@@ -1,0 +1,136 @@
+This version of 3-PG(S) has been developed by Nicholas Coops
+[N.Coops@ffp.csiro.au] & Andrew Loughhead, CSIRO Forestry and Forest Products,
+Private Bag 10, Clayton South 3169, Victoria, Australia.
+
+Please read Release Notes for additional infomation:
+
+Version Number 1.5
+Date: 6 June 2000.
+Programmer:  Andrew Loughhead
+
+"DISCLAIMER" 
+------------------------------------------
+CSIRO accepts no responsibility for the use of 3PG(S) or of the model 3-PG in
+the form supplied or as subsequently modified by third parties. CSIRO disclaims
+liability for all losses, damages and costs incurred by any person as a result
+of relying on this software. Use of this software assumes agreement to this
+condition of use.
+
+Removal of this statement violates the spirit in which 3PG(S) was released by
+CSIRO Forestry and Forest Products.
+Reading input parameters from file '3pgparm.txt'...
+   pFS2                                     constant:      1.000
+   pFS20                                    constant:      0.150
+   StemConst                                constant:      0.095
+   StemPower                                constant:      2.400
+   pRx                                      constant:      0.800
+   pRn                                      constant:      0.250
+   growthTmin                               constant:   -999.000
+   growthTopt                               constant:     25.000
+   growthTmax                               constant:    999.000
+   kF                                       constant:      0.000
+   gammaFx                                  constant:      0.027
+   gammaF0                                  constant:      0.001
+   tgammaF                                  constant:     24.000
+   Rttover                                  constant:      0.015
+   MaxCond                                  constant:      0.020
+   StomCond                                 constant:      0.006
+   CoeffCond                                constant:      0.050
+   BLcond                                   constant:      0.200
+   m0                                       constant:      0.000
+   fN0                                      constant:      1.000
+   SWconst0                                 constant:      0.700
+   SWpower0                                 constant:      9.000
+   wSx1000                                  constant:    300.000
+   MaxAge                                   constant:     50.000
+   nAge                                     constant:      4.000
+   rAge                                     constant:      0.950
+   SLA0                                     constant:      6.000
+   SLA1                                     constant:      6.000
+   tSLA                                     constant:      2.500
+   k                                        constant:      0.500
+   fullCanAge                               constant:      0.000
+   Interception                             constant:      0.150
+   alpha                                    constant:      0.055
+   fracBB0                                  constant:      0.150
+   fracBB1                                  constant:      0.150
+   tBB                                      constant:      1.500
+   y                                        constant:      0.470
+   Density                                  constant:      0.500
+Reading input parameters from file '3pgsite.txt'...
+   output path: ./
+   Lat                                      constant:    -26.000
+   FR                                       constant:      1.000
+   MaxASW                                   constant:    300.000
+   MinASW                                   constant:      0.000
+   Tmax                               month  1 constant: 30.1
+   Tmax                               month  2 constant: 29.7
+   Tmax                               month  3 constant: 28.3
+   Tmax                               month  4 constant: 26.5
+   Tmax                               month  5 constant: 24.1
+   Tmax                               month  6 constant: 21.9
+   Tmax                               month  7 constant: 21.2
+   Tmax                               month  8 constant: 22.5
+   Tmax                               month  9 constant: 25.3
+   Tmax                               month 10 constant: 27.3
+   Tmax                               month 11 constant: 28.8
+   Tmax                               month 12 constant: 29.7
+   Tmin                               month  1 constant: 19.4
+   Tmin                               month  2 constant: 19.5
+   Tmin                               month  3 constant: 17.5
+   Tmin                               month  4 constant: 15.4
+   Tmin                               month  5 constant: 13.2
+   Tmin                               month  6 constant: 8.6
+   Tmin                               month  7 constant: 7.2
+   Tmin                               month  8 constant: 7.1
+   Tmin                               month  9 constant: 10.0
+   Tmin                               month 10 constant: 13.9
+   Tmin                               month 11 constant: 16.9
+   Tmin                               month 12 constant: 18.3
+   Rain                               month  1 constant: 114.0
+   Rain                               month  2 constant: 180.0
+   Rain                               month  3 constant: 175.0
+   Rain                               month  4 constant: 137.0
+   Rain                               month  5 constant: 120.0
+   Rain                               month  6 constant: 64.0
+   Rain                               month  7 constant: 65.0
+   Rain                               month  8 constant: 50.0
+   Rain                               month  9 constant: 33.0
+   Rain                               month 10 constant: 68.0
+   Rain                               month 11 constant: 95.0
+   Rain                               month 12 constant: 137.0
+   Solar radtn                        month  1 constant: 22.6
+   Solar radtn                        month  2 constant: 20.2
+   Solar radtn                        month  3 constant: 19.0
+   Solar radtn                        month  4 constant: 15.5
+   Solar radtn                        month  5 constant: 12.6
+   Solar radtn                        month  6 constant: 12.4
+   Solar radtn                        month  7 constant: 13.3
+   Solar radtn                        month  8 constant: 16.5
+   Solar radtn                        month  9 constant: 20.1
+   Solar radtn                        month 10 constant: 21.7
+   Solar radtn                        month 11 constant: 22.9
+   Solar radtn                        month 12 constant: 22.8
+   Frost Days                         month  1 constant: 0.0
+   Frost Days                         month  2 constant: 0.0
+   Frost Days                         month  3 constant: 0.0
+   Frost Days                         month  4 constant: 0.0
+   Frost Days                         month  5 constant: 0.0
+   Frost Days                         month  6 constant: 0.0
+   Frost Days                         month  7 constant: 0.0
+   Frost Days                         month  8 constant: 0.0
+   Frost Days                         month  9 constant: 0.0
+   Frost Days                         month 10 constant: 0.0
+   Frost Days                         month 11 constant: 0.0
+   Frost Days                         month 12 constant: 0.0
+   StartAge                                 constant:     10.000
+   EndAge                                   constant:     36.000
+   WFi                                      constant:      7.000
+   WRi                                      constant:      2.000
+   WSi                                      constant:      5.000
+   StemNoi                                  constant:   1111.000
+   ASWi                                     constant:    999.000
+   yearPlanted                              constant:   1947.000
+Opening input grids...
+none
+Finished.

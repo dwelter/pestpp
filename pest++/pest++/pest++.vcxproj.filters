@@ -1,0 +1,264 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="genie">
+      <UniqueIdentifier>{381f9232-d13f-479f-a664-03ad33dd6086}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ReadMe.txt" />
+    <None Include="..\..\genie\readme.txt">
+      <Filter>genie</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="FileManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Jacobian.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lapack_tools.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelRunPP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectiveFunc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ParamTransformSeq.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Pest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pest_data_structs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pest_error.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pest++.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PriorInformation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QSqrtMatrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RunManagerAbstract.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RunManagerGenie.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RunManagerSerial.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SVDASolver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SVDSolver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="system_variables.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TerminationController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Transformable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Transformation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="utilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Regularization.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SVD_PROPACK.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SVDPackage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\genie\buffer.cpp">
+      <Filter>genie</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\genie\client.cpp">
+      <Filter>genie</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\genie\commandline.cpp">
+      <Filter>genie</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\genie\executable.cpp">
+      <Filter>genie</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\genie\GENIE_INTERFACE_BASE.cpp">
+      <Filter>genie</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\genie\message.cpp">
+      <Filter>genie</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\genie\modelresult.cpp">
+      <Filter>genie</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\genie\modelrun.cpp">
+      <Filter>genie</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\genie\node.cpp">
+      <Filter>genie</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\genie\receivor.cpp">
+      <Filter>genie</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\genie\runprocess.cpp">
+      <Filter>genie</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\genie\socket_utilities.cpp">
+      <Filter>genie</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\genie\thread.cpp">
+      <Filter>genie</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="FileManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Jacobian.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lapack_tools.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelRunPP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectiveFunc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ParamTransformSeq.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Pest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pest_data_structs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pest_error.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PriorInformation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QSqrtMatrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RunManagerAbstract.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RunManagerGenie.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RunManagerSerial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SVDASolver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SVDSolver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="system_variables.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TerminationController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Transformable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Transformation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utilities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Regularization.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SVD_PROPACK.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SVDPackage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\genie\buffer.h">
+      <Filter>genie</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\genie\client.h">
+      <Filter>genie</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\genie\commandline.h">
+      <Filter>genie</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\genie\defin.h">
+      <Filter>genie</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\genie\executable.h">
+      <Filter>genie</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\genie\header.h">
+      <Filter>genie</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\genie\message.h">
+      <Filter>genie</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\genie\modelresult.h">
+      <Filter>genie</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\genie\modelrun.h">
+      <Filter>genie</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\genie\node.h">
+      <Filter>genie</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\genie\receivor.h">
+      <Filter>genie</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\genie\runprocess.h">
+      <Filter>genie</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\genie\socket_utilities.h">
+      <Filter>genie</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\genie\thread.h">
+      <Filter>genie</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

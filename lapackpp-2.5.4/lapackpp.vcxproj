@@ -1,0 +1,246 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{EC0BDA50-7719-4BC3-8EAC-18F3499E2753}</ProjectGuid>
+    <RootNamespace>lapackpp</RootNamespace>
+    <Keyword>MakeFileProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseIntelMKL>Sequential</UseIntelMKL>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseIntelMKL>Sequential</UseIntelMKL>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseIntelMKL>Sequential</UseIntelMKL>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseIntelMKL>Sequential</UseIntelMKL>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debug\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debug\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Debug\</IntDir>
+    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</IgnoreImportLibrary>
+    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</IgnoreImportLibrary>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Release\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Release\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Release\</IntDir>
+    <NMakeOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">lapackpp.exe</NMakeOutput>
+    <NMakeOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">lapackpp.exe</NMakeOutput>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\include;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>LA_COMPLEX_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>false</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <ShowProgress>LinkVerboseLib</ShowProgress>
+      <SuppressStartupBanner>false</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>..\..\LAPACK;c:\WINNT;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SubSystem>Console</SubSystem>
+      <ImportLibrary>
+      </ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>LA_COMPLEX_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>false</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <ShowProgress>LinkVerboseLib</ShowProgress>
+      <SuppressStartupBanner>false</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>..\..\LAPACK;c:\WINNT;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SubSystem>Console</SubSystem>
+      <ImportLibrary>
+      </ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>LA_COMPLEX_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>LA_COMPLEX_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Lib>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="blaspp\src\blas1pp.cc" />
+    <ClCompile Include="blaspp\src\blas2pp.cc" />
+    <ClCompile Include="blaspp\src\blas3pp.cc" />
+    <ClCompile Include="blaspp\src\blaspp.cc" />
+    <ClCompile Include="matrix\src\bmd.cc" />
+    <ClCompile Include="src\dopla.c" />
+    <ClCompile Include="src\dtimmg.c" />
+    <ClCompile Include="src\eigslv.cc" />
+    <ClCompile Include="src\genmd.cc" />
+    <ClCompile Include="matrix\src\gmc.cc" />
+    <ClCompile Include="matrix\src\gmconv.cc" />
+    <ClCompile Include="matrix\src\gmd.cc" />
+    <ClCompile Include="matrix\src\gmf.cc" />
+    <ClCompile Include="matrix\src\gmi.cc" />
+    <ClCompile Include="matrix\src\gmli.cc" />
+    <ClCompile Include="matrix\src\gmtmpl.cc" />
+    <ClCompile Include="matrix\src\laexcp.cc" />
+    <ClCompile Include="matrix\src\laindex.cc" />
+    <ClCompile Include="src\laprefs.cc" />
+    <ClCompile Include="src\lasvd.cc" />
+    <ClCompile Include="src\lautil.cc" />
+    <ClCompile Include="matrix\src\lavc.cc" />
+    <ClCompile Include="matrix\src\lavd.cc" />
+    <ClCompile Include="matrix\src\lavi.cc" />
+    <ClCompile Include="matrix\src\lavli.cc" />
+    <ClCompile Include="src\linslv.cc" />
+    <ClCompile Include="matrix\src\ltgmd.cc" />
+    <ClCompile Include="matrix\src\spdbmd.cc" />
+    <ClCompile Include="matrix\src\spdmd.cc" />
+    <ClCompile Include="matrix\src\spdtrmd.cc" />
+    <ClCompile Include="matrix\src\sybmd.cc" />
+    <ClCompile Include="matrix\src\symd.cc" />
+    <ClCompile Include="matrix\src\sytrmd.cc" />
+    <ClCompile Include="matrix\src\trmd.cc" />
+    <ClCompile Include="matrix\src\ultgmd.cc" />
+    <ClCompile Include="matrix\src\utgmd.cc" />
+    <ClCompile Include="matrix\src\uutgmd.cc" />
+    <ClCompile Include="matrix\src\vc.cc" />
+    <ClCompile Include="matrix\src\vd.cc" />
+    <ClCompile Include="matrix\src\vf.cc" />
+    <ClCompile Include="matrix\src\vi.cc" />
+    <ClCompile Include="matrix\src\vli.cc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\arch.h" />
+    <ClInclude Include="include\bfd.h" />
+    <ClInclude Include="include\blas1.h" />
+    <ClInclude Include="include\blas1pp.h" />
+    <ClInclude Include="include\blas2.h" />
+    <ClInclude Include="include\blas2pp.h" />
+    <ClInclude Include="include\blas3.h" />
+    <ClInclude Include="include\blas3pp.h" />
+    <ClInclude Include="include\blaspp.h" />
+    <ClInclude Include="include\bmd.h" />
+    <ClInclude Include="include\f2c.h" />
+    <ClInclude Include="include\fmd.h" />
+    <ClInclude Include="include\genmd.h" />
+    <ClInclude Include="include\gfd.h" />
+    <ClInclude Include="include\gfqrc.h" />
+    <ClInclude Include="include\gmc.h" />
+    <ClInclude Include="include\gmd.h" />
+    <ClInclude Include="include\gmf.h" />
+    <ClInclude Include="include\gmi.h" />
+    <ClInclude Include="include\gmli.h" />
+    <ClInclude Include="include\lacomplex.h" />
+    <ClInclude Include="include\lacvd.h" />
+    <ClInclude Include="include\laexcp.h" />
+    <ClInclude Include="include\lafnames.h" />
+    <ClInclude Include="include\laindex.h" />
+    <ClInclude Include="include\lapack.h" />
+    <ClInclude Include="include\lapackc.h" />
+    <ClInclude Include="include\lapackd.h" />
+    <ClInclude Include="include\lapackpp.h" />
+    <ClInclude Include="include\laprefs.h" />
+    <ClInclude Include="include\larvd.h" />
+    <ClInclude Include="include\laslv.h" />
+    <ClInclude Include="include\lasvd.h" />
+    <ClInclude Include="include\latmpl.h" />
+    <ClInclude Include="include\lautil.h" />
+    <ClInclude Include="include\lavc.h" />
+    <ClInclude Include="include\lavd.h" />
+    <ClInclude Include="include\lavi.h" />
+    <ClInclude Include="include\lavli.h" />
+    <ClInclude Include="include\ltgmd.h" />
+    <ClInclude Include="matrix\src\mtmpl.h" />
+    <ClInclude Include="include\spdbmd.h" />
+    <ClInclude Include="include\spdfd.h" />
+    <ClInclude Include="include\spdmd.h" />
+    <ClInclude Include="include\spdtrmd.h" />
+    <ClInclude Include="include\sybfd.h" />
+    <ClInclude Include="include\sybmd.h" />
+    <ClInclude Include="include\syfd.h" />
+    <ClInclude Include="include\symd.h" />
+    <ClInclude Include="include\sytrmd.h" />
+    <ClInclude Include="include\trfd.h" />
+    <ClInclude Include="include\trmd.h" />
+    <ClInclude Include="include\ultgmd.h" />
+    <ClInclude Include="include\utgmd.h" />
+    <ClInclude Include="include\uutgmd.h" />
+    <ClInclude Include="include\vc.h" />
+    <ClInclude Include="include\vd.h" />
+    <ClInclude Include="include\vf.h" />
+    <ClInclude Include="include\vi.h" />
+    <ClInclude Include="include\vli.h" />
+    <ClInclude Include="matrix\src\vtmpl.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="src\ressource.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
