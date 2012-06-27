@@ -21,9 +21,15 @@
 #include <fstream>
 #include "MorrisMethod.h"
 #include <Eigen/Dense>
+#include <utilities.h>
+#include <FileManager.h>
+#include <Pest.h>
+#include <RunManagerGenie.h>
+#include <RunManagerSerial.h>
 
 
 using namespace std;
+using namespace pest_utils;
 using Eigen::MatrixXd;
 
 
@@ -31,9 +37,57 @@ using Eigen::MatrixXd;
 int main(int argc, char* argv[])
 {
 	cout << "Starting Program" << endl;
+		string version = "1.0.1";
+	string complete_path;
+	if (argc >=2) {
+		complete_path = argv[1];
+	}
+	else {
+		cerr << "Usage: gsen pest_ctl_file" << endl;
+		exit(1);
+	}
+
+	string filename = get_filename(complete_path);
+	string pathname = get_pathname(complete_path);
+	if (pathname.empty()) pathname = ".";
+	FileManager file_manager(filename, pathname);
+
+	ofstream &fout_rec = file_manager.rec_ofstream();
+	cout << "gsen Version " << version << endl << endl;
+	fout_rec << "gsen Version " << version << endl << endl;
+
+	cout << "using control file: \"" <<  complete_path << "\"" << endl << endl;
+	fout_rec << "Control file = " <<  complete_path  << "\"" << endl << endl;
+
+	// create to pest run and process control file to initialize it initialize
+	Pest pest_scenario;
+	pest_scenario.set_defaults();
+	pest_scenario.process_ctl_file(file_manager.ctl_filename(), file_manager);
+	pest_scenario.check_inputs();
+
+	// Get the lower bounds of the parameters
+	Parameters ctl_par = pest_scenario.get_ctl_parameters();
+	Parameters low_bnd = pest_scenario.get_ctl_parameter_info().get_low_bnd(ctl_par.get_keys());
+	cout << low_bnd << endl;
+
+	//Build Transformation with ctl_2_numberic
+	ParamTransformSeq base_partran_seq(pest_scenario.get_base_par_tran_seq());
+	Transformation *tran_tied = base_partran_seq.get_transformation("PEST to model tied transformation")->clone();
+	base_partran_seq.clear_tranSeq_ctl2numeric();
+	base_partran_seq.push_back_ctl2model(tran_tied);
+
+	//RunManagerAbstract *run_manager_ptr;
+	//if (pest_scenario.get_pestpp_options().get_gman_socket().empty())
+	//{
+	//	cout << "initializing serial run manager" << endl;
+	//	run_manager_ptr = new RunManagerSerial(pest_scenario.get_model_exec_info(), pathname);
+	//}
+	//else {
+	//	cout << "initializing Genie run manager" << endl;
+	//	run_manager_ptr = new RunManagerGenie (pest_scenario.get_model_exec_info(),  pest_scenario.get_pestpp_options().get_gman_socket());
+	//}
 
 	MatrixXd b_star_mat;
-
 	MorrisMethod morris(8);
 
 	b_star_mat = morris.create_P_star_mat(7);

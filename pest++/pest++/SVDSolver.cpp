@@ -129,7 +129,7 @@ map<string,double> SVDSolver::freeze_parameters(ModelRun &model_run, const LaVec
 	// tmp_parameters is used to a store a list of parameters which aare limited and need
 	// to be frozen.
 
-	// First get a list of parameters that are at there bounds in the direction computed
+	// First get a list of parameters that are at their bounds in the direction computed
 	//using SVD
 	for(Parameters::iterator b=upgrade_pars.begin(), e=upgrade_pars.end(); b!=e; ++b, ++ip)
 	{
@@ -216,13 +216,13 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	// build weights matrix sqrt(Q)
 	QSqrtMatrix Q_sqrt(*obs_info_ptr, obs_names_vec, prior_info_ptr, tikhonov_weight);
 	//build residuals vector
-	residuals_vec = -1.0 * cur_solution.get_residuals_vec(obs_names_vec);
+	residuals_vec = -1.0 * stlvec2LaVec(cur_solution.get_residuals_vec(obs_names_vec));
 
 	// Freeze Parameters
 	bool use_desent;
-	if (prev_phi_percent < 99.0 || num_no_descent < 3) {
+	if (prev_phi_percent > 99.0 && num_no_descent > 2) {
 		use_desent = true;
-		++num_no_descent;
+		num_no_descent = 0;
 	}
 	else {
 		use_desent = false;
@@ -343,6 +343,7 @@ map<string, double> SVDSolver::limit_parameters_ip(const Parameters &init_numeri
 	double p_init;
 	double p_upgrade;
 	double p_limit;
+	double b_facorg_lim;
 	map<string, double> bound_parameters;
 	pair<bool, double> par_limit;
 	Parameters model_parameters_at_limit;
@@ -362,21 +363,39 @@ map<string, double> SVDSolver::limit_parameters_ip(const Parameters &init_numeri
 		p_upgrade = (*pu_iter).second;  // upgrade parameter value
 		p_info = ctl_par_info_ptr->get_parameter_rec_ptr(*name);
 
+		b_facorg_lim = ctl_info->facorig * (ctl_par_info_ptr->get_parameter_rec_ptr(*name)->init_value);
+		if (abs(p_init) >= b_facorg_lim) {
+			b_facorg_lim = p_init;
+		}
+
 		// Check Relative Chanage Limit
-		if(p_info->chglim == "RELATIVE" && abs((p_upgrade - p_init) / p_init) > ctl_info->relparmax)
+		if(p_info->chglim == "RELATIVE" && abs((p_upgrade - p_init) / b_facorg_lim) > ctl_info->relparmax)
 		{
 			par_limit.first = true;
-			par_limit.second = p_init + sign(p_upgrade - p_init) * ctl_info->relparmax *  abs(p_init);
+			par_limit.second = p_init + sign(p_upgrade - p_init) * ctl_info->relparmax *  abs(b_facorg_lim);
 		}
+
 		// Check Factor Change Limit
 		else if(p_info->chglim == "FACTOR") {
-			if (p_upgrade / p_init > ctl_info->facparmax) {
+			if (b_facorg_lim > 0 && p_upgrade < b_facorg_lim/ctl_info->facparmax ) 
+			{
 				par_limit.first = true;
-				par_limit.second = p_init * ctl_info->facparmax;
+				par_limit.second = b_facorg_lim / ctl_info->facparmax;
 			}
-			else if (p_upgrade / p_init < 1.0 / ctl_info->facparmax) {
+			else if (b_facorg_lim > 0 && p_upgrade > b_facorg_lim*ctl_info->facparmax ) 
+			{
 				par_limit.first = true;
-				par_limit.second = p_init * 1.0 / ctl_info->facparmax;
+				par_limit.second = b_facorg_lim * ctl_info->facparmax;
+			}
+			else if (b_facorg_lim < 0 && p_upgrade < b_facorg_lim*ctl_info->facparmax)
+			{
+				par_limit.first = true;
+				par_limit.second = b_facorg_lim * ctl_info->facparmax;
+			}
+			else if (b_facorg_lim < 0 && p_upgrade > b_facorg_lim/ctl_info->facparmax)
+			{
+				par_limit.first = true;
+				par_limit.second = b_facorg_lim / ctl_info->facparmax;
 			}
 		}
 		// Check parameter upper bound

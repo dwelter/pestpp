@@ -176,6 +176,60 @@ const ParameterRec* ParameterInfo::get_parameter_rec_ptr(const string &name) con
 	return ret_val;
 }
 
+Parameters ParameterInfo::get_low_bnd(const vector<string> &keys) const
+{
+	Parameters l_bnd;
+	vector<string>::const_iterator iend=keys.end();
+	ParameterRec const *v_ptr;
+	for (vector<string>::const_iterator i=keys.begin(); i!=iend; ++i)
+	{
+		v_ptr = get_parameter_rec_ptr(*i);
+		if (v_ptr) {
+			l_bnd.insert(*i, v_ptr->lbnd);
+		}
+		else {
+			l_bnd.insert(*i, Parameters::NO_DATA);
+		}
+	}
+	return l_bnd;
+}
+
+Parameters ParameterInfo::get_up_bnd(const vector<string> &keys) const
+{
+	Parameters u_bnd;
+	vector<string>::const_iterator iend=keys.end();
+	ParameterRec const *v_ptr;
+	for (vector<string>::const_iterator i=keys.begin(); i!=iend; ++i)
+	{
+		v_ptr = get_parameter_rec_ptr(*i);
+		if (!v_ptr) {
+			u_bnd.insert(*i, v_ptr->ubnd);
+		}
+		else {
+			u_bnd.insert(*i, Parameters::NO_DATA);
+		}
+	}
+	return u_bnd;
+}
+
+Parameters ParameterInfo::get_init_value(const vector<string> &keys) const
+{
+	Parameters init_value;
+	vector<string>::const_iterator iend=keys.end();
+	ParameterRec const *v_ptr;
+	for (vector<string>::const_iterator i=keys.begin(); i!=iend; ++i)
+	{
+		v_ptr = get_parameter_rec_ptr(*i);
+		if (!v_ptr) {
+			init_value.insert(*i, v_ptr->ubnd);
+		}
+		else {
+			init_value.insert(*i, Parameters::NO_DATA);
+		}
+	}
+	return init_value;
+}
+
 void PestppOptions::parce_line(const string &line)
 {
 	string key;

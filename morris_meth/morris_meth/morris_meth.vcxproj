@@ -38,6 +38,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LibraryPath>$(IFORT_COMPILER12)\Composer XE 2011 SP1\mkl\lib\ia32;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\pest++\pest++;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -51,7 +52,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>blas_win32_MT.lib;lapack_win32_MT.lib;lapackpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\libs;$(IFORT_COMPILER12)\mkl\lib\ia32;..\..\lapackpp-2.5.4\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
@@ -71,11 +72,37 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\pest++\pest++\FileManager.cpp" />
+    <ClCompile Include="..\..\pest++\pest++\ModelRunPP.cpp" />
+    <ClCompile Include="..\..\pest++\pest++\ObjectiveFunc.cpp" />
+    <ClCompile Include="..\..\pest++\pest++\ParamTransformSeq.cpp" />
+    <ClCompile Include="..\..\pest++\pest++\Pest.cpp" />
+    <ClCompile Include="..\..\pest++\pest++\pest_data_structs.cpp" />
+    <ClCompile Include="..\..\pest++\pest++\pest_error.cpp" />
+    <ClCompile Include="..\..\pest++\pest++\PriorInformation.cpp" />
+    <ClCompile Include="..\..\pest++\pest++\Regularization.cpp" />
+    <ClCompile Include="..\..\pest++\pest++\system_variables.cpp" />
+    <ClCompile Include="..\..\pest++\pest++\Transformable.cpp" />
+    <ClCompile Include="..\..\pest++\pest++\utilities.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MorrisMethod.cpp" />
+    <ClCompile Include="Transformation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\pest++\pest++\FileManager.h" />
+    <ClInclude Include="..\..\pest++\pest++\ModelRunPP.h" />
+    <ClInclude Include="..\..\pest++\pest++\ObjectiveFunc.h" />
+    <ClInclude Include="..\..\pest++\pest++\ParamTransformSeq.h" />
+    <ClInclude Include="..\..\pest++\pest++\Pest.h" />
+    <ClInclude Include="..\..\pest++\pest++\pest_data_structs.h" />
+    <ClInclude Include="..\..\pest++\pest++\pest_error.h" />
+    <ClInclude Include="..\..\pest++\pest++\PriorInformation.h" />
+    <ClInclude Include="..\..\pest++\pest++\Regularization.h" />
+    <ClInclude Include="..\..\pest++\pest++\system_variables.h" />
+    <ClInclude Include="..\..\pest++\pest++\Transformable.h" />
+    <ClInclude Include="..\..\pest++\pest++\utilities.h" />
     <ClInclude Include="MorrisMethod.h" />
+    <ClInclude Include="Transformation.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

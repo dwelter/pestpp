@@ -53,6 +53,7 @@ private:
 
 class Transformable {
 public:
+	static const double NO_DATA;
 	typedef unordered_map<string, double>::iterator iterator;
 	typedef unordered_map<string, double>::const_iterator const_iterator;
 	Transformable(){};
@@ -77,9 +78,8 @@ public:
 	Transformable::iterator begin(){return items.begin();}
 	Transformable::const_iterator begin() const {return items.begin();}
 	Transformable::iterator end() {return items.end();}
-	Transformable::const_iterator end() const {return this->items.end();}
-	//LaVectorDouble get_vector() const;
-	LaVectorDouble get_vector(const vector<string> &keys) const;
+	Transformable::const_iterator end() const {return items.end();}
+	vector<double> get_vector(const vector<string> &keys) const;
 	void add_upgrade(const vector<string> &keys, const LaVectorDouble &del_values);
 	virtual ~Transformable(){}
 protected:

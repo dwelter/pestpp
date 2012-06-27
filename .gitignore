@@ -10,3 +10,6 @@
 *.lai
 *.la
 *.a
+
+/morris_meth/ipch
+/morris_meth/Debug

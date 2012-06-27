@@ -19,6 +19,9 @@
 
 #include <iostream>
 #include <cmath>
+#include <vector>
+#include <iterator>
+#include <algorithm>
 #include "ParamTransformSeq.h"
 #include "Transformation.h"
 #include "Transformable.h"
@@ -26,41 +29,210 @@
 
 using namespace std;
 
+//These routines handle reference count on the Transformation used by ParamTransformSeq.
+// Using reference counting makes it possible to not store new copies of all the
+// transformations each time a ParamTransformSeq is copied.
+
+map<const Transformation*, int> ParamTransformSeq::tran_ref_count = map<const Transformation*, int>();
+
+int ParamTransformSeq::tran_add_ref_count(const Transformation *new_tran)
+{
+	int ref_count = 0;
+	map<const Transformation *,int>::iterator it;
+	it = tran_ref_count.find(new_tran);
+	if (it != tran_ref_count.end()) {
+		(*it).second += 1;
+		ref_count = (*it).second;
+	}
+	else {
+		tran_ref_count.insert(pair<const Transformation *, int>(new_tran, 1));
+		ref_count = 1;
+	}
+	return ref_count;
+}
+
+int ParamTransformSeq::tran_sub_ref_count(const Transformation *new_tran)
+{
+	int ref_count = 0;
+	const Transformation *t_ptr;
+	map<const Transformation *,int>::iterator it;
+	it = tran_ref_count.find(new_tran);
+	if (it != tran_ref_count.end()) {
+		(*it).second -= 1;
+		ref_count = (*it).second;
+		if (ref_count<=0) {
+			t_ptr = (*it).first;
+			tran_ref_count.erase(it);
+			delete t_ptr;
+		}
+	}
+	return ref_count;
+}
+
+
 ParamTransformSeq::ParamTransformSeq(const ParamTransformSeq &rhs)
 {
-	*this = rhs;
+	copy(rhs);
+}
+
+ParamTransformSeq::ParamTransformSeq(const ParamTransformSeq &rhs, const set<Transformation *> &deep_copy_tran_set)
+{
+	copy(rhs, deep_copy_tran_set);
+}
+
+ParamTransformSeq::~ParamTransformSeq()
+{
+	clear();
+}
+
+void ParamTransformSeq::clear()
+{
+	clear_tranSeq_ctl2model();
+	clear_tranSeq_ctl2numeric();
+	default_deep_copy_tran_set.clear();
+	name = "empty";
+}
+
+void ParamTransformSeq::clear_tranSeq_ctl2model()
+{
+	for(vector<Transformation*>::iterator i = tranSeq_ctl2model.begin(),
+		e=tranSeq_ctl2model.end(); i != e; ++i)
+	{
+		tran_sub_ref_count(*i);
+		default_deep_copy_tran_set.erase(*i);
+	}
+	ctl_offset_ptr = 0;
+	ctl_scale_prt = 0;
+	tranSeq_ctl2model.clear();
+}
+
+void  ParamTransformSeq::clear_tranSeq_ctl2numeric()
+{
+	for(vector<Transformation*>::iterator i = tranSeq_ctl2numeric.begin(),
+		e=tranSeq_ctl2numeric.end(); i != e; ++i)
+	{
+		tran_sub_ref_count(*i);
+		default_deep_copy_tran_set.erase(*i);
+	}
+	ctl_log10_ptr = 0;
+	ctl_frozen_ptr = 0;
+	tranSeq_ctl2numeric.clear();
+}
+
+void ParamTransformSeq::deep_copy(const ParamTransformSeq &rhs)
+{
+	set<Transformation *> deep_copy_set(rhs.tranSeq_ctl2model.begin(), rhs.tranSeq_ctl2model.end());
+	deep_copy_set.insert(rhs.tranSeq_ctl2numeric.begin(), rhs.tranSeq_ctl2numeric.end());
+	copy(rhs, deep_copy_set);
+}
+
+ParamTransformSeq& ParamTransformSeq::operator=(const ParamTransformSeq &rhs)
+{
+	copy(rhs);
+	return *this;
+}
+
+void ParamTransformSeq::copy(const ParamTransformSeq &rhs)
+{
+	copy(rhs, rhs.default_deep_copy_tran_set);
+}
+
+void ParamTransformSeq::copy(const ParamTransformSeq &rhs, const set<Transformation *> &deep_copy_tran_set)
+{
+	clear();
+	name = "copy of " + rhs.name;
+	
+	Transformation *t_ptr;
+	for(vector<Transformation*>::const_iterator i = rhs.tranSeq_ctl2model.begin(),
+		e=rhs.tranSeq_ctl2model.end(); i != e; ++i)
+	{
+		if (deep_copy_tran_set.find(*i) ==  deep_copy_tran_set.end()) {
+			t_ptr = *i;
+		}
+		else {
+			t_ptr = (*i)->clone();
+		}
+		push_back_ctl2model(t_ptr);
+		if (rhs.default_deep_copy_tran_set.find(*i) !=  rhs.default_deep_copy_tran_set.end()) {
+			default_deep_copy_tran_set.insert(t_ptr);
+		}
+		if (*i == rhs.ctl_offset_ptr) ctl_offset_ptr = dynamic_cast<TranOffset*>(t_ptr);
+		if (*i == rhs.ctl_scale_prt) ctl_scale_prt = dynamic_cast<TranScale*>(t_ptr);
+	}
+	for(vector<Transformation*>::const_iterator i = rhs.tranSeq_ctl2numeric.begin(),
+		e=rhs.tranSeq_ctl2numeric.end(); i != e; ++i)
+	{
+		if (deep_copy_tran_set.find(*i) ==  deep_copy_tran_set.end()) {
+			t_ptr = *i;
+		}
+		else {
+			t_ptr = (*i)->clone();
+		}
+		push_back_ctl2numeric(t_ptr);
+		if (rhs.default_deep_copy_tran_set.find(*i) !=  rhs.default_deep_copy_tran_set.end()) {
+			default_deep_copy_tran_set.insert(t_ptr);
+		}
+		if (*i == rhs.ctl_log10_ptr) ctl_log10_ptr = dynamic_cast<TranLog10*>(t_ptr);
+		if (*i == rhs.ctl_frozen_ptr) ctl_frozen_ptr = dynamic_cast<TranFrozen*>(t_ptr);
+	}
+}
+
+ParamTransformSeq &ParamTransformSeq::operator+=(const ParamTransformSeq &rhs)
+{
+	append(rhs, default_deep_copy_tran_set);
+	return *this;
+}
+
+void ParamTransformSeq::append(const ParamTransformSeq &rhs)
+{
+	append(rhs, rhs.default_deep_copy_tran_set);
+}
+
+void ParamTransformSeq::append(const ParamTransformSeq &rhs, const set<Transformation *> &deep_copy_tran_set )
+{
+	Transformation *t_ptr;
+
+	for (vector<Transformation*>::const_iterator i=rhs.tranSeq_ctl2model.begin(), e=rhs.tranSeq_ctl2model.end();
+		i!=e; ++i) 
+	{
+		if (deep_copy_tran_set.find(*i) ==  deep_copy_tran_set.end()) {
+			t_ptr = *i;
+		}
+		else {
+			t_ptr = (*i)->clone();
+		}
+		push_back_ctl2model(t_ptr);
+		if (rhs.default_deep_copy_tran_set.find(*i) !=  rhs.default_deep_copy_tran_set.end()) {
+			default_deep_copy_tran_set.insert(t_ptr);
+		}
+	}
+	for (vector<Transformation*>::const_iterator i=rhs.tranSeq_ctl2numeric.begin(), e=rhs.tranSeq_ctl2numeric.end();
+		i!=e; ++i) 
+	{
+		if (deep_copy_tran_set.find(*i) ==  deep_copy_tran_set.end()) {
+			t_ptr = *i;
+		}
+		else {
+			t_ptr = (*i)->clone();
+		}
+		push_back_ctl2numeric(t_ptr);
+		if (rhs.default_deep_copy_tran_set.find(*i) !=  rhs.default_deep_copy_tran_set.end()) {
+			default_deep_copy_tran_set.insert(t_ptr);
+		}
+	}
 }
 
 void ParamTransformSeq::push_back_ctl2model(Transformation *tr)
 {
 	tranSeq_ctl2model.push_back(tr);
+	tran_add_ref_count(tr);
 }
 
 void ParamTransformSeq::push_back_ctl2numeric(Transformation *tr)
 {
 	tranSeq_ctl2numeric.push_back(tr);
+	tran_add_ref_count(tr);
 }
-
-void ParamTransformSeq::push_back_ctl2numeric_frozen()
-{
-	tranSeq_ctl2numeric.push_back(&ctl_frozen);
-}
-
-ParamTransformSeq::~ParamTransformSeq()
-{
-	//for(vector<Transformation*>::iterator i = tranSeq_ctl2model.begin(),
-	//	e=tranSeq_ctl2model.end(); i != e; ++i)
-	//{
-	//	delete *i;
-	//}
-	//for(vector<Transformation*>::iterator i = tranSeq_ctl2numeric.begin(),
-	//	e=tranSeq_ctl2numeric.end(); i != e; ++i)
-	//{
-	//	delete *i;
-	//}
-}
-
-TranFrozen *ParamTransformSeq::get_frozen_ptr() {return &ctl_frozen;}
 
 void ParamTransformSeq::ctl2model_ip(Parameters &data) const
 {
@@ -179,48 +351,25 @@ bool ParamTransformSeq::is_one_to_one() const
 	return true;
 }
 
-ParamTransformSeq &ParamTransformSeq::operator+=(const ParamTransformSeq &rhs)
+Transformation* ParamTransformSeq::get_transformation(const string &name)
 {
-	for (vector<Transformation*>::const_iterator b=rhs.tranSeq_ctl2model.begin(), e=rhs.tranSeq_ctl2model.end();
+	Transformation *t_ptr = 0;
+	for (vector<Transformation*>::const_iterator b=tranSeq_ctl2model.begin(), e=tranSeq_ctl2model.end();
 		b!=e; ++b) {
-			tranSeq_ctl2model.push_back((*b)->clone());
-	}
-		for (vector<Transformation*>::const_iterator b=rhs.tranSeq_ctl2numeric.begin(), e=rhs.tranSeq_ctl2numeric.end();
-		b!=e; ++b) {
-			tranSeq_ctl2model.push_back((*b)->clone());
-	}
-	return *this;
-}
-
-const ParamTransformSeq& ParamTransformSeq::operator=(const ParamTransformSeq &rhs)
-{
-	name = "copy";
-	Transformation *tran;
-	tranSeq_ctl2model.clear();
-	for (vector<Transformation*>::const_iterator b=rhs.tranSeq_ctl2model.begin(), e=rhs.tranSeq_ctl2model.end();
-		b!=e; ++b) {
-			tran = (*b)->clone();
-			tranSeq_ctl2model.push_back(tran);
-			if (*b == rhs.ctl_offset_ptr) ctl_offset_ptr = dynamic_cast<TranOffset*>(tran);
-			if (*b == rhs.ctl_scale_prt) ctl_scale_prt = dynamic_cast<TranScale*>(tran);
-	}
-	ctl_frozen = rhs.ctl_frozen;
-	tranSeq_ctl2numeric.clear();
-	for (vector<Transformation*>::const_iterator b=rhs.tranSeq_ctl2numeric.begin(), e=rhs.tranSeq_ctl2numeric.end();
-		b!=e; ++b) {
-			if ((*b) == &(rhs.ctl_frozen))
-			{
-				tran = &ctl_frozen;
+			if( (*b)->get_name() == name) {
+				t_ptr = (*b);
 			}
-			else {
-				tran = (*b)->clone();
-			}
-			tranSeq_ctl2numeric.push_back(tran);
-			if (*b == rhs.ctl_log10_ptr) ctl_log10_ptr = dynamic_cast<TranLog10*>(tran);
 	}
-	return *this;
+	if (!t_ptr) {
+		for (vector<Transformation*>::const_iterator b=tranSeq_ctl2numeric.begin(), e=tranSeq_ctl2numeric.end();
+			b!=e; ++b) {
+				if( (*b)->get_name() == name) {
+					t_ptr = (*b);
+			}	
+		}
+	}
+	return t_ptr;
 }
-
 
 void ParamTransformSeq::print(ostream &os) const
 {
@@ -244,57 +393,3 @@ ostream& operator<< (ostream &os, const ParamTransformSeq& val)
 	return os;
 }
 
-//void ParamTransformSeq::analytic_derivative_to_numeric(JacobianAnalytic &jac, const Parameters & model_pars) const
-//{
-//	const string *p_name;
-//	const Parameters &pars = jac.get_base_numeric_parameters();
-//	const Observations &obs = jac.get_base_sim_observations();
-//	LaGenMatDouble &matrix = jac.get_matrix(pars.get_keys(), obs.get_keys());
-//	pair<bool, double> val_pair;
-//	double scale, offset;
-//	double par_value;
-//	double factor;
-//	bool has_log;
-//	int irow, icol;
-//
-//	icol = 0;
-//	for (Parameters::const_iterator b=pars.begin(), e=pars.end();
-//		b != e; ++b, ++icol)
-//	{
-//		p_name = &(*b).first;
-//		par_value = model_pars.get_rec(*p_name);
-//		val_pair = ctl_offset_ptr->get_value(*p_name);
-//		if (val_pair.first == true) {
-//			offset = val_pair.second;
-//		}
-//		else {
-//			offset = 0.0; 
-//		}
-//		val_pair = ctl_scale_prt->get_value(*p_name);
-//		if (val_pair.first == true) {
-//			scale = val_pair.second;
-//		}
-//		else {
-//			scale = 1.0;
-//		}
-//		has_log = ctl_log10_ptr->has_value(*p_name);
-//
-//		irow = 0;
-//		if (has_log = true) {
-//			factor = (par_value - offset) *  log(10.0);
-//			for (Observations::const_iterator bo=obs.begin(), eo=obs.end();
-//			bo != eo; ++bo, ++irow)
-//			{
-//				matrix(irow,icol)  *=  factor;
-//			}
-//		}
-//		else if (scale != 1) {
-//			factor =  par_value / scale;
-//			for (Observations::const_iterator bo=obs.begin(), eo=obs.end();
-//			bo != eo; ++bo, ++irow)
-//			{
-//				matrix(irow,icol)  *= factor;
-//			}
-//		}
-//	}
-//}
