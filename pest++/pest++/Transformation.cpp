@@ -351,7 +351,7 @@ void TranSVD::reverse(Transformable &data)
 	LaVectorDouble  base_pars(Vt.cols());
 	Transformable ret_base_pars;
 
-	Blas_Mat_Trans_Mat_Mult(Vt(LaIndex(0, n_super), LaIndex(0,n_base-1)), data.get_vector(super_parameter_names), base_pars, 1.0, 0.0);
+	Blas_Mat_Trans_Mat_Mult(Vt(LaIndex(0, n_super), LaIndex(0,n_base-1)), stlvec2LaVec(data.get_vector(super_parameter_names)), base_pars, 1.0, 0.0);
 	for (int i=0; i<n_base; ++i) {
 		ret_base_pars.insert(base_parameter_names[i], base_pars(i));
 	}
@@ -365,7 +365,7 @@ void TranSVD::forward(Transformable &data)
 	LaVectorDouble value;
 
 	for (int i=0; i<n_sing_val; ++i) {
-		value = Vt.row(i) * data.get_vector(base_parameter_names);
+		value = Vt.row(i) * stlvec2LaVec(data.get_vector(base_parameter_names));
 		assert(value.size() == 1);
 		super_pars.insert(super_parameter_names[i], value(0));
 	}

@@ -67,7 +67,6 @@ vector<string> Pest::get_nonregul_obs() const
 }
 
 
-
 int Pest::process_ctl_file(const string &filename, FileManager &file_manager)
 {
 	ifstream fin;
@@ -101,6 +100,7 @@ int Pest::process_ctl_file(const string &filename, FileManager &file_manager)
 	TranScale *t_scale = new TranScale("PEST to model scale transformation");
 	TranLog10 *t_log = new TranLog10("PEST to model log transformation");
 	TranFixed *t_fixed = new TranFixed("PEST to model fixed transformation");
+	TranFrozen *t_frozen = new TranFrozen("PEST frozen parameter transformation");
 	TranNormalize *t_auto_norm = new TranNormalize("PEST auto-normalization transformation");
 
 	base_par_transform.push_back_ctl2model(t_scale);
@@ -109,7 +109,9 @@ int Pest::process_ctl_file(const string &filename, FileManager &file_manager)
 	base_par_transform.set_offset_ptr(t_offset);
 	base_par_transform.push_back_ctl2numeric(t_tied);
 	base_par_transform.push_back_ctl2numeric(t_fixed);
-	base_par_transform.push_back_ctl2numeric_frozen();
+	base_par_transform.push_back_ctl2numeric(t_frozen);
+	base_par_transform.set_frozen_ptr(t_frozen);
+	base_par_transform.add_default_deep_copy(t_frozen);
 	base_par_transform.push_back_ctl2numeric(t_log);
 	base_par_transform.set_log10_ptr(t_log);
 	base_par_transform.push_back_ctl2numeric(t_auto_norm);
@@ -218,7 +220,7 @@ int Pest::process_ctl_file(const string &filename, FileManager &file_manager)
 				name = tokens[0];
 				trans_type = &tokens[1];
 				convert_ip(tokens[2], pi.chglim);
-				convert_ip(tokens[3], value);
+				convert_ip(tokens[3], pi.init_value);
 				convert_ip(tokens[4], pi.lbnd);
 				convert_ip(tokens[5], pi.ubnd);
 				convert_ip(tokens[6], pi.group);
@@ -227,7 +229,7 @@ int Pest::process_ctl_file(const string &filename, FileManager &file_manager)
 				// add parameters to model parameter and paramter_info datasets
 				ctl_ordered_par_names.push_back(name);
 				ctl_parameter_info.insert(name, pi);
-				ctl_parameters.insert(name, value);
+				ctl_parameters.insert(name, pi.init_value);
 				base_group_info.insert_parameter_link(name, pi.group);
 
 				// build appropriate transformations

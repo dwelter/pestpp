@@ -26,24 +26,6 @@
 #include "ParamTransformSeq.h"
 #include "utilities.h"
 #include "pest_error.h"
-/*  
-    © Copyright 2012, David Welter
-    
-    This file is part of PEST++.
-   
-    PEST++ is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    PEST++ is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
-*/
 #include <lapackpp.h>
 #include "ModelRunPP.h"
 #include "SVDASolver.h"
@@ -69,7 +51,7 @@ int main(int argc, char* argv[])
  //   gets(bufb);
 	//exit(0);
 
-	string version = "1.0.1";
+	string version = "1.0.2";
 	string complete_path;
 	if (argc >=2) {
 		complete_path = argv[1];
@@ -122,9 +104,11 @@ int main(int argc, char* argv[])
 	//Build Super-Parameter problem
 	Jacobian *super_jacobian_ptr = new Jacobian(file_manager);
 	ParamTransformSeq trans_svda;
-	TranSVD tran_svd = TranSVD("SVD Super Parameter Tranformation");
+	// method be involked as pointer as the transformation sequence it is added to will
+	// take responsibility for destroying it
+	TranSVD *tran_svd = new TranSVD("SVD Super Parameter Tranformation");
 	trans_svda = base_trans_seq;
-	trans_svda.push_back_ctl2numeric(&tran_svd);
+	trans_svda.push_back_ctl2numeric(tran_svd);
 
 	ParameterGroupInfo sup_group_info;
 	//
@@ -150,9 +134,8 @@ int main(int argc, char* argv[])
 			const vector<string> &nonregul_obs = pest_scenario.get_nonregul_obs();
 			const vector<string> &pars = base_svd.cur_model_run().get_numeric_pars().get_keys();
 			QSqrtMatrix Q_sqrt(pest_scenario.get_ctl_observation_info(), nonregul_obs, &pest_scenario.get_prior_info(), 1.0);
-			tran_svd.update(*base_jacobian_ptr, Q_sqrt, super_nmax, super_eigthres, pars, nonregul_obs);
-			sup_group_info = tran_svd.build_par_group_info(pest_scenario.get_base_group_info());
-			Parameters svda_pars = trans_svda.ctl2numeric_cp(base_svd.cur_model_run().get_ctl_pars());
+			(*tran_svd).update(*base_jacobian_ptr, Q_sqrt, super_nmax, super_eigthres, pars, nonregul_obs);
+			sup_group_info = (*tran_svd).build_par_group_info(pest_scenario.get_base_group_info());			Parameters svda_pars = trans_svda.ctl2numeric_cp(base_svd.cur_model_run().get_ctl_pars());
 			SVDASolver super_svd(&svd_control_info, pest_scenario.get_svd_info(), &sup_group_info, &pest_scenario.get_ctl_parameter_info(),
 				&pest_scenario.get_ctl_observation_info(),  file_manager, &pest_scenario.get_ctl_observations(), &obj_func,
 				trans_svda, svda_pars, &pest_scenario.get_prior_info(), *super_jacobian_ptr, pest_scenario.get_regul_scheme_ptr());

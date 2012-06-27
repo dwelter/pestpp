@@ -23,7 +23,6 @@
 #include <fstream>
 #include <iomanip>
 #include <utility>
-#include <lapackpp.h>
 #include "Transformable.h"
 #include "Transformation.h"
 #include "pest_error.h"
@@ -33,6 +32,8 @@ using std::string;
 using std::map;
 using std::ostream;
 using std::endl;
+
+const double Transformable::NO_DATA = -9.99E99;
 
 Transformable::Transformable(const Transformable &copyin) : items(copyin.items)
 {
@@ -146,9 +147,11 @@ void Transformable::update_rec(const string &name, double value)
 	}
 }
 
-LaVectorDouble Transformable::get_vector(const vector<string> &keys) const
+vector<double> Transformable::get_vector(const vector<string> &keys) const
 {
-	LaVectorDouble v(items.size());
+	vector<double> v;
+	v.resize(items.size(), 0.0);
+
 	double value;
 	int i = 0;
 
@@ -156,7 +159,7 @@ LaVectorDouble Transformable::get_vector(const vector<string> &keys) const
 		b!=e; ++b, ++i)
 	{
 		value = get_rec((*b));
-		v(i) = value;
+		v[i] = value;
 	}
 	return v;
 }

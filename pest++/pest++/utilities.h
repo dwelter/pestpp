@@ -28,6 +28,8 @@ namespace pest_utils
 		return 0;
 	}
 
+	 /** @brief Sign of a number
+ 
 	  
 	/** @brief Splits a string and returns the sub-strings.
 	

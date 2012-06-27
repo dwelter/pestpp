@@ -20,8 +20,8 @@
 #include <list>
 #include <iomanip>
 
-#include <lapackpp.h>
-#include "lapack_tools.h"
+//#include <lapackpp.h>
+//#include "lapack_tools.h"
 #include "ObjectiveFunc.h"
 #include "pest_data_structs.h"
 #include "Transformable.h"
@@ -137,12 +137,13 @@ PhiComponets ObjectiveFunc::phi_report(ostream &os, const Observations &sim_obs,
 }
 
 
-LaVectorDouble ObjectiveFunc::get_residuals_vec(const Observations &sim_obs, const Parameters &pars, const vector<string> &obs_names) const
+vector<double> ObjectiveFunc::get_residuals_vec(const Observations &sim_obs, const Parameters &pars, const vector<string> &obs_names) const
 {
-	LaVectorDouble residuals_vec(obs_names.size());
+	vector<double> residuals_vec;
+	residuals_vec.resize(obs_names.size(), 0.0);
 
 	Observations::const_iterator found_obs;
-	Observations::const_iterator not_found_obs=observations_ptr->end();
+	Observations::const_iterator not_found_obs=(*observations_ptr).end();
 	PriorInformation::const_iterator found_prior_info;
 	PriorInformation::const_iterator not_found_prior_info = prior_info_ptr->end();
 
@@ -154,11 +155,11 @@ LaVectorDouble ObjectiveFunc::get_residuals_vec(const Observations &sim_obs, con
 
 		if (found_obs != not_found_obs)
 		{
-			residuals_vec(i) = sim_obs.get_rec(*b) - (*found_obs).second;
+			residuals_vec[i] = sim_obs.get_rec(*b) - (*found_obs).second;
 		}
 		else if (found_prior_info != not_found_prior_info)
 		{
-			residuals_vec(i) = (*found_prior_info).second.calc_residual(pars);
+			residuals_vec[i] = (*found_prior_info).second.calc_residual(pars);
 		}
 	}
 	return residuals_vec;

@@ -114,9 +114,10 @@ public:
 	string chglim;
 	double lbnd;
 	double ubnd;
+	double init_value;
 	string group;
 	bool dercom;
-	ParameterRec() : chglim(""), lbnd(0.0), ubnd(0.0), group(""),
+	ParameterRec() : chglim(""), lbnd(0.0), ubnd(0.0), init_value(0.0), group(""),
 		dercom(false){}
 };
 ostream& operator<< (ostream &os, const ParameterRec& val);
@@ -124,6 +125,9 @@ ostream& operator<< (ostream &os, const ParameterRec& val);
 class ParameterInfo {
 	friend ostream& operator<< (ostream &os, const ParameterInfo& val);
 public:
+	Parameters get_low_bnd(const vector<string> &keys) const;
+	Parameters get_up_bnd(const vector<string> &keys) const;
+	Parameters get_init_value(const vector<string> &keys) const;
 	const ParameterRec* get_parameter_rec_ptr(const string &name) const;
 	void insert(const string &name, const ParameterRec &rec) {parameter_info[name] = rec;}
 	ParameterInfo() {}

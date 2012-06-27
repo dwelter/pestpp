@@ -49,7 +49,7 @@ public:
 	PhiComponets get_phi_comp(const Observations &sim_obs, const Parameters &pars) const;
 	map<string, double> get_group_phi(const Observations &sim_obs, const Parameters &pars) const;
 	PhiComponets phi_report(ostream &os, const Observations &sim_obs, const Parameters &pars, double tikhonov_weight=1.0) const;
-	LaVectorDouble get_residuals_vec(const Observations &sim_obs, const Parameters &pars, const vector<string> &obs_names) const;
+	vector<double> get_residuals_vec(const Observations &sim_obs, const Parameters &pars, const vector<string> &obs_names) const;
 	~ObjectiveFunc(void) {}
 private:
 	const Observations *observations_ptr;

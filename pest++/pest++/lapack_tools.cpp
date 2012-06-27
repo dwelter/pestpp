@@ -16,6 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
+#include <vector>
 #include "lapack_tools.h"
 #include <lapackpp.h>
 
@@ -66,7 +67,7 @@ void get_LaGenMatDouble_row_abs_max(const LaGenMatDouble &m, int row, int *max_c
 	int ncols = m.cols();
 	assert(row <= nrows);
 
-	*max_col = m(row, 0);
+	*max_col = -999;
 	*max_val = 0;
 	for (int icol=0; icol<ncols; ++icol)
 	{
@@ -76,4 +77,14 @@ void get_LaGenMatDouble_row_abs_max(const LaGenMatDouble &m, int row, int *max_c
 			*max_val = m(row,icol);
 		}
 	}
+}
+LaVectorDouble stlvec2LaVec(const std::vector<double> &stl_vec)
+{
+	int len = stl_vec.size();
+	LaVectorDouble la_vec(len);
+	for (int i=0; i<len; ++i)
+	{
+		la_vec(i) = stl_vec[i];
+	}
+	return la_vec;
 }
