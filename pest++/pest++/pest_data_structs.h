@@ -53,7 +53,7 @@ class SVDInfo {
 public:
 	int maxsing;
 	double eigthresh;
-	SVDInfo() : maxsing(0), eigthresh(1.0e-6) {}
+	SVDInfo() : maxsing(0), eigthresh(1.0e-7) {}
 };
 ostream& operator<< (ostream &os, const SVDInfo& val);
 

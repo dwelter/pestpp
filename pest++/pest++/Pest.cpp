@@ -234,7 +234,7 @@ int Pest::process_ctl_file(const string &filename, FileManager &file_manager)
 
 				// build appropriate transformations
 				if (*trans_type == "FIXED") {
-					t_fixed->insert(name, value);}
+					t_fixed->insert(name, pi.init_value);}
 				else if (*trans_type == "LOG") {
 					t_log->insert(name);
 				}
