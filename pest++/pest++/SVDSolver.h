@@ -49,6 +49,17 @@ public:
 	virtual void set_svd_package(PestppOptions::SVD_PACK _svd_pack);
 	virtual ~SVDSolver(void);
 protected:
+	class Upgrade {
+	public:
+		LaVectorDouble svd_uvec;
+		LaVectorDouble grad_uvec;
+		vector<string> par_name_vec;
+		double svd_norm;
+		double grad_norm;
+		int n_sing_val_used;
+		int tot_sing_val;
+	};
+
 	SVDPackage *svd_package;
 	const string description;
 	const ControlInfo *ctl_info;
@@ -72,11 +83,15 @@ protected:
 	virtual const string &get_description(){return description;}
 	void iteration_update_and_report(ostream &os, ModelRunAbstractBase &upgrade, TerminationController &termination_ctl); 
 	void param_change_stats(double p_old, double p_new, bool &have_fac, double &fac_change, bool &have_rel, double &rel_change);
-	void calc_upgrade_vec(const LaGenMatDouble &jacobian, const QSqrtMatrix &Q_sqrt, const LaVectorDouble &Residuals,
-	LaVectorDouble &svd_update_uvec, double & svd_update_norm, LaVectorDouble &grad_update_uvec, int &n_sing_val_used,
-	int &total_sing_val);
-	map<string,double> freeze_parameters(ModelRun &model_run, const LaVectorDouble &svd_update_uvec, 
-		double svd_update_norm, const LaVectorDouble &grad_update_uvec, bool use_descent=true);
+	Upgrade calc_upgrade_vec(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt, const LaVectorDouble &Residuals,
+		const vector<string> &par_name_vec, const vector<string> &obs_name_vec);
+	map<string,double> freeze_parameters(ModelRun &model_run, const Upgrade &upgrade, bool use_descent=true);
+	ModelRun iterative_parameter_freeze(const ModelRun &model_run, Upgrade &upgrade,
+		const QSqrtMatrix &q_sqrt_mat, const LaVectorDouble &residuals_vec, 
+		const vector<string> & obs_names_vec, bool use_desent);
+	double add_model_run(RunManagerAbstract &run_manager, const ParamTransformSeq &numeric2model_tran_seq,
+		const Parameters &base_numeric_pars, const LaVectorDouble &svd_update_uvec, const LaVectorDouble &grad_update_uvec,
+		const vector<string> update_vec_keys, double svd_update_norm, double rot_fac, double scale);
 };
 
 #endif /* SVDSOLVER_H_ */
