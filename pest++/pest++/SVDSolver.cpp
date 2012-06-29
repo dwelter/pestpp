@@ -120,7 +120,8 @@ SVDSolver::Upgrade SVDSolver::calc_upgrade_vec(const Jacobian &jacobian, const Q
 	return upgrade;
 }
 
-map<string,double> SVDSolver::freeze_parameters(ModelRun &model_run, const Upgrade &upgrade, bool use_descent)
+map<string,double> SVDSolver::freeze_parameters(ModelRun &model_run, const Upgrade &upgrade, bool use_descent,
+	double scale)
 {
 	Parameters upgrade_pars = model_run.get_numeric_pars();
 	Parameters tmp_parameters;
@@ -135,7 +136,7 @@ map<string,double> SVDSolver::freeze_parameters(ModelRun &model_run, const Upgra
 	//using SVD
 	for(Parameters::iterator b=upgrade_pars.begin(), e=upgrade_pars.end(); b!=e; ++b, ++ip)
 	{
-		b->second += upgrade.svd_uvec(ip)*upgrade.svd_norm;
+		b->second += upgrade.svd_uvec(ip)*upgrade.svd_norm*scale;
 	}
 	tmp_svd = limit_parameters_ip(model_run.get_numeric_pars(), upgrade_pars);
 
@@ -149,7 +150,7 @@ map<string,double> SVDSolver::freeze_parameters(ModelRun &model_run, const Upgra
 		ip = 0;
 		for(Parameters::iterator b=upgrade_pars.begin(), e=upgrade_pars.end(); b!=e; ++b, ++ip)
 		{
-			b->second += upgrade.grad_uvec(ip)*upgrade.svd_norm;
+			b->second += upgrade.grad_uvec(ip)*upgrade.svd_norm*scale;
 		}
 		tmp_descent =  limit_parameters_ip(model_run.get_numeric_pars(), upgrade_pars);
 		// remove entries from tmp_svd that are not also in tmp_descent
@@ -170,13 +171,12 @@ map<string,double> SVDSolver::freeze_parameters(ModelRun &model_run, const Upgra
 
 ModelRun SVDSolver::iterative_parameter_freeze(const ModelRun &model_run, 
 	Upgrade &upgrade, const QSqrtMatrix &q_sqrt_mat, const LaVectorDouble &residuals_vec, 
-	const vector<string> & obs_names_vec, bool use_desent)
+	const vector<string> & obs_names_vec, bool use_desent, double scale)
 {
 	ostream &os = file_manager.rec_ofstream();
 	ModelRun base_run(model_run);
 	map<string,double> freeze_pars;
 
-	upgrade = calc_upgrade_vec(jacobian, q_sqrt_mat, residuals_vec, base_run.get_numeric_pars().get_keys(), obs_names_vec);
 	freeze_pars = freeze_parameters(base_run, upgrade, use_desent);
 	while (! freeze_pars.empty() ) {
 		for (map<string,double>::iterator b=freeze_pars.begin(), e=freeze_pars.end(); b!=e; ++b) {
@@ -190,7 +190,7 @@ ModelRun SVDSolver::iterative_parameter_freeze(const ModelRun &model_run,
 				(*b_f).first), upgrade.par_name_vec.end());
 		}
 		upgrade = calc_upgrade_vec(jacobian, q_sqrt_mat, residuals_vec, upgrade.par_name_vec, obs_names_vec);
-		freeze_pars = freeze_parameters(base_run, upgrade, use_desent);
+		freeze_pars = freeze_parameters(base_run, upgrade, use_desent, scale);
 	}
 	base_run.freeze_parameters(freeze_pars);
 	return base_run;
@@ -198,25 +198,24 @@ ModelRun SVDSolver::iterative_parameter_freeze(const ModelRun &model_run,
 
 
 double SVDSolver::add_model_run(RunManagerAbstract &run_manager, const ParamTransformSeq &numeric2model_tran_seq, const Parameters &numeric_base_par, 
-	const LaVectorDouble &svd_update_uvec, const LaVectorDouble &grad_update_uvec, const vector<string> update_vec_keys, 
-	double svd_update_norm, double rot_fac, double scale)
+	const Upgrade &upgrade, double rot_fac, double scale)
 {
 	const double PI = 3.141592;
 	double tmp_norm;
 	double rot_angle = 0.0;
-	LaVectorDouble upgrade_vec = ((1.0 - rot_fac) * svd_update_uvec + rot_fac * grad_update_uvec);
+	LaVectorDouble upgrade_vec = ((1.0 - rot_fac) * upgrade.svd_uvec + rot_fac * upgrade.grad_uvec);
 	tmp_norm = Blas_Norm2(upgrade_vec);
 	// Compute unit upgrade vector;
 	if (tmp_norm != 0) {
 		upgrade_vec *= (1.0 / tmp_norm);
 	}
-	rot_angle = acos(min(1.0, svd_update_uvec * upgrade_vec)) * 180.0 / PI;
-	upgrade_vec *= svd_update_norm;
+	rot_angle = acos(min(1.0, upgrade.svd_uvec * upgrade_vec)) * 180.0 / PI;
+	upgrade_vec *= upgrade.svd_norm*scale;
 	
 	// update numeric parameters in upgrade_run and test them
 	{
 		Parameters upgrade_numeric_pars = numeric_base_par;
-		upgrade_numeric_pars.add_upgrade(update_vec_keys, upgrade_vec);
+		upgrade_numeric_pars.add_upgrade(upgrade.par_name_vec, upgrade_vec);
 		// impose limits on parameter upgrade vector
 		limit_parameters_ip(numeric_base_par, upgrade_numeric_pars);
 		// add run to run manager
@@ -277,6 +276,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	}
 
 	Upgrade upgrade;
+	upgrade = calc_upgrade_vec(jacobian, Q_sqrt, residuals_vec, base_run.get_numeric_pars().get_keys(), obs_names_vec);
 	ModelRun upgrade_run = iterative_parameter_freeze(base_run, upgrade, Q_sqrt, residuals_vec, obs_names_vec, use_desent);
 	ModelRun best_upgrade_run(base_run);
 
@@ -292,23 +292,44 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	Parameters::iterator e;
 
 	//Build model runs
-	double tmp_rot_fac[] =  {0.0, 0.01, 0.1, 0.2, 0.5, 0.7, 1.0};
-	vector<double> rot_fac_vec(tmp_rot_fac, tmp_rot_fac + sizeof(tmp_rot_fac) / sizeof(double));
+	int n_runs = 9;
+	double rot_angle;
+	vector<double> rot_fac_vec;
 	vector<double> rot_angle_vec;
-	run_manager.allocate_memory(base_run.get_model_pars(), base_run.get_obs_template(), rot_fac_vec.size());
+	run_manager.allocate_memory(base_run.get_model_pars(), base_run.get_obs_template(), n_runs);
+	 
+	//Make two runs with rotation factor of zero  but scaled down
+	ModelRun upgrade_run_scale(base_run);
+	Upgrade upgrade_scale;
+	upgrade_scale = calc_upgrade_vec(jacobian, Q_sqrt, residuals_vec, base_run.get_numeric_pars().get_keys(), obs_names_vec);
+	upgrade_run_scale = iterative_parameter_freeze(base_run, upgrade_scale, Q_sqrt, residuals_vec, obs_names_vec, use_desent, 0.1);
+	rot_angle = add_model_run(run_manager, upgrade_run_scale.get_par_tran(), base_run.get_numeric_pars(),
+			upgrade, 0.0, 0.1);
+	rot_angle_vec.push_back(rot_angle);
+	rot_fac_vec.push_back(0.0);
+
+	upgrade_scale = calc_upgrade_vec(jacobian, Q_sqrt, residuals_vec, base_run.get_numeric_pars().get_keys(), obs_names_vec);
+	upgrade_run_scale = iterative_parameter_freeze(base_run, upgrade_scale, Q_sqrt, residuals_vec, obs_names_vec, use_desent,0.5);
+	rot_angle = add_model_run(run_manager, upgrade_run_scale.get_par_tran(), base_run.get_numeric_pars(),
+			upgrade, 0.0, 0.5);
+	rot_angle_vec.push_back(rot_angle);
+	rot_fac_vec.push_back(0.0);
 
 	for(int i=0; i<7; ++i) {
-		double rot_angle = add_model_run(run_manager, upgrade_run.get_par_tran(), base_run.get_numeric_pars(),
-			upgrade.svd_uvec, upgrade.grad_uvec, upgrade.par_name_vec, 
-			upgrade.svd_norm, rot_fac_vec[i], 1.0);
+
+		double tmp_rot_fac[] =  {0.0, 0.01, 0.1, 0.2, 0.5, 0.7, 1.0};
+		double rot_angle = add_model_run(run_manager, upgrade_run.get_par_tran(), 
+			base_run.get_numeric_pars(),upgrade, rot_fac_vec[i], 1.0);
 		rot_angle_vec.push_back(rot_angle);
+		rot_fac_vec.push_back(tmp_rot_fac[i]);
 	}
 	// process model runs
 	cout << "    testing upgrade vectors... ";
 	run_manager.run();
 	cout << endl;
-	for(int i=0; i<7; ++i) {
-		double rot_fac = rot_fac_vec[i];
+	for(int i=0; i<n_runs; ++i) {
+		double rot_fac = 0;
+		if (i>1) rot_fac = rot_fac_vec[i-2];
 		ModelRun upgrade_run(base_run);
 		run_manager.get_run(upgrade_run, i, RunManagerAbstract::FORCE_PAR_UPDATE);
 		streamsize n_prec = os.precision(2);
