@@ -46,7 +46,7 @@ LaGenMatDouble SVD_inv(const LaGenMatDouble &U, const LaVectorDouble &Sigma,
 	// First Calculate S-1 * Ut
 	num_sing = 0;
 	for (int i=0; i < s_size; ++i) {
-		if (Sigma(i) != 0 && i<max_sing && Sigma(i)/Sigma(0) > eigthresh) {
+		if (Sigma(i) != 0 && i<max_sing && pow(Sigma(i)/Sigma(0), 2.0) > eigthresh) {
 			scale_fac = 1.0 / Sigma(i);
 			++num_sing;
 		}

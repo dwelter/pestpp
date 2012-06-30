@@ -20,6 +20,7 @@
 #define SVDSOLVER_H_
 
 #include <map>
+#include <iomanip>
 #include "Transformable.h"
 #include "ParamTransformSeq.h"
 #include "Jacobian.h"
@@ -58,6 +59,7 @@ protected:
 		double grad_norm;
 		int n_sing_val_used;
 		int tot_sing_val;
+		void print(ostream &os); 
 	};
 
 	SVDPackage *svd_package;

@@ -40,6 +40,16 @@
 using namespace std;
 using namespace pest_utils;
 
+
+void SVDSolver::Upgrade::print(ostream &os) 
+{
+	os << "Upgrade: " << n_sing_val_used << "out of " <<  tot_sing_val << "singular vales used" << endl;
+	int vec_size = par_name_vec.size();
+	for (int i=0; i< vec_size; ++i) {
+		os << setw(21) << par_name_vec[i] << setw(20) << svd_uvec(i) << setw(20) <<grad_uvec(i) << endl;
+	}
+}
+
 SVDSolver::SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_par_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, const Parameters &_parameters, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, 
@@ -302,16 +312,16 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	ModelRun upgrade_run_scale(base_run);
 	Upgrade upgrade_scale;
 	upgrade_scale = calc_upgrade_vec(jacobian, Q_sqrt, residuals_vec, base_run.get_numeric_pars().get_keys(), obs_names_vec);
-	upgrade_run_scale = iterative_parameter_freeze(base_run, upgrade_scale, Q_sqrt, residuals_vec, obs_names_vec, use_desent, 0.1);
+	upgrade_run_scale = iterative_parameter_freeze(base_run, upgrade_scale, Q_sqrt, residuals_vec, obs_names_vec, use_desent, 0.05);
 	rot_angle = add_model_run(run_manager, upgrade_run_scale.get_par_tran(), base_run.get_numeric_pars(),
-			upgrade, 0.0, 0.1);
+			upgrade, 0.0, 0.05);
 	rot_angle_vec.push_back(rot_angle);
 	rot_fac_vec.push_back(0.0);
 
 	upgrade_scale = calc_upgrade_vec(jacobian, Q_sqrt, residuals_vec, base_run.get_numeric_pars().get_keys(), obs_names_vec);
-	upgrade_run_scale = iterative_parameter_freeze(base_run, upgrade_scale, Q_sqrt, residuals_vec, obs_names_vec, use_desent,0.5);
+	upgrade_run_scale = iterative_parameter_freeze(base_run, upgrade_scale, Q_sqrt, residuals_vec, obs_names_vec, use_desent,0.1);
 	rot_angle = add_model_run(run_manager, upgrade_run_scale.get_par_tran(), base_run.get_numeric_pars(),
-			upgrade, 0.0, 0.5);
+			upgrade, 0.0, 0.1);
 	rot_angle_vec.push_back(rot_angle);
 	rot_fac_vec.push_back(0.0);
 
@@ -399,7 +409,12 @@ map<string, double> SVDSolver::limit_parameters_ip(const Parameters &init_numeri
 		p_upgrade = (*pu_iter).second;  // upgrade parameter value
 		p_info = ctl_par_info_ptr->get_parameter_rec_ptr(*name);
 
-		b_facorg_lim = ctl_info->facorig * (ctl_par_info_ptr->get_parameter_rec_ptr(*name)->init_value);
+		double init_value = ctl_par_info_ptr->get_parameter_rec_ptr(*name)->init_value;
+		if(init_value == 0.0)
+		{
+			init_value = ctl_par_info_ptr->get_parameter_rec_ptr(*name)->ubnd / 4.0;
+		}
+		b_facorg_lim = ctl_info->facorig * init_value;
 		if (abs(p_init) >= b_facorg_lim) {
 			b_facorg_lim = p_init;
 		}
