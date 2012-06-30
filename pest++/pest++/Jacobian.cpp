@@ -447,14 +447,19 @@ void Jacobian::calc_prior_info_sen(const string &par_name, ModelRun &run1, Model
 	double del_par = *run2.get_numeric_pars().get_rec_ptr(par_name) - *run1.get_numeric_pars().get_rec_ptr(par_name);
 	double del_prior_info;
 	const string *prior_info_name;
+	const PriorInformationRec *pi_rec;
 	Parameters run2_ctl_pars = run2.get_ctl_pars();
 	Parameters run1_ctl_pars = run1.get_ctl_pars();
 
+
+
 	for (PriorInformation::const_iterator b=prior_info.begin(), e=prior_info.end(); b!=e; ++b) {
 		prior_info_name = &((*b).first);
+		pi_rec = &((*b).second);
 		del_prior_info = (*b).second.calc_phi(run2_ctl_pars) - (*b).second.calc_phi(run1_ctl_pars);
 		if (del_prior_info != 0) {
-			prior_info_sen[*prior_info_name][par_name] = del_prior_info / del_par;
+			prior_info_sen[*prior_info_name][par_name] =
+			(pi_rec->calc_residual(run2_ctl_pars) - pi_rec->calc_residual(run1_ctl_pars)) / del_par;
 		}
 	}
 }
