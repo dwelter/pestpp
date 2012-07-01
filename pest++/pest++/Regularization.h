@@ -19,7 +19,7 @@
 #ifndef REGULARIZATION_H_
 #define REGULARIZATION_H_
 
-class ModelRunAbstractBase;
+class ModelRun;
 
 /** @Regularization base class
 
@@ -31,7 +31,7 @@ class Regularization
 public:
 	Regularization(void);
 	virtual void update_weight(){}
-	virtual double get_weight(ModelRunAbstractBase &model_run) const {return 1.0;}
+	virtual double get_weight(ModelRun &model_run) const {return 1.0;}
 	virtual ~Regularization(void);
 };
 
@@ -43,7 +43,7 @@ public:
 	RegularizationPest(double _phi_m_lim, double _phi_m_accept,
 		double _frac_phi_m, double _wf_min, double _wf_max,
 		double _wffac, double _wftol);
-	virtual double get_weight(ModelRunAbstractBase &model_run) const;
+	virtual double get_weight(ModelRun &model_run) const;
 	virtual ~RegularizationPest(void){}
 protected:
 	double phi_m_lim;

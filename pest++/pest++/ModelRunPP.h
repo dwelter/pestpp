@@ -29,7 +29,7 @@
 
 using namespace std;
 
-class ModelRunAbstractBase
+class ModelRun
 {
 public:
 	class Compare
@@ -38,36 +38,11 @@ public:
 		enum FIELD{NUMERIC_PAR, MODEL_PAR, CTL_PAR, SIM_OBS};
 		Compare::Compare(const string &_name, FIELD _field)
 			: name(_name), field(_field) {}
-		bool operator()(ModelRunAbstractBase &run1, ModelRunAbstractBase &run2);
+		bool operator()(ModelRun &run1, ModelRun &run2);
 	private:
 		string name;
 		FIELD field;
 	};
-public:
-	ModelRunAbstractBase() {}
-	virtual void set_numeric_parameters(const Parameters &pars) = 0;
-	virtual void set_ctl_parameters(const Parameters &pars) = 0;
-	virtual void set_model_parameters(const Parameters &pars) = 0;
-	virtual void set_observations(const Observations &observations) = 0;
-	virtual const Parameters &get_numeric_pars() = 0;
-	virtual Parameters get_ctl_pars() = 0;
-	virtual const Parameters &get_model_pars() = 0;
-	virtual const Observations &get_obs() = 0;
-	virtual Observations get_obs_template() const = 0;
-	virtual const ParamTransformSeq &get_par_tran() = 0;
-	virtual double get_phi(double regul_weight=1.0) = 0;
-	virtual PhiComponets get_phi_comp() = 0;
-	virtual vector<double> get_residuals_vec(const vector<string> &obs_names) = 0;
-	virtual void phi_report(ostream &os) = 0;
-	virtual bool obs_valid() const = 0;
-	virtual bool numeric_pars_valid() const = 0;
-	virtual bool model_pars_valid() const = 0;
-	virtual bool phi_valid() const = 0;
-	virtual ~ModelRunAbstractBase(){};
-};
-class ModelRun : public ModelRunAbstractBase
-{
-public:
 	ModelRun(const ObjectiveFunc *_objectiveFunc, const ParamTransformSeq &_par_tran, Observations _sim_obs);
 	ModelRun(const ObjectiveFunc *_objectiveFunc, const ParamTransformSeq &_par_tran, const Parameters &_numeric_pars, const Observations &_sim_obs);
 	ModelRun& operator=(const ModelRun &rhs);

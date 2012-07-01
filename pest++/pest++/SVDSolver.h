@@ -83,7 +83,7 @@ protected:
 	int num_no_descent;
 	virtual map<string, double> limit_parameters_ip(const Parameters &init_numeric_pars, Parameters &upgrade_numeric_pars);
 	virtual const string &get_description(){return description;}
-	void iteration_update_and_report(ostream &os, ModelRunAbstractBase &upgrade, TerminationController &termination_ctl); 
+	void iteration_update_and_report(ostream &os, ModelRun &upgrade, TerminationController &termination_ctl); 
 	void param_change_stats(double p_old, double p_new, bool &have_fac, double &fac_change, bool &have_rel, double &rel_change);
 	Upgrade calc_upgrade_vec(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt, const LaVectorDouble &Residuals,
 		const vector<string> &par_name_vec, const vector<string> &obs_name_vec);

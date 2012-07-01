@@ -38,7 +38,7 @@ RegularizationPest::RegularizationPest(double _phi_m_lim,
 {
 }
 
-double RegularizationPest::get_weight(ModelRunAbstractBase &model_run) const
+double RegularizationPest::get_weight(ModelRun &model_run) const
 {
 	double weight;
 	PhiComponets phi = model_run.get_phi_comp();
