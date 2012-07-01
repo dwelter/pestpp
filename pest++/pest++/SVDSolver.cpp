@@ -525,7 +525,7 @@ void SVDSolver::param_change_stats(double p_old, double p_new, bool &have_fac, d
 	}
 
 
-void SVDSolver::iteration_update_and_report(ostream &os, ModelRunAbstractBase &upgrade, TerminationController &termination_ctl)
+void SVDSolver::iteration_update_and_report(ostream &os, ModelRun &upgrade, TerminationController &termination_ctl)
 {
 	const string *p_name;
 	double p_old, p_new;

@@ -289,7 +289,7 @@ void Jacobian::calc_derivative(const string &numeric_par_name, int jcol, list<Mo
 	LaVectorDouble c(3), y(3);
 
 	// sort run_list the parameter numeric_par_name;
-	ModelRunAbstractBase::Compare compare(numeric_par_name, ModelRunAbstractBase::Compare::NUMERIC_PAR);
+	ModelRun::Compare compare(numeric_par_name, ModelRun::Compare::NUMERIC_PAR);
 	run_list.sort(compare);
 	//p_rec = group_info.get_parameter_rec_ptr(*par_name);
 	g_rec = group_info.get_group_rec_ptr(numeric_par_name);

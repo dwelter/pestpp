@@ -36,7 +36,7 @@
 using namespace std;
 using namespace pest_utils;
 
-bool ModelRunAbstractBase::Compare::operator()(ModelRunAbstractBase &run1, ModelRunAbstractBase &run2)
+bool ModelRun::Compare::operator()(ModelRun &run1, ModelRun &run2)
 {
 	bool ret_val = false;
 	if (field == NUMERIC_PAR) {
