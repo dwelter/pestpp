@@ -302,7 +302,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	Parameters::iterator e;
 
 	//Build model runs
-	int n_runs = 9;
+	int n_runs = 8;
 	double rot_angle;
 	vector<double> rot_fac_vec;
 	vector<double> rot_angle_vec;
@@ -311,17 +311,11 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	//Make two runs with rotation factor of zero  but scaled down
 	ModelRun upgrade_run_scale(base_run);
 	Upgrade upgrade_scale;
+	// Add scaled run
 	upgrade_scale = calc_upgrade_vec(jacobian, Q_sqrt, residuals_vec, base_run.get_numeric_pars().get_keys(), obs_names_vec);
-	upgrade_run_scale = iterative_parameter_freeze(base_run, upgrade_scale, Q_sqrt, residuals_vec, obs_names_vec, use_desent, 0.05);
+	upgrade_run_scale = iterative_parameter_freeze(base_run, upgrade_scale, Q_sqrt, residuals_vec, obs_names_vec, use_desent, 1.1);
 	rot_angle = add_model_run(run_manager, upgrade_run_scale.get_par_tran(), base_run.get_numeric_pars(),
-			upgrade, 0.0, 0.05);
-	rot_angle_vec.push_back(rot_angle);
-	rot_fac_vec.push_back(0.0);
-
-	upgrade_scale = calc_upgrade_vec(jacobian, Q_sqrt, residuals_vec, base_run.get_numeric_pars().get_keys(), obs_names_vec);
-	upgrade_run_scale = iterative_parameter_freeze(base_run, upgrade_scale, Q_sqrt, residuals_vec, obs_names_vec, use_desent,0.1);
-	rot_angle = add_model_run(run_manager, upgrade_run_scale.get_par_tran(), base_run.get_numeric_pars(),
-			upgrade, 0.0, 0.1);
+			upgrade, 0.0, 1.1);
 	rot_angle_vec.push_back(rot_angle);
 	rot_fac_vec.push_back(0.0);
 
@@ -337,6 +331,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	cout << "    testing upgrade vectors... ";
 	run_manager.run();
 	cout << endl;
+	bool best_run_updated_flag = false;
 	for(int i=0; i<n_runs; ++i) {
 		double rot_fac = 0;
 		if (i>1) rot_fac = rot_fac_vec[i-2];
@@ -354,7 +349,8 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 		os << " ("  << upgrade_run.get_phi(tikhonov_weight)/cur_solution.get_phi(tikhonov_weight)*100 << "% starting phi)" << endl;
 		os.precision(n_prec);
 		os.unsetf(ios_base::floatfield); // reset all flags to default
-		if ( upgrade_run.obs_valid() && ( !best_upgrade_run.obs_valid() || upgrade_run.get_phi() <  best_upgrade_run.get_phi())) {
+		if ( upgrade_run.obs_valid() &&  !best_run_updated_flag || upgrade_run.get_phi() <  best_upgrade_run.get_phi()) {
+			best_run_updated_flag = true;
 			best_upgrade_run = upgrade_run;
 		}
 	}
