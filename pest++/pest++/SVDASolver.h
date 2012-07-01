@@ -33,7 +33,7 @@ class SVDASolver : public SVDSolver
 public:
 	SVDASolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_par_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
-		const ParamTransformSeq &_par_transform, const Parameters &_parameters, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, const Regularization *_regul_scheme);
+		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, const Regularization *_regul_scheme);
 	map<string, double> limit_parameters_ip(const Parameters &init_numeric_pars, Parameters &upgrade_numeric_pars);
 	virtual map<string,double> freeze_parameters(Parameters &cur_numeric_pars, const LaVectorDouble &svd_update_uvec, double svd_update_norm,
 		const LaVectorDouble &grad_update_uvec, bool use_descent=true);

@@ -91,14 +91,13 @@ int main(int argc, char* argv[])
 	}
 
 	const ParamTransformSeq &base_trans_seq = pest_scenario.get_base_par_tran_seq();
-	Parameters numeric_pars = base_trans_seq.model2numeric_cp(pest_scenario.get_ctl_parameters());
 	
 	ObjectiveFunc obj_func(&(pest_scenario.get_ctl_observations()), &(pest_scenario.get_ctl_observation_info()), &(pest_scenario.get_prior_info()));
 	Jacobian *base_jacobian_ptr = new Jacobian(file_manager);
 
 	SVDSolver base_svd(&pest_scenario.get_control_info(), pest_scenario.get_svd_info(), &pest_scenario.get_base_group_info(), &pest_scenario.get_ctl_parameter_info(),
 		&pest_scenario.get_ctl_observation_info(), file_manager, &pest_scenario.get_ctl_observations(), &obj_func,
-		base_trans_seq, numeric_pars, pest_scenario.get_prior_info_ptr(), *base_jacobian_ptr, pest_scenario.get_regul_scheme_ptr());
+		base_trans_seq, pest_scenario.get_prior_info_ptr(), *base_jacobian_ptr, pest_scenario.get_regul_scheme_ptr());
 
 	base_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 	//Build Super-Parameter problem
@@ -123,10 +122,13 @@ int main(int argc, char* argv[])
 	TerminationController termination_ctl(pest_scenario.get_control_info().noptmax, pest_scenario.get_control_info().phiredstp,
 			pest_scenario.get_control_info().nphistp, pest_scenario.get_control_info().nphinored, pest_scenario.get_control_info().relparstp,
 			pest_scenario.get_control_info().nrelpar);
+
+	Parameters cur_ctl_parameters = pest_scenario.get_ctl_parameters();
 	for (int i_iter = 0; i_iter<pest_scenario.get_control_info().noptmax; ++i_iter)
 	{
 		bool terminate;
-		terminate = base_svd.solve(*run_manager_ptr, termination_ctl, n_base_iter);
+		terminate = base_svd.solve(*run_manager_ptr, termination_ctl, n_base_iter, cur_ctl_parameters);
+		cur_ctl_parameters = base_svd.cur_model_run().get_ctl_pars();
 		if(terminate) break;
 		// Build Super Parameter or SVDA problem
 	try
@@ -135,14 +137,14 @@ int main(int argc, char* argv[])
 			const vector<string> &pars = base_svd.cur_model_run().get_numeric_pars().get_keys();
 			QSqrtMatrix Q_sqrt(pest_scenario.get_ctl_observation_info(), nonregul_obs, &pest_scenario.get_prior_info(), 1.0);
 			(*tran_svd).update(*base_jacobian_ptr, Q_sqrt, super_nmax, super_eigthres, pars, nonregul_obs);
-			sup_group_info = (*tran_svd).build_par_group_info(pest_scenario.get_base_group_info());			Parameters svda_pars = trans_svda.ctl2numeric_cp(base_svd.cur_model_run().get_ctl_pars());
+			sup_group_info = (*tran_svd).build_par_group_info(pest_scenario.get_base_group_info());		
 			SVDASolver super_svd(&svd_control_info, pest_scenario.get_svd_info(), &sup_group_info, &pest_scenario.get_ctl_parameter_info(),
 				&pest_scenario.get_ctl_observation_info(),  file_manager, &pest_scenario.get_ctl_observations(), &obj_func,
-				trans_svda, svda_pars, &pest_scenario.get_prior_info(), *super_jacobian_ptr, pest_scenario.get_regul_scheme_ptr());
+				trans_svda, &pest_scenario.get_prior_info(), *super_jacobian_ptr, pest_scenario.get_regul_scheme_ptr());
 			super_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 			cout << endl;
-			super_svd.solve(*run_manager_ptr, termination_ctl, n_super_iter);
-			base_svd.cur_model_run().set_ctl_parameters(super_svd.cur_model_run().get_ctl_pars());
+			super_svd.solve(*run_manager_ptr, termination_ctl, n_super_iter, cur_ctl_parameters);
+			cur_ctl_parameters = super_svd.cur_model_run().get_ctl_pars();
 	}
 		catch(...)
 		{

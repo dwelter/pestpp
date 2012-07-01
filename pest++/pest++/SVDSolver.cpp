@@ -52,7 +52,7 @@ void SVDSolver::Upgrade::print(ostream &os)
 
 SVDSolver::SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_par_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
-		const ParamTransformSeq &_par_transform, const Parameters &_parameters, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, 
+		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, 
 		const Regularization *_regul_scheme_ptr, const string &_description)
 		: ctl_info(_ctl_info), svd_info(_svd_info), par_group_info_ptr(_par_group_info_ptr), ctl_par_info_ptr(_ctl_par_info_ptr), obs_info_ptr(_obs_info), obj_func(_obj_func),
 		  file_manager(_file_manager), observations_ptr(_observations), par_transform(_par_transform),
@@ -60,7 +60,6 @@ SVDSolver::SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, con
 		  num_no_descent(0), regul_scheme_ptr(_regul_scheme_ptr), description(_description)
 {
 	svd_package = new SVD_LAPACK();
-	cur_solution.set_numeric_parameters(_parameters);
 }
 
 void SVDSolver::set_svd_package(PestppOptions::SVD_PACK _svd_pack)
@@ -83,10 +82,10 @@ SVDSolver::~SVDSolver(void)
 	delete svd_package;
 }
 
-bool SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter)
+bool SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter, const Parameters &ctl_pars)
 {
 	ostream &os = file_manager.rec_ofstream();
-
+	cur_solution.set_ctl_parameters(ctl_pars);
 	// Start Solution iterations
 	for (int iter_num=1; iter_num<=max_iter;++iter_num) {
 		cout << "OPTIMISATION ITERATION NUMBER: " << termination_ctl.get_iteration_number()+1 << endl;
