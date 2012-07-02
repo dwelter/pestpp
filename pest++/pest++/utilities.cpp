@@ -1,5 +1,6 @@
 #include <string>
 #include <cctype>
+#include <fstream>
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -200,6 +201,19 @@ char* String2CharPtr::get_char_ptr()
 {
 	return &(my_str[0]);
 }
+
+
+void copyfile(const string &from_file, const string &to_file)
+{
+	fstream source(from_file, ios::binary);
+    ofstream dest(to_file, ios::binary);
+
+    dest << source.rdbuf();
+
+    source.close();
+    dest.close();
+}
+
 
 } // end of namespace pest_utils
 

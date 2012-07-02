@@ -32,6 +32,7 @@ public:
 	string ctl_filename() {return build_filename("pst");}
 	string par_filename() {return build_filename("par");}
 	string jacobian_filename() {return build_filename("jco");}
+	string iteration_jacobian_filename() {return build_filename("jci");}
 	const string &get_analytic_derivative_filename(){return analytic_derivative_filename;}
 	void set_analytic_derivative_filename(const string &name) {analytic_derivative_filename = name;}
 	ofstream &rec_ofstream () {return f_rec;}

@@ -86,17 +86,4 @@ protected:
 	};
 };
 
-//class JacobianAnalytic : public Jacobian {
-//public:
-//	JacobianAnalytic(FileManager &_filemanager, const vector<string>  *_ctl_ordered_par_names, const vector<string> *_ctl_ordered_obs_names, int _jacfile);
-//	void calculate(ModelRun &model_run,  vector<string> numeric_par_names, vector<string> obs_names, const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
-//		RunManagerGenie &run_manager, const PriorInformation &prior_info, bool phiredswh_flag=false, bool calc_init_obs=true);
-//	void read_analytic_file(const string &filename, const ParameterInfo &ctl_par_info);
-//	virtual ~JacobianAnalytic(){};
-//private:
-//	const vector<string> *ctl_ordered_par_names;
-//	const vector<string> *ctl_ordered_obs_names;
-//	int jacfile;
-//};
-
 #endif /* JACOBIAN_H_ */

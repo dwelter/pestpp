@@ -43,7 +43,7 @@ public:
 		string name;
 		FIELD field;
 	};
-	ModelRun(const ObjectiveFunc *_objectiveFunc, const ParamTransformSeq &_par_tran, Observations _sim_obs);
+	ModelRun(const ObjectiveFunc *_objectiveFunc, const ParamTransformSeq &_par_tran, const Observations &_sim_obs);
 	ModelRun(const ObjectiveFunc *_objectiveFunc, const ParamTransformSeq &_par_tran, const Parameters &_numeric_pars, const Observations &_sim_obs);
 	ModelRun& operator=(const ModelRun &rhs);
 	virtual void set_numeric_parameters(const Parameters &pars);
@@ -63,6 +63,7 @@ public:
 	virtual PhiComponets get_phi_comp();
 	virtual vector<double> get_residuals_vec(const vector<string> &obs_names);
 	virtual void phi_report(ostream &os);
+	void full_report(ostream &os);
 	virtual bool obs_valid() const;
 	virtual bool numeric_pars_valid() const;
 	virtual bool model_pars_valid() const;

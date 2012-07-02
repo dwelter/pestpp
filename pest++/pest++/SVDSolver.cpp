@@ -82,11 +82,13 @@ SVDSolver::~SVDSolver(void)
 	delete svd_package;
 }
 
-bool SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter, const Parameters &ctl_pars)
+ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter, 
+	const Parameters &ctl_pars, ModelRun &optimum_run)
 {
 	ostream &os = file_manager.rec_ofstream();
 	cur_solution.set_ctl_parameters(ctl_pars);
 	// Start Solution iterations
+	bool save_nextjac = false;
 	for (int iter_num=1; iter_num<=max_iter;++iter_num) {
 		cout << "OPTIMISATION ITERATION NUMBER: " << termination_ctl.get_iteration_number()+1 << endl;
 		os   << "OPTIMISATION ITERATION NUMBER: " << termination_ctl.get_iteration_number()+1 << endl;
@@ -96,12 +98,26 @@ bool SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController &te
 		os   << "  SVD Package: " << svd_package->description << endl;
 		os   << "    Model calls so far : " << run_manager.get_total_runs() << endl;
 		iteration(run_manager, termination_ctl, false);
+		if (save_nextjac) {
+			jacobian.save(file_manager.jacobian_filename());
+		}
+		if (!optimum_run.obs_valid() || cur_solution.get_phi() < optimum_run.get_phi())
+		{
+			optimum_run = cur_solution;
+			// save new optimum parameters to .par file
+			optimum_run.get_ctl_pars().save(file_manager.par_filename(), optimum_run.get_par_tran().get_offset_ptr(), 
+				optimum_run.get_par_tran().get_scale_ptr());
+			jacobian.save(file_manager.jacobian_filename());
+			// jacobian calculated next iteration will be at the current parameters and
+			// will be more accurate than the one caluculated at the begining of this iteration
+			save_nextjac = true;
+		}
 		os << endl << endl;
 		if (termination_ctl.check_last_iteration()){
-			return true;
+			break;
 		}
 	}
-	return false;
+	return cur_solution;
 }
 
 
@@ -251,12 +267,6 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 			phiredswh_flag, calc_init_obs);
 	cout << endl;
 
-	// Save parameters and jacobian
-	if (save_next_jacobian) {
-		par_transform.numeric2ctl_cp(cur_solution.get_numeric_pars()).save(file_manager.par_filename(), par_transform.get_offset_ptr(), par_transform.get_scale_ptr());
-		jacobian.save(file_manager.jacobian_filename());
-		save_next_jacobian = false;
-	}
 	// update regularization weight factor
 	double tikhonov_weight = regul_scheme_ptr->get_weight(cur_solution);
 	// write out report for starting phi
@@ -301,27 +311,29 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	Parameters::iterator e;
 
 	//Build model runs
-	int n_runs = 8;
+	int n_runs = 7;
 	double rot_angle;
 	vector<double> rot_fac_vec;
 	vector<double> rot_angle_vec;
 	run_manager.allocate_memory(base_run.get_model_pars(), base_run.get_obs_template(), n_runs);
 	 
 	//Make two runs with rotation factor of zero  but scaled down
-	ModelRun upgrade_run_scale(base_run);
-	Upgrade upgrade_scale;
+	//ModelRun upgrade_run_scale(base_run);
+	//Upgrade upgrade_scale;
 	// Add scaled run
-	upgrade_scale = calc_upgrade_vec(jacobian, Q_sqrt, residuals_vec, base_run.get_numeric_pars().get_keys(), obs_names_vec);
-	upgrade_run_scale = iterative_parameter_freeze(base_run, upgrade_scale, Q_sqrt, residuals_vec, obs_names_vec, use_desent, 1.1);
-	rot_angle = add_model_run(run_manager, upgrade_run_scale.get_par_tran(), base_run.get_numeric_pars(),
-			upgrade, 0.0, 1.1);
-	rot_angle_vec.push_back(rot_angle);
-	rot_fac_vec.push_back(0.0);
+	//double rot_angle;
+	//upgrade_scale = calc_upgrade_vec(jacobian, Q_sqrt, residuals_vec, base_run.get_numeric_pars().get_keys(), obs_names_vec);
+	//upgrade_run_scale = iterative_parameter_freeze(base_run, upgrade_scale, Q_sqrt, residuals_vec, obs_names_vec, use_desent, 1.1);
+	//rot_angle = add_model_run(run_manager, upgrade_run_scale.get_par_tran(), base_run.get_numeric_pars(),
+	//		upgrade, 0.0, 1.1);
+	//rot_angle_vec.push_back(rot_angle);
+	//rot_fac_vec.push_back(0.0);
 
 	for(int i=0; i<7; ++i) {
 
 		double tmp_rot_fac[] =  {0.0, 0.01, 0.1, 0.2, 0.5, 0.7, 1.0};
-		double rot_angle = add_model_run(run_manager, upgrade_run.get_par_tran(), 
+		rot_fac_vec.push_back(tmp_rot_fac[i]);
+		rot_angle = add_model_run(run_manager, upgrade_run.get_par_tran(), 
 			base_run.get_numeric_pars(),upgrade, rot_fac_vec[i], 1.0);
 		rot_angle_vec.push_back(rot_angle);
 		rot_fac_vec.push_back(tmp_rot_fac[i]);
@@ -361,11 +373,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 		phiredswh_flag = true;
 		os << endl << "      Switching to central derivatives:" << endl;
 	}
-	//write new parameters to paramter file if phi has improved
-	if (best_upgrade_run.get_phi() < cur_solution.get_phi())
-	{
-		save_next_jacobian;
-	}
+
 	cout << "  Starting phi = " << cur_solution.get_phi() << ";  ending phi = " << best_upgrade_run.get_phi() <<
 		"  ("  << best_upgrade_run.get_phi()/cur_solution.get_phi()*100 << "% starting phi)" << endl;
 	cout << endl;
