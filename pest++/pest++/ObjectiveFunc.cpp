@@ -137,6 +137,40 @@ PhiComponets ObjectiveFunc::phi_report(ostream &os, const Observations &sim_obs,
 }
 
 
+PhiComponets ObjectiveFunc::full_report(ostream &os, const Observations &sim_obs, const Parameters &pars, double tikhonov_weight) const
+{
+	map<string, double> group_phi;
+	PhiComponets phi_comp = get_phi_comp(sim_obs, pars);
+	double total_phi = phi_comp.meas + phi_comp.regul * tikhonov_weight;
+	os << "    Phi                                                 Total : " << total_phi << endl;
+	group_phi = get_group_phi(sim_obs, pars);
+	for(map<string, double>::const_iterator b=group_phi.begin(), e=group_phi.end();
+		b!=e; ++b) {
+			os << "    Contribution to phi from observation group ";
+			os << setw(17) << setiosflags(ios::right) << "\"" + (*b).first + "\" : ";
+			os << (*b).second << endl;
+	}
+	os << endl;
+	os << "     Parameter      Optimal"<< endl;
+	os << "        Name         Value"<< endl;
+	os << "    ------------  ------------" << endl;
+
+	const string *p_name;
+	double par_value;
+	for( Parameters::const_iterator nb=pars.begin(), ne=pars.end();
+		nb!=ne; ++nb) {
+		p_name = &((*nb).first);
+		par_value =  (*nb).second;
+		os << left;
+		os << "    " << setw(12) << *p_name
+			;
+		os << right;
+		os << "  " << setw(12) << par_value << endl;
+	}
+	return phi_comp;
+}
+
+
 vector<double> ObjectiveFunc::get_residuals_vec(const Observations &sim_obs, const Parameters &pars, const vector<string> &obs_names) const
 {
 	vector<double> residuals_vec;

@@ -58,7 +58,7 @@ bool ModelRun::Compare::operator()(ModelRun &run1, ModelRun &run2)
 }
 
 
-ModelRun::ModelRun(const ObjectiveFunc *_obj_func_ptr, const ParamTransformSeq &_par_tran, Observations _sim_obs) 
+ModelRun::ModelRun(const ObjectiveFunc *_obj_func_ptr, const ParamTransformSeq &_par_tran, const Observations &_sim_obs) 
 	: obj_func_ptr(_obj_func_ptr), par_tran(_par_tran), sim_obs(_sim_obs), phi_comp(), 
 	  numeric_pars_is_valid(false), model_pars_is_valid(false),
 	obs_is_valid(false), phi_is_valid(false)
@@ -238,6 +238,15 @@ void ModelRun::phi_report(ostream &os)
 		throw PestError("ModelRun::phi_report() - Simulated observations are invalid.  Can not produce phi report.");
 	}
 	phi_comp = obj_func_ptr->phi_report(os, sim_obs, get_ctl_pars());
+	phi_is_valid = true;
+}
+
+void ModelRun::full_report(ostream &os) 
+{
+	if( !obs_is_valid) {
+		throw PestError("ModelRun::full_report() - Simulated observations are invalid.  Can not produce full report.");
+	}
+	phi_comp = obj_func_ptr->full_report(os, sim_obs, get_ctl_pars());
 	phi_is_valid = true;
 }
 

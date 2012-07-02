@@ -82,7 +82,7 @@ SVDSolver::~SVDSolver(void)
 	delete svd_package;
 }
 
-bool SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter, const Parameters &ctl_pars)
+ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter, const Parameters &ctl_pars)
 {
 	ostream &os = file_manager.rec_ofstream();
 	cur_solution.set_ctl_parameters(ctl_pars);
@@ -98,10 +98,10 @@ bool SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController &te
 		iteration(run_manager, termination_ctl, false);
 		os << endl << endl;
 		if (termination_ctl.check_last_iteration()){
-			return true;
+			break;
 		}
 	}
-	return false;
+	return cur_solution;
 }
 
 
@@ -253,8 +253,8 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 
 	// Save parameters and jacobian
 	if (save_next_jacobian) {
-		par_transform.numeric2ctl_cp(cur_solution.get_numeric_pars()).save(file_manager.par_filename(), par_transform.get_offset_ptr(), par_transform.get_scale_ptr());
-		jacobian.save(file_manager.jacobian_filename());
+		//par_transform.numeric2ctl_cp(cur_solution.get_numeric_pars()).save(file_manager.par_filename(), par_transform.get_offset_ptr(), par_transform.get_scale_ptr());
+		jacobian.save(file_manager.iteration_jacobian_filename());
 		save_next_jacobian = false;
 	}
 	// update regularization weight factor
