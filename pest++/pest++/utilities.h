@@ -170,6 +170,7 @@ private:
 
 };
 
+void copyfile(const string &from_file, const string &to_file);
 
 }  // end namespace pest_utils
 

@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
  //   gets(bufb);
 	//exit(0);
 
-	string version = "1.0.2";
+	string version = "1.1.0";
 	string complete_path;
 	if (argc >=2) {
 		complete_path = argv[1];
@@ -129,13 +129,8 @@ int main(int argc, char* argv[])
 	for (int i_iter = 0; i_iter<pest_scenario.get_control_info().noptmax; ++i_iter)
 	{
 		ModelRun *cur_run;
-		cur_run = &(base_svd.solve(*run_manager_ptr, termination_ctl, n_base_iter, cur_ctl_parameters));
+		cur_run = &(base_svd.solve(*run_manager_ptr, termination_ctl, n_base_iter, cur_ctl_parameters, optimum_run));
 		cur_ctl_parameters = base_svd.cur_model_run().get_ctl_pars();
-		if(!optimum_run.obs_valid() || cur_run->get_phi() < optimum_run.get_phi())
-		{
-			optimum_run = *cur_run;
-			optimum_run.get_ctl_pars().save(file_manager.par_filename(), optimum_run.get_par_tran().get_offset_ptr(), optimum_run.get_par_tran().get_scale_ptr());
-		}
 		if(termination_ctl.check_last_iteration()) break;
 		// Build Super Parameter or SVDA problem
 	try
@@ -150,14 +145,8 @@ int main(int argc, char* argv[])
 				trans_svda, &pest_scenario.get_prior_info(), *super_jacobian_ptr, pest_scenario.get_regul_scheme_ptr());
 			super_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 			cout << endl;
-			cur_run = &(super_svd.solve(*run_manager_ptr, termination_ctl, n_super_iter, cur_ctl_parameters));
+			cur_run = &(super_svd.solve(*run_manager_ptr, termination_ctl, n_super_iter, cur_ctl_parameters, optimum_run));
 			cur_ctl_parameters = super_svd.cur_model_run().get_ctl_pars();
-			if(!optimum_run.obs_valid() || cur_run->get_phi() < optimum_run.get_phi())
-			{
-				optimum_run.set_ctl_parameters(cur_run->get_ctl_pars());
-				optimum_run.set_observations(cur_run->get_obs());
-				optimum_run.get_ctl_pars().save(file_manager.par_filename(), optimum_run.get_par_tran().get_offset_ptr(), optimum_run.get_par_tran().get_scale_ptr());
-			}
 		}
 		catch(...)
 		{
