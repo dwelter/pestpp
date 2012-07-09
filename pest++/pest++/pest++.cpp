@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
  //   gets(bufb);
 	//exit(0);
 
-	string version = "1.1.0";
+	string version = "1.1.1";
 	string complete_path;
 	if (argc >=2) {
 		complete_path = argv[1];

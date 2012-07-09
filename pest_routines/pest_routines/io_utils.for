@@ -477,7 +477,8 @@ c     ******************************************************************
 10    NBLC=LEN_TRIM(CLINE)
       J=INDEX(CLINE(1:NBLC),'  ')
       IF(J.NE.0) THEN
-        CALL SHIFTL(CLINE(J+1:NBLC))
+c        CALL SHIFTL(CLINE(J+1:NBLC))
+        CLINE(J+1:NBLC)=ADJUSTL(CLINE(J+1:NBLC))
         GO TO 10
       END IF
       RETURN
