@@ -67,14 +67,14 @@ int main(int argc, char* argv[])
 
 	// Get the lower bounds of the parameters
 	Parameters ctl_par = pest_scenario.get_ctl_parameters();
-	Parameters low_bnd = pest_scenario.get_ctl_parameter_info().get_low_bnd(ctl_par.get_keys());
-	cout << low_bnd << endl;
-
+	Parameters lower_bnd = pest_scenario.get_ctl_parameter_info().get_low_bnd(ctl_par.get_keys());
+	Parameters upper_bnd = pest_scenario.get_ctl_parameter_info().get_up_bnd(ctl_par.get_keys());
+	Parameters delta;
+	//delta = upper_bnd - lower_bnd;
+	cout << lower_bnd << endl;
 	//Build Transformation with ctl_2_numberic
 	ParamTransformSeq base_partran_seq(pest_scenario.get_base_par_tran_seq());
-	Transformation *tran_tied = base_partran_seq.get_transformation("PEST to model tied transformation")->clone();
-	base_partran_seq.clear_tranSeq_ctl2numeric();
-	base_partran_seq.push_back_ctl2model(tran_tied);
+	
 
 	//RunManagerAbstract *run_manager_ptr;
 	//if (pest_scenario.get_pestpp_options().get_gman_socket().empty())
@@ -88,9 +88,9 @@ int main(int argc, char* argv[])
 	//}
 
 	MatrixXd b_star_mat;
-	MorrisMethod morris(8);
+	MorrisMethod morris(8); //8 levels for each parameters
 
-	b_star_mat = morris.create_P_star_mat(7);
+	b_star_mat = morris.create_P_star_mat(ctl_par.size()); 
 	cout << b_star_mat << endl << endl;
 
 	cout << endl << "Simulation Complete - Press RETURN to close window" << endl;

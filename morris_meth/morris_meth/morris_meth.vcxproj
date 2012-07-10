@@ -73,6 +73,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\pest++\pest++\FileManager.cpp" />
+    <ClCompile Include="..\..\pest++\pest++\lapack_tools.cpp" />
     <ClCompile Include="..\..\pest++\pest++\ModelRunPP.cpp" />
     <ClCompile Include="..\..\pest++\pest++\ObjectiveFunc.cpp" />
     <ClCompile Include="..\..\pest++\pest++\ParamTransformSeq.cpp" />
@@ -83,10 +84,10 @@
     <ClCompile Include="..\..\pest++\pest++\Regularization.cpp" />
     <ClCompile Include="..\..\pest++\pest++\system_variables.cpp" />
     <ClCompile Include="..\..\pest++\pest++\Transformable.cpp" />
+    <ClCompile Include="..\..\pest++\pest++\Transformation.cpp" />
     <ClCompile Include="..\..\pest++\pest++\utilities.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MorrisMethod.cpp" />
-    <ClCompile Include="Transformation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\pest++\pest++\FileManager.h" />

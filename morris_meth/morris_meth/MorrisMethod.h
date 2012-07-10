@@ -12,8 +12,8 @@ public:
 	MatrixXd create_P_star_mat(int k);
 	~MorrisMethod(void);
 private:
-	int k;
-	int p;
+	int k; // number of parameters
+	int p; // number of levels for each parameters
 	double delta;
 	static MatrixXd create_B_mat(int k);
 	static MatrixXd create_J_mat(int k);

@@ -57,7 +57,10 @@
     <ClCompile Include="..\..\pest++\pest++\system_variables.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Transformation.cpp">
+    <ClCompile Include="..\..\pest++\pest++\Transformation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\pest++\pest++\lapack_tools.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
