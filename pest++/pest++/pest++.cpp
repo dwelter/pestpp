@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
  //   gets(bufb);
 	//exit(0);
 
-	string version = "1.1.1";
+	string version = "1.1.2";
 	string complete_path;
 	if (argc >=2) {
 		complete_path = argv[1];
@@ -124,8 +124,21 @@ int main(int argc, char* argv[])
 			pest_scenario.get_control_info().nrelpar);
 
 	Parameters cur_ctl_parameters = pest_scenario.get_ctl_parameters();
-	//Define model Run for Base Parameters (uses base parameter tranformations)
 	ModelRun optimum_run(&obj_func, base_trans_seq, pest_scenario.get_ctl_observations());
+	// if noptmax=0 make one run with the intital parameters
+	if (pest_scenario.get_control_info().noptmax == 0) {
+		Parameters init_model_pars = base_trans_seq.ctl2model_cp(cur_ctl_parameters);
+		optimum_run.set_ctl_parameters(init_model_pars);
+		run_manager_ptr->allocate_memory(init_model_pars, pest_scenario.get_ctl_observations(), 1);
+		run_manager_ptr->add_run(init_model_pars);
+		run_manager_ptr->run();
+		run_manager_ptr->get_run(optimum_run, 0, RunManagerAbstract::FORCE_PAR_UPDATE);
+		//init_run.full_report(cout);
+		//init_run.full_report(fout_rec);
+		run_manager_ptr->free_memory();
+	}
+
+	//Define model Run for Base Parameters (uses base parameter tranformations)
 	for (int i_iter = 0; i_iter<pest_scenario.get_control_info().noptmax; ++i_iter)
 	{
 		ModelRun *cur_run;
