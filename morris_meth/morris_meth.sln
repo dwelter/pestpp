@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "morris_meth", "morris_meth\morris_meth.vcxproj", "{D37A7F03-4555-4BE8-A8E8-22B5D5401071}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lapackpp", "..\lapackpp-2.5.4\lapackpp.vcxproj", "{EC0BDA50-7719-4BC3-8EAC-18F3499E2753}"
+Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "pest_routines", "..\pest_routines\pest_routines\pest_routines.vfproj", "{EB9A0791-5341-4772-84AA-F7089AE7C57D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,14 +19,14 @@ Global
 		{D37A7F03-4555-4BE8-A8E8-22B5D5401071}.Release|Win32.ActiveCfg = Release|Win32
 		{D37A7F03-4555-4BE8-A8E8-22B5D5401071}.Release|Win32.Build.0 = Release|Win32
 		{D37A7F03-4555-4BE8-A8E8-22B5D5401071}.Release|x64.ActiveCfg = Release|Win32
-		{EC0BDA50-7719-4BC3-8EAC-18F3499E2753}.Debug|Win32.ActiveCfg = Debug|Win32
-		{EC0BDA50-7719-4BC3-8EAC-18F3499E2753}.Debug|Win32.Build.0 = Debug|Win32
-		{EC0BDA50-7719-4BC3-8EAC-18F3499E2753}.Debug|x64.ActiveCfg = Debug|x64
-		{EC0BDA50-7719-4BC3-8EAC-18F3499E2753}.Debug|x64.Build.0 = Debug|x64
-		{EC0BDA50-7719-4BC3-8EAC-18F3499E2753}.Release|Win32.ActiveCfg = Release|Win32
-		{EC0BDA50-7719-4BC3-8EAC-18F3499E2753}.Release|Win32.Build.0 = Release|Win32
-		{EC0BDA50-7719-4BC3-8EAC-18F3499E2753}.Release|x64.ActiveCfg = Release|x64
-		{EC0BDA50-7719-4BC3-8EAC-18F3499E2753}.Release|x64.Build.0 = Release|x64
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D}.Debug|Win32.Build.0 = Debug|Win32
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D}.Debug|x64.ActiveCfg = Debug|x64
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D}.Debug|x64.Build.0 = Debug|x64
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D}.Release|Win32.ActiveCfg = Release|Win32
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D}.Release|Win32.Build.0 = Release|Win32
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D}.Release|x64.ActiveCfg = Release|x64
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

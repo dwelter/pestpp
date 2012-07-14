@@ -314,7 +314,7 @@ void TranFrozen::print(ostream &os) const
 	}
 }
 
-
+#ifndef NO_LAPACKPP
 void TranSVD::update(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
 		int maxsing, double eigthresh, const vector<string> &par_names, const vector<string> &obs_names)
 {
@@ -403,7 +403,7 @@ void TranSVD::print(ostream &os) const
 	os << "  Singular Values = " << Sigma << endl;
 }
 
-
+#endif
 
 void TranNormalize::forward(Transformable &data)
 {

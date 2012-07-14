@@ -49,11 +49,12 @@
       <MinimalRebuild>false</MinimalRebuild>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <CompileAsManaged>false</CompileAsManaged>
+      <PreprocessorDefinitions>NO_LAPACKPP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\libs;$(IFORT_COMPILER12)\mkl\lib\ia32;..\..\lapackpp-2.5.4\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>mkl_blas95.lib;mkl_lapack95.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(IFORT_COMPILER12)\mkl\lib\ia32;..\..\lapackpp-2.5.4\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
     </Link>
@@ -72,8 +73,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\genie\buffer.cpp" />
+    <ClCompile Include="..\..\genie\client.cpp" />
+    <ClCompile Include="..\..\genie\commandline.cpp" />
+    <ClCompile Include="..\..\genie\executable.cpp" />
+    <ClCompile Include="..\..\genie\GENIE_INTERFACE_BASE.cpp" />
+    <ClCompile Include="..\..\genie\genie_misc_routines.cpp" />
+    <ClCompile Include="..\..\genie\message.cpp" />
     <ClCompile Include="..\..\pest++\pest++\FileManager.cpp" />
-    <ClCompile Include="..\..\pest++\pest++\lapack_tools.cpp" />
     <ClCompile Include="..\..\pest++\pest++\ModelRunPP.cpp" />
     <ClCompile Include="..\..\pest++\pest++\ObjectiveFunc.cpp" />
     <ClCompile Include="..\..\pest++\pest++\ParamTransformSeq.cpp" />
@@ -82,6 +89,9 @@
     <ClCompile Include="..\..\pest++\pest++\pest_error.cpp" />
     <ClCompile Include="..\..\pest++\pest++\PriorInformation.cpp" />
     <ClCompile Include="..\..\pest++\pest++\Regularization.cpp" />
+    <ClCompile Include="..\..\pest++\pest++\RunManagerAbstract.cpp" />
+    <ClCompile Include="..\..\pest++\pest++\RunManagerGenie.cpp" />
+    <ClCompile Include="..\..\pest++\pest++\RunManagerSerial.cpp" />
     <ClCompile Include="..\..\pest++\pest++\system_variables.cpp" />
     <ClCompile Include="..\..\pest++\pest++\Transformable.cpp" />
     <ClCompile Include="..\..\pest++\pest++\Transformation.cpp" />
@@ -90,6 +100,13 @@
     <ClCompile Include="MorrisMethod.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\genie\buffer.h" />
+    <ClInclude Include="..\..\genie\client.h" />
+    <ClInclude Include="..\..\genie\commandline.h" />
+    <ClInclude Include="..\..\genie\defin.h" />
+    <ClInclude Include="..\..\genie\executable.h" />
+    <ClInclude Include="..\..\genie\header.h" />
+    <ClInclude Include="..\..\genie\message.h" />
     <ClInclude Include="..\..\pest++\pest++\FileManager.h" />
     <ClInclude Include="..\..\pest++\pest++\ModelRunPP.h" />
     <ClInclude Include="..\..\pest++\pest++\ObjectiveFunc.h" />
@@ -99,11 +116,16 @@
     <ClInclude Include="..\..\pest++\pest++\pest_error.h" />
     <ClInclude Include="..\..\pest++\pest++\PriorInformation.h" />
     <ClInclude Include="..\..\pest++\pest++\Regularization.h" />
+    <ClInclude Include="..\..\pest++\pest++\RunManagerAbstract.h" />
+    <ClInclude Include="..\..\pest++\pest++\RunManagerGenie.h" />
+    <ClInclude Include="..\..\pest++\pest++\RunManagerSerial.h" />
     <ClInclude Include="..\..\pest++\pest++\system_variables.h" />
     <ClInclude Include="..\..\pest++\pest++\Transformable.h" />
     <ClInclude Include="..\..\pest++\pest++\utilities.h" />
     <ClInclude Include="MorrisMethod.h" />
-    <ClInclude Include="Transformation.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\genie\gpl-3.0.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

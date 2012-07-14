@@ -76,12 +76,12 @@ int main(int argc, char* argv[])
 	ParamTransformSeq base_partran_seq(pest_scenario.get_base_par_tran_seq());
 	
 
-	//RunManagerAbstract *run_manager_ptr;
-	//if (pest_scenario.get_pestpp_options().get_gman_socket().empty())
-	//{
-	//	cout << "initializing serial run manager" << endl;
-	//	run_manager_ptr = new RunManagerSerial(pest_scenario.get_model_exec_info(), pathname);
-	//}
+	RunManagerAbstract *run_manager_ptr;
+	if (pest_scenario.get_pestpp_options().get_gman_socket().empty())
+	{
+		cout << "initializing serial run manager" << endl;
+		run_manager_ptr = new RunManagerSerial(pest_scenario.get_model_exec_info(), pathname);
+	}
 	//else {
 	//	cout << "initializing Genie run manager" << endl;
 	//	run_manager_ptr = new RunManagerGenie (pest_scenario.get_model_exec_info(),  pest_scenario.get_pestpp_options().get_gman_socket());
@@ -95,5 +95,5 @@ int main(int argc, char* argv[])
 
 	cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
 	char buf[256];
-    gets(buf);
+    gets_s(buf, sizeof(buf));
 }
