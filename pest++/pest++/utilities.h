@@ -86,6 +86,8 @@ namespace pest_utils
 		of string s.
     */
 
+
+
 	void strip_ip(string &s, const string &op="both",
 		const string &delimiters=" \t\n\r");
 
@@ -136,10 +138,12 @@ namespace pest_utils
 	void string_to_fortran_char(string in, char out[], int length, CASE_CONV conv_type=NO_CONV);
 
 
+	string remove_file_ext(const string &filename, size_t max_len=string::npos);
 	/** @brief Given a combined path and filename return just the filename.
 
 	    Given path the combined path and filname complete_path, return just the filename.
     */
+
 	string get_filename(const string &complete_path);
 
 	/** @brief Given a combined path and filename return just the pathname.

@@ -44,24 +44,19 @@ using namespace pest_utils;
 
 int main(int argc, char* argv[])
 {
-	//SVD_PROPACK pro_test;
-	//pro_test.test();
-	//cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
-	//char bufb[256];
- //   gets(bufb);
-	//exit(0);
-
 	string version = "1.1.2";
 	string complete_path;
 	if (argc >=2) {
 		complete_path = argv[1];
 	}
 	else {
-		cerr << "Usage: pest++ pest_ctl_file" << endl;
+		cerr << endl<< "PEST++ Version " << version << endl << endl;
+		cerr << "Usage: pest++ pest_ctl_file" << endl << endl;
 		exit(1);
 	}
 
 	string filename = get_filename(complete_path);
+	filename = remove_file_ext(filename); // remove .pst extension
 	string pathname = get_pathname(complete_path);
 	if (pathname.empty()) pathname = ".";
 	FileManager file_manager(filename, pathname);
@@ -76,7 +71,13 @@ int main(int argc, char* argv[])
 	// create to pest run and process control file to initialize it initialize
 	Pest pest_scenario;
 	pest_scenario.set_defaults();
-	pest_scenario.process_ctl_file(file_manager.ctl_filename(), file_manager);
+	try {
+		pest_scenario.process_ctl_file(file_manager.ctl_filename(), file_manager);
+	}
+	catch(PestFileError)
+	{
+		exit(1);
+	}
 	pest_scenario.check_inputs();
 
 	RunManagerAbstract *run_manager_ptr;

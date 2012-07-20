@@ -162,12 +162,26 @@ StringvecFortranCharArray::~StringvecFortranCharArray()
 	delete [] fort_array;
 }
 
+
+string remove_file_ext(const string &filename, size_t max_len)
+{
+	// remove .pst or .PST from the end of the filename
+	string new_str = filename;
+	int found = filename.find_last_of(".");
+	if (found != string::npos)
+	{
+		new_str.erase(found, string::npos);
+	}
+	return new_str;
+}
+
 string get_filename(const string &complete_path)
 {
 	vector<string> tokens;
-	
 	tokenize(complete_path, tokens, OperSys::DIR_SEP);
-	return tokens.back();
+	string filename = tokens.back();
+	strip_ip(filename);
+	return filename;
 }
 string get_pathname(const string &complete_path)
 {
