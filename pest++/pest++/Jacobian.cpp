@@ -21,6 +21,7 @@
 #include <vector>
 #include <lapackpp.h>
 #include <fstream>
+#include <gmd.h>
 #include "Jacobian.h"
 #include "Transformable.h"
 #include "ParamTransformSeq.h"
@@ -606,4 +607,84 @@ void Jacobian::save(const string &filename) const
 	}
 	fout.close();
 }
+
+
+//void Jacobian::read(const string &filename)
+//{
+//	ifstream fin;
+//	fin.open(filename.c_str(), ifstream::binary);
+//
+//	int n_par = base_numeric_par_names.size();
+//	int n_standard_obs = base_sim_obs_names.size();
+//	int n_nonzero;
+//	int n_obs_and_pi;
+//	int i,j,n;
+//	double data;
+//	char par_name[12];
+//	char obs_name[20];
+//
+//	// read header
+//	fin.read((char*) &n_par, sizeof(n_par));
+//	fin.read((char*) &n_obs_and_pi, sizeof(n_obs_and_pi));
+//	n_par = -n_par;
+//	n_obs_and_pi = -n_obs_and_pi;
+//
+//	if (n_obs_and_pi == base_sim_obs_names.size() + prior_info_sen.size())
+//	{
+//		cerr << "Error Reading Jacobian: Prior number of observations and prior information records in current problem and file are inconsistent" << endl;
+//		throw(PestError("Error Reading Jacobian: Prior number of observations and prior information records in current problem and file are inconsistent"));
+//	}
+//
+//	////read number nonzero elements in jacobian (observations + prior information)
+//	fin.read((char*)&n_nonzero, sizeof(n_nonzero));
+//	// read matrix
+//	LaGenMatDouble tmp_matrix = LaGenMatDouble::zeros(n_obs_and_pi, n_par);
+//	for (int i_rec=0; i_rec<n_nonzero; ++ i_rec)
+//	{
+//		fin.read((char*) &(n), sizeof(n));
+//		fin.read((char*) &(data), sizeof(data));
+//		j = int(n/n_par);
+//		i = n % n_par;
+//		tmp_matrix(i,j) = data;
+//	}
+//	//read parameter names
+//	vector<string> tmp_par_names;
+//	for (int i_rec=0; i_rec<n_par; ++i_rec)
+//	{
+//		fin.read(par_name, 12);
+//		string temp_par = string(par_name, 12);
+//trouble here		strip_ip(temp_par);
+//		tmp_par_names.push_back(temp_par);
+//	}
+//	
+//	//read observation and Prior info names
+//	vector<string> tmp_obs_pi_names;
+//	for (int i_rec=0; i_rec<n_obs_and_pi; ++i_rec)
+//	{
+//		fin.read(obs_name, 20);
+//		tmp_obs_pi_names.push_back(strip_cp(string(obs_name, 20)));
+//	}
+//		//prior information
+//
+//	//	prior_info_sen.clear();
+//	//	for (int i_rec=n_standard_obs; i_rec<n_obs_and_pi; ++i_rec)
+//	//	{
+//
+//	//	}
+//
+//	//	for(map<string, map<string, double>>::const_iterator b=prior_info_sen.begin(), e=prior_info_sen.end();
+//	//	b!=e; ++b)
+//	//	{
+//	//		++n;
+//	//		not_found_pi_par = (*b).second.end();
+//	//		found_pi_par = (*b).second.find(*par_name_ptr);
+//	//		if (found_pi_par != not_found_pi_par) {
+//	//			data = (*found_pi_par).second;
+//	//			fout.write((char*) &(n), sizeof(n));
+//	//			fout.write((char*) &(data), sizeof(data));
+//	//		}
+//	//	}
+////	}
+//	fin.close();
+//}
 

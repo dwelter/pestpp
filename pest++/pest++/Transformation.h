@@ -31,11 +31,12 @@
 #include <set>
 #include <vector>
 #include <lapackpp.h>
+#include "Transformable.h"
 
-class Transformable;
 class Jacobian;
 class QSqrtMatrix;
 class ParameterGroupInfo;
+class Parameters;
 
 using namespace std;
 
@@ -274,7 +275,7 @@ public:
 	TranSVD(const string &_name="unnamed TranSVD") : Transformation(_name), n_sing_val(0)  {}
 //	TranSVD(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
 //		int maxsing, double eigthresh, const Transformable &pars, const string &_name="unnamed TranSVD");
-	void update(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
+	void update(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt, const Parameters &base_numeric_pars,
 		int maxsing, double eigthresh, const vector<string> &par_names, const vector<string> &obs_names);
 	virtual void forward(Transformable &data);
 	virtual void reverse(Transformable &data);
@@ -291,6 +292,7 @@ protected:
 	LaVectorDouble Sigma;
 	LaGenMatDouble U;
 	LaGenMatDouble Vt;
+	Transformable init_base_numeric_parameters;
 };
 
 

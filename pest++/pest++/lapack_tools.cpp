@@ -20,6 +20,8 @@
 #include "lapack_tools.h"
 #include <lapackpp.h>
 
+using namespace std;
+
 LaGenMatDouble diag_mat_mult(const LaVectorDouble &diag, const LaGenMatDouble &rhs)
 {
 	LaGenMatDouble ret_val(rhs);
@@ -78,6 +80,7 @@ void get_LaGenMatDouble_row_abs_max(const LaGenMatDouble &m, int row, int *max_c
 		}
 	}
 }
+
 LaVectorDouble stlvec2LaVec(const std::vector<double> &stl_vec)
 {
 	int len = stl_vec.size();
@@ -87,4 +90,21 @@ LaVectorDouble stlvec2LaVec(const std::vector<double> &stl_vec)
 		la_vec(i) = stl_vec[i];
 	}
 	return la_vec;
+}
+
+void print(const LaGenMatDouble &mat, ostream & fout)
+{
+	int nrows = mat.rows();
+	int ncols = mat.cols();
+
+	for (int i=0; i<nrows; ++i)
+	{
+		for (int j=0; j<ncols; ++j) 
+		{
+			fout << mat(i,j);
+			if (j < ncols-1) {fout << ", ";}
+		}
+		fout << endl;
+	}
+
 }

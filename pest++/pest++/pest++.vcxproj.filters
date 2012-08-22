@@ -16,11 +16,23 @@
     <Filter Include="genie">
       <UniqueIdentifier>{381f9232-d13f-479f-a664-03ad33dd6086}</UniqueIdentifier>
     </Filter>
+    <Filter Include="genie\Source Files">
+      <UniqueIdentifier>{12a8f556-511b-4495-b1d2-5ee0bb20b7bc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
     <None Include="..\..\genie\readme.txt">
       <Filter>genie</Filter>
+    </None>
+    <None Include="..\..\pest_routines\pest_routines\io_utils.for">
+      <Filter>genie\Source Files</Filter>
+    </None>
+    <None Include="..\..\pest_routines\pest_routines\readins.for">
+      <Filter>genie\Source Files</Filter>
+    </None>
+    <None Include="..\..\pest_routines\pest_routines\writtpl.for">
+      <Filter>genie\Source Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

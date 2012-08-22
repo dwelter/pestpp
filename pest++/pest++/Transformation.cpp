@@ -24,6 +24,7 @@
 #include <sstream>
 #include <lapackpp.h>
 #include <blas3pp.h>
+#include <blas2pp.h>
 #include <cassert>
 #include "Transformation.h"
 #include "Transformable.h"
@@ -315,7 +316,7 @@ void TranFrozen::print(ostream &os) const
 }
 
 #ifndef NO_LAPACKPP
-void TranSVD::update(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
+void TranSVD::update(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt, const Parameters &base_numeric_pars,
 		int maxsing, double eigthresh, const vector<string> &par_names, const vector<string> &obs_names)
 {
 	stringstream sup_name;
@@ -336,6 +337,7 @@ void TranSVD::update(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
 		sup_name << i+1;
 		super_parameter_names.push_back(sup_name.str());
 	}
+	init_base_numeric_parameters = base_numeric_pars;
 }
 
 
@@ -347,14 +349,18 @@ void TranSVD::reverse(Transformable &data)
 	// Transform super-parameters to base parameters
 	assert(Vt.cols() == base_parameter_names.size());
 	int n_base = Vt.cols();
-	int n_super = data.size()-1;
-	LaVectorDouble  base_pars(Vt.cols());
-	Transformable ret_base_pars;
-
-	Blas_Mat_Trans_Mat_Mult(Vt(LaIndex(0, n_super), LaIndex(0,n_base-1)), stlvec2LaVec(data.get_vector(super_parameter_names)), base_pars, 1.0, 0.0);
-	for (int i=0; i<n_base; ++i) {
-		ret_base_pars.insert(base_parameter_names[i], base_pars(i));
+	vector<double> super_par_vec = data.get_vector(super_parameter_names);
+	vector<double>::iterator it;
+	for (it=super_par_vec.begin(); it!=super_par_vec.end(); ++it)
+	{
+		(*it) -= 10.0;
 	}
+	Transformable ret_base_pars;
+	LaVectorDouble delta_base_mat(Vt.cols());
+	Blas_Mat_Trans_Mat_Mult(Vt(LaIndex(0,n_sing_val-1), LaIndex(0, Vt.rows()-1)), stlvec2LaVec(super_par_vec), delta_base_mat, 1.0, 0.0);
+	for (int i=0; i<n_base; ++i) {
+		ret_base_pars.insert(base_parameter_names[i], delta_base_mat(i) + init_base_numeric_parameters.get_rec(base_parameter_names[i]))
+;	}
 	data = ret_base_pars;
 }
 
@@ -362,12 +368,12 @@ void TranSVD::forward(Transformable &data)
 {
 	//Transform base parameters to super-parameters
 	Transformable super_pars;
-	LaVectorDouble value;
+	LaVectorDouble value(Vt.cols());
 
+	Transformable delta_data = data - init_base_numeric_parameters;
+	Blas_Mat_Vec_Mult(Vt, stlvec2LaVec(delta_data.get_vector(base_parameter_names)), value, 1.0, 0.0);
 	for (int i=0; i<n_sing_val; ++i) {
-		value = Vt.row(i) * stlvec2LaVec(data.get_vector(base_parameter_names));
-		assert(value.size() == 1);
-		super_pars.insert(super_parameter_names[i], value(0));
+		super_pars.insert(super_parameter_names[i], value(i)+10.0);
 	}
 	data = super_pars;
 }
@@ -384,9 +390,11 @@ ParameterGroupInfo TranSVD::build_par_group_info(const ParameterGroupInfo &base_
 	for (int i_sup=0, n_sup=super_parameter_names.size(); i_sup < n_sup; ++i_sup)
 	{
 		get_LaGenMatDouble_row_abs_max(Vt, i_sup, &max_col, &max_val);
+		//dew clean up
 		derinc_par = base_pg_info.get_group_rec_ptr(base_parameter_names[max_col])->derinc;
 		derinc_sup = derinc_par / (abs(max_val)*Sigma(i_sup));
-		ParameterGroupRec sup_rec("RELATIVE", derinc_sup, 0.0, "SWITCH", 2.0, "PARABOLIC");
+		derinc_sup = 0.015;
+		ParameterGroupRec sup_rec("ABSOLUTE", derinc_sup, 0.0, "SWITCH", 2.0, "PARABOLIC");
 		grp_name.str("g_");
 		grp_name << super_parameter_names[i_sup];
 		//add new group

@@ -92,7 +92,6 @@ int Pest::process_ctl_file(const string &filename, FileManager &file_manager)
 	double wftol;
 	vector<string> pestpp_input;
 
-
 	regul_scheme_ptr = new Regularization();
 
 	TranTied *t_tied = new TranTied("PEST to model tied transformation");

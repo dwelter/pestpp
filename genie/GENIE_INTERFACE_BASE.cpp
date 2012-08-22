@@ -306,6 +306,8 @@ int GENIE_INTERFACE(int *nrun,
   // Interface between calling program and the Genie run manager
 
   // Version 1.0.0.0  Mar. 2011
+  // Version 1.0.0.1  Jul. 2012 - Modified for 64 bit.
+  //                  Copy of run dimensions to size_t.
 
   // IKILL does nothing
 
@@ -318,6 +320,9 @@ int GENIE_INTERFACE(int *nrun,
 
   //--- MISC
   //size_t nr;
+  
+  size_t nrun_t,nexec_t,npar_t,nobs_t,ntpl_t,nins_t;
+
   size_t n,ndone=0,itrk;
   bool *runcomplete,chkcomplete;
   ofstream outfile;
@@ -514,14 +519,23 @@ int GENIE_INTERFACE(int *nrun,
     runcomplete=new bool;
   else
     runcomplete=new bool[*nrun];
+
+  // COPY RUN DIMENSIONS
+  nrun_t=*nrun;
+  nexec_t=*nexec;
+  npar_t=*npar;
+  nobs_t=*nobs;
+  ntpl_t=*ntpl;
+  nins_t=*nins;
+
   for(n=0;n<*nrun;n++)
   {
     _run=new MODEL_RUN();
-    _run->npar=(size_t*)npar;
-    _run->nobs=(size_t*)nobs;
-    _run->ntpl=(size_t*)ntpl;
-    _run->nins=(size_t*)nins;
-    _run->nexec=(size_t*)nexec;
+    _run->npar=&npar_t;
+    _run->nobs=&nobs_t;
+    _run->ntpl=&ntpl_t;
+    _run->nins=&nins_t;
+    _run->nexec=&nexec_t;
     //_run->id=new int;
     *_run->id=n+1;
     _run->set_exec(execnams);

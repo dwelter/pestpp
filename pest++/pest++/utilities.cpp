@@ -216,7 +216,6 @@ char* String2CharPtr::get_char_ptr()
 	return &(my_str[0]);
 }
 
-
 void copyfile(const string &from_file, const string &to_file)
 {
 	fstream source(from_file, ios::binary);

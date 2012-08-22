@@ -247,6 +247,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="..\..\genie\readme.txt" />
+    <None Include="..\..\pest_routines\pest_routines\io_utils.for" />
+    <None Include="..\..\pest_routines\pest_routines\readins.for" />
+    <None Include="..\..\pest_routines\pest_routines\writtpl.for" />
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>

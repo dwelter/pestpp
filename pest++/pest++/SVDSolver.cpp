@@ -271,7 +271,6 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	double tikhonov_weight = regul_scheme_ptr->get_weight(cur_solution);
 	// write out report for starting phi
 	obj_func->phi_report(os, cur_solution.get_obs(), cur_solution.get_ctl_pars(), tikhonov_weight);
-
 	// populate vectors with sorted observations (standard and prior info) and parameters
 	obs_names_vec = cur_solution.get_obs().get_keys();
 	{

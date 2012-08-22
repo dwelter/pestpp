@@ -44,7 +44,7 @@ using namespace pest_utils;
 
 int main(int argc, char* argv[])
 {
-	string version = "1.1.2";
+	string version = "1.1.3";
 	string complete_path;
 	if (argc >=2) {
 		complete_path = argv[1];
@@ -113,7 +113,7 @@ int main(int argc, char* argv[])
 	ParameterGroupInfo sup_group_info;
 	//
 	ControlInfo svd_control_info = pest_scenario.get_control_info();
-	svd_control_info.relparmax = 0.2;
+	svd_control_info.relparmax = 0.1;
 	// Start Solution iterations
 	cout << endl << endl;
 	int n_base_iter = pest_scenario.get_pestpp_options().get_n_iter_base();
@@ -147,12 +147,13 @@ int main(int argc, char* argv[])
 		cur_ctl_parameters = base_svd.cur_model_run().get_ctl_pars();
 		if(termination_ctl.check_last_iteration()) break;
 		// Build Super Parameter or SVDA problem
+
 	try
 		{
 			const vector<string> &nonregul_obs = pest_scenario.get_nonregul_obs();
 			const vector<string> &pars = base_svd.cur_model_run().get_numeric_pars().get_keys();
 			QSqrtMatrix Q_sqrt(pest_scenario.get_ctl_observation_info(), nonregul_obs, &pest_scenario.get_prior_info(), 1.0);
-			(*tran_svd).update(*base_jacobian_ptr, Q_sqrt, super_nmax, super_eigthres, pars, nonregul_obs);
+			(*tran_svd).update(*base_jacobian_ptr, Q_sqrt, base_svd.cur_model_run().get_numeric_pars(), super_nmax, super_eigthres, pars, nonregul_obs);
 			sup_group_info = (*tran_svd).build_par_group_info(pest_scenario.get_base_group_info());		
 			SVDASolver super_svd(&svd_control_info, pest_scenario.get_svd_info(), &sup_group_info, &pest_scenario.get_ctl_parameter_info(),
 				&pest_scenario.get_ctl_observation_info(),  file_manager, &pest_scenario.get_ctl_observations(), &obj_func,

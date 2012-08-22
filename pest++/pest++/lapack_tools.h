@@ -20,6 +20,7 @@
 #define LAPACK_TOOLS_H_
 
 #include <vector>
+#include <ostream>
 class LaGenMatDouble;
 class LaVectorDouble;
 
@@ -31,5 +32,7 @@ LaGenMatDouble SVD_inv(const LaGenMatDouble &U, const LaVectorDouble &Sigma,
 void get_LaGenMatDouble_row_abs_max(const LaGenMatDouble &m, int row, int *max_col, double *max_val);
 
 LaVectorDouble stlvec2LaVec(const std::vector<double> &stl_vec);
+
+void print(const LaGenMatDouble &mat, std::ostream &fout);
 
 #endif /* LAPACK_TOOLS_H_ */
