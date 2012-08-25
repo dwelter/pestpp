@@ -44,7 +44,7 @@ using namespace pest_utils;
 
 int main(int argc, char* argv[])
 {
-	string version = "1.1.3";
+	string version = "1.1.4";
 	string complete_path;
 	if (argc >=2) {
 		complete_path = argv[1];
@@ -134,8 +134,9 @@ int main(int argc, char* argv[])
 		run_manager_ptr->add_run(init_model_pars);
 		run_manager_ptr->run();
 		run_manager_ptr->get_run(optimum_run, 0, RunManagerAbstract::FORCE_PAR_UPDATE);
-		//init_run.full_report(cout);
-		//init_run.full_report(fout_rec);
+		// save parameters to .par file
+		optimum_run.get_ctl_pars().save(file_manager.par_filename(), optimum_run.get_par_tran().get_offset_ptr(), 
+			optimum_run.get_par_tran().get_scale_ptr());
 		run_manager_ptr->free_memory();
 	}
 
