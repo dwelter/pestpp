@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="genie">
-      <UniqueIdentifier>{fd227922-1fc8-493a-8644-3598f2dc3498}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -72,27 +69,6 @@
     <ClCompile Include="..\..\pest++\pest++\RunManagerSerial.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\genie\buffer.cpp">
-      <Filter>genie</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\genie\client.cpp">
-      <Filter>genie</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\genie\commandline.cpp">
-      <Filter>genie</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\genie\executable.cpp">
-      <Filter>genie</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\genie\GENIE_INTERFACE_BASE.cpp">
-      <Filter>genie</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\genie\genie_misc_routines.cpp">
-      <Filter>genie</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\genie\message.cpp">
-      <Filter>genie</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MorrisMethod.h">
@@ -143,31 +119,5 @@
     <ClInclude Include="..\..\pest++\pest++\RunManagerSerial.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\genie\buffer.h">
-      <Filter>genie</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\genie\client.h">
-      <Filter>genie</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\genie\commandline.h">
-      <Filter>genie</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\genie\defin.h">
-      <Filter>genie</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\genie\executable.h">
-      <Filter>genie</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\genie\header.h">
-      <Filter>genie</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\genie\message.h">
-      <Filter>genie</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\genie\gpl-3.0.txt">
-      <Filter>genie</Filter>
-    </None>
   </ItemGroup>
 </Project>

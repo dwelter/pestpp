@@ -53,8 +53,8 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>mkl_blas95.lib;mkl_lapack95.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(IFORT_COMPILER12)\mkl\lib\ia32;..\..\lapackpp-2.5.4\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>mkl_blas95.lib;mkl_lapack95.lib;ws2_32.lib;genie.lib;pest_routines.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(IFORT_COMPILER12)\mkl\lib\ia32;..\..\pest_routines\pest_routines\Debug;..\..\genie\Debug;..\lapackpp-2.5.4\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
     </Link>
@@ -73,13 +73,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\genie\buffer.cpp" />
-    <ClCompile Include="..\..\genie\client.cpp" />
-    <ClCompile Include="..\..\genie\commandline.cpp" />
-    <ClCompile Include="..\..\genie\executable.cpp" />
-    <ClCompile Include="..\..\genie\GENIE_INTERFACE_BASE.cpp" />
-    <ClCompile Include="..\..\genie\genie_misc_routines.cpp" />
-    <ClCompile Include="..\..\genie\message.cpp" />
     <ClCompile Include="..\..\pest++\pest++\FileManager.cpp" />
     <ClCompile Include="..\..\pest++\pest++\ModelRunPP.cpp" />
     <ClCompile Include="..\..\pest++\pest++\ObjectiveFunc.cpp" />
@@ -100,13 +93,6 @@
     <ClCompile Include="MorrisMethod.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\genie\buffer.h" />
-    <ClInclude Include="..\..\genie\client.h" />
-    <ClInclude Include="..\..\genie\commandline.h" />
-    <ClInclude Include="..\..\genie\defin.h" />
-    <ClInclude Include="..\..\genie\executable.h" />
-    <ClInclude Include="..\..\genie\header.h" />
-    <ClInclude Include="..\..\genie\message.h" />
     <ClInclude Include="..\..\pest++\pest++\FileManager.h" />
     <ClInclude Include="..\..\pest++\pest++\ModelRunPP.h" />
     <ClInclude Include="..\..\pest++\pest++\ObjectiveFunc.h" />
@@ -123,9 +109,6 @@
     <ClInclude Include="..\..\pest++\pest++\Transformable.h" />
     <ClInclude Include="..\..\pest++\pest++\utilities.h" />
     <ClInclude Include="MorrisMethod.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\genie\gpl-3.0.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

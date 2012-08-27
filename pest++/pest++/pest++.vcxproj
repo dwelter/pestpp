@@ -131,8 +131,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(IFORT_COMPILER12)\mkl\lib\ia32;..\..\pest_routines\pest_routines\Debug;..\..\propack\propack\Debug;..\..\lapackpp-2.5.4\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>lapackpp.lib;pest_routines.lib;mkl_blas95.lib;mkl_lapack95.lib;propack.lib;ws2_32.lib;Advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(IFORT_COMPILER12)\mkl\lib\ia32;..\..\pest_routines\pest_routines\Debug;..\..\propack\propack\Debug;..\..\lapackpp-2.5.4\Debug;..\..\genie\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>lapackpp.lib;pest_routines.lib;mkl_blas95.lib;mkl_lapack95.lib;propack.lib;ws2_32.lib;genie.lib;Advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -211,8 +211,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>mkl_blas95.lib;mkl_lapack95.lib;lapackpp.lib;pest_routines.lib;propack.lib;ws2_32.lib;Advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(IFORT_COMPILER12)\mkl\lib\ia32;..\..\pest_routines\pest_routines\Release;..\..\propack\propack\Release;..\..\lapackpp-2.5.4\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>mkl_blas95.lib;mkl_lapack95.lib;lapackpp.lib;pest_routines.lib;propack.lib;genie.lib;ws2_32.lib;Advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(IFORT_COMPILER12)\mkl\lib\ia32;..\..\pest_routines\pest_routines\Release;..\..\propack\propack\Release;..\..\lapackpp-2.5.4\Release;..\..\genie\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>LIBCMTD.lib%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
     <ProjectReference>
@@ -246,26 +246,9 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="..\..\genie\readme.txt" />
-    <None Include="..\..\pest_routines\pest_routines\io_utils.for" />
-    <None Include="..\..\pest_routines\pest_routines\readins.for" />
-    <None Include="..\..\pest_routines\pest_routines\writtpl.for" />
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\genie\buffer.cpp" />
-    <ClCompile Include="..\..\genie\client.cpp" />
-    <ClCompile Include="..\..\genie\commandline.cpp" />
-    <ClCompile Include="..\..\genie\executable.cpp" />
-    <ClCompile Include="..\..\genie\GENIE_INTERFACE_BASE.cpp" />
-    <ClCompile Include="..\..\genie\message.cpp" />
-    <ClCompile Include="..\..\genie\modelresult.cpp" />
-    <ClCompile Include="..\..\genie\modelrun.cpp" />
-    <ClCompile Include="..\..\genie\node.cpp" />
-    <ClCompile Include="..\..\genie\receivor.cpp" />
-    <ClCompile Include="..\..\genie\runprocess.cpp" />
-    <ClCompile Include="..\..\genie\socket_utilities.cpp" />
-    <ClCompile Include="..\..\genie\thread.cpp" />
     <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="Jacobian.cpp" />
     <ClCompile Include="lapack_tools.cpp" />
@@ -293,20 +276,6 @@
     <ClCompile Include="utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\genie\buffer.h" />
-    <ClInclude Include="..\..\genie\client.h" />
-    <ClInclude Include="..\..\genie\commandline.h" />
-    <ClInclude Include="..\..\genie\defin.h" />
-    <ClInclude Include="..\..\genie\executable.h" />
-    <ClInclude Include="..\..\genie\header.h" />
-    <ClInclude Include="..\..\genie\message.h" />
-    <ClInclude Include="..\..\genie\modelresult.h" />
-    <ClInclude Include="..\..\genie\modelrun.h" />
-    <ClInclude Include="..\..\genie\node.h" />
-    <ClInclude Include="..\..\genie\receivor.h" />
-    <ClInclude Include="..\..\genie\runprocess.h" />
-    <ClInclude Include="..\..\genie\socket_utilities.h" />
-    <ClInclude Include="..\..\genie\thread.h" />
     <ClInclude Include="FileManager.h" />
     <ClInclude Include="Jacobian.h" />
     <ClInclude Include="lapack_tools.h" />

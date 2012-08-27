@@ -5,6 +5,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pest++", "pest++\pest++.vcx
 	ProjectSection(ProjectDependencies) = postProject
 		{C99FF120-0C40-4ACB-A3D8-A7E86E90EC0B} = {C99FF120-0C40-4ACB-A3D8-A7E86E90EC0B}
 		{EC0BDA50-7719-4BC3-8EAC-18F3499E2753} = {EC0BDA50-7719-4BC3-8EAC-18F3499E2753}
+		{5BF76059-872C-4A70-9D5F-235C86131DDD} = {5BF76059-872C-4A70-9D5F-235C86131DDD}
 		{EB9A0791-5341-4772-84AA-F7089AE7C57D} = {EB9A0791-5341-4772-84AA-F7089AE7C57D}
 	EndProjectSection
 EndProject
@@ -13,6 +14,8 @@ EndProject
 Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "pest_routines", "..\pest_routines\pest_routines\pest_routines.vfproj", "{EB9A0791-5341-4772-84AA-F7089AE7C57D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lapackpp", "..\lapackpp-2.5.4\lapackpp.vcxproj", "{EC0BDA50-7719-4BC3-8EAC-18F3499E2753}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "genie", "..\genie\genie.vcxproj", "{5BF76059-872C-4A70-9D5F-235C86131DDD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -70,6 +73,15 @@ Global
 		{EC0BDA50-7719-4BC3-8EAC-18F3499E2753}.Release|Win32.Build.0 = Release|Win32
 		{EC0BDA50-7719-4BC3-8EAC-18F3499E2753}.Release|x64.ActiveCfg = Release|x64
 		{EC0BDA50-7719-4BC3-8EAC-18F3499E2753}.Release|x64.Build.0 = Release|x64
+		{5BF76059-872C-4A70-9D5F-235C86131DDD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5BF76059-872C-4A70-9D5F-235C86131DDD}.Debug|Win32.Build.0 = Debug|Win32
+		{5BF76059-872C-4A70-9D5F-235C86131DDD}.Debug|x64.ActiveCfg = Debug|Win32
+		{5BF76059-872C-4A70-9D5F-235C86131DDD}.Debugx64|Win32.ActiveCfg = Debug|Win32
+		{5BF76059-872C-4A70-9D5F-235C86131DDD}.Debugx64|Win32.Build.0 = Debug|Win32
+		{5BF76059-872C-4A70-9D5F-235C86131DDD}.Debugx64|x64.ActiveCfg = Debug|Win32
+		{5BF76059-872C-4A70-9D5F-235C86131DDD}.Release|Win32.ActiveCfg = Release|Win32
+		{5BF76059-872C-4A70-9D5F-235C86131DDD}.Release|Win32.Build.0 = Release|Win32
+		{5BF76059-872C-4A70-9D5F-235C86131DDD}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
