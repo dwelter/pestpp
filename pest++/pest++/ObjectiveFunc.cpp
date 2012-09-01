@@ -198,3 +198,18 @@ vector<double> ObjectiveFunc::get_residuals_vec(const Observations &sim_obs, con
 	}
 	return residuals_vec;
 }
+
+const Observations *ObjectiveFunc::get_obs_ptr() const
+{
+	return observations_ptr;
+}
+
+const ObservationInfo* ObjectiveFunc::get_obs_info_ptr() const
+{
+	return obs_info_ptr;
+}
+
+const PriorInformation*  ObjectiveFunc::get_prior_info_ptr() const
+{
+	return prior_info_ptr;
+}

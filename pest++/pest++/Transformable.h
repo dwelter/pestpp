@@ -94,7 +94,6 @@ public:
 	Parameters() : Transformable(){}
 	Parameters(const Parameters &copyin) : Transformable(copyin) {}
 	Parameters(const Parameters &copyin, const vector<string> &copy_names) : Transformable(copyin, copy_names){} 
-	void save(const string &filename, const TranOffset *ctl_tran_offset, const TranScale *ctl_tran_scale);
 	virtual ~Parameters(){}
 private:
 };

@@ -48,6 +48,7 @@ public:
 	double calc_phi(const Parameters &pars) const;
 	bool is_regularization() const;
 	double get_weight()const {return weight;}
+	double get_obs_value()const {return pival;}
 	std::string get_group() const{return group;}
 	const std::string *get_group_ptr() const{return &group;}
 	~PriorInformationRec(void);

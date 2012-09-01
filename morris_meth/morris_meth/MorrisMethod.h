@@ -1,9 +1,12 @@
 #ifndef MORRISMETHOD_H_
 #define MORRISMETHOD_H_
 
+#include <vector>
+#include <string>
 #include <Eigen/Dense>
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
+class Parameters;
 
 class MorrisMethod
 {
@@ -20,6 +23,9 @@ private:
 	static MatrixXd create_D_mat(int k);
 	static MatrixXd create_P_mat(int k);
 	VectorXd create_x_vec(int k);
+	Parameters get_ctl_parameters(const MatrixXd &b_mat, int row,
+		const std::vector<std::string> &par_name_vec, const Parameters &lower_bnd, 
+		const Parameters &upper_bnd);
 	static int rand_plus_minus_1(void);
 };
 

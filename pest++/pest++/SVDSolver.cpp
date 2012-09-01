@@ -35,7 +35,8 @@
 #include "PriorInformation.h"
 #include "Regularization.h"
 #include "SVD_PROPACK.h"
-
+#include "OutputFileWriter.h"
+#include <sstream>
 
 using namespace std;
 using namespace pest_utils;
@@ -90,14 +91,32 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 	// Start Solution iterations
 	bool save_nextjac = false;
 	for (int iter_num=1; iter_num<=max_iter;++iter_num) {
-		cout << "OPTIMISATION ITERATION NUMBER: " << termination_ctl.get_iteration_number()+1 << endl;
-		os   << "OPTIMISATION ITERATION NUMBER: " << termination_ctl.get_iteration_number()+1 << endl;
+		int global_iter_num = termination_ctl.get_iteration_number()+1;
+		cout << "OPTIMISATION ITERATION NUMBER: " << global_iter_num << endl;
+		os   << "OPTIMISATION ITERATION NUMBER: " << global_iter_num << endl;
 		cout << "  Iteration type: " << get_description() << endl;
 		os   << "  Iteration type: " << get_description() << endl;
 		cout << "  SVD Package: " << svd_package->description << endl;
 		os   << "  SVD Package: " << svd_package->description << endl;
 		os   << "    Model calls so far : " << run_manager.get_total_runs() << endl;
 		iteration(run_manager, termination_ctl, false);
+		// write files that get wrtten at the end of each iteration
+		stringstream filename;
+		string complete_filename;
+		// rei file for this iteration
+		filename << "rei" << global_iter_num;
+		complete_filename = file_manager.build_filename(filename.str());
+		OutputFileWriter::write_rei(complete_filename, global_iter_num, 
+			*(cur_solution.get_obj_func_ptr()->get_obs_ptr()), 
+			cur_solution.get_obs(), *(cur_solution.get_obj_func_ptr()),
+			cur_solution.get_ctl_pars());
+		// par file for this iteration
+		filename.str(""); // reset the stringstream
+		filename << "par" << global_iter_num;
+		complete_filename = file_manager.build_filename(filename.str());
+		OutputFileWriter::write_par(complete_filename, cur_solution.get_ctl_pars(), 
+			cur_solution.get_par_tran().get_offset_ptr(),  
+			cur_solution.get_par_tran().get_scale_ptr());
 		if (save_nextjac) {
 			jacobian.save(file_manager.jacobian_filename());
 		}
@@ -105,8 +124,13 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 		{
 			optimum_run = cur_solution;
 			// save new optimum parameters to .par file
-			optimum_run.get_ctl_pars().save(file_manager.par_filename(), optimum_run.get_par_tran().get_offset_ptr(), 
+			OutputFileWriter::write_par(file_manager.par_filename(), optimum_run.get_ctl_pars(), optimum_run.get_par_tran().get_offset_ptr(), 
 				optimum_run.get_par_tran().get_scale_ptr());
+			// save new optimum residuals to .rei file
+			OutputFileWriter::write_rei(file_manager.build_filename("rei"), global_iter_num, 
+			*(optimum_run.get_obj_func_ptr()->get_obs_ptr()), 
+			optimum_run.get_obs(), *(optimum_run.get_obj_func_ptr()),
+			optimum_run.get_ctl_pars());
 			jacobian.save(file_manager.jacobian_filename());
 			// jacobian calculated next iteration will be at the current parameters and
 			// will be more accurate than the one caluculated at the begining of this iteration

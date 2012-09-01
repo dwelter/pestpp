@@ -36,6 +36,7 @@
 #include "RunManagerGenie.h"
 #include "RunManagerSerial.h"
 #include "SVD_PROPACK.h"
+#include "OutputFileWriter.h"
 
 using namespace std;
 using namespace pest_utils;
@@ -135,8 +136,13 @@ int main(int argc, char* argv[])
 		run_manager_ptr->run();
 		run_manager_ptr->get_run(optimum_run, 0, RunManagerAbstract::FORCE_PAR_UPDATE);
 		// save parameters to .par file
-		optimum_run.get_ctl_pars().save(file_manager.par_filename(), optimum_run.get_par_tran().get_offset_ptr(), 
+		OutputFileWriter::write_par(file_manager.par_filename(), optimum_run.get_ctl_pars(), optimum_run.get_par_tran().get_offset_ptr(), 
 			optimum_run.get_par_tran().get_scale_ptr());
+		// save new residuals to .rei file
+		OutputFileWriter::write_rei(file_manager.build_filename("rei"), 0, 
+			*(optimum_run.get_obj_func_ptr()->get_obs_ptr()), 
+			optimum_run.get_obs(), *(optimum_run.get_obj_func_ptr()),
+			optimum_run.get_ctl_pars());
 		run_manager_ptr->free_memory();
 	}
 

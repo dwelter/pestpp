@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "MorrisMethod.h"
-
+#include "Transformable.h"
 #include <Eigen/Dense>
 
 using namespace std;
@@ -114,6 +114,20 @@ VectorXd MorrisMethod::create_x_vec(int k)
 int MorrisMethod::rand_plus_minus_1(void)
 {
 	return (rand() % 2 * 2) - 1 ;
+}
+
+
+Parameters MorrisMethod::get_ctl_parameters(const MatrixXd &b_mat, int row,
+		const vector<string> &par_name_vec, const Parameters &lower_bnd, 
+		const Parameters &upper_bnd)
+{
+	Parameters ctl_pars;
+	vector<string>::const_iterator b=par_name_vec.begin();
+	vector<string>::const_iterator e=par_name_vec.end();
+	for(
+
+	return ctl_pars;
+
 }
 
 MorrisMethod::~MorrisMethod(void)

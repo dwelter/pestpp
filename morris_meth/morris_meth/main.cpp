@@ -92,6 +92,12 @@ int main(int argc, char* argv[])
 
 	b_star_mat = morris.create_P_star_mat(ctl_par.size()); 
 	cout << b_star_mat << endl << endl;
+	// make model runs
+	ParamTransformSeq ctl2model_tran = pest_scenario.get_base_par_tran_seq();
+	Parameters model_pars = ctl2model_tran.ctl2model_cp(ctl_par);
+	//run_manager_ptr->allocate_memory(model_pars, pest_scenario.get_ctl_observations(), b_star_mat.rows());
+	//run_manager_ptr->add_run(ctl2model_tran.ctl2model_cp(ctl_par));
+
 
 	cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
 	char buf[256];

@@ -22,10 +22,8 @@
 #include <list>
 #include <utility>
 #include "pest_data_structs.h"
-
-class Observations;
-class Parameters;
-class PriorInformation;
+#include "Pest.h"
+#include "Transformable.h"
 class LaVectorDouble;
 
 using namespace std;
@@ -51,6 +49,9 @@ public:
 	PhiComponets phi_report(ostream &os, const Observations &sim_obs, const Parameters &pars, double tikhonov_weight=1.0) const;
 	PhiComponets full_report(ostream &os, const Observations &sim_obs, const Parameters &pars, double tikhonov_weight=1.0) const;
 	vector<double> get_residuals_vec(const Observations &sim_obs, const Parameters &pars, const vector<string> &obs_names) const;
+	const Observations* get_obs_ptr() const;
+	const ObservationInfo* get_obs_info_ptr() const;
+	const PriorInformation* get_prior_info_ptr() const;
 	~ObjectiveFunc(void) {}
 private:
 	const Observations *observations_ptr;

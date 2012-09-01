@@ -201,34 +201,3 @@ ostream& operator<<(ostream& out, const Transformable &rhs)
 }
 
 
-void Parameters::save(const string &filename, const TranOffset *ctl_tran_offset, const TranScale *ctl_tran_scale)
-{
-	ofstream fout;
-	const string *name_ptr;
-	Parameters::const_iterator it;
-	pair<bool, double> val_pair;
-	double scale, offset;
-
-	fout.open(filename.c_str());
-	fout.unsetf(ios::floatfield);
-	fout.precision(15);
-	fout << "single point" << endl;
-	for(Parameters::const_iterator b=begin(), e=end();
-		b!=e; ++b)
-	{
-		name_ptr = &(*b).first;
-		val_pair = ctl_tran_offset->get_value(*name_ptr);
-		if (val_pair.first == true)
-			offset = val_pair.second;
-		else
-			offset = 0.0;
-		val_pair = ctl_tran_scale->get_value(*name_ptr);
-		if (val_pair.first == true)
-			scale = val_pair.second;
-		else
-			scale = 1.0;
-
-		fout << setw(14) << *name_ptr << setw(22) 
-		<<  showpoint<< (*b).second << " " << setw(20) << showpoint << scale << " " << setw(20) << showpoint << offset << endl;
-	}
-}

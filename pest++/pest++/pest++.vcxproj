@@ -252,6 +252,7 @@
     <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="Jacobian.cpp" />
     <ClCompile Include="lapack_tools.cpp" />
+    <ClCompile Include="OutputFileWriter.cpp" />
     <ClCompile Include="SVD_PROPACK.cpp" />
     <ClCompile Include="ModelRunPP.cpp" />
     <ClCompile Include="ObjectiveFunc.cpp" />
@@ -279,6 +280,7 @@
     <ClInclude Include="FileManager.h" />
     <ClInclude Include="Jacobian.h" />
     <ClInclude Include="lapack_tools.h" />
+    <ClInclude Include="OutputFileWriter.h" />
     <ClInclude Include="SVD_PROPACK.h" />
     <ClInclude Include="ModelRunPP.h" />
     <ClInclude Include="ObjectiveFunc.h" />

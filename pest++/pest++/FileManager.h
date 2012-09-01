@@ -32,6 +32,7 @@ public:
 	FileManager(const string &_base_filename, const string &_directory="");
 	string ctl_filename() {return build_filename("pst");}
 	string par_filename() {return build_filename("par");}
+	string build_filename(const string &ext);
 	string jacobian_filename() {return build_filename("jco");}
 	string iteration_jacobian_filename() {return build_filename("jci");}
 	const string &get_analytic_derivative_filename(){return analytic_derivative_filename;}
@@ -40,7 +41,6 @@ public:
 	~FileManager(void);
 private:
 	string analytic_derivative_filename;
-	string build_filename(const string &ext);
 	string directory;
 	string pest_base_filename;
 	ofstream f_rec;
