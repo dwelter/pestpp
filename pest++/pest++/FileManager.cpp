@@ -18,6 +18,7 @@
 */
 #include "FileManager.h"
 #include "utilities.h"
+#include "OutputFileWriter.h"
 
 using namespace pest_utils;
 
@@ -26,12 +27,16 @@ FileManager::FileManager(const string &_base_filename, const string &_directory)
 {
 	string rec_filename = build_filename("rec");
 	f_rec.open(rec_filename.c_str());
+	string sen_filename = build_filename("sen");
+	f_sen.open(sen_filename.c_str());
+	OutputFileWriter::write_sen_header(f_sen, pest_base_filename);
 }
 
 
 FileManager::~FileManager(void)
 {
 	f_rec.close();
+	f_sen.close();
 }
 
 string FileManager::build_filename(const string &ext)

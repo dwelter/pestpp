@@ -136,8 +136,8 @@ int main(int argc, char* argv[])
 		run_manager_ptr->run();
 		run_manager_ptr->get_run(optimum_run, 0, RunManagerAbstract::FORCE_PAR_UPDATE);
 		// save parameters to .par file
-		OutputFileWriter::write_par(file_manager.par_filename(), optimum_run.get_ctl_pars(), optimum_run.get_par_tran().get_offset_ptr(), 
-			optimum_run.get_par_tran().get_scale_ptr());
+		OutputFileWriter::write_par(file_manager.par_filename(), optimum_run.get_ctl_pars(), *(optimum_run.get_par_tran().get_offset_ptr()), 
+			*(optimum_run.get_par_tran().get_scale_ptr()));
 		// save new residuals to .rei file
 		OutputFileWriter::write_rei(file_manager.build_filename("rei"), 0, 
 			*(optimum_run.get_obj_func_ptr()->get_obs_ptr()), 
@@ -166,7 +166,6 @@ int main(int argc, char* argv[])
 				&pest_scenario.get_ctl_observation_info(),  file_manager, &pest_scenario.get_ctl_observations(), &obj_func,
 				trans_svda, &pest_scenario.get_prior_info(), *super_jacobian_ptr, pest_scenario.get_regul_scheme_ptr());
 			super_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
-			cout << endl;
 			cur_run = &(super_svd.solve(*run_manager_ptr, termination_ctl, n_super_iter, cur_ctl_parameters, optimum_run));
 			cur_ctl_parameters = super_svd.cur_model_run().get_ctl_pars();
 		}
@@ -175,6 +174,7 @@ int main(int argc, char* argv[])
 			cout << "WARNING: super parameter run failed.  Switching to base parameters" << endl;
 		}
 	}
+	cout << endl;
 	cout << "FINAL OPTIMISATION RESULTS" << endl << endl;
 	fout_rec << "FINAL OPTIMISATION RESULTS" << endl << endl;
 	optimum_run.full_report(cout);

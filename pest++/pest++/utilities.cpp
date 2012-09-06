@@ -227,6 +227,19 @@ void copyfile(const string &from_file, const string &to_file)
     dest.close();
 }
 
+template <class keyType, class dataType>
+vector<keyType> get_map_keys(const map<keyType,dataType> &my_map)
+{
+	vector<keyType> keys;
+	for(map<keyType, dataType>::const_iterator b=my_map.begin(), e=my_map.end();
+		b!=e; ++b)
+	{
+		keys.push_back((*b).first);
+	}
+	return keys;
+}
+
+template vector<string> get_map_keys(const map<string, map<string, double>> &my_map);
 
 } // end of namespace pest_utils
 

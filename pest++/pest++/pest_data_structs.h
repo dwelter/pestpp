@@ -59,15 +59,16 @@ ostream& operator<< (ostream &os, const SVDInfo& val);
 
 class ParameterGroupRec {
 public:
+	string name;
 	string inctyp;
 	double derinc;
 	double derinclb;
 	string forcen;
 	double derincmul;
 	string dermthd;
-	ParameterGroupRec(const string &_inctyp="", double _derinc=0.0, double _derinclb=0.0, 
+	ParameterGroupRec(const string &_name="", const string &_inctyp="", double _derinc=0.0, double _derinclb=0.0, 
 		const string &_forcen="", double _derincmul=0.0, 
-		const string &_dermthd="") : inctyp(_inctyp), derinc(_derinc), derinclb(_derinclb), forcen(_forcen),
+		const string &_dermthd="") : name(_name), inctyp(_inctyp), derinc(_derinc), derinclb(_derinclb), forcen(_forcen),
 			derincmul(_derincmul), dermthd(_dermthd) {}
 	ParameterGroupRec(const ParameterGroupRec &rhs) {*this=rhs;}
 	ParameterGroupRec& operator=(const ParameterGroupRec &rhs);
@@ -100,6 +101,7 @@ public:
 	*/
 	void insert_parameter_link(const string &parameter_name, const string & group_name);
 	const ParameterGroupRec* get_group_rec_ptr(const string &par_name) const;
+	string get_group_name(const string &par_name) const;
 	const ParameterGroupInfo& operator=(const ParameterGroupInfo &rhs);
 	~ParameterGroupInfo();
 private:
@@ -163,6 +165,7 @@ public:
 	unordered_map<string, ObservationGroupRec> groups;
 	unordered_map<string, ObservationRec> observations;
 	double get_weight(const string &obs_name) const;
+	string get_group(const string &obs_name) const;
 	const ObservationRec* get_observation_rec_ptr(const string &name) const;
 	const ObservationGroupRec* get_group_rec_ptr(const string &name) const;
 	Observations get_regulatization_obs(const Observations &obs_in);

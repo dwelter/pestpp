@@ -38,6 +38,7 @@ public:
 	double tikhonov_weight);
 	LaGenMatDouble operator*(const LaGenMatDouble &rhs) const;
 	LaGenMatDouble tran_q_mat_mult(const LaGenMatDouble &lhs) const;
+	int num_nonzero() const;
 	~QSqrtMatrix(void);
 
 private:

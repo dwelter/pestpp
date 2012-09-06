@@ -53,7 +53,7 @@ public:
 	virtual const Parameters &get_numeric_pars();
 	virtual Parameters get_ctl_pars();
 	virtual const Parameters &get_model_pars();
-	virtual const Observations &get_obs();
+	virtual const Observations &get_obs() const;
 	virtual Observations get_obs_template() const;
 	virtual const ParamTransformSeq &get_par_tran()  {return par_tran;}
 	const ObjectiveFunc *get_obj_func_ptr()  {return obj_func_ptr;}

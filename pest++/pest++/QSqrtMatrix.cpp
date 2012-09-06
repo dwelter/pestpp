@@ -19,6 +19,8 @@
 #include <utility>
 #include <math.h>
 #include <lapackpp.h>
+#include <algorithm>
+#include <vector>
 #include "QSqrtMatrix.h"
 #include "Transformable.h"
 #include "PriorInformation.h"
@@ -99,6 +101,14 @@ LaGenMatDouble  QSqrtMatrix::tran_q_mat_mult(const LaGenMatDouble &lhs) const
 }
 
 
+bool ne_zero(double v) {return v!=0.0;}
+
+int QSqrtMatrix::num_nonzero() const
+{	
+	int num = (int) count_if(weights.begin(), weights.end(), ne_zero);
+	return num;
+}
+
 LaGenMatDouble operator*(const LaGenMatDouble &lhs, const QSqrtMatrix &rhs)
 {
 	LaGenMatDouble ret_val(lhs);
@@ -111,6 +121,8 @@ LaGenMatDouble operator*(const LaGenMatDouble &lhs, const QSqrtMatrix &rhs)
 	}
 	return ret_val;
 }
+
+
 
 QSqrtMatrix::~QSqrtMatrix(void)
 {

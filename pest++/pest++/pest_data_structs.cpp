@@ -56,6 +56,7 @@ ostream& operator<< (ostream &os, const ControlInfo& val)
 
 ParameterGroupRec& ParameterGroupRec::operator=(const ParameterGroupRec &rhs)
 {
+	name = rhs.name;
 	inctyp = rhs.inctyp;
 	derinc = rhs.derinc;
 	derinclb = rhs.derinclb;
@@ -68,6 +69,7 @@ ParameterGroupRec& ParameterGroupRec::operator=(const ParameterGroupRec &rhs)
 ostream& operator<< (ostream &os, const ParameterGroupRec& val)
 {
 	os << "PEST Parameter Group Information" << endl;
+	os << "    name   = " << val.name << endl;
 	os << "    inctyp = " << val.inctyp << endl;
 	os << "    derinc = " << val.derinc << endl;
 	os << "    derinclb = " << val.derinclb << endl;
@@ -88,6 +90,12 @@ const ParameterGroupRec* ParameterGroupInfo::get_group_rec_ptr(const string &nam
 		ret_val = (*g_iter).second;
 	}
 	return ret_val;
+}
+
+
+string ParameterGroupInfo::get_group_name(const string &par_name) const
+{
+	return get_group_rec_ptr(par_name)->name;
 }
 
 void ParameterGroupInfo::insert_group(const string &group_name, ParameterGroupRec &rec) 
@@ -341,6 +349,11 @@ bool ObservationRec::is_regularization() const
 double ObservationInfo::get_weight(const string &obs_name) const
 {
 	return observations.find(obs_name)->second.weight;
+}
+
+string ObservationInfo::get_group(const string &obs_name) const
+{
+	return observations.find(obs_name)->second.group;
 }
 
 bool ObservationInfo::is_regularization(const string &obs_name) const

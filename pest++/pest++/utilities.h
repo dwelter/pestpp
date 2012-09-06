@@ -11,6 +11,7 @@
 #include <stdexcept>
 #include <sstream>
 #include <vector>
+#include <map>
 #include "pest_error.h"
 
 namespace pest_utils
@@ -151,6 +152,10 @@ namespace pest_utils
 	    Given path the combined path and filname complete_path, return just the pathname.
     */
 	string get_pathname(const string &complete_path);
+
+
+	template <class keyType, class dataType>
+	vector<keyType> get_map_keys(const map<keyType,dataType> &my_map);
 
 class String2CharPtr
 {

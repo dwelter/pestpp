@@ -41,7 +41,8 @@ protected:
 public:
 	Jacobian(FileManager &_file_manager);
 	const vector<string>& parameter_list() const{return base_numeric_par_names;}
-	const vector<string>& observation_list() const{return base_sim_obs_names;}
+	const vector<string>& observation_list() const {return  base_sim_obs_names;}
+	vector<string> obs_and_reg_list() const;
 	const Parameters &get_base_numeric_parameters() const{return base_numeric_parameters;};
 	const Observations &get_base_sim_observations() const {return base_sim_observations;}
 	LaGenMatDouble get_matrix(const vector<string> & par_name_vec, const vector<string> &obs_names) const;
@@ -58,10 +59,10 @@ protected:
 	Parameters base_numeric_parameters;  //values of base parameters used to calculate the jacobian
 	vector< string>  base_sim_obs_names;  //names of base observations used to calculate the jacobian
 	Observations  base_sim_observations;  //values of base observations used to calculate the jacobian
-
 	LaGenMatDouble matrix;
 	map<string, map<string, double>> prior_info_sen;
 	FileManager &file_manager;  // filemanger used to get name of jaobian file
+
 	virtual void calc_derivative(const string &numeric_par_name, int jcol, list<ModelRun> &run_list,  const ParameterGroupInfo &group_info,
 		const ParameterInfo &ctl_par_info, const PriorInformation &prior_info);
 	bool forward_diff(const string &par_name, const Parameters &pest_parameters, 

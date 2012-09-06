@@ -394,9 +394,9 @@ ParameterGroupInfo TranSVD::build_par_group_info(const ParameterGroupInfo &base_
 		derinc_par = base_pg_info.get_group_rec_ptr(base_parameter_names[max_col])->derinc;
 		derinc_sup = derinc_par / (abs(max_val)*Sigma(i_sup));
 		derinc_sup = 0.015;
-		ParameterGroupRec sup_rec("ABSOLUTE", derinc_sup, 0.0, "SWITCH", 2.0, "PARABOLIC");
-		grp_name.str("g_");
-		grp_name << super_parameter_names[i_sup];
+		grp_name.str("");
+		grp_name << "g_" << super_parameter_names[i_sup];
+		ParameterGroupRec sup_rec(grp_name.str(), "ABSOLUTE", derinc_sup, 0.0, "SWITCH", 2.0, "PARABOLIC");
 		//add new group
 		pg_info.insert_group(grp_name.str(), sup_rec);
 		// connect super parameter to new group

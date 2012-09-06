@@ -189,7 +189,7 @@ const Parameters &ModelRun::get_model_pars()
 	return model_pars;
 }
 
-const Observations &ModelRun::get_obs() 
+const Observations &ModelRun::get_obs() const
 {
 	if( !obs_is_valid) {
 		throw PestError("ModelRun::get_obs() - observations is invalid");

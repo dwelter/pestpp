@@ -44,6 +44,15 @@ Jacobian::Jacobian(FileManager &_file_manager) : file_manager(_file_manager)
 Jacobian::~Jacobian() {
 }
 
+
+vector<string> Jacobian::obs_and_reg_list() const
+{
+	vector<string> all_obs = base_sim_obs_names;
+	vector<string> prior_info_obs = get_map_keys(prior_info_sen);
+	all_obs.insert(all_obs.end(), prior_info_obs.begin(), prior_info_obs.end());
+	return all_obs;
+}
+
 unordered_map<string, int> Jacobian::get_par2col_map() const
 {
 	unordered_map<string, int> par2col_map;
@@ -158,7 +167,7 @@ void Jacobian::calculate(ModelRun &init_model_run, vector<string> numeric_par_na
 	Parameters model_parameters = init_model_run.get_model_pars();
 	Parameters numeric_parameters = init_model_run.get_numeric_pars();
 	Observations observations = init_model_run.get_obs_template();
-
+	base_numeric_parameters = init_model_run.get_numeric_pars();
 
 	// compute runs for to jacobain calculation as it is influenced by derivative type( forward or central)
 	vector<JacobianRun> del_numeric_par_vec;

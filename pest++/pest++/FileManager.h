@@ -38,12 +38,14 @@ public:
 	const string &get_analytic_derivative_filename(){return analytic_derivative_filename;}
 	void set_analytic_derivative_filename(const string &name) {analytic_derivative_filename = name;}
 	ofstream &rec_ofstream () {return f_rec;}
+	ofstream &sen_ofstream () {return f_sen;}
 	~FileManager(void);
 private:
 	string analytic_derivative_filename;
 	string directory;
 	string pest_base_filename;
 	ofstream f_rec;
+	ofstream f_sen;
 };
 
 #endif /* FILEMANAGER_H_ */

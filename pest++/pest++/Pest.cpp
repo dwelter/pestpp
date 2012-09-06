@@ -202,6 +202,7 @@ int Pest::process_ctl_file(const string &filename, FileManager &file_manager)
 		{
 			ParameterGroupRec pgi;
 			name = tokens[0];
+			pgi.name = name;
 			convert_ip(tokens[1], pgi.inctyp);
 			convert_ip(tokens[2], pgi.derinc);
 			convert_ip(tokens[3], pgi.derinclb);
