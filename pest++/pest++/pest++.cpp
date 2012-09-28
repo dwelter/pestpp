@@ -126,6 +126,12 @@ int main(int argc, char* argv[])
 			pest_scenario.get_control_info().nrelpar);
 
 	Parameters cur_ctl_parameters = pest_scenario.get_ctl_parameters();
+	//strat junk
+	//char *serial = cur_ctl_parameters.serialize();
+	//Parameters junk;
+	//junk.unserialize(serial);
+	//end junk
+
 	ModelRun optimum_run(&obj_func, base_trans_seq, pest_scenario.get_ctl_observations());
 	// if noptmax=0 make one run with the intital parameters
 	if (pest_scenario.get_control_info().noptmax == 0) {

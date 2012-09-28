@@ -73,6 +73,7 @@ public:
 	void update_rec(const string &name, double value);
 	const_iterator find(const string &name) const;
 	size_t size() const {return items.size();}
+	void clear() {items.clear();}
 
 	vector<string> get_keys() const;
 	Transformable::iterator begin(){return items.begin();}
@@ -81,6 +82,8 @@ public:
 	Transformable::const_iterator end() const {return items.end();}
 	vector<double> get_vector(const vector<string> &keys) const;
 	void add_upgrade(const vector<string> &keys, const LaVectorDouble &del_values);
+	char* serialize() const;
+	void unserialize(const char *);
 	virtual ~Transformable(){}
 protected:
 	unordered_map<string, double> items;
