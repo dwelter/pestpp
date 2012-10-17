@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pest++", "pest++\pest++.vcxproj", "{38231990-B7FE-469D-9DCD-C588D81163E3}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C99FF120-0C40-4ACB-A3D8-A7E86E90EC0B} = {C99FF120-0C40-4ACB-A3D8-A7E86E90EC0B}

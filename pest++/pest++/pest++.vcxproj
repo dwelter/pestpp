@@ -101,7 +101,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>$(IFORT_COMPILER12)\Composer XE 2011 SP1\mkl\lib\ia32;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\Users\dwelter\Documents\Visual Studio 2010\Projects\yam\yam;$(IncludePath)</IncludePath>
+    <IncludePath>$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -131,7 +131,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CompileAsManaged>false</CompileAsManaged>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>..\..\lapackpp-2.5.4\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\yam;..\..\lapackpp-2.5.4\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
@@ -260,6 +260,9 @@
     <ClCompile Include="Jacobian.cpp" />
     <ClCompile Include="lapack_tools.cpp" />
     <ClCompile Include="OutputFileWriter.cpp" />
+    <ClCompile Include="RunManagerYAM.cpp" />
+    <ClCompile Include="RunStorage.cpp" />
+    <ClCompile Include="Serializeation.cpp" />
     <ClCompile Include="SVD_PROPACK.cpp" />
     <ClCompile Include="ModelRunPP.cpp" />
     <ClCompile Include="ObjectiveFunc.cpp" />
@@ -282,12 +285,16 @@
     <ClCompile Include="Transformable.cpp" />
     <ClCompile Include="Transformation.cpp" />
     <ClCompile Include="utilities.cpp" />
+    <ClCompile Include="YamSlave.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FileManager.h" />
     <ClInclude Include="Jacobian.h" />
     <ClInclude Include="lapack_tools.h" />
     <ClInclude Include="OutputFileWriter.h" />
+    <ClInclude Include="RunManagerYAM.h" />
+    <ClInclude Include="RunStorage.h" />
+    <ClInclude Include="Serialization.h" />
     <ClInclude Include="SVD_PROPACK.h" />
     <ClInclude Include="ModelRunPP.h" />
     <ClInclude Include="ObjectiveFunc.h" />
@@ -311,6 +318,7 @@
     <ClInclude Include="Transformable.h" />
     <ClInclude Include="Transformation.h" />
     <ClInclude Include="utilities.h" />
+    <ClInclude Include="YamSlave.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\lapackpp-2.5.4\lapackpp.vcxproj">

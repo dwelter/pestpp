@@ -37,9 +37,9 @@ public:
 	RunManagerGenie(const ModelExecInfo &_mode_exec_info, const std::string &_host, const std::string &_id="PPEST");
 	virtual void allocate_memory(const Parameters &pars, const Observations &obs, int _nruns);
 	virtual void free_memory();
-	virtual void add_run(const Parameters &model_pars);
+	virtual int add_run(const Parameters &model_pars);
 	virtual void run();
-	virtual void get_run(ModelRun &model_run, int run_num, PAR_UPDATE update_type=DEFAULT_PAR_UPDATE) const;
+	virtual void get_run(ModelRun &model_run, int run_num, PAR_UPDATE update_type=DEFAULT_PAR_UPDATE);
 	virtual Parameters get_model_parameters(int run_num) const;
 	virtual ~RunManagerGenie(void);
 protected:

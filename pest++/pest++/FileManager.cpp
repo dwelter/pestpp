@@ -25,21 +25,61 @@ using namespace pest_utils;
 FileManager::FileManager(const string &_base_filename, const string &_directory)
 	: pest_base_filename(strip_cp(_base_filename)), directory(strip_cp(_directory))
 {
-	string rec_filename = build_filename("rec");
-	f_rec.open(rec_filename.c_str());
-	string sen_filename = build_filename("sen");
-	f_sen.open(sen_filename.c_str());
+	ofstream &f_rec = open_file("rec");
+	ofstream &f_sen = open_file("sen");
 	OutputFileWriter::write_sen_header(f_sen, pest_base_filename);
 }
 
 
 FileManager::~FileManager(void)
 {
-	f_rec.close();
-	f_sen.close();
+	for (auto &i : file_map)
+	{
+		if(i.second.is_open()) i.second.close();
+	}
 }
 
 string FileManager::build_filename(const string &ext)
 {
 	return directory + "\\" + pest_base_filename +"." + strip_cp(ext);
+}
+
+ofstream &FileManager::open_file(const string &extension)
+{
+	string filename = build_filename(extension);
+	pair<map<string ,ofstream>::iterator, bool> ret;
+	ret = file_map.insert(pair<string, ofstream>(extension, ofstream()));
+	ofstream &f_new = ret.first->second;
+	if (ret.second != false  && !f_new.is_open())
+	{
+		f_new.open(filename);
+	}
+	if (!f_new.good())
+	{
+		throw PestFileError(filename);
+	}
+	return f_new;
+}
+
+ofstream &FileManager::get_ofstream(const string &extension)
+{
+	map<string, ofstream>::iterator it;
+	it = file_map.find(extension);
+	// need to add error checking
+	if (it == file_map.end())
+	{
+		string filename = build_filename(extension);
+		throw PestFileErrorAccess(filename);
+	}
+	return it->second;
+}
+
+ofstream &FileManager::rec_ofstream()
+{
+	return get_ofstream("rec");
+}
+
+ofstream &FileManager::sen_ofstream()
+{
+	return get_ofstream("sen");
 }

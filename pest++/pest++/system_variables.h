@@ -20,6 +20,7 @@
 #define SYSTEM_VARIABLES_H_
 
 #include <string>
+#include <direct.h>
 
 class OperSys
 {
@@ -27,6 +28,13 @@ public:
 	const static std::string DIR_SEP;
 	const static std::string COMMAND_LINE_APPEND;
 	void string2pathname(std::string &s);
+	static std::string getcwd()
+	{
+		char *buffer;
+		buffer = _getcwd( NULL, 0 );
+		std::string cwd(buffer);
+		return cwd;
+	}
 };
 
 #endif /* SYSTEM_VARIABLES_H_ */

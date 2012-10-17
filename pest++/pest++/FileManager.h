@@ -23,6 +23,7 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <map>
 
 using namespace std;
 
@@ -37,15 +38,16 @@ public:
 	string iteration_jacobian_filename() {return build_filename("jci");}
 	const string &get_analytic_derivative_filename(){return analytic_derivative_filename;}
 	void set_analytic_derivative_filename(const string &name) {analytic_derivative_filename = name;}
-	ofstream &rec_ofstream () {return f_rec;}
-	ofstream &sen_ofstream () {return f_sen;}
+	ofstream &rec_ofstream();
+	ofstream &sen_ofstream();
+	ofstream &open_file(const string &extension);
+	ofstream &get_ofstream(const string &extension);
 	~FileManager(void);
 private:
 	string analytic_derivative_filename;
 	string directory;
 	string pest_base_filename;
-	ofstream f_rec;
-	ofstream f_sen;
+	map<string, ofstream> file_map;
 };
 
 #endif /* FILEMANAGER_H_ */

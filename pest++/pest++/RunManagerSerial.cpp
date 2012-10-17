@@ -130,7 +130,7 @@ void RunManagerSerial::allocate_memory(const Parameters &model_pars, const Obser
 }
 
 
-void RunManagerSerial::add_run(const Parameters &model_pars)
+int RunManagerSerial::add_run(const Parameters &model_pars)
 {
 	int i_run = nruns;
 	nruns++;
@@ -142,6 +142,7 @@ void RunManagerSerial::add_run(const Parameters &model_pars)
 		name = &(par_name_vec[i]);
 		pval.push_back (model_pars.get_rec(*name));
 	}
+    return i_run;
 }
 
 
@@ -212,7 +213,7 @@ void RunManagerSerial::run()
 
 
 
-void RunManagerSerial::get_run(ModelRun &model_run, int run_num, PAR_UPDATE update_type) const
+void RunManagerSerial::get_run(ModelRun &model_run, int run_num, PAR_UPDATE update_type)
 {
 	const string *name;
 	if (failed_runs.count(run_num) > 0)

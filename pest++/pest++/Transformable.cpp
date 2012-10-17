@@ -17,6 +17,8 @@
     along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
 
+#include <winsock2.h>
+#include <ws2tcpip.h>
 #include <ostream>
 #include <string>
 #include <sstream>
@@ -39,7 +41,7 @@ using std::ostream;
 using std::endl;
 using namespace pest_utils;
 
-const double Transformable::NO_DATA = -9.99E99;
+const double Transformable::no_data = -9.99E99;
 
 Transformable::Transformable(const Transformable &copyin) : items(copyin.items)
 {
@@ -206,65 +208,4 @@ ostream& operator<<(ostream& out, const Transformable &rhs)
 	return out;
 }
 
-char* Transformable::serialize() const
-{
-	char *buf;
-	unsigned long buf_sz = 0;
-	unsigned long names_buf_sz = 0;;
-	unsigned long data_buf_sz = 0;
-	// calculate buffer size
- 	for(auto b : *this) 
-	{
-		names_buf_sz += b.first.size() + 1;
-	}
-	data_buf_sz = sizeof(double)*items.size();
-	buf_sz = sizeof(unsigned long) + names_buf_sz + sizeof(unsigned long) + data_buf_sz;
-	// allocate space
-	buf = new char[buf_sz];
-	// build string with space deliminated names and array of numbers
-	stringstream names;
-	vector<double> values;
-	for (auto b : *this)
-	{
-		names << " " << (b.first);
-		values.push_back(b.second);
-	}
-	unsigned long n_rec = values.size();
-	//write information to buffer
-	size_t i_start = 0;
-	w_memcpy_s(buf, buf_sz-i_start, &names_buf_sz, sizeof(names_buf_sz));
-	i_start += sizeof(names_buf_sz);
-	w_memcpy_s(buf+i_start, buf_sz-i_start, names.str().c_str(), names_buf_sz);
-	i_start +=names_buf_sz;
-	w_memcpy_s(buf+i_start, buf_sz-i_start, &n_rec, sizeof(n_rec));
-	i_start +=sizeof(n_rec);
-	w_memcpy_s(buf+i_start, buf_sz-i_start, &values[0], data_buf_sz);
-	return buf;
-}
 
-void Transformable::unserialize(const char *buf)
-{
-	// delete all existing items
-	clear();
-	unsigned long names_arg_sz;
-	unsigned long n_rec;
-	size_t i_start = 0;
-	// get size of names record
-	i_start = 0;
-	w_memcpy_s(&names_arg_sz, sizeof(names_arg_sz), buf+i_start, sizeof(names_arg_sz));
-	i_start += sizeof(names_arg_sz);
-	unique_ptr<char[]> names_buf(new char[names_arg_sz]);
-	w_memcpy_s(names_buf.get(), sizeof(char)*names_arg_sz, buf+i_start, sizeof(char)*names_arg_sz);
-	i_start += sizeof(char)*names_arg_sz;
-	w_memcpy_s(&n_rec, sizeof(n_rec), buf+i_start, sizeof(n_rec));
-	i_start += sizeof(n_rec);
-	// build transformable data set
-	double *value_ptr = (double *) (buf+i_start);
-	vector<string> names_vec;
-	tokenize(strip_cp(string(names_buf.get(), names_arg_sz)), names_vec);
-	assert(names_vec.size() == n_rec);
-	for (unsigned long i=0; i< n_rec; ++i)
-	{
-		insert(names_vec[i], *(value_ptr+i));
-	}
-}
