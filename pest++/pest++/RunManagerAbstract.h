@@ -34,9 +34,9 @@ public:
 	RunManagerAbstract::RunManagerAbstract(const ModelExecInfo &_mode_exec_info);
 	virtual void allocate_memory(const Parameters &pars, const Observations &obs, int _nruns) = 0;
 	virtual void free_memory() = 0;
-	virtual void add_run(const Parameters &model_pars) = 0;
+	virtual int add_run(const Parameters &model_pars) = 0;
 	virtual void run() = 0;
-	virtual void get_run(ModelRun &model_run, int run_num, PAR_UPDATE update_type=DEFAULT_PAR_UPDATE) const = 0;
+	virtual void get_run(ModelRun &model_run, int run_num, PAR_UPDATE update_type=DEFAULT_PAR_UPDATE)  = 0;
 	virtual Parameters get_model_parameters(int run_num) const = 0;
 	virtual Observations get_obs_template(double value = -9999.0) const;
 	virtual int get_total_runs(void) const {return total_runs;}

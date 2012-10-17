@@ -105,17 +105,17 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 		string complete_filename;
 		// rei file for this iteration
 		filename << "rei" << global_iter_num;
-		complete_filename = file_manager.build_filename(filename.str());
-		OutputFileWriter::write_rei(complete_filename, global_iter_num, 
+		OutputFileWriter::write_rei(file_manager.open_ofile_ext(filename.str()), global_iter_num, 
 			*(cur_solution.get_obj_func_ptr()->get_obs_ptr()), 
 			cur_solution.get_obs(), *(cur_solution.get_obj_func_ptr()),
 			cur_solution.get_ctl_pars());
+		file_manager.close_file(filename.str());
 		// par file for this iteration
 		filename.str(""); // reset the stringstream
 		filename << "par" << global_iter_num;
-		complete_filename = file_manager.build_filename(filename.str());
-		OutputFileWriter::write_par(complete_filename, cur_solution.get_ctl_pars(), *(cur_solution.get_par_tran().get_offset_ptr()), 
+		OutputFileWriter::write_par(file_manager.open_ofile_ext(filename.str()), cur_solution.get_ctl_pars(), *(cur_solution.get_par_tran().get_offset_ptr()), 
 				*(cur_solution.get_par_tran().get_scale_ptr()));
+		file_manager.close_file(filename.str());
 		// sen file for this iteration
 		OutputFileWriter::append_sen(file_manager.sen_ofstream(), global_iter_num, jacobian, *(cur_solution.get_obj_func_ptr()), *par_group_info_ptr);
 		if (save_nextjac) {
@@ -125,13 +125,15 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 		{
 			optimum_run = cur_solution;
 			// save new optimum parameters to .par file
-			OutputFileWriter::write_par(file_manager.par_filename(), optimum_run.get_ctl_pars(), *(optimum_run.get_par_tran().get_offset_ptr()), 
+			OutputFileWriter::write_par(file_manager.open_ofile_ext("par"), optimum_run.get_ctl_pars(), *(optimum_run.get_par_tran().get_offset_ptr()), 
 				*(optimum_run.get_par_tran().get_scale_ptr()));
+			file_manager.close_file("par");
 			// save new optimum residuals to .rei file
-			OutputFileWriter::write_rei(file_manager.build_filename("rei"), global_iter_num, 
+			OutputFileWriter::write_rei(file_manager.open_ofile_ext("rei"), global_iter_num, 
 			*(optimum_run.get_obj_func_ptr()->get_obs_ptr()), 
 			optimum_run.get_obs(), *(optimum_run.get_obj_func_ptr()),
 			optimum_run.get_ctl_pars());
+			file_manager.close_file("rei");
 			jacobian.save(file_manager.jacobian_filename());
 			// jacobian calculated next iteration will be at the current parameters and
 			// will be more accurate than the one caluculated at the begining of this iteration

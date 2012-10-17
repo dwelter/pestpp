@@ -65,6 +65,21 @@ private:
 	string filename;
 };
 
+class PestFileErrorAccess : public PestError {
+public:
+	PestFileErrorAccess(const string &_filename, const string &_message="")
+		: PestError(_message) , filename(_filename){
+		message = string("PestFileError:  Error accessing file: \"") + filename + "\"" + message;
+	}
+	virtual ~PestFileErrorAccess() throw () {};
+	virtual const char* what() const throw()
+	{
+		return message.c_str();
+	}
+private:
+	string filename;
+};
+
 class PestParsingError : public PestError {
 public:
 	PestParsingError(const string &_line, const string &_message="")

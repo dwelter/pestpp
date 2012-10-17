@@ -533,8 +533,7 @@ int Jacobian::size_prior_info_sen() const
 
 void Jacobian::save(const string &filename) const
 {
-	ofstream fout;
-	fout.open(filename.c_str(), ofstream::binary);
+	ofstream &fout = file_manager.open_ofile_ext("jco", ofstream::binary);
 
 	int n_par = base_numeric_par_names.size();
 	int n_standard_obs = base_sim_obs_names.size();
@@ -614,7 +613,7 @@ void Jacobian::save(const string &filename) const
 		string_to_fortran_char((*b).first, obs_name, 20);
 		fout.write(obs_name, 20);
 	}
-	fout.close();
+	file_manager.close_file("jco");
 }
 
 

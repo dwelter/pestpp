@@ -196,7 +196,7 @@ Parameters ParameterInfo::get_low_bnd(const vector<string> &keys) const
 			l_bnd.insert(*i, v_ptr->lbnd);
 		}
 		else {
-			l_bnd.insert(*i, Parameters::NO_DATA);
+			l_bnd.insert(*i, Parameters::no_data);
 		}
 	}
 	return l_bnd;
@@ -214,7 +214,7 @@ Parameters ParameterInfo::get_up_bnd(const vector<string> &keys) const
 			u_bnd.insert(*i, v_ptr->ubnd);
 		}
 		else {
-			u_bnd.insert(*i, Parameters::NO_DATA);
+			u_bnd.insert(*i, Parameters::no_data);
 		}
 	}
 	return u_bnd;
@@ -232,7 +232,7 @@ Parameters ParameterInfo::get_init_value(const vector<string> &keys) const
 			init_value.insert(*i, v_ptr->ubnd);
 		}
 		else {
-			init_value.insert(*i, Parameters::NO_DATA);
+			init_value.insert(*i, Parameters::no_data);
 		}
 	}
 	return init_value;
@@ -271,6 +271,9 @@ void PestppOptions::parce_line(const string &line)
 		}
 		else if (key=="GMAN_SOCKET"){
 			gman_socket = value;
+		}
+		else if (key=="VAM_PORT"){
+			vam_port = value;
 		}
 		else if (key=="SVD_PACK"){
 			if(value == "PROPACK") svd_pack = PROPACK;

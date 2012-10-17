@@ -44,3 +44,10 @@ void OperSys::string2pathname(string &s)
 	s = new_s.str();
 }
 
+string OperSys::getcwd()
+{
+	char *buffer;
+	buffer = _getcwd( NULL, 0 );
+	string cwd(buffer);
+	return cwd;
+}

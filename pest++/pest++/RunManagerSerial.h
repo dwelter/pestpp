@@ -28,9 +28,9 @@ public:
 	RunManagerSerial(const ModelExecInfo &_mode_exec_info, const std::string &run_dir);
 	virtual void allocate_memory(const Parameters &pars, const Observations &obs, int _nruns);
 	virtual void free_memory() {pval.clear();}
-	virtual void add_run(const Parameters &model_pars);
+	virtual int add_run(const Parameters &model_pars);
 	virtual void run();
-	virtual void get_run(ModelRun &model_run, int run_num, PAR_UPDATE update_type=DEFAULT_PAR_UPDATE) const;
+	virtual void get_run(ModelRun &model_run, int run_num, PAR_UPDATE update_type=DEFAULT_PAR_UPDATE);
 	virtual Parameters get_model_parameters(int run_num) const;
 	virtual int get_total_runs(void) const {return total_runs;}
 	virtual int get_nruns() {return nruns;}

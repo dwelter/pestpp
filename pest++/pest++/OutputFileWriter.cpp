@@ -32,11 +32,9 @@
 
 using namespace std;
 
-void OutputFileWriter::write_rei(const string &filename, int iter_no, const Observations &obs, const Observations &sim, 
+void OutputFileWriter::write_rei(ofstream &fout, int iter_no, const Observations &obs, const Observations &sim, 
 	const ObjectiveFunc &obj_func, const Parameters &pars)
 {
-	ofstream fout;
-	fout.open(filename);
 	fout << setiosflags(ios::left);
 	fout.unsetf(ios::floatfield);
 	fout.precision(12);
@@ -74,18 +72,15 @@ void OutputFileWriter::write_rei(const string &filename, int iter_no, const Obse
 		<<  " " << showpoint <<  setw(20) << residual
 		<< " " << showpoint << setw(20)  << sqrt(pi_rec_ptr->get_weight()) << endl;	
 	}
-	fout.close();
 }
 
-void OutputFileWriter::write_par(const string &filename, const Parameters &pars, const TranOffset &offset_tran, const TranScale &scale_tran)
+void OutputFileWriter::write_par(ofstream &fout, const Parameters &pars, const TranOffset &offset_tran, const TranScale &scale_tran)
 {
-	ofstream fout;
 	const string *name_ptr;
 	Parameters::const_iterator it;
 	pair<bool, double> val_pair;
 	double scale, offset;
 
-	fout.open(filename.c_str());
 	fout.unsetf(ios::floatfield);
 	fout.precision(15);
 	fout << "single point" << endl;

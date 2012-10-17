@@ -21,6 +21,8 @@
 
 #include <string>
 #include <iostream>
+#include <fstream>
+
 class Observations;
 class ObjectiveFunc;
 class Parameters;
@@ -33,9 +35,9 @@ class ParameterGroupInfo;
 class OutputFileWriter
 {
 public:
-	static void write_rei(const std::string &filename, int iter_no, const Observations &obs,
+	static void write_rei(std::ofstream &fout, int iter_no, const Observations &obs,
 		const Observations &sim, const ObjectiveFunc &obj_func, const Parameters &pars);
-	static void write_par(const std::string &filename, const Parameters &pars, const TranOffset &offset_tran, const TranScale &scale_tran);
+	static void write_par(std::ofstream &fout, const Parameters &pars, const TranOffset &offset_tran, const TranScale &scale_tran);
 	static void write_sen_header(std::ostream &fout, const std::string &case_name);
 	static void append_sen(std::ostream &fout, int iter_no, const Jacobian &jac, const ObjectiveFunc &obj_func, const ParameterGroupInfo &par_grp_info);
 };

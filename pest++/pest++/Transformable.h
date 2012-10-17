@@ -33,6 +33,8 @@ class LaVectorDouble;
 class ParameterInfo;
 class TranOffset;
 class TranScale;
+class Parameters;
+class Observations;
 
 class Transformable_value_error : public PestError {
 public:
@@ -53,7 +55,7 @@ private:
 
 class Transformable {
 public:
-	static const double NO_DATA;
+	static const double no_data;
 	typedef unordered_map<string, double>::iterator iterator;
 	typedef unordered_map<string, double>::const_iterator const_iterator;
 	Transformable(){};
@@ -82,8 +84,6 @@ public:
 	Transformable::const_iterator end() const {return items.end();}
 	vector<double> get_vector(const vector<string> &keys) const;
 	void add_upgrade(const vector<string> &keys, const LaVectorDouble &del_values);
-	char* serialize() const;
-	void unserialize(const char *);
 	virtual ~Transformable(){}
 protected:
 	unordered_map<string, double> items;

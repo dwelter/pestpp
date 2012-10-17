@@ -83,7 +83,7 @@ void RunManagerGenie::allocate_memory(const Parameters &model_pars, const Observ
 	}
 }
 
-void RunManagerGenie::add_run(const Parameters &model_pars)
+int RunManagerGenie::add_run(const Parameters &model_pars)
 {
 	int i_run = nruns;
 	nruns++;
@@ -96,6 +96,7 @@ void RunManagerGenie::add_run(const Parameters &model_pars)
 		name = &(par_name_vec[i]);
 		pval[i_run*npar+i] = model_pars.get_rec(*name);
 	}
+    return i_run;
 }
 
 void RunManagerGenie::run()
@@ -140,7 +141,7 @@ void RunManagerGenie::run()
 }
 
 
-void RunManagerGenie::get_run(ModelRun &model_run, int run_num, PAR_UPDATE update_type) const
+void RunManagerGenie::get_run(ModelRun &model_run, int run_num, PAR_UPDATE update_type)
 {
 	const string *name;
 	if (failed_runs.count(run_num) > 0)

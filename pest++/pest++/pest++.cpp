@@ -16,8 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
-
-//#include "stdafx.h"
+#include "RunManagerYAM.h" //needs to be first because it includes winsock2.h
 #include <iostream>
 #include <fstream>
 #include "Pest.h"
@@ -29,7 +28,6 @@
 #include <lapackpp.h>
 #include "ModelRunPP.h"
 #include "SVDASolver.h"
-#include "utilities.h"
 #include  "QSqrtMatrix.h"
 #include "FileManager.h"
 #include "TerminationController.h"
@@ -37,6 +35,7 @@
 #include "RunManagerSerial.h"
 #include "SVD_PROPACK.h"
 #include "OutputFileWriter.h"
+#include "YamSlave.h"
 
 using namespace std;
 using namespace pest_utils;
@@ -45,7 +44,7 @@ using namespace pest_utils;
 
 int main(int argc, char* argv[])
 {
-	string version = "1.1.4";
+	string version = "2.0.0";
 	string complete_path;
 	if (argc >=2) {
 		complete_path = argv[1];
@@ -69,7 +68,7 @@ int main(int argc, char* argv[])
 	cout << "using control file: \"" <<  complete_path << "\"" << endl << endl;
 	fout_rec << "Control file = " <<  complete_path  << "\"" << endl << endl;
 
-	// create to pest run and process control file to initialize it initialize
+	// create pest run and process control file to initialize it
 	Pest pest_scenario;
 	pest_scenario.set_defaults();
 	try {
@@ -81,15 +80,35 @@ int main(int argc, char* argv[])
 	}
 	pest_scenario.check_inputs();
 
+	// If this is a YAM Slave start the YAM Slave
+	if (argc >=3) {
+		string socket;
+		YAMSlave yam_slave;
+		yam_slave.init("localhost", "21688",
+		pest_scenario.get_comline_vec(),
+		pest_scenario.get_tplfile_vec(),
+		pest_scenario.get_inpfile_vec(),
+		pest_scenario.get_insfile_vec(),
+		pest_scenario.get_outfile_vec(),
+		pest_scenario.get_ctl_ordered_obs_names());
+	}
+
 	RunManagerAbstract *run_manager_ptr;
-	if (pest_scenario.get_pestpp_options().get_gman_socket().empty())
+	if (!pest_scenario.get_pestpp_options().get_vam_port().empty())
+	{
+			cout << "initializing YAM run manager" << endl;
+    		run_manager_ptr = new RunManagerYAM (pest_scenario.get_model_exec_info(),  pest_scenario.get_pestpp_options().get_vam_port(),
+				file_manager.build_filename("rns"), file_manager.open_ofile_ext("rmr"));
+	}
+	else if (!pest_scenario.get_pestpp_options().get_gman_socket().empty())
+	{
+		cout << "initializing Genie run manager" << endl;
+		run_manager_ptr = new RunManagerGenie (pest_scenario.get_model_exec_info(),  pest_scenario.get_pestpp_options().get_gman_socket());
+	}
+	else
 	{
 		cout << "initializing serial run manager" << endl;
 		run_manager_ptr = new RunManagerSerial(pest_scenario.get_model_exec_info(), pathname);
-	}
-	else {
-		cout << "initializing Genie run manager" << endl;
-		run_manager_ptr = new RunManagerGenie (pest_scenario.get_model_exec_info(),  pest_scenario.get_pestpp_options().get_gman_socket());
 	}
 
 	const ParamTransformSeq &base_trans_seq = pest_scenario.get_base_par_tran_seq();
@@ -142,13 +161,15 @@ int main(int argc, char* argv[])
 		run_manager_ptr->run();
 		run_manager_ptr->get_run(optimum_run, 0, RunManagerAbstract::FORCE_PAR_UPDATE);
 		// save parameters to .par file
-		OutputFileWriter::write_par(file_manager.par_filename(), optimum_run.get_ctl_pars(), *(optimum_run.get_par_tran().get_offset_ptr()), 
+		OutputFileWriter::write_par(file_manager.open_ofile_ext("par"), optimum_run.get_ctl_pars(), *(optimum_run.get_par_tran().get_offset_ptr()), 
 			*(optimum_run.get_par_tran().get_scale_ptr()));
 		// save new residuals to .rei file
-		OutputFileWriter::write_rei(file_manager.build_filename("rei"), 0, 
+		OutputFileWriter::write_rei(file_manager.open_ofile_ext("rei"), 0, 
 			*(optimum_run.get_obj_func_ptr()->get_obs_ptr()), 
 			optimum_run.get_obs(), *(optimum_run.get_obj_func_ptr()),
 			optimum_run.get_ctl_pars());
+		file_manager.close_file("par");
+		file_manager.close_file("rei");
 		run_manager_ptr->free_memory();
 	}
 
