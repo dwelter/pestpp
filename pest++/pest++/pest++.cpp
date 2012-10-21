@@ -36,6 +36,7 @@
 #include "SVD_PROPACK.h"
 #include "OutputFileWriter.h"
 #include "YamSlave.h"
+#include "Serialization.h"
 
 using namespace std;
 using namespace pest_utils;
@@ -46,6 +47,15 @@ int main(int argc, char* argv[])
 {
 	string version = "2.0.0";
 	string complete_path;
+
+	// If this is a YAM Slave start the YAM Slave
+	if (argc >=3) {
+		string socket;
+		YAMSlave yam_slave;
+		yam_slave.start("localhost", "21688");
+		exit(0);
+	}
+
 	if (argc >=2) {
 		complete_path = argv[1];
 	}
@@ -80,24 +90,11 @@ int main(int argc, char* argv[])
 	}
 	pest_scenario.check_inputs();
 
-	// If this is a YAM Slave start the YAM Slave
-	if (argc >=3) {
-		string socket;
-		YAMSlave yam_slave;
-		yam_slave.init("localhost", "21688",
-		pest_scenario.get_comline_vec(),
-		pest_scenario.get_tplfile_vec(),
-		pest_scenario.get_inpfile_vec(),
-		pest_scenario.get_insfile_vec(),
-		pest_scenario.get_outfile_vec(),
-		pest_scenario.get_ctl_ordered_obs_names());
-	}
-
 	RunManagerAbstract *run_manager_ptr;
 	if (!pest_scenario.get_pestpp_options().get_vam_port().empty())
 	{
 			cout << "initializing YAM run manager" << endl;
-    		run_manager_ptr = new RunManagerYAM (pest_scenario.get_model_exec_info(),  pest_scenario.get_pestpp_options().get_vam_port(),
+    		run_manager_ptr = new RunManagerYAM (pest_scenario.get_model_exec_info(), pest_scenario.get_ctl_observations().get_keys(), pest_scenario.get_pestpp_options().get_vam_port(),
 				file_manager.build_filename("rns"), file_manager.open_ofile_ext("rmr"));
 	}
 	else if (!pest_scenario.get_pestpp_options().get_gman_socket().empty())

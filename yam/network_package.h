@@ -9,7 +9,7 @@
 class NetPackage
 {
 public:
-	enum PackType{UNKN, OK, R_OK, READY, RUN_DIR, START_RUN, RUN_FINISH, RUN_FAILED, TERMINATE};
+	enum PackType{UNKN, OK, R_OK, READY, RUN_DIR, REQ_CMD, CMD, START_RUN, RUN_FINISH, RUN_FAILED, TERMINATE};
 	static int get_new_group_id();
 	NetPackage(PackType _type=UNKN, int _group=-1, int _run_id=-1, const std::string &desc="");
 	~NetPackage(){}

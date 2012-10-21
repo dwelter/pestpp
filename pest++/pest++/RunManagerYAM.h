@@ -46,7 +46,7 @@ private:
 class RunManagerYAM : public RunManagerAbstract
 {
 public:
-	RunManagerYAM(const ModelExecInfo &_mode_exec_info, const std::string &port, const std::string &stor_filename, ofstream &_f_rmr);
+	RunManagerYAM(const ModelExecInfo &_mode_exec_info, const std::vector<std::string>& _obs_name_vec, const std::string &port, const std::string &stor_filename, ofstream &_f_rmr);
 	virtual void allocate_memory(const Parameters &pars, const Observations &obs, int _nruns);
 	virtual void free_memory();
 	virtual int add_run(const Parameters &model_pars);

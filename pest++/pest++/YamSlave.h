@@ -41,10 +41,7 @@
 class YAMSlave{
 public:
 	void init_network(const std::string &host, const std::string &port);
-	void init(const std::string &host, const std::string &port, const std::vector<std::string> _comline_vec,
-		const std::vector<std::string> _tplfile_vec, const std::vector<std::string> _inpfile_vec,
-		const std::vector<std::string> _insfile_vec, const std::vector<std::string> _outfile_vec,
-		const std::vector<std::string> obs_name_vec);
+	void start(const std::string &host, const std::string &port);
 	~YAMSlave();
 	void run();
 	void recv_message(NetPackage &net_pack);

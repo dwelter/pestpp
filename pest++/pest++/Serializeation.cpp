@@ -42,9 +42,11 @@ vector<char> Serialization::serialize(unsigned long data)
 	return buf;
 }
 
-unsigned Serialization::unserialize(const vector<char> &buf, unsigned long &data)
+unsigned long Serialization::unserialize(const vector<char> &buf, unsigned long &data, unsigned long start_loc)
 {
-	unsigned long bytes_read = 0;
+	assert(buf.size()-start_loc >= sizeof(data));
+	w_memcpy_s(&data, sizeof(data), &buf[start_loc], sizeof(data));
+	unsigned bytes_read = sizeof(data);
 	return bytes_read;
 }
 
@@ -125,7 +127,23 @@ vector<char> Serialization::serialize(const vector<string> &string_vec)
 	return serial_data;
 }
 
-unsigned Serialization::unserialize(const std::vector<char> &buf, Transformable &tr_data, unsigned ser_data_loc)
+vector<char> Serialization::serialize(const vector<vector<string>*> &string_vec_vec)
+{
+	vector<char> serial_data;
+	unsigned long buf_sz = 0;
+	for (auto &i : string_vec_vec)
+	{
+		vector<char> buf_ser = serialize(*i);
+		buf_sz = buf_ser.size();
+		vector<char> buf_size = serialize(buf_sz);
+		serial_data.insert(serial_data.end(), buf_size.begin(), buf_size.end());
+		serial_data.insert(serial_data.end(), buf_ser.begin(), buf_ser.end());
+	}
+	return serial_data;
+}
+
+
+unsigned long Serialization::unserialize(const std::vector<char> &buf, Transformable &tr_data, unsigned long start_loc)
 {
 	// delete all existing items
 	tr_data.clear();
@@ -134,7 +152,7 @@ unsigned Serialization::unserialize(const std::vector<char> &buf, Transformable 
 	unsigned long bytes_read;
 	size_t i_start = 0;
 	// get size of names record
-	i_start = ser_data_loc;
+	i_start = start_loc;
 	w_memcpy_s(&names_arg_sz, sizeof(names_arg_sz), buf.data()+i_start, sizeof(names_arg_sz));
 	i_start += sizeof(names_arg_sz);
 	unique_ptr<char[]> names_buf(new char[names_arg_sz]);
@@ -155,9 +173,9 @@ unsigned Serialization::unserialize(const std::vector<char> &buf, Transformable 
 	return bytes_read;
 }
 
-unsigned Serialization::unserialize(const std::vector<char> &ser_data, std::vector<Transformable*> &tr_vec)
+unsigned long Serialization::unserialize(const std::vector<char> &ser_data, std::vector<Transformable*> &tr_vec, unsigned long start_loc)
 {
-	unsigned i_tr=0;
+	unsigned i_tr=start_loc;
 	unsigned i_char=0;
 	unsigned long bytes_read = 0;
 	unsigned long total_bytes_read = 0;
@@ -173,23 +191,44 @@ unsigned Serialization::unserialize(const std::vector<char> &ser_data, std::vect
 	return total_bytes_read;
 }
 
-unsigned Serialization::unserialize(const std::vector<char> &data, Parameters &pars, Observations &obs)
+unsigned long Serialization::unserialize(const std::vector<char> &data, Parameters &pars, Observations &obs, unsigned long start_loc)
 {
 	 unsigned total_bytes_read = 0;
 	 vector<Transformable*> tr_vec;
 	 tr_vec.push_back(&pars);
 	 tr_vec.push_back(&obs);
-	 total_bytes_read = unserialize(data, tr_vec);
+	 total_bytes_read = unserialize(data, tr_vec, start_loc);
 	 return total_bytes_read;
 }
 
-static unsigned unserialize(const vector<char> &ser_data, vector<string> &string_vec)
+unsigned long Serialization::unserialize(const vector<char> &ser_data, vector<string> &string_vec, unsigned long start_loc, unsigned long max_read_bytes)
 {
 	unsigned total_bytes_read = 0;
-	string tmp_str(ser_data.begin(), ser_data.end());
+	assert(start_loc < ser_data.size());
+	total_bytes_read = min(ser_data.size()-start_loc, max_read_bytes);
+	string tmp_str(ser_data.begin()+start_loc, ser_data.begin()+start_loc+total_bytes_read);
 	string delm;
 	delm.push_back('\0');
 	strip_ip(tmp_str, "both", delm);
 	tokenize(tmp_str, string_vec, delm);
-	return ser_data.size();
+	return total_bytes_read;
+}
+
+unsigned long Serialization::unserialize(const vector<char> &ser_data, vector<vector<string>> &string_vec_vec)
+{
+	unsigned long bytes_read = 0;
+	unsigned long total_bytes_read = 0;
+	unsigned long vec_size = 0;
+
+	// can recode to increase performance by eliminating repeated copying
+	// but at this point it is not worth the effort
+	while(total_bytes_read < ser_data.size())
+	{
+		bytes_read = unserialize(ser_data, vec_size, total_bytes_read);
+		total_bytes_read += bytes_read;
+		string_vec_vec.push_back(vector<string>());
+		bytes_read =  unserialize(ser_data, string_vec_vec.back(), total_bytes_read, vec_size);
+		total_bytes_read += bytes_read;
+	}
+	return total_bytes_read;
 }

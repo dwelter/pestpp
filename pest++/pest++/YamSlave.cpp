@@ -2,6 +2,7 @@
 #include "utilities.h"
 #include "Serialization.h"
 #include "system_variables.h"
+#include <cassert>
 
 using namespace pest_utils;
 
@@ -58,19 +59,6 @@ void YAMSlave::init_network(const string &host, const string &port)
 	// send run directory to master
 	cout << endl;
 	cout << "connection to master succeeded..." << endl << endl;
-	NetPackage net_pack(NetPackage::RUN_DIR, 0, 0,"");
-	string cwd =  OperSys::getcwd();
-	for (err = -1; err==-1;)
-	{
-		err = send_message(net_pack, cwd.c_str(), cwd.size());
-	}
-	 // Send READY Message to master
-	//NetPackage net_pack(NetPackage::READY, 0, 0,"");
-	//char data;
-	//while (err == -1)
-	//{
-	//	err = send_message(net_pack, &data, 0);
-	//}
 }
 
 
@@ -227,18 +215,9 @@ int YAMSlave::run_model(Parameters &pars, Observations &obs)
 }
 
 
-void YAMSlave::init(const string &host, const string &port, const vector<string> _comline_vec,
-		const vector<string> _tplfile_vec, const vector<string> _inpfile_vec,
-		const vector<string> _insfile_vec, const vector<string> _outfile_vec,
-		const vector<string> _obs_name_vec)
+void YAMSlave::start(const string &host, const string &port)
 {
-	comline_vec = _comline_vec;
-	tplfile_vec = _tplfile_vec;
-	inpfile_vec = _inpfile_vec;
-	insfile_vec = _insfile_vec;
-	outfile_vec = _outfile_vec;
-	obs_name_vec = _obs_name_vec;
-
+	
 	bool terminate = false;
 	NetPackage net_pack;
 	Observations obs;
@@ -247,6 +226,41 @@ void YAMSlave::init(const string &host, const string &port, const vector<string>
 
 	init_network(host, port);
 
+	// Send Master the local run directory.  This information is only used by the master
+	// for reporting purposes
+	net_pack.reset(NetPackage::RUN_DIR, 0, 0,"");
+	string cwd =  OperSys::getcwd();
+	for (int err = -1; err==-1;)
+	{
+		err = send_message(net_pack, cwd.c_str(), cwd.size());
+	}
+	// get tpl, input, ins, outout filename and command lines from master
+	net_pack.reset(NetPackage::REQ_CMD, 0, 0, "");
+	for (int err = -1; err==-1;)
+	{
+		err = send_message(net_pack, cwd.c_str(), cwd.size());
+	}
+	//TODO add error checking
+	{
+		recv_message(net_pack);
+		assert(net_pack.get_type() == NetPackage::CMD);
+		vector<vector<string>> tmp_vec_vec;
+		Serialization::unserialize(net_pack.get_data(), tmp_vec_vec);
+		comline_vec = tmp_vec_vec[0];
+		tplfile_vec = tmp_vec_vec[1];
+		inpfile_vec = tmp_vec_vec[2];
+		insfile_vec = tmp_vec_vec[3];
+		outfile_vec = tmp_vec_vec[4];
+		obs_name_vec= tmp_vec_vec[5];
+	}
+
+	// Send READY Message to master
+	net_pack.reset(NetPackage::READY, 0, 0,"");
+	char data;
+	for (int err = -1; err==-1;)
+	{
+		err = send_message(net_pack, &data, 0);
+	}
 	while (!terminate)
 	{
 		//get message from master
@@ -265,7 +279,17 @@ void YAMSlave::init(const string &host, const string &port, const vector<string>
 			cout << "sending results to master (group id = " << group_id << ", run id = " << run_id << ")" <<endl << endl;
 			serialized_data = Serialization::serialize(pars, obs);
 			net_pack.reset(NetPackage::RUN_FINISH, net_pack.get_groud_id(), net_pack.get_run_id(), "");
-			send_message(net_pack, serialized_data.data(), serialized_data.size());
+			for (int err = -1; err==-1;)
+			{
+				err = send_message(net_pack, serialized_data.data(), serialized_data.size());
+			}
+			// Send READY Message to master
+			net_pack.reset(NetPackage::READY, 0, 0,"");
+			char data;
+			for (int err = -1; err==-1;)
+			{
+				err = send_message(net_pack, &data, 0);
+			}
 		}
 		else if (net_pack.get_type() == NetPackage::TERMINATE)
 		{
@@ -276,7 +300,8 @@ void YAMSlave::init(const string &host, const string &port, const vector<string>
 			cout << "received unsupported messaged type: " << net_pack.get_type() << endl;
 		}
 	}
-	//cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
-	//char buf[256];
-    //gets_s(buf, sizeof(buf));
+	w_close(sockfd);
+	cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
+	char buf[256];
+    gets_s(buf, sizeof(buf));
 }

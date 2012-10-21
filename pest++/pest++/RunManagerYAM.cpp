@@ -45,14 +45,15 @@ YamModelRun::YamModelRun(int _run_id, int _sockfd) : sockfd(_sockfd), run_id(_ru
 {
 }
 
-RunManagerYAM::RunManagerYAM(const ModelExecInfo &_model_exec_info, const string &_port, const string &stor_filename, ofstream &_f_rmr)
+RunManagerYAM::RunManagerYAM(const ModelExecInfo &_model_exec_info, const std::vector<std::string>& _obs_name_vec, const string &_port, const string &stor_filename, ofstream &_f_rmr)
 	: RunManagerAbstract(_model_exec_info), port(_port), file_stor(stor_filename), f_rmr(_f_rmr)
 {
 	w_init();
 	int status;
 	struct addrinfo hints;
 	struct addrinfo *servinfo;
-
+	// clean this up 
+	obs_name_vec = _obs_name_vec;
 	memset(&hints, 0, sizeof hints);
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
@@ -189,7 +190,7 @@ void RunManagerYAM::schedule_runs(int group_id)
 			vector<char> data = file_stor.get_serial_pars(run_id);
 			vector<string> sock_name = w_getnameinfo_vec(sock_fd);
 			f_rmr << "Sending run to: " << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << group_id << ", run id = " << run_id << ")" << endl;
-			net_pack.reset(NetPackage::START_RUN, group_id, run_id, "TEST");
+			net_pack.reset(NetPackage::START_RUN, group_id, run_id, "");
 			err = net_pack.send(sock_fd, &data[0], data.size());
 			active_runs.insert(pair<int, YamModelRun>(run_id, tmp_run));
 			waiting_runs.pop_front();
@@ -219,12 +220,26 @@ void RunManagerYAM::process_message(int i)
 	{
 		string work_dir(net_pack.get_data().data(), net_pack.get_data().size());
 		f_rmr << "New Slave connection from: " << sock_name[0] <<":" <<sock_name[1] << "   working dir: " << work_dir << endl;
-		slave_fd.push_back(i);
+	}
+	else if (net_pack.get_type() == net_pack.REQ_CMD)
+	{
+		net_pack.reset(NetPackage::CMD, 0, 0, "");
+		vector<char> data;
+		vector<vector<string> *> tmp_vec;
+		tmp_vec.push_back(&comline_vec);
+		tmp_vec.push_back(&tplfile_vec);
+		tmp_vec.push_back(&inpfile_vec);
+		tmp_vec.push_back(&insfile_vec);
+		tmp_vec.push_back(&outfile_vec);
+		tmp_vec.push_back(&obs_name_vec);
+
+		data = Serialization::serialize(tmp_vec);
+		err = net_pack.send(i, &data[0], data.size());
 	}
 	else if (net_pack.get_type() == net_pack.READY)
 	{
 		// ready message received from slave and add slave to deque
-		//slave_fd.push_back(i);
+		slave_fd.push_back(i);
 	}
 	else if (net_pack.get_type() == net_pack.RUN_FINISH)
 	{
@@ -241,7 +256,6 @@ void RunManagerYAM::process_message(int i)
 			Serialization::unserialize(net_pack.get_data(), tr_vec);
 			file_stor.update_run(run_id, pars, obs);
 		}
-		slave_fd.push_back(i);
 	}
 	else if (net_pack.get_type() == net_pack.RUN_FAILED)
 	{
@@ -308,6 +322,9 @@ RunManagerYAM::~RunManagerYAM(void)
 	//close sockets and cleanup
 	for(int i = 0; i <= fdmax; i++) {
 		if (FD_ISSET(i, &master)) { // we got one!!
+			NetPackage netpack(NetPackage::TERMINATE, 0, 0,"");
+			char data;
+			netpack.send(i, &data, 0);
 			w_close(i);
 		}
 	}
