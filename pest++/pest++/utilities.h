@@ -119,6 +119,8 @@ namespace pest_utils
 	
 	    All characters in string s are converted to lower case.
     */
+	string upper(char *);
+
 	void lower_ip(string &s);
 
 	/** @brief Convert all the characters in a string to lower case.

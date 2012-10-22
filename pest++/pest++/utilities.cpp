@@ -101,6 +101,13 @@ string upper_cp(const string &s)
 	upper_ip(s2);
 	return s2;
 }
+
+string upper(char *txt)
+{
+	string tmp = txt;
+	upper_ip(tmp);
+	return tmp;
+}
 void lower_ip(string &s)
 {
 	string new_s;

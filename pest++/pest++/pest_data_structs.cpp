@@ -269,12 +269,6 @@ void PestppOptions::parce_line(const string &line)
 		else if (key=="N_ITER_SUPER"){
 			convert_ip(value, n_iter_super); 
 		}
-		else if (key=="GMAN_SOCKET"){
-			gman_socket = value;
-		}
-		else if (key=="VAM_PORT"){
-			vam_port = value;
-		}
 		else if (key=="SVD_PACK"){
 			if(value == "PROPACK") svd_pack = PROPACK;
 		}

@@ -300,7 +300,6 @@ void YAMSlave::start(const string &host, const string &port)
 			cout << "received unsupported messaged type: " << net_pack.get_type() << endl;
 		}
 	}
-	w_close(sockfd);
 	cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
 	char buf[256];
     gets_s(buf, sizeof(buf));

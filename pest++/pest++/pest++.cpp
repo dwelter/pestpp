@@ -47,14 +47,8 @@ int main(int argc, char* argv[])
 {
 	string version = "2.0.0";
 	string complete_path;
-
-	// If this is a YAM Slave start the YAM Slave
-	if (argc >=3) {
-		string socket;
-		YAMSlave yam_slave;
-		yam_slave.start("localhost", "21688");
-		exit(0);
-	}
+	enum class RunManagerType {SERIAL, YAM, GENIE};
+	string socket_str;
 
 	if (argc >=2) {
 		complete_path = argv[1];
@@ -64,6 +58,29 @@ int main(int argc, char* argv[])
 		cerr << "Usage: pest++ pest_ctl_file" << endl << endl;
 		exit(1);
 	}
+
+
+	// This is a YAM Slave, start PEST++ as a YAM Slave
+	if (argc >=3 && upper(argv[1]) == "/H") {
+		string socket_str = argv[2];
+		strip_ip(socket_str);
+		vector<string> sock_parts;
+		tokenize(socket_str, sock_parts, ":");
+		YAMSlave yam_slave;
+		yam_slave.start(sock_parts[0], sock_parts[1]);
+		exit(0);
+	}
+
+	RunManagerType run_manager_type = RunManagerType::SERIAL;
+	// Start PEST++ using YAM run manager
+	if (argc >=4 &&  upper(argv[2]) == "/H") {
+		run_manager_type = RunManagerType::YAM;
+	}
+	else if (argc >=4 &&  upper(argv[2]) == "/G") {
+		run_manager_type = RunManagerType::GENIE;
+	}
+
+
 
 	string filename = get_filename(complete_path);
 	filename = remove_file_ext(filename); // remove .pst extension
@@ -91,16 +108,21 @@ int main(int argc, char* argv[])
 	pest_scenario.check_inputs();
 
 	RunManagerAbstract *run_manager_ptr;
-	if (!pest_scenario.get_pestpp_options().get_vam_port().empty())
+	if (run_manager_type == RunManagerType::YAM)
 	{
-			cout << "initializing YAM run manager" << endl;
-    		run_manager_ptr = new RunManagerYAM (pest_scenario.get_model_exec_info(), pest_scenario.get_ctl_observations().get_keys(), pest_scenario.get_pestpp_options().get_vam_port(),
-				file_manager.build_filename("rns"), file_manager.open_ofile_ext("rmr"));
+		cout << "initializing YAM run manager" << endl;
+		string port = argv[3];
+		strip_ip(port);
+		strip_ip(port, "front", ":");
+    	run_manager_ptr = new RunManagerYAM (pest_scenario.get_model_exec_info(), pest_scenario.get_ctl_observations().get_keys(), port,
+			file_manager.build_filename("rns"), file_manager.open_ofile_ext("rmr"));
 	}
-	else if (!pest_scenario.get_pestpp_options().get_gman_socket().empty())
+	else if (run_manager_type == RunManagerType::GENIE)
 	{
 		cout << "initializing Genie run manager" << endl;
-		run_manager_ptr = new RunManagerGenie (pest_scenario.get_model_exec_info(),  pest_scenario.get_pestpp_options().get_gman_socket());
+		string socket_str = argv[3];
+		strip_ip(socket_str);
+		run_manager_ptr = new RunManagerGenie (pest_scenario.get_model_exec_info(), socket_str);
 	}
 	else
 	{

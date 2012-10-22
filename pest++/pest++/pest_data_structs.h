@@ -179,8 +179,6 @@ public:
 	double get_super_eigthres() const{return super_eigthres;}
 	int get_n_iter_base() const{return n_iter_base;}
 	int get_n_iter_super() const{return n_iter_super;}
-	string get_gman_socket() const {return gman_socket;}
-	string get_vam_port() const {return vam_port;}
 	SVD_PACK get_svd_pack() const {return svd_pack;}
 	double get_auto_norm() const{return auto_norm;}
 
@@ -188,8 +186,6 @@ public:
 	void set_super_eigthres(double _super_eigthres) {super_eigthres = _super_eigthres;}
 	void set_n_iter_base(int _n_iter_base) {n_iter_base = _n_iter_base;}
 	void set_n_iter_super(int _n_iter_super){n_iter_super = _n_iter_super;}
-	void set_gman_socket(const string &_gman_socket) {gman_socket = _gman_socket;}
-	void set_vam_port(const string &_vam_port) {gman_socket = _vam_port;}
 	void set_svd_pack(const SVD_PACK _svd_pack=LAPACK) {svd_pack = _svd_pack;}
 	void set_auto_norm(double _auto_norm) {auto_norm = _auto_norm;};
 
@@ -198,8 +194,6 @@ private:
 	double super_eigthres;
 	int n_iter_base;
 	int n_iter_super;
-	std::string gman_socket;
-	std::string vam_port;
 	SVD_PACK svd_pack;
 	double auto_norm;
 };
