@@ -101,16 +101,16 @@ int RunManagerYAM::add_run(const Parameters &model_pars)
 void RunManagerYAM::run()
 {
 	int ifail;
-	int success_runs;
 	stringstream message;
 	NetPackage net_pack;
 	int group_id = net_pack.get_new_group_id();
 
-	success_runs = 0;
+	cout << "    running model " << waiting_runs.size() << " times" << endl;
+	f_rmr << "running model " << waiting_runs.size() << " times" << endl;
 	if(slave_fd.empty())
 	{
-		cout << endl << "      waiting for slaves to appear..." << endl;
-		f_rmr << endl << "Waiting for slaves to appear..." << endl << endl;
+		cout << endl << "      waiting for slaves to appear..." << endl << endl;
+		f_rmr << endl << "    waiting for slaves to appear..." << endl << endl;
 	}
 	while (!active_runs.empty() || !waiting_runs.empty())
 	{
@@ -119,11 +119,10 @@ void RunManagerYAM::run()
 		// get and process incomming messages
 		listen();
 	}
-	total_runs += success_runs;
-	std::cout << string(message.str().size(), '\b');
+	total_runs += completed_runs.size();
 	message.str("");
-	message << "(" << success_runs << "/" << nruns << " runs complete)";
-	std::cout << message.str();
+	message << "    " << completed_runs.size() << " runs complete";
+	std::cout << message.str() << endl;
 	//if (success_runs < i_run)
 	//{
 	//	cout << endl << endl;
@@ -220,6 +219,7 @@ void RunManagerYAM::process_message(int i)
 	{
 		string work_dir(net_pack.get_data().data(), net_pack.get_data().size());
 		f_rmr << "New Slave connection from: " << sock_name[0] <<":" <<sock_name[1] << "   working dir: " << work_dir << endl;
+		cout << endl << "New Slave connection from: " << sock_name[0] <<":" <<sock_name[1] << "   working dir: " << work_dir << endl << endl;
 	}
 	else if (net_pack.get_type() == net_pack.REQ_CMD)
 	{
