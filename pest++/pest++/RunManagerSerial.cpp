@@ -99,52 +99,11 @@ string RunManagerSerial::ins_err_msg(int i)
 	return err_msg;
 }
 
-RunManagerSerial::RunManagerSerial(const ModelExecInfo &_model_exec_info, const string &_run_dir)
-	: RunManagerAbstract(_model_exec_info), run_dir(_run_dir), max_runs(0)
+RunManagerSerial::RunManagerSerial(const ModelExecInfo &_model_exec_info, const string &stor_filename, const string &_run_dir)
+	: RunManagerAbstract(_model_exec_info, stor_filename), run_dir(_run_dir)
 {
+
 }
-
-
-void RunManagerSerial::allocate_memory(const Parameters &model_pars, const Observations &obs, int _max_runs)
-{
-	// For serial runs there is no need to allocate memory.  Just initialize parameter and observation names
-	nruns = 0;
-	max_runs = _max_runs;
-	int npar = model_pars.size();
-	int nobs = obs.size();
-	pval.clear();
-	pval.reserve(npar);
-	oval.clear();
-	// populate parameter names
-	par_name_vec.clear();
-	vector<string> names = model_pars.get_keys();
-	for (int i=0; i<npar; ++i) {
-		par_name_vec.push_back(names[i]);
-	}
-	// populate observation names
-	obs_name_vec.clear();
-	names = obs.get_keys();
-	for (int i=0; i<nobs; ++i) {
-		obs_name_vec.push_back(names[i]);
-	}
-}
-
-
-int RunManagerSerial::add_run(const Parameters &model_pars)
-{
-	int i_run = nruns;
-	nruns++;
-	assert (model_pars.size() == par_name_vec.size());
-
-	string *name;
-	for(int i=0, npar=par_name_vec.size(); i<npar; ++i)
-	{
-		name = &(par_name_vec[i]);
-		pval.push_back (model_pars.get_rec(*name));
-	}
-    return i_run;
-}
-
 
 void RunManagerSerial::run()
 {
@@ -159,9 +118,16 @@ void RunManagerSerial::run()
 
 	success_runs = 0;
 	failed_runs.clear();
-	oval.resize(nruns*nobs,0.0);
+    int nruns = file_stor.get_nruns();
 	for (i_run=0; i_run<nruns; ++i_run)
 	{
+        Parameters pars = file_stor.get_parameters(i_run);
+        Observations obs;
+		vector<double> par_values;
+		for(auto &i : pars)
+		{
+			par_values.push_back(i.second);
+		}
 		try {
 			std::cout << string(message.str().size(), '\b');
 			message.str("");
@@ -171,7 +137,7 @@ void RunManagerSerial::run()
 			WRTTPL(&ntpl, StringvecFortranCharArray(tplfile_vec, 50, pest_utils::TO_LOWER).get_prt(),
 				StringvecFortranCharArray(inpfile_vec, 50, pest_utils::TO_LOWER).get_prt(),
 				&npar, StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
-				&pval[i_run*npar], &ifail);
+				&par_values[0], &ifail);
 			if(ifail != 0)
 			{
 				throw PestError("Error processing template file");
@@ -183,15 +149,22 @@ void RunManagerSerial::run()
 				system(comline_vec[i].c_str());
 			}
 
+		    std::vector<double> obs_vec;
+		    obs_vec.resize(nobs, -9999.00);
 			READINS(&nins, StringvecFortranCharArray(insfile_vec, 50, pest_utils::TO_LOWER).get_prt(),
 				StringvecFortranCharArray(outfile_vec, 50, pest_utils::TO_LOWER).get_prt(),
 				&nobs, StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
-				&oval[i_run*nobs], &ifail);
+				&obs_vec[0], &ifail);
 			if(ifail != 0)
 			{
 				throw PestError("Error processing template file");
 			}
 			success_runs +=1;
+            pars.clear();
+            pars.insert(par_name_vec, par_values);
+            obs.clear();
+            obs.insert(obs_name_vec, obs_vec);
+            file_stor.update_run(i_run, pars, obs);
 		}
 		catch(...)
 		{
@@ -211,50 +184,6 @@ void RunManagerSerial::run()
 	}
 }
 
-
-
-void RunManagerSerial::get_run(ModelRun &model_run, int run_num, PAR_UPDATE update_type)
-{
-	const string *name;
-	if (failed_runs.count(run_num) > 0)
-	{
-		throw PestError("model run failed");
-	}
-	//Must set parameters before observations
-	if(update_type == FORCE_PAR_UPDATE || model_run.get_par_tran().is_one_to_one())
-	{
-		Parameters new_model_par = model_run.get_model_pars();
-		assert(new_model_par.size() == par_name_vec.size());
-		for(int i=0, npar=par_name_vec.size(); i<npar; ++i)
-		{
-			name = &(par_name_vec[i]);
-			new_model_par.update_rec(*name, pval[run_num*npar+i]);
-		}
-		model_run.set_numeric_parameters(model_run.get_par_tran().model2numeric_cp(new_model_par));
-	}
-
-	// Process Observations
-	Observations new_obs = model_run.get_obs_template();
-	assert(new_obs.size() == obs_name_vec.size());
-	for(int i=0, nobs=obs_name_vec.size(); i<nobs; ++i)
-	{
-		name = &(obs_name_vec[i]);
-		new_obs.update_rec(*name, oval[run_num*nobs+i]);
-	}
-	model_run.set_observations(new_obs);
-
-}
-
- Parameters RunManagerSerial::get_model_parameters(int run_num) const
- {
-	Parameters ret_pars;
-
-	for(int i=0, npar = par_name_vec.size(); i<npar; ++i)
-	{
-		ret_pars[par_name_vec[i]] = pval[run_num*npar+i];
-	}
-	return ret_pars;
- }
 
 RunManagerSerial::~RunManagerSerial(void)
 {

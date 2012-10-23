@@ -31,7 +31,9 @@ public:
 	int add_run(const Parameters &pars);
 	void update_run(int run_id, const Parameters &pars, const Observations &obs);
 	void update_run(int run_id, const vector<char> serial_data);
+	int get_nruns();
 	void get_run(int run_id, Parameters *pars, Observations *obs);
+	Parameters get_parameters(int run_id);
 	vector<char> get_serial_pars(int run_id);
 	void free_memory();
 	~RunStorage();

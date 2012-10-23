@@ -21,6 +21,7 @@
 
 #include<string>
 #include <vector>
+#include "RunStorage.h"
 
 class Parameters;
 class Observations;
@@ -31,20 +32,20 @@ class RunManagerAbstract
 {
 public:
 	enum PAR_UPDATE{DEFAULT_PAR_UPDATE, FORCE_PAR_UPDATE};
-	RunManagerAbstract::RunManagerAbstract(const ModelExecInfo &_mode_exec_info);
-	virtual void allocate_memory(const Parameters &pars, const Observations &obs, int _nruns) = 0;
-	virtual void free_memory() = 0;
-	virtual int add_run(const Parameters &model_pars) = 0;
+	RunManagerAbstract::RunManagerAbstract(const ModelExecInfo &_mode_exec_info, const std::string &stor_filename);
+	virtual void allocate_memory(const Parameters &model_pars, const Observations &obs);
+	virtual void free_memory();
+	virtual int add_run(const Parameters &model_pars);
 	virtual void run() = 0;
-	virtual void get_run(ModelRun &model_run, int run_num, PAR_UPDATE update_type=DEFAULT_PAR_UPDATE)  = 0;
-	virtual Parameters get_model_parameters(int run_num) const = 0;
+	virtual void get_run(ModelRun &model_run, int run_num, PAR_UPDATE update_type=DEFAULT_PAR_UPDATE);
+	virtual Parameters get_model_parameters(int run_num);
 	virtual Observations get_obs_template(double value = -9999.0) const;
 	virtual int get_total_runs(void) const {return total_runs;}
-	virtual int get_nruns() {return nruns;}
+	virtual int get_nruns() {return file_stor.get_nruns();}
 	virtual ~RunManagerAbstract(void) {}
 protected:
 	int total_runs;
-	int nruns;
+	RunStorage file_stor;
 	std::vector<std::string> par_name_vec;
 	std::vector<std::string> obs_name_vec;
 	std::vector<std::string> comline_vec;

@@ -45,20 +45,22 @@ int NetPackage::send(int sockfd, const void *data, unsigned long data_len_l)
 	buf_sz += sizeof(desc);
 	buf_sz += data_len_l;
 	//pack information into buffer
-	unique_ptr<char[]> buf(new char[buf_sz]);
+	//unique_ptr<char[]> buf(new char[buf_sz]);
+	vector<char> buf;
+	buf.resize(buf_sz, '\0');
 	size_t i_start = 0;
-	w_memcpy_s(buf.get(), buf_sz-i_start, &buf_sz, sizeof(buf_sz));
+	w_memcpy_s(&buf[i_start], buf_sz-i_start, &buf_sz, sizeof(buf_sz));
 	i_start += sizeof(buf_sz);
-	w_memcpy_s(buf.get()+i_start, buf_sz-i_start, &type, sizeof(type));
+	w_memcpy_s(&buf[i_start], buf_sz-i_start, &type, sizeof(type));
 	i_start += sizeof(type);
-	w_memcpy_s(buf.get()+i_start, buf_sz-i_start, &group, sizeof(group));
+	w_memcpy_s(&buf[i_start], buf_sz-i_start, &group, sizeof(group));
 	i_start += sizeof(group);
-	w_memcpy_s(buf.get()+i_start, buf_sz-i_start, &run_id, sizeof(run_id));
+	w_memcpy_s(&buf[i_start], buf_sz-i_start, &run_id, sizeof(run_id));
 	i_start += sizeof(run_id);
-	w_memcpy_s(buf.get()+i_start, buf_sz-i_start, desc, sizeof(desc));
+	w_memcpy_s(&buf[i_start], buf_sz-i_start, desc, sizeof(desc));
 	i_start += sizeof(desc);
 	if (data_len_l > 0) {
-		w_memcpy_s(buf.get()+i_start, buf_sz-i_start, data, data_len_l);
+		w_memcpy_s(&buf[i_start], buf_sz-i_start, data, data_len_l);
 		i_start += data_len_l;
 	}
 	if (i_start!=buf_sz) {
@@ -66,7 +68,7 @@ int NetPackage::send(int sockfd, const void *data, unsigned long data_len_l)
 			<< " out of " << buf_sz << "bytes" << endl;
 	}
 	assert (i_start==buf_sz);
-	n = w_sendall(sockfd, buf.get(), &buf_sz);
+	n = w_sendall(sockfd, buf.data(), &buf_sz);
 	return n;  // return 0 on sucess or -1 on failure
 }
 
@@ -74,26 +76,25 @@ int  NetPackage::recv(int sockfd)
 {
 	int n;
 	unsigned long header_sz = 0;
-	unsigned long header_read = 0;
 	unsigned long buf_sz = 0;
 	size_t i_start = 0;
 	//get header (ie size, seq_id, id and name)
 	header_sz = sizeof(buf_sz) + sizeof(type) + sizeof(group) + sizeof(run_id) + sizeof(desc);
-	unique_ptr<char[]> header_buf(new char[header_sz]);
-	header_read = header_sz;
-	n = w_recvall(sockfd, header_buf.get(), &header_read);
+	vector<char> header_buf;
+	header_buf.resize(header_sz, '\0');
+	n = w_recvall(sockfd, &header_buf[0], &header_sz);
 	if(n>0) {
-		assert(header_read==header_sz);
+		assert(header_sz==header_buf.size());
 		i_start = 0;
-		w_memcpy_s(&buf_sz, sizeof(buf_sz), header_buf.get()+i_start, sizeof(buf_sz));
+		w_memcpy_s(&buf_sz, sizeof(buf_sz), &header_buf[i_start], sizeof(buf_sz));
 		i_start += sizeof(buf_sz);
-		w_memcpy_s(&type, sizeof(type), header_buf.get()+i_start, sizeof(type));
+		w_memcpy_s(&type, sizeof(type), &header_buf[i_start], sizeof(type));
 		i_start += sizeof(type);
-		w_memcpy_s(&group, sizeof(group), header_buf.get()+i_start, sizeof(group));
+		w_memcpy_s(&group, sizeof(group), &header_buf[i_start], sizeof(group));
 		i_start += sizeof(group);
-		w_memcpy_s(&run_id, sizeof(run_id), header_buf.get()+i_start, sizeof(run_id));
+		w_memcpy_s(&run_id, sizeof(run_id), &header_buf[i_start], sizeof(run_id));
 		i_start += sizeof(run_id);
-		w_memcpy_s(&desc, sizeof(desc), header_buf.get()+i_start, sizeof(desc));
+		w_memcpy_s(&desc, sizeof(desc), &header_buf[i_start], sizeof(desc));
 		i_start += sizeof(desc);
 		desc[DESC_LEN-1] = '\0';
 		//get data
@@ -110,5 +111,6 @@ int  NetPackage::recv(int sockfd)
 
 void NetPackage::print_header(std::ostream &fout)
 {
-	fout << "NetPackage: type = " << type <<", group = " << group << ", run_id = " << run_id << ", description = " << desc << endl; 
+	fout << "NetPackage: type = " << type <<", group = " << group << ", run_id = " << run_id << ", description = " << desc << 
+		", data package size = " << data.size() << endl; 
 }

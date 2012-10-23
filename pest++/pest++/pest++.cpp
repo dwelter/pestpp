@@ -114,7 +114,7 @@ int main(int argc, char* argv[])
 		string port = argv[3];
 		strip_ip(port);
 		strip_ip(port, "front", ":");
-    	run_manager_ptr = new RunManagerYAM (pest_scenario.get_model_exec_info(), pest_scenario.get_ctl_observations().get_keys(), port,
+    	run_manager_ptr = new RunManagerYAM (pest_scenario.get_model_exec_info(), port,
 			file_manager.build_filename("rns"), file_manager.open_ofile_ext("rmr"));
 	}
 	else if (run_manager_type == RunManagerType::GENIE)
@@ -122,12 +122,12 @@ int main(int argc, char* argv[])
 		cout << "initializing Genie run manager" << endl;
 		string socket_str = argv[3];
 		strip_ip(socket_str);
-		run_manager_ptr = new RunManagerGenie (pest_scenario.get_model_exec_info(), socket_str);
+		run_manager_ptr = new RunManagerGenie (pest_scenario.get_model_exec_info(), file_manager.build_filename("rns"), socket_str);
 	}
 	else
 	{
 		cout << "initializing serial run manager" << endl;
-		run_manager_ptr = new RunManagerSerial(pest_scenario.get_model_exec_info(), pathname);
+		run_manager_ptr = new RunManagerSerial(pest_scenario.get_model_exec_info(), file_manager.build_filename("rns"), pathname);
 	}
 
 	const ParamTransformSeq &base_trans_seq = pest_scenario.get_base_par_tran_seq();
@@ -175,7 +175,7 @@ int main(int argc, char* argv[])
 	if (pest_scenario.get_control_info().noptmax == 0) {
 		Parameters init_model_pars = base_trans_seq.ctl2model_cp(cur_ctl_parameters);
 		optimum_run.set_ctl_parameters(init_model_pars);
-		run_manager_ptr->allocate_memory(init_model_pars, pest_scenario.get_ctl_observations(), 1);
+		run_manager_ptr->allocate_memory(init_model_pars, pest_scenario.get_ctl_observations());
 		run_manager_ptr->add_run(init_model_pars);
 		run_manager_ptr->run();
 		run_manager_ptr->get_run(optimum_run, 0, RunManagerAbstract::FORCE_PAR_UPDATE);

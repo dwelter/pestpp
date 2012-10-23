@@ -105,6 +105,17 @@ pair<Transformable::iterator,bool>  Transformable::insert(const pair<string, dou
 	return items.insert(x);
 }
 
+void Transformable::insert(const vector<string> &name_vec, const vector<double> &value_vec)
+{
+    assert(name_vec.size() == value_vec.size());
+    int vec_size = name_vec.size();
+    items.reserve(vec_size);
+	for(int i=0; i<vec_size; ++i)
+	{
+        insert(pair<string, double>(name_vec[i], value_vec[i]));
+	}
+}
+
 size_t Transformable::erase(const string &name)
 {
 	return items.erase(name);

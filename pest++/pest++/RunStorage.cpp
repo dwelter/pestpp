@@ -64,6 +64,11 @@ void RunStorage::reset(const Parameters &pars, const Observations &obs)
 	run_byte_size = pars_byte_size + serial_data.size();
 }
 
+int RunStorage::get_nruns()
+{
+    return n_runs;
+}
+
 int RunStorage::add_run(const Parameters &pars)
 {
 	int run_id = 0;
@@ -109,6 +114,14 @@ vector<char> RunStorage::get_serial_pars(int run_id)
 	buf_stream.seekg(run_byte_size*run_id, ios_base::beg);
 	buf_stream.read(serial_data.data(), serial_data.size());
 	return serial_data;
+}
+
+Parameters RunStorage::get_parameters(int run_id)
+{
+    Parameters pars;
+    vector<char> serial_data = get_serial_pars(run_id);
+    Serialization::unserialize(serial_data, pars);
+    return pars;
 }
 
 void RunStorage::free_memory()

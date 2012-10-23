@@ -25,23 +25,12 @@
 class RunManagerSerial : public RunManagerAbstract
 {
 public:
-	RunManagerSerial(const ModelExecInfo &_mode_exec_info, const std::string &run_dir);
-	virtual void allocate_memory(const Parameters &pars, const Observations &obs, int _nruns);
-	virtual void free_memory() {pval.clear();}
-	virtual int add_run(const Parameters &model_pars);
+	RunManagerSerial(const ModelExecInfo &_mode_exec_info, const std::string &stor_filename, const std::string &run_dir);
 	virtual void run();
-	virtual void get_run(ModelRun &model_run, int run_num, PAR_UPDATE update_type=DEFAULT_PAR_UPDATE);
-	virtual Parameters get_model_parameters(int run_num) const;
-	virtual int get_total_runs(void) const {return total_runs;}
-	virtual int get_nruns() {return nruns;}
 	~RunManagerSerial(void);
 private:
 	std::string run_dir;
-	std::vector<std::string> par_name_vec;
-	std::vector<double> pval;
-	std::vector<double> oval;
-	std::set<int> failed_runs;
-	int max_runs;
+		std::set<int> failed_runs;
 	static std::string tpl_err_msg(int i);
 	static std::string ins_err_msg(int i);
 };

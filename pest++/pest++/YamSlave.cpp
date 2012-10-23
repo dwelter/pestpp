@@ -104,7 +104,14 @@ void YAMSlave::recv_message(NetPackage &net_pack)
 
 int YAMSlave::send_message(NetPackage &net_pack, const void *data, unsigned long data_len)
 {
-	return net_pack.send(sockfd, data, data_len);
+	int err;
+	int n;
+
+	for (err = -1, n=0; err==-1; ++n)
+	{
+		err = net_pack.send(sockfd, data, data_len);
+	}
+	return err;
 }
 
 string YAMSlave::tpl_err_msg(int i)
@@ -153,6 +160,7 @@ string YAMSlave::ins_err_msg(int i)
 
 int YAMSlave::run_model(Parameters &pars, Observations &obs)
 {
+	int success = 1;
 	try 
 	{
 	//	message.str("");
@@ -172,7 +180,7 @@ int YAMSlave::run_model(Parameters &pars, Observations &obs)
 			par_values.data(), &ifail);
 		if(ifail != 0)
 		{
-			throw PestError("Error processing template file");
+			throw PestError("Error processing template file:" + tpl_err_msg(ifail));
 		}
 		// update parameter values
 		pars.clear();
@@ -210,19 +218,20 @@ int YAMSlave::run_model(Parameters &pars, Observations &obs)
 	catch(...)
 	{
 		cerr << "   Aborting model run" << endl;
+		success = 0;
 	}
-	return 1;
+	return success;
 }
 
 
 void YAMSlave::start(const string &host, const string &port)
 {
-	
-	bool terminate = false;
 	NetPackage net_pack;
 	Observations obs;
 	Parameters pars;
 	vector<char> serialized_data;
+	int err;
+	bool terminate = false;
 
 	init_network(host, port);
 
@@ -230,16 +239,10 @@ void YAMSlave::start(const string &host, const string &port)
 	// for reporting purposes
 	net_pack.reset(NetPackage::RUN_DIR, 0, 0,"");
 	string cwd =  OperSys::getcwd();
-	for (int err = -1; err==-1;)
-	{
-		err = send_message(net_pack, cwd.c_str(), cwd.size());
-	}
+	err = send_message(net_pack, cwd.c_str(), cwd.size());
 	// get tpl, input, ins, outout filename and command lines from master
 	net_pack.reset(NetPackage::REQ_CMD, 0, 0, "");
-	for (int err = -1; err==-1;)
-	{
-		err = send_message(net_pack, cwd.c_str(), cwd.size());
-	}
+	err = send_message(net_pack, cwd.c_str(), cwd.size());
 	//TODO add error checking
 	{
 		recv_message(net_pack);
@@ -257,15 +260,13 @@ void YAMSlave::start(const string &host, const string &port)
 	// Send READY Message to master
 	net_pack.reset(NetPackage::READY, 0, 0,"");
 	char data;
-	for (int err = -1; err==-1;)
-	{
-		err = send_message(net_pack, &data, 0);
-	}
-	while (!terminate)
+	err = send_message(net_pack, &data, 0);
+	while (master.fd_count > 0 && !terminate)
 	{
 		//get message from master
 		recv_message(net_pack);
-		if (net_pack.get_type() == NetPackage::START_RUN)
+		if (!master.fd_count > 0) {}
+		else if(net_pack.get_type() == NetPackage::START_RUN)
 		{
 			Serialization::unserialize(net_pack.get_data(), pars);
 			// run model
@@ -279,17 +280,11 @@ void YAMSlave::start(const string &host, const string &port)
 			cout << "sending results to master (group id = " << group_id << ", run id = " << run_id << ")" <<endl << endl;
 			serialized_data = Serialization::serialize(pars, obs);
 			net_pack.reset(NetPackage::RUN_FINISH, net_pack.get_groud_id(), net_pack.get_run_id(), "");
-			for (int err = -1; err==-1;)
-			{
-				err = send_message(net_pack, serialized_data.data(), serialized_data.size());
-			}
+			err = send_message(net_pack, serialized_data.data(), serialized_data.size());
 			// Send READY Message to master
 			net_pack.reset(NetPackage::READY, 0, 0,"");
 			char data;
-			for (int err = -1; err==-1;)
-			{
-				err = send_message(net_pack, &data, 0);
-			}
+			err = send_message(net_pack, &data, 0);
 		}
 		else if (net_pack.get_type() == NetPackage::TERMINATE)
 		{

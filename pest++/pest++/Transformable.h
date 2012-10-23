@@ -68,6 +68,9 @@ public:
 	double &operator[](const string &name);
 	pair<iterator,bool> insert(const string &name, double value);
 	pair<iterator, bool> insert(const pair<string, double> &x);
+    void insert(const vector<string> &name_vec, const vector<double> &value_vec);
+    template <class InputIterator>
+    void insert ( iterator position, InputIterator first, InputIterator last );
 	size_t erase(const string &name);
 	iterator find(const string &name);
 	const double* get_rec_ptr(const string &name) const;
@@ -88,6 +91,12 @@ public:
 protected:
 	unordered_map<string, double> items;
 };
+
+template <class InputIterator>
+void Transformable::insert ( iterator position, InputIterator first, InputIterator last )
+{
+   items.insert(position, first, last);
+}
 
 ostream& operator<< (ostream& out, const Transformable &rhs);
 

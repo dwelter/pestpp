@@ -185,7 +185,7 @@ void Jacobian::calculate(ModelRun &init_model_run, vector<string> numeric_par_na
 	if (calc_init_obs) ++nrun;
 
 	// allocate arrays
-	run_manager.allocate_memory(model_parameters, observations, nrun);
+	run_manager.allocate_memory(model_parameters, observations);
 	
 
 	// fill arrays

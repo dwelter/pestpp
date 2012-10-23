@@ -46,16 +46,12 @@ private:
 class RunManagerYAM : public RunManagerAbstract
 {
 public:
-	RunManagerYAM(const ModelExecInfo &_mode_exec_info, const std::vector<std::string>& _obs_name_vec, const std::string &port, const std::string &stor_filename, ofstream &_f_rmr);
+	RunManagerYAM(const ModelExecInfo &_mode_exec_info, const std::string &port, const std::string &stor_filename, ofstream &_f_rmr);
 	virtual void allocate_memory(const Parameters &pars, const Observations &obs, int _nruns);
 	virtual void free_memory();
 	virtual int add_run(const Parameters &model_pars);
 	virtual void run();
-	virtual void get_run(ModelRun &model_run, int run_id, PAR_UPDATE update_type=DEFAULT_PAR_UPDATE);
-	virtual Parameters get_model_parameters(int run_id) const;
-	virtual int get_total_runs(void) const {return total_runs;}
-	virtual int get_nruns() {return nruns;}
-	void RunManagerYAM::listen();
+	void RunManagerYAM::listen(int cur_group_id);
 	~RunManagerYAM(void);
 private:
 	std::string port;
@@ -65,13 +61,12 @@ private:
 	deque<int> slave_fd;
 	fd_set master; // master file descriptor list
 	std::deque<YamModelRun> waiting_runs;
-	RunStorage file_stor;
 	ofstream &f_rmr;
 	unordered_multimap<int, YamModelRun> active_runs;
 	unordered_multimap<int, YamModelRun> zombie_runs;
 	unordered_map<int, YamModelRun> completed_runs;
 	bool process_model_run(YamModelRun model_run);
-	void process_message(int i);
+	void process_message(int i, int cur_group_id);
 	void schedule_runs(int group_id);
 };
 

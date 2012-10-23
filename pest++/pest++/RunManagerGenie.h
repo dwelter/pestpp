@@ -34,18 +34,10 @@ class RunManagerGenie : public RunManagerAbstract
 public:
 	static const int LEN_PARAMETER_NAME;
 	static const int LEN_OBSERVATION_NAME;
-	RunManagerGenie(const ModelExecInfo &_mode_exec_info, const std::string &_host, const std::string &_id="PPEST");
-	virtual void allocate_memory(const Parameters &pars, const Observations &obs, int _nruns);
-	virtual void free_memory();
-	virtual int add_run(const Parameters &model_pars);
+	RunManagerGenie(const ModelExecInfo &_mode_exec_info, const std::string &stor_filename, const std::string &_host, const std::string &_id="PPEST");
 	virtual void run();
-	virtual void get_run(ModelRun &model_run, int run_num, PAR_UPDATE update_type=DEFAULT_PAR_UPDATE);
-	virtual Parameters get_model_parameters(int run_num) const;
 	virtual ~RunManagerGenie(void);
 protected:
-	int max_runs;
-	double *pval;
-	double *oval;
 	std::string id;
 	std::string host; 
 	std::set<int> failed_runs;  // not implemented yet

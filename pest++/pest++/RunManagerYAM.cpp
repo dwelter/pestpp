@@ -45,15 +45,13 @@ YamModelRun::YamModelRun(int _run_id, int _sockfd) : sockfd(_sockfd), run_id(_ru
 {
 }
 
-RunManagerYAM::RunManagerYAM(const ModelExecInfo &_model_exec_info, const std::vector<std::string>& _obs_name_vec, const string &_port, const string &stor_filename, ofstream &_f_rmr)
-	: RunManagerAbstract(_model_exec_info), port(_port), file_stor(stor_filename), f_rmr(_f_rmr)
+RunManagerYAM::RunManagerYAM(const ModelExecInfo &_model_exec_info, const string &_port, const string &stor_filename, ofstream &_f_rmr)
+	: RunManagerAbstract(_model_exec_info, stor_filename), port(_port), f_rmr(_f_rmr)
 {
 	w_init();
 	int status;
 	struct addrinfo hints;
 	struct addrinfo *servinfo;
-	// clean this up 
-	obs_name_vec = _obs_name_vec;
 	memset(&hints, 0, sizeof hints);
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
@@ -78,6 +76,7 @@ RunManagerYAM::RunManagerYAM(const ModelExecInfo &_model_exec_info, const std::v
 void RunManagerYAM::allocate_memory(const Parameters &model_pars, const Observations &obs, int _max_runs)
 {
 	file_stor.reset(model_pars, obs);
+    obs_name_vec = obs.get_keys();
 }
 
 void  RunManagerYAM::free_memory()
@@ -93,7 +92,6 @@ int RunManagerYAM::add_run(const Parameters &model_pars)
 	int run_id = file_stor.add_run(model_pars);
 	YamModelRun new_run(run_id);
 	waiting_runs.push_back(new_run);
-	nruns++;
 	return run_id;
 }
 
@@ -103,11 +101,11 @@ void RunManagerYAM::run()
 	int ifail;
 	stringstream message;
 	NetPackage net_pack;
-	int group_id = net_pack.get_new_group_id();
+	int cur_group_id = net_pack.get_new_group_id();
 
 	cout << "    running model " << waiting_runs.size() << " times" << endl;
 	f_rmr << "running model " << waiting_runs.size() << " times" << endl;
-	if(slave_fd.empty())
+	if(master.fd_count < 2) // first entry is the listener, slave apper after this
 	{
 		cout << endl << "      waiting for slaves to appear..." << endl << endl;
 		f_rmr << endl << "    waiting for slaves to appear..." << endl << endl;
@@ -115,9 +113,9 @@ void RunManagerYAM::run()
 	while (!active_runs.empty() || !waiting_runs.empty())
 	{
 		//schedule runs on available nodes
-		schedule_runs(group_id);
+		schedule_runs(cur_group_id);
 		// get and process incomming messages
-		listen();
+		listen(cur_group_id);
 	}
 	total_runs += completed_runs.size();
 	message.str("");
@@ -131,7 +129,7 @@ void RunManagerYAM::run()
 }
 
 
-void RunManagerYAM::listen()
+void RunManagerYAM::listen(int cur_group_id)
 {
 	struct sockaddr_storage remote_addr;
 	fd_set read_fds; // temp file descriptor list for select()
@@ -167,7 +165,7 @@ void RunManagerYAM::listen()
 			}
 			else  // handle data from a client
 			{
-				process_message(i);				
+				process_message(i, cur_group_id);				
 			} // END handle data from client
 		} // END got new incoming connection
 	} // END looping through file descriptors
@@ -197,7 +195,7 @@ void RunManagerYAM::schedule_runs(int group_id)
 	}
 }
 
-void RunManagerYAM::process_message(int i)
+void RunManagerYAM::process_message(int i, int cur_group_id)
 {
 	NetPackage net_pack;
 	int err;
@@ -241,10 +239,17 @@ void RunManagerYAM::process_message(int i)
 		// ready message received from slave and add slave to deque
 		slave_fd.push_back(i);
 	}
+
+	else if (net_pack.get_type() == net_pack.RUN_FINISH && net_pack.get_groud_id() != cur_group_id)
+	{
+		// this is an old run that did not finish on time
+		// just ignore it
+	}
 	else if (net_pack.get_type() == net_pack.RUN_FINISH)
 	{
 		int run_id = net_pack.get_run_id();
 		int group_id = net_pack.get_groud_id();
+
 		f_rmr << "Run received from: " << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << group_id << ", run id = " << run_id << ")" << endl;
 		if (process_model_run(YamModelRun(run_id, i)) == true)
 		{
@@ -269,29 +274,6 @@ void RunManagerYAM::process_message(int i)
 		//save results from model run
 	}
 }
-
-void RunManagerYAM::get_run(ModelRun &model_run, int run_id, PAR_UPDATE update_type)
-{
-	Parameters pars;
-	Observations obs;
-	file_stor.get_run(run_id, &pars, &obs);
-
-	//Must set parameters before observations
-	if(update_type == FORCE_PAR_UPDATE || model_run.get_par_tran().is_one_to_one())
-	{
-		// transform to numeric parameters
-		model_run.get_par_tran().model2numeric_ip(pars);
-		model_run.set_numeric_parameters(pars);
-	}
-
-	// Process Observations
-	model_run.set_observations(obs);
-}
-
- Parameters RunManagerYAM::get_model_parameters(int run_num) const
- {
-	 return Parameters();
- }
 
  bool RunManagerYAM::process_model_run(YamModelRun model_run)
  {

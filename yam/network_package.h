@@ -4,7 +4,6 @@
 #include <cstdint>
 #include <vector>
 #include <memory>
-#include <cassert>
 
 class NetPackage
 {

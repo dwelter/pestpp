@@ -269,6 +269,7 @@ void TranTied::insert(const string &item_name, const pair<string, double> &item_
 	items[item_name] = item_value;
 }
 
+
 void TranTied::reverse(Transformable &data)
 {
 	string const *base_name;
@@ -340,10 +341,6 @@ void TranSVD::update(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt, const 
 	init_base_numeric_parameters = base_numeric_pars;
 }
 
-
-
-
-
 void TranSVD::reverse(Transformable &data)
 {
 	// Transform super-parameters to base parameters
@@ -359,8 +356,8 @@ void TranSVD::reverse(Transformable &data)
 	LaVectorDouble delta_base_mat(Vt.cols());
 	Blas_Mat_Trans_Mat_Mult(Vt(LaIndex(0,n_sing_val-1), LaIndex(0, Vt.rows()-1)), stlvec2LaVec(super_par_vec), delta_base_mat, 1.0, 0.0);
 	for (int i=0; i<n_base; ++i) {
-		ret_base_pars.insert(base_parameter_names[i], delta_base_mat(i) + init_base_numeric_parameters.get_rec(base_parameter_names[i]))
-;	}
+		ret_base_pars.insert(base_parameter_names[i], delta_base_mat(i) + init_base_numeric_parameters.get_rec(base_parameter_names[i]));
+	}
 	data = ret_base_pars;
 }
 
