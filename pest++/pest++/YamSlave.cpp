@@ -265,7 +265,7 @@ void YAMSlave::start(const string &host, const string &port)
 	{
 		//get message from master
 		recv_message(net_pack);
-		if (!master.fd_count > 0) {}
+		if (!(master.fd_count > 0)) {}
 		else if(net_pack.get_type() == NetPackage::START_RUN)
 		{
 			Serialization::unserialize(net_pack.get_data(), pars);

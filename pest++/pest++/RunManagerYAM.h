@@ -47,17 +47,17 @@ class RunManagerYAM : public RunManagerAbstract
 {
 public:
 	RunManagerYAM(const ModelExecInfo &_mode_exec_info, const std::string &port, const std::string &stor_filename, ofstream &_f_rmr);
-	virtual void allocate_memory(const Parameters &pars, const Observations &obs, int _nruns);
+	virtual void allocate_memory(const Parameters &pars, const Observations &obs);
 	virtual void free_memory();
 	virtual int add_run(const Parameters &model_pars);
 	virtual void run();
-	void RunManagerYAM::listen(int cur_group_id);
 	~RunManagerYAM(void);
 private:
 	std::string port;
 	static const int BACKLOG = 10;
 	int listener;
 	int fdmax;
+	int cur_group_id;
 	deque<int> slave_fd;
 	fd_set master; // master file descriptor list
 	std::deque<YamModelRun> waiting_runs;
@@ -65,9 +65,13 @@ private:
 	unordered_multimap<int, YamModelRun> active_runs;
 	unordered_multimap<int, YamModelRun> zombie_runs;
 	unordered_map<int, YamModelRun> completed_runs;
-	bool process_model_run(YamModelRun model_run);
-	void process_message(int i, int cur_group_id);
-	void schedule_runs(int group_id);
+	unordered_multimap<int, int> failed_runs;
+	void RunManagerYAM::listen();
+	bool process_model_run(int sock_id, NetPackage &net_pack);
+	void process_message(int i);
+	bool schedule_run(int run_id);
+	void schedule_runs();
+	unordered_multimap<int, YamModelRun>::iterator get_active_run_id(int socket);
 };
 
 #endif /* RUNMANAGERYAM_H */

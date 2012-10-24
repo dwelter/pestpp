@@ -45,7 +45,7 @@ using namespace pest_utils;
 
 int main(int argc, char* argv[])
 {
-	string version = "2.0.0";
+	string version = "1.2.0";
 	string complete_path;
 	enum class RunManagerType {SERIAL, YAM, GENIE};
 	string socket_str;

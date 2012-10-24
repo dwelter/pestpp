@@ -119,8 +119,15 @@ void RunManagerGenie::run()
      vector<double> par_val;
      vector<double> obs_val;
 
-     par_val.reserve(nruns*npar);
-     obs_val.reserve(nruns*nobs);
+     par_val.clear();
+     obs_val.resize(nruns*nobs);
+
+	 for (int i=0; i<nruns; ++i)
+	 {
+		 Parameters tmp_pars = file_stor.get_parameters(i);
+		 vector<double> tmp_vec = tmp_pars.get_vector(par_name_vec);
+		 par_val.insert(par_val.end(), tmp_vec.begin(), tmp_vec.end());
+	 }
 
 	std::copy(par_name_vec.begin(), par_name_vec.end(),std::ostream_iterator<std::string>(apar,"\n"));
 	apar.str(lower_cp(apar.str()));
@@ -150,8 +157,12 @@ void RunManagerGenie::run()
     for (int i=0; i<nruns; ++i)
 	{
        pars.clear();
-       //pars.insert(par_val.at(npar*i), par_val.at(npar*(i+1)));
-        //file_stor.update_run(i, 
+	   vector<double> i_par_vec(par_val.begin()+i*npar, par_val.begin()+(i+1)*npar);
+       pars.insert(par_name_vec, i_par_vec);
+	   obs.clear();
+	   vector<double> i_obs_vec(obs_val.begin()+i*nobs, obs_val.begin()+(i+1)*nobs);
+	   obs.insert(obs_name_vec, i_obs_vec);
+       file_stor.update_run(i, pars, obs);
 	}
 }
 

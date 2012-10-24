@@ -29,6 +29,7 @@
 #include <map>
 #include <direct.h>
 #include <deque>
+#include <utility>
 #include "network_wrapper.h"
 #include "network_package.h"
 #include "Transformable.h"
@@ -72,11 +73,21 @@ RunManagerYAM::RunManagerYAM(const ModelExecInfo &_model_exec_info, const string
 	return;
 }
 
+unordered_multimap<int, YamModelRun>::iterator RunManagerYAM::get_active_run_id(int socket)
+{
+	auto i = active_runs.begin();
+	auto end = active_runs.end();
 
-void RunManagerYAM::allocate_memory(const Parameters &model_pars, const Observations &obs, int _max_runs)
+	for(; i!=end && i->second.get_socket() != socket; ++i)
+	{}
+	return i;
+}
+
+void RunManagerYAM::allocate_memory(const Parameters &model_pars, const Observations &obs)
 {
 	file_stor.reset(model_pars, obs);
     obs_name_vec = obs.get_keys();
+	cur_group_id = NetPackage::get_new_group_id();
 }
 
 void  RunManagerYAM::free_memory()
@@ -84,6 +95,7 @@ void  RunManagerYAM::free_memory()
 	waiting_runs.clear();
 	completed_runs.clear();
 	zombie_runs.clear();
+	failed_runs.clear();
 	file_stor.free_memory();
 }
 
@@ -98,10 +110,8 @@ int RunManagerYAM::add_run(const Parameters &model_pars)
 
 void RunManagerYAM::run()
 {
-	int ifail;
 	stringstream message;
 	NetPackage net_pack;
-	int cur_group_id = net_pack.get_new_group_id();
 
 	cout << "    running model " << waiting_runs.size() << " times" << endl;
 	f_rmr << "running model " << waiting_runs.size() << " times" << endl;
@@ -113,9 +123,9 @@ void RunManagerYAM::run()
 	while (!active_runs.empty() || !waiting_runs.empty())
 	{
 		//schedule runs on available nodes
-		schedule_runs(cur_group_id);
+		schedule_runs();
 		// get and process incomming messages
-		listen(cur_group_id);
+		listen();
 	}
 	total_runs += completed_runs.size();
 	message.str("");
@@ -129,7 +139,7 @@ void RunManagerYAM::run()
 }
 
 
-void RunManagerYAM::listen(int cur_group_id)
+void RunManagerYAM::listen()
 {
 	struct sockaddr_storage remote_addr;
 	fd_set read_fds; // temp file descriptor list for select()
@@ -159,58 +169,63 @@ void RunManagerYAM::listen(int cur_group_id)
 						fdmax = newfd;
 					}
 					vector<string> sock_name = w_getnameinfo_vec(newfd);
-					//f_rmr << "New Slave connection from: " << sock_name[0] <<":" <<sock_name[1] << endl;
-					//slave_fd.push_back(newfd);
 				}
 			}
 			else  // handle data from a client
 			{
-				process_message(i, cur_group_id);				
+				process_message(i);				
 			} // END handle data from client
 		} // END got new incoming connection
 	} // END looping through file descriptors
 }
 
 
-void RunManagerYAM::schedule_runs(int group_id)
+void RunManagerYAM::schedule_runs()
 {
 	NetPackage net_pack;
-
-	while(!slave_fd.empty() && !waiting_runs.empty())
+	for (auto it_run=waiting_runs.begin(); !slave_fd.empty() &&  it_run!=waiting_runs.end();)
 	{
-			// schedule a run on a slave
-			int err;
-			int sock_fd = slave_fd.front();
-			YamModelRun tmp_run =  waiting_runs.front();
-			tmp_run.set_socket(sock_fd);
-			int run_id = tmp_run.get_id();
-			vector<char> data = file_stor.get_serial_pars(run_id);
-			vector<string> sock_name = w_getnameinfo_vec(sock_fd);
-			f_rmr << "Sending run to: " << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << group_id << ", run id = " << run_id << ")" << endl;
-			net_pack.reset(NetPackage::START_RUN, group_id, run_id, "");
-			err = net_pack.send(sock_fd, &data[0], data.size());
-			active_runs.insert(pair<int, YamModelRun>(run_id, tmp_run));
-			waiting_runs.pop_front();
-			slave_fd.pop_front();
+		bool success = schedule_run(it_run->get_id());
+		if (success)
+		{
+			it_run = waiting_runs.erase(it_run);
+		}
+		else
+		{
+			++it_run;
+		}
 	}
 }
 
-void RunManagerYAM::process_message(int i, int cur_group_id)
+void RunManagerYAM::process_message(int i_sock)
 {
 	NetPackage net_pack;
 	int err;
-	vector<string> sock_name = w_getnameinfo_vec(i);
-	if(( err=net_pack.recv(i)) <=0) // error or lost connection
+	vector<string> sock_name = w_getnameinfo_vec(i_sock);
+	if(( err=net_pack.recv(i_sock)) <=0) // error or lost connection
 	{
 		if (err < 0) {
-			f_rmr << "receive failed from slave: " << sock_name[0] <<":" <<sock_name[1] << endl;
-			w_close(i); // bye!
-			FD_CLR(i, &master); // remove from master set
+			f_rmr << "receive failed from slave: " << sock_name[0] <<":" <<sock_name[1] << " - terminating slave" << endl;
+			cerr << "receive failed from slave: " << sock_name[0] <<":" <<sock_name[1] << " - terminating slave" << endl;
+			w_close(i_sock); // bye!
+			FD_CLR(i_sock, &master); // remove from master set
 		}
 		else {
 			f_rmr << "lost connection to slave: " << sock_name[0] <<":" <<sock_name[1] << endl;
-			w_close(i); // bye!
-			FD_CLR(i, &master); // remove from master set
+			cerr << "lost connection to slave: " << sock_name[0] <<":" <<sock_name[1] << endl;
+			w_close(i_sock); // bye!
+			FD_CLR(i_sock, &master); // remove from master set
+		}
+		// remove run from active queue and return it to the waiting queue
+		auto it_active = get_active_run_id(i_sock);
+		if (it_active != active_runs.end())
+		{
+			YamModelRun &cur_run = it_active->second;
+			if (completed_runs.find(cur_run.get_id()) == completed_runs.end()) //check if run has already finish on another node
+			{
+				waiting_runs.push_front(it_active->second);
+			}
+			active_runs.erase(it_active);
 		}
 	}
 	else if (net_pack.get_type() == net_pack.RUN_DIR)
@@ -232,12 +247,12 @@ void RunManagerYAM::process_message(int i, int cur_group_id)
 		tmp_vec.push_back(&obs_name_vec);
 
 		data = Serialization::serialize(tmp_vec);
-		err = net_pack.send(i, &data[0], data.size());
+		err = net_pack.send(i_sock, &data[0], data.size());
 	}
 	else if (net_pack.get_type() == net_pack.READY)
 	{
 		// ready message received from slave and add slave to deque
-		slave_fd.push_back(i);
+		slave_fd.push_back(i_sock);
 	}
 
 	else if (net_pack.get_type() == net_pack.RUN_FINISH && net_pack.get_groud_id() != cur_group_id)
@@ -251,16 +266,8 @@ void RunManagerYAM::process_message(int i, int cur_group_id)
 		int group_id = net_pack.get_groud_id();
 
 		f_rmr << "Run received from: " << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << group_id << ", run id = " << run_id << ")" << endl;
-		if (process_model_run(YamModelRun(run_id, i)) == true)
-		{
-			Parameters pars;
-			Observations obs;
-			vector<Transformable *> tr_vec;
-			tr_vec.push_back(&pars);
-			tr_vec.push_back(&obs);
-			Serialization::unserialize(net_pack.get_data(), tr_vec);
-			file_stor.update_run(run_id, pars, obs);
-		}
+		process_model_run(i_sock, net_pack);
+
 	}
 	else if (net_pack.get_type() == net_pack.RUN_FAILED)
 	{
@@ -275,20 +282,27 @@ void RunManagerYAM::process_message(int i, int cur_group_id)
 	}
 }
 
- bool RunManagerYAM::process_model_run(YamModelRun model_run)
+ bool RunManagerYAM::process_model_run(int sock_id, NetPackage &net_pack)
  {
-	 bool use_run = false;
-	 pair<unordered_multimap<int, YamModelRun>::iterator,unordered_multimap<int, YamModelRun>::iterator> range_pair;
-	int run_id = model_run.get_id();
+	bool use_run = false;
+	int run_id =net_pack.get_run_id();
+	YamModelRun model_run(run_id,  sock_id);
 	//check if another instance of this model run has already completed 
 	if (completed_runs.find(run_id) == completed_runs.end())
 	{
 		completed_runs.insert(pair<int, YamModelRun>(run_id,  model_run));
+		Parameters pars;
+		Observations obs;
+		vector<Transformable *> tr_vec;
+		tr_vec.push_back(&pars);
+		tr_vec.push_back(&obs);
+		Serialization::unserialize(net_pack.get_data(), tr_vec);
+		file_stor.update_run(run_id, pars, obs);
 		use_run = true;
 	}
-	range_pair = active_runs.equal_range(run_id);
+	auto range_pair = active_runs.equal_range(run_id);
 	//remaining runs with this id are not needed so mark them as zombies
-	for ( unordered_multimap<int, YamModelRun>::iterator b=range_pair.first; b!=range_pair.second; ++b)
+	for ( auto b=range_pair.first; b!=range_pair.second; ++b)
 	{
 		if ( (*b).second.get_socket() != model_run.get_socket())
 		{
@@ -297,6 +311,54 @@ void RunManagerYAM::process_message(int i, int cur_group_id)
 	}
 	active_runs.erase(range_pair.first, range_pair.second);
 	return use_run;
+ }
+
+ bool RunManagerYAM::schedule_run(int run_id)
+ {
+	bool scheduled = false;
+	auto it_sock = slave_fd.end(); // iterator to current socket
+
+	if (completed_runs.count(run_id) > 0)
+	{
+		// run already completed on different node.  Do nothing
+	}
+	else if (failed_runs.count(run_id) == 0)
+	{
+		 // schedule a run on a slave
+		NetPackage net_pack(NetPackage::START_RUN, cur_group_id, run_id, "");
+		it_sock = slave_fd.begin();
+	}
+	else if (failed_runs.count(run_id) > 0)
+	{
+		for(deque<int>::iterator it_sock=slave_fd.begin(); it_sock!=slave_fd.end(); ++it_sock)
+		{
+			auto fail_iter_pair = failed_runs.equal_range(run_id);
+
+			auto i = fail_iter_pair.first;
+			for(i = fail_iter_pair.first;
+				i!= fail_iter_pair.second && i->second != run_id;
+				++i) {}
+			if (i == fail_iter_pair.second)  // This is slave has not previously failed on this run
+			{
+				// This run has not previously failed on this slave
+				// Schedule run on it_sock
+				break;
+			}
+		}
+	}
+	if (it_sock != slave_fd.end())
+	{
+		YamModelRun tmp_run(run_id, *it_sock);
+		vector<char> data = file_stor.get_serial_pars(run_id);
+		vector<string> sock_name = w_getnameinfo_vec(*it_sock);
+		f_rmr << "Sending run to: " << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << cur_group_id << ", run id = " << run_id << ")" << endl;
+		NetPackage net_pack(NetPackage::START_RUN, cur_group_id, run_id, "");
+		int err = net_pack.send(*it_sock, &data[0], data.size());
+		active_runs.insert(pair<int, YamModelRun>(run_id, tmp_run));
+		slave_fd.erase(it_sock);
+		scheduled = true;
+	}
+	return true;
  }
 
 RunManagerYAM::~RunManagerYAM(void)
