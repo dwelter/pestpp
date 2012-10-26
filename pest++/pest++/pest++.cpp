@@ -16,7 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
-#include "RunManagerYAM.h" //needs to be first because it includes winsock2.h
+#include "RunManagerYAMR.h" //needs to be first because it includes winsock2.h
 #include <iostream>
 #include <fstream>
 #include "Pest.h"
@@ -35,7 +35,7 @@
 #include "RunManagerSerial.h"
 #include "SVD_PROPACK.h"
 #include "OutputFileWriter.h"
-#include "YamSlave.h"
+#include "YamrSlave.h"
 #include "Serialization.h"
 
 using namespace std;
@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
 {
 	string version = "1.2.0";
 	string complete_path;
-	enum class RunManagerType {SERIAL, YAM, GENIE};
+	enum class RunManagerType {SERIAL, YAMR, GENIE};
 	string socket_str;
 
 	if (argc >=2) {
@@ -60,21 +60,21 @@ int main(int argc, char* argv[])
 	}
 
 
-	// This is a YAM Slave, start PEST++ as a YAM Slave
+	// This is a YAMR Slave, start PEST++ as a YAMR Slave
 	if (argc >=3 && upper(argv[1]) == "/H") {
 		string socket_str = argv[2];
 		strip_ip(socket_str);
 		vector<string> sock_parts;
 		tokenize(socket_str, sock_parts, ":");
-		YAMSlave yam_slave;
+		YAMRSlave yam_slave;
 		yam_slave.start(sock_parts[0], sock_parts[1]);
 		exit(0);
 	}
 
 	RunManagerType run_manager_type = RunManagerType::SERIAL;
-	// Start PEST++ using YAM run manager
+	// Start PEST++ using YAMR run manager
 	if (argc >=4 &&  upper(argv[2]) == "/H") {
-		run_manager_type = RunManagerType::YAM;
+		run_manager_type = RunManagerType::YAMR;
 	}
 	else if (argc >=4 &&  upper(argv[2]) == "/G") {
 		run_manager_type = RunManagerType::GENIE;
@@ -108,13 +108,13 @@ int main(int argc, char* argv[])
 	pest_scenario.check_inputs();
 
 	RunManagerAbstract *run_manager_ptr;
-	if (run_manager_type == RunManagerType::YAM)
+	if (run_manager_type == RunManagerType::YAMR)
 	{
-		cout << "initializing YAM run manager" << endl;
+		cout << "initializing YAMR run manager" << endl;
 		string port = argv[3];
 		strip_ip(port);
 		strip_ip(port, "front", ":");
-    	run_manager_ptr = new RunManagerYAM (pest_scenario.get_model_exec_info(), port,
+    	run_manager_ptr = new RunManagerYAMR (pest_scenario.get_model_exec_info(), port,
 			file_manager.build_filename("rns"), file_manager.open_ofile_ext("rmr"));
 	}
 	else if (run_manager_type == RunManagerType::GENIE)

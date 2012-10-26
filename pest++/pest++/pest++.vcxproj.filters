@@ -96,16 +96,16 @@
     <ClCompile Include="OutputFileWriter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RunManagerYAM.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="YamSlave.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="RunStorage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Serializeation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RunManagerYAMR.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="YamrSlave.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -191,16 +191,16 @@
     <ClInclude Include="OutputFileWriter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RunManagerYAM.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="YamSlave.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="RunStorage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Serialization.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RunManagerYAMR.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="YamrSlave.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

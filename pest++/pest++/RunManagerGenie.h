@@ -40,7 +40,6 @@ public:
 protected:
 	std::string id;
 	std::string host; 
-	std::set<int> failed_runs;  // not implemented yet
 };
 
 #endif /* RUNMANAGERGENIE_H */

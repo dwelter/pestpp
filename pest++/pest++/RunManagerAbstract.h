@@ -21,6 +21,7 @@
 
 #include<string>
 #include <vector>
+#include <set>
 #include "RunStorage.h"
 
 class Parameters;
@@ -46,6 +47,7 @@ public:
 protected:
 	int total_runs;
 	RunStorage file_stor;
+	std::set<int> failed_runs;
 	std::vector<std::string> par_name_vec;
 	std::vector<std::string> obs_name_vec;
 	std::vector<std::string> comline_vec;

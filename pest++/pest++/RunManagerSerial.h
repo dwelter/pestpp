@@ -30,7 +30,6 @@ public:
 	~RunManagerSerial(void);
 private:
 	std::string run_dir;
-		std::set<int> failed_runs;
 	static std::string tpl_err_msg(int i);
 	static std::string ins_err_msg(int i);
 };

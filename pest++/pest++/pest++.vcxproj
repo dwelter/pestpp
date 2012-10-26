@@ -186,7 +186,7 @@
     <ClCompile Include="Jacobian.cpp" />
     <ClCompile Include="lapack_tools.cpp" />
     <ClCompile Include="OutputFileWriter.cpp" />
-    <ClCompile Include="RunManagerYAM.cpp" />
+    <ClCompile Include="RunManagerYAMR.cpp" />
     <ClCompile Include="RunStorage.cpp" />
     <ClCompile Include="Serializeation.cpp" />
     <ClCompile Include="SVD_PROPACK.cpp" />
@@ -211,14 +211,14 @@
     <ClCompile Include="Transformable.cpp" />
     <ClCompile Include="Transformation.cpp" />
     <ClCompile Include="utilities.cpp" />
-    <ClCompile Include="YamSlave.cpp" />
+    <ClCompile Include="YamrSlave.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FileManager.h" />
     <ClInclude Include="Jacobian.h" />
     <ClInclude Include="lapack_tools.h" />
     <ClInclude Include="OutputFileWriter.h" />
-    <ClInclude Include="RunManagerYAM.h" />
+    <ClInclude Include="RunManagerYAMR.h" />
     <ClInclude Include="RunStorage.h" />
     <ClInclude Include="Serialization.h" />
     <ClInclude Include="SVD_PROPACK.h" />
@@ -244,7 +244,7 @@
     <ClInclude Include="Transformable.h" />
     <ClInclude Include="Transformation.h" />
     <ClInclude Include="utilities.h" />
-    <ClInclude Include="YamSlave.h" />
+    <ClInclude Include="YamrSlave.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\lapackpp-2.5.4\lapackpp.vcxproj">
