@@ -4,6 +4,7 @@
 #include "system_variables.h"
 #include <cassert>
 
+
 using namespace pest_utils;
 
 extern "C"
@@ -192,7 +193,12 @@ int YAMSlave::run_model(Parameters &pars, Observations &obs)
 		// run model
 		for (auto &i : comline_vec)
 		{
-			system(i.c_str());
+			ifail = system(i.c_str());
+			if(ifail != 0)
+		{
+			cerr << "Error executing command line: " << i << endl;
+			throw PestError("Error executing command line: " + i);
+		}
 		}
 		// process instructio files
 		int nins = insfile_vec.size();
@@ -274,17 +280,31 @@ void YAMSlave::start(const string &host, const string &port)
 			int run_id = net_pack.get_run_id();
 			cout << "received parameters (group id = " << group_id << ", run id = " << run_id << ")" << endl;
 			cout << "starting model run..." << endl;
-			run_model(pars, obs);
-			//send model results back
-			cout << "run complete" << endl;
-			cout << "sending results to master (group id = " << group_id << ", run id = " << run_id << ")" <<endl << endl;
-			serialized_data = Serialization::serialize(pars, obs);
-			net_pack.reset(NetPackage::RUN_FINISH, net_pack.get_groud_id(), net_pack.get_run_id(), "");
-			err = send_message(net_pack, serialized_data.data(), serialized_data.size());
-			// Send READY Message to master
-			net_pack.reset(NetPackage::READY, 0, 0,"");
-			char data;
-			err = send_message(net_pack, &data, 0);
+			if (run_model(pars, obs))
+			{
+				//send model results back
+				cout << "run complete" << endl;
+				cout << "sending results to master (group id = " << group_id << ", run id = " << run_id << ")" <<endl << endl;
+				serialized_data = Serialization::serialize(pars, obs);
+				net_pack.reset(NetPackage::RUN_FINISH, net_pack.get_groud_id(), net_pack.get_run_id(), "");
+				err = send_message(net_pack, serialized_data.data(), serialized_data.size());
+				// Send READY Message to master
+				net_pack.reset(NetPackage::READY, 0, 0,"");
+				char data;
+				err = send_message(net_pack, &data, 0);
+			}
+			else
+			{
+				serialized_data.clear();
+				serialized_data.push_back('\0');
+				net_pack.reset(NetPackage::RUN_FAILED, net_pack.get_groud_id(), net_pack.get_run_id(), "");
+				err = send_message(net_pack, serialized_data.data(), serialized_data.size());
+				// Send READY Message to master
+				net_pack.reset(NetPackage::READY, 0, 0,"");
+				char data;
+				err = send_message(net_pack, &data, 0);
+				w_sleep(5000);
+			}
 		}
 		else if (net_pack.get_type() == NetPackage::TERMINATE)
 		{
@@ -294,6 +314,7 @@ void YAMSlave::start(const string &host, const string &port)
 		{
 			cout << "received unsupported messaged type: " << net_pack.get_type() << endl;
 		}
+		w_sleep(100);
 	}
 	cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
 	char buf[256];

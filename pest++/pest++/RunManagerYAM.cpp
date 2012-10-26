@@ -264,15 +264,21 @@ void RunManagerYAM::process_message(int i_sock)
 	{
 		int run_id = net_pack.get_run_id();
 		int group_id = net_pack.get_groud_id();
-
 		f_rmr << "Run received from: " << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << group_id << ", run id = " << run_id << ")" << endl;
+		cout << "Run received from: " << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << group_id << ", run id = " << run_id << ")" << endl;
 		process_model_run(i_sock, net_pack);
 
 	}
 	else if (net_pack.get_type() == net_pack.RUN_FAILED)
 	{
-		f_rmr << "Run failed on slave:" << endl;
-		net_pack.print_header(f_rmr);
+		int run_id = net_pack.get_run_id();
+		int group_id = net_pack.get_groud_id();
+		f_rmr << "Run failed on slave:" << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << group_id << ", run id = " << run_id << ")" << endl;
+		cout << "Run failed on slave:" << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << group_id << ", run id = " << run_id << ")" << endl;
+		failed_runs.insert(make_pair(run_id, i_sock));
+		auto it = get_active_run_id(i_sock);
+		waiting_runs.push_front(YamModelRun(run_id, i_sock));
+		active_runs.erase(it);
 	}
 	else
 	{
@@ -330,13 +336,13 @@ void RunManagerYAM::process_message(int i_sock)
 	}
 	else if (failed_runs.count(run_id) > 0)
 	{
-		for(deque<int>::iterator it_sock=slave_fd.begin(); it_sock!=slave_fd.end(); ++it_sock)
+		for(it_sock=slave_fd.begin(); it_sock!=slave_fd.end(); ++it_sock)
 		{
 			auto fail_iter_pair = failed_runs.equal_range(run_id);
 
 			auto i = fail_iter_pair.first;
 			for(i = fail_iter_pair.first;
-				i!= fail_iter_pair.second && i->second != run_id;
+				i!= fail_iter_pair.second && i->second != *it_sock;
 				++i) {}
 			if (i == fail_iter_pair.second)  // This is slave has not previously failed on this run
 			{
@@ -358,7 +364,7 @@ void RunManagerYAM::process_message(int i_sock)
 		slave_fd.erase(it_sock);
 		scheduled = true;
 	}
-	return true;
+	return scheduled;
  }
 
 RunManagerYAM::~RunManagerYAM(void)

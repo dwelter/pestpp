@@ -255,3 +255,8 @@ int w_memcpy_s(void *dest, size_t numberOfElements, const void *src, size_t coun
 	}
 	return errno;
 }
+
+void w_sleep(int millisec)
+{
+	Sleep(5000);
+}
