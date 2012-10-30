@@ -531,7 +531,7 @@ int Jacobian::size_prior_info_sen() const
 }
 
 
-void Jacobian::save(const string &filename) const
+void Jacobian::save() const
 {
 	ofstream &fout = file_manager.open_ofile_ext("jco", ofstream::binary);
 

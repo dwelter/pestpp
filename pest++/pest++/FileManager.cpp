@@ -53,6 +53,17 @@ string FileManager::build_filename(const string &ext)
 	return directory + OperSys::DIR_SEP + pest_base_filename +"." + strip_cp(ext);
 }
 
+string FileManager::get_full_filename(const string &tag)
+{
+	string name = "NOT_FOUND";
+	auto i = filename_map.find(tag);
+	if (i != filename_map.end())
+	{
+		name = i->second;
+	}
+	return directory + OperSys::DIR_SEP + name;
+}
+
 ofstream &FileManager::open_ofile_absolute(const string &tag, const string &filename, ofstream::openmode mode)
 {
 	pair<map<string ,ofstream>::iterator, bool> ret;
@@ -96,7 +107,9 @@ ifstream &FileManager::open_ifile_absolute(const string &tag, const string &file
 	}
 	if (!f_new.good())
 	{
-		throw PestFileError(filename);
+		PestFileError pest_err(filename);
+		cerr << pest_err.what();
+		throw pest_err;
 	}
 	return f_new;
 }

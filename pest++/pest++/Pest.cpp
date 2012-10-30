@@ -67,9 +67,8 @@ vector<string> Pest::get_nonregul_obs() const
 }
 
 
-int Pest::process_ctl_file(const string &filename, FileManager &file_manager)
+int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 {
-	ifstream fin;
 	string line;
 	string section("");
 	vector<string> tokens;
@@ -114,16 +113,6 @@ int Pest::process_ctl_file(const string &filename, FileManager &file_manager)
 	base_par_transform.push_back_ctl2numeric(t_log);
 	base_par_transform.set_log10_ptr(t_log);
 	base_par_transform.push_back_ctl2numeric(t_auto_norm);
-	 
-	try {
-		fin.open(filename.c_str());
-		if (! fin) throw(PestFileError(filename));
-	}
-	catch(...)
-	{
-		cerr << "Error: can not open control file: \"" << filename << "\"" << endl;
-		throw(PestFileError(filename));
-	}
 
 	try {
 	prior_info_string = "";
@@ -286,16 +275,6 @@ int Pest::process_ctl_file(const string &filename, FileManager &file_manager)
 			prior_info_string.append(line);
 		}
 
-		else if (section == "DERIVATIVES COMMAND LINE")
-		{
-			if (sec_lnum == 1) {
-			//command_line_derivates = line;
-			}
-			else if (sec_lnum == 2) {
-				file_manager.set_analytic_derivative_filename(line);
-			}
-		}
-
 		else if (section == "PRIOR INFORMATION" )
 		{
 			//This section processes the prior information.  It does not write out the
@@ -359,7 +338,7 @@ int Pest::process_ctl_file(const string &filename, FileManager &file_manager)
 	}
 	catch (PestConversionError &e) {
 		std::stringstream out;
-		out << "Error parsing \"" << filename << "\" on line number " << lnum << endl;
+		out << "Error parsing \"" << file_manager.get_full_filename("pst") << "\" on line number " << lnum << endl;
 		e.add_front(out.str());
 		e.raise();
 	}

@@ -99,7 +99,8 @@ int main(int argc, char* argv[])
 	Pest pest_scenario;
 	pest_scenario.set_defaults();
 	try {
-		pest_scenario.process_ctl_file(file_manager.ctl_filename(), file_manager);
+		pest_scenario.process_ctl_file(file_manager.open_ifile_ext("pst"), file_manager);
+		file_manager.close_file("pst");
 	}
 	catch(PestFileError)
 	{
@@ -182,12 +183,13 @@ int main(int argc, char* argv[])
 		// save parameters to .par file
 		OutputFileWriter::write_par(file_manager.open_ofile_ext("par"), optimum_run.get_ctl_pars(), *(optimum_run.get_par_tran().get_offset_ptr()), 
 			*(optimum_run.get_par_tran().get_scale_ptr()));
+		file_manager.close_file("par");
 		// save new residuals to .rei file
+
 		OutputFileWriter::write_rei(file_manager.open_ofile_ext("rei"), 0, 
 			*(optimum_run.get_obj_func_ptr()->get_obs_ptr()), 
 			optimum_run.get_obs(), *(optimum_run.get_obj_func_ptr()),
 			optimum_run.get_ctl_pars());
-		file_manager.close_file("par");
 		file_manager.close_file("rei");
 		run_manager_ptr->free_memory();
 	}
@@ -218,6 +220,7 @@ int main(int argc, char* argv[])
 		catch(...)
 		{
 			cout << "WARNING: super parameter run failed.  Switching to base parameters" << endl;
+			fout_rec << "WARNING: super parameter run failed.  Switching to base parameters" << endl;
 		}
 	}
 	cout << endl;

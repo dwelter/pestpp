@@ -31,10 +31,9 @@ class FileManager
 {
 public:
 	FileManager(const string &_base_filename, const std::string &_directory="");
-	std::string ctl_filename() {return build_filename("pst");}
 	std::string build_filename(const std::string &ext);
+	std::string get_full_filename(const std::string &tag);
 	std::string jacobian_filename() {return build_filename("jco");}
-	std::string iteration_jacobian_filename() {return build_filename("jci");}
 	void set_analytic_derivative_filename(const std::string &name) {analytic_derivative_filename = name;}
 	std::ofstream &rec_ofstream();
 	std::ofstream &sen_ofstream();

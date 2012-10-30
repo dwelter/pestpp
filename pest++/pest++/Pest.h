@@ -39,7 +39,7 @@ public:
 	Pest();
 	void set_defaults();
 	void check_inputs();
-	int process_ctl_file(const string &filename, FileManager &file_manager);
+	int process_ctl_file(ifstream &fin, FileManager &file_manager);
 	const Parameters& get_ctl_parameters() const {return ctl_parameters;}
 	const Observations& get_ctl_observations() const {return observation_values;}
 	const ParameterInfo& get_ctl_parameter_info()const {return ctl_parameter_info;}

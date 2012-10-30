@@ -119,7 +119,7 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 		// sen file for this iteration
 		OutputFileWriter::append_sen(file_manager.sen_ofstream(), global_iter_num, jacobian, *(cur_solution.get_obj_func_ptr()), *par_group_info_ptr);
 		if (save_nextjac) {
-			jacobian.save(file_manager.jacobian_filename());
+			jacobian.save();
 		}
 		if (!optimum_run.obs_valid() || cur_solution.get_phi() < optimum_run.get_phi())
 		{
@@ -134,7 +134,7 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 			optimum_run.get_obs(), *(optimum_run.get_obj_func_ptr()),
 			optimum_run.get_ctl_pars());
 			file_manager.close_file("rei");
-			jacobian.save(file_manager.jacobian_filename());
+			jacobian.save();
 			// jacobian calculated next iteration will be at the current parameters and
 			// will be more accurate than the one caluculated at the begining of this iteration
 			save_nextjac = true;

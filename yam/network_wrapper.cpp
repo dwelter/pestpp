@@ -20,6 +20,7 @@ void w_init()
 int w_close(int sockfd) 
 {
 	int n;
+	shutdown(sockfd, SD_BOTH);
 	if ((n = closesocket(sockfd)) != 0)
 	{
 		cerr << "error closing socket: " << WSAGetLastError() << endl;  
