@@ -110,6 +110,20 @@ void ModelRun::set_model_parameters(const Parameters &parameters)
 	phi_is_valid = false;
 }
 
+void ModelRun::update(Parameters &model_pars, Observations &obs, PAR_UPDATE update_type)
+{
+    //Must set parameters before observations
+	if(update_type == FORCE_PAR_UPDATE || get_par_tran().is_one_to_one())
+	{
+		// transform to numeric parameters
+		get_par_tran().model2numeric_ip(model_pars);
+		set_numeric_parameters(model_pars);
+	}
+
+	// Process Observations
+	set_observations(obs);
+}
+
 void ModelRun::set_observations(const Observations &observations)
 {
 	sim_obs = observations;

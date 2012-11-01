@@ -25,7 +25,10 @@
 class RunManagerSerial : public RunManagerAbstract
 {
 public:
-	RunManagerSerial(const ModelExecInfo &_mode_exec_info, const std::string &stor_filename, const std::string &run_dir);
+	RunManagerSerial(const std::vector<std::string> _comline_vec,
+		const std::vector<std::string> _tplfile_vec, const std::vector<std::string> _inpfile_vec,
+		const std::vector<std::string> _insfile_vec, const std::vector<std::string> _outfile_vec,
+		const std::string &stor_filename, const std::string &run_dir);
 	virtual void run();
 	~RunManagerSerial(void);
 private:

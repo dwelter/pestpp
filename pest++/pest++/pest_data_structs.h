@@ -74,16 +74,6 @@ public:
 	ParameterGroupRec& operator=(const ParameterGroupRec &rhs);
 };
 
-class ModelExecInfo {
-public:
-	std::vector<std::string> comline_vec;
-	std::vector<std::string> tplfile_vec;
-	std::vector<std::string> inpfile_vec;
-	std::vector<std::string> insfile_vec;
-	std::vector<std::string> outfile_vec;
-};
-
-
 ostream& operator<< (ostream &os, const ParameterGroupRec& val);
 ostream& operator<< (ostream &os, const map<string, ParameterGroupRec> &val);
 
@@ -169,6 +159,15 @@ public:
 	const ObservationRec* get_observation_rec_ptr(const string &name) const;
 	const ObservationGroupRec* get_group_rec_ptr(const string &name) const;
 	Observations get_regulatization_obs(const Observations &obs_in);
+};
+
+class ModelExecInfo {
+public:
+	std::vector<std::string> comline_vec;
+	std::vector<std::string> tplfile_vec;
+	std::vector<std::string> inpfile_vec;
+	std::vector<std::string> insfile_vec;
+	std::vector<std::string> outfile_vec;
 };
 
 class PestppOptions {

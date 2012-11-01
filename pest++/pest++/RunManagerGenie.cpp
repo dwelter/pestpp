@@ -45,9 +45,14 @@ extern "C" {
 
 
 
-RunManagerGenie::RunManagerGenie(const ModelExecInfo &_model_exec_info, const string &stor_filename,
-	const std::string &_host, const std::string &_id)
-: RunManagerAbstract(_model_exec_info, stor_filename), host(_host), id(_id)
+RunManagerGenie::RunManagerGenie(const vector<string> _comline_vec,
+	const vector<string> _tplfile_vec, const vector<string> _inpfile_vec,
+	const vector<string> _insfile_vec, const vector<string> _outfile_vec,
+	const string &stor_filename, const std::string &_host,
+	const std::string &_id)
+	: RunManagerAbstract(_comline_vec, _tplfile_vec, _inpfile_vec,
+		_insfile_vec, _outfile_vec, stor_filename), 
+		host(_host), id(_id)
 {
 }
 

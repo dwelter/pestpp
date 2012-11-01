@@ -24,21 +24,23 @@
 #include <set>
 #include "RunStorage.h"
 
+class ModelExecInfo;
 class Parameters;
 class Observations;
-class ModelRun;
-class ModelExecInfo;
+
 
 class RunManagerAbstract
 {
 public:
-	enum PAR_UPDATE{DEFAULT_PAR_UPDATE, FORCE_PAR_UPDATE};
-	RunManagerAbstract::RunManagerAbstract(const ModelExecInfo &_mode_exec_info, const std::string &stor_filename);
+	RunManagerAbstract(const std::vector<std::string> _comline_vec,
+		const std::vector<std::string> _tplfile_vec, const std::vector<std::string> _inpfile_vec,
+		const std::vector<std::string> _insfile_vec, const std::vector<std::string> _outfile_vec,
+		const std::string &stor_filename);
 	virtual void allocate_memory(const Parameters &model_pars, const Observations &obs);
 	virtual void free_memory();
 	virtual int add_run(const Parameters &model_pars);
 	virtual void run() = 0;
-	virtual void get_run(ModelRun &model_run, int run_num, PAR_UPDATE update_type=DEFAULT_PAR_UPDATE);
+	virtual bool get_run(int run_id, Parameters &pars, Observations &obs);
 	virtual Parameters get_model_parameters(int run_num);
 	virtual Observations get_obs_template(double value = -9999.0) const;
 	virtual int get_total_runs(void) const {return total_runs;}

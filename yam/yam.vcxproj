@@ -29,6 +29,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{AA6E1EC6-2E3D-42EE-B997-2F40814DD2C9}</ProjectGuid>
     <RootNamespace>yam</RootNamespace>
+    <ProjectName>yam</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -114,6 +115,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalIncludeDirectories>..\lapackpp-2.5.4\include;$(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -167,10 +169,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\pest++\pest++\pest_error.h" />
+    <ClInclude Include="..\pest++\pest++\RunManagerAbstract.h" />
+    <ClInclude Include="..\pest++\pest++\RunManagerGenie.h" />
+    <ClInclude Include="..\pest++\pest++\RunManagerSerial.h" />
+    <ClInclude Include="..\pest++\pest++\RunManagerYAMR.h" />
+    <ClInclude Include="..\pest++\pest++\RunStorage.h" />
+    <ClInclude Include="..\pest++\pest++\Serialization.h" />
+    <ClInclude Include="..\pest++\pest++\system_variables.h" />
+    <ClInclude Include="..\pest++\pest++\Transformable.h" />
+    <ClInclude Include="..\pest++\pest++\utilities.h" />
+    <ClInclude Include="..\pest++\pest++\YamrSlave.h" />
     <ClInclude Include="network_package.h" />
     <ClInclude Include="network_wrapper.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\pest++\pest++\pest_error.cpp" />
+    <ClCompile Include="..\pest++\pest++\RunManagerAbstract.cpp" />
+    <ClCompile Include="..\pest++\pest++\RunManagerGenie.cpp" />
+    <ClCompile Include="..\pest++\pest++\RunManagerSerial.cpp" />
+    <ClCompile Include="..\pest++\pest++\RunManagerYAMR.cpp" />
+    <ClCompile Include="..\pest++\pest++\RunStorage.cpp" />
+    <ClCompile Include="..\pest++\pest++\system_variables.cpp" />
+    <ClCompile Include="..\pest++\pest++\Transformable.cpp" />
+    <ClCompile Include="..\pest++\pest++\utilities.cpp" />
+    <ClCompile Include="..\pest++\pest++\YamrSlave.cpp" />
     <ClCompile Include="network_package.cpp" />
     <ClCompile Include="network_wrapper.cpp" />
   </ItemGroup>

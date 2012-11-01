@@ -28,8 +28,8 @@
 #include <utility>
 #include <cassert>
 #include <memory>
+#include <lapackpp.h>
 #include "Transformable.h"
-#include "Transformation.h"
 #include "pest_error.h"
 #include "pest_data_structs.h"
 #include "network_wrapper.h"

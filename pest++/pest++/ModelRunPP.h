@@ -43,13 +43,15 @@ public:
 		string name;
 		FIELD field;
 	};
+    enum PAR_UPDATE{DEFAULT_PAR_UPDATE, FORCE_PAR_UPDATE};
 	ModelRun(const ObjectiveFunc *_objectiveFunc, const ParamTransformSeq &_par_tran, const Observations &_sim_obs);
 	ModelRun(const ObjectiveFunc *_objectiveFunc, const ParamTransformSeq &_par_tran, const Parameters &_numeric_pars, const Observations &_sim_obs);
 	ModelRun& operator=(const ModelRun &rhs);
 	virtual void set_numeric_parameters(const Parameters &pars);
 	virtual void set_ctl_parameters(const Parameters &pars);
 	virtual void set_model_parameters(const Parameters &pars);
-	virtual void set_observations(const Observations &observations);
+	virtual void set_observations(const Observations &obs);
+    virtual void update(Parameters &model_pars, Observations &obs, PAR_UPDATE update_type=DEFAULT_PAR_UPDATE);
 	virtual const Parameters &get_numeric_pars();
 	virtual Parameters get_ctl_pars();
 	virtual const Parameters &get_model_pars();

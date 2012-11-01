@@ -373,7 +373,11 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 		double rot_fac = 0;
 		if (i>1) rot_fac = rot_fac_vec[i-2];
 		ModelRun upgrade_run(base_run);
-		run_manager.get_run(upgrade_run, i, RunManagerAbstract::FORCE_PAR_UPDATE);
+        Parameters tmp_pars;
+        Observations tmp_obs;
+        run_manager.get_run(i, tmp_pars, tmp_obs);
+		upgrade_run.update(tmp_pars, tmp_obs, ModelRun::FORCE_PAR_UPDATE);
+
 		streamsize n_prec = os.precision(2);
 		os << "      Rotation Factor = ";
 		os << setiosflags(ios::fixed)<< setw(4) << rot_fac;

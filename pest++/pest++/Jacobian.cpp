@@ -224,7 +224,10 @@ void Jacobian::calculate(ModelRun &init_model_run, vector<string> numeric_par_na
 	// if initial run was was get the newly calculated values
 
 	if (calc_init_obs) {
-		run_manager.get_run(init_model_run, i_run);
+        Parameters tmp_pars;
+        Observations tmp_obs;
+        run_manager.get_run(i_run, tmp_pars, tmp_obs);
+		init_model_run.update(tmp_pars, tmp_obs);
 		++i_run;
 	}
 
@@ -239,7 +242,10 @@ void Jacobian::calculate(ModelRun &init_model_run, vector<string> numeric_par_na
 		numeric_parameters = init_model_run.get_numeric_pars();
 		numeric_parameters.update_rec(*par_name, del_numeric_par_vec[i_run].numeric_value);
 		tmp_model_run.set_numeric_parameters(numeric_parameters);
-		run_manager.get_run(tmp_model_run, i_run);
+        Parameters tmp_pars;
+        Observations tmp_obs;
+        run_manager.get_run(i_run, tmp_pars, tmp_obs);
+        tmp_model_run.update(tmp_pars, tmp_obs);
 		run_list.push_back(tmp_model_run);
 
 		if(i_run+1>=nruns || *par_name !=  del_numeric_par_vec[i_run+1].par_name)

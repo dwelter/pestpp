@@ -34,7 +34,10 @@ class RunManagerGenie : public RunManagerAbstract
 public:
 	static const int LEN_PARAMETER_NAME;
 	static const int LEN_OBSERVATION_NAME;
-	RunManagerGenie(const ModelExecInfo &_mode_exec_info, const std::string &stor_filename, const std::string &_host, const std::string &_id="PPEST");
+	RunManagerGenie(const std::vector<std::string> _comline_vec,
+		const std::vector<std::string> _tplfile_vec, const std::vector<std::string> _inpfile_vec,
+		const std::vector<std::string> _insfile_vec, const std::vector<std::string> _outfile_vec,
+		const std::string &stor_filename, const std::string &_host, const std::string &_id="PPEST");
 	virtual void run();
 	virtual ~RunManagerGenie(void);
 protected:

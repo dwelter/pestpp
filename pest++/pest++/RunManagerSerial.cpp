@@ -99,8 +99,13 @@ string RunManagerSerial::ins_err_msg(int i)
 	return err_msg;
 }
 
-RunManagerSerial::RunManagerSerial(const ModelExecInfo &_model_exec_info, const string &stor_filename, const string &_run_dir)
-	: RunManagerAbstract(_model_exec_info, stor_filename), run_dir(_run_dir)
+RunManagerSerial::RunManagerSerial(const vector<string> _comline_vec,
+	const vector<string> _tplfile_vec, const vector<string> _inpfile_vec,
+	const vector<string> _insfile_vec, const vector<string> _outfile_vec,
+	const string &stor_filename, const string &_run_dir)
+	: RunManagerAbstract(_comline_vec, _tplfile_vec, _inpfile_vec,
+		_insfile_vec, _outfile_vec, stor_filename),
+		run_dir(_run_dir)
 {
 
 }

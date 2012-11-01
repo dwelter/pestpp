@@ -26,18 +26,16 @@
 #include <cstring>
 #include "Transformable.h"
 #include "ModelRunPP.h"
-#include "Pest.h"
 #include "utilities.h"
 
-
-RunManagerAbstract::RunManagerAbstract(const ModelExecInfo &_model_exec_info, const string &stor_filename)
-	 : total_runs(0), file_stor(stor_filename)
+RunManagerAbstract::RunManagerAbstract(const vector<string> _comline_vec,
+	const vector<string> _tplfile_vec, const vector<string> _inpfile_vec,
+	const vector<string> _insfile_vec, const vector<string> _outfile_vec,
+	const string &stor_filename)
+	: total_runs(0), comline_vec(_comline_vec), tplfile_vec(_tplfile_vec),
+	inpfile_vec(_inpfile_vec), insfile_vec(_insfile_vec), outfile_vec(_outfile_vec),
+	file_stor(stor_filename)
 {
-	comline_vec = _model_exec_info.comline_vec;
-	tplfile_vec = _model_exec_info.tplfile_vec;
-	inpfile_vec =_model_exec_info.inpfile_vec;
-	insfile_vec = _model_exec_info.insfile_vec;
-	outfile_vec =_model_exec_info.outfile_vec;
 }
 
 void RunManagerAbstract::allocate_memory(const Parameters &model_pars, const Observations &obs)
@@ -54,22 +52,12 @@ int RunManagerAbstract::add_run(const Parameters &model_pars)
 	return run_id;
 }
 
-void RunManagerAbstract::get_run(ModelRun &model_run, int run_id, PAR_UPDATE update_type)
+bool RunManagerAbstract::get_run(int run_id, Parameters &pars, Observations &obs)
 {
-	Parameters pars;
-	Observations obs;
+    bool run_good;
 	file_stor.get_run(run_id, &pars, &obs);
-
-	//Must set parameters before observations
-	if(update_type == FORCE_PAR_UPDATE || model_run.get_par_tran().is_one_to_one())
-	{
-		// transform to numeric parameters
-		model_run.get_par_tran().model2numeric_ip(pars);
-		model_run.set_numeric_parameters(pars);
-	}
-
-	// Process Observations
-	model_run.set_observations(obs);
+    if ( failed_runs.find(run_id) == failed_runs.end() ) run_good = false;
+    return run_good;
 }
 
 

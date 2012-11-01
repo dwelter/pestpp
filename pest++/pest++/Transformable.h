@@ -31,8 +31,6 @@ using namespace std;
 
 class LaVectorDouble;
 class ParameterInfo;
-class TranOffset;
-class TranScale;
 class Parameters;
 class Observations;
 

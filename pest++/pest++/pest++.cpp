@@ -115,20 +115,30 @@ int main(int argc, char* argv[])
 		string port = argv[3];
 		strip_ip(port);
 		strip_ip(port, "front", ":");
-    	run_manager_ptr = new RunManagerYAMR (pest_scenario.get_model_exec_info(), port,
-			file_manager.build_filename("rns"), file_manager.open_ofile_ext("rmr"));
+		const ModelExecInfo &exi = pest_scenario.get_model_exec_info();
+    	run_manager_ptr = new RunManagerYAMR (exi.comline_vec,
+		exi.tplfile_vec, exi.inpfile_vec,
+		exi.insfile_vec, exi.outfile_vec,
+		file_manager.build_filename("rns"), port,
+		file_manager.open_ofile_ext("rmr"));
 	}
 	else if (run_manager_type == RunManagerType::GENIE)
 	{
 		cout << "initializing Genie run manager" << endl;
 		string socket_str = argv[3];
 		strip_ip(socket_str);
-		run_manager_ptr = new RunManagerGenie (pest_scenario.get_model_exec_info(), file_manager.build_filename("rns"), socket_str);
+		const ModelExecInfo &exi = pest_scenario.get_model_exec_info();
+		run_manager_ptr = new RunManagerGenie(exi.comline_vec,
+		exi.tplfile_vec, exi.inpfile_vec, exi.insfile_vec, exi.outfile_vec,
+		file_manager.build_filename("rns"), socket_str);
 	}
 	else
 	{
 		cout << "initializing serial run manager" << endl;
-		run_manager_ptr = new RunManagerSerial(pest_scenario.get_model_exec_info(), file_manager.build_filename("rns"), pathname);
+		const ModelExecInfo &exi = pest_scenario.get_model_exec_info();
+		run_manager_ptr = new RunManagerSerial(exi.comline_vec,
+		exi.tplfile_vec, exi.inpfile_vec, exi.insfile_vec, exi.outfile_vec,
+		file_manager.build_filename("rns"), pathname);
 	}
 
 	const ParamTransformSeq &base_trans_seq = pest_scenario.get_base_par_tran_seq();
@@ -179,7 +189,11 @@ int main(int argc, char* argv[])
 		run_manager_ptr->allocate_memory(init_model_pars, pest_scenario.get_ctl_observations());
 		run_manager_ptr->add_run(init_model_pars);
 		run_manager_ptr->run();
-		run_manager_ptr->get_run(optimum_run, 0, RunManagerAbstract::FORCE_PAR_UPDATE);
+
+        Parameters tmp_pars;
+        Observations tmp_obs;
+        run_manager_ptr->get_run(0, tmp_pars, tmp_obs);
+		optimum_run.update(tmp_pars, tmp_obs, ModelRun::FORCE_PAR_UPDATE);
 		// save parameters to .par file
 		OutputFileWriter::write_par(file_manager.open_ofile_ext("par"), optimum_run.get_ctl_pars(), *(optimum_run.get_par_tran().get_offset_ptr()), 
 			*(optimum_run.get_par_tran().get_scale_ptr()));
