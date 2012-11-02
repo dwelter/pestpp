@@ -93,7 +93,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug64|Win32'">
@@ -105,6 +106,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalIncludeDirectories>..\lapackpp-2.5.4\include;$(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -184,6 +186,7 @@
     <ClInclude Include="network_wrapper.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\pest++\pest++\linpackc.c" />
     <ClCompile Include="..\pest++\pest++\pest_error.cpp" />
     <ClCompile Include="..\pest++\pest++\RunManagerAbstract.cpp" />
     <ClCompile Include="..\pest++\pest++\RunManagerGenie.cpp" />

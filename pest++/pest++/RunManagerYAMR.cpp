@@ -526,7 +526,7 @@ void RunManagerYAMR::process_message(int i_sock)
 		if (cur_state == SlaveInfo::State::NEW)
 		{
 			NetPackage net_pack(NetPackage::REQ_RUNDIR, 0, 0, "");
-			char data = '/0';
+			char data = '\0';
 			int err = net_pack.send(i_sock, &data, sizeof(data));
 			if (err != -1)
 			{
@@ -556,7 +556,7 @@ void RunManagerYAMR::process_message(int i_sock)
 		else if(cur_state == SlaveInfo::State::CMD_SENT)
 		{
 			NetPackage net_pack(NetPackage::REQ_LINPACK, 0, 0, "");
-			char data = '/0';
+			char data = '\0';
 			int err = net_pack.send(i_sock, &data, sizeof(data));
 			if (err != -1)
 			{

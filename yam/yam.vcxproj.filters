@@ -92,5 +92,8 @@
     <ClCompile Include="..\pest++\pest++\system_variables.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\pest++\pest++\linpackc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
