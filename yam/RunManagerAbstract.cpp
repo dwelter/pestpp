@@ -25,7 +25,6 @@
 #include <cassert>
 #include <cstring>
 #include "Transformable.h"
-#include "ModelRunPP.h"
 #include "utilities.h"
 
 RunManagerAbstract::RunManagerAbstract(const vector<string> _comline_vec,
@@ -54,9 +53,9 @@ int RunManagerAbstract::add_run(const Parameters &model_pars)
 
 bool RunManagerAbstract::get_run(int run_id, Parameters &pars, Observations &obs)
 {
-    bool run_good;
+    bool run_good = true;
 	file_stor.get_run(run_id, &pars, &obs);
-    if ( failed_runs.find(run_id) == failed_runs.end() ) run_good = false;
+    if ( failed_runs.find(run_id) != failed_runs.end() ) run_good = false;
     return run_good;
 }
 

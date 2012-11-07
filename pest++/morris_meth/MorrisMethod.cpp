@@ -6,6 +6,7 @@
 #include "Transformable.h"
 #include "RunManagerAbstract.h"
 #include "ParamTransformSeq.h"
+#include "ModelRunPP.h"
 
 using namespace std;
 using Eigen::MatrixXd;
@@ -22,9 +23,9 @@ MatrixXd MorrisMethod::create_P_star_mat(int k)
 	return b_star_mat;
 }
 
-MorrisMethod::MorrisMethod(const vector<string> &_par_name_vec, const Parameters &_lower_bnd, 
-		const Parameters &_upper_bnd, int _p)
-		: par_name_vec(_par_name_vec), lower_bnd(_lower_bnd), upper_bnd(_upper_bnd), p(_p)
+MorrisMethod::MorrisMethod(const vector<string> &_par_name_vec,  const Parameters &_fixed_pars,
+						   const Parameters &_lower_bnd, const Parameters &_upper_bnd, int _p)
+		: par_name_vec(_par_name_vec), fixed_pars(_fixed_pars), lower_bnd(_lower_bnd), upper_bnd(_upper_bnd), p(_p), r(0)
 
 {
 	// p should be even.  If not, add 1 to it.
@@ -137,18 +138,54 @@ Parameters MorrisMethod::get_ctl_parameters(int row)
 	return ctl_pars;
 }
 
-void MorrisMethod::assemble_runs(RunManagerAbstract &rm, ParamTransformSeq &ctl2model_tran)
+void MorrisMethod::assemble_runs(RunManagerAbstract &rm, ParamTransformSeq &base_partran_seq)
 {
+	++r;
 	b_star_mat = create_P_star_mat(par_name_vec.size());
     int n_rows = b_star_mat.rows();
 	for (int i=0; i<n_rows; ++i)
 	{
+		//get control parameters
         Parameters pars = get_ctl_parameters(i);
+		pars.insert(fixed_pars.begin(), fixed_pars.end());
+		// converst control parameters to model parameters
+		base_partran_seq.ctl2model_ip(pars);
         rm.add_run(pars);
+	}
+}
+
+
+void  MorrisMethod::calc_sen(RunManagerAbstract &rm, ModelRun model_run, ofstream &fout)
+{
+	ModelRun run0 = model_run;
+	ModelRun run1 = model_run;
+	Parameters pars0;
+	Observations obs0;
+	Parameters pars1;
+	Observations obs1;
+	unsigned int n_adj_par = par_name_vec.size();
+	for (int i_r=0; i_r<r; ++i_r)
+	{
+		for (unsigned int i_par=0; i_par<n_adj_par; ++i_par)
+		{
+			bool run0_ok, run1_ok;
+			int i_run = i_r*(n_adj_par+1) + i_par;
+			string &p = par_name_vec[i_par];
+			run0_ok = rm.get_run(i_run, pars0, obs0);
+			run1_ok = rm.get_run(i_run+1, pars1, obs1);
+			if (run0_ok && run1_ok)
+			{
+				run0.update(pars0, obs0, ModelRun::FORCE_PAR_UPDATE);
+				double phi0 = run0.get_phi(0.0);
+				run1_ok = rm.get_run(i_run+1, pars1, obs1);
+				run1.update(pars1, obs1, ModelRun::FORCE_PAR_UPDATE);
+				double phi1 = run1.get_phi(0.0);
+				fout << p << "  " <<  phi1 << "  " << phi0 << "  " << pars1[p] << "  " << pars0[p] << " " << (phi1 - phi0) / (pars1[p] - pars0[p]) << endl;
+			}
+		}
 	}
 }
 
 MorrisMethod::~MorrisMethod(void)
 {
 }
-

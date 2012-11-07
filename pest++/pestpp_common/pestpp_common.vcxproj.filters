@@ -15,123 +15,117 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\pest++\FileManager.h">
+    <ClInclude Include="Transformation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pest++\Jacobian.h">
+    <ClInclude Include="TerminationController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pest++\lapack_tools.h">
+    <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pest++\ModelRunPP.h">
+    <ClInclude Include="SVDSolver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pest++\ObjectiveFunc.h">
+    <ClInclude Include="SVDPackage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pest++\ParamTransformSeq.h">
+    <ClInclude Include="SVDASolver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pest++\OutputFileWriter.h">
+    <ClInclude Include="SVD_PROPACK.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pest++\Pest.h">
+    <ClInclude Include="Regularization.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pest++\pest_data_structs.h">
+    <ClInclude Include="QSqrtMatrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pest++\PriorInformation.h">
+    <ClInclude Include="PriorInformation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pest++\QSqrtMatrix.h">
+    <ClInclude Include="pest_data_structs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pest++\Regularization.h">
+    <ClInclude Include="Pest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pest++\resource.h">
+    <ClInclude Include="ParamTransformSeq.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pest++\SVD_PROPACK.h">
+    <ClInclude Include="OutputFileWriter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pest++\SVDASolver.h">
+    <ClInclude Include="ObjectiveFunc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pest++\SVDPackage.h">
+    <ClInclude Include="ModelRunPP.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pest++\SVDSolver.h">
+    <ClInclude Include="lapack_tools.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pest++\targetver.h">
+    <ClInclude Include="Jacobian.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pest++\TerminationController.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\pest++\Transformation.h">
+    <ClInclude Include="FileManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\pest++\FileManager.cpp">
+    <ClCompile Include="Transformation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pest++\Jacobian.cpp">
+    <ClCompile Include="TerminationController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pest++\lapack_tools.cpp">
+    <ClCompile Include="SVDSolver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pest++\ModelRunPP.cpp">
+    <ClCompile Include="SVDPackage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pest++\OutputFileWriter.cpp">
+    <ClCompile Include="SVDASolver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pest++\ObjectiveFunc.cpp">
+    <ClCompile Include="SVD_PROPACK.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pest++\ParamTransformSeq.cpp">
+    <ClCompile Include="Regularization.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pest++\Pest.cpp">
+    <ClCompile Include="QSqrtMatrix.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pest++\PriorInformation.cpp">
+    <ClCompile Include="PriorInformation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pest++\pest_data_structs.cpp">
+    <ClCompile Include="pest_data_structs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pest++\QSqrtMatrix.cpp">
+    <ClCompile Include="Pest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pest++\Regularization.cpp">
+    <ClCompile Include="ParamTransformSeq.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pest++\Serializeation.cpp">
+    <ClCompile Include="OutputFileWriter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pest++\SVD_PROPACK.cpp">
+    <ClCompile Include="ObjectiveFunc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pest++\SVDASolver.cpp">
+    <ClCompile Include="ModelRunPP.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pest++\SVDPackage.cpp">
+    <ClCompile Include="lapack_tools.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pest++\SVDSolver.cpp">
+    <ClCompile Include="Jacobian.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pest++\TerminationController.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\pest++\Transformation.cpp">
+    <ClCompile Include="FileManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

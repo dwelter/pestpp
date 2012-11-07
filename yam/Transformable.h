@@ -67,6 +67,7 @@ public:
 	pair<iterator,bool> insert(const string &name, double value);
 	pair<iterator, bool> insert(const pair<string, double> &x);
     void insert(const vector<string> &name_vec, const vector<double> &value_vec);
+	void insert (iterator first, iterator last );
 	size_t erase(const string &name);
 	iterator find(const string &name);
 	const double* get_rec_ptr(const string &name) const;

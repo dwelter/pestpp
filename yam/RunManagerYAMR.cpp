@@ -34,7 +34,6 @@
 #include "network_wrapper.h"
 #include "network_package.h"
 #include "Transformable.h"
-#include "Pest.h"
 #include "utilities.h"
 #include "Serialization.h"
 
@@ -139,7 +138,7 @@ void SlaveInfo::end_run(int sock_id)
 	if (run_time > std::chrono::hours(0))
 	{
 		run_time = run_time + dt;
-		run_time /= 2.0;
+		run_time /= 2;
 	}
 	else
 	{
@@ -161,7 +160,7 @@ double SlaveInfo::get_runtime(int sock_id)
 	auto it = slave_info_map.find(sock_id);
 	assert(it != slave_info_map.end());
 	auto &run_time = it->second.run_time;
-	return run_time.count();
+	return double(run_time.count());
 }
 
 double SlaveInfo::get_linpack_time(int sock_id)
@@ -169,7 +168,7 @@ double SlaveInfo::get_linpack_time(int sock_id)
 	auto it = slave_info_map.find(sock_id);
 	assert(it != slave_info_map.end());
 	auto &linpack_time = it->second.linpack_time;
-	return linpack_time.count();
+	return double(linpack_time.count());
 }
 
 void SlaveInfo::sort_queue(deque<int> &slave_fd)

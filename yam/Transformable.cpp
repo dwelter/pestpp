@@ -31,7 +31,6 @@
 #include <lapackpp.h>
 #include "Transformable.h"
 #include "pest_error.h"
-#include "pest_data_structs.h"
 #include "network_wrapper.h"
 #include "utilities.h"
 
@@ -65,6 +64,7 @@ Transformable& Transformable::operator+=(const Transformable &rhs)
 {
 	for(Transformable::iterator b=items.begin(), e=items.end(); b!=e; ++b)
 	{
+		assert(rhs.items.find(b->first) != rhs.items.end());
 		b->second += rhs.items.find(b->first)->second;
 	}
     return *this;
@@ -75,6 +75,7 @@ Transformable& Transformable::operator-=(const Transformable &rhs)
 {
 	for(Transformable::iterator b=items.begin(), e=items.end(); b!=e; ++b)
 	{
+		assert(rhs.items.find(b->first) != rhs.items.end());
 		b->second -= rhs.items.find(b->first)->second;
 	}
     return *this;
@@ -114,6 +115,11 @@ void Transformable::insert(const vector<string> &name_vec, const vector<double> 
 	{
         insert(pair<string, double>(name_vec[i], value_vec[i]));
 	}
+}
+
+void Transformable::insert(iterator first, iterator last )
+{
+	items.insert(first, last);
 }
 
 size_t Transformable::erase(const string &name)

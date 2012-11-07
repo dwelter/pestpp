@@ -27,8 +27,6 @@
 #include <map>
 #include <direct.h>
 #include "Transformable.h"
-#include "ModelRunPP.h"
-#include "Pest.h"
 #include "utilities.h"
 
 using namespace std;
@@ -129,9 +127,9 @@ void RunManagerSerial::run()
         Parameters pars = file_stor.get_parameters(i_run);
         Observations obs;
 		vector<double> par_values;
-		for(auto &i : pars)
+		for(auto &i : par_name_vec)
 		{
-			par_values.push_back(i.second);
+			par_values.push_back(pars.get_rec(i));
 		}
 		try {
 			std::cout << string(message.str().size(), '\b');

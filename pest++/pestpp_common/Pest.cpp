@@ -107,6 +107,7 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 	base_par_transform.set_offset_ptr(t_offset);
 	base_par_transform.push_back_ctl2numeric(t_tied);
 	base_par_transform.push_back_ctl2numeric(t_fixed);
+	base_par_transform.set_fixed_ptr(t_fixed);
 	base_par_transform.push_back_ctl2numeric(t_frozen);
 	base_par_transform.set_frozen_ptr(t_frozen);
 	base_par_transform.add_default_deep_copy(t_frozen);
@@ -217,6 +218,27 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 				convert_ip(tokens[8], offset);
 				// add parameters to model parameter and paramter_info datasets
 				ctl_ordered_par_names.push_back(name);
+				if (*trans_type == "FIXED")
+				{
+					pi.tranform_type = ParameterRec::TRAN_TYPE::FIXED;
+				}
+				else if (*trans_type == "LOG")
+				{
+					pi.tranform_type = ParameterRec::TRAN_TYPE::LOG;
+				}
+				else if (*trans_type == "TIED")
+				{
+					pi.tranform_type = ParameterRec::TRAN_TYPE::TIED;
+				}
+				else if (*trans_type == "NONE")
+				{
+					pi.tranform_type = ParameterRec::TRAN_TYPE::NONE;
+				}
+				else
+				{
+					pi.tranform_type = ParameterRec::TRAN_TYPE::NONE;
+					assert(true);
+				}
 				ctl_parameter_info.insert(name, pi);
 				ctl_parameters.insert(name, pi.init_value);
 				base_group_info.insert_parameter_link(name, pi.group);

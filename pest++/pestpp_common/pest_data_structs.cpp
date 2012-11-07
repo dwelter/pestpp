@@ -210,7 +210,7 @@ Parameters ParameterInfo::get_up_bnd(const vector<string> &keys) const
 	for (vector<string>::const_iterator i=keys.begin(); i!=iend; ++i)
 	{
 		v_ptr = get_parameter_rec_ptr(*i);
-		if (!v_ptr) {
+		if (v_ptr) {
 			u_bnd.insert(*i, v_ptr->ubnd);
 		}
 		else {

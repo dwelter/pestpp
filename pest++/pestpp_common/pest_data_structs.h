@@ -103,14 +103,16 @@ private:
 
 class ParameterRec {
 public:
+	enum class TRAN_TYPE {NONE, FIXED, TIED, LOG};
 	string chglim;
 	double lbnd;
 	double ubnd;
 	double init_value;
 	string group;
 	bool dercom;
+	TRAN_TYPE tranform_type;
 	ParameterRec() : chglim(""), lbnd(0.0), ubnd(0.0), init_value(0.0), group(""),
-		dercom(false){}
+		dercom(false), tranform_type(TRAN_TYPE::NONE){}
 };
 ostream& operator<< (ostream &os, const ParameterRec& val);
 

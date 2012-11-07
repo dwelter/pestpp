@@ -14,8 +14,8 @@ cond     relative 0.01  0.0  switch  2.0 parabolic
 scoeff   relative 0.01  0.0  switch  2.0 parabolic
 * parameter data
 recharge fixed factor    0.1     1.0e-10   1.0e10 recharge  1.0   0.0  1
-cond     log   factor    5.0E-3  1.0e-10   1.0e10 cond      1.0   0.0  1
-scoeff   log   factor    5.0E-2  1.0e-10   1.0e10 scoeff    1.0   0.0  1
+cond     log   factor    5.0E-3  1.0e-5   1.0e2 cond      1.0   0.0  1
+scoeff   log   factor    5.0E-2  1.0e-6   1.0    scoeff    1.0   0.0  1
 * observation groups
 obsgroup1
 obs2

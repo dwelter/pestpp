@@ -26,6 +26,37 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="network_package.h" />
+    <ClInclude Include="network_wrapper.h" />
+    <ClInclude Include="pest_error.h" />
+    <ClInclude Include="RunManagerAbstract.h" />
+    <ClInclude Include="RunManagerGenie.h" />
+    <ClInclude Include="RunManagerSerial.h" />
+    <ClInclude Include="RunManagerYAMR.h" />
+    <ClInclude Include="RunStorage.h" />
+    <ClInclude Include="Serialization.h" />
+    <ClInclude Include="system_variables.h" />
+    <ClInclude Include="Transformable.h" />
+    <ClInclude Include="utilities.h" />
+    <ClInclude Include="YamrSlave.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="linpackc.c" />
+    <ClCompile Include="network_package.cpp" />
+    <ClCompile Include="network_wrapper.cpp" />
+    <ClCompile Include="pest_error.cpp" />
+    <ClCompile Include="RunManagerAbstract.cpp" />
+    <ClCompile Include="RunManagerGenie.cpp" />
+    <ClCompile Include="RunManagerSerial.cpp" />
+    <ClCompile Include="RunManagerYAMR.cpp" />
+    <ClCompile Include="RunStorage.cpp" />
+    <ClCompile Include="Serializeation.cpp" />
+    <ClCompile Include="system_variables.cpp" />
+    <ClCompile Include="Transformable.cpp" />
+    <ClCompile Include="utilities.cpp" />
+    <ClCompile Include="YamrSlave.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{AA6E1EC6-2E3D-42EE-B997-2F40814DD2C9}</ProjectGuid>
     <RootNamespace>yam</RootNamespace>
@@ -170,36 +201,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="..\pest++\pest++\pest_error.h" />
-    <ClInclude Include="..\pest++\pest++\RunManagerAbstract.h" />
-    <ClInclude Include="..\pest++\pest++\RunManagerGenie.h" />
-    <ClInclude Include="..\pest++\pest++\RunManagerSerial.h" />
-    <ClInclude Include="..\pest++\pest++\RunManagerYAMR.h" />
-    <ClInclude Include="..\pest++\pest++\RunStorage.h" />
-    <ClInclude Include="..\pest++\pest++\Serialization.h" />
-    <ClInclude Include="..\pest++\pest++\system_variables.h" />
-    <ClInclude Include="..\pest++\pest++\Transformable.h" />
-    <ClInclude Include="..\pest++\pest++\utilities.h" />
-    <ClInclude Include="..\pest++\pest++\YamrSlave.h" />
-    <ClInclude Include="network_package.h" />
-    <ClInclude Include="network_wrapper.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\pest++\pest++\linpackc.c" />
-    <ClCompile Include="..\pest++\pest++\pest_error.cpp" />
-    <ClCompile Include="..\pest++\pest++\RunManagerAbstract.cpp" />
-    <ClCompile Include="..\pest++\pest++\RunManagerGenie.cpp" />
-    <ClCompile Include="..\pest++\pest++\RunManagerSerial.cpp" />
-    <ClCompile Include="..\pest++\pest++\RunManagerYAMR.cpp" />
-    <ClCompile Include="..\pest++\pest++\RunStorage.cpp" />
-    <ClCompile Include="..\pest++\pest++\system_variables.cpp" />
-    <ClCompile Include="..\pest++\pest++\Transformable.cpp" />
-    <ClCompile Include="..\pest++\pest++\utilities.cpp" />
-    <ClCompile Include="..\pest++\pest++\YamrSlave.cpp" />
-    <ClCompile Include="network_package.cpp" />
-    <ClCompile Include="network_wrapper.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -81,6 +81,8 @@ public:
 	void set_log10_ptr(TranLog10 *ptr) {ctl_log10_ptr = ptr;}
 	TranFrozen *get_frozen_ptr()const {return ctl_frozen_ptr;};
 	void set_frozen_ptr(TranFrozen *ptr) {ctl_frozen_ptr = ptr;}
+	TranFixed *get_fixed_ptr()const {return ctl_fixed_ptr;};
+	void set_fixed_ptr(TranFixed *ptr) {ctl_fixed_ptr = ptr;}
 	const TranLog10 *get_log10_ptr() const {return ctl_log10_ptr;}
 	const vector<Transformation*> get_ctl2model_tranformations() const {return tranSeq_ctl2model;}
 	const vector<Transformation*> get_ctl2numeric_tranformations() const {return tranSeq_ctl2numeric;}
@@ -96,6 +98,7 @@ private:
 	TranScale *ctl_scale_prt;
 	TranLog10 *ctl_log10_ptr;
 	TranFrozen *ctl_frozen_ptr;
+	TranFixed *ctl_fixed_ptr;
 	set <Transformation *> default_deep_copy_tran_set;
 	static map<const Transformation*, int> tran_ref_count;
 	static int tran_add_ref_count(const Transformation *);

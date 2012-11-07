@@ -10,6 +10,47 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="FileManager.h" />
+    <ClInclude Include="Jacobian.h" />
+    <ClInclude Include="lapack_tools.h" />
+    <ClInclude Include="ModelRunPP.h" />
+    <ClInclude Include="ObjectiveFunc.h" />
+    <ClInclude Include="OutputFileWriter.h" />
+    <ClInclude Include="ParamTransformSeq.h" />
+    <ClInclude Include="Pest.h" />
+    <ClInclude Include="pest_data_structs.h" />
+    <ClInclude Include="PriorInformation.h" />
+    <ClInclude Include="QSqrtMatrix.h" />
+    <ClInclude Include="Regularization.h" />
+    <ClInclude Include="SVDASolver.h" />
+    <ClInclude Include="SVDPackage.h" />
+    <ClInclude Include="SVDSolver.h" />
+    <ClInclude Include="SVD_PROPACK.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="TerminationController.h" />
+    <ClInclude Include="Transformation.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="FileManager.cpp" />
+    <ClCompile Include="Jacobian.cpp" />
+    <ClCompile Include="lapack_tools.cpp" />
+    <ClCompile Include="ModelRunPP.cpp" />
+    <ClCompile Include="ObjectiveFunc.cpp" />
+    <ClCompile Include="OutputFileWriter.cpp" />
+    <ClCompile Include="ParamTransformSeq.cpp" />
+    <ClCompile Include="Pest.cpp" />
+    <ClCompile Include="pest_data_structs.cpp" />
+    <ClCompile Include="PriorInformation.cpp" />
+    <ClCompile Include="QSqrtMatrix.cpp" />
+    <ClCompile Include="Regularization.cpp" />
+    <ClCompile Include="SVDASolver.cpp" />
+    <ClCompile Include="SVDPackage.cpp" />
+    <ClCompile Include="SVDSolver.cpp" />
+    <ClCompile Include="SVD_PROPACK.cpp" />
+    <ClCompile Include="TerminationController.cpp" />
+    <ClCompile Include="Transformation.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D25CC810-E9E9-4920-82A4-6F585214480E}</ProjectGuid>
     <RootNamespace>pestpp_common</RootNamespace>
@@ -66,49 +107,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="..\pest++\FileManager.h" />
-    <ClInclude Include="..\pest++\Jacobian.h" />
-    <ClInclude Include="..\pest++\lapack_tools.h" />
-    <ClInclude Include="..\pest++\ModelRunPP.h" />
-    <ClInclude Include="..\pest++\ObjectiveFunc.h" />
-    <ClInclude Include="..\pest++\OutputFileWriter.h" />
-    <ClInclude Include="..\pest++\ParamTransformSeq.h" />
-    <ClInclude Include="..\pest++\Pest.h" />
-    <ClInclude Include="..\pest++\pest_data_structs.h" />
-    <ClInclude Include="..\pest++\PriorInformation.h" />
-    <ClInclude Include="..\pest++\QSqrtMatrix.h" />
-    <ClInclude Include="..\pest++\Regularization.h" />
-    <ClInclude Include="..\pest++\resource.h" />
-    <ClInclude Include="..\pest++\SVDASolver.h" />
-    <ClInclude Include="..\pest++\SVDPackage.h" />
-    <ClInclude Include="..\pest++\SVDSolver.h" />
-    <ClInclude Include="..\pest++\SVD_PROPACK.h" />
-    <ClInclude Include="..\pest++\targetver.h" />
-    <ClInclude Include="..\pest++\TerminationController.h" />
-    <ClInclude Include="..\pest++\Transformation.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\pest++\FileManager.cpp" />
-    <ClCompile Include="..\pest++\Jacobian.cpp" />
-    <ClCompile Include="..\pest++\lapack_tools.cpp" />
-    <ClCompile Include="..\pest++\ModelRunPP.cpp" />
-    <ClCompile Include="..\pest++\ObjectiveFunc.cpp" />
-    <ClCompile Include="..\pest++\OutputFileWriter.cpp" />
-    <ClCompile Include="..\pest++\ParamTransformSeq.cpp" />
-    <ClCompile Include="..\pest++\Pest.cpp" />
-    <ClCompile Include="..\pest++\pest_data_structs.cpp" />
-    <ClCompile Include="..\pest++\PriorInformation.cpp" />
-    <ClCompile Include="..\pest++\QSqrtMatrix.cpp" />
-    <ClCompile Include="..\pest++\Regularization.cpp" />
-    <ClCompile Include="..\pest++\Serializeation.cpp" />
-    <ClCompile Include="..\pest++\SVDASolver.cpp" />
-    <ClCompile Include="..\pest++\SVDPackage.cpp" />
-    <ClCompile Include="..\pest++\SVDSolver.cpp" />
-    <ClCompile Include="..\pest++\SVD_PROPACK.cpp" />
-    <ClCompile Include="..\pest++\TerminationController.cpp" />
-    <ClCompile Include="..\pest++\Transformation.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

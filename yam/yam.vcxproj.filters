@@ -21,78 +21,81 @@
     <ClInclude Include="network_wrapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pest++\pest++\Transformable.h">
+    <ClInclude Include="pest_error.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pest++\pest++\pest_error.h">
+    <ClInclude Include="RunManagerAbstract.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pest++\pest++\utilities.h">
+    <ClInclude Include="RunManagerGenie.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pest++\pest++\RunManagerAbstract.h">
+    <ClInclude Include="RunManagerSerial.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pest++\pest++\RunManagerGenie.h">
+    <ClInclude Include="RunManagerYAMR.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pest++\pest++\RunManagerSerial.h">
+    <ClInclude Include="RunStorage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pest++\pest++\RunManagerYAMR.h">
+    <ClInclude Include="Serialization.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pest++\pest++\RunStorage.h">
+    <ClInclude Include="system_variables.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pest++\pest++\Serialization.h">
+    <ClInclude Include="Transformable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pest++\pest++\YamrSlave.h">
+    <ClInclude Include="utilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pest++\pest++\system_variables.h">
+    <ClInclude Include="YamrSlave.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="linpackc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="network_package.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="network_wrapper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pest++\pest++\Transformable.cpp">
+    <ClCompile Include="pest_error.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pest++\pest++\pest_error.cpp">
+    <ClCompile Include="RunManagerAbstract.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pest++\pest++\utilities.cpp">
+    <ClCompile Include="RunManagerGenie.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pest++\pest++\RunManagerAbstract.cpp">
+    <ClCompile Include="RunManagerSerial.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pest++\pest++\RunManagerGenie.cpp">
+    <ClCompile Include="RunManagerYAMR.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pest++\pest++\RunManagerSerial.cpp">
+    <ClCompile Include="RunStorage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pest++\pest++\RunManagerYAMR.cpp">
+    <ClCompile Include="Serializeation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pest++\pest++\RunStorage.cpp">
+    <ClCompile Include="system_variables.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pest++\pest++\YamrSlave.cpp">
+    <ClCompile Include="Transformable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pest++\pest++\system_variables.cpp">
+    <ClCompile Include="utilities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pest++\pest++\linpackc.c">
+    <ClCompile Include="YamrSlave.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

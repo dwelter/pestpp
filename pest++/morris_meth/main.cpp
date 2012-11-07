@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
 		run_manager_type = RunManagerType::GENIE;
 	}
 
-
+	 int morris_r = 7;
 
 	string filename = get_filename(complete_path);
 	filename = remove_file_ext(filename); // remove .pst extension
@@ -145,26 +145,44 @@ int main(int argc, char* argv[])
 
 	// Get the lower bounds of the parameters
 	Parameters ctl_par = pest_scenario.get_ctl_parameters();
+	//remove fixed parameters from ctl_par
+	vector<string> par_name_vec;
+	Parameters fixed_pars;
+	for (auto &i : pest_scenario.get_ctl_ordered_par_names())
+	{
+		if(pest_scenario.get_ctl_parameter_info().get_parameter_rec_ptr(i)->tranform_type != ParameterRec::TRAN_TYPE::FIXED)
+		{
+			par_name_vec.push_back(i);
+		}
+		else
+		{
+			fixed_pars.insert(i, pest_scenario.get_ctl_parameter_info().get_parameter_rec_ptr(i)->init_value);
+		}
+	}
+
+
 	Parameters lower_bnd = pest_scenario.get_ctl_parameter_info().get_low_bnd(ctl_par.get_keys());
 	Parameters upper_bnd = pest_scenario.get_ctl_parameter_info().get_up_bnd(ctl_par.get_keys());
 
 	//Build Transformation with ctl_2_numberic
 	ParamTransformSeq base_partran_seq(pest_scenario.get_base_par_tran_seq());
+	ObjectiveFunc obj_func(&(pest_scenario.get_ctl_observations()), &(pest_scenario.get_ctl_observation_info()), &(pest_scenario.get_prior_info()));
+	ModelRun model_run(&obj_func, base_partran_seq, pest_scenario.get_ctl_observations());
 
-	MorrisMethod morris(ctl_par.get_keys(), lower_bnd, upper_bnd, 8); //8 levels for each parameters
+	MorrisMethod morris(par_name_vec, fixed_pars, lower_bnd, upper_bnd, 8); //8 levels for each parameters
 
 	// make model runs
-	ParamTransformSeq ctl2model_tran = pest_scenario.get_base_par_tran_seq();
-	Parameters model_pars = ctl2model_tran.ctl2model_cp(ctl_par);
-
+	Parameters model_pars = base_partran_seq.ctl2model_cp(ctl_par);
 	run_manager_ptr->allocate_memory(model_pars, pest_scenario.get_ctl_observations());
-	for (int i=0; i<4; ++i)
+	for (int i=0; i<morris_r; ++i)
 	{
-		morris.assemble_runs(*run_manager_ptr, ctl2model_tran);
+		morris.assemble_runs(*run_manager_ptr, base_partran_seq);
 	}
 	run_manager_ptr->run();
 
-
+	morris.calc_sen(*run_manager_ptr, model_run, file_manager.open_ofile_ext("msn"));
+	file_manager.close_file("msn");
+	delete run_manager_ptr;
 	cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
 	char buf[256];
     gets_s(buf, sizeof(buf));

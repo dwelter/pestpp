@@ -25,8 +25,6 @@
 #include <cassert>
 #include <cstring>
 #include "Transformable.h"
-#include "ModelRunPP.h"
-#include "Pest.h"
 #include "utilities.h"
 
 using namespace std;

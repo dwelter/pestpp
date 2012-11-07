@@ -116,8 +116,8 @@ void ModelRun::update(Parameters &model_pars, Observations &obs, PAR_UPDATE upda
 	if(update_type == FORCE_PAR_UPDATE || get_par_tran().is_one_to_one())
 	{
 		// transform to numeric parameters
-		get_par_tran().model2numeric_ip(model_pars);
-		set_numeric_parameters(model_pars);
+		Parameters numeric_pars = get_par_tran().model2numeric_cp(model_pars);
+		set_numeric_parameters(numeric_pars);
 	}
 
 	// Process Observations
