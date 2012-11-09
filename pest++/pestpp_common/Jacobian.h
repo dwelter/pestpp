@@ -65,8 +65,9 @@ protected:
 	virtual void calc_derivative(const string &numeric_par_name, int jcol, list<ModelRun> &run_list,  const ParameterGroupInfo &group_info,
 		const ParameterInfo &ctl_par_info, const PriorInformation &prior_info);
 	bool forward_diff(const string &par_name, const Parameters &pest_parameters, 
-		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, const ParamTransformSeq &par_trans, double &new_par, 
-		Parameters &model_parameters);
+		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, const ParamTransformSeq &par_trans, double &new_par);
+    bool forward_diff_one_to_one(const string &par_name, const Parameters &numeric_parameters, 
+		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, const ParamTransformSeq &par_trans, double &new_par);
 	bool central_diff(const string &par_name, const Parameters &pest_parameters, 
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, const ParamTransformSeq &par_trans, vector<double> &new_par, 
 		vector<Parameters> &model_par_vec);

@@ -20,17 +20,14 @@
 #ifndef YAMRSLAVE_H_
 #define YAMRSLAVE_H_
 
-#include <winsock2.h>
-#include <ws2tcpip.h>
+#include "network_wrapper.h"
 #include <iostream>
 #include <fstream>
 #include <iostream>
 #include <fstream>
 #include <memory>
-//#include "Transformation.h"
 #include "utilities.h"
 #include "pest_error.h"
-#include "network_wrapper.h"
 #include "network_package.h"
 #include "Transformable.h"
 

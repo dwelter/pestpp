@@ -8,9 +8,9 @@
 class NetPackage
 {
 public:
-	enum PackType{UNKN, OK, R_OK, READY, REQ_RUNDIR, RUNDIR, REQ_LINPACK, LINPACK, CMD, START_RUN, RUN_FINISH, RUN_FAILED, TERMINATE};
+	enum class PackType{UNKN, OK, R_OK, READY, REQ_RUNDIR, RUNDIR, REQ_LINPACK, LINPACK, CMD, START_RUN, RUN_FINISH, RUN_FAILED, TERMINATE};
 	static int get_new_group_id();
-	NetPackage(PackType _type=UNKN, int _group=-1, int _run_id=-1, const std::string &desc="");
+	NetPackage(PackType _type=PackType::UNKN, int _group=-1, int _run_id=-1, const std::string &desc="");
 	~NetPackage(){}
 	const static int DESC_LEN = 41;
 	int send(int sockfd, const void *data, unsigned long data_len_l);

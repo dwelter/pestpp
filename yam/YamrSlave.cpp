@@ -252,15 +252,15 @@ void YAMRSlave::start(const string &host, const string &port)
 		else if (!(master.fd_count > 0)) {}
 
         
-        else if(net_pack.get_type() == NetPackage::REQ_RUNDIR)
+        else if(net_pack.get_type() == NetPackage::PackType::REQ_RUNDIR)
 		{
             // Send Master the local run directory.  This information is only used by the master
 	        // for reporting purposes
-        	net_pack.reset(NetPackage::RUNDIR, 0, 0,"");
+        	net_pack.reset(NetPackage::PackType::RUNDIR, 0, 0,"");
 	        string cwd =  OperSys::getcwd();
 	        err = send_message(net_pack, cwd.c_str(), cwd.size());
 		}
-        else if(net_pack.get_type() == NetPackage::CMD)
+        else if(net_pack.get_type() == NetPackage::PackType::CMD)
 		{
             vector<vector<string>> tmp_vec_vec;
 		    Serialization::unserialize(net_pack.get_data(), tmp_vec_vec);
@@ -271,14 +271,14 @@ void YAMRSlave::start(const string &host, const string &port)
 		    outfile_vec = tmp_vec_vec[4];
 		    obs_name_vec= tmp_vec_vec[5];
 		}
-		else if(net_pack.get_type() == NetPackage::REQ_LINPACK)
+		else if(net_pack.get_type() == NetPackage::PackType::REQ_LINPACK)
 		{
 			linpack_wrap();
-			net_pack.reset(NetPackage::LINPACK, 0, 0,"");
+			net_pack.reset(NetPackage::PackType::LINPACK, 0, 0,"");
 			char data;
 			err = send_message(net_pack, &data, 0);
 		}
-		else if(net_pack.get_type() == NetPackage::START_RUN)
+		else if(net_pack.get_type() == NetPackage::PackType::START_RUN)
 		{
 			Serialization::unserialize(net_pack.get_data(), pars);
 			// run model
@@ -292,10 +292,10 @@ void YAMRSlave::start(const string &host, const string &port)
 				cout << "run complete" << endl;
 				cout << "sending results to master (group id = " << group_id << ", run id = " << run_id << ")" <<endl << endl;
 				serialized_data = Serialization::serialize(pars, obs);
-				net_pack.reset(NetPackage::RUN_FINISH, net_pack.get_groud_id(), net_pack.get_run_id(), "");
+				net_pack.reset(NetPackage::PackType::RUN_FINISH, net_pack.get_groud_id(), net_pack.get_run_id(), "");
 				err = send_message(net_pack, serialized_data.data(), serialized_data.size());
 				// Send READY Message to master
-				net_pack.reset(NetPackage::READY, 0, 0,"");
+				net_pack.reset(NetPackage::PackType::READY, 0, 0,"");
 				char data;
 				err = send_message(net_pack, &data, 0);
 			}
@@ -303,22 +303,22 @@ void YAMRSlave::start(const string &host, const string &port)
 			{
 				serialized_data.clear();
 				serialized_data.push_back('\0');
-				net_pack.reset(NetPackage::RUN_FAILED, net_pack.get_groud_id(), net_pack.get_run_id(), "");
+				net_pack.reset(NetPackage::PackType::RUN_FAILED, net_pack.get_groud_id(), net_pack.get_run_id(), "");
 				err = send_message(net_pack, serialized_data.data(), serialized_data.size());
 				// Send READY Message to master
-				net_pack.reset(NetPackage::READY, 0, 0,"");
+				net_pack.reset(NetPackage::PackType::READY, 0, 0,"");
 				char data;
 				err = send_message(net_pack, &data, 0);
 				w_sleep(5000);
 			}
 		}
-		else if (net_pack.get_type() == NetPackage::TERMINATE)
+		else if (net_pack.get_type() == NetPackage::PackType::TERMINATE)
 		{
 			terminate = true;
 		}
 		else 
 		{
-			cout << "received unsupported messaged type: " << net_pack.get_type() << endl;
+			cout << "received unsupported messaged type: " << int(net_pack.get_type()) << endl;
 		}
 		w_sleep(100);
 	}

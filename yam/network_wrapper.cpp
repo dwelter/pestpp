@@ -1,9 +1,8 @@
-#include <winsock2.h>
-#include <ws2tcpip.h>
+#include "network_wrapper.h"
+#include "network_package.h"
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include "network_package.h"
 
 using namespace std;
 

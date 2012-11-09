@@ -17,15 +17,13 @@
     along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
 
-#include <winsock2.h>
-#include <ws2tcpip.h>
+#include "network_wrapper.h"
 #include <string>
 #include <sstream>
 #include <memory>
 #include <cassert>
 #include "Serialization.h"
 #include "Transformable.h"
-#include "network_wrapper.h"
 #include "utilities.h"
 
 using namespace std;
@@ -67,11 +65,13 @@ vector<char> Serialization::serialize(const Transformable &tr_data)
 	// allocate space
 	buf.resize(buf_sz,'\0');
 	// build string with space deliminated names and array of numbers
-	stringstream names;
+	vector<char> names;
+    names.reserve(names_buf_sz);
 	vector<double> values;
 	for (auto &b : tr_data)
 	{
-		names <<  ' ' << (b.first);
+		names.insert(names.end(), b.first.begin(), b.first.end());
+        names.push_back(' ');
 		values.push_back(b.second);
 	}
 	unsigned long n_rec = values.size();
@@ -79,7 +79,7 @@ vector<char> Serialization::serialize(const Transformable &tr_data)
 	size_t i_start = 0;
 	w_memcpy_s(&buf[i_start], buf_sz-i_start, &names_buf_sz, sizeof(names_buf_sz));
 	i_start += sizeof(names_buf_sz);
-	w_memcpy_s(&buf[i_start], buf_sz-i_start, names.str().c_str(), names_buf_sz);
+	w_memcpy_s(&buf[i_start], buf_sz-i_start, names.data(), names_buf_sz);
 	i_start +=names_buf_sz;
 	w_memcpy_s(&buf[i_start], buf_sz-i_start, &n_rec, sizeof(n_rec));
 	i_start +=sizeof(n_rec);

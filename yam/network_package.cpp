@@ -111,6 +111,6 @@ int  NetPackage::recv(int sockfd)
 
 void NetPackage::print_header(std::ostream &fout)
 {
-	fout << "NetPackage: type = " << type <<", group = " << group << ", run_id = " << run_id << ", description = " << desc << 
+	fout << "NetPackage: type = " << int(type) <<", group = " << group << ", run_id = " << run_id << ", description = " << desc << 
 		", data package size = " << data.size() << endl; 
 }

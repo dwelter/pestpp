@@ -216,7 +216,7 @@ Observations ModelRun::get_obs_template() const
 	Observations ret_val(sim_obs);
 	for (Observations::iterator b=ret_val.begin(), e=ret_val.end();
 		b!=e; ++b) {
-			b->second = -9999.0;
+			b->second = Observations::no_data;
 	}
 	return ret_val;
 }

@@ -164,9 +164,9 @@ void Jacobian::calculate(ModelRun &init_model_run, vector<string> numeric_par_na
 {
 	int i_run;
 	string *par_name;
-	Parameters model_parameters = init_model_run.get_model_pars();
-	Parameters numeric_parameters = init_model_run.get_numeric_pars();
-	Observations observations = init_model_run.get_obs_template();
+	Parameters model_parameters(init_model_run.get_model_pars());
+	Parameters numeric_parameters (init_model_run.get_numeric_pars());
+	Observations observations(init_model_run.get_obs_template());
 	base_numeric_parameters = init_model_run.get_numeric_pars();
 
 	// compute runs for to jacobain calculation as it is influenced by derivative type( forward or central)
@@ -284,8 +284,7 @@ bool Jacobian::get_derivative_parameters(const string &par_name, ModelRun &init_
 	}
 	if (!success) {
 		// Forward Difference
-		Parameters numeric_dir_pars;
-		success = forward_diff(par_name, init_model_run.get_numeric_pars(), group_info, ctl_par_info, init_model_run.get_par_tran(), par_1, numeric_dir_pars);
+		success = forward_diff(par_name, init_model_run.get_numeric_pars(), group_info, ctl_par_info, init_model_run.get_par_tran(), par_1);
 		del_numeric_par_vec.push_back(JacobianRun(par_name, par_1));
 	}
 	return success;
@@ -366,10 +365,54 @@ void Jacobian::calc_derivative(const string &numeric_par_name, int jcol, list<Mo
 	calc_prior_info_sen(numeric_par_name, run_first, run_last, prior_info);
 }
 
-bool Jacobian::forward_diff(const string &par_name, const Parameters &numeric_parameters, 
-		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, const ParamTransformSeq &par_trans, double &new_par, 
-		Parameters &numeric_derivative_pars)
+
+bool Jacobian::forward_diff_one_to_one(const string &par_name, const Parameters &numeric_parameters, 
+		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, const ParamTransformSeq &par_trans, double &new_par_val)
 {
+	const ParameterRec *par_info_ptr = ctl_par_info.get_parameter_rec_ptr(par_name);
+	Parameters new_par;
+	double new_ctl_val;
+	double base_numeric_val = numeric_parameters.get_rec(par_name);
+	bool out_of_bound_forward;
+	bool out_of_bound_backward;
+	//vector<string> out_of_bound__forward_par_vec;
+	//vector<string> out_of_bound__backard_par_vec;
+	string tmp_name;
+
+	double incr = derivative_inc(par_name, group_info, ctl_par_info, numeric_parameters, false);
+	new_par_val = new_par[par_name] = base_numeric_val + incr;
+	par_trans.numeric2ctl_ip(new_par);
+	// try forward derivative
+	// perturb numeric paramateres
+	new_ctl_val = new_par.get_rec(par_name);
+	(new_ctl_val > par_info_ptr->ubnd) ? out_of_bound_forward=true : out_of_bound_forward=false;
+	if (!out_of_bound_forward) {
+		return true;
+	}
+	// try backward derivative if forward derivative didn't work
+	new_par.clear();
+	new_par_val = new_par[par_name] = base_numeric_val - incr;
+	par_trans.numeric2ctl_ip(new_par);
+	new_ctl_val = new_par.get_rec(par_name);
+	(new_ctl_val < par_info_ptr->lbnd) ? out_of_bound_backward=true : out_of_bound_backward=false;
+	if (!out_of_bound_backward)
+	{	
+		return true;
+	}
+	return false;
+}
+
+bool Jacobian::forward_diff(const string &par_name, const Parameters &numeric_parameters, 
+		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, const ParamTransformSeq &par_trans, double &new_par)
+{
+	// if the transformation is one to one, call the simpler and more effiecient version of this routine
+	// designed specifically for this case
+	if (par_trans.is_one_to_one())
+	{
+		bool bounds = forward_diff_one_to_one(par_name, numeric_parameters, group_info, ctl_par_info,
+			par_trans, new_par);
+		return bounds;
+	}
 	bool out_of_bound_forward;
 	bool out_of_bound_backward;
 	vector<string> out_of_bound__forward_par_vec;
@@ -378,9 +421,8 @@ bool Jacobian::forward_diff(const string &par_name, const Parameters &numeric_pa
 
 	double incr = derivative_inc(par_name, group_info, ctl_par_info, numeric_parameters, false);
 	// try forward derivative
-	// copy numeric parameters to Model_parameters
-	numeric_derivative_pars = numeric_parameters;
 	// perturb numeric paramateres
+	Parameters numeric_derivative_pars(numeric_parameters);
 	new_par = numeric_derivative_pars[par_name] += incr;
 	out_of_bound_forward = out_of_bounds(par_trans.numeric2ctl_cp(numeric_derivative_pars), group_info, ctl_par_info, out_of_bound__forward_par_vec);
 	if (!out_of_bound_forward) {

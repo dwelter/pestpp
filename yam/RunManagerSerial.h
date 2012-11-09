@@ -19,7 +19,7 @@
 #ifndef RUNMANAGERSERIAL_H
 #define RUNMANAGERSERIAL_H
 
-#include "runmanagergenie.h"
+#include "RunManagerAbstract.h"
 #include <string>
 
 class RunManagerSerial : public RunManagerAbstract

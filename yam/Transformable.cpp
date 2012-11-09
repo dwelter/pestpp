@@ -16,9 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
-
-#include <winsock2.h>
-#include <ws2tcpip.h>
+#include "network_wrapper.h"
 #include <ostream>
 #include <string>
 #include <sstream>
@@ -31,7 +29,6 @@
 #include <lapackpp.h>
 #include "Transformable.h"
 #include "pest_error.h"
-#include "network_wrapper.h"
 #include "utilities.h"
 
 using std::string;
@@ -149,7 +146,7 @@ const double* Transformable::get_rec_ptr(const string &name) const
 
 const double Transformable::get_rec(const string &name) const
 {
-	double ret_val = -9999999;
+	double ret_val = no_data;
 	Transformable::const_iterator iter = find(name);
 	if (iter != end()) {
 		ret_val = (*iter).second;
@@ -192,6 +189,7 @@ vector<double> Transformable::get_vector(const vector<string> &keys) const
 vector<string> Transformable::get_keys() const
 {
 	vector<string> ret_val;
+	ret_val.reserve(size());
 	for(Transformable::const_iterator b=begin(), e=end();
 		b!=e; ++b)
 	{

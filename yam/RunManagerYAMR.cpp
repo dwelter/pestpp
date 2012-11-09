@@ -16,8 +16,8 @@
     You should have received a copy of the GNU General Public License
     along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
-#include <winsock2.h>
-#include <ws2tcpip.h>
+
+#include "network_wrapper.h"
 #include "RunManagerYAMR.h"
 #include <iostream>
 #include <sstream>
@@ -367,7 +367,7 @@ void RunManagerYAMR::process_message(int i_sock)
 			active_runs.erase(it_active);
 		}
 	}
-	else if (net_pack.get_type() == net_pack.RUNDIR)
+	else if (net_pack.get_type() == NetPackage::PackType::RUNDIR)
 	{
 		string work_dir(net_pack.get_data().data(), net_pack.get_data().size());
 		f_rmr << "New Slave connection from: " << sock_name[0] <<":" <<sock_name[1] << "   working dir: " << work_dir << endl;
@@ -375,23 +375,23 @@ void RunManagerYAMR::process_message(int i_sock)
 		slave_info.set_work_dir(i_sock, work_dir);
 		slave_info.set_state(i_sock, SlaveInfo::State::CWD_RCV);
 	}
-	else if (net_pack.get_type() == net_pack.LINPACK)
+	else if (net_pack.get_type() == NetPackage::PackType::LINPACK)
 	{
 		slave_info.end_linpack(i_sock);
 		slave_info.set_state(i_sock, SlaveInfo::State::LINPACK_RCV);
 	}
-	else if (net_pack.get_type() == net_pack.READY)
+	else if (net_pack.get_type() == NetPackage::PackType::READY)
 	{
 		// ready message received from slave add slave to slave_fd
 		slave_fd.push_back(i_sock);
 	}
 
-	else if (net_pack.get_type() == net_pack.RUN_FINISH && net_pack.get_groud_id() != cur_group_id)
+	else if (net_pack.get_type() == NetPackage::PackType::RUN_FINISH && net_pack.get_groud_id() != cur_group_id)
 	{
 		// this is an old run that did not finish on time
 		// just ignore it
 	}
-	else if (net_pack.get_type() == net_pack.RUN_FINISH)
+	else if (net_pack.get_type() == NetPackage::PackType::RUN_FINISH)
 	{
 		int run_id = net_pack.get_run_id();
 		int group_id = net_pack.get_groud_id();
@@ -402,7 +402,7 @@ void RunManagerYAMR::process_message(int i_sock)
 		process_model_run(i_sock, net_pack);
 
 	}
-	else if (net_pack.get_type() == net_pack.RUN_FAILED)
+	else if (net_pack.get_type() == NetPackage::PackType::RUN_FAILED)
 	{
 		int run_id = net_pack.get_run_id();
 		int group_id = net_pack.get_groud_id();
@@ -474,7 +474,7 @@ void RunManagerYAMR::process_message(int i_sock)
 	else if (failure_map.count(run_id) == 0)
 	{
 		 // schedule a run on a slave
-		NetPackage net_pack(NetPackage::START_RUN, cur_group_id, run_id, "");
+		NetPackage net_pack(NetPackage::PackType::START_RUN, cur_group_id, run_id, "");
 		it_sock = slave_fd.begin();
 	}
 	else if (failure_map.count(run_id) > 0)
@@ -500,7 +500,7 @@ void RunManagerYAMR::process_message(int i_sock)
 		YamrModelRun tmp_run(run_id, *it_sock);
 		vector<char> data = file_stor.get_serial_pars(run_id);
 		vector<string> sock_name = w_getnameinfo_vec(*it_sock);
-		NetPackage net_pack(NetPackage::START_RUN, cur_group_id, run_id, "");
+		NetPackage net_pack(NetPackage::PackType::START_RUN, cur_group_id, run_id, "");
 		int err = net_pack.send(*it_sock, &data[0], data.size());
 		if (err != -1)
 		{
@@ -524,7 +524,7 @@ void RunManagerYAMR::process_message(int i_sock)
 		SlaveInfo::State cur_state = slave_info.get_state(i_sock);
 		if (cur_state == SlaveInfo::State::NEW)
 		{
-			NetPackage net_pack(NetPackage::REQ_RUNDIR, 0, 0, "");
+			NetPackage net_pack(NetPackage::PackType::REQ_RUNDIR, 0, 0, "");
 			char data = '\0';
 			int err = net_pack.send(i_sock, &data, sizeof(data));
 			if (err != -1)
@@ -535,7 +535,7 @@ void RunManagerYAMR::process_message(int i_sock)
 		else if(cur_state == SlaveInfo::State::CWD_RCV)
 		{
 			// send Command line, tpl and ins information
-			NetPackage net_pack(NetPackage::CMD, 0, 0, "");
+			NetPackage net_pack(NetPackage::PackType::CMD, 0, 0, "");
 			vector<char> data;
 			vector<vector<string> *> tmp_vec;
 			tmp_vec.push_back(&comline_vec);
@@ -554,7 +554,7 @@ void RunManagerYAMR::process_message(int i_sock)
 		}
 		else if(cur_state == SlaveInfo::State::CMD_SENT)
 		{
-			NetPackage net_pack(NetPackage::REQ_LINPACK, 0, 0, "");
+			NetPackage net_pack(NetPackage::PackType::REQ_LINPACK, 0, 0, "");
 			char data = '\0';
 			int err = net_pack.send(i_sock, &data, sizeof(data));
 			if (err != -1)
@@ -577,7 +577,7 @@ RunManagerYAMR::~RunManagerYAMR(void)
 	for(int i = 0; i <= fdmax; i++) {
 		if (FD_ISSET(i, &master)) 
 		{
-			NetPackage netpack(NetPackage::TERMINATE, 0, 0,"");
+			NetPackage netpack(NetPackage::PackType::TERMINATE, 0, 0,"");
 			char data;
 			netpack.send(i, &data, 0);
 			w_close(i);

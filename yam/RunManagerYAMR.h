@@ -18,7 +18,7 @@
 */
 #ifndef RUNMANAGERYAMR_H
 #define RUNMANAGERYAMR_H
-#include <winsock2.h>
+#include "network_wrapper.h"
 #include <string>
 #include <set>
 #include <deque>
