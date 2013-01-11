@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="FileManager.h" />
     <ClInclude Include="Jacobian.h" />
+    <ClInclude Include="Jacobian_1to1.h" />
     <ClInclude Include="lapack_tools.h" />
     <ClInclude Include="ModelRunPP.h" />
     <ClInclude Include="ObjectiveFunc.h" />
@@ -42,6 +43,7 @@
   <ItemGroup>
     <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="Jacobian.cpp" />
+    <ClCompile Include="Jacobian_1to1.cpp" />
     <ClCompile Include="lapack_tools.cpp" />
     <ClCompile Include="ModelRunPP.cpp" />
     <ClCompile Include="ObjectiveFunc.cpp" />

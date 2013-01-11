@@ -20,6 +20,7 @@
 #include <iostream>
 #include <fstream>
 #include "Pest.h"
+#include "Jacobian_1to1.h"
 #include "Transformable.h"
 #include "Transformation.h"
 #include "ParamTransformSeq.h"
@@ -144,7 +145,7 @@ int main(int argc, char* argv[])
 	const ParamTransformSeq &base_trans_seq = pest_scenario.get_base_par_tran_seq();
 	
 	ObjectiveFunc obj_func(&(pest_scenario.get_ctl_observations()), &(pest_scenario.get_ctl_observation_info()), &(pest_scenario.get_prior_info()));
-	Jacobian *base_jacobian_ptr = new Jacobian(file_manager);
+	Jacobian *base_jacobian_ptr = new Jacobian_1to1(file_manager);
 
 	SVDSolver base_svd(&pest_scenario.get_control_info(), pest_scenario.get_svd_info(), &pest_scenario.get_base_group_info(), &pest_scenario.get_ctl_parameter_info(),
 		&pest_scenario.get_ctl_observation_info(), file_manager, &pest_scenario.get_ctl_observations(), &obj_func,

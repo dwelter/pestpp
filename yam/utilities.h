@@ -12,6 +12,7 @@
 #include <sstream>
 #include <vector>
 #include <map>
+#include <set>
 #include "pest_error.h"
 
 namespace pest_utils
@@ -181,7 +182,19 @@ private:
 
 };
 
+template <class type>
+class CompareItemInSet
+{
+	public:
+		CompareItemInSet(const std::set<type> &_set_ref) : set_ref(_set_ref){};
+		bool operator()(const type &item) {return set_ref.count(item) > 0;}
+		~CompareItemInSet(){}
+	private:
+		const std::set<type> &set_ref;
+};
+
 void copyfile(const string &from_file, const string &to_file);
+
 
 }  // end namespace pest_utils
 

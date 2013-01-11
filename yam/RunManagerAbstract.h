@@ -39,8 +39,12 @@ public:
 	virtual void allocate_memory(const Parameters &model_pars, const Observations &obs);
 	virtual void free_memory();
 	virtual int add_run(const Parameters &model_pars);
+    virtual int add_run(const std::vector<double> &model_pars);
 	virtual void run() = 0;
+    virtual const std::vector<std::string> &get_par_name_vec() const;
+    virtual const std::vector<std::string> &get_obs_name_vec() const;
 	virtual bool get_run(int run_id, Parameters &pars, Observations &obs);
+	virtual const std::set<int>& get_failed_run_ids() const;
 	virtual Parameters get_model_parameters(int run_num);
 	virtual Observations get_obs_template(double value = -9999.0) const;
 	virtual int get_total_runs(void) const {return total_runs;}
@@ -50,8 +54,6 @@ protected:
 	int total_runs;
 	RunStorage file_stor;
 	std::set<int> failed_runs;
-	std::vector<std::string> par_name_vec;
-	std::vector<std::string> obs_name_vec;
 	std::vector<std::string> comline_vec;
 	std::vector<std::string> tplfile_vec;
 	std::vector<std::string> inpfile_vec;

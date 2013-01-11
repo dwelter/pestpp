@@ -127,7 +127,7 @@ vector<char> Serialization::serialize(const vector<string> &string_vec)
 	return serial_data;
 }
 
-vector<char> Serialization::serialize(const vector<vector<string>*> &string_vec_vec)
+vector<char> Serialization::serialize(const vector<vector<string>const*> &string_vec_vec)
 {
 	vector<char> serial_data;
 	unsigned long buf_sz = 0;

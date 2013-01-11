@@ -113,6 +113,8 @@ void RunManagerSerial::run()
 	int ifail;
 	int i_run;
 	int success_runs;
+    const vector<string> &par_name_vec = file_stor.get_par_name_vec();
+    const vector<string> &obs_name_vec = file_stor.get_obs_name_vec();
 	int npar = par_name_vec.size();
 	int nobs = obs_name_vec.size();
 	int ntpl = tplfile_vec.size();

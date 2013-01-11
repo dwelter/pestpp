@@ -32,12 +32,12 @@ c     ******************************************************************
       j1=0
       
 c     DEBUG - write list of tpl files and parameter names to file
-      open(10,file='PAR_DEBUG.dat')
-      write(10,'(a)') 'List of template file names ----->'
-      write(10,'(3a50)') ('/'//trim(tplfle(n))//'\',n=1,ntpl)
-      write(10,'(a)') 'List of parameter names ----->'
-      write(10,'(3a50)') ('/'//trim(pnam(n))//'\',n=1,npar)
-      close(10)
+c      open(10,file='PAR_DEBUG.dat')
+c      write(10,'(a)') 'List of template file names ----->'
+c      write(10,'(3a50)') ('/'//trim(tplfle(n))//'\',n=1,ntpl)
+c      write(10,'(a)') 'List of parameter names ----->'
+c      write(10,'(3a50)') ('/'//trim(pnam(n))//'\',n=1,npar)
+c      close(10)
       
 c     ensure all TPL files exist
       do n=1,ntpl

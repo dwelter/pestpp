@@ -39,16 +39,29 @@ RunManagerAbstract::RunManagerAbstract(const vector<string> _comline_vec,
 
 void RunManagerAbstract::allocate_memory(const Parameters &model_pars, const Observations &obs)
 {
-	file_stor.reset(model_pars, obs);
-    par_name_vec = model_pars.get_keys();
-    obs_name_vec = obs.get_keys();
+	file_stor.reset(model_pars.get_keys(), obs.get_keys());
 }
 
+int RunManagerAbstract::add_run(const vector<double> &model_pars)
+{
+    int run_id = file_stor.add_run(model_pars);
+    return run_id;
+}
 
 int RunManagerAbstract::add_run(const Parameters &model_pars)
 {
 	int run_id = file_stor.add_run(model_pars);
 	return run_id;
+}
+
+ const vector<string>& RunManagerAbstract::get_par_name_vec() const
+ {
+    return file_stor.get_par_name_vec();
+ }
+
+ const vector<string>& RunManagerAbstract::get_obs_name_vec() const
+{
+    return file_stor.get_obs_name_vec();
 }
 
 bool RunManagerAbstract::get_run(int run_id, Parameters &pars, Observations &obs)
@@ -66,6 +79,10 @@ void  RunManagerAbstract::free_memory()
 }
 
 
+const std::set<int>& RunManagerAbstract::get_failed_run_ids() const
+{
+	return failed_runs;
+}
 Parameters RunManagerAbstract::get_model_parameters(int run_id)
  {
 	 return file_stor.get_parameters(run_id); 
@@ -74,8 +91,9 @@ Parameters RunManagerAbstract::get_model_parameters(int run_id)
  Observations RunManagerAbstract::get_obs_template(double value) const
  {
 	Observations ret_obs;
-
-	for(int i=0, nobs=obs_name_vec.size(); i<nobs; ++i)
+    const vector<string> &obs_name_vec = file_stor.get_obs_name_vec();
+	int nobs = obs_name_vec.size();
+	for(int i=0; i<nobs; ++i)
 	{
 		ret_obs[obs_name_vec[i]] = value;
 	}

@@ -22,17 +22,25 @@
 
 #include <string>
 #include <fstream>
+#include <ostream>
 #include <vector>
-#include "Transformable.h"
+#include <cstdint>
+
+class Parameters;
+class Observations;
 
 class RunStorage {
 public:
+    enum class RUN_STATUS : std::int8_t { NOT_RUN = 1, COMPLETE = 2, FAILED = 3 };
 	RunStorage(const std::string &_filename);
-	void reset(const Parameters &pars, const Observations &obs);
+	void reset(const std::vector<std::string> &par_names, const std::vector<std::string> &obs_names);
+    virtual int add_run(const std::vector<double> &model_pars);
 	int add_run(const Parameters &pars);
 	void update_run(int run_id, const Parameters &pars, const Observations &obs);
 	void update_run(int run_id, const std::vector<char> serial_data);
 	int get_nruns();
+    const std::vector<std::string>& get_par_name_vec()const;
+    const std::vector<std::string>& get_obs_name_vec()const;
 	void get_run(int run_id, Parameters *pars, Observations *obs);
 	Parameters get_parameters(int run_id);
 	std::vector<char> get_serial_pars(int run_id);
@@ -41,13 +49,17 @@ public:
 private:
 	std::string filename;
 	std::fstream buf_stream;
-	unsigned long run_byte_size;
-	unsigned long pars_byte_size;
+    std::streamoff beg_obs_name;
+    std::streamoff beg_run0;
+	std::streamoff run_byte_size;
+    std::streamoff run_par_byte_size;
+    std::streamoff run_data_byte_size;
 	int n_runs;
-	Parameters default_pars;
-	Observations default_obs;
+	std::vector<std::string> par_names;
+	std::vector<std::string> obs_names;
 	void check_rec_size(const std::vector<char> &serial_data) const;
 	void check_rec_id(int run_id) const;
+    std::streamoff get_stream_pos(int run_id);
 };
 
 #endif //RUN_STORAGE_H_

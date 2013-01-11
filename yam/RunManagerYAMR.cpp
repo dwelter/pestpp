@@ -222,8 +222,7 @@ unordered_multimap<int, YamrModelRun>::iterator RunManagerYAMR::get_active_run_i
 
 void RunManagerYAMR::allocate_memory(const Parameters &model_pars, const Observations &obs)
 {
-	file_stor.reset(model_pars, obs);
-    obs_name_vec = obs.get_keys();
+	file_stor.reset(model_pars.get_keys(), obs.get_keys());
 	cur_group_id = NetPackage::get_new_group_id();
 }
 
@@ -537,13 +536,13 @@ void RunManagerYAMR::process_message(int i_sock)
 			// send Command line, tpl and ins information
 			NetPackage net_pack(NetPackage::PackType::CMD, 0, 0, "");
 			vector<char> data;
-			vector<vector<string> *> tmp_vec;
+			vector<vector<string> const*> tmp_vec;
 			tmp_vec.push_back(&comline_vec);
 			tmp_vec.push_back(&tplfile_vec);
 			tmp_vec.push_back(&inpfile_vec);
 			tmp_vec.push_back(&insfile_vec);
 			tmp_vec.push_back(&outfile_vec);
-			tmp_vec.push_back(&obs_name_vec);
+			tmp_vec.push_back(&file_stor.get_obs_name_vec());
 
 			data = Serialization::serialize(tmp_vec);
 			int err = net_pack.send(i_sock, &data[0], data.size());

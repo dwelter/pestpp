@@ -169,7 +169,19 @@ void Transformable::update_rec(const string &name, double value)
 	}
 }
 
-vector<double> Transformable::get_vector(const vector<string> &keys) const
+void Transformable::update(const vector<string> &names, const vector<double> &values)
+{
+    items.clear();
+    assert(names.size() == values.size());
+    size_t n_rec = names.size();
+    items.reserve(n_rec);
+    for (size_t i=0; i<n_rec; ++i)
+	{
+        items.insert(make_pair(names[i], values[i]));
+	}
+}
+
+vector<double> Transformable::get_data_vector(const vector<string> &keys) const
 {
 	vector<double> v;
 	v.resize(items.size(), 0.0);
@@ -197,7 +209,6 @@ vector<string> Transformable::get_keys() const
 	}
 	return ret_val;
 }
-
 
 void Transformable::add_upgrade(const vector<string> &keys, const LaVectorDouble &del_values)
 {

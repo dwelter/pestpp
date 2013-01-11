@@ -73,16 +73,17 @@ public:
 	const double* get_rec_ptr(const string &name) const;
 	const double get_rec(const string &name) const;
 	void update_rec(const string &name, double value);
+    void update(const vector<string> &names, const vector<double> &values); 
 	const_iterator find(const string &name) const;
 	size_t size() const {return items.size();}
 	void clear() {items.clear();}
 
 	vector<string> get_keys() const;
+    vector<double> get_data_vector(const vector<string> &keys) const;
 	Transformable::iterator begin(){return items.begin();}
 	Transformable::const_iterator begin() const {return items.begin();}
 	Transformable::iterator end() {return items.end();}
 	Transformable::const_iterator end() const {return items.end();}
-	vector<double> get_vector(const vector<string> &keys) const;
 	void add_upgrade(const vector<string> &keys, const LaVectorDouble &del_values);
 	virtual ~Transformable(){}
 protected:

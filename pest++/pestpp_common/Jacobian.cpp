@@ -169,28 +169,30 @@ void Jacobian::calculate(ModelRun &init_model_run, vector<string> numeric_par_na
 	Observations observations(init_model_run.get_obs_template());
 	base_numeric_parameters = init_model_run.get_numeric_pars();
 
+	run_manager.allocate_memory(model_parameters, observations);
+	const vector<string> &par_name_vec = run_manager.get_par_name_vec();
+	const vector<string> &obs_name_vec = run_manager.get_obs_name_vec();
+
 	// compute runs for to jacobain calculation as it is influenced by derivative type( forward or central)
 	vector<JacobianRun> del_numeric_par_vec;
 	if (calc_init_obs) {
 		del_numeric_par_vec.push_back(JacobianRun("", 0));
+		run_manager.add_run(model_parameters);
 	}
+	Parameters new_pars(init_model_run.get_model_pars());
 	for(int b=0, e=numeric_par_names.size(); b!=e; ++b)
 	{
+		cout << b << " ";
+		//new_pars = model_parameters;
+		vector<string> jnk = model_parameters.get_keys();
 		get_derivative_parameters(numeric_par_names[b], init_model_run, group_info, ctl_par_info, del_numeric_par_vec, phiredswh_flag);
+		run_manager.add_run(new_pars);
 	}
-
-
-	// calculate array sizes and number of model runs
-	int nrun = del_numeric_par_vec.size();
-	if (calc_init_obs) ++nrun;
-
-	// allocate arrays
-	run_manager.allocate_memory(model_parameters, observations);
-	
 
 	// fill arrays
 	for(int i=0, e=del_numeric_par_vec.size(); i!=e; ++i)
 	{
+		cout << i << " ";
 		par_name = &del_numeric_par_vec[i].par_name;
 		if (*par_name != "") {
 			numeric_parameters = init_model_run.get_numeric_pars();
@@ -366,53 +368,11 @@ void Jacobian::calc_derivative(const string &numeric_par_name, int jcol, list<Mo
 }
 
 
-bool Jacobian::forward_diff_one_to_one(const string &par_name, const Parameters &numeric_parameters, 
-		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, const ParamTransformSeq &par_trans, double &new_par_val)
-{
-	const ParameterRec *par_info_ptr = ctl_par_info.get_parameter_rec_ptr(par_name);
-	Parameters new_par;
-	double new_ctl_val;
-	double base_numeric_val = numeric_parameters.get_rec(par_name);
-	bool out_of_bound_forward;
-	bool out_of_bound_backward;
-	//vector<string> out_of_bound__forward_par_vec;
-	//vector<string> out_of_bound__backard_par_vec;
-	string tmp_name;
-
-	double incr = derivative_inc(par_name, group_info, ctl_par_info, numeric_parameters, false);
-	new_par_val = new_par[par_name] = base_numeric_val + incr;
-	par_trans.numeric2ctl_ip(new_par);
-	// try forward derivative
-	// perturb numeric paramateres
-	new_ctl_val = new_par.get_rec(par_name);
-	(new_ctl_val > par_info_ptr->ubnd) ? out_of_bound_forward=true : out_of_bound_forward=false;
-	if (!out_of_bound_forward) {
-		return true;
-	}
-	// try backward derivative if forward derivative didn't work
-	new_par.clear();
-	new_par_val = new_par[par_name] = base_numeric_val - incr;
-	par_trans.numeric2ctl_ip(new_par);
-	new_ctl_val = new_par.get_rec(par_name);
-	(new_ctl_val < par_info_ptr->lbnd) ? out_of_bound_backward=true : out_of_bound_backward=false;
-	if (!out_of_bound_backward)
-	{	
-		return true;
-	}
-	return false;
-}
-
 bool Jacobian::forward_diff(const string &par_name, const Parameters &numeric_parameters, 
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, const ParamTransformSeq &par_trans, double &new_par)
 {
 	// if the transformation is one to one, call the simpler and more effiecient version of this routine
 	// designed specifically for this case
-	if (par_trans.is_one_to_one())
-	{
-		bool bounds = forward_diff_one_to_one(par_name, numeric_parameters, group_info, ctl_par_info,
-			par_trans, new_par);
-		return bounds;
-	}
 	bool out_of_bound_forward;
 	bool out_of_bound_backward;
 	vector<string> out_of_bound__forward_par_vec;

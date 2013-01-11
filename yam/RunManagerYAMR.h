@@ -59,8 +59,8 @@ public:
 		    std::chrono::system_clock::time_point start_time;
 		    std::string work_dir;
 	    };
-    typedef unordered_map<int, SlaveRec>::iterator iterator;
-	typedef unordered_map<int, SlaveRec>::const_iterator const_iterator;
+    typedef std::unordered_map<int, SlaveRec>::iterator iterator;
+	typedef std::unordered_map<int, SlaveRec>::const_iterator const_iterator;
     SlaveInfo::iterator begin(){return slave_info_map.begin();}
 	SlaveInfo::const_iterator begin() const {return slave_info_map.begin();}
 	SlaveInfo::iterator end() {return slave_info_map.end();}
@@ -77,7 +77,7 @@ public:
     void end_linpack(int sock_id);
 	double get_runtime(int sock_id);
     double get_linpack_time(int sock_id);
-	void sort_queue(deque<int> &slave_fd);
+	void sort_queue(std::deque<int> &slave_fd);
 	~SlaveInfo();
 private:
 	class CompareTimes
@@ -88,7 +88,7 @@ private:
 		SlaveInfo *my_class_ptr;
 	};
 
-	unordered_map<int, SlaveRec> slave_info_map;
+	std::unordered_map<int, SlaveRec> slave_info_map;
 };
 
 class RunManagerYAMR : public RunManagerAbstract
@@ -97,7 +97,7 @@ public:
 	RunManagerYAMR(const std::vector<std::string> _comline_vec,
 		const std::vector<std::string> _tplfile_vec, const std::vector<std::string> _inpfile_vec,
 		const std::vector<std::string> _insfile_vec, const std::vector<std::string> _outfile_vec,
-		const std::string &stor_filename, const std::string &port, ofstream &_f_rmr);
+		const std::string &stor_filename, const std::string &port, std::ofstream &_f_rmr);
 	virtual void allocate_memory(const Parameters &pars, const Observations &obs);
 	virtual void free_memory();
 	virtual int add_run(const Parameters &model_pars);
@@ -110,22 +110,22 @@ private:
 	int fdmax;
 	int cur_group_id;
 	const static int max_n_failure = 3; // maximium number of times to retry a failed model run
-	deque<int> slave_fd; // list of slaves ready to accept a model run
+	std::deque<int> slave_fd; // list of slaves ready to accept a model run
 	fd_set master; // master file descriptor list
 	std::deque<YamrModelRun> waiting_runs;
-	ofstream &f_rmr;
-	unordered_multimap<int, YamrModelRun> active_runs;
-	unordered_multimap<int, YamrModelRun> zombie_runs;
-	unordered_map<int, YamrModelRun> completed_runs;
+	std::ofstream &f_rmr;
+	std::unordered_multimap<int, YamrModelRun> active_runs;
+	std::unordered_multimap<int, YamrModelRun> zombie_runs;
+	std::unordered_map<int, YamrModelRun> completed_runs;
 	SlaveInfo slave_info;
-	unordered_multimap<int, int> failure_map;
+	std::unordered_multimap<int, int> failure_map;
 	void RunManagerYAMR::listen();
 	bool process_model_run(int sock_id, NetPackage &net_pack);
 	void process_message(int i);
 	bool schedule_run(int run_id);
 	void schedule_runs();
     void init_slaves();
-	unordered_multimap<int, YamrModelRun>::iterator get_active_run_id(int socket);
+	std::unordered_multimap<int, YamrModelRun>::iterator get_active_run_id(int socket);
 };
 
 #endif /* RUNMANAGERYAMR_H */

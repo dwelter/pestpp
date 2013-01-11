@@ -58,6 +58,8 @@ void RunManagerGenie::run()
 {
     int nruns = get_nruns();
 	int nexec = comline_vec.size();
+    const vector<string> &par_name_vec = file_stor.get_par_name_vec();
+    const vector<string> &obs_name_vec = file_stor.get_obs_name_vec();
 	int npar = par_name_vec.size();
 	int nobs = obs_name_vec.size();
 	int ntpl = tplfile_vec.size();
@@ -80,7 +82,7 @@ void RunManagerGenie::run()
 	 for (int i=0; i<nruns; ++i)
 	 {
 		 Parameters tmp_pars = file_stor.get_parameters(i);
-		 vector<double> tmp_vec = tmp_pars.get_vector(par_name_vec);
+		 vector<double> tmp_vec = tmp_pars.get_data_vector(par_name_vec);
 		 par_val.insert(par_val.end(), tmp_vec.begin(), tmp_vec.end());
 	 }
 

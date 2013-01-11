@@ -36,7 +36,7 @@ public:
 	static std::vector<char> serialize(const std::vector<Transformable*> &tr_vec);
 	static std::vector<char> serialize(const Parameters &pars, const Observations &obs);
 	static std::vector<char> serialize(const std::vector<std::string> &string_vec);
-	static std::vector<char> serialize(const std::vector<std::vector<std::string>*> &string_vec_vec);
+	static std::vector<char> serialize(const std::vector<std::vector<std::string> const*> &string_vec_vec);
 	static unsigned long unserialize(const std::vector<char> &ser_data, unsigned long &data, unsigned long start_loc=0);
 	static unsigned long unserialize(const std::vector<char> &ser_data, Transformable &tr_data, unsigned long start_loc=0);
 	static unsigned long unserialize(const std::vector<char> &ser_data, std::vector<Transformable*> &tr_vec, unsigned long start_loc=0);

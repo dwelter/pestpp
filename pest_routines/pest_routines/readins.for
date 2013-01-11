@@ -18,12 +18,12 @@
       immf=36                   !unit number for model output files
       
 c     DEBUG - write list of ins files and observation names to file
-      open(62,file='OBS_DEBUG.dat')
-      write(62,'(a)') 'List of instruction file names ----->'
-      write(62,'(3a50)') ('/'//trim(insfle(n))//'\',n=1,nins)
-      write(62,'(a)') 'List of observation names ----->'
-      write(62,'(3a50)') ('/'//trim(onam(n))//'\',n=1,nobs)
-      close(62)
+c     open(62,file='OBS_DEBUG.dat')
+c      write(62,'(a)') 'List of instruction file names ----->'
+c      write(62,'(3a50)') ('/'//trim(insfle(n))//'\',n=1,nins)
+c      write(62,'(a)') 'List of observation names ----->'
+c      write(62,'(3a50)') ('/'//trim(onam(n))//'\',n=1,nobs)
+c      close(62)
       
 c     ensure all INS files exist
       do n=1,nins
