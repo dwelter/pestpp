@@ -66,7 +66,7 @@ void SVD_PROPACK::solve_ip(LaGenMatDouble &A, LaVectorDouble &Sigma, LaGenMatDou
 	U = 0.0;
 	Vt = 0.0;
 	//count number of nonzero entries
-	for (n_nonzero=0, irow=0; irow<m_rows; irow++)
+	for (n_nonzero=0, irow=0; irow<m_rows; ++irow)
 	{
 		for(icol=0; icol<n_cols; icol++)
 		{
@@ -87,7 +87,7 @@ void SVD_PROPACK::solve_ip(LaGenMatDouble &A, LaVectorDouble &Sigma, LaGenMatDou
 
 	iparm[0] = n_nonzero;
 	int i_nonzero;
-	for (i_nonzero=0, irow=0; irow<m_rows; irow++)
+	for (i_nonzero=0, irow=0; irow<m_rows; ++irow)
 	{
 		for(icol=0; icol<n_cols; icol++)
 		{
@@ -109,24 +109,19 @@ void SVD_PROPACK::solve_ip(LaGenMatDouble &A, LaVectorDouble &Sigma, LaGenMatDou
 	int ld_tmpv = n_cols;
 	int ld_tmpb = kmax;
 
-	// Compute first singluar value and singular vector
-	int k0 = 0;
-	int k2 = k0 + 1;
-	DLANBPRO_SPARCE(&m_rows, &n_cols, &k0, &k2, tmp_u, 
-		&ld_tmpu, tmp_v, &ld_tmpv, tmp_b, &ld_tmpb, 
-		&rnorm, d_option, ioption, tmp_work,
-		tmp_iwork, dparm, iparm, &ierr);
-
-	double eig_ratio = 1.0;
+	// Compute singluar values and vectors
+	int k0 = -1;
+    int k2 = 0;
+    double eig_ratio = 1.0;
 	while (k0<kmax-1 && eig_ratio > eign_thres)
 	{
-		k0 +=1; // index of last eigenvalue and eignvector computed
-		k2 = k0+1; // index of eignvlaue and eigenvector to be computed this time
+        k0 += 1;
+        k2 = k0+1; // index of eignvlaue and eigenvector to be computed this time
 		DLANBPRO_SPARCE(&m_rows, &n_cols, &k0, &k2, tmp_u, 
 			&ld_tmpu, tmp_v, &ld_tmpv, tmp_b, &ld_tmpb, 
 			&rnorm, d_option, ioption, tmp_work,
 			tmp_iwork, dparm, iparm, &ierr);
-		eig_ratio = tmp_b[k2-1] / tmp_b[0];
+        eig_ratio = tmp_b[k2-1] / tmp_b[0];
 	}
 
 	for (int i_sing=0; i_sing<kmax; ++i_sing)

@@ -58,6 +58,8 @@ public:
 	 dataset contained in data is changed in place.
 	 */
 	virtual void reverse(Transformable &data) = 0;
+	virtual map<string, double> get_fwd_chain_rule_factors(const Transformable &cur_values) const;
+	virtual map<string, double> get_rev_chain_rule_factors(const Transformable &cur_values) const;
 	/** Returns the name of the transformation.
 	 */
 	string get_name()const {return name;}
@@ -141,6 +143,8 @@ public:
 	TranOffset(const string &_name="unnamed TranOffset"): TranMapBase(_name){};
 	virtual void forward(Transformable &data);
 	virtual void reverse(Transformable &data);
+	virtual map<string, double> get_fwd_chain_rule_factors(const Transformable &cur_values) const;
+	virtual map<string, double> get_rev_chain_rule_factors(const Transformable &cur_values) const;
 	virtual ~TranOffset(){};
 	virtual void print(ostream &os) const;
 	virtual bool is_one_to_one() const {return true;}
@@ -159,6 +163,8 @@ public:
 	TranScale(const string &_name="unnamed TranScale"): TranMapBase(_name){};
 	virtual void forward(Transformable &data);
 	virtual void reverse(Transformable &data);
+	virtual map<string, double> get_fwd_chain_rule_factors(const Transformable &cur_values) const;
+	virtual map<string, double> get_rev_chain_rule_factors(const Transformable &cur_values) const;
 	virtual ~TranScale(){};
 	virtual void print(ostream &os) const;
 	virtual bool is_one_to_one() const {return true;}
@@ -178,6 +184,8 @@ public:
 	TranLog10(const string &_name="unnamed TranLog10"): TranSetBase(_name){};
 	virtual void forward(Transformable &data);
 	virtual void reverse(Transformable &data);
+	virtual map<string, double> get_fwd_chain_rule_factors(const Transformable &cur_values) const;
+	virtual map<string, double> get_rev_chain_rule_factors(const Transformable &cur_values) const;
 	virtual ~TranLog10(){};
 	virtual void print(ostream &os) const;
 	virtual bool is_one_to_one() const {return true;}
@@ -195,6 +203,8 @@ public:
 	TranInvLog10(const string &_name="unnamed TranInvLog10"): TranSetBase(_name){};
 	virtual void forward(Transformable &data);
 	virtual void reverse(Transformable &data);
+	virtual map<string, double> get_fwd_chain_rule_factors(const Transformable &cur_values) const;
+	virtual map<string, double> get_rev_chain_rule_factors(const Transformable &cur_values) const;
 	virtual ~TranInvLog10(){};
 	virtual void print(ostream &os) const;
 	virtual bool is_one_to_one() const {return true;}
@@ -309,6 +319,8 @@ public:
 	void insert(const string &item_name, double _offset, double _scale);
 	virtual void forward(Transformable &data);
 	virtual void reverse(Transformable &data);
+	virtual map<string, double> get_fwd_chain_rule_factors(const Transformable &cur_values) const;
+	virtual map<string, double> get_rev_chain_rule_factors(const Transformable &cur_values) const;
 	virtual ~TranNormalize(){};
 	virtual void print(ostream &os) const;
 	virtual bool is_one_to_one() const {return true;}

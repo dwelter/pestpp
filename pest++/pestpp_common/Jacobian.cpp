@@ -379,7 +379,7 @@ bool Jacobian::forward_diff(const string &par_name, const Parameters &numeric_pa
 	vector<string> out_of_bound__backard_par_vec;
 	string tmp_name;
 
-	double incr = derivative_inc(par_name, group_info, ctl_par_info, numeric_parameters, false);
+	double incr = derivative_inc(par_name, group_info, ctl_par_info, numeric_parameters.get_rec(par_name), false);
 	// try forward derivative
 	// perturb numeric paramateres
 	Parameters numeric_derivative_pars(numeric_parameters);
@@ -410,7 +410,7 @@ bool Jacobian::central_diff(const string &par_name, const Parameters &pest_param
 	Parameters numeric_dir_pars;
 	string tmp_name;
 
-	double incr = derivative_inc(par_name, group_info, ctl_par_info, pest_parameters, true);
+	double incr = derivative_inc(par_name, group_info, ctl_par_info, pest_parameters.get_rec(par_name), true);
 	// try backward difference
 	numeric_dir_pars = pest_parameters;
 	new_par = numeric_dir_pars[par_name] -= incr;
@@ -504,7 +504,7 @@ bool Jacobian::out_of_bounds(const Parameters &ctl_parameters, const ParameterGr
 	return out_of_bounds;
 }
 
-double Jacobian::derivative_inc(const string &name, const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info,  const Parameters &parameters, bool central)
+double Jacobian::derivative_inc(const string &name, const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, double cur_par_value, bool central)
 {
 	const ParameterGroupRec *g_rec;
 	double incr = 0.0;	
@@ -514,7 +514,7 @@ double Jacobian::derivative_inc(const string &name, const ParameterGroupInfo &gr
 	if (g_rec->inctyp == "ABSOLUTE") {
 		incr = g_rec->derinc;}
 	else if (g_rec->inctyp == "RELATIVE") {
-		incr =  g_rec->derinc * abs((parameters.find(name)->second));
+		incr =  g_rec->derinc * abs(cur_par_value);
 	}
 	// apply derincmul for central derivatives
 	if (central) {
@@ -542,9 +542,9 @@ const set<string>& Jacobian::get_failed_parameter_names() const
 	return failed_parameter_names;
 }
 
-void Jacobian::save() const
+void Jacobian::save(const string &ext) const
 {
-	ofstream &fout = file_manager.open_ofile_ext("jco", ofstream::binary);
+	ofstream &jout = file_manager.open_ofile_ext(ext, ios::out |ios::binary);
 
 	int n_par = base_numeric_par_names.size();
 	int n_standard_obs = base_sim_obs_names.size();
@@ -558,9 +558,9 @@ void Jacobian::save() const
 
 	// write header
 	tmp  = -n_par;
-	fout.write((char*) &tmp, sizeof(tmp));
+	jout.write((char*) &tmp, sizeof(tmp));
 	tmp = -n_obs_and_pi;
-	fout.write((char*) &tmp, sizeof(tmp));
+	jout.write((char*) &tmp, sizeof(tmp));
 
 	////write number nonzero elements in jacobian 
 	n = 0;
@@ -571,7 +571,7 @@ void Jacobian::save() const
 	}
 	//get number of nonzero derivatives in prior information
 	n += size_prior_info_sen();  
-	fout.write((char*)&n, sizeof(n));
+	jout.write((char*)&n, sizeof(n));
 
 	////write matrix
 	n = 0;
@@ -584,8 +584,8 @@ void Jacobian::save() const
 			data = matrix(i,j);
 			++n;
 			if (data != 0.0) {
-				fout.write((char*) &(n), sizeof(n));
-				fout.write((char*) &(data), sizeof(data));
+				jout.write((char*) &(n), sizeof(n));
+				jout.write((char*) &(data), sizeof(data));
 			}
 		}
 		//prior information
@@ -598,8 +598,8 @@ void Jacobian::save() const
 			found_pi_par = (*b).second.find(*par_name_ptr);
 			if (found_pi_par != not_found_pi_par) {
 				data = (*found_pi_par).second;
-				fout.write((char*) &(n), sizeof(n));
-				fout.write((char*) &(data), sizeof(data));
+				jout.write((char*) &(n), sizeof(n));
+				jout.write((char*) &(data), sizeof(data));
 			}
 		}
 	}
@@ -608,23 +608,23 @@ void Jacobian::save() const
 	for(vector<string>::const_iterator b=base_numeric_par_names.begin(), e=base_numeric_par_names.end();
 		b!=e; ++b) {
 		string_to_fortran_char(*b, par_name, 12);
-		fout.write(par_name, 12);
+		jout.write(par_name, 12);
 	}
 
 	//save observation names (part 1 standard observations)
 	for(vector<string>::const_iterator b=base_sim_obs_names.begin(), e=base_sim_obs_names.end();
 		b!=e; ++b) {
 		string_to_fortran_char(*b, obs_name, 20);
-		fout.write(obs_name, 20);
+		jout.write(obs_name, 20);
 	}
 	//save observation names (part 2 prior information)
 	for(map<string, map<string, double>>::const_iterator b=prior_info_sen.begin(), e=prior_info_sen.end();
 		b!=e; ++b)
 	{
 		string_to_fortran_char((*b).first, obs_name, 20);
-		fout.write(obs_name, 20);
+		jout.write(obs_name, 20);
 	}
-	file_manager.close_file("jco");
+	file_manager.close_file(ext);
 }
 
 

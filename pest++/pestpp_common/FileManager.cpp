@@ -67,13 +67,13 @@ string FileManager::get_full_filename(const string &tag)
 ofstream &FileManager::open_ofile_absolute(const string &tag, const string &filename, ofstream::openmode mode)
 {
 	pair<map<string ,ofstream>::iterator, bool> ret;
-	ret = ofile_map.insert(pair<string, ofstream>(tag, ofstream()));
+	ret = ofile_map.insert(pair<string, ofstream>(tag, ofstream(filename, mode)));
 	ofstream &f_new = ret.first->second;
-	if (ret.second != false  && !f_new.is_open())
-	{
-		f_new.open(filename, mode);
-		filename_map.insert(pair<string, string>(tag, filename));
-	}
+	//if (ret.second != false  && !f_new.is_open())
+	//{
+	//	f_new.open(filename, mode);
+	//	filename_map.insert(pair<string, string>(tag, filename));
+	//}
 	if (!f_new.good())
 	{
 		throw PestFileError(filename);

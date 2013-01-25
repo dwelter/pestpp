@@ -23,7 +23,7 @@ c     modified by C. Muffels, SSPA, for use with PROPACK and PEST
 	  if(transa.eq.'N'.or.transa.eq.'n') then
 c	    compute  y = y + a*x
 	    y(iw(1+i))=y(iw(1+i))+rw(i)*x(iw(iw(1)+1+i))
- 	  else
+      else
 c	    compute  y = y + a(transpose)*x
 	    y(iw(iw(1)+1+i))=y(iw(iw(1)+1+i))+rw(i)*x(iw(1+i))
 	  endif

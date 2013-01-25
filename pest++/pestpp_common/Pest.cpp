@@ -112,9 +112,9 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 	base_par_transform.push_back_ctl2derivative(t_frozen);
 	base_par_transform.set_frozen_ptr(t_frozen);
 	base_par_transform.add_default_deep_copy(t_frozen);
-	base_par_transform.push_back_ctl2derivative(t_log);
+	base_par_transform.push_back_derivative2numeric(t_log);
 	base_par_transform.set_log10_ptr(t_log);
-	base_par_transform.push_back_ctl2derivative(t_auto_norm);
+	base_par_transform.push_back_derivative2numeric(t_auto_norm);
 
 	try {
 	prior_info_string = "";

@@ -5,9 +5,9 @@ set gman_port=24772
 set pestpp_file=storage5
 
 REM create directories for PEST++ and the gslave to run in
-xcopy /q /y template master\
+xcopy /e /q /y template master\
 FOR /L %%i IN (1,1,%nslaves%) DO (
-  xcopy /q /y template slave%%i\
+  xcopy /e /q /y template slave%%i\
 )
 
 REM start GMAN

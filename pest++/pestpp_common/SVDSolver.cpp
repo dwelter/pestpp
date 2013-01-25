@@ -160,6 +160,7 @@ SVDSolver::Upgrade SVDSolver::calc_upgrade_vec(const Jacobian &jacobian, const Q
 	LaGenMatDouble Vt(SqrtQ_J.size(1), SqrtQ_J.size(1));
 	svd_package->solve_ip(SqrtQ_J, Sigma, U, Vt);
 	//calculate the number of singluar values above the threshold
+	cout << Sigma << endl;
 	LaGenMatDouble SqrtQ_J_inv =SVD_inv(U, Sigma, Vt, svd_info.maxsing, svd_info.eigthresh, upgrade.n_sing_val_used);
 	   upgrade.svd_uvec =(SqrtQ_J_inv * Q_sqrt) * Residuals;
 	upgrade.tot_sing_val = Sigma.size();
@@ -361,14 +362,12 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	//rot_angle_vec.push_back(rot_angle);
 	//rot_fac_vec.push_back(0.0);
 
+	double tmp_rot_fac[] =  {0.0, 0.01, 0.1, 0.2, 0.5, 0.7, 1.0};
 	for(int i=0; i<7; ++i) {
-
-		double tmp_rot_fac[] =  {0.0, 0.01, 0.1, 0.2, 0.5, 0.7, 1.0};
 		rot_fac_vec.push_back(tmp_rot_fac[i]);
 		rot_angle = add_model_run(run_manager, upgrade_run.get_par_tran(), 
-			base_run.get_numeric_pars(),upgrade, rot_fac_vec[i], 1.0);
+		base_run.get_numeric_pars(),upgrade, rot_fac_vec[i], 1.0);
 		rot_angle_vec.push_back(rot_angle);
-		rot_fac_vec.push_back(tmp_rot_fac[i]);
 	}
 	// process model runs
 	cout << "    testing upgrade vectors... ";
@@ -376,8 +375,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	cout << endl;
 	bool best_run_updated_flag = false;
 	for(int i=0; i<n_runs; ++i) {
-		double rot_fac = 0;
-		if (i>1) rot_fac = rot_fac_vec[i-2];
+		double rot_fac = rot_fac_vec[i];
 		ModelRun upgrade_run(base_run);
         Parameters tmp_pars;
         Observations tmp_obs;

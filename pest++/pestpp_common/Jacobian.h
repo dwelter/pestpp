@@ -52,7 +52,7 @@ public:
 		RunManagerAbstract &run_manager, const PriorInformation &prior_info, bool phiredswh_flag=false, bool calc_init_obs=true);
 	virtual void calculate(ModelRun &model_run, const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
 		RunManagerAbstract &run_manager, const PriorInformation &prior_info, bool phiredswh_flag=false, bool calc_init_obs=true);
-	virtual void save() const;
+	virtual void save(const std::string &ext="jco") const;
 	virtual const set<string>& get_failed_parameter_names() const;
 	virtual ~Jacobian();
 protected:
@@ -73,7 +73,7 @@ protected:
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, const ParamTransformSeq &par_trans, vector<double> &new_par, 
 		vector<Parameters> &model_par_vec);
 	virtual bool out_of_bounds(const Parameters &model_parameters, const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, vector<string> &out_of_bound_par_vec) const;
-	virtual double derivative_inc(const string &name, const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info,  const Parameters &parameters,  bool central = false);
+	virtual double derivative_inc(const string &name, const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info,   double cur_par_value,  bool central = false);
 	virtual bool get_derivative_parameters(const string &par_name, ModelRun &init_model_run, const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
 		vector<JacobianRun> &del_numeric_par_vec, bool phiredswh_flag);
 	virtual void calc_prior_info_sen(const string &par_name, ModelRun &run1, ModelRun &run2, const PriorInformation &prior_info);
