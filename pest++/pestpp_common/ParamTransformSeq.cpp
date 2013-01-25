@@ -88,7 +88,8 @@ ParamTransformSeq::~ParamTransformSeq()
 void ParamTransformSeq::clear()
 {
 	clear_tranSeq_ctl2model();
-	clear_tranSeq_ctl2numeric();
+	clear_tranSeq_ctl2derivative();
+    clear_tranSeq_derivative2numeric();
 	default_deep_copy_tran_set.clear();
 	name = "empty";
 }
@@ -106,23 +107,38 @@ void ParamTransformSeq::clear_tranSeq_ctl2model()
 	tranSeq_ctl2model.clear();
 }
 
-void  ParamTransformSeq::clear_tranSeq_ctl2numeric()
+void  ParamTransformSeq::clear_tranSeq_ctl2derivative()
 {
-	for(vector<Transformation*>::iterator i = tranSeq_ctl2numeric.begin(),
-		e=tranSeq_ctl2numeric.end(); i != e; ++i)
+	for(vector<Transformation*>::iterator i = tranSeq_ctl2derivative.begin(),
+		e=tranSeq_ctl2derivative.end(); i != e; ++i)
 	{
 		tran_sub_ref_count(*i);
 		default_deep_copy_tran_set.erase(*i);
 	}
 	ctl_log10_ptr = 0;
 	ctl_frozen_ptr = 0;
-	tranSeq_ctl2numeric.clear();
+	tranSeq_ctl2derivative.clear();
+}
+
+
+void ParamTransformSeq::clear_tranSeq_derivative2numeric()
+{
+	for(vector<Transformation*>::iterator i = tranSeq_derivative2numeric.begin(),
+		e=tranSeq_derivative2numeric.end(); i != e; ++i)
+	{
+		tran_sub_ref_count(*i);
+		default_deep_copy_tran_set.erase(*i);
+	}
+	ctl_offset_ptr = 0;
+	ctl_scale_prt = 0;
+	tranSeq_derivative2numeric.clear();
 }
 
 void ParamTransformSeq::deep_copy(const ParamTransformSeq &rhs)
 {
 	set<Transformation *> deep_copy_set(rhs.tranSeq_ctl2model.begin(), rhs.tranSeq_ctl2model.end());
-	deep_copy_set.insert(rhs.tranSeq_ctl2numeric.begin(), rhs.tranSeq_ctl2numeric.end());
+	deep_copy_set.insert(rhs.tranSeq_ctl2derivative.begin(), rhs.tranSeq_ctl2derivative.end());
+    deep_copy_set.insert(rhs.tranSeq_derivative2numeric.begin(), rhs.tranSeq_derivative2numeric.end());
 	copy(rhs, deep_copy_set);
 }
 
@@ -159,8 +175,8 @@ void ParamTransformSeq::copy(const ParamTransformSeq &rhs, const set<Transformat
 		if (*i == rhs.ctl_offset_ptr) ctl_offset_ptr = dynamic_cast<TranOffset*>(t_ptr);
 		if (*i == rhs.ctl_scale_prt) ctl_scale_prt = dynamic_cast<TranScale*>(t_ptr);
 	}
-	for(vector<Transformation*>::const_iterator i = rhs.tranSeq_ctl2numeric.begin(),
-		e=rhs.tranSeq_ctl2numeric.end(); i != e; ++i)
+	for(vector<Transformation*>::const_iterator i = rhs.tranSeq_ctl2derivative.begin(),
+		e=rhs.tranSeq_ctl2derivative.end(); i != e; ++i)
 	{
 		if (deep_copy_tran_set.find(*i) ==  deep_copy_tran_set.end()) {
 			t_ptr = *i;
@@ -168,7 +184,23 @@ void ParamTransformSeq::copy(const ParamTransformSeq &rhs, const set<Transformat
 		else {
 			t_ptr = (*i)->clone();
 		}
-		push_back_ctl2numeric(t_ptr);
+		push_back_ctl2derivative(t_ptr);
+		if (rhs.default_deep_copy_tran_set.find(*i) !=  rhs.default_deep_copy_tran_set.end()) {
+			default_deep_copy_tran_set.insert(t_ptr);
+		}
+		if (*i == rhs.ctl_log10_ptr) ctl_log10_ptr = dynamic_cast<TranLog10*>(t_ptr);
+		if (*i == rhs.ctl_frozen_ptr) ctl_frozen_ptr = dynamic_cast<TranFrozen*>(t_ptr);
+	}
+    for(vector<Transformation*>::const_iterator i = rhs.tranSeq_derivative2numeric.begin(),
+		e=rhs.tranSeq_derivative2numeric.end(); i != e; ++i)
+	{
+		if (deep_copy_tran_set.find(*i) ==  deep_copy_tran_set.end()) {
+			t_ptr = *i;
+		}
+		else {
+			t_ptr = (*i)->clone();
+		}
+		push_back_derivative2numeric(t_ptr);
 		if (rhs.default_deep_copy_tran_set.find(*i) !=  rhs.default_deep_copy_tran_set.end()) {
 			default_deep_copy_tran_set.insert(t_ptr);
 		}
@@ -206,7 +238,7 @@ void ParamTransformSeq::append(const ParamTransformSeq &rhs, const set<Transform
 			default_deep_copy_tran_set.insert(t_ptr);
 		}
 	}
-	for (vector<Transformation*>::const_iterator i=rhs.tranSeq_ctl2numeric.begin(), e=rhs.tranSeq_ctl2numeric.end();
+    for (vector<Transformation*>::const_iterator i=rhs.tranSeq_ctl2derivative.begin(), e=rhs.tranSeq_ctl2derivative.end();
 		i!=e; ++i) 
 	{
 		if (deep_copy_tran_set.find(*i) ==  deep_copy_tran_set.end()) {
@@ -215,7 +247,21 @@ void ParamTransformSeq::append(const ParamTransformSeq &rhs, const set<Transform
 		else {
 			t_ptr = (*i)->clone();
 		}
-		push_back_ctl2numeric(t_ptr);
+		push_back_ctl2derivative(t_ptr);
+		if (rhs.default_deep_copy_tran_set.find(*i) !=  rhs.default_deep_copy_tran_set.end()) {
+			default_deep_copy_tran_set.insert(t_ptr);
+		}
+	}
+	for (vector<Transformation*>::const_iterator i=rhs.tranSeq_derivative2numeric.begin(), e=rhs.tranSeq_derivative2numeric.end();
+		i!=e; ++i) 
+	{
+		if (deep_copy_tran_set.find(*i) ==  deep_copy_tran_set.end()) {
+			t_ptr = *i;
+		}
+		else {
+			t_ptr = (*i)->clone();
+		}
+		push_back_derivative2numeric(t_ptr);
 		if (rhs.default_deep_copy_tran_set.find(*i) !=  rhs.default_deep_copy_tran_set.end()) {
 			default_deep_copy_tran_set.insert(t_ptr);
 		}
@@ -228,11 +274,19 @@ void ParamTransformSeq::push_back_ctl2model(Transformation *tr)
 	tran_add_ref_count(tr);
 }
 
-void ParamTransformSeq::push_back_ctl2numeric(Transformation *tr)
+void ParamTransformSeq::push_back_ctl2derivative(Transformation *tr)
 {
-	tranSeq_ctl2numeric.push_back(tr);
+	tranSeq_ctl2derivative.push_back(tr);
 	tran_add_ref_count(tr);
 }
+
+
+void ParamTransformSeq::push_back_derivative2numeric(Transformation *tr)
+{
+	tranSeq_derivative2numeric.push_back(tr);
+	tran_add_ref_count(tr);
+}
+
 
 void ParamTransformSeq::ctl2model_ip(Parameters &data) const
 {
@@ -252,11 +306,30 @@ Parameters ParamTransformSeq::ctl2model_cp(const Parameters &data) const
 	return ret_val;
 }
 
-void ParamTransformSeq::ctl2numeric_ip(Parameters &data) const
+void ParamTransformSeq::ctl2derivative_ip(Parameters &data) const
 {
 	vector<Transformation*>::const_iterator iter, e;
+	for(iter = tranSeq_ctl2derivative.begin(), e = tranSeq_ctl2derivative.end();
+		iter != e; ++iter)
+	{
+		(*iter)->forward(data);
+		
+	}
+}
 
-	for(iter = tranSeq_ctl2numeric.begin(), e = tranSeq_ctl2numeric.end();
+Parameters ParamTransformSeq::ctl2derivative_cp(const Parameters &data) const
+{
+	Parameters ret_val(data);
+	ctl2derivative_ip(ret_val);
+	return ret_val;
+}
+
+void ParamTransformSeq::ctl2numeric_ip(Parameters &data) const
+{
+     ctl2derivative_ip(data);
+
+	vector<Transformation*>::const_iterator iter, e;
+	for(iter = tranSeq_derivative2numeric.begin(), e = tranSeq_derivative2numeric.end();
 		iter != e; ++iter)
 	{
 		(*iter)->forward(data);
@@ -289,11 +362,31 @@ Parameters ParamTransformSeq::model2ctl_cp(const Parameters &data) const
 	return ret_val;
 }
 
-void ParamTransformSeq::numeric2ctl_ip(Parameters &data) const
+
+void ParamTransformSeq::numeric2derivative_ip(Parameters &data) const
 {
 	vector<Transformation*>::const_reverse_iterator iter, e;
 
-	for(iter = tranSeq_ctl2numeric.rbegin(), e = tranSeq_ctl2numeric.rend();
+	for(iter = tranSeq_derivative2numeric.rbegin(), e = tranSeq_derivative2numeric.rend();
+		iter != e; ++iter)
+	{
+		(*iter)->reverse(data);
+	}
+}
+
+
+Parameters ParamTransformSeq::numeric2derivative_cp(const Parameters &data) const
+{
+	Parameters ret_val(data);
+	numeric2derivative_ip(ret_val);
+	return ret_val;
+}
+
+void ParamTransformSeq::numeric2ctl_ip(Parameters &data) const
+{
+    numeric2derivative_ip(data);
+	vector<Transformation*>::const_reverse_iterator iter, e;
+	for(iter = tranSeq_ctl2derivative.rbegin(), e = tranSeq_ctl2derivative.rend();
 		iter != e; ++iter)
 	{
 		(*iter)->reverse(data);
@@ -334,6 +427,56 @@ Parameters ParamTransformSeq::model2numeric_cp(const Parameters &data) const
 	return ret_val;
 }
 
+void ParamTransformSeq::derivative2numeric_ip(Parameters &data) const
+{
+	vector<Transformation*>::const_reverse_iterator iter, e;
+
+	for(iter = tranSeq_derivative2numeric.rbegin(), e = tranSeq_derivative2numeric.rend();
+		iter != e; ++iter)
+	{
+		(*iter)->forward(data);
+	}
+}
+
+Parameters ParamTransformSeq::derivative2numeric_cp(const Parameters &data) const
+{
+	Parameters ret_val(data);
+	derivative2numeric_ip(ret_val);
+	return ret_val;
+}
+
+void ParamTransformSeq::derivative2ctl_ip(Parameters &data) const
+{
+	vector<Transformation*>::const_reverse_iterator iter, e;
+
+	for(iter = tranSeq_ctl2derivative.rbegin(), e = tranSeq_ctl2derivative.rend();
+		iter != e; ++iter)
+	{
+		(*iter)->reverse(data);
+	}
+}
+
+Parameters ParamTransformSeq::derivative2ctl_cp(const Parameters &data) const
+{
+	Parameters ret_val(data);
+	derivative2ctl_ip(ret_val);
+	return ret_val;
+}
+
+void ParamTransformSeq::derivative2model_ip(Parameters &data) const
+{
+    derivative2ctl_ip(data);
+    ctl2model_ip(data);
+}
+
+Parameters ParamTransformSeq::derivative2model_cp(const Parameters &data) const
+{
+	Parameters ret_val(data);
+	derivative2model_ip(ret_val);
+	return ret_val;
+}
+
+
 bool ParamTransformSeq::is_one_to_one() const
 {
 	for (vector<Transformation*>::const_iterator b=tranSeq_ctl2model.begin(), e=tranSeq_ctl2model.end();
@@ -342,7 +485,13 @@ bool ParamTransformSeq::is_one_to_one() const
 				return false;
 			}
 	}
-	for (vector<Transformation*>::const_iterator b=tranSeq_ctl2numeric.begin(), e=tranSeq_ctl2numeric.end();
+	for (vector<Transformation*>::const_iterator b=tranSeq_ctl2derivative.begin(), e=tranSeq_ctl2derivative.end();
+		b!=e; ++b) {
+			if((*b)->is_one_to_one() == false) {
+				return false;
+			}
+	}
+    for (vector<Transformation*>::const_iterator b=tranSeq_derivative2numeric.begin(), e=tranSeq_derivative2numeric.end();
 		b!=e; ++b) {
 			if((*b)->is_one_to_one() == false) {
 				return false;
@@ -361,7 +510,15 @@ Transformation* ParamTransformSeq::get_transformation(const string &name)
 			}
 	}
 	if (!t_ptr) {
-		for (vector<Transformation*>::const_iterator b=tranSeq_ctl2numeric.begin(), e=tranSeq_ctl2numeric.end();
+		for (vector<Transformation*>::const_iterator b=tranSeq_ctl2derivative.begin(), e=tranSeq_ctl2derivative.end();
+			b!=e; ++b) {
+				if( (*b)->get_name() == name) {
+					t_ptr = (*b);
+			}	
+		}
+	}
+    if (!t_ptr) {
+		for (vector<Transformation*>::const_iterator b=tranSeq_derivative2numeric.begin(), e=tranSeq_derivative2numeric.end();
 			b!=e; ++b) {
 				if( (*b)->get_name() == name) {
 					t_ptr = (*b);
@@ -379,8 +536,13 @@ void ParamTransformSeq::print(ostream &os) const
 		b!=e; ++b) {
 			(*b)->print(os);
 	}
-	os << "Control file to numeric transformations" << endl;
-	for (vector<Transformation*>::const_iterator b=tranSeq_ctl2numeric.begin(), e=tranSeq_ctl2numeric.end();
+	os << "Control file to derivative transformations" << endl;
+	for (vector<Transformation*>::const_iterator b=tranSeq_ctl2derivative.begin(), e=tranSeq_ctl2derivative.end();
+		b!=e; ++b) {
+			(*b)->print(os);
+	}
+    os << "Derivative to numeric transformations" << endl;
+	for (vector<Transformation*>::const_iterator b=tranSeq_derivative2numeric.begin(), e=tranSeq_derivative2numeric.end();
 		b!=e; ++b) {
 			(*b)->print(os);
 	}

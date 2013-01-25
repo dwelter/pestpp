@@ -169,7 +169,7 @@ void Jacobian::calculate(ModelRun &init_model_run, vector<string> numeric_par_na
 	Observations observations(init_model_run.get_obs_template());
 	base_numeric_parameters = init_model_run.get_numeric_pars();
 
-	run_manager.allocate_memory(model_parameters, observations);
+	run_manager.reallocate_memory();
 	const vector<string> &par_name_vec = run_manager.get_par_name_vec();
 	const vector<string> &obs_name_vec = run_manager.get_obs_name_vec();
 
@@ -537,7 +537,10 @@ int Jacobian::size_prior_info_sen() const
 	}
 	return n_sen;
 }
-
+const set<string>& Jacobian::get_failed_parameter_names() const
+{
+	return failed_parameter_names;
+}
 
 void Jacobian::save() const
 {

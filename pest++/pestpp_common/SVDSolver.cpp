@@ -284,6 +284,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	ModelRun base_run(cur_solution);
 	vector<string> obs_names_vec;
 
+
 	// Calculate Jacobian
 	if (!cur_solution.obs_valid() || calc_init_obs == true) {
 		 calc_init_obs = true;
@@ -293,6 +294,11 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 			*par_group_info_ptr, *ctl_par_info_ptr,run_manager,  *prior_info_ptr,
 			phiredswh_flag, calc_init_obs);
 	cout << endl;
+
+	//Freeze Parameter for which the jacobian could not be calculated
+	auto &failed_jac_pars = jacobian.get_failed_parameter_names();
+	//auto  freeze_pars = cur_solution.get_numeric_pars().get_subset(failed_jac_pars.begin(), failed_jac_pars.end());
+	//cur_solution.freeze_parameters(freeze_pars);
 
 	// update regularization weight factor
 	double tikhonov_weight = regul_scheme_ptr->get_weight(cur_solution);
@@ -341,7 +347,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	double rot_angle;
 	vector<double> rot_fac_vec;
 	vector<double> rot_angle_vec;
-	run_manager.allocate_memory(base_run.get_model_pars(), base_run.get_obs_template());
+	run_manager.reallocate_memory();
 	 
 	//Make two runs with rotation factor of zero  but scaled down
 	//ModelRun upgrade_run_scale(base_run);

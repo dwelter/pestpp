@@ -60,6 +60,7 @@ public:
 	virtual const ParamTransformSeq &get_par_tran()  {return par_tran;}
 	const ObjectiveFunc *get_obj_func_ptr()  {return obj_func_ptr;}
 	void freeze_parameters(const map<string,double> par_map);
+	void freeze_parameters(Transformable const &pars);
 	void thaw_parameters();
 	virtual double get_phi(double regul_weight=1.0);
 	virtual PhiComponets get_phi_comp();

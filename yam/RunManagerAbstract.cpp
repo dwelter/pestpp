@@ -42,6 +42,13 @@ void RunManagerAbstract::allocate_memory(const Parameters &model_pars, const Obs
 	file_stor.reset(model_pars.get_keys(), obs.get_keys());
 }
 
+void RunManagerAbstract::reallocate_memory()
+{
+	vector<string> par_names = get_par_name_vec();
+	vector<string> obs_names = get_obs_name_vec();
+	file_stor.reset(par_names, obs_names);
+}
+
 int RunManagerAbstract::add_run(const vector<double> &model_pars)
 {
     int run_id = file_stor.add_run(model_pars);

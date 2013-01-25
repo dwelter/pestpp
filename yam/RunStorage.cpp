@@ -39,7 +39,7 @@ void RunStorage::reset(const vector<string> &_par_names, const vector<string> &_
 	free_memory();
 	par_names = _par_names;
 	obs_names = _obs_names;
-	// a file needs to exist before it can beo pened it with read and write 
+	// a file needs to exist before it can be opened it with read and write 
 	// permission.   So open it with write permission to crteate it, close 
 	// and then reopen it with read and write permisssion.
 	buf_stream.open(filename.c_str(), ios_base::out | ios_base::binary);

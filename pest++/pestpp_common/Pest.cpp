@@ -70,6 +70,7 @@ vector<string> Pest::get_nonregul_obs() const
 int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 {
 	string line;
+    string line_upper;
 	string section("");
 	vector<string> tokens;
 	int sec_begin_lnum, sec_lnum;
@@ -105,37 +106,37 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 	base_par_transform.set_scale_ptr(t_scale);
 	base_par_transform.push_back_ctl2model(t_offset);
 	base_par_transform.set_offset_ptr(t_offset);
-	base_par_transform.push_back_ctl2numeric(t_tied);
-	base_par_transform.push_back_ctl2numeric(t_fixed);
+	base_par_transform.push_back_ctl2derivative(t_tied);
+	base_par_transform.push_back_ctl2derivative(t_fixed);
 	base_par_transform.set_fixed_ptr(t_fixed);
-	base_par_transform.push_back_ctl2numeric(t_frozen);
+	base_par_transform.push_back_ctl2derivative(t_frozen);
 	base_par_transform.set_frozen_ptr(t_frozen);
 	base_par_transform.add_default_deep_copy(t_frozen);
-	base_par_transform.push_back_ctl2numeric(t_log);
+	base_par_transform.push_back_ctl2derivative(t_log);
 	base_par_transform.set_log10_ptr(t_log);
-	base_par_transform.push_back_ctl2numeric(t_auto_norm);
+	base_par_transform.push_back_ctl2derivative(t_auto_norm);
 
 	try {
 	prior_info_string = "";
 	for(lnum=1, sec_begin_lnum=1; getline(fin, line); ++ lnum)
 	{
 		strip_ip(line);
-		upper_ip(line);
+        line_upper = upper_cp(line);
 		tokens.clear();
-		tokenize(line, tokens);
+		tokenize(line_upper, tokens);
 		sec_lnum = lnum - sec_begin_lnum;
 		if (tokens.empty())
 		{
 			//skip blank line
 		}
-		else if (line.substr(0,2) == "++")
+		else if (line_upper.substr(0,2) == "++")
 		{
-			pestpp_input.push_back(line);
+			pestpp_input.push_back(line_upper);
 		}
 			
-		else if (line[0] == '*')
+		else if (line_upper[0] == '*')
 		{
-			section = upper_cp(strip_cp(line, "both", " *\t\n"));
+			section = upper_cp(strip_cp(line_upper, "both", " *\t\n"));
 			sec_begin_lnum = lnum;
 		}
 		else if (section == "CONTROL DATA")
@@ -294,7 +295,7 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 			else if (tokens[0] == "&") {
 				prior_info_string.append(" ");
 			}
-			prior_info_string.append(line);
+			prior_info_string.append(line_upper);
 		}
 
 		else if (section == "PRIOR INFORMATION" )
@@ -316,15 +317,17 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 		}
 		else if (section == "MODEL INPUT/OUTPUT" )
 		{
+            vector<string> tokens_case_sen;
+            tokenize(line_upper, tokens_case_sen);
 			if(i_tpl_ins < num_tpl_file)
 			{
-				model_exec_info.tplfile_vec.push_back(tokens[0]);
-				model_exec_info.inpfile_vec.push_back(tokens[1]);
+				model_exec_info.tplfile_vec.push_back(tokens_case_sen[0]);
+				model_exec_info.inpfile_vec.push_back(tokens_case_sen[1]);
 			}
 			else
 			{
-				model_exec_info.insfile_vec.push_back(tokens[0]);
-				model_exec_info.outfile_vec.push_back(tokens[1]);
+				model_exec_info.insfile_vec.push_back(tokens_case_sen[0]);
+				model_exec_info.outfile_vec.push_back(tokens_case_sen[1]);
 			}
 			++i_tpl_ins;
 		}

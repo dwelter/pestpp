@@ -52,6 +52,7 @@ private:
 	std::vector<std::string> insfile_vec;
 	std::vector<std::string> outfile_vec;
 	std::vector<std::string> obs_name_vec;
+	std::vector<std::string> par_name_vec;
 };
 
 #endif /* YAMRSLAVE_H_ */

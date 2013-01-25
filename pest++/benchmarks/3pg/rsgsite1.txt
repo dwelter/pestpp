@@ -21,9 +21,9 @@
  
 // Site factors
 "Latitude"               -26
-"Fertility rating"       1.0
+"Fertility rating"   1.00000000
 "Soil class"             CL
-"Maximum ASW"           300.0
+"Maximum ASW"        300.000000
 "Minimum ASW"            0
  
 //Climate data           Jan     Feb     March   April   May     June    July    Aug     Sep     Oct     Nov     Dec
@@ -43,4 +43,3 @@
 "Initial soil water"     999
 "Year planted"           1947
  
-

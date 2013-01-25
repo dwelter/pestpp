@@ -57,22 +57,35 @@ public:
 	virtual ~ParamTransformSeq();
 	void clear();
 	void clear_tranSeq_ctl2model();
-	void clear_tranSeq_ctl2numeric();
+	void clear_tranSeq_ctl2derivative();
+	void clear_tranSeq_derivative2numeric();
 	void push_back_ctl2model(Transformation *tr);
-	void push_back_ctl2numeric(Transformation *tr);
-	//void push_back_ctl2numeric_frozen();
+	void push_back_ctl2derivative(Transformation *tr);
+	void push_back_derivative2numeric(Transformation *tr);
+	void numeric2derivative_ip(Parameters &data) const;
 	void numeric2ctl_ip(Parameters &data) const;
 	void numeric2model_ip(Parameters &data) const;
+	void ctl2derivative_ip(Parameters &data) const;
 	void ctl2numeric_ip(Parameters &data) const;
 	void ctl2model_ip(Parameters &data) const;
 	void model2ctl_ip(Parameters &data) const;
+	void model2derivative_ip(Parameters &data) const;
 	void model2numeric_ip(Parameters &data) const;
+	void derivative2numeric_ip(Parameters &data) const;
+	void derivative2ctl_ip(Parameters &data) const;
+	void derivative2model_ip(Parameters &data) const;
+	Parameters numeric2derivative_cp(const Parameters &data) const;
 	Parameters numeric2ctl_cp(const Parameters &data) const;
 	Parameters numeric2model_cp(const Parameters &data) const;
+	Parameters ctl2derivative_cp(const Parameters &data) const;
 	Parameters ctl2numeric_cp(const Parameters &data) const;
 	Parameters ctl2model_cp(const Parameters &data) const;
 	Parameters model2ctl_cp(const Parameters &data) const;
+	Parameters model2derivative_cp(const Parameters &data) const;
 	Parameters model2numeric_cp(const Parameters &data) const;
+	Parameters derivative2numeric_cp(const Parameters &data) const;
+	Parameters derivative2ctl_cp(const Parameters &data) const;
+	Parameters derivative2model_cp(const Parameters &data) const;
 	Transformation* get_transformation(const string &name);
 	void set_offset_ptr(TranOffset *ptr) {ctl_offset_ptr = ptr;}
 	const TranOffset *get_offset_ptr() const{return ctl_offset_ptr;}
@@ -85,7 +98,8 @@ public:
 	void set_fixed_ptr(TranFixed *ptr) {ctl_fixed_ptr = ptr;}
 	const TranLog10 *get_log10_ptr() const {return ctl_log10_ptr;}
 	const vector<Transformation*> get_ctl2model_tranformations() const {return tranSeq_ctl2model;}
-	const vector<Transformation*> get_ctl2numeric_tranformations() const {return tranSeq_ctl2numeric;}
+	const vector<Transformation*> get_ctl2derivative_tranformations() const {return tranSeq_ctl2derivative;}
+	const vector<Transformation*> get_derivative2numeric_tranformations() const {return tranSeq_derivative2numeric;}
 	void add_default_deep_copy(Transformation *tr){default_deep_copy_tran_set.insert(tr);}
 	void clear_default_deep_copies(Transformation *tr){default_deep_copy_tran_set.clear();}
 	set <Transformation *> get_default_deep_copy_vec() const {return default_deep_copy_tran_set;}
@@ -93,7 +107,8 @@ public:
 	void print(ostream &os) const;
 private:
 	vector<Transformation*> tranSeq_ctl2model;
-	vector<Transformation*> tranSeq_ctl2numeric;
+	vector<Transformation*> tranSeq_ctl2derivative;
+	vector<Transformation*> tranSeq_derivative2numeric;
 	TranOffset *ctl_offset_ptr;
 	TranScale *ctl_scale_prt;
 	TranLog10 *ctl_log10_ptr;

@@ -99,6 +99,7 @@ public:
 		const std::vector<std::string> _insfile_vec, const std::vector<std::string> _outfile_vec,
 		const std::string &stor_filename, const std::string &port, std::ofstream &_f_rmr);
 	virtual void allocate_memory(const Parameters &pars, const Observations &obs);
+	virtual void reallocate_memory();
 	virtual void free_memory();
 	virtual int add_run(const Parameters &model_pars);
 	virtual void run();

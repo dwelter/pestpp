@@ -269,7 +269,8 @@ void YAMRSlave::start(const string &host, const string &port)
 		    inpfile_vec = tmp_vec_vec[2];
 		    insfile_vec = tmp_vec_vec[3];
 		    outfile_vec = tmp_vec_vec[4];
-		    obs_name_vec= tmp_vec_vec[5];
+			par_name_vec= tmp_vec_vec[5];
+		    obs_name_vec= tmp_vec_vec[6];
 		}
 		else if(net_pack.get_type() == NetPackage::PackType::REQ_LINPACK)
 		{
@@ -280,7 +281,7 @@ void YAMRSlave::start(const string &host, const string &port)
 		}
 		else if(net_pack.get_type() == NetPackage::PackType::START_RUN)
 		{
-			Serialization::unserialize(net_pack.get_data(), pars);
+			Serialization::unserialize(net_pack.get_data(), pars, par_name_vec);
 			// run model
 			int group_id = net_pack.get_groud_id();
 			int run_id = net_pack.get_run_id();
@@ -291,7 +292,7 @@ void YAMRSlave::start(const string &host, const string &port)
 				//send model results back
 				cout << "run complete" << endl;
 				cout << "sending results to master (group id = " << group_id << ", run id = " << run_id << ")" <<endl << endl;
-				serialized_data = Serialization::serialize(pars, obs);
+				serialized_data = Serialization::serialize(pars, par_name_vec, obs, obs_name_vec);
 				net_pack.reset(NetPackage::PackType::RUN_FINISH, net_pack.get_groud_id(), net_pack.get_run_id(), "");
 				err = send_message(net_pack, serialized_data.data(), serialized_data.size());
 				// Send READY Message to master

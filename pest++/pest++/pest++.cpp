@@ -159,7 +159,7 @@ int main(int argc, char* argv[])
 	// take responsibility for destroying it
 	TranSVD *tran_svd = new TranSVD("SVD Super Parameter Tranformation");
 	trans_svda = base_trans_seq;
-	trans_svda.push_back_ctl2numeric(tran_svd);
+	trans_svda.push_back_derivative2numeric(tran_svd);
 
 	ParameterGroupInfo sup_group_info;
 	//
@@ -181,13 +181,17 @@ int main(int argc, char* argv[])
 	//Parameters junk;
 	//junk.unserialize(serial);
 	//end junk
+	//Allocates Space for Run Manager.  This initializes the model parameter names and observations names.
+	//Niether of these will change over the course of the simulation
+	run_manager_ptr->allocate_memory(base_trans_seq.ctl2model_cp(cur_ctl_parameters), pest_scenario.get_ctl_observations());
+
 
 	ModelRun optimum_run(&obj_func, base_trans_seq, pest_scenario.get_ctl_observations());
 	// if noptmax=0 make one run with the intital parameters
 	if (pest_scenario.get_control_info().noptmax == 0) {
 		Parameters init_model_pars = base_trans_seq.ctl2model_cp(cur_ctl_parameters);
 		optimum_run.set_ctl_parameters(init_model_pars);
-		run_manager_ptr->allocate_memory(init_model_pars, pest_scenario.get_ctl_observations());
+		run_manager_ptr->reallocate_memory();
 		run_manager_ptr->add_run(init_model_pars);
 		run_manager_ptr->run();
 

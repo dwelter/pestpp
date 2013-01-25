@@ -72,6 +72,8 @@ public:
 	iterator find(const string &name);
 	const double* get_rec_ptr(const string &name) const;
 	const double get_rec(const string &name) const;
+	template <class NameIterator>
+    Transformable get_subset (NameIterator first, NameIterator last) const;
 	void update_rec(const string &name, double value);
     void update(const vector<string> &names, const vector<double> &values); 
 	const_iterator find(const string &name) const;
@@ -98,6 +100,8 @@ public:
 	Parameters() : Transformable(){}
 	Parameters(const Parameters &copyin) : Transformable(copyin) {}
 	Parameters(const Parameters &copyin, const vector<string> &copy_names) : Transformable(copyin, copy_names){} 
+	template <class NameIterator>
+	Parameters get_subset (NameIterator first, NameIterator last)const;
 	virtual ~Parameters(){}
 private:
 };
@@ -112,5 +116,36 @@ public:
 private:
 };
 
+
+template <class NameIterator>
+Transformable Transformable::get_subset (const NameIterator first, const NameIterator last) const 
+{
+	Transformable subset;
+	for(auto i = first; i!=last; ++i)
+	{
+		auto t_iter = find(*i);
+		if (t_iter == this->end())
+		{
+			throw(Transformable_value_error(*i));
+		}
+		subset.insert(t_iter);
+	}
+}
+
+
+template <class NameIterator>
+Parameters Parameters::get_subset (NameIterator first, NameIterator last) const
+{
+	Parameters subset;
+	for(auto i = first; i!=last; ++i)
+	{
+		auto t_iter = find(*i);
+		if (t_iter == this->end())
+		{
+			throw(Transformable_value_error(*i));
+		}
+		subset.insert(t_iter->first, t_iter->second);
+	}
+}
 
 #endif /* TRANSFORMABLE_H_ */

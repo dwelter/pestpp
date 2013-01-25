@@ -234,4 +234,3 @@ ostream& operator<<(ostream& out, const Transformable &rhs)
 	return out;
 }
 
-

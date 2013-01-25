@@ -116,6 +116,27 @@ vector<char> Serialization::serialize(const Parameters &pars, const Observations
 	 return serialize(tr_vec);
 }
 
+vector<char> Serialization::serialize(const Parameters &pars, const vector<string> &par_names_vec, const Observations &obs, const vector<string> &obs_names_vec)
+{
+
+	assert(pars.size() == par_names_vec.size());
+	assert(obs.size() == obs_names_vec.size());
+	vector<char> serial_data;
+	size_t npar = par_names_vec.size();
+	size_t nobs = obs_names_vec.size();
+	size_t par_buf_sz = npar * sizeof(double);
+	size_t obs_buf_sz = nobs * sizeof(double);
+	serial_data.resize(par_buf_sz + obs_buf_sz, Parameters::no_data);
+
+	char *buf = &serial_data[0];
+	vector<double> par_data = pars.get_data_vector(par_names_vec);
+	w_memcpy_s(buf, par_buf_sz, &par_data[0], par_data.size() * sizeof(double));
+
+	vector<double> obs_data = obs.get_data_vector(obs_names_vec);
+	w_memcpy_s(buf+par_buf_sz, obs_buf_sz, &obs_data[0], obs_data.size() * sizeof(double));
+	return serial_data;
+}
+
 vector<char> Serialization::serialize(const vector<string> &string_vec)
 {
 	vector<char> serial_data;
@@ -231,4 +252,36 @@ unsigned long Serialization::unserialize(const vector<char> &ser_data, vector<ve
 		total_bytes_read += bytes_read;
 	}
 	return total_bytes_read;
+}
+
+unsigned long Serialization::unserialize(const vector<char> &ser_data, Transformable &items, const vector<string> &names_vec, unsigned long start_loc)
+{
+	unsigned long bytes_read = 0;
+	unsigned long total_bytes_read = 0;
+	size_t vec_size = (ser_data.size() - start_loc) / sizeof(double);
+	assert(vec_size >= names_vec.size());
+
+	items.clear();
+	double *value = 0;
+	size_t iloc = start_loc;
+	size_t n_read = 0;
+	size_t n_val = names_vec.size();
+	for (n_read=0; n_read<n_val; ++n_read)
+	{
+		value = (double*)&ser_data[iloc];
+		items.insert(names_vec[n_read], *value);
+		iloc += sizeof(double);
+	}
+	total_bytes_read = n_read * sizeof(double);
+	return total_bytes_read;
+}
+
+unsigned long Serialization::unserialize(const vector<char> &ser_data, Parameters &pars, const vector<string> &par_names, Observations &obs, const vector<string> &obs_names)
+{
+	unsigned long bytes_read = 0;
+
+	bytes_read = unserialize(ser_data, pars, par_names, 0);
+	bytes_read += unserialize(ser_data, obs, obs_names, bytes_read);
+
+	return bytes_read;
 }

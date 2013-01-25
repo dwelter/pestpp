@@ -222,7 +222,13 @@ unordered_multimap<int, YamrModelRun>::iterator RunManagerYAMR::get_active_run_i
 
 void RunManagerYAMR::allocate_memory(const Parameters &model_pars, const Observations &obs)
 {
-	file_stor.reset(model_pars.get_keys(), obs.get_keys());
+	RunManagerAbstract::allocate_memory(model_pars, obs);
+	cur_group_id = NetPackage::get_new_group_id();
+}
+
+void RunManagerYAMR::reallocate_memory()
+{
+	RunManagerAbstract::reallocate_memory();
 	cur_group_id = NetPackage::get_new_group_id();
 }
 
@@ -441,10 +447,7 @@ void RunManagerYAMR::process_message(int i_sock)
 		completed_runs.insert(pair<int, YamrModelRun>(run_id,  model_run));
 		Parameters pars;
 		Observations obs;
-		vector<Transformable *> tr_vec;
-		tr_vec.push_back(&pars);
-		tr_vec.push_back(&obs);
-		Serialization::unserialize(net_pack.get_data(), tr_vec);
+		Serialization::unserialize(net_pack.get_data(), pars, get_par_name_vec(), obs, get_obs_name_vec());
 		file_stor.update_run(run_id, pars, obs);
 		use_run = true;
 	}
@@ -542,6 +545,7 @@ void RunManagerYAMR::process_message(int i_sock)
 			tmp_vec.push_back(&inpfile_vec);
 			tmp_vec.push_back(&insfile_vec);
 			tmp_vec.push_back(&outfile_vec);
+			tmp_vec.push_back(&file_stor.get_par_name_vec());
 			tmp_vec.push_back(&file_stor.get_obs_name_vec());
 
 			data = Serialization::serialize(tmp_vec);

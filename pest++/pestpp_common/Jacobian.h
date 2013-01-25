@@ -20,10 +20,11 @@
 #ifndef JACOBIAN_H_
 #define JACOBIAN_H_
 #include<map>
-#include <unordered_map>
-#include <vector>
+#include<unordered_map>
+#include<vector>
+#include<set>
 #include "Transformable.h"
-#include <lapackpp.h>
+#include<lapackpp.h>
 
 class ParamTransformSeq;
 class ParameterInfo;
@@ -52,10 +53,12 @@ public:
 	virtual void calculate(ModelRun &model_run, const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
 		RunManagerAbstract &run_manager, const PriorInformation &prior_info, bool phiredswh_flag=false, bool calc_init_obs=true);
 	virtual void save() const;
+	virtual const set<string>& get_failed_parameter_names() const;
 	virtual ~Jacobian();
 protected:
 	vector<string> base_numeric_par_names;  //ordered names of base parameters used to calculate the jacobian
 	Parameters base_numeric_parameters;  //values of base parameters used to calculate the jacobian
+	set<string> failed_parameter_names;
 	vector< string>  base_sim_obs_names;  //names of base observations used to calculate the jacobian
 	Observations  base_sim_observations;  //values of base observations used to calculate the jacobian
 	LaGenMatDouble matrix;

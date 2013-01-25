@@ -143,6 +143,15 @@ void ModelRun::freeze_parameters(const map<string,double> par_map)
 	}
 }
 
+void ModelRun::freeze_parameters(Transformable const &pars)
+{
+	for (const auto &ipar : pars)
+	{
+		numeric_pars.erase(ipar.first);
+		par_tran.get_frozen_ptr()->insert(ipar.first, ipar.second);
+	}
+}
+
 void ModelRun::thaw_parameters()
 {
 	TranFrozen *frz_ptr= par_tran.get_frozen_ptr();

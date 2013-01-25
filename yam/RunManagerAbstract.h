@@ -37,6 +37,7 @@ public:
 		const std::vector<std::string> _insfile_vec, const std::vector<std::string> _outfile_vec,
 		const std::string &stor_filename);
 	virtual void allocate_memory(const Parameters &model_pars, const Observations &obs);
+	virtual void reallocate_memory();
 	virtual void free_memory();
 	virtual int add_run(const Parameters &model_pars);
     virtual int add_run(const std::vector<double> &model_pars);

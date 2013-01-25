@@ -153,7 +153,7 @@ void LaSVD_IP(LaGenMatComplex& A, LaVectorDouble &Sigma)
     integer ldu = 1;
     integer ldvt = 1;
 
-#if 0
+#if 1
     F77NAME(zgesvd)(&jobz, &jobz, &Ml, &Nl, &A(0, 0), &lda,
                     &Sigma(0), &U(0, 0), &ldu, &VT(0, 0), &ldvt,
                     &work(0), &lwork, &rwork(0),
@@ -233,17 +233,26 @@ void LaSVD_IP(LaGenMatDouble& A, LaVectorDouble &Sigma, LaGenMatDouble& U, LaGen
     integer lwork = -1;
     LaVectorDouble work(1);
     // Calculate the optimum temporary workspace
-    F77NAME(dgesdd)(&jobz, &Ml, &Nl, &A(0, 0), &lda,
+   // F77NAME(dgesdd)(&jobz, &Ml, &Nl, &A(0, 0), &lda,
+   //                &Sigma(0), &U(0, 0), &ldu, &VT(0, 0), &ldvt,
+   //               &work(0), &lwork, &iwork(0),
+   //              &info);
+    F77NAME(dgesvd)(&jobz, &jobz, &Ml, &Nl, &A(0, 0), &lda,
                     &Sigma(0), &U(0, 0), &ldu, &VT(0, 0), &ldvt,
-                    &work(0), &lwork, &iwork(0),
+                    &work(0), &lwork,
                     &info);
+
     lwork = int(work(0));
     work.resize(lwork, 1);
 
     // Now the real calculation
-    F77NAME(dgesdd)(&jobz, &Ml, &Nl, &A(0, 0), &lda,
+    //F77NAME(dgesdd)(&jobz, &Ml, &Nl, &A(0, 0), &lda,
+    //                &Sigma(0), &U(0, 0), &ldu, &VT(0, 0), &ldvt,
+    //                &work(0), &lwork, &iwork(0),
+    //                &info);
+    F77NAME(dgesvd)(&jobz, &jobz, &Ml, &Nl, &A(0, 0), &lda,
                     &Sigma(0), &U(0, 0), &ldu, &VT(0, 0), &ldvt,
-                    &work(0), &lwork, &iwork(0),
+                    &work(0), &lwork,
                     &info);
 
     if (info != 0)
@@ -295,9 +304,13 @@ void LaSVD_IP(LaGenMatDouble& A, LaVectorDouble &Sigma)
     int liwork = 8 * std::min(M, N);
     LaVectorLongInt iwork(liwork);
 
-    F77NAME(dgesdd)(&jobz, &Ml, &Nl, &A(0, 0), &lda,
+    //F77NAME(dgesdd)(&jobz, &Ml, &Nl, &A(0, 0), &lda,
+    //                &Sigma(0), &U(0, 0), &ldu, &VT(0, 0), &ldvt,
+    //                &work(0), &lwork, &iwork(0),
+    //                &info);
+    F77NAME(dgesvd)(&jobz, &jobz, &Ml, &Nl, &A(0, 0), &lda,
                     &Sigma(0), &U(0, 0), &ldu, &VT(0, 0), &ldvt,
-                    &work(0), &lwork, &iwork(0),
+                    &work(0), &lwork,
                     &info);
 
     if (info != 0)
