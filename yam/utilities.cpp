@@ -62,7 +62,7 @@ enough to be able to accept some of these foreign types naturally.
 template void tokenize(const std::string& str, vector<string>& tokens, const std::string& delimiters, const bool trimEmpty);
 template void tokenize(const std::string& str, list<string>& tokens, const std::string& delimiters, const bool trimEmpty);
 
-void strip_ip(string &s, const string &op, const string &delimiters)
+std::string& strip_ip(string &s, const string &op, const string &delimiters)
 {
 	size_t i;
 
@@ -79,6 +79,7 @@ void strip_ip(string &s, const string &op, const string &delimiters)
 		else i+=1;
 		if (i<s.size()) s.erase(i);
 	}
+	return s;
 }
 
 string strip_cp(const string &s, const string &op, const string &delimiters)
@@ -247,6 +248,27 @@ vector<keyType> get_map_keys(const map<keyType,dataType> &my_map)
 }
 
 template vector<string> get_map_keys(const map<string, map<string, double>> &my_map);
+
+
+
+string fortran_str_2_string(char *fstr, int str_len)
+{
+	string new_str = strip_ip(string(fstr, str_len));
+	return new_str;
+}
+
+
+vector<string> fortran_str_array_2_vec(char *fstr, int str_len, int array_len)
+{
+	vector<string> str_vec;
+	str_vec.reserve(array_len);
+
+	for (size_t ia=0; ia < array_len; ++ia)
+	{
+		str_vec.push_back(strip_ip(string(fstr+ia*str_len, str_len)));
+	}
+	return str_vec;
+}
 
 } // end of namespace pest_utils
 

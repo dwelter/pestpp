@@ -90,7 +90,7 @@ namespace pest_utils
 
 
 
-	void strip_ip(string &s, const string &op="both",
+	std::string& strip_ip(string &s, const string &op="both",
 		const string &delimiters=" \t\n\r");
 
 	/** @brief Strip leading and/or trailing characters from a string
@@ -195,6 +195,9 @@ class CompareItemInSet
 
 void copyfile(const string &from_file, const string &to_file);
 
+std::string fortran_str_2_string(char *fstr, int str_len);
+
+std::vector<std::string> fortran_str_array_2_vec(char *fstr, int str_len, int fstr_len);
 
 }  // end namespace pest_utils
 

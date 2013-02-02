@@ -31,6 +31,7 @@
     <ClInclude Include="network_wrapper.h" />
     <ClInclude Include="pest_error.h" />
     <ClInclude Include="RunManagerAbstract.h" />
+    <ClInclude Include="RunManagerFortranWrap.h" />
     <ClInclude Include="RunManagerGenie.h" />
     <ClInclude Include="RunManagerSerial.h" />
     <ClInclude Include="RunManagerYAMR.h" />
@@ -47,6 +48,7 @@
     <ClCompile Include="network_wrapper.cpp" />
     <ClCompile Include="pest_error.cpp" />
     <ClCompile Include="RunManagerAbstract.cpp" />
+    <ClCompile Include="RunManagerFortranWrap.cpp" />
     <ClCompile Include="RunManagerGenie.cpp" />
     <ClCompile Include="RunManagerSerial.cpp" />
     <ClCompile Include="RunManagerYAMR.cpp" />
@@ -142,6 +144,10 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <LinkTimeCodeGeneration>
+      </LinkTimeCodeGeneration>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>

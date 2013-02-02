@@ -228,7 +228,6 @@ bool Jacobian_1to1::forward_diff(const string &par_name, double base_derivative_
 {
 	const ParameterRec *par_info_ptr = ctl_par_info.get_parameter_rec_ptr(par_name);
 	Parameters new_par;
-	double new_ctl_val;
 	bool out_of_bound_forward;
 	bool out_of_bound_backward;
 	vector<string> out_of_bound__forward_par_vec;

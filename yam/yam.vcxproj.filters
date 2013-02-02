@@ -54,6 +54,9 @@
     <ClInclude Include="YamrSlave.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RunManagerFortranWrap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="linpackc.c">
@@ -96,6 +99,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="YamrSlave.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RunManagerFortranWrap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

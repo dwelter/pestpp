@@ -235,7 +235,7 @@ void w_print_servinfo(addrinfo *res, ostream &fout)
 		}
 	// convert the IP to a string and print it:
 	inet_ntop(p->ai_family, addr, ipstr, sizeof ipstr);
-	printf(" %s: %s\n", ipver, ipstr);
+	fout << " " << ipver <<": " << ipstr << ipstr << endl;
 	}
 }
 
