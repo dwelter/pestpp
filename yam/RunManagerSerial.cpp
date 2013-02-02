@@ -25,7 +25,7 @@
 #include <cassert>
 #include <cstring>
 #include <map>
-#include <direct.h>
+#include "system_variables.h"
 #include "Transformable.h"
 #include "utilities.h"
 
@@ -138,7 +138,7 @@ void RunManagerSerial::run()
 			message.str("");
 			message << "(" << success_runs << "/" << nruns << " runs complete)";
 			std::cout << message.str();
-			_chdir(run_dir.c_str());
+			OperSys::chdir(run_dir.c_str());
 			WRTTPL(&ntpl, StringvecFortranCharArray(tplfile_vec, 50, pest_utils::TO_LOWER).get_prt(),
 				StringvecFortranCharArray(inpfile_vec, 50, pest_utils::TO_LOWER).get_prt(),
 				&npar, StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),

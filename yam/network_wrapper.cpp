@@ -3,6 +3,11 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <cstring>
+
+//for linux
+//#include <arpa/inet.h>
+//#include <unistd.h>
 
 using namespace std;
 
@@ -51,7 +56,7 @@ vector<string> w_getnameinfo_vec(int sockfd, int flags)
 	char host[INET6_ADDRSTRLEN];
 	char port[INET6_ADDRSTRLEN];
 	struct sockaddr_storage addr;
-	int addr_len = sizeof addr;
+	socklen_t addr_len = sizeof addr;
 	err = getpeername(sockfd, (struct sockaddr*) &addr, &addr_len);
 	err = getnameinfo((struct sockaddr*) &addr, addr_len, host, sizeof host, port, sizeof port, flags); 
 	name_info.push_back(host);
@@ -215,7 +220,7 @@ void w_print_servinfo(addrinfo *res, ostream &fout)
 	{
 		void *addr;
 		char ipstr[INET6_ADDRSTRLEN];
-		char *ipver;
+		string ipver;
 		// get the pointer to the address itself,
 		// different fields in IPv4 and IPv6:
 		if (p->ai_family == AF_INET) { // IPv4

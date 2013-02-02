@@ -20,6 +20,10 @@
 #include <string>
 #include <sstream>
 #include "system_variables.h"
+//for windows
+#include <direct.h>
+//for linux
+//#include <unistd.h>
 
 using namespace std;
 
@@ -50,4 +54,9 @@ string OperSys::getcwd()
 	buffer = _getcwd( NULL, 0 );
 	string cwd(buffer);
 	return cwd;
+}
+
+void OperSys::chdir(const char *str)
+{
+	_chdir(str);
 }

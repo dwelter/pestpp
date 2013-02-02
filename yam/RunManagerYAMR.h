@@ -120,7 +120,7 @@ private:
 	std::unordered_map<int, YamrModelRun> completed_runs;
 	SlaveInfo slave_info;
 	std::unordered_multimap<int, int> failure_map;
-	void RunManagerYAMR::listen();
+	void listen();
 	bool process_model_run(int sock_id, NetPackage &net_pack);
 	void process_message(int i);
 	bool schedule_run(int run_id);

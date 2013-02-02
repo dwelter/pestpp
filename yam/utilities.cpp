@@ -6,6 +6,7 @@
 #include <vector>
 #include <algorithm>
 #include <list>
+#include <cstring>
 
 template <class T> const T& min ( const T& a, const T& b );
 
@@ -238,10 +239,9 @@ template <class keyType, class dataType>
 vector<keyType> get_map_keys(const map<keyType,dataType> &my_map)
 {
 	vector<keyType> keys;
-	for(map<keyType, dataType>::const_iterator b=my_map.begin(), e=my_map.end();
-		b!=e; ++b)
+	for(auto &i : my_map)
 	{
-		keys.push_back((*b).first);
+		keys.push_back(i.first);
 	}
 	return keys;
 }

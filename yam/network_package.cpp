@@ -1,5 +1,6 @@
 #include <memory>
 #include <sstream>
+#include <cstring>
 #include "network_package.h"
 #include "network_wrapper.h"
 #include <cassert>

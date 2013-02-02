@@ -27,7 +27,6 @@
 #include <cassert>
 #include <cstring>
 #include <map>
-#include <direct.h>
 #include <deque>
 #include <utility>
 #include <algorithm>
@@ -83,7 +82,7 @@ SlaveInfo::~SlaveInfo()
 
 void SlaveInfo::add(int sock_id)
 {
-	slave_info_map[sock_id] = SlaveInfo::SlaveRec::SlaveRec();
+	slave_info_map[sock_id] = SlaveInfo::SlaveRec();
 }
 
 void SlaveInfo::erase(int sock_id)

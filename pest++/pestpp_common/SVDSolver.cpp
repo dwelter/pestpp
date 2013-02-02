@@ -160,7 +160,6 @@ SVDSolver::Upgrade SVDSolver::calc_upgrade_vec(const Jacobian &jacobian, const Q
 	LaGenMatDouble Vt(SqrtQ_J.size(1), SqrtQ_J.size(1));
 	svd_package->solve_ip(SqrtQ_J, Sigma, U, Vt);
 	//calculate the number of singluar values above the threshold
-	cout << Sigma << endl;
 	LaGenMatDouble SqrtQ_J_inv =SVD_inv(U, Sigma, Vt, svd_info.maxsing, svd_info.eigthresh, upgrade.n_sing_val_used);
 	   upgrade.svd_uvec =(SqrtQ_J_inv * Q_sqrt) * Residuals;
 	upgrade.tot_sing_val = Sigma.size();
