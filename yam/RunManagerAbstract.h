@@ -36,8 +36,9 @@ public:
 		const std::vector<std::string> _tplfile_vec, const std::vector<std::string> _inpfile_vec,
 		const std::vector<std::string> _insfile_vec, const std::vector<std::string> _outfile_vec,
 		const std::string &stor_filename);
-	virtual void allocate_memory(const Parameters &model_pars, const Observations &obs);
-	virtual void reallocate_memory();
+	virtual void initialize(const Parameters &model_pars, const Observations &obs);
+	virtual void initialize(const std::vector<std::string> &par_names, std::vector<std::string> &obs_names);
+	virtual void reinitialize();
 	virtual void free_memory();
 	virtual int add_run(const Parameters &model_pars);
     virtual int add_run(const std::vector<double> &model_pars);
@@ -45,6 +46,7 @@ public:
     virtual const std::vector<std::string> &get_par_name_vec() const;
     virtual const std::vector<std::string> &get_obs_name_vec() const;
 	virtual bool get_run(int run_id, Parameters &pars, Observations &obs);
+	virtual bool get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs);
 	virtual const std::set<int>& get_failed_run_ids() const;
 	virtual Parameters get_model_parameters(int run_num);
 	virtual Observations get_obs_template(double value = -9999.0) const;

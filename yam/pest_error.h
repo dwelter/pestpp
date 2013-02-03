@@ -31,6 +31,10 @@ public:
 	void add_front(const string &s) {message = s + message;}
 	void add_back(const string &s) {message += s;}
 	void raise() {throw *this;}
+	virtual const char* what() const throw()
+	{
+		return message.c_str();
+	}
 protected:
 	string message;
 };

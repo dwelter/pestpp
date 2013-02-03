@@ -347,7 +347,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	double rot_angle;
 	vector<double> rot_fac_vec;
 	vector<double> rot_angle_vec;
-	run_manager.reallocate_memory();
+	run_manager.reinitialize();
 	 
 	//Make two runs with rotation factor of zero  but scaled down
 	//ModelRun upgrade_run_scale(base_run);

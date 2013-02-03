@@ -169,7 +169,7 @@ void Jacobian::calculate(ModelRun &init_model_run, vector<string> numeric_par_na
 	Observations observations(init_model_run.get_obs_template());
 	base_numeric_parameters = init_model_run.get_numeric_pars();
 
-	run_manager.reallocate_memory();
+	run_manager.reinitialize();
 	const vector<string> &par_name_vec = run_manager.get_par_name_vec();
 	const vector<string> &obs_name_vec = run_manager.get_obs_name_vec();
 

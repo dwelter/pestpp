@@ -173,7 +173,7 @@ int main(int argc, char* argv[])
 
 	// make model runs
 	Parameters model_pars = base_partran_seq.ctl2model_cp(ctl_par);
-	run_manager_ptr->reallocate_memory();
+	run_manager_ptr->reinitialize();
 	for (int i=0; i<morris_r; ++i)
 	{
 		morris.assemble_runs(*run_manager_ptr, base_partran_seq);

@@ -158,6 +158,30 @@ void RunStorage::get_run(int run_id, Parameters *pars, Observations *obs)
 	obs->update(obs_names, obs_data);
 }
 
+void RunStorage::get_run(int run_id, double *pars, size_t npars, double *obs, int nobs)
+{
+	RUN_STATUS r_status;
+	std::int8_t n_fail;
+	check_rec_id(run_id);
+	assert(npars == par_names.size());
+	assert(nobs == obs_names.size());
+	if (npars != par_names.size()) {
+		throw(PestIndexError("RunStorage::get_run: parameter dimension in incorrect"));
+	}
+	if (nobs == obs_names.size()) {
+		throw(PestIndexError("RunStorage::get_run: observation dimension in incorrect"));
+	}
+	size_t p_size = min(npars, par_names.size());
+	size_t o_size = min(npars, par_names.size());
+
+	buf_stream.seekg(get_stream_pos(run_id), ios_base::beg);
+	buf_stream.read(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	buf_stream.read(reinterpret_cast<char*>(&n_fail), sizeof(n_fail));
+	buf_stream.read(reinterpret_cast<char*>(pars), p_size * sizeof(double));
+	buf_stream.read(reinterpret_cast<char*>(obs), o_size * sizeof(double));
+}
+
+
 vector<char> RunStorage::get_serial_pars(int run_id)
 {
 	check_rec_id(run_id);

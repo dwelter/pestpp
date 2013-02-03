@@ -37,12 +37,17 @@ RunManagerAbstract::RunManagerAbstract(const vector<string> _comline_vec,
 {
 }
 
-void RunManagerAbstract::allocate_memory(const Parameters &model_pars, const Observations &obs)
+void RunManagerAbstract::initialize(const Parameters &model_pars, const Observations &obs)
 {
 	file_stor.reset(model_pars.get_keys(), obs.get_keys());
 }
 
-void RunManagerAbstract::reallocate_memory()
+void RunManagerAbstract::initialize(const std::vector<std::string> &par_names, std::vector<std::string> &obs_names)
+{
+	file_stor.reset(par_names, obs_names);
+}
+
+void RunManagerAbstract::reinitialize()
 {
 	vector<string> par_names = get_par_name_vec();
 	vector<string> obs_names = get_obs_name_vec();
@@ -75,6 +80,14 @@ bool RunManagerAbstract::get_run(int run_id, Parameters &pars, Observations &obs
 {
     bool run_good = true;
 	file_stor.get_run(run_id, &pars, &obs);
+    if ( failed_runs.find(run_id) != failed_runs.end() ) run_good = false;
+    return run_good;
+}
+
+bool RunManagerAbstract::get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs)
+{
+	bool run_good = true;
+	file_stor.get_run(run_id, pars, npars, obs, nobs);
     if ( failed_runs.find(run_id) != failed_runs.end() ) run_good = false;
     return run_good;
 }
