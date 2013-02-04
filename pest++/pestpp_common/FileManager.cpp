@@ -36,15 +36,18 @@ FileManager::~FileManager(void)
 {
 	for (auto &i : ofile_map)
 	{
-		if(i.second.is_open()) i.second.close();
+		if(i.second->is_open()) i.second->close();
+		delete i.second;
 	}
 	for (auto &i : ifile_map)
 	{
-		if(i.second.is_open()) i.second.close();
+		if(i.second->is_open()) i.second->close();
+		delete i.second;
 	}
 	for (auto &i : iofile_map)
 	{
-		if(i.second.is_open()) i.second.close();
+		if(i.second->is_open()) i.second->close();
+		delete i.second;
 	}
 }
 
@@ -66,14 +69,14 @@ string FileManager::get_full_filename(const string &tag)
 
 ofstream &FileManager::open_ofile_absolute(const string &tag, const string &filename, ofstream::openmode mode)
 {
-	pair<map<string ,ofstream>::iterator, bool> ret;
-	ret = ofile_map.insert(pair<string, ofstream>(tag, ofstream(filename, mode)));
-	ofstream &f_new = ret.first->second;
-	//if (ret.second != false  && !f_new.is_open())
-	//{
-	//	f_new.open(filename, mode);
-	//	filename_map.insert(pair<string, string>(tag, filename));
-	//}
+	pair<map<string ,ofstream*>::iterator, bool> ret;
+	ret = ofile_map.insert(pair<string, ofstream*>(tag, new ofstream()));
+	ofstream &f_new = *(ret.first->second);
+	if (ret.second != false  && !f_new.is_open())
+	{
+		f_new.open(filename, mode);
+		filename_map.insert(pair<string, string>(tag, filename));
+	}
 	if (!f_new.good())
 	{
 		throw PestFileError(filename);
@@ -97,9 +100,9 @@ ofstream &FileManager::open_ofile_local(const string &tag, const string &filenam
 
 ifstream &FileManager::open_ifile_absolute(const string &tag, const string &filename, ifstream::openmode mode)
 {
-	pair<map<string ,ifstream>::iterator, bool> ret;
-	ret = ifile_map.insert(pair<string, ifstream>(tag, ifstream()));
-	ifstream &f_new = ret.first->second;
+	pair<map<string ,ifstream*>::iterator, bool> ret;
+	ret = ifile_map.insert(pair<string, ifstream*>(tag, new ifstream()));
+	ifstream &f_new = *(ret.first->second);
 	if (ret.second != false  && !f_new.is_open())
 	{
 		f_new.open(filename, mode);
@@ -130,9 +133,9 @@ ifstream &FileManager::open_ifile_local(const string &tag, const string &filenam
 
 fstream &FileManager::open_iofile_absolute(const string &tag, const string &filename, fstream::openmode mode)
 {
-	pair<map<string ,fstream>::iterator, bool> ret;
-	ret = iofile_map.insert(pair<string, fstream>(tag, fstream()));
-	fstream &f_new = ret.first->second;
+	pair<map<string ,fstream*>::iterator, bool> ret;
+	ret = iofile_map.insert(pair<string, fstream*>(tag, new fstream()));
+	fstream &f_new = *(ret.first->second);
 	if (ret.second != false  && !f_new.is_open())
 	{
 		f_new.open(filename, mode);
@@ -162,29 +165,29 @@ fstream &FileManager::open_iofile_local(const string &tag, const string &filenam
 void FileManager::close_file(const string &tag)
 {
 	{
-		map<string, ofstream>::iterator it;
+		map<string, ofstream*>::iterator it;
 		it = ofile_map.find(tag);
-		if (it != ofile_map.end() && it->second.is_open())
+		if (it != ofile_map.end() && it->second->is_open())
 		{
-			it->second.close();
+			it->second->close();
 			ofile_map.erase(it);
 		}
 	}
 	{
-		map<string, ifstream>::iterator it;
+		map<string, ifstream*>::iterator it;
 		it = ifile_map.find(tag);
-		if (it != ifile_map.end() && it->second.is_open())
+		if (it != ifile_map.end() && it->second->is_open())
 		{
-			it->second.close();
+			it->second->close();
 			ifile_map.erase(it);
 		}
 	}
 	{
-		map<string, fstream>::iterator it;
+		map<string, fstream*>::iterator it;
 		it = iofile_map.find(tag);
-		if (it != iofile_map.end() && it->second.is_open())
+		if (it != iofile_map.end() && it->second->is_open())
 		{
-			it->second.close();
+			it->second->close();
 			iofile_map.erase(it);
 		
 		}
@@ -194,38 +197,38 @@ void FileManager::close_file(const string &tag)
 
 ofstream &FileManager::get_ofstream(const string &tag)
 {
-	map<string, ofstream>::iterator it;
+	map<string, ofstream*>::iterator it;
 	it = ofile_map.find(tag);
 	if (it == ofile_map.end())
 	{
 		string filename = build_filename(tag);
 		throw PestFileErrorAccess(filename);
 	}
-	return it->second;
+	return *(it->second);
 }
 
 fstream &FileManager::get_fstream(const string &tag)
 {
-	map<string, fstream>::iterator it;
+	map<string, fstream*>::iterator it;
 	it = iofile_map.find(tag);
 	if (it == iofile_map.end())
 	{
 		string filename = build_filename(tag);
 		throw PestFileErrorAccess(filename);
 	}
-	return it->second;
+	return *(it->second);
 }
 
 ifstream &FileManager::get_ifstream(const string &tag)
 {
-	map<string, ifstream>::iterator it;
+	map<string, ifstream*>::iterator it;
 	it = ifile_map.find(tag);
 	if (it == ifile_map.end())
 	{
 		string filename = build_filename(tag);
 		throw PestFileErrorAccess(filename);
 	}
-	return it->second;
+	return *(it->second);
 }
 
 

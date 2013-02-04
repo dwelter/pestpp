@@ -82,7 +82,7 @@ void OperSys::chdir(const char *str)
 char* OperSys::gets_s(char *str, size_t len)
 {
  #ifdef OS_WIN
-  return gets_s(str, len);
+  return ::gets_s(str, len);
  #endif
  #ifdef OS_LINUX
   return gets(str);

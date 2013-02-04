@@ -25,27 +25,25 @@
 #include <vector>
 #include <map>
 
-using namespace std;
-
 class FileManager
 {
 public:
-	FileManager(const string &_base_filename, const std::string &_directory="");
+	FileManager(const std::string &_base_filename, const std::string &_directory="");
 	std::string build_filename(const std::string &ext);
 	std::string get_full_filename(const std::string &tag);
 	std::string jacobian_filename() {return build_filename("jco");}
 	void set_analytic_derivative_filename(const std::string &name) {analytic_derivative_filename = name;}
 	std::ofstream &rec_ofstream();
 	std::ofstream &sen_ofstream();
-	std::ofstream &open_ofile_ext(const std::string &extension, ios_base::openmode mode = ofstream::out);
-	std::ofstream &open_ofile_local(const std::string &tag, const std::string &filename, ofstream::openmode mode = ofstream::out);
-	std::ofstream &open_ofile_absolute(const std::string &tag, const std::string &filename, ofstream::openmode mode = ofstream::out);
-	std::ifstream &open_ifile_ext(const std::string &extension, ifstream::openmode mode = ifstream::in);
-	std::ifstream &open_ifile_local(const std::string &tag, const std::string &filename, ifstream::openmode mode = ifstream::in);
-	std::ifstream &open_ifile_absolute(const std::string &tag, const std::string &filename, ifstream::openmode mode = ifstream::in);
-	std::fstream &open_iofile_ext(const std::string &extension, ios_base::openmode mode = fstream::in | fstream::out);
-	std::fstream &open_iofile_local(const std::string &tag, const std::string &filename, fstream::openmode mode = fstream::in | fstream::out);
-	std::fstream &open_iofile_absolute(const std::string &tag, const std::string &filename, fstream::openmode mode = fstream::in | fstream::out);
+	std::ofstream &open_ofile_ext(const std::string &extension, std::ios_base::openmode mode = std::ofstream::out);
+	std::ofstream &open_ofile_local(const std::string &tag, const std::string &filename, std::ofstream::openmode mode = std::ofstream::out);
+	std::ofstream &open_ofile_absolute(const std::string &tag, const std::string &filename, std::ofstream::openmode mode = std::ofstream::out);
+	std::ifstream &open_ifile_ext(const std::string &extension, std::ifstream::openmode mode = std::ifstream::in);
+	std::ifstream &open_ifile_local(const std::string &tag, const std::string &filename, std::ifstream::openmode mode = std::ifstream::in);
+	std::ifstream &open_ifile_absolute(const std::string &tag, const std::string &filename, std::ifstream::openmode mode = std::ifstream::in);
+	std::fstream &open_iofile_ext(const std::string &extension, std::ios_base::openmode mode = std::fstream::in | std::fstream::out);
+	std::fstream &open_iofile_local(const std::string &tag, const std::string &filename, std::fstream::openmode mode = std::fstream::in | std::fstream::out);
+	std::fstream &open_iofile_absolute(const std::string &tag, const std::string &filename, std::fstream::openmode mode = std::fstream::in | std::fstream::out);
 	void close_file(const std::string &extension);
 	std::ofstream &get_ofstream(const std::string &tag);
 	std::ifstream &get_ifstream(const std::string &tag);
@@ -55,9 +53,9 @@ private:
 	std::string analytic_derivative_filename;
 	std::string directory;
 	std::string pest_base_filename;
-	std::map<string, std::ofstream> ofile_map;
-	std::map<string, std::ifstream> ifile_map;
-	std::map<string, std::fstream> iofile_map;
+	std::map<std::string, std::ofstream*> ofile_map;
+	std::map<std::string, std::ifstream*> ifile_map;
+	std::map<std::string, std::fstream*> iofile_map;
 	std::map<std::string, std::string> filename_map;
 };
 

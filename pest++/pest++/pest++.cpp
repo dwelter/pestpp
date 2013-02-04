@@ -17,7 +17,7 @@
     along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
 #include "RunManagerYAMR.h" //needs to be first because it includes winsock2.h
-//#include <vld.h> // Memory Leak Detection using "Visual Leak Detector"
+#include <vld.h> // Memory Leak Detection using "Visual Leak Detector"
 #include <iostream>
 #include <fstream>
 #include "Pest.h"

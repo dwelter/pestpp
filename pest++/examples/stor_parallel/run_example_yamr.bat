@@ -2,7 +2,7 @@ REM set variables used in script
 set nslaves=3
 set host=localhost
 set port=4005
-set pestpp_file=storage5
+set pestpp_file=storage5_reg
 
 REM create directories for PEST++ and the gslave to run in
 xcopy /e /q /y template master\
@@ -11,7 +11,7 @@ FOR /L %%i IN (1,1,%nslaves%) DO (
 )
 
 REM start YAMR master
-REM start /D"%CD%\master" .\pest++ %pestpp_file% /H :%port%
+ start /D"%CD%\master" .\pest++ %pestpp_file% /H :%port%
 
 REM start YAMR slaves
 FOR /L %%i IN (1,1,%nslaves%) DO (
