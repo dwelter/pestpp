@@ -42,7 +42,7 @@ public:
     const std::vector<std::string>& get_par_name_vec()const;
     const std::vector<std::string>& get_obs_name_vec()const;
 	void get_run(int run_id, Parameters *pars, Observations *obs);
-	void RunStorage::get_run(int run_id, double *pars, size_t npars, double *obs, int nobs);
+	void RunStorage::get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs);
 	Parameters get_parameters(int run_id);
 	std::vector<char> get_serial_pars(int run_id);
 	void free_memory();

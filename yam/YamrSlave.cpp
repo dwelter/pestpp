@@ -310,7 +310,7 @@ void YAMRSlave::start(const string &host, const string &port)
 				net_pack.reset(NetPackage::PackType::READY, 0, 0,"");
 				char data;
 				err = send_message(net_pack, &data, 0);
-				w_sleep(5000);
+				w_sleep(500);
 			}
 		}
 		else if (net_pack.get_type() == NetPackage::PackType::TERMINATE)
