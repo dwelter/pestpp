@@ -21,6 +21,9 @@
 
 #include <string>
 
+#define OS_WIN
+//#define OS_LINUX
+
 class OperSys
 {
 public:
@@ -29,6 +32,7 @@ public:
 	void string2pathname(std::string &s);
 	static std::string getcwd();
 	static void chdir(const char *str);
+	static char *gets_s(char *str, size_t len);
 };
 
 #endif /* SYSTEM_VARIABLES_H_ */

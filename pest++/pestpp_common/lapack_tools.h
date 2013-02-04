@@ -21,6 +21,7 @@
 
 #include <vector>
 #include <ostream>
+class Transformable;
 class LaGenMatDouble;
 class LaVectorDouble;
 
@@ -34,5 +35,8 @@ void get_LaGenMatDouble_row_abs_max(const LaGenMatDouble &m, int row, int *max_c
 LaVectorDouble stlvec2LaVec(const std::vector<double> &stl_vec);
 
 void print(const LaGenMatDouble &mat, std::ostream &fout);
+
+void add_LaVectorDouble_2_Transformable(Transformable &tr_data, const std::vector<std::string> &keys, 
+										const LaVectorDouble &del_values);
 
 #endif /* LAPACK_TOOLS_H_ */

@@ -1,21 +1,26 @@
 #ifndef NETWORK_H_
 #define NETWORK_H_
 
+//#define OS_LINUX
+#define OS_WIN
 //for windows
-#include <winsock2.h>
-#include <ws2tcpip.h>
-//for linux 
-//#include <sys/select.h>
-//#include <sys/types.h>
-//#include <sys/netdb.h>
+#ifdef OS_WIN
+  #include <winsock2.h>
+  #include <ws2tcpip.h>
+  typedef int socklen_t;
+#endif
+//for linux
+#ifdef OS_LINUX 
+  #include <sys/select.h>
+  #include <sys/types.h>
+  #include <netdb.h>
+  #include <sys/socket.h>
+#endif
 
 //common for all systems
 #include <iostream>
 #include <vector>
 #include <string>
-
-//for windows only
-typedef int socklen_t;
 
 void w_init();
 int w_close(int sockfd);
@@ -39,3 +44,4 @@ int w_memcpy_s(void *dest, size_t number_of_elements, const void *src, size_t co
 void w_print_servinfo(struct addrinfo *res, std::ostream &fout);
 void w_sleep(int millisec);
 #endif /* NETWORK_H_ */
+

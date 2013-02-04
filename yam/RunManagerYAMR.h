@@ -66,6 +66,7 @@ public:
 	SlaveInfo::iterator end() {return slave_info_map.end();}
 	SlaveInfo::const_iterator end() const {return slave_info_map.end();}
 	SlaveInfo();
+	size_t size() const;
 	void add(int sock_id);
 	void erase(int sock_id);
     State get_state(int sock_id);

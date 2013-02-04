@@ -267,7 +267,7 @@ double SVDSolver::add_model_run(RunManagerAbstract &run_manager, const ParamTran
 	// update numeric parameters in upgrade_run and test them
 	{
 		Parameters upgrade_numeric_pars = numeric_base_par;
-		upgrade_numeric_pars.add_upgrade(upgrade.par_name_vec, upgrade_vec);
+		add_LaVectorDouble_2_Transformable(upgrade_numeric_pars, upgrade.par_name_vec, upgrade_vec);
 		// impose limits on parameter upgrade vector
 		limit_parameters_ip(numeric_base_par, upgrade_numeric_pars);
 		// add run to run manager

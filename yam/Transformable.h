@@ -29,7 +29,6 @@
 
 using namespace std;
 
-class LaVectorDouble;
 class ParameterInfo;
 class Parameters;
 class Observations;
@@ -86,7 +85,6 @@ public:
 	Transformable::const_iterator begin() const {return items.begin();}
 	Transformable::iterator end() {return items.end();}
 	Transformable::const_iterator end() const {return items.end();}
-	void add_upgrade(const vector<string> &keys, const LaVectorDouble &del_values);
 	virtual ~Transformable(){}
 protected:
 	unordered_map<string, double> items;

@@ -3,7 +3,8 @@
 #include "Serialization.h"
 #include "system_variables.h"
 #include <cassert>
-
+#include <cstring>
+#include "system_variables.h"
 
 using namespace pest_utils;
 
@@ -54,6 +55,7 @@ void YAMRSlave::init_network(const string &host, const string &port)
 	for (err = -1; err == -1;)
 	{
 		err = w_connect(sockfd, servinfo->ai_addr, servinfo->ai_addrlen);
+		cerr << "failed to connect to master \"" << host << ":" << port << "\""<< endl << endl;
 	}
 	freeaddrinfo(servinfo);
 
@@ -244,14 +246,11 @@ void YAMRSlave::start(const string &host, const string &port)
 	bool terminate = false;
 
 	init_network(host, port);
-	while (master.fd_count > 0 && !terminate)
+	while (!terminate)
 	{
 		//get message from master
 		err = recv_message(net_pack);
 		if (err == -1) {}
-		else if (!(master.fd_count > 0)) {}
-
-        
         else if(net_pack.get_type() == NetPackage::PackType::REQ_RUNDIR)
 		{
             // Send Master the local run directory.  This information is only used by the master
@@ -325,5 +324,5 @@ void YAMRSlave::start(const string &host, const string &port)
 	}
 	cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
 	char buf[256];
-    gets_s(buf, sizeof(buf));
+	OperSys::gets_s(buf, sizeof(buf));
 }

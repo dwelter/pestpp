@@ -90,7 +90,10 @@ void SlaveInfo::erase(int sock_id)
 	slave_info_map.erase(sock_id);
 }
 
-
+size_t SlaveInfo::size() const
+{
+	return slave_info_map.size();
+}
 
 SlaveInfo::State SlaveInfo::get_state(int sock_id)
 {
@@ -256,7 +259,7 @@ void RunManagerYAMR::run()
 
 	cout << "    running model " << waiting_runs.size() << " times" << endl;
 	f_rmr << "running model " << waiting_runs.size() << " times" << endl;
-	if(master.fd_count < 2) // first entry is the listener, slave apper after this
+	if(slave_info.size() == 0) // first entry is the listener, slave apper after this
 	{
 		cout << endl << "      waiting for slaves to appear..." << endl << endl;
 		f_rmr << endl << "    waiting for slaves to appear..." << endl << endl;
@@ -285,7 +288,7 @@ void RunManagerYAMR::listen()
 {
 	struct sockaddr_storage remote_addr;
 	fd_set read_fds; // temp file descriptor list for select()
-	int addr_len;
+	socklen_t addr_len;
 	timeval tv;
 	tv.tv_sec = 1;
 	tv.tv_usec = 0;

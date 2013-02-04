@@ -19,6 +19,7 @@
 #include <vector>
 #include "lapack_tools.h"
 #include <lapackpp.h>
+#include "Transformable.h"
 
 using namespace std;
 
@@ -107,4 +108,19 @@ void print(const LaGenMatDouble &mat, ostream & fout)
 		fout << endl;
 	}
 
+}
+
+void add_LaVectorDouble_2_Transformable(Transformable &tr_data, const vector<string> &keys, 
+										const LaVectorDouble &del_values)
+{
+	int i = 0;
+	Transformable::iterator found;
+	Transformable::iterator not_found=tr_data.end();
+
+	for(vector<string>::const_iterator b=keys.begin(), e=keys.end(); b!=e; ++b, ++i)
+	{
+		found = tr_data.find(*b);
+		assert(found != not_found);
+		(*found).second += del_values(i);
+	}
 }

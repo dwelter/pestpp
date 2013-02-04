@@ -26,7 +26,6 @@
 #include <utility>
 #include <cassert>
 #include <memory>
-#include <lapackpp.h>
 #include "Transformable.h"
 #include "pest_error.h"
 #include "utilities.h"
@@ -208,20 +207,6 @@ vector<string> Transformable::get_keys() const
 		ret_val.push_back((*b).first);
 	}
 	return ret_val;
-}
-
-void Transformable::add_upgrade(const vector<string> &keys, const LaVectorDouble &del_values)
-{
-	int i = 0;
-	Transformable::iterator found;
-	Transformable::iterator not_found=items.end();
-
-	for(vector<string>::const_iterator b=keys.begin(), e=keys.end(); b!=e; ++b, ++i)
-	{
-		found = items.find(*b);
-		assert(found != not_found);
-		(*found).second += del_values(i);
-	}
 }
 
 ostream& operator<<(ostream& out, const Transformable &rhs)

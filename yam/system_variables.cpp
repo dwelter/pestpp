@@ -20,11 +20,14 @@
 #include <string>
 #include <sstream>
 #include "system_variables.h"
-//for windows
-#include <direct.h>
-//for linux
-//#include <unistd.h>
 
+#ifdef OS_WIN
+ #include <direct.h>
+#endif
+
+#ifdef OS_LINUX
+ #include <unistd.h>
+#endif
 using namespace std;
 
 const std::string OperSys::DIR_SEP = "\\";
@@ -50,13 +53,39 @@ void OperSys::string2pathname(string &s)
 
 string OperSys::getcwd()
 {
+    #ifdef OS_WIN
 	char *buffer;
 	buffer = _getcwd( NULL, 0 );
 	string cwd(buffer);
+        free(buffer);
 	return cwd;
+    #endif
+    #ifdef OS_LINUX
+        char *buffer;
+	buffer = ::getcwd( NULL, 0 );
+	string cwd(buffer);
+        free(buffer);
+	return cwd;
+    #endif
 }
 
 void OperSys::chdir(const char *str)
 {
-	_chdir(str);
+   #ifdef OS_WIN
+      _chdir(str);
+   #endif
+   #ifdef OS_LINUX
+      chdir(str);
+   #endif
+}
+
+char* OperSys::gets_s(char *str, size_t len)
+{
+ #ifdef OS_WIN
+  return gets_s(str, len);
+ #endif
+ #ifdef OS_LINUX
+  return gets(str);
+ #endif
+
 }

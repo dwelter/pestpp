@@ -41,7 +41,7 @@ public:
 	int send_message(NetPackage &net_pack, const void *data=NULL, unsigned long data_len=0);
 	int run_model(Parameters &pars, Observations &obs);
 	std::string tpl_err_msg(int i);
-	std::string YAMRSlave::ins_err_msg(int i);
+	std::string ins_err_msg(int i);
 private:
 	int sockfd;
 	int fdmax;

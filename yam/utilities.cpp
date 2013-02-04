@@ -253,8 +253,9 @@ template vector<string> get_map_keys(const map<string, map<string, double>> &my_
 
 string fortran_str_2_string(char *fstr, int str_len)
 {
-	string new_str = strip_ip(string(fstr, str_len));
-	return new_str;
+    string new_str = string(fstr, str_len);
+    strip_ip(new_str);
+    return new_str;
 }
 
 
@@ -265,7 +266,9 @@ vector<string> fortran_str_array_2_vec(char *fstr, int str_len, int array_len)
 
 	for (size_t ia=0; ia < array_len; ++ia)
 	{
-		str_vec.push_back(strip_ip(string(fstr+ia*str_len, str_len)));
+	    string new_str(fstr+ia*str_len, str_len);
+            strip_ip(new_str);
+	    str_vec.push_back(new_str);
 	}
 	return str_vec;
 }

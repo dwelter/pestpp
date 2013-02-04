@@ -5,36 +5,46 @@
 #include <vector>
 #include <cstring>
 
-//for linux
-//#include <arpa/inet.h>
-//#include <unistd.h>
+#ifdef OS_LINUX
+  #include <arpa/inet.h>
+  #include <unistd.h>
+#endif
 
 using namespace std;
 
 void w_init()
 {
+#ifdef OS_WIN
 	WSADATA wsaData;
 
 	if (WSAStartup(MAKEWORD(2,0),  &wsaData)!=0)
 	{
 		cerr << "WSAStartup failed" << endl;
 	}
+#endif
 }
 
 int w_close(int sockfd) 
 {
-	int n;
+  int n;
+    #ifdef OS_WIN
 	shutdown(sockfd, SD_BOTH);
 	if ((n = closesocket(sockfd)) != 0)
 	{
 		cerr << "error closing socket: " << WSAGetLastError() << endl;  
 	}
 	return n;
-
+    #endif
+    #ifdef OS_LINUX
+	n = shutdown(sockfd, 2);
+    #endif
+    return n;
 }
 void w_cleanup()
 {
+   #ifdef OS_WIN
 	WSACleanup();
+   #endif
 }
 
 
@@ -73,7 +83,7 @@ int w_socket(int domain, int type, int protocol)
 	return sockfd;
 }
 
-int w_connect(int sockfd, struct sockaddr *serv_addr, int addrlen)
+int w_connect(int sockfd, struct sockaddr *serv_addr, socklen_t addrlen)
 {
 	int n=0;
 	if ((n=connect(sockfd, serv_addr, addrlen)) == -1 )
@@ -83,7 +93,7 @@ int w_connect(int sockfd, struct sockaddr *serv_addr, int addrlen)
 	return n;
 }
 
-int w_bind(int sockfd, struct sockaddr *my_addr, int addrlen)
+int w_bind(int sockfd, struct sockaddr *my_addr, socklen_t addrlen)
 {
 	int n=0;
 	if ((n=bind(sockfd, my_addr, addrlen)) == -1 )
@@ -93,7 +103,7 @@ int w_bind(int sockfd, struct sockaddr *my_addr, int addrlen)
 	return n;
 }
 
-int w_accept(int sockfd, struct sockaddr *addr, int *addrlen)
+int w_accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen)
 {
 	int n=0;
 	if ((n=accept(sockfd, addr, addrlen)) == -1) 
@@ -253,8 +263,12 @@ int w_select(int numfds, fd_set *readfds, fd_set *writefds,
 
 int w_memcpy_s(void *dest, size_t numberOfElements, const void *src, size_t count)
 {
-	int errno;
+        #ifdef OS_WIN
 	errno = memcpy_s(dest, numberOfElements, src, count);
+        #endif
+        #ifdef OS_LINUX
+	memcpy(dest, src, count);
+        #endif
 	if (errno) {
 		cerr << "Error executing memcpy" << endl;
 	}
@@ -263,5 +277,10 @@ int w_memcpy_s(void *dest, size_t numberOfElements, const void *src, size_t coun
 
 void w_sleep(int millisec)
 {
-	Sleep(5000);
+   #ifdef OS_WIN
+	Sleep(millisec);
+   #endif
+   #ifdef OS_LINUX
+	sleep(millisec / 1000);
+   #endif
 }
