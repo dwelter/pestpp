@@ -1,0 +1,19 @@
+CC := g++
+FC := gfortran
+CFLAGS := -g -c -std=c++0x 
+FFLAGS := -g -c -cpp
+INCLUDES := 
+
+OUT = lib_runmanager.a
+OBJECTS	:= io_utils.o \
+           readins.o \
+           writtpl.o 
+ 
+$(OUT): $(OBJECTS)
+	ar rcs $(OUT) $(OBJECTS)
+
+%.o: %.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@
+
+%.o: %.for
+	$(FC) $(FFLAGS) $(INCLUDES) $< -c $(input) -o $@

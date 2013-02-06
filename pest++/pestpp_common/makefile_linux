@@ -1,0 +1,35 @@
+CC := g++
+FC := gfortran
+CFLAGS := -g -c -std=c++0x 
+FFLAGS := -g -c -cpp
+INCLUDES := -I ../../Eigen -I ../../yam -I ../../pest++/pestpp_common -I ../../lapackpp-2.5.4/include
+
+LIB = pestpp_com.a
+OBJECTS	:= FileManager.o \
+           ParamTransformSeq.o \
+           SVDPackage.o \
+           Jacobian_1to1.o \
+           Pest.o \
+           SVD_PROPACK.o \
+           Jacobian.o \
+           pest_data_structs.o \
+           SVDSolver.o \
+           lapack_tools.o \
+           PriorInformation.o \
+           TerminationController.o \
+           ModelRunPP.o \
+           QSqrtMatrix.o \
+           Transformation.o \
+           ObjectiveFunc.o \
+           Regularization.o \
+           OutputFileWriter.o \
+           SVDASolver.o
+ 
+$(LIB): $(OBJECTS)
+	ar rcs $(LIB) $(OBJECTS)
+
+%.o: %.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@
+
+%.o: %.for
+	$(FC) $(FFLAGS) $(INCLUDES) $< -c $(input) -o $@

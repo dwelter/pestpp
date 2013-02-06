@@ -1,6 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|ARM">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
@@ -8,6 +12,10 @@
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM">
+      <Configuration>Release</Configuration>
+      <Platform>ARM</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
@@ -38,6 +46,13 @@
     <UseIntelMKL>Sequential</UseIntelMKL>
     <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>NotSet</CharacterSet>
+    <UseIntelMKL>Sequential</UseIntelMKL>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -54,6 +69,14 @@
     <UseIntelMKL>Sequential</UseIntelMKL>
     <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+    <UseIntelMKL>Sequential</UseIntelMKL>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -63,10 +86,16 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -80,11 +109,21 @@
     <LibraryPath>$(IFORT_COMPILER12)\Composer XE 2011 SP1\mkl\lib\ia32;C:\Program Files (x86)\Visual Leak Detector\lib\Win64;$(LibraryPath)</LibraryPath>
     <IncludePath>C:\Program Files (x86)\Visual Leak Detector\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <LinkIncremental>true</LinkIncremental>
+    <LibraryPath>$(IFORT_COMPILER12)\Composer XE 2011 SP1\mkl\lib\ia32;C:\Program Files (x86)\Visual Leak Detector\lib\Win64;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files (x86)\Visual Leak Detector\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>$(IFORT_COMPLIRER12)\Composer XE 2011 SP1\mkl\lib\ia32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <LibraryPath>$(IFORT_COMPLIRER12)\Composer XE 2011 SP1\mkl\lib\ia32;C:\Program Files (x86)\Visual Leak Detector\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files (x86)\Visual Leak Detector\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>$(IFORT_COMPLIRER12)\Composer XE 2011 SP1\mkl\lib\ia32;C:\Program Files (x86)\Visual Leak Detector\lib;$(LibraryPath)</LibraryPath>
     <IncludePath>C:\Program Files (x86)\Visual Leak Detector\include;$(IncludePath)</IncludePath>
@@ -116,7 +155,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CompileAsManaged>false</CompileAsManaged>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>..\..\yam;..\..\lapackpp-2.5.4\include;$(SolutionDir)\pestpp_common;$(SolutionDir)pest++;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\yamr;$(SolutionDir)\lapackpp-2.5.4\include;$(SolutionDir)\pestpp_common;$(SolutionDir)pest++;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
@@ -124,7 +163,26 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(IFORT_COMPILER13)\compiler\lib\intel64;$(IFORT_COMPILER13)\mkl\lib\intel64;$(SolutionDir)$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>lapackpp.lib;pest_routines.lib;mkl_blas95_lp64.lib;mkl_lapack95_lp64.lib;propack.lib;ws2_32.lib;genie.lib;Advapi32.lib;yam.lib;pestpp_common.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>lapackpp.lib;pest_routines.lib;mkl_blas95_lp64.lib;mkl_lapack95_lp64.lib;propack.lib;ws2_32.lib;genie.lib;Advapi32.lib;yamr.lib;pestpp_common.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <CompileAsManaged>false</CompileAsManaged>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalIncludeDirectories>$(SolutionDir)\yamr;$(SolutionDir)\lapackpp-2.5.4\include;$(SolutionDir)\pestpp_common;$(SolutionDir)pest++;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(IFORT_COMPILER13)\compiler\lib\intel64;$(IFORT_COMPILER13)\mkl\lib\intel64;$(SolutionDir)$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>lapackpp.lib;pest_routines.lib;mkl_blas95_lp64.lib;mkl_lapack95_lp64.lib;propack.lib;ws2_32.lib;genie.lib;Advapi32.lib;yamr.lib;pestpp_common.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -179,16 +237,37 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
+      <AdditionalIncludeDirectories>..\..\yam;..\..\lapackpp-2.5.4\include;$(SolutionDir)\pestpp_common;$(SolutionDir)pest++;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>lapackpp.lib;pest_routines.lib;mkl_blas95_lp64.lib;mkl_lapack95_lp64.lib;propack.lib;ws2_32.lib;genie.lib;Advapi32.lib;yam.lib;pestpp_common.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(IFORT_COMPILER13)\compiler\lib\intel64;$(IFORT_COMPILER13)\mkl\lib\intel64;$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>LIBCMTD.lib%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pest++.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\lapackpp-2.5.4\lapackpp.vcxproj">
-      <Project>{ec0bda50-7719-4bc3-8eac-18f3499e2753}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
