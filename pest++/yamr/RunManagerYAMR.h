@@ -103,6 +103,7 @@ public:
 	virtual void reinitialize();
 	virtual void free_memory();
 	virtual int add_run(const Parameters &model_pars);
+	virtual int add_run(const std::vector<double> &model_pars);
 	virtual void run();
 	~RunManagerYAMR(void);
 private:

@@ -4,7 +4,7 @@ CFLAGS := -g -c -std=c++0x
 FFLAGS := -g -c -cpp
 INCLUDES := -I ../../Eigen -I ../../yam -I ../../pest++/pestpp_common -I ../../lapackpp-2.5.4/include
 
-LIB = pestpp_com.a
+LIB = libpestpp_com.a
 OBJECTS	:= FileManager.o \
            ParamTransformSeq.o \
            SVDPackage.o \

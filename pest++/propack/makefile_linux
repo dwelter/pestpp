@@ -1,0 +1,29 @@
+CC := g++
+FC := gfortran
+CFLAGS := -g -c -std=c++0x 
+FFLAGS := -g -c -cpp
+INCLUDES := 
+
+OUT := libpropack.a
+
+OBJECTS	:= dgemm_ovwr.o \
+           dlanbpro.o \
+           dmgs.pentium.o \
+           dritzvec.o \
+           dgetu0.o \
+           dlansvd.o \
+           dreorth.o \
+           dsafescal.o \
+           propack_misc.o
+
+$(OUT): $(OBJECTS)
+	ar rcs $(OUT) $(OBJECTS)
+
+%.o: %.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@
+
+%.o: %.F
+	$(FC) $(FFLAGS) $(INCLUDES) $< -c $(input) -o $@
+
+%.o: %.for
+	$(FC) $(FFLAGS) $(INCLUDES) $< -c $(input) -o $@

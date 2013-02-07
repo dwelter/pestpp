@@ -42,6 +42,7 @@ using namespace pest_utils;
 
 YamrModelRun::YamrModelRun(int _run_id, int _sockfd) : sockfd(_sockfd), run_id(_run_id)
 {
+	cout << "          starting YAMR (Yet Another Run Manager)..." << endl << endl;
 }
 
 SlaveInfo::SlaveRec::SlaveRec()
@@ -198,7 +199,7 @@ RunManagerYAMR::RunManagerYAMR(const vector<string> _comline_vec,
 	hints.ai_flags = AI_PASSIVE;
 
 	status = w_getaddrinfo(NULL, port.c_str(), &hints, &servinfo);
-	cout << "Starting YAMR - Yet Another run ManageR" << endl;
+	cout << "          starting YAMR (Yet Another Run ManageR)..." << endl << endl;
 	w_print_servinfo(servinfo, cout);
 	//make socket, bind and listen
 	listener = w_socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
@@ -244,6 +245,14 @@ void  RunManagerYAMR::free_memory()
 }
 
 int RunManagerYAMR::add_run(const Parameters &model_pars)
+{
+	int run_id = file_stor.add_run(model_pars);
+	YamrModelRun new_run(run_id);
+	waiting_runs.push_back(new_run);
+	return run_id;
+}
+
+int RunManagerYAMR::add_run(const std::vector<double> &model_pars)
 {
 	int run_id = file_stor.add_run(model_pars);
 	YamrModelRun new_run(run_id);

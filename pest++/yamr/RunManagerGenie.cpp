@@ -52,6 +52,8 @@ RunManagerGenie::RunManagerGenie(const vector<string> _comline_vec,
 		_insfile_vec, _outfile_vec, stor_filename), 
 		host(_host), id(_id)
 {
+	cout << "                starting GENIE run manager ..." << endl;
+	cout << "   	    developed by Chris Muffels of SSPA" << endl << endl;
 }
 
 void RunManagerGenie::run()

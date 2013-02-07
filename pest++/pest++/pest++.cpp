@@ -17,7 +17,7 @@
     along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
 #include "RunManagerYAMR.h" //needs to be first because it includes winsock2.h
-#include <vld.h> // Memory Leak Detection using "Visual Leak Detector"
+//#include <vld.h> // Memory Leak Detection using "Visual Leak Detector"
 #include <iostream>
 #include <fstream>
 #include "Pest.h"
@@ -39,6 +39,7 @@
 #include "OutputFileWriter.h"
 #include "YamrSlave.h"
 #include "Serialization.h"
+#include "system_variables.h"
 
 using namespace std;
 using namespace pest_utils;
@@ -254,5 +255,5 @@ int main(int argc, char* argv[])
 	delete run_manager_ptr;
 	cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
 	char buf[256];
-    gets_s(buf, sizeof(buf));
+	OperSys::gets_s(buf, sizeof(buf));
 }

@@ -79,7 +79,7 @@
     
     data pars / 0.1, .005, .05/
     
-    ! instantiate run manager  
+    ! instantiate run manager
     itype = -1
     do while (itype < 1)
         write(*,*) "Select a run manager"

@@ -23,6 +23,7 @@
 #include<unordered_map>
 #include<vector>
 #include<set>
+#include<list>
 #include "Transformable.h"
 #include<lapackpp.h>
 

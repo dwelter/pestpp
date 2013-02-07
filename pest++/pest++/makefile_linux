@@ -2,15 +2,13 @@ CC := g++
 FC := gfortran
 CFLAGS := -g -c -std=c++0x 
 FFLAGS := -g -c -cpp
-INCLUDES := 
+INCLUDES := -I ../../Eigen -I ../../yam -I ../../pest++/pestpp_common -I ../../lapackpp-2.5.4/include -I ../pestpp_common
 
-OUT = libpest_routines.a
-OBJECTS	:= io_utils.o \
-           readins.o \
-           writtpl.o 
+OUT = pestpp
+OBJECTS	:= pest++.o
  
 $(OUT): $(OBJECTS)
-	ar rcs $(OUT) $(OBJECTS)
+	$(CC) $(LIB) $(OBJECTS)
 
 %.o: %.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@

@@ -36,7 +36,7 @@ public:
 	{
 	public:
 		enum FIELD{NUMERIC_PAR, MODEL_PAR, CTL_PAR, SIM_OBS};
-		Compare::Compare(const string &_name, FIELD _field)
+		Compare(const string &_name, FIELD _field)
 			: name(_name), field(_field) {}
 		bool operator()(ModelRun &run1, ModelRun &run2);
 	private:

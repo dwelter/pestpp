@@ -24,7 +24,6 @@
 #include <fstream>
 #include <sstream>
 #include <cstdlib>
-#include <direct.h>
 #include <iomanip>
 #include <utility>
 #include "ModelRunPP.h"

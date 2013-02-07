@@ -35,6 +35,12 @@ RunManagerAbstract::RunManagerAbstract(const vector<string> _comline_vec,
 	inpfile_vec(_inpfile_vec), insfile_vec(_insfile_vec), outfile_vec(_outfile_vec),
 	file_stor(stor_filename)
 {
+	cout << endl;
+	cout << "             Generalized Run Manager Interface" << endl;
+	cout << "                       developed by:" << endl << endl;
+	cout << "                        Dave Welter" << endl;
+	cout << "          Computational Water Resource Engineering" << endl;
+	cout << endl << endl;
 }
 
 void RunManagerAbstract::initialize(const Parameters &model_pars, const Observations &obs)

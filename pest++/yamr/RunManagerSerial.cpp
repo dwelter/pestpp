@@ -105,7 +105,7 @@ RunManagerSerial::RunManagerSerial(const vector<string> _comline_vec,
 		_insfile_vec, _outfile_vec, stor_filename),
 		run_dir(_run_dir)
 {
-
+	cout << "              starting serial run manager ..." << endl << endl;
 }
 
 void RunManagerSerial::run()

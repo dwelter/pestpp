@@ -20,6 +20,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <cmath>
 #include "utilities.h"
 #include "Transformable.h"
 

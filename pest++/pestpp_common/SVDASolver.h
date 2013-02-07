@@ -26,8 +26,8 @@
 #include "pest_data_structs.h"
 #include "ModelRunPP.h"
 #include "TerminationController.h"
+#include "SVDSolver.h"
 
-#include "svdsolver.h"
 class SVDASolver : public SVDSolver
 {
 public:
