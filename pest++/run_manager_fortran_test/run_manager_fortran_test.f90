@@ -27,9 +27,9 @@
     character*20 storfile
     character*20 port
     character*20 rmi_info_file
-    character*20 rundir
+    character*80 rundir
     character*20 genie_host
-    character*20 genie_tag
+    character*80 genie_tag
     character*20 p_names(3)
     character*20 o_names(16)
     character buf
@@ -89,15 +89,19 @@
         write(*,*) ""
         read(*,*) itype
         if (itype == 1) then
+             write(*,*) 'please enter model run directory: '
+             read(*,*) rundir
             call rmif_create_serial(comline, 20, 1,&
                         tpl, 20, 1,&
                         inp, 20, 1,&
                         ins, 20, 1,&
                         out, 20, 1,&
                         storfile, 20,&
-                        rundir, 20)
-            else if (itype == 2) then
-                call rmif_create_yamr(comline, 20, 1,&
+                        rundir, 80)
+        else if (itype == 2) then
+            write(*,*) 'please enter port:'
+            read(*,*) port
+            call rmif_create_yamr(comline, 20, 1,&
                         tpl, 20, 1,&
                         inp, 20, 1,&
                         ins, 20, 1,&
@@ -105,16 +109,20 @@
                         storfile, 20,&
                         port, 20,&
                         rmi_info_file, 20)
-            else if (itype == 3) then
-                call rmif_create_genie(comline, 20, 1,&
+        else if (itype == 3) then
+            write(*,*) 'please enter GMAN socket:'
+            read(*,*) genie_host
+            write(*,*) 'please enter GENIE id tag:'
+            read(*,*) genie_tag
+            call rmif_create_genie(comline, 20, 1,&
                         tpl, 20, 1,&
                         inp, 20, 1,&
                         ins, 20, 1,&
                         out, 20, 1,&
                         storfile, 20,&
                         genie_host, 20,&
-                        genie_tag, 20 )
-            else
+                        genie_tag, 80 )
+        else
                 itype = -1
         end if
     end do 

@@ -42,7 +42,6 @@ using namespace pest_utils;
 
 YamrModelRun::YamrModelRun(int _run_id, int _sockfd) : sockfd(_sockfd), run_id(_run_id)
 {
-	cout << "          starting YAMR (Yet Another Run Manager)..." << endl << endl;
 }
 
 SlaveInfo::SlaveRec::SlaveRec()
