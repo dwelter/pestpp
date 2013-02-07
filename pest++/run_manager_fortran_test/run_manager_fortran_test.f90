@@ -17,8 +17,23 @@
     implicit none
      ! Variables
      
+    external rmif_create_serial
+    integer rmif_create_serial
+    external rmif_create_yamr
+    integer rmif_create_yamr
+    external rmif_create_genie
+    integer rmif_create_genie
+    external rmif_initialize
+    integer rmif_initialize
     external rmif_add_run
     integer rmif_add_run
+    external rmif_run
+    integer rmif_run
+    external rmif_get_run
+    integer rmif_get_run
+    external rmfi_delete
+    integer rmfi_delete
+    
     character*20 comline(1)
     character*20 tpl(1)
     character*20 inp(1)
@@ -91,7 +106,7 @@
         if (itype == 1) then
              write(*,*) 'please enter model run directory: '
              read(*,*) rundir
-            call rmif_create_serial(comline, 20, 1,&
+             err = rmif_create_serial(comline, 20, 1,&
                         tpl, 20, 1,&
                         inp, 20, 1,&
                         ins, 20, 1,&
@@ -101,7 +116,7 @@
         else if (itype == 2) then
             write(*,*) 'please enter port:'
             read(*,*) port
-            call rmif_create_yamr(comline, 20, 1,&
+            err = rmif_create_yamr(comline, 20, 1,&
                         tpl, 20, 1,&
                         inp, 20, 1,&
                         ins, 20, 1,&
@@ -114,7 +129,7 @@
             read(*,*) genie_host
             write(*,*) 'please enter GENIE id tag:'
             read(*,*) genie_tag
-            call rmif_create_genie(comline, 20, 1,&
+            err = rmif_create_genie(comline, 20, 1,&
                         tpl, 20, 1,&
                         inp, 20, 1,&
                         ins, 20, 1,&
@@ -133,22 +148,22 @@
     npar = 3
     nobs = 16
     ! intitialize run manager - allocate memory initialize parameter and observation names
-    call rmif_initialize(p_names, 20, npar, o_names, 20, nobs)
+    err = rmif_initialize(p_names, 20, npar, o_names, 20, nobs)
     
     ! add model runs to the queue
-    err = rmif_add_run(pars, npar)
+    err = rmif_add_run(pars, npar, irun)
     do irun = 1, nruns - 1
         pars(1) = pars(1) + pars(1) * 0.2
-        err = rmif_add_run(pars, npar)
+        err = rmif_add_run(pars, npar, irun)
     end do
     
     ! perform mdoel runs
     write(*,*) 'Performing model runs...'
-    call rmif_run()
+    err = rmif_run()
     
     ! read results
     do irun = 0, nruns-1
-        call rmif_get_run(irun, pars,npar, obs, nobs)
+        err = rmif_get_run(irun, pars,npar, obs, nobs)
     
         write(*,*) ""
         write(*,*) ""
@@ -168,7 +183,7 @@
     
     
     !clean up
-    call rmfi_delete()
+    err = rmfi_delete()
     
     write (*,*) ""
     write (*,*) "Press any key to continue"
