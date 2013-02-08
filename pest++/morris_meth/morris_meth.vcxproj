@@ -102,7 +102,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>lapackpp.lib;pest_routines.lib;mkl_blas95.lib;mkl_lapack95.lib;propack.lib;pestpp_common.lib;ws2_32.lib;genie.lib;Advapi32.lib;yam.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>lapackpp.lib;pest_routines.lib;mkl_blas95.lib;mkl_lapack95.lib;propack.lib;pestpp_common.lib;ws2_32.lib;genie.lib;Advapi32.lib;yamr.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(IFORT_COMPILER13)\compiler\lib\ia32;$(IFORT_COMPILER13)\mkl\lib\ia32;$(SolutionDir)$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
