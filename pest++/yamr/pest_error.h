@@ -115,5 +115,20 @@ private:
 	string str;
 };
 
+class PestCommandlineError : public PestError {
+public:
+	PestCommandlineError(const string &_str, const string &_message="")
+		: PestError(_message) , str(_str){
+		message = string("Invalid command line: \"") + _str + "\"" + message;
+	}
+	virtual ~PestCommandlineError() throw () {};
+	virtual const char* what() const throw()
+	{
+		return message.c_str();
+	}
+private:
+	string str;
+};
+
 
 #endif /* PEST_ERROR_H_ */

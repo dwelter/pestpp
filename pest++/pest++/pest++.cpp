@@ -40,6 +40,7 @@
 #include "YamrSlave.h"
 #include "Serialization.h"
 #include "system_variables.h"
+#include "pest_error.h"
 
 using namespace std;
 using namespace pest_utils;
@@ -48,6 +49,13 @@ using namespace pest_utils;
 
 int main(int argc, char* argv[])
 {
+	// build commandline
+	string commandline;
+	for(int i=0; i<argc; ++i)
+	{
+		commandline.append(" ");
+		commandline.append(argv[i]);
+	}
 	string version = "1.2.0";
 	string complete_path;
 	enum class RunManagerType {SERIAL, YAMR, GENIE};
@@ -59,7 +67,7 @@ int main(int argc, char* argv[])
 	else {
 		cerr << endl<< "PEST++ Version " << version << endl << endl;
 		cerr << "Usage: pest++ pest_ctl_file" << endl << endl;
-		exit(1);
+		throw(PestCommandlineError(commandline));
 	}
 
 
@@ -69,8 +77,20 @@ int main(int argc, char* argv[])
 		strip_ip(socket_str);
 		vector<string> sock_parts;
 		tokenize(socket_str, sock_parts, ":");
-		YAMRSlave yam_slave;
-		yam_slave.start(sock_parts[0], sock_parts[1]);
+		try
+		{
+			if (sock_parts.size() != 2)
+			{
+				cerr << "YAMR slave requires the master be specified as /H hostname:port" << endl << endl;
+				throw(PestCommandlineError(commandline));
+			}
+			YAMRSlave yam_slave;
+			yam_slave.start(sock_parts[0], sock_parts[1]);
+		}
+		catch (PestError &perr)
+		{
+			cerr << perr.what();
+		}
 		exit(0);
 	}
 
