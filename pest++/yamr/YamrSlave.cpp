@@ -8,13 +8,13 @@
 
 using namespace pest_utils;
 
-extern "C"
+//extern "C"
 int  linpack_wrap(void);
 
 extern "C"
 {
 
-	void WRTTPL(int *,
+	void wrttpl_(int *,
 		char *,
 		char *,
 		int *,
@@ -22,7 +22,7 @@ extern "C"
 		double *,
 		int *);
 
-	void READINS(int *,
+	void readins_(int *,
 		char *,
 		char *,
 		int *,
@@ -181,7 +181,7 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs)
 			par_name_vec.push_back(i.first);
 			par_values.push_back(i.second);
 		}
-		WRTTPL(&ntpl, StringvecFortranCharArray(tplfile_vec, 50, pest_utils::TO_LOWER).get_prt(),
+		wrttpl_(&ntpl, StringvecFortranCharArray(tplfile_vec, 50, pest_utils::TO_LOWER).get_prt(),
 			StringvecFortranCharArray(inpfile_vec, 50, pest_utils::TO_LOWER).get_prt(),
 			&npar, StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
 			par_values.data(), &ifail);
@@ -211,7 +211,7 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs)
 		int nobs = obs_name_vec.size();
 		std::vector<double> obs_vec;
 		obs_vec.resize(nobs, -9999.00);
-		READINS(&nins, StringvecFortranCharArray(insfile_vec, 50, pest_utils::TO_LOWER).get_prt(),
+		readins_(&nins, StringvecFortranCharArray(insfile_vec, 50, pest_utils::TO_LOWER).get_prt(),
 			StringvecFortranCharArray(outfile_vec, 50, pest_utils::TO_LOWER).get_prt(),
 			&nobs, StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
 			obs_vec.data(), &ifail);

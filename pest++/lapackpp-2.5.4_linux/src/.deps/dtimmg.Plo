@@ -1,0 +1,7 @@
+dtimmg.lo: dtimmg.c ../config.h ../include/arch.h ../include/f2c.h
+
+../config.h:
+
+../include/arch.h:
+
+../include/f2c.h:

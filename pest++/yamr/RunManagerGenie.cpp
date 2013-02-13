@@ -104,12 +104,12 @@ void RunManagerGenie::run()
 	//outfle.str(lower_cp(outfle.str()));
 
 	failed_runs.clear();  //not implemented yet
-	GENIE_INTERFACE(&nruns, &nexec, String2CharPtr(execnames.str()).get_char_ptr(), &npar, &nobs,
-		String2CharPtr(apar.str()).get_char_ptr(), String2CharPtr(aobs.str()).get_char_ptr(),
-                    &par_val[0], &obs_val[0], &ntpl, &nins, String2CharPtr(tplfle.str()).get_char_ptr(),
-                    String2CharPtr(infle.str()).get_char_ptr(), String2CharPtr(insfle.str()).get_char_ptr(),
-					String2CharPtr(outfle.str()).get_char_ptr(),
-                    String2CharPtr(host).get_char_ptr(), String2CharPtr(id).get_char_ptr(), &ikill);
+	//GENIE_INTERFACE(&nruns, &nexec, String2CharPtr(execnames.str()).get_char_ptr(), &npar, &nobs,
+	//	String2CharPtr(apar.str()).get_char_ptr(), String2CharPtr(aobs.str()).get_char_ptr(),
+        //            &par_val[0], &obs_val[0], &ntpl, &nins, String2CharPtr(tplfle.str()).get_char_ptr(),
+        //            String2CharPtr(infle.str()).get_char_ptr(), String2CharPtr(insfle.str()).get_char_ptr(),
+	//				String2CharPtr(outfle.str()).get_char_ptr(),
+        //            String2CharPtr(host).get_char_ptr(), String2CharPtr(id).get_char_ptr(), &ikill);
 	total_runs += nruns;
     Parameters pars;
     Observations obs;
@@ -129,7 +129,7 @@ RunManagerGenie::~RunManagerGenie(void)
 {
 	//close GMAN run manager
 	cout << "Closing GMAN run manager..." << endl;
-	GENIE_KILL_GMAN(String2CharPtr(id).get_char_ptr(), String2CharPtr(host).get_char_ptr());
+	//GENIE_KILL_GMAN(String2CharPtr(id).get_char_ptr(), String2CharPtr(host).get_char_ptr());
 
 	free_memory();
 }

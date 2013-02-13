@@ -56,7 +56,7 @@
     <ClInclude Include="YamrSlave.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="linpackc.c" />
+    <ClCompile Include="linpackc.cpp" />
     <ClCompile Include="network_package.cpp" />
     <ClCompile Include="network_wrapper.cpp" />
     <ClCompile Include="pest_error.cpp" />

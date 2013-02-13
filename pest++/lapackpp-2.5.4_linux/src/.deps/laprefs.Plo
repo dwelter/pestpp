@@ -1,0 +1,8 @@
+laprefs.lo: laprefs.cc ../config.h ../include/lafnames.h \
+ ../include/laprefs.h
+
+../config.h:
+
+../include/lafnames.h:
+
+../include/laprefs.h:

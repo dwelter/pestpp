@@ -36,6 +36,7 @@
 #include "OutputFileWriter.h"
 #include "YamrSlave.h"
 #include "Serialization.h"
+#include "system_variables.h"
 
 
 
@@ -185,5 +186,5 @@ int main(int argc, char* argv[])
 	delete run_manager_ptr;
 	cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
 	char buf[256];
-    gets_s(buf, sizeof(buf));
+	OperSys::gets_s(buf, sizeof(buf));
 }

@@ -2,14 +2,15 @@ CC := g++
 FC := gfortran
 CFLAGS := -g -c -std=c++0x 
 FFLAGS := -g -c -cpp
-INCLUDES := -I ../../Eigen -I ../../yam -I ../../pest++/pestpp_common -I ../../lapackpp-2.5.4/include
+INCLUDES := -I ../ -I ../yamr -I ../pestpp_common -I ../lapackpp-2.5.4_linux/include
+LIBS :=  -L /usr/lib -L ../pest_routines -L../yamr -L ../pestpp_common -L ../lapackpp-2.5.4_linux/lib -L ../pestpp_common -L ../propack -lgfortran -l _runmanager  -l propack -lpestpp_com -llapackpp -lblas -l lapack -l pest_routines -lgfortran
 
 EXE = morris_meth
 OBJECTS	:= main.o \
            MorrisMethod.o
  
 $(EXE): $(OBJECTS)
-	ar rcs $(OUT) $(OBJECTS)
+	gcc  $(OBJECTS) $(LIBS) -o $(EXE)
 
 %.o: %.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@

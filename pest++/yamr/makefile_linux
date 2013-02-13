@@ -7,16 +7,22 @@ OBJECTS	:= network_package.o \
            RunManagerSerial.o \
            Transformable.o \
            network_wrapper.o \
+           RunManagerGenie.o \
            RunManagerYAMR.o \
            utilities.o \
            pest_error.o \
            RunStorage.o \
            RunManagerAbstract.o \
            Serializeation.o \
-           system_variables.o
+           system_variables.o \
+           YamrSlave.o \
+           linpackc.o 
  
 $(OUT): $(OBJECTS)
 	ar rcs $(OUT) $(OBJECTS)
 
 %.o: %.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@
+
+%.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@

@@ -1,0 +1,5 @@
+dopla.lo: dopla.c ../config.h ../include/f2c.h
+
+../config.h:
+
+../include/f2c.h:

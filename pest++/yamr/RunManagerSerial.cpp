@@ -36,7 +36,7 @@ using namespace pest_utils;
 extern "C"
 {
 
-	void WRTTPL(int *,
+	void wrttpl_(int *,
 		char *,
 		char *,
 		int *,
@@ -44,7 +44,7 @@ extern "C"
 		double *,
 		int *);
 
-	void READINS(int *,
+	void readins_(int *,
 		char *,
 		char *,
 		int *,
@@ -139,7 +139,7 @@ void RunManagerSerial::run()
 			message << "(" << success_runs << "/" << nruns << " runs complete)";
 			std::cout << message.str();
 			OperSys::chdir(run_dir.c_str());
-			WRTTPL(&ntpl, StringvecFortranCharArray(tplfile_vec, 50, pest_utils::TO_LOWER).get_prt(),
+			wrttpl_(&ntpl, StringvecFortranCharArray(tplfile_vec, 50, pest_utils::TO_LOWER).get_prt(),
 				StringvecFortranCharArray(inpfile_vec, 50, pest_utils::TO_LOWER).get_prt(),
 				&npar, StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
 				&par_values[0], &ifail);
@@ -156,7 +156,7 @@ void RunManagerSerial::run()
 
 		    std::vector<double> obs_vec;
 		    obs_vec.resize(nobs, -9999.00);
-			READINS(&nins, StringvecFortranCharArray(insfile_vec, 50, pest_utils::TO_LOWER).get_prt(),
+			readins_(&nins, StringvecFortranCharArray(insfile_vec, 50, pest_utils::TO_LOWER).get_prt(),
 				StringvecFortranCharArray(outfile_vec, 50, pest_utils::TO_LOWER).get_prt(),
 				&nobs, StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
 				&obs_vec[0], &ifail);

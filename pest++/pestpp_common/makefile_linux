@@ -2,7 +2,7 @@ CC := g++
 FC := gfortran
 CFLAGS := -g -c -std=c++0x 
 FFLAGS := -g -c -cpp
-INCLUDES := -I ../../Eigen -I ../../yam -I ../../pest++/pestpp_common -I ../../lapackpp-2.5.4/include
+INCLUDES := -I ../Eigen -I ../yamr -I ../pestpp_common -I ../lapackpp-2.5.4_linux/include
 
 LIB = libpestpp_com.a
 OBJECTS	:= FileManager.o \
