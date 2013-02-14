@@ -587,13 +587,19 @@ void RunManagerYAMR::process_message(int i_sock)
 RunManagerYAMR::~RunManagerYAMR(void)
 {
 	//close sockets and cleanup
+	int err;
+	err = w_close(listener);
+	FD_CLR(listener, &master);
+	// this is needed to ensure that the first slave closes properly
+	w_sleep(1000);
 	for(int i = 0; i <= fdmax; i++) {
 		if (FD_ISSET(i, &master)) 
 		{
 			NetPackage netpack(NetPackage::PackType::TERMINATE, 0, 0,"");
 			char data;
 			netpack.send(i, &data, 0);
-			w_close(i);
+			err = w_close(i);
+			FD_CLR(i, &master);
 		}
 	}
 	w_cleanup();
