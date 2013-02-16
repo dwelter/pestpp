@@ -90,8 +90,10 @@
     <ClInclude Include="YamrSlave.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RunManagerCWrapper.h" />
     <ClInclude Include="RunManagerFortranWrapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RunManagerCWrapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

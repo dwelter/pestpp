@@ -41,7 +41,6 @@ RunManager* rmic_create_yamr(char **comline, int comline_array_len,
 	char **out, int out_array_len,
 	char *storfile,
 	char *port,
-	char *genie_tag,
 	char *info_filename)
 {
 	RunManager *run_manager_ptr = nullptr;
@@ -92,12 +91,12 @@ int rmic_initialize(RunManager *run_manager_ptr,
 	return err;
 }
 
-int rmic_add_run(RunManager *run_manager_ptr, double *parameter_data, int npar, int id)
+int rmic_add_run(RunManager *run_manager_ptr, double *parameter_data, int npar, int *id)
 {
 	int err = 0;
 	try {
 		vector<double> data(parameter_data, parameter_data+npar);
-		id = run_manager_ptr->add_run(data);
+		*id = run_manager_ptr->add_run(data);
 	}
 	catch(...)
 	{
@@ -125,7 +124,10 @@ int rmic_get_run(RunManager *run_manager_ptr, int run_id, double *parameter_data
 {
 	int err = 0;
 	try {
-	err = run_manager_ptr->get_run(run_id, parameter_data, npar, obs_data, nobs);
+	bool run_ok;
+	run_ok = run_manager_ptr->get_run(run_id, parameter_data, npar, obs_data, nobs);
+	if (!run_ok) err = 1;
+
 	}
 	catch(PestIndexError ex) {
 		cerr << ex.what() << endl;
