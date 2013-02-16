@@ -41,7 +41,6 @@ RunManager* rmic_create_yamr(char **comline, int comline_array_len,
 	char **out, int out_array_len,
 	char *storfile,
 	char *port,
-	char *genie_tag,
 	char *info_filename)
 {
 	RunManager *run_manager_ptr = nullptr;
@@ -92,12 +91,12 @@ int rmic_initialize(RunManager *run_manager_ptr,
 	return err;
 }
 
-int rmic_add_run(RunManager *run_manager_ptr, double *parameter_data, int npar, int id)
+int rmic_add_run(RunManager *run_manager_ptr, double *parameter_data, int npar, int *id)
 {
 	int err = 0;
 	try {
 		vector<double> data(parameter_data, parameter_data+npar);
-		id = run_manager_ptr->add_run(data);
+		*id = run_manager_ptr->add_run(data);
 	}
 	catch(...)
 	{

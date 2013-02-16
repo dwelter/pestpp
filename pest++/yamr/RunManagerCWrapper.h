@@ -6,6 +6,7 @@
 typedef struct RunManagerAbstract RunManager;
 extern "C"
 {
+extern __declspec(dllexport)
 RunManager* rmic_create_serial(char **comline, int comline_array_len,
 	char **tpl, int tpl_array_len,
 	char **inp, int inp_array_len,
@@ -14,6 +15,7 @@ RunManager* rmic_create_serial(char **comline, int comline_array_len,
 	char *storfile,
 	char *rundir);
 
+extern __declspec(dllexport)
 RunManager* rmic_create_yamr(char **comline, int comline_array_len,
 	char **tpl, int tpl_array_len,
 	char **inp, int inp_array_len,
@@ -21,9 +23,9 @@ RunManager* rmic_create_yamr(char **comline, int comline_array_len,
 	char **out, int out_array_len,
 	char *storfile,
 	char *port,
-	char *genie_tag,
 	char *info_filename);
 
+extern __declspec(dllexport)
 RunManager* rmic_create_genie(char **comline, int comline_array_len,
 	char **tpl, int tpl_array_len,
 	char **inp, int inp_array_len,
@@ -33,16 +35,21 @@ RunManager* rmic_create_genie(char **comline, int comline_array_len,
 	char *host,
 	char *genie_tag);
 
+extern __declspec(dllexport)
 int rmic_initialize(RunManager *run_manager_ptr, 
 	char **pname, int pname_array_len,
 	char **oname, int oname_array_len);
 
-int rmic_add_run(RunManager *run_manager_ptr, double *parameter_data, int npar, int id);
+extern __declspec(dllexport)
+int rmic_add_run(RunManager *run_manager_ptr, double *parameter_data, int npar, int *id);
 
+extern __declspec(dllexport)
 int rmic_run(RunManager *run_manager_ptr);
 
+extern __declspec(dllexport)
 int rmic_get_run(RunManager *run_manager_ptr, int run_id, double *parameter_data, int npar, double *obs_data, int nobs);
 
+extern __declspec(dllexport)
 int rmic_delete(RunManager *run_manager_ptr);
 
 					 
