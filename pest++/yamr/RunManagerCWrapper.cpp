@@ -91,6 +91,20 @@ int rmic_initialize(RunManager *run_manager_ptr,
 	return err;
 }
 
+int rmic_reinitialize(RunManager *run_manager_ptr)
+{
+    int err = 0;
+	try {
+		run_manager_ptr->reinitialize();
+	}
+	catch(...)
+	{
+		err = 1;
+	}
+	return err;
+}
+
+
 int rmic_add_run(RunManager *run_manager_ptr, double *parameter_data, int npar, int *id)
 {
 	int err = 0;
@@ -123,11 +137,11 @@ int rmic_run(RunManager *run_manager_ptr)
 int rmic_get_run(RunManager *run_manager_ptr, int run_id, double *parameter_data, int npar, double *obs_data, int nobs)
 {
 	int err = 0;
-	try {
-	bool run_ok;
-	run_ok = run_manager_ptr->get_run(run_id, parameter_data, npar, obs_data, nobs);
-	if (!run_ok) err = 1;
-
+	try 
+	{
+	   bool run_ok;
+	   run_ok = run_manager_ptr->get_run(run_id, parameter_data, npar, obs_data, nobs);
+	   if (!run_ok) err = 1;
 	}
 	catch(PestIndexError ex) {
 		cerr << ex.what() << endl;
@@ -135,6 +149,55 @@ int rmic_get_run(RunManager *run_manager_ptr, int run_id, double *parameter_data
 	}
 	return err;
 }
+
+
+int rmic_get_failed_runs(RunManager *run_manager_ptr, int *run_id_array, int *nfail)
+{
+    int err = 0;
+    int n_failed;
+    try
+	{
+        const std::set<int> &fail_set = run_manager_ptr->get_failed_run_ids();
+        n_failed = fail_set.size();
+        run_id_array = new int[n_failed];
+        std::copy_n(fail_set.begin(), n_failed, run_id_array);
+	}
+    catch(PestIndexError ex)
+	{
+		cerr << ex.what() << endl;
+		err = 1;
+	}
+	return err;
+}
+
+int rmic_get_nruns(RunManager *run_manager_ptr, int *nruns)
+{
+    int err = 0;
+    try {
+        *nruns = run_manager_ptr->get_nruns();
+	}
+    catch(PestIndexError ex)
+	{
+		cerr << ex.what() << endl;
+		err = 1;
+	}
+	return err;
+}
+
+int rmic_get_total_runs(RunManager *run_manager_ptr, int *total_runs)
+{
+    int err = 0;
+    try {
+        *total_runs = run_manager_ptr->get_total_runs();
+	}
+    catch(PestIndexError ex)
+	{
+		cerr << ex.what() << endl;
+		err = 1;
+	}
+	return err;
+}
+
 
 int rmic_delete(RunManager *run_manager_ptr)
 {

@@ -41,6 +41,9 @@ int rmic_initialize(RunManager *run_manager_ptr,
 	char **oname, int oname_array_len);
 
 extern __declspec(dllexport)
+int rmic_reinitialize(RunManager *run_manager_ptr);
+
+extern __declspec(dllexport)
 int rmic_add_run(RunManager *run_manager_ptr, double *parameter_data, int npar, int *id);
 
 extern __declspec(dllexport)
@@ -48,6 +51,20 @@ int rmic_run(RunManager *run_manager_ptr);
 
 extern __declspec(dllexport)
 int rmic_get_run(RunManager *run_manager_ptr, int run_id, double *parameter_data, int npar, double *obs_data, int nobs);
+
+//*************************************************************************************
+//******************************** IMPORTANT ******************************************
+//The calling program is resposible for freeing the memory associated with run_id_array 
+//after calling this function by involking delete[] run_id_array
+//*************************************************************************************
+extern __declspec(dllexport)
+int rmic_get_failed_runs(RunManager *run_manager_ptr, int *run_id_array, int *nfail);
+
+extern __declspec(dllexport)
+int rmic_get_nruns(RunManager *run_manager_ptr, int *nruns);
+
+extern __declspec(dllexport)
+int rmic_get_total_runs(RunManager *run_manager_ptr, int *total_runs);
 
 extern __declspec(dllexport)
 int rmic_delete(RunManager *run_manager_ptr);
