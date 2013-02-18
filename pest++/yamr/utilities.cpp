@@ -7,8 +7,11 @@
 #include <algorithm>
 #include <list>
 #include <cstring>
+#include <cmath>
 
 template <class T> const T& min ( const T& a, const T& b );
+
+
 
 #include "utilities.h"
 #include "system_variables.h"

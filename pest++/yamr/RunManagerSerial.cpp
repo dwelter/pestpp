@@ -25,6 +25,7 @@
 #include <cassert>
 #include <cstring>
 #include <map>
+#include <algorithm>
 #include "system_variables.h"
 #include "Transformable.h"
 #include "utilities.h"
@@ -164,6 +165,15 @@ void RunManagerSerial::run()
 			{
 				throw PestError("Error processing template file");
 			}
+			// check parameters and observations for inf and nan
+			if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))
+			{
+				throw PestError("Error running model: invalid parameter value returned");
+			}
+			if (std::any_of(obs_vec.begin(), obs_vec.end(), OperSys::double_is_invalid))
+			{
+				throw PestError("Error running model: invalid observation value returned");
+			}
 			success_runs +=1;
             pars.clear();
             pars.insert(par_name_vec, par_values);
@@ -171,11 +181,23 @@ void RunManagerSerial::run()
             obs.insert(obs_name_vec, obs_vec);
             file_stor.update_run(i_run, pars, obs);
 		}
+		catch(const std::exception& ex)
+		{
+			failed_runs.insert(i_run);
+			file_stor.update_run_failed(i_run);
+			cerr << endl;
+			cerr << "  " << ex.what() << endl;
+			cerr << "  Aborting model run" << endl << endl;
+		}
 		catch(...)
 		{
 			failed_runs.insert(i_run);
-			cerr << "   Aborting model run" << endl;
+			file_stor.update_run_failed(i_run);
+			cerr << endl;
+			cerr << "  Error running model" << endl;
+			cerr << "  Aborting model run" << endl << endl;
 		}
+
 	}
 	total_runs += success_runs;
 	std::cout << string(message.str().size(), '\b');

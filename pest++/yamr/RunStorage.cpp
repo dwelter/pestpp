@@ -53,8 +53,7 @@ void RunStorage::reset(const vector<string> &_par_names, const vector<string> &_
 	// calculate the number of bytes required to store a model run
 	run_par_byte_size = par_names.size() * sizeof(double);
 	run_data_byte_size = run_par_byte_size + obs_names.size() * sizeof(double);
-	run_byte_size =  sizeof(RUN_STATUS) + sizeof(int) + run_data_byte_size;
-	std::int16_t n_fail = 0;
+	run_byte_size =  sizeof(std::int8_t) + run_data_byte_size;
 	vector<char> serial_pnames(Serialization::serialize(par_names));
 	vector<char> serial_onames(Serialization::serialize(obs_names));
 	beg_obs_name = serial_pnames.size();
@@ -89,11 +88,9 @@ streamoff RunStorage::get_stream_pos(int run_id)
  {
 	n_runs++;
 	int run_id = n_runs - 1;
-	RUN_STATUS r_status = RUN_STATUS::NOT_RUN;
-	std::int8_t n_fail = 0;
+	std::int8_t r_status = 0;
 	buf_stream.seekp(get_stream_pos(run_id), ios_base::beg);
 	buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
-	buf_stream.write(reinterpret_cast<char*>(&n_fail), sizeof(n_fail));
 	buf_stream.write(reinterpret_cast<const char*>(&model_pars[0]), model_pars.size()*sizeof(double));
 	return run_id;
  }
@@ -112,10 +109,8 @@ void RunStorage::update_run(int run_id, const Parameters &pars, const Observatio
 	vector<double> obs_data(obs.get_data_vector(obs_names));
 	buf_stream.seekp(get_stream_pos(run_id), ios_base::beg);
 	//set run status flage to complete
-	RUN_STATUS r_status = RUN_STATUS::COMPLETE;
+	std::int8_t r_status = 1;
 	buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
-	//skip over nfailed record
-	buf_stream.seekp(sizeof(std::int8_t), ios_base::cur);
 	//write data
 	buf_stream.write(reinterpret_cast<char*>(par_data.data()), par_data.size() * sizeof(double));
 	buf_stream.write(reinterpret_cast<char*>(obs_data.data()), obs_data.size() * sizeof(double));
@@ -127,19 +122,47 @@ void RunStorage::update_run(int run_id, const vector<char> serial_data)
 	check_rec_id(run_id);
 	buf_stream.seekp(get_stream_pos(run_id), ios_base::beg);
 	//set run status flage to complete
-	RUN_STATUS r_status = RUN_STATUS::COMPLETE;
+	std::int8_t r_status = 1;
 	buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
-	//skip over nfailed record
-	buf_stream.seekp(sizeof(std::int8_t), ios_base::cur);
 	//write data
 	buf_stream.write(serial_data.data(), serial_data.size());
 }
 
-void RunStorage::get_run(int run_id, Parameters *pars, Observations *obs)
+
+void RunStorage::update_run_failed(int run_id)
+{
+	std::int8_t r_status = get_run_status_native(run_id);
+	if (r_status < 1)
+	{
+		--r_status;
+		check_rec_id(run_id);
+		buf_stream.seekp(get_stream_pos(run_id), ios_base::beg);
+		//update run status flag
+		buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	}
+
+
+}
+
+std::int8_t RunStorage::get_run_status_native(int run_id)
+{
+	std::int8_t  r_status;
+	check_rec_id(run_id);
+	buf_stream.seekg(get_stream_pos(run_id), ios_base::beg);
+	buf_stream.read(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	return r_status;
+}
+
+int RunStorage::get_run_status(int run_id)
+{
+	int status = get_run_status_native(run_id);
+	return status;
+}
+
+int RunStorage::get_run(int run_id, Parameters *pars, Observations *obs)
 {
 
-	RUN_STATUS r_status;
-	std::int8_t n_fail;
+	std::int8_t  r_status;
 	size_t n_par = par_names.size();
 	size_t n_obs = obs_names.size();
 	vector<double> par_data;
@@ -151,17 +174,17 @@ void RunStorage::get_run(int run_id, Parameters *pars, Observations *obs)
 	
 	buf_stream.seekg(get_stream_pos(run_id), ios_base::beg);
 	buf_stream.read(reinterpret_cast<char*>(&r_status), sizeof(r_status));
-	buf_stream.read(reinterpret_cast<char*>(&n_fail), sizeof(n_fail));
 	buf_stream.read(reinterpret_cast<char*>(&par_data[0]), n_par * sizeof(double));
 	buf_stream.read(reinterpret_cast<char*>(&obs_data[0]), n_obs * sizeof(double));
 	pars->update(par_names, par_data);
 	obs->update(obs_names, obs_data);
+	int status = r_status;
+	return status;
 }
 
-void RunStorage::get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs)
+int RunStorage::get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs)
 {
-	RUN_STATUS r_status;
-	std::int8_t n_fail;
+	std::int8_t r_status;
 	check_rec_id(run_id);
 
 	size_t p_size = par_names.size();
@@ -181,22 +204,22 @@ void RunStorage::get_run(int run_id, double *pars, size_t npars, double *obs, si
 	o_size = min(o_size, nobs);
 	buf_stream.seekg(get_stream_pos(run_id), ios_base::beg);
 	buf_stream.read(reinterpret_cast<char*>(&r_status), sizeof(r_status));
-	buf_stream.read(reinterpret_cast<char*>(&n_fail), sizeof(n_fail));
 	buf_stream.read(reinterpret_cast<char*>(pars), p_size * sizeof(double));
 	buf_stream.read(reinterpret_cast<char*>(obs), o_size * sizeof(double));
-
+	int status = r_status;
+	return status;
 }
 
 
 vector<char> RunStorage::get_serial_pars(int run_id)
 {
 	check_rec_id(run_id);
-	RUN_STATUS r_status;
-	std::int8_t n_fail;
+	std::int8_t r_status;
+
 	vector<char> serial_data;
 	serial_data.resize(run_par_byte_size);
 	buf_stream.seekg(run_byte_size*run_id, ios_base::beg);
-	buf_stream.seekg(get_stream_pos(run_id)+sizeof(r_status)+sizeof(n_fail), ios_base::beg);
+	buf_stream.seekg(get_stream_pos(run_id)+sizeof(r_status), ios_base::beg);
 	buf_stream.read(serial_data.data(), serial_data.size());
 	return serial_data;
 }
@@ -206,13 +229,11 @@ Parameters RunStorage::get_parameters(int run_id)
 	check_rec_id(run_id);
 
 	size_t n_par = par_names.size();
- 	RUN_STATUS r_status;
-	std::int8_t n_fail;
+ 	std::int8_t r_status;
 	vector<double> par_data;
 	par_data.resize(n_par);
 	buf_stream.seekg(get_stream_pos(run_id), ios_base::beg);
 	buf_stream.read(reinterpret_cast<char*>(&r_status), sizeof(r_status));
-	buf_stream.read(reinterpret_cast<char*>(&n_fail), sizeof(n_fail));
 	buf_stream.read(reinterpret_cast<char*>(par_data.data()), n_par*sizeof(double));
 	Parameters pars;
 	pars.update(par_names, par_data);

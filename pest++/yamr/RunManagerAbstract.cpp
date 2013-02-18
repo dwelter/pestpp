@@ -84,18 +84,18 @@ int RunManagerAbstract::add_run(const Parameters &model_pars)
 
 bool RunManagerAbstract::get_run(int run_id, Parameters &pars, Observations &obs)
 {
-    bool run_good = true;
-	file_stor.get_run(run_id, &pars, &obs);
-    if ( failed_runs.find(run_id) != failed_runs.end() ) run_good = false;
-    return run_good;
+	bool success = false;
+	int status = file_stor.get_run(run_id, &pars, &obs);
+	if (status > 0) success = true; 
+    return success;
 }
 
-bool RunManagerAbstract::get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs)
+bool  RunManagerAbstract::get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs)
 {
-	bool run_good = true;
-	file_stor.get_run(run_id, pars, npars, obs, nobs);
-    if ( failed_runs.find(run_id) != failed_runs.end() ) run_good = false;
-    return run_good;
+	bool success = false;
+	int status = file_stor.get_run(run_id, pars, npars, obs, nobs);
+    if (status > 0) success = true; 
+    return success;
 }
 
 

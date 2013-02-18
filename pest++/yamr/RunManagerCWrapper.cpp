@@ -137,12 +137,12 @@ int rmic_run(RunManager *run_manager_ptr)
 
 int rmic_get_run(RunManager *run_manager_ptr, int run_id, double *parameter_data, int npar, double *obs_data, int nobs)
 {
-	int err = 0;
+	int err = 1;
 	try 
 	{
-	   bool run_ok;
-	   run_ok = run_manager_ptr->get_run(run_id, parameter_data, npar, obs_data, nobs);
-	   if (!run_ok) err = 1;
+	   bool success;
+	   success = run_manager_ptr->get_run(run_id, parameter_data, npar, obs_data, nobs);
+	   if (success) err = 0;
 	}
 	catch(PestIndexError ex) {
 		cerr << ex.what() << endl;

@@ -153,11 +153,10 @@ void Jacobian_1to1::calculate(ModelRun &init_model_run, vector<string> numeric_p
 	// if initial run was performed, get the newly calculated values
 
 	if (calc_init_obs) {
-		bool i_run_ok;
         Parameters tmp_pars;
         Observations tmp_obs;
-        i_run_ok = run_manager.get_run(i_run, tmp_pars, tmp_obs);
-		if (i_run_ok != true)
+        bool success = run_manager.get_run(i_run, tmp_pars, tmp_obs);
+		if (!success)
 		{
 			throw(PestError("Error: Base parameter run failed.  Can not compute the Jacobian"));
 		}
@@ -175,7 +174,11 @@ void Jacobian_1to1::calculate(ModelRun &init_model_run, vector<string> numeric_p
 		par_name = &del_numeric_par_vec[i_run].par_name;
         Parameters tmp_pars;
         Observations tmp_obs;
-        run_manager.get_run(i_run, tmp_pars, tmp_obs);
+        bool success = run_manager.get_run(i_run, tmp_pars, tmp_obs);
+		if (!success)
+		{
+			throw(PestError("Error: Run failed.  Cannot compute the Jacobian"));
+		}
         tmp_model_run.update(tmp_pars, tmp_obs);
 		run_list.push_back(tmp_model_run);
 

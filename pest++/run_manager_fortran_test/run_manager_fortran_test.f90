@@ -25,12 +25,22 @@
     integer rmif_create_genie
     external rmif_initialize
     integer rmif_initialize
+    external rmif_reinitialize
+    integer rmif_reinitialize
     external rmif_add_run
     integer rmif_add_run
     external rmif_run
     integer rmif_run
     external rmif_get_run
     integer rmif_get_run
+    external rmif_get_num_failed_runs
+    integer rmif_get_num_failed_runs
+    external rmif_get_failed_run_ids
+    integer rmif_get_failed_run_ids
+    external rmif_get_num_total_runs
+    integer rmif_get_num_total_runs
+    
+    
     external rmfi_delete
     integer rmfi_delete
     
@@ -49,11 +59,15 @@
     character*20 o_names(16)
     character buf
     DOUBLE PRECISION pars(3)
+    DOUBLE PRECISION bad_pars(3)
     DOUBLE PRECISION obs(16)
     integer nruns, npar, nobs
     integer itype
     integer err
     integer ipar, iobs, irun
+    integer nfail
+    integer failed_run_ids(100)
+    integer n_total_runs
     
     
     ! Body of run_manager_fortran_test
@@ -93,6 +107,7 @@
                     'head16              '/
     
     data pars / 0.1, .005, .05/
+    data bad_pars / 0.1, -9e9, .05/
     
     ! instantiate run manager
     itype = -1
@@ -151,7 +166,7 @@
     err = rmif_initialize(p_names, 20, npar, o_names, 20, nobs)
     
     ! add model runs to the queue
-    err = rmif_add_run(pars, npar, irun)
+    err = rmif_add_run(bad_pars, npar, irun)
     do irun = 1, nruns - 1
         pars(1) = pars(1) + pars(1) * 0.2
         err = rmif_add_run(pars, npar, irun)
@@ -161,10 +176,18 @@
     write(*,*) 'Performing model runs...'
     err = rmif_run()
     
+    ! get number of failed model runs
+    err = rmif_get_num_failed_runs(nfail)
+    write(*,*) 'Number of failed runs: ', nfail
+    err = rmif_get_failed_run_ids(failed_run_ids, 100)
+    do irun = 1, nfail
+         write(*,*) '   failed run id = ', failed_run_ids(irun)
+    end do    
+    
     ! read results
     do irun = 0, nruns-1
         err = rmif_get_run(irun, pars,npar, obs, nobs)
-    
+        
         write(*,*) ""
         write(*,*) ""
         write(*,*) "Results for model run", irun
@@ -172,21 +195,38 @@
         do ipar = 1, npar
             write(*,*) "  parameter ", p_names(ipar), " = ", pars(ipar)
         end do
-        write(*,*) "Observation Values:"
-        do iobs = 1, nobs
-            write(*,*) "  observation ", o_names(iobs), " = ", obs(iobs)
-        end do
+        if (err ==0 ) then
+            write(*,*) "Observation Values:"
+            do iobs = 1, nobs
+                write(*,*) "  observation ", o_names(iobs), " = ", obs(iobs)
+            end do
+        else
+            write(*,*) "run failed..."
+        endif
     end do
     
+    err = rmif_get_num_total_runs(n_total_runs)
+    write(*,*) ''
+    write(*,*) 'Total number of successful model runs:', n_total_runs
     
+    ! reinitialize run manager and make another set of runs
+    err = rmif_reinitialize()
+    err = rmif_add_run(pars, npar, irun)
+    pars(1) = pars(1) + pars(1) * 0.2
+    err = rmif_add_run(pars, npar, irun)
+    err = rmif_run()
     
+    err = rmif_get_run(0, pars,npar, obs, nobs)
     
+    err = rmif_get_num_total_runs(n_total_runs)
+    write(*,*) ''
+    write(*,*) 'Total number of successful model runs:', n_total_runs
     
     !clean up
     err = rmfi_delete()
-    
+   
     write (*,*) ""
-    write (*,*) "Press any key to continue"
+    write (*,*) "Press ENTER to continue"
     read (*,*)
     end program run_manager_fortran_test
 

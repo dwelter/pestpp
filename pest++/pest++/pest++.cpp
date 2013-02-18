@@ -219,20 +219,28 @@ int main(int argc, char* argv[])
 
         Parameters tmp_pars;
         Observations tmp_obs;
-        run_manager_ptr->get_run(0, tmp_pars, tmp_obs);
-		optimum_run.update(tmp_pars, tmp_obs, ModelRun::FORCE_PAR_UPDATE);
-		// save parameters to .par file
-		OutputFileWriter::write_par(file_manager.open_ofile_ext("par"), optimum_run.get_ctl_pars(), *(optimum_run.get_par_tran().get_offset_ptr()), 
+        bool success = run_manager_ptr->get_run(0, tmp_pars, tmp_obs);
+		if (!success)
+		{
+			optimum_run.update(tmp_pars, tmp_obs, ModelRun::FORCE_PAR_UPDATE);
+			// save parameters to .par file
+			OutputFileWriter::write_par(file_manager.open_ofile_ext("par"), optimum_run.get_ctl_pars(), *(optimum_run.get_par_tran().get_offset_ptr()), 
 			*(optimum_run.get_par_tran().get_scale_ptr()));
-		file_manager.close_file("par");
-		// save new residuals to .rei file
+			file_manager.close_file("par");
+			// save new residuals to .rei file
+			OutputFileWriter::write_rei(file_manager.open_ofile_ext("rei"), 0, 
+				*(optimum_run.get_obj_func_ptr()->get_obs_ptr()), 
+				optimum_run.get_obs(), *(optimum_run.get_obj_func_ptr()),
+				optimum_run.get_ctl_pars());
+			file_manager.close_file("rei");
+			run_manager_ptr->free_memory();
+		}
+		else
+		{
+			cout << "Model run failed.  No results were recorded." << endl << endl;
+			fout_rec << "Model run failed.  No results were recorded." << endl << endl;
+		}
 
-		OutputFileWriter::write_rei(file_manager.open_ofile_ext("rei"), 0, 
-			*(optimum_run.get_obj_func_ptr()->get_obs_ptr()), 
-			optimum_run.get_obs(), *(optimum_run.get_obj_func_ptr()),
-			optimum_run.get_ctl_pars());
-		file_manager.close_file("rei");
-		run_manager_ptr->free_memory();
 	}
 
 	//Define model Run for Base Parameters (uses base parameter tranformations)

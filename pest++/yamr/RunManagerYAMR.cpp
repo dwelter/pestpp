@@ -209,6 +209,7 @@ RunManagerYAMR::RunManagerYAMR(const vector<string> _comline_vec,
 	fdmax = listener;
 	FD_ZERO(&master);
 	FD_SET(listener, &master);
+	cur_group_id = 0;
 	return;
 }
 
@@ -423,6 +424,7 @@ void RunManagerYAMR::process_message(int i_sock)
 		int group_id = net_pack.get_groud_id();
 		f_rmr << "Run failed on slave:" << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << group_id << ", run id = " << run_id << ")" << endl;
 		cout << "Run failed on slave:" << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << group_id << ", run id = " << run_id << ")" << endl;
+		file_stor.update_run_failed(run_id);
 		failure_map.insert(make_pair(run_id, i_sock));
 		auto it = get_active_run_id(i_sock);
 		active_runs.erase(it);
@@ -591,7 +593,7 @@ RunManagerYAMR::~RunManagerYAMR(void)
 	err = w_close(listener);
 	FD_CLR(listener, &master);
 	// this is needed to ensure that the first slave closes properly
-	w_sleep(1000);
+	w_sleep(2000);
 	for(int i = 0; i <= fdmax; i++) {
 		if (FD_ISSET(i, &master)) 
 		{

@@ -33,6 +33,7 @@ public:
 	static std::string getcwd();
 	static void chdir(const char *str);
 	static char *gets_s(char *str, size_t len);
+	static bool double_is_invalid(double x);
 };
 
 #endif /* SYSTEM_VARIABLES_H_ */

@@ -131,6 +131,19 @@ int RMIF_INITIALIZE(char *f_pname, int  *pname_str_len, int *pname_array_len,
 	return err;
 }
 
+int RMIF_REINITIALIZE()
+{
+    int err = 0;
+	try {
+	    _run_manager_ptr_->reinitialize();
+	}
+	catch(...)
+	{
+		err = 1;
+	}
+	return err;
+}
+
 int RMIF_RUN()
 {
 	int err = 0;
@@ -146,11 +159,13 @@ int RMIF_RUN()
 
 int RMIF_GET_RUN(int *run_id, double *parameter_data, int *npar, double *obs_data, int *nobs)
 {
-	int err = 0;
+	int err = 1;
+	bool success = false;
 	size_t n_par = *npar;
 	size_t n_obs = *nobs;
 	try {
-	err = _run_manager_ptr_->get_run(*run_id, parameter_data, n_par, obs_data, n_obs);
+		success = _run_manager_ptr_->get_run(*run_id, parameter_data, n_par, obs_data, n_obs);
+		if (success) err = 0;
 	}
 	catch(PestIndexError ex) {
 		cerr << ex.what() << endl;
@@ -167,6 +182,55 @@ int RMFI_DELETE()
 	}
 		catch(...)
 	{
+		err = 1;
+	}
+	return err;
+}
+
+int RMIF_GET_NUM_FAILED_RUNS(int *nfail)
+{
+    int err = 0;
+	*nfail = -999;
+	try
+	{
+        const std::set<int> &fail_set = _run_manager_ptr_->get_failed_run_ids();
+        *nfail = fail_set.size();
+	}
+    catch(PestIndexError ex)
+	{
+		cerr << ex.what() << endl;
+		err = 1;
+	}
+	return err;
+}
+
+int RMIF_GET_FAILED_RUN_IDS(int *run_id_array, int *len_run_id_array)
+{
+    int err = 0;
+    try
+	{
+		std::fill_n(run_id_array, *len_run_id_array, -999);
+        const std::set<int> &fail_set = _run_manager_ptr_->get_failed_run_ids();
+        int n_failed_tmp = min(fail_set.size(), *len_run_id_array);
+        std::copy_n(fail_set.begin(), n_failed_tmp, run_id_array);
+	}
+    catch(PestIndexError ex)
+	{
+		cerr << ex.what() << endl;
+		err = 1;
+	}
+	return err;
+}
+
+int RMIF_GET_NUM_TOTAL_RUNS(int *nruns)
+{
+    int err = 0;
+    try {
+        *nruns = _run_manager_ptr_->get_total_runs();
+	}
+    catch(PestIndexError ex)
+	{
+		cerr << ex.what() << endl;
 		err = 1;
 	}
 	return err;

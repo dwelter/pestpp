@@ -36,9 +36,17 @@ int RMIF_ADD_RUN(double *parameter_data, int *npar, int *id);
 int RMIF_INITIALIZE(char *f_pname, int  *pname_str_len, int *pname_array_len,
 				 char *f_oname, int  *oname_str_len, int *oname_array_len);
 
+int RMIF_REINITIALIZE();
+
 int RMIF_RUN();
 
 int RMIF_GET_RUN(int *run_id, double *parameter_data, int *npar, double *obs_data, int *nobs);
+
+int RMIF_GET_NUM_FAILED_RUNS(int *nfail);
+
+int RMIF_GET_FAILED_RUN_IDS(int *run_id_array, int *len_run_id_array);
+
+int RMIF_GET_NUM_TOTAL_RUNS(int *nruns);
 
 int RMFI_DELETE();
 

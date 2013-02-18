@@ -107,7 +107,9 @@ class runpy:
             par_data.ctypes.data_as(ctypes.POINTER(ctypes.c_double)), n_par_c,
             obs_data.ctypes.data_as(ctypes.POINTER(ctypes.c_double)), n_obs_c)
         if err != 0:
-            raise RunpyError('runpy error in function runpy.get_run() with id = %d: error number = %d' % (run_id, err))
+            #raise RunpyError('runpy error in function runpy.get_run() with id = %d: error number = %d' % (run_id, err))
+            par_data = None
+            obs_data = None
         return par_data, obs_data
 
     def get_num_failed(self):

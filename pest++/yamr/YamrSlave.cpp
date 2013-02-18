@@ -4,6 +4,7 @@
 #include "system_variables.h"
 #include <cassert>
 #include <cstring>
+#include <algorithm>
 #include "system_variables.h"
 
 using namespace pest_utils;
@@ -219,6 +220,15 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs)
 		{
 			throw PestError("Error processing template file");
 		}
+		// check parameters and observations for inf and nan
+		if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))
+		{
+			throw PestError("Error running model: invalid parameter value returned");
+		}
+		if (std::any_of(obs_vec.begin(), obs_vec.end(), OperSys::double_is_invalid))
+		{
+			throw PestError("Error running model: invalid observation value returned");
+		}
 		// update observation values
 		obs.clear();
 		for (int i=0; i<nobs; ++i)
@@ -227,8 +237,16 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs)
 		}
 
 	}
+	catch(const std::exception& ex)
+	{
+		cerr << endl;
+		cerr << "   " << ex.what() << endl;
+		cerr << "   Aborting model run" << endl << endl;
+		success = 0;
+	}
 	catch(...)
 	{
+		cerr << "   Error running model" << endl;
 		cerr << "   Aborting model run" << endl;
 		success = 0;
 	}

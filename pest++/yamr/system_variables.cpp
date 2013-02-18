@@ -23,6 +23,7 @@
 
 #ifdef OS_WIN
  #include <direct.h>
+#include <amp_math.h>
 #endif
 
 #ifdef OS_LINUX
@@ -88,4 +89,10 @@ char* OperSys::gets_s(char *str, size_t len)
   return gets(str);
  #endif
 
+}
+
+bool OperSys::double_is_invalid(double x)
+{
+	bool test = (_isnan(x)!=0 || _finite(x) == 0);
+	return test;
 }

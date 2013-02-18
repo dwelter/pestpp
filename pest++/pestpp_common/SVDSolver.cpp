@@ -378,24 +378,37 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 		ModelRun upgrade_run(base_run);
         Parameters tmp_pars;
         Observations tmp_obs;
-        run_manager.get_run(i, tmp_pars, tmp_obs);
-		upgrade_run.update(tmp_pars, tmp_obs, ModelRun::FORCE_PAR_UPDATE);
+        bool success = run_manager.get_run(i, tmp_pars, tmp_obs);
+		if (!success)
+		{
+			upgrade_run.update(tmp_pars, tmp_obs, ModelRun::FORCE_PAR_UPDATE);
 
-		streamsize n_prec = os.precision(2);
-		os << "      Rotation Factor = ";
-		os << setiosflags(ios::fixed)<< setw(4) << rot_fac;
-		os << " (" << rot_angle_vec[i] << " deg)";
-		os.precision(n_prec);
-		os.unsetf(ios_base::floatfield); // reset all flags to default
-		os << ";  phi = " << upgrade_run.get_phi(tikhonov_weight); 
-		os.precision(2);
-		os << setiosflags(ios::fixed);
-		os << " ("  << upgrade_run.get_phi(tikhonov_weight)/cur_solution.get_phi(tikhonov_weight)*100 << "% starting phi)" << endl;
-		os.precision(n_prec);
-		os.unsetf(ios_base::floatfield); // reset all flags to default
-		if ( upgrade_run.obs_valid() &&  !best_run_updated_flag || upgrade_run.get_phi() <  best_upgrade_run.get_phi()) {
-			best_run_updated_flag = true;
-			best_upgrade_run = upgrade_run;
+			streamsize n_prec = os.precision(2);
+			os << "      Rotation Factor = ";
+			os << setiosflags(ios::fixed)<< setw(4) << rot_fac;
+			os << " (" << rot_angle_vec[i] << " deg)";
+			os.precision(n_prec);
+			os.unsetf(ios_base::floatfield); // reset all flags to default
+			os << ";  phi = " << upgrade_run.get_phi(tikhonov_weight); 
+			os.precision(2);
+			os << setiosflags(ios::fixed);
+			os << " ("  << upgrade_run.get_phi(tikhonov_weight)/cur_solution.get_phi(tikhonov_weight)*100 << "% starting phi)" << endl;
+			os.precision(n_prec);
+			os.unsetf(ios_base::floatfield); // reset all flags to default
+			if ( upgrade_run.obs_valid() &&  !best_run_updated_flag || upgrade_run.get_phi() <  best_upgrade_run.get_phi()) {
+				best_run_updated_flag = true;
+				best_upgrade_run = upgrade_run;
+			}
+		}
+		else
+		{
+			streamsize n_prec = os.precision(2);
+			os << "      Rotation Factor = ";
+			os << setiosflags(ios::fixed)<< setw(4) << rot_fac;
+			os << " (" << rot_angle_vec[i] << " deg)";
+			os.precision(n_prec);
+			os.unsetf(ios_base::floatfield); // reset all flags to default
+			os << ";  run failed" << endl;
 		}
 	}
 	// clean up run_manager memory

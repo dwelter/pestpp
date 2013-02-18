@@ -31,18 +31,19 @@ class Observations;
 
 class RunStorage {
 public:
-    enum class RUN_STATUS : std::int8_t { NOT_RUN = 1, COMPLETE = 2, FAILED = 3 };
 	RunStorage(const std::string &_filename);
 	void reset(const std::vector<std::string> &par_names, const std::vector<std::string> &obs_names);
     virtual int add_run(const std::vector<double> &model_pars);
 	int add_run(const Parameters &pars);
 	void update_run(int run_id, const Parameters &pars, const Observations &obs);
 	void update_run(int run_id, const std::vector<char> serial_data);
+	void update_run_failed(int run_id);
 	int get_nruns();
     const std::vector<std::string>& get_par_name_vec()const;
     const std::vector<std::string>& get_obs_name_vec()const;
-	void get_run(int run_id, Parameters *pars, Observations *obs);
-	void get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs);
+	int get_run_status(int run_id);
+	int get_run(int run_id, Parameters *pars, Observations *obs);
+	int get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs);
 	Parameters get_parameters(int run_id);
 	std::vector<char> get_serial_pars(int run_id);
 	void free_memory();
@@ -60,6 +61,7 @@ private:
 	std::vector<std::string> obs_names;
 	void check_rec_size(const std::vector<char> &serial_data) const;
 	void check_rec_id(int run_id) const;
+	std::int8_t get_run_status_native(int run_id);
     std::streamoff get_stream_pos(int run_id);
 };
 
