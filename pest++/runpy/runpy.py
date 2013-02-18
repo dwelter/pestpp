@@ -65,6 +65,13 @@ class runpy:
         if err != 0:
             raise RunpyError('runpy error in function runpy.intialize(): error number = %d' % err)
 
+    def reinitialize(self):
+        func = self.runlib.rmic_initialize
+        func.restype = ctypes.c_int
+        err = func(self.obj)
+        if err != 0:
+            raise RunpyError('runpy error in function runpy.reinitialize(): error number = %d' % err)
+
     def add_run(self, par_data):
         func = self.runlib.rmic_add_run
         func.restype = ctypes.c_int
@@ -103,6 +110,28 @@ class runpy:
             raise RunpyError('runpy error in function runpy.get_run() with id = %d: error number = %d' % (run_id, err))
         return par_data, obs_data
 
+    def get_num_failed(self):
+        func = self.runlib.rmic_get_num_failed_runs
+        func.restype = ctypes.c_int
+        nfail = ctypes.c_int(-999)
+        err = func(self.obj, ctypes.byref(nfail))
+        if err != 0:
+            raise RunpyError('runpy error in function runpy.get_num_failed() with id = %d: error number = %d' % (run_id, err))
+        return nfail.value
+
+    def get_failed_run_ids(self):
+        nfail = self.get_num_failed()
+        fail_list = []
+        func = self.runlib.rmic_get_failed_runs_n
+        func.restype = ctypes.c_int
+        func.argtypes = [ ctypes.c_void_p, ctypes.POINTER(ctypes.c_int), ctypes.c_int ]
+        fail_array = np.ones((nfail,), dtype=np.int)
+        err = func(self.obj, fail_array.ctypes.data_as(ctypes.POINTER(ctypes.c_int)), ctypes.c_int(nfail))
+        fail_list = fail_array.tolist()
+        if err != 0:
+            raise RunpyError('runpy error in function runpy.get_failed_run_ids() with id = %d: error number = %d' % (run_id, err))
+        return fail_list
+
     def __del__(self):
         func = self.runlib.rmic_delete
         func.restype = ctypes.c_int
@@ -128,14 +157,29 @@ def test_serial():
                  'head9', 'head10', 'head11', 'head12',
                  'head13', 'head14', 'head15', 'head16']
 
-    data = np.array([0.1, 0.005, 0.05], dtype=np.double)
-
     run_mngr = runpy()
     run_mngr.create_serial(comline, tpl, inp, ins, out, stor_file, rundir)
     run_mngr.initialize(par_names, obs_names)
+    #add 3 runs
+    nruns = 0
+    for i in xrange(0, 3):
+        data = np.array([0.1 + .02*i, 0.005, 0.05], dtype=np.double)
+        run_mngr.add_run(data)
+        nruns += 1
+    data = np.array([-9.0e99, 0.005, 0.05], dtype=np.double)
     run_mngr.add_run(data)
+    nruns += 1
+
     run_mngr.run()
-    par, obs = run_mngr.get_run(0)
+    failed_runs = run_mngr.get_failed_run_ids()
+    print 'failed runs:', failed_runs
+    for i in xrange(0, nruns):
+        print 'Results for run: %d' % i
+        par, obs = run_mngr.get_run(i)
+        print par
+        print obs
+        print ''
+    pass
 
 def test_yamr():
     comline = ['storage1.exe']
@@ -152,15 +196,23 @@ def test_yamr():
                  'head9', 'head10', 'head11', 'head12',
                  'head13', 'head14', 'head15', 'head16']
 
-    data = np.array([0.1, 0.005, 0.05], dtype=np.double)
-
     run_mngr = runpy()
     run_mngr.create_yamr(comline, tpl, inp, ins, out, stor_file, port, out_file)
     run_mngr.initialize(par_names, obs_names)
-    run_mngr.add_run(data)
+    #add 3 runs
+    nruns = 3
+    for i in xrange(0, nruns):
+        data = np.array([0.1 * .02*nruns, 0.005, 0.05], dtype=np.double)
+        run_mngr.add_run(data)
+
     run_mngr.run()
-    par, obs = run_mngr.get_run(0)
 
-
-#test_serial() 
-test_yamr()
+    for i in xrange(0, nruns):
+        print 'Results for run: %d' % i
+        par, obs = run_mngr.get_run(i)
+        print par
+        print obs
+        print ''
+    pass
+test_serial() 
+#test_yamr()

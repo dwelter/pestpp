@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "RunManagerCWrapper.h"
 #include "utilities.h"
 #include "RunManagerYAMR.h"
@@ -150,8 +151,24 @@ int rmic_get_run(RunManager *run_manager_ptr, int run_id, double *parameter_data
 	return err;
 }
 
+int rmic_get_num_failed_runs(RunManager *run_manager_ptr, int *nfail)
+{
+	int err = 0;
+	*nfail = -999;
+	   try
+	{
+        const std::set<int> &fail_set = run_manager_ptr->get_failed_run_ids();
+        *nfail = fail_set.size();
+	}
+    catch(PestIndexError ex)
+	{
+		cerr << ex.what() << endl;
+		err = 1;
+	}
+	return err;
+}
 
-int rmic_get_failed_runs(RunManager *run_manager_ptr, int *run_id_array, int *nfail)
+int rmic_get_failed_runs_alloc(RunManager *run_manager_ptr, int *run_id_array, int *nfail)
 {
     int err = 0;
     int n_failed;
@@ -169,6 +186,26 @@ int rmic_get_failed_runs(RunManager *run_manager_ptr, int *run_id_array, int *nf
 	}
 	return err;
 }
+
+int rmic_get_failed_runs_n(RunManager *run_manager_ptr, int *run_id_array, int nfail)
+{
+    int err = 0;
+    try
+	{
+		std::fill_n(run_id_array, nfail, -999);
+        const std::set<int> &fail_set = run_manager_ptr->get_failed_run_ids();
+        int n_failed_tmp = min(fail_set.size(), nfail);
+        std::copy_n(fail_set.begin(), n_failed_tmp, run_id_array);
+	}
+    catch(PestIndexError ex)
+	{
+		cerr << ex.what() << endl;
+		err = 1;
+	}
+	return err;
+}
+
+
 
 int rmic_get_nruns(RunManager *run_manager_ptr, int *nruns)
 {
