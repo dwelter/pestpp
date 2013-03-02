@@ -18,7 +18,6 @@
 */
 #include <fstream>
 #include <iostream>
-#include <lapackpp.h>
 #include <iomanip>
 #include <map>
 #include "SVDASolver.h"
@@ -35,6 +34,8 @@
 
 using namespace std;
 using namespace pest_utils;
+using namespace Eigen;
+
 SVDASolver::SVDASolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_par_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, const Regularization *_regul_scheme)
@@ -44,7 +45,7 @@ SVDASolver::SVDASolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, c
 {
 }
 
-map<string,double> SVDASolver::freeze_parameters(Parameters &cur_numeric_pars, const LaVectorDouble &svd_update_uvec, double svd_update_norm, const LaVectorDouble &grad_update_uvec, bool use_descent)
+map<string,double> SVDASolver::freeze_parameters(Parameters &cur_numeric_pars, const VectorXd &svd_update_uvec, double svd_update_norm, const VectorXd &grad_update_uvec, bool use_descent)
 {
 	//This routine has the side effect that it modifies par_transform transformtion
 	// Test SVD parameter upgrade

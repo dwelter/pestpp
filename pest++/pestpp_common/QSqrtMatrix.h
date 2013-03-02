@@ -20,11 +20,11 @@
 #define QSQRT_MATRIX_H_
 
 #include <vector>
+#include <Eigen\Dense>
 
 
 class ObservationInfo;
 class Observations;
-class LaGenMatDouble;
 class PriorInformation;
 class Parameters;
 
@@ -33,11 +33,11 @@ using namespace std;
 class QSqrtMatrix
 {
 public:
-	friend LaGenMatDouble operator*(const LaGenMatDouble &lhs, const QSqrtMatrix &rhs);
+	friend Eigen::MatrixXd operator*(const Eigen::MatrixXd &lhs, const QSqrtMatrix &rhs);
 	QSqrtMatrix(const ObservationInfo &obs_info, const vector<string> &obs, const PriorInformation *prior_info_ptr, 
 	double tikhonov_weight);
-	LaGenMatDouble operator*(const LaGenMatDouble &rhs) const;
-	LaGenMatDouble tran_q_mat_mult(const LaGenMatDouble &lhs) const;
+	Eigen::MatrixXd operator*(const Eigen::MatrixXd &rhs) const;
+	Eigen::MatrixXd tran_q_mat_mult(const Eigen::MatrixXd &lhs) const;
 	int num_nonzero() const;
 	~QSqrtMatrix(void);
 
@@ -45,6 +45,6 @@ private:
 	vector<double> weights;
 };
 
-LaGenMatDouble operator*(const LaGenMatDouble &lhs, const QSqrtMatrix &rhs);
+Eigen::MatrixXd operator*(const Eigen::MatrixXd &lhs, const QSqrtMatrix &rhs);
 
 #endif /* QSQRT_MATRIX_H_ */

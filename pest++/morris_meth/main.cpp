@@ -28,7 +28,6 @@
 #include "ParamTransformSeq.h"
 #include "utilities.h"
 #include "pest_error.h"
-#include <lapackpp.h>
 #include "ModelRunPP.h"
 #include "FileManager.h"
 #include "RunManagerGenie.h"

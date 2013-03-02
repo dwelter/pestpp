@@ -16,12 +16,12 @@
     You should have received a copy of the GNU General Public License
     along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
-#include <lapackpp.h>
 #include <vector>
+#include <iostream>
 #include "SVD_PROPACK.h"
 
 using namespace std;
-
+using namespace Eigen;
 
 extern "C" {
 	double DLAMCH(char*);
@@ -35,7 +35,7 @@ SVD_PROPACK::SVD_PROPACK(void) : SVDPackage("PROPACK")
 {
 }
 
-void SVD_PROPACK::solve_ip(LaGenMatDouble &A, LaVectorDouble &Sigma, LaGenMatDouble &U, LaGenMatDouble &Vt)
+void SVD_PROPACK::solve_ip(MatrixXd& A, VectorXd &Sigma, MatrixXd& U, MatrixXd& Vt )
 {
 	class local_utils {
 		public:
@@ -62,9 +62,12 @@ void SVD_PROPACK::solve_ip(LaGenMatDouble &A, LaVectorDouble &Sigma, LaGenMatDou
 	double rnorm = 0.0;
 	int ierr = 0;
 
-	Sigma = 0.0;
-	U = 0.0;
-	Vt = 0.0;
+	Sigma.resize(min(m_rows, n_cols));
+	Sigma.setConstant(0.0);
+	U.resize(m_rows, m_rows);
+	U.setConstant(0.0);
+	Vt.resize(n_cols, n_cols);
+	Vt.setConstant(0.0);
 	//count number of nonzero entries
 	for (n_nonzero=0, irow=0; irow<m_rows; ++irow)
 	{
@@ -150,12 +153,12 @@ void SVD_PROPACK::solve_ip(LaGenMatDouble &A, LaVectorDouble &Sigma, LaGenMatDou
 
 void SVD_PROPACK::test()
 {
-	LaGenMatDouble A(3,3);
-	LaVectorDouble Sigma(3);
-	LaGenMatDouble U(3,3);
-	LaGenMatDouble Vt(3,3);
+	MatrixXd A(3,3);
+	VectorXd Sigma(3);
+	MatrixXd U(3,3);
+	MatrixXd Vt(3,3);
 
-	A = 0.0;
+	A.setConstant(0.0);
 	A(0,0) = 20;
 	A(1,1) = 30;
 	A(2,2) = 50;
@@ -175,16 +178,16 @@ void SVD_PROPACK::test()
 	std::cout << "Vt = " << endl;
 	std::cout << Vt << endl << endl;
 
-	LaSVD_IP(A, Sigma, U, Vt );
+	JacobiSVD<MatrixXd> svd_fac(A,  ComputeFullU |  ComputeFullV);
 	std::cout << "////////// LAPACK results /////////" << endl;
 	std::cout << "A  = " << endl;
 	std::cout << A << endl << endl;
 	std::cout << "Sigma = " << endl;
-	std::cout << Sigma << endl;
+	std::cout << svd_fac.singularValues() << endl;
 	std::cout << "U = " << endl;
-	std::cout << U << endl << endl;
+	std::cout << svd_fac.matrixU() << endl << endl;
 	std::cout << "Vt = " << endl;
-	std::cout << Vt << endl << endl;
+	std::cout << svd_fac.matrixV().transpose() << endl << endl;
 
 }
 

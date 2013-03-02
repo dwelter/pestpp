@@ -18,7 +18,6 @@
 */
 #include <fstream>
 #include <iostream>
-#include <lapackpp.h>
 #include <iomanip>
 #include <map>
 #include <algorithm>
@@ -40,6 +39,7 @@
 
 using namespace std;
 using namespace pest_utils;
+using namespace Eigen;
 
 
 void SVDSolver::Upgrade::print(ostream &os) 
@@ -60,7 +60,7 @@ SVDSolver::SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, con
 		  cur_solution(_obj_func, _par_transform, *_observations), phiredswh_flag(false), save_next_jacobian(true), prior_info_ptr(_prior_info_ptr), jacobian(_jacobian), prev_phi_percent(0.0),
 		  num_no_descent(0), regul_scheme_ptr(_regul_scheme_ptr), description(_description)
 {
-	svd_package = new SVD_LAPACK();
+	svd_package = new SVD_EIGEN();
 }
 
 void SVDSolver::set_svd_package(PestppOptions::SVD_PACK _svd_pack)
@@ -71,7 +71,7 @@ void SVDSolver::set_svd_package(PestppOptions::SVD_PACK _svd_pack)
 	}
 	else {
 		delete svd_package;
-		svd_package = new SVD_LAPACK;
+		svd_package = new SVD_EIGEN;
 	}
 	svd_package->set_max_sing(svd_info.maxsing);
 	svd_package->set_eign_thres(svd_info.eigthresh);
@@ -149,26 +149,26 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 
 
 SVDSolver::Upgrade SVDSolver::calc_upgrade_vec(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
-	const LaVectorDouble &Residuals, const vector<string> &par_name_vec, const vector<string> &obs_name_vec)
+	const Eigen::VectorXd &Residuals, const vector<string> &par_name_vec, const vector<string> &obs_name_vec)
 {
 	Upgrade upgrade;
 	upgrade.par_name_vec = par_name_vec;
-	LaGenMatDouble jac = jacobian.get_matrix(par_name_vec, obs_name_vec);
-	LaGenMatDouble SqrtQ_J = Q_sqrt * jac;
-	LaVectorDouble Sigma(min(SqrtQ_J.size(0), SqrtQ_J.size(1)));
-	LaGenMatDouble U(SqrtQ_J.size(0), SqrtQ_J.size(0));
-	LaGenMatDouble Vt(SqrtQ_J.size(1), SqrtQ_J.size(1));
+	MatrixXd jac = jacobian.get_matrix(par_name_vec, obs_name_vec);
+	MatrixXd SqrtQ_J = Q_sqrt * jac;
+	VectorXd Sigma;
+	MatrixXd U;
+	MatrixXd Vt;
 	svd_package->solve_ip(SqrtQ_J, Sigma, U, Vt);
 	//calculate the number of singluar values above the threshold
-	LaGenMatDouble SqrtQ_J_inv =SVD_inv(U, Sigma, Vt, svd_info.maxsing, svd_info.eigthresh, upgrade.n_sing_val_used);
-	   upgrade.svd_uvec =(SqrtQ_J_inv * Q_sqrt) * Residuals;
+	MatrixXd SqrtQ_J_inv =SVD_inv(U, Sigma, Vt, svd_info.maxsing, svd_info.eigthresh, upgrade.n_sing_val_used);
+	upgrade.svd_uvec =(SqrtQ_J_inv * Q_sqrt) * Residuals;
 	upgrade.tot_sing_val = Sigma.size();
 	// Calculate svd and greatest descent unit vectors
-	upgrade.svd_norm = Blas_Norm2(upgrade.svd_uvec);
-	if (upgrade.svd_norm != 0) upgrade.svd_uvec.scale(1.0 /upgrade.svd_norm);
+	upgrade.svd_norm = upgrade.svd_uvec.norm();
+	if (upgrade.svd_norm != 0) upgrade.svd_uvec *= 1.0 /upgrade.svd_norm;
 	upgrade.grad_uvec = Q_sqrt.tran_q_mat_mult(jac) * Residuals;
-	upgrade.grad_norm = Blas_Norm2(upgrade.grad_uvec);
-	if (upgrade.grad_norm != 0) upgrade.grad_uvec.scale(1.0 /upgrade.grad_norm);
+	upgrade.grad_norm = upgrade.grad_uvec.norm();
+	if (upgrade.grad_norm != 0) upgrade.grad_uvec *= 1.0 /upgrade.grad_norm;
 	return upgrade;
 }
 
@@ -222,7 +222,7 @@ map<string,double> SVDSolver::freeze_parameters(ModelRun &model_run, const Upgra
 
 
 ModelRun SVDSolver::iterative_parameter_freeze(const ModelRun &model_run, 
-	Upgrade &upgrade, const QSqrtMatrix &q_sqrt_mat, const LaVectorDouble &residuals_vec, 
+	Upgrade &upgrade, const QSqrtMatrix &q_sqrt_mat, const VectorXd &residuals_vec, 
 	const vector<string> & obs_names_vec, bool use_desent, double scale)
 {
 	ostream &os = file_manager.rec_ofstream();
@@ -255,13 +255,13 @@ double SVDSolver::add_model_run(RunManagerAbstract &run_manager, const ParamTran
 	const double PI = 3.141592;
 	double tmp_norm;
 	double rot_angle = 0.0;
-	LaVectorDouble upgrade_vec = ((1.0 - rot_fac) * upgrade.svd_uvec + rot_fac * upgrade.grad_uvec);
-	tmp_norm = Blas_Norm2(upgrade_vec);
+	VectorXd upgrade_vec = ((1.0 - rot_fac) * upgrade.svd_uvec + rot_fac * upgrade.grad_uvec);
+	tmp_norm = upgrade_vec.norm();
 	// Compute unit upgrade vector;
 	if (tmp_norm != 0) {
 		upgrade_vec *= (1.0 / tmp_norm);
 	}
-	rot_angle = acos(min(1.0, upgrade.svd_uvec * upgrade_vec)) * 180.0 / PI;
+	rot_angle = acos(min(1.0, upgrade.svd_uvec.dot(upgrade_vec))) * 180.0 / PI;
 	upgrade_vec *= upgrade.svd_norm*scale;
 	
 	// update numeric parameters in upgrade_run and test them
@@ -280,7 +280,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 {
 	ostream &os = file_manager.rec_ofstream();
 	const double PI = 3.141592;
-	LaVectorDouble residuals_vec;
+	VectorXd residuals_vec;
 	ModelRun base_run(cur_solution);
 	vector<string> obs_names_vec;
 
@@ -336,7 +336,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	os << "        number of singular values used: " << upgrade.n_sing_val_used << "/" << upgrade.tot_sing_val << endl;
 	os << "        upgrade vector magnitude (without limits or bounds) = " << upgrade.svd_norm << endl;
 	os << "        angle to direction of greatest descent: ";
-	os <<  acos(min(1.0, upgrade.svd_uvec * upgrade.grad_uvec)) * 180.0 / PI << " deg" << endl;
+	os <<  acos(min(1.0, upgrade.svd_uvec.dot(upgrade.grad_uvec))) * 180.0 / PI << " deg" << endl;
 	os << endl;
 	//compute rotation factor and try parameter upgrades
 	Parameters::iterator b;
@@ -379,7 +379,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
         Parameters tmp_pars;
         Observations tmp_obs;
         bool success = run_manager.get_run(i, tmp_pars, tmp_obs);
-		if (!success)
+		if (success)
 		{
 			upgrade_run.update(tmp_pars, tmp_obs, ModelRun::FORCE_PAR_UPDATE);
 

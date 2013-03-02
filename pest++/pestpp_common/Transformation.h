@@ -30,7 +30,7 @@
 #include <map>
 #include <set>
 #include <vector>
-#include <lapackpp.h>
+#include <Eigen/Dense>
 #include "Transformable.h"
 
 class Jacobian;
@@ -299,9 +299,9 @@ protected:
 	int n_sing_val;
 	vector<string> base_parameter_names;
 	vector<string> super_parameter_names;
-	LaVectorDouble Sigma;
-	LaGenMatDouble U;
-	LaGenMatDouble Vt;
+	Eigen::VectorXd Sigma;
+	Eigen::MatrixXd U;
+	Eigen::MatrixXd Vt;
 	Transformable init_base_numeric_parameters;
 };
 

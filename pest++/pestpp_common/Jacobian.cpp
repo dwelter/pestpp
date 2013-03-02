@@ -19,9 +19,7 @@
 
 #include <cstdlib>
 #include <vector>
-#include <lapackpp.h>
 #include <fstream>
-#include <gmd.h>
 #include "Jacobian.h"
 #include "Transformable.h"
 #include "ParamTransformSeq.h"
@@ -36,6 +34,7 @@
 
 using namespace std;
 using namespace pest_utils;
+using namespace Eigen;
 
 Jacobian::Jacobian(FileManager &_file_manager) : file_manager(_file_manager) 
 {
@@ -78,7 +77,7 @@ unordered_map<string, int> Jacobian::get_obs2row_map() const
 }
 
 
-LaGenMatDouble Jacobian::get_matrix(const vector<string> & par_names, const vector<string> &obs_names) const
+MatrixXd Jacobian::get_matrix(const vector<string> & par_names, const vector<string> &obs_names) const
 {
 	int n_rows = obs_names.size();
 	int n_cols = par_names.size();
@@ -87,7 +86,7 @@ LaGenMatDouble Jacobian::get_matrix(const vector<string> & par_names, const vect
 	int irow_new;
 	int icol_new;
 
-	LaGenMatDouble new_matrix(n_rows, n_cols);
+	MatrixXd new_matrix(n_rows, n_cols);
 	unordered_map<string, int> par2col_map = get_par2col_map();
 	unordered_map<string, int> obs2row_map = get_obs2row_map();
 	unordered_map<string, int> par2col_new_map;
@@ -100,7 +99,7 @@ LaGenMatDouble Jacobian::get_matrix(const vector<string> & par_names, const vect
 	}
 
 	//build jacobian
-	new_matrix = 0.0;  // initialize all entries to 0
+	new_matrix.setConstant(0.0);  // initialize all entries to 0
 	unordered_map<string, int>::const_iterator found;
 	unordered_map<string, int>::const_iterator not_found_obs2row_map = obs2row_map.end();
 	unordered_map<string, int>::const_iterator not_found_par2col_map = par2col_map.end();
@@ -179,29 +178,13 @@ void Jacobian::calculate(ModelRun &init_model_run, vector<string> numeric_par_na
 		del_numeric_par_vec.push_back(JacobianRun("", 0));
 		run_manager.add_run(model_parameters);
 	}
-	Parameters new_pars(init_model_run.get_model_pars());
 	for(int b=0, e=numeric_par_names.size(); b!=e; ++b)
 	{
-		cout << b << " ";
-		//new_pars = model_parameters;
-		vector<string> jnk = model_parameters.get_keys();
+		// need to optimize already computing model pars in get_derivative_parameters.  should not need to compute them again
 		get_derivative_parameters(numeric_par_names[b], init_model_run, group_info, ctl_par_info, del_numeric_par_vec, phiredswh_flag);
-		run_manager.add_run(new_pars);
-	}
-
-	// fill arrays
-	for(int i=0, e=del_numeric_par_vec.size(); i!=e; ++i)
-	{
-		cout << i << " ";
-		par_name = &del_numeric_par_vec[i].par_name;
-		if (*par_name != "") {
-			numeric_parameters = init_model_run.get_numeric_pars();
-			numeric_parameters.update_rec(*par_name, del_numeric_par_vec[i].numeric_value);
-			model_parameters = init_model_run.get_par_tran().numeric2model_cp(numeric_parameters);
-		}
-		else {
-			model_parameters = init_model_run.get_model_pars();
-		}
+		numeric_parameters = init_model_run.get_numeric_pars();
+		numeric_parameters.update_rec(numeric_par_names[b], del_numeric_par_vec.back().numeric_value);
+		model_parameters = init_model_run.get_par_tran().numeric2model_cp(numeric_parameters);
 		run_manager.add_run(model_parameters);
 	}
 	
@@ -211,7 +194,7 @@ void Jacobian::calculate(ModelRun &init_model_run, vector<string> numeric_par_na
 	// calculate jacobian
 	base_numeric_par_names = numeric_par_names;
 	base_sim_obs_names = obs_names;
-	if(matrix.size(0) != base_sim_obs_names.size() && matrix.size(1) !=base_numeric_par_names.size())
+	if(matrix.rows() != base_sim_obs_names.size() && matrix.cols() !=base_numeric_par_names.size())
 	{
 		matrix.resize(base_sim_obs_names.size(), base_numeric_par_names.size());
 	}
@@ -310,8 +293,6 @@ void Jacobian::calc_derivative(const string &numeric_par_name, int jcol, list<Mo
 	double der;
 	int irow;
 	Parameters::const_iterator par_iter;
-	LaGenMatDouble a_mat(3,3);
-	LaVectorDouble c(3), y(3);
 
 	// sort run_list the parameter numeric_par_name;
 	ModelRun::Compare compare(numeric_par_name, ModelRun::Compare::NUMERIC_PAR);
@@ -333,8 +314,8 @@ void Jacobian::calc_derivative(const string &numeric_par_name, int jcol, list<Mo
 		// then compute the derivative as:
 		//   dy/dx = 2 * c0 * p1 + c1
 		ModelRun &run2 = (*(++run_list.begin()));
-		LaGenMatDouble a_mat(3,3);
-		LaVectorDouble c(3), y(3);
+		MatrixXd a_mat(3,3);
+		VectorXd c(3), y(3);
 		irow = 0;
 		for (vector<string>::const_iterator b_o =base_sim_obs_names.begin(), e_o=base_sim_obs_names.end();
 			b_o!=e_o; ++b_o)
@@ -350,7 +331,7 @@ void Jacobian::calc_derivative(const string &numeric_par_name, int jcol, list<Mo
 				// assemble y vector
 				y(i) =  (*b).get_obs().get_rec(*obs_name);
 			}
-			LaLinearSolve(a_mat, c, y);
+			c = a_mat.colPivHouseholderQr().solve(y);
 			// assume for now that derivative is to be calculated around the second parameter location
 			der = 2.0 * c(0) *  run2.get_numeric_pars().get_rec(numeric_par_name) + c(1);
 			matrix(irow++,jcol) = der;

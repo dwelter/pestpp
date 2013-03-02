@@ -20,6 +20,7 @@
 #define SVDASOLVER_H_
 
 #include <map>
+#include <Eigen/Dense>
 #include "Transformable.h"
 #include "ParamTransformSeq.h"
 #include "Jacobian.h"
@@ -35,8 +36,8 @@ public:
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, const Regularization *_regul_scheme);
 	map<string, double> limit_parameters_ip(const Parameters &init_numeric_pars, Parameters &upgrade_numeric_pars);
-	virtual map<string,double> freeze_parameters(Parameters &cur_numeric_pars, const LaVectorDouble &svd_update_uvec, double svd_update_norm,
-		const LaVectorDouble &grad_update_uvec, bool use_descent=true);
+	virtual map<string,double> freeze_parameters(Parameters &cur_numeric_pars, const Eigen::VectorXd &svd_update_uvec, double svd_update_norm,
+		const Eigen::VectorXd &grad_update_uvec, bool use_descent=true);
 	virtual const string &get_description(){return description;}
 	~SVDASolver(void);
 };

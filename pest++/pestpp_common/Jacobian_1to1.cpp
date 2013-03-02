@@ -20,9 +20,7 @@
 #include <cstdlib>
 #include <vector>
 #include <set>
-#include <lapackpp.h>
 #include <fstream>
-#include <gmd.h>
 #include <algorithm>
 #include "Jacobian_1to1.h"
 #include "Transformable.h"
@@ -138,7 +136,7 @@ void Jacobian_1to1::calculate(ModelRun &init_model_run, vector<string> numeric_p
 	CompareItemInSet<string> compare_items_in_set(failed_parameter_names);
 	remove_if(base_numeric_par_names.begin(), base_numeric_par_names.end(), compare_items_in_set);
 
-	if(matrix.size(0) != base_sim_obs_names.size() || matrix.size(1) !=base_numeric_par_names.size())
+	if(matrix.rows() != base_sim_obs_names.size() || matrix.cols() !=base_numeric_par_names.size())
 	{
 		matrix.resize(base_sim_obs_names.size(), base_numeric_par_names.size());
 	}

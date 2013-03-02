@@ -22,10 +22,9 @@
 #include <algorithm>
 #include <math.h>
 #include <sstream>
-#include <lapackpp.h>
-#include <blas3pp.h>
-#include <blas2pp.h>
+#include <Eigen\Dense>
 #include <cassert>
+#include <iostream>
 #include "Transformation.h"
 #include "Transformable.h"
 #include "lapack_tools.h"
@@ -33,6 +32,7 @@
 #include "QSqrtMatrix.h"
 #include "pest_data_structs.h"
 using namespace std;
+using namespace Eigen;
 
 ///////////////// Transformation Methods /////////////////
 map<string, double> Transformation::get_fwd_chain_rule_factors(const Transformable &cur_values) const
@@ -408,7 +408,6 @@ void TranFrozen::print(ostream &os) const
 	}
 }
 
-#ifndef NO_LAPACKPP
 void TranSVD::update(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt, const Parameters &base_numeric_pars,
 		int maxsing, double eigthresh, const vector<string> &par_names, const vector<string> &obs_names)
 {
@@ -416,13 +415,13 @@ void TranSVD::update(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt, const 
 	super_parameter_names.clear();
 	base_parameter_names = par_names;
 
-	LaGenMatDouble SqrtQ_J = Q_sqrt * jacobian.get_matrix(par_names, obs_names);
-	Sigma.resize(min(SqrtQ_J.size(0), SqrtQ_J.size(1)));
-	U.resize(SqrtQ_J.size(0), SqrtQ_J.size(0));
-	Vt.resize(SqrtQ_J.size(1), SqrtQ_J.size(1));
-	LaSVD_IP(SqrtQ_J, Sigma, U, Vt);
+	MatrixXd SqrtQ_J = Q_sqrt * jacobian.get_matrix(par_names, obs_names);
+	JacobiSVD<MatrixXd> svd_fac(SqrtQ_J,  ComputeFullU |  ComputeFullV);
 	// calculate the number of singluar values above the threshold
-	LaGenMatDouble svd_mat_inv = SVD_inv(U, Sigma, Vt, maxsing, eigthresh, n_sing_val);
+	Sigma = svd_fac.singularValues();
+	U = svd_fac.matrixU();
+	Vt = svd_fac.matrixV().transpose();
+	MatrixXd svd_mat_inv = SVD_inv(U, Sigma, Vt, maxsing, eigthresh, n_sing_val);
 	super_parameter_names.clear();
 	for(int i=0; i<n_sing_val; ++i) {
 		sup_name.str("");
@@ -445,8 +444,7 @@ void TranSVD::reverse(Transformable &data)
 		(*it) -= 10.0;
 	}
 	Transformable ret_base_pars;
-	LaVectorDouble delta_base_mat(Vt.cols());
-	Blas_Mat_Trans_Mat_Mult(Vt(LaIndex(0,n_sing_val-1), LaIndex(0, Vt.rows()-1)), stlvec2LaVec(super_par_vec), delta_base_mat, 1.0, 0.0);
+	VectorXd delta_base_mat = Vt.block(0,0,n_sing_val, Vt.rows()).transpose() *  stlvec2LaVec(super_par_vec);
 	for (int i=0; i<n_base; ++i) {
 		ret_base_pars.insert(base_parameter_names[i], delta_base_mat(i) + init_base_numeric_parameters.get_rec(base_parameter_names[i]));
 	}
@@ -457,10 +455,11 @@ void TranSVD::forward(Transformable &data)
 {
 	//Transform base parameters to super-parameters
 	Transformable super_pars;
-	LaVectorDouble value(Vt.cols());
+	VectorXd value;
 
 	Transformable delta_data = data - init_base_numeric_parameters;
-	Blas_Mat_Vec_Mult(Vt, stlvec2LaVec(delta_data.get_data_vector(base_parameter_names)), value, 1.0, 0.0);
+
+	value = Vt * stlvec2LaVec(delta_data.get_data_vector(base_parameter_names));
 	for (int i=0; i<n_sing_val; ++i) {
 		super_pars.insert(super_parameter_names[i], value(i)+10.0);
 	}
@@ -478,7 +477,7 @@ ParameterGroupInfo TranSVD::build_par_group_info(const ParameterGroupInfo &base_
 
 	for (int i_sup=0, n_sup=super_parameter_names.size(); i_sup < n_sup; ++i_sup)
 	{
-		get_LaGenMatDouble_row_abs_max(Vt, i_sup, &max_col, &max_val);
+		get_MatrixXd_row_abs_max(Vt, i_sup, &max_col, &max_val);
 		//dew clean up
 		derinc_par = base_pg_info.get_group_rec_ptr(base_parameter_names[max_col])->derinc;
 		derinc_sup = derinc_par / (abs(max_val)*Sigma(i_sup));
@@ -499,8 +498,6 @@ void TranSVD::print(ostream &os) const
 	os << "Transformation name = " << name << "; (type=TranSVD)" << endl; 
 	os << "  Singular Values = " << Sigma << endl;
 }
-
-#endif
 
 void TranNormalize::forward(Transformable &data)
 {

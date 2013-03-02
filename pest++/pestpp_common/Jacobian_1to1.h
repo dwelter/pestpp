@@ -3,7 +3,6 @@
 #include<map>
 #include <unordered_map>
 #include <vector>
-#include <lapackpp.h>
 #include <string>
 #include "Transformable.h"
 #include "Jacobian.h"

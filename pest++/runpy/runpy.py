@@ -216,5 +216,7 @@ def test_yamr():
         print obs
         print ''
     pass
-test_serial() 
-#test_yamr()
+
+if __name__=="__main__":
+    #test_serial() 
+    test_yamr()

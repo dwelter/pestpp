@@ -21,6 +21,7 @@
 #include <fstream>
 #include <iostream>
 #include <iomanip>
+#include <Eigen\Dense>
 #include "OutputFileWriter.h"
 #include "Transformable.h"
 #include "Pest.h"
@@ -31,6 +32,7 @@
 #include "ModelRunPP.h"
 
 using namespace std;
+using namespace Eigen;
 
 void OutputFileWriter::write_rei(ofstream &fout, int iter_no, const Observations &obs, const Observations &sim, 
 	const ObjectiveFunc &obj_func, const Parameters &pars)
@@ -121,7 +123,7 @@ void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobia
 	const vector<string> &obs_list = jac.obs_and_reg_list();
 	Parameters pars = jac.get_base_numeric_parameters();
 	QSqrtMatrix q_sqrt( *(obj_func.get_obs_info_ptr()), obs_list, obj_func.get_prior_info_ptr(), 1.0);
-	LaGenMatDouble w_sen_mat = q_sqrt * jac.get_matrix(par_list, obs_list);
+	MatrixXd w_sen_mat = q_sqrt * jac.get_matrix(par_list, obs_list);
 	int n_par = par_list.size();
 	int n_nonzero_weights = q_sqrt.num_nonzero();
 	double nonzero_weights_fac = 0.0;
@@ -131,7 +133,7 @@ void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobia
 		fout << "   " << setw(15) << par_list[i]
 		    << " " << setw(12) << par_grp_info.get_group_name(par_list[i])
 			<< " " << showpoint <<   setw(20) << pars.get_rec(par_list[i])
-			<< " " << showpoint <<   setw(20) << Blas_Norm2(w_sen_mat.col(i)) * nonzero_weights_fac << endl;
+			<< " " << showpoint <<   setw(20) << w_sen_mat.col(i).norm() * nonzero_weights_fac << endl;
 	}
 	fout << endl << endl;
 }

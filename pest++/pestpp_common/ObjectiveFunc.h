@@ -24,7 +24,6 @@
 #include "pest_data_structs.h"
 #include "Pest.h"
 #include "Transformable.h"
-class LaVectorDouble;
 
 using namespace std;
 

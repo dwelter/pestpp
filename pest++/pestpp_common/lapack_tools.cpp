@@ -18,53 +18,47 @@
 */
 #include <vector>
 #include "lapack_tools.h"
-#include <lapackpp.h>
+#include <Eigen\Dense>
 #include "Transformable.h"
 
+using namespace Eigen;
 using namespace std;
 
-LaGenMatDouble diag_mat_mult(const LaVectorDouble &diag, const LaGenMatDouble &rhs)
+MatrixXd diag_mat_mult(const VectorXd &diag, const MatrixXd &rhs)
 {
-	LaGenMatDouble ret_val(rhs);
-	int n_rows = rhs.rows();
-
-	for (int i=0; i < n_rows; ++i) {
-		ret_val.row(i).scale(diag(i));
-	}
+	MatrixXd ret_val = diag.asDiagonal() * rhs;
 	return ret_val;
 }
 
-LaGenMatDouble SVD_inv(const LaGenMatDouble &U, const LaVectorDouble &Sigma, 
-					const LaGenMatDouble &Vt, int max_sing, double eigthresh, int &num_sing)
+MatrixXd SVD_inv(const MatrixXd &U, const VectorXd &Sigma, 
+					const MatrixXd &Vt, int max_sing, double eigthresh, int &num_sing)
 {
-	int u_size = U.rows();
-	int vt_size = Vt.rows();
 	int s_size = Sigma.size();
-	double scale_fac;
 
-	LaGenMatDouble SinvUt(s_size, u_size);
-	LaGenMatDouble ret_val(vt_size, u_size);
+	MatrixXd ret_val;
+	VectorXd sigma_inv_trunc(s_size);
+	sigma_inv_trunc.setZero();
 
 	// Calculate V * S-1 * Ut
-	// First Calculate S-1 * Ut
+	// First Calculate S-1 
 	num_sing = 0;
 	for (int i=0; i < s_size; ++i) {
 		if (Sigma(i) != 0 && i<max_sing && pow(Sigma(i)/Sigma(0), 2.0) > eigthresh) {
-			scale_fac = 1.0 / Sigma(i);
+			sigma_inv_trunc(i) = 1.0 / Sigma(i);
 			++num_sing;
 		}
 		else {
-			scale_fac = 0.0;
+			sigma_inv_trunc(i) = 0.0;
 		}
-		for (int j=0; j < u_size; ++j)
-		SinvUt(i,j) = U(j,i) * scale_fac;
 	}
 	// Calculate V * (S-1 * Ut) 
-	Blas_Mat_Trans_Mat_Mult(Vt(LaIndex(0,s_size-1), LaIndex(0,vt_size-1)), SinvUt, ret_val, 1.0, 0.0);
+	MatrixXd sigma_tmp = MatrixXd::Zero(Vt.rows(), U.cols()); // Vt.rows == V.cols and U.cols == Ut.rows
+	sigma_tmp.block(0,0, num_sing, num_sing) = sigma_inv_trunc.head(num_sing).asDiagonal();
+	ret_val = Vt.transpose() * sigma_tmp * U.transpose();
 	return ret_val;
 }
 
-void get_LaGenMatDouble_row_abs_max(const LaGenMatDouble &m, int row, int *max_col, double *max_val)
+void get_MatrixXd_row_abs_max(const MatrixXd &m, int row, int *max_col, double *max_val)
 {
 	int nrows = m.rows();
 	int ncols = m.cols();
@@ -82,10 +76,10 @@ void get_LaGenMatDouble_row_abs_max(const LaGenMatDouble &m, int row, int *max_c
 	}
 }
 
-LaVectorDouble stlvec2LaVec(const std::vector<double> &stl_vec)
+VectorXd stlvec2LaVec(const std::vector<double> &stl_vec)
 {
 	int len = stl_vec.size();
-	LaVectorDouble la_vec(len);
+	VectorXd la_vec(len);
 	for (int i=0; i<len; ++i)
 	{
 		la_vec(i) = stl_vec[i];
@@ -93,7 +87,7 @@ LaVectorDouble stlvec2LaVec(const std::vector<double> &stl_vec)
 	return la_vec;
 }
 
-void print(const LaGenMatDouble &mat, ostream & fout)
+void print(const MatrixXd &mat, ostream & fout)
 {
 	int nrows = mat.rows();
 	int ncols = mat.cols();
@@ -111,7 +105,7 @@ void print(const LaGenMatDouble &mat, ostream & fout)
 }
 
 void add_LaVectorDouble_2_Transformable(Transformable &tr_data, const vector<string> &keys, 
-										const LaVectorDouble &del_values)
+										const VectorXd &del_values)
 {
 	int i = 0;
 	Transformable::iterator found;

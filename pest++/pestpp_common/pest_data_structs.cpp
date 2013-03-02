@@ -23,7 +23,6 @@
 #include <map>
 #include <sstream>
 #include <list>
-#include <lapackpp.h>
 #include "pest_data_structs.h"
 #include "utilities.h"
 #include "pest_error.h"

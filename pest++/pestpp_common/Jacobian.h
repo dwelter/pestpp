@@ -24,8 +24,8 @@
 #include<vector>
 #include<set>
 #include<list>
+#include<Eigen\Dense>
 #include "Transformable.h"
-#include<lapackpp.h>
 
 class ParamTransformSeq;
 class ParameterInfo;
@@ -47,7 +47,7 @@ public:
 	virtual vector<string> obs_and_reg_list() const;
 	virtual const Parameters &get_base_numeric_parameters() const{return base_numeric_parameters;};
 	virtual const Observations &get_base_sim_observations() const {return base_sim_observations;}
-	virtual LaGenMatDouble get_matrix(const vector<string> & par_name_vec, const vector<string> &obs_names) const;
+	virtual Eigen::MatrixXd get_matrix(const vector<string> & par_name_vec, const vector<string> &obs_names) const;
 	virtual void calculate(ModelRun &model_run, vector<string> numeric_par_names, vector<string> obs_names, 
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
 		RunManagerAbstract &run_manager, const PriorInformation &prior_info, bool phiredswh_flag=false, bool calc_init_obs=true);
@@ -62,7 +62,7 @@ protected:
 	set<string> failed_parameter_names;
 	vector< string>  base_sim_obs_names;  //names of base observations used to calculate the jacobian
 	Observations  base_sim_observations;  //values of base observations used to calculate the jacobian
-	LaGenMatDouble matrix;
+	Eigen::MatrixXd matrix;
 	map<string, map<string, double>> prior_info_sen;
 	FileManager &file_manager;  // filemanger used to get name of jaobian file
 

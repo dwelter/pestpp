@@ -20,16 +20,14 @@
 #ifndef SVDPACKAGE_H_
 #define SVDPACKAGE_H_
 #include <string>
-
-class LaGenMatDouble;
-class LaVectorDouble;
+#include<Eigen/Dense>
 
 
 class SVDPackage
 {
 public:
 	SVDPackage(std::string _descritpion="undefined", int _n_max_sing=1000, double _eign_thres=1.0e-7);
-		virtual void solve_ip(LaGenMatDouble& A, LaVectorDouble &Sigma, LaGenMatDouble& U, LaGenMatDouble& VT ) = 0;
+		virtual void solve_ip(Eigen::MatrixXd & A, Eigen::VectorXd &Sigma, Eigen::MatrixXd & U, Eigen::MatrixXd& VT ) = 0;
 	virtual void set_max_sing(int _n_max_sing);
 	virtual void set_eign_thres(double _eign_thres);
 	virtual ~SVDPackage(void){};
@@ -39,12 +37,12 @@ protected:
 	double eign_thres;
 };
 
-class SVD_LAPACK : public SVDPackage
+class SVD_EIGEN : public SVDPackage
 {
 public:
-	SVD_LAPACK(void): SVDPackage("LAPACK")  {}
-	virtual void solve_ip(LaGenMatDouble& A, LaVectorDouble &Sigma, LaGenMatDouble& U, LaGenMatDouble& VT );
-	virtual ~SVD_LAPACK(void) {}
+	SVD_EIGEN(void): SVDPackage("Eigen JacobiSVD")  {}
+	virtual void solve_ip(Eigen::MatrixXd& A, Eigen::VectorXd &Sigma, Eigen::MatrixXd& U, Eigen::MatrixXd& VT );
+	virtual ~SVD_EIGEN(void) {}
 };
 
 

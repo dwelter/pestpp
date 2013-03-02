@@ -18,7 +18,7 @@
 */
 #include <utility>
 #include <math.h>
-#include <lapackpp.h>
+#include <Eigen\Dense>
 #include <algorithm>
 #include <vector>
 #include "QSqrtMatrix.h"
@@ -28,6 +28,7 @@
 
 
 using namespace std;
+using namespace Eigen;
 
 QSqrtMatrix::QSqrtMatrix(const ObservationInfo &obs_info, const vector<string> &obs_names, 
 	const PriorInformation *prior_info_ptr, double tikhonov_weight)
@@ -71,31 +72,24 @@ QSqrtMatrix::QSqrtMatrix(const ObservationInfo &obs_info, const vector<string> &
 	}
 }
 
-LaGenMatDouble QSqrtMatrix::operator*(const LaGenMatDouble &rhs) const
+MatrixXd QSqrtMatrix::operator*(const MatrixXd &rhs) const
 {
-	LaGenMatDouble ret_val(rhs);
-	LaGenMatDouble row;
+	MatrixXd ret_val(rhs);
 	int n_rows = rhs.rows();
 
 	for (int i=0; i < n_rows; ++i) {
-		ret_val.row(i).scale(weights[i]);
+		ret_val.row(i) *= weights[i];
 	}
 	return ret_val;
 }
 
-LaGenMatDouble  QSqrtMatrix::tran_q_mat_mult(const LaGenMatDouble &lhs) const
+MatrixXd QSqrtMatrix::tran_q_mat_mult(const MatrixXd &lhs) const
 {
-	LaGenMatDouble ret_val(lhs.cols(), lhs.rows());
+	MatrixXd ret_val = lhs.transpose();
 	
-	// Calculate Transpose of LHS
-	for (int i=0, n_rows = lhs.rows(); i < n_rows; ++i) {
-		for (int j=0, n_cols = lhs.cols(); j < n_cols; ++j) {
-			ret_val(j,i) = lhs(i,j);
-		}
-	}
 	// Calculate ret_val * Q
 	for (int j=0, n_cols = ret_val.cols(); j < n_cols; ++j) {
-		ret_val.col(j).scale(pow(weights[j], 2.0));
+		ret_val.col(j) *= pow(weights[j], 2.0);
 	}
 	return ret_val;
 }
@@ -109,15 +103,14 @@ int QSqrtMatrix::num_nonzero() const
 	return num;
 }
 
-LaGenMatDouble operator*(const LaGenMatDouble &lhs, const QSqrtMatrix &rhs)
+MatrixXd operator*(const MatrixXd &lhs, const QSqrtMatrix &rhs)
 {
-	LaGenMatDouble ret_val(lhs);
-	LaGenMatDouble row;
+	MatrixXd ret_val(lhs);
 
 	int n_cols = lhs.cols();
 
 	for (int i=0; i < n_cols; ++i) {
-		ret_val.col(i).scale(rhs.weights[i]);
+		ret_val.col(i) *= rhs.weights[i];
 	}
 	return ret_val;
 }

@@ -21,22 +21,21 @@
 
 #include <vector>
 #include <ostream>
+#include <Eigen\Dense>
 class Transformable;
-class LaGenMatDouble;
-class LaVectorDouble;
 
-LaGenMatDouble diag_mat_mult(const LaVectorDouble &diag, const LaGenMatDouble &rhs);
+Eigen::MatrixXd diag_mat_mult(const Eigen::VectorXd &diag, const Eigen::MatrixXd &rhs);
 
-LaGenMatDouble SVD_inv(const LaGenMatDouble &U, const LaVectorDouble &Sigma, 
-					const LaGenMatDouble &Vt, int max_sing, double eigthresh, int &num_sing);
+Eigen::MatrixXd SVD_inv(const Eigen::MatrixXd &U, const Eigen::VectorXd &Sigma, 
+					const Eigen::MatrixXd &Vt, int max_sing, double eigthresh, int &num_sing);
 
-void get_LaGenMatDouble_row_abs_max(const LaGenMatDouble &m, int row, int *max_col, double *max_val);
+void get_MatrixXd_row_abs_max(const Eigen::MatrixXd &m, int row, int *max_col, double *max_val);
 
-LaVectorDouble stlvec2LaVec(const std::vector<double> &stl_vec);
+Eigen::VectorXd stlvec2LaVec(const std::vector<double> &stl_vec);
 
-void print(const LaGenMatDouble &mat, std::ostream &fout);
+void print(const Eigen::MatrixXd &mat, std::ostream &fout);
 
 void add_LaVectorDouble_2_Transformable(Transformable &tr_data, const std::vector<std::string> &keys, 
-										const LaVectorDouble &del_values);
+										const Eigen::VectorXd &del_values);
 
 #endif /* LAPACK_TOOLS_H_ */

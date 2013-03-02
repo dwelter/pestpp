@@ -18,8 +18,9 @@
 */
 
 #include "SVDPackage.h"
-#include <lapackpp.h>
 #include <string>
+
+using namespace Eigen;
 
 SVDPackage::SVDPackage(std::string _descritpion, int _n_max_sing, double _eign_thres):n_max_sing(_n_max_sing), eign_thres(_eign_thres), description(_descritpion) {}
 
@@ -33,7 +34,10 @@ void SVDPackage::set_eign_thres(double _eign_thres)
 	eign_thres = _eign_thres;
 }
 
-void SVD_LAPACK::solve_ip(LaGenMatDouble& A, LaVectorDouble &Sigma, LaGenMatDouble& U, LaGenMatDouble& VT )
+void SVD_EIGEN::solve_ip(Eigen::MatrixXd& A, Eigen::VectorXd &Sigma, Eigen::MatrixXd& U, Eigen::MatrixXd& Vt )
 {
-	LaSVD_IP(A, Sigma, U, VT );
+	JacobiSVD<MatrixXd> svd_fac(A,  ComputeFullU |  ComputeFullV);
+	Sigma = svd_fac.singularValues();
+	U = svd_fac.matrixU();
+	Vt = svd_fac.matrixV().transpose();
 }

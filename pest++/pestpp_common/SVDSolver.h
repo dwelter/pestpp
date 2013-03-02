@@ -21,6 +21,7 @@
 
 #include <map>
 #include <iomanip>
+#include <Eigen/Dense>
 #include "Transformable.h"
 #include "ParamTransformSeq.h"
 #include "Jacobian.h"
@@ -52,8 +53,8 @@ public:
 protected:
 	class Upgrade {
 	public:
-		LaVectorDouble svd_uvec;
-		LaVectorDouble grad_uvec;
+		Eigen::VectorXd svd_uvec;
+		Eigen::VectorXd grad_uvec;
 		vector<string> par_name_vec;
 		double svd_norm;
 		double grad_norm;
@@ -85,11 +86,11 @@ protected:
 	virtual const string &get_description(){return description;}
 	void iteration_update_and_report(ostream &os, ModelRun &upgrade, TerminationController &termination_ctl); 
 	void param_change_stats(double p_old, double p_new, bool &have_fac, double &fac_change, bool &have_rel, double &rel_change);
-	Upgrade calc_upgrade_vec(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt, const LaVectorDouble &Residuals,
+	Upgrade calc_upgrade_vec(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt, const Eigen::VectorXd &Residuals,
 		const vector<string> &par_name_vec, const vector<string> &obs_name_vec);
 	map<string,double> freeze_parameters(ModelRun &model_run, const Upgrade &upgrade, bool use_descent=true, double scale = 1.0);
 	ModelRun iterative_parameter_freeze(const ModelRun &model_run, Upgrade &upgrade,
-		const QSqrtMatrix &q_sqrt_mat, const LaVectorDouble &residuals_vec, 
+		const QSqrtMatrix &q_sqrt_mat, const Eigen::VectorXd &residuals_vec, 
 		const vector<string> & obs_names_vec, bool use_desent, double scale = 1.0);
 	double add_model_run(RunManagerAbstract &run_manager, const ParamTransformSeq &numeric2model_tran_seq,
 		const Parameters &base_numeric_pars, const Upgrade &upgrade, double rot_fac, double scale);

@@ -20,15 +20,13 @@
 #define SVD_PROPACK_H_
 
 #include "SVDPackage.h"
-
-class LaGenMatDouble;
-class LaVectorDouble;
+#include<Eigen/Dense>
 
 class SVD_PROPACK  : public SVDPackage
 {
 public:
 	SVD_PROPACK(void);
-	void solve_ip(LaGenMatDouble &A, LaVectorDouble &Sigma, LaGenMatDouble &U, LaGenMatDouble &Vt);
+	void solve_ip(Eigen::MatrixXd& A, Eigen::VectorXd &Sigma, Eigen::MatrixXd& U, Eigen::MatrixXd& Vt );
 	void test();
 	~SVD_PROPACK(void);
 private:
