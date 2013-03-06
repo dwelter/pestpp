@@ -20,6 +20,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "yamr", "yamr\yamr.vcxproj", "{AA6E1EC6-2E3D-42EE-B997-2F40814DD2C9}"
 	ProjectSection(ProjectDependencies) = postProject
 		{EB9A0791-5341-4772-84AA-F7089AE7C57D} = {EB9A0791-5341-4772-84AA-F7089AE7C57D}
+		{ED02A2E0-4505-485D-8007-1DF45497AADA} = {ED02A2E0-4505-485D-8007-1DF45497AADA}
 	EndProjectSection
 EndProject
 Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "pest_routines", "pest_routines\pest_routines.vfproj", "{EB9A0791-5341-4772-84AA-F7089AE7C57D}"
@@ -40,6 +41,8 @@ EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "runpy", "runpy\runpy.pyproj", "{9652C9BB-4024-4956-AF2B-AD49F5C90851}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sobol", "sobol\sobol.vcxproj", "{E92C73D5-2FA8-4753-965D-A51821DC394C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "iopp", "iopp\iopp\iopp.vcxproj", "{ED02A2E0-4505-485D-8007-1DF45497AADA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -304,6 +307,30 @@ Global
 		{E92C73D5-2FA8-4753-965D-A51821DC394C}.Release|Win32.Build.0 = Release|Win32
 		{E92C73D5-2FA8-4753-965D-A51821DC394C}.Release|x64.ActiveCfg = Release|x64
 		{E92C73D5-2FA8-4753-965D-A51821DC394C}.Release|x64_old.ActiveCfg = Release|Win32
+		{ED02A2E0-4505-485D-8007-1DF45497AADA}.debug_dll|Any CPU.ActiveCfg = Debug|Win32
+		{ED02A2E0-4505-485D-8007-1DF45497AADA}.debug_dll|Mixed Platforms.ActiveCfg = Debug|Win32
+		{ED02A2E0-4505-485D-8007-1DF45497AADA}.debug_dll|Mixed Platforms.Build.0 = Debug|Win32
+		{ED02A2E0-4505-485D-8007-1DF45497AADA}.debug_dll|Win32.ActiveCfg = Debug|Win32
+		{ED02A2E0-4505-485D-8007-1DF45497AADA}.debug_dll|Win32.Build.0 = Debug|Win32
+		{ED02A2E0-4505-485D-8007-1DF45497AADA}.debug_dll|x64.ActiveCfg = Debug|x64
+		{ED02A2E0-4505-485D-8007-1DF45497AADA}.debug_dll|x64.Build.0 = Debug|x64
+		{ED02A2E0-4505-485D-8007-1DF45497AADA}.debug_dll|x64_old.ActiveCfg = Debug|Win32
+		{ED02A2E0-4505-485D-8007-1DF45497AADA}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{ED02A2E0-4505-485D-8007-1DF45497AADA}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{ED02A2E0-4505-485D-8007-1DF45497AADA}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{ED02A2E0-4505-485D-8007-1DF45497AADA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{ED02A2E0-4505-485D-8007-1DF45497AADA}.Debug|Win32.Build.0 = Debug|Win32
+		{ED02A2E0-4505-485D-8007-1DF45497AADA}.Debug|x64.ActiveCfg = Debug|x64
+		{ED02A2E0-4505-485D-8007-1DF45497AADA}.Debug|x64.Build.0 = Debug|x64
+		{ED02A2E0-4505-485D-8007-1DF45497AADA}.Debug|x64_old.ActiveCfg = Debug|Win32
+		{ED02A2E0-4505-485D-8007-1DF45497AADA}.Release|Any CPU.ActiveCfg = Release|Win32
+		{ED02A2E0-4505-485D-8007-1DF45497AADA}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{ED02A2E0-4505-485D-8007-1DF45497AADA}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{ED02A2E0-4505-485D-8007-1DF45497AADA}.Release|Win32.ActiveCfg = Release|Win32
+		{ED02A2E0-4505-485D-8007-1DF45497AADA}.Release|Win32.Build.0 = Release|Win32
+		{ED02A2E0-4505-485D-8007-1DF45497AADA}.Release|x64.ActiveCfg = Release|x64
+		{ED02A2E0-4505-485D-8007-1DF45497AADA}.Release|x64.Build.0 = Release|x64
+		{ED02A2E0-4505-485D-8007-1DF45497AADA}.Release|x64_old.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

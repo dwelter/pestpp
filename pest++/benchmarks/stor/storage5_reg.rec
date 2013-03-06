@@ -1,0 +1,19 @@
+PEST++ Version 1.2.0
+
+Control file = storage5_reg"
+
+OPTIMISATION ITERATION NUMBER: 1
+  Iteration type: base parameter solution
+  SVD Package: Eigen JacobiSVD
+    Model calls so far : 0
+    Starting phi for this iteration                     Total : 182448
+    Contribution to phi from observation group         "OBS2" : 17086.3
+    Contribution to phi from observation group    "OBSGROUP1" : 77915.2
+    Contribution to phi from observation group    "OBSGROUP3" : 87445.1
+    Contribution to phi from observation group        "REGUL" : 1.55488
+
+      SVD information:
+        number of singular values used: 2/2
+        upgrade vector magnitude (without limits or bounds) = 1.93071
+        angle to direction of greatest descent: 51.1213 deg
+
