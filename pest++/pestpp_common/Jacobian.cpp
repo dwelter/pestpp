@@ -194,10 +194,7 @@ void Jacobian::calculate(ModelRun &init_model_run, vector<string> numeric_par_na
 	// calculate jacobian
 	base_numeric_par_names = numeric_par_names;
 	base_sim_obs_names = obs_names;
-	if(matrix.rows() != base_sim_obs_names.size() && matrix.cols() !=base_numeric_par_names.size())
-	{
-		matrix.resize(base_sim_obs_names.size(), base_numeric_par_names.size());
-	}
+	matrix.resize(base_sim_obs_names.size(), base_numeric_par_names.size());
 	// initialize prior information
 	prior_info_sen.clear();
 

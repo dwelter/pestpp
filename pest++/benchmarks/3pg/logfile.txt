@@ -18,7 +18,7 @@ condition of use.
 
 Removal of this statement violates the spirit in which 3PG(S) was released by
 CSIRO Forestry and Forest Products.
-Reading input parameters from file 'rsgparm1.txt'...
+Reading input parameters from file 'rsgparm4.txt'...
    pFS2                                     constant:      0.750
    pFS20                                    constant:      0.030
    StemConst                                constant:      0.095
@@ -57,7 +57,7 @@ Reading input parameters from file 'rsgparm1.txt'...
    tBB                                      constant:      1.500
    y                                        constant:      0.470
    Density                                  constant:      0.500
-Reading input parameters from file 'rsgsite1.txt'...
+Reading input parameters from file 'rsgsite4.txt'...
    output path: ./
    Lat                                      constant:    -26.000
    FR                                       constant:      1.000

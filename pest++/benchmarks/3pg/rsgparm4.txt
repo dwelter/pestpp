@@ -47,7 +47,7 @@
  
 // Canopy structure and processes
 "Specific leaf area at age 0"                      16.10000000
-"Specific leaf area for mature leaves"             5.700000000
+"Specific leaf area for mature leaves"             5.757000000
 "Age at which specific leaf area = (SLA0+SLA1)/2"         0.92
 "Extinction coefficient for absorption of PAR by canopy"   0.5
 "Age at canopy cover"                                        1

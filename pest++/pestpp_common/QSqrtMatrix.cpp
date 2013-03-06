@@ -83,18 +83,6 @@ MatrixXd QSqrtMatrix::operator*(const MatrixXd &rhs) const
 	return ret_val;
 }
 
-MatrixXd QSqrtMatrix::tran_q_mat_mult(const MatrixXd &lhs) const
-{
-	MatrixXd ret_val = lhs.transpose();
-	
-	// Calculate ret_val * Q
-	for (int j=0, n_cols = ret_val.cols(); j < n_cols; ++j) {
-		ret_val.col(j) *= pow(weights[j], 2.0);
-	}
-	return ret_val;
-}
-
-
 bool ne_zero(double v) {return v!=0.0;}
 
 int QSqrtMatrix::num_nonzero() const
@@ -115,6 +103,11 @@ MatrixXd operator*(const MatrixXd &lhs, const QSqrtMatrix &rhs)
 	return ret_val;
 }
 
+const VectorXd QSqrtMatrix::get_diag_vector() const
+{
+	Map<const VectorXd> vec(&weights[0], weights.size());
+	return vec;
+}
 
 
 QSqrtMatrix::~QSqrtMatrix(void)

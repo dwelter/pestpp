@@ -166,7 +166,7 @@ SVDSolver::Upgrade SVDSolver::calc_upgrade_vec(const Jacobian &jacobian, const Q
 	// Calculate svd and greatest descent unit vectors
 	upgrade.svd_norm = upgrade.svd_uvec.norm();
 	if (upgrade.svd_norm != 0) upgrade.svd_uvec *= 1.0 /upgrade.svd_norm;
-	upgrade.grad_uvec = Q_sqrt.tran_q_mat_mult(jac) * Residuals;
+	upgrade.grad_uvec = jac.transpose() * Q_sqrt * Q_sqrt * Residuals;
 	upgrade.grad_norm = upgrade.grad_uvec.norm();
 	if (upgrade.grad_norm != 0) upgrade.grad_uvec *= 1.0 /upgrade.grad_norm;
 	return upgrade;
@@ -262,6 +262,12 @@ double SVDSolver::add_model_run(RunManagerAbstract &run_manager, const ParamTran
 		upgrade_vec *= (1.0 / tmp_norm);
 	}
 	rot_angle = acos(min(1.0, upgrade.svd_uvec.dot(upgrade_vec))) * 180.0 / PI;
+	//VectorXd gamma = jac * upgrade.svd_uvec;
+	//const VectorXd &w = q_sqrt.get_diag_vector();
+	//double beta_top = (residuals.array() * w.array().square() * gamma.array()).sum();
+	//double beta_bot = ( (w.array() * gamma.array()).square() ).sum();
+	//double beta = beta_top/beta_bot;
+	//upgrade_vec *=beta;
 	upgrade_vec *= upgrade.svd_norm*scale;
 	
 	// update numeric parameters in upgrade_run and test them
@@ -327,7 +333,8 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	}
 
 	Upgrade upgrade;
-	upgrade = calc_upgrade_vec(jacobian, Q_sqrt, residuals_vec, base_run.get_numeric_pars().get_keys(), obs_names_vec);
+	vector<string> par_name_vec = base_run.get_numeric_pars().get_keys();
+	upgrade = calc_upgrade_vec(jacobian, Q_sqrt, residuals_vec, par_name_vec, obs_names_vec);
 	ModelRun upgrade_run = iterative_parameter_freeze(base_run, upgrade, Q_sqrt, residuals_vec, obs_names_vec, use_desent);
 	ModelRun best_upgrade_run(base_run);
 
@@ -343,29 +350,17 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	Parameters::iterator e;
 
 	//Build model runs
-	int n_runs = 7;
+	run_manager.reinitialize();
 	double rot_angle;
 	vector<double> rot_fac_vec;
 	vector<double> rot_angle_vec;
-	run_manager.reinitialize();
-	 
-	//Make two runs with rotation factor of zero  but scaled down
-	//ModelRun upgrade_run_scale(base_run);
-	//Upgrade upgrade_scale;
-	// Add scaled run
-	//double rot_angle;
-	//upgrade_scale = calc_upgrade_vec(jacobian, Q_sqrt, residuals_vec, base_run.get_numeric_pars().get_keys(), obs_names_vec);
-	//upgrade_run_scale = iterative_parameter_freeze(base_run, upgrade_scale, Q_sqrt, residuals_vec, obs_names_vec, use_desent, 1.1);
-	//rot_angle = add_model_run(run_manager, upgrade_run_scale.get_par_tran(), base_run.get_numeric_pars(),
-	//		upgrade, 0.0, 1.1);
-	//rot_angle_vec.push_back(rot_angle);
-	//rot_fac_vec.push_back(0.0);
 
-	double tmp_rot_fac[] =  {0.0, 0.01, 0.1, 0.2, 0.5, 0.7, 1.0};
-	for(int i=0; i<7; ++i) {
-		rot_fac_vec.push_back(tmp_rot_fac[i]);
+	const int n_rot_fac = 7;
+	for(int i=0; i<n_rot_fac; ++i) {
+		double tmp_rot_fac = i / double(n_rot_fac-1);
+		rot_fac_vec.push_back(tmp_rot_fac);
 		rot_angle = add_model_run(run_manager, upgrade_run.get_par_tran(), 
-		base_run.get_numeric_pars(),upgrade, rot_fac_vec[i], 1.0);
+		base_run.get_numeric_pars(),upgrade, rot_fac_vec.back(), 1.0);
 		rot_angle_vec.push_back(rot_angle);
 	}
 	// process model runs
@@ -373,7 +368,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	run_manager.run();
 	cout << endl;
 	bool best_run_updated_flag = false;
-	for(int i=0; i<n_runs; ++i) {
+	for(int i=0; i<n_rot_fac; ++i) {
 		double rot_fac = rot_fac_vec[i];
 		ModelRun upgrade_run(base_run);
         Parameters tmp_pars;

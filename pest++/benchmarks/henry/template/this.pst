@@ -4,7 +4,7 @@ restart estimation
    601  75  2  601  6  
       2      5     single  point  1   0   0
  10.0  2.0  0.3  0.03  10  999  lamforgive
- 10.0  10.0  0.001
+ 2.0  2.0  0.001
  0.1  noaui
  20 0.005  4  4  0.0001  4
  1  1  1
@@ -1312,4 +1312,8 @@ kr10c57       1.0 * log(kr10c57) =   2.301030      1.0 regul_p
 kr10c58       1.0 * log(kr10c58) =   2.301030      1.0 regul_p
 kr10c59       1.0 * log(kr10c59) =   2.301030      1.0 regul_p
 kr10c60       1.0 * log(kr10c60) =   2.301030      1.0 regul_p
+++# PEST++ optional input
+++ super_nmax(75) super_eigthres(1.0e-7)
+++ n_iter_base(1) n_iter_super(3)
 ++# SVD_PACK(PROPACK)
+++# AUTO_NORM(4)

@@ -37,7 +37,7 @@ public:
 	QSqrtMatrix(const ObservationInfo &obs_info, const vector<string> &obs, const PriorInformation *prior_info_ptr, 
 	double tikhonov_weight);
 	Eigen::MatrixXd operator*(const Eigen::MatrixXd &rhs) const;
-	Eigen::MatrixXd tran_q_mat_mult(const Eigen::MatrixXd &lhs) const;
+	const Eigen::VectorXd get_diag_vector() const;
 	int num_nonzero() const;
 	~QSqrtMatrix(void);
 

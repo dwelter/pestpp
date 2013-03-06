@@ -1,5 +1,5 @@
 REM set variables used in script
-set nslaves=6
+set nslaves=4
 set pestpp_file=this
 
 REM create directories for PEST++ and the slaves to run in
@@ -9,7 +9,7 @@ FOR /L %%i IN (1,1,%nslaves%) DO (
 )
 
 REM start YAMR master
-start /D"%CD%\master" .\pest++ %pestpp_file% /H :4005
+REM start /D"%CD%\master" .\pest++ %pestpp_file% /H :4005
 
 REM start YAMR slaves
 FOR /L %%i IN (1,1,%nslaves%) DO (

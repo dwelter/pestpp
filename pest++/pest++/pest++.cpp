@@ -197,11 +197,6 @@ int main(int argc, char* argv[])
 			pest_scenario.get_control_info().nrelpar);
 
 	Parameters cur_ctl_parameters = pest_scenario.get_ctl_parameters();
-	//strat junk
-	//char *serial = cur_ctl_parameters.serialize();
-	//Parameters junk;
-	//junk.unserialize(serial);
-	//end junk
 	//Allocates Space for Run Manager.  This initializes the model parameter names and observations names.
 	//Niether of these will change over the course of the simulation
 	run_manager_ptr->initialize(base_trans_seq.ctl2model_cp(cur_ctl_parameters), pest_scenario.get_ctl_observations());
