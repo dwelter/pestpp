@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
 		commandline.append(" ");
 		commandline.append(argv[i]);
 	}
-	string version = "1.2.0";
+	string version = "2.0.0 beta";
 	string complete_path;
 	enum class RunManagerType {SERIAL, YAMR, GENIE};
 	string socket_str;

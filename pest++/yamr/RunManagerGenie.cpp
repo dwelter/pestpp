@@ -89,27 +89,20 @@ void RunManagerGenie::run()
 	 }
 
 	std::copy(par_name_vec.begin(), par_name_vec.end(),std::ostream_iterator<std::string>(apar,"\n"));
-	apar.str(lower_cp(apar.str()));
 	std::copy(obs_name_vec.begin(), obs_name_vec.end(),std::ostream_iterator<std::string>(aobs,"\n"));
-	aobs.str(lower_cp(aobs.str()));
 	std::copy(comline_vec.begin(), comline_vec.end(),std::ostream_iterator<std::string>(execnames,"\n"));
-	//execnames.str(lower_cp(execnames.str()));
 	std::copy(tplfile_vec.begin(), tplfile_vec.end(),std::ostream_iterator<std::string>(tplfle,"\n"));
-	//tplfle.str(lower_cp(tplfle.str()));
 	std::copy(inpfile_vec.begin(), inpfile_vec.end(),std::ostream_iterator<std::string>(infle,"\n"));
-	//infle.str(lower_cp(infle.str()));
 	std::copy(insfile_vec.begin(), insfile_vec.end(),std::ostream_iterator<std::string>(insfle,"\n"));
-	//insfle.str(lower_cp(insfle.str()));
 	std::copy(outfile_vec.begin(), outfile_vec.end(),std::ostream_iterator<std::string>(outfle,"\n"));
-	//outfle.str(lower_cp(outfle.str()));
 
 	failed_runs.clear();  //not implemented yet
-	//GENIE_INTERFACE(&nruns, &nexec, String2CharPtr(execnames.str()).get_char_ptr(), &npar, &nobs,
-	//	String2CharPtr(apar.str()).get_char_ptr(), String2CharPtr(aobs.str()).get_char_ptr(),
-        //            &par_val[0], &obs_val[0], &ntpl, &nins, String2CharPtr(tplfle.str()).get_char_ptr(),
-        //            String2CharPtr(infle.str()).get_char_ptr(), String2CharPtr(insfle.str()).get_char_ptr(),
-	//				String2CharPtr(outfle.str()).get_char_ptr(),
-        //            String2CharPtr(host).get_char_ptr(), String2CharPtr(id).get_char_ptr(), &ikill);
+	GENIE_INTERFACE(&nruns, &nexec, String2CharPtr(execnames.str()).get_char_ptr(), &npar, &nobs,
+	String2CharPtr(apar.str()).get_char_ptr(), String2CharPtr(aobs.str()).get_char_ptr(),
+                    &par_val[0], &obs_val[0], &ntpl, &nins, String2CharPtr(tplfle.str()).get_char_ptr(),
+                    String2CharPtr(infle.str()).get_char_ptr(), String2CharPtr(insfle.str()).get_char_ptr(),
+					String2CharPtr(outfle.str()).get_char_ptr(),
+                    String2CharPtr(host).get_char_ptr(), String2CharPtr(id).get_char_ptr(), &ikill);
 	total_runs += nruns;
     Parameters pars;
     Observations obs;
