@@ -241,11 +241,23 @@ int main(int argc, char* argv[])
 	for (int i_iter = 0; i_iter<pest_scenario.get_control_info().noptmax; ++i_iter)
 	{
 		ModelRun *cur_run;
-		cur_run = &(base_svd.solve(*run_manager_ptr, termination_ctl, n_base_iter, cur_ctl_parameters, optimum_run));
-		cur_ctl_parameters = base_svd.cur_model_run().get_ctl_pars();
-		if(termination_ctl.check_last_iteration()) break;
+		try
+		{
+			cur_run = &(base_svd.solve(*run_manager_ptr, termination_ctl, n_base_iter, cur_ctl_parameters, optimum_run));
+			cur_ctl_parameters = base_svd.cur_model_run().get_ctl_pars();
+			if(termination_ctl.check_last_iteration()) break;
+		}
+		catch(exception &e)
+		{
+			cout << endl << endl;;
+			cout << e.what() << endl;
+			fout_rec << endl << endl;
+			fout_rec << e.what() << endl;
+			cout << "FATAL ERROR: base parameter run failed." << endl;
+			fout_rec << "FATAL ERROR: base parameter run failed." << endl;
+			throw(e);
+		}
 		// Build Super Parameter or SVDA problem
-
 	try
 		{
 			const vector<string> &nonregul_obs = pest_scenario.get_nonregul_obs();
@@ -260,8 +272,10 @@ int main(int argc, char* argv[])
 			cur_run = &(super_svd.solve(*run_manager_ptr, termination_ctl, n_super_iter, cur_ctl_parameters, optimum_run));
 			cur_ctl_parameters = super_svd.cur_model_run().get_ctl_pars();
 		}
-		catch(...)
+		catch(exception &e)
 		{
+			cout << e.what() << endl;
+			fout_rec << e.what() << endl;
 			cout << "WARNING: super parameter run failed.  Switching to base parameters" << endl;
 			fout_rec << "WARNING: super parameter run failed.  Switching to base parameters" << endl;
 		}
