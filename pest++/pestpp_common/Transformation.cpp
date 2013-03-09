@@ -430,6 +430,10 @@ void TranSVD::update(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt, const 
 		super_parameter_names.push_back(sup_name.str());
 	}
 	init_base_numeric_parameters = base_numeric_pars;
+	if (n_sing_val <= 0 )
+	{
+		throw PestError("TranSVD::update() - super parameter transformation returned 0 super parameters.  Jacobian must equal 0.");
+	}
 }
 
 void TranSVD::reverse(Transformable &data)

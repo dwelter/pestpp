@@ -276,8 +276,8 @@ int main(int argc, char* argv[])
 		{
 			cout << e.what() << endl;
 			fout_rec << e.what() << endl;
-			cout << "WARNING: super parameter run failed.  Switching to base parameters" << endl;
-			fout_rec << "WARNING: super parameter run failed.  Switching to base parameters" << endl;
+			cout << "WARNING: super parameter run failed.  Switching to base parameters" << endl << endl;
+			fout_rec << "WARNING: super parameter run failed.  Switching to base parameters" << endl << endl;
 		}
 	}
 	cout << endl;
