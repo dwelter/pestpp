@@ -1,3 +1,39 @@
                     PARAMETER SENSITIVITIES: CASE storage5_reg
 
 
+ OPTIMISATION ITERATION NO. 1   ----->
+ Parameter name    Group        Current value        Sensitivity
+   COND            COND         -2.30102999566       17.4590545474       
+   SCOEFF          SCOEFF       -1.30102999566       3.33236682411       
+
+
+ OPTIMISATION ITERATION NO. 2   ----->
+ Parameter name    Group        Current value        Sensitivity
+   COND            COND         -2.77815125038       42.5633434492       
+   SCOEFF          SCOEFF       -0.840198368475      10.2108594462       
+
+
+ OPTIMISATION ITERATION NO. 3   ----->
+ Parameter name    Group        Current value        Sensitivity
+   COND            COND         -3.04510400402       65.0226973744       
+   SCOEFF          SCOEFF       -0.603429052342      19.6650563194       
+
+
+ OPTIMISATION ITERATION NO. 4   ----->
+ Parameter name    Group        Current value        Sensitivity
+   COND            COND         -3.00070374183       62.0031078922       
+   SCOEFF          SCOEFF       -0.683970918698      16.7697420597       
+
+
+ OPTIMISATION ITERATION NO. 5   ----->
+ Parameter name    Group        Current value        Sensitivity
+   COND            COND         -2.99995488263       62.3400487977       
+   SCOEFF          SCOEFF       -0.699157442761      16.6336361799       
+
+
+ OPTIMISATION ITERATION NO. 6   ----->
+ Parameter name    Group        Current value        Sensitivity
+   COND            COND         -2.99999405316       62.5991420566       
+   SCOEFF          SCOEFF       -0.699197800896      16.6197439428       
+
+
