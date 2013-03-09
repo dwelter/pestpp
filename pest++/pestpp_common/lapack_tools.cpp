@@ -18,7 +18,7 @@
 */
 #include <vector>
 #include "lapack_tools.h"
-#include <Eigen\Dense>
+#include <Eigen/Dense>
 #include "Transformable.h"
 
 using namespace Eigen;

@@ -24,7 +24,7 @@
 #include<vector>
 #include<set>
 #include<list>
-#include<Eigen\Dense>
+#include<Eigen/Dense>
 #include "Transformable.h"
 
 class ParamTransformSeq;

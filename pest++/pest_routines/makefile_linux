@@ -1,4 +1,4 @@
-CC := g++
+CXX := g++
 FC := gfortran
 CFLAGS := -g -c -std=c++0x 
 FFLAGS := -g -c -cpp
@@ -13,7 +13,10 @@ $(OUT): $(OBJECTS)
 	ar rcs $(OUT) $(OBJECTS)
 
 %.o: %.cpp
-	$(CC) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@
+	$(CXX) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@
 
 %.o: %.for
 	$(FC) $(FFLAGS) $(INCLUDES) $< -c $(input) -o $@
+
+clean:
+	rm $(OBJECTS) $(OUT)

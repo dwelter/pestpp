@@ -22,7 +22,7 @@
 #include <algorithm>
 #include <math.h>
 #include <sstream>
-#include <Eigen\Dense>
+#include <Eigen/Dense>
 #include <cassert>
 #include <iostream>
 #include "Transformation.h"

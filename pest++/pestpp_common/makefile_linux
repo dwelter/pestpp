@@ -1,8 +1,8 @@
-CC := g++
+CXX := g++
 FC := gfortran
 CFLAGS := -g -c -std=c++0x 
 FFLAGS := -g -c -cpp
-INCLUDES := -I ../Eigen -I ../yamr -I ../pestpp_common -I ../lapackpp-2.5.4_linux/include
+INCLUDES := -I ../ -I ../yamr -I ../pestpp_common
 
 LIB = libpestpp_com.a
 OBJECTS	:= FileManager.o \
@@ -29,7 +29,10 @@ $(LIB): $(OBJECTS)
 	ar rcs $(LIB) $(OBJECTS)
 
 %.o: %.cpp
-	$(CC) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@
+	$(CXX) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@
 
 %.o: %.for
 	$(FC) $(FFLAGS) $(INCLUDES) $< -c $(input) -o $@
+
+clean:
+	rm $(OBJECTS) $(OUT)

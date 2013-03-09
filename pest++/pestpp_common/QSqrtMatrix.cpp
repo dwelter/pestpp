@@ -18,7 +18,7 @@
 */
 #include <utility>
 #include <math.h>
-#include <Eigen\Dense>
+#include <Eigen/Dense>
 #include <algorithm>
 #include <vector>
 #include "QSqrtMatrix.h"

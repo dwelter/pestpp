@@ -21,7 +21,7 @@
 
 #include <vector>
 #include <ostream>
-#include <Eigen\Dense>
+#include <Eigen/Dense>
 class Transformable;
 
 Eigen::MatrixXd diag_mat_mult(const Eigen::VectorXd &diag, const Eigen::MatrixXd &rhs);

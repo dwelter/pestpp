@@ -19,6 +19,7 @@
 
 #include <string>
 #include <sstream>
+#include <cmath>
 #include "system_variables.h"
 
 #ifdef OS_WIN
@@ -31,9 +32,14 @@
 #endif
 using namespace std;
 
+#ifdef OS_WIN
 const std::string OperSys::DIR_SEP = "\\";
+const std::string OperSys::COMMAND_LINE_APPEND = " ; ";
+#endif
+#ifdef OS_LINUX
+const std::string OperSys::DIR_SEP = "/";
 const std::string OperSys::COMMAND_LINE_APPEND = " & ";
-
+#endif
 
 void OperSys::string2pathname(string &s)
 {
@@ -93,6 +99,12 @@ char* OperSys::gets_s(char *str, size_t len)
 
 bool OperSys::double_is_invalid(double x)
 {
-	bool test = (_isnan(x)!=0 || _finite(x) == 0);
-	return test;
+#ifdef OS_WIN
+   bool test = (_isnan(x)!=0 || _finite(x) == 0);
+   return test;
+#endif
+#ifdef OS_LINUX
+   bool test = (std::isnan(x) || std::isinf(x));
+  return test;
+#endif
 }

@@ -21,7 +21,7 @@
 #include <fstream>
 #include <iostream>
 #include <iomanip>
-#include <Eigen\Dense>
+#include <Eigen/Dense>
 #include "OutputFileWriter.h"
 #include "Transformable.h"
 #include "Pest.h"

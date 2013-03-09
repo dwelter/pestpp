@@ -1,17 +1,22 @@
-CC := g++
+CXX := g++
 FC := gfortran
 CFLAGS := -g -c -std=c++0x 
 FFLAGS := -g -c -cpp
-INCLUDES := -I ../../Eigen -I ../../yam -I ../../pest++/pestpp_common -I ../../lapackpp-2.5.4/include -I ../pestpp_common
+INCLUDES := -I ../ -I ../yamr -I ../pestpp_common
 
-OUT = pestpp
+LIBS :=  -L /usr/lib64 -L ../pest_routines -L ../yamr -L ../pestpp_common -L ../pestpp_common -L ../propack -l runmanager  -lpestpp_com -l pest_routines -l propack -llapack -lblas -lgfortran -lm
+
+EXE = pestpp
 OBJECTS	:= pest++.o
  
-$(OUT): $(OBJECTS)
-	$(CC) $(LIB) $(OBJECTS)
+$(EXE): $(OBJECTS)
+	$(CXX) -static $(OBJECTS) $(LIBS) -o $(EXE)
 
 %.o: %.cpp
-	$(CC) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@
+	$(CXX) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@
 
 %.o: %.for
 	$(FC) $(FFLAGS) $(INCLUDES) $< -c $(input) -o $@
+
+clean:
+	rm $(OBJECTS) $(OUT)

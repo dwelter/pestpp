@@ -20,7 +20,7 @@
 #define QSQRT_MATRIX_H_
 
 #include <vector>
-#include <Eigen\Dense>
+#include <Eigen/Dense>
 
 
 class ObservationInfo;
