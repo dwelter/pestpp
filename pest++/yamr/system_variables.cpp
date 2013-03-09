@@ -82,7 +82,7 @@ void OperSys::chdir(const char *str)
       _chdir(str);
    #endif
    #ifdef OS_LINUX
-      chdir(str);
+      //chdir(str);
    #endif
 }
 

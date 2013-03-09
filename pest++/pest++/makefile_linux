@@ -4,13 +4,13 @@ CFLAGS := -g -c -std=c++0x
 FFLAGS := -g -c -cpp
 INCLUDES := -I ../ -I ../yamr -I ../pestpp_common
 
-LIBS :=  -L /usr/lib64 -L ../pest_routines -L ../yamr -L ../pestpp_common -L ../pestpp_common -L ../propack -l runmanager  -lpestpp_com -l pest_routines -l propack -llapack -lblas -lgfortran -lm
+LIBS :=  -L /usr/lib64 -L ../pest_routines -L ../yamr -L ../pestpp_common -L ../pestpp_common -L ../propack -l runmanager  -lpestpp_com -l pest_routines -l propack -llapack  -lblas -lgfortran -lm
 
 EXE = pestpp
 OBJECTS	:= pest++.o
  
 $(EXE): $(OBJECTS)
-	$(CXX) -static $(OBJECTS) $(LIBS) -o $(EXE)
+	$(CXX) $(OBJECTS) $(LIBS) -o $(EXE)
 
 %.o: %.cpp
 	$(CXX) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@

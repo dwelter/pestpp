@@ -1,0 +1,16 @@
+CFLAGS := -g -c -std=c++0x 
+FFLAGS := -g -c -cpp
+
+all:
+	make -C yamr -f makefile_linux librunmanager.a
+	make -C propack -f makefile_linux libpropack.a
+	make -C pest_routines -f makefile_linux libpest_routines.a
+	make -C pestpp_common -f makefile_linux libpestpp_com.a
+	make -C pest++ -f makefile_linux pestpp
+
+clean:
+	make -C yamr -f makefile_linux clean
+	make -C propack -f makefile_linux clean
+	make -C pest_routines -f makefile_linux clean
+	make -C pestpp_common -f makefile_linux clean
+	make -C pest++ -f makefile_linux clean
