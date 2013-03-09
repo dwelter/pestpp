@@ -1,5 +1,5 @@
 * parameter data
-mult1 = 1.0100000E+00
+mult1 = 1.00000000000
 flux1 = 4.500000e-01 * mult1
 * template and model input files
 wel_coarse.tpl henry_coarse.wel

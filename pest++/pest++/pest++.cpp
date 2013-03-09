@@ -103,7 +103,6 @@ int main(int argc, char* argv[])
 	}
 
 
-
 	string filename = get_filename(complete_path);
 	filename = remove_file_ext(filename); // remove .pst extension
 	string pathname = get_pathname(complete_path);
