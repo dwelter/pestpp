@@ -1,7 +1,7 @@
 REM set variables used in script
 set nslaves=3
 set gman_ip=127.0.0.1
-set gman_port=24772
+set gman_port=4005
 set pestpp_file=storage5
 
 REM create directories for PEST++ and the gslave to run in
@@ -20,4 +20,4 @@ FOR /L %%i IN (1,1,%nslaves%) DO (
 )
 
 REM start PEST++
-start /D"%CD%\master" pest++ %pestpp_file%
+REM start /D"%CD%\master" pest++ %pestpp_file% /G localhost:gman_port

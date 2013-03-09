@@ -51,6 +51,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="config_os.h" />
     <ClInclude Include="network_package.h" />
     <ClInclude Include="network_wrapper.h" />
     <ClInclude Include="pest_error.h" />

@@ -19,10 +19,8 @@
 #ifndef SYSTEM_VARIABLES_H_
 #define SYSTEM_VARIABLES_H_
 
+#include "config_os.h"
 #include <string>
-
-#define OS_WIN
-//#define OS_LINUX
 
 class OperSys
 {

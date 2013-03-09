@@ -1,8 +1,8 @@
 #ifndef NETWORK_H_
 #define NETWORK_H_
 
-//#define OS_LINUX
-#define OS_WIN
+#include "config_os.h"
+
 //for windows
 #ifdef OS_WIN
   #include <winsock2.h>
