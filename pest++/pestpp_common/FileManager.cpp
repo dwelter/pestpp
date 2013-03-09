@@ -170,6 +170,7 @@ void FileManager::close_file(const string &tag)
 		if (it != ofile_map.end() && it->second->is_open())
 		{
 			it->second->close();
+			delete it->second;
 			ofile_map.erase(it);
 		}
 	}
@@ -179,6 +180,7 @@ void FileManager::close_file(const string &tag)
 		if (it != ifile_map.end() && it->second->is_open())
 		{
 			it->second->close();
+			delete it->second;
 			ifile_map.erase(it);
 		}
 	}
@@ -188,6 +190,7 @@ void FileManager::close_file(const string &tag)
 		if (it != iofile_map.end() && it->second->is_open())
 		{
 			it->second->close();
+			delete it->second;
 			iofile_map.erase(it);
 		
 		}

@@ -288,6 +288,7 @@ int main(int argc, char* argv[])
 	fout_rec.close();
 	// clean up
 	delete base_jacobian_ptr;
+	delete super_jacobian_ptr;
 	delete run_manager_ptr;
 	cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
 	char buf[256];
