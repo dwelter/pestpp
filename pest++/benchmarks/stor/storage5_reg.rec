@@ -18,11 +18,9 @@ OPTIMISATION ITERATION NUMBER: 1
         angle to direction of greatest descent: 51.1206 deg
 
       Rotation Factor = 0.00 (0.00 deg);  phi = 73544.3 (40.31% starting phi)
-      Rotation Factor = 0.17 (7.88 deg);  phi = 40782.2 (22.35% starting phi)
-      Rotation Factor = 0.33 (16.50 deg);  phi = 41593.2 (22.80% starting phi)
+      Rotation Factor = 0.25 (12.11 deg);  phi = 41025.7 (22.49% starting phi)
       Rotation Factor = 0.50 (25.56 deg);  phi = 43367.4 (23.77% starting phi)
-      Rotation Factor = 0.67 (34.62 deg);  phi = 45625.1 (25.01% starting phi)
-      Rotation Factor = 0.83 (43.24 deg);  phi = 48068.1 (26.35% starting phi)
+      Rotation Factor = 0.75 (39.01 deg);  phi = 46837.4 (25.67% starting phi)
       Rotation Factor = 1.00 (51.12 deg);  phi = 50507.5 (27.68% starting phi)
 
     Parameter Upgrades (Control File Parameters)
@@ -30,7 +28,7 @@ OPTIMISATION ITERATION NUMBER: 1
         Name         Value         Value         Change        Change
     ------------  ------------  ------------  ------------  ------------
     COND            0.00166667         0.005             3      0.666667
-    SCOEFF            0.144478          0.05       2.88956      -1.88956
+    SCOEFF            0.124755          0.05        2.4951       -1.4951
     RECHARGE               0.1           0.1             1             0
 
     Parameter Upgrades (Transformed Numeric Parameters)
@@ -38,164 +36,156 @@ OPTIMISATION ITERATION NUMBER: 1
         Name         Value         Value         Change        Change
     ------------  ------------  ------------  ------------  ------------
     COND              -2.77815      -2.30103       1.20735     -0.207351
-    SCOEFF           -0.840198      -1.30103       1.54848      0.354205
+    SCOEFF           -0.903942      -1.30103       1.43929      0.305211
 
    Maximum changes in transformed numeric parameters:
-     Maximum relative change = 0.354205   [SCOEFF]
-     Maximum factor change = 1.54848   [SCOEFF]
+     Maximum relative change = 0.305211   [SCOEFF]
+     Maximum factor change = 1.43929   [SCOEFF]
 
 
 OPTIMISATION ITERATION NUMBER: 2
-  Iteration type: base parameter solution
+  Iteration type: super parameter solution
   SVD Package: Eigen JacobiSVD
-    Model calls so far : 10
-    Starting phi for this iteration                     Total : 40782.2
-    Contribution to phi from observation group         "OBS2" : 2376.07
-    Contribution to phi from observation group    "OBSGROUP1" : 19299.7
-    Contribution to phi from observation group    "OBSGROUP3" : 19104.5
-    Contribution to phi from observation group        "REGUL" : 1.94211
+    Model calls so far : 8
+    Starting phi for this iteration                     Total : 41025.7
+    Contribution to phi from observation group         "OBS2" : 2287.13
+    Contribution to phi from observation group    "OBSGROUP1" : 19318.9
+    Contribution to phi from observation group    "OBSGROUP3" : 19417.7
+    Contribution to phi from observation group        "REGUL" : 1.95615
 
       SVD information:
         number of singular values used: 2/2
-        upgrade vector magnitude (without limits or bounds) = 0.356824
-        angle to direction of greatest descent: 41.4604 deg
+        upgrade vector magnitude (without limits or bounds) = 0.408876
+        angle to direction of greatest descent: 48.4599 deg
 
-      Rotation Factor = 0.00 (0.00 deg);  phi = 2529.03 (6.20% starting phi)
-      Rotation Factor = 0.17 (6.57 deg);  phi = 6188.1 (15.17% starting phi)
-      Rotation Factor = 0.33 (13.54 deg);  phi = 12307.6 (30.18% starting phi)
-      Rotation Factor = 0.50 (20.73 deg);  phi = 20159.6 (49.43% starting phi)
-      Rotation Factor = 0.67 (27.92 deg);  phi = 28394.4 (69.62% starting phi)
-      Rotation Factor = 0.83 (34.89 deg);  phi = 35496.6 (87.04% starting phi)
-      Rotation Factor = 1.00 (41.46 deg);  phi = 40374.2 (99.00% starting phi)
+      Rotation Factor = 0.00 (0.00 deg);  phi = 2352.29 (5.73% starting phi)
+      Rotation Factor = 0.25 (11.55 deg);  phi = 13573 (33.08% starting phi)
+      Rotation Factor = 0.50 (24.23 deg);  phi = 38187.6 (93.08% starting phi)
+      Rotation Factor = 0.75 (36.91 deg);  phi = 67574.2 (164.71% starting phi)
+      Rotation Factor = 1.00 (48.46 deg);  phi = 88074.8 (214.68% starting phi)
 
     Parameter Upgrades (Control File Parameters)
      Parameter      Current       Previous       Factor       Relative
         Name         Value         Value         Change        Change
     ------------  ------------  ------------  ------------  ------------
-    COND           0.000901355    0.00166667       1.84907      0.459187
-    SCOEFF            0.249213      0.144478       1.72492     -0.724921
+    COND           0.000907805    0.00166667       1.83593      0.455317
+    SCOEFF            0.256096      0.124755       2.05279      -1.05279
     RECHARGE               0.1           0.1             1             0
 
     Parameter Upgrades (Transformed Numeric Parameters)
      Parameter      Current       Previous       Factor       Relative
         Name         Value         Value         Change        Change
     ------------  ------------  ------------  ------------  ------------
-    COND               -3.0451      -2.77815       1.09609    -0.0960901
-    SCOEFF           -0.603429     -0.840198       1.39237      0.281802
+    sup_1              9.74722            10       1.02593     0.0252781
+    sup_2              10.3214            10       1.03214    -0.0321374
 
    Maximum changes in transformed numeric parameters:
-     Maximum relative change = 0.281802   [SCOEFF]
-     Maximum factor change = 1.39237   [SCOEFF]
+     Maximum relative change = -0.0321374   [sup_2]
+     Maximum factor change = 1.03214   [sup_2]
 
 
 OPTIMISATION ITERATION NUMBER: 3
-  Iteration type: base parameter solution
+  Iteration type: super parameter solution
   SVD Package: Eigen JacobiSVD
-    Model calls so far : 19
-    Starting phi for this iteration                     Total : 2529.03
-    Contribution to phi from observation group         "OBS2" : 343.331
-    Contribution to phi from observation group    "OBSGROUP1" : 1457.57
-    Contribution to phi from observation group    "OBSGROUP3" : 725.805
-    Contribution to phi from observation group        "REGUL" : 2.32413
+    Model calls so far : 16
+    Starting phi for this iteration                     Total : 2352.29
+    Contribution to phi from observation group         "OBS2" : 403.742
+    Contribution to phi from observation group    "OBSGROUP1" : 1271.71
+    Contribution to phi from observation group    "OBSGROUP3" : 674.514
+    Contribution to phi from observation group        "REGUL" : 2.32097
 
       SVD information:
         number of singular values used: 2/2
-        upgrade vector magnitude (without limits or bounds) = 0.0919694
-        angle to direction of greatest descent: 56.7574 deg
+        upgrade vector magnitude (without limits or bounds) = 0.100873
+        angle to direction of greatest descent: 57.807 deg
 
-      Rotation Factor = 0.00 (0.00 deg);  phi = 25.903 (1.02% starting phi)
-      Rotation Factor = 0.17 (8.57 deg);  phi = 251.834 (9.96% starting phi)
-      Rotation Factor = 0.33 (18.17 deg);  phi = 854.589 (33.79% starting phi)
-      Rotation Factor = 0.50 (28.38 deg);  phi = 1723.34 (68.14% starting phi)
-      Rotation Factor = 0.67 (38.59 deg);  phi = 2644.87 (104.58% starting phi)
-      Rotation Factor = 0.83 (48.18 deg);  phi = 3419.85 (135.22% starting phi)
-      Rotation Factor = 1.00 (56.76 deg);  phi = 3956.34 (156.44% starting phi)
+      Rotation Factor = 0.00 (0.00 deg);  phi = 30.7474 (1.31% starting phi)
+      Rotation Factor = 0.25 (13.47 deg);  phi = 706.29 (30.03% starting phi)
+      Rotation Factor = 0.50 (28.90 deg);  phi = 2373.89 (100.92% starting phi)
+      Rotation Factor = 0.75 (44.34 deg);  phi = 4239 (180.21% starting phi)
+      Rotation Factor = 1.00 (57.81 deg);  phi = 5528.3 (235.02% starting phi)
 
     Parameter Upgrades (Control File Parameters)
      Parameter      Current       Previous       Factor       Relative
         Name         Value         Value         Change        Change
     ------------  ------------  ------------  ------------  ------------
-    COND           0.000998381   0.000901355       1.10764     -0.107644
-    SCOEFF            0.207028      0.249213       1.20377      0.169273
+    COND             0.0010005   0.000907805       1.10211     -0.102112
+    SCOEFF            0.207393      0.256096       1.23484      0.190176
     RECHARGE               0.1           0.1             1             0
 
     Parameter Upgrades (Transformed Numeric Parameters)
      Parameter      Current       Previous       Factor       Relative
         Name         Value         Value         Change        Change
     ------------  ------------  ------------  ------------  ------------
-    COND               -3.0007       -3.0451        1.0148     0.0145809
-    SCOEFF           -0.683971     -0.603429       1.13347     -0.133474
+    sup_1              9.78622       9.74722         1.004   -0.00400103
+    sup_2              10.2283       10.3214        1.0091    0.00901325
 
    Maximum changes in transformed numeric parameters:
-     Maximum relative change = -0.133474   [SCOEFF]
-     Maximum factor change = 1.13347   [SCOEFF]
+     Maximum relative change = 0.00901325   [sup_2]
+     Maximum factor change = 1.0091   [sup_2]
 
 
 OPTIMISATION ITERATION NUMBER: 4
-  Iteration type: base parameter solution
+  Iteration type: super parameter solution
   SVD Package: Eigen JacobiSVD
-    Model calls so far : 28
-    Starting phi for this iteration                     Total : 25.903
-    Contribution to phi from observation group         "OBS2" : 9.13157
-    Contribution to phi from observation group    "OBSGROUP1" : 8.00095
-    Contribution to phi from observation group    "OBSGROUP3" : 6.51926
-    Contribution to phi from observation group        "REGUL" : 2.25122
+    Model calls so far : 23
+    Starting phi for this iteration                     Total : 30.7474
+    Contribution to phi from observation group         "OBS2" : 10.6745
+    Contribution to phi from observation group    "OBSGROUP1" : 8.21574
+    Contribution to phi from observation group    "OBSGROUP3" : 9.6073
+    Contribution to phi from observation group        "REGUL" : 2.24985
 
       SVD information:
         number of singular values used: 2/2
-        upgrade vector magnitude (without limits or bounds) = 0.015205
-        angle to direction of greatest descent: 36.4697 deg
+        upgrade vector magnitude (without limits or bounds) = 0.0159339
+        angle to direction of greatest descent: 54.2171 deg
 
-      Rotation Factor = 0.00 (0.00 deg);  phi = 6.87806 (26.55% starting phi)
-      Rotation Factor = 0.17 (5.85 deg);  phi = 9.77042 (37.72% starting phi)
-      Rotation Factor = 0.33 (11.97 deg);  phi = 19.2031 (74.13% starting phi)
-      Rotation Factor = 0.50 (18.23 deg);  phi = 35.1639 (135.75% starting phi)
-      Rotation Factor = 0.67 (24.50 deg);  phi = 56.7322 (219.02% starting phi)
-      Rotation Factor = 0.83 (30.62 deg);  phi = 82.1993 (317.34% starting phi)
-      Rotation Factor = 1.00 (36.47 deg);  phi = 109.498 (422.72% starting phi)
+      Rotation Factor = 0.00 (0.00 deg);  phi = 6.87908 (22.37% starting phi)
+      Rotation Factor = 0.25 (12.75 deg);  phi = 21.8625 (71.10% starting phi)
+      Rotation Factor = 0.50 (27.11 deg);  phi = 70.5651 (229.50% starting phi)
+      Rotation Factor = 0.75 (41.47 deg);  phi = 139.513 (453.74% starting phi)
+      Rotation Factor = 1.00 (54.22 deg);  phi = 202.882 (659.83% starting phi)
 
     Parameter Upgrades (Control File Parameters)
      Parameter      Current       Previous       Factor       Relative
         Name         Value         Value         Change        Change
     ------------  ------------  ------------  ------------  ------------
-    COND             0.0010001   0.000998381       1.00173    -0.0017258
-    SCOEFF            0.199914      0.207028       1.03559     0.0343639
+    COND            0.00100012     0.0010005       1.00039   0.000385441
+    SCOEFF            0.199922      0.207393       1.03737     0.0360224
     RECHARGE               0.1           0.1             1             0
 
     Parameter Upgrades (Transformed Numeric Parameters)
      Parameter      Current       Previous       Factor       Relative
         Name         Value         Value         Change        Change
     ------------  ------------  ------------  ------------  ------------
-    COND              -2.99995       -3.0007       1.00025   0.000249561
-    SCOEFF           -0.699157     -0.683971        1.0222    -0.0222035
+    sup_1              9.78549       9.78622       1.00007  7.39903e-005
+    sup_2              10.2124       10.2283       1.00156    0.00155621
 
    Maximum changes in transformed numeric parameters:
-     Maximum relative change = -0.0222035   [SCOEFF]
-     Maximum factor change = 1.0222   [SCOEFF]
+     Maximum relative change = 0.00155621   [sup_2]
+     Maximum factor change = 1.00156   [sup_2]
 
 
 OPTIMISATION ITERATION NUMBER: 5
   Iteration type: base parameter solution
   SVD Package: Eigen JacobiSVD
-    Model calls so far : 37
-    Starting phi for this iteration                     Total : 6.87806
-    Contribution to phi from observation group         "OBS2" : 0.433336
-    Contribution to phi from observation group    "OBSGROUP1" : 2.72912
-    Contribution to phi from observation group    "OBSGROUP3" : 1.46567
-    Contribution to phi from observation group        "REGUL" : 2.24993
+    Model calls so far : 30
+    Starting phi for this iteration                     Total : 6.87908
+    Contribution to phi from observation group         "OBS2" : 0.434244
+    Contribution to phi from observation group    "OBSGROUP1" : 2.7343
+    Contribution to phi from observation group    "OBSGROUP3" : 1.46061
+    Contribution to phi from observation group        "REGUL" : 2.24992
 
       SVD information:
         number of singular values used: 2/2
-        upgrade vector magnitude (without limits or bounds) = 5.62415e-005
-        angle to direction of greatest descent: 37.2304 deg
+        upgrade vector magnitude (without limits or bounds) = 7.36255e-005
+        angle to direction of greatest descent: 43.0799 deg
 
-      Rotation Factor = 0.00 (0.00 deg);  phi = 6.87561 (99.96% starting phi)
-      Rotation Factor = 0.17 (5.96 deg);  phi = 6.87561 (99.96% starting phi)
-      Rotation Factor = 0.33 (12.21 deg);  phi = 6.87572 (99.97% starting phi)
-      Rotation Factor = 0.50 (18.62 deg);  phi = 6.87575 (99.97% starting phi)
-      Rotation Factor = 0.67 (25.02 deg);  phi = 6.87585 (99.97% starting phi)
-      Rotation Factor = 0.83 (31.27 deg);  phi = 6.87588 (99.97% starting phi)
-      Rotation Factor = 1.00 (37.23 deg);  phi = 6.87592 (99.97% starting phi)
+      Rotation Factor = 0.00 (0.00 deg);  phi = 6.87561 (99.95% starting phi)
+      Rotation Factor = 0.25 (10.38 deg);  phi = 6.87574 (99.95% starting phi)
+      Rotation Factor = 0.50 (21.54 deg);  phi = 6.87599 (99.96% starting phi)
+      Rotation Factor = 0.75 (32.70 deg);  phi = 6.87627 (99.96% starting phi)
+      Rotation Factor = 1.00 (43.08 deg);  phi = 6.87648 (99.96% starting phi)
 
       Switching to central derivatives:
 
@@ -203,76 +193,117 @@ OPTIMISATION ITERATION NUMBER: 5
      Parameter      Current       Previous       Factor       Relative
         Name         Value         Value         Change        Change
     ------------  ------------  ------------  ------------  ------------
-    COND            0.00100001     0.0010001       1.00009  9.01894e-005
-    SCOEFF            0.199895      0.199914       1.00009  9.29237e-005
+    COND            0.00100001    0.00100012        1.0001   0.000103249
+    SCOEFF            0.199895      0.199922       1.00013   0.000134448
     RECHARGE               0.1           0.1             1             0
 
     Parameter Upgrades (Transformed Numeric Parameters)
      Parameter      Current       Previous       Factor       Relative
         Name         Value         Value         Change        Change
     ------------  ------------  ------------  ------------  ------------
-    COND              -2.99999      -2.99995       1.00001  -1.3057e-005
-    SCOEFF           -0.699198     -0.699157       1.00006  -5.7724e-005
+    COND              -2.99999      -2.99995       1.00001  -1.49479e-005
+    SCOEFF           -0.699198     -0.699139       1.00008  -8.35224e-005
 
    Maximum changes in transformed numeric parameters:
-     Maximum relative change = -5.7724e-005   [SCOEFF]
-     Maximum factor change = 1.00006   [SCOEFF]
+     Maximum relative change = -8.35224e-005   [SCOEFF]
+     Maximum factor change = 1.00008   [SCOEFF]
 
 
 OPTIMISATION ITERATION NUMBER: 6
-  Iteration type: base parameter solution
+  Iteration type: super parameter solution
   SVD Package: Eigen JacobiSVD
-    Model calls so far : 46
+    Model calls so far : 38
     Starting phi for this iteration                     Total : 6.87561
-    Contribution to phi from observation group         "OBS2" : 0.431622
+    Contribution to phi from observation group         "OBS2" : 0.431623
     Contribution to phi from observation group    "OBSGROUP1" : 2.71501
     Contribution to phi from observation group    "OBSGROUP3" : 1.47899
     Contribution to phi from observation group        "REGUL" : 2.24999
 
       SVD information:
         number of singular values used: 2/2
-        upgrade vector magnitude (without limits or bounds) = 1.87928e-007
-        angle to direction of greatest descent: 60.0978 deg
+        upgrade vector magnitude (without limits or bounds) = 1.73868e-006
+        angle to direction of greatest descent: 4.23325 deg
 
-      Rotation Factor = 0.00 (0.00 deg);  phi = 6.87562 (100.00% starting phi)
-      Rotation Factor = 0.17 (8.96 deg);  phi = 6.87562 (100.00% starting phi)
-      Rotation Factor = 0.33 (19.13 deg);  phi = 6.87559 (100.00% starting phi)
-      Rotation Factor = 0.50 (30.05 deg);  phi = 6.87559 (100.00% starting phi)
-      Rotation Factor = 0.67 (40.96 deg);  phi = 6.87557 (100.00% starting phi)
-      Rotation Factor = 0.83 (51.14 deg);  phi = 6.87557 (100.00% starting phi)
-      Rotation Factor = 1.00 (60.10 deg);  phi = 6.87557 (100.00% starting phi)
+      Rotation Factor = 0.00 (0.00 deg);  phi = 6.87565 (100.00% starting phi)
+      Rotation Factor = 0.25 (1.06 deg);  phi = 6.87562 (100.00% starting phi)
+      Rotation Factor = 0.50 (2.12 deg);  phi = 6.87562 (100.00% starting phi)
+      Rotation Factor = 0.75 (3.18 deg);  phi = 6.87562 (100.00% starting phi)
+      Rotation Factor = 1.00 (4.23 deg);  phi = 6.87562 (100.00% starting phi)
+
+      Switching to central derivatives:
 
     Parameter Upgrades (Control File Parameters)
      Parameter      Current       Previous       Factor       Relative
         Name         Value         Value         Change        Change
     ------------  ------------  ------------  ------------  ------------
-    COND            0.00100001    0.00100001             1  -4.18524e-007
-    SCOEFF            0.199895      0.199895             1  -1.09927e-007
+    COND            0.00100001    0.00100001             1  -3.09531e-007
+    SCOEFF            0.199894      0.199895             1  3.99148e-006
     RECHARGE               0.1           0.1             1             0
 
     Parameter Upgrades (Transformed Numeric Parameters)
      Parameter      Current       Previous       Factor       Relative
         Name         Value         Value         Change        Change
     ------------  ------------  ------------  ------------  ------------
-    COND              -2.99999      -2.99999             1  6.05877e-008
-    SCOEFF           -0.699198     -0.699198             1  6.82791e-008
+    sup_1                   10            10             1  3.69523e-009
+    sup_2                   10            10             1  1.73829e-007
 
    Maximum changes in transformed numeric parameters:
-     Maximum relative change = 6.82791e-008   [SCOEFF]
+     Maximum relative change = 1.73829e-007   [sup_2]
+     Maximum factor change = 1   [sup_2]
+
+
+OPTIMISATION ITERATION NUMBER: 7
+  Iteration type: base parameter solution
+  SVD Package: Eigen JacobiSVD
+    Model calls so far : 46
+    Starting phi for this iteration                     Total : 6.87562
+    Contribution to phi from observation group         "OBS2" : 0.431546
+    Contribution to phi from observation group    "OBSGROUP1" : 2.71459
+    Contribution to phi from observation group    "OBSGROUP3" : 1.47949
+    Contribution to phi from observation group        "REGUL" : 2.24999
+
+      SVD information:
+        number of singular values used: 2/2
+        upgrade vector magnitude (without limits or bounds) = 1.98119e-006
+        angle to direction of greatest descent: 57.1078 deg
+
+      Rotation Factor = 0.00 (0.00 deg);  phi = 6.87565 (100.00% starting phi)
+      Rotation Factor = 0.25 (13.33 deg);  phi = 6.87563 (100.00% starting phi)
+      Rotation Factor = 0.50 (28.55 deg);  phi = 6.87555 (100.00% starting phi)
+      Rotation Factor = 0.75 (43.77 deg);  phi = 6.87564 (100.00% starting phi)
+      Rotation Factor = 1.00 (57.11 deg);  phi = 6.87556 (100.00% starting phi)
+
+    Parameter Upgrades (Control File Parameters)
+     Parameter      Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+    ------------  ------------  ------------  ------------  ------------
+    COND            0.00100002    0.00100001             1  -2.29596e-006
+    SCOEFF            0.199895      0.199894             1  -3.94198e-006
+    RECHARGE               0.1           0.1             1             0
+
+    Parameter Upgrades (Transformed Numeric Parameters)
+     Parameter      Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+    ------------  ------------  ------------  ------------  ------------
+    COND              -2.99999      -2.99999             1  3.32375e-007
+    SCOEFF           -0.699198       -0.6992             1  2.44848e-006
+
+   Maximum changes in transformed numeric parameters:
+     Maximum relative change = 2.44848e-006   [SCOEFF]
      Maximum factor change = 1   [SCOEFF]
 
 
 FINAL OPTIMISATION RESULTS
 
-    Phi                                                 Total : 6.87557
-    Contribution to phi from observation group         "OBS2" : 0.43162
-    Contribution to phi from observation group    "OBSGROUP1" : 2.71505
-    Contribution to phi from observation group    "OBSGROUP3" : 1.47892
+    Phi                                                 Total : 6.87555
+    Contribution to phi from observation group         "OBS2" : 0.431603
+    Contribution to phi from observation group    "OBSGROUP1" : 2.71509
+    Contribution to phi from observation group    "OBSGROUP3" : 1.47886
     Contribution to phi from observation group        "REGUL" : 2.24999
 
      Parameter      Optimal
         Name         Value
     ------------  ------------
-    COND            0.00100001
+    COND            0.00100002
     SCOEFF            0.199895
     RECHARGE               0.1

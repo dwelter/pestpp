@@ -54,11 +54,11 @@ void SVDSolver::Upgrade::print(ostream &os)
 SVDSolver::SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_par_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, 
-		const Regularization *_regul_scheme_ptr, const string &_description)
+		const Regularization *_regul_scheme_ptr, int _n_rotation_fac, const string &_description)
 		: ctl_info(_ctl_info), svd_info(_svd_info), par_group_info_ptr(_par_group_info_ptr), ctl_par_info_ptr(_ctl_par_info_ptr), obs_info_ptr(_obs_info), obj_func(_obj_func),
 		  file_manager(_file_manager), observations_ptr(_observations), par_transform(_par_transform),
 		  cur_solution(_obj_func, _par_transform, *_observations), phiredswh_flag(false), save_next_jacobian(true), prior_info_ptr(_prior_info_ptr), jacobian(_jacobian), prev_phi_percent(0.0),
-		  num_no_descent(0), regul_scheme_ptr(_regul_scheme_ptr), description(_description)
+		  num_no_descent(0), regul_scheme_ptr(_regul_scheme_ptr), n_rotation_fac(_n_rotation_fac), description(_description)
 {
 	svd_package = new SVD_EIGEN();
 }
@@ -355,9 +355,8 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	vector<double> rot_fac_vec;
 	vector<double> rot_angle_vec;
 
-	const int n_rot_fac = 7;
-	for(int i=0; i<n_rot_fac; ++i) {
-		double tmp_rot_fac = i / double(n_rot_fac-1);
+	for(int i=0; i<n_rotation_fac; ++i) {
+		double tmp_rot_fac = i / double(n_rotation_fac-1);
 		rot_fac_vec.push_back(tmp_rot_fac);
 		rot_angle = add_model_run(run_manager, upgrade_run.get_par_tran(), 
 		base_run.get_numeric_pars(),upgrade, rot_fac_vec.back(), 1.0);
@@ -368,7 +367,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	run_manager.run();
 	cout << endl;
 	bool best_run_updated_flag = false;
-	for(int i=0; i<n_rot_fac; ++i) {
+	for(int i=0; i<n_rotation_fac; ++i) {
 		double rot_fac = rot_fac_vec[i];
 		ModelRun upgrade_run(base_run);
         Parameters tmp_pars;

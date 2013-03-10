@@ -44,7 +44,7 @@ public:
 	SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_par_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, 
-		const Regularization *regul_scheme_ptr, const string &description="base parameter solution");
+		const Regularization *regul_scheme_ptr, int _n_rotation_fac, const string &description="base parameter solution");
 	ModelRun& solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter, const Parameters &ctl_pars, ModelRun &optimum_run);
 	void iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs=false);
 	ModelRun &cur_model_run() {return cur_solution;}
@@ -82,6 +82,7 @@ protected:
 	bool save_next_jacobian;
 	double prev_phi_percent;
 	int num_no_descent;
+	int n_rotation_fac;
 	virtual map<string, double> limit_parameters_ip(const Parameters &init_numeric_pars, Parameters &upgrade_numeric_pars);
 	virtual const string &get_description(){return description;}
 	void iteration_update_and_report(ostream &os, ModelRun &upgrade, TerminationController &termination_ctl); 

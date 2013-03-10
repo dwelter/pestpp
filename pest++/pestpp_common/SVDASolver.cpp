@@ -38,10 +38,10 @@ using namespace Eigen;
 
 SVDASolver::SVDASolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_par_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
-		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, const Regularization *_regul_scheme)
+		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, const Regularization *_regul_scheme, int _n_rotation_fac)
 		: SVDSolver(_ctl_info, _svd_info, _par_group_info_ptr, _ctl_par_info_ptr, _obs_info, 
 		_file_manager, _observations, _obj_func, _par_transform, _prior_info_ptr, _jacobian, 
-		_regul_scheme, "super parameter solution")
+		_regul_scheme, _n_rotation_fac, "super parameter solution")
 {
 }
 

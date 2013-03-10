@@ -167,9 +167,10 @@ int main(int argc, char* argv[])
 	ObjectiveFunc obj_func(&(pest_scenario.get_ctl_observations()), &(pest_scenario.get_ctl_observation_info()), &(pest_scenario.get_prior_info()));
 	Jacobian *base_jacobian_ptr = new Jacobian_1to1(file_manager);
 
-	SVDSolver base_svd(&pest_scenario.get_control_info(), pest_scenario.get_svd_info(), &pest_scenario.get_base_group_info(), &pest_scenario.get_ctl_parameter_info(),
-		&pest_scenario.get_ctl_observation_info(), file_manager, &pest_scenario.get_ctl_observations(), &obj_func,
-		base_trans_seq, pest_scenario.get_prior_info_ptr(), *base_jacobian_ptr, pest_scenario.get_regul_scheme_ptr());
+	SVDSolver base_svd(&pest_scenario.get_control_info(), pest_scenario.get_svd_info(), &pest_scenario.get_base_group_info(),
+		&pest_scenario.get_ctl_parameter_info(), &pest_scenario.get_ctl_observation_info(), file_manager,
+		&pest_scenario.get_ctl_observations(), &obj_func, base_trans_seq, pest_scenario.get_prior_info_ptr(),
+		*base_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(), pest_scenario.get_pestpp_options().get_n_rotation_fac());
 
 	base_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 	//Build Super-Parameter problem
@@ -266,7 +267,8 @@ int main(int argc, char* argv[])
 			sup_group_info = (*tran_svd).build_par_group_info(pest_scenario.get_base_group_info());		
 			SVDASolver super_svd(&svd_control_info, pest_scenario.get_svd_info(), &sup_group_info, &pest_scenario.get_ctl_parameter_info(),
 				&pest_scenario.get_ctl_observation_info(),  file_manager, &pest_scenario.get_ctl_observations(), &obj_func,
-				trans_svda, &pest_scenario.get_prior_info(), *super_jacobian_ptr, pest_scenario.get_regul_scheme_ptr());
+				trans_svda, &pest_scenario.get_prior_info(), *super_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(),
+				pest_scenario.get_pestpp_options().get_n_rotation_fac());
 			super_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 			cur_run = &(super_svd.solve(*run_manager_ptr, termination_ctl, n_super_iter, cur_ctl_parameters, optimum_run));
 			cur_ctl_parameters = super_svd.cur_model_run().get_ctl_pars();

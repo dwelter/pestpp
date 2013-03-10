@@ -274,6 +274,9 @@ void PestppOptions::parce_line(const string &line)
 		else if (key=="AUTO_NORM"){
 			convert_ip(value, auto_norm); 
 		}
+		else if (key=="N_ROTATION_FAC"){
+			convert_ip(value, n_rotation_fac); 
+		}
 		else {
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");
 		}

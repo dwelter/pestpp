@@ -182,6 +182,7 @@ public:
 	int get_n_iter_super() const{return n_iter_super;}
 	SVD_PACK get_svd_pack() const {return svd_pack;}
 	double get_auto_norm() const{return auto_norm;}
+	double get_n_rotation_fac() const{return n_rotation_fac;}
 
 	void set_super_nmax(int _super_nmax) {super_nmax = _super_nmax;}
 	void set_super_eigthres(double _super_eigthres) {super_eigthres = _super_eigthres;}
@@ -189,6 +190,7 @@ public:
 	void set_n_iter_super(int _n_iter_super){n_iter_super = _n_iter_super;}
 	void set_svd_pack(const SVD_PACK _svd_pack=LAPACK) {svd_pack = _svd_pack;}
 	void set_auto_norm(double _auto_norm) {auto_norm = _auto_norm;};
+	void set_n_rotation_fac(int _n_rotation_fac){n_rotation_fac = _n_rotation_fac;}
 
 private:
 	int super_nmax;
@@ -197,6 +199,7 @@ private:
 	int n_iter_super;
 	SVD_PACK svd_pack;
 	double auto_norm;
+	int n_rotation_fac;
 };
 
 ostream& operator<< (ostream &os, const ObservationInfo& val);
