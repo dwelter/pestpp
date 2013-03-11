@@ -95,6 +95,18 @@ streamoff RunStorage::get_stream_pos(int run_id)
 	return run_id;
  }
 
+ int RunStorage::add_run(const Eigen::VectorXd &model_pars)
+ {
+	n_runs++;
+	int run_id = n_runs - 1;
+	std::int8_t r_status = 0;
+	buf_stream.seekp(get_stream_pos(run_id), ios_base::beg);
+	buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	buf_stream.write(reinterpret_cast<const char*>(&model_pars(0)), model_pars.size()*sizeof(model_pars(0)));
+	return run_id;
+ }
+
+
 int RunStorage::add_run(const Parameters &pars)
 {
 	vector<double> data(pars.get_data_vector(par_names));

@@ -24,7 +24,6 @@
 
 #ifdef OS_WIN
  #include <direct.h>
-#include <amp_math.h>
 #endif
 
 #ifdef OS_LINUX

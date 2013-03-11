@@ -25,6 +25,7 @@
 #include <ostream>
 #include <vector>
 #include <cstdint>
+#include <Eigen\Dense>
 
 class Parameters;
 class Observations;
@@ -35,6 +36,7 @@ public:
 	void reset(const std::vector<std::string> &par_names, const std::vector<std::string> &obs_names);
     virtual int add_run(const std::vector<double> &model_pars);
 	int add_run(const Parameters &pars);
+	virtual int add_run(const Eigen::VectorXd &model_pars);
 	void update_run(int run_id, const Parameters &pars, const Observations &obs);
 	void update_run(int run_id, const std::vector<char> serial_data);
 	void update_run_failed(int run_id);

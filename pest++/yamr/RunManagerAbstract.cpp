@@ -72,6 +72,12 @@ int RunManagerAbstract::add_run(const Parameters &model_pars)
 	return run_id;
 }
 
+int RunManagerAbstract::add_run(const Eigen::VectorXd &model_pars)
+{
+    int run_id = file_stor.add_run(model_pars);
+    return run_id;
+}
+
  const vector<string>& RunManagerAbstract::get_par_name_vec() const
  {
     return file_stor.get_par_name_vec();

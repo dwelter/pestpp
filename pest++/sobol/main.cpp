@@ -27,7 +27,6 @@
 #include "ParamTransformSeq.h"
 #include "utilities.h"
 #include "pest_error.h"
-#include <lapackpp.h>
 #include "ModelRunPP.h"
 #include "FileManager.h"
 #include "RunManagerGenie.h"
@@ -36,7 +35,7 @@
 #include "YamrSlave.h"
 #include "Serialization.h"
 #include "system_variables.h"
-
+#include "sobol.h"
 
 
 using namespace std;
@@ -169,19 +168,18 @@ int main(int argc, char* argv[])
 	ObjectiveFunc obj_func(&(pest_scenario.get_ctl_observations()), &(pest_scenario.get_ctl_observation_info()), &(pest_scenario.get_prior_info()));
 	ModelRun model_run(&obj_func, base_partran_seq, pest_scenario.get_ctl_observations());
 
-	//MorrisMethod morris(par_name_vec, fixed_pars, lower_bnd, upper_bnd, 8); //8 levels for each parameters
+	vector<string> model_par_name_vec = base_partran_seq.ctl2model_cp(ctl_par).get_keys();
+	vector<string> obs_name_vec = pest_scenario.get_ctl_ordered_obs_names();
+	run_manager_ptr->initialize(model_par_name_vec, obs_name_vec);
+	Sobol sobol_meth(run_manager_ptr, par_name_vec, fixed_pars,
+		lower_bnd, upper_bnd, &base_partran_seq, 2);
 
-	// make model runs
-	Parameters model_pars = base_partran_seq.ctl2model_cp(ctl_par);
-	run_manager_ptr->reinitialize();
-	for (int i=0; i<morris_r; ++i)
-	{
-		morris.assemble_runs(*run_manager_ptr, base_partran_seq);
-	}
+
+	sobol_meth.assemble_runs();
 	run_manager_ptr->run();
-
-	morris.calc_sen(*run_manager_ptr, model_run, file_manager.open_ofile_ext("msn"));
-	file_manager.close_file("msn");
+	sobol_meth.calc_sen();
+	//morris.calc_sen(*run_manager_ptr, model_run, file_manager.open_ofile_ext("msn"));
+	//file_manager.close_file("msn");
 	delete run_manager_ptr;
 	cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
 	char buf[256];

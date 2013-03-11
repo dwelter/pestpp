@@ -25,6 +25,7 @@
 #include <string>
 #include <ostream>
 #include <utility>
+#include <Eigen\Dense>
 #include "pest_error.h"
 
 using namespace std;
@@ -58,6 +59,7 @@ public:
 	Transformable(){};
 	Transformable(const Transformable &copyin);
 	Transformable(const Transformable &copyin, const vector<string> &copy_names);
+    Transformable(const std::vector<std::string> &names, const Eigen::VectorXd &values);
 	const Transformable& operator=(const Transformable &rhs);
 	Transformable& operator+=(const Transformable &rhs);
 	Transformable& operator-=(const Transformable &rhs);
@@ -98,6 +100,7 @@ public:
 	Parameters() : Transformable(){}
 	Parameters(const Parameters &copyin) : Transformable(copyin) {}
 	Parameters(const Parameters &copyin, const vector<string> &copy_names) : Transformable(copyin, copy_names){} 
+	Parameters(const std::vector<std::string> &names, const Eigen::VectorXd &values) : Transformable(names, values) {}
 	template <class NameIterator>
 	Parameters get_subset (NameIterator first, NameIterator last)const;
 	virtual ~Parameters(){}

@@ -19,10 +19,11 @@
 #ifndef RUNMANAGERABSTRACT_H
 #define RUNMANAGERABSTRACT_H
 
-#include<string>
+#include <string>
 #include <vector>
 #include <set>
 #include "RunStorage.h"
+#include <Eigen/Dense>
 
 class ModelExecInfo;
 class Parameters;
@@ -36,12 +37,13 @@ public:
 		const std::vector<std::string> _tplfile_vec, const std::vector<std::string> _inpfile_vec,
 		const std::vector<std::string> _insfile_vec, const std::vector<std::string> _outfile_vec,
 		const std::string &stor_filename);
+	virtual void initialize(const std::vector<std::string> &model_par_names, std::vector<std::string> &obs_names);
 	virtual void initialize(const Parameters &model_pars, const Observations &obs);
-	virtual void initialize(const std::vector<std::string> &par_names, std::vector<std::string> &obs_names);
 	virtual void reinitialize();
 	virtual void free_memory();
 	virtual int add_run(const Parameters &model_pars);
     virtual int add_run(const std::vector<double> &model_pars);
+	virtual int add_run(const Eigen::VectorXd &model_pars);
 	virtual void run() = 0;
     virtual const std::vector<std::string> &get_par_name_vec() const;
     virtual const std::vector<std::string> &get_obs_name_vec() const;

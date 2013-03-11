@@ -49,6 +49,21 @@ Transformable::Transformable(const Transformable &copyin, const vector<string> &
 	}
 }
 
+Transformable::Transformable(const vector<string> &names, const Eigen::VectorXd &values)
+{
+    assert(names.size() == values.size());
+    if(names.size() != values.size())
+	{
+        throw PestIndexError("Transformable::Transformable(const vector<string> &names, Eigen::VectorXd &values)", 
+			"size of names vector does not match the size of the values vector");
+	}
+    size_t len = min(names.size(), values.size());
+    for (size_t i=0; i<len; ++i)
+	{
+        items[names[i]] = values(i);
+	}
+}
+
 
 const Transformable& Transformable::operator=(const Transformable &rhs)
 {

@@ -80,9 +80,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)\pestpp_common;$(SolutionDir)\yamr;$(SolutionDir)\lapackpp-2.5.4\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(IFORT_COMPILER13)\compiler\lib\intel64;$(IFORT_COMPILER13)\mkl\lib\intel64;$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>pest_routines.lib;mkl_blas95_lp64.lib;mkl_lapack95_lp64.lib;propack.lib;ws2_32.lib;genie.lib;Advapi32.lib;yamr.lib;pestpp_common.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

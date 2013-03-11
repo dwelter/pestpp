@@ -41,4 +41,3 @@ storage1
 input.tpl   input.dat
 output.ins  output.dat
 * prior information
-++gman_socket(127.0.0.1:24772)

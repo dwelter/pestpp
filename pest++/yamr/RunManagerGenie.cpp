@@ -96,6 +96,7 @@ void RunManagerGenie::run()
 	std::copy(insfile_vec.begin(), insfile_vec.end(),std::ostream_iterator<std::string>(insfle,"\n"));
 	std::copy(outfile_vec.begin(), outfile_vec.end(),std::ostream_iterator<std::string>(outfle,"\n"));
 
+
 	failed_runs.clear();  //not implemented yet
 	GENIE_INTERFACE(&nruns, &nexec, String2CharPtr(execnames.str()).get_char_ptr(), &npar, &nobs,
 	String2CharPtr(apar.str()).get_char_ptr(), String2CharPtr(aobs.str()).get_char_ptr(),
