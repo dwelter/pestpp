@@ -5,6 +5,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pest++", "pest++\pest++.vcx
 		{D25CC810-E9E9-4920-82A4-6F585214480E} = {D25CC810-E9E9-4920-82A4-6F585214480E}
 		{C99FF120-0C40-4ACB-A3D8-A7E86E90EC0B} = {C99FF120-0C40-4ACB-A3D8-A7E86E90EC0B}
 		{5BF76059-872C-4A70-9D5F-235C86131DDD} = {5BF76059-872C-4A70-9D5F-235C86131DDD}
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D} = {EB9A0791-5341-4772-84AA-F7089AE7C57D}
 		{AA6E1EC6-2E3D-42EE-B997-2F40814DD2C9} = {AA6E1EC6-2E3D-42EE-B997-2F40814DD2C9}
 		{ED02A2E0-4505-485D-8007-1DF45497AADA} = {ED02A2E0-4505-485D-8007-1DF45497AADA}
 	EndProjectSection
@@ -19,6 +20,7 @@ Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "run_manager_fortran_test", 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "yamr", "yamr\yamr.vcxproj", "{AA6E1EC6-2E3D-42EE-B997-2F40814DD2C9}"
 	ProjectSection(ProjectDependencies) = postProject
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D} = {EB9A0791-5341-4772-84AA-F7089AE7C57D}
 		{ED02A2E0-4505-485D-8007-1DF45497AADA} = {ED02A2E0-4505-485D-8007-1DF45497AADA}
 	EndProjectSection
 EndProject
@@ -45,6 +47,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sobol", "sobol\sobol.vcxpro
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "iopp", "iopp\iopp\iopp.vcxproj", "{ED02A2E0-4505-485D-8007-1DF45497AADA}"
+EndProject
+Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "pest_routines", "pest_routines\pest_routines.vfproj", "{EB9A0791-5341-4772-84AA-F7089AE7C57D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -260,8 +264,32 @@ Global
 		{ED02A2E0-4505-485D-8007-1DF45497AADA}.Release|Win32.Build.0 = Release|Win32
 		{ED02A2E0-4505-485D-8007-1DF45497AADA}.Release|x64.ActiveCfg = Release|x64
 		{ED02A2E0-4505-485D-8007-1DF45497AADA}.Release|x64.Build.0 = Release|x64
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D}.debug_dll|Any CPU.ActiveCfg = debug_dll|Win32
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D}.debug_dll|Mixed Platforms.ActiveCfg = debug_dll|Win32
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D}.debug_dll|Mixed Platforms.Build.0 = debug_dll|Win32
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D}.debug_dll|Win32.ActiveCfg = debug_dll|Win32
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D}.debug_dll|Win32.Build.0 = debug_dll|Win32
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D}.debug_dll|x64.ActiveCfg = debug_dll|x64
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D}.debug_dll|x64.Build.0 = debug_dll|x64
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D}.Debug|Win32.Build.0 = Debug|Win32
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D}.Debug|x64.ActiveCfg = Debug|x64
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D}.Debug|x64.Build.0 = Debug|x64
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D}.Release|Any CPU.ActiveCfg = Release|Win32
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D}.Release|Win32.ActiveCfg = Release|Win32
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D}.Release|Win32.Build.0 = Release|Win32
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D}.Release|x64.ActiveCfg = Release|x64
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal

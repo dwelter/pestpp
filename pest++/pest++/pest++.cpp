@@ -214,7 +214,7 @@ int main(int argc, char* argv[])
         Parameters tmp_pars;
         Observations tmp_obs;
         bool success = run_manager_ptr->get_run(0, tmp_pars, tmp_obs);
-		if (!success)
+		if (success)
 		{
 			optimum_run.update(tmp_pars, tmp_obs, ModelRun::FORCE_PAR_UPDATE);
 			// save parameters to .par file
@@ -291,7 +291,7 @@ int main(int argc, char* argv[])
 	delete base_jacobian_ptr;
 	delete super_jacobian_ptr;
 	delete run_manager_ptr;
-	cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
-	char buf[256];
-	OperSys::gets_s(buf, sizeof(buf));
+	//cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
+	//char buf[256];
+	//OperSys::gets_s(buf, sizeof(buf));
 }

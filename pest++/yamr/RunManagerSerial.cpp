@@ -35,25 +35,25 @@ using namespace std;
 using namespace pest_utils;
 
 
-//extern "C"
-//{
-//
-//	void wrttpl_(int *,
-//		char *,
-//		char *,
-//		int *,
-//		char *,
-//		double *,
-//		int *);
-//
-//	void readins_(int *,
-//		char *,
-//		char *,
-//		int *,
-//		char *,
-//		double *,
-//		int *);
-//}
+extern "C"
+{
+
+	void wrttpl_(int *,
+		char *,
+		char *,
+		int *,
+		char *,
+		double *,
+		int *);
+
+	void readins_(int *,
+		char *,
+		char *,
+		int *,
+		char *,
+		double *,
+		int *);
+}
 
 string RunManagerSerial::tpl_err_msg(int i)
 {
@@ -122,10 +122,10 @@ void RunManagerSerial::run()
 	int ntpl = tplfile_vec.size();
     int nins = insfile_vec.size();
 	stringstream message;
-	bool isDouble = true;
-	bool forceRadix = true;
-	TemplateFiles tpl_files(isDouble,forceRadix,tplfile_vec,inpfile_vec,par_name_vec);
-	InstructionFiles ins_files(insfile_vec,outfile_vec,obs_name_vec);
+	//bool isDouble = true;
+	//bool forceRadix = true;
+	//TemplateFiles tpl_files(isDouble,forceRadix,tplfile_vec,inpfile_vec,par_name_vec);
+	//InstructionFiles ins_files(insfile_vec,outfile_vec,obs_name_vec);
 	std::vector<double> obs_vec;
 
 	success_runs = 0;
@@ -146,22 +146,22 @@ void RunManagerSerial::run()
 			message << "(" << success_runs << "/" << nruns << " runs complete)";
 			std::cout << message.str();
 			OperSys::chdir(run_dir.c_str());
-			/*wrttpl_(&ntpl, StringvecFortranCharArray(tplfile_vec, 50, pest_utils::TO_LOWER).get_prt(),
+			wrttpl_(&ntpl, StringvecFortranCharArray(tplfile_vec, 50, pest_utils::TO_LOWER).get_prt(),
 				StringvecFortranCharArray(inpfile_vec, 50, pest_utils::TO_LOWER).get_prt(),
 				&npar, StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
 				&par_values[0], &ifail);			
 			if(ifail != 0)
 			{
 				throw PestError("Error processing template file");
-			}*/			
-			tpl_files.writtpl(par_values);			
+			}			
+			//tpl_files.writtpl(par_values);			
 			
 			for (int i=0, n_exec=comline_vec.size(); i<n_exec; ++i)
 			{
 				system(comline_vec[i].c_str());
 			}		    
 		    
-			/*obs_vec.resize(nobs, -9999.00);
+			obs_vec.resize(nobs, -9999.00);
 			readins_(&nins, StringvecFortranCharArray(insfile_vec, 50, pest_utils::TO_LOWER).get_prt(),
 				StringvecFortranCharArray(outfile_vec, 50, pest_utils::TO_LOWER).get_prt(),
 				&nobs, StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
@@ -169,8 +169,8 @@ void RunManagerSerial::run()
 			if(ifail != 0)
 			{
 				throw PestError("Error processing instruction file");
-			}*/
-			obs_vec = ins_files.readins();
+			}
+			//obs_vec = ins_files.readins();
 
 			// check parameters and observations for inf and nan
 			if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))

@@ -10,28 +10,27 @@
 
 using namespace pest_utils;
 
-//extern "C"
 int  linpack_wrap(void);
 
-//extern "C"
-//{
-//
-//	void wrttpl_(int *,
-//		char *,
-//		char *,
-//		int *,
-//		char *,
-//		double *,
-//		int *);
-//
-//	void readins_(int *,
-//		char *,
-//		char *,
-//		int *,
-//		char *,
-//		double *,
-//		int *);
-//}
+extern "C"
+{
+
+	void wrttpl_(int *,
+		char *,
+		char *,
+		int *,
+		char *,
+		double *,
+		int *);
+
+	void readins_(int *,
+		char *,
+		char *,
+		int *,
+		char *,
+		double *,
+		int *);
+}
 
 
 
@@ -170,10 +169,10 @@ string YAMRSlave::ins_err_msg(int i)
 int YAMRSlave::run_model(Parameters &pars, Observations &obs)
 {
 	int success = 1;
-	bool isDouble = true;
-	bool forceRadix = true;
-	TemplateFiles tpl_files(isDouble,forceRadix,tplfile_vec,inpfile_vec,par_name_vec);
-	InstructionFiles ins_files(insfile_vec,outfile_vec,obs_name_vec);
+	//bool isDouble = true;
+	//bool forceRadix = true;
+	//TemplateFiles tpl_files(isDouble,forceRadix,tplfile_vec,inpfile_vec,par_name_vec);
+	//InstructionFiles ins_files(insfile_vec,outfile_vec,obs_name_vec);
 	std::vector<double> obs_vec;
 	try 
 	{
@@ -188,15 +187,15 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs)
 			par_name_vec.push_back(i.first);
 			par_values.push_back(i.second);
 		}
-		/*wrttpl_(&ntpl, StringvecFortranCharArray(tplfile_vec, 50, pest_utils::TO_LOWER).get_prt(),
+		wrttpl_(&ntpl, StringvecFortranCharArray(tplfile_vec, 50, pest_utils::TO_LOWER).get_prt(),
 			StringvecFortranCharArray(inpfile_vec, 50, pest_utils::TO_LOWER).get_prt(),
 			&npar, StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
 			par_values.data(), &ifail);
 		if(ifail != 0)
 		{
 			throw PestError("Error processing template file:" + tpl_err_msg(ifail));
-		}*/
-		tpl_files.writtpl(par_values);
+		}
+		//tpl_files.writtpl(par_values);
 
 		// update parameter values
 		pars.clear();
@@ -218,7 +217,7 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs)
 		// process instructio files
 		int nins = insfile_vec.size();
 		int nobs = obs_name_vec.size();
-		/*std::vector<double> obs_vec;
+		std::vector<double> obs_vec;
 		obs_vec.resize(nobs, -9999.00);
 		readins_(&nins, StringvecFortranCharArray(insfile_vec, 50, pest_utils::TO_LOWER).get_prt(),
 			StringvecFortranCharArray(outfile_vec, 50, pest_utils::TO_LOWER).get_prt(),
@@ -227,8 +226,8 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs)
 		if(ifail != 0)
 		{
 			throw PestError("Error processing template file");
-		}*/
-		obs_vec = ins_files.readins();
+		}
+		//obs_vec = ins_files.readins();
 
 
 		// check parameters and observations for inf and nan
@@ -351,7 +350,4 @@ void YAMRSlave::start(const string &host, const string &port)
 		}
 		w_sleep(100);
 	}
-	cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
-	char buf[256];
-	OperSys::gets_s(buf, sizeof(buf));
 }
