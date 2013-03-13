@@ -4,6 +4,7 @@
 #include <fstream>
 #include <vector>
 #include <cstring>
+#include <sstream>
 
 #ifdef OS_LINUX
   #include <arpa/inet.h>
@@ -19,7 +20,7 @@ void w_init()
 
 	if (WSAStartup(MAKEWORD(2,0),  &wsaData)!=0)
 	{
-		cerr << "WSAStartup failed" << endl;
+		cerr << "WSAStartup failed " << w_get_error_msg() << endl;
 	}
 #endif
 }
@@ -31,7 +32,7 @@ int w_close(int sockfd)
 	shutdown(sockfd, SD_BOTH);
 	if ((n = closesocket(sockfd)) != 0)
 	{
-		cerr << "error closing socket: " << WSAGetLastError() << endl;  
+		cerr << "error closing socket: "  << w_get_error_msg() << endl;  
 	}
 	return n;
     #endif
@@ -78,7 +79,7 @@ int w_socket(int domain, int type, int protocol)
 {
 	int sockfd = socket(domain, type, protocol);
 	if (sockfd < 0) {
-		cerr << "socket error: " << endl;
+		cerr << "socket error: "  << w_get_error_msg() << endl;
 	}
 	return sockfd;
 }
@@ -88,7 +89,7 @@ int w_connect(int sockfd, struct sockaddr *serv_addr, socklen_t addrlen)
 	int n=0;
 	if ((n=connect(sockfd, serv_addr, addrlen)) == -1 )
 	{
-		cerr << "connect error: " << errno << "  " << endl;
+		cerr << "connect error: " << w_get_error_msg() << endl;
 	}
 	return n;
 }
@@ -98,7 +99,7 @@ int w_bind(int sockfd, struct sockaddr *my_addr, socklen_t addrlen)
 	int n=0;
 	if ((n=bind(sockfd, my_addr, addrlen)) == -1 )
 	{
-		cerr << "bind error: " << errno << "  " << endl;
+		cerr << "bind error: " << w_get_error_msg() << endl;
 	}
 	return n;
 }
@@ -108,7 +109,7 @@ int w_accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen)
 	int n=0;
 	if ((n=accept(sockfd, addr, addrlen)) == -1) 
 	{
-		cerr << "bind error: " << errno << "  " << endl;
+		cerr << "bind error: " << w_get_error_msg() << endl;
 	}
 	return n;
 }
@@ -119,7 +120,7 @@ int w_listen(int sockfd, int backlog)
 	int n;
 	if ((n = listen(sockfd, backlog)) == -1)
 	{
-		cerr << "listen error: " << errno << "  " << endl;
+		cerr << "listen error: "  << w_get_error_msg() << endl;
 	}
 	return n;
 }
@@ -129,7 +130,7 @@ int w_recv(int sockfd, char *buf, size_t len, int flags)
 	int n;
 	n = recv(sockfd, buf, len, flags);
 	if (n < 0){
-		cerr << "recv error: " << n << endl;
+		cerr << "recv error: "  << w_get_error_msg() << endl;
 	}
 	return n;
 }
@@ -138,7 +139,7 @@ int w_send(int sockfd, char *buf, size_t len, int flags)
 	int n;
 	n = send(sockfd, buf, len, flags);
 	if (n < 0){
-		cerr << "send error: " << n << endl;
+		cerr << "send error: "  << w_get_error_msg() << endl;
 	}
 	return n;
 }
@@ -245,7 +246,7 @@ void w_print_servinfo(addrinfo *res, ostream &fout)
 		}
 	// convert the IP to a string and print it:
 	inet_ntop(p->ai_family, addr, ipstr, sizeof ipstr);
-	fout << " " << ipver <<": " << ipstr << ipstr << endl;
+	fout << " " << ipver <<": " << ipstr << endl;
 	}
 }
 
@@ -256,23 +257,52 @@ int w_select(int numfds, fd_set *readfds, fd_set *writefds,
 	int n;
 	if ((n=select(numfds, readfds, writefds, exceptfds, timeout)) == -1)
 	{
-		cerr << "select error: " << endl;
+		cerr << "select error: " << w_get_error_msg() << endl;
 	}
 	return n;
 }
 
 int w_memcpy_s(void *dest, size_t numberOfElements, const void *src, size_t count)
 {
+	int err;
         #ifdef OS_WIN
-	errno = memcpy_s(dest, numberOfElements, src, count);
+	err = memcpy_s(dest, numberOfElements, src, count);
         #endif
         #ifdef OS_LINUX
 	memcpy(dest, src, count);
         #endif
-	if (errno) {
+	if (err) {
 		cerr << "Error executing memcpy" << endl;
 	}
-	return errno;
+	return err;
+}
+
+string w_get_error_msg()
+{
+	stringstream err_msg;
+	#ifdef OS_WIN
+	int err_no = WSAGetLastError();
+	LPVOID lpMsgBuf;
+	FormatMessage(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER |
+		FORMAT_MESSAGE_FROM_SYSTEM |
+		FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL,
+		err_no,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+		(LPTSTR) &lpMsgBuf,
+		0,
+		NULL);
+	// Process any inserts in lpMsgBuf.
+	// ..
+	err_msg << "(tcp/ip error id = " << err_no << ") " << (LPCTSTR)lpMsgBuf ;
+	// Free the buffer.
+	LocalFree( lpMsgBuf );
+	#endif
+	#ifdef OS_LINUX
+	err_msg << "(tcp/ip error id = " << errno << ")";
+	#endif
+	return err_msg.str();
 }
 
 void w_sleep(int millisec)

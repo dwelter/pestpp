@@ -26,6 +26,7 @@
 #include <cstring>
 #include "Transformable.h"
 #include "utilities.h"
+#include "config_os.h"
 
 using namespace std;
 using namespace pest_utils;
@@ -98,12 +99,18 @@ void RunManagerGenie::run()
 
 
 	failed_runs.clear();  //not implemented yet
+	#ifdef OS_WIN
 	GENIE_INTERFACE(&nruns, &nexec, String2CharPtr(execnames.str()).get_char_ptr(), &npar, &nobs,
 	String2CharPtr(apar.str()).get_char_ptr(), String2CharPtr(aobs.str()).get_char_ptr(),
                     &par_val[0], &obs_val[0], &ntpl, &nins, String2CharPtr(tplfle.str()).get_char_ptr(),
                     String2CharPtr(infle.str()).get_char_ptr(), String2CharPtr(insfle.str()).get_char_ptr(),
 					String2CharPtr(outfle.str()).get_char_ptr(),
                     String2CharPtr(host).get_char_ptr(), String2CharPtr(id).get_char_ptr(), &ikill);
+	#endif
+	#ifdef OS_LINUX
+	throw(PestError("Error: Genie run manager is not supported under linux"));
+	#endif
+
 	total_runs += nruns;
     Parameters pars;
     Observations obs;

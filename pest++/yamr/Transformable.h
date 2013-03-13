@@ -25,7 +25,7 @@
 #include <string>
 #include <ostream>
 #include <utility>
-#include <Eigen\Dense>
+#include <Eigen/Dense>
 #include "pest_error.h"
 
 using namespace std;

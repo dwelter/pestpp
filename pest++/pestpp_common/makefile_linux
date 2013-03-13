@@ -14,7 +14,7 @@ OBJECTS	:= FileManager.o \
            Jacobian.o \
            pest_data_structs.o \
            SVDSolver.o \
-           lapack_tools.o \
+           eigen_tools.o \
            PriorInformation.o \
            TerminationController.o \
            ModelRunPP.o \

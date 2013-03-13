@@ -25,7 +25,7 @@
 #include <ostream>
 #include <vector>
 #include <cstdint>
-#include <Eigen\Dense>
+#include <Eigen/Dense>
 
 class Parameters;
 class Observations;

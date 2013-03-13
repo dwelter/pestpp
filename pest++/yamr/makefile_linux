@@ -1,14 +1,14 @@
 CC := g++
 CFLAGS := -g -c -std=c++0x 
-INCLUDES :=
+INCLUDES := -I../ -I../iopp/iopp
 
 OUT = librunmanager.a
 OBJECTS	:= network_package.o \
            RunManagerSerial.o \
            Transformable.o \
            network_wrapper.o \
-           RunManagerGenie.o \
            RunManagerYAMR.o \
+           RunManagerGenie.o \
            utilities.o \
            pest_error.o \
            RunStorage.o \

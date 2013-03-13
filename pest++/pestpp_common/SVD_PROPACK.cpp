@@ -23,9 +23,16 @@
 using namespace std;
 using namespace Eigen;
 
+#define DEF_DLAMCH DLAMCH
+#define DEF_DLANBPRO_SPARCE DLANBPRO_SPARCE
+
+//#define DEF_DLAMCH dlamch_
+//#define DEF_DLANBPRO_SPARCE dlanbpro_sparce_
+
+
 extern "C" {
-	double DLAMCH(char*);
-	void DLANBPRO_SPARCE(int *m, int *n, int *k0, int *k, double *U, 
+	double DEF_DLAMCH(char*);
+	void DEF_DLANBPRO_SPARCE(int *m, int *n, int *k0, int *k, double *U, 
 		int *ldu, double *V, int *ldv, double *B, int *ldb, 
 		double *rnorm, double *doption, int *ioption, double *work,
 		int *iwork, double *dparm, int *iparm, int *ierr);
@@ -57,7 +64,7 @@ void SVD_PROPACK::solve_ip(MatrixXd& A, VectorXd &Sigma, MatrixXd& U, MatrixXd& 
 	kmax = min(n_max_sing, kmax);
 	int ioption[] = {0, 1};
 	char eps_char = 'e';
-	double eps = DLAMCH(&eps_char);
+	double eps = DEF_DLAMCH(&eps_char);
 	double d_option[] = {0.0, sqrt(eps), pow(eps, 3.0/4.0), 0.0};
 	double rnorm = 0.0;
 	int ierr = 0;
@@ -120,7 +127,7 @@ void SVD_PROPACK::solve_ip(MatrixXd& A, VectorXd &Sigma, MatrixXd& U, MatrixXd& 
 	{
         k0 += 1;
         k2 = k0+1; // index of eignvlaue and eigenvector to be computed this time
-		DLANBPRO_SPARCE(&m_rows, &n_cols, &k0, &k2, tmp_u, 
+		DEF_DLANBPRO_SPARCE(&m_rows, &n_cols, &k0, &k2, tmp_u, 
 			&ld_tmpu, tmp_v, &ld_tmpv, tmp_b, &ld_tmpb, 
 			&rnorm, d_option, ioption, tmp_work,
 			tmp_iwork, dparm, iparm, &ierr);

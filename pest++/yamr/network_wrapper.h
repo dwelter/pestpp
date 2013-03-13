@@ -42,6 +42,7 @@ int w_select(int numfds, fd_set *readfds, fd_set *writefds,
 int w_memcpy_s(void *dest, size_t number_of_elements, const void *src, size_t count);
 //addrinfo* w_bind_first_avl(addrinfo *servinfo)
 void w_print_servinfo(struct addrinfo *res, std::ostream &fout);
+std::string w_get_error_msg();
 void w_sleep(int millisec);
 #endif /* NETWORK_H_ */
 

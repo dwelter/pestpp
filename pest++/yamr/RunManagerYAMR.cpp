@@ -190,6 +190,7 @@ RunManagerYAMR::RunManagerYAMR(const vector<string> _comline_vec,
 {
 	w_init();
 	int status;
+	int err;
 	struct addrinfo hints;
 	struct addrinfo *servinfo;
 	memset(&hints, 0, sizeof hints);
@@ -202,7 +203,13 @@ RunManagerYAMR::RunManagerYAMR(const vector<string> _comline_vec,
 	w_print_servinfo(servinfo, cout);
 	//make socket, bind and listen
 	listener = w_socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
-	w_bind(listener, servinfo->ai_addr, servinfo->ai_addrlen);
+	err = w_bind(listener, servinfo->ai_addr, servinfo->ai_addrlen);
+	if (err != 0)
+	{
+		stringstream err_str;
+		err_str << "Error: port \"" << port << "\n is busy.  Can not bind port";
+		throw(PestError(err_str.str()));
+	}
 	w_listen(listener, BACKLOG);
 	//free servinfo
 	freeaddrinfo(servinfo);
