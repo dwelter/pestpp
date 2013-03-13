@@ -27,7 +27,7 @@
 #include <iostream>
 #include "Transformation.h"
 #include "Transformable.h"
-#include "lapack_tools.h"
+#include "eigen_tools.h"
 #include "Jacobian.h"
 #include "QSqrtMatrix.h"
 #include "pest_data_structs.h"

@@ -17,7 +17,7 @@
     along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
 #include <vector>
-#include "lapack_tools.h"
+#include "eigen_tools.h"
 #include <Eigen/Dense>
 #include "Transformable.h"
 

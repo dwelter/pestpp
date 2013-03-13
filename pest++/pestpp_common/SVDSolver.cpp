@@ -24,7 +24,7 @@
 #include "SVDSolver.h"
 #include "RunManagerAbstract.h"
 #include "QSqrtMatrix.h"
-#include "lapack_tools.h"
+#include "eigen_tools.h"
 #include "ObjectiveFunc.h"
 #include "utilities.h"
 #include "FileManager.h"
