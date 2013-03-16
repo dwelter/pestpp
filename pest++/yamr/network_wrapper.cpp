@@ -264,7 +264,7 @@ int w_select(int numfds, fd_set *readfds, fd_set *writefds,
 
 int w_memcpy_s(void *dest, size_t numberOfElements, const void *src, size_t count)
 {
-	int err;
+	int err = 0;
         #ifdef OS_WIN
 	err = memcpy_s(dest, numberOfElements, src, count);
         #endif

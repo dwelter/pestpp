@@ -49,7 +49,7 @@ using namespace pest_utils;
 int main(int argc, char* argv[])
 {
 	// build commandline
-	string commandline;
+	string commandline = "";
 	for(int i=0; i<argc; ++i)
 	{
 		commandline.append(" ");
