@@ -48,6 +48,11 @@ using namespace pest_utils;
 
 int main(int argc, char* argv[])
 {
+	string version = "2.0.0 beta";
+	cout << endl << endl;
+	cout << "             PEST++ Version " << version << endl << endl;
+	cout << "                 by Dave Welter" << endl;
+	cout << "     Compuational Water Resource Engineering"<< endl << endl << endl;
 	// build commandline
 	string commandline = "";
 	for(int i=0; i<argc; ++i)
@@ -55,7 +60,6 @@ int main(int argc, char* argv[])
 		commandline.append(" ");
 		commandline.append(argv[i]);
 	}
-	string version = "2.0.0 beta";
 	string complete_path;
 	enum class RunManagerType {SERIAL, YAMR, GENIE};
 	string socket_str;
@@ -64,9 +68,18 @@ int main(int argc, char* argv[])
 		complete_path = argv[1];
 	}
 	else {
-		cerr << endl<< "PEST++ Version " << version << endl << endl;
-		cerr << "Usage: pest++ pest_ctl_file" << endl << endl;
-		throw(PestCommandlineError(commandline));
+		cerr << "--------------------------------------------------------" << endl;
+		cerr << "usage:" << endl << endl;
+		cerr << "    serial run manager:" << endl;
+		cerr << "        pest++ pest_ctl_file.pst" << endl << endl;
+		cerr << "    YAMR master:" << endl;
+		cerr << "        pest++ control_file.pst /H :port" << endl; 
+		cerr << "    YAMR runner:" << endl;
+		cerr << "        pest++ /H hostname:port " << endl << endl;
+		cerr << "    GENIE:" << endl;
+		cerr << "        pest++ control_file.pst /G hostname:port" << endl;
+		cerr << "--------------------------------------------------------" << endl;
+		exit(0);
 	}
 
 
@@ -90,10 +103,10 @@ int main(int argc, char* argv[])
 		{
 			cerr << perr.what();
 		}
-		cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
-		char buf[256];
-		OperSys::gets_s(buf, sizeof(buf));
-		exit(0);
+		//cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
+		//char buf[256];
+		//OperSys::gets_s(buf, sizeof(buf));
+		//exit(0);
 	}
 
 	RunManagerType run_manager_type = RunManagerType::SERIAL;
@@ -113,11 +126,9 @@ int main(int argc, char* argv[])
 	FileManager file_manager(filename, pathname);
 
 	ofstream &fout_rec = file_manager.rec_ofstream();
-	cout << "PEST++ Version " << version << endl << endl;
-	fout_rec << "PEST++ Version " << version << endl << endl;
-
-	cout << "using control file: \"" <<  complete_path << "\"" << endl << endl;
-	fout_rec << "Control file = " <<  complete_path  << "\"" << endl << endl;
+	fout_rec << "             PEST++ Version " << version << endl << endl;
+	fout_rec << "                 by Dave Welter" << endl;
+	fout_rec << "     Compuational Water Resource Engineering"<< endl << endl << endl;
 
 	// create pest run and process control file to initialize it
 	Pest pest_scenario;
@@ -135,7 +146,6 @@ int main(int argc, char* argv[])
 	RunManagerAbstract *run_manager_ptr;
 	if (run_manager_type == RunManagerType::YAMR)
 	{
-		cout << "initializing YAMR run manager" << endl;
 		string port = argv[3];
 		strip_ip(port);
 		strip_ip(port, "front", ":");
@@ -148,7 +158,6 @@ int main(int argc, char* argv[])
 	}
 	else if (run_manager_type == RunManagerType::GENIE)
 	{
-		cout << "initializing Genie run manager" << endl;
 		string socket_str = argv[3];
 		strip_ip(socket_str);
 		const ModelExecInfo &exi = pest_scenario.get_model_exec_info();
@@ -158,12 +167,16 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		cout << "initializing serial run manager" << endl;
 		const ModelExecInfo &exi = pest_scenario.get_model_exec_info();
 		run_manager_ptr = new RunManagerSerial(exi.comline_vec,
 		exi.tplfile_vec, exi.inpfile_vec, exi.insfile_vec, exi.outfile_vec,
 		file_manager.build_filename("rns"), pathname);
 	}
+
+	cout << endl;
+	fout_rec << endl;
+	cout << "using control file: \"" <<  complete_path << "\"" << endl;
+	fout_rec << "Control file = " <<  complete_path  << "\"" << endl;
 
 	const ParamTransformSeq &base_trans_seq = pest_scenario.get_base_par_tran_seq();
 	
@@ -258,7 +271,7 @@ int main(int argc, char* argv[])
 			fout_rec << e.what() << endl;
 			cout << "FATAL ERROR: base parameter run failed." << endl;
 			fout_rec << "FATAL ERROR: base parameter run failed." << endl;
-			throw(e);
+			exit(1);
 		}
 		// Build Super Parameter or SVDA problem
 	try
@@ -294,7 +307,7 @@ int main(int argc, char* argv[])
 	delete base_jacobian_ptr;
 	delete super_jacobian_ptr;
 	delete run_manager_ptr;
-	cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
-	char buf[256];
-	OperSys::gets_s(buf, sizeof(buf));
+	//cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
+	//char buf[256];
+	//OperSys::gets_s(buf, sizeof(buf));
 }
