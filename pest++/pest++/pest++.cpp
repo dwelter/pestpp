@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
 	cout << endl << endl;
 	cout << "             PEST++ Version " << version << endl << endl;
 	cout << "                 by Dave Welter" << endl;
-	cout << "     Compuational Water Resource Engineering"<< endl << endl << endl;
+	cout << "     Computational Water Resource Engineering"<< endl << endl << endl;
 	// build commandline
 	string commandline = "";
 	for(int i=0; i<argc; ++i)
@@ -128,7 +128,7 @@ int main(int argc, char* argv[])
 	ofstream &fout_rec = file_manager.rec_ofstream();
 	fout_rec << "             PEST++ Version " << version << endl << endl;
 	fout_rec << "                 by Dave Welter" << endl;
-	fout_rec << "     Compuational Water Resource Engineering"<< endl << endl << endl;
+	fout_rec << "     Computational Water Resource Engineering"<< endl << endl << endl;
 
 	// create pest run and process control file to initialize it
 	Pest pest_scenario;
@@ -137,9 +137,11 @@ int main(int argc, char* argv[])
 		pest_scenario.process_ctl_file(file_manager.open_ifile_ext("pst"), file_manager);
 		file_manager.close_file("pst");
 	}
-	catch(PestFileError)
+	catch(PestError e)
 	{
-		exit(1);
+		cerr << "Error prococessing control file: " << filename << endl << endl;
+		cerr << e.what() << endl << endl;
+		throw(e);
 	}
 	pest_scenario.check_inputs();
 
