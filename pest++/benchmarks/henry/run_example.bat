@@ -9,11 +9,11 @@ FOR /L %%i IN (1,1,%nslaves%) DO (
 )
 
 REM start YAMR master
-start /D"%CD%\master" .\pest++ %pestpp_file% /H :4005
+REM start /D"%CD%\master" .\pest++ %pestpp_file% /H :4005
 
 REM start YAMR slaves
 FOR /L %%i IN (1,1,%nslaves%) DO (
  echo %%i
- start /D"%CD%\slave%%i" .\pest++ /H localhost:4005
+ start /D"%CD%\slave%%i" .\pest++ /H gecko:4005
 )
 

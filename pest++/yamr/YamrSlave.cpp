@@ -51,21 +51,24 @@ void YAMRSlave::init_network(const string &host, const string &port)
 
 	status = w_getaddrinfo(host.c_str(), port.c_str(), &hints, &servinfo);
 	w_print_servinfo(servinfo, cout);
+	cout << endl;
 	// connect
-	sockfd = w_socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
-	for (err = -1; err == -1;)
+	addrinfo* connect_addr = nullptr;
+	while  (connect_addr == nullptr)
 	{
-		err = w_connect(sockfd, servinfo->ai_addr, servinfo->ai_addrlen);
-		cerr << "failed to connect to master \"" << host << ":" << port << "\""<< endl << endl;
+		connect_addr = w_connect_first_avl(servinfo, sockfd);
+		if (connect_addr == nullptr) {
+			cerr << endl;
+			cerr << "failed to connect to master" << endl;
+		}
 	}
+	cout << "connection to master succeeded on socket: " << w_get_addrinfo_string(connect_addr) << endl << endl;
 	freeaddrinfo(servinfo);
 
 	fdmax = sockfd;
 	FD_ZERO(&master);
 	FD_SET(sockfd, &master);
 	// send run directory to master
-	cout << endl;
-	cout << "connection to master succeeded..." << endl << endl;
 }
 
 

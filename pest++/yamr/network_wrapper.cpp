@@ -185,43 +185,61 @@ int w_recvall(int sockfd, char *buf, unsigned long *len)
 	return n; // return -1 on failure, 0 closed connection or 1 on success
 }
 
+addrinfo* w_bind_first_avl(addrinfo *servinfo, int &sockfd)
+{
+	// loop through all the results and bind to the first we can
+	struct addrinfo *p;
+	char yes = '1';
+	for(p = servinfo; p != nullptr; p = p->ai_next) 
+	{
+		if ((sockfd = w_socket(p->ai_family, p->ai_socktype,
+		p->ai_protocol)) == -1) 
+		{
+			continue;
+		}
+		if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes,
+		sizeof(int)) == -1)
+		{
+			return nullptr;
+		}
+		if (w_bind(sockfd, p->ai_addr, p->ai_addrlen) == -1) 
+		{
+			w_close(sockfd);
+			continue;
+		}
+	break;
+	}
+	if (p == nullptr) {
+		cerr << "server: failed to bind" << endl;
+	}
+	return p;
+}
+
+addrinfo* w_connect_first_avl(addrinfo *servinfo, int &sockfd)
+{
+	// loop through all the results and connect to the first we can
+	struct addrinfo *p;
+	for(p = servinfo; p != nullptr; p = p->ai_next) 
+	{
+		if ((sockfd = w_socket(p->ai_family, p->ai_socktype,
+		p->ai_protocol)) == -1) 
+		{
+			continue;
+		}
+		if (w_connect(sockfd, p->ai_addr, p->ai_addrlen) == -1) 
+		{
+			w_close(sockfd);
+			continue;
+		}
+	break;
+	}
+	if (p == nullptr) {
+		// connection failed
+	}
+	return p;
+}
 
 
-//addrinfo* w_bind_first_avl(addrinfo *servinfo)
-//{
-//	// !!!!!!!!!!!!!!!THIS NEEDS REVIEW AND TESTING !!!!!!!!!!!!!!!!!!!!!
-//	//
-//	// loop through all the results and bind to the first we can
-//	struct addrinfo *p;
-//	int sockfd;
-//	char yes = '1';
-//	for(p = servinfo; p != NULL; p = p->ai_next) 
-//	{
-//		if ((sockfd = socket(p->ai_family, p->ai_socktype,
-//		p->ai_protocol)) == -1) 
-//		{
-//			perror("server: socket");
-//			continue;
-//		}
-//		if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes,
-//		sizeof(int)) == -1)
-//		{
-//			perror("setsockopt");
-//			return NULL;
-//		}
-//		if (bind(sockfd, p->ai_addr, p->ai_addrlen) == -1) 
-//		{
-//			w_close(sockfd);
-//			perror("server: bind");
-//			continue;
-//		}
-//	break;
-//	}
-//	if (p == NULL) {
-//		cerr << "server: failed to bind" << endl;
-//	}
-//	return p;
-//}
 
 void w_print_servinfo(addrinfo *res, ostream &fout)
 {
@@ -229,25 +247,36 @@ void w_print_servinfo(addrinfo *res, ostream &fout)
 	fout << "IP addresses:" << endl;
 	for(p = res;p != NULL; p = p->ai_next) 
 	{
-		void *addr;
-		char ipstr[INET6_ADDRSTRLEN];
-		string ipver;
-		// get the pointer to the address itself,
-		// different fields in IPv4 and IPv6:
-		if (p->ai_family == AF_INET) { // IPv4
-			struct sockaddr_in *ipv4 = (struct sockaddr_in *)p->ai_addr;
-			addr = &(ipv4->sin_addr);
-			ipver = "IPv4";
-		}
-		else { // IPv6
-			struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)p->ai_addr;
-			addr = &(ipv6->sin6_addr);
-			ipver = "IPv6";
-		}
+		string socket_string = w_get_addrinfo_string(p);
+	fout << "  " << socket_string << endl;
+	}
+}
+
+string w_get_addrinfo_string(struct addrinfo *p)
+{
+	stringstream sstr;
+	void *addr;
+	char ipstr[INET6_ADDRSTRLEN];
+	string ipver;
+	unsigned short port = 0;
+	// get the pointer to the address itself,
+	// different fields in IPv4 and IPv6:
+	if (p->ai_family == AF_INET) { // IPv4
+		struct sockaddr_in *ipv4 = (struct sockaddr_in *)p->ai_addr;
+		addr = &(ipv4->sin_addr);
+		port = ipv4->sin_port;
+		ipver = "IPv4";
+	}
+	else { // IPv6
+		struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)p->ai_addr;
+		addr = &(ipv6->sin6_addr);
+		port = ipv6->sin6_port;
+		ipver = "IPv6";
+	}
 	// convert the IP to a string and print it:
 	inet_ntop(p->ai_family, addr, ipstr, sizeof ipstr);
-	fout << " " << ipver <<": " << ipstr << endl;
-	}
+	sstr << "[" << ipver <<"] " << ipstr <<":" << port;
+	return sstr.str();
 }
 
 

@@ -190,7 +190,6 @@ RunManagerYAMR::RunManagerYAMR(const vector<string> _comline_vec,
 {
 	w_init();
 	int status;
-	int err;
 	struct addrinfo hints;
 	struct addrinfo *servinfo;
 	memset(&hints, 0, sizeof hints);
@@ -199,16 +198,21 @@ RunManagerYAMR::RunManagerYAMR(const vector<string> _comline_vec,
 	hints.ai_flags = AI_PASSIVE;
 
 	status = w_getaddrinfo(NULL, port.c_str(), &hints, &servinfo);
-	cout << "          starting YAMR (Yet Another Run ManageR)..." << endl << endl;
+	cout << "          starting YAMR (Yet Another run ManageR)..." << endl << endl;
 	w_print_servinfo(servinfo, cout);
+	cout << endl;
 	//make socket, bind and listen
-	listener = w_socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
-	err = w_bind(listener, servinfo->ai_addr, servinfo->ai_addrlen);
-	if (err != 0)
+	addrinfo *connect_addr = w_bind_first_avl(servinfo, listener);
+	if (connect_addr == nullptr)
 	{
 		stringstream err_str;
-		err_str << "Error: port \"" << port << "\n is busy.  Can not bind port";
+		err_str << "Error: port \"" << port << "\n is busy.  Can not bind port" << endl;
 		throw(PestError(err_str.str()));
+	}
+	else {
+		f_rmr << endl;
+		cout << "YAMR Master listening on socket: " << w_get_addrinfo_string(connect_addr) << endl;
+		f_rmr << "YAMR Master listening on socket:" << w_get_addrinfo_string(connect_addr) << endl;
 	}
 	w_listen(listener, BACKLOG);
 	//free servinfo
