@@ -45,7 +45,8 @@ void YAMRSlave::init_network(const string &host, const string &port)
 	struct addrinfo *servinfo;
 
 	memset(&hints, 0, sizeof hints);
-	hints.ai_family = AF_UNSPEC;
+	//hints.ai_family = AF_UNSPEC;
+	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = AI_PASSIVE;
 

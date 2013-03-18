@@ -48,7 +48,7 @@ using namespace pest_utils;
 
 int main(int argc, char* argv[])
 {
-	string version = "2.0.0 beta";
+	string version = "2.0.0";
 	cout << endl << endl;
 	cout << "             PEST++ Version " << version << endl << endl;
 	cout << "                 by Dave Welter" << endl;
@@ -103,10 +103,10 @@ int main(int argc, char* argv[])
 		{
 			cerr << perr.what();
 		}
-		//cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
-		//char buf[256];
-		//OperSys::gets_s(buf, sizeof(buf));
-		//exit(0);
+		cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
+		char buf[256];
+		OperSys::gets_s(buf, sizeof(buf));
+		exit(0);
 	}
 
 	RunManagerType run_manager_type = RunManagerType::SERIAL;
@@ -309,7 +309,7 @@ int main(int argc, char* argv[])
 	delete base_jacobian_ptr;
 	delete super_jacobian_ptr;
 	delete run_manager_ptr;
-	//cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
-	//char buf[256];
-	//OperSys::gets_s(buf, sizeof(buf));
+	cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
+	char buf[256];
+	OperSys::gets_s(buf, sizeof(buf));
 }
