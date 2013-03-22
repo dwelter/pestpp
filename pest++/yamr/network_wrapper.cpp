@@ -264,18 +264,20 @@ string w_get_addrinfo_string(struct addrinfo *p)
 	if (p->ai_family == AF_INET) { // IPv4
 		struct sockaddr_in *ipv4 = (struct sockaddr_in *)p->ai_addr;
 		addr = &(ipv4->sin_addr);
-		port = ipv4->sin_port;
+		port = ntohs(ipv4->sin_port);
 		ipver = "IPv4";
+		inet_ntop(p->ai_family, addr, ipstr, sizeof ipstr);
+		sstr << ipstr <<":" << port<< " (" << ipver << ")";
 	}
 	else { // IPv6
 		struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)p->ai_addr;
 		addr = &(ipv6->sin6_addr);
-		port = ipv6->sin6_port;
+		port = ntohs(ipv6->sin6_port);
 		ipver = "IPv6";
+		inet_ntop(p->ai_family, addr, ipstr, sizeof ipstr);
+		sstr << "[" << ipstr <<"]:" << port << " (" << ipver << ")";
 	}
 	// convert the IP to a string and print it:
-	inet_ntop(p->ai_family, addr, ipstr, sizeof ipstr);
-	sstr << "[" << ipver <<"] " << ipstr <<":" << port;
 	return sstr.str();
 }
 
@@ -329,7 +331,7 @@ string w_get_error_msg()
 	LocalFree( lpMsgBuf );
 	#endif
 	#ifdef OS_LINUX
-	err_msg << "(tcp/ip error id = " << errno << ")";
+	err_msg << "(tcp/ip error id = " << err_no << ") " << strerror(err_no);
 	#endif
 	return err_msg.str();
 }

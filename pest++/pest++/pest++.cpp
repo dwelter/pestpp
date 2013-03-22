@@ -178,7 +178,7 @@ int main(int argc, char* argv[])
 	cout << endl;
 	fout_rec << endl;
 	cout << "using control file: \"" <<  complete_path << "\"" << endl;
-	fout_rec << "Control file = " <<  complete_path  << "\"" << endl;
+	fout_rec << "using control file: \"" <<  complete_path << "\"" << endl;
 
 	const ParamTransformSeq &base_trans_seq = pest_scenario.get_base_par_tran_seq();
 	

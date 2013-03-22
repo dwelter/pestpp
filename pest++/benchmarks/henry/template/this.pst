@@ -4,7 +4,7 @@ restart estimation
    601  75  2  601  6  
       2      5     single  point  1   0   0
  10.0  2.0  0.3  0.03  10  999  lamforgive
- 2.0  2.0  0.001
+ 3.0  3.0  0.001
  0.1  noaui
  20 0.005  4  4  0.0001  4
  1  1  1
