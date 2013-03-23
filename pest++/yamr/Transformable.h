@@ -82,7 +82,8 @@ public:
 	void clear() {items.clear();}
 
 	vector<string> get_keys() const;
-    vector<double> get_data_vector(const vector<string> &keys) const;
+    vector<double> get_data_vec(const vector<string> &keys) const;
+	Eigen::VectorXd get_data_eigen_vec(const vector<string> &keys) const;
 	Transformable::iterator begin(){return items.begin();}
 	Transformable::const_iterator begin() const {return items.begin();}
 	Transformable::iterator end() {return items.end();}

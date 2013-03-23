@@ -109,7 +109,7 @@ streamoff RunStorage::get_stream_pos(int run_id)
 
 int RunStorage::add_run(const Parameters &pars)
 {
-	vector<double> data(pars.get_data_vector(par_names));
+	vector<double> data(pars.get_data_vec(par_names));
     int run_id = add_run(data);
 	return run_id;
 }
@@ -117,8 +117,8 @@ int RunStorage::add_run(const Parameters &pars)
 void RunStorage::update_run(int run_id, const Parameters &pars, const Observations &obs)
 {
 	check_rec_id(run_id);
-	vector<double> par_data(pars.get_data_vector(par_names));
-	vector<double> obs_data(obs.get_data_vector(obs_names));
+	vector<double> par_data(pars.get_data_vec(par_names));
+	vector<double> obs_data(obs.get_data_vec(obs_names));
 	buf_stream.seekp(get_stream_pos(run_id), ios_base::beg);
 	//set run status flage to complete
 	std::int8_t r_status = 1;

@@ -129,10 +129,10 @@ vector<char> Serialization::serialize(const Parameters &pars, const vector<strin
 	serial_data.resize(par_buf_sz + obs_buf_sz, Parameters::no_data);
 
 	char *buf = &serial_data[0];
-	vector<double> par_data = pars.get_data_vector(par_names_vec);
+	vector<double> par_data = pars.get_data_vec(par_names_vec);
 	w_memcpy_s(buf, par_buf_sz, &par_data[0], par_data.size() * sizeof(double));
 
-	vector<double> obs_data = obs.get_data_vector(obs_names_vec);
+	vector<double> obs_data = obs.get_data_vec(obs_names_vec);
 	w_memcpy_s(buf+par_buf_sz, obs_buf_sz, &obs_data[0], obs_data.size() * sizeof(double));
 	return serial_data;
 }

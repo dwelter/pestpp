@@ -181,7 +181,7 @@ map<string,double> SVDSolver::freeze_parameters(ModelRun &model_run, const Upgra
 	map<string,double> tmp_svd;
 	map<string,double> tmp_descent;
 
-	// tmp_parameters is used to a store a list of parameters which aare limited and need
+	// tmp_parameters is used to a store a list of parameters which are limited and need
 	// to be frozen.
 
 	// First get a list of parameters that are at their bounds in the direction computed
@@ -249,12 +249,11 @@ ModelRun SVDSolver::iterative_parameter_freeze(const ModelRun &model_run,
 }
 
 
-double SVDSolver::add_model_run(RunManagerAbstract &run_manager, const ParamTransformSeq &numeric2model_tran_seq, const Parameters &numeric_base_par, 
-	const Upgrade &upgrade, double rot_fac, double scale)
+void SVDSolver::add_model_run(RunManagerAbstract &run_manager, const ParamTransformSeq &numeric2model_tran_seq, const Parameters &numeric_base_par, 
+	const Upgrade &upgrade, double rot_fac, double scale, double &magnitude, double &rot_angle)
 {
 	const double PI = 3.141592;
 	double tmp_norm;
-	double rot_angle = 0.0;
 	VectorXd upgrade_vec = ((1.0 - rot_fac) * upgrade.svd_uvec + rot_fac * upgrade.grad_uvec);
 	tmp_norm = upgrade_vec.norm();
 	// Compute unit upgrade vector;
@@ -269,17 +268,18 @@ double SVDSolver::add_model_run(RunManagerAbstract &run_manager, const ParamTran
 	//double beta = beta_top/beta_bot;
 	//upgrade_vec *=beta;
 	upgrade_vec *= upgrade.svd_norm*scale;
-	
 	// update numeric parameters in upgrade_run and test them
 	{
 		Parameters upgrade_numeric_pars = numeric_base_par;
 		add_LaVectorDouble_2_Transformable(upgrade_numeric_pars, upgrade.par_name_vec, upgrade_vec);
 		// impose limits on parameter upgrade vector
 		limit_parameters_ip(numeric_base_par, upgrade_numeric_pars);
+		Parameters delta_pars = upgrade_numeric_pars;
+		delta_pars-= numeric_base_par;
+		magnitude = delta_pars.get_data_eigen_vec(delta_pars.get_keys()).norm();
 		// add run to run manager
 		run_manager.add_run(numeric2model_tran_seq.numeric2model_cp(upgrade_numeric_pars));
 	}
-	return rot_angle;
 }
 
 void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs)
@@ -351,16 +351,19 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 
 	//Build model runs
 	run_manager.reinitialize();
-	double rot_angle;
 	vector<double> rot_fac_vec;
 	vector<double> rot_angle_vec;
+	vector<double> magnitude_vec;
 
 	for(int i=0; i<n_rotation_fac; ++i) {
+		double rot_angle;
+		double magnitude;
 		double tmp_rot_fac = i / double(n_rotation_fac-1);
 		rot_fac_vec.push_back(tmp_rot_fac);
-		rot_angle = add_model_run(run_manager, upgrade_run.get_par_tran(), 
-		base_run.get_numeric_pars(),upgrade, rot_fac_vec.back(), 1.0);
+		add_model_run(run_manager, upgrade_run.get_par_tran(), 
+		base_run.get_numeric_pars(),upgrade, rot_fac_vec.back(), 1.0, magnitude, rot_angle);
 		rot_angle_vec.push_back(rot_angle);
+		magnitude_vec.push_back(magnitude);
 	}
 	// process model runs
 	cout << "    testing upgrade vectors... ";
@@ -380,7 +383,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 			streamsize n_prec = os.precision(2);
 			os << "      Rotation Factor = ";
 			os << setiosflags(ios::fixed)<< setw(4) << rot_fac;
-			os << " (" << rot_angle_vec[i] << " deg)";
+			os << " (" << rot_angle_vec[i] << " deg)" << "; length = " << magnitude_vec[i];
 			os.precision(n_prec);
 			os.unsetf(ios_base::floatfield); // reset all flags to default
 			os << ";  phi = " << upgrade_run.get_phi(tikhonov_weight); 

@@ -441,7 +441,7 @@ void TranSVD::reverse(Transformable &data)
 	// Transform super-parameters to base parameters
 	assert(Vt.cols() == base_parameter_names.size());
 	int n_base = Vt.cols();
-	vector<double> super_par_vec = data.get_data_vector(super_parameter_names);
+	vector<double> super_par_vec = data.get_data_vec(super_parameter_names);
 	vector<double>::iterator it;
 	for (it=super_par_vec.begin(); it!=super_par_vec.end(); ++it)
 	{
@@ -463,7 +463,7 @@ void TranSVD::forward(Transformable &data)
 
 	Transformable delta_data = data - init_base_numeric_parameters;
 
-	value = Vt * stlvec2LaVec(delta_data.get_data_vector(base_parameter_names));
+	value = Vt * stlvec2LaVec(delta_data.get_data_vec(base_parameter_names));
 	for (int i=0; i<n_sing_val; ++i) {
 		super_pars.insert(super_parameter_names[i], value(i)+10.0);
 	}

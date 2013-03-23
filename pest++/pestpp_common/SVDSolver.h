@@ -93,8 +93,8 @@ protected:
 	ModelRun iterative_parameter_freeze(const ModelRun &model_run, Upgrade &upgrade,
 		const QSqrtMatrix &q_sqrt_mat, const Eigen::VectorXd &residuals_vec, 
 		const vector<string> & obs_names_vec, bool use_desent, double scale = 1.0);
-	double add_model_run(RunManagerAbstract &run_manager, const ParamTransformSeq &numeric2model_tran_seq, const Parameters &numeric_base_par, 
-	const Upgrade &upgrade, double rot_fac, double scale);
+	void add_model_run(RunManagerAbstract &run_manager, const ParamTransformSeq &numeric2model_tran_seq, const Parameters &numeric_base_par, 
+	const Upgrade &upgrade, double rot_fac, double scale, double &magnitude, double &rot_angle);
 };
 
 #endif /* SVDSOLVER_H_ */

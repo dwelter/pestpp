@@ -26,15 +26,18 @@
 #include <utility>
 #include <cassert>
 #include <memory>
+#include <Eigen/Dense>
 #include "Transformable.h"
 #include "pest_error.h"
 #include "utilities.h"
+
 
 using std::string;
 using std::map;
 using std::ostream;
 using std::endl;
 using namespace pest_utils;
+using namespace Eigen;
 
 const double Transformable::no_data = -9.99E99;
 
@@ -195,7 +198,7 @@ void Transformable::update(const vector<string> &names, const vector<double> &va
 	}
 }
 
-vector<double> Transformable::get_data_vector(const vector<string> &keys) const
+vector<double> Transformable::get_data_vec(const vector<string> &keys) const
 {
 	vector<double> v;
 	v.resize(items.size(), 0.0);
@@ -210,6 +213,18 @@ vector<double> Transformable::get_data_vector(const vector<string> &keys) const
 		v[i] = value;
 	}
 	return v;
+}
+
+Eigen::VectorXd Transformable::get_data_eigen_vec(const vector<string> &keys) const
+{
+	VectorXd vec;
+	vec.resize(size());
+	int i = 0;
+	for (auto &k : keys)
+	{
+		vec(i++) = get_rec(k);
+	}
+	return vec;
 }
 
 vector<string> Transformable::get_keys() const
