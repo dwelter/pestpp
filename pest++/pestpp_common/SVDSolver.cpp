@@ -216,6 +216,7 @@ map<string,double> SVDSolver::freeze_parameters(ModelRun &model_run, const Upgra
 			}
 		}
 	}
+
 	model_run.freeze_parameters(tmp_svd);
 	return tmp_svd;
 }
@@ -234,13 +235,9 @@ ModelRun SVDSolver::iterative_parameter_freeze(const ModelRun &model_run,
 		for (map<string,double>::iterator b=freeze_pars.begin(), e=freeze_pars.end(); b!=e; ++b) {
 			os << "  freezing parameter: " << (*b).first <<  " at:" << (*b).second << endl;
 		}
-		// If there are any frozen parameter, rebuild the LaGenMatDouble jacobian matrix so that it does not include them
-		for(map<string, double>::const_iterator b_f=freeze_pars.begin(), e_f=freeze_pars.end();
-			b_f!=e_f; ++b_f)
-		{
-			upgrade.par_name_vec.erase(std::remove(upgrade.par_name_vec.begin(), upgrade.par_name_vec.end(),
-				(*b_f).first), upgrade.par_name_vec.end());
-		}
+		// If there are any frozen parameter, rebuild the jacobian matrix so that it does not include them
+		upgrade.par_name_vec.erase(std::remove_if(upgrade.par_name_vec.begin(), upgrade.par_name_vec.end(),
+			[&freeze_pars](const string &item)->bool{return freeze_pars.count(item)!=0;}), upgrade.par_name_vec.end());
 		upgrade = calc_upgrade_vec(jacobian, q_sqrt_mat, residuals_vec, upgrade.par_name_vec, obs_names_vec);
 		freeze_pars = freeze_parameters(base_run, upgrade, use_desent, scale);
 	}

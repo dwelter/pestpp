@@ -3,10 +3,10 @@
  
 // Allometric relationships & partitioning
 "Foliage:stem partitioning ratio @ D=2 cm"          .750000000
-"Foliage:stem partitioning ratio @ D=20 cm"         .030000000
-"Constant in the stem mass v. diam. relationship"   .095000000
+"Foliage:stem partitioning ratio @ D=20 cm"         .146813562
+"Constant in the stem mass v. diam. relationship"   .010000000
 "Power in the stem mass v. diam. relationship"      2.40000000
-"Maximum fraction of NPP to roots"                  .800000000
+"Maximum fraction of NPP to roots"                  1.00000000
 "Minimum fraction of NPP to roots"                  .229000000
  
 // Temperature modifier (fT)
@@ -25,7 +25,7 @@
  
 // Conductance
 "Maximum canopy conductance"                              0.02
-"Maximum stomatal conductance"                     .0100000000
+"Maximum stomatal conductance"                     .0150000000
 "Defines stomatal response to VPD"                        0.05
 "Canopy boundary layer conductance"                        0.2
  
@@ -47,7 +47,7 @@
  
 // Canopy structure and processes
 "Specific leaf area at age 0"                      16.10000000
-"Specific leaf area for mature leaves"             5.757000000
+"Specific leaf area for mature leaves"             5.500000000
 "Age at which specific leaf area = (SLA0+SLA1)/2"         0.92
 "Extinction coefficient for absorption of PAR by canopy"   0.5
 "Age at canopy cover"                                        1

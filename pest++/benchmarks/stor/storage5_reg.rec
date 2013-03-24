@@ -21,11 +21,11 @@ OPTIMISATION ITERATION NUMBER: 1
         upgrade vector magnitude (without limits or bounds) = 1.93068
         angle to direction of greatest descent: 51.1206 deg
 
-      Rotation Factor = 0.00 (0.00 deg); length = 1.93;  phi = 73544.3 (40.31% starting phi)
-      Rotation Factor = 0.25 (12.11 deg); length = 1.93;  phi = 41025.7 (22.49% starting phi)
-      Rotation Factor = 0.50 (25.56 deg); length = 1.93;  phi = 43367.4 (23.77% starting phi)
-      Rotation Factor = 0.75 (39.01 deg); length = 1.93;  phi = 46837.4 (25.67% starting phi)
-      Rotation Factor = 1.00 (51.12 deg); length = 1.93;  phi = 50507.5 (27.68% starting phi)
+      Rotation Factor = 0.00 (0.00 deg); length = 0.61;  phi = 73544.3 (40.31% starting phi)
+      Rotation Factor = 0.25 (12.11 deg); length = 0.62;  phi = 41025.7 (22.49% starting phi)
+      Rotation Factor = 0.50 (25.56 deg); length = 0.53;  phi = 43367.4 (23.77% starting phi)
+      Rotation Factor = 0.75 (39.01 deg); length = 0.49;  phi = 46837.4 (25.67% starting phi)
+      Rotation Factor = 1.00 (51.12 deg); length = 0.48;  phi = 50507.5 (27.68% starting phi)
 
     Parameter Upgrades (Control File Parameters)
      Parameter      Current       Previous       Factor       Relative
