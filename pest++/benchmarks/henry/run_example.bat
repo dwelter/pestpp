@@ -1,5 +1,5 @@
 REM set variables used in script
-set nslaves=4
+set nslaves=6
 set pestpp_file=this
 
 REM create directories for PEST++ and the slaves to run in

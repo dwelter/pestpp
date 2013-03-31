@@ -40,6 +40,7 @@ class SVDPackage;
 
 class SVDSolver
 {
+	enum class LimitType {NONE, LBND, UBND, REL, FACT};
 public:
 	SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_par_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
@@ -53,13 +54,10 @@ public:
 protected:
 	class Upgrade {
 	public:
-		Eigen::VectorXd svd_uvec;
-		Eigen::VectorXd grad_uvec;
+		Eigen::VectorXd uvec;
+		double norm;
 		vector<string> par_name_vec;
-		double svd_norm;
-		double grad_norm;
-		int n_sing_val_used;
-		int tot_sing_val;
+		Parameters frozen_numeric_pars;
 		void print(ostream &os); 
 	};
 
@@ -83,18 +81,32 @@ protected:
 	double prev_phi_percent;
 	int num_no_descent;
 	int n_rotation_fac;
-	virtual map<string, double> limit_parameters_ip(const Parameters &init_numeric_pars, Parameters &upgrade_numeric_pars);
+	virtual Parameters limit_parameters_ip(const Parameters &init_numeric_pars, 
+		Parameters &upgrade_numeric_pars, LimitType &limit_type, 
+		const Parameters &frozen_numeric_pars = Parameters());
 	virtual const string &get_description(){return description;}
 	void iteration_update_and_report(ostream &os, ModelRun &upgrade, TerminationController &termination_ctl); 
-	void param_change_stats(double p_old, double p_new, bool &have_fac, double &fac_change, bool &have_rel, double &rel_change);
-	Upgrade calc_upgrade_vec(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt, const Eigen::VectorXd &Residuals,
-		const vector<string> &par_name_vec, const vector<string> &obs_name_vec);
-	map<string,double> freeze_parameters(ModelRun &model_run, const Upgrade &upgrade, bool use_descent=true, double scale = 1.0);
+	void param_change_stats(double p_old, double p_new, bool &have_fac, double &fac_change, bool &have_rel,
+		double &rel_change);
+	Upgrade calc_svd_upgrade_vec(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
+		const Eigen::VectorXd &Residuals,
+		const vector<string> &par_name_vec, const vector<string> &obs_name_vec, 
+		const Parameters &base_numeric_pars, const Parameters &freeze_numeric_pars, int &tot_sing_val);
+	Upgrade calc_upgrade_vec(const Upgrade &direction, 
+		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
+		const Parameters &base_numeric_pars, const Parameters &freeze_numeric_pars, double scale);
+	Upgrade SVDSolver::calc_grad_upgrade_vec(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
+	const Eigen::VectorXd &Residuals, const vector<string> &par_name_vec, const vector<string> &obs_name_vec,
+	const Parameters &base_numeric_pars, const Parameters &freeze_numeric_pars, double l2_norm);
+	Parameters get_freeze_parameters(ModelRun &model_run, const Upgrade &upgrade, double scale, bool freeze_limit_par=false);
 	ModelRun iterative_parameter_freeze(const ModelRun &model_run, Upgrade &upgrade,
 		const QSqrtMatrix &q_sqrt_mat, const Eigen::VectorXd &residuals_vec, 
 		const vector<string> & obs_names_vec, bool use_desent, double scale = 1.0);
-	void add_model_run(RunManagerAbstract &run_manager, const ParamTransformSeq &numeric2model_tran_seq, const Parameters &numeric_base_par, 
-	const Upgrade &upgrade, double rot_fac, double scale, double &magnitude, double &rot_angle);
+	double add_model_run(RunManagerAbstract &run_manager, const ParamTransformSeq &numeric2model_tran_seq,
+		const Parameters &numeric_base_par, const Upgrade &upgrade, double scale);
+	Upgrade get_rotated_upgrade(const Upgrade &upgrade_svd, const Upgrade &upgrade_grad, const Parameters &base_numeric_pars,
+								double rot_fac, const Parameters &freeze_numeric_pars, 
+								double l2_norm, double &rot_angle);
 };
 
 #endif /* SVDSOLVER_H_ */
