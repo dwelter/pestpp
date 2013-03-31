@@ -9,37 +9,31 @@
 
  OPTIMISATION ITERATION NO. 2   ----->
  Parameter name    Group        Current value        Sensitivity
-   sup_1           g_sup_1      10.0000000000        42.7465702622       
-   sup_2           g_sup_2      10.0000000000        10.2455743220       
+   COND            COND         -3.08567429965       64.4913961694       
+   SCOEFF          SCOEFF       -0.301029995664      21.5911424508       
 
 
  OPTIMISATION ITERATION NO. 3   ----->
  Parameter name    Group        Current value        Sensitivity
-   sup_1           g_sup_1      9.74721322433        63.8686005847       
-   sup_2           g_sup_2      10.3213759191        19.0039657609       
+   COND            COND         -3.00243058638       60.1369076011       
+   SCOEFF          SCOEFF       -0.608394355393      17.4417770020       
 
 
  OPTIMISATION ITERATION NO. 4   ----->
  Parameter name    Group        Current value        Sensitivity
-   sup_1           g_sup_1      9.78621747916        61.4235495888       
-   sup_2           g_sup_2      10.2283481733        16.1445111247       
+   COND            COND         -2.99918906120       62.1960433045       
+   SCOEFF          SCOEFF       -0.697143166758      16.6120608920       
 
 
  OPTIMISATION ITERATION NO. 5   ----->
  Parameter name    Group        Current value        Sensitivity
-   COND            COND         -2.99994919052       62.3392542640       
-   SCOEFF          SCOEFF       -0.699139358564      16.6327666282       
+   COND            COND         -2.99999695995       62.3459143407       
+   SCOEFF          SCOEFF       -0.699196762855      16.6347888362       
 
 
  OPTIMISATION ITERATION NO. 6   ----->
  Parameter name    Group        Current value        Sensitivity
-   sup_1           g_sup_1      10.0000000000        61.9875297128       
-   sup_2           g_sup_2      10.0000000000        15.5955131941       
-
-
- OPTIMISATION ITERATION NO. 7   ----->
- Parameter name    Group        Current value        Sensitivity
-   COND            COND         -2.99999391992       62.5985180077       
-   SCOEFF          SCOEFF       -0.699199480360      16.6198413539       
+   COND            COND         -2.99999391992       62.5984726819       
+   SCOEFF          SCOEFF       -0.699198081195      16.6198897917       
 
 

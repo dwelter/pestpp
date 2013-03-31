@@ -45,15 +45,15 @@ SVDASolver::SVDASolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, c
 {
 }
 
-map<string,double> SVDASolver::freeze_parameters(Parameters &cur_numeric_pars, const VectorXd &svd_update_uvec, double svd_update_norm, const VectorXd &grad_update_uvec, bool use_descent)
+Parameters SVDASolver::freeze_parameters(Parameters &cur_numeric_pars, const VectorXd &svd_update_uvec, double svd_update_norm, const VectorXd &grad_update_uvec, bool use_descent)
 {
 	//This routine has the side effect that it modifies par_transform transformtion
 	// Test SVD parameter upgrade
 	Parameters upgrade_pars = cur_numeric_pars;
 	Parameters tmp_parameters;
 	int ip = 0;
-	map<string,double> tmp_svd;
-	map<string,double> tmp_descent;
+	Parameters tmp_svd;
+	
 	for(Parameters::iterator b=upgrade_pars.begin(), e=upgrade_pars.end(); b!=e; ++b, ++ip)
 	{
 		b->second += svd_update_uvec(ip)*svd_update_norm;
@@ -79,7 +79,7 @@ map<string,double> SVDASolver::freeze_parameters(Parameters &cur_numeric_pars, c
 	//				++b;
 	//			}
 	//}
-	for (map<string,double>::iterator b=tmp_svd.begin(), e=tmp_svd.end(); b!=e; ++b) {
+	for (Parameters::iterator b=tmp_svd.begin(), e=tmp_svd.end(); b!=e; ++b) {
 		cur_numeric_pars.erase((*b).first);
 		par_transform.get_frozen_ptr()->insert((*b).first, (*b).second);
 	}
@@ -87,14 +87,13 @@ map<string,double> SVDASolver::freeze_parameters(Parameters &cur_numeric_pars, c
 }
 
 
-
-map<string, double> SVDASolver::limit_parameters_ip(const Parameters &init_numeric_pars, Parameters &upgrade_numeric_pars)
+Parameters SVDASolver::limit_parameters_ip(const Parameters &init_numeric_pars, Parameters &upgrade_numeric_pars, const Parameters &frozen_pars)
 {
 	const string *name;
 	double p_init;
 	double p_upgrade;
 	double limit;
-	map<string,double> tmp;
+	Parameters tmp;
 
 	pair<bool, double> par_limit;
 	Parameters::iterator pu_iter;
@@ -116,7 +115,6 @@ map<string, double> SVDASolver::limit_parameters_ip(const Parameters &init_numer
 	}
 	return tmp;
 }
-
 
 
 

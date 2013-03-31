@@ -35,8 +35,8 @@ public:
 	SVDASolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_par_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, const Regularization *_regul_scheme, int _n_rotation_fac);
-	map<string, double> limit_parameters_ip(const Parameters &init_numeric_pars, Parameters &upgrade_numeric_pars);
-	virtual map<string,double> freeze_parameters(Parameters &cur_numeric_pars, const Eigen::VectorXd &svd_update_uvec, double svd_update_norm,
+	Parameters limit_parameters_ip(const Parameters &init_numeric_pars, Parameters &upgrade_numeric_pars, const Parameters &frozen_numeric_pars = Parameters());
+	Parameters freeze_parameters(Parameters &cur_numeric_pars, const Eigen::VectorXd &svd_update_uvec, double svd_update_norm,
 		const Eigen::VectorXd &grad_update_uvec, bool use_descent=true);
 	virtual const string &get_description(){return description;}
 	~SVDASolver(void);

@@ -76,10 +76,11 @@ const Transformable& Transformable::operator=(const Transformable &rhs)
 
 Transformable& Transformable::operator+=(const Transformable &rhs)
 {
-	for(Transformable::iterator b=items.begin(), e=items.end(); b!=e; ++b)
+	for(auto &i : items)
 	{
-		assert(rhs.items.find(b->first) != rhs.items.end());
-		b->second += rhs.items.find(b->first)->second;
+		auto iter = rhs.items.find(i.first);
+		assert(iter != rhs.items.end());
+		i.second += iter->second;
 	}
     return *this;
  }
@@ -87,13 +88,23 @@ Transformable& Transformable::operator+=(const Transformable &rhs)
 
 Transformable& Transformable::operator-=(const Transformable &rhs)
 {
-	for(Transformable::iterator b=items.begin(), e=items.end(); b!=e; ++b)
+	for(auto &i : items)
 	{
-		assert(rhs.items.find(b->first) != rhs.items.end());
-		b->second -= rhs.items.find(b->first)->second;
+		auto iter = rhs.items.find(i.first);
+		assert(iter != rhs.items.end());
+		i.second -= iter->second;
 	}
     return *this;
  }
+
+Transformable& Transformable::operator*=(double scale)
+{
+	for(auto &i : items)
+	{
+		i.second *= scale;
+	}
+	 return *this;
+}
 
 Transformable Transformable::operator-(const Transformable &rhs) const
 {
@@ -139,6 +150,11 @@ void Transformable::insert(iterator first, iterator last )
 size_t Transformable::erase(const string &name)
 {
 	return items.erase(name);
+}
+
+void Transformable::erase(iterator position)
+{
+	items.erase(position);
 }
 
 Transformable::iterator Transformable::find(const string &name)
@@ -237,6 +253,17 @@ vector<string> Transformable::get_keys() const
 		ret_val.push_back((*b).first);
 	}
 	return ret_val;
+}
+
+double Transformable::l2_norm() const
+{
+   double norm=0;
+   for (auto &i : items)
+   {
+    norm += pow(i.second, 2.0);
+   }
+   norm = sqrt(norm);
+   return norm;
 }
 
 ostream& operator<<(ostream& out, const Transformable &rhs)

@@ -63,6 +63,7 @@ public:
 	const Transformable& operator=(const Transformable &rhs);
 	Transformable& operator+=(const Transformable &rhs);
 	Transformable& operator-=(const Transformable &rhs);
+	Transformable& operator*=(double scale);
 	Transformable operator-(const Transformable &rhs) const;
 	double &operator[](const string &name);
 	pair<iterator,bool> insert(const string &name, double value);
@@ -70,6 +71,7 @@ public:
     void insert(const vector<string> &name_vec, const vector<double> &value_vec);
 	void insert (iterator first, iterator last );
 	size_t erase(const string &name);
+	void erase(iterator position);
 	iterator find(const string &name);
 	const double* get_rec_ptr(const string &name) const;
 	const double get_rec(const string &name) const;
@@ -88,6 +90,7 @@ public:
 	Transformable::const_iterator begin() const {return items.begin();}
 	Transformable::iterator end() {return items.end();}
 	Transformable::const_iterator end() const {return items.end();}
+    double l2_norm() const;
 	virtual ~Transformable(){}
 protected:
 	unordered_map<string, double> items;
