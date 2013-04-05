@@ -36,8 +36,7 @@ public:
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, const Regularization *_regul_scheme, int _n_rotation_fac);
 	Parameters limit_parameters_ip(const Parameters &init_numeric_pars, Parameters &upgrade_numeric_pars, const Parameters &frozen_numeric_pars = Parameters());
-	Parameters freeze_parameters(Parameters &cur_numeric_pars, const Eigen::VectorXd &svd_update_uvec, double svd_update_norm,
-		const Eigen::VectorXd &grad_update_uvec, bool use_descent=true);
+	Parameters SVDASolver::freeze_parameters(Parameters &base_numeric_pars, Parameters &new_numeric_pars, Parameters &frozen_numeric_pars, bool freeze_facpar_relpar);
 	virtual const string &get_description(){return description;}
 	~SVDASolver(void);
 };

@@ -58,7 +58,8 @@ SVDSolver::SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, con
 		: ctl_info(_ctl_info), svd_info(_svd_info), par_group_info_ptr(_par_group_info_ptr), ctl_par_info_ptr(_ctl_par_info_ptr), obs_info_ptr(_obs_info), obj_func(_obj_func),
 		  file_manager(_file_manager), observations_ptr(_observations), par_transform(_par_transform),
 		  cur_solution(_obj_func, _par_transform, *_observations), phiredswh_flag(false), save_next_jacobian(true), prior_info_ptr(_prior_info_ptr), jacobian(_jacobian), prev_phi_percent(0.0),
-		  num_no_descent(0), regul_scheme_ptr(_regul_scheme_ptr), n_rotation_fac(_n_rotation_fac), description(_description)
+		  num_no_descent(0), regul_scheme_ptr(_regul_scheme_ptr), n_rotation_fac(_n_rotation_fac), description(_description),
+		  alpha(-999), alpha_prev(-999), precent_grad_phi(-999), precent_grad_phi_prev(-999)
 {
 	svd_package = new SVD_EIGEN();
 }
@@ -82,6 +83,70 @@ SVDSolver::~SVDSolver(void)
 {
 	delete svd_package;
 }
+
+double SVDSolver::calc_angle_deg(const Upgrade &upgrade1, const Upgrade &upgrade2)
+{
+	const double PI = 3.141592;
+	double angle = acos(min(1.0, (upgrade1.uvec).dot(upgrade2.uvec))) * 180.0 / PI;
+	return angle;
+}
+
+Parameters SVDSolver::apply_upgrade(const Parameters &init_numeric_pars,const Upgrade &upgrade, double scale)
+{
+	Parameters upgrade_pars = init_numeric_pars;
+
+	// Add upgrade to init parameters
+	// This does not check whether parameters remain in bounds
+	for(int ip = 0; ip<upgrade.uvec.size(); ++ip)
+	{
+		const string &p_name = upgrade.par_name_vec[ip];
+		auto it = upgrade_pars.find(upgrade.par_name_vec[ip]);
+		assert(it != upgrade_pars.end());
+		it->second += upgrade.uvec[ip]*upgrade.norm*scale;
+	}
+	//Impose previously frozen parameters
+	for (auto &ipar : upgrade.frozen_numeric_pars)
+	{
+		upgrade_pars[ipar.first] = ipar.second;
+	}
+	return upgrade_pars;
+}
+
+void SVDSolver::update_upgrade(Upgrade &upgrade, const Parameters &base_pars, const Parameters &new_pars, 
+							   const Parameters &frozen_pars)
+{
+
+	//build map of parameter names to index in original par_name_vec vector
+	unordered_map<string, int> par_vec_name_to_idx;
+	for(int i=0; i<upgrade.par_name_vec.size(); ++i)
+	{
+		par_vec_name_to_idx[upgrade.par_name_vec[i]] = i;
+	}
+
+	//compute new upgrade
+	for(int i=0; i<upgrade.par_name_vec.size(); ++i)
+	{
+		auto &it_base = base_pars.find(upgrade.par_name_vec[i]);
+		assert(it_base != base_pars.end());
+		auto &it_new = new_pars.find(upgrade.par_name_vec[i]);
+		assert(it_new != new_pars.end());
+		upgrade.uvec[i] = it_new->second - it_base->second;
+	}
+	//tranfere previously frozen componets of the ugrade vector to upgrade.uvec
+	upgrade.frozen_numeric_pars = frozen_pars;
+	for(auto &ipar : frozen_pars)
+	{
+		const string &par_name = ipar.first;
+		auto &it = par_vec_name_to_idx.find(par_name);
+		assert(it != par_vec_name_to_idx.end());
+		auto &it_base = base_pars.find(ipar.first);
+		upgrade.uvec(it->second) = ipar.second - it_base->second;
+	}
+	upgrade.norm = upgrade.uvec.norm();
+	if (upgrade.norm != 0) upgrade.uvec *= 1.0 /upgrade.norm;
+
+}
+
 
 ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter, 
 	const Parameters &ctl_pars, ModelRun &optimum_run)
@@ -280,7 +345,7 @@ SVDSolver::Upgrade SVDSolver::calc_grad_upgrade_vec(const Jacobian &jacobian, co
 
 SVDSolver::Upgrade SVDSolver::get_rotated_upgrade(const Upgrade &upgrade_svd, const Upgrade &upgrade_grad,
 		const Parameters &base_numeric_pars, double rot_fac,
-		const Parameters &freeze_numeric_pars, double l2_norm, double &rot_angle)
+		const Parameters &freeze_numeric_pars, double l2_norm)
 {
 	Upgrade upgrade;
 	const double PI = 3.141592;
@@ -332,61 +397,7 @@ SVDSolver::Upgrade SVDSolver::get_rotated_upgrade(const Upgrade &upgrade_svd, co
 	}
 	upgrade.norm = upgrade.uvec.norm();
 	if (upgrade.norm != 0) upgrade.uvec *= 1.0 /upgrade.norm;
-	rot_angle = acos(min(1.0, upgrade_svd.uvec.dot(upgrade.uvec))) * 180.0 / PI;
 	return upgrade;
-}
-
-
-Parameters SVDSolver::get_freeze_parameters(ModelRun &model_run, const Upgrade &upgrade, double scale, bool freeze_limit_par)
-{
-	Parameters upgrade_pars = model_run.get_numeric_pars();
-	int ip = 0;
-	Parameters frz_par_map;
-	LimitType limit_type;
-
-	// First get a list of parameters that are at their bounds
-	for(int ip = 0; ip<upgrade.uvec.size(); ++ip)
-	{
-		const string &p_name = upgrade.par_name_vec[ip];
-		auto it = upgrade_pars.find(upgrade.par_name_vec[ip]);
-		assert(it != upgrade_pars.end());
-		it->second += upgrade.uvec[ip]*upgrade.norm*scale;
-	}
-	frz_par_map = limit_parameters_ip(model_run.get_numeric_pars(), upgrade_pars, limit_type, upgrade.frozen_numeric_pars);
-	if ( freeze_limit_par == false && (limit_type != LimitType::UBND && limit_type!= LimitType::LBND) )
-	{
-		frz_par_map.clear();
-	}
-	return frz_par_map;
-}
-
-
-double SVDSolver::add_model_run(RunManagerAbstract &run_manager,
-								const ParamTransformSeq &numeric2model_tran_seq,
-								const Parameters &numeric_base_par, 
-								const Upgrade &upgrade, double scale)
-{
-	double magnitude;
-	LimitType limit_type;
-	VectorXd upgrade_vec = upgrade.uvec*upgrade.norm*scale;
-	// update numeric parameters in upgrade_run and test them
-	Parameters upgrade_numeric_pars = numeric_base_par;
-	add_LaVectorDouble_2_Transformable(upgrade_numeric_pars, upgrade.par_name_vec, upgrade_vec);
-	//impose frozen parameters
-	for (auto &ipar : upgrade.frozen_numeric_pars)
-	{
-		auto iter = upgrade_numeric_pars.find(ipar.first);
-		assert(iter != upgrade_numeric_pars.end());
-		iter->second = ipar.second;
-	}
-	// impose limits on parameter upgrade vector
-	limit_parameters_ip(numeric_base_par, upgrade_numeric_pars, limit_type, upgrade.frozen_numeric_pars);
-	Parameters delta_pars = upgrade_numeric_pars;
-	delta_pars-= numeric_base_par;
-	magnitude = delta_pars.get_data_eigen_vec(delta_pars.get_keys()).norm();
-	// add run to run manager
-	run_manager.add_run(numeric2model_tran_seq.numeric2model_cp(upgrade_numeric_pars));
-	return magnitude;
 }
 
 void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs)
@@ -402,11 +413,12 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	if (!cur_solution.obs_valid() || calc_init_obs == true) {
 		 calc_init_obs = true;
 	 }
-	cout << "    calculating jacobian... ";
+	cout << "  calculating jacobian... ";
 	jacobian.calculate(cur_solution, cur_solution.get_numeric_pars().get_keys(),  cur_solution.get_obs_template().get_keys(),
 			*par_group_info_ptr, *ctl_par_info_ptr,run_manager,  *prior_info_ptr,
 			phiredswh_flag, calc_init_obs);
 	cout << endl;
+	cout << "  computing upgrade vectors... " << endl;
 
 	//Freeze Parameter for which the jacobian could not be calculated
 	auto &failed_jac_pars = jacobian.get_failed_parameter_names();
@@ -428,73 +440,104 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	//build residuals vector
 	residuals_vec = -1.0 * stlvec2LaVec(cur_solution.get_residuals_vec(obs_names_vec));
 
-	vector<string> par_name_vec = base_run.get_numeric_pars().get_keys();
-	Parameters frozen_pars;
-	int tot_sing_val;
-
 	//Build model runs
 	run_manager.reinitialize();
 	vector<double> rot_fac_vec;
 	vector<double> rot_angle_vec;
 	vector<double> magnitude_vec;
-	double magnitude;
 
 
 	// compute svd update vector
+	double target_upgrade_norm = 0;
 	Upgrade svd_upgrade;
-
+	Parameters new_numeric_pars;
+	const Parameters &base_run_numeric_pars = base_run.get_numeric_pars();
+	vector<string> par_name_vec = base_run_numeric_pars.get_keys();
+	Parameters frozen_pars;
+	int tot_sing_val;
+	LimitType limit_type = LimitType::NONE;
 	while (true)
 	{
-		int n_frz = frozen_pars.size();
 		svd_upgrade = calc_svd_upgrade_vec(jacobian, Q_sqrt, residuals_vec, par_name_vec, obs_names_vec,
 			base_run.get_numeric_pars(), frozen_pars, tot_sing_val);
-		Parameters new_frz_pars = get_freeze_parameters(base_run, svd_upgrade, 1.0);
-		frozen_pars.insert(new_frz_pars.begin(), new_frz_pars.end());
-		if (n_frz == frozen_pars.size()) break;
+		new_numeric_pars = apply_upgrade(base_run_numeric_pars, svd_upgrade, 1.0);
+		Parameters new_frozen_pars = limit_parameters_ip(base_run_numeric_pars, new_numeric_pars, limit_type, frozen_pars);
+		if (new_frozen_pars.size() > 0 && (limit_type == LimitType::UBND || limit_type == LimitType::LBND) )
+		{
+			frozen_pars.insert(new_frozen_pars.begin(), new_frozen_pars.end());
+		}
+		update_upgrade(svd_upgrade, base_run_numeric_pars, new_numeric_pars, frozen_pars);
+		if (limit_type != LimitType::UBND && limit_type != LimitType::LBND) break;
+		if (frozen_pars.size() == new_numeric_pars.size()) break; // everything is frozen
 	}
 	//add run svd run to run manager
-	magnitude = add_model_run(run_manager, base_run.get_par_tran(), base_run.get_numeric_pars(), 
-		svd_upgrade, 1.0);
+	run_manager.add_run(base_run.get_par_tran().numeric2model_cp(new_numeric_pars));
 	rot_fac_vec.push_back(0);
 	rot_angle_vec.push_back(0);
-	magnitude_vec.push_back(magnitude);
+	magnitude_vec.push_back(svd_upgrade.norm);
+	target_upgrade_norm = svd_upgrade.norm;
 
-	//check for another run svd run with limited parameters frozen
-	{
-		int n_frz_svd_bnd_only = frozen_pars.size();
-		Upgrade svd_frz_limited_par;
-		while (true)
-		{
-			int n_frz = frozen_pars.size();
-			svd_frz_limited_par = calc_svd_upgrade_vec(jacobian, Q_sqrt, residuals_vec, par_name_vec, obs_names_vec,
-				base_run.get_numeric_pars(), frozen_pars, tot_sing_val);
-			Parameters new_frz_pars = get_freeze_parameters(base_run, svd_upgrade, 1.0, true);
-			frozen_pars.insert(new_frz_pars.begin(), new_frz_pars.end());
-			if (n_frz == frozen_pars.size()) break;
-		}
-		if (frozen_pars.size() > n_frz_svd_bnd_only)
-		{
-			//add run svd run with limited parameters frozen to run manager
-			magnitude = add_model_run(run_manager, base_run.get_par_tran(), base_run.get_numeric_pars(), 
-				svd_frz_limited_par, 1.0);
-			rot_fac_vec.push_back(0);
-			rot_angle_vec.push_back(0);
-			magnitude_vec.push_back(magnitude);
-		}
-	}
+	////check for another run svd run with limited parameters frozen
+	//if (limit_type != LimitType::NONE)
+	//{
+	//	Upgrade svd_frz_limited_upgrade;
+	//	while (true)
+	//	{
+	//		svd_frz_limited_upgrade = calc_svd_upgrade_vec(jacobian, Q_sqrt, residuals_vec, par_name_vec, obs_names_vec,
+	//			base_run.get_numeric_pars(), frozen_pars, tot_sing_val);
+	//		new_numeric_pars = apply_upgrade(base_run_numeric_pars, svd_frz_limited_upgrade, 1.0);
+	//		Parameters new_frozen_pars = limit_parameters_ip(base_run_numeric_pars, new_numeric_pars, limit_type, frozen_pars);
+	//		if (new_frozen_pars.size() > 0)
+	//		{
+	//			frozen_pars.insert(new_frozen_pars.begin(), new_frozen_pars.end());
+	//		}
+	//		update_upgrade(svd_frz_limited_upgrade, base_run_numeric_pars, new_numeric_pars, frozen_pars);
+	//		if (limit_type == LimitType::NONE) break;
+	//		if (frozen_pars.size() == new_numeric_pars.size()) break; // everything is frozen
+	//	}
+	//	//add second svd run with limited parameters frozen to run manager
+	//	run_manager.add_run(base_run.get_par_tran().numeric2model_cp(new_numeric_pars));
+	//	rot_fac_vec.push_back(0);
+	//	rot_angle_vec.push_back(0);
+	//	magnitude_vec.push_back(svd_frz_limited_upgrade.norm);
+	//	target_upgrade_norm = svd_frz_limited_upgrade.norm;
+	//}
 
 
 	//compute gradient descent upgrade vector
 	frozen_pars.clear();
 	Upgrade grad_upgrade;
+	Parameters grad_numeric_pars;
+	limit_type = LimitType::NONE;
+	double tmp_alpha = alpha;
+	if (alpha <= 0)
+	{
+		alpha = .5;
+	}
+	else if (precent_grad_phi > 100)
+	{
+		alpha /= 2.0;
+	}
+	else if (alpha < alpha_prev && precent_grad_phi < precent_grad_phi_prev)
+	{
+		alpha *= 0.80;
+	}
+	else
+	{
+		alpha *= 1.2;
+	}
+	alpha_prev = tmp_alpha;
+	precent_grad_phi_prev = precent_grad_phi;
 	while (true)
 	{
-		int n_frz = frozen_pars.size();
 		grad_upgrade = calc_grad_upgrade_vec(jacobian, Q_sqrt, residuals_vec, par_name_vec, obs_names_vec,
 			base_run.get_numeric_pars(), frozen_pars, svd_upgrade.norm);
-		Parameters new_frz_pars = get_freeze_parameters(base_run, grad_upgrade, svd_upgrade.norm/grad_upgrade.norm);
-		frozen_pars.insert(new_frz_pars.begin(), new_frz_pars.end());
-		if (n_frz == frozen_pars.size()) break;
+		grad_numeric_pars = apply_upgrade(base_run_numeric_pars, grad_upgrade, alpha);
+		Parameters new_frozen_pars = limit_parameters_ip(base_run_numeric_pars, grad_numeric_pars, limit_type, frozen_pars);
+		frozen_pars.insert(new_frozen_pars.begin(), new_frozen_pars.end());
+		update_upgrade(grad_upgrade, base_run_numeric_pars, grad_numeric_pars, frozen_pars);
+		if (limit_type != LimitType::UBND && limit_type != LimitType::LBND) break;
+		if (frozen_pars.size() == new_numeric_pars.size()) break; // everything is frozen
 	}
 
 	os << endl;
@@ -502,45 +545,47 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	//os << "        number of singular values used: " << upgrade.n_sing_val_used << "/" << upgrade.tot_sing_val << endl;
 	os << "        upgrade vector magnitude (without limits or bounds) = " << svd_upgrade.norm << endl;
 	os << "        angle to direction of greatest descent: ";
-	os <<  acos(min(1.0, (svd_upgrade.uvec).dot(grad_upgrade.uvec))) * 180.0 / PI << " deg" << endl;
+	os <<  calc_angle_deg(svd_upgrade, grad_upgrade) << " deg" << endl;
 	os << endl;
 
 	//add rotated runs to run manager
-	for(int i=1; i<n_rotation_fac-1; ++i) {
-		double rot_angle;
-		double magnitude;
+	for(int i=1; i<n_rotation_fac-1; ++i) 
+	{
 		double rot_fac = (i == 0) ? 0 : i / double(n_rotation_fac-1);
 		Upgrade tmp_upgrade;
+		limit_type = LimitType::NONE;
+		frozen_pars.clear();
 		while (true)
 		{
-			int n_frz = frozen_pars.size();
 			tmp_upgrade = get_rotated_upgrade(svd_upgrade, grad_upgrade, base_run.get_numeric_pars(),
-					rot_fac, frozen_pars, svd_upgrade.norm, rot_angle);
-			Parameters new_frz_pars = get_freeze_parameters(base_run, grad_upgrade, svd_upgrade.norm/grad_upgrade.norm);
-			frozen_pars.insert(new_frz_pars.begin(), new_frz_pars.end());
-			if (n_frz == frozen_pars.size()) break;
+					rot_fac, frozen_pars, svd_upgrade.norm);
+			new_numeric_pars = apply_upgrade(base_run_numeric_pars, tmp_upgrade, 1.0);
+			Parameters new_frozen_pars = limit_parameters_ip(base_run_numeric_pars, new_numeric_pars, limit_type, frozen_pars);
+			frozen_pars.insert(new_frozen_pars.begin(), new_frozen_pars.end());
+			update_upgrade(tmp_upgrade, base_run_numeric_pars, new_numeric_pars, frozen_pars);
+			if (limit_type != LimitType::UBND && limit_type != LimitType::LBND) break;
+			if (frozen_pars.size() == new_numeric_pars.size()) break; // everything is frozen
 		}
+		run_manager.add_run(base_run.get_par_tran().numeric2model_cp(new_numeric_pars));
 		rot_fac_vec.push_back(rot_fac);
-		magnitude = add_model_run(run_manager, base_run.get_par_tran(), base_run.get_numeric_pars(), 
-		tmp_upgrade, svd_upgrade.norm/tmp_upgrade.norm);
-		rot_angle_vec.push_back(rot_angle);
+		rot_angle_vec.push_back(calc_angle_deg(svd_upgrade, tmp_upgrade));
 		magnitude_vec.push_back(tmp_upgrade.norm);
 	}
 
 	//add gradient descent run to run manager
-	magnitude = add_model_run(run_manager, base_run.get_par_tran(), base_run.get_numeric_pars(), 
-		grad_upgrade, svd_upgrade.norm/grad_upgrade.norm);
-	rot_fac_vec.push_back(0);
-	rot_angle_vec.push_back(0);
-	magnitude_vec.push_back(magnitude);
+	run_manager.add_run(base_run.get_par_tran().numeric2model_cp(grad_numeric_pars));
+	rot_fac_vec.push_back(1.0);
+	rot_angle_vec.push_back(calc_angle_deg(svd_upgrade, grad_upgrade));
+	magnitude_vec.push_back(grad_upgrade.norm);
+
 	// process model runs
-	cout << "    testing upgrade vectors... ";
+	cout << "  testing upgrade vectors... ";
 	run_manager.run();
 	cout << endl;
 	bool best_run_updated_flag = false;
 	ModelRun best_upgrade_run(base_run);
 
-	for(int i=0; i<n_rotation_fac; ++i) {
+	for(int i=0; i<run_manager.get_nruns(); ++i) {
 		double rot_fac = rot_fac_vec[i];
 		ModelRun upgrade_run(base_run);
 		Parameters tmp_pars;
@@ -566,6 +611,10 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 				best_run_updated_flag = true;
 				best_upgrade_run = upgrade_run;
 			}
+			if (i==run_manager.get_nruns()-1)
+			{
+				precent_grad_phi = upgrade_run.get_phi();
+			}
 		}
 		else
 		{
@@ -578,6 +627,47 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 			os << ";  run failed" << endl;
 		}
 	}
+
+	// Print frozen parameter information
+	if (svd_upgrade.frozen_numeric_pars.size() > 0)
+	{
+		Parameters ctl_frz_par = svd_upgrade.frozen_numeric_pars;
+		vector<string> keys = ctl_frz_par.get_keys();
+		std::sort(keys.begin(), keys.end());
+		base_run.get_par_tran().numeric2ctl_ip(ctl_frz_par);
+		os << endl;
+		os << "  Parameters frozen during SVD upgrade:" << endl;
+		// ctl_frz_par also contains fixed parameters so we need to loop through the keys 
+		// of the original numeric parameters
+		for (auto &ikey : keys)
+		{
+			auto iter = ctl_frz_par.find(ikey);
+			if (iter != ctl_frz_par.end())
+			{
+				os << "    " << iter->first << " frozen at " << iter->second << endl;
+			}
+		}
+	}
+	if (grad_upgrade.frozen_numeric_pars.size() > 0)
+	{
+		Parameters ctl_frz_par = grad_upgrade.frozen_numeric_pars;
+		vector<string> keys = ctl_frz_par.get_keys();
+		std::sort(keys.begin(), keys.end());
+		base_run.get_par_tran().numeric2ctl_ip(ctl_frz_par);
+		os << endl;
+		os << "  Parameters frozen during Gradient Descent upgrade:" << endl;
+		// ctl_frz_par also contains fixed parameters so we need to loop through the keys 
+		// of the original numeric parameters
+		for (auto &ikey : keys)
+		{
+			auto iter = ctl_frz_par.find(ikey);
+			if (iter != ctl_frz_par.end())
+			{
+				os << "    " << iter->first << " frozen at " << iter->second << endl;
+			}
+		}
+	}
+
 	// clean up run_manager memory
 	run_manager.free_memory();
 
@@ -613,11 +703,7 @@ Parameters SVDSolver::limit_parameters_ip(const Parameters &init_numeric_pars, P
 	Parameters bound_parameters;
 	pair<bool, double> par_limit;
 	Parameters ctl_parameters_at_limit;
-	Parameters::const_iterator pu_iter;
-	Parameters::const_iterator pu_end = upgrade_numeric_pars.end();
 	Parameters upgrade_ctl_pars  = par_transform.numeric2ctl_cp(upgrade_numeric_pars);
-	Parameters::const_iterator mu_iter;
-	Parameters::const_iterator mu_end = upgrade_ctl_pars.end();
 
 	Parameters init_ctl_pars = init_numeric_pars;
 	//remove frozen parameters from numeric parameters
@@ -634,12 +720,12 @@ Parameters SVDSolver::limit_parameters_ip(const Parameters &init_numeric_pars, P
 	}
 	par_transform.numeric2ctl_ip(init_ctl_pars);
 
-	for(Parameters::const_iterator b=init_ctl_pars.begin(), e=init_ctl_pars.end(); b!=e; ++b)
+	for(auto &ipar : init_ctl_pars)
 	{
 		par_limit = pair<bool, double>(false, 0.0);
-		name = &(*b).first;  // parameter name
-		p_init = (*b).second; // inital parameter value
-		pu_iter = upgrade_ctl_pars.find(*name);
+		name = &(ipar.first);  // parameter name
+		p_init = ipar.second; // inital parameter value
+		auto pu_iter = upgrade_ctl_pars.find(*name);
 		p_upgrade = (*pu_iter).second;  // upgrade parameter value
 		p_info = ctl_par_info_ptr->get_parameter_rec_ptr(*name);
 
@@ -729,11 +815,11 @@ Parameters SVDSolver::limit_parameters_ip(const Parameters &init_numeric_pars, P
 	// Apply limit factor to PEST upgrade parameters
 	if (limit_factor != 1.0)
 	{
-		for(Parameters::iterator b=upgrade_numeric_pars.begin(), e=upgrade_numeric_pars.end();
-			b!=e; ++b) {
-			name = &(*b).first;
+		for(auto &ipar : upgrade_numeric_pars)
+		{
+			name = &(ipar.first);
 			p_init = init_numeric_pars.get_rec(*name);
-			(*b).second = p_init + ((*b).second - p_init) *  limit_factor;
+			ipar.second = p_init + (ipar.second - p_init) *  limit_factor;
 		}
 	}
 	// Impose frozen Parameters

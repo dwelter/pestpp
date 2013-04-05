@@ -9,31 +9,31 @@
 
  OPTIMISATION ITERATION NO. 2   ----->
  Parameter name    Group        Current value        Sensitivity
-   COND            COND         -3.08567429965       64.4913961694       
-   SCOEFF          SCOEFF       -0.301029995664      21.5911424508       
+   COND            COND         -2.77815116352       42.3974929776       
+   SCOEFF          SCOEFF       -0.823908740944      10.1519761702       
 
 
  OPTIMISATION ITERATION NO. 3   ----->
  Parameter name    Group        Current value        Sensitivity
-   COND            COND         -3.00243058638       60.1369076011       
-   SCOEFF          SCOEFF       -0.608394355393      17.4417770020       
+   COND            COND         -3.04666418164       65.2889452281       
+   SCOEFF          SCOEFF       -0.606273455069      19.7251256962       
 
 
  OPTIMISATION ITERATION NO. 4   ----->
  Parameter name    Group        Current value        Sensitivity
-   COND            COND         -2.99918906120       62.1960433045       
-   SCOEFF          SCOEFF       -0.697143166758      16.6120608920       
+   COND            COND         -3.00087598623       62.0180208150       
+   SCOEFF          SCOEFF       -0.683904248614      16.7778847241       
 
 
  OPTIMISATION ITERATION NO. 5   ----->
  Parameter name    Group        Current value        Sensitivity
-   COND            COND         -2.99999695995       62.3459143407       
-   SCOEFF          SCOEFF       -0.699196762855      16.6347888362       
+   COND            COND         -2.99995353298       62.3400912708       
+   SCOEFF          SCOEFF       -0.699151273030      16.6333914903       
 
 
  OPTIMISATION ITERATION NO. 6   ----->
  Parameter name    Group        Current value        Sensitivity
-   COND            COND         -2.99999391992       62.5984726819       
-   SCOEFF          SCOEFF       -0.699198081195      16.6198897917       
+   COND            COND         -2.99999391992       62.5984736977       
+   SCOEFF          SCOEFF       -0.699197854374      16.6198864103       
 
 

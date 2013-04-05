@@ -45,42 +45,18 @@ SVDASolver::SVDASolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, c
 {
 }
 
-Parameters SVDASolver::freeze_parameters(Parameters &cur_numeric_pars, const VectorXd &svd_update_uvec, double svd_update_norm, const VectorXd &grad_update_uvec, bool use_descent)
+Parameters SVDASolver::freeze_parameters(Parameters &base_numeric_pars, Parameters &new_numeric_pars, Parameters &frozen_ctl_pars, bool freeze_facpar_relpar)
 {
 	//This routine has the side effect that it modifies par_transform transformtion
 	// Test SVD parameter upgrade
-	Parameters upgrade_pars = cur_numeric_pars;
 	Parameters tmp_parameters;
 	int ip = 0;
 	Parameters tmp_svd;
 	
-	for(Parameters::iterator b=upgrade_pars.begin(), e=upgrade_pars.end(); b!=e; ++b, ++ip)
-	{
-		b->second += svd_update_uvec(ip)*svd_update_norm;
-	}
-	tmp_svd = limit_parameters_ip(cur_numeric_pars, upgrade_pars);
+	tmp_svd = limit_parameters_ip(base_numeric_pars, new_numeric_pars, frozen_ctl_pars);
 
-	//// Test Greatest descent parameter upgrade
-	//upgrade_pars = cur_solution.numeric_pars;
-	//ip = 0;
-	//for(Parameters::iterator b=upgrade_pars.begin(), e=upgrade_pars.end(); b!=e; ++b, ++ip)
-	//{
-	//	b->second += grad_update_uvec(ip)*svd_update_norm;
-	//}
-	//tmp_descent =  LimitParameters_one2one_IP(cur_solution.numeric_pars, upgrade_pars);
-	//// remove entries from tmp_svd that are not also in tmp_descent
-	//map<string,double>::iterator descent_end = tmp_descent.end();
-
-	//for (map<string,double>::iterator b=tmp_svd.begin(), e=tmp_svd.end(); b!=e;) {
-	//			if (tmp_descent.find((*b).first) != descent_end ) {
-	//				tmp_svd.erase(b++);
-	//			}
-	//			else {
-	//				++b;
-	//			}
-	//}
 	for (Parameters::iterator b=tmp_svd.begin(), e=tmp_svd.end(); b!=e; ++b) {
-		cur_numeric_pars.erase((*b).first);
+		base_numeric_pars.erase((*b).first);
 		par_transform.get_frozen_ptr()->insert((*b).first, (*b).second);
 	}
 	return tmp_svd;
@@ -90,26 +66,26 @@ Parameters SVDASolver::freeze_parameters(Parameters &cur_numeric_pars, const Vec
 Parameters SVDASolver::limit_parameters_ip(const Parameters &init_numeric_pars, Parameters &upgrade_numeric_pars, const Parameters &frozen_pars)
 {
 	const string *name;
-	double p_init;
-	double p_upgrade;
+	double val_init;
+	double val_upgrade;
 	double limit;
 	Parameters tmp;
 
 	pair<bool, double> par_limit;
-	Parameters::iterator pu_iter;
 	// TO DO this currently assumes SVD and that upgrades are orthogonal
-	for(Parameters::const_iterator b=init_numeric_pars.begin(), e=init_numeric_pars.end(); b!=e; ++b)
+	for(auto &ipar : init_numeric_pars)
 	{
 		par_limit = pair<bool, double>(false, 0.0);
-		name = &(*b).first;  // parameter name
-		p_init = (*b).second; // inital parameter value
-		pu_iter = upgrade_numeric_pars.find(*name);
-		p_upgrade = (*pu_iter).second;  // upgrade parameter value
+		name = &(ipar.first);  // parameter name
+		val_init = ipar.second; // inital parameter value
+		auto iter_pu = upgrade_numeric_pars.find(*name);
+		assert (iter_pu != upgrade_numeric_pars.end());
+		val_upgrade = (*iter_pu).second;  // upgrade parameter value
 		// only use relative change limits
-		limit = abs((p_upgrade - p_init) / p_init);
+		limit = abs((val_upgrade - val_init) / val_init);
 		if(limit > ctl_info->relparmax)
 		{
-			(*pu_iter).second = p_init + sign(p_upgrade - p_init) * ctl_info->relparmax *  abs(p_init);
+			(*iter_pu).second = val_init + sign(val_upgrade - val_init) * ctl_info->relparmax *  abs(val_init);
 		}
 		//cout << "limited update = " << (*pu_iter).second << endl;
 	}

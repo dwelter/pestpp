@@ -81,6 +81,11 @@ protected:
 	double prev_phi_percent;
 	int num_no_descent;
 	int n_rotation_fac;
+	double alpha;
+	double alpha_prev;
+	double precent_grad_phi;
+	double precent_grad_phi_prev;
+
 	virtual Parameters limit_parameters_ip(const Parameters &init_numeric_pars, 
 		Parameters &upgrade_numeric_pars, LimitType &limit_type, 
 		const Parameters &frozen_numeric_pars = Parameters());
@@ -98,15 +103,15 @@ protected:
 	Upgrade SVDSolver::calc_grad_upgrade_vec(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
 	const Eigen::VectorXd &Residuals, const vector<string> &par_name_vec, const vector<string> &obs_name_vec,
 	const Parameters &base_numeric_pars, const Parameters &freeze_numeric_pars, double l2_norm);
-	Parameters get_freeze_parameters(ModelRun &model_run, const Upgrade &upgrade, double scale, bool freeze_limit_par=false);
 	ModelRun iterative_parameter_freeze(const ModelRun &model_run, Upgrade &upgrade,
 		const QSqrtMatrix &q_sqrt_mat, const Eigen::VectorXd &residuals_vec, 
 		const vector<string> & obs_names_vec, bool use_desent, double scale = 1.0);
-	double add_model_run(RunManagerAbstract &run_manager, const ParamTransformSeq &numeric2model_tran_seq,
-		const Parameters &numeric_base_par, const Upgrade &upgrade, double scale);
 	Upgrade get_rotated_upgrade(const Upgrade &upgrade_svd, const Upgrade &upgrade_grad, const Parameters &base_numeric_pars,
 								double rot_fac, const Parameters &freeze_numeric_pars, 
-								double l2_norm, double &rot_angle);
+								double l2_norm);
+	Parameters apply_upgrade(const Parameters &init_numeric_pars,const Upgrade &upgrade, double scale = 1.0);
+	void update_upgrade(Upgrade &upgrade, const Parameters &base_pars, const Parameters &new_pars, const Parameters &frozen_pars);
+	double calc_angle_deg(const Upgrade &upgrade1, const Upgrade &upgrade2);
 };
 
 #endif /* SVDSOLVER_H_ */

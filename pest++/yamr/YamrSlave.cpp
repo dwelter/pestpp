@@ -322,7 +322,8 @@ void YAMRSlave::start(const string &host, const string &port)
 			{
 				//send model results back
 				cout << "run complete" << endl;
-				cout << "sending results to master (group id = " << group_id << ", run id = " << run_id << ")" <<endl << endl;
+				cout << "sending results to master (group id = " << group_id << ", run id = " << run_id << ")..." <<endl;
+				cout << "results sent" << endl << endl;
 				serialized_data = Serialization::serialize(pars, par_name_vec, obs, obs_name_vec);
 				net_pack.reset(NetPackage::PackType::RUN_FINISH, net_pack.get_groud_id(), net_pack.get_run_id(), "");
 				err = send_message(net_pack, serialized_data.data(), serialized_data.size());
