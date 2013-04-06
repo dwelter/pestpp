@@ -81,10 +81,6 @@ protected:
 	double prev_phi_percent;
 	int num_no_descent;
 	int n_rotation_fac;
-	double alpha;
-	double alpha_prev;
-	double precent_grad_phi;
-	double precent_grad_phi_prev;
 
 	virtual Parameters limit_parameters_ip(const Parameters &init_numeric_pars, 
 		Parameters &upgrade_numeric_pars, LimitType &limit_type, 
@@ -97,6 +93,9 @@ protected:
 		const Eigen::VectorXd &Residuals,
 		const vector<string> &par_name_vec, const vector<string> &obs_name_vec, 
 		const Parameters &base_numeric_pars, const Parameters &freeze_numeric_pars, int &tot_sing_val);
+	Upgrade calc_lambda_upgrade_vec(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
+	const Eigen::VectorXd &Residuals, const vector<string> &par_name_vec, const vector<string> &obs_name_vec,
+	const Parameters &base_numeric_pars, const Parameters &freeze_numeric_pars, int &tot_sing_val, double lambda);
 	Upgrade calc_upgrade_vec(const Upgrade &direction, 
 		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
 		const Parameters &base_numeric_pars, const Parameters &freeze_numeric_pars, double scale);
