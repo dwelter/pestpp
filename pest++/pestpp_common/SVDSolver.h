@@ -41,6 +41,7 @@ class SVDPackage;
 class SVDSolver
 {
 	enum class LimitType {NONE, LBND, UBND, REL, FACT};
+	enum class MarquardtMatrix {IDENT, JTQJ};
 public:
 	SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_par_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
@@ -81,6 +82,7 @@ protected:
 	double prev_phi_percent;
 	int num_no_descent;
 	int n_rotation_fac;
+	double best_lambda;
 
 	virtual Parameters limit_parameters_ip(const Parameters &init_numeric_pars, 
 		Parameters &upgrade_numeric_pars, LimitType &limit_type, 
@@ -95,7 +97,8 @@ protected:
 		const Parameters &base_numeric_pars, const Parameters &freeze_numeric_pars, int &tot_sing_val);
 	Upgrade calc_lambda_upgrade_vec(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
 	const Eigen::VectorXd &Residuals, const vector<string> &par_name_vec, const vector<string> &obs_name_vec,
-	const Parameters &base_numeric_pars, const Parameters &freeze_numeric_pars, int &tot_sing_val, double lambda);
+	const Parameters &base_numeric_pars, const Parameters &freeze_numeric_pars, int &tot_sing_val,
+	double lambda, MarquardtMatrix marquardt_type=MarquardtMatrix::IDENT);
 	Upgrade calc_upgrade_vec(const Upgrade &direction, 
 		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
 		const Parameters &base_numeric_pars, const Parameters &freeze_numeric_pars, double scale);

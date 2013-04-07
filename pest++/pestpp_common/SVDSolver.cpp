@@ -58,7 +58,7 @@ SVDSolver::SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, con
 		: ctl_info(_ctl_info), svd_info(_svd_info), par_group_info_ptr(_par_group_info_ptr), ctl_par_info_ptr(_ctl_par_info_ptr), obs_info_ptr(_obs_info), obj_func(_obj_func),
 		  file_manager(_file_manager), observations_ptr(_observations), par_transform(_par_transform),
 		  cur_solution(_obj_func, _par_transform, *_observations), phiredswh_flag(false), save_next_jacobian(true), prior_info_ptr(_prior_info_ptr), jacobian(_jacobian), prev_phi_percent(0.0),
-		  num_no_descent(0), regul_scheme_ptr(_regul_scheme_ptr), n_rotation_fac(_n_rotation_fac), description(_description)
+		  num_no_descent(0), regul_scheme_ptr(_regul_scheme_ptr), n_rotation_fac(_n_rotation_fac), description(_description), best_lambda(20.0)
 {
 	svd_package = new SVD_EIGEN();
 }
@@ -281,7 +281,8 @@ SVDSolver::Upgrade SVDSolver::calc_svd_upgrade_vec(const Jacobian &jacobian, con
 
 SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
 	const Eigen::VectorXd &Residuals, const vector<string> &par_name_vec, const vector<string> &obs_name_vec,
-	const Parameters &base_numeric_pars, const Parameters &freeze_numeric_pars, int &tot_sing_val, double lambda)
+	const Parameters &base_numeric_pars, const Parameters &freeze_numeric_pars, int &tot_sing_val, 
+	double lambda, MarquardtMatrix marquardt_type)
 {
 	Upgrade upgrade;
 	upgrade.frozen_numeric_pars = freeze_numeric_pars;
@@ -304,17 +305,19 @@ SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, 
 		MatrixXd jac_frz = jacobian.get_matrix(frz_par_name_vec, obs_name_vec);
 		del_residuals = (jac_frz) *  frz_del_par_vec;
 	}
-
 	MatrixXd jac = jacobian.get_matrix(p_name_nf_vec, obs_name_vec);
-	MatrixXd ml_mat = jac.transpose() * Q_sqrt * Q_sqrt * jac + lambda * MatrixXd::Identity(jac.cols(), jac.cols());
+	MatrixXd SqrtQ_J = Q_sqrt * jac;
+
 	VectorXd Sigma;
 	MatrixXd U;
 	MatrixXd Vt;
-	svd_package->solve_ip(ml_mat, Sigma, U, Vt);
+	svd_package->solve_ip(SqrtQ_J, Sigma, U, Vt);
+	Sigma = Sigma.array() + lambda;
+	
 	//calculate the number of singluar values above the threshold
 	int max_sing = (p_name_nf_vec.size() < svd_info.maxsing) ? par_name_vec.size() : svd_info.maxsing;
-	MatrixXd ml_mat_inv =SVD_inv(U, Sigma, Vt, max_sing, svd_info.eigthresh, max_sing);
-	VectorXd tmp_svd_uvec =(ml_mat_inv * jac.transpose() * Q_sqrt) * (Residuals + del_residuals);
+	MatrixXd SqrtQ_J_inv =SVD_inv(U, Sigma, Vt, max_sing, svd_info.eigthresh, max_sing);
+	VectorXd tmp_svd_uvec =(SqrtQ_J_inv * Q_sqrt) * (Residuals + del_residuals);
 
 	//build map of parameter names to index in original par_name_vec vector
 	unordered_map<string, int> par_vec_name_to_idx;
@@ -555,6 +558,12 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 
 	double tmp_lambda[] = {1.0, 10.0, 100.0, 1000.0};
 	vector<double> lambda_vec(tmp_lambda, tmp_lambda+sizeof(tmp_lambda)/sizeof(double));
+	lambda_vec.push_back(best_lambda);
+	lambda_vec.push_back(best_lambda / 2.0);
+	lambda_vec.push_back(best_lambda * 2.0);
+	std::sort(lambda_vec.begin(), lambda_vec.end());
+	auto iter = std::unique(lambda_vec.begin(), lambda_vec.end());
+	lambda_vec.resize(std::distance(lambda_vec.begin(), iter));
 	for (double i_lambda : lambda_vec)
 	{
 		frozen_pars.clear();
@@ -578,7 +587,31 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 		rot_angle_vec.push_back(0);
 		magnitude_vec.push_back(ml_upgrade.norm);
 	}
-
+	//// Marquardt Lamda with diagonal of JtQJ matrix
+	//for (double i_lambda : lambda_vec)
+	//{
+	//	frozen_pars.clear();
+	//	while (true)
+	//	{
+	//		ml_upgrade = calc_lambda_upgrade_vec(jacobian, Q_sqrt, residuals_vec, par_name_vec, obs_names_vec,
+	//			base_run.get_numeric_pars(), frozen_pars, tot_sing_val, i_lambda, MarquardtMatrix::JTQJ);
+	//		new_numeric_pars = apply_upgrade(base_run_numeric_pars, ml_upgrade, 1.0);
+	//		Parameters new_frozen_pars = limit_parameters_ip(base_run_numeric_pars, new_numeric_pars, limit_type, frozen_pars);
+	//		if (new_frozen_pars.size() > 0 && (limit_type == LimitType::UBND || limit_type == LimitType::LBND) )
+	//		{
+	//			frozen_pars.insert(new_frozen_pars.begin(), new_frozen_pars.end());
+	//		}
+	//		update_upgrade(ml_upgrade, base_run_numeric_pars, new_numeric_pars, frozen_pars);
+	//		if (limit_type != LimitType::UBND && limit_type != LimitType::LBND) break;
+	//		if (frozen_pars.size() == new_numeric_pars.size()) break; // everything is frozen
+	//	}
+	//	//add run svd run to run manager
+	//	run_manager.add_run(base_run.get_par_tran().numeric2model_cp(new_numeric_pars));
+	//	rot_fac_vec.push_back(0);
+	//	rot_angle_vec.push_back(0);
+	//	magnitude_vec.push_back(ml_upgrade.norm);
+	//}
+	//lambda_vec.insert(lambda_vec.end(), lambda_vec.begin(), lambda_vec.end());
 
 
 	////check for another run svd run with limited parameters frozen
@@ -715,6 +748,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 			if ( upgrade_run.obs_valid() &&  !best_run_updated_flag || upgrade_run.get_phi() <  best_upgrade_run.get_phi()) {
 				best_run_updated_flag = true;
 				best_upgrade_run = upgrade_run;
+				best_lambda = lambda_vec[i];
 			}
 		}
 		else
@@ -772,7 +806,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	// clean up run_manager memory
 	run_manager.free_memory();
 
-	// set flag to switch to central derivatives next iteration
+	// reload best parameters and set flag to switch to central derivatives next iteration
 	if(cur_solution.get_phi() != 0 && !phiredswh_flag &&
 		(cur_solution.get_phi()-best_upgrade_run.get_phi())/cur_solution.get_phi() < ctl_info->phiredswh)
 	{
