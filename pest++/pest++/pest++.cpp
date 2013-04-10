@@ -255,6 +255,8 @@ int main(int argc, char* argv[])
 
 	}
 
+	//open restart file
+	file_manager.open_ofile_ext("rst");
 	//Define model Run for Base Parameters (uses base parameter tranformations)
 	for (int i_iter = 0; i_iter<pest_scenario.get_control_info().noptmax; ++i_iter)
 	{

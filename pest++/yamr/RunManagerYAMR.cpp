@@ -221,7 +221,6 @@ RunManagerYAMR::RunManagerYAMR(const vector<string> _comline_vec,
 	fdmax = listener;
 	FD_ZERO(&master);
 	FD_SET(listener, &master);
-	cur_group_id = 0;
 	return;
 }
 
@@ -253,7 +252,6 @@ void  RunManagerYAMR::free_memory()
 	completed_runs.clear();
 	zombie_runs.clear();
 	failure_map.clear();
-	file_stor.free_memory();
 }
 
 int RunManagerYAMR::add_run(const Parameters &model_pars)

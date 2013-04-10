@@ -151,6 +151,7 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 	const Parameters &ctl_pars, ModelRun &optimum_run)
 {
 	ostream &os = file_manager.rec_ofstream();
+	ostream &fout_restart = file_manager.get_ofstream("rst");
 	cur_solution.set_ctl_parameters(ctl_pars);
 	// Start Solution iterations
 	bool save_nextjac = false;
@@ -163,6 +164,7 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 		cout << "  SVD Package: " << svd_package->description << endl;
 		os   << "  SVD Package: " << svd_package->description << endl;
 		os   << "    Model calls so far : " << run_manager.get_total_runs() << endl;
+		fout_restart << "start_iteration " << iter_num << endl;
 		iteration(run_manager, termination_ctl, false);
 		// write files that get wrtten at the end of each iteration
 		stringstream filename;
@@ -207,6 +209,7 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 		if (termination_ctl.check_last_iteration()){
 			break;
 		}
+		fout_restart << "end_iteration " << iter_num << endl;
 	}
 	return cur_solution;
 }
@@ -312,7 +315,14 @@ SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, 
 	MatrixXd U;
 	MatrixXd Vt;
 	svd_package->solve_ip(SqrtQ_J, Sigma, U, Vt);
-	Sigma = Sigma.array() + lambda;
+	if (marquardt_type == MarquardtMatrix::IDENT)
+	{
+		Sigma = Sigma.array() + lambda;
+	}
+	else
+	{
+		Sigma = Sigma.array() + (Sigma.cwiseProduct(Sigma).array() + lambda * lambda).sqrt();
+	}
 	
 	//calculate the number of singluar values above the threshold
 	int max_sing = (p_name_nf_vec.size() < svd_info.maxsing) ? par_name_vec.size() : svd_info.maxsing;
@@ -488,7 +498,6 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 			phiredswh_flag, calc_init_obs);
 	cout << endl;
 	cout << "  computing upgrade vectors... " << endl;
-
 	//Freeze Parameter for which the jacobian could not be calculated
 	auto &failed_jac_pars = jacobian.get_failed_parameter_names();
 	//auto  freeze_pars = cur_solution.get_numeric_pars().get_subset(failed_jac_pars.begin(), failed_jac_pars.end());
@@ -510,7 +519,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	residuals_vec = -1.0 * stlvec2LaVec(cur_solution.get_residuals_vec(obs_names_vec));
 
 	//Build model runs
-	run_manager.reinitialize();
+	run_manager.reinitialize(file_manager.build_filename("rnu"));
 	vector<double> rot_fac_vec;
 	vector<double> rot_angle_vec;
 	vector<double> magnitude_vec;
@@ -556,7 +565,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	const Parameters &base_run_numeric_pars = base_run.get_numeric_pars();
 	vector<string> par_name_vec = base_run_numeric_pars.get_keys();
 
-	double tmp_lambda[] = {1.0, 10.0, 100.0, 1000.0};
+	double tmp_lambda[] = {0.1, 1.0, 10.0, 100.0, 1000.0};
 	vector<double> lambda_vec(tmp_lambda, tmp_lambda+sizeof(tmp_lambda)/sizeof(double));
 	lambda_vec.push_back(best_lambda);
 	lambda_vec.push_back(best_lambda / 2.0);
@@ -717,7 +726,10 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 
 	// process model runs
 	cout << "  testing upgrade vectors... ";
+	ofstream &fout_restart = file_manager.get_ofstream("rst");
+	fout_restart << "upgrade_model_runs_begin_group_id " << run_manager.get_cur_groupid() << endl;
 	run_manager.run();
+	fout_restart << "upgrade_model_runs_end_group_id " << run_manager.get_cur_groupid() << endl;
 	cout << endl;
 	bool best_run_updated_flag = false;
 	ModelRun best_upgrade_run(base_run);

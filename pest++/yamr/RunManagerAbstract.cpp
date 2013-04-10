@@ -41,23 +41,24 @@ RunManagerAbstract::RunManagerAbstract(const vector<string> _comline_vec,
 	cout << "                        Dave Welter" << endl;
 	cout << "          Computational Water Resource Engineering" << endl;
 	cout << endl << endl;
+	cur_group_id = 0;
 }
 
-void RunManagerAbstract::initialize(const Parameters &model_pars, const Observations &obs)
+void RunManagerAbstract::initialize(const Parameters &model_pars, const Observations &obs, const string &_filename)
 {
-	file_stor.reset(model_pars.get_keys(), obs.get_keys());
+	file_stor.reset(model_pars.get_keys(), obs.get_keys(), _filename);
 }
 
-void RunManagerAbstract::initialize(const std::vector<std::string> &par_names, std::vector<std::string> &obs_names)
+void RunManagerAbstract::initialize(const std::vector<std::string> &par_names, std::vector<std::string> &obs_names, const string &_filename)
 {
-	file_stor.reset(par_names, obs_names);
+	file_stor.reset(par_names, obs_names, _filename);
 }
 
-void RunManagerAbstract::reinitialize()
+void RunManagerAbstract::reinitialize(const string &_filename)
 {
 	vector<string> par_names = get_par_name_vec();
 	vector<string> obs_names = get_obs_name_vec();
-	file_stor.reset(par_names, obs_names);
+	file_stor.reset(par_names, obs_names, _filename);
 }
 
 int RunManagerAbstract::add_run(const vector<double> &model_pars)
@@ -107,7 +108,6 @@ bool  RunManagerAbstract::get_run(int run_id, double *pars, size_t npars, double
 
 void  RunManagerAbstract::free_memory()
 {
-	file_stor.free_memory();
 }
 
 
@@ -130,4 +130,8 @@ Parameters RunManagerAbstract::get_model_parameters(int run_id)
 		ret_obs[obs_name_vec[i]] = value;
 	}
 	return ret_obs;
+ }
+ int RunManagerAbstract::get_cur_groupid()
+ {
+	 return cur_group_id;
  }

@@ -3,7 +3,7 @@
  
 // Allometric relationships & partitioning
 "Foliage:stem partitioning ratio @ D=2 cm"          .750000000
-"Foliage:stem partitioning ratio @ D=20 cm"         .145946867
+"Foliage:stem partitioning ratio @ D=20 cm"         .145946158
 "Constant in the stem mass v. diam. relationship"   .010000000
 "Power in the stem mass v. diam. relationship"      2.40000000
 "Maximum fraction of NPP to roots"                  1.00000000
@@ -25,7 +25,7 @@
  
 // Conductance
 "Maximum canopy conductance"                              0.02
-"Maximum stomatal conductance"                     .0148497905
+"Maximum stomatal conductance"                     .0148498086
 "Defines stomatal response to VPD"                        0.05
 "Canopy boundary layer conductance"                        0.2
  

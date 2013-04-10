@@ -37,9 +37,9 @@ public:
 		const std::vector<std::string> _tplfile_vec, const std::vector<std::string> _inpfile_vec,
 		const std::vector<std::string> _insfile_vec, const std::vector<std::string> _outfile_vec,
 		const std::string &stor_filename);
-	virtual void initialize(const std::vector<std::string> &model_par_names, std::vector<std::string> &obs_names);
-	virtual void initialize(const Parameters &model_pars, const Observations &obs);
-	virtual void reinitialize();
+	virtual void initialize(const std::vector<std::string> &model_par_names, std::vector<std::string> &obs_names, const std::string &_filename = std::string(""));
+	virtual void initialize(const Parameters &model_pars, const Observations &obs, const std::string &_filename = std::string(""));
+	virtual void reinitialize(const std::string &_filename = std::string(""));
 	virtual void free_memory();
 	virtual int add_run(const Parameters &model_pars);
     virtual int add_run(const std::vector<double> &model_pars);
@@ -54,9 +54,11 @@ public:
 	virtual Observations get_obs_template(double value = -9999.0) const;
 	virtual int get_total_runs(void) const {return total_runs;}
 	virtual int get_nruns() {return file_stor.get_nruns();}
+	virtual int get_cur_groupid();
 	virtual ~RunManagerAbstract(void) {}
 protected:
 	int total_runs;
+	int cur_group_id;  // used in some of the derived classes (ie YAMR)
 	RunStorage file_stor;
 	std::set<int> failed_runs;
 	std::vector<std::string> comline_vec;

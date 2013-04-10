@@ -63,7 +63,7 @@ void Jacobian_1to1::calculate(ModelRun &init_model_run, vector<string> numeric_p
 	Observations observations(init_model_run.get_obs_template());
 	base_numeric_parameters = init_model_run.get_numeric_pars();
 	set<string> out_of_bnd_ctl_par_set;
-	run_manager.reinitialize();
+	run_manager.reinitialize(file_manager.build_filename("rnj"));
 	const vector<string> &model_par_name_vec = run_manager.get_par_name_vec();
 	const vector<string> &obs_name_vec = run_manager.get_obs_name_vec();
 	size_t n_par = model_par_name_vec.size();
@@ -113,9 +113,11 @@ void Jacobian_1to1::calculate(ModelRun &init_model_run, vector<string> numeric_p
 			out_of_bnd_ctl_par_set.insert(i_name);
 		}
 	}
-	
+	ofstream &fout_restart = file_manager.get_ofstream("rst");
+	fout_restart << "jacobian_model_runs_begin_group_id " << run_manager.get_cur_groupid() << endl;
 	// make model runs
 	run_manager.run();
+	fout_restart << "jacobian_model_runs_end_group_id " << run_manager.get_cur_groupid() << endl;
 	// create set of parameter names for which deriviatives can not be computed
 	// because the parameters went out of bounds or the model runs failed
 	failed_parameter_names.clear();
@@ -190,6 +192,7 @@ void Jacobian_1to1::calculate(ModelRun &init_model_run, vector<string> numeric_p
 		}
 	}
 	// clean up
+	fout_restart << "jacobian_saved" << endl;
 	run_manager.free_memory();
 }
 

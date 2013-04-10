@@ -33,15 +33,22 @@ RunStorage::RunStorage(const string &_filename) :filename(_filename), n_runs(0),
 {
 }
 
-void RunStorage::reset(const vector<string> &_par_names, const vector<string> &_obs_names)
+void RunStorage::reset(const vector<string> &_par_names, const vector<string> &_obs_names, const string &_filename)
 {
 	n_runs = 0;
-	free_memory();
 	par_names = _par_names;
 	obs_names = _obs_names;
 	// a file needs to exist before it can be opened it with read and write 
 	// permission.   So open it with write permission to crteate it, close 
 	// and then reopen it with read and write permisssion.
+	if (_filename.size() > 0)
+	{
+		filename = _filename;
+	}
+	if (buf_stream.is_open())
+	{
+		buf_stream.close();
+	}
 	buf_stream.open(filename.c_str(), ios_base::out | ios_base::binary);
 	buf_stream.close();
 	buf_stream.open(filename.c_str(), ios_base::out | ios_base::in | ios_base::binary);

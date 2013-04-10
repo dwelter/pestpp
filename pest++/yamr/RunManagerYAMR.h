@@ -111,7 +111,6 @@ private:
 	static const int BACKLOG = 10;
 	int listener;
 	int fdmax;
-	int cur_group_id;
 	const static int max_n_failure = 3; // maximium number of times to retry a failed model run
 	std::deque<int> slave_fd; // list of slaves ready to accept a model run
 	fd_set master; // master file descriptor list

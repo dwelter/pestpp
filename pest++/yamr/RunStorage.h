@@ -33,7 +33,7 @@ class Observations;
 class RunStorage {
 public:
 	RunStorage(const std::string &_filename);
-	void reset(const std::vector<std::string> &par_names, const std::vector<std::string> &obs_names);
+	void reset(const std::vector<std::string> &par_names, const std::vector<std::string> &obs_names, const std::string &_filename = std::string(""));
     virtual int add_run(const std::vector<double> &model_pars);
 	int add_run(const Parameters &pars);
 	virtual int add_run(const Eigen::VectorXd &model_pars);
