@@ -47,6 +47,8 @@ public:
 	ModelRun(const ObjectiveFunc *_objectiveFunc, const ParamTransformSeq &_par_tran, const Observations &_sim_obs);
 	ModelRun(const ObjectiveFunc *_objectiveFunc, const ParamTransformSeq &_par_tran, const Parameters &_numeric_pars, const Observations &_sim_obs);
 	ModelRun& operator=(const ModelRun &rhs);
+	virtual const Parameters& get_frozen_pars();
+	virtual void set_frozen_parameters(const Parameters &frz_pars);
 	virtual void set_numeric_parameters(const Parameters &pars);
 	virtual void set_ctl_parameters(const Parameters &pars);
 	virtual void set_model_parameters(const Parameters &pars);
@@ -79,6 +81,7 @@ protected:
 	Parameters numeric_pars;
 	Parameters model_pars;
 	Observations sim_obs;
+	Parameters frozen_pars;
 private:
 	ParamTransformSeq par_tran;
 };

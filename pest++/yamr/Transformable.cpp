@@ -74,6 +74,18 @@ const Transformable& Transformable::operator=(const Transformable &rhs)
 	return *this;
 }
 
+bool Transformable::operator==(const Transformable &rhs) const
+{
+	return items.size() == rhs.items.size()
+        && std::equal(items.begin(), items.end(),
+                      rhs.items.begin());
+}
+
+bool Transformable::operator!=(const Transformable &rhs) const
+{
+	return !(*this == rhs);
+}
+
 Transformable& Transformable::operator+=(const Transformable &rhs)
 {
 	for(auto &i : items)

@@ -523,7 +523,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	vector<double> rot_fac_vec;
 	vector<double> rot_angle_vec;
 	vector<double> magnitude_vec;
-
+	vector<Parameters> frozen_par_vec;
 
 	//// compute svd update vector
 	//double target_upgrade_norm = 0;
@@ -595,6 +595,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 		rot_fac_vec.push_back(0);
 		rot_angle_vec.push_back(0);
 		magnitude_vec.push_back(ml_upgrade.norm);
+		frozen_par_vec.push_back(frozen_pars);
 	}
 	//// Marquardt Lamda with diagonal of JtQJ matrix
 	//for (double i_lambda : lambda_vec)
@@ -743,7 +744,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 		if (success)
 		{
 			upgrade_run.update(tmp_pars, tmp_obs, ModelRun::FORCE_PAR_UPDATE);
-
+			upgrade_run.set_frozen_parameters(frozen_par_vec[i]);
 			streamsize n_prec = os.precision(2);
 			os << "      Marquardt Lambda = ";
 			os << setiosflags(ios::fixed)<< setw(4) << lambda_vec[i];
@@ -774,46 +775,26 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 			os << ";  run failed" << endl;
 		}
 	}
-
-	//// Print frozen parameter information
-	//if (svd_upgrade.frozen_numeric_pars.size() > 0)
-	//{
-	//	Parameters ctl_frz_par = svd_upgrade.frozen_numeric_pars;
-	//	vector<string> keys = ctl_frz_par.get_keys();
-	//	std::sort(keys.begin(), keys.end());
-	//	base_run.get_par_tran().numeric2ctl_ip(ctl_frz_par);
-	//	os << endl;
-	//	os << "  Parameters frozen during SVD upgrade:" << endl;
-	//	// ctl_frz_par also contains fixed parameters so we need to loop through the keys 
-	//	// of the original numeric parameters
-	//	for (auto &ikey : keys)
-	//	{
-	//		auto iter = ctl_frz_par.find(ikey);
-	//		if (iter != ctl_frz_par.end())
-	//		{
-	//			os << "    " << iter->first << " frozen at " << iter->second << endl;
-	//		}
-	//	}
-	//}
-	//if (grad_upgrade.frozen_numeric_pars.size() > 0)
-	//{
-	//	Parameters ctl_frz_par = grad_upgrade.frozen_numeric_pars;
-	//	vector<string> keys = ctl_frz_par.get_keys();
-	//	std::sort(keys.begin(), keys.end());
-	//	base_run.get_par_tran().numeric2ctl_ip(ctl_frz_par);
-	//	os << endl;
-	//	os << "  Parameters frozen during Gradient Descent upgrade:" << endl;
-	//	// ctl_frz_par also contains fixed parameters so we need to loop through the keys 
-	//	// of the original numeric parameters
-	//	for (auto &ikey : keys)
-	//	{
-	//		auto iter = ctl_frz_par.find(ikey);
-	//		if (iter != ctl_frz_par.end())
-	//		{
-	//			os << "    " << iter->first << " frozen at " << iter->second << endl;
-	//		}
-	//	}
-	//}
+	// Print frozen parameter information
+	Parameters frz_pars = best_upgrade_run.get_frozen_pars();
+	if (frz_pars.size() > 0)
+	{
+		vector<string> keys = frz_pars.get_keys();
+		std::sort(keys.begin(), keys.end());
+		base_run.get_par_tran().numeric2ctl_ip(frz_pars);
+		os << endl;
+		os << "    Parameters frozen during best upgrade:" << endl;
+		// ctl_frz_par also contains fixed parameters so we need to loop through the keys 
+		// of the original numeric parameters
+		for (auto &ikey : keys)
+		{
+			auto iter = frz_pars.find(ikey);
+			if (iter != frz_pars.end())
+			{
+				os << "      " << iter->first << " frozen at " << iter->second << endl;
+			}
+		}
+	}
 
 	// clean up run_manager memory
 	run_manager.free_memory();

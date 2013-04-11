@@ -61,6 +61,8 @@ public:
 	Transformable(const Transformable &copyin, const vector<string> &copy_names);
     Transformable(const std::vector<std::string> &names, const Eigen::VectorXd &values);
 	const Transformable& operator=(const Transformable &rhs);
+	bool operator==(const Transformable &rhs) const;
+	bool operator!=(const Transformable &rhs) const;
 	Transformable& operator+=(const Transformable &rhs);
 	Transformable& operator-=(const Transformable &rhs);
 	Transformable& operator*=(double scale);
