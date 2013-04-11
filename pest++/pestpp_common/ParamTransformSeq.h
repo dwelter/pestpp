@@ -44,7 +44,7 @@ using namespace std;
 class ParamTransformSeq {
 public:
 	ParamTransformSeq(const string &_name="unnamed ParamTransformSeq") : name(_name), ctl_offset_ptr(0),
-		ctl_scale_prt(0), ctl_log10_ptr(0), ctl_frozen_ptr(0) {}
+		ctl_scale_prt(0), ctl_log10_ptr(0) {}
 	ParamTransformSeq(const ParamTransformSeq &rhs);
 	ParamTransformSeq(const ParamTransformSeq &rhs, const set<Transformation *> &deep_copy_tran_set);
 	void copy(const ParamTransformSeq &rhs);
@@ -92,8 +92,6 @@ public:
 	void set_scale_ptr(TranScale *ptr) {ctl_scale_prt = ptr;}
 	const TranScale *get_scale_ptr() const {return ctl_scale_prt;}
 	void set_log10_ptr(TranLog10 *ptr) {ctl_log10_ptr = ptr;}
-	TranFrozen *get_frozen_ptr()const {return ctl_frozen_ptr;};
-	void set_frozen_ptr(TranFrozen *ptr) {ctl_frozen_ptr = ptr;}
 	TranFixed *get_fixed_ptr()const {return ctl_fixed_ptr;};
 	void set_fixed_ptr(TranFixed *ptr) {ctl_fixed_ptr = ptr;}
 	const TranLog10 *get_log10_ptr() const {return ctl_log10_ptr;}
@@ -112,7 +110,6 @@ private:
 	TranOffset *ctl_offset_ptr;
 	TranScale *ctl_scale_prt;
 	TranLog10 *ctl_log10_ptr;
-	TranFrozen *ctl_frozen_ptr;
 	TranFixed *ctl_fixed_ptr;
 	set <Transformation *> default_deep_copy_tran_set;
 	static map<const Transformation*, int> tran_ref_count;

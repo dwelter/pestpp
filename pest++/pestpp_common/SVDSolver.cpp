@@ -833,8 +833,6 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	iteration_update_and_report(os, best_upgrade_run, termination_ctl);
 	prev_phi_percent =  best_upgrade_run.get_phi()/cur_solution.get_phi()*100;
 	cur_solution = best_upgrade_run;
-	// Clear Frozen Parameters
-	cur_solution.thaw_parameters();
 }
 
 Parameters SVDSolver::limit_parameters_ip(const Parameters &init_numeric_pars, Parameters &upgrade_numeric_pars, 

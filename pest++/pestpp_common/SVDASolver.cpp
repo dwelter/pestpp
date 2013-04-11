@@ -55,10 +55,6 @@ Parameters SVDASolver::freeze_parameters(Parameters &base_numeric_pars, Paramete
 	
 	tmp_svd = limit_parameters_ip(base_numeric_pars, new_numeric_pars, frozen_ctl_pars);
 
-	for (Parameters::iterator b=tmp_svd.begin(), e=tmp_svd.end(); b!=e; ++b) {
-		base_numeric_pars.erase((*b).first);
-		par_transform.get_frozen_ptr()->insert((*b).first, (*b).second);
-	}
 	return tmp_svd;
 }
 

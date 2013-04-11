@@ -397,17 +397,6 @@ void TranTied::print(ostream &os) const
 	}
 }
 
-
-
-void TranFrozen::print(ostream &os) const
-{
-	os << "Transformation name = " << name << "; (type=TranFrozen)" << endl; 
-	for (map<string,double>::const_iterator b=items.begin(), e=items.end();
-		b!=e; ++b) {
-			os << "  item name = " << (*b).first << ";  frozen value = " << (*b).second << endl;   
-	}
-}
-
 void TranSVD::update(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt, const Parameters &base_numeric_pars,
 		int maxsing, double eigthresh, const vector<string> &par_names, const vector<string> &obs_names)
 {

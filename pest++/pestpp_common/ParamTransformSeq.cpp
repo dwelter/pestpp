@@ -116,7 +116,6 @@ void  ParamTransformSeq::clear_tranSeq_ctl2derivative()
 		default_deep_copy_tran_set.erase(*i);
 	}
 	ctl_log10_ptr = 0;
-	ctl_frozen_ptr = 0;
 	tranSeq_ctl2derivative.clear();
 }
 
@@ -189,7 +188,6 @@ void ParamTransformSeq::copy(const ParamTransformSeq &rhs, const set<Transformat
 			default_deep_copy_tran_set.insert(t_ptr);
 		}
 		if (*i == rhs.ctl_log10_ptr) ctl_log10_ptr = dynamic_cast<TranLog10*>(t_ptr);
-		if (*i == rhs.ctl_frozen_ptr) ctl_frozen_ptr = dynamic_cast<TranFrozen*>(t_ptr);
 	}
     for(vector<Transformation*>::const_iterator i = rhs.tranSeq_derivative2numeric.begin(),
 		e=rhs.tranSeq_derivative2numeric.end(); i != e; ++i)
@@ -205,7 +203,6 @@ void ParamTransformSeq::copy(const ParamTransformSeq &rhs, const set<Transformat
 			default_deep_copy_tran_set.insert(t_ptr);
 		}
 		if (*i == rhs.ctl_log10_ptr) ctl_log10_ptr = dynamic_cast<TranLog10*>(t_ptr);
-		if (*i == rhs.ctl_frozen_ptr) ctl_frozen_ptr = dynamic_cast<TranFrozen*>(t_ptr);
 	}
 }
 

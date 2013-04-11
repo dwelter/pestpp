@@ -130,41 +130,6 @@ void ModelRun::set_observations(const Observations &observations)
 	phi_is_valid = false;
 }
 
-void ModelRun::freeze_parameters(const map<string,double> par_map)
-{
-	if (!par_map.empty())
-	{
-		for(map<string,double>::const_iterator b=par_map.begin(), e=par_map.end();
-			e!=b; ++b) {
-				numeric_pars.erase((*b).first);
-				par_tran.get_frozen_ptr()->insert((*b).first, (*b).second);
-		}
-	}
-}
-
-void ModelRun::freeze_parameters(Transformable const &pars)
-{
-	for (const auto &ipar : pars)
-	{
-		numeric_pars.erase(ipar.first);
-		par_tran.get_frozen_ptr()->insert(ipar.first, ipar.second);
-	}
-}
-
-void ModelRun::thaw_parameters()
-{
-	TranFrozen *frz_ptr= par_tran.get_frozen_ptr();
-
-	// Make sure model parameters are up to date
-	if (!model_pars_is_valid) {
-		model_pars = par_tran.numeric2model_cp(numeric_pars);
-		model_pars_is_valid = true;
-	}
-	par_tran.get_frozen_ptr()->Clear();
-	numeric_pars = par_tran.model2numeric_cp(model_pars);
-	numeric_pars_is_valid = true;
-}
-
 const Parameters &ModelRun::get_numeric_pars()
 {
 	if (numeric_pars_is_valid) {

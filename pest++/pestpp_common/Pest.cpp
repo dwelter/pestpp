@@ -99,7 +99,6 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 	TranScale *t_scale = new TranScale("PEST to model scale transformation");
 	TranLog10 *t_log = new TranLog10("PEST to model log transformation");
 	TranFixed *t_fixed = new TranFixed("PEST to model fixed transformation");
-	TranFrozen *t_frozen = new TranFrozen("PEST frozen parameter transformation");
 	TranNormalize *t_auto_norm = new TranNormalize("PEST auto-normalization transformation");
 
 	base_par_transform.push_back_ctl2model(t_scale);
@@ -109,9 +108,6 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 	base_par_transform.push_back_ctl2derivative(t_tied);
 	base_par_transform.push_back_ctl2derivative(t_fixed);
 	base_par_transform.set_fixed_ptr(t_fixed);
-	base_par_transform.push_back_ctl2derivative(t_frozen);
-	base_par_transform.set_frozen_ptr(t_frozen);
-	base_par_transform.add_default_deep_copy(t_frozen);
 	base_par_transform.push_back_derivative2numeric(t_log);
 	base_par_transform.set_log10_ptr(t_log);
 	base_par_transform.push_back_derivative2numeric(t_auto_norm);
