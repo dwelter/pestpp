@@ -91,10 +91,6 @@ protected:
 	void iteration_update_and_report(ostream &os, ModelRun &upgrade, TerminationController &termination_ctl); 
 	void param_change_stats(double p_old, double p_new, bool &have_fac, double &fac_change, bool &have_rel,
 		double &rel_change);
-	Upgrade calc_svd_upgrade_vec(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
-		const Eigen::VectorXd &Residuals,
-		const vector<string> &par_name_vec, const vector<string> &obs_name_vec, 
-		const Parameters &base_numeric_pars, const Parameters &freeze_numeric_pars, int &tot_sing_val);
 	Upgrade calc_lambda_upgrade_vec(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
 	const Eigen::VectorXd &Residuals, const vector<string> &par_name_vec, const vector<string> &obs_name_vec,
 	const Parameters &base_numeric_pars, const Parameters &freeze_numeric_pars, int &tot_sing_val,
@@ -102,18 +98,8 @@ protected:
 	Upgrade calc_upgrade_vec(const Upgrade &direction, 
 		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
 		const Parameters &base_numeric_pars, const Parameters &freeze_numeric_pars, double scale);
-	Upgrade SVDSolver::calc_grad_upgrade_vec(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
-	const Eigen::VectorXd &Residuals, const vector<string> &par_name_vec, const vector<string> &obs_name_vec,
-	const Parameters &base_numeric_pars, const Parameters &freeze_numeric_pars, double l2_norm);
-	ModelRun iterative_parameter_freeze(const ModelRun &model_run, Upgrade &upgrade,
-		const QSqrtMatrix &q_sqrt_mat, const Eigen::VectorXd &residuals_vec, 
-		const vector<string> & obs_names_vec, bool use_desent, double scale = 1.0);
-	Upgrade get_rotated_upgrade(const Upgrade &upgrade_svd, const Upgrade &upgrade_grad, const Parameters &base_numeric_pars,
-								double rot_fac, const Parameters &freeze_numeric_pars, 
-								double l2_norm);
 	Parameters apply_upgrade(const Parameters &init_numeric_pars,const Upgrade &upgrade, double scale = 1.0);
 	void update_upgrade(Upgrade &upgrade, const Parameters &base_pars, const Parameters &new_pars, const Parameters &frozen_pars);
-	double calc_angle_deg(const Upgrade &upgrade1, const Upgrade &upgrade2);
 };
 
 #endif /* SVDSOLVER_H_ */
