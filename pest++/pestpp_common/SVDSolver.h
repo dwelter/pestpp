@@ -46,7 +46,7 @@ public:
 	SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_par_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, 
-		const Regularization *regul_scheme_ptr, int _n_rotation_fac, const string &description="base parameter solution");
+		const Regularization *regul_scheme_ptr, int _max_freeze_iter, const string &description="base parameter solution");
 	ModelRun& solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter, const Parameters &ctl_pars, ModelRun &optimum_run);
 	void iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs=false);
 	ModelRun &cur_model_run() {return cur_solution;}
@@ -81,12 +81,14 @@ protected:
 	bool save_next_jacobian;
 	double prev_phi_percent;
 	int num_no_descent;
-	int n_rotation_fac;
+	int max_freeze_iter;
 	double best_lambda;
 
 	virtual Parameters limit_parameters_ip(const Parameters &init_numeric_pars, 
 		Parameters &upgrade_numeric_pars, LimitType &limit_type, 
 		const Parameters &frozen_numeric_pars = Parameters());
+	virtual Parameters limit_parameters_freeze_all_ip(const Parameters &init_numeric_pars, 
+		Parameters &upgrade_numeric_pars, const Parameters &frozen_numeric_pars = Parameters());
 	virtual const string &get_description(){return description;}
 	void iteration_update_and_report(ostream &os, ModelRun &upgrade, TerminationController &termination_ctl); 
 	void param_change_stats(double p_old, double p_new, bool &have_fac, double &fac_change, bool &have_rel,
@@ -100,6 +102,8 @@ protected:
 		const Parameters &base_numeric_pars, const Parameters &freeze_numeric_pars, double scale);
 	Parameters apply_upgrade(const Parameters &init_numeric_pars,const Upgrade &upgrade, double scale = 1.0);
 	void update_upgrade(Upgrade &upgrade, const Parameters &base_pars, const Parameters &new_pars, const Parameters &frozen_pars);
+	void check_limits(const Parameters &init_derivative_pars, const Parameters &upgrade_derivative_pars,
+		map<string, LimitType> &limit_type_map, Parameters &derivative_parameters_at_limit);
 };
 
 #endif /* SVDSOLVER_H_ */

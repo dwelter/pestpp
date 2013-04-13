@@ -38,7 +38,7 @@ using namespace pest_utils;
 bool ModelRun::Compare::operator()(ModelRun &run1, ModelRun &run2)
 {
 	bool ret_val = false;
-	if (run1.frozen_pars != run2.frozen_pars)
+	if (run1.frozen_ctl_pars != run2.frozen_ctl_pars)
 	{
 		ret_val = false;
 	}
@@ -77,7 +77,7 @@ ModelRun::ModelRun(const ObjectiveFunc *_obj_func_ptr, const ParamTransformSeq &
 
 ModelRun& ModelRun::operator=(const ModelRun &rhs)
 {
-	frozen_pars = rhs.frozen_pars;
+	frozen_ctl_pars = rhs.frozen_ctl_pars;
 	obj_func_ptr = rhs.obj_func_ptr;
 	par_tran = rhs.par_tran;
 	numeric_pars = rhs.numeric_pars;
@@ -92,17 +92,17 @@ ModelRun& ModelRun::operator=(const ModelRun &rhs)
 }
 
 
-const Parameters& ModelRun::get_frozen_pars()
+const Parameters& ModelRun::get_frozen_ctl_pars()
 {
-	return frozen_pars;
+	return frozen_ctl_pars;
 }
 
-void ModelRun::set_frozen_parameters(const Parameters &frz_pars)
+void ModelRun::set_frozen_ctl_parameters(const Parameters &frz_pars)
 {
-	frozen_pars = frz_pars;
-	for (auto &ipar : frozen_pars)
+	frozen_ctl_pars = frz_pars;
+	for (auto &ipar : frozen_ctl_pars)
 	{
-		frozen_pars[ipar.first] = ipar.second;
+		frozen_ctl_pars[ipar.first] = ipar.second;
 	}
 }
 

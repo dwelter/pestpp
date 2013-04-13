@@ -34,7 +34,7 @@ class SVDASolver : public SVDSolver
 public:
 	SVDASolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_par_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
-		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, const Regularization *_regul_scheme, int _n_rotation_fac);
+		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, const Regularization *_regul_scheme, int _max_freeze_iter);
 	Parameters limit_parameters_ip(const Parameters &init_numeric_pars, Parameters &upgrade_numeric_pars, const Parameters &frozen_numeric_pars = Parameters());
 	Parameters SVDASolver::freeze_parameters(Parameters &base_numeric_pars, Parameters &new_numeric_pars, Parameters &frozen_numeric_pars, bool freeze_facpar_relpar);
 	virtual const string &get_description(){return description;}

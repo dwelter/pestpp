@@ -54,11 +54,11 @@ void SVDSolver::Upgrade::print(ostream &os)
 SVDSolver::SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_par_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, 
-		const Regularization *_regul_scheme_ptr, int _n_rotation_fac, const string &_description)
+		const Regularization *_regul_scheme_ptr, int _max_freeze_iter, const string &_description)
 		: ctl_info(_ctl_info), svd_info(_svd_info), par_group_info_ptr(_par_group_info_ptr), ctl_par_info_ptr(_ctl_par_info_ptr), obs_info_ptr(_obs_info), obj_func(_obj_func),
 		  file_manager(_file_manager), observations_ptr(_observations), par_transform(_par_transform),
 		  cur_solution(_obj_func, _par_transform, *_observations), phiredswh_flag(false), save_next_jacobian(true), prior_info_ptr(_prior_info_ptr), jacobian(_jacobian), prev_phi_percent(0.0),
-		  num_no_descent(0), regul_scheme_ptr(_regul_scheme_ptr), n_rotation_fac(_n_rotation_fac), description(_description), best_lambda(20.0)
+		  num_no_descent(0), regul_scheme_ptr(_regul_scheme_ptr), max_freeze_iter(_max_freeze_iter), description(_description), best_lambda(20.0)
 {
 	svd_package = new SVD_EIGEN();
 }
@@ -346,15 +346,25 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	std::sort(lambda_vec.begin(), lambda_vec.end());
 	auto iter = std::unique(lambda_vec.begin(), lambda_vec.end());
 	lambda_vec.resize(std::distance(lambda_vec.begin(), iter));
+	int max_freeze_iter = 1;
 	for (double i_lambda : lambda_vec)
 	{
 		frozen_pars.clear();
-		while (true)
+		for (int i_freeze=1; ; ++i_freeze)
 		{
+			Parameters new_frozen_pars;
 			ml_upgrade = calc_lambda_upgrade_vec(jacobian, Q_sqrt, residuals_vec, par_name_vec, obs_names_vec,
 				base_run.get_numeric_pars(), frozen_pars, tot_sing_val, i_lambda);
 			new_numeric_pars = apply_upgrade(base_run_numeric_pars, ml_upgrade, 1.0);
-			Parameters new_frozen_pars = limit_parameters_ip(base_run_numeric_pars, new_numeric_pars, limit_type, frozen_pars);
+			if (i_freeze > max_freeze_iter)
+			{
+				Parameters new_frozen_pars = limit_parameters_ip(base_run_numeric_pars, new_numeric_pars, limit_type, frozen_pars);
+			}
+			else
+			{
+				Parameters new_frozen_pars = limit_parameters_freeze_all_ip(base_run_numeric_pars, new_numeric_pars, frozen_pars);
+			}
+			base_run.get_par_tran().derivative2numeric_ip(new_frozen_pars);
 			if (new_frozen_pars.size() > 0 && (limit_type == LimitType::UBND || limit_type == LimitType::LBND) )
 			{
 				frozen_pars.insert(new_frozen_pars.begin(), new_frozen_pars.end());
@@ -380,6 +390,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	//			base_run.get_numeric_pars(), frozen_pars, tot_sing_val, i_lambda, MarquardtMatrix::JTQJ);
 	//		new_numeric_pars = apply_upgrade(base_run_numeric_pars, ml_upgrade, 1.0);
 	//		Parameters new_frozen_pars = limit_parameters_ip(base_run_numeric_pars, new_numeric_pars, limit_type, frozen_pars);
+	//      base_run.get_par_tran().derivative2numeric_ip(new_frozen_pars);
 	//		if (new_frozen_pars.size() > 0 && (limit_type == LimitType::UBND || limit_type == LimitType::LBND) )
 	//		{
 	//			frozen_pars.insert(new_frozen_pars.begin(), new_frozen_pars.end());
@@ -419,7 +430,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 		if (success)
 		{
 			upgrade_run.update(tmp_pars, tmp_obs, ModelRun::FORCE_PAR_UPDATE);
-			upgrade_run.set_frozen_parameters(frozen_par_vec[i]);
+			upgrade_run.set_frozen_ctl_parameters(base_run.get_par_tran().numeric2derivative_cp(frozen_par_vec[i]));
 			streamsize n_prec = os.precision(2);
 			os << "      Marquardt Lambda = ";
 			os << setiosflags(ios::fixed)<< setw(4) << lambda_vec[i];
@@ -451,20 +462,19 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 		}
 	}
 	// Print frozen parameter information
-	Parameters frz_pars = best_upgrade_run.get_frozen_pars();
-	if (frz_pars.size() > 0)
+	const Parameters &frz_ctl_pars = best_upgrade_run.get_frozen_ctl_pars();
+		
+		//best_upgrade_run.get();
+	if (frz_ctl_pars.size() > 0)
 	{
-		vector<string> keys = frz_pars.get_keys();
+		vector<string> keys = frz_ctl_pars.get_keys();
 		std::sort(keys.begin(), keys.end());
-		base_run.get_par_tran().numeric2ctl_ip(frz_pars);
 		os << endl;
 		os << "    Parameters frozen during best upgrade:" << endl;
-		// ctl_frz_par also contains fixed parameters so we need to loop through the keys 
-		// of the original numeric parameters
 		for (auto &ikey : keys)
 		{
-			auto iter = frz_pars.find(ikey);
-			if (iter != frz_pars.end())
+			auto iter = frz_ctl_pars.find(ikey);
+			if (iter != frz_ctl_pars.end())
 			{
 				os << "      " << iter->first << " frozen at " << iter->second << endl;
 			}
@@ -491,42 +501,23 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	cur_solution = best_upgrade_run;
 }
 
-Parameters SVDSolver::limit_parameters_ip(const Parameters &init_numeric_pars, Parameters &upgrade_numeric_pars, 
-										  LimitType &limit_type, const Parameters &frozen_pars)
+
+void SVDSolver::check_limits(const Parameters &init_derivative_pars, const Parameters &upgrade_derivative_pars,
+						map<string, LimitType> &limit_type_map, Parameters &derivative_parameters_at_limit)
 {
-	map<string, LimitType> limit_type_map;
 	const string *name;
-	const ParameterRec *p_info;
 	double p_init;
 	double p_upgrade;
-	double p_limit;
 	double b_facorg_lim;
-	Parameters bound_parameters;
 	pair<bool, double> par_limit;
-	Parameters ctl_parameters_at_limit;
-	Parameters upgrade_ctl_pars  = par_transform.numeric2ctl_cp(upgrade_numeric_pars);
+	const ParameterRec *p_info;
 
-	Parameters init_ctl_pars = init_numeric_pars;
-	//remove frozen parameters from numeric parameters
-	auto end_iter = init_ctl_pars.end();
-	for(auto iter = init_ctl_pars.begin(); iter != end_iter;) {
-		if (frozen_pars.find((*iter).first) != frozen_pars.end())
-		{
-		   init_ctl_pars.erase(iter++);
-		}
-		else 
-		{
-			++iter;
-	   }
-	}
-	par_transform.numeric2ctl_ip(init_ctl_pars);
-
-	for(auto &ipar : init_ctl_pars)
+	for(auto &ipar : init_derivative_pars)
 	{
 		par_limit = pair<bool, double>(false, 0.0);
 		name = &(ipar.first);  // parameter name
 		p_init = ipar.second; // inital parameter value
-		auto pu_iter = upgrade_ctl_pars.find(*name);
+		auto pu_iter = upgrade_derivative_pars.find(*name);
 		p_upgrade = (*pu_iter).second;  // upgrade parameter value
 		p_info = ctl_par_info_ptr->get_parameter_rec_ptr(*name);
 
@@ -580,7 +571,6 @@ Parameters SVDSolver::limit_parameters_ip(const Parameters &init_numeric_pars, P
 			(par_limit.first && par_limit.second > p_info->ubnd)) {
 				par_limit.first = true;
 				par_limit.second = p_info->ubnd;
-				bound_parameters[*name] = p_info->ubnd;
 				limit_type_map[*name] = LimitType::UBND;
 		}
 		// Check parameter lower bound
@@ -588,30 +578,52 @@ Parameters SVDSolver::limit_parameters_ip(const Parameters &init_numeric_pars, P
 			(par_limit.first && par_limit.second < p_info->lbnd)) {
 				par_limit.first = true;
 				par_limit.second = p_info->lbnd;
-				bound_parameters[*name] = p_info->lbnd;
 				limit_type_map[*name] = LimitType::LBND;
 		}
 		// Add any limited parameters to model_parameters_at_limit
 		if (par_limit.first) {
-			ctl_parameters_at_limit.insert(*name, par_limit.second);
+			derivative_parameters_at_limit.insert(*name, par_limit.second);
 		}
 	}
+}
+
+
+Parameters SVDSolver::limit_parameters_ip(const Parameters &init_numeric_pars, Parameters &upgrade_numeric_pars, 
+										  LimitType &limit_type, const Parameters &frozen_pars)
+{
+	map<string, LimitType> limit_type_map;
+	const string *name;
+	double p_init;
+	double p_upgrade;
+	double p_limit;
+	Parameters bound_derivative_parameters;
+	pair<bool, double> par_limit;
+	Parameters derivative_parameters_at_limit;
+	Parameters upgrade_derivative_pars  = par_transform.numeric2derivative_cp(upgrade_numeric_pars);
+
+	Parameters init_derivative_pars = init_numeric_pars;
+	//remove frozen parameters from numeric parameters
+	init_derivative_pars.erase(frozen_pars);
+	par_transform.numeric2derivative_ip(init_derivative_pars);
+
+	check_limits(init_derivative_pars, upgrade_derivative_pars, limit_type_map, derivative_parameters_at_limit);
+
 	// Calculate most stringent limit factor on a PEST parameter
 	double limit_factor= 1.0;
 	double tmp_limit;
 	string limit_parameter_name = "";
-	Parameters numeric_parameters_at_limit = par_transform.model2numeric_cp(ctl_parameters_at_limit);
+	Parameters numeric_parameters_at_limit = par_transform.model2numeric_cp(derivative_parameters_at_limit);
 	for(auto &ipar : numeric_parameters_at_limit)
 	{
-			name = &(ipar.first);
-			p_limit = ipar.second;
-			p_init = init_numeric_pars.get_rec(*name);
-			p_upgrade = upgrade_numeric_pars.get_rec(*name);
-			tmp_limit = (p_limit - p_init) / (p_upgrade - p_init);
-			if (tmp_limit < limit_factor)  {
-				limit_factor = (p_limit - p_init) / (p_upgrade - p_init);
-				limit_parameter_name = *name;
-			}
+		name = &(ipar.first);
+		p_limit = ipar.second;
+		p_init = init_numeric_pars.get_rec(*name);
+		p_upgrade = upgrade_numeric_pars.get_rec(*name);
+		tmp_limit = (p_limit - p_init) / (p_upgrade - p_init);
+		if (tmp_limit < limit_factor)  {
+			limit_factor = (p_limit - p_init) / (p_upgrade - p_init);
+			limit_parameter_name = *name;
+		}
 	}
 	// Apply limit factor to PEST upgrade parameters
 	if (limit_factor != 1.0)
@@ -634,18 +646,100 @@ Parameters SVDSolver::limit_parameters_ip(const Parameters &init_numeric_pars, P
 	}
 	limit_type = LimitType::NONE;
 	Parameters::iterator iter;
+	bound_derivative_parameters.clear();
 	iter = numeric_parameters_at_limit.find(limit_parameter_name);
 	if (iter != numeric_parameters_at_limit.end()) {
-		bound_parameters.clear();
-		bound_parameters[limit_parameter_name] = numeric_parameters_at_limit[limit_parameter_name];
+		bound_derivative_parameters[limit_parameter_name] = numeric_parameters_at_limit[limit_parameter_name];
 		auto iter = limit_type_map.find(limit_parameter_name);
 		assert(iter != limit_type_map.end());
 		limit_type = iter->second;
 	}
-	else {
-		bound_parameters.clear();
+	par_transform.numeric2derivative_ip(bound_derivative_parameters);
+	return bound_derivative_parameters;
+}
+
+Parameters SVDSolver::limit_parameters_freeze_all_ip(const Parameters &init_numeric_pars,
+					Parameters &upgrade_numeric_pars, const Parameters &frozen_pars)
+{
+	map<string, LimitType> limit_type_map;
+	const string *name;
+	double p_init;
+	double p_upgrade;
+	double p_limit;
+	Parameters frozen_derivative_parameters;
+	pair<bool, double> par_limit;
+	Parameters derivative_parameters_at_limit;
+	Parameters upgrade_derivative_pars  = par_transform.numeric2derivative_cp(upgrade_numeric_pars);
+
+	Parameters init_derivative_pars = init_numeric_pars;
+	//remove frozen parameters from numeric parameters
+	init_derivative_pars.erase(frozen_pars);
+	par_transform.numeric2derivative_ip(init_derivative_pars);
+
+	check_limits(init_derivative_pars, upgrade_derivative_pars, limit_type_map, derivative_parameters_at_limit);
+	// Remove parameters at there upper and lower bound limits as these will be frozen
+	vector<string> pars_at_bnds;
+	for (auto ipar : limit_type_map)
+	{
+		if (ipar.second == LimitType::LBND || ipar.second == LimitType::UBND)
+		{
+			pars_at_bnds.push_back(ipar.first);
+		}
 	}
-	return bound_parameters;
+	derivative_parameters_at_limit.erase(pars_at_bnds);
+
+	// Calculate most stringent limit factor on a PEST parameter
+	double limit_factor = 1.0;
+	double tmp_limit;
+	string limit_parameter_name = "";
+	Parameters numeric_parameters_at_limit = par_transform.model2numeric_cp(derivative_parameters_at_limit);
+	for(auto &ipar : numeric_parameters_at_limit)
+	{
+		name = &(ipar.first);
+		p_limit = ipar.second;
+		p_init = init_numeric_pars.get_rec(*name);
+		p_upgrade = upgrade_numeric_pars.get_rec(*name);
+		tmp_limit = (p_limit - p_init) / (p_upgrade - p_init);
+		if (tmp_limit < limit_factor)  {
+			limit_factor = (p_limit - p_init) / (p_upgrade - p_init);
+			limit_parameter_name = *name;
+		}
+	}
+	// Apply limit factor to PEST upgrade parameters
+	if (limit_factor != 1.0)
+	{
+		for(auto &ipar : upgrade_numeric_pars)
+		{
+			name = &(ipar.first);
+			p_init = init_numeric_pars.get_rec(*name);
+			ipar.second = p_init + (ipar.second - p_init) *  limit_factor;
+		}
+	}
+
+	//Transform parameters back their derivitive state and freeze any that violate their bounds
+	upgrade_derivative_pars = par_transform.numeric2derivative_cp(upgrade_numeric_pars);
+	check_limits(init_derivative_pars, upgrade_derivative_pars, limit_type_map, derivative_parameters_at_limit);
+	for (auto &ipar : derivative_parameters_at_limit)
+	{
+		if(limit_type_map[ipar.first] == LimitType::UBND || limit_type_map[ipar.first] == LimitType::LBND)
+		{
+			upgrade_derivative_pars[ipar.first] = ipar.second;
+			frozen_derivative_parameters.insert(ipar);
+		}
+	}
+	//Transform parameters back their numeric state
+	upgrade_numeric_pars = par_transform.derivative2numeric_cp(upgrade_derivative_pars);
+
+	// Impose frozen Parameters
+	for (auto &ipar : frozen_pars)
+	{
+		auto iter = upgrade_numeric_pars.find(ipar.first);
+		if (iter != upgrade_numeric_pars.end())
+		{
+			upgrade_numeric_pars[ipar.first] = ipar.second;
+		}
+	}
+	return frozen_derivative_parameters;
 }
 
 void SVDSolver::param_change_stats(double p_old, double p_new, bool &have_fac, double &fac_change, bool &have_rel, double &rel_change) 

@@ -169,6 +169,42 @@ void Transformable::erase(iterator position)
 	items.erase(position);
 }
 
+void Transformable::erase(const Parameters &erase_pars)
+{
+	auto end_erase_pars = erase_pars.end();
+	auto end_items = items.end();
+	auto item_iter = items.end();;
+	for(auto iter = erase_pars.begin(); iter != end_erase_pars;) {
+		item_iter = items.find((*iter).first);
+		if (item_iter != end_items)
+		{
+		   items.erase(item_iter++);
+		}
+		else 
+		{
+			++iter;
+	   }
+	}
+}
+
+void Transformable::erase(const vector<string> &erase_par_names)
+{
+	auto end_erase_pars = erase_par_names.end();
+	auto end_items = items.end();
+	auto item_iter = items.end();;
+	for(auto iter = erase_par_names.begin(); iter != end_erase_pars;) {
+		item_iter = items.find((*iter));
+		if (item_iter != end_items)
+		{
+		   items.erase(item_iter++);
+		}
+		else 
+		{
+			++iter;
+	   }
+	}
+}
+
 Transformable::iterator Transformable::find(const string &name)
 {
 	return items.find(name);

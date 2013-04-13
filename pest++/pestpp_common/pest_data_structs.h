@@ -176,30 +176,30 @@ class PestppOptions {
 public:
 	enum SVD_PACK{LAPACK, PROPACK};
 	void parce_line(const string &line);
-	int get_super_nmax() const{return super_nmax;}
+	int get_max_n_super() const{return max_n_super;}
 	double get_super_eigthres() const{return super_eigthres;}
 	int get_n_iter_base() const{return n_iter_base;}
 	int get_n_iter_super() const{return n_iter_super;}
 	SVD_PACK get_svd_pack() const {return svd_pack;}
 	double get_auto_norm() const{return auto_norm;}
-	double get_n_rotation_fac() const{return n_rotation_fac;}
+	double get_max_freeze_iter() const{return max_freeze_iter;}
 
-	void set_super_nmax(int _super_nmax) {super_nmax = _super_nmax;}
+	void set_max_n_super(int _max_n_super) {max_n_super = _max_n_super;}
 	void set_super_eigthres(double _super_eigthres) {super_eigthres = _super_eigthres;}
 	void set_n_iter_base(int _n_iter_base) {n_iter_base = _n_iter_base;}
 	void set_n_iter_super(int _n_iter_super){n_iter_super = _n_iter_super;}
 	void set_svd_pack(const SVD_PACK _svd_pack=LAPACK) {svd_pack = _svd_pack;}
 	void set_auto_norm(double _auto_norm) {auto_norm = _auto_norm;};
-	void set_n_rotation_fac(int _n_rotation_fac){n_rotation_fac = _n_rotation_fac;}
+	void set_max_freeze_iter(int _max_freeze_iter){max_freeze_iter = _max_freeze_iter;}
 
 private:
-	int super_nmax;
+	int max_n_super;;
 	double super_eigthres;
 	int n_iter_base;
 	int n_iter_super;
 	SVD_PACK svd_pack;
 	double auto_norm;
-	int n_rotation_fac;
+	int max_freeze_iter;
 };
 
 ostream& operator<< (ostream &os, const ObservationInfo& val);

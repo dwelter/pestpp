@@ -74,6 +74,8 @@ public:
 	void insert (iterator first, iterator last );
 	size_t erase(const string &name);
 	void erase(iterator position);
+	void erase(const Parameters &erase_pars);
+	void erase(const vector<string> &erase_par_names);
 	iterator find(const string &name);
 	const double* get_rec_ptr(const string &name) const;
 	const double get_rec(const string &name) const;
