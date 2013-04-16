@@ -72,6 +72,7 @@ public:
 	pair<iterator, bool> insert(const pair<string, double> &x);
     void insert(const vector<string> &name_vec, const vector<double> &value_vec);
 	void insert (iterator first, iterator last );
+	void insert(const Transformable &insert_pars);
 	size_t erase(const string &name);
 	void erase(iterator position);
 	void erase(const Parameters &erase_pars);
@@ -90,6 +91,7 @@ public:
 	vector<string> get_keys() const;
     vector<double> get_data_vec(const vector<string> &keys) const;
 	Eigen::VectorXd get_data_eigen_vec(const vector<string> &keys) const;
+	Eigen::VectorXd get_partial_data_eigen_vec(const vector<string> &keys) const;
 	Transformable::iterator begin(){return items.begin();}
 	Transformable::const_iterator begin() const {return items.begin();}
 	Transformable::iterator end() {return items.end();}

@@ -159,6 +159,14 @@ void Transformable::insert(iterator first, iterator last )
 	items.insert(first, last);
 }
 
+void Transformable::insert(const Transformable &insert_items)
+{
+	for(auto &ipar : insert_items)
+	{
+		items[ipar.first] = ipar.second;
+	}
+}
+
 size_t Transformable::erase(const string &name)
 {
 	return items.erase(name);
@@ -279,6 +287,7 @@ vector<double> Transformable::get_data_vec(const vector<string> &keys) const
 	return v;
 }
 
+
 Eigen::VectorXd Transformable::get_data_eigen_vec(const vector<string> &keys) const
 {
 	VectorXd vec;
@@ -290,6 +299,32 @@ Eigen::VectorXd Transformable::get_data_eigen_vec(const vector<string> &keys) co
 	}
 	return vec;
 }
+
+Eigen::VectorXd Transformable::get_partial_data_eigen_vec(const vector<string> &keys) const
+{
+	VectorXd vec;
+	vec.resize(size());
+	int i = 0;
+	auto end = items.end();
+	for (auto &k : keys)
+	{
+		auto iter = items.find(k);
+		if (iter != end)
+		{
+			vec(i) = get_rec(k);
+		}
+		else
+		{
+			vec(i) = 0;
+		}
+		++i;
+	}
+	return vec;
+}
+
+
+
+
 
 vector<string> Transformable::get_keys() const
 {
@@ -323,4 +358,3 @@ ostream& operator<<(ostream& out, const Transformable &rhs)
 	}
 	return out;
 }
-

@@ -44,7 +44,7 @@ using namespace std;
 class ParamTransformSeq {
 public:
 	ParamTransformSeq(const string &_name="unnamed ParamTransformSeq") : name(_name), ctl_offset_ptr(0),
-		ctl_scale_prt(0), ctl_log10_ptr(0) {}
+		ctl_scale_prt(0), ctl_log10_ptr(0), svda_ptr(0) {}
 	ParamTransformSeq(const ParamTransformSeq &rhs);
 	ParamTransformSeq(const ParamTransformSeq &rhs, const set<Transformation *> &deep_copy_tran_set);
 	void copy(const ParamTransformSeq &rhs);
@@ -93,6 +93,8 @@ public:
 	const TranScale *get_scale_ptr() const {return ctl_scale_prt;}
 	void set_log10_ptr(TranLog10 *ptr) {ctl_log10_ptr = ptr;}
 	TranFixed *get_fixed_ptr()const {return ctl_fixed_ptr;};
+	void set_svda_ptr(TranSVD *ptr) {svda_ptr = ptr;}
+	TranSVD *get_svda_ptr()const {return svda_ptr;};
 	void set_fixed_ptr(TranFixed *ptr) {ctl_fixed_ptr = ptr;}
 	const TranLog10 *get_log10_ptr() const {return ctl_log10_ptr;}
 	const vector<Transformation*> get_ctl2model_tranformations() const {return tranSeq_ctl2model;}
@@ -111,6 +113,7 @@ private:
 	TranScale *ctl_scale_prt;
 	TranLog10 *ctl_log10_ptr;
 	TranFixed *ctl_fixed_ptr;
+	TranSVD *svda_ptr;
 	set <Transformation *> default_deep_copy_tran_set;
 	static map<const Transformation*, int> tran_ref_count;
 	static int tran_add_ref_count(const Transformation *);

@@ -16,10 +16,12 @@
     You should have received a copy of the GNU General Public License
     along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
-#include <vector>
 #include "eigen_tools.h"
 #include <Eigen/Dense>
 #include "Transformable.h"
+#include <vector>
+#include <algorithm>
+
 
 using namespace Eigen;
 using namespace std;
@@ -76,7 +78,7 @@ void get_MatrixXd_row_abs_max(const MatrixXd &m, int row, int *max_col, double *
 	}
 }
 
-VectorXd stlvec2LaVec(const std::vector<double> &stl_vec)
+VectorXd stlvec_2_egienvec(const std::vector<double> &stl_vec)
 {
 	int len = stl_vec.size();
 	VectorXd la_vec(len);
@@ -85,6 +87,32 @@ VectorXd stlvec2LaVec(const std::vector<double> &stl_vec)
 		la_vec(i) = stl_vec[i];
 	}
 	return la_vec;
+}
+
+void matrix_del_cols(MatrixXd &mat, const vector<int> &col_id_vec)
+{
+	int ncols = mat.cols();
+
+	vector<int> del_id_vec = col_id_vec;
+	std::sort(del_id_vec.begin(), del_id_vec.end(), [](int i, int j)->bool{return i>j;});
+
+	// shift columns to over write deleted columns
+	int n_shift = 0;
+	for (int icol=0; icol<ncols; ++icol)
+	{
+		if (del_id_vec.back() == icol)
+		{
+			n_shift++;
+			del_id_vec.pop_back();
+		}
+		else if (n_shift > 0)
+		{
+			mat.col(icol-n_shift) = mat.col(icol);
+		}
+	}
+	//make sure all rows got removed;
+	assert (del_id_vec.size() == 0);
+	mat.conservativeResize(mat.rows(), ncols-n_shift);
 }
 
 void print(const MatrixXd &mat, ostream & fout)
@@ -104,17 +132,4 @@ void print(const MatrixXd &mat, ostream & fout)
 
 }
 
-void add_LaVectorDouble_2_Transformable(Transformable &tr_data, const vector<string> &keys, 
-										const VectorXd &del_values)
-{
-	int i = 0;
-	Transformable::iterator found;
-	Transformable::iterator not_found=tr_data.end();
 
-	for(vector<string>::const_iterator b=keys.begin(), e=keys.end(); b!=e; ++b, ++i)
-	{
-		found = tr_data.find(*b);
-		assert(found != not_found);
-		(*found).second += del_values(i);
-	}
-}

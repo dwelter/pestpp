@@ -158,7 +158,7 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 		os   << "  SVD Package: " << svd_package->description << endl;
 		os   << "    Model calls so far : " << run_manager.get_total_runs() << endl;
 		fout_restart << "start_iteration " << iter_num << endl;
-		iteration(run_manager, termination_ctl, false);
+		this->iteration(run_manager, termination_ctl, false);
 		// write files that get wrtten at the end of each iteration
 		stringstream filename;
 		string complete_filename;
@@ -207,6 +207,17 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 	return cur_solution;
 }
 
+VectorXd SVDSolver::calc_residual_corrections(const Jacobian &jacobian, const Parameters &del_numeric_pars, 
+							   const vector<string> obs_name_vec)
+{
+	VectorXd del_residuals;
+	vector<string>frz_par_name_vec = del_numeric_pars.get_keys();
+	VectorXd frz_del_par_vec = del_numeric_pars.get_data_eigen_vec(frz_par_name_vec);
+	MatrixXd jac_frz = jacobian.get_matrix(obs_name_vec, frz_par_name_vec);
+	del_residuals = (jac_frz) *  frz_del_par_vec;
+	return del_residuals;
+}
+
 SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
 	const Eigen::VectorXd &Residuals, const vector<string> &par_name_vec, const vector<string> &obs_name_vec,
 	const Parameters &base_numeric_pars, const Parameters &freeze_numeric_pars, int &tot_sing_val, 
@@ -226,14 +237,8 @@ SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, 
 	//Compute effect of frozen parameters on the residuals vector
 	Parameters delta_freeze_pars = freeze_numeric_pars;
 	delta_freeze_pars -= base_numeric_pars;
-	VectorXd del_residuals;
-	{
-		vector<string>frz_par_name_vec = freeze_numeric_pars.get_keys();
-		VectorXd frz_del_par_vec = delta_freeze_pars.get_data_eigen_vec(frz_par_name_vec);
-		MatrixXd jac_frz = jacobian.get_matrix(frz_par_name_vec, obs_name_vec);
-		del_residuals = (jac_frz) *  frz_del_par_vec;
-	}
-	MatrixXd jac = jacobian.get_matrix(p_name_nf_vec, obs_name_vec);
+	VectorXd del_residuals = calc_residual_corrections(jacobian, delta_freeze_pars, obs_name_vec);
+	MatrixXd jac = jacobian.get_matrix(obs_name_vec, p_name_nf_vec);
 	MatrixXd SqrtQ_J = Q_sqrt * jac;
 
 	VectorXd Sigma;
@@ -320,7 +325,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	// build weights matrix sqrt(Q)
 	QSqrtMatrix Q_sqrt(*obs_info_ptr, obs_names_vec, prior_info_ptr, tikhonov_weight);
 	//build residuals vector
-	residuals_vec = -1.0 * stlvec2LaVec(cur_solution.get_residuals_vec(obs_names_vec));
+	residuals_vec = -1.0 * stlvec_2_egienvec(cur_solution.get_residuals_vec(obs_names_vec));
 
 	//Build model runs
 	run_manager.reinitialize(file_manager.build_filename("rnu"));

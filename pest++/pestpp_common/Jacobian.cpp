@@ -77,7 +77,7 @@ unordered_map<string, int> Jacobian::get_obs2row_map() const
 }
 
 
-MatrixXd Jacobian::get_matrix(const vector<string> & par_names, const vector<string> &obs_names) const
+MatrixXd Jacobian::get_matrix(const vector<string> &obs_names, const vector<string> & par_names) const
 {
 	int n_rows = obs_names.size();
 	int n_cols = par_names.size();

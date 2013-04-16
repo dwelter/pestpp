@@ -1,20 +1,20 @@
 /*  
-    © Copyright 2012, David Welter
-    
-    This file is part of PEST++.
+	© Copyright 2012, David Welter
+	
+	This file is part of PEST++.
    
-    PEST++ is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	PEST++ is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    PEST++ is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	PEST++ is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
 #include <string>
 #include <map>
@@ -397,20 +397,21 @@ void TranTied::print(ostream &os) const
 	}
 }
 
-void TranSVD::update(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt, const Parameters &base_numeric_pars,
-		int maxsing, double eigthresh, const vector<string> &par_names, const vector<string> &obs_names)
+
+const Eigen::MatrixXd& TranSVD::get_vt() const
+{
+	return Vt;
+}
+
+void TranSVD::calc_svd()
 {
 	stringstream sup_name;
-	super_parameter_names.clear();
-	base_parameter_names = par_names;
-
-	MatrixXd SqrtQ_J = Q_sqrt * jacobian.get_matrix(par_names, obs_names);
-	JacobiSVD<MatrixXd> svd_fac(SqrtQ_J,  ComputeFullU |  ComputeFullV);
+	JacobiSVD<MatrixXd> svd_fac(SqrtQ_J, ComputeThinU | ComputeThinV);
 	// calculate the number of singluar values above the threshold
 	Sigma = svd_fac.singularValues();
 	U = svd_fac.matrixU();
 	Vt = svd_fac.matrixV().transpose();
-	MatrixXd svd_mat_inv = SVD_inv(U, Sigma, Vt, maxsing, eigthresh, n_sing_val);
+	MatrixXd svd_mat_inv = SVD_inv(U, Sigma, Vt, max_sing, eigthresh, n_sing_val);
 	super_parameter_names.clear();
 	for(int i=0; i<n_sing_val; ++i) {
 		sup_name.str("");
@@ -418,13 +419,56 @@ void TranSVD::update(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt, const 
 		sup_name << i+1;
 		super_parameter_names.push_back(sup_name.str());
 	}
-	init_base_numeric_parameters = base_numeric_pars;
 	if (n_sing_val <= 0 )
 	{
 		throw PestError("TranSVD::update() - super parameter transformation returned 0 super parameters.  Jacobian must equal 0.");
 	}
 }
+void TranSVD::update_reset_frozen_pars(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt, const Parameters &base_numeric_pars,
+		int maxsing, double _eigthresh, const vector<string> &par_names, const vector<string> &_obs_names,
+		const Parameters &_frozen_derivative_pars)
+{
+	stringstream sup_name;
+	super_parameter_names.clear();
+	max_sing = maxsing; 
+	eigthresh = _eigthresh;
+	obs_names = _obs_names;
 
+	//these are where the derivative was computed so they can be different than the frozen values;
+	init_base_numeric_parameters = base_numeric_pars;  
+	base_parameter_names = par_names;
+	//remove frozen parameters from base_parameter_names
+	std::remove_if(base_parameter_names.begin(), base_parameter_names.end(),
+		[&_frozen_derivative_pars](string &str)->bool{return _frozen_derivative_pars.find(str)!=_frozen_derivative_pars.end();});
+
+	frozen_derivative_parameters = _frozen_derivative_pars;
+	//remove frozen derivatives from matrix parameter list
+	std::remove_if(base_parameter_names.begin(), base_parameter_names.end(),
+		[this](string &str)->bool{return this->frozen_derivative_parameters.find(str)!=this->frozen_derivative_parameters.end();});
+
+	SqrtQ_J = Q_sqrt * jacobian.get_matrix(obs_names, base_parameter_names);
+
+	calc_svd();
+}
+
+void TranSVD::update_add_frozen_pars(const Parameters &new_frozen_pars)
+{
+	vector<int> del_col_ids;
+
+	frozen_derivative_parameters.insert(new_frozen_pars);
+	// build list of columns that needs to be removed from the matrix
+	for (int i=0; i<base_parameter_names.size(); ++i)
+	{
+		if(new_frozen_pars.find(base_parameter_names[i]) != frozen_derivative_parameters.end())
+		{
+			del_col_ids.push_back(i);
+		}
+	}
+	std::remove_if(base_parameter_names.begin(), base_parameter_names.end(),
+		[&new_frozen_pars](string &str)->bool{return new_frozen_pars.find(str)!=new_frozen_pars.end();});
+	matrix_del_cols(SqrtQ_J, del_col_ids);
+	calc_svd();
+}
 void TranSVD::reverse(Transformable &data)
 {
 	// Transform super-parameters to base parameters
@@ -437,11 +481,12 @@ void TranSVD::reverse(Transformable &data)
 		(*it) -= 10.0;
 	}
 	Transformable ret_base_pars;
-	VectorXd delta_base_mat = Vt.block(0,0,n_sing_val, Vt.rows()).transpose() *  stlvec2LaVec(super_par_vec);
+	VectorXd delta_base_mat = Vt.block(0,0,n_sing_val, Vt.rows()).transpose() *  stlvec_2_egienvec(super_par_vec);
 	for (int i=0; i<n_base; ++i) {
 		ret_base_pars.insert(base_parameter_names[i], delta_base_mat(i) + init_base_numeric_parameters.get_rec(base_parameter_names[i]));
 	}
 	data = ret_base_pars;
+	data.insert(frozen_derivative_parameters);
 }
 
 void TranSVD::forward(Transformable &data)
@@ -452,7 +497,7 @@ void TranSVD::forward(Transformable &data)
 
 	Transformable delta_data = data - init_base_numeric_parameters;
 
-	value = Vt * stlvec2LaVec(delta_data.get_data_vec(base_parameter_names));
+	value = Vt * stlvec_2_egienvec(delta_data.get_data_vec(base_parameter_names));
 	for (int i=0; i<n_sing_val; ++i) {
 		super_pars.insert(super_parameter_names[i], value(i)+10.0);
 	}

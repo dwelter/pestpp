@@ -31,11 +31,10 @@ Eigen::MatrixXd SVD_inv(const Eigen::MatrixXd &U, const Eigen::VectorXd &Sigma,
 
 void get_MatrixXd_row_abs_max(const Eigen::MatrixXd &m, int row, int *max_col, double *max_val);
 
-Eigen::VectorXd stlvec2LaVec(const std::vector<double> &stl_vec);
+Eigen::VectorXd stlvec_2_egienvec(const std::vector<double> &stl_vec);
 
 void print(const Eigen::MatrixXd &mat, std::ostream &fout);
 
-void add_LaVectorDouble_2_Transformable(Transformable &tr_data, const std::vector<std::string> &keys, 
-										const Eigen::VectorXd &del_values);
+void matrix_del_cols(Eigen::MatrixXd &mat, const std::vector<int> &col_id_vec);
 
 #endif /* LAPACK_TOOLS_H_ */

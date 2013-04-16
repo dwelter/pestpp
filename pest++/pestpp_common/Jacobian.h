@@ -47,7 +47,7 @@ public:
 	virtual vector<string> obs_and_reg_list() const;
 	virtual const Parameters &get_base_numeric_parameters() const{return base_numeric_parameters;};
 	virtual const Observations &get_base_sim_observations() const {return base_sim_observations;}
-	virtual Eigen::MatrixXd get_matrix(const vector<string> & par_name_vec, const vector<string> &obs_names) const;
+	virtual Eigen::MatrixXd get_matrix(const vector<string> &obs_names, const vector<string> & par_name_vec) const;
 	virtual void calculate(ModelRun &model_run, vector<string> numeric_par_names, vector<string> obs_names, 
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
 		RunManagerAbstract &run_manager, const PriorInformation &prior_info, bool phiredswh_flag=false, bool calc_init_obs=true);

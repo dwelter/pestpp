@@ -314,7 +314,7 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 		else if (section == "MODEL INPUT/OUTPUT" )
 		{
             vector<string> tokens_case_sen;
-            tokenize(line_upper, tokens_case_sen);
+            tokenize(line, tokens_case_sen);
 			if(i_tpl_ins < num_tpl_file)
 			{
 				model_exec_info.tplfile_vec.push_back(tokens_case_sen[0]);
