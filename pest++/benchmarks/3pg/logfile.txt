@@ -20,10 +20,10 @@ Removal of this statement violates the spirit in which 3PG(S) was released by
 CSIRO Forestry and Forest Products.
 Reading input parameters from file 'rsgparm4.txt'...
    pFS2                                     constant:      0.750
-   pFS20                                    constant:      0.069
-   StemConst                                constant:      0.051
+   pFS20                                    constant:      0.145
+   StemConst                                constant:      0.010
    StemPower                                constant:      2.400
-   pRx                                      constant:      0.803
+   pRx                                      constant:      1.000
    pRn                                      constant:      0.229
    growthTmin                               constant:      5.000
    growthTopt                               constant:     25.000
@@ -34,7 +34,7 @@ Reading input parameters from file 'rsgparm4.txt'...
    tgammaF                                  constant:     24.000
    Rttover                                  constant:      0.015
    MaxCond                                  constant:      0.020
-   StomCond                                 constant:      0.005
+   StomCond                                 constant:      0.015
    CoeffCond                                constant:      0.050
    BLcond                                   constant:      0.200
    m0                                       constant:      0.000
@@ -46,7 +46,7 @@ Reading input parameters from file 'rsgparm4.txt'...
    nAge                                     constant:      4.000
    rAge                                     constant:      0.950
    SLA0                                     constant:     16.100
-   SLA1                                     constant:      5.693
+   SLA1                                     constant:      5.500
    tSLA                                     constant:      0.920
    k                                        constant:      0.500
    fullCanAge                               constant:      1.000

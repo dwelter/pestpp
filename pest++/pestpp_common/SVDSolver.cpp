@@ -118,9 +118,9 @@ void SVDSolver::update_upgrade(Upgrade &upgrade, const Parameters &base_pars, co
 	//compute new upgrade
 	for(int i=0; i<upgrade.par_name_vec.size(); ++i)
 	{
-		auto &it_base = base_pars.find(upgrade.par_name_vec[i]);
+		const auto &it_base = base_pars.find(upgrade.par_name_vec[i]);
 		assert(it_base != base_pars.end());
-		auto &it_new = new_pars.find(upgrade.par_name_vec[i]);
+		const auto &it_new = new_pars.find(upgrade.par_name_vec[i]);
 		assert(it_new != new_pars.end());
 		upgrade.uvec[i] = it_new->second - it_base->second;
 	}
@@ -129,9 +129,9 @@ void SVDSolver::update_upgrade(Upgrade &upgrade, const Parameters &base_pars, co
 	for(auto &ipar : frozen_pars)
 	{
 		const string &par_name = ipar.first;
-		auto &it = par_vec_name_to_idx.find(par_name);
+		const auto &it = par_vec_name_to_idx.find(par_name);
 		assert(it != par_vec_name_to_idx.end());
-		auto &it_base = base_pars.find(ipar.first);
+		const auto &it_base = base_pars.find(ipar.first);
 		upgrade.uvec(it->second) = ipar.second - it_base->second;
 	}
 	upgrade.norm = upgrade.uvec.norm();
@@ -158,7 +158,7 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 		os   << "  SVD Package: " << svd_package->description << endl;
 		os   << "    Model calls so far : " << run_manager.get_total_runs() << endl;
 		fout_restart << "start_iteration " << iter_num << endl;
-		this->iteration(run_manager, termination_ctl, false);
+		iteration(run_manager, termination_ctl, false);
 		// write files that get wrtten at the end of each iteration
 		stringstream filename;
 		string complete_filename;
@@ -270,14 +270,14 @@ SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, 
 	//tranfere newly computed componets of the ugrade vector to upgrade.svd_uvec
 	for(int i=0; i<p_name_nf_vec.size(); ++i)
 	{
-		auto &it = par_vec_name_to_idx.find(p_name_nf_vec[i]);
+		const auto &it = par_vec_name_to_idx.find(p_name_nf_vec[i]);
 		assert(it != par_vec_name_to_idx.end());
 		upgrade.uvec(it->second) = tmp_svd_uvec(i);
 	}
 	//tranfere previously frozen componets of the ugrade vector to upgrade.svd_uvec
 	for(auto &ipar : delta_freeze_pars)
 	{
-		auto &it = par_vec_name_to_idx.find(ipar.first);
+		const auto &it = par_vec_name_to_idx.find(ipar.first);
 		assert(it != par_vec_name_to_idx.end());
 		upgrade.uvec(it->second) = ipar.second;
 	}

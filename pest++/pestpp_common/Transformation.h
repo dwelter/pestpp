@@ -268,6 +268,7 @@ public:
 		const Parameters &_frozen_derivative_pars=Parameters());
 	void update_add_frozen_pars(const Parameters &_frozen_derivative_pars);
 	Parameters& get_frozen_derivative_pars() {return frozen_derivative_parameters;}
+	const vector<string>& get_super_parameter_names(){return super_parameter_names;}
 	virtual void forward(Transformable &data);
 	virtual void reverse(Transformable &data);
 	void insert(const string &item_name, double item_value){};
@@ -276,6 +277,7 @@ public:
 	virtual bool is_one_to_one() const {return false;}
 	virtual TranSVD* clone() {return new TranSVD(*this);}
 	ParameterGroupInfo build_par_group_info(const ParameterGroupInfo &base_pg_info);
+	Parameters map_basepar_to_super(const Parameters &base_pars);
 	const Eigen::MatrixXd& get_vt() const;
 protected:
 	int n_sing_val;

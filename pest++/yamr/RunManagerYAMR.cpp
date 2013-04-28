@@ -19,6 +19,8 @@
 
 #include "network_wrapper.h"
 #include "RunManagerYAMR.h"
+#include <chrono>
+#include <ctime>
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -423,8 +425,9 @@ void RunManagerYAMR::process_message(int i_sock)
 		int group_id = net_pack.get_groud_id();
 		// keep track of model run time
 		slave_info.end_run(i_sock);
-		f_rmr << "Run received from: " << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << group_id << ", run id = " << run_id << ")" << endl;
-		cout << "Run received from: " << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << group_id << ", run id = " << run_id << ")" << endl;
+		std::time_t tt =  std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+		f_rmr << "Run received from: " << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << group_id << ", run id = " << run_id << ") at " << ctime(&tt) << endl;
+		cout << "Run received from: " << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << group_id << ", run id = " << run_id << ") at " << ctime(&tt) << endl;
 		process_model_run(i_sock, net_pack);
 
 	}
@@ -432,8 +435,9 @@ void RunManagerYAMR::process_message(int i_sock)
 	{
 		int run_id = net_pack.get_run_id();
 		int group_id = net_pack.get_groud_id();
-		f_rmr << "Run failed on slave:" << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << group_id << ", run id = " << run_id << ")" << endl;
-		cout << "Run failed on slave:" << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << group_id << ", run id = " << run_id << ")" << endl;
+		std::time_t tt =  std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+		f_rmr << "Run failed on slave:" << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << group_id << ", run id = " << run_id << ") at " << ctime(&tt) << endl;
+		cout << "Run failed on slave:" << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << group_id << ", run id = " << run_id << ") at " << ctime(&tt) << endl;
 		file_stor.update_run_failed(run_id);
 		failure_map.insert(make_pair(run_id, i_sock));
 		auto it = get_active_run_id(i_sock);
@@ -530,7 +534,8 @@ void RunManagerYAMR::process_message(int i_sock)
 		{
 			//start run timer
 			slave_info.start_timer(*it_sock);
-			f_rmr << "Sending run to: " << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << cur_group_id << ", run id = " << run_id << ")" << endl;
+			std::time_t tt =  std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+			f_rmr << "Sending run to: " << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << cur_group_id << ", run id = " << run_id << ") at " << ctime(&tt) << endl;
 			active_runs.insert(pair<int, YamrModelRun>(run_id, tmp_run));
 			slave_fd.erase(it_sock);
 			scheduled = true;

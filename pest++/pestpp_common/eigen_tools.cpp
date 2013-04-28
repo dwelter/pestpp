@@ -100,7 +100,7 @@ void matrix_del_cols(MatrixXd &mat, const vector<int> &col_id_vec)
 	int n_shift = 0;
 	for (int icol=0; icol<ncols; ++icol)
 	{
-		if (del_id_vec.back() == icol)
+		if (!del_id_vec.empty() && del_id_vec.back() == icol)
 		{
 			n_shift++;
 			del_id_vec.pop_back();

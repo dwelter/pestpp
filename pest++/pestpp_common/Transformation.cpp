@@ -438,9 +438,9 @@ void TranSVD::update_reset_frozen_pars(const Jacobian &jacobian, const QSqrtMatr
 	init_base_numeric_parameters = base_numeric_pars;  
 	base_parameter_names = par_names;
 	//remove frozen parameters from base_parameter_names
-	std::remove_if(base_parameter_names.begin(), base_parameter_names.end(),
+	auto end_iter = std::remove_if(base_parameter_names.begin(), base_parameter_names.end(),
 		[&_frozen_derivative_pars](string &str)->bool{return _frozen_derivative_pars.find(str)!=_frozen_derivative_pars.end();});
-
+	base_parameter_names.resize(std::distance(base_parameter_names.begin(), end_iter));
 	frozen_derivative_parameters = _frozen_derivative_pars;
 	//remove frozen derivatives from matrix parameter list
 	std::remove_if(base_parameter_names.begin(), base_parameter_names.end(),
@@ -451,21 +451,33 @@ void TranSVD::update_reset_frozen_pars(const Jacobian &jacobian, const QSqrtMatr
 	calc_svd();
 }
 
-void TranSVD::update_add_frozen_pars(const Parameters &new_frozen_pars)
+void TranSVD::update_add_frozen_pars(const Parameters &frozen_pars)
 {
 	vector<int> del_col_ids;
+	Parameters new_frozen_pars;
+	for (auto &ipar : frozen_pars)
+	{
+		auto iter = frozen_derivative_parameters.find(ipar.first);
+		if (iter != frozen_derivative_parameters.end())
+		{
+			new_frozen_pars.insert(*iter);
+		}
+	}
 
 	frozen_derivative_parameters.insert(new_frozen_pars);
+
 	// build list of columns that needs to be removed from the matrix
 	for (int i=0; i<base_parameter_names.size(); ++i)
 	{
-		if(new_frozen_pars.find(base_parameter_names[i]) != frozen_derivative_parameters.end())
+		if(new_frozen_pars.find(base_parameter_names[i]) != new_frozen_pars.end())
 		{
 			del_col_ids.push_back(i);
 		}
 	}
-	std::remove_if(base_parameter_names.begin(), base_parameter_names.end(),
+	//remove frozen parameters from base_parameter_names
+	auto end_iter = std::remove_if(base_parameter_names.begin(), base_parameter_names.end(),
 		[&new_frozen_pars](string &str)->bool{return new_frozen_pars.find(str)!=new_frozen_pars.end();});
+	base_parameter_names.resize(std::distance(base_parameter_names.begin(), end_iter));
 	matrix_del_cols(SqrtQ_J, del_col_ids);
 	calc_svd();
 }
@@ -529,6 +541,19 @@ ParameterGroupInfo TranSVD::build_par_group_info(const ParameterGroupInfo &base_
 		pg_info.insert_parameter_link(super_parameter_names[i_sup], grp_name.str());
 	}
 	return pg_info;
+}
+
+
+Parameters TranSVD::map_basepar_to_super(const Parameters &base_pars)
+{
+	Parameters super_pars;
+	VectorXd base_par_vec = base_pars.get_partial_data_eigen_vec(base_parameter_names);
+	VectorXd super_par_vec = Vt * base_par_vec;
+	for (int i=0; i<super_parameter_names.size(); ++i)
+	{
+		super_pars[super_parameter_names[i]] = super_par_vec(i);
+	}
+	return super_pars;
 }
 
 void TranSVD::print(ostream &os) const

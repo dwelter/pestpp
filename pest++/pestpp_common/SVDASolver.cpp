@@ -88,12 +88,12 @@ Parameters SVDASolver::limit_parameters_ip(const Parameters &init_numeric_pars, 
 		p_info = ctl_par_info_ptr->get_parameter_rec_ptr(*name);
 		if(ipar.second > p_info->ubnd)
 		{
-			frozen_derivative_pars.insert(ipar);
+			frozen_derivative_pars.insert(*name, p_info->ubnd);
 		}
 		// Check parameter lower bound
 		else if(ipar.second < p_info->lbnd)
 		{
-			frozen_derivative_pars.insert(ipar);
+			frozen_derivative_pars.insert(*name, p_info->lbnd);
 		}
 	}
 	return frozen_derivative_pars;
@@ -169,6 +169,8 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 	vector<string> obs_names_vec;
 	vector<string> numeric_par_names_vec = cur_solution.get_numeric_pars().get_keys();
 
+	// fix frozen parameters in SVDA transformation
+	base_run.get_par_tran().get_svda_ptr()->update_add_frozen_pars(cur_solution.get_frozen_ctl_pars());
 
 	// Calculate Jacobian
 	if (!cur_solution.obs_valid() || calc_init_obs == true) {
@@ -201,17 +203,16 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 	vector<double> rot_fac_vec;
 	vector<double> rot_angle_vec;
 	vector<double> magnitude_vec;
-	vector<Parameters> frozen_par_vec;
 
 	//Marquardt Lambda Update Vector
-	Parameters frozen_pars;
 	Parameters new_numeric_pars;
 	Upgrade ml_upgrade;
 	int tot_sing_val;
-	const Parameters &base_run_ctl_pars = base_run.get_ctl_pars();
+	const Parameters &base_run_derivative_pars =  base_run.get_par_tran().ctl2derivative_cp(base_run.get_ctl_pars());
 	Parameters base_numeric_pars = base_run.get_numeric_pars();
 	Parameters frozen_derivative_pars;
 	vector<string> par_name_vec = base_numeric_pars.get_keys();
+	vector<Parameters> numeric_par_vec;
 
 	double tmp_lambda[] = {0.1, 1.0, 10.0, 100.0, 1000.0};
 	vector<double> lambda_vec(tmp_lambda, tmp_lambda+sizeof(tmp_lambda)/sizeof(double));
@@ -224,23 +225,26 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 	int max_freeze_iter = 1;
 	for (double i_lambda : lambda_vec)
 	{
-		Parameters model_parameters;
 		ml_upgrade = calc_lambda_upgrade_vec(jacobian, Q_sqrt, residuals_vec, par_name_vec, obs_names_vec,
-			base_run.get_numeric_pars(), frozen_pars, tot_sing_val, i_lambda);
+			base_run.get_numeric_pars(), Parameters(), tot_sing_val, i_lambda);
 		new_numeric_pars = apply_upgrade(base_numeric_pars, ml_upgrade, 1.0);
 		Parameters new_frozen_pars = limit_parameters_ip(base_numeric_pars, new_numeric_pars);
-		model_parameters = base_run.get_par_tran().numeric2model_cp(new_numeric_pars);
-		if (new_frozen_pars.size() > 0)
-		{
-			model_parameters.insert(new_frozen_pars);
-		}
 		frozen_derivative_pars.insert(new_frozen_pars);
-		//add run svd run to run manager
-		run_manager.add_run(base_run.get_par_tran().numeric2model_cp(new_numeric_pars));
+		numeric_par_vec.push_back(new_numeric_pars);
+	}
+	for (auto ipar : numeric_par_vec)
+	{
+		base_run.get_par_tran().numeric2derivative_ip(ipar);
+		// impose frozen parameters
+		for (auto &i : frozen_derivative_pars)
+		{
+		  ipar[i.first] = i.second;
+		}
+		base_run.get_par_tran().derivative2model_ip(ipar);
+		run_manager.add_run(ipar);
 		rot_fac_vec.push_back(0);
 		rot_angle_vec.push_back(0);
 		magnitude_vec.push_back(ml_upgrade.norm);
-		frozen_par_vec.push_back(new_frozen_pars);
 	}
 
 	os << endl;
@@ -266,7 +270,6 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		if (success)
 		{
 			upgrade_run.update(tmp_pars, tmp_obs, ModelRun::FORCE_PAR_UPDATE);
-			upgrade_run.set_frozen_ctl_parameters(base_run.get_par_tran().numeric2derivative_cp(frozen_par_vec[i]));
 			streamsize n_prec = os.precision(2);
 			os << "      Marquardt Lambda = ";
 			os << setiosflags(ios::fixed)<< setw(4) << lambda_vec[i];
@@ -283,6 +286,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 			if ( upgrade_run.obs_valid() &&  !best_run_updated_flag || upgrade_run.get_phi() <  best_upgrade_run.get_phi()) {
 				best_run_updated_flag = true;
 				best_upgrade_run = upgrade_run;
+				best_upgrade_run.add_frozen_ctl_parameters(frozen_derivative_pars);
 				best_lambda = lambda_vec[i];
 			}
 		}
@@ -313,8 +317,6 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 				os << "      " << iter->first << " frozen at " << iter->second << endl;
 			}
 		}
-		// fix frozen parameters in SVDA transformation
-		base_run.get_par_tran().get_svda_ptr()->update_add_frozen_pars(frozen_derivative_pars);
 	}
 
 	// clean up run_manager memory

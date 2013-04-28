@@ -326,12 +326,12 @@ string w_get_error_msg()
 		NULL);
 	// Process any inserts in lpMsgBuf.
 	// ..
-	err_msg << "(tcp/ip error id = " << err_no << ") " << (LPCTSTR)lpMsgBuf ;
+	err_msg << "(tcp/ip error id = " << errno << ") " << (LPCTSTR)lpMsgBuf ;
 	// Free the buffer.
 	LocalFree( lpMsgBuf );
 	#endif
 	#ifdef OS_LINUX
-	err_msg << "(tcp/ip error id = " << err_no << ") " << strerror(err_no);
+	err_msg << "(tcp/ip error id = " << errno << ") " << strerror(errno);
 	#endif
 	return err_msg.str();
 }

@@ -100,11 +100,18 @@ const Parameters& ModelRun::get_frozen_ctl_pars()
 void ModelRun::set_frozen_ctl_parameters(const Parameters &frz_pars)
 {
 	frozen_ctl_pars = frz_pars;
-	for (auto &ipar : frozen_ctl_pars)
+}
+
+void ModelRun::add_frozen_ctl_parameters(const Parameters &frz_pars)
+{
+	for (auto &ipar : frz_pars)
 	{
 		frozen_ctl_pars[ipar.first] = ipar.second;
 	}
 }
+
+
+
 
 
 void ModelRun::set_numeric_parameters(const Parameters &parameters)
@@ -171,11 +178,11 @@ const Parameters &ModelRun::get_numeric_pars()
 
 Parameters ModelRun::get_ctl_pars()
 {
-	if (numeric_pars_is_valid) {
-		return par_tran.numeric2ctl_cp(numeric_pars);
-	}
-	else if (model_pars_is_valid) {
+	if (model_pars_is_valid) {
 		return par_tran.model2ctl_cp(model_pars);
+	}
+	else if (numeric_pars_is_valid) {
+		return par_tran.numeric2ctl_cp(numeric_pars);
 	}
 	else {
 		throw PestError("ModelRun::get_ctl_pars() - can not return control parameters.  Both model parameters and numeric parameters are undefined");

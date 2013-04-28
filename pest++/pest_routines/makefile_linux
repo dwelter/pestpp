@@ -1,7 +1,7 @@
 CXX := g++
 FC := gfortran
-CFLAGS := -g -c -std=c++0x 
-FFLAGS := -g -c -cpp
+CFLAGS := -O2 -Wall -fPIC -c -std=c++0x 
+FFLAGS := -O2 -Wall -fPIC -c -cpp
 INCLUDES := 
 
 OUT = libpest_routines.a

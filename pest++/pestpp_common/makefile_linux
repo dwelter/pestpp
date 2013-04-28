@@ -1,7 +1,7 @@
 CXX := g++
 FC := gfortran
-CFLAGS := -g -c -std=c++0x 
-FFLAGS := -g -c -cpp
+CFLAGS := -O2 -c -std=c++0x 
+FFLAGS := -O2 -c -cpp
 INCLUDES := -I ../ -I ../yamr -I ../pestpp_common
 
 LIB = libpestpp_com.a

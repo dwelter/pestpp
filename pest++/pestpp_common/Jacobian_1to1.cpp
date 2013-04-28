@@ -136,7 +136,8 @@ void Jacobian_1to1::calculate(ModelRun &init_model_run, vector<string> numeric_p
 	base_sim_obs_names = obs_names;
 	// remove parameters associated with failed runs from the vector base_numeric_par_names
 	CompareItemInSet<string> compare_items_in_set(failed_parameter_names);
-	remove_if(base_numeric_par_names.begin(), base_numeric_par_names.end(), compare_items_in_set);
+	auto end_iter = remove_if(base_numeric_par_names.begin(), base_numeric_par_names.end(), compare_items_in_set);
+	base_numeric_par_names.resize(std::distance(base_numeric_par_names.begin(), end_iter));
 
 	if(matrix.rows() != base_sim_obs_names.size() || matrix.cols() !=base_numeric_par_names.size())
 	{

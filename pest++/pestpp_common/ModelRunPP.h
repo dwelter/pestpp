@@ -49,6 +49,7 @@ public:
 	ModelRun& operator=(const ModelRun &rhs);
 	virtual const Parameters& get_frozen_ctl_pars();
 	virtual void set_frozen_ctl_parameters(const Parameters &frz_pars);
+	virtual void add_frozen_ctl_parameters(const Parameters &frz_pars);
 	virtual void set_numeric_parameters(const Parameters &pars);
 	virtual void set_ctl_parameters(const Parameters &pars);
 	virtual void set_model_parameters(const Parameters &pars);

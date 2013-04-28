@@ -1,12 +1,14 @@
-#include "RunManagerAbstract.h"
-
 #ifndef RUNMANAGER_C_WRAP_H_
 #define RUNMANAGER_C_WRAP_H_
+#include "RunManagerAbstract.h"
+#include "config_os.h"
 
 typedef struct RunManagerAbstract RunManager;
 extern "C"
 {
+#ifdef OS_WIN
 extern __declspec(dllexport)
+#endif
 RunManager* rmic_create_serial(char **comline, int comline_array_len,
 	char **tpl, int tpl_array_len,
 	char **inp, int inp_array_len,
@@ -15,7 +17,9 @@ RunManager* rmic_create_serial(char **comline, int comline_array_len,
 	char *storfile,
 	char *rundir);
 
+#ifdef OS_WIN
 extern __declspec(dllexport)
+#endif
 RunManager* rmic_create_yamr(char **comline, int comline_array_len,
 	char **tpl, int tpl_array_len,
 	char **inp, int inp_array_len,
@@ -25,7 +29,9 @@ RunManager* rmic_create_yamr(char **comline, int comline_array_len,
 	char *port,
 	char *info_filename);
 
+#ifdef OS_WIN
 extern __declspec(dllexport)
+#endif
 RunManager* rmic_create_genie(char **comline, int comline_array_len,
 	char **tpl, int tpl_array_len,
 	char **inp, int inp_array_len,
@@ -35,25 +41,37 @@ RunManager* rmic_create_genie(char **comline, int comline_array_len,
 	char *host,
 	char *genie_tag);
 
+#ifdef OS_WIN
 extern __declspec(dllexport)
+#endif
 int rmic_initialize(RunManager *run_manager_ptr, 
 	char **pname, int pname_array_len,
 	char **oname, int oname_array_len);
 
+#ifdef OS_WIN
 extern __declspec(dllexport)
+#endif
 int rmic_reinitialize(RunManager *run_manager_ptr);
 
+#ifdef OS_WIN
 extern __declspec(dllexport)
+#endif
 int rmic_add_run(RunManager *run_manager_ptr, double *parameter_data, int npar, int *id);
 
+#ifdef OS_WIN
 extern __declspec(dllexport)
+#endif
 int rmic_run(RunManager *run_manager_ptr);
 
+#ifdef OS_WIN
 extern __declspec(dllexport)
+#endif
 int rmic_get_run(RunManager *run_manager_ptr, int run_id, double *parameter_data, int npar, double *obs_data, int nobs);
 
 
+#ifdef OS_WIN
 extern __declspec(dllexport)
+#endif
 int rmic_get_num_failed_runs(RunManager *run_manager_ptr, int *nfail);
 
 //*************************************************************************************
@@ -61,19 +79,29 @@ int rmic_get_num_failed_runs(RunManager *run_manager_ptr, int *nfail);
 //The calling program is resposible for freeing the memory associated with run_id_array 
 //after calling this function by involking delete[] run_id_array
 //*************************************************************************************
+#ifdef OS_WIN
 extern __declspec(dllexport)
+#endif
 int rmic_get_failed_runs_alloc(RunManager *run_manager_ptr, int *run_id_array, int *nfail);
 
+#ifdef OS_WIN
 extern __declspec(dllexport)
+#endif
 int rmic_get_failed_runs_n(RunManager *run_manager_ptr, int *run_id_array, int nfail);
 
+#ifdef OS_WIN
 extern __declspec(dllexport)
+#endif
 int rmic_get_nruns(RunManager *run_manager_ptr, int *nruns);
 
+#ifdef OS_WIN
 extern __declspec(dllexport)
+#endif
 int rmic_get_total_runs(RunManager *run_manager_ptr, int *total_runs);
 
+#ifdef OS_WIN
 extern __declspec(dllexport)
+#endif
 int rmic_delete(RunManager *run_manager_ptr);
 
 					 

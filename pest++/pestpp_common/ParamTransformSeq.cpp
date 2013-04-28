@@ -1,20 +1,20 @@
 /*  
-    © Copyright 2012, David Welter
-    
-    This file is part of PEST++.
+	© Copyright 2012, David Welter
+	
+	This file is part of PEST++.
    
-    PEST++ is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	PEST++ is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    PEST++ is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	PEST++ is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
 
 #include <iostream>
@@ -89,7 +89,7 @@ void ParamTransformSeq::clear()
 {
 	clear_tranSeq_ctl2model();
 	clear_tranSeq_ctl2derivative();
-    clear_tranSeq_derivative2numeric();
+	clear_tranSeq_derivative2numeric();
 	default_deep_copy_tran_set.clear();
 	name = "empty";
 }
@@ -128,8 +128,7 @@ void ParamTransformSeq::clear_tranSeq_derivative2numeric()
 		tran_sub_ref_count(*i);
 		default_deep_copy_tran_set.erase(*i);
 	}
-	ctl_offset_ptr = 0;
-	ctl_scale_prt = 0;
+	svda_ptr = 0;
 	tranSeq_derivative2numeric.clear();
 }
 
@@ -137,7 +136,7 @@ void ParamTransformSeq::deep_copy(const ParamTransformSeq &rhs)
 {
 	set<Transformation *> deep_copy_set(rhs.tranSeq_ctl2model.begin(), rhs.tranSeq_ctl2model.end());
 	deep_copy_set.insert(rhs.tranSeq_ctl2derivative.begin(), rhs.tranSeq_ctl2derivative.end());
-    deep_copy_set.insert(rhs.tranSeq_derivative2numeric.begin(), rhs.tranSeq_derivative2numeric.end());
+	deep_copy_set.insert(rhs.tranSeq_derivative2numeric.begin(), rhs.tranSeq_derivative2numeric.end());
 	copy(rhs, deep_copy_set);
 }
 
@@ -189,7 +188,7 @@ void ParamTransformSeq::copy(const ParamTransformSeq &rhs, const set<Transformat
 		}
 		if (*i == rhs.ctl_log10_ptr) ctl_log10_ptr = dynamic_cast<TranLog10*>(t_ptr);
 	}
-    for(vector<Transformation*>::const_iterator i = rhs.tranSeq_derivative2numeric.begin(),
+	for(vector<Transformation*>::const_iterator i = rhs.tranSeq_derivative2numeric.begin(),
 		e=rhs.tranSeq_derivative2numeric.end(); i != e; ++i)
 	{
 		if (deep_copy_tran_set.find(*i) ==  deep_copy_tran_set.end()) {
@@ -203,6 +202,23 @@ void ParamTransformSeq::copy(const ParamTransformSeq &rhs, const set<Transformat
 			default_deep_copy_tran_set.insert(t_ptr);
 		}
 		if (*i == rhs.ctl_log10_ptr) ctl_log10_ptr = dynamic_cast<TranLog10*>(t_ptr);
+		if (*i == rhs.svda_ptr) svda_ptr = dynamic_cast<TranSVD*>(t_ptr);
+	}
+	for (auto &itran_seq : rhs.custom_tran_seq ) 
+	{
+	  for (auto &itran : itran_seq.second )
+	  { 
+		if (deep_copy_tran_set.find(itran) ==  deep_copy_tran_set.end()) {
+			t_ptr = itran;
+		}
+		else {
+			t_ptr = itran->clone();
+		}
+		custom_tran_seq[itran_seq.first].push_back(t_ptr);
+		if (rhs.default_deep_copy_tran_set.find(itran) !=  rhs.default_deep_copy_tran_set.end()) {
+			default_deep_copy_tran_set.insert(t_ptr);
+		}
+	  }
 	}
 }
 
@@ -235,7 +251,7 @@ void ParamTransformSeq::append(const ParamTransformSeq &rhs, const set<Transform
 			default_deep_copy_tran_set.insert(t_ptr);
 		}
 	}
-    for (vector<Transformation*>::const_iterator i=rhs.tranSeq_ctl2derivative.begin(), e=rhs.tranSeq_ctl2derivative.end();
+	for (vector<Transformation*>::const_iterator i=rhs.tranSeq_ctl2derivative.begin(), e=rhs.tranSeq_ctl2derivative.end();
 		i!=e; ++i) 
 	{
 		if (deep_copy_tran_set.find(*i) ==  deep_copy_tran_set.end()) {
@@ -262,6 +278,22 @@ void ParamTransformSeq::append(const ParamTransformSeq &rhs, const set<Transform
 		if (rhs.default_deep_copy_tran_set.find(*i) !=  rhs.default_deep_copy_tran_set.end()) {
 			default_deep_copy_tran_set.insert(t_ptr);
 		}
+	}
+	for (auto &itran_seq : rhs.custom_tran_seq ) 
+	{
+	  for (auto &itran : itran_seq.second )
+	  { 
+		if (deep_copy_tran_set.find(itran) ==  deep_copy_tran_set.end()) {
+			t_ptr = itran;
+		}
+		else {
+			t_ptr = itran->clone();
+		}
+		custom_tran_seq[itran_seq.first].push_back(t_ptr);
+		if (rhs.default_deep_copy_tran_set.find(itran) !=  rhs.default_deep_copy_tran_set.end()) {
+			default_deep_copy_tran_set.insert(t_ptr);
+		}
+	  }
 	}
 }
 
@@ -323,7 +355,7 @@ Parameters ParamTransformSeq::ctl2derivative_cp(const Parameters &data) const
 
 void ParamTransformSeq::ctl2numeric_ip(Parameters &data) const
 {
-     ctl2derivative_ip(data);
+	 ctl2derivative_ip(data);
 
 	vector<Transformation*>::const_iterator iter, e;
 	for(iter = tranSeq_derivative2numeric.begin(), e = tranSeq_derivative2numeric.end();
@@ -381,7 +413,7 @@ Parameters ParamTransformSeq::numeric2derivative_cp(const Parameters &data) cons
 
 void ParamTransformSeq::numeric2ctl_ip(Parameters &data) const
 {
-    numeric2derivative_ip(data);
+	numeric2derivative_ip(data);
 	vector<Transformation*>::const_reverse_iterator iter, e;
 	for(iter = tranSeq_ctl2derivative.rbegin(), e = tranSeq_ctl2derivative.rend();
 		iter != e; ++iter)
@@ -462,8 +494,8 @@ Parameters ParamTransformSeq::derivative2ctl_cp(const Parameters &data) const
 
 void ParamTransformSeq::derivative2model_ip(Parameters &data) const
 {
-    derivative2ctl_ip(data);
-    ctl2model_ip(data);
+	derivative2ctl_ip(data);
+	ctl2model_ip(data);
 }
 
 Parameters ParamTransformSeq::derivative2model_cp(const Parameters &data) const
@@ -488,7 +520,7 @@ bool ParamTransformSeq::is_one_to_one() const
 				return false;
 			}
 	}
-    for (vector<Transformation*>::const_iterator b=tranSeq_derivative2numeric.begin(), e=tranSeq_derivative2numeric.end();
+	for (vector<Transformation*>::const_iterator b=tranSeq_derivative2numeric.begin(), e=tranSeq_derivative2numeric.end();
 		b!=e; ++b) {
 			if((*b)->is_one_to_one() == false) {
 				return false;
@@ -514,7 +546,7 @@ Transformation* ParamTransformSeq::get_transformation(const string &name)
 			}	
 		}
 	}
-    if (!t_ptr) {
+	if (!t_ptr) {
 		for (vector<Transformation*>::const_iterator b=tranSeq_derivative2numeric.begin(), e=tranSeq_derivative2numeric.end();
 			b!=e; ++b) {
 				if( (*b)->get_name() == name) {
@@ -538,13 +570,37 @@ void ParamTransformSeq::print(ostream &os) const
 		b!=e; ++b) {
 			(*b)->print(os);
 	}
-    os << "Derivative to numeric transformations" << endl;
+	os << "Derivative to numeric transformations" << endl;
 	for (vector<Transformation*>::const_iterator b=tranSeq_derivative2numeric.begin(), e=tranSeq_derivative2numeric.end();
 		b!=e; ++b) {
 			(*b)->print(os);
 	}
 }
 
+void ParamTransformSeq::add_custom_tran_seq(const std::string &name,  const vector<Transformation*> &tran_seq)
+{
+	custom_tran_seq[name] = tran_seq;
+}
+
+const vector<Transformation*> ParamTransformSeq::get_custom_tran_seq(const string &name) const
+{
+	auto iter = custom_tran_seq.find(name);
+	assert(iter != custom_tran_seq.end());
+	return iter->second;
+}
+
+void ParamTransformSeq::custom_tran_seq_forward_ip(const std::string &name, Parameters &data) const
+{
+	auto iter= custom_tran_seq.find(name);
+	assert(iter != custom_tran_seq.end());
+	const vector<Transformation*> &tran_vec = iter->second;
+	
+	for(const auto &itran : tran_vec)
+	{
+		itran->forward(data);
+	}
+
+}
 
 ostream& operator<< (ostream &os, const ParamTransformSeq& val)
 {

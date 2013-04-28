@@ -198,6 +198,7 @@ int main(int argc, char* argv[])
 	// take responsibility for destroying it
 	TranSVD *tran_svd = new TranSVD("SVD Super Parameter Tranformation");
 	trans_svda = base_trans_seq;
+	trans_svda.add_custom_tran_seq(string("svda_derv2basenumeric") ,trans_svda.get_ctl2derivative_tranformations());
 	trans_svda.push_back_derivative2numeric(tran_svd);
 	trans_svda.set_svda_ptr(tran_svd);
 

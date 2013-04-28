@@ -194,7 +194,7 @@ int rmic_get_failed_runs_n(RunManager *run_manager_ptr, int *run_id_array, int n
 	{
 		std::fill_n(run_id_array, nfail, -999);
         const std::set<int> &fail_set = run_manager_ptr->get_failed_run_ids();
-        int n_failed_tmp = min(fail_set.size(), nfail);
+        int n_failed_tmp = min(int(fail_set.size()), nfail);
         std::copy_n(fail_set.begin(), n_failed_tmp, run_id_array);
 	}
     catch(PestIndexError ex)

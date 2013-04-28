@@ -291,7 +291,7 @@ vector<double> Transformable::get_data_vec(const vector<string> &keys) const
 Eigen::VectorXd Transformable::get_data_eigen_vec(const vector<string> &keys) const
 {
 	VectorXd vec;
-	vec.resize(size());
+	vec.resize(keys.size());
 	int i = 0;
 	for (auto &k : keys)
 	{
@@ -303,7 +303,7 @@ Eigen::VectorXd Transformable::get_data_eigen_vec(const vector<string> &keys) co
 Eigen::VectorXd Transformable::get_partial_data_eigen_vec(const vector<string> &keys) const
 {
 	VectorXd vec;
-	vec.resize(size());
+	vec.resize(keys.size());
 	int i = 0;
 	auto end = items.end();
 	for (auto &k : keys)

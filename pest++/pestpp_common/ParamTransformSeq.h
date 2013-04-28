@@ -100,6 +100,9 @@ public:
 	const vector<Transformation*> get_ctl2model_tranformations() const {return tranSeq_ctl2model;}
 	const vector<Transformation*> get_ctl2derivative_tranformations() const {return tranSeq_ctl2derivative;}
 	const vector<Transformation*> get_derivative2numeric_tranformations() const {return tranSeq_derivative2numeric;}
+	const vector<Transformation*> get_custom_tran_seq(const string &name) const;
+	void add_custom_tran_seq(const std::string &name,  const vector<Transformation*> &tran_seq);
+	void custom_tran_seq_forward_ip(const std::string &name, Parameters &data) const;
 	void add_default_deep_copy(Transformation *tr){default_deep_copy_tran_set.insert(tr);}
 	void clear_default_deep_copies(Transformation *tr){default_deep_copy_tran_set.clear();}
 	set <Transformation *> get_default_deep_copy_vec() const {return default_deep_copy_tran_set;}
@@ -109,6 +112,7 @@ private:
 	vector<Transformation*> tranSeq_ctl2model;
 	vector<Transformation*> tranSeq_ctl2derivative;
 	vector<Transformation*> tranSeq_derivative2numeric;
+	map<string,vector<Transformation*> > custom_tran_seq;
 	TranOffset *ctl_offset_ptr;
 	TranScale *ctl_scale_prt;
 	TranLog10 *ctl_log10_ptr;
