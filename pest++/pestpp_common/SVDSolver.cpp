@@ -306,16 +306,28 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 			*par_group_info_ptr, *ctl_par_info_ptr,run_manager,  *prior_info_ptr,
 			phiredswh_flag, calc_init_obs);
 	cout << endl;
-	cout << "  computing upgrade vectors... " << endl;
 	//Freeze Parameter for which the jacobian could not be calculated
-	auto &failed_jac_pars = jacobian.get_failed_parameter_names();
-	//auto  freeze_pars = cur_solution.get_numeric_pars().get_subset(failed_jac_pars.begin(), failed_jac_pars.end());
-	//cur_solution.freeze_parameters(freeze_pars);
+	auto &failed_jac_pars_names = jacobian.get_failed_parameter_names();
+	auto  failed_jac_pars = cur_solution.get_numeric_pars().get_subset(failed_jac_pars_names.begin(), failed_jac_pars_names.end());
 
+	cout << endl;
+
+	cout << "  computing upgrade vectors... " << endl;
 	// update regularization weight factor
 	double tikhonov_weight = regul_scheme_ptr->get_weight(cur_solution);
 	// write out report for starting phi
 	obj_func->phi_report(os, cur_solution.get_obs(), cur_solution.get_ctl_pars(), tikhonov_weight);
+	// write failed jacobian parameters out
+	if (failed_jac_pars.size() > 0)
+	{
+		os << endl;
+		os << "  the following parameters have been frozen as the runs to compute their derivatives failed: ";
+		for (auto &ipar : failed_jac_pars)
+		{
+			os << "    " << ipar.first << " frozen at " << ipar.second << endl; 
+		}
+	}
+	os << endl;
 	// populate vectors with sorted observations (standard and prior info) and parameters
 	obs_names_vec = cur_solution.get_obs().get_keys();
 	{
@@ -354,7 +366,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	int max_freeze_iter = 1;
 	for (double i_lambda : lambda_vec)
 	{
-		frozen_pars.clear();
+		frozen_pars = failed_jac_pars;
 		for (int i_freeze=1; ; ++i_freeze)
 		{
 			Parameters new_frozen_pars;
@@ -378,7 +390,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 			if (limit_type != LimitType::UBND && limit_type != LimitType::LBND) break;
 			if (frozen_pars.size() == new_numeric_pars.size()) break; // everything is frozen
 		}
-		//add run svd run to run manager
+		//add run to run manager
 		run_manager.add_run(base_run.get_par_tran().numeric2model_cp(new_numeric_pars));
 		rot_fac_vec.push_back(0);
 		rot_angle_vec.push_back(0);
@@ -411,10 +423,6 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	//	magnitude_vec.push_back(ml_upgrade.norm);
 	//}
 	//lambda_vec.insert(lambda_vec.end(), lambda_vec.begin(), lambda_vec.end());
-
-	os << endl;
-	os << "      SVD information:" << endl;
-	os << endl;
 
 	// process model runs
 	cout << "  testing upgrade vectors... ";

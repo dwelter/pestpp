@@ -308,7 +308,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		vector<string> keys = frz_ctl_pars.get_keys();
 		std::sort(keys.begin(), keys.end());
 		os << endl;
-		os << "    Parameters frozen during best upgrade:" << endl;
+		os << "    Parameters frozen during upgrades:" << endl;
 		for (auto &ikey : keys)
 		{
 			auto iter = frz_ctl_pars.find(ikey);

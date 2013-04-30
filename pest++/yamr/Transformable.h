@@ -157,6 +157,7 @@ Parameters Parameters::get_subset (NameIterator first, NameIterator last) const
 		}
 		subset.insert(t_iter->first, t_iter->second);
 	}
+	return subset;
 }
 
 #endif /* TRANSFORMABLE_H_ */
