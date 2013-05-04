@@ -41,7 +41,7 @@ RunManagerAbstract::RunManagerAbstract(const vector<string> _comline_vec,
 	cout << "                        Dave Welter" << endl;
 	cout << "          Computational Water Resource Engineering" << endl;
 	cout << endl << endl;
-	cur_group_id = 0;
+	cur_group_id = -1;
 }
 
 void RunManagerAbstract::initialize(const Parameters &model_pars, const Observations &obs, const string &_filename)

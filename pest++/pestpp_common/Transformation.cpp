@@ -60,6 +60,15 @@ void TranMapBase::insert(const string &item_name, double item_value)
 	items[item_name] = item_value;
 }
 
+
+void TranMapBase::insert(const Parameters &pars)
+{
+	for (const auto &ipar : pars)
+	{
+		items[ipar.first] = ipar.second;
+	}
+}
+
 void TranMapBase::print(ostream &os) const
 {
 	os << "Transformation name = " << name << "; (type=TranMapBase)" << endl; 

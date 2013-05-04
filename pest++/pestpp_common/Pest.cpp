@@ -99,6 +99,7 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 	TranScale *t_scale = new TranScale("PEST to model scale transformation");
 	TranLog10 *t_log = new TranLog10("PEST to model log transformation");
 	TranFixed *t_fixed = new TranFixed("PEST to model fixed transformation");
+	TranFixed *t_fixed_failed_jacobian = new TranFixed("fixed transformation for parameters whose jacobian could not be computed");
 	TranNormalize *t_auto_norm = new TranNormalize("PEST auto-normalization transformation");
 
 	base_par_transform.push_back_ctl2model(t_scale);
@@ -109,6 +110,8 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 	base_par_transform.push_back_ctl2derivative(t_fixed);
 	base_par_transform.set_fixed_ptr(t_fixed);
 	base_par_transform.push_back_derivative2numeric(t_log);
+	base_par_transform.set_fixed_failed_jacobian(t_fixed);
+	base_par_transform.push_back_derivative2numeric(t_fixed_failed_jacobian);
 	base_par_transform.set_log10_ptr(t_log);
 	base_par_transform.push_back_derivative2numeric(t_auto_norm);
 

@@ -97,6 +97,8 @@ public:
 	   child classes
 	 */
 	void insert(const string &item_name, double item_value);
+	void clear() {items.clear();}
+	void insert (const Parameters &pars);
 	/** Returns the transformation value associated with the name of an transformable item.  
 	The results are returned as a pair<bool, double> where the first element in the pair will be
 	false if the items is not part of the transformation and true if it is

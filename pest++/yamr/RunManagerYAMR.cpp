@@ -236,15 +236,15 @@ unordered_multimap<int, YamrModelRun>::iterator RunManagerYAMR::get_active_run_i
 	return i;
 }
 
-void RunManagerYAMR::initialize(const Parameters &model_pars, const Observations &obs)
+void RunManagerYAMR::initialize(const Parameters &model_pars, const Observations &obs, const string &_filename)
 {
-	RunManagerAbstract::initialize(model_pars, obs);
+	RunManagerAbstract::initialize(model_pars, obs, _filename);
 	cur_group_id = NetPackage::get_new_group_id();
 }
 
-void RunManagerYAMR::reinitialize()
+void RunManagerYAMR::reinitialize(const std::string &_filename)
 {
-	RunManagerAbstract::reinitialize();
+	RunManagerAbstract::reinitialize(_filename);
 	cur_group_id = NetPackage::get_new_group_id();
 }
 

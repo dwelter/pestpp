@@ -212,7 +212,15 @@ VectorXd SVDSolver::calc_residual_corrections(const Jacobian &jacobian, const Pa
 {
 	VectorXd del_residuals;
 	vector<string>frz_par_name_vec = del_numeric_pars.get_keys();
+	//remove the parameters for which the jaocbian could not be computed
+	const set<string> &failed_jac_par_names = jacobian.get_failed_parameter_names();
+	auto end_iter = remove_if(frz_par_name_vec.begin(), frz_par_name_vec.end(), 	
+		[&failed_jac_par_names](string &str)->bool{return failed_jac_par_names.find(str)!=failed_jac_par_names.end();});
+	frz_par_name_vec.resize(std::distance(frz_par_name_vec.begin(), end_iter));
+
+
 	VectorXd frz_del_par_vec = del_numeric_pars.get_data_eigen_vec(frz_par_name_vec);
+
 	MatrixXd jac_frz = jacobian.get_matrix(obs_name_vec, frz_par_name_vec);
 	del_residuals = (jac_frz) *  frz_del_par_vec;
 	return del_residuals;
@@ -321,7 +329,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	if (failed_jac_pars.size() > 0)
 	{
 		os << endl;
-		os << "  the following parameters have been frozen as the runs to compute their derivatives failed: ";
+		os << "  the following parameters have been frozen as the runs to compute their derivatives failed: " << endl;
 		for (auto &ipar : failed_jac_pars)
 		{
 			os << "    " << ipar.first << " frozen at " << ipar.second << endl; 
@@ -370,6 +378,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 		for (int i_freeze=1; ; ++i_freeze)
 		{
 			Parameters new_frozen_pars;
+			// need to remove parameters frozen due to failed jacobian runs when calling calc_lambda_upgrade_vec
 			ml_upgrade = calc_lambda_upgrade_vec(jacobian, Q_sqrt, residuals_vec, par_name_vec, obs_names_vec,
 				base_run.get_numeric_pars(), frozen_pars, tot_sing_val, i_lambda);
 			new_numeric_pars = apply_upgrade(base_run_numeric_pars, ml_upgrade, 1.0);

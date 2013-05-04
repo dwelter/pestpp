@@ -1,20 +1,20 @@
 /*  
-    © Copyright 2012, David Welter
-    
-    This file is part of PEST++.
+	© Copyright 2012, David Welter
+	
+	This file is part of PEST++.
    
-    PEST++ is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	PEST++ is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    PEST++ is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	PEST++ is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
 
 
@@ -72,17 +72,17 @@ void RunStorage::reset(const vector<string> &_par_names, const vector<string> &_
 
 int RunStorage::get_nruns()
 {
-    return n_runs;
+	return n_runs;
 }
 
 const std::vector<string>& RunStorage::get_par_name_vec()const
 {
-    return par_names;
+	return par_names;
 }
 
 const std::vector<string>& RunStorage::get_obs_name_vec()const
 {
-    return obs_names;
+	return obs_names;
 }
 
 streamoff RunStorage::get_stream_pos(int run_id)
@@ -117,7 +117,7 @@ streamoff RunStorage::get_stream_pos(int run_id)
 int RunStorage::add_run(const Parameters &pars)
 {
 	vector<double> data(pars.get_data_vec(par_names));
-    int run_id = add_run(data);
+	int run_id = add_run(data);
 	return run_id;
 }
 
@@ -248,7 +248,7 @@ Parameters RunStorage::get_parameters(int run_id)
 	check_rec_id(run_id);
 
 	size_t n_par = par_names.size();
- 	std::int8_t r_status;
+	std::int8_t r_status;
 	vector<double> par_data;
 	par_data.resize(n_par);
 	buf_stream.seekg(get_stream_pos(run_id), ios_base::beg);
@@ -257,7 +257,7 @@ Parameters RunStorage::get_parameters(int run_id)
 	Parameters pars;
 	pars.update(par_names, par_data);
 
-    return pars;
+	return pars;
 }
 
 void RunStorage::free_memory()

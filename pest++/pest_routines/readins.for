@@ -156,6 +156,7 @@ c     read model output files
       call outrd(jfail,ninstr,nins,asize,numl,nobs,nblbmx,lcins,ll,
      +           obsn1,obsn2,iiobs,oval,onam,a,mrkdel,aline,buf)
       deallocate(obsn1,obsn2,ll,iiobs)
+      if (jfail.ne.0) ifail = jfail
       deallocate(mrkdel)
       deallocate(a, lcins)
       end subroutine readins

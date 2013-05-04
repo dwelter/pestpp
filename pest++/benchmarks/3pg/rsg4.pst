@@ -63,7 +63,7 @@ dbh25_4  56.1      1.0  obsgroup
 dbh26_4  56.8      1.0  obsgroup
 dbh27_4  58.4      1.0  obsgroup
 * model command line
-3Pg -d rsgparm4.txt -s rsgsite4.txt
+test.bat
 * model input/output
 rsgParm4.tpl  rsgParm4.txt
 rsgSite4.tpl  rsgSite4.txt

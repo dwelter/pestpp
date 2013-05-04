@@ -115,7 +115,7 @@ void  ParamTransformSeq::clear_tranSeq_ctl2derivative()
 		tran_sub_ref_count(*i);
 		default_deep_copy_tran_set.erase(*i);
 	}
-	ctl_log10_ptr = 0;
+	fixed_failed_jaobian = 0;
 	tranSeq_ctl2derivative.clear();
 }
 
@@ -128,6 +128,7 @@ void ParamTransformSeq::clear_tranSeq_derivative2numeric()
 		tran_sub_ref_count(*i);
 		default_deep_copy_tran_set.erase(*i);
 	}
+	ctl_log10_ptr = 0;
 	svda_ptr = 0;
 	tranSeq_derivative2numeric.clear();
 }
@@ -186,7 +187,7 @@ void ParamTransformSeq::copy(const ParamTransformSeq &rhs, const set<Transformat
 		if (rhs.default_deep_copy_tran_set.find(*i) !=  rhs.default_deep_copy_tran_set.end()) {
 			default_deep_copy_tran_set.insert(t_ptr);
 		}
-		if (*i == rhs.ctl_log10_ptr) ctl_log10_ptr = dynamic_cast<TranLog10*>(t_ptr);
+		if (*i == rhs.fixed_failed_jaobian) fixed_failed_jaobian = dynamic_cast<TranFixed*>(t_ptr);
 	}
 	for(vector<Transformation*>::const_iterator i = rhs.tranSeq_derivative2numeric.begin(),
 		e=rhs.tranSeq_derivative2numeric.end(); i != e; ++i)

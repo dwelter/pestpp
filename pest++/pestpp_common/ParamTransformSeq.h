@@ -93,9 +93,11 @@ public:
 	const TranScale *get_scale_ptr() const {return ctl_scale_prt;}
 	void set_log10_ptr(TranLog10 *ptr) {ctl_log10_ptr = ptr;}
 	TranFixed *get_fixed_ptr()const {return ctl_fixed_ptr;};
+	void set_fixed_ptr(TranFixed *ptr) {ctl_fixed_ptr = ptr;}
+	TranFixed *get_fixed_failed_jacobian()const {return fixed_failed_jaobian;};
+	void set_fixed_failed_jacobian(TranFixed *ptr) {fixed_failed_jaobian = ptr;}
 	void set_svda_ptr(TranSVD *ptr) {svda_ptr = ptr;}
 	TranSVD *get_svda_ptr()const {return svda_ptr;};
-	void set_fixed_ptr(TranFixed *ptr) {ctl_fixed_ptr = ptr;}
 	const TranLog10 *get_log10_ptr() const {return ctl_log10_ptr;}
 	const vector<Transformation*> get_ctl2model_tranformations() const {return tranSeq_ctl2model;}
 	const vector<Transformation*> get_ctl2derivative_tranformations() const {return tranSeq_ctl2derivative;}
@@ -117,6 +119,7 @@ private:
 	TranScale *ctl_scale_prt;
 	TranLog10 *ctl_log10_ptr;
 	TranFixed *ctl_fixed_ptr;
+	TranFixed *fixed_failed_jaobian;
 	TranSVD *svda_ptr;
 	set <Transformation *> default_deep_copy_tran_set;
 	static map<const Transformation*, int> tran_ref_count;
