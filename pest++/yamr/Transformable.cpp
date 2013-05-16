@@ -1,20 +1,20 @@
 /*  
-    © Copyright 2012, David Welter
-    
-    This file is part of PEST++.
+	© Copyright 2012, David Welter
+	
+	This file is part of PEST++.
    
-    PEST++ is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	PEST++ is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    PEST++ is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	PEST++ is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
 #include "network_wrapper.h"
 #include <ostream>
@@ -54,16 +54,16 @@ Transformable::Transformable(const Transformable &copyin, const vector<string> &
 
 Transformable::Transformable(const vector<string> &names, const Eigen::VectorXd &values)
 {
-    assert(names.size() == values.size());
-    if(names.size() != values.size())
+	assert(names.size() == values.size());
+	if(names.size() != values.size())
 	{
-        throw PestIndexError("Transformable::Transformable(const vector<string> &names, Eigen::VectorXd &values)", 
+		throw PestIndexError("Transformable::Transformable(const vector<string> &names, Eigen::VectorXd &values)", 
 			"size of names vector does not match the size of the values vector");
 	}
-    size_t len = min(size_t(names.size()), size_t(values.size()));
-    for (size_t i=0; i<len; ++i)
+	size_t len = min(size_t(names.size()), size_t(values.size()));
+	for (size_t i=0; i<len; ++i)
 	{
-        items[names[i]] = values(i);
+		items[names[i]] = values(i);
 	}
 }
 
@@ -77,8 +77,8 @@ const Transformable& Transformable::operator=(const Transformable &rhs)
 bool Transformable::operator==(const Transformable &rhs) const
 {
 	return items.size() == rhs.items.size()
-        && std::equal(items.begin(), items.end(),
-                      rhs.items.begin());
+		&& std::equal(items.begin(), items.end(),
+					  rhs.items.begin());
 }
 
 bool Transformable::operator!=(const Transformable &rhs) const
@@ -94,7 +94,7 @@ Transformable& Transformable::operator+=(const Transformable &rhs)
 		assert(iter != rhs.items.end());
 		i.second += iter->second;
 	}
-    return *this;
+	return *this;
  }
 
 
@@ -106,7 +106,7 @@ Transformable& Transformable::operator-=(const Transformable &rhs)
 		assert(iter != rhs.items.end());
 		i.second -= iter->second;
 	}
-    return *this;
+	return *this;
  }
 
 Transformable& Transformable::operator*=(double scale)
@@ -145,12 +145,12 @@ pair<Transformable::iterator,bool>  Transformable::insert(const pair<string, dou
 
 void Transformable::insert(const vector<string> &name_vec, const vector<double> &value_vec)
 {
-    assert(name_vec.size() == value_vec.size());
-    int vec_size = name_vec.size();
-    items.reserve(vec_size);
+	assert(name_vec.size() == value_vec.size());
+	int vec_size = name_vec.size();
+	items.reserve(vec_size);
 	for(int i=0; i<vec_size; ++i)
 	{
-        insert(pair<string, double>(name_vec[i], value_vec[i]));
+		insert(pair<string, double>(name_vec[i], value_vec[i]));
 	}
 }
 
@@ -260,20 +260,20 @@ void Transformable::update_rec(const string &name, double value)
 
 void Transformable::update(const vector<string> &names, const vector<double> &values)
 {
-    items.clear();
-    assert(names.size() == values.size());
-    size_t n_rec = names.size();
-    items.reserve(n_rec);
-    for (size_t i=0; i<n_rec; ++i)
+	items.clear();
+	assert(names.size() == values.size());
+	size_t n_rec = names.size();
+	items.reserve(n_rec);
+	for (size_t i=0; i<n_rec; ++i)
 	{
-        items.insert(make_pair(names[i], values[i]));
+		items.insert(make_pair(names[i], values[i]));
 	}
 }
 
 vector<double> Transformable::get_data_vec(const vector<string> &keys) const
 {
 	vector<double> v;
-	v.resize(items.size(), 0.0);
+	v.resize(keys.size(), 0.0);
 
 	double value;
 	int i = 0;
@@ -343,7 +343,7 @@ double Transformable::l2_norm() const
    double norm=0;
    for (auto &i : items)
    {
-    norm += pow(i.second, 2.0);
+	norm += pow(i.second, 2.0);
    }
    norm = sqrt(norm);
    return norm;

@@ -182,7 +182,8 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 		}
 		if (!optimum_run.obs_valid() || cur_solution.get_phi() < optimum_run.get_phi())
 		{
-			optimum_run = cur_solution;
+			optimum_run.set_ctl_parameters(cur_solution.get_ctl_pars());
+			optimum_run.set_observations(cur_solution.get_obs());
 			// save new optimum parameters to .par file
 			OutputFileWriter::write_par(file_manager.open_ofile_ext("par"), optimum_run.get_ctl_pars(), *(optimum_run.get_par_tran().get_offset_ptr()), 
 				*(optimum_run.get_par_tran().get_scale_ptr()));
@@ -303,6 +304,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	VectorXd residuals_vec;
 	ModelRun base_run(cur_solution);
 	vector<string> obs_names_vec;
+	set<string> out_ofbound_pars;
 
 
 	// Calculate Jacobian
@@ -311,7 +313,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	 }
 	cout << "  calculating jacobian... ";
 	jacobian.calculate(cur_solution, cur_solution.get_numeric_pars().get_keys(),  cur_solution.get_obs_template().get_keys(),
-			*par_group_info_ptr, *ctl_par_info_ptr,run_manager,  *prior_info_ptr,
+			*par_group_info_ptr, *ctl_par_info_ptr,run_manager,  *prior_info_ptr, out_ofbound_pars,
 			phiredswh_flag, calc_init_obs);
 	cout << endl;
 	//Freeze Parameter for which the jacobian could not be calculated

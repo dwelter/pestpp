@@ -99,6 +99,7 @@ public:
 	void insert(const string &item_name, double item_value);
 	void clear() {items.clear();}
 	void insert (const Parameters &pars);
+	void reset(const Parameters &pars);
 	/** Returns the transformation value associated with the name of an transformable item.  
 	The results are returned as a pair<bool, double> where the first element in the pair will be
 	false if the items is not part of the transformation and true if it is
@@ -228,6 +229,16 @@ public:
 	virtual void print(ostream &os) const;
 	virtual bool is_one_to_one() const {return true;}
 	virtual TranFixed* clone() {return new TranFixed(*this);}
+private:
+};
+
+class TranFrozen: public TranFixed {
+public:
+	TranFrozen(const string &_name="unknown TranFrozen"): TranFixed(_name){};
+	virtual ~TranFrozen(){};
+	virtual void print(ostream &os) const;
+	virtual bool is_one_to_one() const {return true;}
+	virtual TranFrozen* clone() {return new TranFrozen(*this);}
 private:
 };
 

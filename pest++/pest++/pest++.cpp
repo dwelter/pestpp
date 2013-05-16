@@ -1,20 +1,20 @@
 /*  
-    © Copyright 2012, David Welter
-    
-    This file is part of PEST++.
+	© Copyright 2012, David Welter
+	
+	This file is part of PEST++.
    
-    PEST++ is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	PEST++ is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    PEST++ is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	PEST++ is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
 #include "RunManagerYAMR.h" //needs to be first because it includes winsock2.h
 //#include <vld.h> // Memory Leak Detection using "Visual Leak Detector"
@@ -152,7 +152,7 @@ int main(int argc, char* argv[])
 		strip_ip(port);
 		strip_ip(port, "front", ":");
 		const ModelExecInfo &exi = pest_scenario.get_model_exec_info();
-    	run_manager_ptr = new RunManagerYAMR (exi.comline_vec,
+		run_manager_ptr = new RunManagerYAMR (exi.comline_vec,
 		exi.tplfile_vec, exi.inpfile_vec,
 		exi.insfile_vec, exi.outfile_vec,
 		file_manager.build_filename("rns"), port,
@@ -197,10 +197,11 @@ int main(int argc, char* argv[])
 	// method be involked as pointer as the transformation sequence it is added to will
 	// take responsibility for destroying it
 	TranSVD *tran_svd = new TranSVD("SVD Super Parameter Tranformation");
+	TranFixed *tr_svda_fixed = new TranFixed("SVDA Fixed Parameter Transformation");
 	trans_svda = base_trans_seq;
+	trans_svda.push_back_ctl2derivative(tr_svda_fixed);
 	trans_svda.add_custom_tran_seq(string("svda_derv2basenumeric") ,trans_svda.get_ctl2derivative_tranformations());
 	trans_svda.push_back_derivative2numeric(tran_svd);
-	trans_svda.set_svda_ptr(tran_svd);
 
 	ParameterGroupInfo sup_group_info;
 	//
@@ -231,9 +232,9 @@ int main(int argc, char* argv[])
 		run_manager_ptr->add_run(init_model_pars);
 		run_manager_ptr->run();
 
-        Parameters tmp_pars;
-        Observations tmp_obs;
-        bool success = run_manager_ptr->get_run(0, tmp_pars, tmp_obs);
+		Parameters tmp_pars;
+		Observations tmp_obs;
+		bool success = run_manager_ptr->get_run(0, tmp_pars, tmp_obs);
 		if (success)
 		{
 			optimum_run.update(tmp_pars, tmp_obs, ModelRun::FORCE_PAR_UPDATE);
@@ -286,7 +287,8 @@ int main(int argc, char* argv[])
 			const vector<string> &pars = base_svd.cur_model_run().get_numeric_pars().get_keys();
 			QSqrtMatrix Q_sqrt(pest_scenario.get_ctl_observation_info(), nonregul_obs, &pest_scenario.get_prior_info(), 1.0);
 			(*tran_svd).update_reset_frozen_pars(*base_jacobian_ptr, Q_sqrt, base_svd.cur_model_run().get_numeric_pars(), max_n_super, super_eigthres, pars, nonregul_obs, cur_run->get_frozen_ctl_pars());
-			sup_group_info = (*tran_svd).build_par_group_info(pest_scenario.get_base_group_info());		
+			(*tr_svda_fixed).reset((*tran_svd).get_frozen_derivative_pars());
+			sup_group_info = (*tran_svd).build_par_group_info(pest_scenario.get_base_group_info());
 			SVDASolver super_svd(&svd_control_info, pest_scenario.get_svd_info(), &sup_group_info, &pest_scenario.get_ctl_parameter_info(),
 				&pest_scenario.get_ctl_observation_info(),  file_manager, &pest_scenario.get_ctl_observations(), &obj_func,
 				trans_svda, &pest_scenario.get_prior_info(), *super_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(),

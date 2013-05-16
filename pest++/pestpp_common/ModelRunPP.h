@@ -1,20 +1,20 @@
 /*  
-    © Copyright 2012, David Welter
-    
-    This file is part of PEST++.
+	© Copyright 2012, David Welter
+	
+	This file is part of PEST++.
    
-    PEST++ is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	PEST++ is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    PEST++ is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	PEST++ is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
 
 #ifndef MODELRUNPP_H_
@@ -43,18 +43,18 @@ public:
 		string name;
 		FIELD field;
 	};
-    enum PAR_UPDATE{DEFAULT_PAR_UPDATE, FORCE_PAR_UPDATE};
+	enum PAR_UPDATE{DEFAULT_PAR_UPDATE, FORCE_PAR_UPDATE};
 	ModelRun(const ObjectiveFunc *_objectiveFunc, const ParamTransformSeq &_par_tran, const Observations &_sim_obs);
 	ModelRun(const ObjectiveFunc *_objectiveFunc, const ParamTransformSeq &_par_tran, const Parameters &_numeric_pars, const Observations &_sim_obs);
 	ModelRun& operator=(const ModelRun &rhs);
-	virtual const Parameters& get_frozen_ctl_pars();
+	virtual const Parameters& get_frozen_ctl_pars() const;
 	virtual void set_frozen_ctl_parameters(const Parameters &frz_pars);
 	virtual void add_frozen_ctl_parameters(const Parameters &frz_pars);
 	virtual void set_numeric_parameters(const Parameters &pars);
 	virtual void set_ctl_parameters(const Parameters &pars);
 	virtual void set_model_parameters(const Parameters &pars);
 	virtual void set_observations(const Observations &obs);
-    virtual void update(Parameters &model_pars, Observations &obs, PAR_UPDATE update_type=DEFAULT_PAR_UPDATE);
+	virtual void update(Parameters &model_pars, Observations &obs, PAR_UPDATE update_type=DEFAULT_PAR_UPDATE);
 	virtual const Parameters &get_numeric_pars();
 	virtual Parameters get_ctl_pars();
 	virtual const Parameters &get_model_pars();

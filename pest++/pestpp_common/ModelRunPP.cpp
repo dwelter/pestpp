@@ -1,20 +1,20 @@
 /*  
-    © Copyright 2012, David Welter
-    
-    This file is part of PEST++.
+	© Copyright 2012, David Welter
+	
+	This file is part of PEST++.
    
-    PEST++ is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	PEST++ is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    PEST++ is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	PEST++ is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
 #include <vector>
 #include <map>
@@ -92,7 +92,7 @@ ModelRun& ModelRun::operator=(const ModelRun &rhs)
 }
 
 
-const Parameters& ModelRun::get_frozen_ctl_pars()
+const Parameters& ModelRun::get_frozen_ctl_pars() const
 {
 	return frozen_ctl_pars;
 }
@@ -139,7 +139,7 @@ void ModelRun::set_model_parameters(const Parameters &parameters)
 
 void ModelRun::update(Parameters &model_pars, Observations &obs, PAR_UPDATE update_type)
 {
-    //Must set parameters before observations
+	//Must set parameters before observations
 	if(update_type == FORCE_PAR_UPDATE || get_par_tran().is_one_to_one())
 	{
 		// transform to numeric parameters

@@ -1,20 +1,20 @@
 /*  
-    © Copyright 2012, David Welter
-    
-    This file is part of PEST++.
+	© Copyright 2012, David Welter
+	
+	This file is part of PEST++.
    
-    PEST++ is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	PEST++ is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    PEST++ is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	PEST++ is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
 
 #include <string>
@@ -70,7 +70,7 @@ vector<string> Pest::get_nonregul_obs() const
 int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 {
 	string line;
-    string line_upper;
+	string line_upper;
 	string section("");
 	vector<string> tokens;
 	int sec_begin_lnum, sec_lnum;
@@ -99,20 +99,13 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 	TranScale *t_scale = new TranScale("PEST to model scale transformation");
 	TranLog10 *t_log = new TranLog10("PEST to model log transformation");
 	TranFixed *t_fixed = new TranFixed("PEST to model fixed transformation");
-	TranFixed *t_fixed_failed_jacobian = new TranFixed("fixed transformation for parameters whose jacobian could not be computed");
 	TranNormalize *t_auto_norm = new TranNormalize("PEST auto-normalization transformation");
 
 	base_par_transform.push_back_ctl2model(t_scale);
-	base_par_transform.set_scale_ptr(t_scale);
 	base_par_transform.push_back_ctl2model(t_offset);
-	base_par_transform.set_offset_ptr(t_offset);
 	base_par_transform.push_back_ctl2derivative(t_tied);
 	base_par_transform.push_back_ctl2derivative(t_fixed);
-	base_par_transform.set_fixed_ptr(t_fixed);
 	base_par_transform.push_back_derivative2numeric(t_log);
-	base_par_transform.set_fixed_failed_jacobian(t_fixed);
-	base_par_transform.push_back_derivative2numeric(t_fixed_failed_jacobian);
-	base_par_transform.set_log10_ptr(t_log);
 	base_par_transform.push_back_derivative2numeric(t_auto_norm);
 
 	try {
@@ -120,7 +113,7 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 	for(lnum=1, sec_begin_lnum=1; getline(fin, line); ++ lnum)
 	{
 		strip_ip(line);
-        line_upper = upper_cp(line);
+		line_upper = upper_cp(line);
 		tokens.clear();
 		tokenize(line_upper, tokens);
 		sec_lnum = lnum - sec_begin_lnum;
@@ -316,8 +309,8 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 		}
 		else if (section == "MODEL INPUT/OUTPUT" )
 		{
-            vector<string> tokens_case_sen;
-            tokenize(line, tokens_case_sen);
+			vector<string> tokens_case_sen;
+			tokenize(line, tokens_case_sen);
 			if(i_tpl_ins < num_tpl_file)
 			{
 				model_exec_info.tplfile_vec.push_back(tokens_case_sen[0]);

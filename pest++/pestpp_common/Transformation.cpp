@@ -69,6 +69,15 @@ void TranMapBase::insert(const Parameters &pars)
 	}
 }
 
+void TranMapBase::reset(const Parameters &pars)
+{
+	items.clear();
+	for (const auto &ipar : pars)
+	{
+		items[ipar.first] = ipar.second;
+	}
+}
+
 void TranMapBase::print(ostream &os) const
 {
 	os << "Transformation name = " << name << "; (type=TranMapBase)" << endl; 
@@ -364,6 +373,14 @@ void TranFixed::print(ostream &os) const
 	}
 }
 
+void TranFrozen::print(ostream &os) const
+{
+	os << "Transformation name = " << name << "; (type=TranFrozen)" << endl; 
+	for (map<string,double>::const_iterator b=items.begin(), e=items.end();
+		b!=e; ++b) {
+			os << "  item name = " << (*b).first << ";  imposed value = " << (*b).second << endl;   
+	}
+}
 
 void TranTied::insert(const string &item_name, const pair<string, double> &item_value)
 {
@@ -467,9 +484,9 @@ void TranSVD::update_add_frozen_pars(const Parameters &frozen_pars)
 	for (auto &ipar : frozen_pars)
 	{
 		auto iter = frozen_derivative_parameters.find(ipar.first);
-		if (iter != frozen_derivative_parameters.end())
+		if (iter == frozen_derivative_parameters.end())
 		{
-			new_frozen_pars.insert(*iter);
+			new_frozen_pars.insert(ipar);
 		}
 	}
 
@@ -482,6 +499,11 @@ void TranSVD::update_add_frozen_pars(const Parameters &frozen_pars)
 		{
 			del_col_ids.push_back(i);
 		}
+	}
+
+	if (del_col_ids.size() == base_parameter_names.size())
+	{
+		throw PestError("TranSVD::update_add_frozen_pars - All parameters are frozen in SVD transformation");
 	}
 	//remove frozen parameters from base_parameter_names
 	auto end_iter = std::remove_if(base_parameter_names.begin(), base_parameter_names.end(),
@@ -507,7 +529,6 @@ void TranSVD::reverse(Transformable &data)
 		ret_base_pars.insert(base_parameter_names[i], delta_base_mat(i) + init_base_numeric_parameters.get_rec(base_parameter_names[i]));
 	}
 	data = ret_base_pars;
-	data.insert(frozen_derivative_parameters);
 }
 
 void TranSVD::forward(Transformable &data)
@@ -518,7 +539,7 @@ void TranSVD::forward(Transformable &data)
 
 	Transformable delta_data = data - init_base_numeric_parameters;
 
-	value = Vt * stlvec_2_egienvec(delta_data.get_data_vec(base_parameter_names));
+	value = Vt * delta_data.get_data_eigen_vec(base_parameter_names);
 	for (int i=0; i<n_sing_val; ++i) {
 		super_pars.insert(super_parameter_names[i], value(i)+10.0);
 	}
