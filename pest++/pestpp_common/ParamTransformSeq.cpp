@@ -361,14 +361,7 @@ Parameters ParamTransformSeq::ctl2derivative_cp(const Parameters &data) const
 void ParamTransformSeq::ctl2numeric_ip(Parameters &data) const
 {
 	 ctl2derivative_ip(data);
-
-	vector<Transformation*>::const_iterator iter, e;
-	for(iter = tranSeq_derivative2numeric.begin(), e = tranSeq_derivative2numeric.end();
-		iter != e; ++iter)
-	{
-		(*iter)->forward(data);
-		
-	}
+	 derivative2numeric_ip(data);
 }
 
 Parameters ParamTransformSeq::ctl2numeric_cp(const Parameters &data) const

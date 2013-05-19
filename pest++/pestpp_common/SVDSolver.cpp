@@ -402,7 +402,8 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 			if (frozen_pars.size() == new_numeric_pars.size()) break; // everything is frozen
 		}
 		//add run to run manager
-		run_manager.add_run(base_run.get_par_tran().numeric2model_cp(new_numeric_pars));
+		Parameters new_model_pars = base_run.get_par_tran().numeric2model_cp(new_numeric_pars);
+		run_manager.add_run(new_model_pars);
 		rot_fac_vec.push_back(0);
 		rot_angle_vec.push_back(0);
 		magnitude_vec.push_back(ml_upgrade.norm);
@@ -636,7 +637,7 @@ Parameters SVDSolver::limit_parameters_ip(const Parameters &init_numeric_pars, P
 	double limit_factor= 1.0;
 	double tmp_limit;
 	string limit_parameter_name = "";
-	Parameters numeric_parameters_at_limit = par_transform.model2numeric_cp(derivative_parameters_at_limit);
+	Parameters numeric_parameters_at_limit = par_transform.derivative2numeric_cp(derivative_parameters_at_limit);
 	for(auto &ipar : numeric_parameters_at_limit)
 	{
 		name = &(ipar.first);
@@ -645,7 +646,7 @@ Parameters SVDSolver::limit_parameters_ip(const Parameters &init_numeric_pars, P
 		p_upgrade = upgrade_numeric_pars.get_rec(*name);
 		tmp_limit = (p_limit - p_init) / (p_upgrade - p_init);
 		if (tmp_limit < limit_factor)  {
-			limit_factor = (p_limit - p_init) / (p_upgrade - p_init);
+			limit_factor = tmp_limit;
 			limit_parameter_name = *name;
 		}
 	}
@@ -716,7 +717,7 @@ Parameters SVDSolver::limit_parameters_freeze_all_ip(const Parameters &init_nume
 	double limit_factor = 1.0;
 	double tmp_limit;
 	string limit_parameter_name = "";
-	Parameters numeric_parameters_at_limit = par_transform.model2numeric_cp(derivative_parameters_at_limit);
+	Parameters numeric_parameters_at_limit = par_transform.derivative2numeric_cp(derivative_parameters_at_limit);
 	for(auto &ipar : numeric_parameters_at_limit)
 	{
 		name = &(ipar.first);
@@ -725,7 +726,7 @@ Parameters SVDSolver::limit_parameters_freeze_all_ip(const Parameters &init_nume
 		p_upgrade = upgrade_numeric_pars.get_rec(*name);
 		tmp_limit = (p_limit - p_init) / (p_upgrade - p_init);
 		if (tmp_limit < limit_factor)  {
-			limit_factor = (p_limit - p_init) / (p_upgrade - p_init);
+			limit_factor = tmp_limit;
 			limit_parameter_name = *name;
 		}
 	}

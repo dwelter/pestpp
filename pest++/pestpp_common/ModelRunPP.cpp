@@ -182,7 +182,7 @@ Parameters ModelRun::get_ctl_pars()
 		return par_tran.model2ctl_cp(model_pars);
 	}
 	else if (numeric_pars_is_valid) {
-		return par_tran.numeric2ctl_cp(numeric_pars);
+ 		return par_tran.numeric2ctl_cp(numeric_pars);
 	}
 	else {
 		throw PestError("ModelRun::get_ctl_pars() - can not return control parameters.  Both model parameters and numeric parameters are undefined");

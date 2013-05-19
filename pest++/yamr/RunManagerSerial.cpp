@@ -1,20 +1,20 @@
 /*  
-    © Copyright 2012, David Welter
-    
-    This file is part of PEST++.
+	© Copyright 2012, David Welter
+	
+	This file is part of PEST++.
    
-    PEST++ is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	PEST++ is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    PEST++ is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	PEST++ is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
 #include "RunManagerSerial.h"
 #include <iostream>
@@ -115,12 +115,12 @@ void RunManagerSerial::run()
 	int ifail;
 	int i_run;
 	int success_runs;
-    const vector<string> &par_name_vec = file_stor.get_par_name_vec();
-    const vector<string> &obs_name_vec = file_stor.get_obs_name_vec();
+	const vector<string> &par_name_vec = file_stor.get_par_name_vec();
+	const vector<string> &obs_name_vec = file_stor.get_obs_name_vec();
 	int npar = par_name_vec.size();
 	int nobs = obs_name_vec.size();
 	int ntpl = tplfile_vec.size();
-    int nins = insfile_vec.size();
+	int nins = insfile_vec.size();
 	stringstream message;
 	//bool isDouble = true;
 	//bool forceRadix = true;
@@ -130,11 +130,11 @@ void RunManagerSerial::run()
 
 	success_runs = 0;
 	failed_runs.clear();
-    int nruns = file_stor.get_nruns();
+	int nruns = file_stor.get_nruns();
 	for (i_run=0; i_run<nruns; ++i_run)
 	{
-        Parameters pars = file_stor.get_parameters(i_run);
-        Observations obs;
+		Parameters pars = file_stor.get_parameters(i_run);
+		Observations obs;
 		vector<double> par_values;
 		for(auto &i : par_name_vec)
 		{
@@ -160,7 +160,7 @@ void RunManagerSerial::run()
 			{
 				system(comline_vec[i].c_str());
 			}		    
-		    
+			
 			obs_vec.resize(nobs, -9999.00);
 			readins_(&nins, StringvecFortranCharArray(insfile_vec, 50).get_prt(),
 				StringvecFortranCharArray(outfile_vec, 50).get_prt(),
@@ -182,11 +182,11 @@ void RunManagerSerial::run()
 				throw PestError("Error running model: invalid observation value returned");
 			}
 			success_runs +=1;
-            pars.clear();
-            pars.insert(par_name_vec, par_values);
-            obs.clear();
-            obs.insert(obs_name_vec, obs_vec);
-            file_stor.update_run(i_run, pars, obs);
+			pars.clear();
+			pars.insert(par_name_vec, par_values);
+			obs.clear();
+			obs.insert(obs_name_vec, obs_vec);
+			file_stor.update_run(i_run, pars, obs);
 		}
 		catch(const std::exception& ex)
 		{

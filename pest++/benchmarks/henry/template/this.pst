@@ -1313,7 +1313,9 @@ kr10c58       1.0 * log(kr10c58) =   2.301030      1.0 regul_p
 kr10c59       1.0 * log(kr10c59) =   2.301030      1.0 regul_p
 kr10c60       1.0 * log(kr10c60) =   2.301030      1.0 regul_p
 ++# PEST++ optional input
-++# super_nmax(75) super_eigthres(1.0e-7)
-++# n_iter_base(1) n_iter_super(3)
 ++# SVD_PACK(PROPACK)
+++ N_ITER_BASE(1)
+++ N_ITER_SUPER(3)
+++ SUPER_EIGTHRES(1.0e-8)
+++ MAX_N_SUPER(77)
 ++ AUTO_NORM(4)

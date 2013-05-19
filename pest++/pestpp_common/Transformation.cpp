@@ -524,7 +524,7 @@ void TranSVD::reverse(Transformable &data)
 		(*it) -= 10.0;
 	}
 	Transformable ret_base_pars;
-	VectorXd delta_base_mat = Vt.block(0,0,n_sing_val, Vt.rows()).transpose() *  stlvec_2_egienvec(super_par_vec);
+	VectorXd delta_base_mat = Vt.block(0,0,n_sing_val, Vt.cols()).transpose() *  stlvec_2_egienvec(super_par_vec);
 	for (int i=0; i<n_base; ++i) {
 		ret_base_pars.insert(base_parameter_names[i], delta_base_mat(i) + init_base_numeric_parameters.get_rec(base_parameter_names[i]));
 	}
@@ -615,8 +615,8 @@ void TranNormalize::reverse(Transformable &data)
 		data_iter = data.find(b->first);
 		if (data_iter != data_end)
 		{
-			(*data_iter).second -= b->second.offset;
 			(*data_iter).second /= b->second.scale;
+			(*data_iter).second -= b->second.offset;
 		}
 	}
 }
