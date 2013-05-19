@@ -456,9 +456,9 @@ Parameters ParamTransformSeq::model2numeric_cp(const Parameters &data) const
 
 void ParamTransformSeq::derivative2numeric_ip(Parameters &data) const
 {
-	vector<Transformation*>::const_reverse_iterator iter, e;
+	vector<Transformation*>::const_iterator iter, e;
 
-	for(iter = tranSeq_derivative2numeric.rbegin(), e = tranSeq_derivative2numeric.rend();
+	for(iter = tranSeq_derivative2numeric.begin(), e = tranSeq_derivative2numeric.end();
 		iter != e; ++iter)
 	{
 		(*iter)->forward(data);
