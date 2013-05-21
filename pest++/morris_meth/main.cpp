@@ -167,7 +167,7 @@ int main(int argc, char* argv[])
 	//Build Transformation with ctl_2_numberic
 	ParamTransformSeq base_partran_seq(pest_scenario.get_base_par_tran_seq());
 	ObjectiveFunc obj_func(&(pest_scenario.get_ctl_observations()), &(pest_scenario.get_ctl_observation_info()), &(pest_scenario.get_prior_info()));
-	ModelRun model_run(&obj_func, base_partran_seq, pest_scenario.get_ctl_observations());
+	ModelRun model_run(&obj_func, pest_scenario.get_ctl_observations());
 
 	MorrisMethod morris(par_name_vec, fixed_pars, lower_bnd, upper_bnd, 8); //8 levels for each parameters
 

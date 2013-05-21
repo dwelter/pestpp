@@ -47,7 +47,7 @@ public:
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, 
 		const Regularization *regul_scheme_ptr, int _max_freeze_iter, const string &description="base parameter solution");
-	virtual ModelRun& solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter, const Parameters &ctl_pars, ModelRun &optimum_run);
+	virtual ModelRun& solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter, ModelRun &cur_run, ModelRun &optimum_run);
 	virtual void iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs=false);
 	ModelRun &cur_model_run() {return cur_solution;}
 	virtual void set_svd_package(PestppOptions::SVD_PACK _svd_pack);

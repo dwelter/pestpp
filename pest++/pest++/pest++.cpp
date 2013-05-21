@@ -223,7 +223,7 @@ int main(int argc, char* argv[])
 	run_manager_ptr->initialize(base_trans_seq.ctl2model_cp(cur_ctl_parameters), pest_scenario.get_ctl_observations());
 
 
-	ModelRun optimum_run(&obj_func, base_trans_seq, pest_scenario.get_ctl_observations());
+	ModelRun optimum_run(&obj_func, pest_scenario.get_ctl_observations());
 	// if noptmax=0 make one run with the intital parameters
 	if (pest_scenario.get_control_info().noptmax == 0) {
 		Parameters init_model_pars = base_trans_seq.ctl2model_cp(cur_ctl_parameters);
@@ -235,12 +235,13 @@ int main(int argc, char* argv[])
 		Parameters tmp_pars;
 		Observations tmp_obs;
 		bool success = run_manager_ptr->get_run(0, tmp_pars, tmp_obs);
+		base_trans_seq.model2ctl_ip(tmp_pars);
 		if (success)
 		{
-			optimum_run.update(tmp_pars, tmp_obs, ModelRun::FORCE_PAR_UPDATE);
+			optimum_run.update_ctl(tmp_pars, tmp_obs);
 			// save parameters to .par file
-			OutputFileWriter::write_par(file_manager.open_ofile_ext("par"), optimum_run.get_ctl_pars(), *(optimum_run.get_par_tran().get_offset_ptr()), 
-			*(optimum_run.get_par_tran().get_scale_ptr()));
+			OutputFileWriter::write_par(file_manager.open_ofile_ext("par"), optimum_run.get_ctl_pars(), *(base_trans_seq.get_offset_ptr()), 
+			*(base_trans_seq.get_scale_ptr()));
 			file_manager.close_file("par");
 			// save new residuals to .rei file
 			OutputFileWriter::write_rei(file_manager.open_ofile_ext("rei"), 0, 
@@ -261,12 +262,13 @@ int main(int argc, char* argv[])
 	//open restart file
 	file_manager.open_ofile_ext("rst");
 	//Define model Run for Base Parameters (uses base parameter tranformations)
+	ModelRun cur_run(&obj_func, pest_scenario.get_ctl_observations());
+	cur_run.set_ctl_parameters(cur_ctl_parameters);
 	for (int i_iter = 0; i_iter<pest_scenario.get_control_info().noptmax; ++i_iter)
 	{
-		ModelRun *cur_run;
 		try
 		{
-			cur_run = &(base_svd.solve(*run_manager_ptr, termination_ctl, n_base_iter, cur_ctl_parameters, optimum_run));
+			cur_run = base_svd.solve(*run_manager_ptr, termination_ctl, n_base_iter, cur_run, optimum_run);
 			cur_ctl_parameters = base_svd.cur_model_run().get_ctl_pars();
 			if(termination_ctl.check_last_iteration()) break;
 		}
@@ -284,9 +286,10 @@ int main(int argc, char* argv[])
 	try
 		{
 			const vector<string> &nonregul_obs = pest_scenario.get_nonregul_obs();
-			const vector<string> &pars = base_svd.cur_model_run().get_numeric_pars().get_keys();
+			Parameters base_numeric_pars = base_trans_seq.ctl2numeric_cp( base_svd.cur_model_run().get_ctl_pars());
+			const vector<string> &pars = base_numeric_pars.get_keys();
 			QSqrtMatrix Q_sqrt(pest_scenario.get_ctl_observation_info(), nonregul_obs, &pest_scenario.get_prior_info(), 1.0);
-			(*tran_svd).update_reset_frozen_pars(*base_jacobian_ptr, Q_sqrt, base_svd.cur_model_run().get_numeric_pars(), max_n_super, super_eigthres, pars, nonregul_obs, cur_run->get_frozen_ctl_pars());
+			(*tran_svd).update_reset_frozen_pars(*base_jacobian_ptr, Q_sqrt, base_numeric_pars, max_n_super, super_eigthres, pars, nonregul_obs, cur_run.get_frozen_ctl_pars());
 			(*tr_svda_fixed).reset((*tran_svd).get_frozen_derivative_pars());
 			sup_group_info = (*tran_svd).build_par_group_info(pest_scenario.get_base_group_info());
 			SVDASolver super_svd(&svd_control_info, pest_scenario.get_svd_info(), &sup_group_info, &pest_scenario.get_ctl_parameter_info(),
@@ -294,7 +297,7 @@ int main(int argc, char* argv[])
 				trans_svda, &pest_scenario.get_prior_info(), *super_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(),
 				pest_scenario.get_pestpp_options().get_max_freeze_iter());
 			super_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
-			cur_run = &(super_svd.solve(*run_manager_ptr, termination_ctl, n_super_iter, cur_ctl_parameters, optimum_run));
+			cur_run = super_svd.solve(*run_manager_ptr, termination_ctl, n_super_iter, cur_run, optimum_run);
 			cur_ctl_parameters = super_svd.cur_model_run().get_ctl_pars();
 		}
 		catch(exception &e)

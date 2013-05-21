@@ -175,10 +175,10 @@ void  MorrisMethod::calc_sen(RunManagerAbstract &rm, ModelRun model_run, ofstrea
 			run1_ok = rm.get_run(i_run+1, pars1, obs1);
 			if (run0_ok && run1_ok)
 			{
-				run0.update(pars0, obs0, ModelRun::FORCE_PAR_UPDATE);
+				run0.update_ctl(pars0, obs0);
 				double phi0 = run0.get_phi(0.0);
 				run1_ok = rm.get_run(i_run+1, pars1, obs1);
-				run1.update(pars1, obs1, ModelRun::FORCE_PAR_UPDATE);
+				run1.update_ctl(pars1, obs1);
 				double phi1 = run1.get_phi(0.0);
 				fout << p << "  " <<  phi1 << "  " << phi0 << "  " << pars1[p] << "  " << pars0[p] << " " << (phi1 - phi0) / (pars1[p] - pars0[p]) << endl;
 			}

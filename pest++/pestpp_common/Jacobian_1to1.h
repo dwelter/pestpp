@@ -20,10 +20,10 @@ class Jacobian_1to1 : public Jacobian{
 
 public:
 	Jacobian_1to1(FileManager &_file_manager);
-	virtual bool calculate(ModelRun &model_run, vector<string> numeric_par_names, vector<string> obs_names, 
+	virtual bool calculate(ModelRun &model_run, vector<string> numeric_par_names, vector<string> obs_names, ParamTransformSeq &par_transform,
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
 		RunManagerAbstract &run_manager, const PriorInformation &prior_info, set<string> &out_of_bound_par, bool phiredswh_flag=false, bool calc_init_obs=true);
-	virtual bool calculate(ModelRun &model_run, const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
+	virtual bool calculate(ModelRun &model_run, ParamTransformSeq &par_transform, const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
 		RunManagerAbstract &run_manager, const PriorInformation &prior_info, set<string> &out_of_bound_par, bool phiredswh_flag=false, bool calc_init_obs=true);
 	virtual ~Jacobian_1to1();
 protected:

@@ -32,35 +32,22 @@ using namespace std;
 class ModelRun
 {
 public:
-	class Compare
-	{
-	public:
-		enum FIELD{NUMERIC_PAR, MODEL_PAR, CTL_PAR, SIM_OBS};
-		Compare(const string &_name, FIELD _field)
-			: name(_name), field(_field) {}
-		bool operator()(ModelRun &run1, ModelRun &run2);
-	private:
-		string name;
-		FIELD field;
-	};
-	enum PAR_UPDATE{DEFAULT_PAR_UPDATE, FORCE_PAR_UPDATE};
-	ModelRun(const ObjectiveFunc *_objectiveFunc, const ParamTransformSeq &_par_tran, const Observations &_sim_obs);
-	ModelRun(const ObjectiveFunc *_objectiveFunc, const ParamTransformSeq &_par_tran, const Parameters &_numeric_pars, const Observations &_sim_obs);
+	ModelRun(const ObjectiveFunc *_objectiveFunc, const Observations &_sim_obs);
+	//ModelRun(const ObjectiveFunc *_objectiveFunc, const ParamTransformSeq &_par_tran, const Parameters &_numeric_pars, const Observations &_sim_obs);
 	ModelRun& operator=(const ModelRun &rhs);
 	virtual const Parameters& get_frozen_ctl_pars() const;
 	virtual void set_frozen_ctl_parameters(const Parameters &frz_pars);
 	virtual void add_frozen_ctl_parameters(const Parameters &frz_pars);
-	virtual void set_numeric_parameters(const Parameters &pars);
+	//virtual void set_numeric_parameters(const Parameters &pars);
 	virtual void set_ctl_parameters(const Parameters &pars);
-	virtual void set_model_parameters(const Parameters &pars);
+	//virtual void set_model_parameters(const Parameters &pars);
 	virtual void set_observations(const Observations &obs);
-	virtual void update(Parameters &model_pars, Observations &obs, PAR_UPDATE update_type=DEFAULT_PAR_UPDATE);
-	virtual const Parameters &get_numeric_pars();
-	virtual Parameters get_ctl_pars();
-	virtual const Parameters &get_model_pars();
+	virtual void update_ctl(Parameters &ctl_pars, Observations &obs);
+	//virtual const Parameters &get_numeric_pars();
+	virtual const Parameters &get_ctl_pars();
+	//virtual const Parameters &get_model_pars();
 	virtual const Observations &get_obs() const;
 	virtual Observations get_obs_template() const;
-	virtual const ParamTransformSeq &get_par_tran()  {return par_tran;}
 	const ObjectiveFunc *get_obj_func_ptr()  {return obj_func_ptr;}
 	virtual double get_phi(double regul_weight=1.0);
 	virtual PhiComponets get_phi_comp();
@@ -68,23 +55,18 @@ public:
 	virtual void phi_report(ostream &os);
 	void full_report(ostream &os);
 	virtual bool obs_valid() const;
-	virtual bool numeric_pars_valid() const;
-	virtual bool model_pars_valid() const;
 	virtual bool phi_valid() const;
 	virtual ~ModelRun();
 protected:
 	PhiComponets phi_comp;
-	bool numeric_pars_is_valid;
-	bool model_pars_is_valid;
 	bool obs_is_valid;
 	bool phi_is_valid;
 	const ObjectiveFunc *obj_func_ptr;
-	Parameters numeric_pars;
-	Parameters model_pars;
+	Parameters ctl_pars;
 	Observations sim_obs;
 	Parameters frozen_ctl_pars;
 private:
-	ParamTransformSeq par_tran;
+	//ParamTransformSeq par_tran;
 };
 
 #endif /* MODELRUNPP_H_ */

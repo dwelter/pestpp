@@ -57,7 +57,7 @@ SVDSolver::SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, con
 		const Regularization *_regul_scheme_ptr, int _max_freeze_iter, const string &_description)
 		: ctl_info(_ctl_info), svd_info(_svd_info), par_group_info_ptr(_par_group_info_ptr), ctl_par_info_ptr(_ctl_par_info_ptr), obs_info_ptr(_obs_info), obj_func(_obj_func),
 		  file_manager(_file_manager), observations_ptr(_observations), par_transform(_par_transform),
-		  cur_solution(_obj_func, _par_transform, *_observations), phiredswh_flag(false), save_next_jacobian(true), prior_info_ptr(_prior_info_ptr), jacobian(_jacobian), prev_phi_percent(0.0),
+		  cur_solution(_obj_func, *_observations), phiredswh_flag(false), save_next_jacobian(true), prior_info_ptr(_prior_info_ptr), jacobian(_jacobian), prev_phi_percent(0.0),
 		  num_no_descent(0), regul_scheme_ptr(_regul_scheme_ptr), max_freeze_iter(_max_freeze_iter), description(_description), best_lambda(20.0)
 {
 	svd_package = new SVD_EIGEN();
@@ -141,11 +141,11 @@ void SVDSolver::update_upgrade(Upgrade &upgrade, const Parameters &base_pars, co
 
 
 ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter, 
-	const Parameters &ctl_pars, ModelRun &optimum_run)
+	ModelRun &cur_run, ModelRun &optimum_run)
 {
 	ostream &os = file_manager.rec_ofstream();
 	ostream &fout_restart = file_manager.get_ofstream("rst");
-	cur_solution.set_ctl_parameters(ctl_pars);
+	cur_solution = cur_run;
 	// Start Solution iterations
 	bool save_nextjac = false;
 	for (int iter_num=1; iter_num<=max_iter;++iter_num) {
@@ -172,8 +172,8 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 		// par file for this iteration
 		filename.str(""); // reset the stringstream
 		filename << "par" << global_iter_num;
-		OutputFileWriter::write_par(file_manager.open_ofile_ext(filename.str()), cur_solution.get_ctl_pars(), *(cur_solution.get_par_tran().get_offset_ptr()), 
-				*(cur_solution.get_par_tran().get_scale_ptr()));
+		OutputFileWriter::write_par(file_manager.open_ofile_ext(filename.str()), cur_solution.get_ctl_pars(), *(par_transform.get_offset_ptr()), 
+				*(par_transform.get_scale_ptr()));
 		file_manager.close_file(filename.str());
 		// sen file for this iteration
 		OutputFileWriter::append_sen(file_manager.sen_ofstream(), global_iter_num, jacobian, *(cur_solution.get_obj_func_ptr()), *par_group_info_ptr);
@@ -185,8 +185,8 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 			optimum_run.set_ctl_parameters(cur_solution.get_ctl_pars());
 			optimum_run.set_observations(cur_solution.get_obs());
 			// save new optimum parameters to .par file
-			OutputFileWriter::write_par(file_manager.open_ofile_ext("par"), optimum_run.get_ctl_pars(), *(optimum_run.get_par_tran().get_offset_ptr()), 
-				*(optimum_run.get_par_tran().get_scale_ptr()));
+			OutputFileWriter::write_par(file_manager.open_ofile_ext("par"), optimum_run.get_ctl_pars(), *(par_transform.get_offset_ptr()), 
+				*(par_transform.get_scale_ptr()));
 			file_manager.close_file("par");
 			// save new optimum residuals to .rei file
 			OutputFileWriter::write_rei(file_manager.open_ofile_ext("rei"), global_iter_num, 
@@ -302,8 +302,6 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	ostream &os = file_manager.rec_ofstream();
 	const double PI = 3.141592;
 	VectorXd residuals_vec;
-	ModelRun base_run(cur_solution);
-	vector<string> obs_names_vec;
 	set<string> out_ofbound_pars;
 
 
@@ -312,13 +310,16 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 		 calc_init_obs = true;
 	 }
 	cout << "  calculating jacobian... ";
-	jacobian.calculate(cur_solution, cur_solution.get_numeric_pars().get_keys(),  cur_solution.get_obs_template().get_keys(),
+	vector<string> obs_names_vec = cur_solution.get_obs_template().get_keys();
+	vector<string> numeric_parname_vec = par_transform.ctl2numeric_cp(cur_solution.get_ctl_pars()).get_keys();
+	jacobian.calculate(cur_solution, numeric_parname_vec, obs_names_vec, par_transform,
 			*par_group_info_ptr, *ctl_par_info_ptr,run_manager,  *prior_info_ptr, out_ofbound_pars,
 			phiredswh_flag, calc_init_obs);
 	cout << endl;
 	//Freeze Parameter for which the jacobian could not be calculated
 	auto &failed_jac_pars_names = jacobian.get_failed_parameter_names();
-	auto  failed_jac_pars = cur_solution.get_numeric_pars().get_subset(failed_jac_pars_names.begin(), failed_jac_pars_names.end());
+	auto  failed_jac_pars = cur_solution.get_ctl_pars().get_subset(failed_jac_pars_names.begin(), failed_jac_pars_names.end());
+	par_transform.ctl2numeric_ip(failed_jac_pars);
 
 	cout << endl;
 
@@ -339,7 +340,6 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	}
 	os << endl;
 	// populate vectors with sorted observations (standard and prior info) and parameters
-	obs_names_vec = cur_solution.get_obs().get_keys();
 	{
 		vector<string> prior_info_names = prior_info_ptr->get_keys();
 		obs_names_vec.insert(obs_names_vec.end(), prior_info_names.begin(), prior_info_names.end());
@@ -362,7 +362,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	Upgrade ml_upgrade;
 	int tot_sing_val;
 	LimitType limit_type = LimitType::NONE;
-	const Parameters &base_run_numeric_pars = base_run.get_numeric_pars();
+	const Parameters &base_run_numeric_pars =  par_transform.ctl2numeric_cp(cur_solution.get_ctl_pars());
 	vector<string> par_name_vec = base_run_numeric_pars.get_keys();
 
 	double tmp_lambda[] = {0.1, 1.0, 10.0, 100.0, 1000.0};
@@ -382,7 +382,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 			Parameters new_frozen_pars;
 			// need to remove parameters frozen due to failed jacobian runs when calling calc_lambda_upgrade_vec
 			ml_upgrade = calc_lambda_upgrade_vec(jacobian, Q_sqrt, residuals_vec, par_name_vec, obs_names_vec,
-				base_run.get_numeric_pars(), frozen_pars, tot_sing_val, i_lambda);
+				base_run_numeric_pars, frozen_pars, tot_sing_val, i_lambda);
 			new_numeric_pars = apply_upgrade(base_run_numeric_pars, ml_upgrade, 1.0);
 			if (i_freeze > max_freeze_iter)
 			{
@@ -392,7 +392,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 			{
 				Parameters new_frozen_pars = limit_parameters_freeze_all_ip(base_run_numeric_pars, new_numeric_pars, frozen_pars);
 			}
-			base_run.get_par_tran().derivative2numeric_ip(new_frozen_pars);
+			par_transform.derivative2numeric_ip(new_frozen_pars);
 			if (new_frozen_pars.size() > 0 && (limit_type == LimitType::UBND || limit_type == LimitType::LBND) )
 			{
 				frozen_pars.insert(new_frozen_pars.begin(), new_frozen_pars.end());
@@ -402,7 +402,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 			if (frozen_pars.size() == new_numeric_pars.size()) break; // everything is frozen
 		}
 		//add run to run manager
-		Parameters new_model_pars = base_run.get_par_tran().numeric2model_cp(new_numeric_pars);
+		Parameters new_model_pars = par_transform.numeric2model_cp(new_numeric_pars);
 		run_manager.add_run(new_model_pars);
 		rot_fac_vec.push_back(0);
 		rot_angle_vec.push_back(0);
@@ -444,18 +444,19 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	fout_restart << "upgrade_model_runs_end_group_id " << run_manager.get_cur_groupid() << endl;
 	cout << endl;
 	bool best_run_updated_flag = false;
-	ModelRun best_upgrade_run(base_run);
+	ModelRun best_upgrade_run(cur_solution);
 
 	for(int i=0; i<run_manager.get_nruns(); ++i) {
 		double rot_fac = rot_fac_vec[i];
-		ModelRun upgrade_run(base_run);
+		ModelRun upgrade_run(cur_solution);
 		Parameters tmp_pars;
 		Observations tmp_obs;
 		bool success = run_manager.get_run(i, tmp_pars, tmp_obs);
 		if (success)
 		{
-			upgrade_run.update(tmp_pars, tmp_obs, ModelRun::FORCE_PAR_UPDATE);
-			upgrade_run.set_frozen_ctl_parameters(base_run.get_par_tran().numeric2derivative_cp(frozen_par_vec[i]));
+			par_transform.model2ctl_ip(tmp_pars);
+			upgrade_run.update_ctl(tmp_pars, tmp_obs);
+			upgrade_run.set_frozen_ctl_parameters(par_transform.numeric2derivative_cp(frozen_par_vec[i]));
 			streamsize n_prec = os.precision(2);
 			os << "      Marquardt Lambda = ";
 			os << setiosflags(ios::fixed)<< setw(4) << lambda_vec[i];
@@ -798,21 +799,35 @@ void SVDSolver::iteration_update_and_report(ostream &os, ModelRun &upgrade, Term
 	double p_old, p_new;
 	double fac_change=-9999, rel_change=-9999;
 	bool have_fac=false, have_rel=false;
-	const Parameters &old_ctl_pars = par_transform.numeric2ctl_cp(cur_solution.get_numeric_pars());
-	const Parameters &new_ctl_pars = par_transform.numeric2ctl_cp(upgrade.get_numeric_pars());
+	double max_fac_change = 0;
+	double max_rel_change = 0;
+	const string *max_fac_par = 0;
+	const string *max_rel_par = 0;
+	const Parameters &old_ctl_pars = cur_solution.get_ctl_pars();
+	const Parameters &new_ctl_pars = upgrade.get_ctl_pars();
 
 	os << "    Parameter Upgrades (Control File Parameters)" << endl;
 	os << "     Parameter      Current       Previous       Factor       Relative" << endl;
 	os << "        Name         Value         Value         Change        Change" << endl;
 	os << "    ------------  ------------  ------------  ------------  ------------" << endl;
 
-	for( Parameters::const_iterator nb=new_ctl_pars.begin(), ne=new_ctl_pars.end();
-		nb!=ne; ++nb) {
-		p_name = &((*nb).first);
-		p_new =  (*nb).second;
+	for( const auto &ipar : new_ctl_pars)
+	{
+		p_name = &(ipar.first);
+		p_new =  ipar.second;
 		p_old = old_ctl_pars.get_rec(*p_name);
 		param_change_stats(p_old, p_new, have_fac, fac_change, have_rel, rel_change);
-		os << left;
+		if (fac_change >= max_fac_change) 
+		{
+			max_fac_change = fac_change;
+			max_fac_par = p_name;
+		}
+		if (abs(rel_change) >= abs(max_rel_change))
+		{
+			max_rel_change = rel_change;
+			max_rel_par = p_name;
+		}
+		//os << left;
 		os << "    " << setw(12) << *p_name;
 		os << right;
 		os << "  " << setw(12) << p_new;
@@ -828,21 +843,27 @@ void SVDSolver::iteration_update_and_report(ostream &os, ModelRun &upgrade, Term
 		os << endl;
 	}
 	os << endl;
+	os << endl;
+	os << "   Maximum changes in transformed numeric parameters:" << endl;
+	os << "     Maximum relative change = " << max_rel_change << "   [" << *max_rel_par << "]" << endl;
+	os << "     Maximum factor change = " << max_fac_change << "   [" << *max_fac_par << "]" << endl;
 
-	double max_fac_change = 0;
-	double max_rel_change = 0;
-	const string *max_fac_par = 0;
-	const string *max_rel_par = 0;
+	max_fac_change = 0;
+	max_rel_change = 0;
+	max_fac_par = 0;
+	max_rel_par = 0;
 	os << "    Parameter Upgrades (Transformed Numeric Parameters)" << endl;
 	os << "     Parameter      Current       Previous       Factor       Relative" << endl;
 	os << "        Name         Value         Value         Change        Change" << endl;
 	os << "    ------------  ------------  ------------  ------------  ------------" << endl;
 
-	for( Parameters::const_iterator nb=upgrade.get_numeric_pars().begin(), ne=upgrade.get_numeric_pars().end();
-		nb!=ne; ++nb) {
-		p_name = &((*nb).first);
-		p_new =  (*nb).second;
-		p_old = cur_solution.get_numeric_pars().get_rec(*p_name);
+	const Parameters old_numeric_pars = par_transform.ctl2numeric_cp(cur_solution.get_ctl_pars());
+	const Parameters new_numeric_pars = par_transform.ctl2numeric_cp(upgrade.get_ctl_pars());
+	for( const auto &ipar : new_numeric_pars)
+	{
+		p_name = &(ipar.first);
+		p_new =  ipar.second;
+		p_old = old_numeric_pars.get_rec(*p_name);
 		param_change_stats(p_old, p_new, have_fac, fac_change, have_rel, rel_change);
 		if (fac_change >= max_fac_change) 
 		{

@@ -35,57 +35,25 @@
 using namespace std;
 using namespace pest_utils;
 
-bool ModelRun::Compare::operator()(ModelRun &run1, ModelRun &run2)
-{
-	bool ret_val = false;
-	if (run1.frozen_ctl_pars != run2.frozen_ctl_pars)
-	{
-		ret_val = false;
-	}
-	if (field == NUMERIC_PAR) {
-		ret_val = run1.get_numeric_pars().get_rec(name) < run2.get_numeric_pars().get_rec(name);
-	}
-	else if(field == MODEL_PAR) {
-		ret_val = run1.get_model_pars().get_rec(name) < run2.get_model_pars().get_rec(name);
-	}
-	else if(field == CTL_PAR) {
-		ret_val = run1.get_ctl_pars().get_rec(name) < run2.get_ctl_pars().get_rec(name);
-	}
-	else if (field == SIM_OBS) {
-		ret_val = run1.get_obs().get_rec(name) < run2.get_obs().get_rec(name);
-	}
-	else {
-		assert(false);
-	}
-	return ret_val;
-}
-
-
-ModelRun::ModelRun(const ObjectiveFunc *_obj_func_ptr, const ParamTransformSeq &_par_tran, const Observations &_sim_obs) 
-	: obj_func_ptr(_obj_func_ptr), par_tran(_par_tran), sim_obs(_sim_obs), phi_comp(), 
-	  numeric_pars_is_valid(false), model_pars_is_valid(false),
+ModelRun::ModelRun(const ObjectiveFunc *_obj_func_ptr, const Observations &_sim_obs) 
+	: obj_func_ptr(_obj_func_ptr), sim_obs(_sim_obs), phi_comp(),
 	obs_is_valid(false), phi_is_valid(false)
 {
 }
 
-ModelRun::ModelRun(const ObjectiveFunc *_obj_func_ptr, const ParamTransformSeq &_par_tran, const Parameters &_numeric_pars, const Observations &_obs)
-		: obj_func_ptr(_obj_func_ptr), par_tran(_par_tran),
-		  numeric_pars(_numeric_pars), sim_obs(_obs), phi_comp(),
-		  numeric_pars_is_valid(true), model_pars_is_valid(false),
-		  obs_is_valid(true), phi_is_valid(false)
-{}
+//ModelRun::ModelRun(const ObjectiveFunc *_obj_func_ptr, const ParamTransformSeq &_par_tran, const Parameters &_ctl_pars, const Observations &_obs)
+//		: obj_func_ptr(_obj_func_ptr), par_tran(_par_tran),
+//		  ctl_pars(_ctl_pars), sim_obs(_obs), phi_comp(),
+//		  obs_is_valid(true), phi_is_valid(false)
+//{}
 
 ModelRun& ModelRun::operator=(const ModelRun &rhs)
 {
 	frozen_ctl_pars = rhs.frozen_ctl_pars;
 	obj_func_ptr = rhs.obj_func_ptr;
-	par_tran = rhs.par_tran;
-	numeric_pars = rhs.numeric_pars;
-	model_pars = rhs.model_pars;
+	ctl_pars = rhs.ctl_pars;
 	sim_obs = rhs.sim_obs; 
 	phi_comp = rhs.phi_comp;
-	numeric_pars_is_valid = rhs.numeric_pars_is_valid;
-	model_pars_is_valid = rhs.model_pars_is_valid;
 	obs_is_valid = rhs.obs_is_valid;
 	phi_is_valid = rhs.phi_is_valid;
 	return *this;
@@ -111,42 +79,14 @@ void ModelRun::add_frozen_ctl_parameters(const Parameters &frz_pars)
 }
 
 
-
-
-
-void ModelRun::set_numeric_parameters(const Parameters &parameters)
-{
-	numeric_pars = parameters;
-	numeric_pars_is_valid = true;
-	model_pars_is_valid = false;
-	obs_is_valid = false;
-	phi_is_valid = false;
-}
-
 void ModelRun::set_ctl_parameters(const Parameters &pars)
 {
-	set_numeric_parameters(par_tran.ctl2numeric_cp(pars));
+	ctl_pars = pars;
 }
 
-void ModelRun::set_model_parameters(const Parameters &parameters)
+void ModelRun::update_ctl(Parameters &ctl_pars, Observations &obs)
 {
-	model_pars = parameters;
-	model_pars_is_valid = true;
-	numeric_pars_is_valid = false;
-	obs_is_valid = false;
-	phi_is_valid = false;
-}
-
-void ModelRun::update(Parameters &model_pars, Observations &obs, PAR_UPDATE update_type)
-{
-	//Must set parameters before observations
-	if(update_type == FORCE_PAR_UPDATE || get_par_tran().is_one_to_one())
-	{
-		// transform to numeric parameters
-		Parameters numeric_pars = get_par_tran().model2numeric_cp(model_pars);
-		set_numeric_parameters(numeric_pars);
-	}
-
+	set_ctl_parameters(ctl_pars);
 	// Process Observations
 	set_observations(obs);
 }
@@ -158,50 +98,9 @@ void ModelRun::set_observations(const Observations &observations)
 	phi_is_valid = false;
 }
 
-const Parameters &ModelRun::get_numeric_pars()
+const Parameters &ModelRun::get_ctl_pars()
 {
-	if (numeric_pars_is_valid) {
-	}
-	else if (model_pars_is_valid && par_tran.is_one_to_one()) {
-		numeric_pars = par_tran.model2numeric_cp(model_pars);
-		numeric_pars_is_valid = true;
-	}
-	else if (model_pars_is_valid && !par_tran.is_one_to_one())
-	{
-		throw PestError("ModelRun::get_numeric_pars() - can not return numeric parameters.  Transformation is not one-to-one so numeric parameters can not be calculated from model parameters");
-	}
-	else {
-		throw PestError("ModelRun::get_numeric_pars() - can not return numeric parameters.  Both model parameters and numeric parameters are undefined");
-	}
-	return numeric_pars;
-}
-
-Parameters ModelRun::get_ctl_pars()
-{
-	if (model_pars_is_valid) {
-		return par_tran.model2ctl_cp(model_pars);
-	}
-	else if (numeric_pars_is_valid) {
- 		return par_tran.numeric2ctl_cp(numeric_pars);
-	}
-	else {
-		throw PestError("ModelRun::get_ctl_pars() - can not return control parameters.  Both model parameters and numeric parameters are undefined");
-	}
-	return Parameters();
-}
-
-const Parameters &ModelRun::get_model_pars() 
-{
-	if (model_pars_is_valid) {
-	}
-	else if (numeric_pars_is_valid) {
-		model_pars = par_tran.numeric2model_cp(numeric_pars);
-		model_pars_is_valid = true;
-	}
-	else {
-		throw PestError("ModelRun::get_numeric_pars() - can not return model parameters.  Both model parameters and numeric parameters are undefined");
-	}
-	return model_pars;
+	return ctl_pars;
 }
 
 const Observations &ModelRun::get_obs() const
@@ -273,16 +172,6 @@ bool ModelRun::phi_valid() const
 bool ModelRun::obs_valid() const
 {
 	return obs_is_valid;
-}
-
-bool ModelRun::numeric_pars_valid() const
-{
-	return numeric_pars_is_valid;
-}
-
-bool ModelRun::model_pars_valid() const
-{
-	return model_pars_is_valid;
 }
 
 ModelRun::~ModelRun()
