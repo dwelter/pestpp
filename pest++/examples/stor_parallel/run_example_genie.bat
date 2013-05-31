@@ -20,4 +20,4 @@ FOR /L %%i IN (1,1,%nslaves%) DO (
 )
 
 REM start PEST++
-start /D"%CD%\master" .\pest++ %pestpp_file% /G %gman_ip%:%gman_port%
+REM start /D"%CD%\master" .\pest++ %pestpp_file% /G %gman_ip%:%gman_port%

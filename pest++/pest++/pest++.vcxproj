@@ -97,7 +97,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
     <UseIntelMKL>Sequential</UseIntelMKL>
     <PlatformToolset>v110</PlatformToolset>
@@ -347,7 +347,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>mkl_blas95_lp64.lib;mkl_lapack95_lp64.lib;propack.lib;ws2_32.lib;genie.lib;Advapi32.lib;yamr.lib;pestpp_common.lib;pest_routines.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(IFORT_COMPILER13)\compiler\lib\intel64;$(IFORT_COMPILER13)\mkl\lib\intel64;$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <IgnoreSpecificDefaultLibraries>LIBCMTD.lib%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>
+      </IgnoreSpecificDefaultLibraries>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>

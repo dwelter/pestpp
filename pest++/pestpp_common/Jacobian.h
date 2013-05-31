@@ -66,7 +66,7 @@ protected:
 	map<string, map<string, double>> prior_info_sen;
 	FileManager &file_manager;  // filemanger used to get name of jaobian file
 
-	virtual void calc_derivative(const string &numeric_par_name, int jcol, list<ModelRun> &run_list, const ParamTransformSeq &par_trans, const ParameterGroupInfo &group_info,
+	virtual void calc_derivative(const string &numeric_par_name, int jcol, list<pair<ModelRun, double> > &run_list, const ParamTransformSeq &par_trans, const ParameterGroupInfo &group_info,
 		const ParameterInfo &ctl_par_info, const PriorInformation &prior_info);
 	virtual bool forward_diff(const string &par_name, const Parameters &pest_parameters, 
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, const ParamTransformSeq &par_trans,

@@ -528,6 +528,7 @@ void TranSVD::reverse(Transformable &data)
 	for (int i=0; i<n_base; ++i) {
 		ret_base_pars.insert(base_parameter_names[i], delta_base_mat(i) + init_base_numeric_parameters.get_rec(base_parameter_names[i]));
 	}
+
 	data = ret_base_pars;
 }
 

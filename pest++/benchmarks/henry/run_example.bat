@@ -9,7 +9,7 @@ FOR /L %%i IN (1,1,%nslaves%) DO (
 )
 
 REM start YAMR master
-REM start /D"%CD%\master" .\pest++ %pestpp_file% /H :4005
+start /D"%CD%\master" .\pest++ %pestpp_file% /H :4005
 
 REM start YAMR slaves
 FOR /L %%i IN (1,1,%nslaves%) DO (

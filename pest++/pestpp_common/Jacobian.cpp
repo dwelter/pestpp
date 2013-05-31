@@ -232,15 +232,13 @@ bool Jacobian::calculate(ModelRun &init_model_run, vector<string> numeric_par_na
 	// process the parameter pertubation runs
 	int nruns = del_numeric_par_vec.size();
 	int icol;
-	list<ModelRun> run_list;
+	list<pair<ModelRun, double>> run_list;
 	base_numeric_par_names.clear();
 	for(; i_run<nruns; ++i_run)
 	{
 		par_name = &del_numeric_par_vec[i_run].par_name;
+		double numeric_par_value = del_numeric_par_vec[i_run].numeric_value;
 		ModelRun tmp_model_run = init_model_run;
-		Parameters numeric_parameters = base_numeric_parameters;
-		numeric_parameters.update_rec(*par_name, del_numeric_par_vec[i_run].numeric_value);
-		tmp_model_run.set_ctl_parameters(par_transform.numeric2ctl_cp(numeric_parameters));
 		Parameters tmp_pars;
 		Observations tmp_obs;
 		int status=run_manager.get_run(i_run, tmp_pars, tmp_obs);
@@ -248,14 +246,15 @@ bool Jacobian::calculate(ModelRun &init_model_run, vector<string> numeric_par_na
 		{
 			throw(PestError("Error: run failed.  Cannot compute the Jacobian"));
 		}
-		par_transform.model2ctl_ip(tmp_pars);
 		tmp_model_run.update_ctl(tmp_pars, tmp_obs);
-		run_list.push_back(tmp_model_run);
+		par_transform.model2ctl_ip(tmp_pars);
+		run_list.push_back(make_pair(tmp_model_run, numeric_par_value));
 
 		if(i_run+1>=nruns || *par_name !=  del_numeric_par_vec[i_run+1].par_name)
 		{
+			double base_numeric_par_value = base_numeric_parameters.get_rec(*par_name);
 			base_numeric_par_names.push_back(*par_name);
-			run_list.push_front(init_model_run);
+			run_list.push_front(make_pair(init_model_run, base_numeric_par_value));
 			icol = base_numeric_par_names.size() - 1;
 			calc_derivative(*par_name, icol, run_list, par_transform, group_info, ctl_par_info, prior_info);
 			run_list.clear();
@@ -300,7 +299,7 @@ bool Jacobian::get_derivative_parameters(const string &par_name, Parameters &num
 }
 
 
-void Jacobian::calc_derivative(const string &numeric_par_name, int jcol, list<ModelRun> &run_list,  const ParamTransformSeq &par_trans, 
+void Jacobian::calc_derivative(const string &numeric_par_name, int jcol, list<pair<ModelRun, double> > &run_list,  const ParamTransformSeq &par_trans, 
 							   const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, const PriorInformation &prior_info)
 {
 	const ParameterGroupRec *g_rec;
@@ -309,22 +308,18 @@ void Jacobian::calc_derivative(const string &numeric_par_name, int jcol, list<Mo
 	double der;
 	int irow;
 	Parameters::const_iterator par_iter;
-	list<pair<ModelRun &, Parameters>> numeric_run_list;;
-	for(auto &irun : run_list)
-	{
-		numeric_run_list.push_back(pair<ModelRun &, Parameters>(irun, par_trans.ctl2numeric_cp(irun.get_ctl_pars())));
-	}
+	
 	// sort run_list the parameter numeric_par_name;
-	auto compare = [&numeric_par_name] (const pair<ModelRun &, Parameters> &a, const pair<ModelRun &, Parameters> &b)
-		{return a.second.get_rec(numeric_par_name) > b.second.get_rec(numeric_par_name);};
-	numeric_run_list.sort(compare);
-	auto &run_first = numeric_run_list.front();
-	auto  &run_last = numeric_run_list.back();
+	auto compare = [] (const pair<ModelRun, double> &a, const pair<ModelRun, double> &b)
+		{return a.second > b.second;};
+	run_list.sort(compare);
+	auto &run_first = run_list.front();
+	auto  &run_last = run_list.back();
 
 	//p_rec = group_info.get_parameter_rec_ptr(*par_name);
 	g_rec = group_info.get_group_rec_ptr(numeric_par_name);
 
-	if (numeric_run_list.size() ==3 && g_rec->dermthd == "PARABOLIC")
+	if (run_list.size() ==3 && g_rec->dermthd == "PARABOLIC")
 	{
 		// Central Difference Parabola
 		// Solve Ac = o for c to get the equation for a parabola where:
@@ -333,7 +328,7 @@ void Jacobian::calc_derivative(const string &numeric_par_name, int jcol, list<Mo
 		//        | p2**2  p2  1 |               | c2 |            | o2 |
 		// then compute the derivative as:
 		//   dy/dx = 2 * c0 * p1 + c1
-		auto &run2 = (*(++numeric_run_list.begin()));
+		auto &run2 = (*(++run_list.begin()));
 		MatrixXd a_mat(3,3);
 		VectorXd c(3), y(3);
 		irow = 0;
@@ -341,18 +336,18 @@ void Jacobian::calc_derivative(const string &numeric_par_name, int jcol, list<Mo
 		{
 			// assemble A matrix
 			int i=0;
-			for (auto &irun_pair : numeric_run_list)
+			for (auto &irun_pair : run_list)
 				//list<ModelRun>::iterator b=run_list.begin(), e=run_list.end(); b!=e; ++b, ++i) 
 			{
 				// assemble A matrix
-				double par_value = irun_pair.second.get_rec(numeric_par_name);
+				double par_value = irun_pair.second;
 				a_mat(i,0) = par_value*par_value; a_mat(i,1) = par_value; a_mat(i,2) = 1;
 				// assemble y vector
 				y(i) =  irun_pair.first.get_obs().get_rec(iobs_name);
 			}
 			c = a_mat.colPivHouseholderQr().solve(y);
 			// assume for now that derivative is to be calculated around the second parameter location
-			der = 2.0 * c(0) *  run2.second.get_rec(numeric_par_name) + c(1);
+			der = 2.0 * c(0) *  run2.second + c(1);
 			matrix(irow++,jcol) = der;
 		}
 	}
@@ -360,7 +355,7 @@ void Jacobian::calc_derivative(const string &numeric_par_name, int jcol, list<Mo
 	{
 		// Forward Difference and Central Difference Outer
 		irow=0;
-		del_par = run_last.second.get_rec(numeric_par_name) - run_first.second.get_rec(numeric_par_name);
+		del_par = run_last.second - run_first.second;
 		for (auto &iobs_name : base_sim_obs_names)
 		{
 			del_obs = run_last.first.get_obs().get_rec(iobs_name) - run_first.first.get_obs().get_rec(iobs_name);
@@ -368,7 +363,7 @@ void Jacobian::calc_derivative(const string &numeric_par_name, int jcol, list<Mo
 		}
 	}
 	// Prior Information allways calculated using outer model runs even for central difference
-	del_par = run_last.second.get_rec(numeric_par_name) - run_first.second.get_rec(numeric_par_name);
+	del_par = run_last.second - run_first.second;
 	calc_prior_info_sen(numeric_par_name, run_first.first.get_ctl_pars(), run_last.first.get_ctl_pars(), del_par,  prior_info);
 }
 

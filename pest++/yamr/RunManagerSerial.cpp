@@ -146,21 +146,23 @@ void RunManagerSerial::run()
 			message << "(" << success_runs << "/" << nruns << " runs complete)";
 			std::cout << message.str();
 			OperSys::chdir(run_dir.c_str());
+			if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))
+			{
+				throw PestError("Error running model: invalid parameter value returned");
+			}
 			wrttpl_(&ntpl, StringvecFortranCharArray(tplfile_vec, 50).get_prt(),
 				StringvecFortranCharArray(inpfile_vec, 50).get_prt(),
 				&npar, StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
-				&par_values[0], &ifail);			
+				&par_values[0], &ifail);	
 			if(ifail != 0)
 			{
 				throw PestError("Error processing template file");
 			}			
 			//tpl_files.writtpl(par_values);			
-			
 			for (int i=0, n_exec=comline_vec.size(); i<n_exec; ++i)
 			{
 				system(comline_vec[i].c_str());
 			}		    
-			
 			obs_vec.resize(nobs, -9999.00);
 			readins_(&nins, StringvecFortranCharArray(insfile_vec, 50).get_prt(),
 				StringvecFortranCharArray(outfile_vec, 50).get_prt(),

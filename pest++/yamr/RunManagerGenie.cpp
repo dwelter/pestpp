@@ -1,20 +1,20 @@
 /*  
-    © Copyright 2012, David Welter
-    
-    This file is part of PEST++.
+	© Copyright 2012, David Welter
+	
+	This file is part of PEST++.
    
-    PEST++ is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	PEST++ is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    PEST++ is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	PEST++ is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
 #include "RunManagerGenie.h"
 #include <iostream>
@@ -59,14 +59,14 @@ RunManagerGenie::RunManagerGenie(const vector<string> _comline_vec,
 
 void RunManagerGenie::run()
 {
-    int nruns = get_nruns();
+	int nruns = get_nruns();
 	int nexec = comline_vec.size();
-    const vector<string> &par_name_vec = file_stor.get_par_name_vec();
-    const vector<string> &obs_name_vec = file_stor.get_obs_name_vec();
+	const vector<string> &par_name_vec = file_stor.get_par_name_vec();
+	const vector<string> &obs_name_vec = file_stor.get_obs_name_vec();
 	int npar = par_name_vec.size();
 	int nobs = obs_name_vec.size();
 	int ntpl = tplfile_vec.size();
-    int nins = insfile_vec.size();
+	int nins = insfile_vec.size();
 	int ikill = 1;
 	stringstream apar;
 	stringstream aobs;
@@ -76,11 +76,11 @@ void RunManagerGenie::run()
 	stringstream insfle;
 	stringstream outfle;
 
-     vector<double> par_val;
-     vector<double> obs_val;
+	 vector<double> par_val;
+	 vector<double> obs_val;
 
-     par_val.clear();
-     obs_val.resize(nruns*nobs);
+	 par_val.clear();
+	 obs_val.resize(nruns*nobs);
 
 	 for (int i=0; i<nruns; ++i)
 	 {
@@ -102,27 +102,27 @@ void RunManagerGenie::run()
 	#ifdef OS_WIN
 	GENIE_INTERFACE(&nruns, &nexec, String2CharPtr(execnames.str()).get_char_ptr(), &npar, &nobs,
 	String2CharPtr(apar.str()).get_char_ptr(), String2CharPtr(aobs.str()).get_char_ptr(),
-                    &par_val[0], &obs_val[0], &ntpl, &nins, String2CharPtr(tplfle.str()).get_char_ptr(),
-                    String2CharPtr(infle.str()).get_char_ptr(), String2CharPtr(insfle.str()).get_char_ptr(),
+					&par_val[0], &obs_val[0], &ntpl, &nins, String2CharPtr(tplfle.str()).get_char_ptr(),
+					String2CharPtr(infle.str()).get_char_ptr(), String2CharPtr(insfle.str()).get_char_ptr(),
 					String2CharPtr(outfle.str()).get_char_ptr(),
-                    String2CharPtr(host).get_char_ptr(), String2CharPtr(id).get_char_ptr(), &ikill);
+					String2CharPtr(host).get_char_ptr(), String2CharPtr(id).get_char_ptr(), &ikill);
 	#endif
 	#ifdef OS_LINUX
 	throw(PestError("Error: Genie run manager is not supported under linux"));
 	#endif
 
 	total_runs += nruns;
-    Parameters pars;
-    Observations obs;
-    for (int i=0; i<nruns; ++i)
+	Parameters pars;
+	Observations obs;
+	for (int i=0; i<nruns; ++i)
 	{
-       pars.clear();
+	   pars.clear();
 	   vector<double> i_par_vec(par_val.begin()+i*npar, par_val.begin()+(i+1)*npar);
-       pars.insert(par_name_vec, i_par_vec);
+	   pars.insert(par_name_vec, i_par_vec);
 	   obs.clear();
 	   vector<double> i_obs_vec(obs_val.begin()+i*nobs, obs_val.begin()+(i+1)*nobs);
 	   obs.insert(obs_name_vec, i_obs_vec);
-       file_stor.update_run(i, pars, obs);
+	   file_stor.update_run(i, pars, obs);
 	}
 }
 

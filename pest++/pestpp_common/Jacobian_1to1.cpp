@@ -61,6 +61,7 @@ bool Jacobian_1to1::calculate(ModelRun &init_model_run, vector<string> numeric_p
 {
 	int i_run;
 	string *par_name;
+	double par_value;
 	Parameters model_parameters(par_transform.ctl2model_cp(init_model_run.get_ctl_pars()));
 	Observations observations(init_model_run.get_obs_template());
 	base_numeric_parameters = par_transform.ctl2numeric_cp( init_model_run.get_ctl_pars());
@@ -150,12 +151,14 @@ bool Jacobian_1to1::calculate(ModelRun &init_model_run, vector<string> numeric_p
 		++i_run;
 	}
 
+	base_numeric_parameters =  par_transform.ctl2numeric_cp(init_model_run.get_ctl_pars());
 	// process the parameter pertubation runs
 	int nruns = del_numeric_par_vec.size();
-	list<ModelRun> run_list;
+	list<pair<ModelRun, double> > run_list;
 	base_numeric_par_names.clear();
 	ModelRun tmp_model_run = init_model_run;
 	int icol = 0;
+	vector<string>par_name_vec;
 	for(; i_run<nruns; ++i_run)
 	{
 		par_name = &del_numeric_par_vec[i_run].par_name;
@@ -164,9 +167,15 @@ bool Jacobian_1to1::calculate(ModelRun &init_model_run, vector<string> numeric_p
 		bool success = run_manager.get_run(i_run, tmp_pars, tmp_obs);
 		if (success)
 		{
+
+			par_name_vec.clear();
+			par_name_vec.push_back(*par_name);
 			par_transform.model2ctl_ip(tmp_pars);
 			tmp_model_run.update_ctl(tmp_pars, tmp_obs);
-			run_list.push_back(tmp_model_run);
+			Parameters numeric_pars(tmp_pars, par_name_vec);
+			par_transform.ctl2numeric_ip(numeric_pars);
+			par_value = numeric_pars.get_rec(*par_name);
+			run_list.push_back(make_pair(tmp_model_run, par_value));
 		}
 
 		if(i_run+1>=nruns || *par_name !=  del_numeric_par_vec[i_run+1].par_name)
@@ -174,7 +183,8 @@ bool Jacobian_1to1::calculate(ModelRun &init_model_run, vector<string> numeric_p
 			if (!run_list.empty())
 			{
 				base_numeric_par_names.push_back(*par_name);
-				run_list.push_front(init_model_run);
+				double base_numeric_par_value = base_numeric_parameters.get_rec(*par_name);
+				run_list.push_front(make_pair(init_model_run, base_numeric_par_value));
 				calc_derivative(*par_name, icol, run_list, par_transform, group_info, ctl_par_info, prior_info);
 				icol++;
 			}
