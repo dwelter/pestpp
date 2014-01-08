@@ -130,6 +130,7 @@ public:
 	virtual void print(ostream &os) const;
 	virtual bool is_one_to_one() const {return false;}
 	virtual TranSetBase* clone() = 0;
+	virtual const set<string>& get_items() const {return items;}
 protected:
 	set<string> items;
 };

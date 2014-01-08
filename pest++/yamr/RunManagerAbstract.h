@@ -1,20 +1,20 @@
 /*  
-    © Copyright 2012, David Welter
-    
-    This file is part of PEST++.
+	© Copyright 2012, David Welter
+	
+	This file is part of PEST++.
    
-    PEST++ is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	PEST++ is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    PEST++ is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	PEST++ is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
 #ifndef RUNMANAGERABSTRACT_H
 #define RUNMANAGERABSTRACT_H
@@ -42,11 +42,11 @@ public:
 	virtual void reinitialize(const std::string &_filename = std::string(""));
 	virtual void free_memory();
 	virtual int add_run(const Parameters &model_pars);
-    virtual int add_run(const std::vector<double> &model_pars);
+	virtual int add_run(const std::vector<double> &model_pars);
 	virtual int add_run(const Eigen::VectorXd &model_pars);
 	virtual void run() = 0;
-    virtual const std::vector<std::string> &get_par_name_vec() const;
-    virtual const std::vector<std::string> &get_obs_name_vec() const;
+	virtual const std::vector<std::string> &get_par_name_vec() const;
+	virtual const std::vector<std::string> &get_obs_name_vec() const;
 	virtual bool get_run(int run_id, Parameters &pars, Observations &obs);
 	virtual bool get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs);
 	virtual const std::set<int>& get_failed_run_ids() const;

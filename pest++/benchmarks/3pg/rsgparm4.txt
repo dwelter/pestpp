@@ -3,10 +3,10 @@
  
 // Allometric relationships & partitioning
 "Foliage:stem partitioning ratio @ D=2 cm"          .750000000
-"Foliage:stem partitioning ratio @ D=20 cm"         .148455061
-"Constant in the stem mass v. diam. relationship"   .010416428
+"Foliage:stem partitioning ratio @ D=20 cm"         .151337812
+"Constant in the stem mass v. diam. relationship"   .010000000
 "Power in the stem mass v. diam. relationship"      2.40000000
-"Maximum fraction of NPP to roots"                  .999977579
+"Maximum fraction of NPP to roots"                  1.00000000
 "Minimum fraction of NPP to roots"                  .229000000
  
 // Temperature modifier (fT)

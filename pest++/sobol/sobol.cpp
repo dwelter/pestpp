@@ -70,7 +70,7 @@ void Sobol::add_model_runs(const MatrixXd &n)
 	}
 }
 
-void Sobol::assemble_runs()
+void Sobol::assemble_runs(RunManagerAbstract &rm, ParamTransformSeq &base_partran_seq)
 {
 	MatrixXd n;
 	run_manager_ptr->reinitialize();
@@ -94,7 +94,7 @@ void Sobol::assemble_runs()
 	add_model_runs(m2);
 }
 
-VectorXd Sobol::get_exp_val(int run_set)
+VectorXd Sobol::get_expected_value(int run_set)
 {
 	vector<string> par_name_vec = run_manager_ptr->get_par_name_vec();
 	vector<string> obs_name_vec = run_manager_ptr->get_obs_name_vec();
@@ -126,7 +126,7 @@ VectorXd Sobol::get_exp_val(int run_set)
 
 void Sobol::calc_sen()
 {
-	get_exp_val(3);
-	//cout << get_exp_val(1) << endl << endl;
-	//cout << get_exp_val(0) - get_exp_val(1) << endl;
+	get_expected_value(3);
+	//cout << get_expected_value(1) << endl << endl;
+	//cout << get_expected_value(0) - get_expected_value(1) << endl;
 }

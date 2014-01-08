@@ -987,7 +987,6 @@ vector<pair<int,int>> InstructionFile::get_marker_indices(string line)
 unordered_map<string,double> InstructionFile::read(ifstream* out)
 {
 	unordered_map<string,double> obs_map,line_map;
-	double oval;
 	for (auto i : instruction_lines)
 	{
 		line_map = i.execute(out);

@@ -138,6 +138,11 @@ fstream &FileManager::open_iofile_absolute(const string &tag, const string &file
 	fstream &f_new = *(ret.first->second);
 	if (ret.second != false  && !f_new.is_open())
 	{
+	    // a file needs to exist before it can be opened it with read and write 
+	    // permission.   So open it with write permission to crteate it, close 
+	    // and then reopen it with read and write permisssion.
+		f_new.open(filename, ios_base::out | ios_base::binary);
+		f_new.close();
 		f_new.open(filename, mode);
 		filename_map.insert(pair<string, string>(tag, filename));
 	}

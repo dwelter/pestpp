@@ -1,29 +1,29 @@
-﻿Build started 1/8/2013 9:22:06 PM.
-     1>Project "D:\Users\jwhite\git_repo\iopp\iopp\iopp\iopp.vcxproj" on node 2 (Build target(s)).
+﻿Build started 12/4/2013 4:21:30 PM.
+     1>Project "C:\Users\Dave\Documents\Visual Studio 2012\Projects\pestpp\pest++\iopp\iopp\iopp.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt iopp.cpp
          iopp.cpp
-     1>iopp.cpp(110): warning C4244: 'argument' : conversion from 'std::streamoff' to 'int', possible loss of data
-     1>iopp.cpp(304): warning C4018: '<' : signed/unsigned mismatch
-     1>iopp.cpp(313): warning C4018: '<' : signed/unsigned mismatch
-     1>iopp.cpp(350): warning C4101: 'line_length' : unreferenced local variable
-     1>iopp.cpp(374): warning C4101: 'e' : unreferenced local variable
-     1>iopp.cpp(601): warning C4018: '<' : signed/unsigned mismatch
-     1>iopp.cpp(715): warning C4101: 'e' : unreferenced local variable
-     1>iopp.cpp(745): warning C4101: 'e' : unreferenced local variable
-     1>iopp.cpp(934): warning C4101: 'oval' : unreferenced local variable
-     1>iopp.cpp(1076): warning C4018: '<' : signed/unsigned mismatch
-     1>iopp.cpp(1131): warning C4018: '>=' : signed/unsigned mismatch
-     1>iopp.cpp(1152): warning C4018: '<' : signed/unsigned mismatch
-     1>iopp.cpp(1242): warning C4018: '<' : signed/unsigned mismatch
-     1>iopp.cpp(1287): warning C4018: '>' : signed/unsigned mismatch
-     1>iopp.cpp(1433): warning C4244: '+=' : conversion from 'double' to '__int64', possible loss of data
-     1>iopp.cpp(1666): warning C4018: '<=' : signed/unsigned mismatch
+     1>iopp.cpp(111): warning C4244: 'argument' : conversion from 'std::streamoff' to 'int', possible loss of data
+     1>iopp.cpp(328): warning C4018: '<' : signed/unsigned mismatch
+     1>iopp.cpp(337): warning C4018: '<' : signed/unsigned mismatch
+     1>iopp.cpp(374): warning C4101: 'line_length' : unreferenced local variable
+     1>iopp.cpp(398): warning C4101: 'e' : unreferenced local variable
+     1>iopp.cpp(637): warning C4018: '<' : signed/unsigned mismatch
+     1>iopp.cpp(753): warning C4101: 'e' : unreferenced local variable
+     1>iopp.cpp(787): warning C4101: 'e' : unreferenced local variable
+     1>iopp.cpp(1046): warning C4018: '<' : signed/unsigned mismatch
+     1>iopp.cpp(1201): warning C4018: '<' : signed/unsigned mismatch
+     1>iopp.cpp(1256): warning C4018: '>=' : signed/unsigned mismatch
+     1>iopp.cpp(1277): warning C4018: '<' : signed/unsigned mismatch
+     1>iopp.cpp(1367): warning C4018: '<' : signed/unsigned mismatch
+     1>iopp.cpp(1412): warning C4018: '>' : signed/unsigned mismatch
+     1>iopp.cpp(1558): warning C4244: '+=' : conversion from 'double' to '__int64', possible loss of data
+     1>iopp.cpp(1796): warning C4018: '<=' : signed/unsigned mismatch
        Lib:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\Lib.exe /OUT:"D:\Users\jwhite\git_repo\iopp\inscheck++\Release\iopp.lib" /NOLOGO /LTCG Release\iopp.obj
-         iopp.vcxproj -> D:\Users\jwhite\git_repo\iopp\inscheck++\Release\iopp.lib
-     1>Done Building Project "D:\Users\jwhite\git_repo\iopp\iopp\iopp\iopp.vcxproj" (Build target(s)).
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\Lib.exe /OUT:"C:\Users\Dave\Documents\Visual Studio 2012\Projects\pestpp\pest++\Release\iopp.lib" /NOLOGO /LTCG Release\iopp.obj
+         iopp.vcxproj -> C:\Users\Dave\Documents\Visual Studio 2012\Projects\pestpp\pest++\Release\iopp.lib
+     1>Done Building Project "C:\Users\Dave\Documents\Visual Studio 2012\Projects\pestpp\pest++\iopp\iopp\iopp.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:02.32
+Time Elapsed 00:00:01.50

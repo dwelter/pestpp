@@ -1,3 +1,4 @@
+CXX := g++
 CC := g++
 CFLAGS := -g -c -std=c++0x 
 INCLUDES := -I../ -I../iopp/iopp
@@ -22,7 +23,7 @@ $(OUT): $(OBJECTS)
 	ar rcs $(OUT) $(OBJECTS)
 
 %.o: %.cpp
-	$(CC) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@
+	$(CXX) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@

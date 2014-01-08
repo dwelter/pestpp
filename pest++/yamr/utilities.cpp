@@ -8,6 +8,7 @@
 #include <list>
 #include <cstring>
 #include <cmath>
+#include <cassert>
 
 template <class T> const T& min ( const T& a, const T& b );
 
@@ -275,6 +276,7 @@ vector<string> fortran_str_array_2_vec(char *fstr, int str_len, int array_len)
 	}
 	return str_vec;
 }
+
 
 } // end of namespace pest_utils
 

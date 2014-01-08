@@ -1,19 +1,25 @@
+CXX := g++
 CC := g++
 FC := gfortran
 CFLAGS := -g -c -std=c++0x 
 FFLAGS := -g -c -cpp
-INCLUDES := -I ../ -I ../yamr -I ../pestpp_common -I ../lapackpp-2.5.4_linux/include
-LIBS :=  -L /usr/lib -L ../pest_routines -L../yamr -L ../pestpp_common -L ../lapackpp-2.5.4_linux/lib -L ../pestpp_common -L ../propack -lgfortran -l _runmanager  -l propack -lpestpp_com -llapackpp -lblas -l lapack -l pest_routines -lgfortran
+INCLUDES := -I ../ -I ../yamr -I ../pestpp_common
+LIBS :=  -L /opt/pest/lib -L/usr/lib64 -L ../pest_routines -L ../yamr -L ../pestpp_common -L ../pestpp_common -L ../propack -l runmanager  -lpestpp_com -l pest_routines -l propack -llapack  -lblas -lgfortran 
 
-EXE = morris_meth
+
+EXE = gsa.exe
 OBJECTS	:= main.o \
-           MorrisMethod.o
+           GsaAbstractBase.o \
+           MorrisMethod.o \
+	   sobol.o
  
 $(EXE): $(OBJECTS)
-	gcc  $(OBJECTS) $(LIBS) -o $(EXE)
+	$(CC)  $(OBJECTS) $(LIBS) -o $(EXE)
 
 %.o: %.cpp
-	$(CC) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@
+	$(CXX) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@
 
 %.o: %.for
 	$(FC) $(FFLAGS) $(INCLUDES) $< -c $(input) -o $@
+clean:
+	rm $(OBJECTS) $(EXE)
