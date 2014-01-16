@@ -1,0 +1,300 @@
+             PEST++ Version 2.1.0
+
+                 by Dave Welter
+     Computational Water Resource Engineering
+
+
+
+using control file: "pest.pst"
+OPTIMISATION ITERATION NUMBER: 1
+  Iteration type: base parameter solution
+  SVD Package: Eigen JacobiSVD
+    Model calls so far : 0
+    Starting phi for this iteration                     Total : 0.5
+    Contribution to phi from observation group         "HEAD" : 0.5
+
+      Marquardt Lambda = 0.10; length = 0.55;  phi = 0.044296 (8.86% starting phi)
+      Marquardt Lambda = 1.00; length = 0.32;  phi = 0.075825 (15.16% starting phi)
+      Marquardt Lambda = 10.00; length = 0.06;  phi = 0.400693 (80.14% starting phi)
+      Marquardt Lambda = 20.00; length = 0.03;  phi = 0.447508 (89.50% starting phi)
+      Marquardt Lambda = 40.00; length = 0.02;  phi = 0.473377 (94.68% starting phi)
+      Marquardt Lambda = 100.00; length = 0.01;  phi = 0.488074 (97.61% starting phi)
+      Marquardt Lambda = 1000.00; length = 0.00;  phi = 0.499001 (99.80% starting phi)
+
+    Parameter Upgrades (Control File Parameters)
+     Parameter      Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+    ------------  ------------  ------------  ------------  ------------
+            K_02       1.76885           2.5       1.41335       0.29246
+            K_03       1.25153           2.5       1.99755      0.499387
+            K_04       1.25153           2.5       1.99755      0.499387
+            K_05       1.44322           2.5       1.73224      0.422713
+            K_11           2.5           2.5             1             0
+            K_06       1.66426           2.5       1.50217      0.334296
+            K_07       2.03977           2.5       1.22563      0.184093
+            K_10           2.5           2.5             1             0
+            K_08           2.5           2.5             1             0
+            K_09           2.5           2.5             1             0
+
+
+   Maximum changes in transformed numeric parameters:
+     Maximum relative change = 0.499387   [K_04]
+     Maximum factor change = 1.99755   [K_04]
+    Parameter Upgrades (Transformed Numeric Parameters)
+     Parameter      Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+    ------------  ------------  ------------  ------------  ------------
+    K_02              0.247691       0.39794        1.6066      0.377567
+    K_03             0.0974423       0.39794       4.08385      0.755133
+    K_04             0.0974423       0.39794       4.08385      0.755133
+    K_05              0.159332       0.39794       2.49756      0.599609
+    K_11               0.39794       0.39794             1             0
+    K_06              0.221221       0.39794       1.79883      0.444084
+    K_07              0.309581       0.39794       1.28542      0.222042
+    K_10               0.39794       0.39794             1             0
+    K_08               0.39794       0.39794             1             0
+    K_09               0.39794       0.39794             1             0
+
+   Maximum changes in transformed numeric parameters:
+     Maximum relative change = 0.755133   [K_04]
+     Maximum factor change = 4.08385   [K_04]
+
+
+OPTIMISATION ITERATION NUMBER: 2
+  Iteration type: base parameter solution
+  SVD Package: Eigen JacobiSVD
+    Model calls so far : 18
+    Starting phi for this iteration                     Total : 0.044296
+    Contribution to phi from observation group         "HEAD" : 0.044296
+
+      Marquardt Lambda = 0.05; length = 0.08;  phi = 0.014305 (32.29% starting phi)
+      Marquardt Lambda = 0.10; length = 0.07;  phi = 0.014522 (32.78% starting phi)
+      Marquardt Lambda = 0.20; length = 0.07;  phi = 0.014801 (33.41% starting phi)
+      Marquardt Lambda = 1.00; length = 0.05;  phi = 0.017909 (40.43% starting phi)
+      Marquardt Lambda = 10.00; length = 0.01;  phi = 0.034621 (78.16% starting phi)
+      Marquardt Lambda = 100.00; length = 0.00;  phi = 0.04297 (97.01% starting phi)
+      Marquardt Lambda = 1000.00; length = 0.00;  phi = 0.044269 (99.94% starting phi)
+
+    Parameter Upgrades (Control File Parameters)
+     Parameter      Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+    ------------  ------------  ------------  ------------  ------------
+            K_02       1.85842       1.76885       1.05064    -0.0506355
+            K_03       1.38149       1.25153       1.10384     -0.103835
+            K_04       1.38149       1.25153       1.10384     -0.103835
+            K_05       1.55894       1.44322       1.08019    -0.0801857
+            K_11           2.5           2.5             1             0
+            K_06       1.73497       1.66426       1.04248    -0.0424847
+            K_07       2.06825       2.03977       1.01397    -0.0139656
+            K_10           2.5           2.5             1             0
+            K_08           2.5           2.5             1             0
+            K_09           2.5           2.5             1             0
+
+
+   Maximum changes in transformed numeric parameters:
+     Maximum relative change = -0.103835   [K_04]
+     Maximum factor change = 1.10384   [K_04]
+    Parameter Upgrades (Transformed Numeric Parameters)
+     Parameter      Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+    ------------  ------------  ------------  ------------  ------------
+    K_02              0.269143      0.247691       1.08661    -0.0866081
+    K_03              0.140347     0.0974423        1.4403     -0.440304
+    K_04              0.140347     0.0974423        1.4403     -0.440304
+    K_05               0.19283      0.159332       1.21024     -0.210243
+    K_11               0.39794       0.39794             1             0
+    K_06              0.239291      0.221221       1.08168    -0.0816815
+    K_07              0.315604      0.309581       1.01946    -0.0194561
+    K_10               0.39794       0.39794             1             0
+    K_08               0.39794       0.39794             1             0
+    K_09               0.39794       0.39794             1             0
+
+   Maximum changes in transformed numeric parameters:
+     Maximum relative change = -0.440304   [K_04]
+     Maximum factor change = 1.4403   [K_04]
+
+
+OPTIMISATION ITERATION NUMBER: 3
+  Iteration type: base parameter solution
+  SVD Package: Eigen JacobiSVD
+    Model calls so far : 35
+    Starting phi for this iteration                     Total : 0.014305
+    Contribution to phi from observation group         "HEAD" : 0.014305
+
+      Marquardt Lambda = 0.03; length = 0.00;  phi = 0.014285 (99.86% starting phi)
+      Marquardt Lambda = 0.05; length = 0.00;  phi = 0.014285 (99.86% starting phi)
+      Marquardt Lambda = 0.10; length = 0.00;  phi = 0.014285 (99.86% starting phi)
+      Marquardt Lambda = 1.00; length = 0.00;  phi = 0.014458 (101.07% starting phi)
+      Marquardt Lambda = 10.00; length = 0.00;  phi = 0.014468 (101.14% starting phi)
+      Marquardt Lambda = 100.00; length = 0.00;  phi = 0.014305 (100.00% starting phi)
+      Marquardt Lambda = 1000.00; length = 0.00;  phi = 0.014305 (100.00% starting phi)
+
+      Switching to central derivatives:
+
+    Parameter Upgrades (Control File Parameters)
+     Parameter      Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+    ------------  ------------  ------------  ------------  ------------
+            K_02       1.86011       1.85842       1.00091  -0.000909699
+            K_03       1.38441       1.38149       1.00212   -0.00211757
+            K_04       1.38441       1.38149       1.00212   -0.00211757
+            K_05       1.56129       1.55894        1.0015   -0.00150403
+            K_11           2.5           2.5             1             0
+            K_06       1.73651       1.73497       1.00089  -0.000890796
+            K_07       2.06887       2.06825        1.0003  -0.000296869
+            K_10           2.5           2.5             1             0
+            K_08           2.5           2.5             1             0
+            K_09           2.5           2.5             1             0
+
+
+   Maximum changes in transformed numeric parameters:
+     Maximum relative change = -0.00211757   [K_04]
+     Maximum factor change = 1.00212   [K_04]
+    Parameter Upgrades (Transformed Numeric Parameters)
+     Parameter      Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+    ------------  ------------  ------------  ------------  ------------
+    K_02              0.269538      0.269143       1.00147   -0.00146724
+    K_03              0.141265      0.140347       1.00655   -0.00654579
+    K_04              0.141265      0.140347       1.00655   -0.00654579
+    K_05              0.193483       0.19283       1.00338   -0.00338486
+    K_11               0.39794       0.39794             1             0
+    K_06              0.239677      0.239291       1.00162   -0.00161601
+    K_07              0.315733      0.315604       1.00041  -0.000408453
+    K_10               0.39794       0.39794             1             0
+    K_08               0.39794       0.39794             1             0
+    K_09               0.39794       0.39794             1             0
+
+   Maximum changes in transformed numeric parameters:
+     Maximum relative change = -0.00654579   [K_04]
+     Maximum factor change = 1.00655   [K_04]
+
+
+OPTIMISATION ITERATION NUMBER: 4
+  Iteration type: base parameter solution
+  SVD Package: Eigen JacobiSVD
+    Model calls so far : 52
+    Starting phi for this iteration                     Total : 0.014285
+    Contribution to phi from observation group         "HEAD" : 0.014285
+
+      Marquardt Lambda = 0.01; length = 0.00;  phi = 0.014285 (100.00% starting phi)
+      Marquardt Lambda = 0.03; length = 0.00;  phi = 0.014285 (100.00% starting phi)
+      Marquardt Lambda = 0.05; length = 0.00;  phi = 0.014285 (100.00% starting phi)
+      Marquardt Lambda = 0.10; length = 0.00;  phi = 0.014285 (100.00% starting phi)
+      Marquardt Lambda = 1.00; length = 0.00;  phi = 0.014285 (100.00% starting phi)
+      Marquardt Lambda = 10.00; length = 0.00;  phi = 0.014285 (100.00% starting phi)
+      Marquardt Lambda = 100.00; length = 0.00;  phi = 0.014285 (100.00% starting phi)
+      Marquardt Lambda = 1000.00; length = 0.00;  phi = 0.014285 (100.00% starting phi)
+
+    Parameter Upgrades (Control File Parameters)
+     Parameter      Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+    ------------  ------------  ------------  ------------  ------------
+            K_02       1.85919       1.86011       1.00049   0.000492552
+            K_03       1.38405       1.38441       1.00026    0.00025816
+            K_04       1.38405       1.38441       1.00026    0.00025816
+            K_05       1.56074       1.56129       1.00035   0.000353554
+            K_11       2.49818           2.5       1.00073    0.00072708
+            K_06       1.73575       1.73651       1.00044   0.000437947
+            K_07       2.06767       2.06887       1.00058   0.000576934
+            K_10       2.49818           2.5       1.00073    0.00072708
+            K_08       2.49818           2.5       1.00073    0.00072708
+            K_09       2.49818           2.5       1.00073    0.00072708
+
+
+   Maximum changes in transformed numeric parameters:
+     Maximum relative change = 0.00072708   [K_09]
+     Maximum factor change = 1.00073   [K_09]
+    Parameter Upgrades (Transformed Numeric Parameters)
+     Parameter      Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+    ------------  ------------  ------------  ------------  ------------
+    K_02              0.269324      0.269538       1.00079   0.000793822
+    K_03              0.141153      0.141265       1.00079    0.00079377
+    K_04              0.141153      0.141265       1.00079    0.00079377
+    K_05              0.193329      0.193483       1.00079   0.000793734
+    K_11              0.397624       0.39794       1.00079   0.000793792
+    K_06              0.239487      0.239677       1.00079   0.000793732
+    K_07              0.315482      0.315733       1.00079   0.000793809
+    K_10              0.397624       0.39794       1.00079   0.000793792
+    K_08              0.397624       0.39794       1.00079   0.000793792
+    K_09              0.397624       0.39794       1.00079   0.000793792
+
+   Maximum changes in transformed numeric parameters:
+     Maximum relative change = 0.000793822   [K_02]
+     Maximum factor change = 1.00079   [K_02]
+
+
+OPTIMISATION ITERATION NUMBER: 5
+  Iteration type: base parameter solution
+  SVD Package: Eigen JacobiSVD
+    Model calls so far : 80
+    Starting phi for this iteration                     Total : 0.014285
+    Contribution to phi from observation group         "HEAD" : 0.014285
+
+      Marquardt Lambda = 0.01; length = 0.00;  phi = 0.014458 (101.21% starting phi)
+      Marquardt Lambda = 0.01; length = 0.00;  phi = 0.014458 (101.21% starting phi)
+      Marquardt Lambda = 0.03; length = 0.00;  phi = 0.014458 (101.21% starting phi)
+      Marquardt Lambda = 0.10; length = 0.00;  phi = 0.014458 (101.21% starting phi)
+      Marquardt Lambda = 1.00; length = 0.00;  phi = 0.014458 (101.21% starting phi)
+      Marquardt Lambda = 10.00; length = 0.00;  phi = 0.014285 (100.00% starting phi)
+      Marquardt Lambda = 100.00; length = 0.00;  phi = 0.014285 (100.00% starting phi)
+      Marquardt Lambda = 1000.00; length = 0.00;  phi = 0.014285 (100.00% starting phi)
+
+    Parameter Upgrades (Control File Parameters)
+     Parameter      Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+    ------------  ------------  ------------  ------------  ------------
+            K_02       1.85899       1.85919       1.00011   0.000106552
+            K_03       1.38398       1.38405       1.00006  5.58504e-005
+            K_04       1.38398       1.38405       1.00006  5.58504e-005
+            K_05       1.56062       1.56074       1.00008  7.65024e-005
+            K_11       2.49779       2.49818       1.00016   0.000157314
+            K_06       1.73559       1.73575       1.00009  9.47141e-005
+            K_07       2.06742       2.06767       1.00012   0.000124826
+            K_10       2.49779       2.49818       1.00016   0.000157314
+            K_08       2.49779       2.49818       1.00016   0.000157314
+            K_09       2.49779       2.49818       1.00016   0.000157314
+
+
+   Maximum changes in transformed numeric parameters:
+     Maximum relative change = 0.000157314   [K_09]
+     Maximum factor change = 1.00016   [K_09]
+    Parameter Upgrades (Transformed Numeric Parameters)
+     Parameter      Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+    ------------  ------------  ------------  ------------  ------------
+    K_02              0.269278      0.269324       1.00017   0.000171827
+    K_03              0.141129      0.141153       1.00017   0.000171843
+    K_04              0.141129      0.141153       1.00017   0.000171843
+    K_05              0.193296      0.193329       1.00017   0.000171861
+    K_11              0.397556      0.397624       1.00017   0.000171836
+    K_06              0.239446      0.239487       1.00017   0.000171766
+    K_07              0.315428      0.315482       1.00017   0.000171847
+    K_10              0.397556      0.397624       1.00017   0.000171836
+    K_08              0.397556      0.397624       1.00017   0.000171836
+    K_09              0.397556      0.397624       1.00017   0.000171836
+
+   Maximum changes in transformed numeric parameters:
+     Maximum relative change = 0.000171861   [K_05]
+     Maximum factor change = 1.00017   [K_05]
+
+
+FINAL OPTIMISATION RESULTS
+
+    Phi                                                 Total : 0.014285
+    Contribution to phi from observation group         "HEAD" : 0.014285
+
+     Parameter      Optimal
+        Name         Value
+    ------------  ------------
+    K_02               1.86011
+    K_03               1.38441
+    K_04               1.38441
+    K_05               1.56129
+    K_11                   2.5
+    K_06               1.73651
+    K_07               2.06887
+    K_10                   2.5
+    K_08                   2.5
+    K_09                   2.5
