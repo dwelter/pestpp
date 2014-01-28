@@ -19,16 +19,18 @@
 #include <vector>
 #include <iostream>
 #include "SVD_PROPACK.h"
+#include "config_os.h"
 
 using namespace std;
 using namespace Eigen;
-
+#ifdef OS_WIN
 #define DEF_DLAMCH DLAMCH
 #define DEF_DLANBPRO_SPARCE DLANBPRO_SPARCE
-
-//#define DEF_DLAMCH dlamch_
-//#define DEF_DLANBPRO_SPARCE dlanbpro_sparce_
-
+#endif
+#ifdef OS_LINUX 
+#define DEF_DLAMCH dlamch_
+#define DEF_DLANBPRO_SPARCE dlanbpro_sparce_
+#endif
 
 extern "C" {
 	double DEF_DLAMCH(char*);

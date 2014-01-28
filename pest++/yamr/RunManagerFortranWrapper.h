@@ -36,6 +36,8 @@ int RMIF_ADD_RUN(double *parameter_data, int *npar, int *id);
 int RMIF_INITIALIZE(char *f_pname, int  *pname_str_len, int *pname_array_len,
 				 char *f_oname, int  *oname_str_len, int *oname_array_len);
 
+int RMIF_INITIALIZE_RESTART(char *f_storfile, int *storfile_len);
+
 int RMIF_REINITIALIZE();
 
 int RMIF_RUN();

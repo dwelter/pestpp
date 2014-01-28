@@ -131,6 +131,20 @@ int RMIF_INITIALIZE(char *f_pname, int  *pname_str_len, int *pname_array_len,
 	return err;
 }
 
+int RMIF_INITIALIZE_RESTART(char *f_storfile, int *storfile_len)
+{
+	int err = 0;
+	try {
+		string storfile =  fortran_str_2_string(f_storfile, *storfile_len);
+		_run_manager_ptr_->initialize_restart(storfile);
+	}
+	catch(...)
+	{
+		err = 1;
+	}
+	return err;
+}
+
 int RMIF_REINITIALIZE()
 {
     int err = 0;

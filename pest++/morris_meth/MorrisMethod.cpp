@@ -331,19 +331,21 @@ void  MorrisMethod::calc_sen(ModelRun model_run, ofstream &fout_raw, ofstream &f
 			double phi1 = run1.get_phi(0.0);
 			double p0 = pars0[*p];
 			double p1 = pars1[*p];
-			double sen = pars1.no_data;
 			if (log_trans_pars.find(*p) != log_trans_pars.end())
 			{
 				p0 = log10(p0);
 				p1 = log10(p1);
 			}
-			sen = (phi1 - phi0) / (p1 - p0);
+			// compute standard Morris Sensitivity on the global objective function
+			double sen = (phi1 - phi0) / delta;
 			fout_raw << log_name(*p) << ",  " <<  phi1 << ",  " << phi0 << ",  " << p1 << ",  " << p0 << ", " << sen << endl;
 			const auto &it_senmap_ptr = sen_map.find(*p);
 			if (it_senmap_ptr != sen_map.end())
 			{
 				it_senmap_ptr->second.push_back(sen);
 			}
+
+			//Compute sensitvities of indiviual observations
 			obs_sen_file.write_sen(*p, pars0, obs0, pars1, obs1);
 		}
 	}

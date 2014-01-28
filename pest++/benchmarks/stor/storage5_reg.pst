@@ -39,7 +39,7 @@ head14     99.9955      1.1  obs2
 head15     100.000      2.2  obsgroup3
 head16     100.000      3.3  obsgroup1
 * model command line
-./storage1.exe
+storage1.exe
 * model input/output
 input.tpl   input.dat
 output.ins  output.dat

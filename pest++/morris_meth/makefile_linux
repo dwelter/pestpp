@@ -4,14 +4,14 @@ FC := gfortran
 CFLAGS := -g -c -std=c++0x 
 FFLAGS := -g -c -cpp
 INCLUDES := -I ../ -I ../yamr -I ../pestpp_common
-LIBS :=  -L /opt/pest/lib -L/usr/lib64 -L ../pest_routines -L ../yamr -L ../pestpp_common -L ../pestpp_common -L ../propack -l runmanager  -lpestpp_com -l pest_routines -l propack -llapack  -lblas -lgfortran 
-
+LIBS :=  -L /opt/pest/lib -L/usr/lib64 -L ../pest_routines -L ../yamr -L ../pestpp_common -L ../pestpp_common -L ../propack -l runmanager  -lpestpp_com -l pest_routines -l propack -llapack -lblas -lgfortran 
 
 EXE = gsa.exe
 OBJECTS	:= main.o \
            GsaAbstractBase.o \
            MorrisMethod.o \
-	   sobol.o
+	   sobol.o \
+	   Stats.o
  
 $(EXE): $(OBJECTS)
 	$(CC)  $(OBJECTS) $(LIBS) -o $(EXE)

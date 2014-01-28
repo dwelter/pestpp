@@ -175,6 +175,7 @@ int main(int argc, char* argv[])
 		file_manager.build_filename("rns"), pathname);
 	}
 
+
 	cout << endl;
 	fout_rec << endl;
 	cout << "using control file: \"" <<  complete_path << "\"" << endl;

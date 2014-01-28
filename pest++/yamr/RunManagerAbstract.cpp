@@ -1,20 +1,20 @@
 /*  
-    © Copyright 2012, David Welter
-    
-    This file is part of PEST++.
+	© Copyright 2012, David Welter
+	
+	This file is part of PEST++.
    
-    PEST++ is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	PEST++ is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    PEST++ is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	PEST++ is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
 #include "RunManagerAbstract.h"
 #include <iostream>
@@ -61,10 +61,16 @@ void RunManagerAbstract::reinitialize(const string &_filename)
 	file_stor.reset(par_names, obs_names, _filename);
 }
 
+void RunManagerAbstract::initialize_restart(const std::string &_filename)
+{
+
+	file_stor.init_restart(_filename);
+}
+
 int RunManagerAbstract::add_run(const vector<double> &model_pars)
 {
-    int run_id = file_stor.add_run(model_pars);
-    return run_id;
+	int run_id = file_stor.add_run(model_pars);
+	return run_id;
 }
 
 int RunManagerAbstract::add_run(const Parameters &model_pars)
@@ -75,18 +81,18 @@ int RunManagerAbstract::add_run(const Parameters &model_pars)
 
 int RunManagerAbstract::add_run(const Eigen::VectorXd &model_pars)
 {
-    int run_id = file_stor.add_run(model_pars);
-    return run_id;
+	int run_id = file_stor.add_run(model_pars);
+	return run_id;
 }
 
  const vector<string>& RunManagerAbstract::get_par_name_vec() const
  {
-    return file_stor.get_par_name_vec();
+	return file_stor.get_par_name_vec();
  }
 
  const vector<string>& RunManagerAbstract::get_obs_name_vec() const
 {
-    return file_stor.get_obs_name_vec();
+	return file_stor.get_obs_name_vec();
 }
 
 bool RunManagerAbstract::get_run(int run_id, Parameters &pars, Observations &obs)
@@ -94,15 +100,15 @@ bool RunManagerAbstract::get_run(int run_id, Parameters &pars, Observations &obs
 	bool success = false;
 	int status = file_stor.get_run(run_id, &pars, &obs);
 	if (status > 0) success = true; 
-    return success;
+	return success;
 }
 
 bool  RunManagerAbstract::get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs)
 {
 	bool success = false;
 	int status = file_stor.get_run(run_id, pars, npars, obs, nobs);
-    if (status > 0) success = true; 
-    return success;
+	if (status > 0) success = true; 
+	return success;
 }
 
 
@@ -123,7 +129,7 @@ Parameters RunManagerAbstract::get_model_parameters(int run_id)
  Observations RunManagerAbstract::get_obs_template(double value) const
  {
 	Observations ret_obs;
-    const vector<string> &obs_name_vec = file_stor.get_obs_name_vec();
+	const vector<string> &obs_name_vec = file_stor.get_obs_name_vec();
 	int nobs = obs_name_vec.size();
 	for(int i=0; i<nobs; ++i)
 	{

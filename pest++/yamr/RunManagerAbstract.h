@@ -39,6 +39,7 @@ public:
 		const std::string &stor_filename);
 	virtual void initialize(const std::vector<std::string> &model_par_names, std::vector<std::string> &obs_names, const std::string &_filename = std::string(""));
 	virtual void initialize(const Parameters &model_pars, const Observations &obs, const std::string &_filename = std::string(""));
+	virtual void initialize_restart(const std::string &_filename);
 	virtual void reinitialize(const std::string &_filename = std::string(""));
 	virtual void free_memory();
 	virtual int add_run(const Parameters &model_pars);

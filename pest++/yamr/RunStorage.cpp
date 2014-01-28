@@ -57,17 +57,84 @@ void RunStorage::reset(const vector<string> &_par_names, const vector<string> &_
 	{
 		throw PestFileError(filename);
 	}
+	// calculate the number of bytes required to store parameter names
+	vector<char> serial_pnames(Serialization::serialize(par_names));
+	std::int64_t p_name_size_64 = serial_pnames.size() * sizeof(char);
+	// calculate the number of bytes required to store observation names
+	vector<char> serial_onames(Serialization::serialize(obs_names));
+	std::int64_t o_name_size_64 = serial_onames.size() * sizeof(char);
 	// calculate the number of bytes required to store a model run
 	run_par_byte_size = par_names.size() * sizeof(double);
 	run_data_byte_size = run_par_byte_size + obs_names.size() * sizeof(double);
 	run_byte_size =  sizeof(std::int8_t) + run_data_byte_size;
-	vector<char> serial_pnames(Serialization::serialize(par_names));
-	vector<char> serial_onames(Serialization::serialize(obs_names));
-	beg_obs_name = serial_pnames.size();
-	beg_run0 = beg_obs_name + serial_onames.size();
+	std::int64_t  run_size_64 = run_byte_size;
+	beg_run0 = 4 * sizeof(std::int64_t) + serial_pnames.size() + serial_onames.size();
+	std::int64_t n_runs_64;
+	// write header to file
 	buf_stream.seekp(0, ios_base::beg);
+	buf_stream.write((char*) &p_name_size_64, sizeof(p_name_size_64));
+	buf_stream.write((char*) &o_name_size_64, sizeof(o_name_size_64));
+	buf_stream.write((char*) &run_size_64, sizeof(run_size_64));
+	buf_stream.write((char*) &n_runs_64, sizeof(n_runs_64));
 	buf_stream.write(serial_pnames.data(), serial_pnames.size());
 	buf_stream.write(serial_onames.data(), serial_onames.size());
+}
+
+
+void RunStorage::init_restart(const std::string &_filename)
+{
+	filename = _filename;
+	par_names.clear();
+	obs_names.clear();
+
+	// a file needs to exist before it can be opened it with read and write 
+	// permission.   So open it with write permission to crteate it, close 
+	// and then reopen it with read and write permisssion.
+	if (buf_stream.is_open())
+	{
+		buf_stream.close();
+	}
+	buf_stream.open(filename.c_str(), ios_base::out | ios_base::binary);
+	buf_stream.close();
+	buf_stream.open(filename.c_str(), ios_base::out | ios_base::in | ios_base::binary | ios_base::app);
+	assert(buf_stream.good() == true);
+	if (!buf_stream.good())
+	{
+		throw PestFileError(filename);
+	}
+	// read header
+	buf_stream.seekg(0, ios_base::beg);
+
+	std::int64_t p_name_size_64;
+	buf_stream.read((char*) &p_name_size_64, sizeof(p_name_size_64));
+	std::streamoff p_names_size = p_name_size_64;
+
+	std::int64_t o_name_size_64;
+	buf_stream.read((char*) &o_name_size_64, sizeof(o_name_size_64));
+	std::streamoff o_names_size = o_name_size_64;
+
+	std::int64_t  run_size_64;
+	buf_stream.read((char*) &run_size_64, sizeof(run_size_64));
+	run_byte_size = run_size_64;
+
+	std::int64_t n_runs_64;
+	buf_stream.read((char*) &n_runs_64, sizeof(n_runs_64));
+	n_runs = n_runs_64;
+
+	vector<char> serial_pnames;
+	serial_pnames.resize(p_name_size_64);
+	buf_stream.read(serial_pnames.data(), serial_pnames.size());
+	Serialization::unserialize(serial_pnames, par_names);
+
+	vector<char> serial_onames;
+	serial_onames.resize(o_name_size_64);
+	buf_stream.read(serial_onames.data(), serial_onames.size());
+	Serialization::unserialize(serial_onames, obs_names);
+
+	beg_run0 = 4 * sizeof(std::int64_t) + serial_pnames.size() + serial_onames.size();
+	run_par_byte_size = par_names.size() * sizeof(double);
+	run_data_byte_size = run_par_byte_size + obs_names.size() * sizeof(double);
+	run_byte_size =  sizeof(std::int8_t) + run_data_byte_size;
 }
 
 int RunStorage::get_nruns()

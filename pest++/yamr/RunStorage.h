@@ -34,6 +34,7 @@ class RunStorage {
 public:
 	RunStorage(const std::string &_filename);
 	void reset(const std::vector<std::string> &par_names, const std::vector<std::string> &obs_names, const std::string &_filename = std::string(""));
+	void init_restart(const std::string &_filename);
     virtual int add_run(const std::vector<double> &model_pars);
 	int add_run(const Parameters &pars);
 	virtual int add_run(const Eigen::VectorXd &model_pars);
@@ -53,11 +54,12 @@ public:
 private:
 	std::string filename;
 	std::fstream buf_stream;
-    std::streamoff beg_obs_name;
     std::streamoff beg_run0;
 	std::streamoff run_byte_size;
     std::streamoff run_par_byte_size;
     std::streamoff run_data_byte_size;
+	std::streamoff p_names_size;
+	std::streamoff o_names_size;
 	int n_runs;
 	std::vector<std::string> par_names;
 	std::vector<std::string> obs_names;
