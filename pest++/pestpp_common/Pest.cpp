@@ -52,7 +52,15 @@ void Pest::check_inputs()
 		svd_info.maxsing = min(numeric_pars.size(), observation_values.size());
 	}
 }
-
+const map<string, string> Pest::get_observation_groups() const
+{
+	map<string, string> obs_grp_map;
+	for(auto &iobs : ctl_ordered_obs_names)
+	{
+		obs_grp_map[iobs] = (observation_info.get_observation_rec_ptr(iobs)->group);
+	}
+	return obs_grp_map;
+}
 
 vector<string> Pest::get_nonregul_obs() const
 {

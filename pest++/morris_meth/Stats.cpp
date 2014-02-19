@@ -282,3 +282,60 @@ double sobol_u_missing_data(const std::vector<double> &x_vec, const std::vector<
 	return m_xy_k * n / (n_actual-1);
 }
 
+void RunningStats::reset()
+{
+    n = 0;
+    mk = 0.0;
+	mk_abs = 0.0;
+    qk = 0.0;
+}
+
+void RunningStats::add(double sample)
+{
+    ++n;
+    if (n==1)
+	{
+        mk = sample;
+		mk_abs = abs(sample);
+        qk = 0.0;
+	}
+	else
+	{
+		qk += (n - 1) * pow((sample - mk), 2.0) / n; // must happend before mk is updated
+		mk += (sample - mk) / n;
+		mk_abs += (abs(sample) - mk_abs) / n;
+	}
+}
+
+void RunningStats::add(const std::vector<double> &sample)
+{
+    for (auto &s : sample)
+	{
+       add(s); 
+	}
+}
+
+double RunningStats::comp_var()
+{
+    return qk / (n-1);
+}
+
+double RunningStats::comp_sigma()
+{
+    return sqrt(comp_var());
+}
+
+double RunningStats::comp_mean()
+{
+return mk;
+}
+
+double RunningStats::comp_abs_mean()
+{
+	return mk_abs;
+}
+
+int RunningStats::comp_nsamples()
+{
+	return n;
+}

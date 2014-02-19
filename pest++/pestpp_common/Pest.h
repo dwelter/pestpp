@@ -1,20 +1,20 @@
 /*  
-    © Copyright 2012, David Welter
-    
-    This file is part of PEST++.
+	© Copyright 2012, David Welter
+	
+	This file is part of PEST++.
    
-    PEST++ is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	PEST++ is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    PEST++ is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	PEST++ is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
 
 #ifndef PEST_H_
@@ -45,6 +45,7 @@ public:
 	const ParameterInfo& get_ctl_parameter_info()const {return ctl_parameter_info;}
 	const ParameterGroupInfo& get_base_group_info() const {return  base_group_info;}
 	const ObservationInfo &get_ctl_observation_info() const {return observation_info;}
+	const std::map<std::string, std::string> get_observation_groups() const;
 	const PriorInformation &get_prior_info() {return prior_info;}
 	const PriorInformation *get_prior_info_ptr() {return &prior_info;}
 	const SVDInfo& get_svd_info() const {return svd_info;}

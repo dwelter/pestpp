@@ -56,6 +56,56 @@ map<string, string>  GsaAbstractBase::process_gsa_file(ifstream &fin, FileManage
 	return arg_map;
 }
 
+map<string, string> GsaAbstractBase::process_obt_file(std::ifstream &fin_obt, FileManager &file_manager)
+{
+	map<string, string> grp_2_grp_type;
+	//map<string, vector<string> > grp_2_regec_vec;
+	string line;
+	vector<string> tokens;
+	string cur_grp_type;
+	int lnum = 0;
+	try {
+		while(getline(fin_obt, line))
+		{
+			++lnum;
+			strip_ip(line);
+			if (line[0] == '#')
+			{
+			}
+			else if (upper_cp(line.substr(0, 8)) == "OBS_TYPE")
+			{
+				tokens.clear();
+				tokenize(line, tokens, "\t\n\r() ");
+				cur_grp_type = tokens[1];
+				upper_ip(cur_grp_type);
+			}
+			//else if (upper_cp(line.substr(0, 8)) == "REGEX")
+			//{
+			//	tokens.clear();
+			//	tokenize(line, tokens, "\t\n\r() ");
+			//	string regex_str = tokens[1];
+			//	strip_ip(regex_str, "\"");
+			//	upper_ip(regex_str);
+			//}
+			else
+			{
+				string grp = upper_cp(line);
+				grp_2_grp_type[grp] = cur_grp_type;
+			}
+		}
+	}
+	catch(exception &e)
+	{
+		PestFileErrorAccess e_new(file_manager.get_full_filename("obt"), e.what());
+		cout << e.what() << endl;
+		std::stringstream out;
+		out << "Error parsing \"" << file_manager.get_full_filename("obt") << "\" on line number " << lnum << endl;
+		e_new.add_back(out.str());
+		e_new.raise();
+	}
+	return grp_2_grp_type;
+}
+
 void GsaAbstractBase::parce_line(const string &line, map<string, string> &arg_map)
 {
 	string key;
@@ -99,6 +149,12 @@ string GsaAbstractBase::log_name(const string &name) const
 		log_name = "log(" + name + ")";
 	}
 	return log_name;
+}
+
+bool GsaAbstractBase::is_log_trans_par(const string &name) const
+{
+	bool ret_val = (log_trans_pars.find(name) != log_trans_pars.end()) ? true : false;
+	return ret_val;
 }
 
 //vector<double> GsaAbstractBase::calc_reduced_normal_intervals(int n_interval, double min, double max)
@@ -232,21 +288,6 @@ double GsaAbstractBase::ltqnorm(double p)
 		return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q /
 			(((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1);
 	}
-}
-
-pair<double, double> GsaAbstractBase::max_min(const vector<double> &ao)
-{
-	double max = -99e50;
-	double min = -max;
-	for (auto &i :ao)
-	{
-		if (i != MISSING_DATA)
-		{
-			if (i > max) max = i;
-			if (i < min) min = i;
-		}
-	}
-	return make_pair (max, min);
 }
 
 ostream& operator<<(ostream& out, const vector<double> &rhs)

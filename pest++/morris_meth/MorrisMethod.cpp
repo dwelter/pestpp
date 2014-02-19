@@ -22,100 +22,64 @@ using namespace pest_utils;
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 
-void MorrisObsSenFile::initialize(const std::vector<std::string> &_par_names_vec, const std::vector<std::string> &_obs_names_vec, int _max_runs_per_par, fstream *_fout_sen)
+void MorrisObsSenFile::initialize(const vector<string> &_par_names_vec, const vector<string> &_obs_names_vec, double _no_data, const GsaAbstractBase *_gsa_abstract_base)
 {
-	 par_names_vec = _par_names_vec;
-	 obs_names_vec = _obs_names_vec;
-	 max_runs_per_par = _max_runs_per_par;
-	 fout_sen = _fout_sen;
-
-	 parname_to_indexmap.clear();
-	 n_completed_runs.clear();
-	 for(int i=0; i<par_names_vec.size(); ++i)
-	 {
-		 parname_to_indexmap[par_names_vec[i]] = i;
-		 n_completed_runs[par_names_vec[i]] = 0;
-	 }
-
-	double no_data = Transformable::no_data;
-	unsigned long n_items = ( par_names_vec.size() + obs_names_vec.size() ) * max_runs_per_par;
-	for (unsigned long i=0; i<n_items; ++i)
-	{
-		fout_sen->write((char*)&no_data, sizeof(no_data));
-	}
+	par_names_vec =_par_names_vec;
+	obs_names_vec = _obs_names_vec;
+	gsa_abstract_base = _gsa_abstract_base;
+	no_data = _no_data;
 }
 
-void MorrisObsSenFile::write_sen(const std::string &par_name, Parameters &par1, Observations &obs1, Parameters &par2, Observations &obs2,  bool log_tran)
+void MorrisObsSenFile::add_sen_run_pair(const std::string &par_name, Parameters &par1, Observations &obs1, Parameters &par2, Observations &obs2)
 {
 	assert (obs1.size() == obs2.size());
 	assert (par1.size() == par2.size());
 	int nobs = obs1.size();
 
 	// compute sensitivities of individual observations
-	vector<double> sen_vec;
-	sen_vec.reserve(nobs);
 	double isen;
 	double del_par = par2[par_name] - par1[par_name];
-	if (log_tran)
-		del_par = log10(del_par);
+	if (gsa_abstract_base->is_log_trans_par(par_name))
+	{
+		del_par =  log10(par2[par_name]) - log10(par1[par_name]);
+	}
 	for (const auto &iobs : obs_names_vec)
 	{
 		isen = (obs2[iobs] - obs1[iobs]) / del_par;
-		sen_vec.push_back(isen);
+		const auto id = make_pair(par_name, iobs);
+		if (map_obs_stats.find(id) == map_obs_stats.end())
+		{
+			map_obs_stats[id] = RunningStats();
+		}
+		map_obs_stats[make_pair(par_name, iobs)].add(isen);
 	}
-	//Write to binarary file
-	streamoff iloc = (parname_to_indexmap[par_name] * max_runs_per_par + n_completed_runs[par_name]) * nobs * sizeof(double);
-	fout_sen->seekp(iloc, ios_base::beg);
-	fout_sen->write((char*)sen_vec.data(), sen_vec.size()*sizeof(double));
-	++n_completed_runs[par_name];
 }
 
 void MorrisObsSenFile::calc_obs_sen(ofstream &fout_obs_sen)
 {
-	int nobs = obs_names_vec.size();
-	vector<vector<double> > sen_vec;
-	vector<double> sen_buf;
-	sen_buf.resize(nobs, Transformable::no_data);
 
-	fout_obs_sen << endl;
-	fout_obs_sen << "par_name";
-	for (const auto &iobs : obs_names_vec)
-		fout_obs_sen << ", " << iobs;
-	fout_obs_sen << endl;
-
-	for(int ipar=0; ipar<par_names_vec.size(); ++ipar)
+	fout_obs_sen << "par_name, obs_name, mean, abs_mean, sigma, n_samples" << endl;  
+	for (const auto &ipar : par_names_vec)
 	{
-		sen_vec.clear();
-		sen_vec.resize(nobs, vector<double>());
-		for (auto &ivec : sen_vec)
+		for(const auto &iobs : obs_names_vec)
 		{
-			ivec.reserve(max_runs_per_par);
-		}
-		auto it_par = n_completed_runs.find(par_names_vec[ipar]);
-		assert (it_par != n_completed_runs.end());
-		const string *ipar_name = 0;
-		int n_runs = 0;
-		if (it_par != n_completed_runs.end()) 
-		{
-			n_runs = it_par->second;
-			ipar_name = &(it_par->first);
-			for(int isample=0; isample<n_runs; ++isample)
+			double mean = no_data;
+			double abs_mean = no_data;
+			double sigma = no_data;
+			int n_samples = 0;
+			const auto id = make_pair(ipar, iobs);
+			auto sen_itr = map_obs_stats.find(id);
+			if (sen_itr != map_obs_stats.end() && sen_itr->second.comp_nsamples() > 0)
 			{
-				streamoff iloc = (parname_to_indexmap[*ipar_name] * max_runs_per_par + isample) * nobs * sizeof(double);
-				fout_sen->seekg(iloc, ios_base::beg);
-				fout_sen->read((char*) sen_buf.data(), sen_buf.size()*sizeof(double));
-				for(int idx=0; idx<nobs; ++idx)
-				{
-					sen_vec[idx].push_back(sen_buf[idx]);
-				}
+				mean = sen_itr->second.comp_mean();
+				abs_mean = sen_itr->second.comp_abs_mean();
+				sigma = sen_itr->second.comp_sigma();
+				mean = sen_itr->second.comp_mean();
+				n_samples = sen_itr->second.comp_nsamples();
 			}
+			string parname = gsa_abstract_base->log_name(ipar);
+			fout_obs_sen << parname << ", " << iobs << ", " << mean << ", " << abs_mean << ", " << sigma <<", " << n_samples <<  endl;
 		}
-		fout_obs_sen << *ipar_name;
-		for(const auto &ivec :  sen_vec)
-		{
-			fout_obs_sen <<", " <<  vec_mean(ivec);
-		}
-		fout_obs_sen << endl;
 	}
 }
 
@@ -301,16 +265,16 @@ void  MorrisMethod::calc_sen(ModelRun model_run, ofstream &fout_raw, ofstream &f
 	Observations obs1;
 	string *p;
 	unsigned int n_adj_par = adj_par_name_vec.size();
-	map<string, vector<double> > sen_map;
+	map<string, RunningStats > sen_map;
 
 	for (auto &it_p : adj_par_name_vec)
 	{
-		sen_map[it_p] = vector<double>();
+		sen_map[it_p] = RunningStats();
 	}
 
 
 	fstream &fout_mbn = file_manager_ptr->open_iofile_ext("mbn", ios::out | ios::in | ios::binary);
-	obs_sen_file.initialize(adj_par_name_vec, run_manager_ptr->get_obs_name_vec(), r, &fout_mbn);
+	obs_sen_file.initialize(adj_par_name_vec, run_manager_ptr->get_obs_name_vec(), Observations::no_data, this);
 
 	fout_raw << "parameter_name, phi_0, phi_1, par_0, par_1, sen" << endl;
 
@@ -339,25 +303,29 @@ void  MorrisMethod::calc_sen(ModelRun model_run, ofstream &fout_raw, ofstream &f
 			// compute standard Morris Sensitivity on the global objective function
 			double sen = (phi1 - phi0) / delta;
 			fout_raw << log_name(*p) << ",  " <<  phi1 << ",  " << phi0 << ",  " << p1 << ",  " << p0 << ", " << sen << endl;
-			const auto &it_senmap_ptr = sen_map.find(*p);
-			if (it_senmap_ptr != sen_map.end())
+
+			auto &it_senmap = sen_map.find(*p);
+			if (it_senmap != sen_map.end())
 			{
-				it_senmap_ptr->second.push_back(sen);
+				it_senmap->second.add(sen);
 			}
 
 			//Compute sensitvities of indiviual observations
-			obs_sen_file.write_sen(*p, pars0, obs0, pars1, obs1);
+			obs_sen_file.add_sen_run_pair(log_name(*p), pars0, obs0, pars1, obs1);
 		}
 	}
 	ofstream &fout_mos = file_manager_ptr->open_ofile_ext("mos");
 	obs_sen_file.calc_obs_sen(fout_mos);
 	file_manager_ptr->close_file("mos");
-	map<string, double> stats;
+	// write standard Morris Sensitivity on the global objective function
 	fout_morris << "parameter_name, sen_mean, sen_mean_abs, sen_std_dev" << endl;
-	for (auto &it_par : adj_par_name_vec)
+	for (const auto &it_par : adj_par_name_vec)
 	{
-		stats = vec_calc_stats(sen_map[it_par]);
-		fout_morris << log_name(it_par) << ", " << stats["mean"] << ", " << stats["mean_abs"] << ", " <<  stats["std_dev"] << endl;
+		auto &it_senmap = sen_map.find(it_par);
+		if (it_senmap != sen_map.end())
+		{
+			fout_morris << log_name(it_par) << ", " << it_senmap->second.comp_mean() << ", " << it_senmap->second.comp_abs_mean() << ", " <<  it_senmap->second.comp_var() << endl;
+		}
 	}
 }
 

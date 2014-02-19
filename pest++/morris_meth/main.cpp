@@ -245,6 +245,9 @@ int main(int argc, char* argv[])
 
 		gsa_method = new MorrisMethod(adj_par_name_vec, fixed_pars, lower_bnd, upper_bnd, log_trans_pars,
 			morris_p, morris_r, run_manager_ptr, &base_partran_seq, pest_scenario.get_ctl_ordered_obs_names(), &file_manager);
+		auto junk = pest_scenario.get_observation_groups();
+		auto  obs_type_grps = gsa_method->process_obt_file(file_manager.open_ifile_ext("obt"), file_manager);
+		file_manager.close_file("obt");
 	}
 	else if (method != gsa_opt_map.end() && method->second == "SOBOL")
 	{
