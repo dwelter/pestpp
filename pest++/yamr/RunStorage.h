@@ -31,6 +31,22 @@ class Parameters;
 class Observations;
 
 class RunStorage {
+	// This class stores a sequence of model runs in a single binary file using the following format:
+	//     nruns (number of model runs stored in file)                       int_64_t
+	//     run_size (number of bytes required to store each model run)       int_64_t
+	//     par_name_vec_size (number of bytes required to store parameter names)  int_64_t
+	//     obes_name_vec_size (number of bytes required to store observation names)  int_64_t
+	//     parameter names (serialized parameter names)                               char*par_name_vec_size
+	//     observation names (serialized observation names)                               char*obes_name_vec_size
+	//   The following structure is repeated nruns times (ie once for each model run)
+	//        run_status (flag indicating status of mode run)                         int_8_t
+	//              run_status=0   this run has not yet been completed
+	//			    run_status=-100   run was canceled
+	//				run_status<0 and >-100  run completed and failed.  THis is the number of times it failed
+	//				run_status=1   run and been sucessfully completed
+	//       parameter_values  (parameters values for model runs)                     double*number of parameters
+	//       observationn_values( observations results produced by the model run)     double*number of observations
+
 public:
 	RunStorage(const std::string &_filename);
 	void reset(const std::vector<std::string> &par_names, const std::vector<std::string> &obs_names, const std::string &_filename = std::string(""));
@@ -42,6 +58,7 @@ public:
 	void update_run(int run_id, const std::vector<char> serial_data);
 	void update_run_failed(int run_id);
 	int get_nruns();
+	int increment_nruns();
 	const std::vector<std::string>& get_par_name_vec()const;
 	const std::vector<std::string>& get_obs_name_vec()const;
 	int get_run_status(int run_id);
@@ -53,18 +70,17 @@ public:
 	~RunStorage();
 private:
 	std::string filename;
-	std::fstream buf_stream;
+	mutable std::fstream buf_stream;
 	std::streamoff beg_run0;
 	std::streamoff run_byte_size;
 	std::streamoff run_par_byte_size;
 	std::streamoff run_data_byte_size;
 	std::streamoff p_names_size;
 	std::streamoff o_names_size;
-	int n_runs;
 	std::vector<std::string> par_names;
 	std::vector<std::string> obs_names;
 	void check_rec_size(const std::vector<char> &serial_data) const;
-	void check_rec_id(int run_id) const;
+	void check_rec_id(int run_id);
 	std::int8_t get_run_status_native(int run_id);
 	std::streamoff get_stream_pos(int run_id);
 };

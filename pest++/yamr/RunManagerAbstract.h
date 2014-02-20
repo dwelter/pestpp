@@ -36,7 +36,7 @@ public:
 	RunManagerAbstract(const std::vector<std::string> _comline_vec,
 		const std::vector<std::string> _tplfile_vec, const std::vector<std::string> _inpfile_vec,
 		const std::vector<std::string> _insfile_vec, const std::vector<std::string> _outfile_vec,
-		const std::string &stor_filename);
+		const std::string &stor_filename, int _max_n_failure=1);
 	virtual void initialize(const std::vector<std::string> &model_par_names, std::vector<std::string> &obs_names, const std::string &_filename = std::string(""));
 	virtual void initialize(const Parameters &model_pars, const Observations &obs, const std::string &_filename = std::string(""));
 	virtual void initialize_restart(const std::string &_filename);
@@ -50,23 +50,27 @@ public:
 	virtual const std::vector<std::string> &get_obs_name_vec() const;
 	virtual bool get_run(int run_id, Parameters &pars, Observations &obs);
 	virtual bool get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs);
-	virtual const std::set<int>& get_failed_run_ids() const;
+	virtual const std::set<int> get_failed_run_ids();
 	virtual Parameters get_model_parameters(int run_num);
 	virtual Observations get_obs_template(double value = -9999.0) const;
 	virtual int get_total_runs(void) const {return total_runs;}
-	virtual int get_nruns() {return file_stor.get_nruns();}
-	virtual int get_cur_groupid();
+	virtual int get_num_failed_runs(void);
+	virtual bool n_run_failures_exceeded(int id);
+	virtual int get_nruns(void) {return file_stor.get_nruns();}
+	virtual int get_cur_groupid(void);
+	virtual std::vector<int> get_outstanding_run_ids();
 	virtual ~RunManagerAbstract(void) {}
 protected:
 	int total_runs;
+	int max_n_failure; // maximium number of times to retry a failed model run
 	int cur_group_id;  // used in some of the derived classes (ie YAMR)
 	RunStorage file_stor;
-	std::set<int> failed_runs;
 	std::vector<std::string> comline_vec;
 	std::vector<std::string> tplfile_vec;
 	std::vector<std::string> inpfile_vec;
 	std::vector<std::string> insfile_vec;
 	std::vector<std::string> outfile_vec;
+	bool run_requried(int run_id);
 };
 
 #endif /*  RUNMANAGERABSTRACT_H */

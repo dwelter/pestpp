@@ -29,13 +29,12 @@
 
 using namespace std;
 
-RunStorage::RunStorage(const string &_filename) :filename(_filename), n_runs(0), run_byte_size(0)
+RunStorage::RunStorage(const string &_filename) :filename(_filename), run_byte_size(0)
 {
 }
 
 void RunStorage::reset(const vector<string> &_par_names, const vector<string> &_obs_names, const string &_filename)
 {
-	n_runs = 0;
 	par_names = _par_names;
 	obs_names = _obs_names;
 	// a file needs to exist before it can be opened it with read and write 
@@ -69,13 +68,13 @@ void RunStorage::reset(const vector<string> &_par_names, const vector<string> &_
 	run_byte_size =  sizeof(std::int8_t) + run_data_byte_size;
 	std::int64_t  run_size_64 = run_byte_size;
 	beg_run0 = 4 * sizeof(std::int64_t) + serial_pnames.size() + serial_onames.size();
-	std::int64_t n_runs_64;
+	std::int64_t n_runs_64=0;
 	// write header to file
 	buf_stream.seekp(0, ios_base::beg);
+	buf_stream.write((char*) &n_runs_64, sizeof(n_runs_64));
+	buf_stream.write((char*) &run_size_64, sizeof(run_size_64));
 	buf_stream.write((char*) &p_name_size_64, sizeof(p_name_size_64));
 	buf_stream.write((char*) &o_name_size_64, sizeof(o_name_size_64));
-	buf_stream.write((char*) &run_size_64, sizeof(run_size_64));
-	buf_stream.write((char*) &n_runs_64, sizeof(n_runs_64));
 	buf_stream.write(serial_pnames.data(), serial_pnames.size());
 	buf_stream.write(serial_onames.data(), serial_onames.size());
 }
@@ -105,6 +104,13 @@ void RunStorage::init_restart(const std::string &_filename)
 	// read header
 	buf_stream.seekg(0, ios_base::beg);
 
+	std::int64_t n_runs_64;
+	buf_stream.read((char*) &n_runs_64, sizeof(n_runs_64));
+	
+	std::int64_t  run_size_64;
+	buf_stream.read((char*) &run_size_64, sizeof(run_size_64));
+	run_byte_size = run_size_64;
+
 	std::int64_t p_name_size_64;
 	buf_stream.read((char*) &p_name_size_64, sizeof(p_name_size_64));
 	std::streamoff p_names_size = p_name_size_64;
@@ -112,14 +118,6 @@ void RunStorage::init_restart(const std::string &_filename)
 	std::int64_t o_name_size_64;
 	buf_stream.read((char*) &o_name_size_64, sizeof(o_name_size_64));
 	std::streamoff o_names_size = o_name_size_64;
-
-	std::int64_t  run_size_64;
-	buf_stream.read((char*) &run_size_64, sizeof(run_size_64));
-	run_byte_size = run_size_64;
-
-	std::int64_t n_runs_64;
-	buf_stream.read((char*) &n_runs_64, sizeof(n_runs_64));
-	n_runs = n_runs_64;
 
 	vector<char> serial_pnames;
 	serial_pnames.resize(p_name_size_64);
@@ -139,9 +137,24 @@ void RunStorage::init_restart(const std::string &_filename)
 
 int RunStorage::get_nruns()
 {
+	buf_stream.seekg(0, ios_base::beg);
+	std::int64_t n_runs_64;
+	buf_stream.read((char*) &n_runs_64, sizeof(n_runs_64));
+	int n_runs = n_runs_64;
 	return n_runs;
 }
 
+int RunStorage::increment_nruns()
+{
+	buf_stream.seekg(0, ios_base::beg);
+	std::int64_t n_runs_64;
+	buf_stream.read((char*) &n_runs_64, sizeof(n_runs_64));
+	++n_runs_64;
+	buf_stream.seekp(0, ios_base::beg);
+	buf_stream.write((char*) &n_runs_64, sizeof(n_runs_64));
+	int n_runs = n_runs_64;
+	return n_runs_64;
+}
 const std::vector<string>& RunStorage::get_par_name_vec()const
 {
 	return par_names;
@@ -160,9 +173,8 @@ streamoff RunStorage::get_stream_pos(int run_id)
 
  int RunStorage::add_run(const vector<double> &model_pars)
  {
-	n_runs++;
-	int run_id = n_runs - 1;
 	std::int8_t r_status = 0;
+	int run_id = increment_nruns() - 1;
 	buf_stream.seekp(get_stream_pos(run_id), ios_base::beg);
 	buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
 	buf_stream.write(reinterpret_cast<const char*>(&model_pars[0]), model_pars.size()*sizeof(double));
@@ -171,9 +183,8 @@ streamoff RunStorage::get_stream_pos(int run_id)
 
  int RunStorage::add_run(const Eigen::VectorXd &model_pars)
  {
-	n_runs++;
-	int run_id = n_runs - 1;
 	std::int8_t r_status = 0;
+	int run_id = increment_nruns() - 1;
 	buf_stream.seekp(get_stream_pos(run_id), ios_base::beg);
 	buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
 	buf_stream.write(reinterpret_cast<const char*>(&model_pars(0)), model_pars.size()*sizeof(model_pars(0)));
@@ -190,27 +201,27 @@ int RunStorage::add_run(const Parameters &pars)
 
 void RunStorage::update_run(int run_id, const Parameters &pars, const Observations &obs)
 {
+	//set run status flage to complete
+	std::int8_t r_status = 1;
 	check_rec_id(run_id);
 	vector<double> par_data(pars.get_data_vec(par_names));
 	vector<double> obs_data(obs.get_data_vec(obs_names));
-	buf_stream.seekp(get_stream_pos(run_id), ios_base::beg);
-	//set run status flage to complete
-	std::int8_t r_status = 1;
-	buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
 	//write data
+	buf_stream.seekp(get_stream_pos(run_id), ios_base::beg);
+	buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
 	buf_stream.write(reinterpret_cast<char*>(par_data.data()), par_data.size() * sizeof(double));
 	buf_stream.write(reinterpret_cast<char*>(obs_data.data()), obs_data.size() * sizeof(double));
 }
 
 void RunStorage::update_run(int run_id, const vector<char> serial_data)
 {
-	check_rec_size(serial_data);
-	check_rec_id(run_id);
-	buf_stream.seekp(get_stream_pos(run_id), ios_base::beg);
 	//set run status flage to complete
 	std::int8_t r_status = 1;
-	buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	check_rec_size(serial_data);
+	check_rec_id(run_id);
 	//write data
+	buf_stream.seekp(get_stream_pos(run_id), ios_base::beg);
+	buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
 	buf_stream.write(serial_data.data(), serial_data.size());
 }
 
@@ -222,12 +233,10 @@ void RunStorage::update_run_failed(int run_id)
 	{
 		--r_status;
 		check_rec_id(run_id);
-		buf_stream.seekp(get_stream_pos(run_id), ios_base::beg);
 		//update run status flag
+		buf_stream.seekp(get_stream_pos(run_id), ios_base::beg);
 		buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
 	}
-
-
 }
 
 std::int8_t RunStorage::get_run_status_native(int run_id)
@@ -343,8 +352,9 @@ void RunStorage::check_rec_size(const vector<char> &serial_data) const
 	}
 }
 
-void RunStorage::check_rec_id(int run_id) const
+void RunStorage::check_rec_id(int run_id)
 {
+	int n_runs = get_nruns();
 	if ( run_id + 1 > n_runs)
 	{
 		ostringstream msg;

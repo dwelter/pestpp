@@ -59,7 +59,6 @@ RunManagerGenie::RunManagerGenie(const vector<string> _comline_vec,
 
 void RunManagerGenie::run()
 {
-	int nruns = get_nruns();
 	int nexec = comline_vec.size();
 	const vector<string> &par_name_vec = file_stor.get_par_name_vec();
 	const vector<string> &obs_name_vec = file_stor.get_obs_name_vec();
@@ -79,15 +78,19 @@ void RunManagerGenie::run()
 	 vector<double> par_val;
 	 vector<double> obs_val;
 
+	// This is necessary to support restart as some run many already be complete
+	vector<int> run_id_vec = get_outstanding_run_ids();
+	int nruns = run_id_vec.size();
+
 	 par_val.clear();
 	 obs_val.resize(nruns*nobs);
 
-	 for (int i=0; i<nruns; ++i)
-	 {
-		 Parameters tmp_pars = file_stor.get_parameters(i);
+	for (int i_run : run_id_vec)
+	{
+		 Parameters tmp_pars = file_stor.get_parameters(i_run);
 		 vector<double> tmp_vec = tmp_pars.get_data_vec(par_name_vec);
 		 par_val.insert(par_val.end(), tmp_vec.begin(), tmp_vec.end());
-	 }
+	}
 
 	std::copy(par_name_vec.begin(), par_name_vec.end(),std::ostream_iterator<std::string>(apar,"\n"));
 	std::copy(obs_name_vec.begin(), obs_name_vec.end(),std::ostream_iterator<std::string>(aobs,"\n"));
@@ -97,8 +100,6 @@ void RunManagerGenie::run()
 	std::copy(insfile_vec.begin(), insfile_vec.end(),std::ostream_iterator<std::string>(insfle,"\n"));
 	std::copy(outfile_vec.begin(), outfile_vec.end(),std::ostream_iterator<std::string>(outfle,"\n"));
 
-
-	failed_runs.clear();  //not implemented yet
 	#ifdef OS_WIN
 	GENIE_INTERFACE(&nruns, &nexec, String2CharPtr(execnames.str()).get_char_ptr(), &npar, &nobs,
 	String2CharPtr(apar.str()).get_char_ptr(), String2CharPtr(aobs.str()).get_char_ptr(),
@@ -116,13 +117,14 @@ void RunManagerGenie::run()
 	Observations obs;
 	for (int i=0; i<nruns; ++i)
 	{
+	   int run_id =run_id_vec[i]; 
 	   pars.clear();
 	   vector<double> i_par_vec(par_val.begin()+i*npar, par_val.begin()+(i+1)*npar);
 	   pars.insert(par_name_vec, i_par_vec);
 	   obs.clear();
 	   vector<double> i_obs_vec(obs_val.begin()+i*nobs, obs_val.begin()+(i+1)*nobs);
 	   obs.insert(obs_name_vec, i_obs_vec);
-	   file_stor.update_run(i, pars, obs);
+	   file_stor.update_run(run_id, pars, obs);
 	}
 }
 

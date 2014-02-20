@@ -187,7 +187,7 @@ RunManagerYAMR::RunManagerYAMR(const vector<string> _comline_vec,
 	const vector<string> _insfile_vec, const vector<string> _outfile_vec,
 	const string &stor_filename, const string &_port, ofstream &_f_rmr)
 	: RunManagerAbstract(_comline_vec, _tplfile_vec, _inpfile_vec,
-		_insfile_vec, _outfile_vec, stor_filename),
+		_insfile_vec, _outfile_vec, stor_filename, yamr_max_n_failure),
 		 port(_port), f_rmr(_f_rmr)
 {
 	w_init();
@@ -240,6 +240,21 @@ void RunManagerYAMR::initialize(const Parameters &model_pars, const Observations
 {
 	RunManagerAbstract::initialize(model_pars, obs, _filename);
 	cur_group_id = NetPackage::get_new_group_id();
+}
+
+void RunManagerYAMR::initialize_restart(const std::string &_filename)
+{
+	file_stor.init_restart(_filename);
+	waiting_runs.clear();
+	completed_runs.clear();
+	zombie_runs.clear();
+	failure_map.clear();
+	vector<int> waiting_run_id_vec = get_outstanding_run_ids();
+	for (int &id : waiting_run_id_vec)
+	{
+		YamrModelRun new_run(id);
+		waiting_runs.push_back(new_run);
+	}
 }
 
 void RunManagerYAMR::reinitialize(const std::string &_filename)
@@ -447,11 +462,6 @@ void RunManagerYAMR::process_message(int i_sock)
 		{
 			//put model run back into the waiting queue
 			waiting_runs.push_front(YamrModelRun(run_id, i_sock));
-		}
-		else
-		{
-			//model run fail too many time.  Mark it as a bad run
-			failed_runs.insert(run_id);
 		}
 	}
 	else

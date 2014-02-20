@@ -114,7 +114,8 @@ void RunManagerSerial::run()
 {
 	int ifail;
 	int i_run;
-	int success_runs;
+	int success_runs = 0;
+	int prev_sucess_runs = 0;
 	const vector<string> &par_name_vec = file_stor.get_par_name_vec();
 	const vector<string> &obs_name_vec = file_stor.get_obs_name_vec();
 	int npar = par_name_vec.size();
@@ -128,10 +129,11 @@ void RunManagerSerial::run()
 	//InstructionFiles ins_files(insfile_vec,outfile_vec,obs_name_vec);
 	std::vector<double> obs_vec;
 
-	success_runs = 0;
-	failed_runs.clear();
-	int nruns = file_stor.get_nruns();
-	for (i_run=0; i_run<nruns; ++i_run)
+	// This is necessary to support restart as some run many already be complete
+	vector<int> run_id_vec = get_outstanding_run_ids();
+
+	int nruns = run_id_vec.size();
+	for (int i_run : run_id_vec)
 	{
 		Parameters pars = file_stor.get_parameters(i_run);
 		Observations obs;
@@ -192,7 +194,6 @@ void RunManagerSerial::run()
 		}
 		catch(const std::exception& ex)
 		{
-			failed_runs.insert(i_run);
 			file_stor.update_run_failed(i_run);
 			cerr << endl;
 			cerr << "  " << ex.what() << endl;
@@ -200,20 +201,23 @@ void RunManagerSerial::run()
 		}
 		catch(...)
 		{
-			failed_runs.insert(i_run);
 			file_stor.update_run_failed(i_run);
 			cerr << endl;
 			cerr << "  Error running model" << endl;
 			cerr << "  Aborting model run" << endl << endl;
 		}
-
 	}
+
 	total_runs += success_runs;
 	std::cout << string(message.str().size(), '\b');
 	message.str("");
-	message << "(" << success_runs << "/" << nruns << " runs complete)";
+	message << "(" << success_runs << "/" << nruns << " runs complete";
+	if (prev_sucess_runs > 0)
+		{message << " and " << prev_sucess_runs << " additional run completed previously";
+	}
+	message <<")";
 	std::cout << message.str();
-	if (success_runs < i_run)
+	if (success_runs < nruns)
 	{
 		cout << endl << endl;
 		cout << "WARNING: " << i_run-success_runs << " out of " <<i_run << " runs failed" << endl << endl;

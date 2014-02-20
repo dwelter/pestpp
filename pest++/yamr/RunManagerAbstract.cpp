@@ -30,10 +30,10 @@
 RunManagerAbstract::RunManagerAbstract(const vector<string> _comline_vec,
 	const vector<string> _tplfile_vec, const vector<string> _inpfile_vec,
 	const vector<string> _insfile_vec, const vector<string> _outfile_vec,
-	const string &stor_filename)
+	const string &stor_filename, int _max_n_failure)
 	: total_runs(0), comline_vec(_comline_vec), tplfile_vec(_tplfile_vec),
 	inpfile_vec(_inpfile_vec), insfile_vec(_insfile_vec), outfile_vec(_outfile_vec),
-	file_stor(stor_filename)
+	file_stor(stor_filename), max_n_failure(_max_n_failure)
 {
 	cout << endl;
 	cout << "             Generalized Run Manager Interface" << endl;
@@ -116,11 +116,49 @@ void  RunManagerAbstract::free_memory()
 {
 }
 
-
-const std::set<int>& RunManagerAbstract::get_failed_run_ids() const
+bool RunManagerAbstract::n_run_failures_exceeded(int id)
 {
+	bool ret_val;
+	int istatus = file_stor.get_run_status(id);
+	if (istatus<= -max_n_failure  &&  istatus > -100)
+	 {
+		 ret_val = true;
+	 }
+	else
+	{
+		ret_val = false;
+	}
+	return ret_val;
+}
+
+const std::set<int> RunManagerAbstract::get_failed_run_ids()
+{
+	std::set<int> failed_runs;
+	int n_runs = file_stor.get_nruns();
+	for (int id=0; id<n_runs; ++id)
+	{
+		if(n_run_failures_exceeded(id))
+		 {
+			 failed_runs.insert(id);
+		 }
+	}
 	return failed_runs;
 }
+
+int RunManagerAbstract::get_num_failed_runs(void)
+{
+	int n_failed = 0;
+	int n_runs = file_stor.get_nruns();
+	for (int id=0; id<n_runs; ++id)
+	 {
+		if(n_run_failures_exceeded(id))
+		{
+			++n_failed;
+		 }
+	 }
+	 return n_failed;
+}
+
 Parameters RunManagerAbstract::get_model_parameters(int run_id)
  {
 	 return file_stor.get_parameters(run_id); 
@@ -140,4 +178,33 @@ Parameters RunManagerAbstract::get_model_parameters(int run_id)
  int RunManagerAbstract::get_cur_groupid()
  {
 	 return cur_group_id;
+ }
+ 
+ bool RunManagerAbstract::run_requried(int run_id)
+ {
+	 bool ret_val;
+	 int istatus = file_stor.get_run_status(run_id);
+	 if (istatus > -max_n_failure)
+	 {
+		 ret_val = true;
+	 }
+	 else 
+	 {
+		 ret_val = false;
+	 }
+	 return ret_val;
+ }
+
+ vector<int> RunManagerAbstract::get_outstanding_run_ids()
+ {
+	 vector<int> run_ids;
+	 int n_runs = file_stor.get_nruns();
+	 for (int id=0; id<n_runs; ++id)
+	 {
+		 if(run_requried(id))
+		 {
+			 run_ids.push_back(id);
+		 }
+	 }
+	 return run_ids;
  }
