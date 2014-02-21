@@ -67,22 +67,28 @@ void RunManagerAbstract::initialize_restart(const std::string &_filename)
 	file_stor.init_restart(_filename);
 }
 
-int RunManagerAbstract::add_run(const vector<double> &model_pars)
+int RunManagerAbstract::add_run(const vector<double> &model_pars, const string &info_txt, double info_value)
 {
-	int run_id = file_stor.add_run(model_pars);
+	int run_id = file_stor.add_run(model_pars, info_txt, info_value);
 	return run_id;
 }
 
-int RunManagerAbstract::add_run(const Parameters &model_pars)
+int RunManagerAbstract::add_run(const Parameters &model_pars, const string &info_txt, double info_value)
 {
-	int run_id = file_stor.add_run(model_pars);
+	int run_id = file_stor.add_run(model_pars, info_txt, info_value);
 	return run_id;
 }
 
-int RunManagerAbstract::add_run(const Eigen::VectorXd &model_pars)
+int RunManagerAbstract::add_run(const Eigen::VectorXd &model_pars, const string &info_txt, double info_value)
 {
-	int run_id = file_stor.add_run(model_pars);
+	int run_id = file_stor.add_run(model_pars, info_txt, info_value);
 	return run_id;
+}
+
+void RunManagerAbstract::update_run(int run_id, Parameters &pars, Observations &obs)
+{
+
+	file_stor.update_run(run_id, pars, obs);
 }
 
  const vector<string>& RunManagerAbstract::get_par_name_vec() const
@@ -95,22 +101,42 @@ int RunManagerAbstract::add_run(const Eigen::VectorXd &model_pars)
 	return file_stor.get_obs_name_vec();
 }
 
-bool RunManagerAbstract::get_run(int run_id, Parameters &pars, Observations &obs)
+ void RunManagerAbstract::get_info(int run_id, int &run_status, std::string &info_txt, double &info_value)
+ {
+	  file_stor.get_info(run_id, run_status, info_txt, info_value);
+ }
+
+bool RunManagerAbstract::get_run(int run_id, Parameters &pars, Observations &obs, string &info_txt, double &info_value)
 {
 	bool success = false;
-	int status = file_stor.get_run(run_id, &pars, &obs);
+	int status = file_stor.get_run(run_id, &pars, &obs, info_txt, info_value);
+	if (status > 0) success = true; 
+	return success;
+}
+
+bool RunManagerAbstract::get_run(int run_id, Parameters &pars, Observations &obs)
+{
+	string info_txt;
+	double info_value;
+
+	return get_run(run_id, pars, obs, info_txt, info_value);
+}
+
+bool  RunManagerAbstract::get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs, string &info_txt, double &info_value)
+{
+	bool success = false;
+	int status = file_stor.get_run(run_id, pars, npars, obs, nobs, info_txt, info_value);
 	if (status > 0) success = true; 
 	return success;
 }
 
 bool  RunManagerAbstract::get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs)
 {
-	bool success = false;
-	int status = file_stor.get_run(run_id, pars, npars, obs, nobs);
-	if (status > 0) success = true; 
-	return success;
-}
+	string info_txt;
+	double info_value;
 
+	return get_run(run_id, pars, npars, obs, nobs, info_txt, info_value);
+}
 
 void  RunManagerAbstract::free_memory()
 {

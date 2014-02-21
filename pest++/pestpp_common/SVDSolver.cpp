@@ -157,7 +157,7 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 		cout << "  SVD Package: " << svd_package->description << endl;
 		os   << "  SVD Package: " << svd_package->description << endl;
 		os   << "    Model calls so far : " << run_manager.get_total_runs() << endl;
-		fout_restart << "start_iteration " << iter_num << endl;
+		fout_restart << "start_iteration " << global_iter_num << endl;
 		iteration(run_manager, termination_ctl, false);
 		// write files that get wrtten at the end of each iteration
 		stringstream filename;
@@ -203,7 +203,6 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 		if (termination_ctl.check_last_iteration()){
 			break;
 		}
-		fout_restart << "end_iteration " << iter_num << endl;
 	}
 	return cur_solution;
 }
@@ -299,6 +298,8 @@ SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, 
 
 void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs)
 {
+	ostream &fout_restart = file_manager.get_ofstream("rst");
+	fout_restart << "native_par_iteration" << endl;
 	ostream &os = file_manager.rec_ofstream();
 	const double PI = 3.141592;
 	VectorXd residuals_vec;
@@ -312,9 +313,14 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	cout << "  calculating jacobian... ";
 	vector<string> obs_names_vec = cur_solution.get_obs_template().get_keys();
 	vector<string> numeric_parname_vec = par_transform.ctl2numeric_cp(cur_solution.get_ctl_pars()).get_keys();
-	jacobian.calculate(cur_solution, numeric_parname_vec, obs_names_vec, par_transform,
-			*par_group_info_ptr, *ctl_par_info_ptr,run_manager,  *prior_info_ptr, out_ofbound_pars,
+	jacobian.build_runs(cur_solution, numeric_parname_vec, obs_names_vec, par_transform,
+			*par_group_info_ptr, *ctl_par_info_ptr,run_manager, out_ofbound_pars,
 			phiredswh_flag, calc_init_obs);
+	jacobian.make_runs(run_manager);
+	jacobian.process_runs(cur_solution, numeric_parname_vec, obs_names_vec, par_transform,
+			*par_group_info_ptr, *ctl_par_info_ptr,run_manager,   *prior_info_ptr, out_ofbound_pars,
+			phiredswh_flag, calc_init_obs);
+
 	cout << endl;
 	//Freeze Parameter for which the jacobian could not be calculated
 	auto &failed_jac_pars_names = jacobian.get_failed_parameter_names();
@@ -432,10 +438,8 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 
 	// process model runs
 	cout << "  testing upgrade vectors... ";
-	ofstream &fout_restart = file_manager.get_ofstream("rst");
-	fout_restart << "upgrade_model_runs_begin_group_id " << run_manager.get_cur_groupid() << endl;
+	fout_restart << "upgrade_model_runs_built " << run_manager.get_cur_groupid() << endl;
 	run_manager.run();
-	fout_restart << "upgrade_model_runs_end_group_id " << run_manager.get_cur_groupid() << endl;
 	cout << endl;
 	bool best_run_updated_flag = false;
 	ModelRun best_upgrade_run(cur_solution);

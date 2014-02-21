@@ -149,23 +149,10 @@ MatrixXd Jacobian::get_matrix(const vector<string> &obs_names, const vector<stri
 }
 
 
-bool Jacobian::calculate(ModelRun &init_model_run, ParamTransformSeq &par_transform, const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
-		RunManagerAbstract &run_manager, const PriorInformation &prior_info, set<string> &out_of_bound_par, bool phiredswh_flag, bool calc_init_obs)
-{
-	bool success;
-	vector<string> numeric_par_names = par_transform.ctl2numeric_cp(init_model_run.get_ctl_pars()).get_keys();
-	success = calculate(init_model_run, numeric_par_names,  init_model_run.get_obs_template().get_keys(), par_transform,
-		group_info, ctl_par_info, run_manager, prior_info, out_of_bound_par, phiredswh_flag, calc_init_obs);
-	return success;
-
-}
-
-bool Jacobian::calculate(ModelRun &init_model_run, vector<string> numeric_par_names, vector<string> obs_names, ParamTransformSeq &par_transform,
+bool Jacobian::build_runs(ModelRun &init_model_run, vector<string> numeric_par_names, vector<string> obs_names, ParamTransformSeq &par_transform,
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
-		RunManagerAbstract &run_manager, const PriorInformation &prior_info, set<string> &out_of_bound_par, bool phiredswh_flag, bool calc_init_obs)
+		RunManagerAbstract &run_manager, set<string> &out_of_bound_par, bool phiredswh_flag, bool calc_init_obs)
 {
-	int i_run;
-	string *par_name;
 	Observations observations(init_model_run.get_obs_template());
 
 	run_manager.reinitialize();
@@ -173,12 +160,16 @@ bool Jacobian::calculate(ModelRun &init_model_run, vector<string> numeric_par_na
 	const vector<string> &obs_name_vec = run_manager.get_obs_name_vec();
 
 	// compute runs for to jacobain calculation as it is influenced by derivative type( forward or central)
-	vector<JacobianRun> del_numeric_par_vec;
-	if (calc_init_obs) {
-		del_numeric_par_vec.push_back(JacobianRun("", 0));
-		Parameters model_pars = par_transform.ctl2model_cp(init_model_run.get_ctl_pars());
-		run_manager.add_run(model_pars);
+	vector<double> del_numeric_par_vec;
+	
+	// add base run
+	Parameters model_pars = par_transform.ctl2model_cp(init_model_run.get_ctl_pars());
+	int run_id = run_manager.add_run(model_pars, "", 0);
+
+	if (!calc_init_obs) {
+		run_manager.update_run(run_id, model_pars, observations);
 	}
+
 	out_of_bound_par.clear();
 	bool all_par_in_bound = true;
 	Parameters numeric_pars = par_transform.ctl2numeric_cp(init_model_run.get_ctl_pars());
@@ -189,9 +180,9 @@ bool Jacobian::calculate(ModelRun &init_model_run, vector<string> numeric_par_na
 		if (success)
 		{
 			Parameters numeric_parameters = par_transform.ctl2numeric_cp(init_model_run.get_ctl_pars());
-			numeric_parameters.update_rec(ipar_name, del_numeric_par_vec.back().numeric_value);
+			numeric_parameters.update_rec(ipar_name, del_numeric_par_vec.back());
 			Parameters model_parameters = par_transform.numeric2model_cp(numeric_parameters);
-			run_manager.add_run(model_parameters);
+			run_manager.add_run(model_parameters, ipar_name, del_numeric_par_vec.back());
 		}
 		else
 		{
@@ -202,26 +193,38 @@ bool Jacobian::calculate(ModelRun &init_model_run, vector<string> numeric_par_na
 	{
 		return false;
 	}
-	
+	return true;	
+}
+
+void Jacobian::make_runs(RunManagerAbstract &run_manager)
+{
 	// make model runs
 	run_manager.run();
+}
 
+bool Jacobian::process_runs(ModelRun &init_model_run, vector<string> numeric_par_names, vector<string> obs_names, ParamTransformSeq &par_transform,
+		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
+		RunManagerAbstract &run_manager,  const PriorInformation &prior_info, set<string> &out_of_bound_par, bool phiredswh_flag, bool calc_init_obs)
+{
 	// calculate jacobian
 	base_sim_obs_names = obs_names;
-	matrix.resize(base_sim_obs_names.size(), numeric_par_names.size());
+	if(matrix.rows() != base_sim_obs_names.size() || matrix.cols() !=numeric_par_names.size())
+	{
+		matrix.resize(base_sim_obs_names.size(), numeric_par_names.size());
+	}
 	// initialize prior information
 	prior_info_sen.clear();
 
-	i_run = 0;
-	// if initial run was was get the newly calculated values
-
-	if (calc_init_obs) {
+	int i_run = 0;
+	// if initial run was run get the newly calculated values
+		// get base run parameters and observation for initial model run from run manager storage
+	{
 		Parameters tmp_pars;
 		Observations tmp_obs;
 		bool success = run_manager.get_run(i_run, tmp_pars, tmp_obs);
 		if (!success)
 		{
-			throw(PestError("Error: Base parameter run failed.  Cannot compute the Jacobian"));
+			throw(PestError("Error: Super-parameter base parameter run failed.  Can not compute the Jacobian"));
 		}
 		par_transform.model2ctl_ip(tmp_pars);
 		init_model_run.update_ctl(tmp_pars, tmp_obs);
@@ -230,36 +233,51 @@ bool Jacobian::calculate(ModelRun &init_model_run, vector<string> numeric_par_na
 	base_numeric_parameters =  par_transform.ctl2numeric_cp(init_model_run.get_ctl_pars());
 
 	// process the parameter pertubation runs
-	int nruns = del_numeric_par_vec.size();
-	int icol;
+	ModelRun cur_model_run = init_model_run;
+	int nruns = run_manager.get_nruns();
+	int icol = 0;
+	string cur_par_name;
+	string par_name_next;
+	int run_status_next;
+	double par_value_next;
+	double cur_numeric_par_value;
 	list<pair<ModelRun, double>> run_list;
 	base_numeric_par_names.clear();
 	for(; i_run<nruns; ++i_run)
 	{
-		par_name = &del_numeric_par_vec[i_run].par_name;
-		double numeric_par_value = del_numeric_par_vec[i_run].numeric_value;
-		ModelRun tmp_model_run = init_model_run;
 		Parameters tmp_pars;
 		Observations tmp_obs;
-		int status=run_manager.get_run(i_run, tmp_pars, tmp_obs);
-		if (status <1)
-		{
-			throw(PestError("Error: run failed.  Cannot compute the Jacobian"));
-		}
-		tmp_model_run.update_ctl(tmp_pars, tmp_obs);
-		par_transform.model2ctl_ip(tmp_pars);
-		run_list.push_back(make_pair(tmp_model_run, numeric_par_value));
+		bool success = run_manager.get_run(i_run, tmp_pars, tmp_obs, cur_par_name, cur_numeric_par_value);
 
-		if(i_run+1>=nruns || *par_name !=  del_numeric_par_vec[i_run+1].par_name)
+		if (success)
 		{
-			double base_numeric_par_value = base_numeric_parameters.get_rec(*par_name);
-			base_numeric_par_names.push_back(*par_name);
+			cur_model_run.update_ctl(tmp_pars, tmp_obs);
+			par_transform.model2ctl_ip(tmp_pars);
+			run_list.push_back(make_pair(cur_model_run, cur_numeric_par_value));
+		}
+
+		// read information associated with the next model run;
+		if (i_run+1<nruns)
+		{
+			run_manager.get_info(i_run+1, run_status_next, par_name_next, par_value_next);
+		}
+
+		if( i_run+1>=nruns || (cur_par_name !=par_name_next) )
+		{
+			base_numeric_par_names.push_back(cur_par_name);
+			double base_numeric_par_value = base_numeric_parameters.get_rec(cur_par_name);
 			run_list.push_front(make_pair(init_model_run, base_numeric_par_value));
-			icol = base_numeric_par_names.size() - 1;
-			calc_derivative(*par_name, icol, run_list, par_transform, group_info, ctl_par_info, prior_info);
-			run_list.clear();
+			calc_derivative(cur_par_name, icol, run_list, par_transform, group_info, ctl_par_info, prior_info);
+			icol++;
+		}
+		else
+		{
+			failed_parameter_names.insert(cur_par_name);
+			throw(PestError("Error: All runs for parameter: " + cur_par_name 
+				+ " failed.  Cannot compute the Jacobian"));
 		}
 	}
+
 	matrix.conservativeResize(base_sim_obs_names.size(), base_numeric_par_names.size());
 	// clean up
 	run_manager.free_memory();
@@ -267,7 +285,7 @@ bool Jacobian::calculate(ModelRun &init_model_run, vector<string> numeric_par_na
 }
 
 bool Jacobian::get_derivative_parameters(const string &par_name, Parameters &numeric_pars, ParamTransformSeq &par_transform, const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
-		vector<JacobianRun> &del_numeric_par_vec, bool phiredswh_flag, set<string> &out_of_bound_par)
+		vector<double> &delta_numeric_par_vec, bool phiredswh_flag, set<string> &out_of_bound_par)
 {
 	bool success = false;
 	double par_0;
@@ -284,7 +302,7 @@ bool Jacobian::get_derivative_parameters(const string &par_name, Parameters &num
 		success = central_diff(par_name, numeric_pars, group_info, ctl_par_info, par_transform, new_par_vec, dir_numeric_pars_vec, out_of_bound_par);
 		if (success)
 		{
-			del_numeric_par_vec.push_back(JacobianRun(par_name, new_par_vec[0]));
+			delta_numeric_par_vec.push_back(new_par_vec[0]);
 		}
 	}
 	if (!success) {
@@ -292,7 +310,7 @@ bool Jacobian::get_derivative_parameters(const string &par_name, Parameters &num
 		success = forward_diff(par_name, numeric_pars, group_info, ctl_par_info, par_transform, par_1, out_of_bound_par);
 		if (success)
 		{
-			del_numeric_par_vec.push_back(JacobianRun(par_name, par_1));
+			delta_numeric_par_vec.push_back(par_1);
 		}
 	}
 	return success;

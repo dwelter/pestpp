@@ -44,16 +44,20 @@ class RunStorage {
 	//			    run_status=-100   run was canceled
 	//				run_status<0 and >-100  run completed and failed.  THis is the number of times it failed
 	//				run_status=1   run and been sucessfully completed
+	//       info_txt  (description of model run)                                     char*41
+	//       info_value (variable used to store an important value.  The varaible     double
+	//                   depends on the type of model run being stored  )
 	//       parameter_values  (parameters values for model runs)                     double*number of parameters
 	//       observationn_values( observations results produced by the model run)     double*number of observations
 
 public:
+	static const double no_data;
 	RunStorage(const std::string &_filename);
 	void reset(const std::vector<std::string> &par_names, const std::vector<std::string> &obs_names, const std::string &_filename = std::string(""));
 	void init_restart(const std::string &_filename);
-	virtual int add_run(const std::vector<double> &model_pars);
-	int add_run(const Parameters &pars);
-	virtual int add_run(const Eigen::VectorXd &model_pars);
+	virtual int add_run(const std::vector<double> &model_pars, const std::string &info_txt="", double info_value=no_data);
+	virtual int add_run(const Parameters &pars, const std::string &info_txt="", double info_value=no_data);
+	virtual int add_run(const Eigen::VectorXd &model_pars, const std::string &info_txt="", double info_value=no_data);
 	void update_run(int run_id, const Parameters &pars, const Observations &obs);
 	void update_run(int run_id, const std::vector<char> serial_data);
 	void update_run_failed(int run_id);
@@ -62,13 +66,17 @@ public:
 	const std::vector<std::string>& get_par_name_vec()const;
 	const std::vector<std::string>& get_obs_name_vec()const;
 	int get_run_status(int run_id);
+	void get_info(int run_id, int &run_status, std::string &info_txt, double &info_value);
 	int get_run(int run_id, Parameters *pars, Observations *obs);
 	int get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs);
+	int get_run(int run_id, Parameters *pars, Observations *obs, std::string &info_txt, double &info_value);
+	int get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs, std::string &info_txt, double &info_value);
 	Parameters get_parameters(int run_id);
 	std::vector<char> get_serial_pars(int run_id);
 	void free_memory();
 	~RunStorage();
 private:
+	static const int info_txt_length = 41;
 	std::string filename;
 	mutable std::fstream buf_stream;
 	std::streamoff beg_run0;

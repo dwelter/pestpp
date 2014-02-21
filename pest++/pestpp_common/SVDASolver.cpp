@@ -102,6 +102,8 @@ Parameters SVDASolver::limit_parameters_ip(const Parameters &init_numeric_pars, 
 
 void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs)
 {
+	ostream &fout_restart = file_manager.get_ofstream("rst");
+	fout_restart << "super_par_iteration" << endl;
 	ostream &os = file_manager.rec_ofstream();
 	const double PI = 3.141592;
 	ModelRun base_run(cur_solution);
@@ -141,9 +143,18 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		if (!base_run.obs_valid() || calc_init_obs == true) {
 		 calc_init_obs = true;
 		}
-		bool success = jacobian.calculate(base_run, numeric_par_names_vec, obs_names_vec, par_transform,
+		bool success = jacobian.build_runs(base_run, numeric_par_names_vec, obs_names_vec, par_transform,
+			*par_group_info_ptr, *ctl_par_info_ptr,run_manager, out_of_bound_pars,
+			phiredswh_flag, calc_init_obs);
+
+		jacobian.make_runs(run_manager);
+
+		bool success2 = jacobian.process_runs(base_run, numeric_par_names_vec, obs_names_vec, par_transform,
 			*par_group_info_ptr, *ctl_par_info_ptr,run_manager,  *prior_info_ptr, out_of_bound_pars,
 			phiredswh_flag, calc_init_obs);
+
+		success = success && success2;
+
 		if (success)
 		{
 			break;
@@ -226,10 +237,8 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 
 	// process model runs
 	cout << "  testing upgrade vectors... ";
-	ofstream &fout_restart = file_manager.get_ofstream("rst");
-	fout_restart << "upgrade_model_runs_begin_group_id " << run_manager.get_cur_groupid() << endl;
+	fout_restart << "upgrade_model_runs_built " << run_manager.get_cur_groupid() << endl;
 	run_manager.run();
-	fout_restart << "upgrade_model_runs_end_group_id " << run_manager.get_cur_groupid() << endl;
 	cout << endl;
 	bool best_run_updated_flag = false;
 	ModelRun best_upgrade_run(base_run);

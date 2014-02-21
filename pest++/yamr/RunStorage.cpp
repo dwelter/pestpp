@@ -23,11 +23,14 @@
 #include <cassert>
 #include <iostream>
 #include <fstream>
+#include <algorithm> 
 #include "RunStorage.h"
 #include "Serialization.h"
 #include "Transformable.h"
 
 using namespace std;
+
+const double RunStorage::no_data = -9999.0;
 
 RunStorage::RunStorage(const string &_filename) :filename(_filename), run_byte_size(0)
 {
@@ -65,7 +68,9 @@ void RunStorage::reset(const vector<string> &_par_names, const vector<string> &_
 	// calculate the number of bytes required to store a model run
 	run_par_byte_size = par_names.size() * sizeof(double);
 	run_data_byte_size = run_par_byte_size + obs_names.size() * sizeof(double);
-	run_byte_size =  sizeof(std::int8_t) + run_data_byte_size;
+	//compute the amount of memeory required to store a single model run
+	// run_byte_size = size of run_status + size of info_txt + size of info_value + size of parameter oand observation data
+	run_byte_size =  sizeof(std::int8_t) + 41*sizeof(char) * sizeof(double) + run_data_byte_size;
 	std::int64_t  run_size_64 = run_byte_size;
 	beg_run0 = 4 * sizeof(std::int64_t) + serial_pnames.size() + serial_onames.size();
 	std::int64_t n_runs_64=0;
@@ -171,31 +176,41 @@ streamoff RunStorage::get_stream_pos(int run_id)
 	return pos;
 }
 
- int RunStorage::add_run(const vector<double> &model_pars)
+ int RunStorage::add_run(const vector<double> &model_pars, const string &info_txt, double info_value)
  {
 	std::int8_t r_status = 0;
 	int run_id = increment_nruns() - 1;
+	vector<char> info_txt_buf;
+	info_txt_buf.resize(info_txt_length, '\0');
+	copy_n(info_txt.begin(), min(info_txt.size(), size_t(info_txt_length)-1) , info_txt_buf.begin());
 	buf_stream.seekp(get_stream_pos(run_id), ios_base::beg);
 	buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	buf_stream.write(reinterpret_cast<char*>(info_txt_buf.data()), sizeof(char)*info_txt_buf.size());
+	buf_stream.write(reinterpret_cast<char*>(&info_value), sizeof(double));
 	buf_stream.write(reinterpret_cast<const char*>(&model_pars[0]), model_pars.size()*sizeof(double));
 	return run_id;
  }
 
- int RunStorage::add_run(const Eigen::VectorXd &model_pars)
+ int RunStorage::add_run(const Eigen::VectorXd &model_pars, const string &info_txt, double info_value)
  {
 	std::int8_t r_status = 0;
 	int run_id = increment_nruns() - 1;
+	vector<char> info_txt_buf;
+	info_txt_buf.resize(info_txt_length, '\0');
+	copy_n(info_txt.begin(), min(info_txt.size(), size_t(info_txt_length)-1) , info_txt_buf.begin());
 	buf_stream.seekp(get_stream_pos(run_id), ios_base::beg);
 	buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	buf_stream.write(reinterpret_cast<char*>(info_txt_buf.data()), sizeof(char)*info_txt_buf.size());
+	buf_stream.write(reinterpret_cast<char*>(&info_value), sizeof(double));
 	buf_stream.write(reinterpret_cast<const char*>(&model_pars(0)), model_pars.size()*sizeof(model_pars(0)));
 	return run_id;
  }
 
 
-int RunStorage::add_run(const Parameters &pars)
+int RunStorage::add_run(const Parameters &pars, const string &info_txt, double info_value)
 {
 	vector<double> data(pars.get_data_vec(par_names));
-	int run_id = add_run(data);
+	int run_id = add_run(data, info_txt, info_value);
 	return run_id;
 }
 
@@ -209,6 +224,8 @@ void RunStorage::update_run(int run_id, const Parameters &pars, const Observatio
 	//write data
 	buf_stream.seekp(get_stream_pos(run_id), ios_base::beg);
 	buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	//skip over info_txt and info_value fields
+	buf_stream.seekp(sizeof(char)*info_txt_length+sizeof(double), ios_base::cur);
 	buf_stream.write(reinterpret_cast<char*>(par_data.data()), par_data.size() * sizeof(double));
 	buf_stream.write(reinterpret_cast<char*>(obs_data.data()), obs_data.size() * sizeof(double));
 }
@@ -222,6 +239,8 @@ void RunStorage::update_run(int run_id, const vector<char> serial_data)
 	//write data
 	buf_stream.seekp(get_stream_pos(run_id), ios_base::beg);
 	buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	//skip over info_txt and info_value fields
+	buf_stream.seekp(sizeof(char)*info_txt_length+sizeof(double), ios_base::cur);
 	buf_stream.write(serial_data.data(), serial_data.size());
 }
 
@@ -254,10 +273,28 @@ int RunStorage::get_run_status(int run_id)
 	return status;
 }
 
-int RunStorage::get_run(int run_id, Parameters *pars, Observations *obs)
+void RunStorage::get_info(int run_id, int &run_status, string &info_txt, double &info_value)
+{
+	std::int8_t  r_status;
+	vector<char> info_txt_buf;
+	info_txt_buf.resize(info_txt_length, '\0');
+
+	buf_stream.seekg(get_stream_pos(run_id), ios_base::beg);
+	buf_stream.read(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	buf_stream.read(reinterpret_cast<char*>(&info_txt_buf[0]), sizeof(char)*info_txt_length);
+	buf_stream.read(reinterpret_cast<char*>(&info_value), sizeof(double));
+
+	run_status = r_status;
+	info_txt = info_txt_buf.data();
+}
+
+int RunStorage::get_run(int run_id, Parameters *pars, Observations *obs, string &info_txt, double &info_value)
 {
 
 	std::int8_t  r_status;
+	vector<char> info_txt_buf;
+	info_txt_buf.resize(info_txt_length, '\0');
+
 	size_t n_par = par_names.size();
 	size_t n_obs = obs_names.size();
 	vector<double> par_data;
@@ -269,17 +306,30 @@ int RunStorage::get_run(int run_id, Parameters *pars, Observations *obs)
 	
 	buf_stream.seekg(get_stream_pos(run_id), ios_base::beg);
 	buf_stream.read(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	buf_stream.read(reinterpret_cast<char*>(&info_txt_buf[0]), sizeof(char)*info_txt_length);
+	buf_stream.read(reinterpret_cast<char*>(&info_value), sizeof(double));
 	buf_stream.read(reinterpret_cast<char*>(&par_data[0]), n_par * sizeof(double));
 	buf_stream.read(reinterpret_cast<char*>(&obs_data[0]), n_obs * sizeof(double));
 	pars->update(par_names, par_data);
 	obs->update(obs_names, obs_data);
 	int status = r_status;
+	info_txt = info_txt_buf.data();
 	return status;
 }
 
-int RunStorage::get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs)
+int RunStorage::get_run(int run_id, Parameters *pars, Observations *obs)
+{
+	string info_txt;
+	double info_value;
+	return get_run(run_id, pars, obs, info_txt, info_value);
+}
+
+int RunStorage::get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs, string &info_txt, double &info_value)
 {
 	std::int8_t r_status;
+	vector<char> info_txt_buf;
+	info_txt_buf.resize(info_txt_length, '\0');
+
 	check_rec_id(run_id);
 
 	size_t p_size = par_names.size();
@@ -299,12 +349,21 @@ int RunStorage::get_run(int run_id, double *pars, size_t npars, double *obs, siz
 	o_size = min(o_size, nobs);
 	buf_stream.seekg(get_stream_pos(run_id), ios_base::beg);
 	buf_stream.read(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	buf_stream.read(reinterpret_cast<char*>(&info_txt_buf[0]), sizeof(char)*info_txt_length);
+	buf_stream.read(reinterpret_cast<char*>(&info_value), sizeof(double));
 	buf_stream.read(reinterpret_cast<char*>(pars), p_size * sizeof(double));
 	buf_stream.read(reinterpret_cast<char*>(obs), o_size * sizeof(double));
 	int status = r_status;
+	info_txt = info_txt_buf.data();
 	return status;
 }
 
+int RunStorage::get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs)
+{
+	string info_txt;
+	double info_value;
+	return get_run(run_id, pars, npars, obs, nobs, info_txt, info_value);
+}
 
 vector<char> RunStorage::get_serial_pars(int run_id)
 {
@@ -314,21 +373,22 @@ vector<char> RunStorage::get_serial_pars(int run_id)
 	vector<char> serial_data;
 	serial_data.resize(run_par_byte_size);
 	buf_stream.seekg(run_byte_size*run_id, ios_base::beg);
-	buf_stream.seekg(get_stream_pos(run_id)+sizeof(r_status), ios_base::beg);
+	buf_stream.seekg(sizeof(r_status)+sizeof(char)*info_txt_length+sizeof(double), ios_base::cur);
 	buf_stream.read(serial_data.data(), serial_data.size());
 	return serial_data;
 }
 
 Parameters RunStorage::get_parameters(int run_id)
 {
+	std::int8_t r_status;
+
 	check_rec_id(run_id);
 
 	size_t n_par = par_names.size();
-	std::int8_t r_status;
 	vector<double> par_data;
 	par_data.resize(n_par);
 	buf_stream.seekg(get_stream_pos(run_id), ios_base::beg);
-	buf_stream.read(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	buf_stream.seekg(sizeof(r_status)+sizeof(char)*info_txt_length+sizeof(double), ios_base::cur);
 	buf_stream.read(reinterpret_cast<char*>(par_data.data()), n_par*sizeof(double));
 	Parameters pars;
 	pars.update(par_names, par_data);
