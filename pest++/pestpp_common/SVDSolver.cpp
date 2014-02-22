@@ -305,7 +305,6 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	VectorXd residuals_vec;
 	set<string> out_ofbound_pars;
 
-
 	// Calculate Jacobian
 	if (!cur_solution.obs_valid() || calc_init_obs == true) {
 		 calc_init_obs = true;
@@ -320,14 +319,14 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	jacobian.process_runs(cur_solution, numeric_parname_vec, obs_names_vec, par_transform,
 			*par_group_info_ptr, *ctl_par_info_ptr,run_manager,   *prior_info_ptr, out_ofbound_pars,
 			phiredswh_flag, calc_init_obs);
-
 	cout << endl;
+
+
 	//Freeze Parameter for which the jacobian could not be calculated
 	auto &failed_jac_pars_names = jacobian.get_failed_parameter_names();
 	auto  failed_jac_pars = cur_solution.get_ctl_pars().get_subset(failed_jac_pars_names.begin(), failed_jac_pars_names.end());
 
 	cout << endl;
-
 	cout << "  computing upgrade vectors... " << endl;
 	// update regularization weight factor
 	double tikhonov_weight = regul_scheme_ptr->get_weight(cur_solution);
@@ -435,11 +434,13 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 		magnitude_vec.push_back(ml_upgrade.norm);
 		frozen_par_vec.push_back(frozen_derivative_pars);
 	}
+	fout_restart << "upgrade_model_runs_built " << run_manager.get_cur_groupid() << endl;
+
+	cout << "  performing upgrade vector runs... ";
+	run_manager.run();
 
 	// process model runs
 	cout << "  testing upgrade vectors... ";
-	fout_restart << "upgrade_model_runs_built " << run_manager.get_cur_groupid() << endl;
-	run_manager.run();
 	cout << endl;
 	bool best_run_updated_flag = false;
 	ModelRun best_upgrade_run(cur_solution);
@@ -488,7 +489,6 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	// Print frozen parameter information
 	const Parameters &frz_ctl_pars = best_upgrade_run.get_frozen_ctl_pars();
 		
-		//best_upgrade_run.get();
 	if (frz_ctl_pars.size() > 0)
 	{
 		vector<string> keys = frz_ctl_pars.get_keys();
