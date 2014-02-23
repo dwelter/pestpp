@@ -271,22 +271,29 @@ void  RunManagerYAMR::free_memory()
 	failure_map.clear();
 }
 
-int RunManagerYAMR::add_run(const Parameters &model_pars)
+int RunManagerYAMR::add_run(const Parameters &model_pars, const string &info_txt, double info_value)
 {
-	int run_id = file_stor.add_run(model_pars);
+	int run_id = file_stor.add_run(model_pars, info_txt, info_value);
 	YamrModelRun new_run(run_id);
 	waiting_runs.push_back(new_run);
 	return run_id;
 }
 
-int RunManagerYAMR::add_run(const std::vector<double> &model_pars)
+int RunManagerYAMR::add_run(const std::vector<double> &model_pars, const string &info_txt, double info_value)
 {
-	int run_id = file_stor.add_run(model_pars);
+	int run_id = file_stor.add_run(model_pars, info_txt, info_value);
 	YamrModelRun new_run(run_id);
 	waiting_runs.push_back(new_run);
 	return run_id;
 }
 
+int RunManagerYAMR::add_run(const Eigen::VectorXd &model_pars, const string &info_txt, double info_value)
+{
+	int run_id = file_stor.add_run(model_pars, info_txt, info_value);
+	YamrModelRun new_run(run_id);
+	waiting_runs.push_back(new_run);
+	return run_id;
+}
 
 void RunManagerYAMR::run()
 {

@@ -54,11 +54,11 @@ void SVDSolver::Upgrade::print(ostream &os)
 SVDSolver::SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_par_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, 
-		const Regularization *_regul_scheme_ptr, int _max_freeze_iter, const string &_description)
+		const Regularization *_regul_scheme_ptr, int _max_freeze_iter, Pest::RestartCommand &_restart_command, const string &_description)
 		: ctl_info(_ctl_info), svd_info(_svd_info), par_group_info_ptr(_par_group_info_ptr), ctl_par_info_ptr(_ctl_par_info_ptr), obs_info_ptr(_obs_info), obj_func(_obj_func),
 		  file_manager(_file_manager), observations_ptr(_observations), par_transform(_par_transform),
 		  cur_solution(_obj_func, *_observations), phiredswh_flag(false), save_next_jacobian(true), prior_info_ptr(_prior_info_ptr), jacobian(_jacobian), prev_phi_percent(0.0),
-		  num_no_descent(0), regul_scheme_ptr(_regul_scheme_ptr), max_freeze_iter(_max_freeze_iter), description(_description), best_lambda(20.0)
+		  num_no_descent(0), regul_scheme_ptr(_regul_scheme_ptr), max_freeze_iter(_max_freeze_iter), description(_description), best_lambda(20.0), restart_command(_restart_command)
 {
 	svd_package = new SVD_EIGEN();
 }
@@ -305,23 +305,49 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	VectorXd residuals_vec;
 	set<string> out_ofbound_pars;
 
+	vector<string> obs_names_vec = cur_solution.get_obs_template().get_keys();
+	vector<string> numeric_parname_vec = par_transform.ctl2numeric_cp(cur_solution.get_ctl_pars()).get_keys();
+
+	if (restart_command == Pest::RestartCommand::REUSE_JACOBIAN)
+	{
+		restart_command = Pest::RestartCommand::NONE;
+		cout << "  reusing previosuly computed jacobian... ";
+		cout << endl << endl;
+		cout << "  running the model once with the current parameters... ";
+		run_manager.reinitialize(file_manager.build_filename("rnu"));
+		int run_id = run_manager.add_run( par_transform.ctl2model_cp(cur_solution.get_ctl_pars()));
+		run_manager.run();
+		Parameters tmp_pars;
+		Observations tmp_obs;
+		bool success = run_manager.get_run(run_id, tmp_pars, tmp_obs);
+		if (success)
+		{
+			jacobian.read(file_manager.build_filename("jco"), *prior_info_ptr);
+			par_transform.model2ctl_ip(tmp_pars);
+			cur_solution.update_ctl(tmp_pars, tmp_obs);
+			goto restart_reuse_jacoboian;
+		}
+		else
+		{
+			throw(PestError("Error: Base parameter run failed.  Can not continue."));
+		}
+	}
+
 	// Calculate Jacobian
 	if (!cur_solution.obs_valid() || calc_init_obs == true) {
 		 calc_init_obs = true;
 	 }
 	cout << "  calculating jacobian... ";
-	vector<string> obs_names_vec = cur_solution.get_obs_template().get_keys();
-	vector<string> numeric_parname_vec = par_transform.ctl2numeric_cp(cur_solution.get_ctl_pars()).get_keys();
 	jacobian.build_runs(cur_solution, numeric_parname_vec, obs_names_vec, par_transform,
-			*par_group_info_ptr, *ctl_par_info_ptr,run_manager, out_ofbound_pars,
+			*par_group_info_ptr, *ctl_par_info_ptr, run_manager, out_ofbound_pars,
 			phiredswh_flag, calc_init_obs);
 	jacobian.make_runs(run_manager);
 	jacobian.process_runs(cur_solution, numeric_parname_vec, obs_names_vec, par_transform,
-			*par_group_info_ptr, *ctl_par_info_ptr,run_manager,   *prior_info_ptr, out_ofbound_pars,
+			*par_group_info_ptr, *ctl_par_info_ptr, run_manager, *prior_info_ptr, out_ofbound_pars,
 			phiredswh_flag, calc_init_obs);
+
+	restart_reuse_jacoboian:
 	cout << endl;
-
-
 	//Freeze Parameter for which the jacobian could not be calculated
 	auto &failed_jac_pars_names = jacobian.get_failed_parameter_names();
 	auto  failed_jac_pars = cur_solution.get_ctl_pars().get_subset(failed_jac_pars_names.begin(), failed_jac_pars_names.end());

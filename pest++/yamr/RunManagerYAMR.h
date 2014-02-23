@@ -103,8 +103,9 @@ public:
 	virtual void initialize_restart(const std::string &_filename);
 	virtual void reinitialize(const std::string &_filename = std::string(""));
 	virtual void free_memory();
-	virtual int add_run(const Parameters &model_pars);
-	virtual int add_run(const std::vector<double> &model_pars);
+	virtual int add_run(const Parameters &model_pars, const std::string &info_txt="", double info_value=RunStorage::no_data);
+	virtual int add_run(const std::vector<double> &model_pars, const std::string &info_txt="", double info_valuee=RunStorage::no_data);
+	virtual int add_run(const Eigen::VectorXd &model_pars, const std::string &info_txt="", double info_valuee=RunStorage::no_data);
 	virtual void run();
 	~RunManagerYAMR(void);
 private:

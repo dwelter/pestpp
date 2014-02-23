@@ -128,12 +128,24 @@ void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobia
 	int n_nonzero_weights = q_sqrt.num_nonzero();
 	double nonzero_weights_fac = 0.0;
 	if (n_nonzero_weights > 0) nonzero_weights_fac = 1.0 / double(n_nonzero_weights);
+	size_t size_par_vec = pars.size();
 	for (int i=0; i<n_par; ++i) 
 	{
-		fout << "   " << setw(15) << par_list[i]
+		 if (size_par_vec==0)
+		 {
+			fout << "   " << setw(15) << par_list[i]
 		    << " " << setw(12) << par_grp_info.get_group_name(par_list[i])
-			<< " " << showpoint <<   setw(20) << pars.get_rec(par_list[i])
+		    << " " << showpoint <<   setw(20) << "NA"
 			<< " " << showpoint <<   setw(20) << w_sen_mat.col(i).norm() * nonzero_weights_fac << endl;
+
+		 }
+		 else
+		 {
+			fout << "   " << setw(15) << par_list[i]
+		    << " " << setw(12) << par_grp_info.get_group_name(par_list[i])
+		    << " " << showpoint <<   setw(20) << pars.get_rec(par_list[i])
+			<< " " << showpoint <<   setw(20) << w_sen_mat.col(i).norm() * nonzero_weights_fac << endl;
+		 }
 	}
 	fout << endl << endl;
 }

@@ -20,6 +20,7 @@
 //#include <vld.h> // Memory Leak Detection using "Visual Leak Detector"
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 #include "Pest.h"
 #include "Jacobian_1to1.h"
 #include "Transformable.h"
@@ -60,9 +61,12 @@ int main(int argc, char* argv[])
 		commandline.append(" ");
 		commandline.append(argv[i]);
 	}
+
+	vector<string> cmd_arg_vec(argc);
+	copy(argv, argv+argc, cmd_arg_vec.begin());
+
 	string complete_path;
 	enum class RunManagerType {SERIAL, YAMR, GENIE};
-	string socket_str;
 
 	if (argc >=2) {
 		complete_path = argv[1];
@@ -82,13 +86,26 @@ int main(int argc, char* argv[])
 		exit(0);
 	}
 
+	//by default use the serial run manager.  This will be changed later if another
+	//run manger is specified on the command line.
+	RunManagerType run_manager_type = RunManagerType::SERIAL;
 
-	// This is a YAMR Slave, start PEST++ as a YAMR Slave
-	if (argc >=3 && upper(argv[1]) == "/H") {
-		string socket_str = argv[2];
-		strip_ip(socket_str);
+	vector<string>::const_iterator it_find, it_find_next;
+	string next_item;
+	string socket_str="";
+	//Check for YAMR Slave
+	it_find = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/H");
+	next_item.clear();
+	if (it_find!= cmd_arg_vec.end() && it_find+1 != cmd_arg_vec.end())
+	{
+		next_item = *(it_find+1);
+		strip_ip(next_item);
+	}
+	if (it_find!= cmd_arg_vec.end() && !next_item.empty() && next_item[0] !=':') 
+	{
+		// This is a YAMR Slave, start PEST++ as a YAMR Slave
 		vector<string> sock_parts;
-		tokenize(socket_str, sock_parts, ":");
+		tokenize(next_item, sock_parts, ":");
 		try
 		{
 			if (sock_parts.size() != 2)
@@ -108,14 +125,28 @@ int main(int argc, char* argv[])
 		OperSys::gets_s(buf, sizeof(buf));
 		exit(0);
 	}
-
-	RunManagerType run_manager_type = RunManagerType::SERIAL;
-	// Start PEST++ using YAMR run manager
-	if (argc >=4 &&  upper(argv[2]) == "/H") {
+	//Check for YAMR Master
+	else if (it_find!= cmd_arg_vec.end())
+	{
+	// using YAMR run manager
 		run_manager_type = RunManagerType::YAMR;
+		socket_str = next_item;
 	}
-	else if (argc >=4 &&  upper(argv[2]) == "/G") {
+
+	it_find = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/G");
+	next_item.clear();
+	if (it_find!= cmd_arg_vec.end() && it_find+1 != cmd_arg_vec.end())
+	{
+		next_item = *(it_find+1);
+		strip_ip(next_item);
+	
+	}
+	//Check for GENIE Master
+	if (it_find!= cmd_arg_vec.end())
+	{
+		//Using GENIE run manager
 		run_manager_type = RunManagerType::GENIE;
+		socket_str = next_item;
 	}
 
 
@@ -133,6 +164,15 @@ int main(int argc, char* argv[])
 	// create pest run and process control file to initialize it
 	Pest pest_scenario;
 	pest_scenario.set_defaults();
+
+	//if desired set front to reuse existing jacobian on the first iteration
+	it_find = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/j");
+	if (it_find!= cmd_arg_vec.end())
+	{
+		pest_scenario.set_start_command(Pest::RestartCommand::REUSE_JACOBIAN);
+	}
+
+
 	try {
 		pest_scenario.process_ctl_file(file_manager.open_ifile_ext("pst"), file_manager);
 		file_manager.close_file("pst");
@@ -148,7 +188,7 @@ int main(int argc, char* argv[])
 	RunManagerAbstract *run_manager_ptr;
 	if (run_manager_type == RunManagerType::YAMR)
 	{
-		string port = argv[3];
+		string port = socket_str;
 		strip_ip(port);
 		strip_ip(port, "front", ":");
 		const ModelExecInfo &exi = pest_scenario.get_model_exec_info();
@@ -160,7 +200,6 @@ int main(int argc, char* argv[])
 	}
 	else if (run_manager_type == RunManagerType::GENIE)
 	{
-		string socket_str = argv[3];
 		strip_ip(socket_str);
 		const ModelExecInfo &exi = pest_scenario.get_model_exec_info();
 		run_manager_ptr = new RunManagerGenie(exi.comline_vec,
@@ -189,7 +228,7 @@ int main(int argc, char* argv[])
 	SVDSolver base_svd(&pest_scenario.get_control_info(), pest_scenario.get_svd_info(), &pest_scenario.get_base_group_info(),
 		&pest_scenario.get_ctl_parameter_info(), &pest_scenario.get_ctl_observation_info(), file_manager,
 		&pest_scenario.get_ctl_observations(), &obj_func, base_trans_seq, pest_scenario.get_prior_info_ptr(),
-		*base_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(), pest_scenario.get_pestpp_options().get_max_freeze_iter());
+		*base_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(), pest_scenario.get_pestpp_options().get_max_freeze_iter(), pest_scenario.get_restart_command());
 
 	base_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 	//Build Super-Parameter problem
@@ -296,7 +335,7 @@ int main(int argc, char* argv[])
 			SVDASolver super_svd(&svd_control_info, pest_scenario.get_svd_info(), &sup_group_info, &pest_scenario.get_ctl_parameter_info(),
 				&pest_scenario.get_ctl_observation_info(),  file_manager, &pest_scenario.get_ctl_observations(), &obj_func,
 				trans_svda, &pest_scenario.get_prior_info(), *super_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(),
-				pest_scenario.get_pestpp_options().get_max_freeze_iter());
+				pest_scenario.get_pestpp_options().get_max_freeze_iter(), pest_scenario.get_restart_command());
 			super_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 			cur_run = super_svd.solve(*run_manager_ptr, termination_ctl, n_super_iter, cur_run, optimum_run);
 			cur_ctl_parameters = super_svd.cur_model_run().get_ctl_pars();
