@@ -372,7 +372,7 @@ vector<char> RunStorage::get_serial_pars(int run_id)
 
 	vector<char> serial_data;
 	serial_data.resize(run_par_byte_size);
-	buf_stream.seekg(run_byte_size*run_id, ios_base::beg);
+	buf_stream.seekg(get_stream_pos(run_id), ios_base::beg);
 	buf_stream.seekg(sizeof(r_status)+sizeof(char)*info_txt_length+sizeof(double), ios_base::cur);
 	buf_stream.read(serial_data.data(), serial_data.size());
 	return serial_data;

@@ -282,25 +282,25 @@ void YAMRSlave::start(const string &host, const string &port)
 		//get message from master
 		err = recv_message(net_pack);
 		if (err == -1) {}
-        else if(net_pack.get_type() == NetPackage::PackType::REQ_RUNDIR)
+		else if(net_pack.get_type() == NetPackage::PackType::REQ_RUNDIR)
 		{
-            // Send Master the local run directory.  This information is only used by the master
-	        // for reporting purposes
-        	net_pack.reset(NetPackage::PackType::RUNDIR, 0, 0,"");
-	        string cwd =  OperSys::getcwd();
-	        err = send_message(net_pack, cwd.c_str(), cwd.size());
+			// Send Master the local run directory.  This information is only used by the master
+			// for reporting purposes
+			net_pack.reset(NetPackage::PackType::RUNDIR, 0, 0,"");
+			string cwd =  OperSys::getcwd();
+			err = send_message(net_pack, cwd.c_str(), cwd.size());
 		}
-        else if(net_pack.get_type() == NetPackage::PackType::CMD)
+		else if(net_pack.get_type() == NetPackage::PackType::CMD)
 		{
-            vector<vector<string>> tmp_vec_vec;
-		    Serialization::unserialize(net_pack.get_data(), tmp_vec_vec);
-		    comline_vec = tmp_vec_vec[0];
-		    tplfile_vec = tmp_vec_vec[1];
-		    inpfile_vec = tmp_vec_vec[2];
-		    insfile_vec = tmp_vec_vec[3];
-		    outfile_vec = tmp_vec_vec[4];
+			vector<vector<string>> tmp_vec_vec;
+			Serialization::unserialize(net_pack.get_data(), tmp_vec_vec);
+			comline_vec = tmp_vec_vec[0];
+			tplfile_vec = tmp_vec_vec[1];
+			inpfile_vec = tmp_vec_vec[2];
+			insfile_vec = tmp_vec_vec[3];
+			outfile_vec = tmp_vec_vec[4];
 			par_name_vec= tmp_vec_vec[5];
-		    obs_name_vec= tmp_vec_vec[6];
+			obs_name_vec= tmp_vec_vec[6];
 		}
 		else if(net_pack.get_type() == NetPackage::PackType::REQ_LINPACK)
 		{
