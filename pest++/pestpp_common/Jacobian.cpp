@@ -687,16 +687,17 @@ void Jacobian::read(const string &filename, const PriorInformation &prior_info)
 	}
 	//read observation and Prior info names
 	base_sim_obs_names.clear();
-	vector<string> tmp_obs_names;
+	//vector<string> tmp_obs_names;
+
 	for (int i_rec=0; i_rec<n_obs_and_pi; ++i_rec)
 	{
 		fin.read(obs_name, 20);
 		string tmp_obs_name = strip_cp(string(obs_name, 20));
-		tmp_obs_names.push_back(strip_cp(tmp_obs_name));
-		if (prior_info.find(obs_name) == prior_info.end())
-		{
+		//tmp_obs_names.push_back(strip_cp(tmp_obs_name));
+		//if (prior_info.find(obs_name) == prior_info.end())
+		//{
 			base_sim_obs_names.push_back(tmp_obs_name);
-		}
+		//}
 	}
 
 	//return to sensitivity section of file
@@ -705,23 +706,24 @@ void Jacobian::read(const string &filename, const PriorInformation &prior_info)
 	// read matrix
 	matrix = MatrixXd::Zero(n_obs_and_pi, n_par);
 	prior_info_sen.clear();
-	string *obs_name_ptr;
+	//string *obs_name_ptr;
+	int prior_cout = 0;
 	for (int i_rec=0; i_rec<n_nonzero; ++ i_rec)
 	{
 		fin.read((char*) &(n), sizeof(n));
 		--n;
 		fin.read((char*) &(data), sizeof(data));
 		j = int(n/(n_obs_and_pi)); // parameter index
-		i = (n-n_par*j) % n_obs_and_pi;  //observation index
-		obs_name_ptr = &tmp_obs_names[i];
-		if (prior_info.find(*obs_name_ptr) == prior_info.end())
-		{
+		i = (n-n_obs_and_pi*j) % n_obs_and_pi;  //observation index
+		//obs_name_ptr = &tmp_obs_names[i];
+		//if (prior_info.find(*obs_name_ptr) == prior_info.end())
+		//{
 			matrix(i,j) = data;
-		}
-		else
-		{
-			prior_info_sen[*obs_name_ptr][base_numeric_par_names[j]] = data;
-		}
+		//}
+		//else
+		//{
+		//	prior_info_sen[*obs_name_ptr][base_numeric_par_names[j]] = data;
+	//	}
 	}
 	fin.close();
 }

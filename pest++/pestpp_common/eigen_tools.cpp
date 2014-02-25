@@ -1,26 +1,27 @@
 /*  
-    © Copyright 2012, David Welter
-    
-    This file is part of PEST++.
+	© Copyright 2012, David Welter
+	
+	This file is part of PEST++.
    
-    PEST++ is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	PEST++ is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    PEST++ is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	PEST++ is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
 #include "eigen_tools.h"
 #include <Eigen/Dense>
 #include "Transformable.h"
 #include <vector>
 #include <algorithm>
+#include <iomanip>
 
 
 using namespace Eigen;
@@ -130,6 +131,42 @@ void print(const MatrixXd &mat, ostream & fout)
 		fout << endl;
 	}
 
+}
+
+void print(const MatrixXd &mat, ostream & fout, int n_per_line)
+{
+	int nrows = mat.rows();
+	int ncols = mat.cols();
+	int n = 0;
+
+	for (int i=0; i<nrows; ++i)
+	{
+		for (int j=0; j<ncols; ++j) 
+		{
+			fout << setw(15) << setiosflags(ios::right) << mat(i,j);
+			if ((j+1) % (n_per_line) == 0 || j+1==ncols)
+			{
+				fout << '\n';
+			}
+		}
+		fout << endl;
+	}
+
+}
+
+void print(const VectorXd &vec, ostream & fout, int n_per_line)
+{
+	int n = vec.size();
+
+	for (int i=0; i<n; ++i)
+	{
+		fout << setw(15) << setiosflags(ios::right) << vec(i);
+			if ((i+1) % (n_per_line) == 0 || i+1==n)
+		{
+			fout << '\n';
+		}
+
+	}
 }
 
 

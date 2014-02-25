@@ -158,10 +158,17 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 		os   << "  SVD Package: " << svd_package->description << endl;
 		os   << "    Model calls so far : " << run_manager.get_total_runs() << endl;
 		fout_restart << "start_iteration " << global_iter_num << endl;
+		// write head for SVD file
+		ofstream &fout_svd = file_manager.get_ofstream("svd");
+		fout_svd << "------------------------------------------------------------------------------" << endl;
+		fout_svd << "OPTIMISATION ITERATION NO.        : " << global_iter_num << endl << endl;
+
 		iteration(run_manager, termination_ctl, false);
+
 		// write files that get wrtten at the end of each iteration
 		stringstream filename;
 		string complete_filename;
+
 		// rei file for this iteration
 		filename << "rei" << global_iter_num;
 		OutputFileWriter::write_rei(file_manager.open_ofile_ext(filename.str()), global_iter_num, 
@@ -253,6 +260,11 @@ SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, 
 	MatrixXd U;
 	MatrixXd Vt;
 	svd_package->solve_ip(SqrtQ_J, Sigma, U, Vt);
+	ofstream &fout_svd = file_manager.get_ofstream("svd");
+	fout_svd << "FROZEN PARAMETERS-" << endl;
+	fout_svd << freeze_numeric_pars << endl << endl;
+	OutputFileWriter::write_svd(fout_svd, Sigma, U, Vt);
+
 	if (marquardt_type == MarquardtMatrix::IDENT)
 	{
 		Sigma = Sigma.array() + lambda;
@@ -290,6 +302,8 @@ SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, 
 		upgrade.uvec(it->second) = ipar.second;
 	}
 	tot_sing_val = Sigma.size();
+	fout_svd << "Number of singular values used in solution = " <<  tot_sing_val << endl << endl << endl;
+
 	// Calculate svd unit vector
 	upgrade.norm = upgrade.uvec.norm();
 	if (upgrade.norm != 0) upgrade.uvec *= 1.0 /upgrade.norm;
@@ -405,6 +419,9 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	int max_freeze_iter = 1;
 	for (double i_lambda : lambda_vec)
 	{
+		ofstream &fout_svd = file_manager.get_ofstream("svd");
+		fout_svd << "CURRENT VALUE OF MARQUARDT LAMBDA = " << i_lambda << " ----->" << endl << endl;
+
 		Parameters new_numeric_pars;
 		frozen_derivative_pars = failed_jac_pars;
 		for (int i_freeze=1; ; ++i_freeze)

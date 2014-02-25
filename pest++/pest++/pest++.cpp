@@ -185,6 +185,10 @@ int main(int argc, char* argv[])
 	}
 	pest_scenario.check_inputs();
 
+	//Open files that are required for the entire simulation
+	file_manager.open_ofile_ext("svd");
+
+
 	RunManagerAbstract *run_manager_ptr;
 	if (run_manager_type == RunManagerType::YAMR)
 	{

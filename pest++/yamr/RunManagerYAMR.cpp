@@ -259,6 +259,10 @@ void RunManagerYAMR::initialize_restart(const std::string &_filename)
 
 void RunManagerYAMR::reinitialize(const std::string &_filename)
 {
+	waiting_runs.clear();
+	completed_runs.clear();
+	zombie_runs.clear();
+	failure_map.clear();
 	RunManagerAbstract::reinitialize(_filename);
 	cur_group_id = NetPackage::get_new_group_id();
 }

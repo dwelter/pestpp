@@ -1,20 +1,20 @@
 /*  
-    © Copyright 2012, David Welter
-    
-    This file is part of PEST++.
+	© Copyright 2012, David Welter
+	
+	This file is part of PEST++.
    
-    PEST++ is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	PEST++ is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    PEST++ is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	PEST++ is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
 
 
@@ -30,6 +30,7 @@
 #include "Jacobian.h"
 #include "QSqrtMatrix.h"
 #include "ModelRunPP.h"
+#include "eigen_tools.h"
 
 using namespace std;
 using namespace Eigen;
@@ -134,18 +135,28 @@ void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobia
 		 if (size_par_vec==0)
 		 {
 			fout << "   " << setw(15) << par_list[i]
-		    << " " << setw(12) << par_grp_info.get_group_name(par_list[i])
-		    << " " << showpoint <<   setw(20) << "NA"
+			<< " " << setw(12) << par_grp_info.get_group_name(par_list[i])
+			<< " " << showpoint <<   setw(20) << "NA"
 			<< " " << showpoint <<   setw(20) << w_sen_mat.col(i).norm() * nonzero_weights_fac << endl;
-
 		 }
 		 else
 		 {
 			fout << "   " << setw(15) << par_list[i]
-		    << " " << setw(12) << par_grp_info.get_group_name(par_list[i])
-		    << " " << showpoint <<   setw(20) << pars.get_rec(par_list[i])
+			<< " " << setw(12) << par_grp_info.get_group_name(par_list[i])
+			<< " " << showpoint <<   setw(20) << pars.get_rec(par_list[i])
 			<< " " << showpoint <<   setw(20) << w_sen_mat.col(i).norm() * nonzero_weights_fac << endl;
 		 }
 	}
 	fout << endl << endl;
+}
+
+void OutputFileWriter::write_svd(ostream &fout, VectorXd &Sigma, MatrixXd U, MatrixXd &Vt)
+{
+	fout << "SINGULAR VALUES:-" << endl;
+	print(Sigma, fout, 7);
+	fout << endl << endl;
+	fout << "MATRIX OF EIGENVECTORS:-" << endl;
+	print(Vt, fout, 7);
+	fout << endl;
+
 }

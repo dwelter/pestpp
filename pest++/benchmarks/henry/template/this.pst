@@ -6,7 +6,7 @@ restart estimation
  10.0  2.0  0.3  0.03  10  999  lamforgive
  3.0  3.0  0.001
  0.1  noaui
- 20 0.005  4  4  0.0001  4
+ 2 0.005  4  4  0.0001  4
  1  1  1
 * singular value decomposition
 1
@@ -1314,8 +1314,8 @@ kr10c59       1.0 * log(kr10c59) =   2.301030      1.0 regul_p
 kr10c60       1.0 * log(kr10c60) =   2.301030      1.0 regul_p
 ++# PEST++ optional input
 ++# SVD_PACK(PROPACK)
-++ N_ITER_BASE(1)
-++ N_ITER_SUPER(3)
-++ SUPER_EIGTHRES(1.0e-8)
-++ MAX_N_SUPER(77)
+++# N_ITER_BASE(1)
+++# N_ITER_SUPER(3)
+++# SUPER_EIGTHRES(1.0e-8)
+++# MAX_N_SUPER(77)
 ++ AUTO_NORM(4)
