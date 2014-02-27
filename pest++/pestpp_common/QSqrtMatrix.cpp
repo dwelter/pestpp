@@ -72,6 +72,39 @@ QSqrtMatrix::QSqrtMatrix(const ObservationInfo &obs_info, const vector<string> &
 	}
 }
 
+
+bool ne_zero(double v) {return v!=0.0;}
+
+//Eigen::SparseMatrix<double> QSqrtMatrix::operator*(const Eigen::SparseMatrix<double> &rhs) const
+//{
+//	Eigen::SparseMatrix<double> ret_val(rhs);
+//	int n_rows = rhs.rows();
+//
+//	for (int i=0; i < n_rows; ++i) {
+//		ret_val.row(i) *= weights[i];
+//	}
+//	return ret_val;
+//}
+
+int QSqrtMatrix::num_nonzero() const
+{	
+	int num = (int) count_if(weights.begin(), weights.end(), ne_zero);
+	return num;
+}
+
+//Eigen::SparseMatrix<double> operator*(const Eigen::SparseMatrix<double> &lhs, const QSqrtMatrix &rhs)
+//{
+//	Eigen::SparseMatrix<double> ret_val(lhs);
+//
+//	int n_cols = lhs.cols();
+//
+//	for (int i=0; i < n_cols; ++i) {
+//		ret_val.col(i) *= rhs.weights[i];
+//	}
+//	return ret_val;
+//}
+
+
 MatrixXd QSqrtMatrix::operator*(const MatrixXd &rhs) const
 {
 	MatrixXd ret_val(rhs);
@@ -81,14 +114,6 @@ MatrixXd QSqrtMatrix::operator*(const MatrixXd &rhs) const
 		ret_val.row(i) *= weights[i];
 	}
 	return ret_val;
-}
-
-bool ne_zero(double v) {return v!=0.0;}
-
-int QSqrtMatrix::num_nonzero() const
-{	
-	int num = (int) count_if(weights.begin(), weights.end(), ne_zero);
-	return num;
 }
 
 MatrixXd operator*(const MatrixXd &lhs, const QSqrtMatrix &rhs)
@@ -102,6 +127,8 @@ MatrixXd operator*(const MatrixXd &lhs, const QSqrtMatrix &rhs)
 	}
 	return ret_val;
 }
+
+
 
 const VectorXd QSqrtMatrix::get_diag_vector() const
 {

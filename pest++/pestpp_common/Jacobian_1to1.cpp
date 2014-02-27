@@ -118,15 +118,10 @@ bool Jacobian_1to1::process_runs(ModelRun &init_model_run, vector<string> numeri
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
 		RunManagerAbstract &run_manager,  const PriorInformation &prior_info, set<string> &out_of_bound_par, bool phiredswh_flag, bool calc_init_obs)
 {
-	// calculate jacobian
 	base_sim_obs_names = obs_names;
-
-	if(matrix.rows() != base_sim_obs_names.size() || matrix.cols() !=numeric_par_names.size())
-	{
-		matrix.resize(base_sim_obs_names.size(), numeric_par_names.size());
-	}
-	// initialize prior information
-	prior_info_sen.clear();
+	vector<string> prior_info_name = prior_info.get_keys();
+	base_sim_obs_names.insert(base_sim_obs_names.end(), prior_info_name.begin(), prior_info_name.end());
+	std::vector<Eigen::Triplet<double> > triplet_list;
 
 	unordered_map<string, int> par2col_map = get_par2col_map();
 	unordered_map<string, int>::iterator found;
@@ -194,7 +189,8 @@ bool Jacobian_1to1::process_runs(ModelRun &init_model_run, vector<string> numeri
 				base_numeric_par_names.push_back(cur_par_name);
 				double base_numeric_par_value = base_numeric_parameters.get_rec(cur_par_name);
 				run_list.push_front(make_pair(init_model_run, base_numeric_par_value));
-				calc_derivative(cur_par_name, icol, run_list, par_transform, group_info, ctl_par_info, prior_info);
+				std::vector<Eigen::Triplet<double> > tmp_triplet_vec = calc_derivative(cur_par_name, icol, run_list, par_transform, group_info, ctl_par_info, prior_info);
+				triplet_list.insert( triplet_list.end(), tmp_triplet_vec.begin(), tmp_triplet_vec.end() );
 				icol++;
 			}
 			else
@@ -204,8 +200,9 @@ bool Jacobian_1to1::process_runs(ModelRun &init_model_run, vector<string> numeri
 			run_list.clear();
 		}
 	}
-
-	matrix.conservativeResize(base_sim_obs_names.size(), base_numeric_par_names.size());
+	matrix.resize(base_sim_obs_names.size(), base_numeric_par_names.size());
+	matrix.setZero();
+	matrix.setFromTriplets(triplet_list.begin(), triplet_list.end());
 	// clean up
 	ofstream &fout_restart = file_manager.get_ofstream("rst");
 	fout_restart << "jacobian_saved" << endl;

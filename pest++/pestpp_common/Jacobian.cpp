@@ -44,12 +44,9 @@ Jacobian::~Jacobian() {
 }
 
 
-vector<string> Jacobian::obs_and_reg_list() const
+const vector<string>& Jacobian::obs_and_reg_list() const
 {
-	vector<string> all_obs = base_sim_obs_names;
-	vector<string> prior_info_obs = get_map_keys(prior_info_sen);
-	all_obs.insert(all_obs.end(), prior_info_obs.begin(), prior_info_obs.end());
-	return all_obs;
+	return base_sim_obs_names;
 }
 
 unordered_map<string, int> Jacobian::get_par2col_map() const
@@ -77,74 +74,64 @@ unordered_map<string, int> Jacobian::get_obs2row_map() const
 }
 
 
-MatrixXd Jacobian::get_matrix(const vector<string> &obs_names, const vector<string> & par_names) const
+Eigen::SparseMatrix<double> Jacobian::get_matrix(const vector<string> &obs_names, const vector<string> & par_names) const
 {
 	int n_rows = obs_names.size();
 	int n_cols = par_names.size();
-	int irow_old;
-	int icol_old;
 	int irow_new;
 	int icol_new;
 
-	MatrixXd new_matrix(n_rows, n_cols);
-	unordered_map<string, int> par2col_map = get_par2col_map();
-	unordered_map<string, int> obs2row_map = get_obs2row_map();
-	unordered_map<string, int> par2col_new_map;
+	unordered_map<string, int> obs_name2newindex_map;
+	unordered_map<string, int> par_name2new_index_map;
 
-	// Build mapping of parameter names column number in new matrix to be returned
+	// Build mapping of parameter names to column number in new matrix to be returned
 	icol_new = 0;
 	for (vector<string>::const_iterator b=par_names.begin(), e=par_names.end();
 		b!=e; ++b, ++icol_new) {
-		par2col_new_map[(*b)] = icol_new;
+		par_name2new_index_map[(*b)] = icol_new;
 	}
+
+	// Build mapping of observation names to row  number in new matrix to be returned
+	irow_new = 0;
+	for (vector<string>::const_iterator b=obs_names.begin(), e=obs_names.end();
+		b!=e; ++b, ++irow_new) {
+		obs_name2newindex_map[(*b)] = irow_new;
+	}
+
 
 	//build jacobian
-	new_matrix.setConstant(0.0);  // initialize all entries to 0
-	unordered_map<string, int>::const_iterator found;
-	unordered_map<string, int>::const_iterator not_found_obs2row_map = obs2row_map.end();
-	unordered_map<string, int>::const_iterator not_found_par2col_map = par2col_map.end();
-	map<string, map<string, double>>::const_iterator found_prior_info;
-	map<string, map<string, double>>::const_iterator not_found_prior_info = prior_info_sen.end();
+	unordered_map<string, int>::const_iterator found_par;
+	unordered_map<string, int>::const_iterator found_obs;
+	unordered_map<string, int>::const_iterator not_found_par_map = par_name2new_index_map.end();
+	unordered_map<string, int>::const_iterator not_found_obs_map = obs_name2newindex_map.end();
 
-	irow_new=0;
-	for (vector<string>::const_iterator b_obs=obs_names.begin(), e_obs=obs_names.end();
-		b_obs!=e_obs; ++b_obs, ++irow_new) {
-		// check to see if this is a standard observation (not prior information)
-		found = obs2row_map.find(*b_obs);
-		found_prior_info =  prior_info_sen.find(*b_obs);
-		if (found !=  not_found_obs2row_map) {
-			irow_old = (*found).second;
-			icol_new=0;
-			for (vector<string>::const_iterator b_par=par_names.begin(), e_par=par_names.end();
-				b_par!=e_par; ++b_par, ++icol_new)
-			{
-				found = par2col_map.find(*b_par);
-				assert(found != not_found_par2col_map);  // parameter in par_names not found in current jacobian
-				icol_old = (*found).second;
-				new_matrix(irow_new, icol_new) = matrix(irow_old, icol_old);
-			}
-		}
-		// check for observation in prior information
-		else if (found_prior_info != not_found_prior_info)
+	//unordered_map<string, int>::const_iterator not_found_par2col_map = par2col_map.end();
+	//map<string, map<string, double>>::const_iterator found_prior_info;
+	//map<string, map<string, double>>::const_iterator not_found_prior_info = prior_info_sen.end();
+
+	double data;
+	const string *obs_name;
+	const string *par_name;
+	std::vector<Eigen::Triplet<double> > triplet_list;
+	for (int icol=0; icol<matrix.outerSize(); ++icol)
+	{
+		for (SparseMatrix<double>::InnerIterator it(matrix, icol); it; ++it)
 		{
-			const string *par_name;
-			unordered_map<string, int>::const_iterator found_par;
-			unordered_map<string, int>::const_iterator not_found_par=par2col_new_map.end();
-			for(map<string, double>::const_iterator b_pi_rec=(*found_prior_info).second.begin(), e_pi_rec=(*found_prior_info).second.end();
-				b_pi_rec != e_pi_rec; ++b_pi_rec) 
+			data = it.value();
+			par_name = &base_numeric_par_names[it.col()];
+			obs_name = &base_sim_obs_names[it.row()];
+			found_par = par_name2new_index_map.find(*par_name);
+			found_obs = obs_name2newindex_map.find(*obs_name);
+
+			if(found_par != not_found_par_map && found_obs != not_found_obs_map)
 			{
-				par_name = &(*b_pi_rec).first;
-				found_par = par2col_new_map.find(*par_name);
-				if (found_par != not_found_par) {
-					icol_new = (*found_par).second;
-					new_matrix(irow_new, icol_new) = (*b_pi_rec).second;
-				}
+				triplet_list.push_back(Eigen::Triplet<double>(found_obs->second, found_par->second, data));
 			}
-		}
-		else {
-			assert(true); //observation name in obs_names not found in current jacobian
 		}
 	}
+	Eigen::SparseMatrix<double> new_matrix(n_rows, n_cols);
+	new_matrix.setZero();  // initialize all entries to 0
+	new_matrix.setFromTriplets(triplet_list.begin(), triplet_list.end());
 	return new_matrix;
 }
 
@@ -208,12 +195,14 @@ bool Jacobian::process_runs(ModelRun &init_model_run, vector<string> numeric_par
 {
 	// calculate jacobian
 	base_sim_obs_names = obs_names;
+	vector<string> prior_info_name = prior_info.get_keys();
+	base_sim_obs_names.insert(base_sim_obs_names.end(), prior_info_name.begin(), prior_info_name.end());
 	if(matrix.rows() != base_sim_obs_names.size() || matrix.cols() !=numeric_par_names.size())
 	{
 		matrix.resize(base_sim_obs_names.size(), numeric_par_names.size());
 	}
-	// initialize prior information
-	prior_info_sen.clear();
+	std::vector<Eigen::Triplet<double> > triplet_list;
+
 
 	int i_run = 0;
 	// if initial run was run get the newly calculated values
@@ -267,7 +256,8 @@ bool Jacobian::process_runs(ModelRun &init_model_run, vector<string> numeric_par
 			base_numeric_par_names.push_back(cur_par_name);
 			double base_numeric_par_value = base_numeric_parameters.get_rec(cur_par_name);
 			run_list.push_front(make_pair(init_model_run, base_numeric_par_value));
-			calc_derivative(cur_par_name, icol, run_list, par_transform, group_info, ctl_par_info, prior_info);
+			std::vector<Eigen::Triplet<double> > tmp_triplet_vec = calc_derivative(cur_par_name, icol, run_list, par_transform, group_info, ctl_par_info, prior_info);
+			triplet_list.insert( triplet_list.end(), tmp_triplet_vec.begin(), tmp_triplet_vec.end() );
 			icol++;
 		}
 		else
@@ -277,8 +267,8 @@ bool Jacobian::process_runs(ModelRun &init_model_run, vector<string> numeric_par
 				+ " failed.  Cannot compute the Jacobian"));
 		}
 	}
-
-	matrix.conservativeResize(base_sim_obs_names.size(), base_numeric_par_names.size());
+	matrix.setZero();
+	matrix.setFromTriplets(triplet_list.begin(), triplet_list.end());
 	// clean up
 	run_manager.free_memory();
 	return true;
@@ -317,7 +307,7 @@ bool Jacobian::get_derivative_parameters(const string &par_name, Parameters &num
 }
 
 
-void Jacobian::calc_derivative(const string &numeric_par_name, int jcol, list<pair<ModelRun, double> > &run_list,  const ParamTransformSeq &par_trans, 
+std::vector<Eigen::Triplet<double> >  Jacobian::calc_derivative(const string &numeric_par_name, int jcol, list<pair<ModelRun, double> > &run_list,  const ParamTransformSeq &par_trans, 
 							   const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, const PriorInformation &prior_info)
 {
 	const ParameterGroupRec *g_rec;
@@ -326,6 +316,7 @@ void Jacobian::calc_derivative(const string &numeric_par_name, int jcol, list<pa
 	double der;
 	int irow;
 	Parameters::const_iterator par_iter;
+	std::vector<Eigen::Triplet<double> > triplet_list;
 	
 	// sort run_list the parameter numeric_par_name;
 	auto compare = [] (const pair<ModelRun, double> &a, const pair<ModelRun, double> &b)
@@ -337,52 +328,76 @@ void Jacobian::calc_derivative(const string &numeric_par_name, int jcol, list<pa
 	//p_rec = group_info.get_parameter_rec_ptr(*par_name);
 	g_rec = group_info.get_group_rec_ptr(numeric_par_name);
 
-	if (run_list.size() ==3 && g_rec->dermthd == "PARABOLIC")
+	irow = 0;
+	for (auto &iobs_name : base_sim_obs_names)
 	{
-		// Central Difference Parabola
-		// Solve Ac = o for c to get the equation for a parabola where:
-		//        | p0**2  p0  1 |               | c0 |            | o0 |
-		//   A =  | p1**2  p1  1 |          c =  | c1 |        y = | o1 |
-		//        | p2**2  p2  1 |               | c2 |            | o2 |
-		// then compute the derivative as:
-		//   dy/dx = 2 * c0 * p1 + c1
-		auto &run2 = (*(++run_list.begin()));
-		MatrixXd a_mat(3,3);
-		VectorXd c(3), y(3);
-		irow = 0;
-		for (auto &iobs_name : base_sim_obs_names)
+		// Check if this is not prior infomation
+		if (prior_info.find(iobs_name) == prior_info.end())
 		{
-			// assemble A matrix
-			int i=0;
-			for (auto &irun_pair : run_list)
-				//list<ModelRun>::iterator b=run_list.begin(), e=run_list.end(); b!=e; ++b, ++i) 
+			if (run_list.size() ==3 && g_rec->dermthd == "PARABOLIC")
 			{
+				// Central Difference Parabola
+				// Solve Ac = o for c to get the equation for a parabola where:
+				//        | p0**2  p0  1 |               | c0 |            | o0 |
+				//   A =  | p1**2  p1  1 |          c =  | c1 |        y = | o1 |
+				//        | p2**2  p2  1 |               | c2 |            | o2 |
+				// then compute the derivative as:
+				//   dy/dx = 2 * c0 * p1 + c1
+				auto &run2 = (*(++run_list.begin()));
+				MatrixXd a_mat(3,3);
+				VectorXd c(3), y(3);
 				// assemble A matrix
-				double par_value = irun_pair.second;
-				a_mat(i,0) = par_value*par_value; a_mat(i,1) = par_value; a_mat(i,2) = 1;
-				// assemble y vector
-				y(i) =  irun_pair.first.get_obs().get_rec(iobs_name);
+				int i=0;
+				for (auto &irun_pair : run_list)
+				{
+					// assemble A matrix
+					double par_value = irun_pair.second;
+					a_mat(i,0) = par_value*par_value; a_mat(i,1) = par_value; a_mat(i,2) = 1;
+					// assemble y vector
+					y(i) =  irun_pair.first.get_obs().get_rec(iobs_name);
+				}
+				c = a_mat.colPivHouseholderQr().solve(y);
+				// assume for now that derivative is to be calculated around the second parameter location
+				der = 2.0 * c(0) *  run2.second + c(1);
+				if (der != 0)
+				{
+					triplet_list.push_back(Eigen::Triplet<double>(irow, jcol, der));
+				}
 			}
-			c = a_mat.colPivHouseholderQr().solve(y);
-			// assume for now that derivative is to be calculated around the second parameter location
-			der = 2.0 * c(0) *  run2.second + c(1);
-			matrix(irow++,jcol) = der;
+			else 
+			{
+				// Forward Difference and Central Difference Outer
+				del_par = run_last.second - run_first.second;
+				del_obs = run_last.first.get_obs().get_rec(iobs_name) - run_first.first.get_obs().get_rec(iobs_name);
+				if (del_obs != 0)
+				{
+					triplet_list.push_back(Eigen::Triplet<double>(irow, jcol, del_obs / del_par));
+				}
+			}
 		}
-	}
-	else 
-	{
-		// Forward Difference and Central Difference Outer
-		irow=0;
-		del_par = run_last.second - run_first.second;
-		for (auto &iobs_name : base_sim_obs_names)
+		else
 		{
-			del_obs = run_last.first.get_obs().get_rec(iobs_name) - run_first.first.get_obs().get_rec(iobs_name);
-			matrix(irow++,jcol) = del_obs / del_par;
+			// Prior Information allways calculated using outer model runs even for central difference
+			del_par = run_last.second - run_first.second;
+			double del_prior_info;
+
+			const PriorInformationRec *pi_rec;
+			const Parameters &ctl_pars_1 = run_first.first.get_ctl_pars();
+			const Parameters &ctl_pars_2 = run_last.first.get_ctl_pars();
+			const auto prior_info_it = prior_info.find(iobs_name);
+			if (prior_info_it != prior_info.end())
+			{
+				pi_rec = &(prior_info_it->second);
+				del_prior_info = pi_rec->calc_phi(ctl_pars_2) - pi_rec->calc_phi(ctl_pars_1);
+				if (del_prior_info != 0) {
+					triplet_list.push_back(Eigen::Triplet<double>(irow, jcol,
+					(pi_rec->calc_residual(ctl_pars_2) - pi_rec->calc_residual(ctl_pars_1)) / del_par));
+				}
+			}
 		}
+		++irow;
 	}
-	// Prior Information allways calculated using outer model runs even for central difference
-	del_par = run_last.second - run_first.second;
-	calc_prior_info_sen(numeric_par_name, run_first.first.get_ctl_pars(), run_last.first.get_ctl_pars(), del_par,  prior_info);
+	return triplet_list;
 }
 
 
@@ -477,25 +492,6 @@ bool Jacobian::central_diff(const string &par_name, const Parameters &pest_param
 	return true;
 }
 
-
-void Jacobian::calc_prior_info_sen(const string &par_name, const Parameters &ctl_pars_1, const Parameters &ctl_pars_2, double del_numeric_par,  const PriorInformation &prior_info)
-{
-	double del_prior_info;
-	const string *prior_info_name;
-	const PriorInformationRec *pi_rec;
-
-	for (auto &i_pinfo : prior_info)
-	{
-		prior_info_name = &(i_pinfo.first);
-		pi_rec = &(i_pinfo.second);
-		del_prior_info = i_pinfo.second.calc_phi(ctl_pars_2) - i_pinfo.second.calc_phi(ctl_pars_1);
-		if (del_prior_info != 0) {
-			prior_info_sen[*prior_info_name][par_name] =
-			(pi_rec->calc_residual(ctl_pars_2) - pi_rec->calc_residual(ctl_pars_1)) / del_numeric_par;
-		}
-	}
-}
-
 bool Jacobian::out_of_bounds(const Parameters &ctl_parameters, const ParameterGroupInfo &group_info,
 	const ParameterInfo &ctl_par_info, set<string> &out_of_bound_par) const
 {
@@ -541,16 +537,6 @@ double Jacobian::derivative_inc(const string &name, const ParameterGroupInfo &gr
 	return incr;
 }
 
-int Jacobian::size_prior_info_sen() const
-{
-	int n_sen = 0;
-	for(map<string, map<string, double>>::const_iterator b=prior_info_sen.begin(), e=prior_info_sen.end();
-		b!=e; ++b)
-	{
-		n_sen += (*b).second.size();
-	}
-	return n_sen;
-}
 const set<string>& Jacobian::get_failed_parameter_names() const
 {
 	return failed_parameter_names;
@@ -559,11 +545,9 @@ const set<string>& Jacobian::get_failed_parameter_names() const
 void Jacobian::save(const string &ext) const
 {
 	ofstream &jout = file_manager.open_ofile_ext(ext, ios::out |ios::binary);
-
 	int n_par = base_numeric_par_names.size();
-	int n_standard_obs = base_sim_obs_names.size();
-	int n_obs_and_pi = n_standard_obs + prior_info_sen.size();
-	int i,j,n;
+	int n_obs_and_pi = base_sim_obs_names.size();
+	int n;
 	int tmp;
 	double data;
 	const string *par_name_ptr;
@@ -576,48 +560,27 @@ void Jacobian::save(const string &ext) const
 	tmp = -n_obs_and_pi;
 	jout.write((char*) &tmp, sizeof(tmp));
 
-	////write number nonzero elements in jacobian 
-	n = 0;
-	for(int i=0, n_sobs=matrix.rows(), n_spars=matrix.cols(); i<n_sobs; ++i){
-		for(j=0;j<n_spars; ++j) {
-			if(matrix(i,j)!=0) ++n;
-		}
-	}
-	//get number of nonzero derivatives in prior information
-	n += size_prior_info_sen();  
+	//write number nonzero elements in jacobian (includes prior information)
+	n = matrix.nonZeros();
 	jout.write((char*)&n, sizeof(n));
 
-	////write matrix
+	//write matrix
 	n = 0;
 	map<string, double>::const_iterator found_pi_par;
 	map<string, double>::const_iterator not_found_pi_par;
-	for(j=0;j<n_par; ++j) {
-		par_name_ptr = &base_numeric_par_names[j];
-		// standard observations
-		for(i=0; i<n_standard_obs; ++i){
-			data = matrix(i,j);
-			++n;
-			if (data != 0.0) {
-				jout.write((char*) &(n), sizeof(n));
-				jout.write((char*) &(data), sizeof(data));
-			}
-		}
-		//prior information
 
-		for(map<string, map<string, double>>::const_iterator b=prior_info_sen.begin(), e=prior_info_sen.end();
-		b!=e; ++b)
+	Eigen::SparseMatrix<double> matrix_T(matrix);
+	matrix_T.transpose();
+	for (int icol=0; icol<matrix.outerSize(); ++icol)
+	{
+		for (SparseMatrix<double>::InnerIterator it(matrix_T, icol); it; ++it)
 		{
-			++n;
-			not_found_pi_par = (*b).second.end();
-			found_pi_par = (*b).second.find(*par_name_ptr);
-			if (found_pi_par != not_found_pi_par) {
-				data = (*found_pi_par).second;
-				jout.write((char*) &(n), sizeof(n));
-				jout.write((char*) &(data), sizeof(data));
+			data = it.value();
+			n = it.row() + 1 + it.col() * matrix_T.rows();
+			jout.write((char*) &(n), sizeof(n));
+			jout.write((char*) &(data), sizeof(data));
 			}
-		}
 	}
-
 	//save parameter names
 	for(vector<string>::const_iterator b=base_numeric_par_names.begin(), e=base_numeric_par_names.end();
 		b!=e; ++b) {
@@ -625,19 +588,13 @@ void Jacobian::save(const string &ext) const
 		jout.write(par_name, 12);
 	}
 
-	//save observation names (part 1 standard observations)
+	//save observation and Prior information names
 	for(vector<string>::const_iterator b=base_sim_obs_names.begin(), e=base_sim_obs_names.end();
 		b!=e; ++b) {
 		string_to_fortran_char(*b, obs_name, 20);
 		jout.write(obs_name, 20);
 	}
 	//save observation names (part 2 prior information)
-	for(map<string, map<string, double>>::const_iterator b=prior_info_sen.begin(), e=prior_info_sen.end();
-		b!=e; ++b)
-	{
-		string_to_fortran_char((*b).first, obs_name, 20);
-		jout.write(obs_name, 20);
-	}
 	file_manager.close_file(ext);
 }
 
@@ -664,12 +621,6 @@ void Jacobian::read(const string &filename, const PriorInformation &prior_info)
 	////read number nonzero elements in jacobian (observations + prior information)
 	fin.read((char*)&n_nonzero, sizeof(n_nonzero));
 
-//	if (n_obs_and_pi != base_sim_obs_names.size() + prior_info_sen.size())
-//	{
-//		cerr << "Error Reading Jacobian: Prior number of observations and prior information records in current problem and file are inconsistent" << endl;
-//		throw(PestError("Error Reading Jacobian: Prior number of observations and prior information records in current problem and file are inconsistent"));
-//	}
-
 	// record current position in file
 	streampos begin_sen_pos = fin.tellg();
 
@@ -687,27 +638,21 @@ void Jacobian::read(const string &filename, const PriorInformation &prior_info)
 	}
 	//read observation and Prior info names
 	base_sim_obs_names.clear();
-	//vector<string> tmp_obs_names;
 
 	for (int i_rec=0; i_rec<n_obs_and_pi; ++i_rec)
 	{
 		fin.read(obs_name, 20);
 		string tmp_obs_name = strip_cp(string(obs_name, 20));
-		//tmp_obs_names.push_back(strip_cp(tmp_obs_name));
-		//if (prior_info.find(obs_name) == prior_info.end())
-		//{
 			base_sim_obs_names.push_back(tmp_obs_name);
-		//}
 	}
 
 	//return to sensitivity section of file
 	fin.seekg(begin_sen_pos, ios_base::beg);
 
 	// read matrix
-	matrix = MatrixXd::Zero(n_obs_and_pi, n_par);
-	prior_info_sen.clear();
-	//string *obs_name_ptr;
 	int prior_cout = 0;
+	std::vector<Eigen::Triplet<double> > triplet_list;
+	triplet_list.reserve(n_nonzero);
 	for (int i_rec=0; i_rec<n_nonzero; ++ i_rec)
 	{
 		fin.read((char*) &(n), sizeof(n));
@@ -715,16 +660,11 @@ void Jacobian::read(const string &filename, const PriorInformation &prior_info)
 		fin.read((char*) &(data), sizeof(data));
 		j = int(n/(n_obs_and_pi)); // parameter index
 		i = (n-n_obs_and_pi*j) % n_obs_and_pi;  //observation index
-		//obs_name_ptr = &tmp_obs_names[i];
-		//if (prior_info.find(*obs_name_ptr) == prior_info.end())
-		//{
-			matrix(i,j) = data;
-		//}
-		//else
-		//{
-		//	prior_info_sen[*obs_name_ptr][base_numeric_par_names[j]] = data;
-	//	}
+		triplet_list.push_back(Eigen::Triplet<double>(i, j, data));
 	}
+	matrix.resize(n_obs_and_pi, n_par);
+	matrix.setZero();
+	matrix.setFromTriplets(triplet_list.begin(), triplet_list.end());
 	fin.close();
 }
 

@@ -56,7 +56,7 @@
     character*20 genie_host
     character*80 genie_tag
     character*20 p_names(3)
-    character*20 o_names(16)
+    character*50 o_names(16)
     character buf
     DOUBLE PRECISION pars(3)
     DOUBLE PRECISION bad_pars(3)

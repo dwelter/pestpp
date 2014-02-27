@@ -8,16 +8,16 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerCommandArguments>storage5_reg</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>step4fu2_reg.pst /j</LocalDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerWorkingDirectory>$(SolutionDir)benchmarks\stor</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerWorkingDirectory>C:\Users\Dave\Desktop\Randy2\WORKER_DATA</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerDebuggerType>Auto</LocalDebuggerDebuggerType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LocalDebuggerCommandArguments>storage5_reg</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>step4fu2_reg.pst \j</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerWorkingDirectory>C:\Users\Dave\Documents\Visual Studio 2012\Projects\pestpp\pest++\examples\stor_parallel\master_debug</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerWorkingDirectory>C:\Users\Dave\Desktop\Randy2\WORKER_DATA</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
 </Project>

@@ -1,24 +1,26 @@
 /*  
-    © Copyright 2012, David Welter
-    
-    This file is part of PEST++.
+	© Copyright 2012, David Welter
+	
+	This file is part of PEST++.
    
-    PEST++ is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	PEST++ is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    PEST++ is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	PEST++ is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
 #include "TerminationController.h"
 #include <vector>
 #include <algorithm>
+#include "utilities.h"
+using namespace pest_utils;
 
 using namespace std;
 
@@ -118,10 +120,62 @@ const TerminationController& TerminationController::operator=(const TerminationC
 }
 
 
+void TerminationController::save_state(std::ostream &fout)
+{
+
+	fout << "TERMINATION_INFO_1 " << noptmax << " " << nopt_count << " " << nphinoger << " " 
+		<< nphinoger_count << " " << nrelpar << endl;
+	fout << "TERMINATION_INFO_2 " << nrelpar_count << " " << nphistp << " " << phiredstp << " " << relparstp << endl;
+	fout << "TERMINATION_INFO_3 ";
+	for (double &a : lowest_phi)
+	{
+		fout << " " << a;
+	}
+	fout << endl;
+}
 
 
 
+void  TerminationController::read_state(const std::string &line)
+{
+	vector<string> tokens;
 
+	tokenize(line, tokens);
+	try
+	{
+		string line_type = upper_cp(tokens[0]);
+		if (line_type == "TERMINATION_INFO_1")
+		{
+			convert_ip(tokens[1], noptmax);
+			convert_ip(tokens[2], nopt_count);
+			convert_ip(tokens[3], nphinoger);
+			convert_ip(tokens[4], nphinoger_count);
+			convert_ip(tokens[5], nrelpar);
+		}
+		else if (line_type == "TERMINATION_INFO_2")
+		{
+			convert_ip(tokens[1], nrelpar);
+			convert_ip(tokens[2],nphistp);
+			convert_ip(tokens[3],phiredstp);
+			convert_ip(tokens[4],relparstp );
+		}
+		else if (line_type == "TERMINATION_INFO_3")
+		{
+			for (int i=1; i<tokens.size(); ++i)
+			{
+				double val = convert_cp<double>(tokens[1]);
+				lowest_phi.push_back(val);
+			}
+		}
+	}
+	catch(std::runtime_error &e)
+	{
+		cerr << "Error processing restart file on line:" << endl;
+		cerr << line << endl << endl;
+		cerr << e.what() << endl << endl;
+		throw(e);
+	}
+}
 
 TerminationController::~TerminationController(void)
 {

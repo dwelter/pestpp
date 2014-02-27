@@ -158,11 +158,11 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 		os   << "  SVD Package: " << svd_package->description << endl;
 		os   << "    Model calls so far : " << run_manager.get_total_runs() << endl;
 		fout_restart << "start_iteration " << global_iter_num << endl;
+		termination_ctl.save_state(fout_restart);
 		// write head for SVD file
 		ofstream &fout_svd = file_manager.get_ofstream("svd");
 		fout_svd << "------------------------------------------------------------------------------" << endl;
 		fout_svd << "OPTIMISATION ITERATION NO.        : " << global_iter_num << endl << endl;
-
 		iteration(run_manager, termination_ctl, false);
 
 		// write files that get wrtten at the end of each iteration
@@ -250,16 +250,17 @@ SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, 
 	}
 
 	//Compute effect of frozen parameters on the residuals vector
-	Parameters delta_freeze_pars = freeze_numeric_pars;
-	delta_freeze_pars -= base_numeric_pars;
-	VectorXd del_residuals = calc_residual_corrections(jacobian, delta_freeze_pars, obs_name_vec);
-	MatrixXd jac = jacobian.get_matrix(obs_name_vec, p_name_nf_vec);
-	MatrixXd SqrtQ_J = Q_sqrt * jac;
-
 	VectorXd Sigma;
 	MatrixXd U;
 	MatrixXd Vt;
-	svd_package->solve_ip(SqrtQ_J, Sigma, U, Vt);
+	Parameters delta_freeze_pars = freeze_numeric_pars;
+	delta_freeze_pars -= base_numeric_pars;
+	VectorXd del_residuals = calc_residual_corrections(jacobian, delta_freeze_pars, obs_name_vec);
+	{
+		Eigen::SparseMatrix<double> jac = jacobian.get_matrix(obs_name_vec, p_name_nf_vec);
+		MatrixXd SqrtQ_J = Q_sqrt * jac;
+		svd_package->solve_ip(SqrtQ_J, Sigma, U, Vt);
+	}
 	ofstream &fout_svd = file_manager.get_ofstream("svd");
 	fout_svd << "FROZEN PARAMETERS-" << endl;
 	fout_svd << freeze_numeric_pars << endl << endl;
@@ -275,9 +276,12 @@ SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, 
 	}
 	
 	//calculate the number of singluar values above the threshold
+	VectorXd tmp_svd_uvec;
 	int max_sing = (p_name_nf_vec.size() < svd_info.maxsing) ? par_name_vec.size() : svd_info.maxsing;
-	MatrixXd SqrtQ_J_inv =SVD_inv(U, Sigma, Vt, max_sing, svd_info.eigthresh, max_sing);
-	VectorXd tmp_svd_uvec =(SqrtQ_J_inv * Q_sqrt) * (Residuals + del_residuals);
+	{
+		MatrixXd SqrtQ_J_inv =SVD_inv(U, Sigma, Vt, max_sing, svd_info.eigthresh, max_sing);
+		tmp_svd_uvec =(SqrtQ_J_inv * Q_sqrt) * (Residuals + del_residuals);
+	}
 
 	//build map of parameter names to index in original par_name_vec vector
 	unordered_map<string, int> par_vec_name_to_idx;
@@ -362,6 +366,8 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 
 	restart_reuse_jacoboian:
 	cout << endl;
+
+
 	//Freeze Parameter for which the jacobian could not be calculated
 	auto &failed_jac_pars_names = jacobian.get_failed_parameter_names();
 	auto  failed_jac_pars = cur_solution.get_ctl_pars().get_subset(failed_jac_pars_names.begin(), failed_jac_pars_names.end());

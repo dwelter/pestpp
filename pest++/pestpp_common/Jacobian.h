@@ -25,6 +25,7 @@
 #include<set>
 #include<list>
 #include<Eigen/Dense>
+#include<Eigen/Sparse>
 #include "Transformable.h"
 
 class ParamTransformSeq;
@@ -41,10 +42,9 @@ public:
 	Jacobian(FileManager &_file_manager);
 	virtual const vector<string>& parameter_list() const{return base_numeric_par_names;}
 	virtual const vector<string>& observation_list() const {return  base_sim_obs_names;}
-	virtual vector<string> obs_and_reg_list() const;
+	virtual const vector<string>& obs_and_reg_list() const;
 	virtual const Parameters &get_base_numeric_parameters() const{return base_numeric_parameters;};
-	virtual const Observations &get_base_sim_observations() const {return base_sim_observations;}
-	virtual Eigen::MatrixXd get_matrix(const vector<string> &obs_names, const vector<string> & par_name_vec) const;
+	Eigen::SparseMatrix<double> get_matrix(const vector<string> &obs_names, const vector<string> & par_name_vec) const;
 	virtual bool build_runs(ModelRun &model_run, vector<string> numeric_par_names, vector<string> obs_names, ParamTransformSeq &par_transform,
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
 		RunManagerAbstract &run_manager, set<string> &out_of_bound_par, bool phiredswh_flag=false, bool calc_init_obs=true);
@@ -63,11 +63,10 @@ protected:
 	set<string> failed_parameter_names;
 	vector< string>  base_sim_obs_names;  //names of base observations used to calculate the jacobian
 	Observations  base_sim_observations;  //values of base observations used to calculate the jacobian
-	Eigen::MatrixXd matrix;
-	map<string, map<string, double>> prior_info_sen;
+	Eigen::SparseMatrix<double> matrix;
 	FileManager &file_manager;  // filemanger used to get name of jaobian file
 
-	virtual void calc_derivative(const string &numeric_par_name, int jcol, list<pair<ModelRun, double> > &run_list, const ParamTransformSeq &par_trans, const ParameterGroupInfo &group_info,
+	virtual std::vector<Eigen::Triplet<double> > calc_derivative(const string &numeric_par_name, int jcol, list<pair<ModelRun, double> > &run_list, const ParamTransformSeq &par_trans, const ParameterGroupInfo &group_info,
 		const ParameterInfo &ctl_par_info, const PriorInformation &prior_info);
 	virtual bool forward_diff(const string &par_name, const Parameters &pest_parameters, 
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, const ParamTransformSeq &par_trans,
@@ -79,8 +78,6 @@ protected:
 	virtual double derivative_inc(const string &name, const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info,   double cur_par_value,  bool central = false);
 	virtual bool get_derivative_parameters(const string &par_name, Parameters &numeric_pars, ParamTransformSeq &par_transform, const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
 		vector<double> &delta_numeric_par_vec, bool phiredswh_flag, set<string> &out_of_bound_par);
-	virtual void calc_prior_info_sen(const string &par_name, const Parameters &ctl_pars_1, const Parameters &ctl_pars_2, double del_numeric_par, const PriorInformation &prior_info);
-	virtual int size_prior_info_sen() const;
 	virtual unordered_map<string, int> get_par2col_map() const;
 	virtual unordered_map<string, int> get_obs2row_map() const;
 };
