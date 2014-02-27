@@ -75,16 +75,21 @@ QSqrtMatrix::QSqrtMatrix(const ObservationInfo &obs_info, const vector<string> &
 
 bool ne_zero(double v) {return v!=0.0;}
 
-//Eigen::SparseMatrix<double> QSqrtMatrix::operator*(const Eigen::SparseMatrix<double> &rhs) const
-//{
-//	Eigen::SparseMatrix<double> ret_val(rhs);
-//	int n_rows = rhs.rows();
-//
-//	for (int i=0; i < n_rows; ++i) {
-//		ret_val.row(i) *= weights[i];
-//	}
-//	return ret_val;
-//}
+Eigen::SparseMatrix<double> QSqrtMatrix::operator*(const Eigen::SparseMatrix<double> &rhs) const
+{
+	Eigen::SparseMatrix<double> q_mat( rhs.rows(),  rhs.rows());
+	Eigen::SparseMatrix<double> ret_val(rhs.rows(), rhs.cols());
+	int n_rows = rhs.rows();
+	std::vector<Eigen::Triplet<double> > triplet_list;
+	for (int i=0; i < n_rows; ++i) {
+		triplet_list.push_back(Eigen::Triplet<double>(i, i, weights[i]));
+	}
+	q_mat.setZero();
+	q_mat.setFromTriplets(triplet_list.begin(), triplet_list.end());
+	ret_val.setZero();
+	ret_val = q_mat * rhs;
+	return ret_val;
+}
 
 int QSqrtMatrix::num_nonzero() const
 {	

@@ -38,7 +38,7 @@ public:
 	friend Eigen::MatrixXd operator*(const Eigen::MatrixXd &lhs, const QSqrtMatrix &rhs);
 	QSqrtMatrix(const ObservationInfo &obs_info, const vector<string> &obs, const PriorInformation *prior_info_ptr, 
 	double tikhonov_weight);
-	//Eigen::SparseMatrix<double> operator*(const Eigen::SparseMatrix<double> &rhs) const;
+	Eigen::SparseMatrix<double> operator*(const Eigen::SparseMatrix<double> &rhs) const;
 	Eigen::MatrixXd operator*(const Eigen::MatrixXd &rhs) const;
 	const Eigen::VectorXd get_diag_vector() const;
 	int num_nonzero() const;
