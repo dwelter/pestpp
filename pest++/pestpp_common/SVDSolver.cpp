@@ -257,13 +257,9 @@ SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, 
 	delta_freeze_pars -= base_numeric_pars;
 	VectorXd del_residuals = calc_residual_corrections(jacobian, delta_freeze_pars, obs_name_vec);
 	{ 
-		MatrixXd SqrtQ_J_dense;
-		{
-			Eigen::SparseMatrix<double> jac = jacobian.get_matrix(obs_name_vec, p_name_nf_vec);
-			Eigen::SparseMatrix<double> SqrtQ_J = Q_sqrt * jac;
-			SqrtQ_J_dense = SqrtQ_J;
-		}
-		svd_package->solve_ip(SqrtQ_J_dense, Sigma, U, Vt);
+		Eigen::SparseMatrix<double> jac = jacobian.get_matrix(obs_name_vec, p_name_nf_vec);
+		Eigen::SparseMatrix<double> SqrtQ_J = Q_sqrt * jac;
+		svd_package->solve_ip(SqrtQ_J, Sigma, U, Vt);
 	}
 	ofstream &fout_svd = file_manager.get_ofstream("svd");
 	fout_svd << "FROZEN PARAMETERS-" << endl;

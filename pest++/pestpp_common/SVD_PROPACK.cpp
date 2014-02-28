@@ -1,20 +1,20 @@
 /*  
-    © Copyright 2012, David Welter
-    
-    This file is part of PEST++.
+	© Copyright 2012, David Welter
+	
+	This file is part of PEST++.
    
-    PEST++ is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	PEST++ is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    PEST++ is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	PEST++ is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
 #include <vector>
 #include <iostream>
@@ -44,7 +44,7 @@ SVD_PROPACK::SVD_PROPACK(void) : SVDPackage("PROPACK")
 {
 }
 
-void SVD_PROPACK::solve_ip(MatrixXd& A, VectorXd &Sigma, MatrixXd& U, MatrixXd& Vt )
+void SVD_PROPACK::solve_ip(Eigen::SparseMatrix<double>& A, VectorXd &Sigma, MatrixXd& U, MatrixXd& Vt )
 {
 	class local_utils {
 		public:
@@ -59,7 +59,6 @@ void SVD_PROPACK::solve_ip(MatrixXd& A, VectorXd &Sigma, MatrixXd& U, MatrixXd& 
 
 	int m_rows = A.rows();
 	int n_cols = A.cols();
-	int irow, icol;
 	int n_nonzero;
 	int k = 0;
 	int kmax = min(m_rows, n_cols);
@@ -78,16 +77,8 @@ void SVD_PROPACK::solve_ip(MatrixXd& A, VectorXd &Sigma, MatrixXd& U, MatrixXd& 
 	Vt.resize(n_cols, n_cols);
 	Vt.setConstant(0.0);
 	//count number of nonzero entries
-	for (n_nonzero=0, irow=0; irow<m_rows; ++irow)
-	{
-		for(icol=0; icol<n_cols; icol++)
-		{
-			if(A(irow, icol) != 0.0)
-			{
-				n_nonzero += 1;
-			}
-		}
-	}
+	n_nonzero = A.nonZeros();
+
 	// Allocate and initialize arrays
 	double *dparm = new double[n_nonzero];
 	int *iparm = new int[2*n_nonzero+1];
@@ -98,20 +89,20 @@ void SVD_PROPACK::solve_ip(MatrixXd& A, VectorXd &Sigma, MatrixXd& U, MatrixXd& 
 	int *tmp_iwork = new int[2*kmax+1];
 
 	iparm[0] = n_nonzero;
-	int i_nonzero;
-	for (i_nonzero=0, irow=0; irow<m_rows; ++irow)
+	int n=0;
+	double data;
+	for (int icol=0; icol<A.outerSize(); ++icol)
 	{
-		for(icol=0; icol<n_cols; icol++)
+		for (SparseMatrix<double>::InnerIterator it(A, icol); it; ++it)
 		{
-			if(A(irow, icol) != 0.0)
-			{
-				dparm[i_nonzero] = A(irow, icol);
-				iparm[i_nonzero+1] = (irow+1);
-				iparm[n_nonzero+1+i_nonzero] = (icol+1);
-				i_nonzero++;
-			}
+			data = it.value();
+			dparm[n] = data;
+			++n;
+			iparm[n] = it.row()+1;
+			iparm[n_nonzero+n] = it.col()+1;
 		}
 	}
+
 	local_utils::init_array(tmp_u, m_rows*(kmax+1), 0.0);
 	local_utils::init_array(tmp_v, n_cols*kmax, 0.0);
 	local_utils::init_array(tmp_b, kmax*2, 0.0);
@@ -123,17 +114,17 @@ void SVD_PROPACK::solve_ip(MatrixXd& A, VectorXd &Sigma, MatrixXd& U, MatrixXd& 
 
 	// Compute singluar values and vectors
 	int k0 = -1;
-    int k2 = 0;
-    double eig_ratio = 1.0;
+	int k2 = 0;
+	double eig_ratio = 1.0;
 	while (k0<kmax-1 && eig_ratio > eign_thres)
 	{
-        k0 += 1;
-        k2 = k0+1; // index of eignvlaue and eigenvector to be computed this time
+		k0 += 1;
+		k2 = k0+1; // index of eignvlaue and eigenvector to be computed this time
 		DEF_DLANBPRO_SPARCE(&m_rows, &n_cols, &k0, &k2, tmp_u, 
 			&ld_tmpu, tmp_v, &ld_tmpv, tmp_b, &ld_tmpb, 
 			&rnorm, d_option, ioption, tmp_work,
 			tmp_iwork, dparm, iparm, &ierr);
-        eig_ratio = tmp_b[k2-1] / tmp_b[0];
+		eig_ratio = tmp_b[k2-1] / tmp_b[0];
 	}
 
 	for (int i_sing=0; i_sing<kmax; ++i_sing)
@@ -156,21 +147,21 @@ void SVD_PROPACK::solve_ip(MatrixXd& A, VectorXd &Sigma, MatrixXd& U, MatrixXd& 
 	delete [] tmp_v;
 	delete [] tmp_b;
 	delete [] tmp_work;
-    delete [] tmp_iwork;
+	delete [] tmp_iwork;
 }
 
 
 void SVD_PROPACK::test()
 {
-	MatrixXd A(3,3);
+	Eigen::SparseMatrix<double> A(3,3);
 	VectorXd Sigma(3);
 	MatrixXd U(3,3);
 	MatrixXd Vt(3,3);
 
-	A.setConstant(0.0);
-	A(0,0) = 20;
-	A(1,1) = 30;
-	A(2,2) = 50;
+	A.setZero();
+	A.insert(0,0) = 20;
+	A.insert(1,1) = 30;
+	A.insert(2,2) = 50;
 
 	set_max_sing(3);
 	set_eign_thres(1e-7);

@@ -9,61 +9,61 @@
 
  OPTIMISATION ITERATION NO. 2   ----->
  Parameter name    Group        Current value        Sensitivity
-   sup_1           g_sup_1      10.0000000000        73.0381470456       
-   sup_2           g_sup_2      10.0000000000        73.0381470456       
+   sup_1           g_sup_1      10.0000000000        74.2605817512       
+   sup_2           g_sup_2      10.0000000000        74.2605817512       
 
 
  OPTIMISATION ITERATION NO. 3   ----->
  Parameter name    Group        Current value        Sensitivity
-   sup_1           g_sup_1      9.92741193908        95.4579987656       
-   sup_2           g_sup_2      9.97641786650        4.55407526449       
+   sup_1           g_sup_1      9.97175062882        82.3675473670       
+   sup_2           g_sup_2      10.0000000015        5.90667577832       
 
 
  OPTIMISATION ITERATION NO. 4   ----->
  Parameter name    Group        Current value        Sensitivity
-   sup_1           g_sup_1      9.88920003452        104.910047789       
-   sup_2           g_sup_2      10.0643612848        1.75492835758       
+   sup_1           g_sup_1      9.89674137859        103.449372990       
+   sup_2           g_sup_2      10.1038402741        1.46026278595       
 
 
  OPTIMISATION ITERATION NO. 5   ----->
  Parameter name    Group        Current value        Sensitivity
-   COND            COND         -0.852994596832      108.247645383       
-   SCOEFF          SCOEFF       1.52563421381        24.3614670840       
+   COND            COND         -0.851193437287      107.766692059       
+   SCOEFF          SCOEFF       1.52355475524        24.1348902862       
 
 
  OPTIMISATION ITERATION NO. 6   ----->
  Parameter name    Group        Current value        Sensitivity
-   sup_1           g_sup_1      10.0000000000        107.215342179       
-   sup_2           g_sup_2      10.0000000000        107.215342179       
+   sup_1           g_sup_1      10.0000000000        106.669991163       
+   sup_2           g_sup_2      10.0000000000        106.669991163       
 
 
  OPTIMISATION ITERATION NO. 7   ----->
  Parameter name    Group        Current value        Sensitivity
-   sup_1           g_sup_1      9.99952636120        115.669083687       
-   sup_2           g_sup_2      10.0004703650        112.140385202       
+   sup_1           g_sup_1      9.99813202838        107.331058752       
+   sup_2           g_sup_2      10.0000000084        20.8878117817       
 
 
  OPTIMISATION ITERATION NO. 8   ----->
  Parameter name    Group        Current value        Sensitivity
-   sup_1           g_sup_1      9.99946381785        115.676362000       
-   sup_2           g_sup_2      10.0008079175        110.715920818       
+   sup_1           g_sup_1      9.99839204482        115.507993455       
+   sup_2           g_sup_2      10.0005230356        107.847275282       
 
 
  OPTIMISATION ITERATION NO. 9   ----->
  Parameter name    Group        Current value        Sensitivity
-   COND            COND         -0.857724500155      109.236215620       
-   SCOEFF          SCOEFF       1.53483006108        25.0347820648       
+   COND            COND         -0.857041873204      109.060828881       
+   SCOEFF          SCOEFF       1.53398043727        24.9420766108       
 
 
  OPTIMISATION ITERATION NO. 10  ----->
  Parameter name    Group        Current value        Sensitivity
-   sup_1           g_sup_1      10.0000000000        107.215488126       
-   sup_2           g_sup_2      10.0000000000        107.215488126       
+   sup_1           g_sup_1      10.0000000000        107.217598900       
+   sup_2           g_sup_2      10.0000000000        107.217598900       
 
 
  OPTIMISATION ITERATION NO. 11  ----->
  Parameter name    Group        Current value        Sensitivity
-   COND            COND         -0.856628193839      108.955967070       
-   SCOEFF          SCOEFF       1.53343773000        24.8858589444       
+   COND            COND         -0.857097942750      0.884030770850      
+   SCOEFF          SCOEFF       1.53390261247        1.58111526571       
 
 
