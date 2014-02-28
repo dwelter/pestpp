@@ -16,8 +16,8 @@
     <LocalDebuggerDebuggerType>Auto</LocalDebuggerDebuggerType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LocalDebuggerCommandArguments>step4fu2_reg.pst /j</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>step4fu2_reg /j</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerWorkingDirectory>C:\Users\Dave\Desktop\Randy2\WORKER_DATA</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerWorkingDirectory>$(SolutionDir)examples\Randy2\WORKER_DATA</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
 </Project>
