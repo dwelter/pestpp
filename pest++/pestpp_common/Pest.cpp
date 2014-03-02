@@ -189,6 +189,9 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 				convert_ip(tokens[0], svd_info.maxsing);
 				convert_ip(tokens[1], svd_info.eigthresh);
 			}
+			if (sec_lnum == 3) {
+				convert_ip(tokens[0], svd_info.eigwrite);
+			}
 		}
 		else if (section == "PARAMETER GROUPS")
 		{

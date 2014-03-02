@@ -1,21 +1,21 @@
 
 /*  
-    © Copyright 2012, David Welter
-    
-    This file is part of PEST++.
+	© Copyright 2012, David Welter
+	
+	This file is part of PEST++.
    
-    PEST++ is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	PEST++ is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    PEST++ is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	PEST++ is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
 #include "FileManager.h"
 #include "utilities.h"
@@ -28,8 +28,6 @@ FileManager::FileManager(const string &_base_filename, const string &_directory)
 	: pest_base_filename(strip_cp(_base_filename)), directory(strip_cp(_directory))
 {
 	ofstream &f_rec = open_ofile_ext("rec");
-	ofstream &f_sen = open_ofile_ext("sen");
-	OutputFileWriter::write_sen_header(f_sen, pest_base_filename);
 }
 
 
@@ -139,9 +137,9 @@ fstream &FileManager::open_iofile_absolute(const string &tag, const string &file
 	fstream &f_new = *(ret.first->second);
 	if (ret.second != false  && !f_new.is_open())
 	{
-	    // a file needs to exist before it can be opened it with read and write 
-	    // permission.   So open it with write permission to crteate it, close 
-	    // and then reopen it with read and write permisssion.
+		// a file needs to exist before it can be opened it with read and write 
+		// permission.   So open it with write permission to crteate it, close 
+		// and then reopen it with read and write permisssion.
 		f_new.open(filename, ios_base::out | ios_base::binary);
 		f_new.close();
 		f_new.open(filename, mode);

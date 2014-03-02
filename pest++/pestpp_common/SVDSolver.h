@@ -29,6 +29,7 @@
 #include "ModelRunPP.h"
 #include "TerminationController.h"
 #include "RunManagerAbstract.h"
+#include "OutputFileWriter.h"
 
 
 class FileManager;
@@ -46,7 +47,7 @@ public:
 	SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_par_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, 
-		const Regularization *regul_scheme_ptr, int _max_freeze_iter, Pest::RestartCommand &_restart_command, const string &description="base parameter solution");
+		const Regularization *regul_scheme_ptr, int _max_freeze_iter, OutputFileWriter &_output_file_writer, Pest::RestartCommand &_restart_command, const string &description="base parameter solution");
 	virtual ModelRun& solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter, ModelRun &cur_run, ModelRun &optimum_run);
 	virtual void iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs=false);
 	ModelRun &cur_model_run() {return cur_solution;}
@@ -83,6 +84,7 @@ protected:
 	int num_no_descent;
 	int max_freeze_iter;
 	double best_lambda;
+	OutputFileWriter &output_file_writer;
 	Pest::RestartCommand &restart_command;
 
 	virtual Parameters limit_parameters_ip(const Parameters &init_numeric_pars, 

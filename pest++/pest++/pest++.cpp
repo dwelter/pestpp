@@ -185,8 +185,9 @@ int main(int argc, char* argv[])
 	}
 	pest_scenario.check_inputs();
 
-	//Open files that are required for the entire simulation
-	file_manager.open_ofile_ext("svd");
+	//Initialize OutputFileWriter to hadle IO of suplementary files (.par, .par, .svd)
+	bool save_eign = pest_scenario.get_svd_info().eigwrite > 0;
+	OutputFileWriter output_file_writer(file_manager, file_manager.get_base_filename(), true, save_eign);
 
 
 	RunManagerAbstract *run_manager_ptr;
@@ -232,7 +233,7 @@ int main(int argc, char* argv[])
 	SVDSolver base_svd(&pest_scenario.get_control_info(), pest_scenario.get_svd_info(), &pest_scenario.get_base_group_info(),
 		&pest_scenario.get_ctl_parameter_info(), &pest_scenario.get_ctl_observation_info(), file_manager,
 		&pest_scenario.get_ctl_observations(), &obj_func, base_trans_seq, pest_scenario.get_prior_info_ptr(),
-		*base_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(), pest_scenario.get_pestpp_options().get_max_freeze_iter(), pest_scenario.get_restart_command());
+		*base_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(), pest_scenario.get_pestpp_options().get_max_freeze_iter(), output_file_writer, pest_scenario.get_restart_command());
 
 	base_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 	//Build Super-Parameter problem
@@ -284,11 +285,11 @@ int main(int argc, char* argv[])
 		{
 			optimum_run.update_ctl(tmp_pars, tmp_obs);
 			// save parameters to .par file
-			OutputFileWriter::write_par(file_manager.open_ofile_ext("par"), optimum_run.get_ctl_pars(), *(base_trans_seq.get_offset_ptr()), 
+			output_file_writer.write_par(file_manager.open_ofile_ext("par"), optimum_run.get_ctl_pars(), *(base_trans_seq.get_offset_ptr()), 
 			*(base_trans_seq.get_scale_ptr()));
 			file_manager.close_file("par");
 			// save new residuals to .rei file
-			OutputFileWriter::write_rei(file_manager.open_ofile_ext("rei"), 0, 
+			output_file_writer.write_rei(file_manager.open_ofile_ext("rei"), 0, 
 				*(optimum_run.get_obj_func_ptr()->get_obs_ptr()), 
 				optimum_run.get_obs(), *(optimum_run.get_obj_func_ptr()),
 				optimum_run.get_ctl_pars());
@@ -339,7 +340,7 @@ int main(int argc, char* argv[])
 			SVDASolver super_svd(&svd_control_info, pest_scenario.get_svd_info(), &sup_group_info, &pest_scenario.get_ctl_parameter_info(),
 				&pest_scenario.get_ctl_observation_info(),  file_manager, &pest_scenario.get_ctl_observations(), &obj_func,
 				trans_svda, &pest_scenario.get_prior_info(), *super_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(),
-				pest_scenario.get_pestpp_options().get_max_freeze_iter(), pest_scenario.get_restart_command());
+				pest_scenario.get_pestpp_options().get_max_freeze_iter(), output_file_writer, pest_scenario.get_restart_command());
 			super_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 			cur_run = super_svd.solve(*run_manager_ptr, termination_ctl, n_super_iter, cur_run, optimum_run);
 			cur_ctl_parameters = super_svd.cur_model_run().get_ctl_pars();

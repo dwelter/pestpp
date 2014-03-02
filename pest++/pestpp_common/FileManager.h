@@ -32,6 +32,7 @@ public:
 	std::string build_filename(const std::string &ext);
 	std::string get_full_filename(const std::string &tag);
 	std::string jacobian_filename() {return build_filename("jco");}
+	std::string get_base_filename() {return pest_base_filename;}
 	void set_analytic_derivative_filename(const std::string &name) {analytic_derivative_filename = name;}
 	std::ofstream &rec_ofstream();
 	std::ofstream &sen_ofstream();

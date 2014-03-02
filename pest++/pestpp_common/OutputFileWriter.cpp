@@ -35,6 +35,18 @@
 using namespace std;
 using namespace Eigen;
 
+OutputFileWriter::OutputFileWriter(FileManager &_file_manager, const string &_case_name, bool _save_rei, bool _save_svd)
+	: file_manager(_file_manager), case_name(_case_name), save_rei(_save_rei), save_svd(_save_svd)
+{
+
+	ofstream &fout_sen = file_manager.open_ofile_ext("sen");
+	write_sen_header(fout_sen, case_name);
+	if (save_svd)
+	{
+		file_manager.open_ofile_ext("svd");
+	}
+}
+
 void OutputFileWriter::write_rei(ofstream &fout, int iter_no, const Observations &obs, const Observations &sim, 
 	const ObjectiveFunc &obj_func, const Parameters &pars)
 {
@@ -150,13 +162,31 @@ void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobia
 	fout << endl << endl;
 }
 
-void OutputFileWriter::write_svd(ostream &fout, VectorXd &Sigma, MatrixXd U, MatrixXd &Vt)
+void OutputFileWriter::write_svd(VectorXd &Sigma, MatrixXd U, MatrixXd &Vt, int num_sing_used, double lambda, const Parameters &freeze_numeric_pars)
 {
-	fout << "SINGULAR VALUES:-" << endl;
-	print(Sigma, fout, 7);
-	fout << endl << endl;
-	fout << "MATRIX OF EIGENVECTORS:-" << endl;
-	print(Vt, fout, 7);
-	fout << endl;
+	if (OutputFileWriter::save_svd)
+	{
+		ofstream &fout_svd = file_manager.get_ofstream("svd");
+		fout_svd<< "CURRENT VALUE OF MARQUARDT LAMBDA = " << lambda << " --------->" << endl << endl;
+		fout_svd << "FROZEN PARAMETERS-" << endl;
+		fout_svd << freeze_numeric_pars << endl << endl;
+		fout_svd << "SINGULAR VALUES:-" << endl;
+		print(Sigma, fout_svd, 7);
+		fout_svd << endl << endl;
+		fout_svd << "MATRIX OF EIGENVECTORS:-" << endl;
+		print(Vt, fout_svd, 7);
+		fout_svd << endl;
+		fout_svd << "Number of singular values used in solution = " <<  num_sing_used << endl << endl << endl;
+	}
+}
 
+void OutputFileWriter::write_svd_iteration(int iteration_no)
+{
+	if (OutputFileWriter::save_svd)
+	{
+		ofstream &fout_svd = file_manager.get_ofstream("svd");
+	// write head for SVD file
+		fout_svd << "------------------------------------------------------------------------------" << endl;
+		fout_svd << "OPTIMISATION ITERATION NO.        : " << iteration_no << endl << endl;
+	}
 }

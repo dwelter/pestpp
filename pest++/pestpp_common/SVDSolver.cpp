@@ -54,11 +54,11 @@ void SVDSolver::Upgrade::print(ostream &os)
 SVDSolver::SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_par_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, 
-		const Regularization *_regul_scheme_ptr, int _max_freeze_iter, Pest::RestartCommand &_restart_command, const string &_description)
+		const Regularization *_regul_scheme_ptr, int _max_freeze_iter, OutputFileWriter &_output_file_writer, Pest::RestartCommand &_restart_command, const string &_description)
 		: ctl_info(_ctl_info), svd_info(_svd_info), par_group_info_ptr(_par_group_info_ptr), ctl_par_info_ptr(_ctl_par_info_ptr), obs_info_ptr(_obs_info), obj_func(_obj_func),
 		  file_manager(_file_manager), observations_ptr(_observations), par_transform(_par_transform),
 		  cur_solution(_obj_func, *_observations), phiredswh_flag(false), save_next_jacobian(true), prior_info_ptr(_prior_info_ptr), jacobian(_jacobian), prev_phi_percent(0.0),
-		  num_no_descent(0), regul_scheme_ptr(_regul_scheme_ptr), max_freeze_iter(_max_freeze_iter), description(_description), best_lambda(20.0), restart_command(_restart_command)
+		  num_no_descent(0), regul_scheme_ptr(_regul_scheme_ptr), max_freeze_iter(_max_freeze_iter), output_file_writer(_output_file_writer), description(_description), best_lambda(20.0), restart_command(_restart_command)
 {
 	svd_package = new SVD_EIGEN();
 }
@@ -160,9 +160,7 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 		fout_restart << "start_iteration " << global_iter_num << endl;
 		termination_ctl.save_state(fout_restart);
 		// write head for SVD file
-		ofstream &fout_svd = file_manager.get_ofstream("svd");
-		fout_svd << "------------------------------------------------------------------------------" << endl;
-		fout_svd << "OPTIMISATION ITERATION NO.        : " << global_iter_num << endl << endl;
+		output_file_writer.write_svd_iteration(global_iter_num);
 		iteration(run_manager, termination_ctl, false);
 
 		// write files that get wrtten at the end of each iteration
@@ -171,7 +169,7 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 
 		// rei file for this iteration
 		filename << "rei" << global_iter_num;
-		OutputFileWriter::write_rei(file_manager.open_ofile_ext(filename.str()), global_iter_num, 
+		output_file_writer.write_rei(file_manager.open_ofile_ext(filename.str()), global_iter_num, 
 			*(cur_solution.get_obj_func_ptr()->get_obs_ptr()), 
 			cur_solution.get_obs(), *(cur_solution.get_obj_func_ptr()),
 			cur_solution.get_ctl_pars());
@@ -179,11 +177,11 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 		// par file for this iteration
 		filename.str(""); // reset the stringstream
 		filename << "par" << global_iter_num;
-		OutputFileWriter::write_par(file_manager.open_ofile_ext(filename.str()), cur_solution.get_ctl_pars(), *(par_transform.get_offset_ptr()), 
+		output_file_writer.write_par(file_manager.open_ofile_ext(filename.str()), cur_solution.get_ctl_pars(), *(par_transform.get_offset_ptr()), 
 				*(par_transform.get_scale_ptr()));
 		file_manager.close_file(filename.str());
 		// sen file for this iteration
-		OutputFileWriter::append_sen(file_manager.sen_ofstream(), global_iter_num, jacobian, *(cur_solution.get_obj_func_ptr()), *par_group_info_ptr);
+		output_file_writer.append_sen(file_manager.sen_ofstream(), global_iter_num, jacobian, *(cur_solution.get_obj_func_ptr()), *par_group_info_ptr);
 		if (save_nextjac) {
 			jacobian.save();
 		}
@@ -192,11 +190,11 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 			optimum_run.set_ctl_parameters(cur_solution.get_ctl_pars());
 			optimum_run.set_observations(cur_solution.get_obs());
 			// save new optimum parameters to .par file
-			OutputFileWriter::write_par(file_manager.open_ofile_ext("par"), optimum_run.get_ctl_pars(), *(par_transform.get_offset_ptr()), 
+			output_file_writer.write_par(file_manager.open_ofile_ext("par"), optimum_run.get_ctl_pars(), *(par_transform.get_offset_ptr()), 
 				*(par_transform.get_scale_ptr()));
 			file_manager.close_file("par");
 			// save new optimum residuals to .rei file
-			OutputFileWriter::write_rei(file_manager.open_ofile_ext("rei"), global_iter_num, 
+			output_file_writer.write_rei(file_manager.open_ofile_ext("rei"), global_iter_num, 
 			*(optimum_run.get_obj_func_ptr()->get_obs_ptr()), 
 			optimum_run.get_obs(), *(optimum_run.get_obj_func_ptr()),
 			optimum_run.get_ctl_pars());
@@ -261,10 +259,6 @@ SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, 
 		Eigen::SparseMatrix<double> SqrtQ_J = Q_sqrt * jac;
 		svd_package->solve_ip(SqrtQ_J, Sigma, U, Vt);
 	}
-	ofstream &fout_svd = file_manager.get_ofstream("svd");
-	fout_svd << "FROZEN PARAMETERS-" << endl;
-	fout_svd << freeze_numeric_pars << endl << endl;
-	OutputFileWriter::write_svd(fout_svd, Sigma, U, Vt);
 
 	if (marquardt_type == MarquardtMatrix::IDENT)
 	{
@@ -278,11 +272,13 @@ SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, 
 	//calculate the number of singluar values above the threshold
 	Eigen::VectorXd tmp_svd_uvec;
 	int max_sing = (p_name_nf_vec.size() < svd_info.maxsing) ? par_name_vec.size() : svd_info.maxsing;
+	int num_sing_used;
 	{
 		Eigen::SparseVector<double> tmp_svd_uvec_sparse;
-		Eigen::SparseMatrix<double> SqrtQ_J_inv = SVD_inv(U, Sigma, Vt, max_sing, svd_info.eigthresh, max_sing);
+		Eigen::SparseMatrix<double> SqrtQ_J_inv = SVD_inv(U, Sigma, Vt, max_sing, svd_info.eigthresh, num_sing_used);
 		tmp_svd_uvec_sparse = (SqrtQ_J_inv * Q_sqrt) * ((Residuals + del_residuals).sparseView());
 		tmp_svd_uvec = tmp_svd_uvec_sparse.toDense();
+		output_file_writer.write_svd(Sigma, U, Vt, num_sing_used, lambda, freeze_numeric_pars);
 	}
 
 	//build map of parameter names to index in original par_name_vec vector
@@ -307,8 +303,6 @@ SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, 
 		assert(it != par_vec_name_to_idx.end());
 		upgrade.uvec(it->second) = ipar.second;
 	}
-	tot_sing_val = Sigma.size();
-	fout_svd << "Number of singular values used in solution = " <<  tot_sing_val << endl << endl << endl;
 
 	// Calculate svd unit vector
 	upgrade.norm = upgrade.uvec.norm();
@@ -430,9 +424,6 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	int max_freeze_iter = 1;
 	for (double i_lambda : lambda_vec)
 	{
-		ofstream &fout_svd = file_manager.get_ofstream("svd");
-		fout_svd << "CURRENT VALUE OF MARQUARDT LAMBDA = " << i_lambda << " ----->" << endl << endl;
-
 		Parameters new_numeric_pars;
 		frozen_derivative_pars = failed_jac_pars;
 		for (int i_freeze=1; ; ++i_freeze)

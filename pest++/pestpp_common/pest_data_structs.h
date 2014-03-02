@@ -52,8 +52,9 @@ ostream& operator<< (ostream &os, const ControlInfo& val);
 class SVDInfo {
 public:
 	int maxsing;
+	int eigwrite;
 	double eigthresh;
-	SVDInfo() : maxsing(0), eigthresh(1.0e-7) {}
+	SVDInfo() : maxsing(0), eigwrite(0), eigthresh(1.0e-7) {}
 };
 ostream& operator<< (ostream &os, const SVDInfo& val);
 
