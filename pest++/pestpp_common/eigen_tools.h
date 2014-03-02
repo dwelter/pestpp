@@ -22,11 +22,13 @@
 #include <vector>
 #include <ostream>
 #include <Eigen/Dense>
+#include <Eigen/Sparse>
+
 class Transformable;
 
 Eigen::MatrixXd diag_mat_mult(const Eigen::VectorXd &diag, const Eigen::MatrixXd &rhs);
 
-Eigen::MatrixXd SVD_inv(const Eigen::MatrixXd &U, const Eigen::VectorXd &Sigma, 
+Eigen::SparseMatrix<double> SVD_inv(const Eigen::MatrixXd &U, const Eigen::VectorXd &Sigma, 
 					const Eigen::MatrixXd &Vt, int max_sing, double eigthresh, int &num_sing);
 
 void get_MatrixXd_row_abs_max(const Eigen::MatrixXd &m, int row, int *max_col, double *max_val);

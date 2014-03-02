@@ -276,11 +276,13 @@ SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, 
 	}
 	
 	//calculate the number of singluar values above the threshold
-	VectorXd tmp_svd_uvec;
+	Eigen::VectorXd tmp_svd_uvec;
 	int max_sing = (p_name_nf_vec.size() < svd_info.maxsing) ? par_name_vec.size() : svd_info.maxsing;
 	{
-		MatrixXd SqrtQ_J_inv =SVD_inv(U, Sigma, Vt, max_sing, svd_info.eigthresh, max_sing);
-		tmp_svd_uvec =(SqrtQ_J_inv * Q_sqrt) * (Residuals + del_residuals);
+		Eigen::SparseVector<double> tmp_svd_uvec_sparse;
+		Eigen::SparseMatrix<double> SqrtQ_J_inv = SVD_inv(U, Sigma, Vt, max_sing, svd_info.eigthresh, max_sing);
+		tmp_svd_uvec_sparse = (SqrtQ_J_inv * Q_sqrt) * ((Residuals + del_residuals).sparseView());
+		tmp_svd_uvec = tmp_svd_uvec_sparse.toDense();
 	}
 
 	//build map of parameter names to index in original par_name_vec vector
@@ -329,7 +331,11 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	if (restart_command == Pest::RestartCommand::REUSE_JACOBIAN)
 	{
 		restart_command = Pest::RestartCommand::NONE;
-		cout << "  reusing previosuly computed jacobian... ";
+		cout << "  reading previosuly computed jacobian... ";
+		{
+			jacobian.read(file_manager.build_filename("jco"), *prior_info_ptr);
+		}
+
 		cout << endl << endl;
 		cout << "  running the model once with the current parameters... ";
 		run_manager.reinitialize(file_manager.build_filename("rnu"));
@@ -340,7 +346,6 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 		bool success = run_manager.get_run(run_id, tmp_pars, tmp_obs);
 		if (success)
 		{
-			jacobian.read(file_manager.build_filename("jco"), *prior_info_ptr);
 			par_transform.model2ctl_ip(tmp_pars);
 			cur_solution.update_ctl(tmp_pars, tmp_obs);
 			goto restart_reuse_jacoboian;

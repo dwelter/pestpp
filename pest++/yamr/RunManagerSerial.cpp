@@ -177,14 +177,14 @@ void RunManagerSerial::run()
 			//obs_vec = ins_files.readins();
 
 			// check parameters and observations for inf and nan
-			if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))
-			{
-				throw PestError("Error running model: invalid parameter value returned");
-			}
-			if (std::any_of(obs_vec.begin(), obs_vec.end(), OperSys::double_is_invalid))
-			{
-				throw PestError("Error running model: invalid observation value returned");
-			}
+			//if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))
+			//{
+			//	throw PestError("Error running model: invalid parameter value returned");
+			//}
+			//if (std::any_of(obs_vec.begin(), obs_vec.end(), OperSys::double_is_invalid))
+			//{
+			//	throw PestError("Error running model: invalid observation value returned");
+			//}
 			success_runs +=1;
 			pars.clear();
 			pars.insert(par_name_vec, par_values);

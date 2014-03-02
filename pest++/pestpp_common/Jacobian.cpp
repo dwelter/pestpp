@@ -634,6 +634,7 @@ void Jacobian::read(const string &filename, const PriorInformation &prior_info)
 		fin.read(par_name, 12);
 		string temp_par = string(par_name, 12);
 		strip_ip(temp_par);
+		upper_ip(temp_par);
 		base_numeric_par_names.push_back(temp_par);
 	}
 	//read observation and Prior info names
@@ -643,7 +644,8 @@ void Jacobian::read(const string &filename, const PriorInformation &prior_info)
 	{
 		fin.read(obs_name, 20);
 		string tmp_obs_name = strip_cp(string(obs_name, 20));
-			base_sim_obs_names.push_back(tmp_obs_name);
+		upper_ip(tmp_obs_name);
+		base_sim_obs_names.push_back(tmp_obs_name);
 	}
 
 	//return to sensitivity section of file

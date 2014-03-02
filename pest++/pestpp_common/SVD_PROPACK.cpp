@@ -70,12 +70,6 @@ void SVD_PROPACK::solve_ip(Eigen::SparseMatrix<double>& A, VectorXd &Sigma, Matr
 	double rnorm = 0.0;
 	int ierr = 0;
 
-	Sigma.resize(min(m_rows, n_cols));
-	Sigma.setConstant(0.0);
-	U.resize(m_rows, m_rows);
-	U.setConstant(0.0);
-	Vt.resize(n_cols, n_cols);
-	Vt.setConstant(0.0);
 	//count number of nonzero entries
 	n_nonzero = A.nonZeros();
 
@@ -127,6 +121,13 @@ void SVD_PROPACK::solve_ip(Eigen::SparseMatrix<double>& A, VectorXd &Sigma, Matr
 		eig_ratio = tmp_b[k2-1] / tmp_b[0];
 	}
 
+	Sigma.resize(kmax);
+	Sigma.setConstant(0.0);
+	U.resize(m_rows, kmax);
+	U.setConstant(0.0);
+	Vt.resize(kmax, n_cols);
+	Vt.setConstant(0.0);
+
 	for (int i_sing=0; i_sing<kmax; ++i_sing)
 	{
 		Sigma(i_sing) = tmp_b[i_sing];
@@ -136,7 +137,7 @@ void SVD_PROPACK::solve_ip(Eigen::SparseMatrix<double>& A, VectorXd &Sigma, Matr
 		}
 		for(int icol=0; icol<n_cols; ++ icol)
 		{
-			Vt(icol,i_sing) = tmp_v[i_sing*n_cols+icol];
+			Vt(i_sing,icol) = tmp_v[i_sing*n_cols+icol];
 		}
 	}
 

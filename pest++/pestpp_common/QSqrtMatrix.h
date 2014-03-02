@@ -48,7 +48,7 @@ private:
 	vector<double> weights;
 };
 
-//Eigen::SparseMatrix<double> operator*(const Eigen::SparseMatrix<double> &lhs, const QSqrtMatrix &rhs);
+Eigen::SparseMatrix<double> operator*(const Eigen::SparseMatrix<double> &lhs, const QSqrtMatrix &rhs);
 Eigen::MatrixXd operator*(const Eigen::MatrixXd &lhs, const QSqrtMatrix &rhs);
 
 #endif /* QSQRT_MATRIX_H_ */

@@ -437,7 +437,7 @@ void TranSVD::calc_svd()
 	Sigma = svd_fac.singularValues();
 	U = svd_fac.matrixU();
 	Vt = svd_fac.matrixV().transpose();
-	MatrixXd svd_mat_inv = SVD_inv(U, Sigma, Vt, max_sing, eigthresh, n_sing_val);
+	SVD_inv(U, Sigma, Vt, max_sing, eigthresh, n_sing_val);
 	super_parameter_names.clear();
 	for(int i=0; i<n_sing_val; ++i) {
 		sup_name.str("");

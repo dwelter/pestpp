@@ -33,43 +33,43 @@ MatrixXd diag_mat_mult(const VectorXd &diag, const MatrixXd &rhs)
 	return ret_val;
 }
 
-MatrixXd SVD_inv(const MatrixXd &U, const VectorXd &Sigma, 
+Eigen::SparseMatrix<double> SVD_inv(const MatrixXd &U, const VectorXd &Sigma, 
 					const MatrixXd &Vt, int max_sing, double eigthresh, int &num_sing)
 {
-	int s_size = Sigma.size();
-
-	MatrixXd ret_val;
-	VectorXd sigma_inv_trunc(s_size);
-	sigma_inv_trunc.setZero();
+	size_t s_size = Sigma.size();
 
 	// Calculate V * S-1 * Ut
 	// First Calculate S-1 
 	num_sing = 0;
 	for (int i=0; i < s_size; ++i) {
 		if (Sigma(i) != 0 && i<max_sing && Sigma(i)/Sigma(0) > eigthresh) {
-			sigma_inv_trunc(i) = 1.0 / Sigma(i);
 			++num_sing;
 		}
-		else {
-			sigma_inv_trunc(i) = 0.0;
-		}
 	}
+	Eigen::SparseMatrix<double> sigma_inv_trunc(num_sing, num_sing);
+	sigma_inv_trunc.setZero();
+	std::vector<Eigen::Triplet<double> > triplet_list;
+	for (int i=0; i < num_sing; ++i) {
+			triplet_list.push_back(Eigen::Triplet<double>(i,i,1.0 / Sigma(i)));
+	}
+	sigma_inv_trunc.setFromTriplets(triplet_list.begin(), triplet_list.end());
+
 	// Calculate V * (S-1 * Ut) 
-	MatrixXd sigma_tmp = MatrixXd::Zero(Vt.rows(), U.cols()); // Vt.rows == V.cols and U.cols == Ut.rows
-	sigma_tmp.block(0,0, num_sing, num_sing) = sigma_inv_trunc.head(num_sing).asDiagonal();
-	ret_val = Vt.transpose() * sigma_tmp * U.transpose();
+	Eigen::SparseMatrix<double> tmp_v = Vt.topRows(num_sing).transpose().sparseView();
+	Eigen::SparseMatrix<double> tmp_ut =  U.leftCols(num_sing).transpose().sparseView();
+	Eigen::SparseMatrix<double> ret_val = tmp_v * sigma_inv_trunc * tmp_ut;
 	return ret_val;
 }
 
 void get_MatrixXd_row_abs_max(const MatrixXd &m, int row, int *max_col, double *max_val)
 {
-	int nrows = m.rows();
-	int ncols = m.cols();
+	size_t nrows = m.rows();
+	size_t ncols = m.cols();
 	assert(row <= nrows);
 
 	*max_col = -999;
 	*max_val = 0;
-	for (int icol=0; icol<ncols; ++icol)
+	for (size_t icol=0; icol<ncols; ++icol)
 	{
 		if(abs(m(row,icol)) > abs(*max_val)) 
 		{
@@ -81,9 +81,9 @@ void get_MatrixXd_row_abs_max(const MatrixXd &m, int row, int *max_col, double *
 
 VectorXd stlvec_2_egienvec(const std::vector<double> &stl_vec)
 {
-	int len = stl_vec.size();
+	size_t len = stl_vec.size();
 	VectorXd la_vec(len);
-	for (int i=0; i<len; ++i)
+	for (size_t i=0; i<len; ++i)
 	{
 		la_vec(i) = stl_vec[i];
 	}
@@ -92,7 +92,7 @@ VectorXd stlvec_2_egienvec(const std::vector<double> &stl_vec)
 
 void matrix_del_cols(MatrixXd &mat, const vector<int> &col_id_vec)
 {
-	int ncols = mat.cols();
+	size_t ncols = mat.cols();
 
 	vector<int> del_id_vec = col_id_vec;
 	std::sort(del_id_vec.begin(), del_id_vec.end(), [](int i, int j)->bool{return i>j;});
@@ -118,12 +118,12 @@ void matrix_del_cols(MatrixXd &mat, const vector<int> &col_id_vec)
 
 void print(const MatrixXd &mat, ostream & fout)
 {
-	int nrows = mat.rows();
-	int ncols = mat.cols();
+	size_t nrows = mat.rows();
+	size_t ncols = mat.cols();
 
-	for (int i=0; i<nrows; ++i)
+	for (size_t i=0; i<nrows; ++i)
 	{
-		for (int j=0; j<ncols; ++j) 
+		for (size_t j=0; j<ncols; ++j) 
 		{
 			fout << mat(i,j);
 			if (j < ncols-1) {fout << ", ";}
@@ -135,13 +135,13 @@ void print(const MatrixXd &mat, ostream & fout)
 
 void print(const MatrixXd &mat, ostream & fout, int n_per_line)
 {
-	int nrows = mat.rows();
-	int ncols = mat.cols();
-	int n = 0;
+	size_t nrows = mat.rows();
+	size_t ncols = mat.cols();
+	size_t n = 0;
 
-	for (int i=0; i<nrows; ++i)
+	for (size_t i=0; i<nrows; ++i)
 	{
-		for (int j=0; j<ncols; ++j) 
+		for (size_t j=0; j<ncols; ++j) 
 		{
 			fout << setw(15) << setiosflags(ios::right) << mat(i,j);
 			if ((j+1) % (n_per_line) == 0 || j+1==ncols)
@@ -156,9 +156,9 @@ void print(const MatrixXd &mat, ostream & fout, int n_per_line)
 
 void print(const VectorXd &vec, ostream & fout, int n_per_line)
 {
-	int n = vec.size();
+	size_t n = vec.size();
 
-	for (int i=0; i<n; ++i)
+	for (size_t i=0; i<n; ++i)
 	{
 		fout << setw(15) << setiosflags(ios::right) << vec(i);
 			if ((i+1) % (n_per_line) == 0 || i+1==n)

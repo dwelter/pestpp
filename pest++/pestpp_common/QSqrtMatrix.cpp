@@ -97,17 +97,17 @@ int QSqrtMatrix::num_nonzero() const
 	return num;
 }
 
-//Eigen::SparseMatrix<double> operator*(const Eigen::SparseMatrix<double> &lhs, const QSqrtMatrix &rhs)
-//{
-//	Eigen::SparseMatrix<double> ret_val(lhs);
-//
-//	int n_cols = lhs.cols();
-//
-//	for (int i=0; i < n_cols; ++i) {
-//		ret_val.col(i) *= rhs.weights[i];
-//	}
-//	return ret_val;
-//}
+Eigen::SparseMatrix<double> operator*(const Eigen::SparseMatrix<double> &lhs, const QSqrtMatrix &rhs)
+{
+	Eigen::SparseMatrix<double> ret_val(lhs);
+
+	int n_cols = lhs.cols();
+
+	for (int i=0; i < n_cols; ++i) {
+		ret_val.col(i) *= rhs.weights[i];
+	}
+	return ret_val;
+}
 
 
 MatrixXd QSqrtMatrix::operator*(const MatrixXd &rhs) const
