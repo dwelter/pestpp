@@ -18,6 +18,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LocalDebuggerCommandArguments>step4fu2_reg /j</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerWorkingDirectory>C:\Users\Dave\Desktop\Randy2\Randy2\WORKER_DATA</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerWorkingDirectory>C:\Users\Dave\Desktop\Randy2\Randy2\test</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
 </Project>

@@ -249,8 +249,8 @@ SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, 
 
 	//Compute effect of frozen parameters on the residuals vector
 	VectorXd Sigma;
-	MatrixXd U;
-	MatrixXd Vt;
+	Eigen::SparseMatrix<double> U;
+	Eigen::SparseMatrix<double> Vt;
 	Parameters delta_freeze_pars = freeze_numeric_pars;
 	delta_freeze_pars -= base_numeric_pars;
 	VectorXd del_residuals = calc_residual_corrections(jacobian, delta_freeze_pars, obs_name_vec);
@@ -278,7 +278,7 @@ SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, 
 		Eigen::SparseMatrix<double> SqrtQ_J_inv = SVD_inv(U, Sigma, Vt, max_sing, svd_info.eigthresh, num_sing_used);
 		tmp_svd_uvec_sparse = (SqrtQ_J_inv * Q_sqrt) * ((Residuals + del_residuals).sparseView());
 		tmp_svd_uvec = tmp_svd_uvec_sparse.toDense();
-		output_file_writer.write_svd(Sigma, U, Vt, num_sing_used, lambda, freeze_numeric_pars);
+		output_file_writer.write_svd(Sigma, Vt, num_sing_used, lambda, freeze_numeric_pars);
 	}
 
 	//build map of parameter names to index in original par_name_vec vector
@@ -422,8 +422,15 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	auto iter = std::unique(lambda_vec.begin(), lambda_vec.end());
 	lambda_vec.resize(std::distance(lambda_vec.begin(), iter));
 	int max_freeze_iter = 1;
+	int i_update_vec = 0;
+	stringstream message;
 	for (double i_lambda : lambda_vec)
 	{
+		std::cout << string(message.str().size(), '\b');
+		message.str("");
+		message << "  computing vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size();
+		std::cout << message.str();
+		
 		Parameters new_numeric_pars;
 		frozen_derivative_pars = failed_jac_pars;
 		for (int i_freeze=1; ; ++i_freeze)
@@ -479,8 +486,8 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 		magnitude_vec.push_back(ml_upgrade.norm);
 		frozen_par_vec.push_back(frozen_derivative_pars);
 	}
+	cout << endl;
 	fout_restart << "upgrade_model_runs_built " << run_manager.get_cur_groupid() << endl;
-
 	cout << "  performing upgrade vector runs... ";
 	run_manager.run();
 

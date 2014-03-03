@@ -34,10 +34,10 @@ void SVDPackage::set_eign_thres(double _eign_thres)
 	eign_thres = _eign_thres;
 }
 
-void SVD_EIGEN::solve_ip(Eigen::SparseMatrix<double>& A, Eigen::VectorXd &Sigma, Eigen::MatrixXd& U, Eigen::MatrixXd& Vt )
+void SVD_EIGEN::solve_ip(Eigen::SparseMatrix<double>& A, Eigen::VectorXd &Sigma, Eigen::SparseMatrix<double>& U, Eigen::SparseMatrix<double>& Vt )
 {
 	JacobiSVD<MatrixXd> svd_fac(A,  ComputeFullU |  ComputeFullV);
 	Sigma = svd_fac.singularValues();
-	U = svd_fac.matrixU();
-	Vt = svd_fac.matrixV().transpose();
+	U = svd_fac.matrixU().sparseView();
+	Vt = svd_fac.matrixV().transpose().sparseView();
 }

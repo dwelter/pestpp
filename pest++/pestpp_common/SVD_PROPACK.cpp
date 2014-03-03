@@ -30,10 +30,12 @@ using namespace Eigen;
 #ifdef OS_LINUX 
 #define DEF_DLAMCH dlamch_
 #define DEF_DLANBPRO_SPARCE dlanbpro_sparce_
+extern "C" {
+	double DEF_DLAMCH(char*);
+}
 #endif
 
 extern "C" {
-	double DEF_DLAMCH(char*);
 	void DEF_DLANBPRO_SPARCE(int *m, int *n, int *k0, int *k, double *U, 
 		int *ldu, double *V, int *ldv, double *B, int *ldb, 
 		double *rnorm, double *doption, int *ioption, double *work,
@@ -44,7 +46,7 @@ SVD_PROPACK::SVD_PROPACK(void) : SVDPackage("PROPACK")
 {
 }
 
-void SVD_PROPACK::solve_ip(Eigen::SparseMatrix<double>& A, VectorXd &Sigma, MatrixXd& U, MatrixXd& Vt )
+void SVD_PROPACK::solve_ip(Eigen::SparseMatrix<double>& A, VectorXd &Sigma, Eigen::SparseMatrix<double> &U, Eigen::SparseMatrix<double>& Vt )
 {
 	class local_utils {
 		public:
@@ -121,27 +123,47 @@ void SVD_PROPACK::solve_ip(Eigen::SparseMatrix<double>& A, VectorXd &Sigma, Matr
 		eig_ratio = tmp_b[k2-1] / tmp_b[0];
 	}
 
+	std::vector<Eigen::Triplet<double> > triplet_list;
+	// Update Sigma
 	Sigma.resize(kmax);
 	Sigma.setConstant(0.0);
-	U.resize(m_rows, kmax);
-	U.setConstant(0.0);
-	Vt.resize(kmax, n_cols);
-	Vt.setConstant(0.0);
-
 	for (int i_sing=0; i_sing<kmax; ++i_sing)
 	{
 		Sigma(i_sing) = tmp_b[i_sing];
-		for(int irow=0; irow<m_rows; ++ irow)
-		{
-			U(irow,i_sing) = tmp_u[i_sing*m_rows+irow];
-		}
-		for(int icol=0; icol<n_cols; ++ icol)
-		{
-			Vt(i_sing,icol) = tmp_v[i_sing*n_cols+icol];
-		}
 	}
 
-		
+	triplet_list.reserve(kmax);
+	// Update U
+	for (int i_sing=0; i_sing<kmax; ++i_sing)
+	{
+		for(int irow=0; irow<m_rows; ++ irow)
+		{
+			if (tmp_u[i_sing*m_rows+irow] != 0)
+			{
+				triplet_list.push_back(Eigen::Triplet<double>(irow,i_sing, tmp_u[i_sing*m_rows+irow]));
+			}
+		}
+	}
+	U.resize(m_rows, kmax);
+	U.setZero();
+	U.setFromTriplets(triplet_list.begin(), triplet_list.end());
+
+	triplet_list.clear();
+	// Update Vt
+	for (int i_sing=0; i_sing<kmax; ++i_sing)
+	{
+		for(int icol=0; icol<n_cols; ++ icol)
+		{
+			if (tmp_v[i_sing*n_cols+icol] != 0)
+			{
+				triplet_list.push_back(Eigen::Triplet<double>(i_sing, icol, tmp_v[i_sing*n_cols+icol]));
+			}
+		}
+	}
+	Vt.resize(kmax, n_cols);
+	Vt.setZero();
+	Vt.setFromTriplets(triplet_list.begin(), triplet_list.end());
+
 	delete [] dparm;
 	delete [] iparm;
 	delete [] tmp_u;
@@ -156,8 +178,8 @@ void SVD_PROPACK::test()
 {
 	Eigen::SparseMatrix<double> A(3,3);
 	VectorXd Sigma(3);
-	MatrixXd U(3,3);
-	MatrixXd Vt(3,3);
+	Eigen::SparseMatrix<double> U(3,3);
+	Eigen::SparseMatrix<double> Vt(3,3);
 
 	A.setZero();
 	A.insert(0,0) = 20;

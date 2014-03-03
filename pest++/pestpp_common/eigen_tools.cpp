@@ -20,6 +20,7 @@
 #include <Eigen/Dense>
 #include "Transformable.h"
 #include <vector>
+#include <set>
 #include <algorithm>
 #include <iomanip>
 
@@ -27,14 +28,8 @@
 using namespace Eigen;
 using namespace std;
 
-MatrixXd diag_mat_mult(const VectorXd &diag, const MatrixXd &rhs)
-{
-	MatrixXd ret_val = diag.asDiagonal() * rhs;
-	return ret_val;
-}
-
-Eigen::SparseMatrix<double> SVD_inv(const MatrixXd &U, const VectorXd &Sigma, 
-					const MatrixXd &Vt, int max_sing, double eigthresh, int &num_sing)
+Eigen::SparseMatrix<double> SVD_inv(const Eigen::SparseMatrix<double> &U, const VectorXd &Sigma, 
+					const Eigen::SparseMatrix<double> &Vt, int max_sing, double eigthresh, int &num_sing)
 {
 	size_t s_size = Sigma.size();
 
@@ -55,9 +50,7 @@ Eigen::SparseMatrix<double> SVD_inv(const MatrixXd &U, const VectorXd &Sigma,
 	sigma_inv_trunc.setFromTriplets(triplet_list.begin(), triplet_list.end());
 
 	// Calculate V * (S-1 * Ut) 
-	Eigen::SparseMatrix<double> tmp_v = Vt.topRows(num_sing).transpose().sparseView();
-	Eigen::SparseMatrix<double> tmp_ut =  U.leftCols(num_sing).transpose().sparseView();
-	Eigen::SparseMatrix<double> ret_val = tmp_v * sigma_inv_trunc * tmp_ut;
+	Eigen::SparseMatrix<double> ret_val = Vt.topRows(num_sing).transpose() * sigma_inv_trunc * U.leftCols(num_sing).transpose();
 	return ret_val;
 }
 
@@ -90,30 +83,37 @@ VectorXd stlvec_2_egienvec(const std::vector<double> &stl_vec)
 	return la_vec;
 }
 
-void matrix_del_cols(MatrixXd &mat, const vector<int> &col_id_vec)
+void matrix_del_cols(Eigen::SparseMatrix<double> &mat, const vector<int> &col_id_vec)
 {
-	size_t ncols = mat.cols();
-
-	vector<int> del_id_vec = col_id_vec;
-	std::sort(del_id_vec.begin(), del_id_vec.end(), [](int i, int j)->bool{return i>j;});
-
-	// shift columns to over write deleted columns
-	int n_shift = 0;
-	for (int icol=0; icol<ncols; ++icol)
+	if (!col_id_vec.empty())
 	{
-		if (!del_id_vec.empty() && del_id_vec.back() == icol)
+		size_t ncols = mat.cols();
+		set<int> del_col_set(col_id_vec.begin(), col_id_vec.end());
+
+		std::vector<Eigen::Triplet<int> > triplet_list;
+
+		// add rows to be retained to the beginning of the  permuatation matrix
+		int icol_new = 0;
+		for (int icol_old=0; icol_old<ncols; ++icol_old)
 		{
-			n_shift++;
-			del_id_vec.pop_back();
+			if (del_col_set.find(icol_old) != del_col_set.end())
+			{
+				triplet_list.push_back(Eigen::Triplet<int>(icol_old, icol_new, 1.0));
+				++icol_new;
+			}
 		}
-		else if (n_shift > 0)
+		// add rows to be deleted to end to permuatation matrix
+		for (int icol_old :  col_id_vec)
 		{
-			mat.col(icol-n_shift) = mat.col(icol);
+			triplet_list.push_back(Eigen::Triplet<int>(icol_old, icol_new, 1.0));
+			++icol_new;
 		}
+		Eigen::SparseMatrix<double> perm_sparse_matrix(ncols, ncols);
+		perm_sparse_matrix.setZero();
+		perm_sparse_matrix.setFromTriplets(triplet_list.begin(), triplet_list.end());
+		Eigen::SparseMatrix<double> new_matrix = mat * perm_sparse_matrix;
+		mat = new_matrix.leftCols(icol_new);
 	}
-	//make sure all rows got removed;
-	assert (del_id_vec.size() == 0);
-	mat.conservativeResize(mat.rows(), ncols-n_shift);
 }
 
 void print(const MatrixXd &mat, ostream & fout)

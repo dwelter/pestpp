@@ -213,8 +213,15 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 	auto iter = std::unique(lambda_vec.begin(), lambda_vec.end());
 	lambda_vec.resize(std::distance(lambda_vec.begin(), iter));
 	int max_freeze_iter = 1;
+	stringstream message;
+	int i_update_vec = 0;
 	for (double i_lambda : lambda_vec)
 	{
+		std::cout << string(message.str().size(), '\b');
+		message.str("");
+		message << "  computing vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size();
+		std::cout << message.str();
+
 		ml_upgrade = calc_lambda_upgrade_vec(jacobian, Q_sqrt, residuals_vec, numeric_par_names_vec, obs_names_vec,
 			base_numeric_pars, Parameters(), tot_sing_val, i_lambda);
 		Parameters new_numeric_pars = apply_upgrade(base_numeric_pars, ml_upgrade, 1.0);
@@ -231,6 +238,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		magnitude_vec.push_back(ml_upgrade.norm);
 	}
 
+	cout << endl;
 	os << endl;
 	os << "      SVD information:" << endl;
 	os << endl;

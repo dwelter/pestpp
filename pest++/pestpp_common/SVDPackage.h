@@ -27,7 +27,7 @@ class SVDPackage
 {
 public:
 	SVDPackage(std::string _descritpion="undefined", int _n_max_sing=1000, double _eign_thres=1.0e-7);
-		virtual void solve_ip(Eigen::SparseMatrix<double>& A, Eigen::VectorXd &Sigma, Eigen::MatrixXd & U, Eigen::MatrixXd& VT ) = 0;
+		virtual void solve_ip(Eigen::SparseMatrix<double>& A, Eigen::VectorXd &Sigma, Eigen::SparseMatrix<double> & U, Eigen::SparseMatrix<double>& VT ) = 0;
 	virtual void set_max_sing(int _n_max_sing);
 	virtual void set_eign_thres(double _eign_thres);
 	virtual ~SVDPackage(void){};
@@ -41,7 +41,7 @@ class SVD_EIGEN : public SVDPackage
 {
 public:
 	SVD_EIGEN(void): SVDPackage("Eigen JacobiSVD")  {}
-	virtual void solve_ip(Eigen::SparseMatrix<double>& A, Eigen::VectorXd &Sigma, Eigen::MatrixXd& U, Eigen::MatrixXd& VT );
+	virtual void solve_ip(Eigen::SparseMatrix<double>& A, Eigen::VectorXd &Sigma, Eigen::SparseMatrix<double>& U, Eigen::SparseMatrix<double>& VT );
 	virtual ~SVD_EIGEN(void) {}
 };
 

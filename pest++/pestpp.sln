@@ -1,5 +1,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pest++", "pest++\pest++.vcxproj", "{38231990-B7FE-469D-9DCD-C588D81163E3}"
 	ProjectSection(ProjectDependencies) = postProject
 		{D25CC810-E9E9-4920-82A4-6F585214480E} = {D25CC810-E9E9-4920-82A4-6F585214480E}

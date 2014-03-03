@@ -162,7 +162,7 @@ void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobia
 	fout << endl << endl;
 }
 
-void OutputFileWriter::write_svd(VectorXd &Sigma, MatrixXd U, MatrixXd &Vt, int num_sing_used, double lambda, const Parameters &freeze_numeric_pars)
+void OutputFileWriter::write_svd(VectorXd &Sigma, Eigen::SparseMatrix<double> &Vt, int num_sing_used, double lambda, const Parameters &freeze_numeric_pars)
 {
 	if (OutputFileWriter::save_svd)
 	{
@@ -174,7 +174,7 @@ void OutputFileWriter::write_svd(VectorXd &Sigma, MatrixXd U, MatrixXd &Vt, int 
 		print(Sigma, fout_svd, 7);
 		fout_svd << endl << endl;
 		fout_svd << "MATRIX OF EIGENVECTORS:-" << endl;
-		print(Vt, fout_svd, 7);
+		print(Vt.toDense(), fout_svd, 7);
 		fout_svd << endl;
 		fout_svd << "Number of singular values used in solution = " <<  num_sing_used << endl << endl << endl;
 	}

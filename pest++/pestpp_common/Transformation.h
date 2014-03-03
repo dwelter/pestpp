@@ -31,6 +31,7 @@
 #include <set>
 #include <vector>
 #include <Eigen/Dense>
+#include <Eigen/Sparse>
 #include "Transformable.h"
 
 class Jacobian;
@@ -301,10 +302,10 @@ protected:
 	vector<string> base_parameter_names;
 	vector<string> super_parameter_names;
 	vector<string> obs_names;
-	Eigen::MatrixXd SqrtQ_J;
+	Eigen::SparseMatrix<double> SqrtQ_J;
 	Eigen::VectorXd Sigma;
-	Eigen::MatrixXd U;
-	Eigen::MatrixXd Vt;
+	Eigen::SparseMatrix<double> U;
+	Eigen::SparseMatrix<double> Vt;
 	Parameters init_base_numeric_parameters;
 	Parameters frozen_derivative_parameters;
 	void calc_svd();

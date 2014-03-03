@@ -165,11 +165,27 @@ int main(int argc, char* argv[])
 	Pest pest_scenario;
 	pest_scenario.set_defaults();
 
-	//if desired set front to reuse existing jacobian on the first iteration
-	it_find = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/j");
-	if (it_find!= cmd_arg_vec.end())
+
+	//Initialize OutputFileWriter to hadle IO of suplementary files (.par, .par, .svd)
+	//bool save_eign = pest_scenario.get_svd_info().eigwrite > 0;
+	OutputFileWriter output_file_writer(file_manager, file_manager.get_base_filename(), true, false);
+
+	//if desired set flag to reuse existing jacobian on the first iteration
+	vector<string>::const_iterator it_find_j = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/j");
+	vector<string>::const_iterator it_find_r = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/r");
+	if (it_find_j!= cmd_arg_vec.end())
 	{
 		pest_scenario.set_start_command(Pest::RestartCommand::REUSE_JACOBIAN);
+	}
+	else if (it_find_r!= cmd_arg_vec.end())
+	{
+		//process .rst restart file
+		//pest_scenario.set_start_command(Pest::RestartCommand::);
+		 //RESUME_JACOBIAN_RUNS, RESUME_UPGRADE_RUNS}
+	}
+	else
+	{
+		pest_scenario.set_start_command(Pest::RestartCommand::NONE);
 	}
 
 
@@ -184,11 +200,6 @@ int main(int argc, char* argv[])
 		throw(e);
 	}
 	pest_scenario.check_inputs();
-
-	//Initialize OutputFileWriter to hadle IO of suplementary files (.par, .par, .svd)
-	bool save_eign = pest_scenario.get_svd_info().eigwrite > 0;
-	OutputFileWriter output_file_writer(file_manager, file_manager.get_base_filename(), true, save_eign);
-
 
 	RunManagerAbstract *run_manager_ptr;
 	if (run_manager_type == RunManagerType::YAMR)

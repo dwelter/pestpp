@@ -75,6 +75,9 @@
     <ClInclude Include="eigen_tools.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RestartController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Transformation.cpp">
@@ -132,6 +135,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="eigen_tools.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RestartController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

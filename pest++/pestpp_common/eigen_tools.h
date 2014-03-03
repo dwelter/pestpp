@@ -16,8 +16,8 @@
 	You should have received a copy of the GNU General Public License
 	along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
-#ifndef LAPACK_TOOLS_H_
-#define LAPACK_TOOLS_H_
+#ifndef EIGEN_TOOLS_H_
+#define EIGEN_TOOLS_H_
 
 #include <vector>
 #include <ostream>
@@ -26,10 +26,8 @@
 
 class Transformable;
 
-Eigen::MatrixXd diag_mat_mult(const Eigen::VectorXd &diag, const Eigen::MatrixXd &rhs);
-
-Eigen::SparseMatrix<double> SVD_inv(const Eigen::MatrixXd &U, const Eigen::VectorXd &Sigma, 
-					const Eigen::MatrixXd &Vt, int max_sing, double eigthresh, int &num_sing);
+Eigen::SparseMatrix<double> SVD_inv(const Eigen::SparseMatrix<double> &U, const Eigen::VectorXd &Sigma, 
+					const Eigen::SparseMatrix<double> &Vt, int max_sing, double eigthresh, int &num_sing);
 
 void get_MatrixXd_row_abs_max(const Eigen::MatrixXd &m, int row, int *max_col, double *max_val);
 
@@ -37,9 +35,9 @@ Eigen::VectorXd stlvec_2_egienvec(const std::vector<double> &stl_vec);
 
 void print(const Eigen::MatrixXd &mat, std::ostream &fout);
 
-void matrix_del_cols(Eigen::MatrixXd &mat, const std::vector<int> &col_id_vec);
+void matrix_del_cols(Eigen::SparseMatrix<double> &mat, const std::vector<int> &col_id_vec);
 
 void print(const Eigen::MatrixXd &mat, std::ostream & fout, int n_per_line=7);
 void print(const Eigen::VectorXd &vec, std::ostream & fout, int n_per_line=7);
 
-#endif /* LAPACK_TOOLS_H_ */
+#endif /* EIGEN_TOOLS_H_ */

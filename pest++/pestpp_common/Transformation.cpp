@@ -432,11 +432,11 @@ const Eigen::MatrixXd& TranSVD::get_vt() const
 void TranSVD::calc_svd()
 {
 	stringstream sup_name;
-	JacobiSVD<MatrixXd> svd_fac(SqrtQ_J, ComputeThinU | ComputeThinV);
+	JacobiSVD<MatrixXd> svd_fac(SqrtQ_J.toDense(), ComputeThinU | ComputeThinV);
 	// calculate the number of singluar values above the threshold
 	Sigma = svd_fac.singularValues();
-	U = svd_fac.matrixU();
-	Vt = svd_fac.matrixV().transpose();
+	U = svd_fac.matrixU().sparseView();
+	Vt = svd_fac.matrixV().transpose().sparseView();
 	SVD_inv(U, Sigma, Vt, max_sing, eigthresh, n_sing_val);
 	super_parameter_names.clear();
 	for(int i=0; i<n_sing_val; ++i) {

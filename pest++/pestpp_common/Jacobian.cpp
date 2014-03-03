@@ -550,7 +550,6 @@ void Jacobian::save(const string &ext) const
 	int n;
 	int tmp;
 	double data;
-	const string *par_name_ptr;
 	char par_name[12];
 	char obs_name[20];
 

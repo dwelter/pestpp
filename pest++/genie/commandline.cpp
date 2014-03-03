@@ -23,6 +23,7 @@
 #include <sstream>
 #include <string>
 #include <cmath>
+#include <algorithm>
 
 #include "commandline.h"
 
