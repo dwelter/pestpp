@@ -83,8 +83,6 @@ private:
 	std::streamoff run_byte_size;
 	std::streamoff run_par_byte_size;
 	std::streamoff run_data_byte_size;
-	std::streamoff p_names_size;
-	std::streamoff o_names_size;
 	std::vector<std::string> par_names;
 	std::vector<std::string> obs_names;
 	void check_rec_size(const std::vector<char> &serial_data) const;

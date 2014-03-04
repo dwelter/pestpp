@@ -21,6 +21,7 @@
 #include <iostream>
 #include <fstream>
 #include <Eigen/Dense>
+#include <Eigen/Sparse>
 #include "MorrisMethod.h"
 #include "sobol.h"
 #include "Pest.h"

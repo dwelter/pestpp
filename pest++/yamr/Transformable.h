@@ -79,7 +79,7 @@ public:
 	void erase(const vector<string> &erase_par_names);
 	iterator find(const string &name);
 	const double* get_rec_ptr(const string &name) const;
-	const double get_rec(const string &name) const;
+	double get_rec(const string &name) const;
 	template <class NameIterator>
 	Transformable get_subset (NameIterator first, NameIterator last) const;
 	void update_rec(const string &name, double value);

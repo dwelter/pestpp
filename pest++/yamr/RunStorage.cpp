@@ -118,11 +118,9 @@ void RunStorage::init_restart(const std::string &_filename)
 
 	std::int64_t p_name_size_64;
 	buf_stream.read((char*) &p_name_size_64, sizeof(p_name_size_64));
-	std::streamoff p_names_size = p_name_size_64;
 
 	std::int64_t o_name_size_64;
 	buf_stream.read((char*) &o_name_size_64, sizeof(o_name_size_64));
-	std::streamoff o_names_size = o_name_size_64;
 
 	vector<char> serial_pnames;
 	serial_pnames.resize(p_name_size_64);
@@ -158,7 +156,7 @@ int RunStorage::increment_nruns()
 	buf_stream.seekp(0, ios_base::beg);
 	buf_stream.write((char*) &n_runs_64, sizeof(n_runs_64));
 	int n_runs = n_runs_64;
-	return n_runs_64;
+	return n_runs;
 }
 const std::vector<string>& RunStorage::get_par_name_vec()const
 {

@@ -25,9 +25,9 @@
 using namespace pest_utils;
 
 FileManager::FileManager(const string &_base_filename, const string &_directory)
-	: pest_base_filename(strip_cp(_base_filename)), directory(strip_cp(_directory))
+  : directory(strip_cp(_directory)), pest_base_filename(strip_cp(_base_filename))
 {
-	ofstream &f_rec = open_ofile_ext("rec");
+	open_ofile_ext("rec");
 }
 
 

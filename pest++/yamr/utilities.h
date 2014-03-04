@@ -1,7 +1,7 @@
 #ifndef UTILITIES_H_
 #define UTILITIES_H_
 
-/** @file
+/* @file
  @brief Utility Functions
  
  This file contains a variety of utility functions for string and numeric operations.
@@ -19,7 +19,7 @@ namespace pest_utils
 {
 	enum CASE_CONV{NO_CONV, TO_UPPER, TO_LOWER};
 
-   /** @brief Sign of a number
+   /* @brief Sign of a number
  
    Returns the sign of a val (-1, 1 or 0).
   */
@@ -29,11 +29,9 @@ namespace pest_utils
 		if (val < 0) return -1;
 		return 0;
 	}
-
-	 /** @brief Sign of a number
  
 	  
-	/** @brief Splits a string and returns the sub-strings.
+	/* @brief Splits a string and returns the sub-strings.
 	
 	String str is split into sub-strings using the characters specified 
 	in delimiters and the sub-strings are are returned in the tokens constainer.
@@ -45,7 +43,7 @@ namespace pest_utils
 		const std::string& delimiters=" \t\n\r", const bool trimEmpty=true);
 
 
-	/** @brief Convert a string to another type.
+	/* @brief Convert a string to another type.
 	
 	String s is converted to the type of the return variable x.  If extra
 	characters are left over after the conversion and failIfLeftoverChars is set
@@ -61,7 +59,7 @@ namespace pest_utils
 		}
 	}
 
-	/** @brief Convert a string to another type.
+	/* @brief Convert a string to another type.
 	
 	String s is converted to the type T.  If extra
 	characters are left over after the conversion and failIfLeftoverChars is set
@@ -80,7 +78,7 @@ namespace pest_utils
 		return x;
 	}
 
-	/** @brief Strip leading and/or trailing characters from a string
+	/* @brief Strip leading and/or trailing characters from a string
 	
 		The characters contained in arguement delimiters are stripped from 
 		string s.  op can be specified as "front", "back" or "both" to control
@@ -93,7 +91,7 @@ namespace pest_utils
 	std::string& strip_ip(string &s, const string &op="both",
 		const string &delimiters=" \t\n\r");
 
-	/** @brief Strip leading and/or trailing characters from a string
+	/* @brief Strip leading and/or trailing characters from a string
 	
 		The characters contained in arguement delimiters are stripped from 
 		string s and the updated string is returned without modifying s.  op can be specified as "front", "back" or "both" to control
@@ -103,20 +101,20 @@ namespace pest_utils
 	string strip_cp(const string &s, const string &op="both", 
 		const string &delimiters=" \t\n\r");
 
-	/** @brief Convert all the characters in a string to upper case
+	/* @brief Convert all the characters in a string to upper case
 	
 		All characters in string s are converted to upper case
 	*/
 	void upper_ip(string &s);
 
-	/** @brief Convert all the characters in a string to upper case
+	/* @brief Convert all the characters in a string to upper case
 	
 		All characters in string s are converted to upper case and returned as 
 		a new string without modifying the original string
 	*/
 	string upper_cp(const string &s);
 
-		/** @brief Convert all the characters in a string to upper case.
+		/* @brief Convert all the characters in a string to upper case.
 	
 		All characters in string s are converted to lower case.
 	*/
@@ -124,18 +122,18 @@ namespace pest_utils
 
 	void lower_ip(string &s);
 
-	/** @brief Convert all the characters in a string to lower case.
+	/* @brief Convert all the characters in a string to lower case.
 	
 		All characters in string s are converted to lower case and returned as 
 		a new string without modifying the original string.
 	*/
 	string lower_cp(const string &s);
 
-	/** @brief Return the base filename (filename without the "." extention).
+	/* @brief Return the base filename (filename without the "." extention).
 	*/
 	string get_base_filename(const string &s);
 
-	/** @brief Converts a C++ string to a FORTRAN character array.
+	/* @brief Converts a C++ string to a FORTRAN character array.
 
 		Converts string "in" to a FORTRAN character array of length "length".
 	*/
@@ -143,14 +141,14 @@ namespace pest_utils
 
 
 	string remove_file_ext(const string &filename, size_t max_len=string::npos);
-	/** @brief Given a combined path and filename return just the filename.
+	/* @brief Given a combined path and filename return just the filename.
 
 		Given path the combined path and filname complete_path, return just the filename.
 	*/
 
 	string get_filename(const string &complete_path);
 
-	/** @brief Given a combined path and filename return just the pathname.
+	/* @brief Given a combined path and filename return just the pathname.
 
 		Given path the combined path and filname complete_path, return just the pathname.
 	*/

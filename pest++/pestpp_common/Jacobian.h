@@ -54,7 +54,7 @@ public:
 		RunManagerAbstract &run_manager,  const PriorInformation &prior_info, set<string> &out_of_bound_par, bool phiredswh_flag, bool calc_init_obs);
 
 	virtual void save(const std::string &ext="jco") const;
-	void Jacobian::read(const std::string &filename, const PriorInformation &prior_info);
+	void read(const std::string &filename, const PriorInformation &prior_info);
 	virtual const set<string>& get_failed_parameter_names() const;
 	virtual ~Jacobian();
 protected:

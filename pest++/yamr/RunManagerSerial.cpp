@@ -113,7 +113,6 @@ RunManagerSerial::RunManagerSerial(const vector<string> _comline_vec,
 void RunManagerSerial::run()
 {
 	int ifail;
-	int i_run;
 	int success_runs = 0;
 	int prev_sucess_runs = 0;
 	const vector<string> &par_name_vec = file_stor.get_par_name_vec();
@@ -220,7 +219,7 @@ void RunManagerSerial::run()
 	if (success_runs < nruns)
 	{
 		cout << endl << endl;
-		cout << "WARNING: " << i_run-success_runs << " out of " <<i_run << " runs failed" << endl << endl;
+		cout << "WARNING: " << nruns - success_runs << " out of " <<nruns << " runs failed" << endl << endl;
 	}
 }
 

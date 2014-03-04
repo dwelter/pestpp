@@ -29,7 +29,7 @@ public:
 	virtual void assemble_runs() = 0;
 	virtual void calc_sen(ModelRun model_run, std::ofstream &fout_raw, std::ofstream &fout_sen, std::ofstream &fout_orw) = 0;
 	static std::map<std::string, std::string>  process_gsa_file(std::ifstream &fin, FileManager &file_manager);
-	map<string, string> GsaAbstractBase::process_obt_file(std::ifstream &fin_obt, FileManager &file_manager);
+	map<string, string> process_obt_file(std::ifstream &fin_obt, FileManager &file_manager);
 	std::string log_name(const string &name) const;
 	bool is_log_trans_par(const string &name) const;
 	std::vector<double> calc_interval_midpoints(int n_interval, double min, double max);

@@ -65,11 +65,11 @@ bool SlaveInfo::CompareTimes::operator() (int a, int b)
 	assert(itb != info_map.end());
 	if (itb->second.run_time > std::chrono::milliseconds(0) && ita->second.run_time > std::chrono::milliseconds(0))
 	{
-		bool ret = ! (itb->second.run_time > ita->second.run_time);
+		ret = ! (itb->second.run_time > ita->second.run_time);
 	}
 	else if (itb->second.linpack_time > std::chrono::milliseconds(0) && ita->second.linpack_time > std::chrono::milliseconds(0))
 	{
-		bool ret = ! (itb->second.linpack_time > ita->second.linpack_time);
+		ret = ! (itb->second.linpack_time > ita->second.linpack_time);
 	}
 	return ret;
 }

@@ -424,7 +424,7 @@ void TranTied::print(ostream &os) const
 }
 
 
-const Eigen::MatrixXd& TranSVD::get_vt() const
+const  Eigen::SparseMatrix<double>& TranSVD::get_vt() const
 {
 	return Vt;
 }

@@ -1,7 +1,7 @@
 CXX = 'g++'
 CCC = 'g++'
 FC = gfortran
-CFLAGS := '-std=gnu++0x -g -c' 
+CFLAGS := '-std=gnu++0x -g -c -Wall -Wextra' 
 FFLAGS := '-g -c -cpp'
 
 all:

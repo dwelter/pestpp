@@ -33,7 +33,6 @@ public:
 	std::string get_full_filename(const std::string &tag);
 	std::string jacobian_filename() {return build_filename("jco");}
 	std::string get_base_filename() {return pest_base_filename;}
-	void set_analytic_derivative_filename(const std::string &name) {analytic_derivative_filename = name;}
 	std::ofstream &rec_ofstream();
 	std::ofstream &sen_ofstream();
 	std::ofstream &open_ofile_ext(const std::string &extension, std::ios_base::openmode mode = std::ofstream::out);
@@ -51,7 +50,6 @@ public:
 	std::fstream &get_fstream(const std::string &tag);
 	~FileManager(void);
 private:
-	std::string analytic_derivative_filename;
 	std::string directory;
 	std::string pest_base_filename;
 	std::map<std::string, std::ofstream*> ofile_map;

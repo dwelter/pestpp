@@ -304,7 +304,7 @@ void  MorrisMethod::calc_sen(ModelRun model_run, ofstream &fout_raw, ofstream &f
 			double sen = (phi1 - phi0) / delta;
 			fout_raw << log_name(*p) << ",  " <<  phi1 << ",  " << phi0 << ",  " << p1 << ",  " << p0 << ", " << sen << endl;
 
-			auto &it_senmap = sen_map.find(*p);
+			const auto &it_senmap = sen_map.find(*p);
 			if (it_senmap != sen_map.end())
 			{
 				it_senmap->second.add(sen);
@@ -321,7 +321,7 @@ void  MorrisMethod::calc_sen(ModelRun model_run, ofstream &fout_raw, ofstream &f
 	fout_morris << "parameter_name, sen_mean, sen_mean_abs, sen_std_dev" << endl;
 	for (const auto &it_par : adj_par_name_vec)
 	{
-		auto &it_senmap = sen_map.find(it_par);
+		const auto &it_senmap = sen_map.find(it_par);
 		if (it_senmap != sen_map.end())
 		{
 			fout_morris << log_name(it_par) << ", " << it_senmap->second.comp_mean() << ", " << it_senmap->second.comp_abs_mean() << ", " <<  it_senmap->second.comp_var() << endl;

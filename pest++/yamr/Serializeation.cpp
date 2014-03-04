@@ -256,7 +256,6 @@ unsigned long Serialization::unserialize(const vector<char> &ser_data, vector<ve
 
 unsigned long Serialization::unserialize(const vector<char> &ser_data, Transformable &items, const vector<string> &names_vec, unsigned long start_loc)
 {
-	unsigned long bytes_read = 0;
 	unsigned long total_bytes_read = 0;
 	size_t vec_size = (ser_data.size() - start_loc) / sizeof(double);
 	assert(vec_size >= names_vec.size());

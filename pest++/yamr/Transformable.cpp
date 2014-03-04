@@ -233,7 +233,7 @@ const double* Transformable::get_rec_ptr(const string &name) const
 	return ret_val;
 }
 
-const double Transformable::get_rec(const string &name) const
+double Transformable::get_rec(const string &name) const
 {
 	double ret_val = no_data;
 	Transformable::const_iterator iter = find(name);

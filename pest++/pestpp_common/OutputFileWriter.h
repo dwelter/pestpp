@@ -48,7 +48,7 @@ public:
 	void write_sen_header(std::ostream &fout, const std::string &case_name);
 	void append_sen(std::ostream &fout, int iter_no, const Jacobian &jac, const ObjectiveFunc &obj_func, const ParameterGroupInfo &par_grp_info);
 	void write_svd(Eigen::VectorXd &Sigma, Eigen::SparseMatrix<double> &Vt, int num_sing_used, double lambda, const Parameters &freeze_numeric_pars);
-	void OutputFileWriter::write_svd_iteration(int iteration_no);
+	void write_svd_iteration(int iteration_no);
 private:
 	FileManager &file_manager;
 	std::string case_name;

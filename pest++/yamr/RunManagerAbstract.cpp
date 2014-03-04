@@ -31,9 +31,9 @@ RunManagerAbstract::RunManagerAbstract(const vector<string> _comline_vec,
 	const vector<string> _tplfile_vec, const vector<string> _inpfile_vec,
 	const vector<string> _insfile_vec, const vector<string> _outfile_vec,
 	const string &stor_filename, int _max_n_failure)
-	: total_runs(0), comline_vec(_comline_vec), tplfile_vec(_tplfile_vec),
-	inpfile_vec(_inpfile_vec), insfile_vec(_insfile_vec), outfile_vec(_outfile_vec),
-	file_stor(stor_filename), max_n_failure(_max_n_failure)
+  : total_runs(0), max_n_failure(_max_n_failure), file_stor(stor_filename),
+    comline_vec(_comline_vec), tplfile_vec(_tplfile_vec),
+    inpfile_vec(_inpfile_vec), insfile_vec(_insfile_vec), outfile_vec(_outfile_vec)
 {
 	cout << endl;
 	cout << "             Generalized Run Manager Interface" << endl;
