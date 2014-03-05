@@ -539,7 +539,6 @@ void TranSVD::forward(Transformable &data)
 	VectorXd value;
 
 	Transformable delta_data = data - init_base_numeric_parameters;
-
 	value = Vt * delta_data.get_data_eigen_vec(base_parameter_names);
 	for (int i=0; i<n_sing_val; ++i) {
 		super_pars.insert(super_parameter_names[i], value(i)+10.0);

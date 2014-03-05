@@ -219,7 +219,8 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 	{
 		std::cout << string(message.str().size(), '\b');
 		message.str("");
-		message << "  computing vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size();
+		message << "  computing vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << lambda_vec.size() << "             ";
+		std::cout << message.str();
 		std::cout << message.str();
 
 		ml_upgrade = calc_lambda_upgrade_vec(jacobian, Q_sqrt, residuals_vec, numeric_par_names_vec, obs_names_vec,
