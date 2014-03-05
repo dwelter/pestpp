@@ -20,7 +20,7 @@ Removal of this statement violates the spirit in which 3PG(S) was released by
 CSIRO Forestry and Forest Products.
 Reading input parameters from file 'rsgparm4.txt'...
    pFS2                                     constant:      0.750
-   pFS20                                    constant:      0.151
+   pFS20                                    constant:      0.146
    StemConst                                constant:      0.010
    StemPower                                constant:      2.400
    pRx                                      constant:      1.000

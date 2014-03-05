@@ -200,6 +200,8 @@ int main(int argc, char* argv[])
 		throw(e);
 	}
 	pest_scenario.check_inputs();
+	bool save_eign = pest_scenario.get_svd_info().eigwrite > 0;
+	output_file_writer.save_svd_output(save_eign);
 
 	RunManagerAbstract *run_manager_ptr;
 	if (run_manager_type == RunManagerType::YAMR)

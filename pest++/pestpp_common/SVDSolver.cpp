@@ -260,22 +260,28 @@ SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, 
 		svd_package->solve_ip(SqrtQ_J, Sigma, U, Vt);
 	}
 
+	//calculate the number of singluar values above the threshold
+	int num_sing_used = 0;
+	int max_sing = (p_name_nf_vec.size() < svd_info.maxsing) ? par_name_vec.size() : svd_info.maxsing;
+	for (int i = 0; i < max_sing; ++i) {
+		if (Sigma(i) != 0 && i<max_sing && Sigma(i) / Sigma(0) > svd_info.eigthresh) {
+			++num_sing_used;
+		}
+	}
+	//Only add lambda to singular values above the threshhold 
 	if (marquardt_type == MarquardtMatrix::IDENT)
 	{
-		Sigma = Sigma.array() + lambda;
+		Sigma.head(num_sing_used) = Sigma.head(num_sing_used).array() + lambda;
 	}
 	else
 	{
-		Sigma = Sigma.array() + (Sigma.cwiseProduct(Sigma).array() + lambda * lambda).sqrt();
+		//this needs checking 
+		Sigma.head(num_sing_used) = Sigma.head(num_sing_used).array() + (Sigma.head(num_sing_used).cwiseProduct(Sigma).array() + lambda * lambda).sqrt();
 	}
-	
-	//calculate the number of singluar values above the threshold
 	Eigen::VectorXd tmp_svd_uvec;
-	int max_sing = (p_name_nf_vec.size() < svd_info.maxsing) ? par_name_vec.size() : svd_info.maxsing;
-	int num_sing_used;
 	{
 		Eigen::SparseVector<double> tmp_svd_uvec_sparse;
-		Eigen::SparseMatrix<double> SqrtQ_J_inv = SVD_inv(U, Sigma, Vt, max_sing, svd_info.eigthresh, num_sing_used);
+		Eigen::SparseMatrix<double> SqrtQ_J_inv = SVD_inv(U, Sigma, Vt, num_sing_used, svd_info.eigthresh, num_sing_used);
 		tmp_svd_uvec_sparse = (SqrtQ_J_inv * Q_sqrt) * ((Residuals + del_residuals).sparseView());
 		tmp_svd_uvec = tmp_svd_uvec_sparse.toDense();
 		output_file_writer.write_svd(Sigma, Vt, num_sing_used, lambda, freeze_numeric_pars);
@@ -428,7 +434,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	{
 		std::cout << string(message.str().size(), '\b');
 		message.str("");
-		message << "  computing vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size();
+		message << "  computing vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
 		std::cout << message.str();
 		
 		Parameters new_numeric_pars;

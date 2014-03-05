@@ -162,6 +162,16 @@ void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobia
 	fout << endl << endl;
 }
 
+void OutputFileWriter::save_svd_output(bool _save_svd)
+{
+	save_svd = _save_svd;
+	if (save_svd)
+	{
+		file_manager.open_ofile_ext("svd");
+	}
+}
+
+
 void OutputFileWriter::write_svd(VectorXd &Sigma, Eigen::SparseMatrix<double> &Vt, int num_sing_used, double lambda, const Parameters &freeze_numeric_pars)
 {
 	if (OutputFileWriter::save_svd)
