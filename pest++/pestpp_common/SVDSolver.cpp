@@ -254,9 +254,10 @@ SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, 
 	Parameters delta_freeze_pars = freeze_numeric_pars;
 	delta_freeze_pars -= base_numeric_pars;
 	VectorXd del_residuals = calc_residual_corrections(jacobian, delta_freeze_pars, obs_name_vec);
+	Eigen::SparseMatrix<double> q_sqrt = Q_sqrt.get_sparse_matrix(obs_name_vec);
 	{ 
 		Eigen::SparseMatrix<double> jac = jacobian.get_matrix(obs_name_vec, p_name_nf_vec);
-		Eigen::SparseMatrix<double> SqrtQ_J = Q_sqrt * jac;
+		Eigen::SparseMatrix<double> SqrtQ_J = q_sqrt * jac;
 		svd_package->solve_ip(SqrtQ_J, Sigma, U, Vt);
 	}
 
@@ -268,21 +269,27 @@ SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, 
 			++num_sing_used;
 		}
 	}
+
+	//Trim the Matricies based on the number of singular values to be used
+	Sigma = VectorXd(Sigma.head(num_sing_used));
+	Vt = Eigen::SparseMatrix<double>(Vt.topRows(num_sing_used));
+	U = Eigen::SparseMatrix<double>(U.leftCols(num_sing_used));
+
 	//Only add lambda to singular values above the threshhold 
 	if (marquardt_type == MarquardtMatrix::IDENT)
 	{
-		Sigma.head(num_sing_used) = Sigma.head(num_sing_used).array() + lambda;
+		Sigma = Sigma.array() + lambda;
 	}
 	else
 	{
 		//this needs checking 
-		Sigma.head(num_sing_used) = Sigma.head(num_sing_used).array() + (Sigma.head(num_sing_used).cwiseProduct(Sigma).array() + lambda * lambda).sqrt();
+		Sigma = Sigma.array() + (Sigma.cwiseProduct(Sigma).array() + lambda * lambda).sqrt();
 	}
 	Eigen::VectorXd tmp_svd_uvec;
 	{
 		Eigen::SparseVector<double> tmp_svd_uvec_sparse;
 		Eigen::SparseMatrix<double> SqrtQ_J_inv = SVD_inv(U, Sigma, Vt, num_sing_used, svd_info.eigthresh, num_sing_used);
-		tmp_svd_uvec_sparse = (SqrtQ_J_inv * Q_sqrt) * ((Residuals + del_residuals).sparseView());
+		tmp_svd_uvec_sparse = (SqrtQ_J_inv * q_sqrt) * ((Residuals + del_residuals).sparseView());
 		tmp_svd_uvec = tmp_svd_uvec_sparse.toDense();
 		output_file_writer.write_svd(Sigma, Vt, num_sing_used, lambda, freeze_numeric_pars);
 	}
@@ -400,7 +407,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 		obs_names_vec.insert(obs_names_vec.end(), prior_info_names.begin(), prior_info_names.end());
 	}
 	// build weights matrix sqrt(Q)
-	QSqrtMatrix Q_sqrt(*obs_info_ptr, obs_names_vec, prior_info_ptr, tikhonov_weight);
+	QSqrtMatrix Q_sqrt(obs_info_ptr, prior_info_ptr, tikhonov_weight);
 	//build residuals vector
 	residuals_vec = -1.0 * stlvec_2_egienvec(cur_solution.get_residuals_vec(obs_names_vec));
 
@@ -435,6 +442,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 		std::cout << string(message.str().size(), '\b');
 		message.str("");
 		message << "  computing vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
+
 		std::cout << message.str();
 		
 		Parameters new_numeric_pars;

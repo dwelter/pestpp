@@ -187,8 +187,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		vector<string> prior_info_names = prior_info_ptr->get_keys();
 		obs_names_vec.insert(obs_names_vec.end(), prior_info_names.begin(), prior_info_names.end());
 	}
-	// build weights matrix sqrt(Q)
-	QSqrtMatrix Q_sqrt(*obs_info_ptr, obs_names_vec, prior_info_ptr, tikhonov_weight);
+
 	//build residuals vector
 	VectorXd residuals_vec = -1.0 * stlvec_2_egienvec(base_run.get_residuals_vec(obs_names_vec));
 
@@ -203,6 +202,9 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 	Parameters base_numeric_pars = par_transform.ctl2numeric_cp(base_run.get_ctl_pars());
 	vector<Parameters> frozen_derivative_par_vec;
 	Parameters *new_frozen_par_ptr = 0;
+
+	// build weights matrix sqrt(Q)
+	QSqrtMatrix Q_sqrt(obs_info_ptr, prior_info_ptr, tikhonov_weight);
 
 	double tmp_lambda[] = {0.1, 1.0, 10.0, 100.0, 1000.0};
 	vector<double> lambda_vec(tmp_lambda, tmp_lambda+sizeof(tmp_lambda)/sizeof(double));
@@ -220,7 +222,6 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		std::cout << string(message.str().size(), '\b');
 		message.str("");
 		message << "  computing vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << lambda_vec.size() << "             ";
-		std::cout << message.str();
 		std::cout << message.str();
 
 		ml_upgrade = calc_lambda_upgrade_vec(jacobian, Q_sqrt, residuals_vec, numeric_par_names_vec, obs_names_vec,

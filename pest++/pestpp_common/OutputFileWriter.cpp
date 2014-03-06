@@ -135,10 +135,11 @@ void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobia
 	const vector<string> &par_list = jac.parameter_list();
 	const vector<string> &obs_list = jac.obs_and_reg_list();
 	Parameters pars = jac.get_base_numeric_parameters();
-	QSqrtMatrix q_sqrt( *(obj_func.get_obs_info_ptr()), obs_list, obj_func.get_prior_info_ptr(), 1.0);
-	MatrixXd w_sen_mat = q_sqrt * jac.get_matrix(obs_list, par_list);
+	QSqrtMatrix Q_sqrt(obj_func.get_obs_info_ptr(), obj_func.get_prior_info_ptr(), 1.0);
+	Eigen::SparseMatrix<double> q_sqrt = Q_sqrt.get_sparse_matrix(obs_list);
+	Eigen::SparseMatrix<double> w_sen_mat = q_sqrt * jac.get_matrix(obs_list, par_list);
 	int n_par = par_list.size();
-	int n_nonzero_weights = q_sqrt.num_nonzero();
+	int n_nonzero_weights = q_sqrt.nonZeros();
 	double nonzero_weights_fac = 0.0;
 	if (n_nonzero_weights > 0) nonzero_weights_fac = 1.0 / double(n_nonzero_weights);
 	size_t size_par_vec = pars.size();

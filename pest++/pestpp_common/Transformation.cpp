@@ -472,7 +472,7 @@ void TranSVD::update_reset_frozen_pars(const Jacobian &jacobian, const QSqrtMatr
 	std::remove_if(base_parameter_names.begin(), base_parameter_names.end(),
 		[this](string &str)->bool{return this->frozen_derivative_parameters.find(str)!=this->frozen_derivative_parameters.end();});
 
-	SqrtQ_J = Q_sqrt * jacobian.get_matrix(obs_names, base_parameter_names);
+	SqrtQ_J = Q_sqrt.get_sparse_matrix(obs_names) * jacobian.get_matrix(obs_names, base_parameter_names);
 
 	calc_svd();
 }

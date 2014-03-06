@@ -23,7 +23,6 @@
 #include <Eigen/Dense>
 #include<Eigen/Sparse>
 
-
 class ObservationInfo;
 class Observations;
 class PriorInformation;
@@ -34,21 +33,14 @@ using namespace std;
 class QSqrtMatrix
 {
 public:
-	friend Eigen::SparseMatrix<double> operator*(const Eigen::SparseMatrix<double> &lhs, const QSqrtMatrix &rhs);
-	friend Eigen::MatrixXd operator*(const Eigen::MatrixXd &lhs, const QSqrtMatrix &rhs);
-	QSqrtMatrix(const ObservationInfo &obs_info, const vector<string> &obs, const PriorInformation *prior_info_ptr, 
-	double tikhonov_weight);
-	Eigen::SparseMatrix<double> operator*(const Eigen::SparseMatrix<double> &rhs) const;
-	Eigen::MatrixXd operator*(const Eigen::MatrixXd &rhs) const;
-	const Eigen::VectorXd get_diag_vector() const;
-	int num_nonzero() const;
+	QSqrtMatrix(){};
+	QSqrtMatrix(const ObservationInfo *obs_info_ptr, const PriorInformation *prior_info_ptr, double tikhonov_weight);
+	Eigen::SparseMatrix<double> QSqrtMatrix::get_sparse_matrix(const vector<string> &obs_names) const;
 	~QSqrtMatrix(void);
-
 private:
-	vector<double> weights;
+	const ObservationInfo *obs_info_ptr;
+	const PriorInformation *prior_info_ptr;
+	double tikhonov_weight;
 };
-
-Eigen::SparseMatrix<double> operator*(const Eigen::SparseMatrix<double> &lhs, const QSqrtMatrix &rhs);
-Eigen::MatrixXd operator*(const Eigen::MatrixXd &lhs, const QSqrtMatrix &rhs);
 
 #endif /* QSQRT_MATRIX_H_ */

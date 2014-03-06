@@ -30,12 +30,13 @@ using namespace Eigen;
 #ifdef OS_LINUX 
 #define DEF_DLAMCH dlamch_
 #define DEF_DLANBPRO_SPARCE dlanbpro_sparce_
-extern "C" {
-	double DEF_DLAMCH(char*);
-}
+//extern "C" {
+//	double DEF_DLAMCH(char*);
+//}
 #endif
 
 extern "C" {
+	double DEF_DLAMCH(char*);
 	void DEF_DLANBPRO_SPARCE(int *m, int *n, int *k0, int *k, double *U, 
 		int *ldu, double *V, int *ldv, double *B, int *ldb, 
 		double *rnorm, double *doption, int *ioption, double *work,
