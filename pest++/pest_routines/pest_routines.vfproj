@@ -34,7 +34,7 @@
 				<Tool Name="VFPostBuildEventTool"/>
 				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration>
 		<Configuration Name="Release|x64" OutputDirectory="$(SolutionDir)$(Platform)\$(Configuration)\" IntermediateDirectory="$(Platform)\$(ConfigurationName)" ConfigurationType="typeStaticLibrary">
-				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" InterproceduralOptimizations="ipoMultiFile" Preprocess="preprocessYes" OpenMPConditionalCompilation="false" EnableEnhancedInstructionSet="codeArchSSE2" ExternalNameInterpretation="extNameLowerCase" ExternalNameUnderscore="true" UseMkl="mklSequential"/>
+				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" FavorSizeOrSpeed="favorNone" InterproceduralOptimizations="ipoMultiFile" Preprocess="preprocessYes" OpenMPConditionalCompilation="false" EnableEnhancedInstructionSet="codeArchSSE2" ExternalNameInterpretation="extNameLowerCase" ExternalNameUnderscore="true" UseMkl="mklSequential"/>
 				<Tool Name="VFLibrarianTool"/>
 				<Tool Name="VFResourceCompilerTool"/>
 				<Tool Name="VFMidlTool" SuppressStartupBanner="true" TargetEnvironment="midlTargetAMD64"/>

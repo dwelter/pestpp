@@ -272,6 +272,7 @@ SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, 
 
 	//Trim the Matricies based on the number of singular values to be used
 	Sigma = VectorXd(Sigma.head(num_sing_used));
+
 	Vt = Eigen::SparseMatrix<double>(Vt.topRows(num_sing_used));
 	U = Eigen::SparseMatrix<double>(U.leftCols(num_sing_used));
 
@@ -285,14 +286,12 @@ SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, 
 		//this needs checking 
 		Sigma = Sigma.array() + (Sigma.cwiseProduct(Sigma).array() + lambda * lambda).sqrt();
 	}
+	VectorXd Sigma_inv = Sigma.array().inverse();
+
+	Eigen::SparseVector<double> tmp_residual = (Residuals + del_residuals).sparseView();
 	Eigen::VectorXd tmp_svd_uvec;
-	{
-		Eigen::SparseVector<double> tmp_svd_uvec_sparse;
-		Eigen::SparseMatrix<double> SqrtQ_J_inv = SVD_inv(U, Sigma, Vt, num_sing_used, svd_info.eigthresh, num_sing_used);
-		tmp_svd_uvec_sparse = (SqrtQ_J_inv * q_sqrt) * ((Residuals + del_residuals).sparseView());
-		tmp_svd_uvec = tmp_svd_uvec_sparse.toDense();
-		output_file_writer.write_svd(Sigma, Vt, num_sing_used, lambda, freeze_numeric_pars);
-	}
+	tmp_svd_uvec = Vt.transpose() * Sigma_inv.asDiagonal() * U.transpose() * q_sqrt  * (Residuals + del_residuals);
+	output_file_writer.write_svd(Sigma, Vt, num_sing_used, lambda, freeze_numeric_pars);
 
 	//build map of parameter names to index in original par_name_vec vector
 	unordered_map<string, int> par_vec_name_to_idx;

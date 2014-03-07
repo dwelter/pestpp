@@ -437,7 +437,16 @@ void TranSVD::calc_svd()
 	Sigma = svd_fac.singularValues();
 	U = svd_fac.matrixU().sparseView();
 	Vt = svd_fac.matrixV().transpose().sparseView();
-	SVD_inv(U, Sigma, Vt, max_sing, eigthresh, n_sing_val);
+
+	//calculate the number of singluar values above the threshold
+	int tmp_max_sing = min(max_sing, int(Sigma.size()));
+	n_sing_val = 0;
+	for (int i = 0; i < tmp_max_sing; ++i) {
+		if (Sigma(i) != 0 && i<tmp_max_sing && Sigma(i) / Sigma(0) > eigthresh) {
+			++n_sing_val;
+		}
+	}
+
 	super_parameter_names.clear();
 	for(int i=0; i<n_sing_val; ++i) {
 		sup_name.str("");

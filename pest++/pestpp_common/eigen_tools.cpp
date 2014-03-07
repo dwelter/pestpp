@@ -28,31 +28,6 @@
 using namespace Eigen;
 using namespace std;
 
-Eigen::SparseMatrix<double> SVD_inv(const Eigen::SparseMatrix<double> &U, const VectorXd &Sigma, 
-					const Eigen::SparseMatrix<double> &Vt, int max_sing, double eigthresh, int &num_sing)
-{
-	size_t s_size = Sigma.size();
-
-	// Calculate V * S-1 * Ut
-	// First Calculate S-1 
-	num_sing = 0;
-	for (int i=0; i < s_size; ++i) {
-		if (Sigma(i) != 0 && i<max_sing && Sigma(i)/Sigma(0) > eigthresh) {
-			++num_sing;
-		}
-	}
-	Eigen::SparseMatrix<double> sigma_inv_trunc(num_sing, num_sing);
-	sigma_inv_trunc.setZero();
-	std::vector<Eigen::Triplet<double> > triplet_list;
-	for (int i=0; i < num_sing; ++i) {
-			triplet_list.push_back(Eigen::Triplet<double>(i,i,1.0 / Sigma(i)));
-	}
-	sigma_inv_trunc.setFromTriplets(triplet_list.begin(), triplet_list.end());
-
-	// Calculate V * (S-1 * Ut) 
-	Eigen::SparseMatrix<double> ret_val = Vt.topRows(num_sing).transpose() * sigma_inv_trunc * U.leftCols(num_sing).transpose();
-	return ret_val;
-}
 
 void get_MatrixXd_row_abs_max(const MatrixXd &m, int row, int *max_col, double *max_val)
 {

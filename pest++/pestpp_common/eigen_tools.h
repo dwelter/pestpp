@@ -26,9 +26,6 @@
 
 class Transformable;
 
-Eigen::SparseMatrix<double> SVD_inv(const Eigen::SparseMatrix<double> &U, const Eigen::VectorXd &Sigma, 
-					const Eigen::SparseMatrix<double> &Vt, int max_sing, double eigthresh, int &num_sing);
-
 void get_MatrixXd_row_abs_max(const Eigen::MatrixXd &m, int row, int *max_col, double *max_val);
 
 Eigen::VectorXd stlvec_2_egienvec(const std::vector<double> &stl_vec);
