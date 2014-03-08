@@ -44,7 +44,7 @@ Jacobian_1to1::Jacobian_1to1(FileManager &_file_manager) : Jacobian(_file_manage
 Jacobian_1to1::~Jacobian_1to1() {
 }
 
-bool Jacobian_1to1::build_runs(ModelRun &init_model_run, vector<string> numeric_par_names, vector<string> obs_names, ParamTransformSeq &par_transform,
+bool Jacobian_1to1::build_runs(ModelRun &init_model_run, vector<string> numeric_par_names, ParamTransformSeq &par_transform,
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
 		RunManagerAbstract &run_manager, set<string> &out_of_bound_par, bool phiredswh_flag, bool calc_init_obs)
 {

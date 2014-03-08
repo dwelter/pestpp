@@ -136,7 +136,7 @@ Eigen::SparseMatrix<double> Jacobian::get_matrix(const vector<string> &obs_names
 }
 
 
-bool Jacobian::build_runs(ModelRun &init_model_run, vector<string> numeric_par_names, vector<string> obs_names, ParamTransformSeq &par_transform,
+bool Jacobian::build_runs(ModelRun &init_model_run, vector<string> numeric_par_names, ParamTransformSeq &par_transform,
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
 		RunManagerAbstract &run_manager, set<string> &out_of_bound_par, bool phiredswh_flag, bool calc_init_obs)
 {

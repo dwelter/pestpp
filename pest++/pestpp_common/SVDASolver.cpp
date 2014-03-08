@@ -143,7 +143,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		if (!base_run.obs_valid() || calc_init_obs == true) {
 		 calc_init_obs = true;
 		}
-		bool success = jacobian.build_runs(base_run, numeric_par_names_vec, obs_names_vec, par_transform,
+		bool success = jacobian.build_runs(base_run, numeric_par_names_vec, par_transform,
 			*par_group_info_ptr, *ctl_par_info_ptr,run_manager, out_of_bound_pars,
 			phiredswh_flag, calc_init_obs);
 

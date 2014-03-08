@@ -367,7 +367,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 		 calc_init_obs = true;
 	 }
 	cout << "  calculating jacobian... ";
-	jacobian.build_runs(cur_solution, numeric_parname_vec, obs_names_vec, par_transform,
+	jacobian.build_runs(cur_solution, numeric_parname_vec, par_transform,
 			*par_group_info_ptr, *ctl_par_info_ptr, run_manager, out_ofbound_pars,
 			phiredswh_flag, calc_init_obs);
 	jacobian.make_runs(run_manager);
