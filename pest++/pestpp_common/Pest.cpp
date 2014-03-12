@@ -43,7 +43,6 @@ void Pest::set_defaults()
 {
 	svd_info.maxsing = 0;
 	svd_info.eigthresh = 1.0e-6;
-	restart_command = RestartCommand::NONE;
 }
 
 void Pest::check_inputs()

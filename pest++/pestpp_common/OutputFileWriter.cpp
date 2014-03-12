@@ -31,9 +31,11 @@
 #include "QSqrtMatrix.h"
 #include "ModelRunPP.h"
 #include "eigen_tools.h"
+#include "utilities.h"
 
 using namespace std;
 using namespace Eigen;
+using namespace::pest_utils;
 
 OutputFileWriter::OutputFileWriter(FileManager &_file_manager, const string &_case_name, bool _save_rei, bool _save_svd)
 	: file_manager(_file_manager), case_name(_case_name), save_rei(_save_rei), save_svd(_save_svd)
@@ -118,6 +120,30 @@ void OutputFileWriter::write_par(ofstream &fout, const Parameters &pars, const T
 		<<  showpoint<< (*b).second << " " << setw(20) << showpoint << scale << " " << setw(20) << showpoint << offset << endl;
 	}
 }
+
+
+void OutputFileWriter::read_par(ifstream &fin, Parameters &pars)
+{
+	string line;
+	string name;
+	double value;
+	vector<string> tokens;
+
+
+	getline(fin, line);
+
+	while (getline(fin, line))
+	{
+		strip_ip(line);
+		tokens.clear();
+		tokenize(line, tokens);
+		name = tokens[0];
+		convert_ip(tokens[1], value);
+		pars[name] = value;
+	}
+}
+
+
 
 void OutputFileWriter::write_sen_header(std::ostream &fout, const string &case_name)
 {

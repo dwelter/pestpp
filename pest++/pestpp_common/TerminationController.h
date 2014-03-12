@@ -23,9 +23,11 @@
 #include <fstream>
 #include <iostream>
 
+class RestartController;
 
 class TerminationController
 {
+	friend RestartController;
 public:
 	TerminationController(int _noptmax=0, double _phiredstp=0.0, int _nphistp=0, int _nphinoger=0,
 		double _relparstp=0.0, int _nrelpar=0);
@@ -49,6 +51,7 @@ private:
 	double phiredstp;
 	double relparstp;
 	std::vector<double> lowest_phi;
+	bool terminate;
 };
 
 #endif //TERMINATIONCONTROLLER_H_

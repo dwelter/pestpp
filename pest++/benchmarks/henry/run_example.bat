@@ -9,7 +9,7 @@ xcopy /e /q /y template master\
  )
 
 REM start YAMR master
-start /D"%CD%\master" .\pest++ %pestpp_file% /H :4006
+start /D"%CD%\master" .\pest++ %pestpp_file% /H :4006 /j
 
 REM start YAMR slaves
  FOR /L %%i IN (1,1,%nslaves%) DO (

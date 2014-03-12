@@ -54,11 +54,11 @@ void SVDSolver::Upgrade::print(ostream &os)
 SVDSolver::SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_par_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, 
-		const Regularization *_regul_scheme_ptr, int _max_freeze_iter, OutputFileWriter &_output_file_writer, Pest::RestartCommand &_restart_command, const string &_description)
+		const Regularization *_regul_scheme_ptr, int _max_freeze_iter, OutputFileWriter &_output_file_writer, RestartController &_restart_controller, const string &_description)
 		: ctl_info(_ctl_info), svd_info(_svd_info), par_group_info_ptr(_par_group_info_ptr), ctl_par_info_ptr(_ctl_par_info_ptr), obs_info_ptr(_obs_info), obj_func(_obj_func),
 		  file_manager(_file_manager), observations_ptr(_observations), par_transform(_par_transform),
 		  cur_solution(_obj_func, *_observations), phiredswh_flag(false), save_next_jacobian(true), prior_info_ptr(_prior_info_ptr), jacobian(_jacobian), prev_phi_percent(0.0),
-		  num_no_descent(0), regul_scheme_ptr(_regul_scheme_ptr), max_freeze_iter(_max_freeze_iter), output_file_writer(_output_file_writer), description(_description), best_lambda(20.0), restart_command(_restart_command)
+		  num_no_descent(0), regul_scheme_ptr(_regul_scheme_ptr), max_freeze_iter(_max_freeze_iter), output_file_writer(_output_file_writer), description(_description), best_lambda(20.0), restart_controller(_restart_controller)
 {
 	svd_package = new SVD_EIGEN();
 }
@@ -157,8 +157,8 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 		cout << "  SVD Package: " << svd_package->description << endl;
 		os   << "  SVD Package: " << svd_package->description << endl;
 		os   << "    Model calls so far : " << run_manager.get_total_runs() << endl;
-		fout_restart << "start_iteration " << global_iter_num << endl;
-		termination_ctl.save_state(fout_restart);
+		fout_restart << "start_iteration " << iter_num << "  " << global_iter_num << endl;
+
 		// write head for SVD file
 		output_file_writer.write_svd_iteration(global_iter_num);
 		iteration(run_manager, termination_ctl, false);
@@ -324,8 +324,6 @@ SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, 
 
 void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs)
 {
-	ostream &fout_restart = file_manager.get_ofstream("rst");
-	fout_restart << "native_par_iteration" << endl;
 	ostream &os = file_manager.rec_ofstream();
 	const double PI = 3.141592;
 	VectorXd residuals_vec;
@@ -334,9 +332,13 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	vector<string> obs_names_vec = cur_solution.get_obs_template().get_keys();
 	vector<string> numeric_parname_vec = par_transform.ctl2numeric_cp(cur_solution.get_ctl_pars()).get_keys();
 
-	if (restart_command == Pest::RestartCommand::REUSE_JACOBIAN)
+	//Save information necessary for restart
+	ostream &fout_restart = file_manager.get_ofstream("rst");
+	fout_restart << "base_par_iteration" << endl;
+
+	if (restart_controller.get_restart_option() == RestartController::RestartOption::REUSE_JACOBIAN)
 	{
-		restart_command = Pest::RestartCommand::NONE;
+		restart_controller.get_restart_option() = RestartController::RestartOption::NONE;
 		cout << "  reading previosuly computed jacobian... ";
 		{
 			jacobian.read(file_manager.build_filename("jco"), *prior_info_ptr);
@@ -361,6 +363,15 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 			throw(PestError("Error: Base parameter run failed.  Can not continue."));
 		}
 	}
+	else if (restart_controller.get_restart_option() == RestartController::RestartOption::RESUME_JACOBIAN_RUNS)
+	{
+		Parameters tmp_pars;
+		ifstream &fin_par = file_manager.open_ifile_ext("rpb");
+		output_file_writer.read_par(fin_par, tmp_pars);
+		file_manager.close_file("rpb");
+		cur_solution.set_ctl_parameters(tmp_pars);
+		goto restart_resume_jacobian_runs;
+	}
 
 	// Calculate Jacobian
 	if (!cur_solution.obs_valid() || calc_init_obs == true) {
@@ -370,6 +381,16 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	jacobian.build_runs(cur_solution, numeric_parname_vec, par_transform,
 			*par_group_info_ptr, *ctl_par_info_ptr, run_manager, out_ofbound_pars,
 			phiredswh_flag, calc_init_obs);
+restart_resume_jacobian_runs:
+
+	// save current parameters
+	ofstream &fout_rpb = file_manager.open_ofile_ext("rpb");
+	output_file_writer.write_par(fout_rpb, cur_solution.get_ctl_pars(), *(par_transform.get_offset_ptr()),
+		*(par_transform.get_scale_ptr()));
+	file_manager.close_file("rpb");
+	// save state of termination controller
+	termination_ctl.save_state(fout_restart);
+
 	jacobian.make_runs(run_manager);
 	jacobian.process_runs(cur_solution, numeric_parname_vec, obs_names_vec, par_transform,
 			*par_group_info_ptr, *ctl_par_info_ptr, run_manager, *prior_info_ptr, out_ofbound_pars,

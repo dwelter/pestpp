@@ -36,7 +36,6 @@ class PriorInformation;
 class Pest {
 public:
 	friend ostream& operator<< (ostream &os, const Pest& val);
-	enum class RestartCommand {NONE, REUSE_JACOBIAN, RESUME_JACOBIAN_RUNS, RESUME_UPGRADE_RUNS};
 	Pest();
 	void set_defaults();
 	void check_inputs();
@@ -63,8 +62,6 @@ public:
 	const PestppOptions &get_pestpp_options() const {return pestpp_options;}
 	const Regularization* get_regul_scheme_ptr() {return regul_scheme_ptr;}
 	vector<string> get_nonregul_obs() const;
-	RestartCommand& get_restart_command() {return restart_command;}
-	void set_start_command(const RestartCommand _restart_command) {restart_command=_restart_command;}
 	virtual ~Pest();
 private:
 	ControlInfo control_info;
@@ -81,7 +78,6 @@ private:
 	vector<string> ctl_ordered_par_names;
 	vector<string> ctl_ordered_obs_names;
 	Regularization *regul_scheme_ptr;
-	RestartCommand restart_command;
 };
 ostream& operator<< (ostream &os, const Pest& val);
 #endif /* PEST_H_ */

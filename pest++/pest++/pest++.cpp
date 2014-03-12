@@ -41,6 +41,7 @@
 #include "Serialization.h"
 #include "system_variables.h"
 #include "pest_error.h"
+#include "RestartController.h"
 
 using namespace std;
 using namespace pest_utils;
@@ -165,29 +166,9 @@ int main(int argc, char* argv[])
 	Pest pest_scenario;
 	pest_scenario.set_defaults();
 
-
 	//Initialize OutputFileWriter to hadle IO of suplementary files (.par, .par, .svd)
 	//bool save_eign = pest_scenario.get_svd_info().eigwrite > 0;
 	OutputFileWriter output_file_writer(file_manager, file_manager.get_base_filename(), true, false);
-
-	//if desired set flag to reuse existing jacobian on the first iteration
-	vector<string>::const_iterator it_find_j = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/j");
-	vector<string>::const_iterator it_find_r = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/r");
-	if (it_find_j!= cmd_arg_vec.end())
-	{
-		pest_scenario.set_start_command(Pest::RestartCommand::REUSE_JACOBIAN);
-	}
-	else if (it_find_r!= cmd_arg_vec.end())
-	{
-		//process .rst restart file
-		//pest_scenario.set_start_command(Pest::RestartCommand::);
-		 //RESUME_JACOBIAN_RUNS, RESUME_UPGRADE_RUNS}
-	}
-	else
-	{
-		pest_scenario.set_start_command(Pest::RestartCommand::NONE);
-	}
-
 
 	try {
 		pest_scenario.process_ctl_file(file_manager.open_ifile_ext("pst"), file_manager);
@@ -243,10 +224,33 @@ int main(int argc, char* argv[])
 	ObjectiveFunc obj_func(&(pest_scenario.get_ctl_observations()), &(pest_scenario.get_ctl_observation_info()), &(pest_scenario.get_prior_info()));
 	Jacobian *base_jacobian_ptr = new Jacobian_1to1(file_manager);
 
+	TerminationController termination_ctl(pest_scenario.get_control_info().noptmax, pest_scenario.get_control_info().phiredstp,
+		pest_scenario.get_control_info().nphistp, pest_scenario.get_control_info().nphinored, pest_scenario.get_control_info().relparstp,
+		pest_scenario.get_control_info().nrelpar);
+
+	RestartController restart_ctl;
+	//process restart and  reuse jacibian directives
+	vector<string>::const_iterator it_find_j = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/j");
+	vector<string>::const_iterator it_find_r = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/r");
+	if (it_find_j != cmd_arg_vec.end())
+	{
+		restart_ctl.get_restart_option() = RestartController::RestartOption::REUSE_JACOBIAN;
+	}
+	else if (it_find_r != cmd_arg_vec.end())
+	{
+		ifstream &fin_rst = file_manager.open_ifile_ext("rst");
+		restart_ctl.process_rst_file(fin_rst, termination_ctl);
+		file_manager.close_file("rst");
+	}
+	else
+	{
+		restart_ctl.get_restart_option() = RestartController::RestartOption::NONE;
+	}
+
 	SVDSolver base_svd(&pest_scenario.get_control_info(), pest_scenario.get_svd_info(), &pest_scenario.get_base_group_info(),
 		&pest_scenario.get_ctl_parameter_info(), &pest_scenario.get_ctl_observation_info(), file_manager,
 		&pest_scenario.get_ctl_observations(), &obj_func, base_trans_seq, pest_scenario.get_prior_info_ptr(),
-		*base_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(), pest_scenario.get_pestpp_options().get_max_freeze_iter(), output_file_writer, pest_scenario.get_restart_command());
+		*base_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(), pest_scenario.get_pestpp_options().get_max_freeze_iter(), output_file_writer, restart_ctl);
 
 	base_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 	//Build Super-Parameter problem
@@ -271,9 +275,6 @@ int main(int argc, char* argv[])
 	int n_super_iter = pest_scenario.get_pestpp_options().get_n_iter_super();
 	int max_n_super = pest_scenario.get_pestpp_options().get_max_n_super();
 	double super_eigthres = pest_scenario.get_pestpp_options().get_super_eigthres();
-	TerminationController termination_ctl(pest_scenario.get_control_info().noptmax, pest_scenario.get_control_info().phiredstp,
-			pest_scenario.get_control_info().nphistp, pest_scenario.get_control_info().nphinored, pest_scenario.get_control_info().relparstp,
-			pest_scenario.get_control_info().nrelpar);
 
 	Parameters cur_ctl_parameters = pest_scenario.get_ctl_parameters();
 	//Allocates Space for Run Manager.  This initializes the model parameter names and observations names.
@@ -353,7 +354,7 @@ int main(int argc, char* argv[])
 			SVDASolver super_svd(&svd_control_info, pest_scenario.get_svd_info(), &sup_group_info, &pest_scenario.get_ctl_parameter_info(),
 				&pest_scenario.get_ctl_observation_info(),  file_manager, &pest_scenario.get_ctl_observations(), &obj_func,
 				trans_svda, &pest_scenario.get_prior_info(), *super_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(),
-				pest_scenario.get_pestpp_options().get_max_freeze_iter(), output_file_writer, pest_scenario.get_restart_command());
+				pest_scenario.get_pestpp_options().get_max_freeze_iter(), output_file_writer, restart_ctl);
 			super_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 			cur_run = super_svd.solve(*run_manager_ptr, termination_ctl, n_super_iter, cur_run, optimum_run);
 			cur_ctl_parameters = super_svd.cur_model_run().get_ctl_pars();

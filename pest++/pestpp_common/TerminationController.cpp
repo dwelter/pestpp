@@ -28,7 +28,8 @@ TerminationController::TerminationController(int _noptmax, double _phiredstp,
 	int _nphistp, int _nphinoger, double _relparstp, int _nrelpar) 
 	: noptmax(_noptmax), phiredstp(_phiredstp), nphistp(_nphistp),
 	nphinoger(_nphinoger), relparstp(_relparstp), 
-	nrelpar(_nrelpar), nphinoger_count(0), nrelpar_count(0), nopt_count(0)
+	nrelpar(_nrelpar), nphinoger_count(0), nrelpar_count(0), nopt_count(0), 
+	terminate(false)
 {
 }
 
@@ -36,30 +37,8 @@ void TerminationController::reset() {
 	nopt_count = 0;
 	nphinoger_count = 0;
 	lowest_phi.clear();
+	terminate = false;
 }
-
-//TerminationController& TerminationController::operator+=(const TerminationController &rhs)
-//{
-//	if (nphistp!=rhs.nphistp !!
-//		phiredstp!=rhs.phiredstp
-//		relparstp!=rhs.relparstp) {
-//
-//	}
-//	// add number of iterations
-//	nopt_count += rhs.nopt_count;
-//	// keep track of NPHISTP lowest phi's
-//	lowest_phi.insert(lowest_phi.end(), rhs.lowest_phi.begin(), rhs.lowest_phi.end());
-//	sort(lowest_phi.begin(), lowest_phi.end());
-//	if (lowest_phi.size() > nphistp) {
-//		lowest_phi.resize(nphistp);
-//	}
-//	if (rhs.nrelpar_count == rhs.nopt_count) {
-//		nrelpar_count += rhs.nrelpar_count;
-//	}
-//	else {
-//		nrelpar_count = rhs.nrelpar_count;
-//	}
-//}
 
 bool TerminationController::process_iteration(double phi, double relpar)
 {
@@ -95,14 +74,16 @@ bool TerminationController::check_last_iteration()
 	double min_phi_diff = lowest_phi.back() - lowest_phi.front();
 	// Impose Termination Criteria
 	if (nphinoger_count > nphinoger)
-		return true;
-	if (lowest_phi.size() >= nphistp && min_phi_diff <= phiredstp)
-		return true;
-	if (nrelpar_count > nrelpar)
-		return true;
-	if (nopt_count >= noptmax)
-		return true;
-	return false;
+		terminate = true;
+	else if (lowest_phi.size() >= nphistp && min_phi_diff <= phiredstp)
+		terminate = true;
+	else if (nrelpar_count > nrelpar)
+		terminate = true;
+	else if (nopt_count >= noptmax)
+		terminate = true;
+	else 
+		terminate = false;
+	return terminate;
 }
 
 const TerminationController& TerminationController::operator=(const TerminationController &rhs)
@@ -123,10 +104,10 @@ const TerminationController& TerminationController::operator=(const TerminationC
 void TerminationController::save_state(std::ostream &fout)
 {
 
-	fout << "TERMINATION_INFO_1 " << noptmax << " " << nopt_count << " " << nphinoger << " " 
+	fout << "termination_info_1 " << noptmax << " " << nopt_count << " " << nphinoger << " " 
 		<< nphinoger_count << " " << nrelpar << endl;
-	fout << "TERMINATION_INFO_2 " << nrelpar_count << " " << nphistp << " " << phiredstp << " " << relparstp << endl;
-	fout << "TERMINATION_INFO_3 ";
+	fout << "termination_info_2 " << nrelpar_count << " " << nphistp << " " << phiredstp << " " << relparstp << endl;
+	fout << "termination_info_3 ";
 	for (double &a : lowest_phi)
 	{
 		fout << " " << a;
