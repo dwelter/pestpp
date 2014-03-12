@@ -39,6 +39,7 @@ public:
 	int get_iteration_number() {return nopt_count;}
 	void save_state(std::ostream &fout);
 	void read_state(const std::string &line);
+	bool terminate() { return terminate_code; }
 	~TerminationController(void);
 private:
 	int noptmax;
@@ -51,7 +52,7 @@ private:
 	double phiredstp;
 	double relparstp;
 	std::vector<double> lowest_phi;
-	bool terminate;
+	bool terminate_code;
 };
 
 #endif //TERMINATIONCONTROLLER_H_

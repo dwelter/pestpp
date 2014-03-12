@@ -27,7 +27,7 @@ class SVD_PROPACK  : public SVDPackage
 {
 public:
 	SVD_PROPACK(void);
-	void solve_ip(Eigen::SparseMatrix<double>& A, Eigen::VectorXd &Sigma, Eigen::SparseMatrix<double>& U, Eigen::SparseMatrix<double>& Vt );
+	void solve_ip(Eigen::SparseMatrix<double>& A, Eigen::VectorXd &Sigma, Eigen::SparseMatrix<double>& U, Eigen::SparseMatrix<double>& Vt, Eigen::VectorXd &Sigma_trunc);
 	void test();
 	~SVD_PROPACK(void);
 private:

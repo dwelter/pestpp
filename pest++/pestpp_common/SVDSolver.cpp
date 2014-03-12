@@ -151,11 +151,11 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 	for (int iter_num=1; iter_num<=max_iter;++iter_num) {
 		int global_iter_num = termination_ctl.get_iteration_number()+1;
 		cout << "OPTIMISATION ITERATION NUMBER: " << global_iter_num << endl;
-		os   << "OPTIMISATION ITERATION NUMBER: " << global_iter_num << endl;
-		cout << "  Iteration type: " << get_description() << endl;
-		os   << "  Iteration type: " << get_description() << endl;
-		cout << "  SVD Package: " << svd_package->description << endl;
-		os   << "  SVD Package: " << svd_package->description << endl;
+		os   << "OPTIMISATION ITERATION NUMBER: " << global_iter_num << endl << endl;
+		cout << "    Iteration type: " << get_description() << endl;
+		os   << "    Iteration type: " << get_description() << endl;
+		cout << "    SVD Package: " << svd_package->description << endl;
+		os   << "    SVD Package: " << svd_package->description << endl;
 		os   << "    Model calls so far : " << run_manager.get_total_runs() << endl;
 		fout_restart << "start_iteration " << iter_num << "  " << global_iter_num << endl;
 
@@ -249,6 +249,7 @@ SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, 
 
 	//Compute effect of frozen parameters on the residuals vector
 	VectorXd Sigma;
+	VectorXd Sigma_trunc;
 	Eigen::SparseMatrix<double> U;
 	Eigen::SparseMatrix<double> Vt;
 	Parameters delta_freeze_pars = freeze_numeric_pars;
@@ -258,23 +259,9 @@ SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, 
 	{ 
 		Eigen::SparseMatrix<double> jac = jacobian.get_matrix(obs_name_vec, p_name_nf_vec);
 		Eigen::SparseMatrix<double> SqrtQ_J = q_sqrt * jac;
-		svd_package->solve_ip(SqrtQ_J, Sigma, U, Vt);
+		// Returns truncated Sigma, U and Vt arrays with small singular parameters trimed off
+		svd_package->solve_ip(SqrtQ_J, Sigma, U, Vt, Sigma_trunc);
 	}
-
-	//calculate the number of singluar values above the threshold
-	int num_sing_used = 0;
-	int max_sing = (p_name_nf_vec.size() < svd_info.maxsing) ? par_name_vec.size() : svd_info.maxsing;
-	for (int i = 0; i < max_sing; ++i) {
-		if (Sigma(i) != 0 && i<max_sing && Sigma(i) / Sigma(0) > svd_info.eigthresh) {
-			++num_sing_used;
-		}
-	}
-
-	//Trim the Matricies based on the number of singular values to be used
-	Sigma = VectorXd(Sigma.head(num_sing_used));
-
-	Vt = Eigen::SparseMatrix<double>(Vt.topRows(num_sing_used));
-	U = Eigen::SparseMatrix<double>(U.leftCols(num_sing_used));
 
 	//Only add lambda to singular values above the threshhold 
 	if (marquardt_type == MarquardtMatrix::IDENT)
@@ -291,7 +278,7 @@ SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, 
 	Eigen::SparseVector<double> tmp_residual = (Residuals + del_residuals).sparseView();
 	Eigen::VectorXd tmp_svd_uvec;
 	tmp_svd_uvec = Vt.transpose() * Sigma_inv.asDiagonal() * U.transpose() * q_sqrt  * (Residuals + del_residuals);
-	output_file_writer.write_svd(Sigma, Vt, num_sing_used, lambda, freeze_numeric_pars);
+	output_file_writer.write_svd(Sigma, Vt, lambda, freeze_numeric_pars, Sigma_trunc);
 
 	//build map of parameter names to index in original par_name_vec vector
 	unordered_map<string, int> par_vec_name_to_idx;
@@ -381,7 +368,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	jacobian.build_runs(cur_solution, numeric_parname_vec, par_transform,
 			*par_group_info_ptr, *ctl_par_info_ptr, run_manager, out_ofbound_pars,
 			phiredswh_flag, calc_init_obs);
-restart_resume_jacobian_runs:
+	restart_resume_jacobian_runs:
 
 	// save current parameters
 	ofstream &fout_rpb = file_manager.open_ofile_ext("rpb");
@@ -461,7 +448,7 @@ restart_resume_jacobian_runs:
 	{
 		std::cout << string(message.str().size(), '\b');
 		message.str("");
-		message << "  computing vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
+		message << "  computing upgrade vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
 
 		std::cout << message.str();
 		
@@ -532,6 +519,7 @@ restart_resume_jacobian_runs:
 	bool best_run_updated_flag = false;
 	ModelRun best_upgrade_run(cur_solution);
 
+	os << "    Summary of upgrade vectors:" << endl;
 	for(int i=0; i<run_manager.get_nruns(); ++i) {
 		double rot_fac = rot_fac_vec[i];
 		ModelRun upgrade_run(cur_solution);
@@ -553,7 +541,7 @@ restart_resume_jacobian_runs:
 			os << ";  phi = " << upgrade_run.get_phi(tikhonov_weight); 
 			os.precision(2);
 			os << setiosflags(ios::fixed);
-			os << " ("  << upgrade_run.get_phi(tikhonov_weight)/cur_solution.get_phi(tikhonov_weight)*100 << "% starting phi)" << endl;
+			os << " ("  << upgrade_run.get_phi(tikhonov_weight)/cur_solution.get_phi(tikhonov_weight)*100 << "%)" << endl;
 			os.precision(n_prec);
 			os.unsetf(ios_base::floatfield); // reset all flags to default
 			if ( upgrade_run.obs_valid() &&  !best_run_updated_flag || upgrade_run.get_phi() <  best_upgrade_run.get_phi()) {
@@ -604,7 +592,7 @@ restart_resume_jacobian_runs:
 	}
 
 	cout << "  Starting phi = " << cur_solution.get_phi() << ";  ending phi = " << best_upgrade_run.get_phi() <<
-		"  ("  << best_upgrade_run.get_phi()/cur_solution.get_phi()*100 << "% starting phi)" << endl;
+		"  ("  << best_upgrade_run.get_phi()/cur_solution.get_phi()*100 << "%)" << endl;
 	cout << endl;
 	os << endl;
 	iteration_update_and_report(os, best_upgrade_run, termination_ctl);
@@ -892,9 +880,9 @@ void SVDSolver::iteration_update_and_report(ostream &os, ModelRun &upgrade, Term
 	const Parameters &new_ctl_pars = upgrade.get_ctl_pars();
 
 	os << "    Parameter Upgrades (Control File Parameters)" << endl;
-	os << "     Parameter      Current       Previous       Factor       Relative" << endl;
+	os << "      Parameter     Current       Previous       Factor       Relative" << endl;
 	os << "        Name         Value         Value         Change        Change" << endl;
-	os << "    ------------  ------------  ------------  ------------  ------------" << endl;
+	os << "      ----------  ------------  ------------  ------------  ------------" << endl;
 
 	for( const auto &ipar : new_ctl_pars)
 	{
@@ -912,7 +900,7 @@ void SVDSolver::iteration_update_and_report(ostream &os, ModelRun &upgrade, Term
 			max_rel_change = rel_change;
 			max_rel_par = p_name;
 		}
-		//os << left;
+		os << right;
 		os << "    " << setw(12) << *p_name;
 		os << right;
 		os << "  " << setw(12) << p_new;
@@ -927,20 +915,18 @@ void SVDSolver::iteration_update_and_report(ostream &os, ModelRun &upgrade, Term
 			os << "  " << setw(12) << "N/A";
 		os << endl;
 	}
+	os << "       Maximum changes in \"control file\" parameters:" << endl;
+	os << "         Maximum relative change = " << max_rel_change << "   [" << *max_rel_par << "]" << endl;
+	os << "         Maximum factor change = " << max_fac_change << "   [" << *max_fac_par << "]" << endl;
 	os << endl;
-	os << endl;
-	os << "   Maximum changes in transformed numeric parameters:" << endl;
-	os << "     Maximum relative change = " << max_rel_change << "   [" << *max_rel_par << "]" << endl;
-	os << "     Maximum factor change = " << max_fac_change << "   [" << *max_fac_par << "]" << endl;
-
 	max_fac_change = 0;
 	max_rel_change = 0;
 	max_fac_par = 0;
 	max_rel_par = 0;
 	os << "    Parameter Upgrades (Transformed Numeric Parameters)" << endl;
-	os << "     Parameter      Current       Previous       Factor       Relative" << endl;
+	os << "      Parameter     Current       Previous       Factor       Relative" << endl;
 	os << "        Name         Value         Value         Change        Change" << endl;
-	os << "    ------------  ------------  ------------  ------------  ------------" << endl;
+	os << "      ----------  ------------  ------------  ------------  ------------" << endl;
 
 	const Parameters old_numeric_pars = par_transform.ctl2numeric_cp(cur_solution.get_ctl_pars());
 	const Parameters new_numeric_pars = par_transform.ctl2numeric_cp(upgrade.get_ctl_pars());
@@ -960,7 +946,7 @@ void SVDSolver::iteration_update_and_report(ostream &os, ModelRun &upgrade, Term
 			max_rel_change = rel_change;
 			max_rel_par = p_name;
 		}
-		os << left;
+		os << right;
 		os << "    " << setw(12) << *p_name;
 		os << right;
 		os << "  " << setw(12) << p_new;
@@ -975,9 +961,8 @@ void SVDSolver::iteration_update_and_report(ostream &os, ModelRun &upgrade, Term
 			os << "  " << setw(12) << "N/A";
 		os << endl;
 	}
-	os << endl;
-	os << "   Maximum changes in transformed numeric parameters:" << endl;
-	os << "     Maximum relative change = " << max_rel_change << "   [" << *max_rel_par << "]" << endl;
-	os << "     Maximum factor change = " << max_fac_change << "   [" << *max_fac_par << "]" << endl;
+	os << "       Maximum changes in \"transformed numeric\" parameters:" << endl;
+	os << "         Maximum relative change = " << max_rel_change << "   [" << *max_rel_par << "]" << endl;
+	os << "         Maximum factor change = " << max_fac_change << "   [" << *max_fac_par << "]" << endl;
 	termination_ctl.process_iteration(upgrade.get_phi(), max_rel_change);
 }

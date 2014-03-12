@@ -199,7 +199,7 @@ void OutputFileWriter::save_svd_output(bool _save_svd)
 }
 
 
-void OutputFileWriter::write_svd(VectorXd &Sigma, Eigen::SparseMatrix<double> &Vt, int num_sing_used, double lambda, const Parameters &freeze_numeric_pars)
+void OutputFileWriter::write_svd(VectorXd &Sigma, Eigen::SparseMatrix<double> &Vt, double lambda, const Parameters &freeze_numeric_pars, VectorXd &Sigma_trunc)
 {
 	if (OutputFileWriter::save_svd)
 	{
@@ -207,13 +207,15 @@ void OutputFileWriter::write_svd(VectorXd &Sigma, Eigen::SparseMatrix<double> &V
 		fout_svd<< "CURRENT VALUE OF MARQUARDT LAMBDA = " << lambda << " --------->" << endl << endl;
 		fout_svd << "FROZEN PARAMETERS-" << endl;
 		fout_svd << freeze_numeric_pars << endl << endl;
-		fout_svd << "SINGULAR VALUES:-" << endl;
+		fout_svd << "SINGULAR VALUES IN SOLUTION:-" << endl;
 		print(Sigma, fout_svd, 7);
+		fout_svd << "TRUNCATED SINGULAR VALUES:-" << endl;
+		print(Sigma_trunc, fout_svd, 7);
 		fout_svd << endl << endl;
-		fout_svd << "MATRIX OF EIGENVECTORS:-" << endl;
+		fout_svd << "MATRIX OF EIGENVECTORS IN SOLUTION:-" << endl;
 		print(Vt.toDense(), fout_svd, 7);
 		fout_svd << endl;
-		fout_svd << "Number of singular values used in solution = " <<  num_sing_used << endl << endl << endl;
+		fout_svd << "Number of singular values used in solution = " << Sigma.size() << endl << endl << endl;
 	}
 }
 

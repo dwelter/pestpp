@@ -27,6 +27,7 @@
 #include <iostream>
 #include "Transformation.h"
 #include "Transformable.h"
+#include "SVD_PROPACK.h"
 #include "eigen_tools.h"
 #include "Jacobian.h"
 #include "QSqrtMatrix.h"
@@ -432,20 +433,12 @@ const  Eigen::SparseMatrix<double>& TranSVD::get_vt() const
 void TranSVD::calc_svd()
 {
 	stringstream sup_name;
-	JacobiSVD<MatrixXd> svd_fac(SqrtQ_J.toDense(), ComputeThinU | ComputeThinV);
+	VectorXd Sigma_trunc;
+	SVD_EIGEN svd_package(max_sing, eigthresh);
+	svd_package.solve_ip(SqrtQ_J, Sigma, U, Vt, Sigma_trunc);
 	// calculate the number of singluar values above the threshold
-	Sigma = svd_fac.singularValues();
-	U = svd_fac.matrixU().sparseView();
-	Vt = svd_fac.matrixV().transpose().sparseView();
 
-	//calculate the number of singluar values above the threshold
-	int tmp_max_sing = min(max_sing, int(Sigma.size()));
-	n_sing_val = 0;
-	for (int i = 0; i < tmp_max_sing; ++i) {
-		if (Sigma(i) != 0 && i<tmp_max_sing && Sigma(i) / Sigma(0) > eigthresh) {
-			++n_sing_val;
-		}
-	}
+	n_sing_val = Sigma.size();
 
 	super_parameter_names.clear();
 	for(int i=0; i<n_sing_val; ++i) {

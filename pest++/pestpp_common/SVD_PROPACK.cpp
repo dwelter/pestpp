@@ -18,6 +18,7 @@
 */
 #include <vector>
 #include <iostream>
+#include <algorithm>
 #include "SVD_PROPACK.h"
 #include "config_os.h"
 
@@ -47,7 +48,7 @@ SVD_PROPACK::SVD_PROPACK(void) : SVDPackage("PROPACK")
 {
 }
 
-void SVD_PROPACK::solve_ip(Eigen::SparseMatrix<double>& A, VectorXd &Sigma, Eigen::SparseMatrix<double> &U, Eigen::SparseMatrix<double>& Vt )
+void SVD_PROPACK::solve_ip(Eigen::SparseMatrix<double>& A, VectorXd &Sigma, Eigen::SparseMatrix<double> &U, Eigen::SparseMatrix<double>& Vt, VectorXd &Sigma_trunc)
 {
 	class local_utils {
 		public:
@@ -110,32 +111,55 @@ void SVD_PROPACK::solve_ip(Eigen::SparseMatrix<double>& A, VectorXd &Sigma, Eige
 	int ld_tmpb = kmax;
 
 	// Compute singluar values and vectors
-	int k0 = -1;
+	int k0 = 0;
 	int k2 = 0;
 	double eig_ratio = 1.0;
-	while (k0<kmax-1 && eig_ratio > eign_thres)
+	int step_size = 50;
+	while (k0<kmax && eig_ratio > eign_thres)
 	{
-		k0 += 1;
-		k2 = k0+1; // index of eignvlaue and eigenvector to be computed this time
+		k2 = min(step_size+k0, kmax); // index of eignvlaue and eigenvector to be computed this time
 		DEF_DLANBPRO_SPARCE(&m_rows, &n_cols, &k0, &k2, tmp_u, 
 			&ld_tmpu, tmp_v, &ld_tmpv, tmp_b, &ld_tmpb, 
 			&rnorm, d_option, ioption, tmp_work,
 			tmp_iwork, dparm, iparm, &ierr);
 		eig_ratio = tmp_b[k2-1] / tmp_b[0];
+		k0 += k2;
 	}
 
-	std::vector<Eigen::Triplet<double> > triplet_list;
+	//Compute number of singular values to be used in the solution
+	int n_sing_used = 0;
+	for (int i_sing = 0; i_sing < kmax; ++i_sing)
+	{
+		eig_ratio = tmp_b[i_sing] / tmp_b[0];
+		if (eig_ratio > eign_thres)
+		{
+			++n_sing_used;
+		}
+		else
+		{
+			break;
+		}
+	}
+
 	// Update Sigma
-	Sigma.resize(kmax);
+	Sigma.resize(n_sing_used);
 	Sigma.setConstant(0.0);
-	for (int i_sing=0; i_sing<kmax; ++i_sing)
+	for (int i_sing = 0; i_sing<n_sing_used; ++i_sing)
 	{
 		Sigma(i_sing) = tmp_b[i_sing];
 	}
 
-	triplet_list.reserve(kmax);
+	Sigma_trunc.resize(kmax - n_sing_used);
+	Sigma_trunc.setConstant(0.0);
+	for (int i_sing = n_sing_used; i_sing<kmax; ++i_sing)
+	{
+		Sigma_trunc(i_sing - n_sing_used) = tmp_b[i_sing];
+	}
+
+	std::vector<Eigen::Triplet<double> > triplet_list;
+	triplet_list.reserve(n_sing_used);
 	// Update U
-	for (int i_sing=0; i_sing<kmax; ++i_sing)
+	for (int i_sing = 0; i_sing<n_sing_used; ++i_sing)
 	{
 		for(int irow=0; irow<m_rows; ++ irow)
 		{
@@ -145,13 +169,13 @@ void SVD_PROPACK::solve_ip(Eigen::SparseMatrix<double>& A, VectorXd &Sigma, Eige
 			}
 		}
 	}
-	U.resize(m_rows, kmax);
+	U.resize(m_rows, n_sing_used);
 	U.setZero();
 	U.setFromTriplets(triplet_list.begin(), triplet_list.end());
 
 	triplet_list.clear();
 	// Update Vt
-	for (int i_sing=0; i_sing<kmax; ++i_sing)
+	for (int i_sing = 0; i_sing<n_sing_used; ++i_sing)
 	{
 		for(int icol=0; icol<n_cols; ++ icol)
 		{
@@ -161,7 +185,7 @@ void SVD_PROPACK::solve_ip(Eigen::SparseMatrix<double>& A, VectorXd &Sigma, Eige
 			}
 		}
 	}
-	Vt.resize(kmax, n_cols);
+	Vt.resize(n_sing_used, n_cols);
 	Vt.setZero();
 	Vt.setFromTriplets(triplet_list.begin(), triplet_list.end());
 
@@ -178,7 +202,8 @@ void SVD_PROPACK::solve_ip(Eigen::SparseMatrix<double>& A, VectorXd &Sigma, Eige
 void SVD_PROPACK::test()
 {
 	Eigen::SparseMatrix<double> A(3,3);
-	VectorXd Sigma(3);
+	VectorXd Sigma;
+	VectorXd Sigma_trunc;
 	Eigen::SparseMatrix<double> U(3,3);
 	Eigen::SparseMatrix<double> Vt(3,3);
 
@@ -191,7 +216,7 @@ void SVD_PROPACK::test()
 	set_eign_thres(1e-7);
 
 
-	solve_ip(A, Sigma, U, Vt);
+	solve_ip(A, Sigma, U, Vt, Sigma_trunc);
 	std::cout << "////////// PROPACK results /////////" << endl;
 	std::cout << "A  = " << endl;
 	std::cout << A << endl << endl;

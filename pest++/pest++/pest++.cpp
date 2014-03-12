@@ -216,8 +216,8 @@ int main(int argc, char* argv[])
 
 	cout << endl;
 	fout_rec << endl;
-	cout << "using control file: \"" <<  complete_path << "\"" << endl;
-	fout_rec << "using control file: \"" <<  complete_path << "\"" << endl;
+	cout << "using control file: \"" << complete_path << "\"" << endl << endl << endl;
+	fout_rec << "using control file: \"" << complete_path << "\"" << endl << endl << endl;
 
 	const ParamTransformSeq &base_trans_seq = pest_scenario.get_base_par_tran_seq();
 	
@@ -323,13 +323,13 @@ int main(int argc, char* argv[])
 	//Define model Run for Base Parameters (uses base parameter tranformations)
 	ModelRun cur_run(&obj_func, pest_scenario.get_ctl_observations());
 	cur_run.set_ctl_parameters(cur_ctl_parameters);
-	for (int i_iter = 0; i_iter<pest_scenario.get_control_info().noptmax; ++i_iter)
+	while (!termination_ctl.terminate())
 	{
 		try
 		{
 			cur_run = base_svd.solve(*run_manager_ptr, termination_ctl, n_base_iter, cur_run, optimum_run);
 			cur_ctl_parameters = base_svd.cur_model_run().get_ctl_pars();
-			if(termination_ctl.check_last_iteration()) break;
+			if (termination_ctl.terminate()) break;
 		}
 		catch(exception &e)
 		{

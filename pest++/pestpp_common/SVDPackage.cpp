@@ -19,6 +19,8 @@
 
 #include "SVDPackage.h"
 #include <string>
+#include <iostream>
+#include <iomanip>
 
 using namespace Eigen;
 
@@ -34,10 +36,32 @@ void SVDPackage::set_eign_thres(double _eign_thres)
 	eign_thres = _eign_thres;
 }
 
-void SVD_EIGEN::solve_ip(Eigen::SparseMatrix<double>& A, Eigen::VectorXd &Sigma, Eigen::SparseMatrix<double>& U, Eigen::SparseMatrix<double>& Vt )
+void SVD_EIGEN::solve_ip(Eigen::SparseMatrix<double>& A, Eigen::VectorXd &Sigma, Eigen::SparseMatrix<double>& U, Eigen::SparseMatrix<double>& Vt, Eigen::VectorXd &Sigma_trunc)
 {
-	JacobiSVD<MatrixXd> svd_fac(A,  ComputeFullU |  ComputeFullV);
-	Sigma = svd_fac.singularValues();
+	JacobiSVD<MatrixXd> svd_fac(A,  ComputeThinU |  ComputeThinV);
+	VectorXd Sigma_full = svd_fac.singularValues();
 	U = svd_fac.matrixU().sparseView();
 	Vt = svd_fac.matrixV().transpose().sparseView();
+
+	//Compute number of singular values to be used in the solution
+	int num_sing_used = 0;
+	double eig_ratio;
+	for (int i_sing = 0; i_sing < Sigma_full.size(); ++i_sing)
+	{
+		eig_ratio = Sigma_full[i_sing] / Sigma_full[0];
+		if (eig_ratio > eign_thres)
+		{
+			++num_sing_used;
+		}
+		else
+		{
+			break;
+		}
+	}
+	//Trim the Matricies based on the number of singular values to be used
+	Sigma = Sigma_full.head(num_sing_used);
+	Sigma_trunc = Sigma_full.tail(Sigma_full.size() - num_sing_used);
+
+	Vt = Eigen::SparseMatrix<double>(Vt.topRows(num_sing_used));
+	U = Eigen::SparseMatrix<double>(U.leftCols(num_sing_used));
 }

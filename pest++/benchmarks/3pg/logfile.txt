@@ -21,7 +21,7 @@ CSIRO Forestry and Forest Products.
 Reading input parameters from file 'rsgparm4.txt'...
    pFS2                                     constant:      0.750
    pFS20                                    constant:      0.147
-   StemConst                                constant:      0.010
+   StemConst                                constant:      0.012
    StemPower                                constant:      2.400
    pRx                                      constant:      1.000
    pRn                                      constant:      0.229

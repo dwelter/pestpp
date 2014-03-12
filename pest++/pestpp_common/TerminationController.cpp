@@ -29,7 +29,7 @@ TerminationController::TerminationController(int _noptmax, double _phiredstp,
 	: noptmax(_noptmax), phiredstp(_phiredstp), nphistp(_nphistp),
 	nphinoger(_nphinoger), relparstp(_relparstp), 
 	nrelpar(_nrelpar), nphinoger_count(0), nrelpar_count(0), nopt_count(0), 
-	terminate(false)
+	terminate_code(false)
 {
 }
 
@@ -37,7 +37,7 @@ void TerminationController::reset() {
 	nopt_count = 0;
 	nphinoger_count = 0;
 	lowest_phi.clear();
-	terminate = false;
+	terminate_code = false;
 }
 
 bool TerminationController::process_iteration(double phi, double relpar)
@@ -74,16 +74,16 @@ bool TerminationController::check_last_iteration()
 	double min_phi_diff = lowest_phi.back() - lowest_phi.front();
 	// Impose Termination Criteria
 	if (nphinoger_count > nphinoger)
-		terminate = true;
+		terminate_code = true;
 	else if (lowest_phi.size() >= nphistp && min_phi_diff <= phiredstp)
-		terminate = true;
+		terminate_code = true;
 	else if (nrelpar_count > nrelpar)
-		terminate = true;
+		terminate_code = true;
 	else if (nopt_count >= noptmax)
-		terminate = true;
+		terminate_code = true;
 	else 
-		terminate = false;
-	return terminate;
+		terminate_code = false;
+	return terminate_code;
 }
 
 const TerminationController& TerminationController::operator=(const TerminationController &rhs)

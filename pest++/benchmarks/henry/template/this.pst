@@ -11,7 +11,7 @@ restart estimation
 * singular value decomposition
 1
 75  1.0e-7
-0  0  0
+1  0  0
 * parameter groups
  p     relative    0.01  0.0  switch  2.0 parabolic
  m     relative    0.01  0.0  switch  2.0 parabolic

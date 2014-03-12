@@ -221,7 +221,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 	{
 		std::cout << string(message.str().size(), '\b');
 		message.str("");
-		message << "  computing vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << lambda_vec.size() << "             ";
+		message << "  computing upgrade vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
 		std::cout << message.str();
 
 		ml_upgrade = calc_lambda_upgrade_vec(jacobian, Q_sqrt, residuals_vec, numeric_par_names_vec, obs_names_vec,
@@ -241,8 +241,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 	}
 
 	cout << endl;
-	os << endl;
-	os << "      SVD information:" << endl;
+
 	os << endl;
 
 	// process model runs
@@ -253,6 +252,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 	bool best_run_updated_flag = false;
 	ModelRun best_upgrade_run(base_run);
 
+	os << "    Summary of upgrade runs:" << endl;
 	for(int i=0; i<run_manager.get_nruns(); ++i) {
 		ModelRun upgrade_run(base_run);
 		Parameters tmp_pars;
@@ -264,14 +264,14 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 			upgrade_run.update_ctl(tmp_pars, tmp_obs);
 			streamsize n_prec = os.precision(2);
 			os << "      Marquardt Lambda = ";
-			os << setiosflags(ios::fixed)<< setw(4) << lambda_vec[i];
-			os << "; length = " << magnitude_vec[i];
+			os << setiosflags(ios::fixed)<< setw(8) << lambda_vec[i];
+			os << ";   length = " << magnitude_vec[i];
 			os.precision(n_prec);
 			os.unsetf(ios_base::floatfield); // reset all flags to default
-			os << ";  phi = " << upgrade_run.get_phi(tikhonov_weight); 
+			os << ";   phi = " << upgrade_run.get_phi(tikhonov_weight); 
 			os.precision(2);
 			os << setiosflags(ios::fixed);
-			os << " ("  << upgrade_run.get_phi(tikhonov_weight)/base_run.get_phi(tikhonov_weight)*100 << "% starting phi)" << endl;
+			os << " ("  << upgrade_run.get_phi(tikhonov_weight)/base_run.get_phi(tikhonov_weight)*100 << "%)" << endl;
 			os.precision(n_prec);
 			os.unsetf(ios_base::floatfield); // reset all flags to default
 			if ( upgrade_run.obs_valid() &&  !best_run_updated_flag || upgrade_run.get_phi() <  best_upgrade_run.get_phi()) {
@@ -285,11 +285,11 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		{
 			streamsize n_prec = os.precision(2);
 			os << "     Marquardt Lambda = ";
-			os << setiosflags(ios::fixed)<< setw(4) << lambda_vec[i];
-			os << "; length = " << magnitude_vec[i];
+			os << setiosflags(ios::fixed)<< setw(8) << lambda_vec[i];
+			os << ";   length = " << magnitude_vec[i];
 			os.precision(n_prec);
 			os.unsetf(ios_base::floatfield); // reset all flags to default
-			os << ";  run failed" << endl;
+			os << ";    run failed" << endl;
 		}
 	}
 	// Print frozen parameter information for parameters frozen in SVD transformation
@@ -338,7 +338,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 	}
 
 	cout << "  Starting phi = " << base_run.get_phi() << ";  ending phi = " << best_upgrade_run.get_phi() <<
-		"  ("  << best_upgrade_run.get_phi()/base_run.get_phi()*100 << "% starting phi)" << endl;
+		"  ("  << best_upgrade_run.get_phi()/base_run.get_phi()*100 << "%)" << endl;
 	cout << endl;
 	os << endl;
 	iteration_update_and_report(os, best_upgrade_run, termination_ctl);

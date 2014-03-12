@@ -135,7 +135,7 @@ void print(const VectorXd &vec, ostream & fout, int n_per_line)
 
 	for (size_t i=0; i<n; ++i)
 	{
-		fout << setw(15) << setiosflags(ios::right) << vec(i);
+		fout << showpoint << setw(15) << setiosflags(ios::right) << vec(i);
 			if ((i+1) % (n_per_line) == 0 || i+1==n)
 		{
 			fout << '\n';
