@@ -252,6 +252,14 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 	bool best_run_updated_flag = false;
 	ModelRun best_upgrade_run(base_run);
 
+	long jac_num_nonzero = jacobian.get_nonzero();
+	long jac_num_total = jacobian.get_size();
+	long jac_num_zero = jac_num_total - jac_num_nonzero;
+	streamsize n_prec = os.precision(2);
+	os << "    Number of terms in the jacobian equal to zero: " << jac_num_zero << "/" << jac_num_total
+		<< " (" << double(jac_num_zero) / double(jac_num_total) * 100 << "%)" << endl << endl;
+	os.precision(n_prec);
+
 	os << "    Summary of upgrade runs:" << endl;
 	for(int i=0; i<run_manager.get_nruns(); ++i) {
 		ModelRun upgrade_run(base_run);

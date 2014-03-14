@@ -56,6 +56,8 @@ public:
 	virtual void save(const std::string &ext="jco") const;
 	void read(const std::string &filename, const PriorInformation &prior_info);
 	virtual const set<string>& get_failed_parameter_names() const;
+	virtual long get_nonzero() const { return matrix.nonZeros();}
+	virtual long get_size() const { return matrix.size(); }
 	virtual ~Jacobian();
 protected:
 	vector<string> base_numeric_par_names;  //ordered names of base parameters used to calculate the jacobian

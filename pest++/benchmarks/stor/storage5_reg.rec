@@ -19,6 +19,8 @@ OPTIMISATION ITERATION NUMBER: 1
     Contribution to phi from observation group    "OBSGROUP3" : 87445.1
     Contribution to phi from observation group        "REGUL" : 1.55488
 
+    Number of terms in the jacobian equal to zero: 8/36 (22%)
+
     Summary of upgrade vectors:
       Marquardt Lambda = 0.10; length = 1.90;  phi = 70522.3 (38.65%)
       Marquardt Lambda = 1.00; length = 1.88;  phi = 69000.3 (37.82%)
@@ -60,6 +62,8 @@ OPTIMISATION ITERATION NUMBER: 2
     Contribution to phi from observation group    "OBSGROUP1" : 19299.1
     Contribution to phi from observation group    "OBSGROUP3" : 19076
     Contribution to phi from observation group        "REGUL" : 1.94001
+
+    Number of terms in the jacobian equal to zero: 0/36 (0%)
 
     Summary of upgrade runs:
       Marquardt Lambda =     0.10;   length = 0.18;   phi = 11532.8 (28.28%)
@@ -103,6 +107,8 @@ OPTIMISATION ITERATION NUMBER: 3
     Contribution to phi from observation group    "OBSGROUP3" : 5411.53
     Contribution to phi from observation group        "REGUL" : 2.15081
 
+    Number of terms in the jacobian equal to zero: 0/36 (0%)
+
     Summary of upgrade runs:
       Marquardt Lambda =     0.05;   length = 0.30;   phi = 92.1327 (0.80%)
       Marquardt Lambda =     0.10;   length = 0.30;   phi = 91.9593 (0.80%)
@@ -144,6 +150,8 @@ OPTIMISATION ITERATION NUMBER: 4
     Contribution to phi from observation group    "OBSGROUP1" : 27.3533
     Contribution to phi from observation group    "OBSGROUP3" : 30.1263
     Contribution to phi from observation group        "REGUL" : 2.24143
+
+    Number of terms in the jacobian equal to zero: 0/36 (0%)
 
     Summary of upgrade runs:
       Marquardt Lambda =     0.10;   length = 0.23;   phi = 3781.68 (5457.87%)
@@ -187,6 +195,8 @@ OPTIMISATION ITERATION NUMBER: 5
     Contribution to phi from observation group    "OBSGROUP3" : 7.22004
     Contribution to phi from observation group        "REGUL" : 2.24658
 
+    Number of terms in the jacobian equal to zero: 4/36 (11%)
+
     Summary of upgrade vectors:
       Marquardt Lambda = 0.10; length = 0.01;  phi = 6.88209 (32.00%)
       Marquardt Lambda = 1.00; length = 0.01;  phi = 6.88108 (31.99%)
@@ -228,6 +238,8 @@ OPTIMISATION ITERATION NUMBER: 6
     Contribution to phi from observation group    "OBSGROUP1" : 2.70614
     Contribution to phi from observation group    "OBSGROUP3" : 1.49022
     Contribution to phi from observation group        "REGUL" : 2.24996
+
+    Number of terms in the jacobian equal to zero: 0/36 (0%)
 
     Summary of upgrade runs:
       Marquardt Lambda =     0.10;   length = 0.00;   phi = 6.87592 (100.00%)
@@ -272,6 +284,8 @@ OPTIMISATION ITERATION NUMBER: 7
     Contribution to phi from observation group    "OBSGROUP1" : 2.70376
     Contribution to phi from observation group    "OBSGROUP3" : 1.49271
     Contribution to phi from observation group        "REGUL" : 2.24997
+
+    Number of terms in the jacobian equal to zero: 0/36 (0%)
 
     Summary of upgrade runs:
       Marquardt Lambda =     0.10;   length = 0.00;   phi = 6.87584 (100.00%)

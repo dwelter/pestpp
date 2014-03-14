@@ -369,7 +369,6 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 			*par_group_info_ptr, *ctl_par_info_ptr, run_manager, out_ofbound_pars,
 			phiredswh_flag, calc_init_obs);
 	restart_resume_jacobian_runs:
-
 	// save current parameters
 	ofstream &fout_rpb = file_manager.open_ofile_ext("rpb");
 	output_file_writer.write_par(fout_rpb, cur_solution.get_ctl_pars(), *(par_transform.get_offset_ptr()),
@@ -518,6 +517,14 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	cout << endl;
 	bool best_run_updated_flag = false;
 	ModelRun best_upgrade_run(cur_solution);
+
+	long jac_num_nonzero = jacobian.get_nonzero();
+	long jac_num_total = jacobian.get_size();
+	long jac_num_zero = jac_num_total - jac_num_nonzero;
+	streamsize n_prec = os.precision(2);
+	os << "    Number of terms in the jacobian equal to zero: " << jac_num_zero << "/" << jac_num_total
+		<< " (" << double(jac_num_zero) / double(jac_num_total) * 100 << "%)" << endl << endl;
+	os.precision(n_prec);
 
 	os << "    Summary of upgrade vectors:" << endl;
 	for(int i=0; i<run_manager.get_nruns(); ++i) {
