@@ -175,6 +175,10 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 			cur_solution.get_ctl_pars());
 		file_manager.close_file(filename.str());
 		// par file for this iteration
+		output_file_writer.write_par(file_manager.open_ofile_ext("par"), cur_solution.get_ctl_pars(), *(par_transform.get_offset_ptr()),
+			*(par_transform.get_scale_ptr()));
+		file_manager.close_file("par");
+
 		filename.str(""); // reset the stringstream
 		filename << "par" << global_iter_num;
 		output_file_writer.write_par(file_manager.open_ofile_ext(filename.str()), cur_solution.get_ctl_pars(), *(par_transform.get_offset_ptr()), 
@@ -190,9 +194,9 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 			optimum_run.set_ctl_parameters(cur_solution.get_ctl_pars());
 			optimum_run.set_observations(cur_solution.get_obs());
 			// save new optimum parameters to .par file
-			output_file_writer.write_par(file_manager.open_ofile_ext("par"), optimum_run.get_ctl_pars(), *(par_transform.get_offset_ptr()), 
+			output_file_writer.write_par(file_manager.open_ofile_ext("bpa"), optimum_run.get_ctl_pars(), *(par_transform.get_offset_ptr()), 
 				*(par_transform.get_scale_ptr()));
-			file_manager.close_file("par");
+			file_manager.close_file("bpa");
 			// save new optimum residuals to .rei file
 			output_file_writer.write_rei(file_manager.open_ofile_ext("rei"), global_iter_num, 
 			*(optimum_run.get_obj_func_ptr()->get_obs_ptr()), 
@@ -453,6 +457,9 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 		
 		Parameters new_numeric_pars;
 		frozen_derivative_pars = failed_jac_pars;
+
+		//Compute automatic regularization weight adjustments here
+
 		for (int i_freeze=1; ; ++i_freeze)
 		{
 			Parameters new_frozen_derivative_pars;
