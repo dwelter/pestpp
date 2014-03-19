@@ -74,5 +74,6 @@
 		<File RelativePath=".\dreorth.F"/>
 		<File RelativePath=".\dritzvec.F"/>
 		<File RelativePath=".\dsafescal.F"/>
-		<File RelativePath=".\propack_misc.for"/></Filter></Files>
+		<File RelativePath=".\propack_misc.for"/></Filter>
+		<File RelativePath="..\pestpp_common\Transformation.cpp"/></Files>
 	<Globals/></VisualStudioProject>

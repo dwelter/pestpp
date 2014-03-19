@@ -36,6 +36,15 @@ void SVDPackage::set_eign_thres(double _eign_thres)
 	eign_thres = _eign_thres;
 }
 
+int SVDPackage::get_max_sing() {
+	return n_max_sing;
+}
+
+double SVDPackage::get_eign_thres()
+{
+	return eign_thres;
+}
+
 void SVD_EIGEN::solve_ip(Eigen::SparseMatrix<double>& A, Eigen::VectorXd &Sigma, Eigen::SparseMatrix<double>& U, Eigen::SparseMatrix<double>& Vt, Eigen::VectorXd &Sigma_trunc)
 {
 	JacobiSVD<MatrixXd> svd_fac(A,  ComputeThinU |  ComputeThinV);

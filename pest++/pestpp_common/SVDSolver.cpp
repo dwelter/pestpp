@@ -279,9 +279,8 @@ SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, 
 	}
 	VectorXd Sigma_inv = Sigma.array().inverse();
 
-	Eigen::SparseVector<double> tmp_residual = (Residuals + del_residuals).sparseView();
 	Eigen::VectorXd tmp_svd_uvec;
-	tmp_svd_uvec = Vt.transpose() * Sigma_inv.asDiagonal() * U.transpose() * q_sqrt  * (Residuals + del_residuals);
+	tmp_svd_uvec = Vt.transpose() * (Sigma_inv.asDiagonal() * (U.transpose() * (q_sqrt  * (Residuals + del_residuals))));
 	output_file_writer.write_svd(Sigma, Vt, lambda, freeze_numeric_pars, Sigma_trunc);
 
 	//build map of parameter names to index in original par_name_vec vector
@@ -338,7 +337,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 		cout << endl << endl;
 		cout << "  running the model once with the current parameters... ";
 		run_manager.reinitialize(file_manager.build_filename("rnu"));
-		int run_id = run_manager.add_run( par_transform.ctl2model_cp(cur_solution.get_ctl_pars()));
+		int run_id = run_manager.add_run(par_transform.ctl2model_cp(cur_solution.get_ctl_pars()));
 		run_manager.run();
 		Parameters tmp_pars;
 		Observations tmp_obs;
@@ -366,13 +365,13 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 
 	// Calculate Jacobian
 	if (!cur_solution.obs_valid() || calc_init_obs == true) {
-		 calc_init_obs = true;
-	 }
+		calc_init_obs = true;
+	}
 	cout << "  calculating jacobian... ";
 	jacobian.build_runs(cur_solution, numeric_parname_vec, par_transform,
-			*par_group_info_ptr, *ctl_par_info_ptr, run_manager, out_ofbound_pars,
-			phiredswh_flag, calc_init_obs);
-	restart_resume_jacobian_runs:
+		*par_group_info_ptr, *ctl_par_info_ptr, run_manager, out_ofbound_pars,
+		phiredswh_flag, calc_init_obs);
+restart_resume_jacobian_runs:
 	// save current parameters
 	ofstream &fout_rpb = file_manager.open_ofile_ext("rpb");
 	output_file_writer.write_par(fout_rpb, cur_solution.get_ctl_pars(), *(par_transform.get_offset_ptr()),
@@ -382,10 +381,17 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	termination_ctl.save_state(fout_restart);
 
 	jacobian.make_runs(run_manager);
-	jacobian.process_runs(cur_solution, numeric_parname_vec, obs_names_vec, par_transform,
-			*par_group_info_ptr, *ctl_par_info_ptr, run_manager, *prior_info_ptr, out_ofbound_pars,
-			phiredswh_flag, calc_init_obs);
-
+	jacobian.process_runs(numeric_parname_vec, obs_names_vec, par_transform,
+		*par_group_info_ptr, *ctl_par_info_ptr, run_manager, *prior_info_ptr, out_ofbound_pars,
+		phiredswh_flag, calc_init_obs);
+	//Update parameters and observations for base run
+	{
+		Parameters tmp_pars;
+		Observations tmp_obs;
+		bool success = run_manager.get_run(0, tmp_pars, tmp_obs);
+		par_transform.model2ctl_ip(tmp_pars);
+		cur_solution.update_ctl(tmp_pars, tmp_obs);
+	}
 	restart_reuse_jacoboian:
 	cout << endl;
 
@@ -468,7 +474,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 			ml_upgrade = calc_lambda_upgrade_vec(jacobian, Q_sqrt, residuals_vec, par_name_vec, obs_names_vec,
 				base_run_numeric_pars, frozen_numeric_pars, tot_sing_val, i_lambda);
 			new_numeric_pars = apply_upgrade(base_run_numeric_pars, ml_upgrade, 1.0);
-			if (i_freeze > max_freeze_iter)
+			if (i_freeze < max_freeze_iter)
 			{
 				new_frozen_derivative_pars = limit_parameters_ip(base_run_numeric_pars, new_numeric_pars, limit_type, frozen_numeric_pars);
 			}
@@ -790,7 +796,7 @@ Parameters SVDSolver::limit_parameters_freeze_all_ip(const Parameters &init_nume
 	par_transform.numeric2derivative_ip(init_derivative_pars);
 
 	check_limits(init_derivative_pars, upgrade_derivative_pars, limit_type_map, derivative_parameters_at_limit);
-	// Remove parameters at there upper and lower bound limits as these will be frozen
+	// Remove parameters at their upper and lower bound limits as these will be frozen
 	vector<string> pars_at_bnds;
 	for (auto ipar : limit_type_map)
 	{

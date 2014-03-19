@@ -430,15 +430,28 @@ const  Eigen::SparseMatrix<double>& TranSVD::get_vt() const
 	return Vt;
 }
 
+
+TranSVD::TranSVD(int _max_sing, double _eign_thresh, const string &_name) : Transformation(_name)
+{
+	tran_svd_pack = new SVD_EIGEN(_max_sing, _eign_thresh);
+}
+
+void TranSVD::set_SVD_pack_propack()
+{
+	int max_sing = tran_svd_pack->get_max_sing();
+	double eigthresh = tran_svd_pack->get_eign_thres();
+	delete tran_svd_pack;
+	tran_svd_pack = new SVD_PROPACK(max_sing, eigthresh);
+}
+
 void TranSVD::calc_svd()
 {
 	stringstream sup_name;
 	VectorXd Sigma_trunc;
-	SVD_EIGEN svd_package(max_sing, eigthresh);
-	svd_package.solve_ip(SqrtQ_J, Sigma, U, Vt, Sigma_trunc);
+	tran_svd_pack->solve_ip(SqrtQ_J, Sigma, U, Vt, Sigma_trunc);
 	// calculate the number of singluar values above the threshold
 
-	n_sing_val = Sigma.size();
+	int n_sing_val = Sigma.size();
 
 	super_parameter_names.clear();
 	for(int i=0; i<n_sing_val; ++i) {
@@ -452,15 +465,19 @@ void TranSVD::calc_svd()
 		throw PestError("TranSVD::update() - super parameter transformation returned 0 super parameters.  Jacobian must equal 0.");
 	}
 }
+
 void TranSVD::update_reset_frozen_pars(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt, const Parameters &base_numeric_pars,
 		int maxsing, double _eigthresh, const vector<string> &par_names, const vector<string> &_obs_names,
 		const Parameters &_frozen_derivative_pars)
 {
 	stringstream sup_name;
 	super_parameter_names.clear();
-	max_sing = maxsing; 
-	eigthresh = _eigthresh;
+
+	tran_svd_pack->set_max_sing(maxsing);
+	tran_svd_pack->set_eign_thres(_eigthresh);
 	obs_names = _obs_names;
+
+	
 
 	//these are where the derivative was computed so they can be different than the frozen values;
 	init_base_numeric_parameters = base_numeric_pars;  
@@ -526,6 +543,7 @@ void TranSVD::reverse(Transformable &data)
 		(*it) -= 10.0;
 	}
 	Transformable ret_base_pars;
+	int n_sing_val = Sigma.size();
 	VectorXd delta_base_mat = Vt.block(0,0,n_sing_val, Vt.cols()).transpose() *  stlvec_2_egienvec(super_par_vec);
 	for (int i=0; i<n_base; ++i) {
 		ret_base_pars.insert(base_parameter_names[i], delta_base_mat(i) + init_base_numeric_parameters.get_rec(base_parameter_names[i]));
@@ -541,6 +559,7 @@ void TranSVD::forward(Transformable &data)
 	VectorXd value;
 
 	Transformable delta_data = data - init_base_numeric_parameters;
+	int n_sing_val = Sigma.size();
 	value = Vt * delta_data.get_data_eigen_vec(base_parameter_names);
 	for (int i=0; i<n_sing_val; ++i) {
 		super_pars.insert(super_parameter_names[i], value(i)+10.0);

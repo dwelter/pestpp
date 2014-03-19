@@ -44,7 +44,7 @@ extern "C" {
 		int *iwork, double *dparm, int *iparm, int *ierr);
 }
 
-SVD_PROPACK::SVD_PROPACK(void) : SVDPackage("PROPACK")
+SVD_PROPACK::SVD_PROPACK(int _n_max_sing, double _eign_thres) : SVDPackage("PROPACK", _n_max_sing, _eign_thres)
 {
 }
 
@@ -122,8 +122,9 @@ void SVD_PROPACK::solve_ip(Eigen::SparseMatrix<double>& A, VectorXd &Sigma, Eige
 			&ld_tmpu, tmp_v, &ld_tmpv, tmp_b, &ld_tmpb, 
 			&rnorm, d_option, ioption, tmp_work,
 			tmp_iwork, dparm, iparm, &ierr);
+		if (k2 == k0) break; // no more singular values
 		eig_ratio = tmp_b[k2-1] / tmp_b[0];
-		k0 += k2;
+		k0 = k2;
 	}
 
 	//Compute number of singular values to be used in the solution

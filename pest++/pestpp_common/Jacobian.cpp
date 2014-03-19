@@ -189,7 +189,7 @@ void Jacobian::make_runs(RunManagerAbstract &run_manager)
 	run_manager.run();
 }
 
-bool Jacobian::process_runs(ModelRun &init_model_run, vector<string> numeric_par_names, vector<string> obs_names, ParamTransformSeq &par_transform,
+bool Jacobian::process_runs(vector<string> numeric_par_names, vector<string> obs_names, ParamTransformSeq &par_transform,
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
 		RunManagerAbstract &run_manager,  const PriorInformation &prior_info, set<string> &out_of_bound_par, bool phiredswh_flag, bool calc_init_obs)
 {
@@ -203,26 +203,22 @@ bool Jacobian::process_runs(ModelRun &init_model_run, vector<string> numeric_par
 	}
 	std::vector<Eigen::Triplet<double> > triplet_list;
 
-
+	JacobianRun base_run;
 	int i_run = 0;
 	// if initial run was run get the newly calculated values
 	// get base run parameters and observation for initial model run from run manager storage
 	{
-		Parameters tmp_pars;
-		Observations tmp_obs;
-		bool success = run_manager.get_run(i_run, tmp_pars, tmp_obs);
+		bool success = run_manager.get_run(i_run, base_run.ctl_pars, base_run.obs);
 		if (!success)
 		{
 			throw(PestError("Error: Super-parameter base parameter run failed.  Can not compute the Jacobian"));
 		}
-		par_transform.model2ctl_ip(tmp_pars);
-		init_model_run.update_ctl(tmp_pars, tmp_obs);
+		par_transform.model2ctl_ip(base_run.ctl_pars);
+		base_numeric_parameters = par_transform.ctl2numeric_cp(base_run.ctl_pars);
 		++i_run;
 	}
-	base_numeric_parameters =  par_transform.ctl2numeric_cp(init_model_run.get_ctl_pars());
 
 	// process the parameter pertubation runs
-	ModelRun cur_model_run = init_model_run;
 	int nruns = run_manager.get_nruns();
 	int icol = 0;
 	string cur_par_name;
@@ -230,19 +226,20 @@ bool Jacobian::process_runs(ModelRun &init_model_run, vector<string> numeric_par
 	int run_status_next;
 	double par_value_next;
 	double cur_numeric_par_value;
-	list<pair<ModelRun, double>> run_list;
+	list<JacobianRun> run_list;
 	base_numeric_par_names.clear();
 	for(; i_run<nruns; ++i_run)
 	{
-		Parameters tmp_pars;
-		Observations tmp_obs;
-		bool success = run_manager.get_run(i_run, tmp_pars, tmp_obs, cur_par_name, cur_numeric_par_value);
-
+		run_list.push_back(JacobianRun());
+		bool success = run_manager.get_run(i_run, run_list.back().ctl_pars, run_list.back().obs, cur_par_name, cur_numeric_par_value);
 		if (success)
 		{
-			cur_model_run.update_ctl(tmp_pars, tmp_obs);
-			par_transform.model2ctl_ip(tmp_pars);
-			run_list.push_back(make_pair(cur_model_run, cur_numeric_par_value));
+			par_transform.model2ctl_ip(run_list.back().ctl_pars);
+			run_list.back().numeric_derivative_par = cur_numeric_par_value;
+		}
+		else
+		{
+			run_list.pop_back();
 		}
 
 		// read information associated with the next model run;
@@ -255,10 +252,12 @@ bool Jacobian::process_runs(ModelRun &init_model_run, vector<string> numeric_par
 		{
 			base_numeric_par_names.push_back(cur_par_name);
 			double base_numeric_par_value = base_numeric_parameters.get_rec(cur_par_name);
-			run_list.push_front(make_pair(init_model_run, base_numeric_par_value));
-			std::vector<Eigen::Triplet<double> > tmp_triplet_vec = calc_derivative(cur_par_name, icol, run_list, par_transform, group_info, ctl_par_info, prior_info);
+			base_run.numeric_derivative_par = base_numeric_par_value;
+			run_list.push_front(base_run);
+			std::vector<Eigen::Triplet<double> > tmp_triplet_vec = calc_derivative(cur_par_name, icol, run_list, group_info, prior_info);
 			triplet_list.insert( triplet_list.end(), tmp_triplet_vec.begin(), tmp_triplet_vec.end() );
 			icol++;
+			run_list.clear();
 		}
 		else
 		{
@@ -307,8 +306,8 @@ bool Jacobian::get_derivative_parameters(const string &par_name, Parameters &num
 }
 
 
-std::vector<Eigen::Triplet<double> >  Jacobian::calc_derivative(const string &numeric_par_name, int jcol, list<pair<ModelRun, double> > &run_list,  const ParamTransformSeq &par_trans, 
-							   const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, const PriorInformation &prior_info)
+std::vector<Eigen::Triplet<double> >  Jacobian::calc_derivative(const string &numeric_par_name, int jcol, list<JacobianRun> &run_list,
+							   const ParameterGroupInfo &group_info, const PriorInformation &prior_info)
 {
 	const ParameterGroupRec *g_rec;
 	double del_par;
@@ -319,8 +318,8 @@ std::vector<Eigen::Triplet<double> >  Jacobian::calc_derivative(const string &nu
 	std::vector<Eigen::Triplet<double> > triplet_list;
 	
 	// sort run_list the parameter numeric_par_name;
-	auto compare = [] (const pair<ModelRun, double> &a, const pair<ModelRun, double> &b)
-		{return a.second > b.second;};
+	auto compare = [](const JacobianRun &a, const JacobianRun &b)
+	{return a.numeric_derivative_par > b.numeric_derivative_par; };
 	run_list.sort(compare);
 	auto &run_first = run_list.front();
 	auto  &run_last = run_list.back();
@@ -351,14 +350,15 @@ std::vector<Eigen::Triplet<double> >  Jacobian::calc_derivative(const string &nu
 				for (auto &irun_pair : run_list)
 				{
 					// assemble A matrix
-					double par_value = irun_pair.second;
+					double par_value = irun_pair.numeric_derivative_par;
 					a_mat(i,0) = par_value*par_value; a_mat(i,1) = par_value; a_mat(i,2) = 1;
 					// assemble y vector
-					y(i) =  irun_pair.first.get_obs().get_rec(iobs_name);
+					y(i) =  irun_pair.obs.get_rec(iobs_name);
+					++i;
 				}
 				c = a_mat.colPivHouseholderQr().solve(y);
 				// assume for now that derivative is to be calculated around the second parameter location
-				der = 2.0 * c(0) *  run2.second + c(1);
+				der = 2.0 * c(0) *  run2.numeric_derivative_par + c(1);
 				if (der != 0)
 				{
 					triplet_list.push_back(Eigen::Triplet<double>(irow, jcol, der));
@@ -367,8 +367,8 @@ std::vector<Eigen::Triplet<double> >  Jacobian::calc_derivative(const string &nu
 			else 
 			{
 				// Forward Difference and Central Difference Outer
-				del_par = run_last.second - run_first.second;
-				del_obs = run_last.first.get_obs().get_rec(iobs_name) - run_first.first.get_obs().get_rec(iobs_name);
+				del_par = run_last.numeric_derivative_par - run_first.numeric_derivative_par;
+				del_obs = run_last.obs.get_rec(iobs_name) - run_first.obs.get_rec(iobs_name);
 				if (del_obs != 0)
 				{
 					triplet_list.push_back(Eigen::Triplet<double>(irow, jcol, del_obs / del_par));
@@ -378,12 +378,12 @@ std::vector<Eigen::Triplet<double> >  Jacobian::calc_derivative(const string &nu
 		else
 		{
 			// Prior Information allways calculated using outer model runs even for central difference
-			del_par = run_last.second - run_first.second;
+			del_par = run_last.numeric_derivative_par - run_first.numeric_derivative_par;
 			double del_prior_info;
 
 			const PriorInformationRec *pi_rec;
-			const Parameters &ctl_pars_1 = run_first.first.get_ctl_pars();
-			const Parameters &ctl_pars_2 = run_last.first.get_ctl_pars();
+			const Parameters &ctl_pars_1 = run_first.ctl_pars;
+			const Parameters &ctl_pars_2 = run_last.ctl_pars;
 			const auto prior_info_it = prior_info.find(iobs_name);
 			if (prior_info_it != prior_info.end())
 			{

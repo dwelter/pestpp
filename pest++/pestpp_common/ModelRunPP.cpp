@@ -41,15 +41,9 @@ ModelRun::ModelRun(const ObjectiveFunc *_obj_func_ptr, const Observations &_sim_
 {
 }
 
-//ModelRun::ModelRun(const ObjectiveFunc *_obj_func_ptr, const ParamTransformSeq &_par_tran, const Parameters &_ctl_pars, const Observations &_obs)
-//		: obj_func_ptr(_obj_func_ptr), par_tran(_par_tran),
-//		  ctl_pars(_ctl_pars), sim_obs(_obs), phi_comp(),
-//		  obs_is_valid(true), phi_is_valid(false)
-//{}
-
 ModelRun& ModelRun::operator=(const ModelRun &rhs)
 {
-	frozen_ctl_pars = rhs.frozen_ctl_pars;
+	frozen_ctl_par_names = rhs.frozen_ctl_par_names;
 	obj_func_ptr = rhs.obj_func_ptr;
 	ctl_pars = rhs.ctl_pars;
 	sim_obs = rhs.sim_obs; 
@@ -60,24 +54,31 @@ ModelRun& ModelRun::operator=(const ModelRun &rhs)
 }
 
 
-const Parameters& ModelRun::get_frozen_ctl_pars() const
+Parameters ModelRun::get_frozen_ctl_pars() const
 {
-	return frozen_ctl_pars;
+	Parameters frz_pars(ctl_pars, frozen_ctl_par_names);
+	return frz_pars;
 }
 
 void ModelRun::set_frozen_ctl_parameters(const Parameters &frz_pars)
 {
-	frozen_ctl_pars = frz_pars;
+	frozen_ctl_par_names.clear();
+	add_frozen_ctl_parameters(frz_pars);
 }
 
 void ModelRun::add_frozen_ctl_parameters(const Parameters &frz_pars)
 {
 	for (auto &ipar : frz_pars)
 	{
-		frozen_ctl_pars[ipar.first] = ipar.second;
+		frozen_ctl_par_names.push_back(ipar.first);
+		ctl_pars[ipar.first] = ipar.second;
 	}
 }
 
+void ModelRun::clear_frozen_ctl_parameters()
+{
+	frozen_ctl_par_names.clear();
+}
 
 void ModelRun::set_ctl_parameters(const Parameters &pars)
 {

@@ -114,7 +114,7 @@ void Jacobian_1to1::make_runs(RunManagerAbstract &run_manager)
 	run_manager.run();
 }
 
-bool Jacobian_1to1::process_runs(ModelRun &init_model_run, vector<string> numeric_par_names, vector<string> obs_names, ParamTransformSeq &par_transform,
+bool Jacobian_1to1::process_runs(vector<string> numeric_par_names, vector<string> obs_names, ParamTransformSeq &par_transform,
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
 		RunManagerAbstract &run_manager,  const PriorInformation &prior_info, set<string> &out_of_bound_par, bool phiredswh_flag, bool calc_init_obs)
 {
@@ -127,27 +127,21 @@ bool Jacobian_1to1::process_runs(ModelRun &init_model_run, vector<string> numeri
 	unordered_map<string, int>::iterator found;
 	unordered_map<string, int>::iterator not_found = par2col_map.end();
 
+	JacobianRun base_run;
 	int i_run = 0;
 	// get base run parameters and observation for initial model run from run manager storage
+	bool success = run_manager.get_run(i_run, base_run.ctl_pars, base_run.obs);
+	if (!success)
 	{
-		Parameters tmp_pars;
-		Observations tmp_obs;
-		bool success = run_manager.get_run(i_run, tmp_pars, tmp_obs);
-		if (!success)
-		{
-			throw(PestError("Error: Base parameter run failed.  Can not compute the Jacobian"));
-		}
-		par_transform.model2ctl_ip(tmp_pars);
-		init_model_run.update_ctl(tmp_pars, tmp_obs);
-		++i_run;
+		throw(PestError("Error: Base parameter run failed.  Can not compute the Jacobian"));
 	}
+	par_transform.model2ctl_ip(base_run.ctl_pars);
+	base_numeric_parameters = par_transform.ctl2numeric_cp(base_run.ctl_pars);
+	++i_run;
 
-	base_numeric_parameters =  par_transform.ctl2numeric_cp(init_model_run.get_ctl_pars());
 	// process the parameter pertubation runs
 	int nruns = run_manager.get_nruns();
-	list<pair<ModelRun, double> > run_list;
 	base_numeric_par_names.clear();
-	ModelRun cur_model_run = init_model_run;
 	int icol = 0;
 	vector<string>par_name_vec;
 	string cur_par_name;
@@ -156,24 +150,26 @@ bool Jacobian_1to1::process_runs(ModelRun &init_model_run, vector<string> numeri
 	double par_value_next;
 	double cur_numeric_par_value;
 	
+	list<JacobianRun> run_list;
 	for(; i_run<nruns; ++i_run)
 	{
-		Parameters tmp_pars;
-		Observations tmp_obs;
-		bool success = run_manager.get_run(i_run, tmp_pars, tmp_obs, cur_par_name, cur_numeric_par_value);
+		run_list.push_back(JacobianRun());
+		bool success = run_manager.get_run(i_run, run_list.back().ctl_pars, run_list.back().obs, cur_par_name, cur_numeric_par_value);
+		run_list.back().numeric_derivative_par = cur_numeric_par_value;
 
 		if (success)
 		{
-			par_transform.model2ctl_ip(tmp_pars);
-			cur_model_run.update_ctl(tmp_pars, tmp_obs);
-
+			par_transform.model2ctl_ip(run_list.back().ctl_pars);
 			// get the updated parameter value which reflects roundoff errors
 			par_name_vec.clear();
 			par_name_vec.push_back(cur_par_name);
-			Parameters numeric_pars(tmp_pars, par_name_vec);
+			Parameters numeric_pars(run_list.back().ctl_pars, par_name_vec);
 			par_transform.ctl2numeric_ip(numeric_pars);
-			cur_numeric_par_value = numeric_pars.get_rec(cur_par_name);
-			run_list.push_back(make_pair(cur_model_run, cur_numeric_par_value));
+			run_list.back().numeric_derivative_par = numeric_pars.get_rec(cur_par_name);
+		}
+		else
+		{
+			run_list.pop_back();
 		}
 
 		// read information associated with the next model run;
@@ -187,9 +183,9 @@ bool Jacobian_1to1::process_runs(ModelRun &init_model_run, vector<string> numeri
 			if (!run_list.empty())
 			{
 				base_numeric_par_names.push_back(cur_par_name);
-				double base_numeric_par_value = base_numeric_parameters.get_rec(cur_par_name);
-				run_list.push_front(make_pair(init_model_run, base_numeric_par_value));
-				std::vector<Eigen::Triplet<double> > tmp_triplet_vec = calc_derivative(cur_par_name, icol, run_list, par_transform, group_info, ctl_par_info, prior_info);
+				base_run.numeric_derivative_par = base_numeric_parameters.get_rec(cur_par_name);
+				run_list.push_front(base_run);
+				std::vector<Eigen::Triplet<double> > tmp_triplet_vec = calc_derivative(cur_par_name, icol, run_list, group_info, prior_info);
 				triplet_list.insert( triplet_list.end(), tmp_triplet_vec.begin(), tmp_triplet_vec.end() );
 				icol++;
 			}

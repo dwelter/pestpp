@@ -9,37 +9,31 @@
 
  OPTIMISATION ITERATION NO. 2   ----->
  Parameter name    Group        Current value        Sensitivity
-   sup_1           g_sup_1      10.0000000000        42.0217761092       
-   sup_2           g_sup_2      10.0000000000        42.0217761092       
+   sup_1           g_sup_1      10.0000000000        42.0206690283       
+   sup_2           g_sup_2      10.0000000000        9.94843220614       
 
 
  OPTIMISATION ITERATION NO. 3   ----->
  Parameter name    Group        Current value        Sensitivity
-   sup_1           g_sup_1      9.87050606971        56.1432064739       
-   sup_2           g_sup_2      9.87050608343        13.3051886869       
+   sup_1           g_sup_1      9.76840736322        63.2965777157       
+   sup_2           g_sup_2      10.1467119903        16.7868418126       
 
 
  OPTIMISATION ITERATION NO. 4   ----->
  Parameter name    Group        Current value        Sensitivity
-   sup_1           g_sup_1      9.78888529691        60.9671558870       
-   sup_2           g_sup_2      10.1458307705        0.639585429496      
+   sup_1           g_sup_1      9.78265099865        61.8510289318       
+   sup_2           g_sup_2      10.1374583341        16.0723146441       
 
 
  OPTIMISATION ITERATION NO. 5   ----->
  Parameter name    Group        Current value        Sensitivity
-   COND            COND         -2.99769178948       61.8882218649       
-   SCOEFF          SCOEFF       -0.692281939049      16.5768817625       
+   COND            COND         -2.99999131420       62.3462136228       
+   SCOEFF          SCOEFF       -0.699197849595      16.6343631964       
 
 
  OPTIMISATION ITERATION NO. 6   ----->
  Parameter name    Group        Current value        Sensitivity
-   sup_1           g_sup_1      10.0000000000        61.9861818375       
-   sup_2           g_sup_2      10.0000000000        61.9861818375       
-
-
- OPTIMISATION ITERATION NO. 7   ----->
- Parameter name    Group        Current value        Sensitivity
-   sup_1           g_sup_1      9.99999322926        64.6999543172       
-   sup_2           g_sup_2      9.99999337022        64.6996503040       
+   sup_1           g_sup_1      10.0000000000        61.9871978372       
+   sup_2           g_sup_2      10.0000000000        15.5973842074       
 
 

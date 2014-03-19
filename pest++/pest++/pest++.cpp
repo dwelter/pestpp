@@ -256,9 +256,17 @@ int main(int argc, char* argv[])
 	//Build Super-Parameter problem
 	Jacobian *super_jacobian_ptr = new Jacobian(file_manager);
 	ParamTransformSeq trans_svda;
-	// method be involked as pointer as the transformation sequence it is added to will
+	// method must be involked as pointer as the transformation sequence it is added to will
 	// take responsibility for destroying it
-	TranSVD *tran_svd = new TranSVD("SVD Super Parameter Tranformation");
+	TranSVD *tran_svd = new TranSVD(pest_scenario.get_pestpp_options().get_max_n_super(), 
+		pest_scenario.get_pestpp_options().get_super_eigthres(), "SVD Super Parameter Tranformation");
+
+	if (pest_scenario.get_pestpp_options().get_svd_pack() == PestppOptions::PROPACK)
+	{
+		tran_svd->set_SVD_pack_propack();
+	}
+
+
 	TranFixed *tr_svda_fixed = new TranFixed("SVDA Fixed Parameter Transformation");
 	trans_svda = base_trans_seq;
 	trans_svda.push_back_ctl2derivative(tr_svda_fixed);

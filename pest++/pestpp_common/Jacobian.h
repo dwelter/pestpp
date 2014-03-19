@@ -37,6 +37,14 @@ class ModelRun;
 class FileManager;
 class PriorInformation;
 
+class JacobianRun{
+public:
+	JacobianRun(Observations _obs = Observations(), Parameters _ctl_pars = Parameters(), double _numeric_derivative_par = Parameters::no_data) : obs(_obs), ctl_pars(_ctl_pars), numeric_derivative_par(numeric_derivative_par){}
+	Observations obs;
+	Parameters ctl_pars;
+	double numeric_derivative_par;
+};
+
 class Jacobian {
 public:
 	Jacobian(FileManager &_file_manager);
@@ -49,7 +57,7 @@ public:
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
 		RunManagerAbstract &run_manager, set<string> &out_of_bound_par, bool phiredswh_flag=false, bool calc_init_obs=true);
 	virtual void make_runs(RunManagerAbstract &run_manager);
-	virtual bool process_runs(ModelRun &init_model_run, vector<string> numeric_par_names, vector<string> obs_names, ParamTransformSeq &par_transform,
+	virtual bool process_runs(vector<string> numeric_par_names, vector<string> obs_names, ParamTransformSeq &par_transform,
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
 		RunManagerAbstract &run_manager,  const PriorInformation &prior_info, set<string> &out_of_bound_par, bool phiredswh_flag, bool calc_init_obs);
 
@@ -68,8 +76,8 @@ protected:
 	Eigen::SparseMatrix<double> matrix;
 	FileManager &file_manager;  // filemanger used to get name of jaobian file
 
-	virtual std::vector<Eigen::Triplet<double> > calc_derivative(const string &numeric_par_name, int jcol, list<pair<ModelRun, double> > &run_list, const ParamTransformSeq &par_trans, const ParameterGroupInfo &group_info,
-		const ParameterInfo &ctl_par_info, const PriorInformation &prior_info);
+	virtual std::vector<Eigen::Triplet<double> > calc_derivative(const string &numeric_par_name, int jcol, list<JacobianRun> &run_list, const ParameterGroupInfo &group_info,
+		const PriorInformation &prior_info);
 	virtual bool forward_diff(const string &par_name, const Parameters &pest_parameters, 
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, const ParamTransformSeq &par_trans,
 		double &new_par, set<string> &out_of_bound_par);

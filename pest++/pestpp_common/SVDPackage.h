@@ -29,7 +29,10 @@ public:
 	SVDPackage(std::string _descritpion="undefined", int _n_max_sing=1000, double _eign_thres=1.0e-7);
 	virtual void solve_ip(Eigen::SparseMatrix<double>& A, Eigen::VectorXd &Sigma, Eigen::SparseMatrix<double> & U, Eigen::SparseMatrix<double>& VT, Eigen::VectorXd &Sigma_trunc) = 0;
 	virtual void set_max_sing(int _n_max_sing);
+	virtual int get_max_sing();
 	virtual void set_eign_thres(double _eign_thres);
+	virtual double get_eign_thres();
+
 	virtual ~SVDPackage(void){};
 	const std::string description;
 protected:

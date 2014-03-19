@@ -69,12 +69,14 @@ void matrix_del_cols(Eigen::SparseMatrix<double> &mat, const vector<int> &col_id
 
 		// add rows to be retained to the beginning of the  permuatation matrix
 		int icol_new = 0;
+		int n_col_save = 0;
 		for (int icol_old=0; icol_old<ncols; ++icol_old)
 		{
 			if (del_col_set.find(icol_old) == del_col_set.end())
 			{
 				triplet_list.push_back(Eigen::Triplet<int>(icol_old, icol_new, 1.0));
 				++icol_new;
+				++n_col_save;
 			}
 		}
 		// add rows to be deleted to end to permuatation matrix
@@ -87,7 +89,7 @@ void matrix_del_cols(Eigen::SparseMatrix<double> &mat, const vector<int> &col_id
 		perm_sparse_matrix.setZero();
 		perm_sparse_matrix.setFromTriplets(triplet_list.begin(), triplet_list.end());
 		Eigen::SparseMatrix<double> new_matrix = mat * perm_sparse_matrix;
-		mat = new_matrix.leftCols(icol_new-1);
+		mat = new_matrix.leftCols(n_col_save);
 	}
 }
 

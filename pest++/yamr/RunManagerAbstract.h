@@ -56,6 +56,7 @@ public:
 	virtual bool get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs, std::string &info_txt, double &info_value);
 	virtual const std::set<int> get_failed_run_ids();
 	virtual Parameters get_model_parameters(int run_num);
+	virtual std::vector<double> get_observations_vec(int run_id);
 	virtual Observations get_obs_template(double value = -9999.0) const;
 	virtual int get_total_runs(void) const {return total_runs;}
 	virtual int get_num_failed_runs(void);

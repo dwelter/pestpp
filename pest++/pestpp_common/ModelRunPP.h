@@ -33,19 +33,15 @@ class ModelRun
 {
 public:
 	ModelRun(const ObjectiveFunc *_objectiveFunc, const Observations &_sim_obs);
-	//ModelRun(const ObjectiveFunc *_objectiveFunc, const ParamTransformSeq &_par_tran, const Parameters &_numeric_pars, const Observations &_sim_obs);
 	ModelRun& operator=(const ModelRun &rhs);
-	virtual const Parameters& get_frozen_ctl_pars() const;
+	virtual Parameters get_frozen_ctl_pars() const;
 	virtual void set_frozen_ctl_parameters(const Parameters &frz_pars);
 	virtual void add_frozen_ctl_parameters(const Parameters &frz_pars);
-	//virtual void set_numeric_parameters(const Parameters &pars);
+	virtual void clear_frozen_ctl_parameters();
 	virtual void set_ctl_parameters(const Parameters &pars);
-	//virtual void set_model_parameters(const Parameters &pars);
 	virtual void set_observations(const Observations &obs);
 	virtual void update_ctl(Parameters &ctl_pars, Observations &obs);
-	//virtual const Parameters &get_numeric_pars();
 	virtual const Parameters &get_ctl_pars();
-	//virtual const Parameters &get_model_pars();
 	virtual const Observations &get_obs() const;
 	virtual Observations get_obs_template() const;
 	const ObjectiveFunc *get_obj_func_ptr()  {return obj_func_ptr;}
@@ -64,9 +60,7 @@ protected:
 	const ObjectiveFunc *obj_func_ptr;
 	Parameters ctl_pars;
 	Observations sim_obs;
-	Parameters frozen_ctl_pars;
-private:
-	//ParamTransformSeq par_tran;
+	std::vector<std::string> frozen_ctl_par_names;
 };
 
 #endif /* MODELRUNPP_H_ */

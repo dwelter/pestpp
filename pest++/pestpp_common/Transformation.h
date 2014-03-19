@@ -33,6 +33,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include "Transformable.h"
+#include "SVD_PROPACK.h"
 
 class Jacobian;
 class QSqrtMatrix;
@@ -277,7 +278,8 @@ protected:
 */
 class TranSVD: public Transformation {
 public:
-	TranSVD(const string &_name="unnamed TranSVD") : Transformation(_name), n_sing_val(0), max_sing(0), eigthresh(0.0)  {}
+	TranSVD(int _max_sing, double _eign_thresh, const string &_name = "unnamed TranSVD");
+	void set_SVD_pack_propack();
 	void update_reset_frozen_pars(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt, const Parameters &base_numeric_pars,
 		int maxsing, double eigthresh, const vector<string> &par_names, const vector<string> &obs_names,
 		const Parameters &_frozen_derivative_pars=Parameters());
@@ -296,9 +298,7 @@ public:
 	Parameters map_basepar_to_super(const Parameters &base_pars);
 	const Eigen::SparseMatrix<double>& get_vt() const;
 protected:
-	int n_sing_val;
-	int max_sing;
-	double eigthresh;
+	SVDPackage *tran_svd_pack;
 
 	vector<string> base_parameter_names;
 	vector<string> super_parameter_names;

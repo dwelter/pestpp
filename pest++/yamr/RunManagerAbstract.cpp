@@ -190,6 +190,11 @@ Parameters RunManagerAbstract::get_model_parameters(int run_id)
 	 return file_stor.get_parameters(run_id); 
  }
 
+vector<double> RunManagerAbstract::get_observations_vec(int run_id)
+{
+	return file_stor.get_observations_vec(run_id);
+}
+
  Observations RunManagerAbstract::get_obs_template(double value) const
  {
 	Observations ret_obs;

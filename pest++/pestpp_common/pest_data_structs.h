@@ -175,7 +175,7 @@ public:
 
 class PestppOptions {
 public:
-	enum SVD_PACK{LAPACK, PROPACK};
+	enum SVD_PACK{EIGEN, PROPACK};
 	void parce_line(const string &line);
 	int get_max_n_super() const{return max_n_super;}
 	double get_super_eigthres() const{return super_eigthres;}
@@ -189,7 +189,7 @@ public:
 	void set_super_eigthres(double _super_eigthres) {super_eigthres = _super_eigthres;}
 	void set_n_iter_base(int _n_iter_base) {n_iter_base = _n_iter_base;}
 	void set_n_iter_super(int _n_iter_super){n_iter_super = _n_iter_super;}
-	void set_svd_pack(const SVD_PACK _svd_pack=LAPACK) {svd_pack = _svd_pack;}
+	void set_svd_pack(const SVD_PACK _svd_pack=EIGEN) {svd_pack = _svd_pack;}
 	void set_auto_norm(double _auto_norm) {auto_norm = _auto_norm;};
 	void set_max_freeze_iter(int _max_freeze_iter){max_freeze_iter = _max_freeze_iter;}
 

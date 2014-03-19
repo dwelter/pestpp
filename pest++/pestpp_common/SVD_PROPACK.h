@@ -26,7 +26,7 @@
 class SVD_PROPACK  : public SVDPackage
 {
 public:
-	SVD_PROPACK(void);
+	SVD_PROPACK(int _n_max_sing = 1000, double _eign_thres = 1.0e-7);
 	void solve_ip(Eigen::SparseMatrix<double>& A, Eigen::VectorXd &Sigma, Eigen::SparseMatrix<double>& U, Eigen::SparseMatrix<double>& Vt, Eigen::VectorXd &Sigma_trunc);
 	void test();
 	~SVD_PROPACK(void);

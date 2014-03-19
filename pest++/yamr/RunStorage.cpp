@@ -390,8 +390,24 @@ Parameters RunStorage::get_parameters(int run_id)
 	buf_stream.read(reinterpret_cast<char*>(par_data.data()), n_par*sizeof(double));
 	Parameters pars;
 	pars.update(par_names, par_data);
-
 	return pars;
+}
+
+
+vector<double> RunStorage::get_observations_vec(int run_id)
+{
+	std::int8_t r_status;
+
+	check_rec_id(run_id);
+
+	size_t n_par = par_names.size();
+	size_t n_obs = obs_names.size();
+	vector<double> obs_data;
+	obs_data.resize(n_obs);
+	buf_stream.seekg(get_stream_pos(run_id), ios_base::beg);
+	buf_stream.seekg(sizeof(r_status)+sizeof(char)*info_txt_length + sizeof(double)+n_par*sizeof(double), ios_base::cur);
+	buf_stream.read(reinterpret_cast<char*>(obs_data.data()), n_obs*sizeof(double));
+	return obs_data;
 }
 
 void RunStorage::free_memory()

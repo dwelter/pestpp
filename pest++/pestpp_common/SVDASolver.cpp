@@ -70,7 +70,7 @@ Parameters SVDASolver::limit_parameters_ip(const Parameters &init_numeric_pars, 
 		val_upgrade = (*iter_pu).second;  // upgrade parameter value
 		// only use relative change limits
 		limit = abs((val_upgrade - val_init) / (val_init * ctl_info->relparmax));
-		if (limit > 1)
+		if (limit < 1)
 		{
 			limit_fac = min(limit_fac, 1.0 / limit);
 		}
@@ -149,7 +149,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 
 		jacobian.make_runs(run_manager);
 
-		bool success2 = jacobian.process_runs(base_run, numeric_par_names_vec, obs_names_vec, par_transform,
+		bool success2 = jacobian.process_runs(numeric_par_names_vec, obs_names_vec, par_transform,
 			*par_group_info_ptr, *ctl_par_info_ptr,run_manager,  *prior_info_ptr, out_of_bound_pars,
 			phiredswh_flag, calc_init_obs);
 
