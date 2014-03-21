@@ -529,7 +529,7 @@ restart_resume_jacobian_runs:
 		<< " (" << double(jac_num_zero) / double(jac_num_total) * 100 << "%)" << endl << endl;
 	os.precision(n_prec);
 
-	os << "    Summary of upgrade vectors:" << endl;
+	os << "    Summary of upgrade runs:" << endl;
 	for(int i=0; i<run_manager.get_nruns(); ++i) {
 		double rot_fac = rot_fac_vec[i];
 		ModelRun upgrade_run(cur_solution);
