@@ -209,18 +209,24 @@ VectorXd SVDSolver::calc_residual_corrections(const Jacobian &jacobian, const Pa
 							   const vector<string> obs_name_vec)
 {
 	VectorXd del_residuals;
-	vector<string>frz_par_name_vec = del_numeric_pars.get_keys();
-	//remove the parameters for which the jaocbian could not be computed
-	const set<string> &failed_jac_par_names = jacobian.get_failed_parameter_names();
-	auto end_iter = remove_if(frz_par_name_vec.begin(), frz_par_name_vec.end(), 	
-		[&failed_jac_par_names](string &str)->bool{return failed_jac_par_names.find(str)!=failed_jac_par_names.end();});
-	frz_par_name_vec.resize(std::distance(frz_par_name_vec.begin(), end_iter));
+	if (del_numeric_pars.size() > 0)
+	{
+		vector<string>frz_par_name_vec = del_numeric_pars.get_keys();
+		//remove the parameters for which the jaocbian could not be computed
+		const set<string> &failed_jac_par_names = jacobian.get_failed_parameter_names();
+		auto end_iter = remove_if(frz_par_name_vec.begin(), frz_par_name_vec.end(),
+			[&failed_jac_par_names](string &str)->bool{return failed_jac_par_names.find(str) != failed_jac_par_names.end(); });
+		frz_par_name_vec.resize(std::distance(frz_par_name_vec.begin(), end_iter));
 
+		VectorXd frz_del_par_vec = del_numeric_pars.get_data_eigen_vec(frz_par_name_vec);
 
-	VectorXd frz_del_par_vec = del_numeric_pars.get_data_eigen_vec(frz_par_name_vec);
-
-	MatrixXd jac_frz = jacobian.get_matrix(obs_name_vec, frz_par_name_vec);
-	del_residuals = (jac_frz) *  frz_del_par_vec;
+		MatrixXd jac_frz = jacobian.get_matrix(obs_name_vec, frz_par_name_vec);
+		del_residuals = (jac_frz)*  frz_del_par_vec;
+	}
+	else
+	{
+		del_residuals = VectorXd::Zero(obs_name_vec.size());
+	}
 	return del_residuals;
 }
 
