@@ -15,6 +15,7 @@ class ObjectiveFunc;
 class ModelRun;
 class FileManager;
 class PriorInformation;
+class ParameterRec;
 
 class Jacobian_1to1 : public Jacobian{
 
@@ -34,7 +35,7 @@ protected:
 	bool central_diff(const string &par_name, double derivative_par_value, 
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, const ParamTransformSeq &par_trans, vector<double> &new_par_vec, 
 		vector<Parameters>  &numeric_dir_par_vec);
-	bool out_of_bounds(const Parameters &model_parameters, const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info) const;
+	bool out_of_bounds(const Parameters &model_parameters, const ParameterRec *par_info_ptr) const;
 	bool get_derivative_parameters(const string &par_name, double derivative_par_value, const ParamTransformSeq &par_trans, const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
 		vector<double> &delta_numeric_par_vec, bool phiredswh_flag);
 };

@@ -60,8 +60,7 @@ protected:
 		Eigen::VectorXd uvec;
 		double norm;
 		vector<string> par_name_vec;
-		Parameters frozen_numeric_pars;
-		void print(ostream &os); 
+		Parameters frozen_numeric_pars; 
 	};
 
 	SVDPackage *svd_package;
@@ -99,7 +98,7 @@ protected:
 		double &rel_change);
 	Upgrade calc_lambda_upgrade_vec(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
 	const Eigen::VectorXd &Residuals, const vector<string> &par_name_vec, const vector<string> &obs_name_vec,
-	const Parameters &base_numeric_pars, const Parameters &freeze_numeric_pars, int &tot_sing_val,
+					const Parameters &base_numeric_pars, const Parameters &freeze_numeric_pars,
 	double lambda, MarquardtMatrix marquardt_type=MarquardtMatrix::IDENT);
 	Upgrade calc_upgrade_vec(const Upgrade &direction, 
 		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,

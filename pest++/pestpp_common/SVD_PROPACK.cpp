@@ -64,7 +64,6 @@ void SVD_PROPACK::solve_ip(Eigen::SparseMatrix<double>& A, VectorXd &Sigma, Eige
 	int m_rows = A.rows();
 	int n_cols = A.cols();
 	int n_nonzero;
-	int k = 0;
 	int kmax = min(m_rows, n_cols);
 	kmax = min(n_max_sing, kmax);
 	int ioption[] = {0, 1};

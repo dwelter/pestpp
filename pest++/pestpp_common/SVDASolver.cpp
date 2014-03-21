@@ -197,7 +197,6 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 
 	//Marquardt Lambda Update Vector
 	Upgrade ml_upgrade;
-	int tot_sing_val;
 	const Parameters &base_run_derivative_pars =  par_transform.ctl2derivative_cp(base_run.get_ctl_pars());
 	Parameters base_numeric_pars = par_transform.ctl2numeric_cp(base_run.get_ctl_pars());
 	vector<Parameters> frozen_derivative_par_vec;
@@ -225,7 +224,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		std::cout << message.str();
 
 		ml_upgrade = calc_lambda_upgrade_vec(jacobian, Q_sqrt, residuals_vec, numeric_par_names_vec, obs_names_vec,
-			base_numeric_pars, Parameters(), tot_sing_val, i_lambda);
+			base_numeric_pars, Parameters(), i_lambda);
 		Parameters new_numeric_pars = apply_upgrade(base_numeric_pars, ml_upgrade, 1.0);
 		Parameters new_frozen_pars = limit_parameters_ip(base_numeric_pars, new_numeric_pars);
 		frozen_derivative_par_vec.push_back(new_frozen_pars);

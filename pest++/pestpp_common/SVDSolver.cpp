@@ -41,16 +41,6 @@ using namespace std;
 using namespace pest_utils;
 using namespace Eigen;
 
-
-void SVDSolver::Upgrade::print(ostream &os) 
-{
-	//os << "Upgrade: " << n_sing_val_used << "out of " <<  tot_sing_val << "singular vales used" << endl;
-	//int vec_size = par_name_vec.size();
-	//for (int i=0; i< vec_size; ++i) {
-	//	os << setw(21) << par_name_vec[i] << setw(20) << svd_uvec(i) << setw(20) <<grad_uvec(i) << endl;
-	//}
-}
-
 SVDSolver::SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_par_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, 
@@ -91,7 +81,6 @@ Parameters SVDSolver::apply_upgrade(const Parameters &init_numeric_pars,const Up
 	// This does not check whether parameters remain in bounds
 	for(int ip = 0; ip<upgrade.uvec.size(); ++ip)
 	{
-		const string &p_name = upgrade.par_name_vec[ip];
 		auto it = upgrade_pars.find(upgrade.par_name_vec[ip]);
 		assert(it != upgrade_pars.end());
 		it->second += upgrade.uvec[ip]*upgrade.norm*scale;
@@ -237,7 +226,7 @@ VectorXd SVDSolver::calc_residual_corrections(const Jacobian &jacobian, const Pa
 
 SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
 	const Eigen::VectorXd &Residuals, const vector<string> &par_name_vec, const vector<string> &obs_name_vec,
-	const Parameters &base_numeric_pars, const Parameters &freeze_numeric_pars, int &tot_sing_val, 
+	const Parameters &base_numeric_pars, const Parameters &freeze_numeric_pars, 
 	double lambda, MarquardtMatrix marquardt_type)
 {
 	Upgrade upgrade;
@@ -331,7 +320,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 		restart_controller.get_restart_option() = RestartController::RestartOption::NONE;
 		cout << "  reading previosuly computed jacobian... ";
 		{
-			jacobian.read(file_manager.build_filename("jco"), *prior_info_ptr);
+			jacobian.read(file_manager.build_filename("jco"));
 		}
 
 		cout << endl << endl;
@@ -373,10 +362,12 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 		phiredswh_flag, calc_init_obs);
 restart_resume_jacobian_runs:
 	// save current parameters
-	ofstream &fout_rpb = file_manager.open_ofile_ext("rpb");
-	output_file_writer.write_par(fout_rpb, cur_solution.get_ctl_pars(), *(par_transform.get_offset_ptr()),
+	{
+	  ofstream &fout_rpb = file_manager.open_ofile_ext("rpb");
+	  output_file_writer.write_par(fout_rpb, cur_solution.get_ctl_pars(), *(par_transform.get_offset_ptr()),
 		*(par_transform.get_scale_ptr()));
-	file_manager.close_file("rpb");
+	  file_manager.close_file("rpb");
+	}
 	// save state of termination controller
 	termination_ctl.save_state(fout_restart);
 
@@ -437,7 +428,6 @@ restart_resume_jacobian_runs:
 	//Marquardt Lambda Update Vector
 	Parameters frozen_derivative_pars;
 	Upgrade ml_upgrade;
-	int tot_sing_val;
 	LimitType limit_type = LimitType::NONE;
 	const Parameters &base_run_numeric_pars =  par_transform.ctl2numeric_cp(cur_solution.get_ctl_pars());
 	vector<string> par_name_vec = base_run_numeric_pars.get_keys();
@@ -472,7 +462,7 @@ restart_resume_jacobian_runs:
 			Parameters frozen_numeric_pars = par_transform.derivative2numeric_cp(frozen_derivative_pars);
 			// need to remove parameters frozen due to failed jacobian runs when calling calc_lambda_upgrade_vec
 			ml_upgrade = calc_lambda_upgrade_vec(jacobian, Q_sqrt, residuals_vec, par_name_vec, obs_names_vec,
-				base_run_numeric_pars, frozen_numeric_pars, tot_sing_val, i_lambda);
+				base_run_numeric_pars, frozen_numeric_pars, i_lambda);
 			new_numeric_pars = apply_upgrade(base_run_numeric_pars, ml_upgrade, 1.0);
 			if (i_freeze < max_freeze_iter)
 			{

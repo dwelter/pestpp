@@ -13,7 +13,7 @@ EXE = pestpp
 OBJECTS	:= pest++.o
  
 $(EXE): $(OBJECTS)
-	$(CXX) $(OBJECTS) $(LIBS) -o $(EXE)
+	$(CXX) -static $(OBJECTS) $(LIBS) -o $(EXE)
 
 %.o: %.cpp
 	$(CXX) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@

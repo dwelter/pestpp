@@ -143,8 +143,6 @@ bool Jacobian::build_runs(ModelRun &init_model_run, vector<string> numeric_par_n
 	Observations observations(init_model_run.get_obs_template());
 
 	run_manager.reinitialize();
-	const vector<string> &par_name_vec = run_manager.get_par_name_vec();
-	const vector<string> &obs_name_vec = run_manager.get_obs_name_vec();
 
 	// compute runs for to jacobain calculation as it is influenced by derivative type( forward or central)
 	vector<double> del_numeric_par_vec;
@@ -277,11 +275,8 @@ bool Jacobian::get_derivative_parameters(const string &par_name, Parameters &num
 		vector<double> &delta_numeric_par_vec, bool phiredswh_flag, set<string> &out_of_bound_par)
 {
 	bool success = false;
-	double par_0;
-	double par_1;
 	const ParameterGroupRec *g_rec;
 
-	par_0 =  numeric_pars.find(par_name)->second;
 	g_rec = group_info.get_group_rec_ptr(par_name);
 
 	if (g_rec->forcen == "ALWAYS_3" || phiredswh_flag == true) {
@@ -295,6 +290,7 @@ bool Jacobian::get_derivative_parameters(const string &par_name, Parameters &num
 		}
 	}
 	if (!success) {
+	  double par_1;
 		// Forward Difference
 		success = forward_diff(par_name, numeric_pars, group_info, ctl_par_info, par_transform, par_1, out_of_bound_par);
 		if (success)
@@ -411,19 +407,19 @@ bool Jacobian::forward_diff(const string &par_name, const Parameters &numeric_pa
 	bool out_of_bound_backward;
 	string tmp_name;
 
-	double incr = derivative_inc(par_name, group_info, ctl_par_info, numeric_parameters.get_rec(par_name), false);
+	double incr = derivative_inc(par_name, group_info, numeric_parameters.get_rec(par_name), false);
 	// try forward derivative
 	// perturb numeric paramateres
 	Parameters numeric_derivative_pars(numeric_parameters);
 	new_par = numeric_derivative_pars[par_name] += incr;
-	out_of_bound_forward = out_of_bounds(par_trans.numeric2ctl_cp(numeric_derivative_pars), group_info, ctl_par_info, out_of_bound_par);
+	out_of_bound_forward = out_of_bounds(par_trans.numeric2ctl_cp(numeric_derivative_pars), ctl_par_info, out_of_bound_par);
 	if (!out_of_bound_forward) {
 		return true;
 	}
 	// try backward derivative if forward derivative didn't work
 	numeric_derivative_pars = numeric_parameters;
 	new_par = numeric_derivative_pars[par_name] -= incr;
-	out_of_bound_backward = out_of_bounds(par_trans.numeric2ctl_cp(numeric_derivative_pars), group_info, ctl_par_info, out_of_bound_par);
+	out_of_bound_backward = out_of_bounds(par_trans.numeric2ctl_cp(numeric_derivative_pars), ctl_par_info, out_of_bound_par);
 	if (!out_of_bound_backward)
 	{	
 		return true;
@@ -441,11 +437,11 @@ bool Jacobian::central_diff(const string &par_name, const Parameters &pest_param
 	Parameters numeric_dir_pars;
 	string tmp_name;
 
-	double incr = derivative_inc(par_name, group_info, ctl_par_info, pest_parameters.get_rec(par_name), true);
+	double incr = derivative_inc(par_name, group_info, pest_parameters.get_rec(par_name), true);
 	// try backward difference
 	numeric_dir_pars = pest_parameters;
 	new_par = numeric_dir_pars[par_name] -= incr;
-	out_of_bnds_back = out_of_bounds(par_trans.numeric2ctl_cp(numeric_dir_pars), group_info, ctl_par_info, out_of_bound_par);
+	out_of_bnds_back = out_of_bounds(par_trans.numeric2ctl_cp(numeric_dir_pars), ctl_par_info, out_of_bound_par);
 
 	if (!out_of_bnds_back) {
 		new_par_vec.push_back(new_par);
@@ -454,7 +450,7 @@ bool Jacobian::central_diff(const string &par_name, const Parameters &pest_param
 	// try forward derivative
 	numeric_dir_pars = pest_parameters;
 	new_par = numeric_dir_pars[par_name] += incr;
-	out_of_bnds_forward = out_of_bounds(par_trans.numeric2ctl_cp(numeric_dir_pars), group_info, ctl_par_info, out_of_bound_par);
+	out_of_bnds_forward = out_of_bounds(par_trans.numeric2ctl_cp(numeric_dir_pars), ctl_par_info, out_of_bound_par);
 	if (!out_of_bnds_forward) {
 		new_par_vec.push_back(new_par);
 		numeric_dir_par_vec.push_back(numeric_dir_pars);
@@ -464,7 +460,7 @@ bool Jacobian::central_diff(const string &par_name, const Parameters &pest_param
 		set<string> tmp_out_of_bound_par;
 		numeric_dir_pars = pest_parameters;
 		new_par = numeric_dir_pars[par_name] += 2.0 * incr;
-		out_of_bnds = out_of_bounds(par_trans.numeric2ctl_cp(numeric_dir_pars), group_info, ctl_par_info, tmp_out_of_bound_par);
+		out_of_bnds = out_of_bounds(par_trans.numeric2ctl_cp(numeric_dir_pars), ctl_par_info, tmp_out_of_bound_par);
 		if (!out_of_bnds) {
 			new_par_vec.push_back(new_par);
 			numeric_dir_par_vec.push_back(numeric_dir_pars);
@@ -479,7 +475,7 @@ bool Jacobian::central_diff(const string &par_name, const Parameters &pest_param
 		set<string> tmp_out_of_bound_par;
 		numeric_dir_pars = pest_parameters;
 		new_par = numeric_dir_pars[par_name] -= 2.0 * incr;
-		out_of_bnds = out_of_bounds(par_trans.numeric2ctl_cp(numeric_dir_pars), group_info, ctl_par_info, tmp_out_of_bound_par);
+		out_of_bnds = out_of_bounds(par_trans.numeric2ctl_cp(numeric_dir_pars), ctl_par_info, tmp_out_of_bound_par);
 		if (!out_of_bnds) {
 			new_par_vec.insert(new_par_vec.begin(), new_par);
 			numeric_dir_par_vec.insert(numeric_dir_par_vec.begin(), numeric_dir_pars);
@@ -492,7 +488,7 @@ bool Jacobian::central_diff(const string &par_name, const Parameters &pest_param
 	return true;
 }
 
-bool Jacobian::out_of_bounds(const Parameters &ctl_parameters, const ParameterGroupInfo &group_info,
+bool Jacobian::out_of_bounds(const Parameters &ctl_parameters,
 	const ParameterInfo &ctl_par_info, set<string> &out_of_bound_par) const
 {
 	const string *par_name;
@@ -514,7 +510,7 @@ bool Jacobian::out_of_bounds(const Parameters &ctl_parameters, const ParameterGr
 	return out_of_bounds;
 }
 
-double Jacobian::derivative_inc(const string &name, const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, double cur_par_value, bool central)
+double Jacobian::derivative_inc(const string &name, const ParameterGroupInfo &group_info, double cur_par_value, bool central)
 {
 	const ParameterGroupRec *g_rec;
 	double incr = 0.0;	
@@ -598,13 +594,12 @@ void Jacobian::save(const string &ext) const
 }
 
 
-void Jacobian::read(const string &filename, const PriorInformation &prior_info)
+void Jacobian::read(const string &filename)
 {
 	ifstream fin;
 	fin.open(filename.c_str(), ifstream::binary);
 
-	int n_par = base_numeric_par_names.size();
-	int n_standard_obs = base_sim_obs_names.size();
+	int n_par;
 	int n_nonzero;
 	int n_obs_and_pi;
 	int i,j,n;
@@ -651,7 +646,6 @@ void Jacobian::read(const string &filename, const PriorInformation &prior_info)
 	fin.seekg(begin_sen_pos, ios_base::beg);
 
 	// read matrix
-	int prior_cout = 0;
 	std::vector<Eigen::Triplet<double> > triplet_list;
 	triplet_list.reserve(n_nonzero);
 	for (int i_rec=0; i_rec<n_nonzero; ++ i_rec)

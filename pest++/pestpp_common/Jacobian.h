@@ -39,7 +39,7 @@ class PriorInformation;
 
 class JacobianRun{
 public:
-	JacobianRun(Observations _obs = Observations(), Parameters _ctl_pars = Parameters(), double _numeric_derivative_par = Parameters::no_data) : obs(_obs), ctl_pars(_ctl_pars), numeric_derivative_par(numeric_derivative_par){}
+	JacobianRun(Observations _obs = Observations(), Parameters _ctl_pars = Parameters(), double _numeric_derivative_par = Parameters::no_data) : obs(_obs), ctl_pars(_ctl_pars), numeric_derivative_par(_numeric_derivative_par){}
 	Observations obs;
 	Parameters ctl_pars;
 	double numeric_derivative_par;
@@ -62,7 +62,7 @@ public:
 		RunManagerAbstract &run_manager,  const PriorInformation &prior_info, set<string> &out_of_bound_par, bool phiredswh_flag, bool calc_init_obs);
 
 	virtual void save(const std::string &ext="jco") const;
-	void read(const std::string &filename, const PriorInformation &prior_info);
+	void read(const std::string &filename);
 	virtual const set<string>& get_failed_parameter_names() const;
 	virtual long get_nonzero() const { return matrix.nonZeros();}
 	virtual long get_size() const { return matrix.size(); }
@@ -84,8 +84,8 @@ protected:
 	virtual bool central_diff(const string &par_name, const Parameters &pest_parameters, 
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, const ParamTransformSeq &par_trans, vector<double> &new_par, 
 		vector<Parameters> &model_par_vec, set<string> &out_of_bound_par);
-	virtual bool out_of_bounds(const Parameters &model_parameters, const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, set<string> &out_of_bound_par) const;
-	virtual double derivative_inc(const string &name, const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info,   double cur_par_value,  bool central = false);
+	virtual bool out_of_bounds(const Parameters &model_parameters, const ParameterInfo &ctl_par_info, set<string> &out_of_bound_par) const;
+	virtual double derivative_inc(const string &name, const ParameterGroupInfo &group_info,   double cur_par_value,  bool central = false);
 	virtual bool get_derivative_parameters(const string &par_name, Parameters &numeric_pars, ParamTransformSeq &par_transform, const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
 		vector<double> &delta_numeric_par_vec, bool phiredswh_flag, set<string> &out_of_bound_par);
 	virtual unordered_map<string, int> get_par2col_map() const;

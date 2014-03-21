@@ -52,9 +52,6 @@ bool Jacobian_1to1::build_runs(ModelRun &init_model_run, vector<string> numeric_
 	Observations observations(init_model_run.get_obs_template());
 	base_numeric_parameters = par_transform.ctl2numeric_cp( init_model_run.get_ctl_pars());
 	run_manager.reinitialize(file_manager.build_filename("rnj"));
-	const vector<string> &model_par_name_vec = run_manager.get_par_name_vec();
-	const vector<string> &obs_name_vec = run_manager.get_obs_name_vec();
-	size_t n_par = model_par_name_vec.size();
 
 	failed_parameter_names.clear();
 	// add base run
@@ -210,9 +207,6 @@ bool Jacobian_1to1::get_derivative_parameters(const string &par_name, double par
 		vector<double> &delta_numeric_par_vec, bool phiredswh_flag)
 {
 	bool success = false;
-
-	double par_0 =  par_value;
-	double par_1;
 	const ParameterGroupRec *g_rec = group_info.get_group_rec_ptr(par_name);
 
 	if (g_rec->forcen == "ALWAYS_3" || phiredswh_flag == true) {
@@ -230,10 +224,10 @@ bool Jacobian_1to1::get_derivative_parameters(const string &par_name, double par
 	}
 	if (!success) {
 		// Forward Difference
-		success = forward_diff(par_name, par_value, group_info, ctl_par_info, par_trans, par_1);
+		success = forward_diff(par_name, par_value, group_info, ctl_par_info, par_trans, par_value);
 		if(success)
 		{
-			delta_numeric_par_vec.push_back(par_1);
+			delta_numeric_par_vec.push_back(par_value);
 		}
 	}
 	return success;
@@ -251,17 +245,17 @@ bool Jacobian_1to1::forward_diff(const string &par_name, double base_derivative_
 	string tmp_name;
 
 	// perturb derivative parameters
-	double incr = derivative_inc(par_name, group_info, ctl_par_info, base_derivative_val, false);
+	double incr = derivative_inc(par_name, group_info, base_derivative_val, false);
 	new_par_val = new_par[par_name] = base_derivative_val + incr;
 	// try forward derivative
-	out_of_bound_forward = out_of_bounds(par_trans.derivative2ctl_cp(new_par), group_info, ctl_par_info);
+	out_of_bound_forward = out_of_bounds(new_par, par_info_ptr);
 	if (!out_of_bound_forward) {
 		return true;
 	}
 	// try backward derivative if forward derivative didn't work
 	new_par.clear();
 	new_par_val = new_par[par_name] = base_derivative_val - incr;
-	out_of_bound_backward = out_of_bounds(par_trans.derivative2ctl_cp(new_par), group_info, ctl_par_info);
+	out_of_bound_backward = out_of_bounds(new_par, par_info_ptr);
 	if (!out_of_bound_backward)
 	{	
 		return true;
@@ -278,10 +272,11 @@ bool Jacobian_1to1::central_diff(const string &par_name, double base_derivative_
 	Parameters perturb_derivative_pars;
 	string tmp_name;
 
-	double incr = derivative_inc(par_name, group_info, ctl_par_info, base_derivative_val, true);
+	const ParameterRec *par_info_ptr = ctl_par_info.get_parameter_rec_ptr(par_name);
+	double incr = derivative_inc(par_name, group_info, base_derivative_val, true);
 	// try backward difference
 	new_par = perturb_derivative_pars[par_name] = base_derivative_val - incr;
-	out_of_bnds_back = out_of_bounds(par_trans.derivative2ctl_cp(perturb_derivative_pars), group_info, ctl_par_info);
+	out_of_bnds_back = out_of_bounds(perturb_derivative_pars, par_info_ptr);
 
 	if (!out_of_bnds_back) {
 		new_par_vec.push_back(new_par);
@@ -289,7 +284,7 @@ bool Jacobian_1to1::central_diff(const string &par_name, double base_derivative_
 	}
 	// try forward derivative
 	new_par = perturb_derivative_pars[par_name] = base_derivative_val + incr;
-	out_of_bnds_forward = out_of_bounds(par_trans.derivative2ctl_cp(perturb_derivative_pars), group_info, ctl_par_info);
+	out_of_bnds_forward = out_of_bounds(perturb_derivative_pars, par_info_ptr);
 	if (!out_of_bnds_forward) {
 		new_par_vec.push_back(new_par);
 		perturb_derivative_par_vec.push_back(perturb_derivative_pars);
@@ -297,7 +292,7 @@ bool Jacobian_1to1::central_diff(const string &par_name, double base_derivative_
 	// if backward difference was out of bounds do a second forward derivative
 	if (out_of_bnds_back) {
 		new_par = perturb_derivative_pars[par_name] = base_derivative_val + 2.0 * incr;
-		out_of_bnds = out_of_bounds(par_trans.numeric2ctl_cp(perturb_derivative_pars), group_info, ctl_par_info);
+		out_of_bnds = out_of_bounds(perturb_derivative_pars, par_info_ptr);
 		if (!out_of_bnds) {
 			new_par_vec.push_back(new_par);
 			perturb_derivative_par_vec.push_back(perturb_derivative_pars);
@@ -310,7 +305,7 @@ bool Jacobian_1to1::central_diff(const string &par_name, double base_derivative_
 	// if forward difference was out of bounds do a second backward derivative
 	if (out_of_bnds_forward) {
 		new_par = perturb_derivative_pars[par_name] = base_derivative_val - 2.0 * incr;
-		out_of_bnds = out_of_bounds(par_trans.numeric2ctl_cp(perturb_derivative_pars), group_info, ctl_par_info);
+		out_of_bnds = out_of_bounds(perturb_derivative_pars, par_info_ptr);
 		if (!out_of_bnds) {
 			new_par_vec.insert(new_par_vec.begin(), new_par);
 			perturb_derivative_par_vec.push_back(perturb_derivative_pars);
@@ -323,20 +318,16 @@ bool Jacobian_1to1::central_diff(const string &par_name, double base_derivative_
 	return true;
 }
 
-bool Jacobian_1to1::out_of_bounds(const Parameters &ctl_parameters, const ParameterGroupInfo &group_info,
-	const ParameterInfo &ctl_par_info) const
+bool Jacobian_1to1::out_of_bounds(const Parameters &ctl_parameters,
+	const ParameterRec *par_info_ptr) const
 {
-	const string *par_name;
-	double min, max;
-	const ParameterRec *par_info_ptr;
 	bool out_of_bounds=false;
 
+        // This will always only contain one entry one 1 to 1 Jacobians
 	for (auto &p : ctl_parameters)
 	{
-			par_name = &(p.first);
-			par_info_ptr = ctl_par_info.get_parameter_rec_ptr(*par_name);
-			max = par_info_ptr->ubnd;
-			min = par_info_ptr->lbnd;
+		double max = par_info_ptr->ubnd;
+		double min = par_info_ptr->lbnd;
 		if (p.second > max || p.second < min) {
 			out_of_bounds = true;
 		}

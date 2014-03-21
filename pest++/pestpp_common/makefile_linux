@@ -1,7 +1,7 @@
 CXX := g++
 FC := gfortran
-CFLAGS := -O2 -c -std=c++0x 
-FFLAGS := -O2 -c -cpp
+CFLAGS := -g -c -std=c++0x -Wextra -Wall -Wswitch-enum -Wunreachable-code
+FFLAGS := -g -c -cpp -Wextra, -Wall  -Wswitch-enum -Wunreachable-code
 INCLUDES := -I ../ -I ../yamr -I ../pestpp_common
 
 LIB = libpestpp_com.a
@@ -22,6 +22,7 @@ OBJECTS	:= FileManager.o \
            Transformation.o \
            ObjectiveFunc.o \
            Regularization.o \
+           RestartController.o \
            OutputFileWriter.o \
            SVDASolver.o
  
