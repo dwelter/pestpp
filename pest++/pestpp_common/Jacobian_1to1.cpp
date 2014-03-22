@@ -111,11 +111,11 @@ void Jacobian_1to1::make_runs(RunManagerAbstract &run_manager)
 	run_manager.run();
 }
 
-bool Jacobian_1to1::process_runs(vector<string> numeric_par_names, vector<string> obs_names, ParamTransformSeq &par_transform,
+bool Jacobian_1to1::process_runs(vector<string> numeric_par_names, ParamTransformSeq &par_transform,
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
 		RunManagerAbstract &run_manager,  const PriorInformation &prior_info, set<string> &out_of_bound_par, bool phiredswh_flag, bool calc_init_obs)
 {
-	base_sim_obs_names = obs_names;
+       base_sim_obs_names = run_manager.get_obs_name_vec();
 	vector<string> prior_info_name = prior_info.get_keys();
 	base_sim_obs_names.insert(base_sim_obs_names.end(), prior_info_name.begin(), prior_info_name.end());
 	std::vector<Eigen::Triplet<double> > triplet_list;
@@ -127,7 +127,8 @@ bool Jacobian_1to1::process_runs(vector<string> numeric_par_names, vector<string
 	JacobianRun base_run;
 	int i_run = 0;
 	// get base run parameters and observation for initial model run from run manager storage
-	bool success = run_manager.get_run(i_run, base_run.ctl_pars, base_run.obs);
+	run_manager.get_model_parameters(i_run,  base_run.ctl_pars);
+	bool success = run_manager.get_observations_vec(i_run, base_run.obs_vec);
 	if (!success)
 	{
 		throw(PestError("Error: Base parameter run failed.  Can not compute the Jacobian"));
@@ -140,6 +141,7 @@ bool Jacobian_1to1::process_runs(vector<string> numeric_par_names, vector<string
 	int nruns = run_manager.get_nruns();
 	base_numeric_par_names.clear();
 	int icol = 0;
+	int r_status;
 	vector<string>par_name_vec;
 	string cur_par_name;
 	string par_name_next;
@@ -151,7 +153,9 @@ bool Jacobian_1to1::process_runs(vector<string> numeric_par_names, vector<string
 	for(; i_run<nruns; ++i_run)
 	{
 		run_list.push_back(JacobianRun());
-		bool success = run_manager.get_run(i_run, run_list.back().ctl_pars, run_list.back().obs, cur_par_name, cur_numeric_par_value);
+		run_manager. get_info(i_run, r_status, cur_par_name, cur_numeric_par_value);
+		run_manager.get_model_parameters(i_run,  run_list.back().ctl_pars);
+	    bool success = run_manager.get_observations_vec(i_run, run_list.back().obs_vec);
 		run_list.back().numeric_derivative_par = cur_numeric_par_value;
 
 		if (success)

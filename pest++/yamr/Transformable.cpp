@@ -269,7 +269,16 @@ void Transformable::update(const vector<string> &names, const vector<double> &va
 		items.insert(make_pair(names[i], values[i]));
 	}
 }
-
+void Transformable::update_without_clear(const vector<string> &names, const vector<double> &values)
+{
+	assert(names.size() == values.size());
+	size_t n_rec = names.size();
+	items.reserve(n_rec);
+	for (size_t i=0; i<n_rec; ++i)
+	{
+		items[names[i]] = values[i];
+	}
+}
 vector<double> Transformable::get_data_vec(const vector<string> &keys) const
 {
 	vector<double> v;

@@ -187,12 +187,12 @@ void Jacobian::make_runs(RunManagerAbstract &run_manager)
 	run_manager.run();
 }
 
-bool Jacobian::process_runs(vector<string> numeric_par_names, vector<string> obs_names, ParamTransformSeq &par_transform,
+bool Jacobian::process_runs(vector<string> numeric_par_names, ParamTransformSeq &par_transform,
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
 		RunManagerAbstract &run_manager,  const PriorInformation &prior_info, set<string> &out_of_bound_par, bool phiredswh_flag, bool calc_init_obs)
 {
 	// calculate jacobian
-	base_sim_obs_names = obs_names;
+  base_sim_obs_names = run_manager.get_obs_name_vec();
 	vector<string> prior_info_name = prior_info.get_keys();
 	base_sim_obs_names.insert(base_sim_obs_names.end(), prior_info_name.begin(), prior_info_name.end());
 	if(matrix.rows() != base_sim_obs_names.size() || matrix.cols() !=numeric_par_names.size())
@@ -203,10 +203,10 @@ bool Jacobian::process_runs(vector<string> numeric_par_names, vector<string> obs
 
 	JacobianRun base_run;
 	int i_run = 0;
-	// if initial run was run get the newly calculated values
 	// get base run parameters and observation for initial model run from run manager storage
 	{
-		bool success = run_manager.get_run(i_run, base_run.ctl_pars, base_run.obs);
+	        run_manager.get_model_parameters(i_run,  base_run.ctl_pars);
+	        bool success = run_manager.get_observations_vec(i_run, base_run.obs_vec);
 		if (!success)
 		{
 			throw(PestError("Error: Super-parameter base parameter run failed.  Can not compute the Jacobian"));
@@ -219,6 +219,7 @@ bool Jacobian::process_runs(vector<string> numeric_par_names, vector<string> obs
 	// process the parameter pertubation runs
 	int nruns = run_manager.get_nruns();
 	int icol = 0;
+	int r_status;
 	string cur_par_name;
 	string par_name_next;
 	int run_status_next;
@@ -229,7 +230,9 @@ bool Jacobian::process_runs(vector<string> numeric_par_names, vector<string> obs
 	for(; i_run<nruns; ++i_run)
 	{
 		run_list.push_back(JacobianRun());
-		bool success = run_manager.get_run(i_run, run_list.back().ctl_pars, run_list.back().obs, cur_par_name, cur_numeric_par_value);
+                run_manager. get_info(i_run, r_status, cur_par_name, cur_numeric_par_value);
+		run_manager.get_model_parameters(i_run,  run_list.back().ctl_pars);
+	        bool success = run_manager.get_observations_vec(i_run, run_list.back().obs_vec);
 		if (success)
 		{
 			par_transform.model2ctl_ip(run_list.back().ctl_pars);
@@ -349,7 +352,7 @@ std::vector<Eigen::Triplet<double> >  Jacobian::calc_derivative(const string &nu
 					double par_value = irun_pair.numeric_derivative_par;
 					a_mat(i,0) = par_value*par_value; a_mat(i,1) = par_value; a_mat(i,2) = 1;
 					// assemble y vector
-					y(i) =  irun_pair.obs.get_rec(iobs_name);
+					y(i) =  irun_pair.obs_vec[irow];
 					++i;
 				}
 				c = a_mat.colPivHouseholderQr().solve(y);
@@ -364,7 +367,7 @@ std::vector<Eigen::Triplet<double> >  Jacobian::calc_derivative(const string &nu
 			{
 				// Forward Difference and Central Difference Outer
 				del_par = run_last.numeric_derivative_par - run_first.numeric_derivative_par;
-				del_obs = run_last.obs.get_rec(iobs_name) - run_first.obs.get_rec(iobs_name);
+				del_obs = run_last.obs_vec[irow] - run_first.obs_vec[irow];
 				if (del_obs != 0)
 				{
 					triplet_list.push_back(Eigen::Triplet<double>(irow, jcol, del_obs / del_par));

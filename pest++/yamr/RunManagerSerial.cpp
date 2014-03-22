@@ -134,9 +134,11 @@ void RunManagerSerial::run()
 	int nruns = run_id_vec.size();
 	for (int i_run : run_id_vec)
 	{
-		Parameters pars = file_stor.get_parameters(i_run);
 		Observations obs;
 		vector<double> par_values;
+		Parameters pars;
+		file_stor.get_parameters(i_run, pars);
+
 		for(auto &i : par_name_vec)
 		{
 			par_values.push_back(pars.get_rec(i));

@@ -84,6 +84,7 @@ public:
 	Transformable get_subset (NameIterator first, NameIterator last) const;
 	void update_rec(const string &name, double value);
 	void update(const vector<string> &names, const vector<double> &values); 
+	void update_without_clear(const vector<string> &names, const vector<double> &values);
 	const_iterator find(const string &name) const;
 	size_t size() const {return items.size();}
 	void clear() {items.clear();}

@@ -310,7 +310,6 @@ SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, 
 void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs)
 {
 	ostream &os = file_manager.rec_ofstream();
-	const double PI = 3.141592;
 	VectorXd residuals_vec;
 	set<string> out_ofbound_pars;
 
@@ -378,7 +377,7 @@ restart_resume_jacobian_runs:
 	termination_ctl.save_state(fout_restart);
 
 	jacobian.make_runs(run_manager);
-	jacobian.process_runs(numeric_parname_vec, obs_names_vec, par_transform,
+	jacobian.process_runs(numeric_parname_vec, par_transform,
 		*par_group_info_ptr, *ctl_par_info_ptr, run_manager, *prior_info_ptr, out_ofbound_pars,
 		phiredswh_flag, calc_init_obs);
 	//Update parameters and observations for base run
@@ -560,7 +559,7 @@ restart_resume_jacobian_runs:
 			os << " ("  << upgrade_run.get_phi(tikhonov_weight)/cur_solution.get_phi(tikhonov_weight)*100 << "%)" << endl;
 			os.precision(n_prec);
 			os.unsetf(ios_base::floatfield); // reset all flags to default
-			if ( upgrade_run.obs_valid() &&  !best_run_updated_flag || upgrade_run.get_phi() <  best_upgrade_run.get_phi()) {
+			if ( upgrade_run.obs_valid() &&  (!best_run_updated_flag || upgrade_run.get_phi() <  best_upgrade_run.get_phi() )) {
 				best_run_updated_flag = true;
 				best_upgrade_run = upgrade_run;
 				best_lambda = lambda_vec[i];

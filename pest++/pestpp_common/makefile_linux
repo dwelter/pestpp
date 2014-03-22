@@ -1,7 +1,7 @@
 CXX := g++
 FC := gfortran
-CFLAGS := -g -c -std=c++0x -Wextra -Wall -Wswitch-enum -Wunreachable-code
-FFLAGS := -g -c -cpp -Wextra, -Wall  -Wswitch-enum -Wunreachable-code
+CFLAGS := -g -c -std=c++0x 
+FFLAGS := -g -c -cpp 
 INCLUDES := -I ../ -I ../yamr -I ../pestpp_common
 
 LIB = libpestpp_com.a

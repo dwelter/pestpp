@@ -67,13 +67,16 @@ public:
 	const std::vector<std::string>& get_obs_name_vec()const;
 	int get_run_status(int run_id);
 	void get_info(int run_id, int &run_status, std::string &info_txt, double &info_value);
-	int get_run(int run_id, Parameters *pars, Observations *obs);
+	int get_run(int run_id, Parameters &pars, Observations &obs, bool clear_old=true);
+	int get_run(int run_id, Parameters &pars, Observations &obs, std::string &info_txt, double &info_value, bool clear_old=true);
 	int get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs);
-	int get_run(int run_id, Parameters *pars, Observations *obs, std::string &info_txt, double &info_value);
 	int get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs, std::string &info_txt, double &info_value);
-	Parameters get_parameters(int run_id);
+	int get_run(int run_id, std::vector<double> &pars_vec, std::vector<double> &obs_vec,
+		    std::string &info_txt, double &info_value);
+	int get_run(int run_id, std::vector<double> &pars_vec, std::vector<double> &obs_vec);
+	int get_parameters(int run_id, Parameters &pars);
 	std::vector<char> get_serial_pars(int run_id);
-	std::vector<double> get_observations_vec(int run_id);
+	int get_observations_vec(int run_id, std::vector<double> &data_vec);
 	void free_memory();
 	~RunStorage();
 private:

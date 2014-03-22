@@ -105,7 +105,6 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 	ostream &fout_restart = file_manager.get_ofstream("rst");
 	fout_restart << "super_par_iteration" << endl;
 	ostream &os = file_manager.rec_ofstream();
-	const double PI = 3.141592;
 	ModelRun base_run(cur_solution);
 	vector<string> obs_names_vec = base_run.get_obs_template().get_keys(); 
 	vector<string> numeric_par_names_vec;
@@ -149,7 +148,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 
 		jacobian.make_runs(run_manager);
 
-		bool success2 = jacobian.process_runs(numeric_par_names_vec, obs_names_vec, par_transform,
+		bool success2 = jacobian.process_runs(numeric_par_names_vec, par_transform,
 			*par_group_info_ptr, *ctl_par_info_ptr,run_manager,  *prior_info_ptr, out_of_bound_pars,
 			phiredswh_flag, calc_init_obs);
 
@@ -213,7 +212,6 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 	std::sort(lambda_vec.begin(), lambda_vec.end());
 	auto iter = std::unique(lambda_vec.begin(), lambda_vec.end());
 	lambda_vec.resize(std::distance(lambda_vec.begin(), iter));
-	int max_freeze_iter = 1;
 	stringstream message;
 	int i_update_vec = 0;
 	for (double i_lambda : lambda_vec)
@@ -225,15 +223,18 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 
 		ml_upgrade = calc_lambda_upgrade_vec(jacobian, Q_sqrt, residuals_vec, numeric_par_names_vec, obs_names_vec,
 			base_numeric_pars, Parameters(), i_lambda);
-		Parameters new_numeric_pars = apply_upgrade(base_numeric_pars, ml_upgrade, 1.0);
-		Parameters new_frozen_pars = limit_parameters_ip(base_numeric_pars, new_numeric_pars);
+		//Start out with new_pars as numeric parameters
+		Parameters new_pars = apply_upgrade(base_numeric_pars, ml_upgrade, 1.0);
+		Parameters new_frozen_pars = limit_parameters_ip(base_numeric_pars, new_pars);
 		frozen_derivative_par_vec.push_back(new_frozen_pars);
-		Parameters new_pars = par_transform.numeric2derivative_cp(new_numeric_pars);
+                //transform new_par to derivative parameters
+		par_transform.numeric2derivative_ip(new_pars);
 		// impose frozen parameters
 		for (auto &i : frozen_derivative_par_vec.back())
 		{
 		  new_pars[i.first] = i.second;
 		}
+		//transform new_pars to model parameters
 		par_transform.derivative2model_ip(new_pars);
 		run_manager.add_run(new_pars);
 		magnitude_vec.push_back(ml_upgrade.norm);

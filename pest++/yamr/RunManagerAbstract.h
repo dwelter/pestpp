@@ -50,13 +50,15 @@ public:
 	virtual const std::vector<std::string> &get_par_name_vec() const;
 	virtual const std::vector<std::string> &get_obs_name_vec() const;
 	virtual void get_info(int run_id, int &run_status, std::string &info_txt, double &info_value);
-	virtual bool get_run(int run_id, Parameters &pars, Observations &obs);
-	virtual bool get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs);
-	virtual bool get_run(int run_id, Parameters &pars, Observations &obs, std::string &info_txt, double &info_value);
+	virtual bool get_run(int run_id, Parameters &pars, Observations &obs, bool clear_old=true);
+	virtual bool get_run(int run_id, Parameters &pars, Observations &obs, std::string &info_txt, double &info_value, bool clear_old=true);
 	virtual bool get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs, std::string &info_txt, double &info_value);
+	virtual bool get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs);
+	virtual bool get_run(int run_id, std::vector<double> &pars_vec, std::vector<double> &obs_vec, std::string &info_txt, double &info_value);
+	virtual bool get_run(int run_id, std::vector<double> &pars_vec, std::vector<double> &obs_vec);
 	virtual const std::set<int> get_failed_run_ids();
-	virtual Parameters get_model_parameters(int run_num);
-	virtual std::vector<double> get_observations_vec(int run_id);
+	virtual bool get_model_parameters(int run_num, Parameters &pars);
+	virtual bool get_observations_vec(int run_id, std::vector<double> &data_vec);
 	virtual Observations get_obs_template(double value = -9999.0) const;
 	virtual int get_total_runs(void) const {return total_runs;}
 	virtual int get_num_failed_runs(void);

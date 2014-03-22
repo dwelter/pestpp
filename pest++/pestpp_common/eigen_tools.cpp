@@ -114,7 +114,6 @@ void print(const MatrixXd &mat, ostream & fout, int n_per_line)
 {
 	size_t nrows = mat.rows();
 	size_t ncols = mat.cols();
-	size_t n = 0;
 
 	for (size_t i=0; i<nrows; ++i)
 	{

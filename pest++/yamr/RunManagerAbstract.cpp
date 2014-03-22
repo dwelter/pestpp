@@ -106,20 +106,36 @@ void RunManagerAbstract::update_run(int run_id, Parameters &pars, Observations &
 	  file_stor.get_info(run_id, run_status, info_txt, info_value);
  }
 
-bool RunManagerAbstract::get_run(int run_id, Parameters &pars, Observations &obs, string &info_txt, double &info_value)
+bool RunManagerAbstract::get_run(int run_id, Parameters &pars, Observations &obs, string &info_txt, double &info_value, bool clear_old)
 {
 	bool success = false;
-	int status = file_stor.get_run(run_id, &pars, &obs, info_txt, info_value);
+	int status = file_stor.get_run(run_id, pars, obs, info_txt, info_value, clear_old);
 	if (status > 0) success = true; 
 	return success;
 }
 
-bool RunManagerAbstract::get_run(int run_id, Parameters &pars, Observations &obs)
+bool RunManagerAbstract::get_run(int run_id, Parameters &pars, Observations &obs,  bool clear_old)
 {
 	string info_txt;
 	double info_value;
 
-	return get_run(run_id, pars, obs, info_txt, info_value);
+	return get_run(run_id, pars, obs, info_txt, info_value, clear_old);
+}
+
+bool RunManagerAbstract::get_run(int run_id, vector<double> &pars_vec, vector<double> &obs_vec, string &info_txt, double &info_value)
+{
+	bool success = false;
+	int status = file_stor.get_run(run_id, pars_vec, obs_vec, info_txt, info_value);
+	if (status > 0) success = true; 
+	return success;
+}
+
+bool RunManagerAbstract::get_run(int run_id, vector<double> &pars_vec, vector<double> &obs_vec)
+{
+	string info_txt;
+	double info_value;
+
+	return get_run(run_id, pars_vec, obs_vec, info_txt, info_value);
 }
 
 bool  RunManagerAbstract::get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs, string &info_txt, double &info_value)
@@ -137,6 +153,7 @@ bool  RunManagerAbstract::get_run(int run_id, double *pars, size_t npars, double
 
 	return get_run(run_id, pars, npars, obs, nobs, info_txt, info_value);
 }
+
 
 void  RunManagerAbstract::free_memory()
 {
@@ -185,14 +202,20 @@ int RunManagerAbstract::get_num_failed_runs(void)
 	 return n_failed;
 }
 
-Parameters RunManagerAbstract::get_model_parameters(int run_id)
+bool RunManagerAbstract::get_model_parameters(int run_id, Parameters &pars)
  {
-	 return file_stor.get_parameters(run_id); 
+	bool success = false;
+	int status = file_stor.get_parameters(run_id, pars); 
+	if (status > 0) success = true; 
+        return success;
  }
 
-vector<double> RunManagerAbstract::get_observations_vec(int run_id)
+bool RunManagerAbstract::get_observations_vec(int run_id, vector<double> &data_vec)
 {
-	return file_stor.get_observations_vec(run_id);
+	bool success = false;
+	int status = file_stor.get_observations_vec(run_id, data_vec);
+	if (status > 0) success = true; 
+	return success;
 }
 
  Observations RunManagerAbstract::get_obs_template(double value) const

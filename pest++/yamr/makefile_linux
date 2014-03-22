@@ -1,6 +1,6 @@
 CXX := g++
 CC := g++
-CFLAGS := -g -c -std=c++0x 
+CFLAGS := -g -c -std=c++0x -Wextra -Wall -Wswitch-enum -Wunreachable-code
 INCLUDES := -I../ -I../iopp/iopp
 
 OUT = librunmanager.a

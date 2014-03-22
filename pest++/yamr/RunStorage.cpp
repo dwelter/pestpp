@@ -286,40 +286,30 @@ void RunStorage::get_info(int run_id, int &run_status, string &info_txt, double 
 	info_txt = info_txt_buf.data();
 }
 
-int RunStorage::get_run(int run_id, Parameters *pars, Observations *obs, string &info_txt, double &info_value)
+int RunStorage::get_run(int run_id, Parameters &pars, Observations &obs, string &info_txt, double &info_value, bool clear_old)
 {
-
-	std::int8_t  r_status;
-	vector<char> info_txt_buf;
-	info_txt_buf.resize(info_txt_length, '\0');
-
-	size_t n_par = par_names.size();
-	size_t n_obs = obs_names.size();
 	vector<double> par_data;
 	vector<double> obs_data;
-	par_data.resize(n_par);
-	obs_data.resize(n_obs);
 
-	check_rec_id(run_id);
-	
-	buf_stream.seekg(get_stream_pos(run_id), ios_base::beg);
-	buf_stream.read(reinterpret_cast<char*>(&r_status), sizeof(r_status));
-	buf_stream.read(reinterpret_cast<char*>(&info_txt_buf[0]), sizeof(char)*info_txt_length);
-	buf_stream.read(reinterpret_cast<char*>(&info_value), sizeof(double));
-	buf_stream.read(reinterpret_cast<char*>(&par_data[0]), n_par * sizeof(double));
-	buf_stream.read(reinterpret_cast<char*>(&obs_data[0]), n_obs * sizeof(double));
-	pars->update(par_names, par_data);
-	obs->update(obs_names, obs_data);
-	int status = r_status;
-	info_txt = info_txt_buf.data();
+	int status = get_run(run_id, par_data, obs_data, info_txt, info_value);
+	if (clear_old)
+	{
+	  pars.update(par_names, par_data);
+	  obs.update(obs_names, obs_data);
+	}
+	else
+	{
+	  pars.update_without_clear(par_names, par_data);
+	  obs.update_without_clear(obs_names, obs_data);
+	}
 	return status;
 }
 
-int RunStorage::get_run(int run_id, Parameters *pars, Observations *obs)
+int RunStorage::get_run(int run_id, Parameters &pars, Observations &obs, bool clear_old)
 {
 	string info_txt;
 	double info_value;
-	return get_run(run_id, pars, obs, info_txt, info_value);
+	return get_run(run_id, pars, obs, info_txt, info_value, clear_old);
 }
 
 int RunStorage::get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs, string &info_txt, double &info_value)
@@ -356,6 +346,38 @@ int RunStorage::get_run(int run_id, double *pars, size_t npars, double *obs, siz
 	return status;
 }
 
+int RunStorage::get_run(int run_id, vector<double> &pars_vec, vector<double> &obs_vec, string &info_txt, double &info_value)
+{
+	std::int8_t  r_status;
+	vector<char> info_txt_buf;
+	info_txt_buf.resize(info_txt_length, '\0');
+
+	size_t n_par = par_names.size();
+	size_t n_obs = obs_names.size();
+      
+	pars_vec.resize(n_par);
+	obs_vec.resize(n_obs);
+
+	check_rec_id(run_id);
+	
+	buf_stream.seekg(get_stream_pos(run_id), ios_base::beg);
+	buf_stream.read(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	buf_stream.read(reinterpret_cast<char*>(&info_txt_buf[0]), sizeof(char)*info_txt_length);
+	buf_stream.read(reinterpret_cast<char*>(&info_value), sizeof(double));
+	buf_stream.read(reinterpret_cast<char*>(&pars_vec[0]), n_par * sizeof(double));
+	buf_stream.read(reinterpret_cast<char*>(&obs_vec[0]), n_obs * sizeof(double));
+	int status = r_status;
+	info_txt = info_txt_buf.data();
+	return status;
+}
+
+int RunStorage::get_run(int run_id, vector<double> &pars_vec, vector<double> &obs_vec)
+{
+	string info_txt;
+	double info_value;
+	return get_run(run_id, pars_vec, obs_vec, info_txt, info_value);
+}
+
 int RunStorage::get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs)
 {
 	string info_txt;
@@ -376,9 +398,12 @@ vector<char> RunStorage::get_serial_pars(int run_id)
 	return serial_data;
 }
 
-Parameters RunStorage::get_parameters(int run_id)
+int  RunStorage::get_parameters(int run_id, Parameters &pars)
 {
 	std::int8_t r_status;
+	vector<char> info_txt_buf;
+	info_txt_buf.resize(info_txt_length, '\0');
+	double info_value;
 
 	check_rec_id(run_id);
 
@@ -386,28 +411,37 @@ Parameters RunStorage::get_parameters(int run_id)
 	vector<double> par_data;
 	par_data.resize(n_par);
 	buf_stream.seekg(get_stream_pos(run_id), ios_base::beg);
-	buf_stream.seekg(sizeof(r_status)+sizeof(char)*info_txt_length+sizeof(double), ios_base::cur);
+	buf_stream.read(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	buf_stream.read(reinterpret_cast<char*>(&info_txt_buf[0]), sizeof(char)*info_txt_length);
+	buf_stream.read(reinterpret_cast<char*>(&info_value), sizeof(double));
+
 	buf_stream.read(reinterpret_cast<char*>(par_data.data()), n_par*sizeof(double));
-	Parameters pars;
 	pars.update(par_names, par_data);
-	return pars;
+	int status = r_status;
+	return status;
 }
 
 
-vector<double> RunStorage::get_observations_vec(int run_id)
+int  RunStorage::get_observations_vec(int run_id, vector<double> &obs_data)
 {
 	std::int8_t r_status;
+	vector<char> info_txt_buf;
+	info_txt_buf.resize(info_txt_length, '\0');
+	double info_value;
 
 	check_rec_id(run_id);
 
 	size_t n_par = par_names.size();
 	size_t n_obs = obs_names.size();
-	vector<double> obs_data;
 	obs_data.resize(n_obs);
 	buf_stream.seekg(get_stream_pos(run_id), ios_base::beg);
-	buf_stream.seekg(sizeof(r_status)+sizeof(char)*info_txt_length + sizeof(double)+n_par*sizeof(double), ios_base::cur);
+	buf_stream.read(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	buf_stream.read(reinterpret_cast<char*>(&info_txt_buf[0]), sizeof(char)*info_txt_length);
+	buf_stream.read(reinterpret_cast<char*>(&info_value), sizeof(double));
+	buf_stream.seekg(n_par*sizeof(double), ios_base::cur);
 	buf_stream.read(reinterpret_cast<char*>(obs_data.data()), n_obs*sizeof(double));
-	return obs_data;
+	int status = r_status;
+	return status;
 }
 
 void RunStorage::free_memory()

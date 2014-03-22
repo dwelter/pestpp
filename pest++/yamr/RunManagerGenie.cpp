@@ -87,7 +87,8 @@ void RunManagerGenie::run()
 
 	for (int i_run : run_id_vec)
 	{
-		 Parameters tmp_pars = file_stor.get_parameters(i_run);
+	         Parameters tmp_pars;
+	         file_stor.get_parameters(i_run, tmp_pars);
 		 vector<double> tmp_vec = tmp_pars.get_data_vec(par_name_vec);
 		 par_val.insert(par_val.end(), tmp_vec.begin(), tmp_vec.end());
 	}

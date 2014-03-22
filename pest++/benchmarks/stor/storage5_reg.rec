@@ -21,7 +21,7 @@ OPTIMISATION ITERATION NUMBER: 1
 
     Number of terms in the jacobian equal to zero: 8/36 (22%)
 
-    Summary of upgrade vectors:
+    Summary of upgrade runs:
       Marquardt Lambda = 0.10; length = 1.90;  phi = 70522.3 (38.65%)
       Marquardt Lambda = 1.00; length = 1.88;  phi = 69000.3 (37.82%)
       Marquardt Lambda = 10.00; length = 1.71;  phi = 54358.2 (29.79%)
@@ -199,7 +199,7 @@ OPTIMISATION ITERATION NUMBER: 5
 
     Number of terms in the jacobian equal to zero: 4/36 (11%)
 
-    Summary of upgrade vectors:
+    Summary of upgrade runs:
       Marquardt Lambda = 0.10; length = 0.00;  phi = 6.87559 (100.00%)
       Marquardt Lambda = 1.00; length = 0.00;  phi = 6.87559 (100.00%)
       Marquardt Lambda = 10.00; length = 0.00;  phi = 6.87563 (100.00%)
