@@ -575,14 +575,11 @@ ParameterGroupInfo TranSVD::build_par_group_info(const ParameterGroupInfo &base_
 	double max_val;
 	ParameterGroupInfo pg_info;
 	stringstream grp_name;
-
 	for (int i_sup=0, n_sup=super_parameter_names.size(); i_sup < n_sup; ++i_sup)
 	{
 		get_MatrixXd_row_abs_max(Vt, i_sup, &max_col, &max_val);
-		//dew clean up
 		derinc_par = base_pg_info.get_group_rec_ptr(base_parameter_names[max_col])->derinc;
-		derinc_sup = derinc_par / (abs(max_val)*Sigma(i_sup));
-		derinc_sup = 0.015;
+		derinc_sup = .01;
 		grp_name.str("");
 		grp_name << "g_" << super_parameter_names[i_sup];
 		ParameterGroupRec sup_rec(grp_name.str(), "ABSOLUTE", derinc_sup, 0.0, "SWITCH", 2.0, "PARABOLIC");

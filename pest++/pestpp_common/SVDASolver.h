@@ -33,13 +33,17 @@
 class SVDASolver : public SVDSolver
 {
 public:
-	SVDASolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_par_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
+	SVDASolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_base_parameter_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
-		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, const Regularization *_regul_scheme, int _max_freeze_iter, OutputFileWriter &_output_file_writer, RestartController &_restart_controller);
+		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, const Regularization *_regul_scheme, 
+		int _max_freeze_iter, OutputFileWriter &_output_file_writer, RestartController &_restart_controller);
 	virtual Parameters limit_parameters_ip(const Parameters &init_numeric_pars, Parameters &upgrade_numeric_pars);
 	void iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs=false);
 	virtual const string &get_description(){return description;}
+	virtual ParameterGroupInfo get_parameter_group_info() const { return super_parameter_group_info; }
 	~SVDASolver(void);
+private:
+	ParameterGroupInfo super_parameter_group_info;
 };
 
 

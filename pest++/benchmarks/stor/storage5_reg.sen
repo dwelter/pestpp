@@ -9,31 +9,31 @@
 
  OPTIMISATION ITERATION NO. 2   ----->
  Parameter name    Group        Current value        Sensitivity
-   sup_1           g_sup_1      10.0000000000        42.0206690283       
-   sup_2           g_sup_2      10.0000000000        9.94843220614       
+   sup_1           g_sup_1      10.0000000000        42.2376753082       
+   sup_2           g_sup_2      10.0000000000        9.95656933635       
 
 
  OPTIMISATION ITERATION NO. 3   ----->
  Parameter name    Group        Current value        Sensitivity
-   sup_1           g_sup_1      9.76840736322        63.2965777157       
-   sup_2           g_sup_2      10.1467119903        16.7868418126       
+   sup_1           g_sup_1      9.76949882389        63.4869695995       
+   sup_2           g_sup_2      10.1457433744        16.7053437605       
 
 
  OPTIMISATION ITERATION NO. 4   ----->
  Parameter name    Group        Current value        Sensitivity
-   sup_1           g_sup_1      9.78265099865        61.8510289318       
-   sup_2           g_sup_2      10.1374583341        16.0723146441       
+   sup_1           g_sup_1      9.78259051053        62.1485479515       
+   sup_2           g_sup_2      10.1373531412        16.0540674561       
 
 
  OPTIMISATION ITERATION NO. 5   ----->
  Parameter name    Group        Current value        Sensitivity
-   COND            COND         -2.99999131420       62.3462136228       
-   SCOEFF          SCOEFF       -0.699197849595      16.6343631964       
+   COND            COND         -2.99999174848       62.3453059674       
+   SCOEFF          SCOEFF       -0.699199154467      16.6345776361       
 
 
  OPTIMISATION ITERATION NO. 6   ----->
  Parameter name    Group        Current value        Sensitivity
-   sup_1           g_sup_1      10.0000000000        61.9871978372       
-   sup_2           g_sup_2      10.0000000000        15.5973842074       
+   sup_1           g_sup_1      10.0000000000        62.2810663410       
+   sup_2           g_sup_2      10.0000000000        15.5759036846       
 
 

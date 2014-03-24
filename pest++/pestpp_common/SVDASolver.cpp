@@ -36,10 +36,11 @@ using namespace std;
 using namespace pest_utils;
 using namespace Eigen;
 
-SVDASolver::SVDASolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_par_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
-		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
-		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, const Regularization *_regul_scheme, int _max_freeze_iter, OutputFileWriter &_output_file_writer, RestartController &_restart_controller)
-		: SVDSolver(_ctl_info, _svd_info, _par_group_info_ptr, _ctl_par_info_ptr, _obs_info, 
+SVDASolver::SVDASolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_base_parameter_group_info_ptr, 
+	const ParameterInfo *_ctl_par_info_ptr, const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
+	const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, const Regularization *_regul_scheme, int _max_freeze_iter,
+	OutputFileWriter &_output_file_writer, RestartController &_restart_controller)
+	: SVDSolver(_ctl_info, _svd_info, _base_parameter_group_info_ptr, _ctl_par_info_ptr, _obs_info,
 		_file_manager, _observations, _obj_func, _par_transform, _prior_info_ptr, _jacobian, 
 		_regul_scheme, _max_freeze_iter, _output_file_writer, _restart_controller, "super parameter solution")
 {
@@ -136,20 +137,24 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		par_transform.get_svda_ptr()->update_add_frozen_pars(base_run.get_frozen_ctl_pars());
 		par_transform.get_svda_fixed_ptr()->reset(par_transform.get_svda_ptr()->get_frozen_derivative_pars());
 		// need to reset parameters and the numeric parameters changed when the SVDA transformation was changed above
+		//DEW_change
 		base_run.set_ctl_parameters(base_run.get_ctl_pars());
-		numeric_par_names_vec = par_transform.ctl2numeric_cp(base_run.get_ctl_pars()).get_keys();
+		Parameters numeric_pars = par_transform.ctl2numeric_cp(base_run.get_ctl_pars());
+		numeric_par_names_vec = numeric_pars.get_keys();
+		Parameters derivative_pars = par_transform.ctl2derivative_cp(base_run.get_ctl_pars());
 		set<string> out_of_bound_pars;
 		if (!base_run.obs_valid() || calc_init_obs == true) {
 		 calc_init_obs = true;
 		}
+		super_parameter_group_info = par_transform.get_svda_ptr()->build_par_group_info(*par_group_info_ptr);
 		bool success = jacobian.build_runs(base_run, numeric_par_names_vec, par_transform,
-			*par_group_info_ptr, *ctl_par_info_ptr,run_manager, out_of_bound_pars,
+			super_parameter_group_info, *ctl_par_info_ptr, run_manager, out_of_bound_pars,
 			phiredswh_flag, calc_init_obs);
 
 		jacobian.make_runs(run_manager);
 
 		bool success2 = jacobian.process_runs(numeric_par_names_vec, par_transform,
-			*par_group_info_ptr, *ctl_par_info_ptr,run_manager,  *prior_info_ptr, out_of_bound_pars,
+			super_parameter_group_info, *ctl_par_info_ptr, run_manager, *prior_info_ptr, out_of_bound_pars,
 			phiredswh_flag, calc_init_obs);
 
 		success = success && success2;

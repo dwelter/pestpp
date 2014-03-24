@@ -174,7 +174,7 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 				*(par_transform.get_scale_ptr()));
 		file_manager.close_file(filename.str());
 		// sen file for this iteration
-		output_file_writer.append_sen(file_manager.sen_ofstream(), global_iter_num, jacobian, *(cur_solution.get_obj_func_ptr()), *par_group_info_ptr);
+		output_file_writer.append_sen(file_manager.sen_ofstream(), global_iter_num, jacobian, *(cur_solution.get_obj_func_ptr()), get_parameter_group_info());
 		if (save_nextjac) {
 			jacobian.save();
 		}

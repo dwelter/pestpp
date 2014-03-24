@@ -50,7 +50,7 @@ using namespace pest_utils;
 
 int main(int argc, char* argv[])
 {
-	string version = "2.1.0";
+	string version = "2.2.0";
 	cout << endl << endl;
 	cout << "             PEST++ Version " << version << endl << endl;
 	cout << "                 by Dave Welter" << endl;
@@ -273,8 +273,6 @@ int main(int argc, char* argv[])
 	trans_svda.add_custom_tran_seq(string("svda_derv2basenumeric") ,trans_svda.get_ctl2derivative_tranformations());
 	trans_svda.push_back_derivative2numeric(tran_svd);
 
-	ParameterGroupInfo sup_group_info;
-	//
 	ControlInfo svd_control_info = pest_scenario.get_control_info();
 	svd_control_info.relparmax = 0.1;
 	// Start Solution iterations
@@ -358,8 +356,7 @@ int main(int argc, char* argv[])
 			QSqrtMatrix Q_sqrt(&(pest_scenario.get_ctl_observation_info()), &pest_scenario.get_prior_info(), 1.0);
 			(*tran_svd).update_reset_frozen_pars(*base_jacobian_ptr, Q_sqrt, base_numeric_pars, max_n_super, super_eigthres, pars, nonregul_obs, cur_run.get_frozen_ctl_pars());
 			(*tr_svda_fixed).reset((*tran_svd).get_frozen_derivative_pars());
-			sup_group_info = (*tran_svd).build_par_group_info(pest_scenario.get_base_group_info());
-			SVDASolver super_svd(&svd_control_info, pest_scenario.get_svd_info(), &sup_group_info, &pest_scenario.get_ctl_parameter_info(),
+				SVDASolver super_svd(&svd_control_info, pest_scenario.get_svd_info(), &pest_scenario.get_base_group_info(), &pest_scenario.get_ctl_parameter_info(),
 				&pest_scenario.get_ctl_observation_info(),  file_manager, &pest_scenario.get_ctl_observations(), &obj_func,
 				trans_svda, &pest_scenario.get_prior_info(), *super_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(),
 				pest_scenario.get_pestpp_options().get_max_freeze_iter(), output_file_writer, restart_ctl);

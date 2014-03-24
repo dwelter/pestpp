@@ -10,7 +10,7 @@ restart  estimation
     1     1     1
 * singular value decomposition
 1
-13 1.0E-7 
+5 1.0E-7 
 1
 * parameter groups
 fsp      relative 0.01  0.0  switch  2.0 parabolic
@@ -74,8 +74,8 @@ rsgSite4.tpl  rsgSite4.txt
 rsgSite4.ins  rsgSite4.out
 * prior information
 ++# PEST++ optional input
-++ max_n_super(6) super_eigthres(1.0e-6)
-++ n_iter_base(1) n_iter_super(3)
+++ max_n_super(5) super_eigthres(1.0e-8)
+++ n_iter_base(1) n_iter_super(2)
 ++# SVD_PACK(PROPACK)
 ++# AUTO_NORM(4)
 
