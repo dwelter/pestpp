@@ -1,5 +1,6 @@
-﻿Build started 3/19/2014 8:27:07 PM.
+﻿Build started 3/24/2014 7:38:19 PM.
      1>Project "C:\Users\Dave\Documents\Visual Studio 2013\Projects\pestpp\pest++\iopp\iopp\iopp.vcxproj" on node 2 (Rebuild target(s)).
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.CppClean.targets(76,5): warning : The process cannot access the file 'c:\users\dave\documents\visual studio 2013\projects\pestpp\pest++\iopp\iopp\release\iopp.obj' because it is being used by another process.
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /MT /GS /Gy /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt iopp.cpp
          iopp.cpp
@@ -26,4 +27,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:04.90
+Time Elapsed 00:00:01.58
