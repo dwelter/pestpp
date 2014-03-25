@@ -101,6 +101,25 @@ Parameters SVDASolver::limit_parameters_ip(const Parameters &init_numeric_pars, 
 	return freeze_derivative_par;
 }
 
+void SVDASolver::calc_upgrade_vec(double i_lambda, vector<Parameters> &frozen_derivative_par_vec, QSqrtMatrix &Q_sqrt, VectorXd &residuals_vec,
+	vector<string> &numeric_par_names_vec, vector<string> &obs_names_vec, const Parameters &base_run_numeric_pars,
+	Upgrade &ml_upgrade, Parameters &new_pars, MarquardtMatrix marquardt_type)
+{
+	ml_upgrade = calc_lambda_upgrade_vec(jacobian, Q_sqrt, residuals_vec, numeric_par_names_vec, obs_names_vec,
+		base_run_numeric_pars, Parameters(), i_lambda, marquardt_type);
+	//Start out with new_pars as numeric parameters
+	new_pars = apply_upgrade(base_run_numeric_pars, ml_upgrade, 1.0);
+	Parameters new_frozen_pars = limit_parameters_ip(base_run_numeric_pars, new_pars);
+	frozen_derivative_par_vec.push_back(new_frozen_pars);
+	//transform new_par to derivative parameters
+	par_transform.numeric2derivative_ip(new_pars);
+	// impose frozen parameters
+	for (auto &i : frozen_derivative_par_vec.back())
+	{
+		new_pars[i.first] = i.second;
+	}
+
+}
 void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs)
 {
 	ostream &fout_restart = file_manager.get_ofstream("rst");
@@ -226,22 +245,34 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		message << "  computing upgrade vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
 		std::cout << message.str();
 
-		ml_upgrade = calc_lambda_upgrade_vec(jacobian, Q_sqrt, residuals_vec, numeric_par_names_vec, obs_names_vec,
-			base_numeric_pars, Parameters(), i_lambda);
-		//Start out with new_pars as numeric parameters
-		Parameters new_pars = apply_upgrade(base_numeric_pars, ml_upgrade, 1.0);
-		Parameters new_frozen_pars = limit_parameters_ip(base_numeric_pars, new_pars);
-		frozen_derivative_par_vec.push_back(new_frozen_pars);
-                //transform new_par to derivative parameters
-		par_transform.numeric2derivative_ip(new_pars);
-		// impose frozen parameters
-		for (auto &i : frozen_derivative_par_vec.back())
-		{
-		  new_pars[i.first] = i.second;
-		}
+		Parameters new_pars;
+
+		calc_upgrade_vec(i_lambda, frozen_derivative_par_vec, Q_sqrt, residuals_vec,
+			numeric_par_names_vec, obs_names_vec, base_numeric_pars,
+			ml_upgrade, new_pars, MarquardtMatrix::IDENT);
+
 		//transform new_pars to model parameters
 		par_transform.derivative2model_ip(new_pars);
-		run_manager.add_run(new_pars);
+		run_manager.add_run(new_pars, "IDEN", i_lambda);
+		magnitude_vec.push_back(ml_upgrade.norm);
+	}
+
+	for (double i_lambda : lambda_vec)
+	{
+		std::cout << string(message.str().size(), '\b');
+		message.str("");
+		message << "  computing upgrade vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
+		std::cout << message.str();
+
+		Parameters new_pars;
+
+		calc_upgrade_vec(i_lambda, frozen_derivative_par_vec, Q_sqrt, residuals_vec,
+			numeric_par_names_vec, obs_names_vec, base_numeric_pars,
+			ml_upgrade, new_pars, MarquardtMatrix::JTQJ);
+
+		//transform new_pars to model parameters
+		par_transform.derivative2model_ip(new_pars);
+		run_manager.add_run(new_pars, "DIAG", i_lambda);
 		magnitude_vec.push_back(ml_upgrade.norm);
 	}
 
@@ -270,14 +301,17 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		ModelRun upgrade_run(base_run);
 		Parameters tmp_pars;
 		Observations tmp_obs;
-		bool success = run_manager.get_run(i, tmp_pars, tmp_obs);
+		string lambda_type;
+		double i_lambda;
+		bool success = run_manager.get_run(i, tmp_pars, tmp_obs, lambda_type, i_lambda);
 		if (success)
 		{
 			par_transform.model2ctl_ip(tmp_pars);
 			upgrade_run.update_ctl(tmp_pars, tmp_obs);
 			streamsize n_prec = os.precision(2);
-			os << "      Marquardt Lambda = ";
-			os << setiosflags(ios::fixed)<< setw(8) << lambda_vec[i];
+			os << "      Lambda = ";
+			os << setiosflags(ios::fixed) << setw(8) << i_lambda;
+			os << "; Type: " << setw(4) << lambda_type;
 			os << ";   length = " << magnitude_vec[i];
 			os.precision(n_prec);
 			os.unsetf(ios_base::floatfield); // reset all flags to default
@@ -291,14 +325,14 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 				best_run_updated_flag = true;
 				best_upgrade_run = upgrade_run;
 				new_frozen_par_ptr = &frozen_derivative_par_vec[i];
-				best_lambda = lambda_vec[i];
+				best_lambda = i_lambda;
 			}
 		}
 		else
 		{
 			streamsize n_prec = os.precision(2);
 			os << "     Marquardt Lambda = ";
-			os << setiosflags(ios::fixed)<< setw(8) << lambda_vec[i];
+			os << setiosflags(ios::fixed) << setw(8) << i_lambda;
 			os << ";   length = " << magnitude_vec[i];
 			os.precision(n_prec);
 			os.unsetf(ios_base::floatfield); // reset all flags to default

@@ -42,6 +42,7 @@ class SVDPackage;
 
 class SVDSolver
 {
+protected:
 	enum class LimitType {NONE, LBND, UBND, REL, FACT};
 	enum class MarquardtMatrix {IDENT, JTQJ};
 public:
@@ -97,6 +98,9 @@ protected:
 	virtual void iteration_update_and_report(ostream &os, ModelRun &upgrade, TerminationController &termination_ctl); 
 	void param_change_stats(double p_old, double p_new, bool &have_fac, double &fac_change, bool &have_rel,
 		double &rel_change);
+	void calc_upgrade_vec(double i_lambda, Parameters &frozen_derivative_pars, QSqrtMatrix &Q_sqrt, Eigen::VectorXd &residuals_vec,
+		vector<string> &par_name_vec, vector<string> &obs_names_vec, const Parameters &base_run_numeric_pars, LimitType &limit_type,
+		Upgrade &ml_upgrade, Parameters &new_model_pars, MarquardtMatrix marquardt_type);
 	Upgrade calc_lambda_upgrade_vec(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
 	const Eigen::VectorXd &Residuals, const vector<string> &par_name_vec, const vector<string> &obs_name_vec,
 					const Parameters &base_numeric_pars, const Parameters &freeze_numeric_pars,

@@ -38,6 +38,9 @@ public:
 		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, const Regularization *_regul_scheme, 
 		int _max_freeze_iter, OutputFileWriter &_output_file_writer, RestartController &_restart_controller);
 	virtual Parameters limit_parameters_ip(const Parameters &init_numeric_pars, Parameters &upgrade_numeric_pars);
+	void calc_upgrade_vec(double i_lambda, vector<Parameters> &frozen_derivative_par_vec, QSqrtMatrix &Q_sqrt, Eigen::VectorXd &residuals_vec,
+		vector<string> &numeric_par_names_vec, vector<string> &obs_names_vec, const Parameters &base_run_numeric_pars,
+		Upgrade &ml_upgrade, Parameters &new_model_pars, MarquardtMatrix marquardt_type);
 	void iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs=false);
 	virtual const string &get_description(){return description;}
 	virtual ParameterGroupInfo get_parameter_group_info() const { return super_parameter_group_info; }

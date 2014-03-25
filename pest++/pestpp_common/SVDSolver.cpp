@@ -307,10 +307,62 @@ SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, 
 	return upgrade;
 }
 
+void SVDSolver::calc_upgrade_vec(double i_lambda, Parameters &frozen_derivative_pars, QSqrtMatrix &Q_sqrt, VectorXd &residuals_vec,
+	vector<string> &par_name_vec, vector<string> &obs_names_vec, const Parameters &base_run_numeric_pars, LimitType &limit_type,
+	Upgrade &ml_upgrade, Parameters &new_model_pars, MarquardtMatrix marquardt_type)
+{
+	Parameters new_numeric_pars;
+	for (int i_freeze = 1;; ++i_freeze)
+	{
+		Parameters new_frozen_derivative_pars;
+		Parameters frozen_numeric_pars = par_transform.derivative2numeric_cp(frozen_derivative_pars);
+		// need to remove parameters frozen due to failed jacobian runs when calling calc_lambda_upgrade_vec
+		ml_upgrade = calc_lambda_upgrade_vec(jacobian, Q_sqrt, residuals_vec, par_name_vec, obs_names_vec,
+			base_run_numeric_pars, frozen_numeric_pars, i_lambda, marquardt_type);
+		new_numeric_pars = apply_upgrade(base_run_numeric_pars, ml_upgrade, 1.0);
+		if (i_freeze < max_freeze_iter)
+		{
+			new_frozen_derivative_pars = limit_parameters_ip(base_run_numeric_pars, new_numeric_pars, limit_type, frozen_numeric_pars);
+		}
+		else
+		{
+			new_frozen_derivative_pars = limit_parameters_freeze_all_ip(base_run_numeric_pars, new_numeric_pars, frozen_numeric_pars);
+		}
+
+		if (new_frozen_derivative_pars.size() > 0 && (limit_type != LimitType::FACT || limit_type != LimitType::REL))
+		{
+			frozen_derivative_pars.insert(new_frozen_derivative_pars.begin(), new_frozen_derivative_pars.end());
+		}
+		else
+		{
+			break;
+		}
+		update_upgrade(ml_upgrade, base_run_numeric_pars, new_numeric_pars, frozen_numeric_pars);
+		if (limit_type != LimitType::UBND && limit_type != LimitType::LBND) break;
+		if (frozen_numeric_pars.size() == new_numeric_pars.size()) break; // everything is frozen
+	}
+	//add run to run manager
+	new_model_pars = par_transform.numeric2ctl_cp(new_numeric_pars);
+	// make sure these are all in bounds
+	for (auto &ipar : new_model_pars)
+	{
+		const string &name = ipar.first;
+		const ParameterRec *p_info = ctl_par_info_ptr->get_parameter_rec_ptr(name);
+		if (ipar.second > p_info->ubnd)
+		{
+			ipar.second = p_info->ubnd;
+		}
+		// Check parameter lower bound
+		else if (ipar.second < p_info->lbnd)
+		{
+			ipar.second = p_info->lbnd;
+		}
+	}
+}
+
 void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs)
 {
 	ostream &os = file_manager.rec_ofstream();
-	VectorXd residuals_vec;
 	set<string> out_ofbound_pars;
 
 	vector<string> obs_names_vec = cur_solution.get_obs_template().get_keys();
@@ -421,18 +473,14 @@ restart_resume_jacobian_runs:
 	// build weights matrix sqrt(Q)
 	QSqrtMatrix Q_sqrt(obs_info_ptr, prior_info_ptr, tikhonov_weight);
 	//build residuals vector
-	residuals_vec = -1.0 * stlvec_2_egienvec(cur_solution.get_residuals_vec(obs_names_vec));
+	VectorXd residuals_vec = -1.0 * stlvec_2_egienvec(cur_solution.get_residuals_vec(obs_names_vec));
 
 	//Build model runs
 	run_manager.reinitialize(file_manager.build_filename("rnu"));
-	vector<double> rot_fac_vec;
-	vector<double> rot_angle_vec;
 	vector<double> magnitude_vec;
 	vector<Parameters> frozen_par_vec;
 
 	//Marquardt Lambda Update Vector
-	Parameters frozen_derivative_pars;
-	Upgrade ml_upgrade;
 	LimitType limit_type = LimitType::NONE;
 	const Parameters &base_run_numeric_pars =  par_transform.ctl2numeric_cp(cur_solution.get_ctl_pars());
 	vector<string> par_name_vec = base_run_numeric_pars.get_keys();
@@ -453,67 +501,48 @@ restart_resume_jacobian_runs:
 		std::cout << string(message.str().size(), '\b');
 		message.str("");
 		message << "  computing upgrade vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
-
 		std::cout << message.str();
 		
-		Parameters new_numeric_pars;
-		frozen_derivative_pars = failed_jac_pars;
-
 		//Compute automatic regularization weight adjustments here
 
-		for (int i_freeze=1; ; ++i_freeze)
-		{
-			Parameters new_frozen_derivative_pars;
-			Parameters frozen_numeric_pars = par_transform.derivative2numeric_cp(frozen_derivative_pars);
-			// need to remove parameters frozen due to failed jacobian runs when calling calc_lambda_upgrade_vec
-			ml_upgrade = calc_lambda_upgrade_vec(jacobian, Q_sqrt, residuals_vec, par_name_vec, obs_names_vec,
-				base_run_numeric_pars, frozen_numeric_pars, i_lambda);
-			new_numeric_pars = apply_upgrade(base_run_numeric_pars, ml_upgrade, 1.0);
-			if (i_freeze < max_freeze_iter)
-			{
-				new_frozen_derivative_pars = limit_parameters_ip(base_run_numeric_pars, new_numeric_pars, limit_type, frozen_numeric_pars);
-			}
-			else
-			{
-				new_frozen_derivative_pars = limit_parameters_freeze_all_ip(base_run_numeric_pars, new_numeric_pars, frozen_numeric_pars);
-			}
+		Parameters frozen_derivative_pars = failed_jac_pars;
+		Parameters new_model_pars;
+		Upgrade ml_upgrade;
+		//Compute automatic regularization weight adjustments here
 
-			if (new_frozen_derivative_pars.size() > 0 && (limit_type != LimitType::FACT || limit_type != LimitType::REL ) )
-			{
-				frozen_derivative_pars.insert(new_frozen_derivative_pars.begin(), new_frozen_derivative_pars.end());
-			}
-			else
-			{
-				break;
-			}
-			update_upgrade(ml_upgrade, base_run_numeric_pars, new_numeric_pars, frozen_numeric_pars);
-			if (limit_type != LimitType::UBND && limit_type != LimitType::LBND) break;
-			if (frozen_numeric_pars.size() == new_numeric_pars.size()) break; // everything is frozen
-		}
-		//add run to run manager
-		Parameters new_model_pars = par_transform.numeric2ctl_cp(new_numeric_pars);
-		// make sure these are all in bounds
-		for (auto &ipar :  new_model_pars)
-		{
-			const string &name = ipar.first;
-			const ParameterRec *p_info = ctl_par_info_ptr->get_parameter_rec_ptr(name);
-			if(ipar.second > p_info->ubnd)
-			{
-				ipar.second = p_info->ubnd;
-			}
-			// Check parameter lower bound
-			else if(ipar.second < p_info->lbnd)
-			{
-				ipar.second = p_info->lbnd;
-			}
-		}
+		calc_upgrade_vec(i_lambda, frozen_derivative_pars, Q_sqrt, residuals_vec,
+			par_name_vec, obs_names_vec, base_run_numeric_pars, limit_type,
+			ml_upgrade, new_model_pars, MarquardtMatrix::IDENT);
+
 		par_transform.ctl2model_ip(new_model_pars);
-		run_manager.add_run(new_model_pars);
-		rot_fac_vec.push_back(0);
-		rot_angle_vec.push_back(0);
+		run_manager.add_run(new_model_pars, "IDEN", i_lambda);
 		magnitude_vec.push_back(ml_upgrade.norm);
 		frozen_par_vec.push_back(frozen_derivative_pars);
 	}
+	for (double i_lambda : lambda_vec)
+	{
+		std::cout << string(message.str().size(), '\b');
+		message.str("");
+		message << "  computing upgrade vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
+		std::cout << message.str();
+
+		//Compute automatic regularization weight adjustments here
+
+		Parameters frozen_derivative_pars = failed_jac_pars;
+		Parameters new_model_pars;
+		Upgrade ml_upgrade;
+		//Compute automatic regularization weight adjustments here
+
+		calc_upgrade_vec(i_lambda, frozen_derivative_pars, Q_sqrt, residuals_vec,
+			par_name_vec, obs_names_vec, base_run_numeric_pars, limit_type,
+			ml_upgrade, new_model_pars, MarquardtMatrix::JTQJ);
+
+		par_transform.ctl2model_ip(new_model_pars);
+		run_manager.add_run(new_model_pars, "DIAG", i_lambda);
+		magnitude_vec.push_back(ml_upgrade.norm);
+		frozen_par_vec.push_back(frozen_derivative_pars);
+	}
+
 	cout << endl;
 	fout_restart << "upgrade_model_runs_built " << run_manager.get_cur_groupid() << endl;
 	cout << "  performing upgrade vector runs... ";
@@ -536,20 +565,21 @@ restart_resume_jacobian_runs:
 
 	os << "    Summary of upgrade runs:" << endl;
 	for(int i=0; i<run_manager.get_nruns(); ++i) {
-		double rot_fac = rot_fac_vec[i];
 		ModelRun upgrade_run(cur_solution);
 		Parameters tmp_pars;
 		Observations tmp_obs;
-		bool success = run_manager.get_run(i, tmp_pars, tmp_obs);
+		string lambda_type;
+		double i_lambda;
+		bool success = run_manager.get_run(i, tmp_pars, tmp_obs, lambda_type, i_lambda);
 		if (success)
 		{
 			par_transform.model2ctl_ip(tmp_pars);
 			upgrade_run.update_ctl(tmp_pars, tmp_obs);
 			upgrade_run.set_frozen_ctl_parameters(frozen_par_vec[i]);
 			streamsize n_prec = os.precision(2);
-			os << "      Marquardt Lambda = ";
-			os << setiosflags(ios::fixed)<< setw(4) << lambda_vec[i];
-			//os << " (" << rot_angle_vec[i] << " deg)" << "; length = " << magnitude_vec[i];
+			os << "      Lambda = ";
+			os << setiosflags(ios::fixed) << setw(8) << i_lambda;
+			os << "; Type: " << setw(4) << lambda_type;
 			os << "; length = " << magnitude_vec[i];
 			os.precision(n_prec);
 			os.unsetf(ios_base::floatfield); // reset all flags to default
@@ -562,15 +592,15 @@ restart_resume_jacobian_runs:
 			if ( upgrade_run.obs_valid() &&  (!best_run_updated_flag || upgrade_run.get_phi() <  best_upgrade_run.get_phi() )) {
 				best_run_updated_flag = true;
 				best_upgrade_run = upgrade_run;
-				best_lambda = lambda_vec[i];
+				best_lambda = i_lambda;
 			}
 		}
 		else
 		{
 			streamsize n_prec = os.precision(2);
-			os << "      Rotation Factor = ";
-			os << setiosflags(ios::fixed)<< setw(4) << rot_fac;
-			os << " (" << rot_angle_vec[i] << " deg)";
+			os << "      Marquardt Lambda = ";
+			os << setiosflags(ios::fixed) << setw(4) << i_lambda;
+			os << "; length = " << magnitude_vec[i];
 			os.precision(n_prec);
 			os.unsetf(ios_base::floatfield); // reset all flags to default
 			os << ";  run failed" << endl;
