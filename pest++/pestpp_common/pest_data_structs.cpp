@@ -277,6 +277,9 @@ void PestppOptions::parce_line(const string &line)
 		else if (key=="MAX__FREEZE_ITER"){
 			convert_ip(value, max_freeze_iter);
 		}
+		else if (key == "MAT_INV"){
+			if (value == "Q1/2J") mat_inv = Q12J;
+		}
 		else {
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");
 		}

@@ -36,7 +36,7 @@ public:
 	SVDASolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_base_parameter_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, const Regularization *_regul_scheme, 
-		int _max_freeze_iter, OutputFileWriter &_output_file_writer, RestartController &_restart_controller);
+		int _max_freeze_iter, OutputFileWriter &_output_file_writer, RestartController &_restart_controller, SVDSolver::MAT_INV _mat_inv);
 	virtual Parameters limit_parameters_ip(const Parameters &init_numeric_pars, Parameters &upgrade_numeric_pars);
 	void calc_upgrade_vec(double i_lambda, vector<Parameters> &frozen_derivative_par_vec, QSqrtMatrix &Q_sqrt, Eigen::VectorXd &residuals_vec,
 		vector<string> &numeric_par_names_vec, vector<string> &obs_names_vec, const Parameters &base_run_numeric_pars,

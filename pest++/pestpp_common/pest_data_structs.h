@@ -176,12 +176,14 @@ public:
 class PestppOptions {
 public:
 	enum SVD_PACK{EIGEN, PROPACK};
+	enum MAT_INV{Q12J, JTQJ};
 	void parce_line(const string &line);
 	int get_max_n_super() const{return max_n_super;}
 	double get_super_eigthres() const{return super_eigthres;}
 	int get_n_iter_base() const{return n_iter_base;}
 	int get_n_iter_super() const{return n_iter_super;}
 	SVD_PACK get_svd_pack() const {return svd_pack;}
+	MAT_INV get_mat_inv() const { return mat_inv;}
 	double get_auto_norm() const{return auto_norm;}
 	double get_max_freeze_iter() const{return max_freeze_iter;}
 
@@ -190,6 +192,7 @@ public:
 	void set_n_iter_base(int _n_iter_base) {n_iter_base = _n_iter_base;}
 	void set_n_iter_super(int _n_iter_super){n_iter_super = _n_iter_super;}
 	void set_svd_pack(const SVD_PACK _svd_pack=EIGEN) {svd_pack = _svd_pack;}
+	void set_mat_inv(const MAT_INV _mat_inv = JTQJ) { mat_inv = _mat_inv; }
 	void set_auto_norm(double _auto_norm) {auto_norm = _auto_norm;};
 	void set_max_freeze_iter(int _max_freeze_iter){max_freeze_iter = _max_freeze_iter;}
 
@@ -199,6 +202,7 @@ private:
 	int n_iter_base;
 	int n_iter_super;
 	SVD_PACK svd_pack;
+	MAT_INV mat_inv;
 	double auto_norm;
 	int max_freeze_iter;
 };

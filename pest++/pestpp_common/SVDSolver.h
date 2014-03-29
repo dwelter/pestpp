@@ -42,6 +42,8 @@ class SVDPackage;
 
 class SVDSolver
 {
+public:
+	enum class MAT_INV{ Q12J, JTQJ };
 protected:
 	enum class LimitType {NONE, LBND, UBND, REL, FACT};
 	enum class MarquardtMatrix {IDENT, JTQJ};
@@ -49,7 +51,8 @@ public:
 	SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_par_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, 
-		const Regularization *regul_scheme_ptr, int _max_freeze_iter, OutputFileWriter &_output_file_writer, RestartController &_restart_controller, const string &description = "base parameter solution");
+		const Regularization *regul_scheme_ptr, int _max_freeze_iter, OutputFileWriter &_output_file_writer, RestartController &_restart_controller, 
+		SVDSolver::MAT_INV _mat_inv, const string &description = string("base parameter solution"));
 	virtual ModelRun& solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter, ModelRun &cur_run, ModelRun &optimum_run);
 	virtual void iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs=false);
 	ModelRun &cur_model_run() {return cur_solution;}
@@ -66,6 +69,7 @@ protected:
 	};
 
 	SVDPackage *svd_package;
+	MAT_INV mat_inv;
 	const string description;
 	const ControlInfo *ctl_info;
 	SVDInfo svd_info;
@@ -101,18 +105,16 @@ protected:
 	void calc_upgrade_vec(double i_lambda, Parameters &frozen_derivative_pars, QSqrtMatrix &Q_sqrt, Eigen::VectorXd &residuals_vec,
 		vector<string> &obs_names_vec, const Parameters &base_run_numeric_pars, LimitType &limit_type,
 		Parameters &new_model_pars, MarquardtMatrix marquardt_type);
-	void calc_lambda_upgrade_vec(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
+	void calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
 		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
 		const Parameters &base_derivative_pars, const Parameters &freeze_derivative_pars,
 		double lambda, Parameters &derivative_upgrade_pars, Parameters &upgrade_deriv_del_pars,
 		Parameters &grad_deriv_del_pars, MarquardtMatrix marquardt_type);
-//	void calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
-//		const Eigen::VectorXd &Residuals, const vector<string> &par_name_vec, const vector<string> &obs_name_vec,
-//		const Parameters &base_numeric_pars, const Parameters &freeze_numeric_pars,
-//		double lambda, MarquardtMatrix marquardt_type = MarquardtMatrix::IDENT);
-	Upgrade calc_upgrade_vec(const Upgrade &direction, 
+	void calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
 		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
-		const Parameters &base_numeric_pars, const Parameters &freeze_numeric_pars, double scale);
+		const Parameters &base_derivative_pars, const Parameters &freeze_derivative_pars,
+		double lambda, Parameters &derivative_upgrade_pars, Parameters &upgrade_deriv_del_pars,
+		Parameters &grad_deriv_del_pars, MarquardtMatrix marquardt_type);
 	Parameters apply_upgrade(const Parameters &init_numeric_pars,const Upgrade &upgrade, double scale = 1.0);
 	void update_upgrade(Upgrade &upgrade, const Parameters &base_pars, const Parameters &new_pars, const Parameters &frozen_pars);
 	void check_limits(const Parameters &init_derivative_pars, const Parameters &upgrade_derivative_pars,

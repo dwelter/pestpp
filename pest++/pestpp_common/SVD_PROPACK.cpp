@@ -50,6 +50,11 @@ SVD_PROPACK::SVD_PROPACK(int _n_max_sing, double _eign_thres) : SVDPackage("PROP
 
 void SVD_PROPACK::solve_ip(Eigen::SparseMatrix<double>& A, VectorXd &Sigma, Eigen::SparseMatrix<double> &U, Eigen::SparseMatrix<double>& Vt, VectorXd &Sigma_trunc)
 {
+	solve_ip(A, Sigma, U, Vt, Sigma_trunc, eign_thres);
+}
+
+void SVD_PROPACK::solve_ip(Eigen::SparseMatrix<double>& A, VectorXd &Sigma, Eigen::SparseMatrix<double> &U, Eigen::SparseMatrix<double>& Vt, VectorXd &Sigma_trunc, double _eigen_thres)
+{
 	class local_utils {
 		public:
 		static void init_array(double data[], int len, double value = 0.0)
@@ -114,7 +119,7 @@ void SVD_PROPACK::solve_ip(Eigen::SparseMatrix<double>& A, VectorXd &Sigma, Eige
 	int k2 = 0;
 	double eig_ratio = 1.0;
 	int step_size = 50;
-	while (k0<kmax && eig_ratio > eign_thres)
+	while (k0<kmax && eig_ratio > _eigen_thres)
 	{
 		k2 = min(step_size+k0, kmax); // index of eignvlaue and eigenvector to be computed this time
 		DEF_DLANBPRO_SPARCE(&m_rows, &n_cols, &k0, &k2, tmp_u, 
@@ -131,7 +136,7 @@ void SVD_PROPACK::solve_ip(Eigen::SparseMatrix<double>& A, VectorXd &Sigma, Eige
 	for (int i_sing = 0; i_sing < kmax; ++i_sing)
 	{
 		eig_ratio = tmp_b[i_sing] / tmp_b[0];
-		if (eig_ratio > eign_thres)
+		if (eig_ratio > _eigen_thres)
 		{
 			++n_sing_used;
 		}

@@ -45,7 +45,14 @@ double SVDPackage::get_eign_thres()
 	return eign_thres;
 }
 
-void SVD_EIGEN::solve_ip(Eigen::SparseMatrix<double>& A, Eigen::VectorXd &Sigma, Eigen::SparseMatrix<double>& U, Eigen::SparseMatrix<double>& Vt, Eigen::VectorXd &Sigma_trunc)
+void SVD_EIGEN::solve_ip(Eigen::SparseMatrix<double>& A, Eigen::VectorXd &Sigma, Eigen::SparseMatrix<double>& U,
+	Eigen::SparseMatrix<double>& Vt, Eigen::VectorXd &Sigma_trunc)
+{
+	solve_ip(A, Sigma, U, Vt, Sigma_trunc, eign_thres);
+}
+
+void SVD_EIGEN::solve_ip(Eigen::SparseMatrix<double>& A, Eigen::VectorXd &Sigma, Eigen::SparseMatrix<double>& U,
+	Eigen::SparseMatrix<double>& Vt, Eigen::VectorXd &Sigma_trunc,  double _eigen_thres)
 {
 	JacobiSVD<MatrixXd> svd_fac(A,  ComputeThinU |  ComputeThinV);
 	VectorXd Sigma_full = svd_fac.singularValues();
@@ -58,7 +65,7 @@ void SVD_EIGEN::solve_ip(Eigen::SparseMatrix<double>& A, Eigen::VectorXd &Sigma,
 	for (int i_sing = 0; i_sing < Sigma_full.size(); ++i_sing)
 	{
 		eig_ratio = Sigma_full[i_sing] / Sigma_full[0];
-		if (eig_ratio > eign_thres)
+		if (eig_ratio > _eigen_thres)
 		{
 			++num_sing_used;
 		}

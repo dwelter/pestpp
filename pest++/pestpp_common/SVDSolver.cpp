@@ -44,11 +44,11 @@ using namespace Eigen;
 SVDSolver::SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_par_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, 
-		const Regularization *_regul_scheme_ptr, int _max_freeze_iter, OutputFileWriter &_output_file_writer, RestartController &_restart_controller, const string &_description)
+		const Regularization *_regul_scheme_ptr, int _max_freeze_iter, OutputFileWriter &_output_file_writer, RestartController &_restart_controller, SVDSolver::MAT_INV _mat_inv, const string &_description)
 		: ctl_info(_ctl_info), svd_info(_svd_info), par_group_info_ptr(_par_group_info_ptr), ctl_par_info_ptr(_ctl_par_info_ptr), obs_info_ptr(_obs_info), obj_func(_obj_func),
 		  file_manager(_file_manager), observations_ptr(_observations), par_transform(_par_transform),
 		  cur_solution(_obj_func, *_observations), phiredswh_flag(false), save_next_jacobian(true), prior_info_ptr(_prior_info_ptr), jacobian(_jacobian), prev_phi_percent(0.0),
-		  num_no_descent(0), regul_scheme_ptr(_regul_scheme_ptr), max_freeze_iter(_max_freeze_iter), output_file_writer(_output_file_writer), description(_description), best_lambda(20.0), restart_controller(_restart_controller)
+		  num_no_descent(0), regul_scheme_ptr(_regul_scheme_ptr), max_freeze_iter(_max_freeze_iter), output_file_writer(_output_file_writer), mat_inv(_mat_inv), description(_description), best_lambda(20.0), restart_controller(_restart_controller)
 {
 	svd_package = new SVD_EIGEN();
 }
@@ -137,16 +137,21 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 	cur_solution = cur_run;
 	// Start Solution iterations
 	bool save_nextjac = false;
+	string matrix_inv = (mat_inv == MAT_INV::Q12J) ? "\"Q 1/2 J\"" : "\"Jt Q J\"";
 	for (int iter_num=1; iter_num<=max_iter;++iter_num) {
 		int global_iter_num = termination_ctl.get_iteration_number()+1;
 		cout << "OPTIMISATION ITERATION NUMBER: " << global_iter_num << endl;
 		os   << "OPTIMISATION ITERATION NUMBER: " << global_iter_num << endl << endl;
-		cout << "    Iteration type: " << get_description() << endl;
+		cout << "  Iteration type: " << get_description() << endl;
 		os   << "    Iteration type: " << get_description() << endl;
-		cout << "    SVD Package: " << svd_package->description << endl;
+		cout << "  SVD Package: " << svd_package->description << endl;
 		os   << "    SVD Package: " << svd_package->description << endl;
+		cout << "  Matrix Inversion: " << matrix_inv << endl;
+		os   << "    Matrix Inversion: " << matrix_inv << endl;
 		os   << "    Model calls so far : " << run_manager.get_total_runs() << endl;
 		fout_restart << "start_iteration " << iter_num << "  " << global_iter_num << endl;
+		cout << endl;
+		os << endl;
 
 		// write head for SVD file
 		output_file_writer.write_svd_iteration(global_iter_num);
@@ -230,85 +235,98 @@ VectorXd SVDSolver::calc_residual_corrections(const Jacobian &jacobian, const Pa
 	return del_residuals;
 }
 
-//SVDSolver::Upgrade SVDSolver::calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
-//	const Eigen::VectorXd &Residuals, const vector<string> &par_name_vec, const vector<string> &obs_name_vec,
-//	const Parameters &base_numeric_pars, const Parameters &freeze_numeric_pars,
-//	double lambda, MarquardtMatrix marquardt_type)
-//{
-//	Upgrade upgrade;
-//	upgrade.frozen_numeric_pars = freeze_numeric_pars;
-//	upgrade.par_name_vec = par_name_vec;
-//	//create a vector which only contains the names of the unfrozen parameters
-//	vector<string> p_name_nf_vec(par_name_vec.size());
-//	{
-//		auto it = std::copy_if(par_name_vec.begin(), par_name_vec.end(), p_name_nf_vec.begin(),
-//			[&freeze_numeric_pars](const string &s) ->bool{return (freeze_numeric_pars.find(s) == freeze_numeric_pars.end()); });
-//		p_name_nf_vec.resize(std::distance(p_name_nf_vec.begin(), it));
-//	}
-//
-//	//Compute effect of frozen parameters on the residuals vector
-//	VectorXd Sigma;
-//	VectorXd Sigma_trunc;
-//	Eigen::SparseMatrix<double> U;
-//	Eigen::SparseMatrix<double> Vt;
-//	//Parameters delta_freeze_pars = freeze_numeric_pars;
-//	//delta_freeze_pars -= base_numeric_pars;
-//	//VectorXd del_residuals = calc_residual_corrections(jacobian, delta_freeze_pars, obs_name_vec);
-//	Eigen::SparseMatrix<double> q_mat = Q_sqrt.get_sparse_matrix(obs_name_vec);
-//	q_mat = (q_mat * q_mat).eval();
-//	Eigen::SparseMatrix<double> jac = jacobian.get_matrix(obs_name_vec, p_name_nf_vec);
-//	{
-//		Eigen::SparseMatrix<double> ident;
-//		ident.resize(jac.cols(), jac.cols());
-//		ident.setIdentity();
-//		Eigen::SparseMatrix<double> JtQJ = jac.transpose() * q_mat * jac;
-//		if (marquardt_type == MarquardtMatrix::IDENT)
-//		{
-//			//JtQJ += lambda * ident;
-//		}
-//		else
-//		{
-//			//VectorXd diag = lambda * JtQJ.diagonal();
-//			//MatrixXd diag_mat = diag.asDiagonal();
-//			//JtQJ = (JtQJ + diag_mat.sparseView());
-//		}
-//		// Returns truncated Sigma, U and Vt arrays with small singular parameters trimed off
-//		svd_package->solve_ip(JtQJ, Sigma, U, Vt, Sigma_trunc);
-//	}
-//	VectorXd Sigma_inv = Sigma.array().inverse();
-//
-//	Eigen::VectorXd tmp_svd_uvec;
-//	tmp_svd_uvec = Vt.transpose() * (Sigma_inv.asDiagonal() * (U.transpose() * (jac.transpose()* (q_mat  * Residuals))));
-//	output_file_writer.write_svd(Sigma, Vt, lambda, freeze_numeric_pars, Sigma_trunc);
-//
-//	//build map of parameter names to index in original par_name_vec vector
-//	unordered_map<string, int> par_vec_name_to_idx;
-//	for (int i = 0; i < par_name_vec.size(); ++i)
-//	{
-//		par_vec_name_to_idx[par_name_vec[i]] = i;
-//	}
-//
-//	upgrade.uvec.resize(par_name_vec.size());
-//	//tranfere newly computed componets of the ugrade vector to upgrade.svd_uvec
-//	for (int i = 0; i < p_name_nf_vec.size(); ++i)
-//	{
-//		const auto &it = par_vec_name_to_idx.find(p_name_nf_vec[i]);
-//		assert(it != par_vec_name_to_idx.end());
-//		upgrade.uvec(it->second) = tmp_svd_uvec(i);
-//	}
-//	//tranfere previously frozen componets of the ugrade vector to upgrade.svd_uvec
-//	for (auto &ipar : freeze_numeric_pars)
-//	{
-//		const auto &it = par_vec_name_to_idx.find(ipar.first);
-//		assert(it != par_vec_name_to_idx.end());
-//		upgrade.uvec(it->second) = ipar.second;
-//	}
-//	// Calculate svd unit vector
-//	upgrade.norm = upgrade.uvec.norm();
-//	if (upgrade.norm != 0) upgrade.uvec *= 1.0 / upgrade.norm;
-//}
+void SVDSolver::calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
+	const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
+	const Parameters &base_derivative_pars, const Parameters &prev_frozen_derivative_pars,
+	double lambda, Parameters &derivative_upgrade_pars, Parameters &upgrade_deriv_del_pars,
+	Parameters &grad_deriv_del_pars, MarquardtMatrix marquardt_type)
+{
+	//Create a set of Derivative Parameters which does not include the frozen Parameters
+	Parameters pars_nf = base_derivative_pars;
+	pars_nf.erase(prev_frozen_derivative_pars);
+	//Transform these parameters to numeric parameters
+	par_transform.derivative2numeric_ip(pars_nf);
+	vector<string> numeric_par_names = pars_nf.get_keys();
 
-void SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
+	//Compute effect of frozen parameters on the residuals vector
+	Parameters delta_freeze_pars = prev_frozen_derivative_pars;
+	Parameters base_freeze_pars(base_derivative_pars, delta_freeze_pars.get_keys());
+	par_transform.derivative2numeric_ip(delta_freeze_pars);
+	par_transform.derivative2numeric_ip(base_freeze_pars);
+	delta_freeze_pars -= base_freeze_pars;
+	VectorXd del_residuals = calc_residual_corrections(jacobian, delta_freeze_pars, obs_name_vec);
+
+	VectorXd Sigma;
+	VectorXd Sigma_trunc;
+	Eigen::SparseMatrix<double> U;
+	Eigen::SparseMatrix<double> Vt;
+
+	Eigen::SparseMatrix<double> q_mat = Q_sqrt.get_sparse_matrix(obs_name_vec);
+	q_mat = (q_mat * q_mat).eval();
+	Eigen::SparseMatrix<double> jac = jacobian.get_matrix(obs_name_vec, numeric_par_names);
+	Eigen::SparseMatrix<double> ident;
+	ident.resize(jac.cols(), jac.cols());
+	ident.setIdentity();
+	Eigen::SparseMatrix<double> JtQJ = jac.transpose() * q_mat * jac;
+	//Compute Scaling Matrix Sii
+	svd_package->solve_ip(JtQJ, Sigma, U, Vt, Sigma_trunc, 0.0);
+	VectorXd Sigma_inv_sqrt = Sigma.array().inverse().sqrt();
+	VectorXd Sigma_sqrt = Sigma.array().sqrt();
+	Eigen::SparseMatrix<double> S = Vt.transpose() * Sigma_inv_sqrt.asDiagonal() * U.transpose();
+	Eigen::SparseMatrix<double> S_inv = Vt.transpose() * Sigma_sqrt.asDiagonal() * U.transpose();
+	JtQJ = (jac * S).transpose() * q_mat * jac * S;
+	if (marquardt_type == MarquardtMatrix::IDENT)
+	{
+		JtQJ += lambda * S.transpose() * S;
+	}
+	else
+	{
+		VectorXd diag = lambda * JtQJ.diagonal();
+		MatrixXd diag_mat = diag.asDiagonal();
+		JtQJ = (JtQJ + diag_mat.sparseView());
+	}
+	// Returns truncated Sigma, U and Vt arrays with small singular parameters trimed off
+	svd_package->solve_ip(JtQJ, Sigma, U, Vt, Sigma_trunc);
+	
+	VectorXd Sigma_inv = Sigma.array().inverse();
+	
+	Eigen::VectorXd upgrade_vec;
+	upgrade_vec = S * (Vt.transpose() * (Sigma_inv.asDiagonal() * (U.transpose() * ((jac * S).transpose()* (q_mat  * (Residuals + del_residuals))))));
+
+	Eigen::VectorXd grad_vec;
+	grad_vec = -2.0 * (jac.transpose() * (q_mat * Residuals));
+
+	//tranfere newly computed componets of the ugrade vector to upgrade.svd_uvec
+	Parameters upgrade;
+	Parameters grad;
+
+	string *name_ptr;
+	auto it_nf_end = pars_nf.end();
+	for (int i = 0; i<numeric_par_names.size(); ++i)
+	{
+		name_ptr = &(numeric_par_names[i]);
+		upgrade[*name_ptr] = upgrade_vec(i);
+		grad[*name_ptr] = grad_vec(i);
+		auto it_nf = pars_nf.find(*name_ptr);
+		if (it_nf != it_nf_end)
+		{
+			it_nf->second += upgrade_vec(i);
+		}
+	}
+	// Transform upgrade_pars back to derivative parameters
+	derivative_upgrade_pars = par_transform.numeric2derivative_cp(pars_nf);
+	upgrade_deriv_del_pars = par_transform.chainrule_numeric2derivative_cp(upgrade);
+	grad_deriv_del_pars = par_transform.chainrule_numeric2derivative_cp(grad);
+
+	//tranfere previously frozen componets of the ugrade vector to upgrade.svd_uvec
+	for (auto &ipar : prev_frozen_derivative_pars)
+	{
+		derivative_upgrade_pars[ipar.first] = ipar.second;
+	}
+}
+
+
+void SVDSolver::calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
 	const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
 	const Parameters &base_derivative_pars, const Parameters &prev_frozen_derivative_pars,
 	double lambda, Parameters &derivative_upgrade_pars, Parameters &upgrade_deriv_del_pars,
@@ -356,7 +374,7 @@ void SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, const QSqrtMat
 	upgrade_vec = Vt.transpose() * (Sigma_inv.asDiagonal() * (U.transpose() * (q_sqrt  * (Residuals + del_residuals))));
 
 	Eigen::VectorXd grad_vec;
-	grad_vec = -2.0 * jac.transpose() * (q_sqrt * (q_sqrt * Residuals));
+	grad_vec = -2.0 * (jac.transpose() * (q_sqrt * (q_sqrt * Residuals)));
 
 	//tranfere newly computed componets of the ugrade vector to upgrade.svd_uvec
 	Parameters upgrade;
@@ -396,9 +414,24 @@ void SVDSolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_deriva
 	int num_upgrade_out_grad_in;
 	Parameters new_frozen_derivative_pars;
 
+	// define a function type for upgrade methods 
+	typedef void(SVDSolver::*UPGRADE_FUNCTION) (const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
+		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
+		const Parameters &base_derivative_pars, const Parameters &prev_frozen_derivative_pars,
+		double lambda, Parameters &derivative_upgrade_pars, Parameters &upgrade_deriv_del_pars,
+		Parameters &grad_deriv_del_pars, MarquardtMatrix marquardt_type);
+
+	UPGRADE_FUNCTION calc_lambda_upgrade = &SVDSolver::calc_lambda_upgrade_vec_JtQJ;
+
+	if (mat_inv == MAT_INV::Q12J)
+	{
+		calc_lambda_upgrade = &SVDSolver::calc_lambda_upgrade_vecQ12J;
+	}
+
+
 	// need to remove parameters frozen due to failed jacobian runs when calling calc_lambda_upgrade_vec
 	//Freeze Parameters at the boundary whose ugrade vector and gradient both head out of bounds
-	calc_lambda_upgrade_vec(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+	(*this.*calc_lambda_upgrade)(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
 		base_run_derivative_pars, prev_frozen_derivative_pars, i_lambda, upgrade_deriv_pars, upgrade_deriv_del_pars,
 		grad_pars_del_pars, marquardt_type);
 	num_upgrade_out_grad_in = check_bnd_par(new_frozen_derivative_pars, base_run_derivative_pars, upgrade_deriv_del_pars, grad_pars_del_pars);
@@ -407,7 +440,7 @@ void SVDSolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_deriva
 	if (num_upgrade_out_grad_in > 0)
 	{
 		new_frozen_derivative_pars.clear();
-		calc_lambda_upgrade_vec(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+		(*this.*calc_lambda_upgrade)(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
 			base_run_derivative_pars, prev_frozen_derivative_pars, i_lambda, upgrade_deriv_pars, upgrade_deriv_del_pars,
 			grad_pars_del_pars, marquardt_type);
 		check_bnd_par(new_frozen_derivative_pars, base_run_derivative_pars, upgrade_deriv_pars);
@@ -417,7 +450,7 @@ void SVDSolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_deriva
 	//If there are newly frozen parameters recompute the upgrade vector
 	if (new_frozen_derivative_pars.size() > 0)
 	{
-		calc_lambda_upgrade_vec(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+		(*this.*calc_lambda_upgrade)(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
 			base_run_derivative_pars, prev_frozen_derivative_pars, i_lambda, upgrade_deriv_pars, upgrade_deriv_del_pars,
 			grad_pars_del_pars, marquardt_type);
 	}
@@ -595,28 +628,28 @@ restart_resume_jacobian_runs:
 		magnitude_vec.push_back(Transformable::l2_norm(par_transform.derivative2numeric_cp(base_run_derivative_pars), par_transform.model2numeric_cp(new_model_pars)));
 		frozen_par_vec.push_back(frozen_derivative_pars);
 	}
-	for (double i_lambda : lambda_vec)
-	{
-		std::cout << string(message.str().size(), '\b');
-		message.str("");
-		message << "  computing upgrade vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
-		std::cout << message.str();
+	//for (double i_lambda : lambda_vec)
+	//{
+	//	std::cout << string(message.str().size(), '\b');
+	//	message.str("");
+	//	message << "  computing upgrade vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
+	//	std::cout << message.str();
 
-		//Compute automatic regularization weight adjustments here
+	//	//Compute automatic regularization weight adjustments here
 
-		Parameters frozen_derivative_pars = failed_jac_pars;
-		Parameters new_model_pars;
-		//Compute automatic regularization weight adjustments here
+	//	Parameters frozen_derivative_pars = failed_jac_pars;
+	//	Parameters new_model_pars;
+	//	//Compute automatic regularization weight adjustments here
 
-		calc_upgrade_vec(i_lambda, frozen_derivative_pars, Q_sqrt, residuals_vec,
-			obs_names_vec, base_run_derivative_pars, limit_type,
-			new_model_pars, MarquardtMatrix::JTQJ);
+	//	calc_upgrade_vec(i_lambda, frozen_derivative_pars, Q_sqrt, residuals_vec,
+	//		obs_names_vec, base_run_derivative_pars, limit_type,
+	//		new_model_pars, MarquardtMatrix::JTQJ);
 
-		par_transform.ctl2model_ip(new_model_pars);
-		run_manager.add_run(new_model_pars, "DIAG", i_lambda);
-		magnitude_vec.push_back(Transformable::l2_norm(par_transform.derivative2ctl_cp(base_run_derivative_pars), par_transform.model2ctl_cp(new_model_pars)));
-		frozen_par_vec.push_back(frozen_derivative_pars);
-	}
+	//	par_transform.ctl2model_ip(new_model_pars);
+	//	run_manager.add_run(new_model_pars, "DIAG", i_lambda);
+	//	magnitude_vec.push_back(Transformable::l2_norm(par_transform.derivative2ctl_cp(base_run_derivative_pars), par_transform.model2ctl_cp(new_model_pars)));
+	//	frozen_par_vec.push_back(frozen_derivative_pars);
+	//}
 
 	cout << endl;
 	fout_restart << "upgrade_model_runs_built " << run_manager.get_cur_groupid() << endl;
