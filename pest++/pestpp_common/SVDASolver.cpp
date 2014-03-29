@@ -105,19 +105,20 @@ void SVDASolver::calc_upgrade_vec(double i_lambda, vector<Parameters> &frozen_de
 	vector<string> &numeric_par_names_vec, vector<string> &obs_names_vec, const Parameters &base_run_numeric_pars,
 	Upgrade &ml_upgrade, Parameters &new_pars, MarquardtMatrix marquardt_type)
 {
-	ml_upgrade = calc_lambda_upgrade_vec(jacobian, Q_sqrt, residuals_vec, numeric_par_names_vec, obs_names_vec,
-		base_run_numeric_pars, Parameters(), i_lambda, marquardt_type);
-	//Start out with new_pars as numeric parameters
-	new_pars = apply_upgrade(base_run_numeric_pars, ml_upgrade, 1.0);
-	Parameters new_frozen_pars = limit_parameters_ip(base_run_numeric_pars, new_pars);
-	frozen_derivative_par_vec.push_back(new_frozen_pars);
-	//transform new_par to derivative parameters
-	par_transform.numeric2derivative_ip(new_pars);
-	// impose frozen parameters
-	for (auto &i : frozen_derivative_par_vec.back())
-	{
-		new_pars[i.first] = i.second;
-	}
+	////dew_clean_up
+	//ml_upgrade = calc_lambda_upgrade_vec(jacobian, Q_sqrt, residuals_vec, numeric_par_names_vec, obs_names_vec,
+	//	base_run_numeric_pars, Parameters(), i_lambda, marquardt_type);
+	////Start out with new_pars as numeric parameters
+	//new_pars = apply_upgrade(base_run_numeric_pars, ml_upgrade, 1.0);
+	//Parameters new_frozen_pars = limit_parameters_ip(base_run_numeric_pars, new_pars);
+	//frozen_derivative_par_vec.push_back(new_frozen_pars);
+	////transform new_par to derivative parameters
+	//par_transform.numeric2derivative_ip(new_pars);
+	//// impose frozen parameters
+	//for (auto &i : frozen_derivative_par_vec.back())
+	//{
+	//	new_pars[i.first] = i.second;
+	//}
 
 }
 void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs)
@@ -228,7 +229,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 	// build weights matrix sqrt(Q)
 	QSqrtMatrix Q_sqrt(obs_info_ptr, prior_info_ptr, tikhonov_weight);
 
-	double tmp_lambda[] = {0.1, 1.0, 10.0, 100.0, 1000.0};
+	double tmp_lambda[] = {1.0e-5, 0.1, 1.0, 10.0, 100.0, 1000.0};
 	vector<double> lambda_vec(tmp_lambda, tmp_lambda+sizeof(tmp_lambda)/sizeof(double));
 	lambda_vec.push_back(best_lambda);
 	lambda_vec.push_back(best_lambda / 2.0);
@@ -292,7 +293,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 	long jac_num_total = jacobian.get_size();
 	long jac_num_zero = jac_num_total - jac_num_nonzero;
 	streamsize n_prec = os.precision(2);
-	os << "    Number of terms in the jacobian equal to zero: " << jac_num_zero << "/" << jac_num_total
+	os << "    Number of terms in the jacobian equal to zero: " << jac_num_zero << " / " << jac_num_total
 		<< " (" << double(jac_num_zero) / double(jac_num_total) * 100 << "%)" << endl << endl;
 	os.precision(n_prec);
 

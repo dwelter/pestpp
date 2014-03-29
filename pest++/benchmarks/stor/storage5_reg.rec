@@ -11,7 +11,7 @@ using control file: "storage5_reg"
 OPTIMISATION ITERATION NUMBER: 1
 
     Iteration type: base parameter solution
-    SVD Package: PROPACK
+    SVD Package: Eigen JacobiSVD
     Model calls so far : 0
     Starting phi for this iteration                     Total : 182448
     Contribution to phi from observation group         "OBS2" : 17086.3
@@ -19,254 +19,200 @@ OPTIMISATION ITERATION NUMBER: 1
     Contribution to phi from observation group    "OBSGROUP3" : 87445.1
     Contribution to phi from observation group        "REGUL" : 1.55488
 
-    Number of terms in the jacobian equal to zero: 8/36 (22%)
+    Number of terms in the jacobian equal to zero: 8 / 36 (22%)
 
     Summary of upgrade runs:
-      Lambda =     0.10; Type: IDEN; length = 1.90;  phi = 70522.3 (38.65%)
-      Lambda =     1.00; Type: IDEN; length = 1.88;  phi = 69000.3 (37.82%)
-      Lambda =    10.00; Type: IDEN; length = 1.71;  phi = 54358.2 (29.79%)
-      Lambda =    20.00; Type: IDEN; length = 1.56;  phi = 40781.8 (22.35%)
-      Lambda =    40.00; Type: IDEN; length = 1.36;  phi = 41007.1 (22.48%)
-      Lambda =   100.00; Type: IDEN; length = 1.03;  phi = 42329 (23.20%)
-      Lambda =  1000.00; Type: IDEN; length = 0.29;  phi = 108009 (59.20%)
-      Lambda =     0.10; Type: DIAG; length = 0.95;  phi = 70691.9 (38.75%)
-      Lambda =     1.00; Type: DIAG; length = 0.95;  phi = 70683.5 (38.74%)
-      Lambda =    10.00; Type: DIAG; length = 0.95;  phi = 69844.4 (38.28%)
-      Lambda =    20.00; Type: DIAG; length = 0.93;  phi = 67376.9 (36.93%)
-      Lambda =    40.00; Type: DIAG; length = 0.89;  phi = 58461.1 (32.04%)
-      Lambda =   100.00; Type: DIAG; length = 0.76;  phi = 40938.1 (22.44%)
-      Lambda =  1000.00; Type: DIAG; length = 0.28;  phi = 110929 (60.80%)
+      Lambda =     0.00; Type: IDEN; length = -92559631349317830000000000000000000000000000000000000000000000.00;  phi = 73544.3 (40.31%)
 
     Parameter Upgrades (Control File Parameters)
       Parameter     Current       Previous       Factor       Relative
         Name         Value         Value         Change        Change
       ----------  ------------  ------------  ------------  ------------
         RECHARGE           0.1           0.1             1             0
-            COND    0.00166667         0.005             3      0.666667
-          SCOEFF      0.148611          0.05       2.97222      -1.97222
+            COND    0.00211154         0.005       2.36794      0.577692
+          SCOEFF          0.15          0.05             3            -2
        Maximum changes in "control file" parameters:
-         Maximum relative change = -1.97222   [SCOEFF]
-         Maximum factor change = 3   [COND]
+         Maximum relative change = -2   [SCOEFF]
+         Maximum factor change = 3   [SCOEFF]
 
     Parameter Upgrades (Transformed Numeric Parameters)
       Parameter     Current       Previous       Factor       Relative
         Name         Value         Value         Change        Change
       ----------  ------------  ------------  ------------  ------------
-            COND      -2.77815      -2.30103       1.20735     -0.207351
-          SCOEFF     -0.827949      -1.30103       1.57139      0.363621
+            COND     -0.671657     -0.457731       1.46736     -0.467361
+          SCOEFF       1.45073       1.13265       1.28083      -0.28083
        Maximum changes in "transformed numeric" parameters:
-         Maximum relative change = 0.363621   [SCOEFF]
-         Maximum factor change = 1.57139   [SCOEFF]
+         Maximum relative change = -0.467361   [COND]
+         Maximum factor change = 1.46736   [COND]
 
 
 OPTIMISATION ITERATION NUMBER: 2
 
-    Iteration type: super parameter solution
-    SVD Package: PROPACK
-    Model calls so far : 17
-    Starting phi for this iteration                     Total : 40781.8
-    Contribution to phi from observation group         "OBS2" : 2404.77
-    Contribution to phi from observation group    "OBSGROUP1" : 19299.1
-    Contribution to phi from observation group    "OBSGROUP3" : 19076
-    Contribution to phi from observation group        "REGUL" : 1.94001
+    Iteration type: base parameter solution
+    SVD Package: Eigen JacobiSVD
+    Model calls so far : 4
+    Starting phi for this iteration                     Total : 73544.3
+    Contribution to phi from observation group         "OBS2" : 5059.4
+    Contribution to phi from observation group    "OBSGROUP1" : 33479.1
+    Contribution to phi from observation group    "OBSGROUP3" : 35004
+    Contribution to phi from observation group        "REGUL" : 1.79927
 
-    Number of terms in the jacobian equal to zero: 0/36 (0%)
+    Number of terms in the jacobian equal to zero: 5 / 36 (14%)
 
     Summary of upgrade runs:
-      Marquardt Lambda =     0.10;   length = 0.35;   phi = 2769.3 (6.79%)
-      Marquardt Lambda =     1.00;   length = 0.35;   phi = 2723.27 (6.68%)
-      Marquardt Lambda =    10.00;   length = 0.34;   phi = 2297.71 (5.63%)
-      Marquardt Lambda =    20.00;   length = 0.33;   phi = 1891.12 (4.64%)
-      Marquardt Lambda =    40.00;   length = 0.31;   phi = 1245.92 (3.06%)
-      Marquardt Lambda =   100.00;   length = 0.27;   phi = 219.569 (0.54%)
-      Marquardt Lambda =  1000.00;   length = 0.12;   phi = 11651.4 (28.57%)
+      Lambda =     0.00; Type: IDEN; length = -92559631349317830000000000000000000000000000000000000000000000.00;  phi = 18790.4 (25.55%)
 
     Parameter Upgrades (Control File Parameters)
       Parameter     Current       Previous       Factor       Relative
         Name         Value         Value         Change        Change
       ----------  ------------  ------------  ------------  ------------
         RECHARGE           0.1           0.1             1             0
-            COND   0.000969515    0.00166667       1.71907      0.418291
-          SCOEFF      0.204138      0.148611       1.37364     -0.373635
+            COND   0.000759721    0.00211154       2.77936      0.640205
+          SCOEFF      0.303333          0.15       2.02222      -1.02222
        Maximum changes in "control file" parameters:
-         Maximum relative change = 0.418291   [COND]
-         Maximum factor change = 1.71907   [COND]
+         Maximum relative change = -1.02222   [SCOEFF]
+         Maximum factor change = 2.77936   [COND]
 
     Parameter Upgrades (Transformed Numeric Parameters)
       Parameter     Current       Previous       Factor       Relative
         Name         Value         Value         Change        Change
       ----------  ------------  ------------  ------------  ------------
-           sup_1        9.7695            10       1.02359     0.0230501
-           sup_2       10.1457            10       1.01457    -0.0145743
+            COND      -0.92534     -0.671657        1.3777     -0.377697
+          SCOEFF       1.65461       1.45073       1.14054      -0.14054
        Maximum changes in "transformed numeric" parameters:
-         Maximum relative change = 0.0230501   [sup_1]
-         Maximum factor change = 1.02359   [sup_1]
+         Maximum relative change = -0.377697   [COND]
+         Maximum factor change = 1.3777   [COND]
 
 
 OPTIMISATION ITERATION NUMBER: 3
 
-    Iteration type: super parameter solution
-    SVD Package: PROPACK
-    Model calls so far : 27
-    Starting phi for this iteration                     Total : 219.569
-    Contribution to phi from observation group         "OBS2" : 13.0155
-    Contribution to phi from observation group    "OBSGROUP1" : 122.185
-    Contribution to phi from observation group    "OBSGROUP3" : 82.0985
-    Contribution to phi from observation group        "REGUL" : 2.27028
+    Iteration type: base parameter solution
+    SVD Package: Eigen JacobiSVD
+    Model calls so far : 8
+    Starting phi for this iteration                     Total : 18790.4
+    Contribution to phi from observation group         "OBS2" : 1823.5
+    Contribution to phi from observation group    "OBSGROUP1" : 11622.5
+    Contribution to phi from observation group    "OBSGROUP3" : 5341.98
+    Contribution to phi from observation group        "REGUL" : 2.45376
 
-    Number of terms in the jacobian equal to zero: 0/36 (0%)
+    Number of terms in the jacobian equal to zero: 3 / 36 (8.3%)
 
     Summary of upgrade runs:
-      Marquardt Lambda =     0.10;   length = 0.02;   phi = 6.98575 (3.18%)
-      Marquardt Lambda =     1.00;   length = 0.02;   phi = 6.99038 (3.18%)
-      Marquardt Lambda =    10.00;   length = 0.02;   phi = 7.05523 (3.21%)
-      Marquardt Lambda =    50.00;   length = 0.01;   phi = 7.68918 (3.50%)
-      Marquardt Lambda =   100.00;   length = 0.01;   phi = 9.08041 (4.14%)
-      Marquardt Lambda =   200.00;   length = 0.01;   phi = 13.1085 (5.97%)
-      Marquardt Lambda =  1000.00;   length = 0.01;   phi = 55.9753 (25.49%)
+      Lambda =     0.00; Type: IDEN; length = -92559631349317830000000000000000000000000000000000000000000000.00;  phi = 450.336 (2.40%)
 
     Parameter Upgrades (Control File Parameters)
       Parameter     Current       Previous       Factor       Relative
         Name         Value         Value         Change        Change
       ----------  ------------  ------------  ------------  ------------
         RECHARGE           0.1           0.1             1             0
-            COND   0.000999821   0.000969515       1.03126    -0.0312589
-          SCOEFF      0.200438      0.204138       1.01846     0.0181233
+            COND   0.000973455   0.000759721       1.28133     -0.281332
+          SCOEFF       0.23508      0.303333       1.29034      0.225011
        Maximum changes in "control file" parameters:
-         Maximum relative change = -0.0312589   [COND]
-         Maximum factor change = 1.03126   [COND]
+         Maximum relative change = -0.281332   [COND]
+         Maximum factor change = 1.29034   [SCOEFF]
 
     Parameter Upgrades (Transformed Numeric Parameters)
       Parameter     Current       Previous       Factor       Relative
         Name         Value         Value         Change        Change
       ----------  ------------  ------------  ------------  ------------
-           sup_1       9.78259        9.7695       1.00134   -0.00134006
-           sup_2       10.1374       10.1457       1.00083   0.000826971
+            COND     -0.863819      -0.92534       1.07122     0.0664847
+          SCOEFF       1.58081       1.65461       1.04669     0.0446043
        Maximum changes in "transformed numeric" parameters:
-         Maximum relative change = -0.00134006   [sup_1]
-         Maximum factor change = 1.00134   [sup_1]
+         Maximum relative change = 0.0664847   [COND]
+         Maximum factor change = 1.07122   [COND]
 
 
 OPTIMISATION ITERATION NUMBER: 4
 
-    Iteration type: super parameter solution
-    SVD Package: PROPACK
-    Model calls so far : 37
-    Starting phi for this iteration                     Total : 6.98575
-    Contribution to phi from observation group         "OBS2" : 0.529758
-    Contribution to phi from observation group    "OBSGROUP1" : 3.00932
-    Contribution to phi from observation group    "OBSGROUP3" : 1.19655
-    Contribution to phi from observation group        "REGUL" : 2.25012
+    Iteration type: base parameter solution
+    SVD Package: Eigen JacobiSVD
+    Model calls so far : 12
+    Starting phi for this iteration                     Total : 450.336
+    Contribution to phi from observation group         "OBS2" : 161.176
+    Contribution to phi from observation group    "OBSGROUP1" : 128.869
+    Contribution to phi from observation group    "OBSGROUP3" : 158.021
+    Contribution to phi from observation group        "REGUL" : 2.27081
 
-    Number of terms in the jacobian equal to zero: 0/36 (0%)
+    Number of terms in the jacobian equal to zero: 4 / 36 (11%)
 
     Summary of upgrade runs:
-      Marquardt Lambda =     0.05;   length = 0.00;   phi = 6.87562 (98.42%)
-      Marquardt Lambda =     0.10;   length = 0.00;   phi = 6.87564 (98.42%)
-      Marquardt Lambda =     0.20;   length = 0.00;   phi = 6.87564 (98.42%)
-      Marquardt Lambda =     1.00;   length = 0.00;   phi = 6.87562 (98.42%)
-      Marquardt Lambda =    10.00;   length = 0.00;   phi = 6.87576 (98.43%)
-      Marquardt Lambda =   100.00;   length = 0.00;   phi = 6.88312 (98.53%)
-      Marquardt Lambda =  1000.00;   length = 0.00;   phi = 6.94242 (99.38%)
-
-      Switching to central derivatives:
+      Lambda =     0.00; Type: IDEN; length = -92559631349317830000000000000000000000000000000000000000000000.00;  phi = 8.44267 (1.87%)
 
     Parameter Upgrades (Control File Parameters)
       Parameter     Current       Previous       Factor       Relative
         Name         Value         Value         Change        Change
       ----------  ------------  ------------  ------------  ------------
         RECHARGE           0.1           0.1             1             0
-            COND    0.00100002   0.000999821        1.0002  -0.000198035
-          SCOEFF      0.199895      0.200438       1.00272    0.00271081
+            COND    0.00100123   0.000973455       1.02853    -0.0285324
+          SCOEFF      0.201309       0.23508       1.16775      0.143655
        Maximum changes in "control file" parameters:
-         Maximum relative change = 0.00271081   [SCOEFF]
-         Maximum factor change = 1.00272   [SCOEFF]
+         Maximum relative change = 0.143655   [SCOEFF]
+         Maximum factor change = 1.16775   [SCOEFF]
 
     Parameter Upgrades (Transformed Numeric Parameters)
       Parameter     Current       Previous       Factor       Relative
         Name         Value         Value         Change        Change
       ----------  ------------  ------------  ------------  ------------
-           sup_1       9.78264       9.78259             1  -4.71376e-006
-           sup_2       10.1362       10.1374       1.00012   0.000116512
+            COND     -0.856838     -0.863819       1.00815    0.00808236
+          SCOEFF       1.53591       1.58081       1.02923     0.0284037
        Maximum changes in "transformed numeric" parameters:
-         Maximum relative change = 0.000116512   [sup_2]
-         Maximum factor change = 1.00012   [sup_2]
+         Maximum relative change = 0.0284037   [SCOEFF]
+         Maximum factor change = 1.02923   [SCOEFF]
 
 
 OPTIMISATION ITERATION NUMBER: 5
 
     Iteration type: base parameter solution
-    SVD Package: PROPACK
-    Model calls so far : 47
-    Starting phi for this iteration                     Total : 6.87562
-    Contribution to phi from observation group         "OBS2" : 0.431549
-    Contribution to phi from observation group    "OBSGROUP1" : 2.71486
-    Contribution to phi from observation group    "OBSGROUP3" : 1.47922
-    Contribution to phi from observation group        "REGUL" : 2.24999
+    SVD Package: Eigen JacobiSVD
+    Model calls so far : 16
+    Starting phi for this iteration                     Total : 8.44267
+    Contribution to phi from observation group         "OBS2" : 1.00788
+    Contribution to phi from observation group    "OBSGROUP1" : 3.75449
+    Contribution to phi from observation group    "OBSGROUP3" : 1.4311
+    Contribution to phi from observation group        "REGUL" : 2.24921
 
-    Number of terms in the jacobian equal to zero: 4/36 (11%)
+    Number of terms in the jacobian equal to zero: 4 / 36 (11%)
 
     Summary of upgrade runs:
-      Lambda =     0.10; Type: IDEN; length = 0.00;  phi = 6.87566 (100.00%)
-      Lambda =     1.00; Type: IDEN; length = 0.00;  phi = 6.87566 (100.00%)
-      Lambda =    10.00; Type: IDEN; length = 0.00;  phi = 6.87566 (100.00%)
-      Lambda =    20.00; Type: IDEN; length = 0.00;  phi = 6.87566 (100.00%)
-      Lambda =    40.00; Type: IDEN; length = 0.00;  phi = 6.87563 (100.00%)
-      Lambda =   100.00; Type: IDEN; length = 0.00;  phi = 6.87562 (100.00%)
-      Lambda =  1000.00; Type: IDEN; length = 0.00;  phi = 6.87565 (100.00%)
-      Lambda =     0.10; Type: DIAG; length = 0.00;  phi = 6.87561 (100.00%)
-      Lambda =     1.00; Type: DIAG; length = 0.00;  phi = 6.87561 (100.00%)
-      Lambda =    10.00; Type: DIAG; length = 0.00;  phi = 6.87561 (100.00%)
-      Lambda =    20.00; Type: DIAG; length = 0.00;  phi = 6.87561 (100.00%)
-      Lambda =    40.00; Type: DIAG; length = 0.00;  phi = 6.87561 (100.00%)
-      Lambda =   100.00; Type: DIAG; length = 0.00;  phi = 6.87569 (100.00%)
-      Lambda =  1000.00; Type: DIAG; length = 0.00;  phi = 6.87565 (100.00%)
-
-      Switching to central derivatives:
+      Lambda =     0.00; Type: IDEN; length = -92559631349317830000000000000000000000000000000000000000000000.00;  phi = 6.87563 (81.44%)
 
     Parameter Upgrades (Control File Parameters)
       Parameter     Current       Previous       Factor       Relative
         Name         Value         Value         Change        Change
       ----------  ------------  ------------  ------------  ------------
         RECHARGE           0.1           0.1             1             0
-            COND    0.00100002    0.00100002             1  1.99996e-006
-          SCOEFF      0.199895      0.199895             1  -9.6751e-007
+            COND    0.00100001    0.00100123       1.00122     0.0012155
+          SCOEFF      0.199895      0.201309       1.00708    0.00702591
        Maximum changes in "control file" parameters:
-         Maximum relative change = 1.99996e-006   [COND]
-         Maximum factor change = 1   [COND]
+         Maximum relative change = 0.00702591   [SCOEFF]
+         Maximum factor change = 1.00708   [SCOEFF]
 
     Parameter Upgrades (Transformed Numeric Parameters)
       Parameter     Current       Previous       Factor       Relative
         Name         Value         Value         Change        Change
       ----------  ------------  ------------  ------------  ------------
-            COND      -2.99999      -2.99999             1  -2.89525e-007
-          SCOEFF     -0.699199     -0.699199             1  6.00951e-007
+            COND      -0.85714     -0.856838       1.00035  -0.000352264
+          SCOEFF       1.53387       1.53591       1.00133    0.00132911
        Maximum changes in "transformed numeric" parameters:
-         Maximum relative change = 6.00951e-007   [SCOEFF]
-         Maximum factor change = 1   [SCOEFF]
+         Maximum relative change = 0.00132911   [SCOEFF]
+         Maximum factor change = 1.00133   [SCOEFF]
 
 
 OPTIMISATION ITERATION NUMBER: 6
 
-    Iteration type: super parameter solution
-    SVD Package: PROPACK
-    Model calls so far : 64
-    Starting phi for this iteration                     Total : 6.87561
-    Contribution to phi from observation group         "OBS2" : 0.431567
-    Contribution to phi from observation group    "OBSGROUP1" : 2.71492
-    Contribution to phi from observation group    "OBSGROUP3" : 1.47914
+    Iteration type: base parameter solution
+    SVD Package: Eigen JacobiSVD
+    Model calls so far : 20
+    Starting phi for this iteration                     Total : 6.87563
+    Contribution to phi from observation group         "OBS2" : 0.431592
+    Contribution to phi from observation group    "OBSGROUP1" : 2.7148
+    Contribution to phi from observation group    "OBSGROUP3" : 1.47924
     Contribution to phi from observation group        "REGUL" : 2.24999
 
-    Number of terms in the jacobian equal to zero: 0/36 (0%)
+    Number of terms in the jacobian equal to zero: 4 / 36 (11%)
 
     Summary of upgrade runs:
-      Marquardt Lambda =     0.10;   length = 0.00;   phi = 6.87567 (100.00%)
-      Marquardt Lambda =     1.00;   length = 0.00;   phi = 6.87567 (100.00%)
-      Marquardt Lambda =    10.00;   length = 0.00;   phi = 6.8756 (100.00%)
-      Marquardt Lambda =    20.00;   length = 0.00;   phi = 6.8756 (100.00%)
-      Marquardt Lambda =    40.00;   length = 0.00;   phi = 6.8756 (100.00%)
-      Marquardt Lambda =   100.00;   length = 0.00;   phi = 6.87564 (100.00%)
-      Marquardt Lambda =  1000.00;   length = 0.00;   phi = 6.87562 (100.00%)
+      Lambda =     0.00; Type: IDEN; length = -92559631349317830000000000000000000000000000000000000000000000.00;  phi = 6.87567 (100.00%)
 
       Switching to central derivatives:
 
@@ -275,29 +221,67 @@ OPTIMISATION ITERATION NUMBER: 6
         Name         Value         Value         Change        Change
       ----------  ------------  ------------  ------------  ------------
         RECHARGE           0.1           0.1             1             0
-            COND    0.00100001    0.00100002             1  2.99995e-006
-          SCOEFF      0.199895      0.199895             1  5.39284e-007
+            COND    0.00100001    0.00100001             1  -9.99987e-007
+          SCOEFF      0.199895      0.199895             1  -1.22064e-006
        Maximum changes in "control file" parameters:
-         Maximum relative change = 2.99995e-006   [COND]
-         Maximum factor change = 1   [COND]
+         Maximum relative change = -1.22064e-006   [SCOEFF]
+         Maximum factor change = 1   [SCOEFF]
 
     Parameter Upgrades (Transformed Numeric Parameters)
       Parameter     Current       Previous       Factor       Relative
         Name         Value         Value         Change        Change
       ----------  ------------  ------------  ------------  ------------
-           sup_1            10            10             1  1.31895e-007
-           sup_2            10            10             1  1.12591e-008
+            COND     -0.857139      -0.85714             1  2.89527e-007
+          SCOEFF       1.53387       1.53387             1  -2.30406e-007
        Maximum changes in "transformed numeric" parameters:
-         Maximum relative change = 1.31895e-007   [sup_1]
-         Maximum factor change = 1   [sup_1]
+         Maximum relative change = 2.89527e-007   [COND]
+         Maximum factor change = 1   [COND]
+
+
+OPTIMISATION ITERATION NUMBER: 7
+
+    Iteration type: base parameter solution
+    SVD Package: Eigen JacobiSVD
+    Model calls so far : 24
+    Starting phi for this iteration                     Total : 6.87567
+    Contribution to phi from observation group         "OBS2" : 0.431608
+    Contribution to phi from observation group    "OBSGROUP1" : 2.71501
+    Contribution to phi from observation group    "OBSGROUP3" : 1.47906
+    Contribution to phi from observation group        "REGUL" : 2.24999
+
+    Number of terms in the jacobian equal to zero: 2 / 36 (5.6%)
+
+    Summary of upgrade runs:
+      Lambda =     0.00; Type: IDEN; length = -92559631349317830000000000000000000000000000000000000000000000.00;  phi = 6.87562 (100.00%)
+
+    Parameter Upgrades (Control File Parameters)
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+        RECHARGE           0.1           0.1             1             0
+            COND    0.00100001    0.00100001             1             0
+          SCOEFF      0.199895      0.199895             1  -8.90467e-007
+       Maximum changes in "control file" parameters:
+         Maximum relative change = -8.90467e-007   [SCOEFF]
+         Maximum factor change = 1   [SCOEFF]
+
+    Parameter Upgrades (Transformed Numeric Parameters)
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+            COND     -0.857139     -0.857139             1            -0
+          SCOEFF       1.53387       1.53387             1  -1.68083e-007
+       Maximum changes in "transformed numeric" parameters:
+         Maximum relative change = -1.68083e-007   [SCOEFF]
+         Maximum factor change = 1   [SCOEFF]
 
 
 FINAL OPTIMISATION RESULTS
 
-    Phi                                                 Total : 6.8756
-    Contribution to phi from observation group         "OBS2" : 0.431571
-    Contribution to phi from observation group    "OBSGROUP1" : 2.71473
-    Contribution to phi from observation group    "OBSGROUP3" : 1.47931
+    Phi                                                 Total : 6.87562
+    Contribution to phi from observation group         "OBS2" : 0.431633
+    Contribution to phi from observation group    "OBSGROUP1" : 2.71508
+    Contribution to phi from observation group    "OBSGROUP3" : 1.47892
     Contribution to phi from observation group        "REGUL" : 2.24999
 
      Parameter      Optimal

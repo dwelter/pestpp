@@ -3,37 +3,43 @@
 
  OPTIMISATION ITERATION NO. 1   ----->
  Parameter name    Group        Current value        Sensitivity
-   COND            COND         -2.30102999566       17.4590545474       
-   SCOEFF          SCOEFF       -1.30102999566       3.33236682411       
+   COND            COND         -0.457731426094      30.5533454580       
+   SCOEFF          SCOEFF       1.13264666956        4.99855023617       
 
 
  OPTIMISATION ITERATION NO. 2   ----->
  Parameter name    Group        Current value        Sensitivity
-   sup_1           g_sup_1      10.0000000000        42.2376753082       
-   sup_2           g_sup_2      10.0000000000        9.95656933635       
+   COND            COND         -0.671657417953      59.9317657397       
+   SCOEFF          SCOEFF       1.45072750604        12.4818643086       
 
 
  OPTIMISATION ITERATION NO. 3   ----->
  Parameter name    Group        Current value        Sensitivity
-   sup_1           g_sup_1      9.76949882389        63.4869695995       
-   sup_2           g_sup_2      10.1457433744        16.7053437605       
+   COND            COND         -0.925340496446      127.491953980       
+   SCOEFF          SCOEFF       1.65461272014        36.4808624794       
 
 
  OPTIMISATION ITERATION NO. 4   ----->
  Parameter name    Group        Current value        Sensitivity
-   sup_1           g_sup_1      9.78259051053        62.1485479515       
-   sup_2           g_sup_2      10.1373531412        16.0540674561       
+   COND            COND         -0.863819497059      108.039395858       
+   SCOEFF          SCOEFF       1.58080989135        26.5863795694       
 
 
  OPTIMISATION ITERATION NO. 5   ----->
  Parameter name    Group        Current value        Sensitivity
-   COND            COND         -2.99999174848       62.3453059674       
-   SCOEFF          SCOEFF       -0.699199154467      16.6345776361       
+   COND            COND         -0.856837797737      108.848192879       
+   SCOEFF          SCOEFF       1.53590903595        24.9462963679       
 
 
  OPTIMISATION ITERATION NO. 6   ----->
  Parameter name    Group        Current value        Sensitivity
-   sup_1           g_sup_1      10.0000000000        62.2807625292       
-   sup_2           g_sup_2      10.0000000000        15.5752602375       
+   COND            COND         -0.857139630976      109.106372875       
+   SCOEFF          SCOEFF       1.53386764779        24.9524063977       
+
+
+ OPTIMISATION ITERATION NO. 7   ----->
+ Parameter name    Group        Current value        Sensitivity
+   COND            COND         -0.857139382811      109.547240684       
+   SCOEFF          SCOEFF       1.53386800120        24.9306916852       
 
 

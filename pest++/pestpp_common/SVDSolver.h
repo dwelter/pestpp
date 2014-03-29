@@ -89,7 +89,7 @@ protected:
 	OutputFileWriter &output_file_writer;
 	RestartController &restart_controller;
 
-	virtual Parameters limit_parameters_ip(const Parameters &init_numeric_pars, 
+	virtual void limit_parameters_ip(const Parameters &init_numeric_pars, 
 		Parameters &upgrade_numeric_pars, LimitType &limit_type, 
 		const Parameters &frozen_numeric_pars = Parameters());
 	virtual Parameters limit_parameters_freeze_all_ip(const Parameters &init_numeric_pars, 
@@ -99,12 +99,17 @@ protected:
 	void param_change_stats(double p_old, double p_new, bool &have_fac, double &fac_change, bool &have_rel,
 		double &rel_change);
 	void calc_upgrade_vec(double i_lambda, Parameters &frozen_derivative_pars, QSqrtMatrix &Q_sqrt, Eigen::VectorXd &residuals_vec,
-		vector<string> &par_name_vec, vector<string> &obs_names_vec, const Parameters &base_run_numeric_pars, LimitType &limit_type,
+		vector<string> &obs_names_vec, const Parameters &base_run_numeric_pars, LimitType &limit_type,
 		Upgrade &ml_upgrade, Parameters &new_model_pars, MarquardtMatrix marquardt_type);
-	Upgrade calc_lambda_upgrade_vec(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
-	const Eigen::VectorXd &Residuals, const vector<string> &par_name_vec, const vector<string> &obs_name_vec,
-					const Parameters &base_numeric_pars, const Parameters &freeze_numeric_pars,
-	double lambda, MarquardtMatrix marquardt_type=MarquardtMatrix::IDENT);
+	void calc_lambda_upgrade_vec(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
+		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
+		const Parameters &base_derivative_pars, const Parameters &freeze_derivative_pars,
+		double lambda, Parameters &derivative_upgrade_pars, Parameters &upgrade_deriv_del_pars,
+		Parameters &grad_deriv_del_pars, MarquardtMatrix marquardt_type);
+//	void calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
+//		const Eigen::VectorXd &Residuals, const vector<string> &par_name_vec, const vector<string> &obs_name_vec,
+//		const Parameters &base_numeric_pars, const Parameters &freeze_numeric_pars,
+//		double lambda, MarquardtMatrix marquardt_type = MarquardtMatrix::IDENT);
 	Upgrade calc_upgrade_vec(const Upgrade &direction, 
 		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
 		const Parameters &base_numeric_pars, const Parameters &freeze_numeric_pars, double scale);
@@ -114,6 +119,8 @@ protected:
 		map<string, LimitType> &limit_type_map, Parameters &derivative_parameters_at_limit);
 	Eigen::VectorXd calc_residual_corrections(const Jacobian &jacobian, const Parameters &del_numeric_pars, 
 							   const vector<string> obs_name_vec);
+	bool par_heading_out_bnd(double org_par, double new_par, double lower_bnd, double upper_bnd);
+	int check_bnd_par(Parameters &new_freeze_derivative_pars, const Parameters &current_derivative_pars, const Parameters &new_upgrade_pars, const Parameters &new_grad_pars=Parameters());
 };
 
 #endif /* SVDSOLVER_H_ */

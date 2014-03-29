@@ -38,7 +38,7 @@ class Transformable_value_error : public PestError {
 public:
 	Transformable_value_error(const string &_str, const string &_message="")
 		: PestError(_message) , str(_str){
-		message = string("Transformable_value_error:  Error can not sccess tag: \"") + _str + "\"" + message;
+		message = string("Transformable_value_error:  Error can not access tag: \"") + _str + "\"" + message;
 	}
 	virtual ~Transformable_value_error() throw () {};
 	virtual const char* what() const throw()

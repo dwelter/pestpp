@@ -86,6 +86,7 @@ public:
 	Parameters derivative2numeric_cp(const Parameters &data) const;
 	Parameters derivative2ctl_cp(const Parameters &data) const;
 	Parameters derivative2model_cp(const Parameters &data) const;
+	Parameters chainrule_numeric2derivative_cp(Parameters &data) const;
 	Transformation* get_transformation(const string &name);
 	const TranOffset *get_offset_ptr() const;
 	const TranScale *get_scale_ptr() const;

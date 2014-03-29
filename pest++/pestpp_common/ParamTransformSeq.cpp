@@ -472,6 +472,7 @@ Parameters ParamTransformSeq::derivative2numeric_cp(const Parameters &data) cons
 	return ret_val;
 }
 
+
 void ParamTransformSeq::derivative2ctl_ip(Parameters &data) const
 {
 	vector<Transformation*>::const_reverse_iterator iter, e;
@@ -502,6 +503,29 @@ Parameters ParamTransformSeq::derivative2model_cp(const Parameters &data) const
 	derivative2model_ip(ret_val);
 	return ret_val;
 }
+
+
+Parameters ParamTransformSeq::chainrule_numeric2derivative_cp(Parameters &data) const
+{
+	Parameters ret_val(data);
+	map<string, double> factors;
+	vector<Transformation*>::const_reverse_iterator iter, e;
+	for (iter = tranSeq_derivative2numeric.rbegin(), e = tranSeq_derivative2numeric.rend();
+		iter != e; ++iter)
+	{
+		factors = (*iter)->get_fwd_chain_rule_factors(data);
+		for (auto &i_fac : factors)
+		{
+			auto it_ret_val = ret_val.find(i_fac.first);
+			if (it_ret_val != ret_val.end())
+			{
+				it_ret_val->second *= i_fac.second;
+			}
+		}
+	}
+	return ret_val;
+}
+
 
 
 bool ParamTransformSeq::is_one_to_one() const
