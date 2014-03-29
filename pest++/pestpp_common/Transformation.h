@@ -64,8 +64,6 @@ public:
 	virtual void d1_to_d2(Transformable &del_data, Transformable &data) = 0;
 	virtual void d2_to_d1(Transformable &del_data, Transformable &data) = 0;
 
-	virtual map<string, double> get_fwd_chain_rule_factors(const Transformable &cur_values) const;
-	virtual map<string, double> get_rev_chain_rule_factors(const Transformable &cur_values) const;
 	/** Returns the name of the transformation.
 	 */
 	string get_name()const {return name;}
@@ -155,8 +153,6 @@ public:
 	virtual void reverse(Transformable &data);
 	virtual void d1_to_d2(Transformable &del_data, Transformable &data);
 	virtual void d2_to_d1(Transformable &del_data, Transformable &data);
-	virtual map<string, double> get_fwd_chain_rule_factors(const Transformable &cur_values) const;
-	virtual map<string, double> get_rev_chain_rule_factors(const Transformable &cur_values) const;
 	virtual ~TranOffset(){};
 	virtual void print(ostream &os) const;
 	virtual bool is_one_to_one() const {return true;}
@@ -177,8 +173,6 @@ public:
 	virtual void reverse(Transformable &data);
 	virtual void d1_to_d2(Transformable &del_data, Transformable &data);
 	virtual void d2_to_d1(Transformable &del_data, Transformable &data);
-	virtual map<string, double> get_fwd_chain_rule_factors(const Transformable &cur_values) const;
-	virtual map<string, double> get_rev_chain_rule_factors(const Transformable &cur_values) const;
 	virtual ~TranScale(){};
 	virtual void print(ostream &os) const;
 	virtual bool is_one_to_one() const {return true;}
@@ -200,8 +194,6 @@ public:
 	virtual void reverse(Transformable &data);
 	virtual void d1_to_d2(Transformable &del_data, Transformable &data);
 	virtual void d2_to_d1(Transformable &del_data, Transformable &data);
-	virtual map<string, double> get_fwd_chain_rule_factors(const Transformable &cur_values) const;
-	virtual map<string, double> get_rev_chain_rule_factors(const Transformable &cur_values) const;
 	virtual ~TranLog10(){};
 	virtual void print(ostream &os) const;
 	virtual bool is_one_to_one() const {return true;}
@@ -221,8 +213,6 @@ public:
 	virtual void reverse(Transformable &data);
 	virtual void d1_to_d2(Transformable &del_data, Transformable &data);
 	virtual void d2_to_d1(Transformable &del_data, Transformable &data);
-	virtual map<string, double> get_fwd_chain_rule_factors(const Transformable &cur_values) const;
-	virtual map<string, double> get_rev_chain_rule_factors(const Transformable &cur_values) const;
 	virtual ~TranInvLog10(){};
 	virtual void print(ostream &os) const;
 	virtual bool is_one_to_one() const {return true;}
@@ -346,8 +336,6 @@ public:
 	virtual void reverse(Transformable &data);
 	virtual void d1_to_d2(Transformable &del_data, Transformable &data);
 	virtual void d2_to_d1(Transformable &del_data, Transformable &data);
-	virtual map<string, double> get_fwd_chain_rule_factors(const Transformable &cur_values) const;
-	virtual map<string, double> get_rev_chain_rule_factors(const Transformable &cur_values) const;
 	virtual ~TranNormalize(){};
 	virtual void print(ostream &os) const;
 	virtual bool is_one_to_one() const {return true;}

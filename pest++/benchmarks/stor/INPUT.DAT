@@ -1,4 +1,4 @@
-.10000000000  .005000000  .0505000000  / recharge conductance storage coeff
+.10000000000  .001000014  .1998951810  / recharge conductance storage coeff
 0.0                   / initial head
  
 0.1                   / elapsed times

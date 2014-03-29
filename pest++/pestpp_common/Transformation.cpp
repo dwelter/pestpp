@@ -36,23 +36,6 @@ using namespace std;
 using namespace Eigen;
 
 ///////////////// Transformation Methods /////////////////
-map<string, double> Transformation::get_fwd_chain_rule_factors(const Transformable &cur_values) const
-{
-	//This feature is not supported be all children and 
-	//needs to be defined before it can be used;
-	cerr << "Transformation::get_fwd_chain_rule_factors() - method not defined" << endl;
-	assert(0);
-	throw PestError("Transformation::get_fwd_chain_rule_factors() - method not defined");
-}
-
-map<string, double> Transformation::get_rev_chain_rule_factors(const Transformable &cur_values) const
-{
-	//This feature is not supported be all children and 
-	//needs to be defined before it can be used;
-	cerr << "Transformation::get_rev_chain_rule_factors() - method not defined" << endl;
-	assert(0);
-	throw PestError("Transformation::get_rev_chain_rule_factors() - method not defined");
-}
 
 
 ///////////////// TranMapBase Methods /////////////////
@@ -175,19 +158,6 @@ void TranOffset::d1_to_d2(Transformable &del_data, Transformable &data)
 	// Nothing to do.
 }
 
-map<string, double> TranOffset::get_fwd_chain_rule_factors(const Transformable &cur_values) const
-{
-	// Offset transformation does not affect derivatives.  Return an empty map.
-	map<string, double> factors;
-	return factors;
-}
-
-map<string, double> TranOffset::get_rev_chain_rule_factors(const Transformable &cur_values) const
-{
-	// Offset transformation does not affect derivatives.  Return an empty map.
-	map<string, double> factors;
-	return factors;
-}
 
 ///////////////// TranScale Methods /////////////////
 void TranScale::forward(Transformable &data)
@@ -243,29 +213,6 @@ void TranScale::d2_to_d1(Transformable &del_data, Transformable &data)
 		}
 	}
 	reverse(data);
-}
-
-map<string, double> TranScale::get_fwd_chain_rule_factors(const Transformable &cur_values) const
-{
-	map<string, double> factors;;
-	for (map<string,double>::const_iterator b=items.begin(), e=items.end();
-		b!=e; ++b)
-	{
-			factors[b->first] = 1.0 / b->second;
-	}
-	return factors;
-}
-
-map<string, double> TranScale::get_rev_chain_rule_factors(const Transformable &cur_values) const
-{
-	map<string, double> factors;;
-	for (map<string, double>::const_iterator b = items.begin(), e = items.end();
-		b != e; ++b)
-	{
-		factors[b->first] = b->second;
-	}
-	return factors;
-
 }
 
 void TranScale::print(ostream &os) const
@@ -339,35 +286,6 @@ void TranLog10::d2_to_d1(Transformable &del_data, Transformable &data)
 	reverse(data);
 }
 
-
-map<string, double> TranLog10::get_fwd_chain_rule_factors(const Transformable &cur_values) const
-{
-	// if this transformation takes x -> y
-	// the factors = dy / dx
-	map<string, double> factors;
-	for (set<string,double>::const_iterator b=items.begin(), e=items.end();
-		b!=e; ++b)
-	{
-		double x = cur_values.get_rec(*b);
-		factors[*b] = pow(x, 10.0) * log(10.0);
-	}
-	return factors;
-}
-
-map<string, double> TranLog10::get_rev_chain_rule_factors(const Transformable &cur_values) const
-{
-	// if this transformation takes x -> y or y = log10(x) or x = 10^y
-	// the factors = dy/dx = d/dx(log10(x) =  1/(y * ln(10))
-	map<string, double> factors;
-	for (set<string,double>::const_iterator b=items.begin(), e=items.end();
-		b!=e; ++b)
-	{
-		double y = cur_values.get_rec(*b);
-		factors[*b] = 1.0 / (y * log(10.0));
-	}
-	return factors;
-}
-
 void TranLog10::print(ostream &os) const
 {
 	os << "Transformation name = " << name << "; (type=TranLog10)" << endl;
@@ -439,27 +357,6 @@ void TranInvLog10::d1_to_d2(Transformable &del_data, Transformable &data)
 	forward(data);
 }
 
-map<string, double> TranInvLog10::get_fwd_chain_rule_factors(const Transformable &cur_values) const
-{
-	map<string, double> factors;
-	for (set<string,double>::const_iterator b=items.begin(), e=items.end();
-		b!=e; ++b)
-	{
-			factors[*b] = 1.0 / ( cur_values.get_rec(*b) * log(10.0) );
-	}
-	return factors;
-}
-
-map<string, double> TranInvLog10::get_rev_chain_rule_factors(const Transformable &cur_values) const
-{
-	map<string, double> factors;
-	for (set<string,double>::const_iterator b=items.begin(), e=items.end();
-		b!=e; ++b)
-	{
-			factors[*b] = log(10.0) * pow(10.0, cur_values.get_rec(*b));
-	}
-	return factors;
-}
 void TranInvLog10::print(ostream &os) const
 {
 	os << "Transformation name = " << name << "; (type=TranInvLog10)" << endl;
@@ -870,30 +767,6 @@ void TranNormalize::d2_to_d1(Transformable &del_data, Transformable &data)
 		}
 	}
 	reverse(data);
-}
-
-
-
-map<string, double> TranNormalize::get_fwd_chain_rule_factors(const Transformable &cur_values) const
-{
-	map<string, double> factors; 
-	for (map<string,NormData>::const_iterator b=items.begin(), e=items.end();
-		b!=e; ++b)
-	{
-			factors[b->first] = 1.0 / b->second.scale;
-	}
-	return factors;
-}
-
-map<string, double> TranNormalize::get_rev_chain_rule_factors(const Transformable &cur_values) const
-{
-	map<string, double> factors; 
-	for (map<string,NormData>::const_iterator b=items.begin(), e=items.end();
-		b!=e; ++b)
-	{
-			factors[b->first] = b->second.scale;
-	}
-	return factors;
 }
 
 void TranNormalize::insert(const string &item_name, double _offset, double _scale)
