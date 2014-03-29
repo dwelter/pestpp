@@ -100,7 +100,7 @@ protected:
 		double &rel_change);
 	void calc_upgrade_vec(double i_lambda, Parameters &frozen_derivative_pars, QSqrtMatrix &Q_sqrt, Eigen::VectorXd &residuals_vec,
 		vector<string> &obs_names_vec, const Parameters &base_run_numeric_pars, LimitType &limit_type,
-		Upgrade &ml_upgrade, Parameters &new_model_pars, MarquardtMatrix marquardt_type);
+		Parameters &new_model_pars, MarquardtMatrix marquardt_type);
 	void calc_lambda_upgrade_vec(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
 		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
 		const Parameters &base_derivative_pars, const Parameters &freeze_derivative_pars,

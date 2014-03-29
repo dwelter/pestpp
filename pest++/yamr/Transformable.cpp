@@ -358,6 +358,28 @@ double Transformable::l2_norm() const
    return norm;
 }
 
+
+double  Transformable::l2_norm(const Transformable &d1, const Transformable &d2)
+{
+	double norm = 0.0;
+	const auto it_end = d1.end();
+	assert(d1.size() == d2.size());
+	for (const auto &i_d2 : d2.items)
+	{
+		auto it_d1 = d1.find(i_d2.first);
+		if (it_d1 != it_end)
+		{
+			norm += pow(it_d1->second - i_d2.second, 2.0);
+		}
+		else
+		{
+			assert(true);
+		}
+	}
+	norm = sqrt(norm);
+	return norm;
+}
+
 ostream& operator<<(ostream& out, const Transformable &rhs)
 {
 	for(Transformable::const_iterator b=rhs.begin(), e=rhs.end();
@@ -367,3 +389,4 @@ ostream& operator<<(ostream& out, const Transformable &rhs)
 	}
 	return out;
 }
+

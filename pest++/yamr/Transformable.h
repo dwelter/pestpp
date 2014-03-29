@@ -98,6 +98,7 @@ public:
 	Transformable::iterator end() {return items.end();}
 	Transformable::const_iterator end() const {return items.end();}
 	double l2_norm() const;
+	static double l2_norm(const Transformable &d1, const Transformable &d2);
 	virtual ~Transformable(){}
 protected:
 	unordered_map<string, double> items;

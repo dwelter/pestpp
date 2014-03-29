@@ -328,7 +328,6 @@ void SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, const QSqrtMat
 	par_transform.derivative2numeric_ip(base_freeze_pars);
 	delta_freeze_pars -= base_freeze_pars;
 	VectorXd del_residuals = calc_residual_corrections(jacobian, delta_freeze_pars, obs_name_vec);
-	cout << del_residuals << endl;
 
 	VectorXd Sigma;
 	VectorXd Sigma_trunc;
@@ -389,8 +388,7 @@ void SVDSolver::calc_lambda_upgrade_vec(const Jacobian &jacobian, const QSqrtMat
 }
 
 void SVDSolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_derivative_pars, QSqrtMatrix &Q_sqrt, VectorXd &residuals_vec,
-	vector<string> &obs_names_vec, const Parameters &base_run_derivative_pars, LimitType &limit_type,
-	Upgrade &ml_upgrade, Parameters &new_model_pars, MarquardtMatrix marquardt_type)
+	vector<string> &obs_names_vec, const Parameters &base_run_derivative_pars, LimitType &limit_type, Parameters &new_model_pars, MarquardtMatrix marquardt_type)
 {
 	Parameters upgrade_deriv_pars;
 	Parameters upgrade_deriv_del_pars;
@@ -564,15 +562,15 @@ restart_resume_jacobian_runs:
 	LimitType limit_type = LimitType::NONE;
 	const Parameters &base_run_derivative_pars = par_transform.ctl2derivative_cp(cur_solution.get_ctl_pars());
 
-	//double tmp_lambda[] = {1.0E-5, 0.1, 1.0, 10.0, 100.0, 1000.0};
-	double tmp_lambda[] = { 0.0 };
+	double tmp_lambda[] = {0.1, 1.0, 10.0, 100.0, 1000.0};
+	//double tmp_lambda[] = { 0.0 };
 	vector<double> lambda_vec(tmp_lambda, tmp_lambda+sizeof(tmp_lambda)/sizeof(double));
-	//lambda_vec.push_back(best_lambda);
-	//lambda_vec.push_back(best_lambda / 2.0);
-	//lambda_vec.push_back(best_lambda * 2.0);
-	//std::sort(lambda_vec.begin(), lambda_vec.end());
-	//auto iter = std::unique(lambda_vec.begin(), lambda_vec.end());
-	//lambda_vec.resize(std::distance(lambda_vec.begin(), iter));
+	lambda_vec.push_back(best_lambda);
+	lambda_vec.push_back(best_lambda / 2.0);
+	lambda_vec.push_back(best_lambda * 2.0);
+	std::sort(lambda_vec.begin(), lambda_vec.end());
+	auto iter = std::unique(lambda_vec.begin(), lambda_vec.end());
+	lambda_vec.resize(std::distance(lambda_vec.begin(), iter));
 	int max_freeze_iter = 1;
 	int i_update_vec = 0;
 	stringstream message;
@@ -587,40 +585,38 @@ restart_resume_jacobian_runs:
 
 		Parameters frozen_derivative_pars = failed_jac_pars;
 		Parameters new_model_pars;
-		Upgrade ml_upgrade;
 		//Compute automatic regularization weight adjustments here
 
 		calc_upgrade_vec(i_lambda, frozen_derivative_pars, Q_sqrt, residuals_vec,
 			obs_names_vec, base_run_derivative_pars, limit_type,
-			ml_upgrade, new_model_pars, MarquardtMatrix::IDENT);
+			new_model_pars, MarquardtMatrix::IDENT);
 
 		run_manager.add_run(new_model_pars, "IDEN", i_lambda);
-		magnitude_vec.push_back(ml_upgrade.norm);
+		magnitude_vec.push_back(Transformable::l2_norm(par_transform.derivative2numeric_cp(base_run_derivative_pars), par_transform.model2numeric_cp(new_model_pars)));
 		frozen_par_vec.push_back(frozen_derivative_pars);
 	}
-	//for (double i_lambda : lambda_vec)
-	//{
-	//	std::cout << string(message.str().size(), '\b');
-	//	message.str("");
-	//	message << "  computing upgrade vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
-	//	std::cout << message.str();
+	for (double i_lambda : lambda_vec)
+	{
+		std::cout << string(message.str().size(), '\b');
+		message.str("");
+		message << "  computing upgrade vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
+		std::cout << message.str();
 
-	//	//Compute automatic regularization weight adjustments here
+		//Compute automatic regularization weight adjustments here
 
-	//	Parameters frozen_derivative_pars = failed_jac_pars;
-	//	Parameters new_model_pars;
-	//	Upgrade ml_upgrade;
-	//	//Compute automatic regularization weight adjustments here
+		Parameters frozen_derivative_pars = failed_jac_pars;
+		Parameters new_model_pars;
+		//Compute automatic regularization weight adjustments here
 
-	//	calc_upgrade_vec(i_lambda, frozen_derivative_pars, Q_sqrt, residuals_vec,
-	//		par_name_vec, obs_names_vec, base_run_numeric_pars, limit_type,
-	//		ml_upgrade, new_model_pars, MarquardtMatrix::JTQJ);
+		calc_upgrade_vec(i_lambda, frozen_derivative_pars, Q_sqrt, residuals_vec,
+			obs_names_vec, base_run_derivative_pars, limit_type,
+			new_model_pars, MarquardtMatrix::JTQJ);
 
-	//	par_transform.ctl2model_ip(new_model_pars);
-	//	run_manager.add_run(new_model_pars, "DIAG", i_lambda);
-	//	magnitude_vec.push_back(ml_upgrade.norm);
-	//	frozen_par_vec.push_back(frozen_derivative_pars);
-	//}
+		par_transform.ctl2model_ip(new_model_pars);
+		run_manager.add_run(new_model_pars, "DIAG", i_lambda);
+		magnitude_vec.push_back(Transformable::l2_norm(par_transform.derivative2ctl_cp(base_run_derivative_pars), par_transform.model2ctl_cp(new_model_pars)));
+		frozen_par_vec.push_back(frozen_derivative_pars);
+	}
 
 	cout << endl;
 	fout_restart << "upgrade_model_runs_built " << run_manager.get_cur_groupid() << endl;
