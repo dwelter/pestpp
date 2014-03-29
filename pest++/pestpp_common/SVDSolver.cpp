@@ -241,6 +241,7 @@ void SVDSolver::calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSq
 	double lambda, Parameters &derivative_upgrade_pars, Parameters &upgrade_deriv_del_pars,
 	Parameters &grad_deriv_del_pars, MarquardtMatrix marquardt_type)
 {
+	Parameters base_numeric_pars = par_transform.derivative2numeric_cp(base_derivative_pars);
 	//Create a set of Derivative Parameters which does not include the frozen Parameters
 	Parameters pars_nf = base_derivative_pars;
 	pars_nf.erase(prev_frozen_derivative_pars);
@@ -315,8 +316,10 @@ void SVDSolver::calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSq
 	}
 	// Transform upgrade_pars back to derivative parameters
 	derivative_upgrade_pars = par_transform.numeric2derivative_cp(pars_nf);
-	upgrade_deriv_del_pars = par_transform.chainrule_numeric2derivative_cp(upgrade);
-	grad_deriv_del_pars = par_transform.chainrule_numeric2derivative_cp(grad);
+	upgrade_deriv_del_pars = upgrade;
+	par_transform.del_numeric_2_del_derivative_ip(upgrade_deriv_del_pars, Parameters(base_numeric_pars));
+	grad_deriv_del_pars = grad;
+	par_transform.del_numeric_2_del_derivative_ip(grad_deriv_del_pars, Parameters(base_numeric_pars));
 
 	//tranfere previously frozen componets of the ugrade vector to upgrade.svd_uvec
 	for (auto &ipar : prev_frozen_derivative_pars)
@@ -332,6 +335,7 @@ void SVDSolver::calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqr
 	double lambda, Parameters &derivative_upgrade_pars, Parameters &upgrade_deriv_del_pars,
 	Parameters &grad_deriv_del_pars, MarquardtMatrix marquardt_type )
 {
+	Parameters base_numeric_pars = par_transform.derivative2numeric_cp(base_derivative_pars);
 	//Create a set of Derivative Parameters which does not include the frozen Parameters
 	Parameters pars_nf = base_derivative_pars;
 	pars_nf.erase(prev_frozen_derivative_pars);
@@ -395,8 +399,10 @@ void SVDSolver::calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqr
 	}
 	// Transform upgrade_pars back to derivative parameters
 	derivative_upgrade_pars = par_transform.numeric2derivative_cp(pars_nf);
-	upgrade_deriv_del_pars = par_transform.chainrule_numeric2derivative_cp(upgrade);
-	grad_deriv_del_pars = par_transform.chainrule_numeric2derivative_cp(grad);
+	upgrade_deriv_del_pars = upgrade;
+	par_transform.del_numeric_2_del_derivative_ip(upgrade_deriv_del_pars, Parameters(base_numeric_pars));
+	grad_deriv_del_pars = grad;
+	par_transform.del_numeric_2_del_derivative_ip(grad_deriv_del_pars, Parameters(base_numeric_pars));
 
 	//tranfere previously frozen componets of the ugrade vector to upgrade.svd_uvec
 	for (auto &ipar : prev_frozen_derivative_pars)

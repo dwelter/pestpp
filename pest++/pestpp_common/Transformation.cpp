@@ -163,16 +163,28 @@ void TranOffset::print(ostream &os) const
 	}
 }
 
+void TranOffset::d2_to_d1(Transformable &del_data, Transformable &data)
+{
+	// Offset transformation does not affect derivatives.
+	// Nothing to do.
+}
+
+void TranOffset::d1_to_d2(Transformable &del_data, Transformable &data)
+{
+	// Offset transformation does not affect derivatives.
+	// Nothing to do.
+}
+
 map<string, double> TranOffset::get_fwd_chain_rule_factors(const Transformable &cur_values) const
 {
-	// Offset transformation does not affect deriviatives.  Return an empty map.
+	// Offset transformation does not affect derivatives.  Return an empty map.
 	map<string, double> factors;
 	return factors;
 }
 
 map<string, double> TranOffset::get_rev_chain_rule_factors(const Transformable &cur_values) const
 {
-	// Offset transformation does not affect deriviatives.  Return an empty map.
+	// Offset transformation does not affect derivatives.  Return an empty map.
 	map<string, double> factors;
 	return factors;
 }
@@ -203,6 +215,34 @@ void TranScale::reverse(Transformable &data)
 			(*data_iter).second /= b->second;
 		}
 	}
+}
+
+void TranScale::d1_to_d2(Transformable &del_data, Transformable &data)
+{
+	Transformable::iterator del_data_iter, del_data_end = del_data.end();
+	for (map<string, double>::const_iterator b = items.begin(), e = items.end();
+		b != e; ++b) {
+		del_data_iter = del_data.find(b->first);
+		if (del_data_iter != del_data_end)
+		{
+			(*del_data_iter).second *= b->second;
+		}
+	}
+	forward(data);
+}
+
+void TranScale::d2_to_d1(Transformable &del_data, Transformable &data)
+{
+	Transformable::iterator del_data_iter, del_data_end = del_data.end();
+	for (map<string, double>::const_iterator b = items.begin(), e = items.end();
+		b != e; ++b) {
+		del_data_iter = del_data.find(b->first);
+		if (del_data_iter != del_data_end)
+		{
+			(*del_data_iter).second /= b->second;
+		}
+	}
+	reverse(data);
 }
 
 map<string, double> TranScale::get_fwd_chain_rule_factors(const Transformable &cur_values) const
@@ -262,6 +302,41 @@ void TranLog10::reverse(Transformable &data)
 			(*data_iter).second = pow(10.0, (*data_iter).second);
 		}
 	}
+}
+
+
+void TranLog10::d1_to_d2(Transformable &del_data, Transformable &data)
+{
+	Transformable::iterator del_data_iter, del_data_end = del_data.end();
+	for (set<string>::const_iterator b = items.begin(), e = items.end(); b != e; ++b)
+	{
+		del_data_iter = del_data.find(*b);
+		if (del_data_iter != del_data_end)
+		{
+			double d1 = data.get_rec(*b);
+			double factor = 1.0 / (d1 * log(10.0));
+			(*del_data_iter).second *= factor;
+		}
+	}
+	forward(data);
+}
+
+void TranLog10::d2_to_d1(Transformable &del_data, Transformable &data)
+{
+	// this transformation takes x -> y = log10(x)
+	// the factors = dy/dx = d/dx(log10(x) =  1/(y * ln(10))
+	Transformable::iterator del_data_iter, del_data_end = del_data.end();
+	for (set<string>::const_iterator b = items.begin(), e = items.end(); b != e; ++b)
+	{
+		del_data_iter = del_data.find(*b);
+		if (del_data_iter != del_data_end)
+		{
+			double d2 = data.get_rec(*b);
+			double factor = pow(d2, 10.0) * log(10.0);
+			(*del_data_iter).second *= factor;
+		}
+	}
+	reverse(data);
 }
 
 
@@ -329,6 +404,41 @@ void TranInvLog10::reverse(Transformable &data)
 	}
 }
 
+
+void TranInvLog10::d2_to_d1(Transformable &del_data, Transformable &data)
+{
+	Transformable::iterator del_data_iter, del_data_end = del_data.end();
+	for (set<string>::const_iterator b = items.begin(), e = items.end(); b != e; ++b)
+	{
+		del_data_iter = del_data.find(*b);
+		if (del_data_iter != del_data_end)
+		{
+			double d1 = data.get_rec(*b);
+			double factor = 1.0 / (d1 * log(10.0));
+			(*del_data_iter).second *= factor;
+		}
+	}
+	reverse(data);
+}
+
+void TranInvLog10::d1_to_d2(Transformable &del_data, Transformable &data)
+{
+	// this transformation takes x -> y = log10(x)
+	// the factors = dy/dx = d/dx(log10(x) =  1/(y * ln(10))
+	Transformable::iterator del_data_iter, del_data_end = del_data.end();
+	for (set<string>::const_iterator b = items.begin(), e = items.end(); b != e; ++b)
+	{
+		del_data_iter = data.find(*b);
+		if (del_data_iter != del_data_end)
+		{
+			double d2 = data.get_rec(*b);
+			double factor = pow(d2, 10.0) * log(10.0);
+			(*del_data_iter).second *= factor;
+		}
+	}
+	forward(data);
+}
+
 map<string, double> TranInvLog10::get_fwd_chain_rule_factors(const Transformable &cur_values) const
 {
 	map<string, double> factors;
@@ -377,6 +487,25 @@ void TranFixed::reverse(Transformable &data)
 	}
 }
 
+void TranFixed::d1_to_d2(Transformable &del_data, Transformable &data)
+{
+	for (map<string, double>::iterator b = items.begin(), e = items.end(); b != e; ++b)
+	{
+		del_data.erase(b->first);
+	}
+	forward(data);
+}
+
+void TranFixed::d2_to_d1(Transformable &del_data, Transformable &data)
+{
+	for (map<string, double>::iterator b = items.begin(), e = items.end(); b != e; ++b)
+	{
+		del_data.insert(b->first, 0.0);
+	}
+	reverse(data);
+}
+
+
 void TranFixed::print(ostream &os) const
 {
 	os << "Transformation name = " << name << "; (type=TranFixed)" << endl; 
@@ -400,6 +529,34 @@ void TranTied::insert(const string &item_name, const pair<string, double> &item_
 	items[item_name] = item_value;
 }
 
+
+void TranTied::d1_to_d2(Transformable &del_data, Transformable &data)
+{
+	for (map<string, pair_string_double>::iterator ii = items.begin(); ii != items.end(); ++ii)
+	{
+		del_data.erase(ii->first);
+	}
+	forward(data);
+}
+
+void TranTied::d2_to_d1(Transformable &del_data, Transformable &data)
+{
+	string const *base_name;
+	double *factor;
+	Transformable::iterator base_iter;
+	for (map<string, pair_string_double>::iterator b = items.begin(), e = items.end();
+		b != e; ++b)
+	{
+		base_name = &(b->second.first);
+		factor = &(b->second.second);
+		base_iter = data.find(*base_name);
+		if (base_iter != data.end())
+		{
+			del_data.insert(b->first, (*base_iter).second * (*factor));
+		}
+	}
+	reverse(data);
+}
 
 void TranTied::reverse(Transformable &data)
 {
@@ -426,6 +583,8 @@ void TranTied::forward(Transformable &data)
 		data.erase(ii->first);
 	}
 }
+
+
 void TranTied::print(ostream &os) const
 {
 	os << "Transformation name = " << name << "; (type=TranTied)" << endl; 
@@ -579,6 +738,38 @@ void TranSVD::forward(Transformable &data)
 	data = super_pars;
 }
 
+
+void TranSVD::d1_to_d2(Transformable &del_data, Transformable &data)
+{
+	Transformable new_data;
+	VectorXd d1_vec = del_data.get_partial_data_eigen_vec(base_parameter_names);
+	VectorXd d2_vec = Vt * d1_vec;
+	for (int i = 0; i<Sigma.size(); ++i) {
+		new_data[super_parameter_names[i]] = d2_vec[i];
+	}
+	new_data = del_data;
+	forward(data);
+}
+
+
+void TranSVD::d2_to_d1(Transformable &del_data, Transformable &data)
+{
+	Transformable new_data;
+	VectorXd d2_vec = del_data.get_partial_data_eigen_vec(super_parameter_names);
+	VectorXd d1_vec = Vt.transpose() * d2_vec;
+	for (int i = 0; i < base_parameter_names.size(); ++i)
+	{
+		new_data[base_parameter_names[i]] = d1_vec[i];
+	}
+	for (auto & ipar : frozen_derivative_parameters)
+	{
+		new_data[ipar.first] = 0;
+	}
+	del_data = new_data;
+	reverse(data);
+}
+
+
 ParameterGroupInfo TranSVD::build_par_group_info(const ParameterGroupInfo &base_pg_info)
 {
 	double derinc_sup;
@@ -650,6 +841,37 @@ void TranNormalize::reverse(Transformable &data)
 		}
 	}
 }
+
+
+
+void TranNormalize::d1_to_d2(Transformable &del_data, Transformable &data)
+{
+	Transformable::iterator del_data_iter, del_data_end = del_data.end();
+	for (map<string, NormData>::const_iterator b = items.begin(), e = items.end();
+		b != e; ++b) {
+		del_data_iter = data.find(b->first);
+		if (del_data_iter != del_data_end)
+		{
+			(*del_data_iter).second *= b->second.scale;
+		}
+	}
+	forward(data);
+}
+
+void TranNormalize::d2_to_d1(Transformable &del_data, Transformable &data)
+{
+	Transformable::iterator del_data_iter, del_data_end = del_data.end();
+	for (map<string, NormData>::const_iterator b = items.begin(), e = items.end();
+		b != e; ++b) {
+		del_data_iter = del_data.find(b->first);
+		if (del_data_iter != del_data_end)
+		{
+			(*del_data_iter).second /= b->second.scale;
+		}
+	}
+	reverse(data);
+}
+
 
 
 map<string, double> TranNormalize::get_fwd_chain_rule_factors(const Transformable &cur_values) const

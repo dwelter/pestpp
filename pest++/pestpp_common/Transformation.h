@@ -60,6 +60,10 @@ public:
 	 dataset contained in data is changed in place.
 	 */
 	virtual void reverse(Transformable &data) = 0;
+
+	virtual void d1_to_d2(Transformable &del_data, Transformable &data) = 0;
+	virtual void d2_to_d1(Transformable &del_data, Transformable &data) = 0;
+
 	virtual map<string, double> get_fwd_chain_rule_factors(const Transformable &cur_values) const;
 	virtual map<string, double> get_rev_chain_rule_factors(const Transformable &cur_values) const;
 	/** Returns the name of the transformation.
@@ -149,6 +153,8 @@ public:
 	TranOffset(const string &_name="unnamed TranOffset"): TranMapBase(_name){};
 	virtual void forward(Transformable &data);
 	virtual void reverse(Transformable &data);
+	virtual void d1_to_d2(Transformable &del_data, Transformable &data);
+	virtual void d2_to_d1(Transformable &del_data, Transformable &data);
 	virtual map<string, double> get_fwd_chain_rule_factors(const Transformable &cur_values) const;
 	virtual map<string, double> get_rev_chain_rule_factors(const Transformable &cur_values) const;
 	virtual ~TranOffset(){};
@@ -169,6 +175,8 @@ public:
 	TranScale(const string &_name="unnamed TranScale"): TranMapBase(_name){};
 	virtual void forward(Transformable &data);
 	virtual void reverse(Transformable &data);
+	virtual void d1_to_d2(Transformable &del_data, Transformable &data);
+	virtual void d2_to_d1(Transformable &del_data, Transformable &data);
 	virtual map<string, double> get_fwd_chain_rule_factors(const Transformable &cur_values) const;
 	virtual map<string, double> get_rev_chain_rule_factors(const Transformable &cur_values) const;
 	virtual ~TranScale(){};
@@ -190,6 +198,8 @@ public:
 	TranLog10(const string &_name="unnamed TranLog10"): TranSetBase(_name){};
 	virtual void forward(Transformable &data);
 	virtual void reverse(Transformable &data);
+	virtual void d1_to_d2(Transformable &del_data, Transformable &data);
+	virtual void d2_to_d1(Transformable &del_data, Transformable &data);
 	virtual map<string, double> get_fwd_chain_rule_factors(const Transformable &cur_values) const;
 	virtual map<string, double> get_rev_chain_rule_factors(const Transformable &cur_values) const;
 	virtual ~TranLog10(){};
@@ -209,6 +219,8 @@ public:
 	TranInvLog10(const string &_name="unnamed TranInvLog10"): TranSetBase(_name){};
 	virtual void forward(Transformable &data);
 	virtual void reverse(Transformable &data);
+	virtual void d1_to_d2(Transformable &del_data, Transformable &data);
+	virtual void d2_to_d1(Transformable &del_data, Transformable &data);
 	virtual map<string, double> get_fwd_chain_rule_factors(const Transformable &cur_values) const;
 	virtual map<string, double> get_rev_chain_rule_factors(const Transformable &cur_values) const;
 	virtual ~TranInvLog10(){};
@@ -228,6 +240,8 @@ public:
 	TranFixed(const string &_name="unknown TranFixed"): TranMapBase(_name){};
 	virtual void forward(Transformable &data);
 	virtual void reverse(Transformable &data);
+	virtual void d1_to_d2(Transformable &del_data, Transformable &data);
+	virtual void d2_to_d1(Transformable &del_data, Transformable &data);
 	virtual ~TranFixed(){};
 	virtual void print(ostream &os) const;
 	virtual bool is_one_to_one() const {return true;}
@@ -261,6 +275,8 @@ public:
 	void insert(const string &item_name, const pair<string, double> &item_value);
 	virtual void forward(Transformable &data);
 	virtual void reverse(Transformable &data);
+	virtual void d1_to_d2(Transformable &del_data, Transformable &data);
+	virtual void d2_to_d1(Transformable &del_data, Transformable &data);
 	virtual ~TranTied(){};
 	virtual void print(ostream &os) const;
 	virtual bool is_one_to_one() const {return true;}
@@ -283,6 +299,8 @@ public:
 	void update_reset_frozen_pars(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt, const Parameters &base_numeric_pars,
 		int maxsing, double eigthresh, const vector<string> &par_names, const vector<string> &obs_names,
 		const Parameters &_frozen_derivative_pars=Parameters());
+	virtual void d1_to_d2(Transformable &del_data, Transformable &data);
+	virtual void d2_to_d1(Transformable &del_data, Transformable &data);
 	void update_add_frozen_pars(const Parameters &_frozen_derivative_pars);
 	Parameters& get_frozen_derivative_pars() {return frozen_derivative_parameters;}
 	const vector<string>& get_super_parameter_names(){return super_parameter_names;}
@@ -326,6 +344,8 @@ public:
 	void insert(const string &item_name, double _offset, double _scale);
 	virtual void forward(Transformable &data);
 	virtual void reverse(Transformable &data);
+	virtual void d1_to_d2(Transformable &del_data, Transformable &data);
+	virtual void d2_to_d1(Transformable &del_data, Transformable &data);
 	virtual map<string, double> get_fwd_chain_rule_factors(const Transformable &cur_values) const;
 	virtual map<string, double> get_rev_chain_rule_factors(const Transformable &cur_values) const;
 	virtual ~TranNormalize(){};
