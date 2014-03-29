@@ -258,24 +258,24 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		magnitude_vec.push_back(ml_upgrade.norm);
 	}
 
-	for (double i_lambda : lambda_vec)
-	{
-		std::cout << string(message.str().size(), '\b');
-		message.str("");
-		message << "  computing upgrade vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
-		std::cout << message.str();
+	//for (double i_lambda : lambda_vec)
+	//{
+	//	std::cout << string(message.str().size(), '\b');
+	//	message.str("");
+	//	message << "  computing upgrade vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
+	//	std::cout << message.str();
 
-		Parameters new_pars;
+	//	Parameters new_pars;
 
-		calc_upgrade_vec(i_lambda, frozen_derivative_par_vec, Q_sqrt, residuals_vec,
-			numeric_par_names_vec, obs_names_vec, base_numeric_pars,
-			ml_upgrade, new_pars, MarquardtMatrix::JTQJ);
+	//	calc_upgrade_vec(i_lambda, frozen_derivative_par_vec, Q_sqrt, residuals_vec,
+	//		numeric_par_names_vec, obs_names_vec, base_numeric_pars,
+	//		ml_upgrade, new_pars, MarquardtMatrix::JTQJ);
 
-		//transform new_pars to model parameters
-		par_transform.derivative2model_ip(new_pars);
-		run_manager.add_run(new_pars, "DIAG", i_lambda);
-		magnitude_vec.push_back(ml_upgrade.norm);
-	}
+	//	//transform new_pars to model parameters
+	//	par_transform.derivative2model_ip(new_pars);
+	//	run_manager.add_run(new_pars, "DIAG", i_lambda);
+	//	magnitude_vec.push_back(ml_upgrade.norm);
+	//}
 
 	cout << endl;
 
