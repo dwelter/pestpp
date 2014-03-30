@@ -171,6 +171,8 @@ ostream& operator<< (ostream &os, const ParameterRec& val)
 
 /////////////////////////////////////  CtlParameterInfo Methods ///////////////////////
 
+
+
 const ParameterRec* ParameterInfo::get_parameter_rec_ptr(const string &name) const
 {
 	const ParameterRec *ret_val = 0;

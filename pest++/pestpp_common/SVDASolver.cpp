@@ -47,64 +47,128 @@ SVDASolver::SVDASolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, c
 }
 
 
-Parameters SVDASolver::limit_parameters_ip(const Parameters &init_numeric_pars, Parameters &upgrade_numeric_pars)
+Parameters SVDASolver::limit_parameters_freeze_all_ip(const Parameters &init_ctl_pars,
+		Parameters &upgrade_ctl_pars, const Parameters &prev_frozen_ctl_pars)
 {
 	const string *name;
 	double val_init;
 	double val_upgrade;
-	double limit;
 
-	pair<bool, double> par_limit;
 	// superparameters are always limited by RELPARMAX
 	// if any base parameters go outof bounds, they should be frozen,
 	// a new SVD factorization should be computed, and then this routine should be called again
 
 	//Assume Super parameters are independent and apply limits one at a time
-	double limit_fac = 1.0;
-	for(auto &ipar : init_numeric_pars)
+
+	par_transform.ctl2numeric_ip(upgrade_ctl_pars);
+	Parameters init_numeric_pars = par_transform.ctl2numeric_cp(init_ctl_pars);
+
+	for (auto &ipar : upgrade_ctl_pars)
 	{
-		par_limit = pair<bool, double>(false, 0.0);
 		name = &(ipar.first);  // parameter name
-		val_init = ipar.second; // inital parameter value
-		auto iter_pu = upgrade_numeric_pars.find(*name);
-		assert (iter_pu != upgrade_numeric_pars.end());
-		val_upgrade = (*iter_pu).second;  // upgrade parameter value
+		val_upgrade = ipar.second; // inital parameter value
+		auto iter_pu = init_numeric_pars.find(*name);
+		assert(iter_pu != init_numeric_pars.end());
+		val_init = (*iter_pu).second;  // upgrade parameter value
 		// only use relative change limits
-		limit = abs((val_upgrade - val_init) / (val_init * ctl_info->relparmax));
-		if (limit < 1)
+		if (abs((val_upgrade - val_init) / val_init) > ctl_info->relparmax)
 		{
-			limit_fac = min(limit_fac, 1.0 / limit);
+			double delta = abs(ctl_info->relparmax * val_init) * sign(val_upgrade - val_init);
+			ipar.second = val_init + delta;
 		}
-	}
-	for(auto &ipar : upgrade_numeric_pars)
-	{
-		ipar.second *= limit_fac;
 	}
 			
-	//convert parameters to their deriviative form and check any any that have exceeded their bounds
-	Parameters derivative_update_pars = par_transform.numeric2derivative_cp(upgrade_numeric_pars);
-	Parameters freeze_derivative_par;
-	for (auto &ipar :  derivative_update_pars)
+	//convert parameters to their ctl form and check any any that have exceeded their bounds
+	par_transform.numeric2ctl_ip(upgrade_ctl_pars);
+	Parameters freeze_ctl_par;
+	for (auto &ipar : upgrade_ctl_pars)
 	{
-		const string &name = ipar.first;
-		const ParameterRec *p_info = ctl_par_info_ptr->get_parameter_rec_ptr(name);
-		if(ipar.second > p_info->ubnd)
+		name = &(ipar.first);
+		const ParameterRec *p_info = ctl_par_info_ptr->get_parameter_rec_ptr(*name);
+		if (p_info->is_active() && prev_frozen_ctl_pars.find(*name) == prev_frozen_ctl_pars.end())
 		{
-			freeze_derivative_par[name] = p_info->ubnd;
-		}
-		// Check parameter lower bound
-		else if(ipar.second < p_info->lbnd)
-		{
-			freeze_derivative_par[name] = p_info->lbnd;
+			const ParameterRec *p_info = ctl_par_info_ptr->get_parameter_rec_ptr(*name);
+			if (ipar.second > p_info->ubnd)
+			{
+				ipar.second = freeze_ctl_par[*name] = p_info->ubnd;
+			}
+			// Check parameter lower bound
+			else if (ipar.second < p_info->lbnd)
+			{
+				ipar.second = freeze_ctl_par[*name] = p_info->lbnd;
+			}
 		}
 	}
-	return freeze_derivative_par;
+	for (auto &ipar : prev_frozen_ctl_pars)
+	{
+		upgrade_ctl_pars[ipar.first] = ipar.second;
+	}
+
+	return freeze_ctl_par;
 }
 
-void SVDASolver::calc_upgrade_vec(double i_lambda, vector<Parameters> &frozen_derivative_par_vec, QSqrtMatrix &Q_sqrt, VectorXd &residuals_vec,
-	vector<string> &numeric_par_names_vec, vector<string> &obs_names_vec, const Parameters &base_run_numeric_pars,
-	Upgrade &ml_upgrade, Parameters &new_pars, MarquardtMatrix marquardt_type)
+void SVDASolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_ctl_pars, QSqrtMatrix &Q_sqrt, VectorXd &residuals_vec,
+	vector<string> &obs_names_vec, const Parameters &base_run_ctl_pars, LimitType &limit_type, Parameters &upgrade_ctl_pars,
+	MarquardtMatrix marquardt_type)
 {
+	Parameters upgrade_ctl_del_pars;
+	Parameters grad_ctl_del_pars;
+	int num_upgrade_out_grad_in;
+	Parameters new_frozen_ctl_pars;
+
+	// define a function type for upgrade methods 
+	typedef void(SVDSolver::*UPGRADE_FUNCTION) (const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
+		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
+		const Parameters &base_ctl_pars, const Parameters &prev_frozen_ctl_pars,
+		double lambda, Parameters &ctl_upgrade_pars, Parameters &upgrade_ctl_del_pars,
+		Parameters &grad_ctl_del_pars, MarquardtMatrix marquardt_type);
+
+	UPGRADE_FUNCTION calc_lambda_upgrade = &SVDASolver::calc_lambda_upgrade_vec_JtQJ;
+
+	if (mat_inv == MAT_INV::Q12J)
+	{
+		calc_lambda_upgrade = &SVDASolver::calc_lambda_upgrade_vecQ12J;
+	}
+
+		// need to remove parameters frozen due to failed jacobian runs when calling calc_lambda_upgrade_vec
+		//Freeze Parameters at the boundary whose ugrade vector and gradient both head out of bounds
+		(*this.*calc_lambda_upgrade)(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+			base_run_ctl_pars, prev_frozen_ctl_pars, i_lambda, upgrade_ctl_pars, upgrade_ctl_del_pars,
+			grad_ctl_del_pars, marquardt_type);
+		num_upgrade_out_grad_in = check_bnd_par(new_frozen_ctl_pars, base_run_ctl_pars, upgrade_ctl_del_pars, grad_ctl_del_pars);
+		prev_frozen_ctl_pars.insert(new_frozen_ctl_pars.begin(), new_frozen_ctl_pars.end());
+		//Recompute the ugrade vector without the newly frozen parameters and freeze those at the boundary whose upgrade still goes heads out of bounds
+		if (num_upgrade_out_grad_in > 0)
+		{
+			new_frozen_ctl_pars.clear();
+			(*this.*calc_lambda_upgrade)(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+				base_run_ctl_pars, prev_frozen_ctl_pars, i_lambda, upgrade_ctl_pars, upgrade_ctl_del_pars,
+				grad_ctl_del_pars, marquardt_type);
+			check_bnd_par(new_frozen_ctl_pars, base_run_ctl_pars, upgrade_ctl_pars);
+			prev_frozen_ctl_pars.insert(new_frozen_ctl_pars.begin(), new_frozen_ctl_pars.end());
+			new_frozen_ctl_pars.clear();
+		}
+		//If there are newly frozen parameters recompute the upgrade vector
+		if (new_frozen_ctl_pars.size() > 0)
+		{
+			(*this.*calc_lambda_upgrade)(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+				base_run_ctl_pars, prev_frozen_ctl_pars, i_lambda, upgrade_ctl_pars, upgrade_ctl_del_pars,
+				grad_ctl_del_pars, marquardt_type);
+		}
+		//Freeze any new parameters that want to go out of bounds
+		new_frozen_ctl_pars.clear();
+		new_frozen_ctl_pars = limit_parameters_freeze_all_ip(base_run_ctl_pars, upgrade_ctl_pars, prev_frozen_ctl_pars);
+		prev_frozen_ctl_pars.insert(new_frozen_ctl_pars.begin(), new_frozen_ctl_pars.end());
+		//If there are newly frozen parameters recompute the upgrade vector
+		//if (new_frozen_derivative_pars.size() > 0)
+		//{
+		//	calc_lambda_upgrade_vec(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+		//		base_run_derivative_pars, prev_frozen_derivative_pars, i_lambda, upgrade_deriv_pars, upgrade_deriv_del_pars,
+		//		grad_pars_del_pars, marquardt_type);
+		//}
+		//limit_parameters_ip(base_run_derivative_pars, upgrade_deriv_pars, limit_type, prev_frozen_derivative_pars);
+		//prev_frozen_derivative_pars.insert(new_frozen_derivative_pars.begin(), new_frozen_derivative_pars.end());
+		//compute model parameters
 	////dew_clean_up
 	//ml_upgrade = calc_lambda_upgrade_vec(jacobian, Q_sqrt, residuals_vec, numeric_par_names_vec, obs_names_vec,
 	//	base_run_numeric_pars, Parameters(), i_lambda, marquardt_type);
@@ -221,8 +285,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 
 	//Marquardt Lambda Update Vector
 	Upgrade ml_upgrade;
-	const Parameters &base_run_derivative_pars =  par_transform.ctl2derivative_cp(base_run.get_ctl_pars());
-	Parameters base_numeric_pars = par_transform.ctl2numeric_cp(base_run.get_ctl_pars());
+	
 	vector<Parameters> frozen_derivative_par_vec;
 	Parameters *new_frozen_par_ptr = 0;
 
@@ -246,36 +309,20 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		message << "  computing upgrade vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
 		std::cout << message.str();
 
-		Parameters new_pars;
+		Parameters new_ctl_pars;
+		const Parameters &base_run_ctl_pars = base_run.get_ctl_pars();
+		Parameters base_numeric_pars = par_transform.ctl2numeric_cp(base_run.get_ctl_pars());
+		LimitType limit_type;
 
-		calc_upgrade_vec(i_lambda, frozen_derivative_par_vec, Q_sqrt, residuals_vec,
-			numeric_par_names_vec, obs_names_vec, base_numeric_pars,
-			ml_upgrade, new_pars, MarquardtMatrix::IDENT);
+		frozen_derivative_par_vec.push_back(Parameters());
+		calc_upgrade_vec(i_lambda, frozen_derivative_par_vec.back(), Q_sqrt, residuals_vec,
+			obs_names_vec, base_run_ctl_pars, limit_type,
+			new_ctl_pars, MarquardtMatrix::IDENT);
 
 		//transform new_pars to model parameters
-		par_transform.derivative2model_ip(new_pars);
-		run_manager.add_run(new_pars, "IDEN", i_lambda);
-		magnitude_vec.push_back(ml_upgrade.norm);
+		magnitude_vec.push_back(Transformable::l2_norm(base_run_ctl_pars, new_ctl_pars));
+		run_manager.add_run(par_transform.ctl2model_cp(new_ctl_pars), "IDEN", i_lambda);
 	}
-
-	//for (double i_lambda : lambda_vec)
-	//{
-	//	std::cout << string(message.str().size(), '\b');
-	//	message.str("");
-	//	message << "  computing upgrade vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
-	//	std::cout << message.str();
-
-	//	Parameters new_pars;
-
-	//	calc_upgrade_vec(i_lambda, frozen_derivative_par_vec, Q_sqrt, residuals_vec,
-	//		numeric_par_names_vec, obs_names_vec, base_numeric_pars,
-	//		ml_upgrade, new_pars, MarquardtMatrix::JTQJ);
-
-	//	//transform new_pars to model parameters
-	//	par_transform.derivative2model_ip(new_pars);
-	//	run_manager.add_run(new_pars, "DIAG", i_lambda);
-	//	magnitude_vec.push_back(ml_upgrade.norm);
-	//}
 
 	cout << endl;
 

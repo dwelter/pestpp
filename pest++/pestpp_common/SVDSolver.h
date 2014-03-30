@@ -93,36 +93,36 @@ protected:
 	OutputFileWriter &output_file_writer;
 	RestartController &restart_controller;
 
-	virtual void limit_parameters_ip(const Parameters &init_numeric_pars, 
-		Parameters &upgrade_numeric_pars, LimitType &limit_type, 
-		const Parameters &frozen_numeric_pars = Parameters());
-	virtual Parameters limit_parameters_freeze_all_ip(const Parameters &init_numeric_pars, 
-		Parameters &upgrade_numeric_pars, const Parameters &frozen_numeric_pars = Parameters());
+	//virtual void limit_parameters_ip(const Parameters &init_numeric_pars, 
+	//	Parameters &upgrade_numeric_pars, LimitType &limit_type, 
+	//	const Parameters &frozen_numeric_pars = Parameters());
+	virtual Parameters limit_parameters_freeze_all_ip(const Parameters &init_ctl_pars, 
+		Parameters &upgrade_ctl_pars, const Parameters &frozen_ctl_pars = Parameters());
 	virtual const string &get_description(){return description;}
 	virtual void iteration_update_and_report(ostream &os, ModelRun &upgrade, TerminationController &termination_ctl); 
 	void param_change_stats(double p_old, double p_new, bool &have_fac, double &fac_change, bool &have_rel,
 		double &rel_change);
-	void calc_upgrade_vec(double i_lambda, Parameters &frozen_derivative_pars, QSqrtMatrix &Q_sqrt, Eigen::VectorXd &residuals_vec,
-		vector<string> &obs_names_vec, const Parameters &base_run_numeric_pars, LimitType &limit_type,
-		Parameters &new_model_pars, MarquardtMatrix marquardt_type);
+	void calc_upgrade_vec(double i_lambda, Parameters &frozen_ctl_pars, QSqrtMatrix &Q_sqrt, Eigen::VectorXd &residuals_vec,
+		vector<string> &obs_names_vec, const Parameters &base_run_ctl_pars, LimitType &limit_type,
+		Parameters &new_ctl_pars, MarquardtMatrix marquardt_type);
 	void calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
 		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
-		const Parameters &base_derivative_pars, const Parameters &freeze_derivative_pars,
-		double lambda, Parameters &derivative_upgrade_pars, Parameters &upgrade_deriv_del_pars,
-		Parameters &grad_deriv_del_pars, MarquardtMatrix marquardt_type);
+		const Parameters &base_ctl_pars, const Parameters &freeze_ctl_pars,
+		double lambda, Parameters &ctl_upgrade_pars, Parameters &upgrade_ctl_del_pars,
+		Parameters &grad_ctl_del_pars, MarquardtMatrix marquardt_type);
 	void calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
 		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
-		const Parameters &base_derivative_pars, const Parameters &freeze_derivative_pars,
-		double lambda, Parameters &derivative_upgrade_pars, Parameters &upgrade_deriv_del_pars,
-		Parameters &grad_deriv_del_pars, MarquardtMatrix marquardt_type);
-	Parameters apply_upgrade(const Parameters &init_numeric_pars,const Upgrade &upgrade, double scale = 1.0);
-	void update_upgrade(Upgrade &upgrade, const Parameters &base_pars, const Parameters &new_pars, const Parameters &frozen_pars);
-	void check_limits(const Parameters &init_derivative_pars, const Parameters &upgrade_derivative_pars,
-		map<string, LimitType> &limit_type_map, Parameters &derivative_parameters_at_limit);
+		const Parameters &base_ctl_pars, const Parameters &freeze_ctl_pars,
+		double lambda, Parameters &ctl_upgrade_pars, Parameters &upgrade_ctl_del_pars,
+		Parameters &grad_ctl_del_pars, MarquardtMatrix marquardt_type);
+//	Parameters apply_upgrade(const Parameters &init_numeric_pars,const Upgrade &upgrade, double scale = 1.0);
+//	void update_upgrade(Upgrade &upgrade, const Parameters &base_pars, const Parameters &new_pars, const Parameters &frozen_pars);
+	void check_limits(const Parameters &init_ctl_pars, const Parameters &upgrade_ctl_pars,
+		map<string, LimitType> &limit_type_map, Parameters &ctl_parameters_at_limit);
 	Eigen::VectorXd calc_residual_corrections(const Jacobian &jacobian, const Parameters &del_numeric_pars, 
 							   const vector<string> obs_name_vec);
 	bool par_heading_out_bnd(double org_par, double new_par, double lower_bnd, double upper_bnd);
-	int check_bnd_par(Parameters &new_freeze_derivative_pars, const Parameters &current_derivative_pars, const Parameters &new_upgrade_pars, const Parameters &new_grad_pars=Parameters());
+	int check_bnd_par(Parameters &new_freeze_ctl_pars, const Parameters &current_ctl_pars, const Parameters &new_upgrade_ctl_pars, const Parameters &new_grad_ctl_pars=Parameters());
 };
 
 #endif /* SVDSOLVER_H_ */

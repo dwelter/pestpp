@@ -86,7 +86,7 @@ public:
 	Parameters derivative2numeric_cp(const Parameters &data) const;
 	Parameters derivative2ctl_cp(const Parameters &data) const;
 	Parameters derivative2model_cp(const Parameters &data) const;
-	void del_numeric_2_del_derivative_ip(Parameters &del_data, Parameters &data) const;
+	void del_numeric_2_del_ctl_ip(Parameters &del_data, Parameters &data) const;
 	Transformation* get_transformation(const string &name);
 	const TranOffset *get_offset_ptr() const;
 	const TranScale *get_scale_ptr() const;

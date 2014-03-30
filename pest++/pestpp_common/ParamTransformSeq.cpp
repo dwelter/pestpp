@@ -505,11 +505,16 @@ Parameters ParamTransformSeq::derivative2model_cp(const Parameters &data) const
 }
 
 
-void ParamTransformSeq::del_numeric_2_del_derivative_ip(Parameters &del_data, Parameters &data) const
+void ParamTransformSeq::del_numeric_2_del_ctl_ip(Parameters &del_data, Parameters &data) const
 {
 	map<string, double> factors;
 	vector<Transformation*>::const_reverse_iterator iter, e;
 	for (iter = tranSeq_derivative2numeric.rbegin(), e = tranSeq_derivative2numeric.rend();
+		iter != e; ++iter)
+	{
+		(*iter)->d2_to_d1(del_data, data);
+	}
+	for (iter = tranSeq_ctl2derivative.rbegin(), e = tranSeq_ctl2derivative.rend();
 		iter != e; ++iter)
 	{
 		(*iter)->d2_to_d1(del_data, data);
