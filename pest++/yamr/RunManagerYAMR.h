@@ -98,7 +98,7 @@ public:
 	RunManagerYAMR(const std::vector<std::string> _comline_vec,
 		const std::vector<std::string> _tplfile_vec, const std::vector<std::string> _inpfile_vec,
 		const std::vector<std::string> _insfile_vec, const std::vector<std::string> _outfile_vec,
-		const std::string &stor_filename, const std::string &port, std::ofstream &_f_rmr);
+		const std::string &stor_filename, const std::string &port, std::ofstream &_f_rmr, int _max_n_failure=3);
 	virtual void initialize(const Parameters &model_pars, const Observations &obs, const std::string &_filename = std::string(""));
 	virtual void initialize_restart(const std::string &_filename);
 	virtual void reinitialize(const std::string &_filename = std::string(""));
@@ -113,7 +113,6 @@ private:
 	static const int BACKLOG = 10;
 	int listener;
 	int fdmax;
-	static const int yamr_max_n_failure = 3; // maximium number of times to retry a failed model run
 	std::deque<int> slave_fd; // list of slaves ready to accept a model run
 	fd_set master; // master file descriptor list
 	std::deque<YamrModelRun> waiting_runs;

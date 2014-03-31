@@ -31,6 +31,7 @@
 #include "RunManagerAbstract.h"
 #include "OutputFileWriter.h"
 #include "RestartController.h"
+#include "PerformanceLog.h"
 
 
 class FileManager;
@@ -52,7 +53,7 @@ public:
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, 
 		const Regularization *regul_scheme_ptr, OutputFileWriter &_output_file_writer, RestartController &_restart_controller, 
-		SVDSolver::MAT_INV _mat_inv, const string &description = string("base parameter solution"));
+		SVDSolver::MAT_INV _mat_inv, PerformanceLog *_performance_log, const string &description = string("base parameter solution"));
 	virtual ModelRun& solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter, ModelRun &cur_run, ModelRun &optimum_run);
 	virtual void iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs=false);
 	ModelRun &cur_model_run() {return cur_solution;}
@@ -91,6 +92,7 @@ protected:
 	double best_lambda;
 	OutputFileWriter &output_file_writer;
 	RestartController &restart_controller;
+	PerformanceLog *performance_log;
 
 	//virtual void limit_parameters_ip(const Parameters &init_numeric_pars, 
 	//	Parameters &upgrade_numeric_pars, LimitType &limit_type, 

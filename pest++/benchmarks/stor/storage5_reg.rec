@@ -1,4 +1,4 @@
-             PEST++ Version 2.2.0
+             PEST++ Version 2.2.1
 
                  by Dave Welter
      Computational Water Resource Engineering
@@ -106,7 +106,7 @@ OPTIMISATION ITERATION NUMBER: 3
     Iteration type: super parameter solution
     SVD Package: Eigen JacobiSVD
     Matrix Inversion: "Jt Q J"
-    Model calls so far : 21
+    Model calls so far : 20
 
     Starting phi for this iteration                     Total : 9561.78
     Contribution to phi from observation group         "OBS2" : 962.4
@@ -153,7 +153,7 @@ OPTIMISATION ITERATION NUMBER: 4
     Iteration type: super parameter solution
     SVD Package: Eigen JacobiSVD
     Matrix Inversion: "Jt Q J"
-    Model calls so far : 32
+    Model calls so far : 30
 
     Starting phi for this iteration                     Total : 145.031
     Contribution to phi from observation group         "OBS2" : 58.0618
@@ -200,7 +200,7 @@ OPTIMISATION ITERATION NUMBER: 5
     Iteration type: base parameter solution
     SVD Package: Eigen JacobiSVD
     Matrix Inversion: "Jt Q J"
-    Model calls so far : 43
+    Model calls so far : 40
 
     Starting phi for this iteration                     Total : 7.10663
     Contribution to phi from observation group         "OBS2" : 0.501753
@@ -248,7 +248,7 @@ OPTIMISATION ITERATION NUMBER: 6
     Iteration type: super parameter solution
     SVD Package: Eigen JacobiSVD
     Matrix Inversion: "Jt Q J"
-    Model calls so far : 53
+    Model calls so far : 49
 
     Starting phi for this iteration                     Total : 6.87557
     Contribution to phi from observation group         "OBS2" : 0.431664
@@ -297,7 +297,7 @@ OPTIMISATION ITERATION NUMBER: 7
     Iteration type: super parameter solution
     SVD Package: Eigen JacobiSVD
     Matrix Inversion: "Jt Q J"
-    Model calls so far : 64
+    Model calls so far : 59
 
     Starting phi for this iteration                     Total : 6.87562
     Contribution to phi from observation group         "OBS2" : 0.431546

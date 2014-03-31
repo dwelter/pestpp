@@ -185,9 +185,9 @@ void SlaveInfo::sort_queue(deque<int> &slave_fd)
 RunManagerYAMR::RunManagerYAMR(const vector<string> _comline_vec,
 	const vector<string> _tplfile_vec, const vector<string> _inpfile_vec,
 	const vector<string> _insfile_vec, const vector<string> _outfile_vec,
-	const string &stor_filename, const string &_port, ofstream &_f_rmr)
+	const string &stor_filename, const string &_port, ofstream &_f_rmr, int _max_n_failure)
 	: RunManagerAbstract(_comline_vec, _tplfile_vec, _inpfile_vec,
-		_insfile_vec, _outfile_vec, stor_filename, yamr_max_n_failure),
+	_insfile_vec, _outfile_vec, stor_filename, _max_n_failure),
 		 port(_port), f_rmr(_f_rmr)
 {
 	w_init();

@@ -240,8 +240,11 @@ Parameters ParameterInfo::get_init_value(const vector<string> &keys) const
 }
 
 
-PestppOptions::PestppOptions(int _n_iter_base, int _n_iter_super, int _max_n_super, double _super_eigthres, SVD_PACK _svd_pack, MAT_INV _mat_inv, double _auto_norm, double _super_relparmax)
-: n_iter_base(_n_iter_base), n_iter_super(_n_iter_super), max_n_super(_max_n_super), super_eigthres(_super_eigthres), svd_pack(_svd_pack), mat_inv(_mat_inv), auto_norm(_auto_norm), super_relparmax(_super_relparmax)
+PestppOptions::PestppOptions(int _n_iter_base, int _n_iter_super, int _max_n_super, double _super_eigthres,
+	SVD_PACK _svd_pack, MAT_INV _mat_inv, double _auto_norm, double _super_relparmax, int _max_run_fail)
+	: n_iter_base(_n_iter_base), n_iter_super(_n_iter_super), max_n_super(_max_n_super), super_eigthres(_super_eigthres), 
+	svd_pack(_svd_pack), mat_inv(_mat_inv), auto_norm(_auto_norm), super_relparmax(_super_relparmax),
+	max_run_fail(_max_run_fail)
 {
 }
 
@@ -287,6 +290,9 @@ void PestppOptions::parce_line(const string &line)
 		}
 		else if (key == "MAT_INV"){
 			if (value == "Q1/2J") mat_inv = Q12J;
+		}
+		else if (key == "MAX_RUN_FAIL"){
+			convert_ip(value, max_run_fail);
 		}
 		else {
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");

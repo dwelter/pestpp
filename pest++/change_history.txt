@@ -1,6 +1,9 @@
 Change History
 
-PEST++software version 2.2.0 as of March 24, 2014:
+PEST++software version 2.2.0 as of March 31, 2014:
+
+Changes made from version 2.2.1 to 2.2.2
+	1) Added performance output file(.pfm) to track execution time
 
 Changes made from version 2.2.0 to 2.2.1
    	1) Refactored parameter freezing algorithm to be more consistent with that of PEST

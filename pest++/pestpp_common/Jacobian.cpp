@@ -140,8 +140,6 @@ bool Jacobian::build_runs(ModelRun &init_model_run, vector<string> numeric_par_n
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
 		RunManagerAbstract &run_manager, set<string> &out_of_bound_par, bool phiredswh_flag, bool calc_init_obs)
 {
-	Observations observations(init_model_run.get_obs_template());
-
 	run_manager.reinitialize();
 
 	// compute runs for to jacobain calculation as it is influenced by derivative type( forward or central)
@@ -152,6 +150,7 @@ bool Jacobian::build_runs(ModelRun &init_model_run, vector<string> numeric_par_n
 	int run_id = run_manager.add_run(model_pars, "", 0);
 
 	if (!calc_init_obs) {
+		const Observations &observations = init_model_run.get_obs();
 		run_manager.update_run(run_id, model_pars, observations);
 	}
 

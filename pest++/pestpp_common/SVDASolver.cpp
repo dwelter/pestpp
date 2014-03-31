@@ -39,10 +39,10 @@ using namespace Eigen;
 SVDASolver::SVDASolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_base_parameter_group_info_ptr, 
 	const ParameterInfo *_ctl_par_info_ptr, const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 	const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, const Regularization *_regul_scheme,
-	OutputFileWriter &_output_file_writer, RestartController &_restart_controller, SVDSolver::MAT_INV _mat_inv)
+	OutputFileWriter &_output_file_writer, RestartController &_restart_controller, SVDSolver::MAT_INV _mat_inv, PerformanceLog *_performance_log)
 	: SVDSolver(_ctl_info, _svd_info, _base_parameter_group_info_ptr, _ctl_par_info_ptr, _obs_info,
 		_file_manager, _observations, _obj_func, _par_transform, _prior_info_ptr, _jacobian, 
-		_regul_scheme, _output_file_writer, _restart_controller, _mat_inv, "super parameter solution")
+		_regul_scheme, _output_file_writer, _restart_controller, _mat_inv, _performance_log, "super parameter solution")
 {
 }
 
@@ -206,16 +206,17 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		 calc_init_obs = true;
 		}
 		super_parameter_group_info = par_transform.get_svda_ptr()->build_par_group_info(*par_group_info_ptr);
+		performance_log->log_event("commencing to build jacobian parameter sets");
 		bool success = jacobian.build_runs(base_run, numeric_par_names_vec, par_transform,
 			super_parameter_group_info, *ctl_par_info_ptr, run_manager, out_of_bound_pars,
 			phiredswh_flag, calc_init_obs);
-
+		performance_log->log_event("jacobian parameter sets built, commencing model runs");
 		jacobian.make_runs(run_manager);
-
+		performance_log->log_event("jacobian runs complete, processing runs");
 		bool success2 = jacobian.process_runs(numeric_par_names_vec, par_transform,
 			super_parameter_group_info, *ctl_par_info_ptr, run_manager, *prior_info_ptr, out_of_bound_pars,
 			phiredswh_flag, calc_init_obs);
-
+		performance_log->log_event("processing jacobian runs complete");
 		success = success && success2;
 
 		if (success)

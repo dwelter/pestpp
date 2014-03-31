@@ -42,7 +42,7 @@ class RunStorage {
 	//        run_status (flag indicating status of mode run)                         int_8_t
 	//              run_status=0   this run has not yet been completed
 	//			    run_status=-100   run was canceled
-	//				run_status<0 and >-100  run completed and failed.  THis is the number of times it failed
+	//				run_status<0 and >-100  run completed and failed.  This is the number of times it failed
 	//				run_status=1   run and been sucessfully completed
 	//       info_txt  (description of model run)                                     char*41
 	//       info_value (variable used to store an important value.  The varaible     double

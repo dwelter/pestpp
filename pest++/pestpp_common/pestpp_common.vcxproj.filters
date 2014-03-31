@@ -78,6 +78,9 @@
     <ClInclude Include="RestartController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PerformanceLog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TerminationController.cpp">
@@ -138,6 +141,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Transformation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PerformanceLog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

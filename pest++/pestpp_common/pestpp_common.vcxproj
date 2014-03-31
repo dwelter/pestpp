@@ -47,6 +47,7 @@
     <ClInclude Include="ObjectiveFunc.h" />
     <ClInclude Include="OutputFileWriter.h" />
     <ClInclude Include="ParamTransformSeq.h" />
+    <ClInclude Include="PerformanceLog.h" />
     <ClInclude Include="Pest.h" />
     <ClInclude Include="pest_data_structs.h" />
     <ClInclude Include="PriorInformation.h" />
@@ -70,6 +71,7 @@
     <ClCompile Include="ObjectiveFunc.cpp" />
     <ClCompile Include="OutputFileWriter.cpp" />
     <ClCompile Include="ParamTransformSeq.cpp" />
+    <ClCompile Include="PerformanceLog.cpp" />
     <ClCompile Include="Pest.cpp" />
     <ClCompile Include="pest_data_structs.cpp" />
     <ClCompile Include="PriorInformation.cpp" />

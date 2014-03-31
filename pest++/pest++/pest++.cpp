@@ -42,6 +42,7 @@
 #include "system_variables.h"
 #include "pest_error.h"
 #include "RestartController.h"
+#include "PerformanceLog.h"
 
 using namespace std;
 using namespace pest_utils;
@@ -157,6 +158,8 @@ int main(int argc, char* argv[])
 	if (pathname.empty()) pathname = ".";
 	FileManager file_manager(filename, pathname);
 
+	PerformanceLog performance_log(file_manager.open_ofile_ext("pfm"));
+
 	ofstream &fout_rec = file_manager.rec_ofstream();
 	fout_rec << "             PEST++ Version " << version << endl << endl;
 	fout_rec << "                 by Dave Welter" << endl;
@@ -171,8 +174,10 @@ int main(int argc, char* argv[])
 	OutputFileWriter output_file_writer(file_manager, file_manager.get_base_filename(), true, false);
 
 	try {
+		performance_log.log_event("starting to process control file", 1);
 		pest_scenario.process_ctl_file(file_manager.open_ifile_ext("pst"), file_manager);
 		file_manager.close_file("pst");
+		performance_log.log_event("finished processing control file");
 	}
 	catch(PestError e)
 	{
@@ -195,7 +200,8 @@ int main(int argc, char* argv[])
 		exi.tplfile_vec, exi.inpfile_vec,
 		exi.insfile_vec, exi.outfile_vec,
 		file_manager.build_filename("rns"), port,
-		file_manager.open_ofile_ext("rmr"));
+		file_manager.open_ofile_ext("rmr"),
+		pest_scenario.get_pestpp_options().get_max_run_fail());
 	}
 	else if (run_manager_type == RunManagerType::GENIE)
 	{
@@ -210,7 +216,8 @@ int main(int argc, char* argv[])
 		const ModelExecInfo &exi = pest_scenario.get_model_exec_info();
 		run_manager_ptr = new RunManagerSerial(exi.comline_vec,
 		exi.tplfile_vec, exi.inpfile_vec, exi.insfile_vec, exi.outfile_vec,
-		file_manager.build_filename("rns"), pathname);
+		file_manager.build_filename("rns"), pathname,
+		pest_scenario.get_pestpp_options().get_max_run_fail());
 	}
 
 
@@ -253,7 +260,7 @@ int main(int argc, char* argv[])
 		&pest_scenario.get_ctl_parameter_info(), &pest_scenario.get_ctl_observation_info(), file_manager,
 		&pest_scenario.get_ctl_observations(), &obj_func, base_trans_seq, pest_scenario.get_prior_info_ptr(),
 		*base_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(),
-		output_file_writer, restart_ctl, mat_inv);
+		output_file_writer, restart_ctl, mat_inv, &performance_log);
 
 	base_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 	//Build Super-Parameter problem
@@ -362,7 +369,7 @@ int main(int argc, char* argv[])
 				SVDASolver super_svd(&svd_control_info, pest_scenario.get_svd_info(), &pest_scenario.get_base_group_info(), &pest_scenario.get_ctl_parameter_info(),
 				&pest_scenario.get_ctl_observation_info(),  file_manager, &pest_scenario.get_ctl_observations(), &obj_func,
 				trans_svda, &pest_scenario.get_prior_info(), *super_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(),
-				output_file_writer, restart_ctl, mat_inv);
+				output_file_writer, restart_ctl, mat_inv, &performance_log);
 			super_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 			cur_run = super_svd.solve(*run_manager_ptr, termination_ctl, n_super_iter, cur_run, optimum_run);
 			cur_ctl_parameters = super_svd.cur_model_run().get_ctl_pars();

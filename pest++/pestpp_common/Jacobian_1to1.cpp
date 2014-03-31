@@ -49,7 +49,6 @@ bool Jacobian_1to1::build_runs(ModelRun &init_model_run, vector<string> numeric_
 		RunManagerAbstract &run_manager, set<string> &out_of_bound_par, bool phiredswh_flag, bool calc_init_obs)
 {
 	Parameters model_parameters(par_transform.ctl2model_cp(init_model_run.get_ctl_pars()));
-	Observations observations(init_model_run.get_obs_template());
 	base_numeric_parameters = par_transform.ctl2numeric_cp( init_model_run.get_ctl_pars());
 	run_manager.reinitialize(file_manager.build_filename("rnj"));
 
@@ -59,7 +58,8 @@ bool Jacobian_1to1::build_runs(ModelRun &init_model_run, vector<string> numeric_
 	//if base run is has already been complete, update it and mark it as complete
 	// compute runs for to jacobain calculation as it is influenced by derivative type( forward or central)
 	if (!calc_init_obs) {
-		run_manager.update_run(run_id, model_parameters, observations);
+		const Observations &init_obs = init_model_run.get_obs();
+		run_manager.update_run(run_id, model_parameters, init_obs);
 	}
 
 	Parameters new_derivative_pars;

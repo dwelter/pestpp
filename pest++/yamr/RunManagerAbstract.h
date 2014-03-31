@@ -45,7 +45,7 @@ public:
 	virtual int add_run(const Parameters &model_pars, const std::string &info_txt="", double info_value=RunStorage::no_data);
 	virtual int add_run(const std::vector<double> &model_pars, const std::string &info_txt="", double info_valuee=RunStorage::no_data);
 	virtual int add_run(const Eigen::VectorXd &model_pars, const std::string &info_txt="", double info_valuee=RunStorage::no_data);
-	virtual void update_run(int run_id, Parameters &pars, Observations &obs);
+	virtual void update_run(int run_id, const Parameters &pars, const Observations &obs);
 	virtual void run() = 0;
 	virtual const std::vector<std::string> &get_par_name_vec() const;
 	virtual const std::vector<std::string> &get_obs_name_vec() const;

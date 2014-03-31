@@ -44,11 +44,13 @@ using namespace Eigen;
 SVDSolver::SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_par_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, 
-		const Regularization *_regul_scheme_ptr, OutputFileWriter &_output_file_writer, RestartController &_restart_controller, SVDSolver::MAT_INV _mat_inv, const string &_description)
+		const Regularization *_regul_scheme_ptr, OutputFileWriter &_output_file_writer, RestartController &_restart_controller, SVDSolver::MAT_INV _mat_inv, 
+		PerformanceLog *_performance_log, const string &_description)
 		: ctl_info(_ctl_info), svd_info(_svd_info), par_group_info_ptr(_par_group_info_ptr), ctl_par_info_ptr(_ctl_par_info_ptr), obs_info_ptr(_obs_info), obj_func(_obj_func),
 		  file_manager(_file_manager), observations_ptr(_observations), par_transform(_par_transform),
 		  cur_solution(_obj_func, *_observations), phiredswh_flag(false), save_next_jacobian(true), prior_info_ptr(_prior_info_ptr), jacobian(_jacobian), prev_phi_percent(0.0),
-		  num_no_descent(0), regul_scheme_ptr(_regul_scheme_ptr), output_file_writer(_output_file_writer), mat_inv(_mat_inv), description(_description), best_lambda(20.0), restart_controller(_restart_controller)
+		  num_no_descent(0), regul_scheme_ptr(_regul_scheme_ptr), output_file_writer(_output_file_writer), mat_inv(_mat_inv), description(_description), best_lambda(20.0),
+		  restart_controller(_restart_controller), performance_log(_performance_log)
 {
 	svd_package = new SVD_EIGEN();
 }
@@ -100,8 +102,22 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 
 		// write head for SVD file
 		output_file_writer.write_svd_iteration(global_iter_num);
-		iteration(run_manager, termination_ctl, false);
 
+		performance_log->log_blank_lines();
+		performance_log->add_indent(-10);
+		ostringstream tmp_str;
+		tmp_str << "beginning iteration " << global_iter_num;
+		performance_log->log_event(tmp_str.str(), 0, "start_iter");
+		performance_log->add_indent();
+		iteration(run_manager, termination_ctl, false);
+		tmp_str.str("");
+		tmp_str.clear();
+		tmp_str << "completed iteration " << global_iter_num;
+		performance_log->log_event(tmp_str.str(), 0, "end_iter");
+		tmp_str.str("");
+		tmp_str.clear();
+		tmp_str << "time to complete iteration " << global_iter_num;
+		performance_log->log_summary(tmp_str.str(), "end_iter", "start_iter");
 		// write files that get wrtten at the end of each iteration
 		stringstream filename;
 		string complete_filename;
@@ -215,12 +231,14 @@ void SVDSolver::calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSq
 	ident.setIdentity();
 	Eigen::SparseMatrix<double> JtQJ = jac.transpose() * q_mat * jac;
 	//Compute Scaling Matrix Sii
+	performance_log->log_event("commencing to scale JtQJ matrix");
 	svd_package->solve_ip(JtQJ, Sigma, U, Vt, Sigma_trunc, 0.0);
 	VectorXd Sigma_inv_sqrt = Sigma.array().inverse().sqrt();
 	VectorXd Sigma_sqrt = Sigma.array().sqrt();
 	Eigen::SparseMatrix<double> S = Vt.transpose() * Sigma_inv_sqrt.asDiagonal() * U.transpose();
 	Eigen::SparseMatrix<double> S_inv = Vt.transpose() * Sigma_sqrt.asDiagonal() * U.transpose();
 	JtQJ = (jac * S).transpose() * q_mat * jac * S;
+	performance_log->log_event("scaling of  JtQJ matrix complete");
 	if (marquardt_type == MarquardtMatrix::IDENT)
 	{
 		JtQJ += lambda * S.transpose() * S;
@@ -232,15 +250,19 @@ void SVDSolver::calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSq
 		JtQJ = (JtQJ + diag_mat.sparseView());
 	}
 	// Returns truncated Sigma, U and Vt arrays with small singular parameters trimed off
+	performance_log->log_event("commencing SVD factorization");
 	svd_package->solve_ip(JtQJ, Sigma, U, Vt, Sigma_trunc);
-	
+	performance_log->log_event("SVD factorization complete");
+
 	VectorXd Sigma_inv = Sigma.array().inverse();
 	
+	performance_log->log_event("commencing linear algebra multiplication to compute ugrade");
 	Eigen::VectorXd upgrade_vec;
 	upgrade_vec = S * (Vt.transpose() * (Sigma_inv.asDiagonal() * (U.transpose() * ((jac * S).transpose()* (q_mat  * (Residuals + del_residuals))))));
 
 	Eigen::VectorXd grad_vec;
 	grad_vec = -2.0 * (jac.transpose() * (q_mat * Residuals));
+	performance_log->log_event("linear algebra multiplication to compute ugrade complete");
 
 	//tranfere newly computed componets of the ugrade vector to upgrade.svd_uvec
 	Parameters upgrade;
@@ -304,8 +326,9 @@ void SVDSolver::calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqr
 	Eigen::SparseMatrix<double> jac = jacobian.get_matrix(obs_name_vec, numeric_par_names);
 	Eigen::SparseMatrix<double> SqrtQ_J = q_sqrt * jac;
 	// Returns truncated Sigma, U and Vt arrays with small singular parameters trimed off
+	performance_log->log_event("commencing SVD factorization");
 	svd_package->solve_ip(SqrtQ_J, Sigma, U, Vt, Sigma_trunc);
-
+	performance_log->log_event("SVD factorization complete");
 	//Only add lambda to singular values above the threshhold 
 	if (marquardt_type == MarquardtMatrix::IDENT)
 	{
@@ -319,11 +342,13 @@ void SVDSolver::calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqr
 	output_file_writer.write_svd(Sigma, Vt, lambda, prev_frozen_ctl_pars, Sigma_trunc);
 	VectorXd Sigma_inv = Sigma.array().inverse();
 
+	performance_log->log_event("commencing linear algebra multiplication to compute ugrade");
 	Eigen::VectorXd upgrade_vec;
 	upgrade_vec = Vt.transpose() * (Sigma_inv.asDiagonal() * (U.transpose() * (q_sqrt  * (Residuals + del_residuals))));
 
 	Eigen::VectorXd grad_vec;
 	grad_vec = -2.0 * (jac.transpose() * (q_sqrt * (q_sqrt * Residuals)));
+	performance_log->log_event("linear algebra multiplication to compute ugrade complete");
 
 	//tranfere newly computed componets of the ugrade vector to upgrade.svd_uvec
 	Parameters upgrade;
@@ -464,6 +489,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 		calc_init_obs = true;
 	}
 	cout << "  calculating jacobian... ";
+	performance_log->log_event("commencing to build jacobian parameter sets");
 	jacobian.build_runs(cur_solution, numeric_parname_vec, par_transform,
 		*par_group_info_ptr, *ctl_par_info_ptr, run_manager, out_ofbound_pars,
 		phiredswh_flag, calc_init_obs);
@@ -478,10 +504,13 @@ restart_resume_jacobian_runs:
 	// save state of termination controller
 	termination_ctl.save_state(fout_restart);
 
+	performance_log->log_event("jacobian parameter sets built, commencing model runs");
 	jacobian.make_runs(run_manager);
+	performance_log->log_event("jacobian runs complete, processing runs");
 	jacobian.process_runs(numeric_parname_vec, par_transform,
 		*par_group_info_ptr, *ctl_par_info_ptr, run_manager, *prior_info_ptr, out_ofbound_pars,
 		phiredswh_flag, calc_init_obs);
+	performance_log->log_event("processing jacobian runs complete");
 	//Update parameters and observations for base run
 	{
 		Parameters tmp_pars;

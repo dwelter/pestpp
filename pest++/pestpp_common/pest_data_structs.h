@@ -179,7 +179,7 @@ public:
 	enum SVD_PACK{EIGEN, PROPACK};
 	enum MAT_INV{Q12J, JTQJ};
 	PestppOptions(int _n_iter_base = 50, int n_iter_super=0, int _max_n_super = 50, double _super_eigthres = 1.0E-6, SVD_PACK _svd_pack = PestppOptions::EIGEN,
-		MAT_INV _mat_inv = PestppOptions::JTQJ, double _auto_norm = -999, double _super_relparmax = 0.1);
+		MAT_INV _mat_inv = PestppOptions::JTQJ, double _auto_norm = -999, double _super_relparmax = 0.1, int max_run_fail=3);
 	void parce_line(const string &line);
 	int get_max_n_super() const{return max_n_super;}
 	double get_super_eigthres() const{return super_eigthres;}
@@ -189,6 +189,7 @@ public:
 	MAT_INV get_mat_inv() const { return mat_inv;}
 	double get_auto_norm() const{return auto_norm;}
 	double get_super_relparmax() const{ return super_relparmax; }
+	int get_max_run_fail() const{ return max_run_fail; }
 
 	void set_max_n_super(int _max_n_super) {max_n_super = _max_n_super;}
 	void set_super_eigthres(double _super_eigthres) {super_eigthres = _super_eigthres;}
@@ -198,6 +199,7 @@ public:
 	void set_mat_inv(const MAT_INV _mat_inv = JTQJ) { mat_inv = _mat_inv; }
 	void set_auto_norm(double _auto_norm) {auto_norm = _auto_norm;};
 	void set_super_relparmax(double _super_relparmax) { super_relparmax = _super_relparmax; };
+	void set_max_run_fail(int _max_run_fail){ max_run_fail = _max_run_fail; }
 
 private:
 	int max_n_super;;
@@ -208,6 +210,7 @@ private:
 	MAT_INV mat_inv;
 	double auto_norm;
 	double super_relparmax;
+	int max_run_fail;
 };
 
 ostream& operator<< (ostream &os, const ObservationInfo& val);

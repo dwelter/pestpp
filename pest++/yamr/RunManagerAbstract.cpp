@@ -85,7 +85,7 @@ int RunManagerAbstract::add_run(const Eigen::VectorXd &model_pars, const string 
 	return run_id;
 }
 
-void RunManagerAbstract::update_run(int run_id, Parameters &pars, Observations &obs)
+void RunManagerAbstract::update_run(int run_id, const Parameters &pars, const Observations &obs)
 {
 
 	file_stor.update_run(run_id, pars, obs);
@@ -238,7 +238,7 @@ bool RunManagerAbstract::get_observations_vec(int run_id, vector<double> &data_v
  {
 	 bool ret_val;
 	 int istatus = file_stor.get_run_status(run_id);
-	 if (istatus > -max_n_failure)
+	 if (istatus <=0 && istatus > -max_n_failure)
 	 {
 		 ret_val = true;
 	 }
