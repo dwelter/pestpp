@@ -51,7 +51,7 @@ public:
 	SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_par_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, 
-		const Regularization *regul_scheme_ptr, int _max_freeze_iter, OutputFileWriter &_output_file_writer, RestartController &_restart_controller, 
+		const Regularization *regul_scheme_ptr, OutputFileWriter &_output_file_writer, RestartController &_restart_controller, 
 		SVDSolver::MAT_INV _mat_inv, const string &description = string("base parameter solution"));
 	virtual ModelRun& solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter, ModelRun &cur_run, ModelRun &optimum_run);
 	virtual void iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs=false);
@@ -88,7 +88,6 @@ protected:
 	bool save_next_jacobian;
 	double prev_phi_percent;
 	int num_no_descent;
-	int max_freeze_iter;
 	double best_lambda;
 	OutputFileWriter &output_file_writer;
 	RestartController &restart_controller;
@@ -115,8 +114,6 @@ protected:
 		const Parameters &base_ctl_pars, const Parameters &freeze_ctl_pars,
 		double lambda, Parameters &ctl_upgrade_pars, Parameters &upgrade_ctl_del_pars,
 		Parameters &grad_ctl_del_pars, MarquardtMatrix marquardt_type);
-//	Parameters apply_upgrade(const Parameters &init_numeric_pars,const Upgrade &upgrade, double scale = 1.0);
-//	void update_upgrade(Upgrade &upgrade, const Parameters &base_pars, const Parameters &new_pars, const Parameters &frozen_pars);
 	void check_limits(const Parameters &init_ctl_pars, const Parameters &upgrade_ctl_pars,
 		map<string, LimitType> &limit_type_map, Parameters &ctl_parameters_at_limit);
 	Eigen::VectorXd calc_residual_corrections(const Jacobian &jacobian, const Parameters &del_numeric_pars, 

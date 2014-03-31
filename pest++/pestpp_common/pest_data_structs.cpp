@@ -239,6 +239,12 @@ Parameters ParameterInfo::get_init_value(const vector<string> &keys) const
 	return init_value;
 }
 
+
+PestppOptions::PestppOptions(int _n_iter_base, int _n_iter_super, int _max_n_super, double _super_eigthres, SVD_PACK _svd_pack, MAT_INV _mat_inv, double _auto_norm, double _super_relparmax)
+: n_iter_base(_n_iter_base), n_iter_super(_n_iter_super), max_n_super(_max_n_super), super_eigthres(_super_eigthres), svd_pack(_svd_pack), mat_inv(_mat_inv), auto_norm(_auto_norm), super_relparmax(_super_relparmax)
+{
+}
+
 void PestppOptions::parce_line(const string &line)
 {
 	string key;
@@ -276,8 +282,8 @@ void PestppOptions::parce_line(const string &line)
 		else if (key=="AUTO_NORM"){
 			convert_ip(value, auto_norm); 
 		}
-		else if (key=="MAX__FREEZE_ITER"){
-			convert_ip(value, max_freeze_iter);
+		else if (key == "SUPER_RELPARMAX"){
+			convert_ip(value, super_relparmax);
 		}
 		else if (key == "MAT_INV"){
 			if (value == "Q1/2J") mat_inv = Q12J;

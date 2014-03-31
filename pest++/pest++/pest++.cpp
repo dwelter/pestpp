@@ -252,7 +252,7 @@ int main(int argc, char* argv[])
 	SVDSolver base_svd(&pest_scenario.get_control_info(), pest_scenario.get_svd_info(), &pest_scenario.get_base_group_info(),
 		&pest_scenario.get_ctl_parameter_info(), &pest_scenario.get_ctl_observation_info(), file_manager,
 		&pest_scenario.get_ctl_observations(), &obj_func, base_trans_seq, pest_scenario.get_prior_info_ptr(),
-		*base_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(), pest_scenario.get_pestpp_options().get_max_freeze_iter(),
+		*base_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(),
 		output_file_writer, restart_ctl, mat_inv);
 
 	base_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
@@ -277,7 +277,7 @@ int main(int argc, char* argv[])
 	trans_svda.push_back_derivative2numeric(tran_svd);
 
 	ControlInfo svd_control_info = pest_scenario.get_control_info();
-	svd_control_info.relparmax = 0.1;
+	svd_control_info.relparmax = pest_scenario.get_pestpp_options().get_super_relparmax();
 	// Start Solution iterations
 	cout << endl << endl;
 	int n_base_iter = pest_scenario.get_pestpp_options().get_n_iter_base();
@@ -362,7 +362,7 @@ int main(int argc, char* argv[])
 				SVDASolver super_svd(&svd_control_info, pest_scenario.get_svd_info(), &pest_scenario.get_base_group_info(), &pest_scenario.get_ctl_parameter_info(),
 				&pest_scenario.get_ctl_observation_info(),  file_manager, &pest_scenario.get_ctl_observations(), &obj_func,
 				trans_svda, &pest_scenario.get_prior_info(), *super_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(),
-				pest_scenario.get_pestpp_options().get_max_freeze_iter(), output_file_writer, restart_ctl, mat_inv);
+				output_file_writer, restart_ctl, mat_inv);
 			super_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 			cur_run = super_svd.solve(*run_manager_ptr, termination_ctl, n_super_iter, cur_run, optimum_run);
 			cur_ctl_parameters = super_svd.cur_model_run().get_ctl_pars();

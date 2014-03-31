@@ -377,10 +377,6 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 	pestpp_options.set_n_iter_base(control_info.noptmax);
 	pestpp_options.set_super_eigthres(svd_info.eigthresh);
 	pestpp_options.set_max_n_super(ctl_parameters.size());
-	pestpp_options.set_svd_pack(PestppOptions::EIGEN);
-	pestpp_options.set_mat_inv(PestppOptions::JTQJ);
-	pestpp_options.set_auto_norm(-999.0);
-	pestpp_options.set_max_freeze_iter(1);
 	for(vector<string>::const_iterator b=pestpp_input.begin(),e=pestpp_input.end();
 		b!=e; ++b) {
 			pestpp_options.parce_line(*b);

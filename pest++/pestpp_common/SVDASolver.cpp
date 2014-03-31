@@ -38,11 +38,11 @@ using namespace Eigen;
 
 SVDASolver::SVDASolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_base_parameter_group_info_ptr, 
 	const ParameterInfo *_ctl_par_info_ptr, const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
-	const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, const Regularization *_regul_scheme, int _max_freeze_iter,
+	const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, const Regularization *_regul_scheme,
 	OutputFileWriter &_output_file_writer, RestartController &_restart_controller, SVDSolver::MAT_INV _mat_inv)
 	: SVDSolver(_ctl_info, _svd_info, _base_parameter_group_info_ptr, _ctl_par_info_ptr, _obs_info,
 		_file_manager, _observations, _obj_func, _par_transform, _prior_info_ptr, _jacobian, 
-		_regul_scheme, _max_freeze_iter, _output_file_writer, _restart_controller, _mat_inv, "super parameter solution")
+		_regul_scheme, _output_file_writer, _restart_controller, _mat_inv, "super parameter solution")
 {
 }
 
@@ -159,31 +159,6 @@ void SVDASolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_ctl_p
 		new_frozen_ctl_pars.clear();
 		new_frozen_ctl_pars = limit_parameters_freeze_all_ip(base_run_ctl_pars, upgrade_ctl_pars, prev_frozen_ctl_pars);
 		prev_frozen_ctl_pars.insert(new_frozen_ctl_pars.begin(), new_frozen_ctl_pars.end());
-		//If there are newly frozen parameters recompute the upgrade vector
-		//if (new_frozen_derivative_pars.size() > 0)
-		//{
-		//	calc_lambda_upgrade_vec(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
-		//		base_run_derivative_pars, prev_frozen_derivative_pars, i_lambda, upgrade_deriv_pars, upgrade_deriv_del_pars,
-		//		grad_pars_del_pars, marquardt_type);
-		//}
-		//limit_parameters_ip(base_run_derivative_pars, upgrade_deriv_pars, limit_type, prev_frozen_derivative_pars);
-		//prev_frozen_derivative_pars.insert(new_frozen_derivative_pars.begin(), new_frozen_derivative_pars.end());
-		//compute model parameters
-	////dew_clean_up
-	//ml_upgrade = calc_lambda_upgrade_vec(jacobian, Q_sqrt, residuals_vec, numeric_par_names_vec, obs_names_vec,
-	//	base_run_numeric_pars, Parameters(), i_lambda, marquardt_type);
-	////Start out with new_pars as numeric parameters
-	//new_pars = apply_upgrade(base_run_numeric_pars, ml_upgrade, 1.0);
-	//Parameters new_frozen_pars = limit_parameters_ip(base_run_numeric_pars, new_pars);
-	//frozen_derivative_par_vec.push_back(new_frozen_pars);
-	////transform new_par to derivative parameters
-	//par_transform.numeric2derivative_ip(new_pars);
-	//// impose frozen parameters
-	//for (auto &i : frozen_derivative_par_vec.back())
-	//{
-	//	new_pars[i.first] = i.second;
-	//}
-
 }
 void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs)
 {
