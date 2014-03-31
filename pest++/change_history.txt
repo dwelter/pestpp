@@ -2,6 +2,11 @@ Change History
 
 PEST++software version 2.2.0 as of March 24, 2014:
 
+Changes made from version 2.2.0 to 2.2.1
+   	1) Refactored parameter freezing algorithm to be more consistent with that of PEST
+   	2) Imlimented JtQJ solution with Scaling - this is now the default as it is more tolerant of noise
+   	3) Impilmented chain rule to transform differentials
+
 Changes made from version 1.1.2 to 2.2.0
         1) Added supprt for .rei, bpa, .sen and .svd output files
         2) Switched from Rotation Factor to Marquardt Lambda
