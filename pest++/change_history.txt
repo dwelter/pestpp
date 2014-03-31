@@ -4,6 +4,9 @@ PEST++software version 2.2.0 as of March 31, 2014:
 
 Changes made from version 2.2.1 to 2.2.2
 	1) Added performance output file(.pfm) to track execution time
+	2) Added input option MAX_RUN_FAIL
+	3) Added input option SUPER_RELPAMAX
+	
 
 Changes made from version 2.2.0 to 2.2.1
    	1) Refactored parameter freezing algorithm to be more consistent with that of PEST
