@@ -64,7 +64,7 @@ bool Jacobian_1to1::build_runs(ModelRun &init_model_run, vector<string> numeric_
 
 	Parameters new_derivative_pars;
 	bool success;
-	Parameters base_derivative_parameters = par_transform.numeric2derivative_cp(base_numeric_parameters);
+	Parameters base_derivative_parameters = par_transform.numeric2active_ctl_cp(base_numeric_parameters);
 	//Loop through derivative parameters and build the parameter sets necessary for computing the jacobian
 	for (auto &i_name : numeric_par_names)
 	{
@@ -82,7 +82,7 @@ bool Jacobian_1to1::build_runs(ModelRun &init_model_run, vector<string> numeric_
 				Parameters new_pars;
 				org_pars.insert(make_pair(i_name, model_parameters.get_rec(i_name)));
 				new_pars.insert(make_pair(i_name, par));
-				par_transform.derivative2model_ip(new_pars);
+				par_transform.active_ctl2model_ip(new_pars);
 				for (auto &ipar : new_pars)
 				{
 					model_parameters[ipar.first] = ipar.second;

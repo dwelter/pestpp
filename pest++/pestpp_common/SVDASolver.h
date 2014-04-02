@@ -38,10 +38,10 @@ public:
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, const Regularization *_regul_scheme, 
 		OutputFileWriter &_output_file_writer, RestartController &_restart_controller, SVDSolver::MAT_INV _mat_inv, PerformanceLog *_performance_log);
-	virtual Parameters limit_parameters_freeze_all_ip(const Parameters &init_ctl_pars,
-		Parameters &upgrade_ctl_pars, const Parameters &prev_frozen_ctl_pars);
-	virtual void calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_ctl_pars, QSqrtMatrix &Q_sqrt, Eigen::VectorXd &residuals_vec,
-		std::vector<std::string> &obs_names_vec, const Parameters &base_run_ctl_pars, LimitType &limit_type, Parameters &new_ctl_pars,
+	virtual Parameters limit_parameters_freeze_all_ip(const Parameters &init_active_ctl_pars,
+		Parameters &upgrade_active_ctl_pars, const Parameters &prev_frozen_active_ctl_pars);
+	virtual void calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_active_ctl_pars, QSqrtMatrix &Q_sqrt, Eigen::VectorXd &residuals_vec,
+		std::vector<std::string> &obs_names_vec, const Parameters &base_run_active_ctl_pars, LimitType &limit_type, Parameters &new_active_ctl_pars,
 		MarquardtMatrix marquardt_type);
 	void iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs=false);
 	virtual const string &get_description(){return description;}

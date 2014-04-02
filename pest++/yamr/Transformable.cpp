@@ -27,6 +27,7 @@
 #include <cassert>
 #include <memory>
 #include <Eigen/Dense>
+#include <utility>
 #include "Transformable.h"
 #include "pest_error.h"
 #include "utilities.h"
@@ -43,6 +44,11 @@ const double Transformable::no_data = -9.99E99;
 
 Transformable::Transformable(const Transformable &copyin) : items(copyin.items)
 {
+}
+
+Transformable::Transformable(const Transformable &&copyin)
+{
+	items = std::move(copyin.items);
 }
 
 Transformable::Transformable(const Transformable &copyin, const vector<string> &copy_names)

@@ -111,10 +111,10 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 
 	base_par_transform.push_back_ctl2model(t_scale);
 	base_par_transform.push_back_ctl2model(t_offset);
-	base_par_transform.push_back_ctl2derivative(t_tied);
-	base_par_transform.push_back_ctl2derivative(t_fixed);
-	base_par_transform.push_back_derivative2numeric(t_log);
-	base_par_transform.push_back_derivative2numeric(t_auto_norm);
+	base_par_transform.push_back_ctl2active_ctl(t_tied);
+	base_par_transform.push_back_ctl2active_ctl(t_fixed);
+	base_par_transform.push_back_active_ctl2numeric(t_log);
+	base_par_transform.push_back_active_ctl2numeric(t_auto_norm);
 
 	try {
 	prior_info_string = "";

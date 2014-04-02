@@ -51,7 +51,7 @@ using namespace pest_utils;
 
 int main(int argc, char* argv[])
 {
-	string version = "2.2.2";
+	string version = "2.2.3";
 	cout << endl << endl;
 	cout << "             PEST++ Version " << version << endl << endl;
 	cout << "                 by Dave Welter" << endl;
@@ -279,9 +279,9 @@ int main(int argc, char* argv[])
 
 	TranFixed *tr_svda_fixed = new TranFixed("SVDA Fixed Parameter Transformation");
 	trans_svda = base_trans_seq;
-	trans_svda.push_back_ctl2derivative(tr_svda_fixed);
-	trans_svda.add_custom_tran_seq(string("svda_derv2basenumeric") ,trans_svda.get_ctl2derivative_tranformations());
-	trans_svda.push_back_derivative2numeric(tran_svd);
+	trans_svda.push_back_ctl2active_ctl(tr_svda_fixed);
+	trans_svda.add_custom_tran_seq(string("svda_derv2basenumeric") ,trans_svda.get_ctl2active_ctl_tranformations());
+	trans_svda.push_back_active_ctl2numeric(tran_svd);
 
 	ControlInfo svd_control_info = pest_scenario.get_control_info();
 	svd_control_info.relparmax = pest_scenario.get_pestpp_options().get_super_relparmax();

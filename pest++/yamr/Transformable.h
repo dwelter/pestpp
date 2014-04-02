@@ -58,6 +58,7 @@ public:
 	typedef unordered_map<string, double>::const_iterator const_iterator;
 	Transformable(){};
 	Transformable(const Transformable &copyin);
+	Transformable(const Transformable &&copyin);
 	Transformable(const Transformable &copyin, const vector<string> &copy_names);
 	Transformable(const std::vector<std::string> &names, const Eigen::VectorXd &values);
 	const Transformable& operator=(const Transformable &rhs);

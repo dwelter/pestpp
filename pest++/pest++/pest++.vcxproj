@@ -145,6 +145,7 @@
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>$(IFORT_COMPILER12)\Composer XE 2011 SP1\mkl\lib\ia32;$(LibraryPath)</LibraryPath>
     <IncludePath>$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug_dll|Win32'">
     <LinkIncremental>true</LinkIncremental>
