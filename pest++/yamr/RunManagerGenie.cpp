@@ -66,7 +66,7 @@ void RunManagerGenie::run()
 	int nobs = obs_name_vec.size();
 	int ntpl = tplfile_vec.size();
 	int nins = insfile_vec.size();
-	int ikill = 1;
+
 	stringstream apar;
 	stringstream aobs;
 	stringstream execnames;
@@ -77,6 +77,7 @@ void RunManagerGenie::run()
 
 	 vector<double> par_val;
 	 vector<double> obs_val;
+	 vector<int> ifail;
 
 	// This is necessary to support restart as some run many already be complete
 	vector<int> run_id_vec = get_outstanding_run_ids();
@@ -84,7 +85,7 @@ void RunManagerGenie::run()
 
 	 par_val.clear();
 	 obs_val.resize(nruns*nobs);
-
+	 ifail.resize(nruns);
 	for (int i_run : run_id_vec)
 	{
 	         Parameters tmp_pars;
@@ -107,7 +108,7 @@ void RunManagerGenie::run()
 					&par_val[0], &obs_val[0], &ntpl, &nins, String2CharPtr(tplfle.str()).get_char_ptr(),
 					String2CharPtr(infle.str()).get_char_ptr(), String2CharPtr(insfle.str()).get_char_ptr(),
 					String2CharPtr(outfle.str()).get_char_ptr(),
-					String2CharPtr(host).get_char_ptr(), String2CharPtr(id).get_char_ptr(), &ikill);
+					String2CharPtr(host).get_char_ptr(), String2CharPtr(id).get_char_ptr(), &ifail[0]);
 	#endif
 	#ifdef OS_LINUX
 	throw(PestError("Error: Genie run manager is not supported under linux"));
@@ -118,14 +119,21 @@ void RunManagerGenie::run()
 	Observations obs;
 	for (int i=0; i<nruns; ++i)
 	{
-	   int run_id =run_id_vec[i]; 
-	   pars.clear();
-	   vector<double> i_par_vec(par_val.begin()+i*npar, par_val.begin()+(i+1)*npar);
-	   pars.insert(par_name_vec, i_par_vec);
-	   obs.clear();
-	   vector<double> i_obs_vec(obs_val.begin()+i*nobs, obs_val.begin()+(i+1)*nobs);
-	   obs.insert(obs_name_vec, i_obs_vec);
-	   file_stor.update_run(run_id, pars, obs);
+		if (ifail[i] > 0)
+		{
+			int run_id = run_id_vec[i];
+			pars.clear();
+			vector<double> i_par_vec(par_val.begin() + i*npar, par_val.begin() + (i + 1)*npar);
+			pars.insert(par_name_vec, i_par_vec);
+			obs.clear();
+			vector<double> i_obs_vec(obs_val.begin() + i*nobs, obs_val.begin() + (i + 1)*nobs);
+			obs.insert(obs_name_vec, i_obs_vec);
+			file_stor.update_run(run_id, pars, obs);
+		}
+		else
+		{
+			file_stor.set_run_nfailed(i, max_n_failure);
+		}
 	}
 }
 

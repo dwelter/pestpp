@@ -256,6 +256,15 @@ void RunStorage::update_run_failed(int run_id)
 	}
 }
 
+void RunStorage::set_run_nfailed(int run_id, int nfail)
+{
+	std::int8_t r_status = -nfail;
+	check_rec_id(run_id);
+	//update run status flag
+	buf_stream.seekp(get_stream_pos(run_id), ios_base::beg);
+	buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+}
+
 std::int8_t RunStorage::get_run_status_native(int run_id)
 {
 	std::int8_t  r_status;

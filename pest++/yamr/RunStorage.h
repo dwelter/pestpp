@@ -61,6 +61,7 @@ public:
 	void update_run(int run_id, const Parameters &pars, const Observations &obs);
 	void update_run(int run_id, const std::vector<char> serial_data);
 	void update_run_failed(int run_id);
+	void set_run_nfailed(int run_id, int nfail);
 	int get_nruns();
 	int increment_nruns();
 	const std::vector<std::string>& get_par_name_vec()const;
