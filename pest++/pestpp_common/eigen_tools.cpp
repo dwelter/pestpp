@@ -58,6 +58,22 @@ VectorXd stlvec_2_egienvec(const std::vector<double> &stl_vec)
 	return la_vec;
 }
 
+Eigen::VectorXd transformable_2_egien_vec(const Transformable &data, vector<string> oredered_names)
+{
+	size_t len = oredered_names.size();
+	VectorXd new_vec(len);
+	auto data_end = data.end();
+
+	for (size_t i = 0; i<len; ++i)
+	{
+		auto &it = data.find(oredered_names[i]);
+		assert(it != data_end);
+		new_vec(i) = it->second;
+	}
+	return new_vec;
+}
+
+
 void matrix_del_cols(Eigen::SparseMatrix<double> &mat, const vector<int> &col_id_vec)
 {
 	if (!col_id_vec.empty())

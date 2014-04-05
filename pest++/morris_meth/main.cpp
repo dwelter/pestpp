@@ -83,6 +83,12 @@ int main(int argc, char* argv[])
 		exit(0);
 	}
 
+	// testing
+	ifstream fin_junk;
+	fin_junk.open("C:\\Users\\dwelter\\Desktop\\junk.txt");
+	MorrisMethod::process_pooled_var_file(fin_junk);
+
+
 	// This is a YAMR Slave, start PEST++ as a YAMR Slave
 	if (argc >=3 && upper(argv[1]) == "/H") {
 		string socket_str = argv[2];

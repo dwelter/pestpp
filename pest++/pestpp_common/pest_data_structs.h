@@ -139,6 +139,8 @@ public:
 	double gtarg;  // optional
 	string covfile; // optional
 	ObservationGroupRec() : gtarg(0.0), covfile(""){};
+	static bool is_regularization(const std::string &grp_name);
+
 };
 ostream& operator<< (ostream &os, const ObservationGroupRec& val);
 

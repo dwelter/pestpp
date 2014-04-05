@@ -21,30 +21,15 @@
 
 class ModelRun;
 
-/** @Regularization base class
-
-The is the base class for regularization.  It provides default behavior that
-always returns a weight factor of 1.0
-*/
-class Regularization
+class DynamicRegularization
 {
 public:
-	Regularization(void);
-	virtual void update_weight(){}
-	virtual double get_weight(ModelRun &model_run) const {return 1.0;}
-	virtual ~Regularization(void);
-};
-
-
-
-class RegularizationPest : public Regularization
-{
-public:
-	RegularizationPest(double _phi_m_lim, double _phi_m_accept,
-		double _frac_phi_m, double _wf_min, double _wf_max,
-		double _wffac, double _wftol);
-	virtual double get_weight(ModelRun &model_run) const;
-	virtual ~RegularizationPest(void){}
+	DynamicRegularization(double _phi_m_lim = 0, double _phi_m_accept = 0,
+		double _frac_phi_m = 1, double _wf_min = 1e-10, double _wf_max = 1e10,
+		double _wffac = 0, double _wftol = 1000, double _tikhonov_weight = 1);
+	virtual double get_weight() const;
+	virtual void set_weight(double _tikhonov_weight) {tikhonov_weight = _tikhonov_weight;}
+	virtual ~DynamicRegularization(void){}
 protected:
 	double phi_m_lim;
 	double phi_m_accept;
@@ -53,6 +38,7 @@ protected:
 	double wf_max;
 	double wffac;
 	double wftol;
+	double tikhonov_weight;
 };
 
 

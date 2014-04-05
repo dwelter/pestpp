@@ -20,6 +20,7 @@
 #define SVDSOLVER_H_
 
 #include <map>
+#include <set>
 #include <iomanip>
 #include <Eigen/Dense>
 #include "Transformable.h"
@@ -38,7 +39,7 @@ class FileManager;
 class ModelRun;
 class QSqrtMatrix;
 class PriorInformation;
-class Regularization;
+class DynamicRegularization;
 class SVDPackage;
 
 class SVDSolver
@@ -52,7 +53,7 @@ public:
 	SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_par_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, 
-		const Regularization *regul_scheme_ptr, OutputFileWriter &_output_file_writer, RestartController &_restart_controller, 
+		const DynamicRegularization *regul_scheme_ptr, OutputFileWriter &_output_file_writer, RestartController &_restart_controller,
 		SVDSolver::MAT_INV _mat_inv, PerformanceLog *_performance_log, const string &description = string("base parameter solution"));
 	virtual ModelRun& solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter, ModelRun &cur_run, ModelRun &optimum_run);
 	virtual void iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs=false);
@@ -82,7 +83,7 @@ protected:
 	const Observations *observations_ptr;
 	const ObservationInfo *obs_info_ptr;
 	const PriorInformation *prior_info_ptr;
-	const Regularization *regul_scheme_ptr;
+	DynamicRegularization regul_scheme;
 	FileManager &file_manager;
 	Jacobian &jacobian;
 	bool phiredswh_flag;
@@ -94,9 +95,8 @@ protected:
 	RestartController &restart_controller;
 	PerformanceLog *performance_log;
 
-	//virtual void limit_parameters_ip(const Parameters &init_numeric_pars, 
-	//	Parameters &upgrade_numeric_pars, LimitType &limit_type, 
-	//	const Parameters &frozen_numeric_pars = Parameters());
+	virtual void limit_parameters_ip(const Parameters &init_active_ctl_pars, Parameters &upgrade_active_ctl_pars,
+		LimitType &limit_type, const Parameters &frozen_ative_ctl_pars, bool ignore_upper_lower=false);
 	virtual Parameters limit_parameters_freeze_all_ip(const Parameters &init_active_ctl_pars,
 		Parameters &upgrade_active_ctl_pars, const Parameters &frozen_active_ctl_pars = Parameters());
 	virtual const string &get_description(){return description;}
@@ -120,6 +120,9 @@ protected:
 		map<string, LimitType> &limit_type_map, Parameters &active_ctl_parameters_at_limit);
 	Eigen::VectorXd calc_residual_corrections(const Jacobian &jacobian, const Parameters &del_numeric_pars, 
 							   const vector<string> obs_name_vec);
+	void dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt,
+		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
+		const Parameters &base_active_ctl_pars, const Parameters &freeze_active_ctl_pars);
 	bool par_heading_out_bnd(double org_par, double new_par, double lower_bnd, double upper_bnd);
 	int check_bnd_par(Parameters &new_freeze_active_ctl_pars, const Parameters &current_active_ctl_pars, const Parameters &new_upgrade_active_ctl_pars, const Parameters &new_grad_active_ctl_pars = Parameters());
 };

@@ -8,6 +8,7 @@
 #include <iostream>
 #include <map>
 #include <algorithm>
+#include <regex>
 #include "MorrisMethod.h"
 #include "Transformable.h"
 #include "RunManagerAbstract.h"
@@ -79,6 +80,29 @@ void MorrisObsSenFile::calc_obs_sen(ofstream &fout_obs_sen)
 			}
 			string parname = gsa_abstract_base->log_name(ipar);
 			fout_obs_sen << parname << ", " << iobs << ", " << mean << ", " << abs_mean << ", " << sigma <<", " << n_samples <<  endl;
+		}
+	}
+}
+
+
+void MorrisMethod::process_pooled_var_file(std::ifstream &fin)
+{
+	string line;
+	regex reg_reg ("regex\\s*\\(\"(.+)\"\\)");
+	regex reg_grp("group\\s*\\((.+)\\)");
+	cmatch mr;
+	while (getline(fin, line))
+	{
+		cout << line << endl;
+		if (regex_match(line.c_str(), mr, reg_reg))
+		{
+			for (auto x : mr) cout << x << " ";
+			cout << std::endl;
+		}
+		if (regex_match(line.c_str(), mr, reg_grp))
+		{
+			for (auto x : mr) cout << x << " ";
+			cout << std::endl;
 		}
 	}
 }

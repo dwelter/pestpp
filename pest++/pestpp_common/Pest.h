@@ -60,7 +60,7 @@ public:
 	const  vector<string> &get_insfile_vec();
 	const  vector<string> &get_outfile_vec();
 	const PestppOptions &get_pestpp_options() const {return pestpp_options;}
-	const Regularization* get_regul_scheme_ptr() {return regul_scheme_ptr;}
+	const DynamicRegularization* get_regul_scheme_ptr() { return regul_scheme_ptr; }
 	vector<string> get_nonregul_obs() const;
 	virtual ~Pest();
 private:
@@ -77,7 +77,7 @@ private:
 	ParamTransformSeq base_par_transform;
 	vector<string> ctl_ordered_par_names;
 	vector<string> ctl_ordered_obs_names;
-	Regularization *regul_scheme_ptr;
+	DynamicRegularization *regul_scheme_ptr;
 };
 ostream& operator<< (ostream &os, const Pest& val);
 #endif /* PEST_H_ */

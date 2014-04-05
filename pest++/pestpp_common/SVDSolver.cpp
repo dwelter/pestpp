@@ -44,12 +44,12 @@ using namespace Eigen;
 SVDSolver::SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_par_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, 
-		const Regularization *_regul_scheme_ptr, OutputFileWriter &_output_file_writer, RestartController &_restart_controller, SVDSolver::MAT_INV _mat_inv, 
+		const DynamicRegularization *_regul_scheme_ptr, OutputFileWriter &_output_file_writer, RestartController &_restart_controller, SVDSolver::MAT_INV _mat_inv,
 		PerformanceLog *_performance_log, const string &_description)
 		: ctl_info(_ctl_info), svd_info(_svd_info), par_group_info_ptr(_par_group_info_ptr), ctl_par_info_ptr(_ctl_par_info_ptr), obs_info_ptr(_obs_info), obj_func(_obj_func),
 		  file_manager(_file_manager), observations_ptr(_observations), par_transform(_par_transform),
 		  cur_solution(_obj_func, *_observations), phiredswh_flag(false), save_next_jacobian(true), prior_info_ptr(_prior_info_ptr), jacobian(_jacobian), prev_phi_percent(0.0),
-		  num_no_descent(0), regul_scheme_ptr(_regul_scheme_ptr), output_file_writer(_output_file_writer), mat_inv(_mat_inv), description(_description), best_lambda(20.0),
+		  num_no_descent(0), regul_scheme(*_regul_scheme_ptr), output_file_writer(_output_file_writer), mat_inv(_mat_inv), description(_description), best_lambda(20.0),
 		  restart_controller(_restart_controller), performance_log(_performance_log)
 {
 	svd_package = new SVD_EIGEN();
@@ -233,6 +233,7 @@ void SVDSolver::calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSq
 	//Compute Scaling Matrix Sii
 	performance_log->log_event("commencing to scale JtQJ matrix");
 	svd_package->solve_ip(JtQJ, Sigma, U, Vt, Sigma_trunc, 0.0);
+
 	VectorXd Sigma_inv_sqrt = Sigma.array().inverse().sqrt();
 	VectorXd Sigma_sqrt = Sigma.array().sqrt();
 	Eigen::SparseMatrix<double> S = Vt.transpose() * Sigma_inv_sqrt.asDiagonal() * U.transpose();
@@ -253,6 +254,8 @@ void SVDSolver::calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSq
 	performance_log->log_event("commencing SVD factorization");
 	svd_package->solve_ip(JtQJ, Sigma, U, Vt, Sigma_trunc);
 	performance_log->log_event("SVD factorization complete");
+
+	output_file_writer.write_svd(Sigma, Vt, lambda, prev_frozen_active_ctl_pars, Sigma_trunc);
 
 	VectorXd Sigma_inv = Sigma.array().inverse();
 	
@@ -385,6 +388,7 @@ void SVDSolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_active
 	int num_upgrade_out_grad_in;
 	Parameters new_frozen_active_ctl_pars;
 
+	upgrade_active_ctl_pars.clear();
 	// define a function type for upgrade methods 
 	typedef void(SVDSolver::*UPGRADE_FUNCTION) (const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
 		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
@@ -523,10 +527,30 @@ restart_resume_jacobian_runs:
 	auto &failed_jac_pars_names = jacobian.get_failed_parameter_names();
 	auto  failed_jac_pars = cur_solution.get_ctl_pars().get_subset(failed_jac_pars_names.begin(), failed_jac_pars_names.end());
 
-	cout << endl;
-	cout << "  computing upgrade vectors... " << endl;
-	// update regularization weight factor
-	double tikhonov_weight = regul_scheme_ptr->get_weight(cur_solution);
+	// populate vectors with sorted observations (standard and prior info) and parameters
+	{
+		vector<string> prior_info_names = prior_info_ptr->get_keys();
+		obs_names_vec.insert(obs_names_vec.end(), prior_info_names.begin(), prior_info_names.end());
+	}
+
+	// build weights matrix sqrt(Q)
+	double tikhonov_weight = regul_scheme.get_weight();
+	QSqrtMatrix Q_sqrt(obs_info_ptr, prior_info_ptr, tikhonov_weight);
+	//build residuals vector
+	VectorXd residuals_vec = -1.0 * stlvec_2_egienvec(cur_solution.get_residuals_vec(obs_names_vec));
+
+	Parameters base_run_active_ctl_par = par_transform.ctl2active_ctl_cp(cur_solution.get_ctl_pars());
+	vector<double> magnitude_vec;
+	Parameters frozen_active_ctl_pars = failed_jac_pars;
+	LimitType limit_type = LimitType::NONE;
+	//If running in regularization mode, adjust the regularization weights
+	// define a function type for upgrade methods 
+	//dynamic_weight_adj(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+	//	base_run_active_ctl_par, frozen_active_ctl_pars);
+	//tikhonov_weight = Q_sqrt.get_tikhonov_weight();
+	//regul_scheme.set_weight(tikhonov_weight);
+
+
 	// write out report for starting phi
 	obj_func->phi_report(os, cur_solution.get_obs(), cur_solution.get_ctl_pars(), tikhonov_weight);
 	// write failed jacobian parameters out
@@ -536,31 +560,17 @@ restart_resume_jacobian_runs:
 		os << "  the following parameters have been frozen as the runs to compute their derivatives failed: " << endl;
 		for (auto &ipar : failed_jac_pars)
 		{
-			os << "    " << ipar.first << " frozen at " << ipar.second << endl; 
+			os << "    " << ipar.first << " frozen at " << ipar.second << endl;
 		}
 	}
-	os << endl;
-	// populate vectors with sorted observations (standard and prior info) and parameters
-	{
-		vector<string> prior_info_names = prior_info_ptr->get_keys();
-		obs_names_vec.insert(obs_names_vec.end(), prior_info_names.begin(), prior_info_names.end());
-	}
-	// build weights matrix sqrt(Q)
-	QSqrtMatrix Q_sqrt(obs_info_ptr, prior_info_ptr, tikhonov_weight);
-	//build residuals vector
-	VectorXd residuals_vec = -1.0 * stlvec_2_egienvec(cur_solution.get_residuals_vec(obs_names_vec));
+
 
 	//Build model runs
 	run_manager.reinitialize(file_manager.build_filename("rnu"));
-	vector<double> magnitude_vec;
-	vector<Parameters> frozen_par_vec;
-
+	cout << endl;
+	cout << "  computing upgrade vectors... " << endl;
 	//Marquardt Lambda Update Vector
-	LimitType limit_type = LimitType::NONE;
-	Parameters base_run_active_ctl_par = par_transform.ctl2active_ctl_cp(cur_solution.get_ctl_pars());
-
 	double tmp_lambda[] = {0.1, 1.0, 10.0, 100.0, 1000.0};
-	//double tmp_lambda[] = { 0.0 };
 	vector<double> lambda_vec(tmp_lambda, tmp_lambda+sizeof(tmp_lambda)/sizeof(double));
 	lambda_vec.push_back(best_lambda);
 	lambda_vec.push_back(best_lambda / 2.0);
@@ -570,19 +580,15 @@ restart_resume_jacobian_runs:
 	lambda_vec.resize(std::distance(lambda_vec.begin(), iter));
 	int i_update_vec = 0;
 	stringstream message;
+	vector<Parameters> frozen_par_vec;
 	for (double i_lambda : lambda_vec)
 	{
 		std::cout << string(message.str().size(), '\b');
 		message.str("");
 		message << "  computing upgrade vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
 		std::cout << message.str();
-		
-		//Compute automatic regularization weight adjustments here
 
-		Parameters frozen_active_ctl_pars = failed_jac_pars;
 		Parameters new_pars;
-		//Compute automatic regularization weight adjustments here
-
 		calc_upgrade_vec(i_lambda, frozen_active_ctl_pars, Q_sqrt, residuals_vec,
 			obs_names_vec, base_run_active_ctl_par, limit_type,
 			new_pars, MarquardtMatrix::IDENT);
@@ -639,7 +645,7 @@ restart_resume_jacobian_runs:
 			os << " ("  << upgrade_run.get_phi(tikhonov_weight)/cur_solution.get_phi(tikhonov_weight)*100 << "%)" << endl;
 			os.precision(n_prec);
 			os.unsetf(ios_base::floatfield); // reset all flags to default
-			if ( upgrade_run.obs_valid() &&  (!best_run_updated_flag || upgrade_run.get_phi() <  best_upgrade_run.get_phi() )) {
+			if (upgrade_run.obs_valid() && (!best_run_updated_flag || upgrade_run.get_phi(tikhonov_weight) <  best_upgrade_run.get_phi(tikhonov_weight))) {
 				best_run_updated_flag = true;
 				best_upgrade_run = upgrade_run;
 				best_lambda = i_lambda;
@@ -679,19 +685,19 @@ restart_resume_jacobian_runs:
 	run_manager.free_memory();
 
 	// reload best parameters and set flag to switch to central derivatives next iteration
-	if(cur_solution.get_phi() != 0 && !phiredswh_flag &&
-		(cur_solution.get_phi()-best_upgrade_run.get_phi())/cur_solution.get_phi() < ctl_info->phiredswh)
+	if (cur_solution.get_phi(tikhonov_weight) != 0 && !phiredswh_flag &&
+		(cur_solution.get_phi(tikhonov_weight) - best_upgrade_run.get_phi(tikhonov_weight) / cur_solution.get_phi(tikhonov_weight) < ctl_info->phiredswh) )
 	{
 		phiredswh_flag = true;
 		os << endl << "      Switching to central derivatives:" << endl;
 	}
 
-	cout << "  Starting phi = " << cur_solution.get_phi() << ";  ending phi = " << best_upgrade_run.get_phi() <<
-		"  ("  << best_upgrade_run.get_phi()/cur_solution.get_phi()*100 << "%)" << endl;
+	cout << "  Starting phi = " << cur_solution.get_phi(tikhonov_weight) << ";  ending phi = " << best_upgrade_run.get_phi(tikhonov_weight) <<
+		"  (" << best_upgrade_run.get_phi(tikhonov_weight) / cur_solution.get_phi(tikhonov_weight) * 100 << "%)" << endl;
 	cout << endl;
 	os << endl;
 	iteration_update_and_report(os, best_upgrade_run, termination_ctl);
-	prev_phi_percent =  best_upgrade_run.get_phi()/cur_solution.get_phi()*100;
+	prev_phi_percent = best_upgrade_run.get_phi(tikhonov_weight) / cur_solution.get_phi(tikhonov_weight) * 100;
 	cur_solution = best_upgrade_run;
 }
 
@@ -1061,60 +1067,136 @@ int SVDSolver::check_bnd_par(Parameters &new_freeze_active_ctl_pars, const Param
 	return num_upgrade_out_grad_in;
 }
 
-//void SVDSolver::limit_parameters_ip(const Parameters &init_deriviative_pars, Parameters &upgrade_derivative_pars, 
-//										  LimitType &limit_type, const Parameters &frozen_pars)
-//{
-//	map<string, LimitType> limit_type_map;
-//	limit_type = LimitType::NONE;
-//	const string *name;
-//	double p_init;
-//	double p_upgrade;
-//	double p_limit;
-//	
-//	pair<bool, double> par_limit;
-//	Parameters limited_derivative_parameters;
-//	//remove forozen parameters from upgrade pars
-//	upgrade_derivative_pars.erase(frozen_pars);
-//
-//	check_limits(init_deriviative_pars, upgrade_derivative_pars, limit_type_map, limited_derivative_parameters);
-//
-//	// Calculate most stringent limit factor on a numeric PEST parameters
-//	double limit_factor= 1.0;
-//	double tmp_limit;
-//	string limit_parameter_name = "";
-//	Parameters limited_numeric_parameters = par_transform.active_ctl2numeric_cp(limited_derivative_parameters);
-//	//this can be optimized to just compute init_numeric_parameters for those parameters at their limits
-//	Parameters init_numeric_pars = par_transform.active_ctl2numeric_cp(init_deriviative_pars);
-//	Parameters upgrade_numeric_pars = par_transform.active_ctl2numeric_cp(upgrade_derivative_pars);
-//	for (auto &ipar : limited_numeric_parameters)
-//	{
-//		name = &(ipar.first);
-//		p_limit = ipar.second;
-//		p_init = init_numeric_pars.get_rec(*name);
-//		p_upgrade = upgrade_numeric_pars.get_rec(*name);
-//		tmp_limit = (p_limit - p_init) / (p_upgrade - p_init);
-//		if (tmp_limit < limit_factor)
-//		{
-//			limit_factor = tmp_limit;
-//			limit_parameter_name = *name;
-//			limit_type = limit_type_map[*name];
-//		}
-//	}
-//	// Apply limit factor to numeric PEST upgrade parameters
-//	if (limit_factor != 1.0)
-//	{
-//		for (auto &ipar : upgrade_numeric_pars)
-//		{
-//			name = &(ipar.first);
-//			p_init = init_numeric_pars.get_rec(*name);
-//			ipar.second = p_init + (ipar.second - p_init) *  limit_factor;
-//		}
-//	}
-//	//Convert newly limited parameters to their derivative state
-//	upgrade_derivative_pars = par_transform.numeric2active_ctl_cp(upgrade_numeric_pars);
-//	// Impose frozen Parameters as they were removed in the beginning
-//	for (auto &ipar : frozen_pars)
-//	{
-//		upgrade_derivative_pars[ipar.first] = ipar.second;
-//	}
-//}
+void SVDSolver::limit_parameters_ip(const Parameters &init_active_ctl_pars, Parameters &upgrade_active_ctl_pars, 
+										  LimitType &limit_type, const Parameters &frozen_active_ctl_pars, 
+										  bool ignore_upper_lower)
+{
+	map<string, LimitType> limit_type_map;
+	limit_type = LimitType::NONE;
+	const string *name;
+	double p_init;
+	double p_upgrade;
+	double p_limit;
+	
+	Parameters limited_active_ctl_parameters;
+	//remove forozen parameters from upgrade pars
+	upgrade_active_ctl_pars.erase(frozen_active_ctl_pars);
+
+	check_limits(init_active_ctl_pars, upgrade_active_ctl_pars, limit_type_map, limited_active_ctl_parameters);
+
+	//delete any limits cooresponding to ignored types
+	for (auto it = limited_active_ctl_parameters.begin(); it != limited_active_ctl_parameters.end(); )
+	{
+		const string &name = (*it).first;
+		const LimitType l_type = limit_type_map[name];
+
+		auto temp_it = it;
+		++temp_it;
+
+		if (l_type == LimitType::LBND || l_type == LimitType::UBND)
+		{
+			limited_active_ctl_parameters.erase(it);
+		}
+
+		it = temp_it;
+	}
+	// Calculate most stringent limit factor on a numeric PEST parameters
+	double limit_factor= 1.0;
+	double tmp_limit;
+	string limit_parameter_name = "";
+	Parameters limited_numeric_parameters = par_transform.active_ctl2numeric_cp(limited_active_ctl_parameters);
+	//this can be optimized to just compute init_numeric_parameters for those parameters at their limits
+	Parameters init_numeric_pars = par_transform.active_ctl2numeric_cp(init_active_ctl_pars);
+	Parameters upgrade_numeric_pars = par_transform.active_ctl2numeric_cp(upgrade_active_ctl_pars);
+	for (auto &ipar : limited_numeric_parameters)
+	{
+		name = &(ipar.first);
+		p_limit = ipar.second;
+		p_init = init_numeric_pars.get_rec(*name);
+		p_upgrade = upgrade_numeric_pars.get_rec(*name);
+		tmp_limit = (p_limit - p_init) / (p_upgrade - p_init);
+		if (tmp_limit < limit_factor)
+		{
+			limit_factor = tmp_limit;
+			limit_parameter_name = *name;
+			limit_type = limit_type_map[*name];
+		}
+	}
+	// Apply limit factor to numeric PEST upgrade parameters
+	if (limit_factor != 1.0)
+	{
+		for (auto &ipar : upgrade_numeric_pars)
+		{
+			name = &(ipar.first);
+			p_init = init_numeric_pars.get_rec(*name);
+			ipar.second = p_init + (ipar.second - p_init) *  limit_factor;
+		}
+	}
+	//Convert newly limited parameters to their derivative state
+	upgrade_active_ctl_pars = par_transform.numeric2active_ctl_cp(upgrade_numeric_pars);
+	// Impose frozen Parameters as they were removed in the beginning
+	for (auto &ipar : frozen_active_ctl_pars)
+	{
+		upgrade_active_ctl_pars[ipar.first] = ipar.second;
+	}
+}
+
+void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt,
+	const Eigen::VectorXd &residuals_vec, const vector<string> &obs_names_vec,
+	const Parameters &base_run_active_ctl_par, const Parameters &freeze_active_ctl_pars)
+{
+	//If running in regularization mode, adjust the regularization weights
+	// define a function type for upgrade methods 
+	Parameters new_pars;
+	LimitType limit_type = LimitType::NONE;
+	for (int i = 0; i < 6; ++i)
+	{
+		typedef void(SVDSolver::*UPGRADE_FUNCTION) (const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
+			const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
+			const Parameters &base_ctl_pars, const Parameters &prev_frozen_ctl_pars,
+			double lambda, Parameters &ctl_upgrade_pars, Parameters &upgrade_ctl_del_pars,
+			Parameters &grad_ctl_del_pars, MarquardtMatrix marquardt_type);
+
+		UPGRADE_FUNCTION calc_lambda_upgrade = &SVDSolver::calc_lambda_upgrade_vec_JtQJ;
+
+		if (mat_inv == MAT_INV::Q12J)
+		{
+			calc_lambda_upgrade = &SVDSolver::calc_lambda_upgrade_vecQ12J;
+		}
+		// need to remove parameters frozen due to failed jacobian runs when calling calc_lambda_upgrade_vec
+		//Freeze Parameters at the boundary whose ugrade vector and gradient both head out of bounds
+		Parameters upgrade_ctl_del_pars;
+		Parameters grad_ctl_del_pars;
+		map<string, LimitType> limit_type_map;
+		Parameters limited_ctl_parameters;
+
+		(*this.*calc_lambda_upgrade)(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+			base_run_active_ctl_par, freeze_active_ctl_pars, 0, new_pars, upgrade_ctl_del_pars,
+			grad_ctl_del_pars, MarquardtMatrix::IDENT);
+		limit_parameters_ip(base_run_active_ctl_par, new_pars,
+			limit_type, freeze_active_ctl_pars, true);
+
+		Parameters new_ctl_pars = par_transform.active_ctl2ctl_cp(new_pars);
+		Parameters delta_par = par_transform.active_ctl2numeric_cp(new_pars)
+			- par_transform.active_ctl2numeric_cp(base_run_active_ctl_par);
+		vector<string> numeric_par_names = new_pars.get_keys();
+		VectorXd delta_par_vec = transformable_2_egien_vec(delta_par, numeric_par_names);
+		Eigen::SparseMatrix<double> jac = jacobian.get_matrix(obs_names_vec, numeric_par_names);
+		VectorXd delta_obs_vec = jac * delta_par_vec;
+		Transformable delta_obs(obs_names_vec, delta_obs_vec);
+		Observations projected_obs = cur_solution.get_obs();
+		projected_obs += delta_obs;
+
+		double mu = Q_sqrt.get_tikhonov_weight();
+		PhiComponets cur_phi_comp = cur_solution.get_obj_func_ptr()->get_phi_comp(cur_solution.get_obs(), cur_solution.get_ctl_pars());
+		PhiComponets proj_phi_comp = cur_solution.get_obj_func_ptr()->get_phi_comp(projected_obs, new_ctl_pars);
+		double target_phi = (cur_phi_comp.meas + cur_phi_comp.regul) * (1.0 - 0.3);
+		double proj_phi = proj_phi_comp.meas + proj_phi_comp.regul*mu;
+		double target_phi_regul = target_phi - proj_phi_comp.meas;
+		if (proj_phi_comp.meas != 0)
+		{
+			double new_mu = target_phi_regul / proj_phi_comp.regul;
+			Q_sqrt.set_tikhonov_weight(mu);
+		}
+	}
+}

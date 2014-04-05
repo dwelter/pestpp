@@ -100,7 +100,7 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 	double wftol;
 	vector<string> pestpp_input;
 
-	regul_scheme_ptr = new Regularization();
+	regul_scheme_ptr = new DynamicRegularization();
 
 	TranTied *t_tied = new TranTied("PEST to model tied transformation");
 	TranOffset *t_offset = new TranOffset("PEST to model offset transformation");
@@ -351,7 +351,7 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 				convert_ip(tokens[0], wffac);
 				convert_ip(tokens[1], wftol);
 				delete regul_scheme_ptr;
-				regul_scheme_ptr = new RegularizationPest(phimlim, phimaccept, fracphim, wfmin, wfmax,
+				regul_scheme_ptr = new DynamicRegularization(phimlim, phimaccept, fracphim, wfmin, wfmax,
 								   wffac, wftol);
 			}
 		}

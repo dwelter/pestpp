@@ -20,29 +20,17 @@
 #include "ObjectiveFunc.h"
 #include "ModelRunPP.h"
 
-Regularization::Regularization(void)
-{
-}
 
-
-Regularization::~Regularization(void)
-{
-}
-
-
-RegularizationPest::RegularizationPest(double _phi_m_lim, 
+DynamicRegularization::DynamicRegularization(double _phi_m_lim,
 	double _phi_m_accept, double _frac_phi_m, double _wf_min, double _wf_max,
-	double _wffac, double _wftol)
+	double _wffac, double _wftol, double _tikhonov_weight)
 	: phi_m_lim(_phi_m_lim), phi_m_accept(_phi_m_accept), frac_phi_m(_frac_phi_m),
-	  wf_min(_wf_min), wf_max(_wf_max), wffac(_wffac), wftol(_wftol)
+	wf_min(_wf_min), wf_max(_wf_max), wffac(_wffac), wftol(_wftol), 
+	tikhonov_weight(_tikhonov_weight)
 {
 }
 
-double RegularizationPest::get_weight(ModelRun &model_run) const
+double DynamicRegularization::get_weight() const
 {
-	double weight;
-	PhiComponets phi = model_run.get_phi_comp();
-	weight = 1.0;
-	if (phi.regul > 1.0e-9) weight = .02 * phi.meas / phi.regul;
-	return weight;
+	return tikhonov_weight;
 }

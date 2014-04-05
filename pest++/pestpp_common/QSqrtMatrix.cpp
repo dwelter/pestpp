@@ -35,7 +35,7 @@ QSqrtMatrix::QSqrtMatrix(const ObservationInfo *_obs_info_ptr, const PriorInform
 {
 }
 
-Eigen::SparseMatrix<double> QSqrtMatrix::get_sparse_matrix(const vector<string> &obs_names) const
+Eigen::SparseMatrix<double> QSqrtMatrix::get_sparse_matrix(const vector<string> &obs_names, bool get_sqaure) const
 {
 
 	Eigen::SparseMatrix<double> weights(obs_names.size(), obs_names.size());
@@ -58,7 +58,8 @@ Eigen::SparseMatrix<double> QSqrtMatrix::get_sparse_matrix(const vector<string> 
 			if ((*found_obsinfo_iter).second.is_regularization()) {
 				weight *= tikhonov_weight;
 			}
-			triplet_list.push_back(Eigen::Triplet<double>(i, i, sqrt(weight)));
+			if (!get_sqaure) weight = sqrt(weight);
+			triplet_list.push_back(Eigen::Triplet<double>(i, i, weight));
 		}
 		else if (found_prior_info != not_found_prior_info)
 		{
@@ -67,7 +68,8 @@ Eigen::SparseMatrix<double> QSqrtMatrix::get_sparse_matrix(const vector<string> 
 			if ((*found_prior_info).second.is_regularization()) {
 				weight *= tikhonov_weight;
 			}
-			triplet_list.push_back(Eigen::Triplet<double>(i, i, sqrt(weight)));
+			if (!get_sqaure) weight = sqrt(weight);
+			triplet_list.push_back(Eigen::Triplet<double>(i, i, weight));
 		}
 		else {
 			assert(true);  //observation not in standard observations or prior information 

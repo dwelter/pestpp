@@ -38,7 +38,7 @@ using namespace Eigen;
 
 SVDASolver::SVDASolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_base_parameter_group_info_ptr, 
 	const ParameterInfo *_ctl_par_info_ptr, const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
-	const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, const Regularization *_regul_scheme,
+	const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, const DynamicRegularization *_regul_scheme,
 	OutputFileWriter &_output_file_writer, RestartController &_restart_controller, SVDSolver::MAT_INV _mat_inv, PerformanceLog *_performance_log)
 	: SVDSolver(_ctl_info, _svd_info, _base_parameter_group_info_ptr, _ctl_par_info_ptr, _obs_info,
 		_file_manager, _observations, _obj_func, _par_transform, _prior_info_ptr, _jacobian, 
@@ -242,7 +242,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 	cout << "  computing upgrade vectors... " << endl;
 
 	// update regularization weight factor
-	double tikhonov_weight = regul_scheme_ptr->get_weight(base_run);
+	double tikhonov_weight = regul_scheme.get_weight();
 	// write out report for starting phi
 	obj_func->phi_report(os, base_run.get_obs(), base_run.get_ctl_pars(), tikhonov_weight);
 	// populate vectors with sorted observations (standard and prior info) and parameters

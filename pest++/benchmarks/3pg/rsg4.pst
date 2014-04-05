@@ -13,15 +13,15 @@ restart  estimation
 5 1.0e-7
 1
 * parameter groups
-fsp      relative 0.01  0.0  switch  2.0 parabolic
-lr       relative 0.01  0.0  switch  2.0 parabolic
-msc      relative 0.01  0.0  switch  2.0 parabolic
-sla      relative 0.01  0.0  switch  2.0 parabolic
-smdc     relative 0.01  0.0  switch  2.0 parabolic
-smdp     relative 0.01  0.0  switch  2.0 parabolic
-npp      relative 0.01  0.0  switch  2.0 parabolic
-fert     relative 0.01  0.0  switch  2.0 parabolic
-asw      relative 0.01  0.0  switch  2.0 parabolic
+fsp      relative 0.01  0.0  always_2  2.0 parabolic
+lr       relative 0.01  0.0  always_2  2.0 parabolic
+msc      relative 0.01  0.0  always_2  2.0 parabolic
+sla      relative 0.01  0.0  always_2  2.0 parabolic
+smdc     relative 0.01  0.0  always_2  2.0 parabolic
+smdp     relative 0.01  0.0  always_2  2.0 parabolic
+npp      relative 0.01  0.0  always_2  2.0 parabolic
+fert     relative 0.01  0.0  always_2  2.0 parabolic
+asw      relative 0.01  0.0  always_2  2.0 parabolic
 * parameter data
 fsp0_4   fixed factor   0.75       0.55    1.0          fsp      1.0     0.0 1
 fsp1_4   none  factor   0.03       0.025   1.5          fsp      1.0     0.0 1
@@ -76,7 +76,7 @@ rsgSite4.ins  rsgSite4.out
 ++# PEST++ optional input
 ++ max_n_super(5) super_eigthres(1.0e-8)
 ++ n_iter_base(1) n_iter_super(2)
-++# MAT_INV(Q1/2J)
+++ MAT_INV(Q1/2J)
 ++# SVD_PACK(PROPACK)
 ++# SUPER_RELPARMAX(.01)
 ++ AUTO_NORM(4)

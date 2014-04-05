@@ -327,6 +327,15 @@ ostream& operator<< (ostream &os, const ObservationRec& val)
 	return os;
 }
 
+bool ObservationGroupRec::is_regularization(const string &grp_name)
+{
+	bool is_reg = false;
+	int found = upper_cp(grp_name).find("REGUL");
+	if (found == 0) is_reg = true;
+	return is_reg;
+
+}
+
 const ObservationRec* ObservationInfo::get_observation_rec_ptr(const string &name) const
 {
 	const ObservationRec *ret_val = 0;
@@ -338,6 +347,7 @@ const ObservationRec* ObservationInfo::get_observation_rec_ptr(const string &nam
 	}
 	return ret_val;
 }
+
 const ObservationGroupRec* ObservationInfo::get_group_rec_ptr(const string &name) const
 {
 	const ObservationGroupRec *ret_val = 0;

@@ -127,6 +127,13 @@ PhiComponets ObjectiveFunc::phi_report(ostream &os, const Observations &sim_obs,
 	double total_phi = phi_comp.meas + phi_comp.regul * tikhonov_weight;
 	os << "    Starting phi for this iteration                     Total : " << total_phi << endl;
 	group_phi = get_group_phi(sim_obs, pars);
+	for (auto &igrp : group_phi)
+	{
+		if (ObservationGroupRec::is_regularization(igrp.first))
+		{
+			igrp.second *= tikhonov_weight;
+		}
+	}
 	for(map<string, double>::const_iterator b=group_phi.begin(), e=group_phi.end();
 		b!=e; ++b) {
 			os << "    Contribution to phi from observation group ";

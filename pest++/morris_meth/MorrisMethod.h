@@ -42,6 +42,7 @@ public:
 		const Parameters &upper_bnd, const set<string> &_log_trans_pars, int _p, int _r,
 			 RunManagerAbstract *rm_ptr, ParamTransformSeq *base_partran_seq,
 			 const std::vector<std::string> &_obs_name_vec, FileManager *_file_manager_ptr);
+	void static process_pooled_var_file(std::ifstream &fin);
 	void initialize(const set<string> &_log_trans_pars, int _p, int _r);
 	void assemble_runs();
 	void calc_sen(ModelRun model_run, std::ofstream &fout_raw, std::ofstream &fout_morris, std::ofstream &fout_orw);
@@ -63,6 +64,8 @@ private:
 	static int rand_plus_minus_1(void);
 	MorrisObsSenFile obs_sen_file;
 };
+
+
 
 
 #endif /* MORRISMETHOD_H_ */

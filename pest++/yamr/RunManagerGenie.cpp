@@ -88,14 +88,24 @@ void RunManagerGenie::run()
 	 ifail.resize(nruns);
 	for (int i_run : run_id_vec)
 	{
-	         Parameters tmp_pars;
-	         file_stor.get_parameters(i_run, tmp_pars);
+	     Parameters tmp_pars;
+	     file_stor.get_parameters(i_run, tmp_pars);
 		 vector<double> tmp_vec = tmp_pars.get_data_vec(par_name_vec);
 		 par_val.insert(par_val.end(), tmp_vec.begin(), tmp_vec.end());
 	}
 
-	std::copy(par_name_vec.begin(), par_name_vec.end(),std::ostream_iterator<std::string>(apar,"\n"));
-	std::copy(obs_name_vec.begin(), obs_name_vec.end(),std::ostream_iterator<std::string>(aobs,"\n"));
+	vector<string> par_name_vec_lwr = par_name_vec;
+	for (auto &ipar : par_name_vec_lwr)
+	{
+		lower_ip(ipar);
+	}
+	vector<string> obs_name_vec_lwr = obs_name_vec;
+	for (auto &iobs : obs_name_vec_lwr)
+	{
+		lower_ip(iobs);
+	}
+	std::copy(par_name_vec_lwr.begin(), par_name_vec_lwr.end(),std::ostream_iterator<std::string>(apar,"\n"));
+	std::copy(obs_name_vec_lwr.begin(), obs_name_vec_lwr.end(),std::ostream_iterator<std::string>(aobs,"\n"));
 	std::copy(comline_vec.begin(), comline_vec.end(),std::ostream_iterator<std::string>(execnames,"\n"));
 	std::copy(tplfile_vec.begin(), tplfile_vec.end(),std::ostream_iterator<std::string>(tplfle,"\n"));
 	std::copy(inpfile_vec.begin(), inpfile_vec.end(),std::ostream_iterator<std::string>(infle,"\n"));
@@ -119,7 +129,7 @@ void RunManagerGenie::run()
 	Observations obs;
 	for (int i=0; i<nruns; ++i)
 	{
-		if (ifail[i] > 0)
+		if (ifail[i] == 0)
 		{
 			int run_id = run_id_vec[i];
 			pars.clear();

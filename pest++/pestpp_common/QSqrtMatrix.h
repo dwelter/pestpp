@@ -35,7 +35,9 @@ class QSqrtMatrix
 public:
 	QSqrtMatrix(){};
 	QSqrtMatrix(const ObservationInfo *obs_info_ptr, const PriorInformation *prior_info_ptr, double tikhonov_weight);
-	Eigen::SparseMatrix<double> get_sparse_matrix(const vector<string> &obs_names) const;
+	void set_tikhonov_weight(double _tikhonov_weight) { tikhonov_weight = _tikhonov_weight; }
+	double get_tikhonov_weight() { return tikhonov_weight; }
+	Eigen::SparseMatrix<double> get_sparse_matrix(const vector<string> &obs_names, bool get_square=false) const;
 	~QSqrtMatrix(void);
 private:
 	const ObservationInfo *obs_info_ptr;
