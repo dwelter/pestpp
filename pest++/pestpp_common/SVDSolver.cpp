@@ -100,7 +100,7 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 		cout << endl;
 		os << endl;
 
-		// write head for SVD file
+		// write header for SVD file
 		output_file_writer.write_svd_iteration(global_iter_num);
 
 		performance_log->log_blank_lines();
@@ -139,8 +139,6 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 		output_file_writer.write_par(file_manager.open_ofile_ext(filename.str()), cur_solution.get_ctl_pars(), *(par_transform.get_offset_ptr()), 
 				*(par_transform.get_scale_ptr()));
 		file_manager.close_file(filename.str());
-		// sen file for this iteration
-		output_file_writer.append_sen(file_manager.sen_ofstream(), global_iter_num, jacobian, *(cur_solution.get_obj_func_ptr()), get_parameter_group_info());
 		if (save_nextjac) {
 			jacobian.save();
 		}
@@ -410,18 +408,22 @@ void SVDSolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_active
 
 	// need to remove parameters frozen due to failed jacobian runs when calling calc_lambda_upgrade_vec
 	//Freeze Parameters at the boundary whose ugrade vector and gradient both head out of bounds
+	performance_log->log_event("commencing calculation of upgrade vector");
 	(*this.*calc_lambda_upgrade)(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
 		base_run_active_ctl_pars, prev_frozen_active_ctl_pars, i_lambda, upgrade_active_ctl_pars, upgrade_ctl_del_pars,
 		grad_ctl_del_pars, marquardt_type);
+	performance_log->log_event("commencing check of parameter bounds");
 	num_upgrade_out_grad_in = check_bnd_par(new_frozen_active_ctl_pars, base_run_active_ctl_pars, upgrade_ctl_del_pars, grad_ctl_del_pars);
 	prev_frozen_active_ctl_pars.insert(new_frozen_active_ctl_pars.begin(), new_frozen_active_ctl_pars.end());
 	//Recompute the ugrade vector without the newly frozen parameters and freeze those at the boundary whose upgrade still goes heads out of bounds
 	if (num_upgrade_out_grad_in > 0)
 	{
 		new_frozen_active_ctl_pars.clear();
+		performance_log->log_event("commencing recalculation of upgrade vector freezing parameters whose upgrade and gradient point out of bounds");
 		(*this.*calc_lambda_upgrade)(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
 			base_run_active_ctl_pars, prev_frozen_active_ctl_pars, i_lambda, upgrade_active_ctl_pars, upgrade_ctl_del_pars,
 			grad_ctl_del_pars, marquardt_type);
+		performance_log->log_event("commencing check of parameter bounds with new parameters");
 		check_bnd_par(new_frozen_active_ctl_pars, prev_frozen_active_ctl_pars, upgrade_active_ctl_pars);
 		prev_frozen_active_ctl_pars.insert(new_frozen_active_ctl_pars.begin(), new_frozen_active_ctl_pars.end());
 		new_frozen_active_ctl_pars.clear();
@@ -429,6 +431,7 @@ void SVDSolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_active
 	//If there are newly frozen parameters recompute the upgrade vector
 	if (new_frozen_active_ctl_pars.size() > 0)
 	{
+		performance_log->log_event("commencing recalculation of upgrade vector freezing parameters whose upgrade heads out of bounds");
 		(*this.*calc_lambda_upgrade)(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
 			base_run_active_ctl_pars, prev_frozen_active_ctl_pars, i_lambda, upgrade_active_ctl_pars, upgrade_ctl_del_pars,
 			grad_ctl_del_pars, marquardt_type);
@@ -515,6 +518,13 @@ restart_resume_jacobian_runs:
 		*par_group_info_ptr, *ctl_par_info_ptr, run_manager, *prior_info_ptr, out_ofbound_pars,
 		phiredswh_flag, calc_init_obs);
 	performance_log->log_event("processing jacobian runs complete");
+
+	performance_log->log_event("saving jacobian and sen files");
+	// save jacobian
+	jacobian.save("jac");
+	// sen file for this iteration
+	output_file_writer.append_sen(file_manager.sen_ofstream(), termination_ctl.get_iteration_number()+1, jacobian, *(cur_solution.get_obj_func_ptr()), get_parameter_group_info());
+
 	//Update parameters and observations for base run
 	{
 		Parameters tmp_pars;
@@ -583,9 +593,14 @@ restart_resume_jacobian_runs:
 	lambda_vec.resize(std::distance(lambda_vec.begin(), iter));
 	int i_update_vec = 0;
 	stringstream message;
+	stringstream prf_message;
 	vector<Parameters> frozen_par_vec;
 	for (double i_lambda : lambda_vec)
 	{
+		prf_message.str("");
+		prf_message << "beginning upgrade vector calculations, lamda = " << i_lambda;
+		performance_log->log_event(prf_message.str());
+		performance_log->add_indent();
 		std::cout << string(message.str().size(), '\b');
 		message.str("");
 		message << "  computing upgrade vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
@@ -600,8 +615,10 @@ restart_resume_jacobian_runs:
 		par_transform.active_ctl2model_ip(new_pars);
 		run_manager.add_run(new_pars, "IDEN", i_lambda);
 		frozen_par_vec.push_back(frozen_active_ctl_pars);
+		performance_log->add_indent(-1);
 	}
 
+	performance_log->add_indent(-1);
 	cout << endl;
 	fout_restart << "upgrade_model_runs_built " << run_manager.get_cur_groupid() << endl;
 	cout << "  performing upgrade vector runs... ";

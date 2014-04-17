@@ -216,6 +216,12 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 			super_parameter_group_info, *ctl_par_info_ptr, run_manager, *prior_info_ptr, out_of_bound_pars,
 			phiredswh_flag, calc_init_obs);
 		performance_log->log_event("processing jacobian runs complete");
+
+		performance_log->log_event("saving jacobian and sen files");
+		// save jacobian
+		jacobian.save("jac");
+		// sen file for this iteration
+		output_file_writer.append_sen(file_manager.sen_ofstream(), termination_ctl.get_iteration_number() + 1, jacobian, *(cur_solution.get_obj_func_ptr()), get_parameter_group_info());
 		success = success && success2;
 
 		if (success)
@@ -275,9 +281,14 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 	auto iter = std::unique(lambda_vec.begin(), lambda_vec.end());
 	lambda_vec.resize(std::distance(lambda_vec.begin(), iter));
 	stringstream message;
+	stringstream prf_message;
 	int i_update_vec = 0;
 	for (double i_lambda : lambda_vec)
 	{
+		prf_message.str("");
+		prf_message << "beginning upgrade vector calculations, lamda = " << i_lambda;
+		performance_log->log_event(prf_message.str());
+		performance_log->add_indent();
 		std::cout << string(message.str().size(), '\b');
 		message.str("");
 		message << "  computing upgrade vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
@@ -297,6 +308,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		magnitude_vec.push_back(Transformable::l2_norm(base_run_active_ctl_pars, new_pars));
 		par_transform.active_ctl2model_ip(new_pars);
 		run_manager.add_run(new_pars, "IDEN", i_lambda);
+		performance_log->add_indent(-1);
 	}
 
 	cout << endl;
