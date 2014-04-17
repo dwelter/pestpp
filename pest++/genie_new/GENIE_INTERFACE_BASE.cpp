@@ -662,17 +662,17 @@ INCOMPLETE AT THIS TIME
         if(!chkcomplete)
         {
           // NEW RUN FAILURE  ----------------------------
-          if(*npar<0) {
+          if(*npar>=999999) {
             // run failed
             ifail[*(*result)->id-1]=1;
           }
           else {
             // run succeeded
             ifail[*(*result)->id-1]=0;
+            for(n=0;n<*npar;n++)
+              pval[(*(*result)->id-1)*(*npar)+n]=(*result)->parvals[n];
           }
           // ---------------------------------------------
-          for(n=0;n<*npar;n++)
-            pval[(*(*result)->id-1)*(*npar)+n]=(*result)->parvals[n];
           for(n=0;n<*nobs;n++)
             oval[(*(*result)->id-1)*(*nobs)+n]=(*result)->obsvals[n];
           if(*nrun==1)

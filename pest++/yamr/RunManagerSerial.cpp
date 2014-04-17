@@ -180,14 +180,14 @@ void RunManagerSerial::run()
 				//obs_vec = ins_files.readins();
 
 				// check parameters and observations for inf and nan
-				//if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))
-				//{
-				//	throw PestError("Error running model: invalid parameter value returned");
-				//}
-				//if (std::any_of(obs_vec.begin(), obs_vec.end(), OperSys::double_is_invalid))
-				//{
-				//	throw PestError("Error running model: invalid observation value returned");
-				//}
+				if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))
+				{
+					throw PestError("Error running model: invalid parameter value returned");
+				}
+				if (std::any_of(obs_vec.begin(), obs_vec.end(), OperSys::double_is_invalid))
+				{
+					throw PestError("Error running model: invalid observation value returned");
+				}
 				success_runs += 1;
 				pars.clear();
 				pars.insert(par_name_vec, par_values);
@@ -210,18 +210,17 @@ void RunManagerSerial::run()
 				cerr << "  Aborting model run" << endl << endl;
 			}
 		}
-
-		total_runs += success_runs;
-		std::cout << string(message.str().size(), '\b');
-		message.str("");
-		message << "(" << success_runs << "/" << nruns << " runs complete";
-		if (prev_sucess_runs > 0)
-		{
-			message << " and " << prev_sucess_runs << " additional run completed previously";
-		}
-		message << ")";
-		std::cout << message.str();
 	}
+	total_runs += success_runs;
+	std::cout << string(message.str().size(), '\b');
+	message.str("");
+	message << "(" << success_runs << "/" << nruns << " runs complete";
+	if (prev_sucess_runs > 0)
+	{
+		message << " and " << prev_sucess_runs << " additional run completed previously";
+	}
+	message << ")";
+	std::cout << message.str();
 	if (success_runs < nruns)
 	{			cout << endl << endl;
 		cout << "WARNING: " << nruns - success_runs << " out of " << nruns << " runs failed" << endl << endl;

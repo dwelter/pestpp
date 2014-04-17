@@ -21,7 +21,8 @@ int RMIF_CREATE_SERIAL(char *f_comline, int  *comline_str_len, int *comline_arra
 	char *f_ins, int  *ins_str_len, int *ins_array_len,
 	char *f_out, int  *out_str_len, int *out_array_len,
 	char *f_storfile, int *storfile_len,
-	char *f_rundir, int *rundir_len)
+	char *f_rundir, int *rundir_len, int *n_max_fail)
+
 {
 	vector<string> comline_vec =  fortran_str_array_2_vec(f_comline, *comline_str_len, *comline_array_len);
 	vector<string> tpl_vec =  fortran_str_array_2_vec(f_tpl, *tpl_str_len, *tpl_array_len);
@@ -32,7 +33,8 @@ int RMIF_CREATE_SERIAL(char *f_comline, int  *comline_str_len, int *comline_arra
 	string rundir =  fortran_str_2_string(f_rundir, *rundir_len);
 	int err = 0;
 	try {
-		_run_manager_ptr_ = new RunManagerSerial(comline_vec, tpl_vec, inp_vec, ins_vec, out_vec, storfile, rundir);	
+		_run_manager_ptr_ = new RunManagerSerial(comline_vec, tpl_vec, inp_vec, ins_vec,
+			out_vec, storfile, rundir, *n_max_fail);
 	}
 	catch(...)
 	{
@@ -49,7 +51,8 @@ int RMIF_CREATE_YAMR(char *f_comline, int  *comline_str_len, int *comline_array_
 	char *f_out, int  *out_str_len, int *out_array_len,
 	char *f_storfile, int *storfile_len,
 	char *f_port, int *f_port_len, 
-	char *f_info_filename, int *info_filename_len )
+	char *f_info_filename, int *info_filename_len, int *n_max_fail)
+
 {
 	int err = 0;
 	try {
@@ -62,7 +65,8 @@ int RMIF_CREATE_YAMR(char *f_comline, int  *comline_str_len, int *comline_array_
 		string port =  fortran_str_2_string(f_port, *f_port_len);
 		string info_filename =  fortran_str_2_string(f_port, *info_filename_len);
 		fout_run_manager_log_file.open(info_filename);
-		_run_manager_ptr_ = new RunManagerYAMR(comline_vec, tpl_vec, inp_vec, ins_vec, out_vec, storfile, port, fout_run_manager_log_file);
+		_run_manager_ptr_ = new RunManagerYAMR(comline_vec, tpl_vec, inp_vec, ins_vec, out_vec, storfile, 
+			port, fout_run_manager_log_file, *n_max_fail);
 	}
 	catch(...)
 	{

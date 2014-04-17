@@ -286,8 +286,10 @@ void SVDSolver::calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSq
 	}
 	// Transform upgrade_pars back to derivative parameters
 	active_ctl_upgrade_pars = par_transform.numeric2active_ctl_cp(pars_nf);
-	par_transform.del_numeric_2_del_active_ctl_ip(upgrade_active_ctl_del_pars, Parameters(base_numeric_pars));
-	par_transform.del_numeric_2_del_active_ctl_ip(grad_active_ctl_del_pars, Parameters(base_numeric_pars));
+	Parameters tmp_pars(base_numeric_pars);
+	par_transform.del_numeric_2_del_active_ctl_ip(upgrade_active_ctl_del_pars, tmp_pars);
+	tmp_pars = base_numeric_pars;
+	par_transform.del_numeric_2_del_active_ctl_ip(grad_active_ctl_del_pars, tmp_pars);
 
 	//tranfere previously frozen componets of the ugrade vector to upgrade.svd_uvec
 	for (auto &ipar : prev_frozen_active_ctl_pars)
@@ -370,8 +372,10 @@ void SVDSolver::calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqr
 	}
 	// Transform upgrade_pars back to ctl parameters
 	active_ctl_upgrade_pars = par_transform.numeric2active_ctl_cp(pars_nf);
-	par_transform.del_numeric_2_del_active_ctl_ip(upgrade_active_ctl_del_pars, Parameters(base_numeric_pars));
-	par_transform.del_numeric_2_del_active_ctl_ip(grad_active_ctl_del_pars, Parameters(base_numeric_pars));
+	Parameters tmp_pars(base_numeric_pars);
+	par_transform.del_numeric_2_del_active_ctl_ip(upgrade_active_ctl_del_pars, tmp_pars);
+	tmp_pars = base_numeric_pars;
+	par_transform.del_numeric_2_del_active_ctl_ip(grad_active_ctl_del_pars, tmp_pars);
 
 	//tranfere previously frozen componets of the ugrade vector to upgrade.svd_uvec
 	for (auto &ipar : prev_frozen_active_ctl_pars)
@@ -1145,6 +1149,11 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 	const Eigen::VectorXd &residuals_vec, const vector<string> &obs_names_vec,
 	const Parameters &base_run_active_ctl_par, const Parameters &freeze_active_ctl_pars)
 {
+	double philim = 8.0;
+
+	double fracphim = 0.3;
+	double wfmin =  1.0e-5;
+	double wfmax = 1.0e5;
 	//If running in regularization mode, adjust the regularization weights
 	// define a function type for upgrade methods 
 	Parameters new_pars;
@@ -1187,16 +1196,37 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 		Observations projected_obs = cur_solution.get_obs();
 		projected_obs += delta_obs;
 
+		//double mu = Q_sqrt.get_tikhonov_weight();
+		//PhiComponets cur_phi_comp = cur_solution.get_obj_func_ptr()->get_phi_comp(cur_solution.get_obs(), cur_solution.get_ctl_pars());
+		//PhiComponets proj_phi_comp = cur_solution.get_obj_func_ptr()->get_phi_comp(projected_obs, new_ctl_pars);
+		//double target_phi_frac = (cur_phi_comp.meas + cur_phi_comp.regul) * (1.0 - fracphim);
+		//double target_phi = max(philim, target_phi_frac);
+		//double proj_phi = proj_phi_comp.meas + proj_phi_comp.regul*mu;
+		//double target_phi_regul = target_phi - proj_phi_comp.meas;
+		//if (proj_phi_comp.meas != 0)
+		//{
+		//	double new_mu = target_phi_regul / proj_phi_comp.regul;
+		//	new_mu = min(wfmax, new_mu);
+		//	new_mu = max(wfmin, new_mu);
+		//	Q_sqrt.set_tikhonov_weight(new_mu);
+		//}
+
 		double mu = Q_sqrt.get_tikhonov_weight();
 		PhiComponets cur_phi_comp = cur_solution.get_obj_func_ptr()->get_phi_comp(cur_solution.get_obs(), cur_solution.get_ctl_pars());
 		PhiComponets proj_phi_comp = cur_solution.get_obj_func_ptr()->get_phi_comp(projected_obs, new_ctl_pars);
-		double target_phi = (cur_phi_comp.meas + cur_phi_comp.regul) * (1.0 - 0.3);
-		double proj_phi = proj_phi_comp.meas + proj_phi_comp.regul*mu;
-		double target_phi_regul = target_phi - proj_phi_comp.meas;
-		if (proj_phi_comp.meas != 0)
+		double target_phi_meas_frac = cur_phi_comp.meas * (1.0 - fracphim);
+		double target_phi_meas = max(philim, target_phi_meas_frac);
+		double proj_phi_meas = proj_phi_comp.meas;
+		double target_phi_regul = (target_phi_meas - proj_phi_meas);
+		if (proj_phi_comp.regul != 0)
 		{
-			double new_mu = target_phi_regul / proj_phi_comp.regul;
-			Q_sqrt.set_tikhonov_weight(mu);
+			double new_mu = target_phi_regul / (proj_phi_comp.regul);
+			new_mu = min(wfmax, new_mu);
+			new_mu = max(wfmin, new_mu);
+			Q_sqrt.set_tikhonov_weight(new_mu);
 		}
+		cout << "Phi_m desired -> " << target_phi_meas << endl;
+		cout << "target     ->  " << cur_phi_comp.meas << ",  " << cur_phi_comp.regul << endl;
+		cout << "projected  -> " << proj_phi_comp.meas << ",  " << proj_phi_comp.regul << endl;
 	}
 }

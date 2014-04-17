@@ -127,7 +127,7 @@
                         ins, 20, 1,&
                         out, 20, 1,&
                         storfile, 20,&
-                        rundir, 80)
+                        rundir, 80, 3)
         else if (itype == 2) then
             write(*,*) 'please enter port:'
             read(*,*) port
@@ -138,7 +138,7 @@
                         out, 20, 1,&
                         storfile, 20,&
                         port, 20,&
-                        rmi_info_file, 20)
+                        rmi_info_file, 20, 3)
         else if (itype == 3) then
             write(*,*) 'please enter GMAN socket:'
             read(*,*) genie_host
@@ -163,7 +163,7 @@
     npar = 3
     nobs = 16
     ! intitialize run manager - allocate memory initialize parameter and observation names
-    err = rmif_initialize(p_names, 20, npar, o_names, 20, nobs)
+    err = rmif_initialize(p_names, 20, npar, o_names, 50, nobs)
     
     ! add model runs to the queue
     err = rmif_add_run(bad_pars, npar, irun)

@@ -66,7 +66,7 @@ Eigen::VectorXd transformable_2_egien_vec(const Transformable &data, vector<stri
 
 	for (size_t i = 0; i<len; ++i)
 	{
-		auto &it = data.find(oredered_names[i]);
+		const auto &it = data.find(oredered_names[i]);
 		assert(it != data_end);
 		new_vec(i) = it->second;
 	}

@@ -33,6 +33,7 @@ public:
 		double _relparstp=0.0, int _nrelpar=0);
 	TerminationController(const TerminationController &rhs) {*this = rhs;}
 	bool process_iteration(double phi, double relpar);
+	void set_terminate(bool _terminate_code) { terminate_code = _terminate_code; }
 	bool check_last_iteration();
 	void reset();
 	const TerminationController& operator=(const TerminationController &rhs);

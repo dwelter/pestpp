@@ -125,6 +125,7 @@ PhiComponets ObjectiveFunc::phi_report(ostream &os, const Observations &sim_obs,
 	map<string, double> group_phi;
 	PhiComponets phi_comp = get_phi_comp(sim_obs, pars);
 	double total_phi = phi_comp.meas + phi_comp.regul * tikhonov_weight;
+	//os << "    Current regularization weight factor                      : " << tikhonov_weight << endl;
 	os << "    Starting phi for this iteration                     Total : " << total_phi << endl;
 	group_phi = get_group_phi(sim_obs, pars);
 	for (auto &igrp : group_phi)

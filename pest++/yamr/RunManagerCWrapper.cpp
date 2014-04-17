@@ -22,7 +22,8 @@ RunManager* rmic_create_serial(char **comline, int comline_array_len,
 	char **ins, int ins_array_len,
 	char **out, int out_array_len,
 	char *storfile,
-	char *rundir)
+	char *rundir,
+	int n_max_fail)
 {
 	RunManager *run_manager_ptr = nullptr;
 	vector<string> comline_vec(comline, comline+comline_array_len);
@@ -30,7 +31,8 @@ RunManager* rmic_create_serial(char **comline, int comline_array_len,
 	vector<string> inp_vec(inp, inp+inp_array_len);
 	vector<string> ins_vec(ins, ins+ins_array_len);
 	vector<string> out_vec(out, out+out_array_len);
-	run_manager_ptr = new RunManagerSerial(comline_vec, tpl_vec, inp_vec, ins_vec, out_vec, storfile, rundir);	
+	run_manager_ptr = new RunManagerSerial(comline_vec, tpl_vec, inp_vec, ins_vec,
+		out_vec, storfile, rundir, n_max_fail);
 	return run_manager_ptr;
 }
 
@@ -42,7 +44,8 @@ RunManager* rmic_create_yamr(char **comline, int comline_array_len,
 	char **out, int out_array_len,
 	char *storfile,
 	char *port,
-	char *info_filename)
+	char *info_filename,
+	int n_max_fail)
 {
 	RunManager *run_manager_ptr = nullptr;
 	vector<string> comline_vec(comline, comline+comline_array_len);
@@ -51,7 +54,8 @@ RunManager* rmic_create_yamr(char **comline, int comline_array_len,
 	vector<string> ins_vec(ins, ins+ins_array_len);
 	vector<string> out_vec(out, out+out_array_len);
 	fout_run_manager_log_file.open(info_filename);
-	run_manager_ptr = new RunManagerYAMR(comline_vec, tpl_vec, inp_vec, ins_vec, out_vec, storfile, port, fout_run_manager_log_file);
+	run_manager_ptr = new RunManagerYAMR(comline_vec, tpl_vec, inp_vec, ins_vec, out_vec, storfile, port, 
+		fout_run_manager_log_file, n_max_fail);
 	return run_manager_ptr;
 }
 

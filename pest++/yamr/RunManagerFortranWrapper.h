@@ -11,7 +11,7 @@ int RMIF_CREATE_SERIAL(char *f_comline, int  *comline_str_len, int *comline_arra
 	char *f_ins, int  *ins_str_len, int *ins_array_len,
 	char *f_out, int  *out_str_len, int *out_array_len,
 	char *f_storfile, int *storfile_len,
-	char *f_rundir, int *rundir_len);
+	char *f_rundir, int *rundir_len, int *n_max_fail);
 
 int RMIF_CREATE_YAMR(char *f_comline, int  *comline_str_len, int *comline_array_len,
 	char *f_tpl, int  *tpl_str_len, int *tpl_array_len,
@@ -20,7 +20,8 @@ int RMIF_CREATE_YAMR(char *f_comline, int  *comline_str_len, int *comline_array_
 	char *f_out, int  *out_str_len, int *out_array_len,
 	char *f_storfile, int *storfile_len,
 	char *f_port, int *f_port_len, 
-	char *f_info_filename, int *info_filename_len );
+	char *f_info_filename, int *info_filename_len, int *n_max_fail);
+
 
 int RMIF_CREATE_GENIE(char *f_comline, int  *comline_str_len, int *comline_array_len,
 	char *f_tpl, int  *tpl_str_len, int *tpl_array_len,

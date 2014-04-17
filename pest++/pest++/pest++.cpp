@@ -311,6 +311,7 @@ int main(int argc, char* argv[])
 		Observations tmp_obs;
 		bool success = run_manager_ptr->get_run(0, tmp_pars, tmp_obs);
 		base_trans_seq.model2ctl_ip(tmp_pars);
+		termination_ctl.set_terminate(true);
 		if (success)
 		{
 			optimum_run.update_ctl(tmp_pars, tmp_obs);

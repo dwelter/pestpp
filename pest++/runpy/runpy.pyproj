@@ -8,12 +8,12 @@
     <StartupFile>runpy.py</StartupFile>
     <SearchPath>
     </SearchPath>
-    <WorkingDirectory>C:\Users\Dave\Documents\Visual Studio 2012\Projects\pestpp\pest++\runpy</WorkingDirectory>
+    <WorkingDirectory>C:\Users\Dave\Documents\Visual Studio 2013\Projects\pestpp\pest++\runpy</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>runpy</Name>
     <RootNamespace>runpy</RootNamespace>
     <IsWindowsApplication>False</IsWindowsApplication>
-    <InterpreterId>9a7a9026-48c1-4688-9d5d-e5699d47d074</InterpreterId>
+    <InterpreterId>{9a7a9026-48c1-4688-9d5d-e5699d47d074}</InterpreterId>
     <InterpreterVersion>2.7</InterpreterVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -26,6 +26,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="runpy.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="{9a7a9026-48c1-4688-9d5d-e5699d47d074}\2.7" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
 </Project>

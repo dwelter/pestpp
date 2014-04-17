@@ -21,7 +21,7 @@ class runpy:
         arr[:] = L
         return arr
 
-    def create_serial(self, comline, tpl, inp, ins, out, stor_file, rundir):
+    def create_serial(self, comline, tpl, inp, ins, out, stor_file, rundir, n_fail_max):
         func = self.runlib.rmic_create_serial
         func.restype = ctypes.c_void_p
         comline_c = self.call_c(comline)
@@ -34,10 +34,10 @@ class runpy:
               inp_c, len(inp),
               ins_c, len(ins),
               out_c, len(out), 
-              ctypes.c_char_p(stor_file), ctypes.c_char_p(rundir))
+              ctypes.c_char_p(stor_file), ctypes.c_char_p(rundir), n_fail_max)
 
     def create_yamr(self, comline, tpl, inp, ins, out, stor_file,
-                    port, info_filename):
+                    port, info_filename, n_fail_max):
         func = self.runlib.rmic_create_yamr
         func.restype = ctypes.c_void_p
         comline_c = self.call_c(comline)
@@ -51,7 +51,7 @@ class runpy:
               ins_c, len(ins),
               out_c, len(out), 
               ctypes.c_char_p(stor_file), 
-              ctypes.c_char_p(port), ctypes.c_char_p(info_filename))
+              ctypes.c_char_p(port), ctypes.c_char_p(info_filename), n_fail_max)
 
 
     def initialize(self, par_names, obs_names):
@@ -160,7 +160,7 @@ def test_serial():
                  'head13', 'head14', 'head15', 'head16']
 
     run_mngr = runpy()
-    run_mngr.create_serial(comline, tpl, inp, ins, out, stor_file, rundir)
+    run_mngr.create_serial(comline, tpl, inp, ins, out, stor_file, rundir, 3)
     run_mngr.initialize(par_names, obs_names)
     #add 3 runs
     nruns = 0
@@ -199,7 +199,7 @@ def test_yamr():
                  'head13', 'head14', 'head15', 'head16']
 
     run_mngr = runpy()
-    run_mngr.create_yamr(comline, tpl, inp, ins, out, stor_file, port, out_file)
+    run_mngr.create_yamr(comline, tpl, inp, ins, out, stor_file, port, out_file, 3)
     run_mngr.initialize(par_names, obs_names)
     #add 3 runs
     nruns = 3
@@ -218,5 +218,5 @@ def test_yamr():
     pass
 
 if __name__=="__main__":
-    #test_serial() 
-    test_yamr()
+    test_serial() 
+    #test_yamr()

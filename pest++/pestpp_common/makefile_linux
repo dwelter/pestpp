@@ -24,6 +24,7 @@ OBJECTS	:= FileManager.o \
            Regularization.o \
            RestartController.o \
            OutputFileWriter.o \
+	   PerformanceLog.o \
            SVDASolver.o
  
 $(LIB): $(OBJECTS)
