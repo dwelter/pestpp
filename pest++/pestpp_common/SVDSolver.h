@@ -54,7 +54,7 @@ public:
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, 
 		const DynamicRegularization *regul_scheme_ptr, OutputFileWriter &_output_file_writer, RestartController &_restart_controller,
-		SVDSolver::MAT_INV _mat_inv, PerformanceLog *_performance_log, const string &description = string("base parameter solution"));
+		SVDSolver::MAT_INV _mat_inv, PerformanceLog *_performance_log, const std::vector<double> &_base_lamda_vec, const string &description = string("base parameter solution"));
 	virtual ModelRun& solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter, ModelRun &cur_run, ModelRun &optimum_run);
 	virtual void iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs=false);
 	ModelRun &cur_model_run() {return cur_solution;}
@@ -94,6 +94,7 @@ protected:
 	OutputFileWriter &output_file_writer;
 	RestartController &restart_controller;
 	PerformanceLog *performance_log;
+	std::vector<double> base_lamda_vec;
 
 	virtual void limit_parameters_ip(const Parameters &init_active_ctl_pars, Parameters &upgrade_active_ctl_pars,
 		LimitType &limit_type, const Parameters &frozen_ative_ctl_pars, bool ignore_upper_lower=false);

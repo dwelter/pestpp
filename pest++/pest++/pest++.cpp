@@ -260,7 +260,7 @@ int main(int argc, char* argv[])
 		&pest_scenario.get_ctl_parameter_info(), &pest_scenario.get_ctl_observation_info(), file_manager,
 		&pest_scenario.get_ctl_observations(), &obj_func, base_trans_seq, pest_scenario.get_prior_info_ptr(),
 		*base_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(),
-		output_file_writer, restart_ctl, mat_inv, &performance_log);
+		output_file_writer, restart_ctl, mat_inv, &performance_log, pest_scenario.get_pestpp_options().get_base_lamda_vec());
 
 	base_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 	//Build Super-Parameter problem
@@ -370,7 +370,7 @@ int main(int argc, char* argv[])
 				SVDASolver super_svd(&svd_control_info, pest_scenario.get_svd_info(), &pest_scenario.get_base_group_info(), &pest_scenario.get_ctl_parameter_info(),
 				&pest_scenario.get_ctl_observation_info(),  file_manager, &pest_scenario.get_ctl_observations(), &obj_func,
 				trans_svda, &pest_scenario.get_prior_info(), *super_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(),
-				output_file_writer, restart_ctl, mat_inv, &performance_log);
+				output_file_writer, restart_ctl, mat_inv, &performance_log, pest_scenario.get_pestpp_options().get_base_lamda_vec());
 			super_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 			cur_run = super_svd.solve(*run_manager_ptr, termination_ctl, n_super_iter, cur_run, optimum_run);
 			cur_ctl_parameters = super_svd.cur_model_run().get_ctl_pars();

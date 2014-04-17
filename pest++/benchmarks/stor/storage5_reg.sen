@@ -9,37 +9,31 @@
 
  OPTIMISATION ITERATION NO. 2   ----->
  Parameter name    Group        Current value        Sensitivity
-   COND            COND         -0.697538937386      65.8776119403       
-   SCOEFF          SCOEFF       1.45072750604        13.6232116889       
+   sup_1           g_sup_1      10.0000000000        74.8670862692       
+   sup_2           g_sup_2      10.0000000000        15.4771416162       
 
 
  OPTIMISATION ITERATION NO. 3   ----->
  Parameter name    Group        Current value        Sensitivity
-   COND            COND         -0.903757976336      120.457932864       
-   SCOEFF          SCOEFF       1.61949827803        32.9138810986       
+   sup_1           g_sup_1      9.85705507995        111.693987529       
+   sup_2           g_sup_2      10.2118719211        28.0413460263       
 
 
  OPTIMISATION ITERATION NO. 4   ----->
  Parameter name    Group        Current value        Sensitivity
-   COND            COND         -0.859859229174      108.265390663       
-   SCOEFF          SCOEFF       1.55836658787        25.6755356757       
+   sup_1           g_sup_1      9.87805356889        107.354481903       
+   sup_2           g_sup_2      10.1599709096        24.1855992334       
 
 
  OPTIMISATION ITERATION NO. 5   ----->
  Parameter name    Group        Current value        Sensitivity
-   COND            COND         -0.857030214314      109.038323493       
-   SCOEFF          SCOEFF       1.53426695291        24.9454390211       
+   COND            COND         -0.857124245220      109.098185169       
+   SCOEFF          SCOEFF       1.53389474309        24.9501976329       
 
 
  OPTIMISATION ITERATION NO. 6   ----->
  Parameter name    Group        Current value        Sensitivity
-   COND            COND         -0.857139630976      109.106014211       
-   SCOEFF          SCOEFF       1.53386848569        24.9521906088       
-
-
- OPTIMISATION ITERATION NO. 7   ----->
- Parameter name    Group        Current value        Sensitivity
-   COND            COND         -0.857139382811      109.104811750       
-   SCOEFF          SCOEFF       1.53386791719        24.9515544175       
+   sup_1           g_sup_1      10.0000000000        108.101305537       
+   sup_2           g_sup_2      10.0000000000        23.4217278425       
 
 
