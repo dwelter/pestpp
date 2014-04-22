@@ -118,6 +118,22 @@ int RMIF_ADD_RUN(double *parameter_data, int *npar, int *id)
 	return err;
 }
 
+int RMIF_ADD_RUN_WITH_INFO(double *parameter_data, int *npar, int *id,
+	char *f_info_txt, int  *info_txt_len, double *info_value)
+{
+	int err = 0;
+	try {
+		string info_txt = fortran_str_2_string(f_info_txt, *info_txt_len);
+		vector<double> data(parameter_data, parameter_data + *npar);
+		*id = _run_manager_ptr_->add_run(data, info_txt, *info_value);
+	}
+	catch (...)
+	{
+		err = 1;
+	}
+	return err;
+}
+
 int RMIF_INITIALIZE(char *f_pname, int  *pname_str_len, int *pname_array_len,
 				 char *f_oname, int  *oname_str_len, int *oname_array_len)
 
@@ -191,6 +207,30 @@ int RMIF_GET_RUN(int *run_id, double *parameter_data, int *npar, double *obs_dat
 	}
 	return err;
 }
+
+
+int RMIF_GET_RUN_WITH_INFO(int *run_id, double *parameter_data, int *npar, double *obs_data, int *nobs,
+	char *f_info_txt, int  *info_txt_len, double *info_value)
+{
+	int err = 1;
+	bool success = false;
+	size_t n_par = *npar;
+	size_t n_obs = *nobs;
+	try {
+		string info_txt;
+		success = _run_manager_ptr_->get_run(*run_id, parameter_data, n_par, obs_data, n_obs, info_txt, *info_value);
+		string_to_fortran_char(info_txt, f_info_txt, *info_txt_len);
+		if (success) err = 0;
+	}
+	catch (PestIndexError ex) {
+		cerr << ex.what() << endl;
+		err = 1;
+	}
+	return err;
+
+}
+
+
 
 int RMFI_DELETE()
 {

@@ -43,7 +43,7 @@ head14     99.9955      1.1  obs2
 head15     100.000      2.2  obsgroup3
 head16     100.000      3.3  obsgroup1
 * model command line
-storage1.exe
+storage1
 * model input/output
 input.tpl   input.dat
 output.ins  output.dat
@@ -60,4 +60,4 @@ pri_2 1.0 * log(scoeff) = -0.7 0.8 regul
 ++# SVD_PACK(PROPACK)
 ++# MAT_INV(Q1/2J)
 ++ AUTO_NORM(4)
-++ LAMDAS(.05,1,5,50,500,5000)
+++ LAMBDAS(.05, 1, 5, 50, 500, 5000)

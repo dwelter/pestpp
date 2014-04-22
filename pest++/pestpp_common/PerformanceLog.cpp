@@ -3,10 +3,22 @@
 #include <string>
 #include <algorithm>
 #include <sstream>
+#include <cstring>
 #include "PerformanceLog.h"
+#include "config_os.h"
 
 using namespace std;
 using std::chrono::high_resolution_clock;
+
+void PerformanceLog::writetime(stringstream &os, time_t tc) {
+	// alternative to put_time iomanip
+        // as put_time is not implimented in gcc4.8
+	locale loc;
+	const time_put<char>& tp = use_facet<time_put<char>>(loc);
+	const char *pat = "%F %T";
+	tp.put(os,os,' ',localtime(&tc),pat,pat+strlen(pat));
+}
+
 
 PerformanceLog::PerformanceLog(ofstream &_fout)
 : fout(_fout), indent_size(2), indent_level(0)
@@ -50,7 +62,12 @@ string PerformanceLog::time_to_string(const std::chrono::high_resolution_clock::
 {
 	stringstream time_str;
 	auto tmp_time_c = high_resolution_clock::to_time_t(tmp_time);
+	#ifdef OS_LINUX
+	writetime(time_str, tmp_time_c);
+	#endif
+	#ifdef OS_WIN
 	time_str <<  put_time(std::localtime(&tmp_time_c), "%X");
+	#endif
 	return time_str.str();
 }
 

@@ -245,7 +245,7 @@ PestppOptions::PestppOptions(int _n_iter_base, int _n_iter_super, int _max_n_sup
 	SVD_PACK _svd_pack, MAT_INV _mat_inv, double _auto_norm, double _super_relparmax, int _max_run_fail)
 	: n_iter_base(_n_iter_base), n_iter_super(_n_iter_super), max_n_super(_max_n_super), super_eigthres(_super_eigthres), 
 	svd_pack(_svd_pack), mat_inv(_mat_inv), auto_norm(_auto_norm), super_relparmax(_super_relparmax),
-	max_run_fail(_max_run_fail), base_lamda_vec({ 0.1, 1.0, 10.0, 100.0, 1000.0 })
+	max_run_fail(_max_run_fail), base_lambda_vec({ 0.1, 1.0, 10.0, 100.0, 1000.0 })
 {
 }
 
@@ -253,6 +253,11 @@ void PestppOptions::parce_line(const string &line)
 {
 	string key;
 	string value;
+	regex lambda_reg("(\\w+)(?:\\s*\\()([^\\)]+)(?:\\))");
+	const std::sregex_iterator end_reg;
+	//regex lambda_reg("((\\w+\\s*\\([^\\)]+\\))+?)");
+	cmatch mr;
+
 	size_t found = line.find_first_of("#");
 	if (found == string::npos) {
 		found = line.length();
@@ -260,14 +265,13 @@ void PestppOptions::parce_line(const string &line)
 	string tmp_line = line.substr(0, found);
 	strip_ip(tmp_line, "both", "\t\n\r+ ");
 	upper_ip(tmp_line);
-	list<string> tokens;
-	tokenize(tmp_line, tokens, "\t\n\r() ");
-	while(tokens.size() >=2)
+
+
+	for (std::sregex_iterator i(tmp_line.begin(), tmp_line.end(), lambda_reg); i != end_reg; ++i)
 	{
-		key = tokens.front();
-		tokens.pop_front();
-		value = tokens.front();
-		tokens.pop_front();
+		string key = (*i)[1];
+		string value = (*i)[2];
+
 		if (key=="MAX_N_SUPER"){
 			convert_ip(value, max_n_super); 
 		}
@@ -295,14 +299,14 @@ void PestppOptions::parce_line(const string &line)
 		else if (key == "MAX_RUN_FAIL"){
 			convert_ip(value, max_run_fail);
 		}
-		else if (key == "LAMDAS")
+		else if (key == "LAMBDAS")
 		{
-			base_lamda_vec.clear();
-			vector<string> lamda_tok;
-			tokenize(value, lamda_tok, ",");
-			for (const auto &ilamda : lamda_tok)
+			base_lambda_vec.clear();
+			vector<string> lambda_tok;
+			tokenize(value, lambda_tok, ",");
+			for (const auto &ilambda : lambda_tok)
 			{
-				base_lamda_vec.push_back(convert_cp<double>(ilamda));
+				base_lambda_vec.push_back(convert_cp<double>(ilambda));
 			}
 		}
 		else {

@@ -39,10 +39,10 @@ using namespace Eigen;
 SVDASolver::SVDASolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_base_parameter_group_info_ptr, 
 	const ParameterInfo *_ctl_par_info_ptr, const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 	const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, const DynamicRegularization *_regul_scheme,
-	OutputFileWriter &_output_file_writer, RestartController &_restart_controller, SVDSolver::MAT_INV _mat_inv, PerformanceLog *_performance_log, const std::vector<double> &_base_lamda_vec)
+	OutputFileWriter &_output_file_writer, RestartController &_restart_controller, SVDSolver::MAT_INV _mat_inv, PerformanceLog *_performance_log, const std::vector<double> &_base_lambda_vec)
 	: SVDSolver(_ctl_info, _svd_info, _base_parameter_group_info_ptr, _ctl_par_info_ptr, _obs_info,
 		_file_manager, _observations, _obj_func, _par_transform, _prior_info_ptr, _jacobian, 
-		_regul_scheme, _output_file_writer, _restart_controller, _mat_inv, _performance_log, _base_lamda_vec, "super parameter solution")
+		_regul_scheme, _output_file_writer, _restart_controller, _mat_inv, _performance_log, _base_lambda_vec, "super parameter solution")
 {
 }
 
@@ -273,7 +273,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 	// build weights matrix sqrt(Q)
 	QSqrtMatrix Q_sqrt(obs_info_ptr, prior_info_ptr, tikhonov_weight);
 
-	vector<double> lambda_vec = base_lamda_vec;
+	vector<double> lambda_vec = base_lambda_vec;
 	lambda_vec.push_back(best_lambda);
 	lambda_vec.push_back(best_lambda / 2.0);
 	lambda_vec.push_back(best_lambda * 2.0);
@@ -286,7 +286,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 	for (double i_lambda : lambda_vec)
 	{
 		prf_message.str("");
-		prf_message << "beginning upgrade vector calculations, lamda = " << i_lambda;
+		prf_message << "beginning upgrade vector calculations, lambda = " << i_lambda;
 		performance_log->log_event(prf_message.str());
 		performance_log->add_indent();
 		std::cout << string(message.str().size(), '\b');

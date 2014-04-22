@@ -24,6 +24,7 @@ private:
 	int indent() { return indent_level * indent_size; }
 	std::string time_to_string(const std::chrono::high_resolution_clock::time_point &tmp_time);
 	std::string elapsed_time_to_string(std::chrono::high_resolution_clock::time_point &current_time, std::chrono::high_resolution_clock::time_point &prev_time);
+	void writetime(std::stringstream &os, time_t tc);
 };
 
 #endif //PERFORMANCE_LOG_H_

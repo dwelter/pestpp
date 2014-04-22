@@ -45,12 +45,12 @@ SVDSolver::SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, con
 	const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 	const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian,
 	const DynamicRegularization *_regul_scheme_ptr, OutputFileWriter &_output_file_writer, RestartController &_restart_controller, SVDSolver::MAT_INV _mat_inv,
-	PerformanceLog *_performance_log, const vector<double> &_base_lamda_vec, const string &_description)
+	PerformanceLog *_performance_log, const vector<double> &_base_lambda_vec, const string &_description)
 	: ctl_info(_ctl_info), svd_info(_svd_info), par_group_info_ptr(_par_group_info_ptr), ctl_par_info_ptr(_ctl_par_info_ptr), obs_info_ptr(_obs_info), obj_func(_obj_func),
 	file_manager(_file_manager), observations_ptr(_observations), par_transform(_par_transform),
 	cur_solution(_obj_func, *_observations), phiredswh_flag(false), save_next_jacobian(true), prior_info_ptr(_prior_info_ptr), jacobian(_jacobian), prev_phi_percent(0.0),
 	num_no_descent(0), regul_scheme(*_regul_scheme_ptr), output_file_writer(_output_file_writer), mat_inv(_mat_inv), description(_description), best_lambda(20.0),
-	restart_controller(_restart_controller), performance_log(_performance_log), base_lamda_vec(_base_lamda_vec)
+	restart_controller(_restart_controller), performance_log(_performance_log), base_lambda_vec(_base_lambda_vec)
 {
 	svd_package = new SVD_EIGEN();
 }
@@ -584,7 +584,7 @@ restart_resume_jacobian_runs:
 	cout << endl;
 	cout << "  computing upgrade vectors... " << endl;
 	//Marquardt Lambda Update Vector
-	vector<double> lambda_vec = base_lamda_vec;
+	vector<double> lambda_vec = base_lambda_vec;
 	lambda_vec.push_back(best_lambda);
 	lambda_vec.push_back(best_lambda / 2.0);
 	lambda_vec.push_back(best_lambda * 2.0);
@@ -598,13 +598,13 @@ restart_resume_jacobian_runs:
 	for (double i_lambda : lambda_vec)
 	{
 		prf_message.str("");
-		prf_message << "beginning upgrade vector calculations, lamda = " << i_lambda;
+		prf_message << "beginning upgrade vector calculations, lambda = " << i_lambda;
 		performance_log->log_event(prf_message.str());
 		performance_log->add_indent();
 		std::cout << string(message.str().size(), '\b');
 		message.str("");
 		message << "  computing upgrade vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
-		std::cout << message.str();
+		std::cout << message.str() << endl;
 
 		Parameters new_pars;
 		calc_upgrade_vec(i_lambda, frozen_active_ctl_pars, Q_sqrt, residuals_vec,

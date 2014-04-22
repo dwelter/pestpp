@@ -193,7 +193,7 @@ public:
 	double get_auto_norm() const{return auto_norm;}
 	double get_super_relparmax() const{ return super_relparmax; }
 	int get_max_run_fail() const{ return max_run_fail; }
-	const vector<double>& get_base_lamda_vec() const {return base_lamda_vec;}
+	const vector<double>& get_base_lambda_vec() const {return base_lambda_vec;}
 
 	void set_max_n_super(int _max_n_super) {max_n_super = _max_n_super;}
 	void set_super_eigthres(double _super_eigthres) {super_eigthres = _super_eigthres;}
@@ -215,7 +215,7 @@ private:
 	double auto_norm;
 	double super_relparmax;
 	int max_run_fail;
-	vector<double> base_lamda_vec;
+	vector<double> base_lambda_vec;
 };
 
 ostream& operator<< (ostream &os, const ObservationInfo& val);

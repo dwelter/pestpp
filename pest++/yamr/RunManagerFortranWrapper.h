@@ -34,6 +34,9 @@ int RMIF_CREATE_GENIE(char *f_comline, int  *comline_str_len, int *comline_array
 
 int RMIF_ADD_RUN(double *parameter_data, int *npar, int *id);
 
+int RMIF_ADD_RUN_WITH_INFO(double *parameter_data, int *npar, int *id,
+	char *f_info_txt, int  *info_txt_len, double *info_value);
+
 int RMIF_INITIALIZE(char *f_pname, int  *pname_str_len, int *pname_array_len,
 				 char *f_oname, int  *oname_str_len, int *oname_array_len);
 
@@ -44,6 +47,10 @@ int RMIF_REINITIALIZE();
 int RMIF_RUN();
 
 int RMIF_GET_RUN(int *run_id, double *parameter_data, int *npar, double *obs_data, int *nobs);
+
+int RMIF_GET_RUN_WITH_INFO(int *run_id, double *parameter_data, int *npar, double *obs_data, int *nobs,
+	char *f_info_txt, int  *info_txt_len, double *info_value);
+
 
 int RMIF_GET_NUM_FAILED_RUNS(int *nfail);
 
