@@ -71,7 +71,7 @@
     
     
     ! Body of run_manager_fortran_test
-    data comline   /'storage1.exe        '/
+    data comline   /'./storage1_linux    '/
     data tpl       /'input.tpl           '/
     data inp       /'input.dat           '/
     data ins       /'output.ins          '/
