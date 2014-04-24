@@ -138,7 +138,7 @@
                         out, 20, 1,&
                         storfile, 20,&
                         port, 20,&
-                        rmi_info_file, 20, 3)
+                        rmi_info_file, 20, 2)
         else if (itype == 3) then
             write(*,*) 'please enter GMAN socket:'
             read(*,*) genie_host

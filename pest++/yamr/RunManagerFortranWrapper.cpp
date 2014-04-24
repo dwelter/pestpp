@@ -15,7 +15,7 @@ using namespace pest_utils;
 extern "C"
 {
 
-int RMIF_CREATE_SERIAL(char *f_comline, int  *comline_str_len, int *comline_array_len,
+int rmif_create_serial_(char *f_comline, int  *comline_str_len, int *comline_array_len,
 	char *f_tpl, int  *tpl_str_len, int *tpl_array_len,
 	char *f_inp, int  *inp_str_len, int *inp_array_len,
 	char *f_ins, int  *ins_str_len, int *ins_array_len,
@@ -44,7 +44,7 @@ int RMIF_CREATE_SERIAL(char *f_comline, int  *comline_str_len, int *comline_arra
 }
 
 
-int RMIF_CREATE_YAMR(char *f_comline, int  *comline_str_len, int *comline_array_len,
+int rmif_create_yamr_(char *f_comline, int  *comline_str_len, int *comline_array_len,
 	char *f_tpl, int  *tpl_str_len, int *tpl_array_len,
 	char *f_inp, int  *inp_str_len, int *inp_array_len,
 	char *f_ins, int  *ins_str_len, int *ins_array_len,
@@ -63,7 +63,7 @@ int RMIF_CREATE_YAMR(char *f_comline, int  *comline_str_len, int *comline_array_
 		vector<string> out_vec =  fortran_str_array_2_vec(f_out, *out_str_len, *out_array_len);
 		string storfile =  fortran_str_2_string(f_storfile, *storfile_len);
 		string port =  fortran_str_2_string(f_port, *f_port_len);
-		string info_filename =  fortran_str_2_string(f_port, *info_filename_len);
+		string info_filename =  fortran_str_2_string(f_info_filename, *info_filename_len);
 		fout_run_manager_log_file.open(info_filename);
 		_run_manager_ptr_ = new RunManagerYAMR(comline_vec, tpl_vec, inp_vec, ins_vec, out_vec, storfile, 
 			port, fout_run_manager_log_file, *n_max_fail);
@@ -75,7 +75,7 @@ int RMIF_CREATE_YAMR(char *f_comline, int  *comline_str_len, int *comline_array_
 	return err;
 }
 
-int RMIF_CREATE_GENIE(char *f_comline, int  *comline_str_len, int *comline_array_len,
+int rmif_create_genie_(char *f_comline, int  *comline_str_len, int *comline_array_len,
 	char *f_tpl, int  *tpl_str_len, int *tpl_array_len,
 	char *f_inp, int  *inp_str_len, int *inp_array_len,
 	char *f_ins, int  *ins_str_len, int *ins_array_len,
@@ -104,7 +104,7 @@ int RMIF_CREATE_GENIE(char *f_comline, int  *comline_str_len, int *comline_array
 }
 
 
-int RMIF_ADD_RUN(double *parameter_data, int *npar, int *id)
+int rmif_add_run_(double *parameter_data, int *npar, int *id)
 {
 	int err = 0;
 	try {
@@ -118,7 +118,7 @@ int RMIF_ADD_RUN(double *parameter_data, int *npar, int *id)
 	return err;
 }
 
-int RMIF_ADD_RUN_WITH_INFO(double *parameter_data, int *npar, int *id,
+int rmif_add_run_with_info_(double *parameter_data, int *npar, int *id,
 	char *f_info_txt, int  *info_txt_len, double *info_value)
 {
 	int err = 0;
@@ -134,7 +134,7 @@ int RMIF_ADD_RUN_WITH_INFO(double *parameter_data, int *npar, int *id,
 	return err;
 }
 
-int RMIF_INITIALIZE(char *f_pname, int  *pname_str_len, int *pname_array_len,
+int rmif_initialize_(char *f_pname, int  *pname_str_len, int *pname_array_len,
 				 char *f_oname, int  *oname_str_len, int *oname_array_len)
 
 {
@@ -151,7 +151,7 @@ int RMIF_INITIALIZE(char *f_pname, int  *pname_str_len, int *pname_array_len,
 	return err;
 }
 
-int RMIF_INITIALIZE_RESTART(char *f_storfile, int *storfile_len)
+int rmif_initialize_restart_(char *f_storfile, int *storfile_len)
 {
 	int err = 0;
 	try {
@@ -165,7 +165,7 @@ int RMIF_INITIALIZE_RESTART(char *f_storfile, int *storfile_len)
 	return err;
 }
 
-int RMIF_REINITIALIZE()
+int rmif_reinitialize_()
 {
     int err = 0;
 	try {
@@ -178,7 +178,7 @@ int RMIF_REINITIALIZE()
 	return err;
 }
 
-int RMIF_RUN()
+int rmif_run_()
 {
 	int err = 0;
 	try {
@@ -191,7 +191,7 @@ int RMIF_RUN()
 	return err;
 }
 
-int RMIF_GET_RUN(int *run_id, double *parameter_data, int *npar, double *obs_data, int *nobs)
+int rmif_get_run_(int *run_id, double *parameter_data, int *npar, double *obs_data, int *nobs)
 {
 	int err = 1;
 	bool success = false;
@@ -209,7 +209,7 @@ int RMIF_GET_RUN(int *run_id, double *parameter_data, int *npar, double *obs_dat
 }
 
 
-int RMIF_GET_RUN_WITH_INFO(int *run_id, double *parameter_data, int *npar, double *obs_data, int *nobs,
+int rmif_get_run_with_info_(int *run_id, double *parameter_data, int *npar, double *obs_data, int *nobs,
 	char *f_info_txt, int  *info_txt_len, double *info_value)
 {
 	int err = 1;
@@ -232,7 +232,7 @@ int RMIF_GET_RUN_WITH_INFO(int *run_id, double *parameter_data, int *npar, doubl
 
 
 
-int RMFI_DELETE()
+int rmfi_delete_()
 {
 	int err = 0;
 	try {
@@ -245,7 +245,7 @@ int RMFI_DELETE()
 	return err;
 }
 
-int RMIF_GET_NUM_FAILED_RUNS(int *nfail)
+int rmif_get_num_failed_runs_(int *nfail)
 {
     int err = 0;
 	*nfail = -999;
@@ -262,14 +262,14 @@ int RMIF_GET_NUM_FAILED_RUNS(int *nfail)
 	return err;
 }
 
-int RMIF_GET_FAILED_RUN_IDS(int *run_id_array, int *len_run_id_array)
+int rmif_get_failed_run_ids_(int *run_id_array, int *len_run_id_array)
 {
     int err = 0;
     try
 	{
 		std::fill_n(run_id_array, *len_run_id_array, -999);
         const std::set<int> &fail_set = _run_manager_ptr_->get_failed_run_ids();
-        int n_failed_tmp = min(fail_set.size(), *len_run_id_array);
+        size_t n_failed_tmp = min(fail_set.size(), size_t(*len_run_id_array));
         std::copy_n(fail_set.begin(), n_failed_tmp, run_id_array);
 	}
     catch(PestIndexError ex)
@@ -280,7 +280,7 @@ int RMIF_GET_FAILED_RUN_IDS(int *run_id_array, int *len_run_id_array)
 	return err;
 }
 
-int RMIF_GET_NUM_TOTAL_RUNS(int *nruns)
+int rmif_get_num_total_runs_(int *nruns)
 {
     int err = 0;
     try {

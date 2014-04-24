@@ -522,7 +522,7 @@ void RunManagerYAMR::process_message(int i_sock)
 	{
 		// run already completed on different node.  Do nothing
 	}
-	else if (failure_map.count(run_id) == 0)
+	else if (failure_map.count(run_id) == 0 || failure_map.count(run_id) >= slave_fd.size())
 	{
 		 // schedule a run on a slave
 		NetPackage net_pack(NetPackage::PackType::START_RUN, cur_group_id, run_id, "");

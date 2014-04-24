@@ -17,7 +17,9 @@ OBJECTS	:= network_package.o \
            Serializeation.o \
            system_variables.o \
            YamrSlave.o \
-           linpackc.o 
+           linpackc.o \
+           RunManagerCWrapper.o \
+           RunManagerFortranWrapper.o 
  
 $(OUT): $(OBJECTS)
 	ar rcs $(OUT) $(OBJECTS)

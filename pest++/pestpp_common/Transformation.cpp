@@ -150,12 +150,14 @@ void TranOffset::d2_to_d1(Transformable &del_data, Transformable &data)
 {
 	// Offset transformation does not affect derivatives.
 	// Nothing to do.
+	reverse(data);
 }
 
 void TranOffset::d1_to_d2(Transformable &del_data, Transformable &data)
 {
 	// Offset transformation does not affect derivatives.
 	// Nothing to do.
+	forward(data);
 }
 
 
@@ -663,10 +665,6 @@ void TranSVD::d2_to_d1(Transformable &del_data, Transformable &data)
 	for (int i = 0; i < base_parameter_names.size(); ++i)
 	{
 		new_data[base_parameter_names[i]] = d1_vec[i];
-	}
-	for (auto & ipar : frozen_derivative_parameters)
-	{
-		new_data[ipar.first] = 0;
 	}
 	del_data = new_data;
 	reverse(data);

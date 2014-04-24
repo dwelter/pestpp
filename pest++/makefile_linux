@@ -1,10 +1,12 @@
 CXX = 'g++'
 CCC = 'g++'
 FC = gfortran
-CFLAGS := '-std=gnu++0x -O2 -c' 
-FFLAGS := '-O2 -c -cpp'
+#CFLAGS := '-std=gnu++0x -O2 -c' 
+#FFLAGS := '-O2 -c -cpp'
 #CFLAGS := '-std=gnu++0x -g -gdwarf-2 -c' 
 #FFLAGS := '-g -gdwarf-2 -c -cpp'
+CFLAGS := '-std=gnu++0x -g  -c' 
+FFLAGS := '-g -c -cpp'
 
 all:
 	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} -C yamr -f makefile_linux librunmanager.a
@@ -13,6 +15,7 @@ all:
 	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} -C pestpp_common -f makefile_linux libpestpp_com.a
 	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} -C pest++ -f makefile_linux pestpp
 	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} -C morris_meth -f makefile_linux gsa.exe
+	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} -C run_manager_fortran_test -f makefile_linux fortran_test
 clean:
 	make -C yamr -f makefile_linux clean
 	make -C propack -f makefile_linux clean
@@ -20,3 +23,4 @@ clean:
 	make -C pestpp_common -f makefile_linux clean
 	make -C pest++ -f makefile_linux clean
 	make -C morris_meth -f makefile_linux clean
+	make -C run_manager_fortran_test -f makefile_linux clean
