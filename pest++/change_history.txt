@@ -1,6 +1,11 @@
 Change History
 
-PEST++software version 2.2.0 as of March 31, 2014:
+PEST++software version 2.2.4 as of March 31, 2014:
+
+Changes made from version 2.2.2 to 2.2.4
+	1)Updated GENIE
+	2) Added JtQJ as default matrix to be inverted
+	3) Updated mehtod to handle frozen paraemters
 
 Changes made from version 2.2.1 to 2.2.2
 	1) Added performance output file(.pfm) to track execution time
