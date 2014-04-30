@@ -3,7 +3,7 @@
  
 // Allometric relationships & partitioning
 "Foliage:stem partitioning ratio @ D=2 cm"          .750000000
-"Foliage:stem partitioning ratio @ D=20 cm"         .131092856
+"Foliage:stem partitioning ratio @ D=20 cm"         .144543366
 "Constant in the stem mass v. diam. relationship"   .010000000
 "Power in the stem mass v. diam. relationship"      2.40000000
 "Maximum fraction of NPP to roots"                  1.00000000
@@ -31,34 +31,3 @@
  
 // Fertitlity effects
 "Value of 'm' when FR = 0"                                   0
-"Value of 'fNutr' when FR = 0"                               1
- 
-// Soil water modifier (fSW)
-"Moisture ratio deficit for fq = 0.5"                      0.7
-"Power of moisture ratio deficit"                            9
- 
-// Stem numbers
-"Max. stem mass per tree @ 1000 trees/hectare"             300
- 
-// Age modifier (fAge)
-"Maximum stand age used in age modifier"                    50
-"Power of relative age in function for fAge"                 4
-"Relative age to give fAge = 0.5"                         0.95
- 
-// Canopy structure and processes
-"Specific leaf area at age 0"                      16.10000000
-"Specific leaf area for mature leaves"             6.000000000
-"Age at which specific leaf area = (SLA0+SLA1)/2"         0.92
-"Extinction coefficient for absorption of PAR by canopy"   0.5
-"Age at canopy cover"                                        1
-"Proportion of intercepted rainfall evaporated from canopy" 0.15
-"Canopy quantum efficiency"                                0.055
- 
-// Branch and bark fraction (fracBB)
-"Branch and bark fraction at age 0"                       0.75
-"Branch and bark fraction for mature stands"              0.15
-"Age at which fracBB = (fracBB0+fracBB1)/2"                1.5
- 
-// Various
-"Ratio NPP/GPP"                                           0.47
-"Basic density"                                            0.5

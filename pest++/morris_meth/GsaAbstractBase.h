@@ -20,16 +20,17 @@ class FileManager;
 class GsaAbstractBase
 {
 public:
+	enum class PARAM_DIST{ normal, uniform };
 	static const double MISSING_DATA;
 	static mt19937_64 rand_engine;
 	GsaAbstractBase(RunManagerAbstract *rm_ptr, ParamTransformSeq *base_partran_seq_ptr,
 		const std::vector<std::string> &par_name_vec, const Parameters &_fixed_ctl_pars,
 		const Parameters &_lower_bnd, const Parameters &_upper_bnd,
-		const std::vector<std::string> &_obs_name_vec, FileManager *_file_manager_ptr);
+		const std::vector<std::string> &_obs_name_vec, FileManager *_file_manager_ptr,
+		PARAM_DIST _par_dist = PARAM_DIST::normal);
 	virtual void assemble_runs() = 0;
 	virtual void calc_sen(ModelRun model_run, std::ofstream &fout_raw, std::ofstream &fout_sen, std::ofstream &fout_orw) = 0;
 	static std::map<std::string, std::string>  process_gsa_file(std::ifstream &fin, FileManager &file_manager);
-	map<string, string> process_obt_file(std::ifstream &fin_obt, FileManager &file_manager);
 	std::string log_name(const string &name) const;
 	bool is_log_trans_par(const string &name) const;
 	std::vector<double> calc_interval_midpoints(int n_interval, double min, double max);
@@ -37,6 +38,7 @@ public:
 	virtual ~GsaAbstractBase(void);
 
 protected:
+	PARAM_DIST par_dist;
 	std::vector<std::string> adj_par_name_vec;
 	std::vector<std::string> obs_name_vec;
 	Parameters fixed_ctl_pars;
@@ -47,6 +49,8 @@ protected:
 	ParamTransformSeq *base_partran_seq_ptr;
 	FileManager *file_manager_ptr;
 	static void parce_line(const std::string &line, std::map<std::string, std::string> &arg_map);
+	map<string, double> calc_parameter_norm_std_dev();
+	map<string, double> calc_parameter_unif_std_dev();
 };
 
 std::ostream& operator<< (std::ostream& out, const std::vector<double> &rhs);

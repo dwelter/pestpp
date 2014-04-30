@@ -13,11 +13,12 @@ mt19937_64 GsaAbstractBase::rand_engine = mt19937_64();
 GsaAbstractBase::GsaAbstractBase(RunManagerAbstract *_rm_ptr, ParamTransformSeq *_base_partran_seq_ptr,
 		const vector<string> &_adj_par_name_vec, const Parameters &_fixed_ctl_pars,
 		const Parameters &_lower_bnd, const Parameters &_upper_bnd,
-		const std::vector<std::string> &_obs_name_vec, FileManager *_file_manager_ptr)
+		const std::vector<std::string> &_obs_name_vec, FileManager *_file_manager_ptr, 
+		PARAM_DIST _par_dist)
 		: run_manager_ptr(_rm_ptr), base_partran_seq_ptr(_base_partran_seq_ptr), 
 		  adj_par_name_vec(_adj_par_name_vec), fixed_ctl_pars(_fixed_ctl_pars),
 		  lower_bnd(_lower_bnd), upper_bnd(_upper_bnd), obs_name_vec(_obs_name_vec),
-		  file_manager_ptr(_file_manager_ptr)
+		  file_manager_ptr(_file_manager_ptr), par_dist(_par_dist)
 {
 }
 
@@ -56,54 +57,43 @@ map<string, string>  GsaAbstractBase::process_gsa_file(ifstream &fin, FileManage
 	return arg_map;
 }
 
-map<string, string> GsaAbstractBase::process_obt_file(std::ifstream &fin_obt, FileManager &file_manager)
+
+map<string, double> GsaAbstractBase::calc_parameter_norm_std_dev()
 {
-	map<string, string> grp_2_grp_type;
-	//map<string, vector<string> > grp_2_regec_vec;
-	string line;
-	vector<string> tokens;
-	string cur_grp_type;
-	int lnum = 0;
-	try {
-		while(getline(fin_obt, line))
+	map<string, double> std_dev_map;
+	for (const auto &ipar : adj_par_name_vec)
+	{
+		double lower = lower_bnd.get_rec(ipar);
+		double upper = upper_bnd.get_rec(ipar);
+		if (log_trans_pars.find(ipar) == log_trans_pars.end())
 		{
-			++lnum;
-			strip_ip(line);
-			if (line[0] == '#')
-			{
-			}
-			else if (upper_cp(line.substr(0, 8)) == "OBS_TYPE")
-			{
-				tokens.clear();
-				tokenize(line, tokens, "\t\n\r() ");
-				cur_grp_type = tokens[1];
-				upper_ip(cur_grp_type);
-			}
-			//else if (upper_cp(line.substr(0, 8)) == "REGEX")
-			//{
-			//	tokens.clear();
-			//	tokenize(line, tokens, "\t\n\r() ");
-			//	string regex_str = tokens[1];
-			//	strip_ip(regex_str, "\"");
-			//	upper_ip(regex_str);
-			//}
-			else
-			{
-				string grp = upper_cp(line);
-				grp_2_grp_type[grp] = cur_grp_type;
-			}
+			std_dev_map[ipar] = (upper - lower) / 4.0;
+		}
+		else
+		{
+			std_dev_map[log_name(ipar)] = (log10(upper) - log10(lower)) / 4.0;
 		}
 	}
-	catch(exception &e)
+	return std_dev_map;
+}
+
+map<string, double> GsaAbstractBase::calc_parameter_unif_std_dev()
+{
+	map<string, double> std_dev_map;
+	for (const auto &ipar : adj_par_name_vec)
 	{
-		PestFileErrorAccess e_new(file_manager.get_full_filename("obt"), e.what());
-		cout << e.what() << endl;
-		std::stringstream out;
-		out << "Error parsing \"" << file_manager.get_full_filename("obt") << "\" on line number " << lnum << endl;
-		e_new.add_back(out.str());
-		e_new.raise();
+		double lower = lower_bnd.get_rec(ipar);
+		double upper = upper_bnd.get_rec(ipar);
+		if (log_trans_pars.find(ipar) == log_trans_pars.end())
+		{
+			std_dev_map[ipar] = (upper - lower) / sqrt(12.0);
+		}
+		else
+		{
+			std_dev_map[log_name(ipar)] = (log10(upper) - log10(lower)) / sqrt(12.0);
+		}
 	}
-	return grp_2_grp_type;
+	return std_dev_map;
 }
 
 void GsaAbstractBase::parce_line(const string &line, map<string, string> &arg_map)
@@ -156,20 +146,6 @@ bool GsaAbstractBase::is_log_trans_par(const string &name) const
 	bool ret_val = (log_trans_pars.find(name) != log_trans_pars.end()) ? true : false;
 	return ret_val;
 }
-
-//vector<double> GsaAbstractBase::calc_reduced_normal_intervals(int n_interval, double min, double max)
-//{
-//	double a1 = (max - min) / 0.9;
-//	double a0 = min - 0.05 * a1;
-//
-//	vector<double> interval_mid_pts = calc_interval_midpoints(n_interval, 0.05, 0.95);
-//	for (auto &i : interval_mid_pts)
-//	{
-//		i = a0 + a1 * ltqnorm(i);
-//		cout << i << endl;
-//	}
-//	return interval_mid_pts;
-//}
 
 
 vector<double>  GsaAbstractBase::calc_interval_midpoints(int n_interval, double min, double max)

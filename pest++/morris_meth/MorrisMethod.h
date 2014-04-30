@@ -11,6 +11,8 @@
 #include "GsaAbstractBase.h"
 #include "Transformable.h"
 #include "GsaAbstractBase.h"
+#include "pest_data_structs.h"
+
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 
@@ -24,8 +26,8 @@ class MorrisObsSenFile
 {
 public:
 	void initialize(const std::vector<std::string> &par_names_vec, const std::vector<std::string> &obs_names_vec, double _no_data, const GsaAbstractBase *_gsa_abstract_base);
-	void add_sen_run_pair(const std::string &par_name, Parameters &par1, Observations &obs1, Parameters &pars2, Observations &obs2);
-	void calc_obs_sen(std::ofstream &fout_obs_sen);
+	void add_sen_run_pair(const std::string &par_name, double p1, Observations &obs1, double p2, Observations &obs2);
+	void calc_pooled_obs_sen(std::ofstream &fout_obs_sen, map<string, double> &obs_2_sen_weight, map<string, double> &par_2_sen_weight);
 private:
 	double no_data;
 	vector<string> par_names_vec;
@@ -38,11 +40,12 @@ private:
 class MorrisMethod : public GsaAbstractBase
 {
 public:
-	MorrisMethod(const std::vector<std::string> &_adj_par_name_vec, const Parameters &_fixed_ctl_pars, const Parameters &lower_bnd, 
+	MorrisMethod(const std::vector<std::string> &_adj_par_name_vec, const Parameters &_fixed_ctl_pars, const Parameters &lower_bnd,
 		const Parameters &upper_bnd, const set<string> &_log_trans_pars, int _p, int _r,
-			 RunManagerAbstract *rm_ptr, ParamTransformSeq *base_partran_seq,
-			 const std::vector<std::string> &_obs_name_vec, FileManager *_file_manager_ptr);
-	void static process_pooled_var_file(std::ifstream &fin);
+		RunManagerAbstract *rm_ptr, ParamTransformSeq *base_partran_seq,
+		const std::vector<std::string> &_obs_name_vec, FileManager *_file_manager_ptr,
+		const ObservationInfo *_obs_info_ptr, PARAM_DIST _par_dist = PARAM_DIST::normal);
+	void process_pooled_var_file(std::ifstream &fin);
 	void initialize(const set<string> &_log_trans_pars, int _p, int _r);
 	void assemble_runs();
 	void calc_sen(ModelRun model_run, std::ofstream &fout_raw, std::ofstream &fout_morris, std::ofstream &fout_orw);
@@ -63,6 +66,8 @@ private:
 	Parameters get_ctl_parameters(int row);
 	static int rand_plus_minus_1(void);
 	MorrisObsSenFile obs_sen_file;
+	const ObservationInfo *obs_info_ptr;
+	map<std::string, std::string> group_2_pool_group_map;
 };
 
 

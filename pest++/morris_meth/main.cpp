@@ -83,12 +83,6 @@ int main(int argc, char* argv[])
 		exit(0);
 	}
 
-	// testing
-	ifstream fin_junk;
-	fin_junk.open("C:\\Users\\dwelter\\Desktop\\junk.txt");
-	MorrisMethod::process_pooled_var_file(fin_junk);
-
-
 	// This is a YAMR Slave, start PEST++ as a YAMR Slave
 	if (argc >=3 && upper(argv[1]) == "/H") {
 		string socket_str = argv[2];
@@ -250,9 +244,16 @@ int main(int argc, char* argv[])
 			convert_ip(morris_p_it->second, morris_p);
 		}
 
-		gsa_method = new MorrisMethod(adj_par_name_vec, fixed_pars, lower_bnd, upper_bnd, log_trans_pars,
-			morris_p, morris_r, run_manager_ptr, &base_partran_seq, pest_scenario.get_ctl_ordered_obs_names(), &file_manager);
-		auto  obs_type_grps = gsa_method->process_obt_file(file_manager.open_ifile_ext("obt"), file_manager);
+
+		MorrisMethod *m_ptr = new MorrisMethod(adj_par_name_vec, fixed_pars, lower_bnd, upper_bnd, log_trans_pars,
+			morris_p, morris_r, run_manager_ptr, &base_partran_seq, pest_scenario.get_ctl_ordered_obs_names(), &file_manager, &(pest_scenario.get_ctl_observation_info()));
+		gsa_method = m_ptr;
+
+		// testing
+		ifstream fin_junk;
+		fin_junk.open("C:\\Users\\dwelter\\Desktop\\junk.txt");
+		m_ptr->process_pooled_var_file(fin_junk);
+
 		file_manager.close_file("obt");
 	}
 	else if (method != gsa_opt_map.end() && method->second == "SOBOL")

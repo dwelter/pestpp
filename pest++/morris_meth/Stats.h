@@ -16,21 +16,21 @@ double sobol_u_missing_data(const std::vector<double> &x_vec, const std::vector<
 
 class RunningStats
 {
-    //Based on paper "Computing the standard deviation efficiently" by Mark Hoemmen, Berkeley
+	//Based on paper "Computing the standard deviation efficiently" by Mark Hoemmen, Berkeley
 public:
 	RunningStats() : n(0), mk(0.0), mk_abs(0.0), qk(0.0) {}
-    void reset();
-    void add(double sample);
-    void add(const std::vector<double> &sample);
-    double comp_var();
-    double comp_sigma();
-    double comp_mean();
-	double comp_abs_mean();
-	int comp_nsamples();
+	void reset();
+	void add(double sample);
+	void add(const std::vector<double> &sample);
+	double comp_var() const;
+	double comp_sigma()const;
+	double comp_mean()const;
+	double comp_abs_mean()const;
+	int comp_nsamples()const;
 	~RunningStats() {};
 private:
-    long n;
-    double mk;
+	long n;
+	double mk;
 	double mk_abs;
-    double qk;
+	double qk;
 };

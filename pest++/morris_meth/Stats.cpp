@@ -315,27 +315,27 @@ void RunningStats::add(const std::vector<double> &sample)
 	}
 }
 
-double RunningStats::comp_var()
+double RunningStats::comp_var() const
 {
     return qk / (n-1);
 }
 
-double RunningStats::comp_sigma()
+double RunningStats::comp_sigma() const
 {
     return sqrt(comp_var());
 }
 
-double RunningStats::comp_mean()
+double RunningStats::comp_mean() const
 {
 return mk;
 }
 
-double RunningStats::comp_abs_mean()
+double RunningStats::comp_abs_mean() const
 {
 	return mk_abs;
 }
 
-int RunningStats::comp_nsamples()
+int RunningStats::comp_nsamples() const
 {
 	return n;
 }
