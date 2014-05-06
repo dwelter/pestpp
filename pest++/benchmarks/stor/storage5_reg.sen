@@ -7,9 +7,3 @@
    SCOEFF          SCOEFF       1.13264666956        4.99855023617       
 
 
- OPTIMISATION ITERATION NO. 2   ----->
- Parameter name    Group        Current value        Sensitivity
-   sup_1           g_sup_1      10.0000000000        74.8670862692       
-   sup_2           g_sup_2      10.0000000000        15.4771416162       
-
-

@@ -559,10 +559,10 @@ restart_resume_jacobian_runs:
 	LimitType limit_type = LimitType::NONE;
 	//If running in regularization mode, adjust the regularization weights
 	// define a function type for upgrade methods 
-	//dynamic_weight_adj(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
-	//	base_run_active_ctl_par, frozen_active_ctl_pars);
-	//tikhonov_weight = Q_sqrt.get_tikhonov_weight();
-	//regul_scheme.set_weight(tikhonov_weight);
+	dynamic_weight_adj(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+		base_run_active_ctl_par, frozen_active_ctl_pars);
+	tikhonov_weight = Q_sqrt.get_tikhonov_weight();
+	regul_scheme.set_weight(tikhonov_weight);
 
 
 	// write out report for starting phi
@@ -1174,6 +1174,16 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 	// define a function type for upgrade methods 
 	Parameters new_pars;
 	LimitType limit_type = LimitType::NONE;
+
+
+	PhiComponets phi_comp_cur = cur_solution.get_obj_func_ptr()->get_phi_comp(cur_solution.get_obs(), cur_solution.get_ctl_pars());
+	PhiComponets proj_phi_comp_l;
+	PhiComponets proj_phi_comp_r;
+	double mu_l = Q_sqrt.get_tikhonov_weight();
+	double mu_r = mu_l;
+	double mu_new;
+	double target_phi_meas_frac = phi_comp_cur.meas * (1.0 - fracphim);
+	double target_phi_meas = max(philim, target_phi_meas_frac);
 	for (int i = 0; i < 6; ++i)
 	{
 		typedef void(SVDSolver::*UPGRADE_FUNCTION) (const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
@@ -1212,37 +1222,50 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 		Observations projected_obs = cur_solution.get_obs();
 		projected_obs += delta_obs;
 
-		//double mu = Q_sqrt.get_tikhonov_weight();
-		//PhiComponets cur_phi_comp = cur_solution.get_obj_func_ptr()->get_phi_comp(cur_solution.get_obs(), cur_solution.get_ctl_pars());
-		//PhiComponets proj_phi_comp = cur_solution.get_obj_func_ptr()->get_phi_comp(projected_obs, new_ctl_pars);
-		//double target_phi_frac = (cur_phi_comp.meas + cur_phi_comp.regul) * (1.0 - fracphim);
-		//double target_phi = max(philim, target_phi_frac);
-		//double proj_phi = proj_phi_comp.meas + proj_phi_comp.regul*mu;
-		//double target_phi_regul = target_phi - proj_phi_comp.meas;
-		//if (proj_phi_comp.meas != 0)
-		//{
-		//	double new_mu = target_phi_regul / proj_phi_comp.regul;
-		//	new_mu = min(wfmax, new_mu);
-		//	new_mu = max(wfmin, new_mu);
-		//	Q_sqrt.set_tikhonov_weight(new_mu);
-		//}
-
-		double mu = Q_sqrt.get_tikhonov_weight();
-		PhiComponets cur_phi_comp = cur_solution.get_obj_func_ptr()->get_phi_comp(cur_solution.get_obs(), cur_solution.get_ctl_pars());
 		PhiComponets proj_phi_comp = cur_solution.get_obj_func_ptr()->get_phi_comp(projected_obs, new_ctl_pars);
-		double target_phi_meas_frac = cur_phi_comp.meas * (1.0 - fracphim);
-		double target_phi_meas = max(philim, target_phi_meas_frac);
-		double proj_phi_meas = proj_phi_comp.meas;
-		double target_phi_regul = (target_phi_meas - proj_phi_meas);
-		if (proj_phi_comp.regul != 0)
-		{
-			double new_mu = target_phi_regul / (proj_phi_comp.regul);
-			new_mu = min(wfmax, new_mu);
-			new_mu = max(wfmin, new_mu);
-			Q_sqrt.set_tikhonov_weight(new_mu);
-		}
+		cout << "mu -> " << mu_l << " , " << mu_r << endl;
 		cout << "Phi_m desired -> " << target_phi_meas << endl;
-		cout << "target     ->  " << cur_phi_comp.meas << ",  " << cur_phi_comp.regul << endl;
-		cout << "projected  -> " << proj_phi_comp.meas << ",  " << proj_phi_comp.regul << endl;
+		cout << "projected  -> " << proj_phi_comp.meas << ",  " << proj_phi_comp.regul << endl << endl;
+
+
+		if (mu_l = mu_r)
+		{
+			proj_phi_comp_prev = proj_phi_comp;
+			if (proj_phi_comp.meas > target_phi_meas)
+			{
+				mu_new = mu_r / 2.0;
+			}
+			else
+			{
+				mu_new = mu_l * 2.0;
+			}
+		}
+		else
+		{
+
+			double fl = proj_phi_comp_prev.meas - target_phi_meas;
+			double fr = proj_phi_comp.meas - target_phi_meas;
+			if (f0 < 0 && f1 < 0)
+			{
+				mu_l = mu_r;
+				mu_r = 2.0 * mu_r;
+			}
+			else if (f0 < 0 && f1 < 0)
+			{
+				mu_r = mu_l;
+				mu_l = mu_l / 2.0;
+			}
+			else
+			{
+				
+			}
+			cout << f1 - f0 << endl;
+			double new_mu = prev_mu - f1 * (cur_mu - prev_mu) / (f1 - f0);
+			prev_mu = cur_mu;
+			cur_mu = new_mu;
+			proj_phi_comp_prev = proj_phi_comp;
+		}
+		cur_mu = max(1e-5, cur_mu);
+		Q_sqrt.set_tikhonov_weight(cur_mu);
 	}
 }
