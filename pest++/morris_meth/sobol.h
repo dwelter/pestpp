@@ -21,7 +21,7 @@ public:
 		RunManagerAbstract *rm_ptr, ParamTransformSeq *base_partran_seq,
 		const std::vector<std::string> &_obs_name_vec, FileManager *_file_manager_ptr);
 	void assemble_runs();
-	void calc_sen(ModelRun model_run, std::ofstream &fout_raw, std::ofstream &fout_sen, std::ofstream &fout_orw);
+	void calc_sen(ModelRun model_run);
 private:
 	VectorXd gen_rand_vec(long nsample, double min, double max);
 	void gen_m1_m2();

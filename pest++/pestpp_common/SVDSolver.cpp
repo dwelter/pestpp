@@ -1161,6 +1161,55 @@ void SVDSolver::limit_parameters_ip(const Parameters &init_active_ctl_pars, Para
 	}
 }
 
+
+PhiComponets SVDSolver::phi_estimate(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt,
+	const Eigen::VectorXd &residuals_vec, const vector<string> &obs_names_vec,
+	const Parameters &base_run_active_ctl_par, const Parameters &freeze_active_ctl_pars)
+{
+
+	Parameters upgrade_ctl_del_pars;
+	Parameters grad_ctl_del_pars;
+	map<string, LimitType> limit_type_map;
+	Parameters limited_ctl_parameters;
+	Parameters new_pars;
+	LimitType limit_type = LimitType::NONE;
+
+	typedef void(SVDSolver::*UPGRADE_FUNCTION) (const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
+		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
+		const Parameters &base_ctl_pars, const Parameters &prev_frozen_ctl_pars,
+		double lambda, Parameters &ctl_upgrade_pars, Parameters &upgrade_ctl_del_pars,
+		Parameters &grad_ctl_del_pars, MarquardtMatrix marquardt_type);
+
+	UPGRADE_FUNCTION calc_lambda_upgrade = &SVDSolver::calc_lambda_upgrade_vec_JtQJ;
+
+	if (mat_inv == MAT_INV::Q12J)
+	{
+		calc_lambda_upgrade = &SVDSolver::calc_lambda_upgrade_vecQ12J;
+	}
+	// need to remove parameters frozen due to failed jacobian runs when calling calc_lambda_upgrade_vec
+	//Freeze Parameters at the boundary whose ugrade vector and gradient both head out of bounds
+
+	(*this.*calc_lambda_upgrade)(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+		base_run_active_ctl_par, freeze_active_ctl_pars, 0, new_pars, upgrade_ctl_del_pars,
+		grad_ctl_del_pars, MarquardtMatrix::IDENT);
+	limit_parameters_ip(base_run_active_ctl_par, new_pars,
+		limit_type, freeze_active_ctl_pars, true);
+
+	Parameters new_ctl_pars = par_transform.active_ctl2ctl_cp(new_pars);
+	Parameters delta_par = par_transform.active_ctl2numeric_cp(new_pars)
+		- par_transform.active_ctl2numeric_cp(base_run_active_ctl_par);
+	vector<string> numeric_par_names = new_pars.get_keys();
+	VectorXd delta_par_vec = transformable_2_egien_vec(delta_par, numeric_par_names);
+	Eigen::SparseMatrix<double> jac = jacobian.get_matrix(obs_names_vec, numeric_par_names);
+	VectorXd delta_obs_vec = jac * delta_par_vec;
+	Transformable delta_obs(obs_names_vec, delta_obs_vec);
+	Observations projected_obs = cur_solution.get_obs();
+	projected_obs += delta_obs;
+
+	PhiComponets proj_phi_comp = cur_solution.get_obj_func_ptr()->get_phi_comp(projected_obs, new_ctl_pars);
+	return proj_phi_comp;
+}
+
 void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt,
 	const Eigen::VectorXd &residuals_vec, const vector<string> &obs_names_vec,
 	const Parameters &base_run_active_ctl_par, const Parameters &freeze_active_ctl_pars)
@@ -1175,97 +1224,99 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 	Parameters new_pars;
 	LimitType limit_type = LimitType::NONE;
 
-
+	double mu_l;
+	double mu_r;
+	PhiComponets phi_proj_l;
+	PhiComponets phi_proj_r;
 	PhiComponets phi_comp_cur = cur_solution.get_obj_func_ptr()->get_phi_comp(cur_solution.get_obs(), cur_solution.get_ctl_pars());
-	PhiComponets proj_phi_comp_l;
-	PhiComponets proj_phi_comp_r;
-	double mu_l = Q_sqrt.get_tikhonov_weight();
-	double mu_r = mu_l;
-	double mu_new;
+	double mu_cur = Q_sqrt.get_tikhonov_weight();
 	double target_phi_meas_frac = phi_comp_cur.meas * (1.0 - fracphim);
 	double target_phi_meas = max(philim, target_phi_meas_frac);
-	for (int i = 0; i < 6; ++i)
+
+	PhiComponets proj_phi = phi_estimate(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+		base_run_active_ctl_par, freeze_active_ctl_pars);
+	double f_cur = proj_phi.meas - target_phi_meas;
+
+	if (f_cur < 0)
 	{
-		typedef void(SVDSolver::*UPGRADE_FUNCTION) (const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
-			const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
-			const Parameters &base_ctl_pars, const Parameters &prev_frozen_ctl_pars,
-			double lambda, Parameters &ctl_upgrade_pars, Parameters &upgrade_ctl_del_pars,
-			Parameters &grad_ctl_del_pars, MarquardtMatrix marquardt_type);
-
-		UPGRADE_FUNCTION calc_lambda_upgrade = &SVDSolver::calc_lambda_upgrade_vec_JtQJ;
-
-		if (mat_inv == MAT_INV::Q12J)
+		mu_l = mu_cur;
+		phi_proj_l = proj_phi;
+		mu_r = mu_l * 100.0;
+		Q_sqrt.set_tikhonov_weight(mu_r);
+		phi_proj_r = phi_estimate(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+			base_run_active_ctl_par, freeze_active_ctl_pars);
+	}
+	else
+	{
+		mu_r = mu_cur;
+		phi_proj_r = proj_phi;
+		mu_l = mu_r / 2.0;
+		Q_sqrt.set_tikhonov_weight(mu_l);
+		phi_proj_l = phi_estimate(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+			base_run_active_ctl_par, freeze_active_ctl_pars);
+	}
+	
+	for (int i = 0; i < 20; ++i)
+	{
+		double fl = phi_proj_l.meas - target_phi_meas;
+		double fr = phi_proj_r.meas - target_phi_meas;
+		//compute new mu;
+		double mu_new;
+		MatrixXd a_mat(2, 2);
+		VectorXd c(2), y(2);
+		a_mat <<  mu_l, 1,
+				  mu_r, 1;
+		y << fl, fr;
+		c = a_mat.colPivHouseholderQr().solve(y);
+		mu_new = -c(0) / c(1);
+		if (fr < 0 && fl > fr)
 		{
-			calc_lambda_upgrade = &SVDSolver::calc_lambda_upgrade_vecQ12J;
+			mu_new = mu_l * 10;
 		}
-		// need to remove parameters frozen due to failed jacobian runs when calling calc_lambda_upgrade_vec
-		//Freeze Parameters at the boundary whose ugrade vector and gradient both head out of bounds
-		Parameters upgrade_ctl_del_pars;
-		Parameters grad_ctl_del_pars;
-		map<string, LimitType> limit_type_map;
-		Parameters limited_ctl_parameters;
 
-		(*this.*calc_lambda_upgrade)(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
-			base_run_active_ctl_par, freeze_active_ctl_pars, 0, new_pars, upgrade_ctl_del_pars,
-			grad_ctl_del_pars, MarquardtMatrix::IDENT);
-		limit_parameters_ip(base_run_active_ctl_par, new_pars,
-			limit_type, freeze_active_ctl_pars, true);
+		else if (fr > 0 && mu_new > mu_r)
+		{
+			mu_new = mu_r + 0.9 * (mu_l - mu_r);
+		}
+		else if (fl < 0 && mu_new < mu_l)
+		{
+			mu_new = mu_r + 0.1 * (mu_l - mu_r);
+		}
+		mu_new = max(1.0e-5, mu_new);
+		mu_new = min(mu_new, 1.0e10);
+		Q_sqrt.set_tikhonov_weight(mu_new);
+		PhiComponets phi_proj_new = phi_estimate(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+			base_run_active_ctl_par, freeze_active_ctl_pars);
+		double f_new = phi_proj_new.meas - target_phi_meas;
 
-		Parameters new_ctl_pars = par_transform.active_ctl2ctl_cp(new_pars);
-		Parameters delta_par = par_transform.active_ctl2numeric_cp(new_pars)
-			- par_transform.active_ctl2numeric_cp(base_run_active_ctl_par);
-		vector<string> numeric_par_names = new_pars.get_keys();
-		VectorXd delta_par_vec = transformable_2_egien_vec(delta_par, numeric_par_names);
-		Eigen::SparseMatrix<double> jac = jacobian.get_matrix(obs_names_vec, numeric_par_names);
-		VectorXd delta_obs_vec = jac * delta_par_vec;
-		Transformable delta_obs(obs_names_vec, delta_obs_vec);
-		Observations projected_obs = cur_solution.get_obs();
-		projected_obs += delta_obs;
-
-		PhiComponets proj_phi_comp = cur_solution.get_obj_func_ptr()->get_phi_comp(projected_obs, new_ctl_pars);
+		if (fl > 0 && f_new < 0)
+		{
+			mu_r = mu_l;
+			phi_proj_r = phi_proj_l;
+			mu_l = mu_new;
+			phi_proj_l = phi_proj_new;
+		}
+		else if (fr < 0 && f_new > 0)
+		{
+			mu_l = mu_r;
+			phi_proj_l = phi_proj_r;
+			mu_r = mu_new;
+			phi_proj_r = phi_proj_new;
+		}
+		else if (fl < 0 && f_new <0 && f_new < fl)
+		{
+			mu_l = mu_new;
+			phi_proj_l = phi_proj_new;
+		}
+		else if (fr > 0  && f_new >0 && f_new < fr)
+		{
+			mu_r = mu_new;
+			phi_proj_r = phi_proj_new;
+		}
+		mu_new = max(1e-5, mu_new);
 		cout << "mu -> " << mu_l << " , " << mu_r << endl;
 		cout << "Phi_m desired -> " << target_phi_meas << endl;
-		cout << "projected  -> " << proj_phi_comp.meas << ",  " << proj_phi_comp.regul << endl << endl;
-
-
-		if (mu_l = mu_r)
-		{
-			proj_phi_comp_prev = proj_phi_comp;
-			if (proj_phi_comp.meas > target_phi_meas)
-			{
-				mu_new = mu_r / 2.0;
-			}
-			else
-			{
-				mu_new = mu_l * 2.0;
-			}
-		}
-		else
-		{
-
-			double fl = proj_phi_comp_prev.meas - target_phi_meas;
-			double fr = proj_phi_comp.meas - target_phi_meas;
-			if (f0 < 0 && f1 < 0)
-			{
-				mu_l = mu_r;
-				mu_r = 2.0 * mu_r;
-			}
-			else if (f0 < 0 && f1 < 0)
-			{
-				mu_r = mu_l;
-				mu_l = mu_l / 2.0;
-			}
-			else
-			{
-				
-			}
-			cout << f1 - f0 << endl;
-			double new_mu = prev_mu - f1 * (cur_mu - prev_mu) / (f1 - f0);
-			prev_mu = cur_mu;
-			cur_mu = new_mu;
-			proj_phi_comp_prev = proj_phi_comp;
-		}
-		cur_mu = max(1e-5, cur_mu);
-		Q_sqrt.set_tikhonov_weight(cur_mu);
+		cout << "projected_l  -> " << phi_proj_l.meas << ",  " << "projected_r  -> " << phi_proj_r.meas << endl << endl;
+		Q_sqrt.set_tikhonov_weight(mu_new);
 	}
 }

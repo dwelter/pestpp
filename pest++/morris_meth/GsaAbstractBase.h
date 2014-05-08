@@ -29,7 +29,7 @@ public:
 		const std::vector<std::string> &_obs_name_vec, FileManager *_file_manager_ptr,
 		PARAM_DIST _par_dist = PARAM_DIST::normal);
 	virtual void assemble_runs() = 0;
-	virtual void calc_sen(ModelRun model_run, std::ofstream &fout_raw, std::ofstream &fout_sen, std::ofstream &fout_orw) = 0;
+	virtual void calc_sen(ModelRun model_run) = 0;
 	static std::map<std::string, std::string>  process_gsa_file(std::ifstream &fin, FileManager &file_manager);
 	std::string log_name(const string &name) const;
 	bool is_log_trans_par(const string &name) const;

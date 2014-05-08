@@ -124,6 +124,8 @@ void GsaAbstractBase::parce_line(const string &line, map<string, string> &arg_ma
 		}
 		else if (key=="SOBOL_SAMPLES"){
 		}
+		else if (key == "MORRIS_POOLED_OBS"){
+		}
 		else {
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");
 		}

@@ -233,6 +233,7 @@ int main(int argc, char* argv[])
 	{
 		int morris_r = 4;
 		int morris_p = 5;
+		bool calc_pooled_obs = false;
 		auto morris_r_it = gsa_opt_map.find("MORRIS_R");
 		if (morris_r_it != gsa_opt_map.end())
 		{
@@ -243,18 +244,19 @@ int main(int argc, char* argv[])
 		{
 			convert_ip(morris_p_it->second, morris_p);
 		}
+		auto morris_pool_it = gsa_opt_map.find("MORRIS_POOLED_OBS");
+		if (morris_pool_it != gsa_opt_map.end())
+		{
+			string pooled_obs_flag = morris_pool_it->second;
+			upper_ip(pooled_obs_flag);
+			if (pooled_obs_flag == "TRUE") calc_pooled_obs = true;
+		}
 
 
 		MorrisMethod *m_ptr = new MorrisMethod(adj_par_name_vec, fixed_pars, lower_bnd, upper_bnd, log_trans_pars,
-			morris_p, morris_r, run_manager_ptr, &base_partran_seq, pest_scenario.get_ctl_ordered_obs_names(), &file_manager, &(pest_scenario.get_ctl_observation_info()));
+			morris_p, morris_r, run_manager_ptr, &base_partran_seq, pest_scenario.get_ctl_ordered_obs_names(), &file_manager, &(pest_scenario.get_ctl_observation_info()), calc_pooled_obs);
 		gsa_method = m_ptr;
-
-		// testing
-		ifstream fin_junk;
-		fin_junk.open("C:\\Users\\dwelter\\Desktop\\junk.txt");
-		m_ptr->process_pooled_var_file(fin_junk);
-
-		file_manager.close_file("obt");
+		m_ptr->process_pooled_var_file();
 	}
 	else if (method != gsa_opt_map.end() && method->second == "SOBOL")
 	{
@@ -280,7 +282,7 @@ int main(int argc, char* argv[])
 	gsa_method->assemble_runs();
 	run_manager_ptr->run();
 
-	gsa_method->calc_sen(model_run, file_manager.open_ofile_ext("srw"), file_manager.open_ofile_ext("msn"), file_manager.open_ofile_ext("orw"));
+	gsa_method->calc_sen(model_run);
 	file_manager.close_file("srw");
 	file_manager.close_file("msn");
 	file_manager.close_file("orw");

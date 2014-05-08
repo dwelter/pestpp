@@ -137,7 +137,7 @@ vector<double> Sobol::get_phi_vec(int run_set, ModelRun &model_run)
 	return phi_vec;
 }
 
-void Sobol::calc_sen(ModelRun model_run, std::ofstream &fout_raw, std::ofstream &fout_sen, ofstream &fout_orw)
+void Sobol::calc_sen(ModelRun model_run)
 {
 	vector<double> ya = get_phi_vec(0, model_run);
 	vector<double> yb = get_phi_vec(1, model_run);

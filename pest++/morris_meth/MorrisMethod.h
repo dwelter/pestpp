@@ -44,16 +44,17 @@ public:
 		const Parameters &upper_bnd, const set<string> &_log_trans_pars, int _p, int _r,
 		RunManagerAbstract *rm_ptr, ParamTransformSeq *base_partran_seq,
 		const std::vector<std::string> &_obs_name_vec, FileManager *_file_manager_ptr,
-		const ObservationInfo *_obs_info_ptr, PARAM_DIST _par_dist = PARAM_DIST::normal);
-	void process_pooled_var_file(std::ifstream &fin);
+		const ObservationInfo *_obs_info_ptr, bool _calc_pooled_obs);
+	void process_pooled_var_file();
 	void initialize(const set<string> &_log_trans_pars, int _p, int _r);
 	void assemble_runs();
-	void calc_sen(ModelRun model_run, std::ofstream &fout_raw, std::ofstream &fout_morris, std::ofstream &fout_orw);
+	void calc_sen(ModelRun model_run);
 	~MorrisMethod(void);
 private:
 	int k; // number of parameters
 	int p; // number of levels for each parameters
 	int r;
+	bool calc_obs_sen;
 	double delta;
 	MatrixXd b_star_mat;
 	std::map<long, std::string*> runid_2_parname_map;
