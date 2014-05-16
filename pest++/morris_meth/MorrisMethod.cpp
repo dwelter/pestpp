@@ -110,18 +110,15 @@ void MorrisMethod::process_pooled_var_file()
 		cmatch mr;
 		while (getline(fin, line))
 		{
-			cout << line << endl;
 			if (regex_match(line.c_str(), mr, reg_reg))
 			{
 				regex inp_reg = regex(mr[1].str(), regex_constants::icase);
-				cout << mr[1] << endl;
 
 				for (auto itr = obs_group_names.begin(); itr != obs_group_names.end();)
 				{
 					auto  here = itr++;
 					if (regex_match(*here, inp_reg))
 					{
-						cout << *here << endl;
 						group_2_pool_group_map[*here] = cur_pool_grp;
 						obs_group_names.erase(here);
 					}
@@ -282,30 +279,25 @@ Parameters MorrisMethod::get_ctl_parameters(int row)
 
 void MorrisMethod::assemble_runs()
 {
-	runid_2_parname_map.clear();
 	for (int tmp_r=0; tmp_r<r; ++tmp_r)
 	{
 		b_star_mat = create_P_star_mat(adj_par_name_vec.size());
 		int n_rows = b_star_mat.rows();
 		int run_id;
-		string *par_name = nullptr;
-		double par_value;
+		string par_name = "";
 		for (int i=0; i<n_rows; ++i)
 		{
+			par_name.clear();
 			//get control parameters
 			Parameters pars = get_ctl_parameters(i);
 			pars.insert(fixed_ctl_pars.begin(), fixed_ctl_pars.end());
-			// converst control parameters to model parameters
+			// convert control parameters to model parameters
 			base_partran_seq_ptr->ctl2model_ip(pars);
-			run_id = run_manager_ptr->add_run(pars);
-			par_name = nullptr;
-			par_value = pars.no_data;
 			if (i>0)
 			{
-				par_name = &adj_par_name_vec[i-1];
-				par_value = pars.get_rec(*par_name);
+				par_name = adj_par_name_vec[i-1];
 			}
-			runid_2_parname_map[run_id] = par_name;
+			run_id = run_manager_ptr->add_run(pars, par_name, Parameters::no_data);
 		}
 	}
 }
@@ -321,7 +313,6 @@ void  MorrisMethod::calc_sen(ModelRun model_run)
 	Observations obs0;
 	Parameters pars1;
 	Observations obs1;
-	string *p;
 	unsigned int n_adj_par = adj_par_name_vec.size();
 	map<string, RunningStats > sen_map;
 	map<string, RunningStats> obs_stats_map;
@@ -342,14 +333,12 @@ void  MorrisMethod::calc_sen(ModelRun model_run)
 	fout_raw << "parameter_name, phi_0, phi_1, par_0, par_1, sen" << endl;
 	int n_runs = run_manager_ptr->get_nruns();
 	bool run0_ok, run1_ok;
+	string par_name_1;
+	double null_value;
 	for (int i_run=1; i_run<n_runs; ++i_run)
 	{
 		run0_ok = run_manager_ptr->get_run(i_run-1, pars0, obs0);
-		run1_ok = run_manager_ptr->get_run(i_run, pars1, obs1);
-		auto it = runid_2_parname_map.find(i_run);
-		assert(it != runid_2_parname_map.end());
-		p = it->second;
-
+		run1_ok = run_manager_ptr->get_run(i_run, pars1, obs1, par_name_1, null_value);
 		// Add run0 to obs_stats
 		if (run0_ok)
 		{
@@ -363,34 +352,33 @@ void  MorrisMethod::calc_sen(ModelRun model_run)
 			}
 		}
 
-		if (run0_ok && run1_ok && p!=nullptr)
+		if (run0_ok && run1_ok && !par_name_1.empty())
 		{
 			run0.update_ctl(pars0, obs0);
 			double phi0 = run0.get_phi(0.0);
 			run1.update_ctl(pars1, obs1);
 			double phi1 = run1.get_phi(0.0);
-			double p0 = pars0[*p];
-			double p1 = pars1[*p];
-			if (log_trans_pars.find(*p) != log_trans_pars.end())
+			double p0 = pars0[par_name_1];
+			double p1 = pars1[par_name_1];
+			if (log_trans_pars.find(par_name_1) != log_trans_pars.end())
 			{
 				p0 = log10(p0);
 				p1 = log10(p1);
 			}
 			// compute standard Morris Sensitivity on the global objective function
 			double sen = (phi1 - phi0) / delta;
-			fout_raw << log_name(*p) << ",  " <<  phi1 << ",  " << phi0 << ",  " << p1 << ",  " << p0 << ", " << sen << endl;
+			fout_raw << log_name(par_name_1) << ",  " << phi1 << ",  " << phi0 << ",  " << p1 << ",  " << p0 << ", " << sen << endl;
 
-			const auto &it_senmap = sen_map.find(*p);
+			const auto &it_senmap = sen_map.find(par_name_1);
 			if (it_senmap != sen_map.end())
 			{
 				it_senmap->second.add(sen);
 			}
 
 			//Compute sensitvities of indiviual observations
-			obs_sen_file.add_sen_run_pair(log_name(*p), p0, obs0, p1, obs1);
+			obs_sen_file.add_sen_run_pair(log_name(par_name_1), p0, obs0, p1, obs1);
 		}
 	}
-
 	// Add final run to obs_stats
 	if (run1_ok)
 	{

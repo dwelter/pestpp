@@ -1,12 +1,12 @@
 CXX = 'g++'
 CCC = 'g++'
 FC = gfortran
-#CFLAGS := '-std=gnu++0x -O2 -c' 
-#FFLAGS := '-O2 -c -cpp'
+CFLAGS := '-std=gnu++0x -O2 -c' 
+FFLAGS := '-O2 -c -cpp'
 #CFLAGS := '-std=gnu++0x -g -gdwarf-2 -c' 
 #FFLAGS := '-g -gdwarf-2 -c -cpp'
-CFLAGS := '-std=gnu++0x -g  -c' 
-FFLAGS := '-g -c -cpp'
+#CFLAGS := '-std=gnu++0x -g  -c' 
+#FFLAGS := '-g -c -cpp'
 
 all:
 	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} -C yamr -f makefile_linux librunmanager.a

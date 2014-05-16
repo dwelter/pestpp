@@ -57,7 +57,6 @@ private:
 	bool calc_obs_sen;
 	double delta;
 	MatrixXd b_star_mat;
-	std::map<long, std::string*> runid_2_parname_map;
 	static MatrixXd create_B_mat(int k);
 	static MatrixXd create_J_mat(int k);
 	static MatrixXd create_D_mat(int k);

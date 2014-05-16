@@ -482,5 +482,5 @@ void RunStorage::check_rec_id(int run_id)
 
 RunStorage::~RunStorage()
 {
-	free_memory();
+  //free_memory();
 }

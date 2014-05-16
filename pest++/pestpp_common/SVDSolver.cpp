@@ -559,10 +559,10 @@ restart_resume_jacobian_runs:
 	LimitType limit_type = LimitType::NONE;
 	//If running in regularization mode, adjust the regularization weights
 	// define a function type for upgrade methods 
-	dynamic_weight_adj(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
-		base_run_active_ctl_par, frozen_active_ctl_pars);
-	tikhonov_weight = Q_sqrt.get_tikhonov_weight();
-	regul_scheme.set_weight(tikhonov_weight);
+	//dynamic_weight_adj(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+		//base_run_active_ctl_par, frozen_active_ctl_pars);
+	//tikhonov_weight = Q_sqrt.get_tikhonov_weight();
+	//regul_scheme.set_weight(tikhonov_weight);
 
 
 	// write out report for starting phi

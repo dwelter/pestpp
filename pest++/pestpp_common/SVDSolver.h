@@ -125,7 +125,7 @@ protected:
 		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
 		const Parameters &base_active_ctl_pars, const Parameters &freeze_active_ctl_pars);
 	bool par_heading_out_bnd(double org_par, double new_par, double lower_bnd, double upper_bnd);
-	PhiComponets SVDSolver::phi_estimate(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt,
+	PhiComponets phi_estimate(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt,
 		const Eigen::VectorXd &residuals_vec, const vector<string> &obs_names_vec,
 		const Parameters &base_run_active_ctl_par, const Parameters &freeze_active_ctl_pars);
 	int check_bnd_par(Parameters &new_freeze_active_ctl_pars, const Parameters &current_active_ctl_pars, const Parameters &new_upgrade_active_ctl_pars, const Parameters &new_grad_active_ctl_pars = Parameters());

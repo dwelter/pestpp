@@ -6,7 +6,7 @@ INCLUDES := -I ../ -I ../yamr -I ../pestpp_common
 
 #LIBS :=  -L /opt/pest/lib -L/usr/lib64 -L ../pest_routines -L ../yamr -L ../pestpp_common -L ../pestpp_common -L ../propack -l runmanager  -lpestpp_com -l pest_routines -l propack -llapack  -lblas -lgfortran 
 
-LIBS := -L /opt/local/gcc-4.9.0/lib64 -L /usr/lib64 -L/opt/local/lib64  -L ../pest_routines -L ../yamr -L ../pestpp_common -L ../pestpp_common -L ../propack -l runmanager  -lpestpp_com -l pest_routines -l propack -llapack -lblas -lgfortran  /opt/local/gcc-4.9.0/lib64/libquadmath.a
+LIBS := -L /opt/hesm/apps/gcc-4.9.0/lib64 -L /opt/hesm/lib64 -L /usr/lib64 -L/opt/local/lib64  -L ../pest_routines -L ../yamr -L ../pestpp_common -L ../pestpp_common -L ../propack -l runmanager  -lpestpp_com -l pest_routines -l propack -llapack -lblas -lgfortran  /opt/hesm/apps/gcc-4.9.0/lib64/libquadmath.a
 
 
 EXE = pestpp
