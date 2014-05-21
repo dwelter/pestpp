@@ -455,7 +455,7 @@ void RunManagerYAMR::process_message(int i_sock)
 		slave_info.end_run(i_sock);
 		std::time_t tt =  std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 		f_rmr << "Run received from: " << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << group_id << ", run id = " << run_id << ") at " << ctime(&tt) << endl;
-		cout << "Run received from: " << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << group_id << ", run id = " << run_id << ") at " << ctime(&tt) << endl;
+		//cout << "Run received from: " << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << group_id << ", run id = " << run_id << ") at " << ctime(&tt) << endl;
 		process_model_run(i_sock, net_pack);
 
 	}

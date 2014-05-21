@@ -57,15 +57,20 @@ int main(int argc, char* argv[])
 	cout << "                 by Dave Welter" << endl;
 	cout << "     Computational Water Resource Engineering"<< endl << endl << endl;
 	// build commandline
-	string commandline = "";
+	string commandline = "";	
 	for(int i=0; i<argc; ++i)
-	{
+	{		 
 		commandline.append(" ");
 		commandline.append(argv[i]);
 	}
 
+	//transform(commandline.begin(), commandline.end(), commandline.begin(), ::tolower);
 	vector<string> cmd_arg_vec(argc);
 	copy(argv, argv+argc, cmd_arg_vec.begin());
+	for (vector<string>::iterator it = cmd_arg_vec.begin(); it != cmd_arg_vec.end(); ++it)
+	{		
+		transform(it->begin(), it->end(), it->begin(), ::tolower);
+	}
 
 	string complete_path;
 	enum class RunManagerType {SERIAL, YAMR, GENIE};
@@ -96,7 +101,7 @@ int main(int argc, char* argv[])
 	string next_item;
 	string socket_str="";
 	//Check for YAMR Slave
-	it_find = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/H");
+	it_find = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/h");
 	next_item.clear();
 	if (it_find!= cmd_arg_vec.end() && it_find+1 != cmd_arg_vec.end())
 	{
@@ -135,7 +140,7 @@ int main(int argc, char* argv[])
 		socket_str = next_item;
 	}
 
-	it_find = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/G");
+	it_find = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/g");
 	next_item.clear();
 	if (it_find!= cmd_arg_vec.end() && it_find+1 != cmd_arg_vec.end())
 	{
