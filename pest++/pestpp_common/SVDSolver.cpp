@@ -559,10 +559,10 @@ restart_resume_jacobian_runs:
 	LimitType limit_type = LimitType::NONE;
 	//If running in regularization mode, adjust the regularization weights
 	// define a function type for upgrade methods 
-	//dynamic_weight_adj(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
-		//base_run_active_ctl_par, frozen_active_ctl_pars);
-	//tikhonov_weight = Q_sqrt.get_tikhonov_weight();
-	//regul_scheme.set_weight(tikhonov_weight);
+	dynamic_weight_adj(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+		base_run_active_ctl_par, frozen_active_ctl_pars);
+	tikhonov_weight = Q_sqrt.get_tikhonov_weight();
+	regul_scheme.set_weight(tikhonov_weight);
 
 
 	// write out report for starting phi
@@ -1214,6 +1214,26 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 	const Eigen::VectorXd &residuals_vec, const vector<string> &obs_names_vec,
 	const Parameters &base_run_active_ctl_par, const Parameters &freeze_active_ctl_pars)
 {
+
+	class MuPoint
+	{
+	public:
+		double mu;
+		PhiComponets phi_comp;
+		double target_phi_meas;
+		void set(double _mu, const PhiComponets &_phi_comp) { mu = _mu; phi_comp = _phi_comp; }
+		double f() const { return phi_comp.meas - target_phi_meas;} 
+		void print(ostream &fout)
+		{
+			fout << "  mu           = " << mu << endl;
+			fout << "  phi_meas     = " << phi_comp.meas << endl;
+			fout << "  target_phi_meas     = " << target_phi_meas << endl;
+			fout << "  phi residual = " << f() << endl;
+		}
+		bool operator< (const MuPoint &rhs){ return abs(f()) < abs(rhs.f()); }
+
+	};
+
 	double philim = 8.0;
 
 	double fracphim = 0.3;
@@ -1224,99 +1244,128 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 	Parameters new_pars;
 	LimitType limit_type = LimitType::NONE;
 
-	double mu_l;
-	double mu_r;
-	PhiComponets phi_proj_l;
-	PhiComponets phi_proj_r;
+	vector<MuPoint> mu_vec;
+	mu_vec.resize(4);
+	
 	PhiComponets phi_comp_cur = cur_solution.get_obj_func_ptr()->get_phi_comp(cur_solution.get_obs(), cur_solution.get_ctl_pars());
 	double mu_cur = Q_sqrt.get_tikhonov_weight();
 	double target_phi_meas_frac = phi_comp_cur.meas * (1.0 - fracphim);
 	double target_phi_meas = max(philim, target_phi_meas_frac);
 
-	PhiComponets proj_phi = phi_estimate(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+	for (auto &i_mu : mu_vec)
+	{
+		i_mu.target_phi_meas = target_phi_meas;
+	}
+
+
+	PhiComponets proj_phi_cur = phi_estimate(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
 		base_run_active_ctl_par, freeze_active_ctl_pars);
-	double f_cur = proj_phi.meas - target_phi_meas;
+	double f_cur = proj_phi_cur.meas - target_phi_meas;
 
 	if (f_cur < 0)
 	{
-		mu_l = mu_cur;
-		phi_proj_l = proj_phi;
-		mu_r = mu_l * 100.0;
-		Q_sqrt.set_tikhonov_weight(mu_r);
-		phi_proj_r = phi_estimate(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
-			base_run_active_ctl_par, freeze_active_ctl_pars);
-	}
-	else
-	{
-		mu_r = mu_cur;
-		phi_proj_r = proj_phi;
-		mu_l = mu_r / 2.0;
-		Q_sqrt.set_tikhonov_weight(mu_l);
-		phi_proj_l = phi_estimate(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
-			base_run_active_ctl_par, freeze_active_ctl_pars);
-	}
-	
-	for (int i = 0; i < 20; ++i)
-	{
-		double fl = phi_proj_l.meas - target_phi_meas;
-		double fr = phi_proj_r.meas - target_phi_meas;
-		//compute new mu;
-		double mu_new;
-		MatrixXd a_mat(2, 2);
-		VectorXd c(2), y(2);
-		a_mat <<  mu_l, 1,
-				  mu_r, 1;
-		y << fl, fr;
-		c = a_mat.colPivHouseholderQr().solve(y);
-		mu_new = -c(0) / c(1);
-		if (fr < 0 && fl > fr)
-		{
-			mu_new = mu_l * 10;
-		}
-
-		else if (fr > 0 && mu_new > mu_r)
-		{
-			mu_new = mu_r + 0.9 * (mu_l - mu_r);
-		}
-		else if (fl < 0 && mu_new < mu_l)
-		{
-			mu_new = mu_r + 0.1 * (mu_l - mu_r);
-		}
+		mu_vec[0].set(mu_cur, proj_phi_cur);
+		double mu_new = mu_vec[0].mu * 5.0;
 		mu_new = max(1.0e-5, mu_new);
 		mu_new = min(mu_new, 1.0e10);
 		Q_sqrt.set_tikhonov_weight(mu_new);
 		PhiComponets phi_proj_new = phi_estimate(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
 			base_run_active_ctl_par, freeze_active_ctl_pars);
-		double f_new = phi_proj_new.meas - target_phi_meas;
-
-		if (fl > 0 && f_new < 0)
-		{
-			mu_r = mu_l;
-			phi_proj_r = phi_proj_l;
-			mu_l = mu_new;
-			phi_proj_l = phi_proj_new;
-		}
-		else if (fr < 0 && f_new > 0)
-		{
-			mu_l = mu_r;
-			phi_proj_l = phi_proj_r;
-			mu_r = mu_new;
-			phi_proj_r = phi_proj_new;
-		}
-		else if (fl < 0 && f_new <0 && f_new < fl)
-		{
-			mu_l = mu_new;
-			phi_proj_l = phi_proj_new;
-		}
-		else if (fr > 0  && f_new >0 && f_new < fr)
-		{
-			mu_r = mu_new;
-			phi_proj_r = phi_proj_new;
-		}
-		mu_new = max(1e-5, mu_new);
-		cout << "mu -> " << mu_l << " , " << mu_r << endl;
-		cout << "Phi_m desired -> " << target_phi_meas << endl;
-		cout << "projected_l  -> " << phi_proj_l.meas << ",  " << "projected_r  -> " << phi_proj_r.meas << endl << endl;
-		Q_sqrt.set_tikhonov_weight(mu_new);
+		mu_vec[3].set(mu_new, phi_proj_new);
 	}
+	else
+	{
+		mu_vec[3].set(mu_cur, proj_phi_cur);
+		double mu_new = mu_vec[3].mu * 5.0;
+		mu_new = max(1.0e-5, mu_new);
+		mu_new = min(mu_new, 1.0e10);
+		Q_sqrt.set_tikhonov_weight(mu_new);
+		PhiComponets phi_proj_new = phi_estimate(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+			base_run_active_ctl_par, freeze_active_ctl_pars);
+		mu_vec[0].set(mu_new, phi_proj_new);
+	}
+	
+
+	// make sure f[0] and f[3] bracket the solution
+
+	for (int i = 0; i < 20; ++i)
+	{
+		if (mu_vec[0].f() < 0)
+		{
+			break;
+		}
+		else
+		{
+			mu_vec[3] = mu_vec[0];
+			mu_vec[0].mu /= 5.0;
+			Q_sqrt.set_tikhonov_weight(mu_vec[0].mu);
+			mu_vec[0].phi_comp = phi_estimate(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+				base_run_active_ctl_par, freeze_active_ctl_pars);
+		}
+	}
+
+	for (int i = 0; i < 20; ++i)
+	{
+		if (mu_vec[3].f() > 0)
+		{
+			break;
+		}
+		else
+		{
+			mu_vec[0] = mu_vec[3];
+			mu_vec[3].mu *= 5.0;
+			Q_sqrt.set_tikhonov_weight(mu_vec[3].mu);
+			mu_vec[3].phi_comp = phi_estimate(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+				base_run_active_ctl_par, freeze_active_ctl_pars);
+		}
+	}
+
+	double tau = (sqrt(5.0) - 1.0) / 2.0;
+	double lw = mu_vec[3].mu - mu_vec[0].mu;
+	mu_vec[1].mu = mu_vec[0].mu + (1.0 - tau) * lw;
+	Q_sqrt.set_tikhonov_weight(mu_vec[1].mu);
+	mu_vec[1].phi_comp = phi_estimate(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+		base_run_active_ctl_par, freeze_active_ctl_pars);
+
+	mu_vec[2].mu = mu_vec[3].mu - (1.0 - tau) * lw;
+	Q_sqrt.set_tikhonov_weight(mu_vec[2].mu);
+	mu_vec[2].phi_comp = phi_estimate(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+		base_run_active_ctl_par, freeze_active_ctl_pars);
+
+	cout << "############################" << endl;
+	for (auto &i_mu : mu_vec)
+	{
+		i_mu.print(cout);
+	}
+
+	for (int i = 0; i < 20; ++i)
+	{
+		if (abs(mu_vec[0].f()) > abs(mu_vec[3].f()) && mu_vec[0].f() < 0)
+		{
+			mu_vec[0] = mu_vec[1];
+			mu_vec[1] = mu_vec[2];
+			lw = mu_vec[3].mu - mu_vec[0].mu;
+			mu_vec[2].mu = mu_vec[3].mu - (1.0 - tau) * lw;
+			Q_sqrt.set_tikhonov_weight(mu_vec[2].mu);
+			mu_vec[2].phi_comp = phi_estimate(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+				base_run_active_ctl_par, freeze_active_ctl_pars);
+		}
+		else
+		{
+			mu_vec[3] = mu_vec[2];
+			mu_vec[2] = mu_vec[1];
+			lw = mu_vec[3].mu - mu_vec[0].mu;
+			mu_vec[1].mu = mu_vec[0].mu + (1.0 - tau) * lw;
+			Q_sqrt.set_tikhonov_weight(mu_vec[1].mu);
+			mu_vec[1].phi_comp = phi_estimate(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+				base_run_active_ctl_par, freeze_active_ctl_pars);
+		}
+		cout << "############################" << endl;
+		for (auto &i_mu : mu_vec)
+		{
+			i_mu.print(cout);
+		}
+	}
+	Q_sqrt.set_tikhonov_weight(std::min_element(mu_vec.begin(), mu_vec.end())->mu);
+	cout << std::min_element(mu_vec.begin(), mu_vec.end())->mu << endl;
 }
