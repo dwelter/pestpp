@@ -94,12 +94,6 @@ void RunStorage::init_restart(const std::string &_filename)
 	// a file needs to exist before it can be opened it with read and write 
 	// permission.   So open it with write permission to crteate it, close 
 	// and then reopen it with read and write permisssion.
-	if (buf_stream.is_open())
-	{
-		buf_stream.close();
-	}
-	buf_stream.open(filename.c_str(), ios_base::out | ios_base::binary);
-	buf_stream.close();
 	buf_stream.open(filename.c_str(), ios_base::out | ios_base::in | ios_base::binary | ios_base::app);
 	assert(buf_stream.good() == true);
 	if (!buf_stream.good())
@@ -135,7 +129,6 @@ void RunStorage::init_restart(const std::string &_filename)
 	beg_run0 = 4 * sizeof(std::int64_t) + serial_pnames.size() + serial_onames.size();
 	run_par_byte_size = par_names.size() * sizeof(double);
 	run_data_byte_size = run_par_byte_size + obs_names.size() * sizeof(double);
-	run_byte_size =  sizeof(std::int8_t) + run_data_byte_size;
 }
 
 int RunStorage::get_nruns()

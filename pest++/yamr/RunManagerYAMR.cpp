@@ -411,6 +411,12 @@ void RunManagerYAMR::process_message(int i_sock)
 		w_close(i_sock); // bye!
 		FD_CLR(i_sock, &master); // remove from master set
 		slave_info.erase(i_sock); // remove information on this slave
+		//remove slave from slave_fd 
+		auto it_sfd = find(slave_fd.begin(), slave_fd.end(), i_sock);
+		if (it_sfd != slave_fd.end())
+		{
+			slave_fd.erase(it_sfd);
+		}
 		// remove run from active queue and return it to the waiting queue
 		auto it_active = get_active_run_id(i_sock);
 		if (it_active != active_runs.end())

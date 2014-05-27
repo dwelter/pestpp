@@ -18,16 +18,16 @@ class Sobol : public GsaAbstractBase
 public:
 	Sobol(const std::vector<std::string> &_adj_par_name_vec, const Parameters &_fixed__ctl_pars,
 		const Parameters &_lower_bnd, const Parameters &_upper_bnd, int n_sample,
-		RunManagerAbstract *rm_ptr, ParamTransformSeq *base_partran_seq,
+		ParamTransformSeq *base_partran_seq,
 		const std::vector<std::string> &_obs_name_vec, FileManager *_file_manager_ptr);
-	void assemble_runs();
-	void calc_sen(ModelRun model_run);
+	void assemble_runs(RunManagerAbstract &run_manager);
+	void calc_sen(RunManagerAbstract &run_manager, ModelRun model_run);
 private:
 	VectorXd gen_rand_vec(long nsample, double min, double max);
 	void gen_m1_m2();
 	MatrixXd gen_N_matrix(const MatrixXd &m1, const MatrixXd &m2, const vector<int> &idx_vec);
-	void add_model_runs(const MatrixXd &n);
-	vector<double> get_phi_vec(int run_set, ModelRun &model_run);
+	void add_model_runs(RunManagerAbstract &run_manager, const MatrixXd &n);
+	vector<double> get_phi_vec(RunManagerAbstract &run_manager, int run_set, ModelRun &model_run);
 	int n_sample;
 	Eigen::MatrixXd m1;
 	Eigen::MatrixXd m2;

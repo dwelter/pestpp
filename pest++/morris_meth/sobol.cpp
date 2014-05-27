@@ -18,9 +18,9 @@ using namespace Eigen;
 
 Sobol::Sobol(const vector<string> &_adj_par_name_vec, const Parameters &_fixed__ctl_pars,
 	const Parameters &_lower_bnd, const Parameters &_upper_bnd, int _n_sample,
-	RunManagerAbstract *_rm_ptr, ParamTransformSeq *base_partran_seq_ptr,
+	ParamTransformSeq *base_partran_seq_ptr,
 	const std::vector<std::string> &_obs_name_vec, FileManager *_file_manager_ptr)
-	: GsaAbstractBase(_rm_ptr, base_partran_seq_ptr, _adj_par_name_vec, 
+	: GsaAbstractBase(base_partran_seq_ptr, _adj_par_name_vec, 
 	       _fixed__ctl_pars, _lower_bnd, _upper_bnd, _obs_name_vec, _file_manager_ptr), n_sample(_n_sample)
 	{
 	}
@@ -72,7 +72,7 @@ MatrixXd Sobol::gen_N_matrix(const MatrixXd &m1, const MatrixXd &m2, const vecto
   return n;
 }
 
-void Sobol::add_model_runs(const MatrixXd &n)
+void Sobol::add_model_runs(RunManagerAbstract &run_manager, const MatrixXd &n)
 {
 	for (int i=0; i<n_sample; ++i)
 	{
@@ -80,21 +80,21 @@ void Sobol::add_model_runs(const MatrixXd &n)
 		Parameters tmp_pars(adj_par_name_vec, tmp_vec);
 		tmp_pars.insert(fixed_ctl_pars.begin(), fixed_ctl_pars.end());
 		base_partran_seq_ptr->ctl2model_ip(tmp_pars);
-		run_manager_ptr->add_run(tmp_pars);
+		run_manager.add_run(tmp_pars);
 	}
 }
 
-void Sobol::assemble_runs()
+void Sobol::assemble_runs(RunManagerAbstract &run_manager)
 {
 	MatrixXd c;
-	run_manager_ptr->reinitialize();
+	run_manager.reinitialize();
 	gen_m1_m2();
 	
 	//calculate a0
 	int n_adj_par = adj_par_name_vec.size();
 
-	add_model_runs(m1);
-	add_model_runs(m2);
+	add_model_runs(run_manager, m1);
+	add_model_runs(run_manager, m2);
 
 	//cout << m1 << endl << endl;
 	//cout << m2 << endl << endl;
@@ -107,11 +107,11 @@ void Sobol::assemble_runs()
 		idx_vec.push_back(ai);
 		c = gen_N_matrix(m1, m2, idx_vec);
 		//cout << c << endl << endl;
-		add_model_runs(c);
+		add_model_runs(run_manager, c);
 	}
 }
 
-vector<double> Sobol::get_phi_vec(int run_set, ModelRun &model_run)
+vector<double> Sobol::get_phi_vec(RunManagerAbstract &run_manager, int run_set, ModelRun &model_run)
 {
 	ModelRun run0 = model_run;
 
@@ -125,7 +125,7 @@ vector<double> Sobol::get_phi_vec(int run_set, ModelRun &model_run)
 	for(int run_id=run_b; run_id<run_e; ++run_id)
 	{
 		double phi = MISSING_DATA;
-		bool success = run_manager_ptr->get_run(run_id, pars0, obs0);
+		bool success = run_manager.get_run(run_id, pars0, obs0);
 		if (success)
 		{
 			run0.update_ctl(pars0, obs0);
@@ -137,10 +137,10 @@ vector<double> Sobol::get_phi_vec(int run_set, ModelRun &model_run)
 	return phi_vec;
 }
 
-void Sobol::calc_sen(ModelRun model_run)
+void Sobol::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run)
 {
-	vector<double> ya = get_phi_vec(0, model_run);
-	vector<double> yb = get_phi_vec(1, model_run);
+	vector<double> ya = get_phi_vec(run_manager, 0, model_run);
+	vector<double> yb = get_phi_vec(run_manager, 1, model_run);
 	
 	//cout <<"######### A " << endl;
 	//cout << "------YA--------" << endl;
@@ -163,9 +163,9 @@ void Sobol::calc_sen(ModelRun model_run)
 	int npar = adj_par_name_vec.size();
 	for (int i=0; i<npar; ++i)
 	{
-		cout << "nruns = " << run_manager_ptr->get_nruns() << endl;
+		cout << "nruns = " << run_manager.get_nruns() << endl;
 		cout <<"######### PAR = " << adj_par_name_vec[i] << endl;
-		vector<double> yci = get_phi_vec(i+2, model_run);
+		vector<double> yci = get_phi_vec(run_manager, i + 2, model_run);
 
 		//{
 		//	auto covar_stats  =  vec_covar_missing_data(ya, yci, MISSING_DATA);

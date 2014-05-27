@@ -180,6 +180,23 @@ int main(int argc, char* argv[])
 	cout << "using control file: \"" <<  complete_path << "\"" << endl;
 	fout_rec << "using control file: \"" <<  complete_path << "\"" << endl;
 
+
+	enum class GSA_RESTART { NONE, RESTART };
+	GSA_RESTART gsa_restart = GSA_RESTART::NONE;
+	vector<string> cmd_arg_vec(argc);
+	copy(argv, argv + argc, cmd_arg_vec.begin());
+	//process restart and  reuse jacibian directives
+	vector<string>::const_iterator it_find_r = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/r");
+	if (it_find_r != cmd_arg_vec.end())
+	{
+		gsa_restart = GSA_RESTART::RESTART;
+	}
+	else
+	{
+		gsa_restart = GSA_RESTART::NONE;
+	}
+
+
 	map<string, string> gsa_opt_map;
 	//process .gsa file
 	try
@@ -197,10 +214,6 @@ int main(int argc, char* argv[])
 	//Build Transformation with ctl_2_numberic
 	ParamTransformSeq base_partran_seq(pest_scenario.get_base_par_tran_seq());
 	Parameters ctl_par = pest_scenario.get_ctl_parameters();
-
-	//Allocates Space for Run Manager.  This initializes the model parameter names and observations names.
-	//Neither of these will change over the course of the simulation
-	run_manager_ptr->initialize(base_partran_seq.ctl2model_cp(ctl_par), pest_scenario.get_ctl_observations());
 
 	// Get the lower and upper bounds of the parameters
 	//remove fixed parameters from ctl_par
@@ -254,7 +267,7 @@ int main(int argc, char* argv[])
 
 
 		MorrisMethod *m_ptr = new MorrisMethod(adj_par_name_vec, fixed_pars, lower_bnd, upper_bnd, log_trans_pars,
-			morris_p, morris_r, run_manager_ptr, &base_partran_seq, pest_scenario.get_ctl_ordered_obs_names(), &file_manager, &(pest_scenario.get_ctl_observation_info()), calc_pooled_obs);
+			morris_p, morris_r, &base_partran_seq, pest_scenario.get_ctl_ordered_obs_names(), &file_manager, &(pest_scenario.get_ctl_observation_info()), calc_pooled_obs);
 		gsa_method = m_ptr;
 		m_ptr->process_pooled_var_file();
 	}
@@ -268,7 +281,7 @@ int main(int argc, char* argv[])
 		}
 
 		gsa_method = new Sobol(adj_par_name_vec, fixed_pars, lower_bnd, upper_bnd, n_sample, 
-			run_manager_ptr, &base_partran_seq, pest_scenario.get_ctl_ordered_obs_names(), &file_manager);
+			&base_partran_seq, pest_scenario.get_ctl_ordered_obs_names(), &file_manager);
 	}
 	else
 	{
@@ -277,12 +290,23 @@ int main(int argc, char* argv[])
 
 
 	// make model runs
-	Parameters model_pars = base_partran_seq.ctl2model_cp(ctl_par);
-	run_manager_ptr->reinitialize();
-	gsa_method->assemble_runs();
+	if (gsa_restart == GSA_RESTART::NONE)
+	{
+		//Allocates Space for Run Manager.  This initializes the model parameter names and observations names.
+		//Neither of these will change over the course of the simulation
+		run_manager_ptr->initialize(base_partran_seq.ctl2model_cp(ctl_par), pest_scenario.get_ctl_observations());
+
+		Parameters model_pars = base_partran_seq.ctl2model_cp(ctl_par);
+		run_manager_ptr->reinitialize();
+		gsa_method->assemble_runs(*run_manager_ptr);
+	}
+	else
+	{
+		run_manager_ptr->initialize_restart(file_manager.build_filename("rns"));
+	}
 	run_manager_ptr->run();
 
-	gsa_method->calc_sen(model_run);
+	gsa_method->calc_sen(*run_manager_ptr, model_run);
 	file_manager.close_file("srw");
 	file_manager.close_file("msn");
 	file_manager.close_file("orw");

@@ -147,10 +147,10 @@ MatrixXd MorrisMethod::create_P_star_mat(int k)
 
 MorrisMethod::MorrisMethod(const vector<string> &_adj_par_name_vec,  const Parameters &_fixed_pars,
 						   const Parameters &_lower_bnd, const Parameters &_upper_bnd, const set<string> &_log_trans_pars, 
-			   int _p, int _r, RunManagerAbstract *_rm_ptr, ParamTransformSeq *_base_partran_seq_ptr, 
+			   int _p, int _r, ParamTransformSeq *_base_partran_seq_ptr, 
 			   const std::vector<std::string> &_obs_name_vec, FileManager *file_manager_ptr, const ObservationInfo *_obs_info_ptr,
 			   bool _calc_pooled_obs)
-						   : GsaAbstractBase(_rm_ptr, _base_partran_seq_ptr, _adj_par_name_vec, _fixed_pars, _lower_bnd, _upper_bnd, 
+						   : GsaAbstractBase(_base_partran_seq_ptr, _adj_par_name_vec, _fixed_pars, _lower_bnd, _upper_bnd, 
 						   _obs_name_vec, file_manager_ptr, PARAM_DIST::uniform), obs_info_ptr(_obs_info_ptr), calc_obs_sen(_calc_pooled_obs)
 {
 	initialize(_log_trans_pars, _p, _r);
@@ -277,7 +277,7 @@ Parameters MorrisMethod::get_ctl_parameters(int row)
 	return ctl_pars;
 }
 
-void MorrisMethod::assemble_runs()
+void MorrisMethod::assemble_runs(RunManagerAbstract &run_manager)
 {
 	for (int tmp_r=0; tmp_r<r; ++tmp_r)
 	{
@@ -297,12 +297,12 @@ void MorrisMethod::assemble_runs()
 			{
 				par_name = adj_par_name_vec[i-1];
 			}
-			run_id = run_manager_ptr->add_run(pars, par_name, Parameters::no_data);
+			run_id = run_manager.add_run(pars, par_name, Parameters::no_data);
 		}
 	}
 }
 
-void  MorrisMethod::calc_sen(ModelRun model_run)
+void  MorrisMethod::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run)
 {
 	ofstream &fout_morris = file_manager_ptr->open_ofile_ext("msn");
 	ofstream &fout_raw = file_manager_ptr->open_ofile_ext("raw");
@@ -327,18 +327,18 @@ void  MorrisMethod::calc_sen(ModelRun model_run)
 		obs_stats_map[it_obs] = RunningStats();
 	}
 
-	const vector<string> &run_mngr_obs_name_vec = run_manager_ptr->get_obs_name_vec();
+	const vector<string> &run_mngr_obs_name_vec = run_manager.get_obs_name_vec();
 	obs_sen_file.initialize(adj_par_name_vec, run_mngr_obs_name_vec, Observations::no_data, this);
 
 	fout_raw << "parameter_name, phi_0, phi_1, par_0, par_1, sen" << endl;
-	int n_runs = run_manager_ptr->get_nruns();
+	int n_runs = run_manager.get_nruns();
 	bool run0_ok, run1_ok;
 	string par_name_1;
 	double null_value;
 	for (int i_run=1; i_run<n_runs; ++i_run)
 	{
-		run0_ok = run_manager_ptr->get_run(i_run-1, pars0, obs0);
-		run1_ok = run_manager_ptr->get_run(i_run, pars1, obs1, par_name_1, null_value);
+		run0_ok = run_manager.get_run(i_run-1, pars0, obs0);
+		run1_ok = run_manager.get_run(i_run, pars1, obs1, par_name_1, null_value);
 		// Add run0 to obs_stats
 		if (run0_ok)
 		{

@@ -10,12 +10,12 @@ using namespace pest_utils;
 const double GsaAbstractBase::MISSING_DATA = -9999e50;
 mt19937_64 GsaAbstractBase::rand_engine = mt19937_64();
 
-GsaAbstractBase::GsaAbstractBase(RunManagerAbstract *_rm_ptr, ParamTransformSeq *_base_partran_seq_ptr,
+GsaAbstractBase::GsaAbstractBase(ParamTransformSeq *_base_partran_seq_ptr,
 		const vector<string> &_adj_par_name_vec, const Parameters &_fixed_ctl_pars,
 		const Parameters &_lower_bnd, const Parameters &_upper_bnd,
 		const std::vector<std::string> &_obs_name_vec, FileManager *_file_manager_ptr, 
 		PARAM_DIST _par_dist)
-		: run_manager_ptr(_rm_ptr), base_partran_seq_ptr(_base_partran_seq_ptr), 
+		: base_partran_seq_ptr(_base_partran_seq_ptr), 
 		  adj_par_name_vec(_adj_par_name_vec), fixed_ctl_pars(_fixed_ctl_pars),
 		  lower_bnd(_lower_bnd), upper_bnd(_upper_bnd), obs_name_vec(_obs_name_vec),
 		  file_manager_ptr(_file_manager_ptr), par_dist(_par_dist)
