@@ -384,6 +384,10 @@ int main(int argc, char* argv[])
 		}
 	}
 	cout << endl;
+	termination_ctl.termination_summary(cout);
+	cout << endl;
+	termination_ctl.termination_summary(fout_rec);
+	fout_rec << endl;
 	cout << "FINAL OPTIMISATION RESULTS" << endl << endl;
 	fout_rec << "FINAL OPTIMISATION RESULTS" << endl << endl;
 	optimum_run.full_report(cout);

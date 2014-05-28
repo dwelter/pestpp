@@ -35,8 +35,8 @@ void RestartController::process_rst_file(std::ifstream &fin, TerminationControll
 		{
 			convert_ip(tokens[1], term_ctl.noptmax);
 			convert_ip(tokens[2], term_ctl.nopt_count);
-			convert_ip(tokens[3], term_ctl.nphinoger);
-			convert_ip(tokens[4], term_ctl.nphinoger_count);
+			convert_ip(tokens[3], term_ctl.nphinored);
+			convert_ip(tokens[4], term_ctl.nphinored_count);
 			convert_ip(tokens[5], term_ctl.nrelpar);
 
 		}

@@ -29,7 +29,7 @@ class TerminationController
 {
 	friend RestartController;
 public:
-	TerminationController(int _noptmax=0, double _phiredstp=0.0, int _nphistp=0, int _nphinoger=0,
+	TerminationController(int _noptmax=0, double _phiredstp=0.0, int _nphistp=0, int _nphinored=0,
 		double _relparstp=0.0, int _nrelpar=0);
 	TerminationController(const TerminationController &rhs) {*this = rhs;}
 	bool process_iteration(double phi, double relpar);
@@ -41,12 +41,13 @@ public:
 	void save_state(std::ostream &fout);
 	void read_state(const std::string &line);
 	bool terminate() { return terminate_code; }
+	void termination_summary(std::ostream &fout);
 	~TerminationController(void);
 private:
 	int noptmax;
 	int nopt_count;
-	int nphinoger;
-	int nphinoger_count;
+	int nphinored;
+	int nphinored_count;
 	int nrelpar;
 	int nrelpar_count;
 	unsigned nphistp;
@@ -54,6 +55,7 @@ private:
 	double relparstp;
 	std::vector<double> lowest_phi;
 	bool terminate_code;
+	std::string termimate_reason;
 };
 
 #endif //TERMINATIONCONTROLLER_H_
