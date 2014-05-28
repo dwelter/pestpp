@@ -37,16 +37,13 @@ using namespace std;
 using namespace Eigen;
 using namespace::pest_utils;
 
-OutputFileWriter::OutputFileWriter(FileManager &_file_manager, const string &_case_name, bool _save_rei, bool _save_svd)
-	: file_manager(_file_manager), case_name(_case_name), save_rei(_save_rei), save_svd(_save_svd)
+OutputFileWriter::OutputFileWriter(FileManager &_file_manager, const string &_case_name, bool _save_rei, int _eigenwrite)
+: file_manager(_file_manager), case_name(_case_name), save_rei(_save_rei), eigenwrite(_eigenwrite)
 {
 
 	ofstream &fout_sen = file_manager.open_ofile_ext("sen");
 	write_sen_header(fout_sen, case_name);
-	if (save_svd)
-	{
-		file_manager.open_ofile_ext("svd");
-	}
+	file_manager.open_ofile_ext("svd");
 }
 
 void OutputFileWriter::write_rei(ofstream &fout, int iter_no, const Observations &obs, const Observations &sim, 
@@ -189,20 +186,14 @@ void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobia
 	fout << endl << endl;
 }
 
-void OutputFileWriter::save_svd_output(bool _save_svd)
+void OutputFileWriter::set_svd_output_opt(int _eigenwrite)
 {
-	save_svd = _save_svd;
-	if (save_svd)
-	{
-		file_manager.open_ofile_ext("svd");
-	}
+	eigenwrite = _eigenwrite;
 }
 
 
 void OutputFileWriter::write_svd(VectorXd &Sigma, Eigen::SparseMatrix<double> &Vt, double lambda, const Parameters &freeze_numeric_pars, VectorXd &Sigma_trunc)
 {
-	if (OutputFileWriter::save_svd)
-	{
 		ofstream &fout_svd = file_manager.get_ofstream("svd");
 		fout_svd<< "CURRENT VALUE OF MARQUARDT LAMBDA = " << lambda << " --------->" << endl << endl;
 		fout_svd << "FROZEN PARAMETERS-" << endl;
@@ -212,20 +203,19 @@ void OutputFileWriter::write_svd(VectorXd &Sigma, Eigen::SparseMatrix<double> &V
 		fout_svd << "TRUNCATED SINGULAR VALUES:-" << endl;
 		print(Sigma_trunc, fout_svd, 7);
 		fout_svd << endl << endl;
-		fout_svd << "MATRIX OF EIGENVECTORS IN SOLUTION:-" << endl;
-		print(Vt.toDense(), fout_svd, 7);
-		fout_svd << endl;
+		if (eigenwrite > 0)
+		{
+			fout_svd << "MATRIX OF EIGENVECTORS IN SOLUTION:-" << endl;
+			print(Vt.toDense(), fout_svd, 7);
+			fout_svd << endl;
+		}
 		fout_svd << "Number of singular values used in solution = " << Sigma.size() << endl << endl << endl;
-	}
 }
 
 void OutputFileWriter::write_svd_iteration(int iteration_no)
 {
-	if (OutputFileWriter::save_svd)
-	{
 		ofstream &fout_svd = file_manager.get_ofstream("svd");
 	// write head for SVD file
 		fout_svd << "------------------------------------------------------------------------------" << endl;
 		fout_svd << "OPTIMISATION ITERATION NO.        : " << iteration_no << endl << endl;
-	}
 }

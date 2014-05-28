@@ -41,20 +41,20 @@ class ParameterGroupInfo;
 class OutputFileWriter
 {
 public:
-	OutputFileWriter(FileManager &_file_manager, const std::string &_case_name, bool _save_rei=true, bool _save_svd=false);
+	OutputFileWriter(FileManager &_file_manager, const std::string &_case_name, bool _save_rei = true, int _eigenwrite=0);
 	void write_rei(std::ofstream &fout, int iter_no, const Observations &obs,
 		const Observations &sim, const ObjectiveFunc &obj_func, const Parameters &pars);
 	void write_par(std::ofstream &fout, const Parameters &pars, const TranOffset &offset_tran, const TranScale &scale_tran);
 	void read_par(std::ifstream &fin, Parameters &pars);
 	void write_sen_header(std::ostream &fout, const std::string &case_name);
-	void save_svd_output(bool _save_svd);
+	void set_svd_output_opt(int _eigenwrite);
 	void append_sen(std::ostream &fout, int iter_no, const Jacobian &jac, const ObjectiveFunc &obj_func, const ParameterGroupInfo &par_grp_info);
 	void write_svd(Eigen::VectorXd &Sigma, Eigen::SparseMatrix<double> &Vt, double lambda, const Parameters &freeze_numeric_pars, Eigen::VectorXd &Sigma_trunc);
 	void write_svd_iteration(int iteration_no);
 private:
 	FileManager &file_manager;
 	std::string case_name;
-	bool save_svd;
+	int eigenwrite;
 	bool save_rei;
 };
 #endif /* OUTPUTFILEWRITER_H */

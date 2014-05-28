@@ -171,7 +171,7 @@ int main(int argc, char* argv[])
 
 	//Initialize OutputFileWriter to hadle IO of suplementary files (.par, .par, .svd)
 	//bool save_eign = pest_scenario.get_svd_info().eigwrite > 0;
-	OutputFileWriter output_file_writer(file_manager, file_manager.get_base_filename(), true, false);
+	OutputFileWriter output_file_writer(file_manager, file_manager.get_base_filename(), true);
 
 	try {
 		performance_log.log_event("starting to process control file", 1);
@@ -186,8 +186,7 @@ int main(int argc, char* argv[])
 		throw(e);
 	}
 	pest_scenario.check_inputs();
-	bool save_eign = pest_scenario.get_svd_info().eigwrite > 0;
-	output_file_writer.save_svd_output(save_eign);
+	output_file_writer.set_svd_output_opt(pest_scenario.get_svd_info().eigwrite);
 
 	RunManagerAbstract *run_manager_ptr;
 	if (run_manager_type == RunManagerType::YAMR)
