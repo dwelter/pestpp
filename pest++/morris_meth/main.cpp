@@ -311,7 +311,8 @@ int main(int argc, char* argv[])
 	file_manager.close_file("msn");
 	file_manager.close_file("orw");
 	delete run_manager_ptr;
-	cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
-	char buf[256];
-	OperSys::gets_s(buf, sizeof(buf));
+	cout << endl << endl << "Simulation Complete..." << endl;
+	//cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
+	//char buf[256];
+	//OperSys::gets_s(buf, sizeof(buf));
 }

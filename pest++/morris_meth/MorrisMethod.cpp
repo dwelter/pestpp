@@ -332,12 +332,23 @@ void  MorrisMethod::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run
 
 	fout_raw << "parameter_name, phi_0, phi_1, par_0, par_1, sen" << endl;
 	int n_runs = run_manager.get_nruns();
-	bool run0_ok, run1_ok;
+	bool run0_ok = false;
+	bool run1_ok = false;
 	string par_name_1;
 	double null_value;
+	stringstream message;
+	cout << endl;
+	run1_ok = run_manager.get_run(0, pars1, obs1);
 	for (int i_run=1; i_run<n_runs; ++i_run)
 	{
-		run0_ok = run_manager.get_run(i_run-1, pars0, obs0);
+		std::cout << string(message.str().size(), '\b');
+		message.str("");
+		message << "processing run " << i_run+1 << " / " << n_runs;
+		std::cout << message.str();
+
+		run0_ok = run1_ok;
+		pars0 = pars1;
+		obs0 = obs1;
 		run1_ok = run_manager.get_run(i_run, pars1, obs1, par_name_1, null_value);
 		// Add run0 to obs_stats
 		if (run0_ok)
@@ -392,6 +403,7 @@ void  MorrisMethod::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run
 		}
 	}
 
+	cout << "writing output files" << endl;
 	// write standard Morris Sensitivity on the global objective function
 	fout_morris << "parameter_name, sen_mean, sen_mean_abs, sen_std_dev" << endl;
 	for (const auto &it_par : adj_par_name_vec)

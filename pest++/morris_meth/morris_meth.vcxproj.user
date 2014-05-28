@@ -6,8 +6,13 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerCommandArguments>storage5_reg /r</LocalDebuggerCommandArguments>
-    <LocalDebuggerWorkingDirectory>$(SolutionDir)\benchmarks\stor</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerCommandArguments>ecfm_draft8  /r</LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory>C:\Users\Dave\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\ECFM\master\template</LocalDebuggerWorkingDirectory>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LocalDebuggerCommandArguments>ecfm_draft8 /r</LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory>C:\Users\Dave\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\ECFM\master\template</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>

@@ -397,7 +397,8 @@ int main(int argc, char* argv[])
 	delete base_jacobian_ptr;
 	delete super_jacobian_ptr;
 	delete run_manager_ptr;
-	cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
-	char buf[256];
-	OperSys::gets_s(buf, sizeof(buf));
+	cout << endl << endl << "Simulation Complete..." << endl;
+	//cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
+	//char buf[256];
+	//OperSys::gets_s(buf, sizeof(buf));
 }

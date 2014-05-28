@@ -82,6 +82,7 @@ void RunStorage::reset(const vector<string> &_par_names, const vector<string> &_
 	buf_stream.write((char*) &o_name_size_64, sizeof(o_name_size_64));
 	buf_stream.write(serial_pnames.data(), serial_pnames.size());
 	buf_stream.write(serial_onames.data(), serial_onames.size());
+	buf_stream.flush();
 }
 
 
@@ -91,10 +92,7 @@ void RunStorage::init_restart(const std::string &_filename)
 	par_names.clear();
 	obs_names.clear();
 
-	// a file needs to exist before it can be opened it with read and write 
-	// permission.   So open it with write permission to crteate it, close 
-	// and then reopen it with read and write permisssion.
-	buf_stream.open(filename.c_str(), ios_base::out | ios_base::in | ios_base::binary | ios_base::app);
+	buf_stream.open(filename.c_str(), ios_base::out | ios_base::in | ios_base::binary | ios_base::ate);
 	assert(buf_stream.good() == true);
 	if (!buf_stream.good())
 	{
@@ -149,6 +147,7 @@ int RunStorage::increment_nruns()
 	buf_stream.seekp(0, ios_base::beg);
 	buf_stream.write((char*) &n_runs_64, sizeof(n_runs_64));
 	int n_runs = n_runs_64;
+	buf_stream.flush();
 	return n_runs;
 }
 const std::vector<string>& RunStorage::get_par_name_vec()const
@@ -179,6 +178,7 @@ streamoff RunStorage::get_stream_pos(int run_id)
 	buf_stream.write(reinterpret_cast<char*>(info_txt_buf.data()), sizeof(char)*info_txt_buf.size());
 	buf_stream.write(reinterpret_cast<char*>(&info_value), sizeof(double));
 	buf_stream.write(reinterpret_cast<const char*>(&model_pars[0]), model_pars.size()*sizeof(double));
+	buf_stream.flush();
 	return run_id;
  }
 
@@ -194,6 +194,7 @@ streamoff RunStorage::get_stream_pos(int run_id)
 	buf_stream.write(reinterpret_cast<char*>(info_txt_buf.data()), sizeof(char)*info_txt_buf.size());
 	buf_stream.write(reinterpret_cast<char*>(&info_value), sizeof(double));
 	buf_stream.write(reinterpret_cast<const char*>(&model_pars(0)), model_pars.size()*sizeof(model_pars(0)));
+	buf_stream.flush();
 	return run_id;
  }
 
@@ -219,6 +220,7 @@ void RunStorage::update_run(int run_id, const Parameters &pars, const Observatio
 	buf_stream.seekp(sizeof(char)*info_txt_length+sizeof(double), ios_base::cur);
 	buf_stream.write(reinterpret_cast<char*>(par_data.data()), par_data.size() * sizeof(double));
 	buf_stream.write(reinterpret_cast<char*>(obs_data.data()), obs_data.size() * sizeof(double));
+	buf_stream.flush();
 }
 
 void RunStorage::update_run(int run_id, const vector<char> serial_data)
@@ -233,6 +235,7 @@ void RunStorage::update_run(int run_id, const vector<char> serial_data)
 	//skip over info_txt and info_value fields
 	buf_stream.seekp(sizeof(char)*info_txt_length+sizeof(double), ios_base::cur);
 	buf_stream.write(serial_data.data(), serial_data.size());
+	buf_stream.flush();
 }
 
 
@@ -246,6 +249,7 @@ void RunStorage::update_run_failed(int run_id)
 		//update run status flag
 		buf_stream.seekp(get_stream_pos(run_id), ios_base::beg);
 		buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+		buf_stream.flush();
 	}
 }
 
@@ -256,6 +260,7 @@ void RunStorage::set_run_nfailed(int run_id, int nfail)
 	//update run status flag
 	buf_stream.seekp(get_stream_pos(run_id), ios_base::beg);
 	buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	buf_stream.flush();
 }
 
 std::int8_t RunStorage::get_run_status_native(int run_id)
