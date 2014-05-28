@@ -14,6 +14,6 @@ start /D"%CD%\master" .\pest++ %pestpp_file% /H :4006 /j
 REM start YAMR slaves
  FOR /L %%i IN (1,1,%nslaves%) DO (
  echo %%i
-  start /D"%CD%\slave%%i" .\pest++ /H anole:4006
+  start /D"%CD%\slave%%i" .\pest++ /H igsbabewlt109:4006
  )
 
