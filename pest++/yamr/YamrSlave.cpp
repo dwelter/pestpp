@@ -230,7 +230,7 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs)
 			obs_vec.data(), &ifail);
 		if(ifail != 0)
 		{
-			throw PestError("Error processing template file");
+			throw PestError("Error processing instruction file");
 		}
 		//obs_vec = ins_files.readins();
 

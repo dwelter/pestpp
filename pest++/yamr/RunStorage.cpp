@@ -127,14 +127,52 @@ void RunStorage::init_restart(const std::string &_filename)
 	beg_run0 = 4 * sizeof(std::int64_t) + serial_pnames.size() + serial_onames.size();
 	run_par_byte_size = par_names.size() * sizeof(double);
 	run_data_byte_size = run_par_byte_size + obs_names.size() * sizeof(double);
+
+	//check buffer to see if a write was improperly terminated
+	std::int8_t r_status = 0;
+	std::int8_t buf_status = 0;
+	std::int32_t buf_run_id = 0;
+
+	int end_of_runs = get_nruns();
+	buf_stream.seekg(get_stream_pos(end_of_runs), ios_base::beg);
+	buf_stream.read(reinterpret_cast<char*>(&buf_status), sizeof(buf_status));
+	if (buf_status == 1 || buf_status == 2)
+	{
+		buf_stream.read(reinterpret_cast<char*>(&buf_run_id), sizeof(buf_run_id));
+		buf_stream.read(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+		check_rec_id(buf_run_id);
+		size_t n_par = par_names.size();
+		size_t n_obs = obs_names.size();
+		vector<double> pars_vec(n_par, Parameters::no_data);
+		vector<double> obs_vec(n_obs, Observations::no_data);
+
+		buf_stream.read(reinterpret_cast<char*>(pars_vec.data()), n_par * sizeof(double));
+		buf_stream.read(reinterpret_cast<char*>(obs_vec.data()), n_obs * sizeof(double));
+
+		//write data
+		buf_stream.seekp(get_stream_pos(buf_run_id), ios_base::beg);
+		buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+		//skip over info_txt and info_value fields
+		buf_stream.seekp(sizeof(char)*info_txt_length + sizeof(double), ios_base::cur);
+		buf_stream.write(reinterpret_cast<char*>(pars_vec.data()), pars_vec.size() * sizeof(double));
+		buf_stream.write(reinterpret_cast<char*>(obs_vec.data()), obs_vec.size() * sizeof(double));
+		buf_stream.flush();
+		//reset flag for buffer at end of file to 0 to signal it is no longer relavent
+		buf_status = 0;
+		buf_stream.seekp(get_stream_pos(end_of_runs), ios_base::beg);
+		buf_stream.write(reinterpret_cast<char*>(&buf_status), sizeof(buf_status));
+		buf_stream.flush();
+	}
 }
 
 int RunStorage::get_nruns()
 {
+	streamoff init_pos = buf_stream.tellg();
 	buf_stream.seekg(0, ios_base::beg);
 	std::int64_t n_runs_64;
 	buf_stream.read((char*) &n_runs_64, sizeof(n_runs_64));
 	int n_runs = n_runs_64;
+	buf_stream.seekg(init_pos);
 	return n_runs;
 }
 
@@ -213,6 +251,20 @@ void RunStorage::update_run(int run_id, const Parameters &pars, const Observatio
 	check_rec_id(run_id);
 	vector<double> par_data(pars.get_data_vec(par_names));
 	vector<double> obs_data(obs.get_data_vec(obs_names));
+	//write data to buffer at end of file and set buffer flag to 1
+	std::int8_t buf_status = 0;
+	std::int32_t buf_run_id = run_id;
+	int end_of_runs = get_nruns();
+	buf_stream.seekp(get_stream_pos(end_of_runs), ios_base::beg);
+	buf_stream.write(reinterpret_cast<char*>(&buf_status), sizeof(buf_status));
+	buf_stream.write(reinterpret_cast<char*>(&buf_run_id), sizeof(buf_run_id));
+	buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	buf_stream.write(reinterpret_cast<char*>(par_data.data()), par_data.size() * sizeof(double));
+	buf_stream.write(reinterpret_cast<char*>(obs_data.data()), obs_data.size() * sizeof(double));
+	buf_status = 1;
+	buf_stream.seekp(get_stream_pos(end_of_runs), ios_base::beg);
+	buf_stream.write(reinterpret_cast<char*>(&buf_status), sizeof(buf_status));
+	buf_stream.flush();
 	//write data
 	buf_stream.seekp(get_stream_pos(run_id), ios_base::beg);
 	buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
@@ -220,6 +272,11 @@ void RunStorage::update_run(int run_id, const Parameters &pars, const Observatio
 	buf_stream.seekp(sizeof(char)*info_txt_length+sizeof(double), ios_base::cur);
 	buf_stream.write(reinterpret_cast<char*>(par_data.data()), par_data.size() * sizeof(double));
 	buf_stream.write(reinterpret_cast<char*>(obs_data.data()), obs_data.size() * sizeof(double));
+	buf_stream.flush();
+	//reset flag for buffer at end of file to 0 to signal it is no longer relavent
+	buf_status = 0;
+	buf_stream.seekp(get_stream_pos(end_of_runs), ios_base::beg);
+	buf_stream.write(reinterpret_cast<char*>(&buf_status), sizeof(buf_status));
 	buf_stream.flush();
 }
 
@@ -229,12 +286,30 @@ void RunStorage::update_run(int run_id, const vector<char> serial_data)
 	std::int8_t r_status = 1;
 	check_rec_size(serial_data);
 	check_rec_id(run_id);
+	//write data to buffer at end of file and set buffer flag to 2
+	std::int8_t buf_status = 0;
+	std::int32_t buf_run_id = run_id;
+	int end_of_runs = get_nruns();
+	buf_stream.seekp(get_stream_pos(end_of_runs), ios_base::beg);
+	buf_stream.write(reinterpret_cast<char*>(&buf_status), sizeof(buf_status));
+	buf_stream.write(reinterpret_cast<char*>(&buf_run_id), sizeof(buf_run_id));
+	buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	buf_stream.write(serial_data.data(), serial_data.size());
+	buf_status = 2;
+	buf_stream.seekp(get_stream_pos(end_of_runs), ios_base::beg);
+	buf_stream.write(reinterpret_cast<char*>(&buf_status), sizeof(buf_status));
+	buf_stream.flush();
 	//write data
 	buf_stream.seekp(get_stream_pos(run_id), ios_base::beg);
 	buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
 	//skip over info_txt and info_value fields
 	buf_stream.seekp(sizeof(char)*info_txt_length+sizeof(double), ios_base::cur);
 	buf_stream.write(serial_data.data(), serial_data.size());
+	buf_stream.flush();
+	//reset flag for buffer at end of file to 0 to signal it is no longer relavent
+	buf_status = 0;
+	buf_stream.seekp(get_stream_pos(end_of_runs), ios_base::beg);
+	buf_stream.write(reinterpret_cast<char*>(&buf_status), sizeof(buf_status));
 	buf_stream.flush();
 }
 
@@ -473,7 +548,7 @@ void RunStorage::check_rec_id(int run_id)
 	if ( run_id + 1 > n_runs)
 	{
 		ostringstream msg;
-		msg << "Error in RunStorage routine: run id = " << run_id << "is not valid.  Valid values are 0 to " << n_runs - 1;
+		msg << "Error in RunStorage routine: run id = " << run_id << " is not valid.  Valid values are 0 to " << n_runs - 1;
 		throw PestError(msg.str());
 	}
 }
