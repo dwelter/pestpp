@@ -159,6 +159,16 @@ void SlaveInfo::end_linpack(int sock_id)
 }
 
 
+double SlaveInfo::get_runtime_minute(int sock_id)
+{
+	auto it = slave_info_map.find(sock_id);
+	assert(it != slave_info_map.end());
+	auto &run_time = it->second.run_time;
+	double run_minutes = std::chrono::duration_cast<std::chrono::milliseconds>(run_time).count() / 6000.0;
+	return run_minutes;
+}
+
+
 double SlaveInfo::get_runtime(int sock_id)
 {
 	auto it = slave_info_map.find(sock_id);
@@ -460,8 +470,10 @@ void RunManagerYAMR::process_message(int i_sock)
 		// keep track of model run time
 		slave_info.end_run(i_sock);
 		std::time_t tt =  std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-		f_rmr << "Run received from: " << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << group_id << ", run id = " << run_id << ") at " << ctime(&tt) << endl;
+		streamsize n_prec = f_rmr.precision(2);
+		f_rmr << "Run received from: " << sock_name[0] << ":" << sock_name[1] << " at " << ctime(&tt) << "  (run time = " << slave_info.get_runtime_minute(i_sock) << " min: group id = " << group_id << ", run id = " << run_id << ")" << endl << endl;
 		//cout << "Run received from: " << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << group_id << ", run id = " << run_id << ") at " << ctime(&tt) << endl;
+		f_rmr.precision(n_prec);
 		process_model_run(i_sock, net_pack);
 
 	}
