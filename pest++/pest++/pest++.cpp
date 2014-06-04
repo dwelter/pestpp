@@ -51,7 +51,7 @@ using namespace pest_utils;
 
 int main(int argc, char* argv[])
 {
-	string version = "2.2.6";
+	string version = "2.2.7";
 	cout << endl << endl;
 	cout << "             PEST++ Version " << version << endl << endl;
 	cout << "                 by Dave Welter" << endl;
@@ -335,6 +335,7 @@ int main(int argc, char* argv[])
 		{
 			cout << "Model run failed.  No results were recorded." << endl << endl;
 			fout_rec << "Model run failed.  No results were recorded." << endl << endl;
+			exit(1);
 		}
 
 	}
