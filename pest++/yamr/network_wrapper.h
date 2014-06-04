@@ -5,7 +5,7 @@
 
 //for windows
 #ifdef OS_WIN
-  #define FD_SETSIZE 1000
+  #define FD_SETSIZE 2048
   #include <winsock2.h>
   #include <ws2tcpip.h>
   typedef int socklen_t;
