@@ -164,7 +164,7 @@ double SlaveInfo::get_runtime_minute(int sock_id)
 	auto it = slave_info_map.find(sock_id);
 	assert(it != slave_info_map.end());
 	auto &run_time = it->second.run_time;
-	double run_minutes = std::chrono::duration_cast<std::chrono::milliseconds>(run_time).count() / 6000.0;
+	double run_minutes = std::chrono::duration_cast<std::chrono::milliseconds>(run_time).count() / 60000.0;
 	return run_minutes;
 }
 

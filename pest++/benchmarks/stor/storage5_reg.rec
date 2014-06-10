@@ -1,4 +1,4 @@
-             GSA++ Version 2.2.6
+             PEST++ Version 2.2.7
 
                  by Dave Welter
      Computational Water Resource Engineering
@@ -6,3 +6,5 @@
 
 
 using control file: "storage5_reg"
+
+

@@ -240,7 +240,7 @@ int main(int argc, char* argv[])
 		pest_scenario.get_control_info().nrelpar);
 
 	RestartController restart_ctl;
-	//process restart and  reuse jacibian directives
+	//process restart and reuse jacobian directives
 	vector<string>::const_iterator it_find_j = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/j");
 	vector<string>::const_iterator it_find_r = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/r");
 	if (it_find_j != cmd_arg_vec.end())
@@ -249,6 +249,7 @@ int main(int argc, char* argv[])
 	}
 	else if (it_find_r != cmd_arg_vec.end())
 	{
+		//restart_ctl.get_restart_option() = RestartController::RestartOption::RESUME_JACOBIAN_RUNS;
 		ifstream &fin_rst = file_manager.open_ifile_ext("rst");
 		restart_ctl.process_rst_file(fin_rst, termination_ctl);
 		file_manager.close_file("rst");

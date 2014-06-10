@@ -500,7 +500,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	jacobian.build_runs(cur_solution, numeric_parname_vec, par_transform,
 		*par_group_info_ptr, *ctl_par_info_ptr, run_manager, out_ofbound_pars,
 		phiredswh_flag, calc_init_obs);
-restart_resume_jacobian_runs:
+	restart_resume_jacobian_runs:
 	// save current parameters
 	{
 	  ofstream &fout_rpb = file_manager.open_ofile_ext("rpb");
