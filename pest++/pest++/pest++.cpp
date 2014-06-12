@@ -51,7 +51,7 @@ using namespace pest_utils;
 
 int main(int argc, char* argv[])
 {
-	string version = "2.2.7";
+	string version = "2.2.8";
 	cout << endl << endl;
 	cout << "             PEST++ Version " << version << endl << endl;
 	cout << "                 by Dave Welter" << endl;
@@ -274,7 +274,7 @@ int main(int argc, char* argv[])
 	// method must be involked as pointer as the transformation sequence it is added to will
 	// take responsibility for destroying it
 	TranSVD *tran_svd = new TranSVD(pest_scenario.get_pestpp_options().get_max_n_super(), 
-		pest_scenario.get_pestpp_options().get_super_eigthres(), "SVD Super Parameter Tranformation");
+	pest_scenario.get_pestpp_options().get_super_eigthres(), "SVD Super Parameter Tranformation");
 
 	if (pest_scenario.get_pestpp_options().get_svd_pack() == PestppOptions::PROPACK)
 	{

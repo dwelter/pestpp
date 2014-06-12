@@ -21,6 +21,7 @@
 #include <string>
 #include <iostream>
 #include <iomanip>
+#include <algorithm>
 
 using namespace Eigen;
 
@@ -62,7 +63,9 @@ void SVD_EIGEN::solve_ip(Eigen::SparseMatrix<double>& A, Eigen::VectorXd &Sigma,
 	//Compute number of singular values to be used in the solution
 	int num_sing_used = 0;
 	double eig_ratio;
-	for (int i_sing = 0; i_sing < Sigma_full.size(); ++i_sing)
+
+	int kmax = (Sigma_full.size() < n_max_sing) ? Sigma_full.size() : n_max_sing;
+	for (int i_sing = 0; i_sing < kmax; ++i_sing)
 	{
 		eig_ratio = Sigma_full[i_sing] / Sigma_full[0];
 		if (eig_ratio > _eigen_thres)

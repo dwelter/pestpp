@@ -49,7 +49,7 @@ using Eigen::VectorXd;
 
 int main(int argc, char* argv[])
 {
-	string version = "2.2.7";
+	string version = "2.2.8";
 	cout << endl << endl;
 	cout << "             GSA++ Version " << version << endl << endl;
 	cout << "                 by Dave Welter" << endl;
