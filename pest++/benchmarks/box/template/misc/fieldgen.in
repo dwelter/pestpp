@@ -1,0 +1,13 @@
+grid.spc
+
+ref\zone.ref
+f
+struct.dat
+struct1
+o
+40
+10
+reals\hk_
+f
+1.0
+

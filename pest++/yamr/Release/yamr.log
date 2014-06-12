@@ -1,0 +1,40 @@
+﻿Build started 12/3/2013 3:21:17 PM.
+     1>Project "D:\Users\jwhite\git_repo\pestpp\pest++\yamr\yamr.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt linpackc.cpp network_package.cpp network_wrapper.cpp pest_error.cpp RunManagerAbstract.cpp RunManagerCWrapper.cpp RunManagerFortranWrapper.cpp RunManagerGenie.cpp RunManagerSerial.cpp RunManagerYAMR.cpp RunStorage.cpp Serializeation.cpp system_variables.cpp Transformable.cpp utilities.cpp YamrSlave.cpp
+         linpackc.cpp
+         network_package.cpp
+     1>network_package.cpp(24): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\string.h(191) : see declaration of 'strncpy'
+     1>network_package.cpp(33): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\string.h(191) : see declaration of 'strncpy'
+         network_wrapper.cpp
+         pest_error.cpp
+         RunManagerAbstract.cpp
+     1>d:\users\jwhite\git_repo\pestpp\pest++\yamr\RunStorage.h(28): fatal error C1083: Cannot open include file: 'Eigen/Dense': No such file or directory
+         RunManagerCWrapper.cpp
+     1>d:\users\jwhite\git_repo\pestpp\pest++\yamr\RunStorage.h(28): fatal error C1083: Cannot open include file: 'Eigen/Dense': No such file or directory
+         RunManagerFortranWrapper.cpp
+     1>d:\users\jwhite\git_repo\pestpp\pest++\yamr\RunStorage.h(28): fatal error C1083: Cannot open include file: 'Eigen/Dense': No such file or directory
+         RunManagerGenie.cpp
+     1>d:\users\jwhite\git_repo\pestpp\pest++\yamr\RunStorage.h(28): fatal error C1083: Cannot open include file: 'Eigen/Dense': No such file or directory
+         RunManagerSerial.cpp
+     1>d:\users\jwhite\git_repo\pestpp\pest++\yamr\RunStorage.h(28): fatal error C1083: Cannot open include file: 'Eigen/Dense': No such file or directory
+         RunManagerYAMR.cpp
+     1>d:\users\jwhite\git_repo\pestpp\pest++\yamr\RunStorage.h(28): fatal error C1083: Cannot open include file: 'Eigen/Dense': No such file or directory
+         RunStorage.cpp
+     1>d:\users\jwhite\git_repo\pestpp\pest++\yamr\RunStorage.h(28): fatal error C1083: Cannot open include file: 'Eigen/Dense': No such file or directory
+         Serializeation.cpp
+     1>d:\users\jwhite\git_repo\pestpp\pest++\yamr\Transformable.h(28): fatal error C1083: Cannot open include file: 'Eigen/Dense': No such file or directory
+         system_variables.cpp
+         Transformable.cpp
+     1>Transformable.cpp(29): fatal error C1083: Cannot open include file: 'Eigen/Dense': No such file or directory
+         utilities.cpp
+     1>utilities.cpp(270): warning C4018: '<' : signed/unsigned mismatch
+         YamrSlave.cpp
+     1>d:\users\jwhite\git_repo\pestpp\pest++\yamr\Transformable.h(28): fatal error C1083: Cannot open include file: 'Eigen/Dense': No such file or directory
+     1>Done Building Project "D:\Users\jwhite\git_repo\pestpp\pest++\yamr\yamr.vcxproj" (Build target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:10.56

@@ -1,0 +1,17 @@
+             PEST++ Version 2.2.8
+
+                 by Dave Welter
+     Computational Water Resource Engineering
+
+
+
+using control file: "pest.pst"
+
+
+OPTIMISATION ITERATION NUMBER: 1
+
+    Iteration type: base parameter solution
+    SVD Package: Eigen JacobiSVD
+    Matrix Inversion: "Jt Q J"
+    Model calls so far : 0
+

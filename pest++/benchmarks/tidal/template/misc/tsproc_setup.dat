@@ -1,0 +1,603 @@
+
+START SETTINGS
+ CONTEXT pest_prep
+DATE_FORMAT dd/mm/yyyy
+END SETTINGS
+
+START get_mul_series_ssf
+ CONTEXT pest_prep
+ file smp\obs\hds.smp
+ site O10
+ new_series_name O10oh
+ site O11
+ new_series_name O11oh
+ site O12
+ new_series_name O12oh
+ site O13
+ new_series_name O13oh
+ site O14
+ new_series_name O14oh
+ site O15
+ new_series_name O15oh
+ site O16
+ new_series_name O16oh
+ site O17
+ new_series_name O17oh
+ site O18
+ new_series_name O18oh
+ site O19
+ new_series_name O19oh
+ site O110
+ new_series_name O110oh
+ site O111
+ new_series_name O111oh
+ site O112
+ new_series_name O112oh
+ site O113
+ new_series_name O113oh
+ site O114
+ new_series_name O114oh
+ site O115
+ new_series_name O115oh
+ site O116
+ new_series_name O116oh
+ site O117
+ new_series_name O117oh
+ site O118
+ new_series_name O118oh
+ site O119
+ new_series_name O119oh
+ site O30
+ new_series_name O30oh
+ site O31
+ new_series_name O31oh
+ site O32
+ new_series_name O32oh
+ site O33
+ new_series_name O33oh
+ site O34
+ new_series_name O34oh
+ site O35
+ new_series_name O35oh
+ site O36
+ new_series_name O36oh
+ site O37
+ new_series_name O37oh
+ site O38
+ new_series_name O38oh
+ site O39
+ new_series_name O39oh
+ site O310
+ new_series_name O310oh
+ site O311
+ new_series_name O311oh
+ site O312
+ new_series_name O312oh
+ site O313
+ new_series_name O313oh
+ site O314
+ new_series_name O314oh
+ site O315
+ new_series_name O315oh
+ site O316
+ new_series_name O316oh
+ site O317
+ new_series_name O317oh
+ site O318
+ new_series_name O318oh
+ site O319
+ new_series_name O319oh
+END get_mul_series_ssf
+
+START get_mul_series_ssf
+ CONTEXT all
+ file smp\mod\hds.smp
+ site O10
+ new_series_name O10sh
+ site O11
+ new_series_name O11sh
+ site O12
+ new_series_name O12sh
+ site O13
+ new_series_name O13sh
+ site O14
+ new_series_name O14sh
+ site O15
+ new_series_name O15sh
+ site O16
+ new_series_name O16sh
+ site O17
+ new_series_name O17sh
+ site O18
+ new_series_name O18sh
+ site O19
+ new_series_name O19sh
+ site O110
+ new_series_name O110sh
+ site O111
+ new_series_name O111sh
+ site O112
+ new_series_name O112sh
+ site O113
+ new_series_name O113sh
+ site O114
+ new_series_name O114sh
+ site O115
+ new_series_name O115sh
+ site O116
+ new_series_name O116sh
+ site O117
+ new_series_name O117sh
+ site O118
+ new_series_name O118sh
+ site O119
+ new_series_name O119sh
+ site O30
+ new_series_name O30sh
+ site O31
+ new_series_name O31sh
+ site O32
+ new_series_name O32sh
+ site O33
+ new_series_name O33sh
+ site O34
+ new_series_name O34sh
+ site O35
+ new_series_name O35sh
+ site O36
+ new_series_name O36sh
+ site O37
+ new_series_name O37sh
+ site O38
+ new_series_name O38sh
+ site O39
+ new_series_name O39sh
+ site O310
+ new_series_name O310sh
+ site O311
+ new_series_name O311sh
+ site O312
+ new_series_name O312sh
+ site O313
+ new_series_name O313sh
+ site O314
+ new_series_name O314sh
+ site O315
+ new_series_name O315sh
+ site O316
+ new_series_name O316sh
+ site O317
+ new_series_name O317sh
+ site O318
+ new_series_name O318sh
+ site O319
+ new_series_name O319sh
+END get_mul_series_ssf
+
+START series_equation
+ CONTEXT all
+ new_series_name O10
+ equation o10sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O11
+ equation o11sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O12
+ equation o12sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O13
+ equation o13sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O14
+ equation o14sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O15
+ equation o15sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O16
+ equation o16sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O17
+ equation o17sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O18
+ equation o18sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O19
+ equation o19sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O110
+ equation o110sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O111
+ equation o111sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O112
+ equation o112sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O113
+ equation o113sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O114
+ equation o114sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O115
+ equation o115sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O116
+ equation o116sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O117
+ equation o117sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O118
+ equation o118sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O119
+ equation o119sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O30
+ equation o30sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O31
+ equation o31sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O32
+ equation o32sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O33
+ equation o33sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O34
+ equation o34sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O35
+ equation o35sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O36
+ equation o36sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O37
+ equation o37sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O38
+ equation o38sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O39
+ equation o39sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O310
+ equation o310sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O311
+ equation o311sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O312
+ equation o312sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O313
+ equation o313sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O314
+ equation o314sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O315
+ equation o315sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O316
+ equation o316sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O317
+ equation o317sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O318
+ equation o318sh
+END series_equation
+
+START series_equation
+ CONTEXT all
+ new_series_name O319
+ equation o319sh
+END series_equation
+
+START LIST_OUTPUT
+CONTEXT all
+ FILE processed.dat
+ SERIES_NAME o10
+ SERIES_NAME o11
+ SERIES_NAME o12
+ SERIES_NAME o13
+ SERIES_NAME o14
+ SERIES_NAME o15
+ SERIES_NAME o16
+ SERIES_NAME o17
+ SERIES_NAME o18
+ SERIES_NAME o19
+ SERIES_NAME o110
+ SERIES_NAME o111
+ SERIES_NAME o112
+ SERIES_NAME o113
+ SERIES_NAME o114
+ SERIES_NAME o115
+ SERIES_NAME o116
+ SERIES_NAME o117
+ SERIES_NAME o118
+ SERIES_NAME o119
+ SERIES_NAME o30
+ SERIES_NAME o31
+ SERIES_NAME o32
+ SERIES_NAME o33
+ SERIES_NAME o34
+ SERIES_NAME o35
+ SERIES_NAME o36
+ SERIES_NAME o37
+ SERIES_NAME o38
+ SERIES_NAME o39
+ SERIES_NAME o310
+ SERIES_NAME o311
+ SERIES_NAME o312
+ SERIES_NAME o313
+ SERIES_NAME o314
+ SERIES_NAME o315
+ SERIES_NAME o316
+ SERIES_NAME o317
+ SERIES_NAME o318
+ SERIES_NAME o319
+ SERIES_FORMAT long
+END LIST_OUTPUT
+
+START write_pest_files
+ CONTEXT pest_prep
+ template_file tpl\k_1.ref.tpl
+ model_input_file model\ref\k_1.ref
+ template_file tpl\k_2.ref.tpl
+ model_input_file model\ref\k_2.ref
+ template_file tpl\k_3.ref.tpl
+ model_input_file model\ref\k_3.ref
+ template_file tpl\sy_1.ref.tpl
+ model_input_file model\ref\sy_1.ref
+ template_file tpl\s_2.ref.tpl
+ model_input_file model\ref\s_2.ref
+ template_file tpl\s_3.ref.tpl
+ model_input_file model\ref\s_3.ref
+ new_instruction_file tsproc.ins
+ model_command_line model.bat
+ truncated_svd 1.0e-3
+ parameter_data_file misc\par.info
+ parameter_data_file misc\par.info
+ new_pest_control_file pest.pst
+ observation_series_name o10oh
+ model_series_name o10
+ series_weights_equation 1.0
+ observation_series_name o11oh
+ model_series_name o11
+ series_weights_equation 1.0
+ observation_series_name o12oh
+ model_series_name o12
+ series_weights_equation 1.0
+ observation_series_name o13oh
+ model_series_name o13
+ series_weights_equation 1.0
+ observation_series_name o14oh
+ model_series_name o14
+ series_weights_equation 1.0
+ observation_series_name o15oh
+ model_series_name o15
+ series_weights_equation 1.0
+ observation_series_name o16oh
+ model_series_name o16
+ series_weights_equation 1.0
+ observation_series_name o17oh
+ model_series_name o17
+ series_weights_equation 1.0
+ observation_series_name o18oh
+ model_series_name o18
+ series_weights_equation 1.0
+ observation_series_name o19oh
+ model_series_name o19
+ series_weights_equation 1.0
+ observation_series_name o110oh
+ model_series_name o110
+ series_weights_equation 1.0
+ observation_series_name o111oh
+ model_series_name o111
+ series_weights_equation 1.0
+ observation_series_name o112oh
+ model_series_name o112
+ series_weights_equation 1.0
+ observation_series_name o113oh
+ model_series_name o113
+ series_weights_equation 1.0
+ observation_series_name o114oh
+ model_series_name o114
+ series_weights_equation 1.0
+ observation_series_name o115oh
+ model_series_name o115
+ series_weights_equation 1.0
+ observation_series_name o116oh
+ model_series_name o116
+ series_weights_equation 1.0
+ observation_series_name o117oh
+ model_series_name o117
+ series_weights_equation 1.0
+ observation_series_name o118oh
+ model_series_name o118
+ series_weights_equation 1.0
+ observation_series_name o119oh
+ model_series_name o119
+ series_weights_equation 1.0
+ observation_series_name o30oh
+ model_series_name o30
+ series_weights_equation 1.0
+ observation_series_name o31oh
+ model_series_name o31
+ series_weights_equation 1.0
+ observation_series_name o32oh
+ model_series_name o32
+ series_weights_equation 1.0
+ observation_series_name o33oh
+ model_series_name o33
+ series_weights_equation 1.0
+ observation_series_name o34oh
+ model_series_name o34
+ series_weights_equation 1.0
+ observation_series_name o35oh
+ model_series_name o35
+ series_weights_equation 1.0
+ observation_series_name o36oh
+ model_series_name o36
+ series_weights_equation 1.0
+ observation_series_name o37oh
+ model_series_name o37
+ series_weights_equation 1.0
+ observation_series_name o38oh
+ model_series_name o38
+ series_weights_equation 1.0
+ observation_series_name o39oh
+ model_series_name o39
+ series_weights_equation 1.0
+ observation_series_name o310oh
+ model_series_name o310
+ series_weights_equation 1.0
+ observation_series_name o311oh
+ model_series_name o311
+ series_weights_equation 1.0
+ observation_series_name o312oh
+ model_series_name o312
+ series_weights_equation 1.0
+ observation_series_name o313oh
+ model_series_name o313
+ series_weights_equation 1.0
+ observation_series_name o314oh
+ model_series_name o314
+ series_weights_equation 1.0
+ observation_series_name o315oh
+ model_series_name o315
+ series_weights_equation 1.0
+ observation_series_name o316oh
+ model_series_name o316
+ series_weights_equation 1.0
+ observation_series_name o317oh
+ model_series_name o317
+ series_weights_equation 1.0
+ observation_series_name o318oh
+ model_series_name o318
+ series_weights_equation 1.0
+ observation_series_name o319oh
+ model_series_name o319
+ series_weights_equation 1.0
+END write_pest_files

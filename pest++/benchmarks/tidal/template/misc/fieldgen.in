@@ -1,0 +1,13 @@
+misc\grid.spc
+
+misc\zone.ref
+f
+misc\structure.dat
+struct1
+o
+10
+10
+reals\real
+f
+1000
+
