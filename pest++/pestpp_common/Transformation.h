@@ -298,7 +298,7 @@ public:
 	virtual void reverse(Transformable &data);
 	void insert(const string &item_name, double item_value)
 	    {/*can't insert into SVD.  This is intentionally a no-op*/};
-	virtual ~TranSVD(){};
+	virtual ~TranSVD();
 	virtual void print(ostream &os) const;
 	virtual bool is_one_to_one() const {return false;}
 	virtual TranSVD* clone() {return new TranSVD(*this);}

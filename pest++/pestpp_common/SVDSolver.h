@@ -54,11 +54,13 @@ public:
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, 
 		const DynamicRegularization *regul_scheme_ptr, OutputFileWriter &_output_file_writer, RestartController &_restart_controller,
-		SVDSolver::MAT_INV _mat_inv, PerformanceLog *_performance_log, const std::vector<double> &_base_lambda_vec, const string &description = string("base parameter solution"));
+		SVDSolver::MAT_INV _mat_inv, PerformanceLog *_performance_log, const std::vector<double> &_base_lambda_vec, 
+		const string &description = string("base parameter solution"), bool _phiredswh_flag = false, bool _save_next_jacobian = true);
 	virtual ModelRun& solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter, ModelRun &cur_run, ModelRun &optimum_run);
 	virtual void iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs=false);
 	ModelRun &cur_model_run() {return cur_solution;}
 	virtual void set_svd_package(PestppOptions::SVD_PACK _svd_pack);
+	bool get_phiredswh_flag() { return phiredswh_flag;}
 	virtual ParameterGroupInfo get_parameter_group_info() const { return *par_group_info_ptr; }
 	virtual ~SVDSolver(void);
 protected:
@@ -88,8 +90,6 @@ protected:
 	Jacobian &jacobian;
 	bool phiredswh_flag;
 	bool save_next_jacobian;
-	double prev_phi_percent;
-	int num_no_descent;
 	double best_lambda;
 	OutputFileWriter &output_file_writer;
 	RestartController &restart_controller;

@@ -1,0 +1,61 @@
+Change History
+
+PEST++software version 2.2.4 as of March 31, 2014:
+
+Changes made from version 2.2.2 to 2.2.4
+	1)Updated GENIE
+	2) Added JtQJ as default matrix to be inverted
+	3) Updated mehtod to handle frozen paraemters
+
+Changes made from version 2.2.1 to 2.2.2
+	1) Added performance output file(.pfm) to track execution time
+	2) Added input option MAX_RUN_FAIL
+	3) Added input option SUPER_RELPAMAX
+	
+
+Changes made from version 2.2.0 to 2.2.1
+   	1) Refactored parameter freezing algorithm to be more consistent with that of PEST
+   	2) Imlimented JtQJ solution with Scaling - this is now the default as it is more tolerant of noise
+   	3) Impilmented chain rule to transform differentials
+
+Changes made from version 1.1.2 to 2.2.0
+        1) Added supprt for .rei, bpa, .sen and .svd output files
+        2) Switched from Rotation Factor to Marquardt Lambda
+        3) Optimized code for large problems
+           - spped optimizations
+           - matricies now stored using Eigne's sparce storage format
+        4) Replaced LAPACK++ with Eigen
+        5) Added YAMR run mamanger
+        6) Added Linux makefiles
+        7) Added support for /j command line option for reusing an existing jacobian file
+        
+
+Changes made from version 1.1.3 to 1.1.4
+	1) Save parameters when NOPTMAX = 0
+	2) Added output to *.sen, *.par# and *.rei files
+
+
+Changes made from version 1.1.2 to 1.1.3
+	1) Report version number when no control file is entered on the command line
+	2) Starts when .pst extension is included on the command line
+	3) Enhanced super parameter formulation - super parameters changed to represent changes in parameters
+
+Changes made from version 1.1.1 to 1.1.2
+	1) Added support for NOPTMAX = 0
+	
+Changes made from version 1.1.0 to 1.1.1
+	1) Fixed bug in processing instruction files
+	
+Changes made from version 1.0.1 to 1.1.0
+	1) Fixed bug in calculating sensitivities of reularization information
+	2) Fixed bug in calculating upgrade vector
+	3) Refactored code to facilitate future work in global sensitivity analysis
+        4) Removed dependency on libiomp5md.dll
+
+Changes made from version 1.0.0 to 1.0.1:
+	1) Changes to PROPACK implementation
+	2) Changes to auto normalization implementation
+	3) Reporting of SVD solver in output
+
+	
+	

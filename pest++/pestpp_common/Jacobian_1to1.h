@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <vector>
 #include <string>
+#include <iostream>
 #include "Transformable.h"
 #include "Jacobian.h"
 
@@ -28,8 +29,11 @@ public:
 	virtual bool process_runs(vector<string> numeric_par_names, ParamTransformSeq &par_transform,
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
 		RunManagerAbstract &run_manager,  const PriorInformation &prior_info, set<string> &out_of_bound_par, bool phiredswh_flag, bool calc_init_obs);
+	virtual void report_errors(std::ostream &fout);
 	virtual ~Jacobian_1to1();
 protected:
+	Parameters failed_ctl_parameters;
+	Parameters failed_to_increment_parmaeters;
 	bool forward_diff(const string &par_name, double derivative_par_value, 
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, const ParamTransformSeq &par_trans, double &new_par_val);
 	bool central_diff(const string &par_name, double derivative_par_value, 

@@ -21,6 +21,8 @@
 #include <vector>
 #include <set>
 #include <fstream>
+#include <iostream>
+#include <iomanip>
 #include <algorithm>
 #include "Jacobian_1to1.h"
 #include "Transformable.h"
@@ -53,6 +55,7 @@ bool Jacobian_1to1::build_runs(ModelRun &init_model_run, vector<string> numeric_
 	run_manager.reinitialize(file_manager.build_filename("rnj"));
 
 	failed_parameter_names.clear();
+	failed_ctl_parameters.clear();
 	// add base run
 	int run_id = run_manager.add_run(model_parameters, "", 0);
 	//if base run is has already been complete, update it and mark it as complete
@@ -97,6 +100,7 @@ bool Jacobian_1to1::build_runs(ModelRun &init_model_run, vector<string> numeric_
 		else 
 		{
 			failed_parameter_names.insert(i_name);
+			failed_to_increment_parmaeters.insert(i_name, derivative_par_value);
 		}
 	}
 	ofstream &fout_restart = file_manager.get_ofstream("rst");
@@ -193,6 +197,7 @@ bool Jacobian_1to1::process_runs(vector<string> numeric_par_names, ParamTransfor
 			else
 			{
 				failed_parameter_names.insert(cur_par_name);
+				failed_ctl_parameters.insert(cur_par_name, cur_numeric_par_value);
 			}
 			run_list.clear();
 		}
@@ -337,4 +342,48 @@ bool Jacobian_1to1::out_of_bounds(const Parameters &ctl_parameters,
 		}
 	}
 	return out_of_bounds;
+}
+
+void Jacobian_1to1::report_errors(std::ostream &fout)
+{
+
+	failed_to_increment_parmaeters.insert("insert1", 1.12312312321);
+	failed_to_increment_parmaeters.insert("insert2", 1.12312312321);
+	if (failed_to_increment_parmaeters.size() > 0)
+	{
+		fout << "    Parameters that went out of bounds while comuting jacobian" << endl;
+		fout << "      Parameter" << endl;
+		fout << "        Name" << endl;
+		fout << "      ----------" << endl;
+	}
+	for (const auto & ipar : failed_to_increment_parmaeters)
+	{
+		fout << right;
+		fout << "  " << setw(12) << ipar.first << endl;
+	}
+
+	if (failed_to_increment_parmaeters.size() > 0)
+	{
+		fout << endl;
+	}
+
+	failed_ctl_parameters.insert("failed1", 4.312321);
+	failed_ctl_parameters.insert("failed2", 5.2321);
+	if (failed_ctl_parameters.size() > 0)
+	{
+		fout << "    Parameters whose perturbation runs failed while computing jacobian" << endl;
+		fout << "      Parameter     Failed" << endl;
+		fout << "        Name        Value" << endl;
+		fout << "      ----------  ------------" << endl;
+	}
+
+	for (const auto & ipar : failed_ctl_parameters)
+	{
+		fout << right;
+		fout << "  " << setw(12) << ipar.first;
+		fout << right;
+		fout << "  " << setw(12) << ipar.second << endl;
+	}
+
+
 }

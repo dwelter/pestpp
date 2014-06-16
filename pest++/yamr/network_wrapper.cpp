@@ -28,18 +28,18 @@ void w_init()
 int w_close(int sockfd) 
 {
   int n;
-    #ifdef OS_WIN
+	#ifdef OS_WIN
 	shutdown(sockfd, SD_BOTH);
 	if ((n = closesocket(sockfd)) != 0)
 	{
 		cerr << "error closing socket: "  << w_get_error_msg() << endl;  
 	}
 	return n;
-    #endif
-    #ifdef OS_LINUX
+	#endif
+	#ifdef OS_LINUX
 	n = shutdown(sockfd, 2);
-    #endif
-    return n;
+	#endif
+	return n;
 }
 void w_cleanup()
 {
@@ -296,12 +296,12 @@ int w_select(int numfds, fd_set *readfds, fd_set *writefds,
 int w_memcpy_s(void *dest, size_t numberOfElements, const void *src, size_t count)
 {
 	int err = 0;
-        #ifdef OS_WIN
+		#ifdef OS_WIN
 	err = memcpy_s(dest, numberOfElements, src, count);
-        #endif
-        #ifdef OS_LINUX
+		#endif
+		#ifdef OS_LINUX
 	memcpy(dest, src, count);
-        #endif
+		#endif
 	if (err) {
 		cerr << "Error executing memcpy" << endl;
 	}

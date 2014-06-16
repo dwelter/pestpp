@@ -708,6 +708,11 @@ Parameters TranSVD::map_basepar_to_super(const Parameters &base_pars)
 	return super_pars;
 }
 
+TranSVD::~TranSVD()
+{
+	delete tran_svd_pack;
+}
+
 void TranSVD::print(ostream &os) const
 {
 	os << "Transformation name = " << name << "; (type=TranSVD)" << endl; 

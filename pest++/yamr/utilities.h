@@ -50,7 +50,7 @@ namespace pest_utils
 	to true, a PestConversionError exception is thrown
 	*/
 	template<typename T>
-	inline void convert_ip(string const& s, T& x, bool failIfLeftoverChars = true)
+	inline void convert_ip(string const &s, T& x, bool failIfLeftoverChars = true)
 	{
 		istringstream i(s);
 		char c;

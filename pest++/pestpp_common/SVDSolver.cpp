@@ -1,8 +1,8 @@
-/*  
+/*
 	© Copyright 2012, David Welter
-	
+
 	This file is part of PEST++.
-   
+
 	PEST++ is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
 	the Free Software Foundation, either version 3 of the License, or
@@ -15,7 +15,7 @@
 
 	You should have received a copy of the GNU General Public License
 	along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
-*/
+	*/
 #include <fstream>
 #include <iostream>
 #include <iomanip>
@@ -45,11 +45,11 @@ SVDSolver::SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, con
 	const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 	const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian,
 	const DynamicRegularization *_regul_scheme_ptr, OutputFileWriter &_output_file_writer, RestartController &_restart_controller, SVDSolver::MAT_INV _mat_inv,
-	PerformanceLog *_performance_log, const vector<double> &_base_lambda_vec, const string &_description)
+	PerformanceLog *_performance_log, const vector<double> &_base_lambda_vec, const string &_description, bool _phiredswh_flag, bool _save_next_jacobian)
 	: ctl_info(_ctl_info), svd_info(_svd_info), par_group_info_ptr(_par_group_info_ptr), ctl_par_info_ptr(_ctl_par_info_ptr), obs_info_ptr(_obs_info), obj_func(_obj_func),
 	file_manager(_file_manager), observations_ptr(_observations), par_transform(_par_transform),
-	cur_solution(_obj_func, *_observations), phiredswh_flag(false), save_next_jacobian(true), prior_info_ptr(_prior_info_ptr), jacobian(_jacobian), prev_phi_percent(0.0),
-	num_no_descent(0), regul_scheme(*_regul_scheme_ptr), output_file_writer(_output_file_writer), mat_inv(_mat_inv), description(_description), best_lambda(20.0),
+	cur_solution(_obj_func, *_observations), phiredswh_flag(_phiredswh_flag), save_next_jacobian(_save_next_jacobian), prior_info_ptr(_prior_info_ptr), jacobian(_jacobian),
+	regul_scheme(*_regul_scheme_ptr), output_file_writer(_output_file_writer), mat_inv(_mat_inv), description(_description), best_lambda(20.0),
 	restart_controller(_restart_controller), performance_log(_performance_log), base_lambda_vec(_base_lambda_vec)
 {
 	svd_package = new SVD_EIGEN();
@@ -57,7 +57,7 @@ SVDSolver::SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, con
 
 void SVDSolver::set_svd_package(PestppOptions::SVD_PACK _svd_pack)
 {
-	if(_svd_pack == PestppOptions::PROPACK){
+	if (_svd_pack == PestppOptions::PROPACK){
 		delete svd_package;
 		svd_package = new SVD_PROPACK;
 	}
@@ -69,14 +69,12 @@ void SVDSolver::set_svd_package(PestppOptions::SVD_PACK _svd_pack)
 	svd_package->set_eign_thres(svd_info.eigthresh);
 }
 
-
 SVDSolver::~SVDSolver(void)
 {
 	delete svd_package;
 }
 
-
-ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter, 
+ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter,
 	ModelRun &cur_run, ModelRun &optimum_run)
 {
 	ostream &os = file_manager.rec_ofstream();
@@ -85,17 +83,17 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 	// Start Solution iterations
 	bool save_nextjac = false;
 	string matrix_inv = (mat_inv == MAT_INV::Q12J) ? "\"Q 1/2 J\"" : "\"Jt Q J\"";
-	for (int iter_num=1; iter_num<=max_iter;++iter_num) {
-		int global_iter_num = termination_ctl.get_iteration_number()+1;
+	for (int iter_num = 1; iter_num <= max_iter; ++iter_num) {
+		int global_iter_num = termination_ctl.get_iteration_number() + 1;
 		cout << "OPTIMISATION ITERATION NUMBER: " << global_iter_num << endl;
-		os   << "OPTIMISATION ITERATION NUMBER: " << global_iter_num << endl << endl;
+		os << "OPTIMISATION ITERATION NUMBER: " << global_iter_num << endl << endl;
 		cout << "  Iteration type: " << get_description() << endl;
-		os   << "    Iteration type: " << get_description() << endl;
+		os << "    Iteration type: " << get_description() << endl;
 		cout << "  SVD Package: " << svd_package->description << endl;
-		os   << "    SVD Package: " << svd_package->description << endl;
+		os << "    SVD Package: " << svd_package->description << endl;
 		cout << "  Matrix Inversion: " << matrix_inv << endl;
-		os   << "    Matrix Inversion: " << matrix_inv << endl;
-		os   << "    Model calls so far : " << run_manager.get_total_runs() << endl;
+		os << "    Matrix Inversion: " << matrix_inv << endl;
+		os << "    Model calls so far : " << run_manager.get_total_runs() << endl;
 		fout_restart << "start_iteration " << iter_num << "  " << global_iter_num << endl;
 		cout << endl;
 		os << endl;
@@ -124,8 +122,8 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 
 		// rei file for this iteration
 		filename << "rei" << global_iter_num;
-		output_file_writer.write_rei(file_manager.open_ofile_ext(filename.str()), global_iter_num, 
-			*(cur_solution.get_obj_func_ptr()->get_obs_ptr()), 
+		output_file_writer.write_rei(file_manager.open_ofile_ext(filename.str()), global_iter_num,
+			*(cur_solution.get_obj_func_ptr()->get_obs_ptr()),
 			cur_solution.get_obs(), *(cur_solution.get_obj_func_ptr()),
 			cur_solution.get_ctl_pars());
 		file_manager.close_file(filename.str());
@@ -136,8 +134,8 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 
 		filename.str(""); // reset the stringstream
 		filename << "par" << global_iter_num;
-		output_file_writer.write_par(file_manager.open_ofile_ext(filename.str()), cur_solution.get_ctl_pars(), *(par_transform.get_offset_ptr()), 
-				*(par_transform.get_scale_ptr()));
+		output_file_writer.write_par(file_manager.open_ofile_ext(filename.str()), cur_solution.get_ctl_pars(), *(par_transform.get_offset_ptr()),
+			*(par_transform.get_scale_ptr()));
 		file_manager.close_file(filename.str());
 		if (save_nextjac) {
 			jacobian.save();
@@ -147,14 +145,14 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 			optimum_run.set_ctl_parameters(cur_solution.get_ctl_pars());
 			optimum_run.set_observations(cur_solution.get_obs());
 			// save new optimum parameters to .par file
-			output_file_writer.write_par(file_manager.open_ofile_ext("bpa"), optimum_run.get_ctl_pars(), *(par_transform.get_offset_ptr()), 
+			output_file_writer.write_par(file_manager.open_ofile_ext("bpa"), optimum_run.get_ctl_pars(), *(par_transform.get_offset_ptr()),
 				*(par_transform.get_scale_ptr()));
 			file_manager.close_file("bpa");
 			// save new optimum residuals to .rei file
-			output_file_writer.write_rei(file_manager.open_ofile_ext("rei"), global_iter_num, 
-			*(optimum_run.get_obj_func_ptr()->get_obs_ptr()), 
-			optimum_run.get_obs(), *(optimum_run.get_obj_func_ptr()),
-			optimum_run.get_ctl_pars());
+			output_file_writer.write_rei(file_manager.open_ofile_ext("rei"), global_iter_num,
+				*(optimum_run.get_obj_func_ptr()->get_obs_ptr()),
+				optimum_run.get_obs(), *(optimum_run.get_obj_func_ptr()),
+				optimum_run.get_ctl_pars());
 			file_manager.close_file("rei");
 			jacobian.save();
 			// jacobian calculated next iteration will be at the current parameters and
@@ -169,8 +167,8 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 	return cur_solution;
 }
 
-VectorXd SVDSolver::calc_residual_corrections(const Jacobian &jacobian, const Parameters &del_numeric_pars, 
-							   const vector<string> obs_name_vec)
+VectorXd SVDSolver::calc_residual_corrections(const Jacobian &jacobian, const Parameters &del_numeric_pars,
+	const vector<string> obs_name_vec)
 {
 	VectorXd del_residuals;
 	if (del_numeric_pars.size() > 0)
@@ -256,7 +254,7 @@ void SVDSolver::calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSq
 	output_file_writer.write_svd(Sigma, Vt, lambda, prev_frozen_active_ctl_pars, Sigma_trunc);
 
 	VectorXd Sigma_inv = Sigma.array().inverse();
-	
+
 	performance_log->log_event("commencing linear algebra multiplication to compute ugrade");
 	Eigen::VectorXd upgrade_vec;
 	upgrade_vec = S * (Vt.transpose() * (Sigma_inv.asDiagonal() * (U.transpose() * ((jac * S).transpose()* (q_mat  * (Residuals + del_residuals))))));
@@ -271,7 +269,7 @@ void SVDSolver::calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSq
 
 	string *name_ptr;
 	auto it_nf_end = pars_nf.end();
-	for (int i = 0; i<numeric_par_names.size(); ++i)
+	for (int i = 0; i < numeric_par_names.size(); ++i)
 	{
 		name_ptr = &(numeric_par_names[i]);
 		upgrade_active_ctl_del_pars[*name_ptr] = upgrade_vec(i);
@@ -295,7 +293,6 @@ void SVDSolver::calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSq
 		active_ctl_upgrade_pars[ipar.first] = ipar.second;
 	}
 }
-
 
 void SVDSolver::calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
 	const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
@@ -330,14 +327,14 @@ void SVDSolver::calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqr
 	performance_log->log_event("commencing SVD factorization");
 	svd_package->solve_ip(SqrtQ_J, Sigma, U, Vt, Sigma_trunc);
 	performance_log->log_event("SVD factorization complete");
-	//Only add lambda to singular values above the threshhold 
+	//Only add lambda to singular values above the threshhold
 	if (marquardt_type == MarquardtMatrix::IDENT)
 	{
 		Sigma = Sigma.array() + lambda;
 	}
 	else
 	{
-		//this needs checking 
+		//this needs checking
 		Sigma = Sigma.array() + (Sigma.cwiseProduct(Sigma).array() * lambda).sqrt();
 	}
 	output_file_writer.write_svd(Sigma, Vt, lambda, prev_frozen_active_ctl_pars, Sigma_trunc);
@@ -354,10 +351,10 @@ void SVDSolver::calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqr
 	//tranfere newly computed componets of the ugrade vector to upgrade.svd_uvec
 	upgrade_active_ctl_del_pars.clear();
 	grad_active_ctl_del_pars.clear();
-	
+
 	string *name_ptr;
 	auto it_nf_end = pars_nf.end();
-	for (int i = 0; i<numeric_par_names.size(); ++i)
+	for (int i = 0; i < numeric_par_names.size(); ++i)
 	{
 		name_ptr = &(numeric_par_names[i]);
 		upgrade_active_ctl_del_pars[*name_ptr] = upgrade_vec(i);
@@ -391,7 +388,7 @@ void SVDSolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_active
 	Parameters new_frozen_active_ctl_pars;
 
 	upgrade_active_ctl_pars.clear();
-	// define a function type for upgrade methods 
+	// define a function type for upgrade methods
 	typedef void(SVDSolver::*UPGRADE_FUNCTION) (const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
 		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
 		const Parameters &base_ctl_pars, const Parameters &prev_frozen_ctl_pars,
@@ -404,7 +401,6 @@ void SVDSolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_active
 	{
 		calc_lambda_upgrade = &SVDSolver::calc_lambda_upgrade_vecQ12J;
 	}
-
 
 	// need to remove parameters frozen due to failed jacobian runs when calling calc_lambda_upgrade_vec
 	//Freeze Parameters at the boundary whose ugrade vector and gradient both head out of bounds
@@ -500,13 +496,13 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	jacobian.build_runs(cur_solution, numeric_parname_vec, par_transform,
 		*par_group_info_ptr, *ctl_par_info_ptr, run_manager, out_ofbound_pars,
 		phiredswh_flag, calc_init_obs);
-	restart_resume_jacobian_runs:
+restart_resume_jacobian_runs:
 	// save current parameters
 	{
-	  ofstream &fout_rpb = file_manager.open_ofile_ext("rpb");
-	  output_file_writer.write_par(fout_rpb, cur_solution.get_ctl_pars(), *(par_transform.get_offset_ptr()),
-		*(par_transform.get_scale_ptr()));
-	  file_manager.close_file("rpb");
+		ofstream &fout_rpb = file_manager.open_ofile_ext("rpb");
+		output_file_writer.write_par(fout_rpb, cur_solution.get_ctl_pars(), *(par_transform.get_offset_ptr()),
+			*(par_transform.get_scale_ptr()));
+		file_manager.close_file("rpb");
 	}
 	// save state of termination controller
 	termination_ctl.save_state(fout_restart);
@@ -523,7 +519,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	// save jacobian
 	jacobian.save("jac");
 	// sen file for this iteration
-	output_file_writer.append_sen(file_manager.sen_ofstream(), termination_ctl.get_iteration_number()+1, jacobian, *(cur_solution.get_obj_func_ptr()), get_parameter_group_info());
+	output_file_writer.append_sen(file_manager.sen_ofstream(), termination_ctl.get_iteration_number() + 1, jacobian, *(cur_solution.get_obj_func_ptr()), get_parameter_group_info());
 
 	//Update parameters and observations for base run
 	{
@@ -533,9 +529,8 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 		par_transform.model2ctl_ip(tmp_pars);
 		cur_solution.update_ctl(tmp_pars, tmp_obs);
 	}
-	restart_reuse_jacoboian:
+restart_reuse_jacoboian:
 	cout << endl;
-
 
 	//Freeze Parameter for which the jacobian could not be calculated
 	auto &failed_jac_pars_names = jacobian.get_failed_parameter_names();
@@ -558,12 +553,11 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	Parameters frozen_active_ctl_pars = failed_jac_pars;
 	LimitType limit_type = LimitType::NONE;
 	//If running in regularization mode, adjust the regularization weights
-	// define a function type for upgrade methods 
+	// define a function type for upgrade methods
 	//dynamic_weight_adj(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
 	//	base_run_active_ctl_par, frozen_active_ctl_pars);
 	//tikhonov_weight = Q_sqrt.get_tikhonov_weight();
 	//regul_scheme.set_weight(tikhonov_weight);
-
 
 	// write out report for starting phi
 	obj_func->phi_report(os, cur_solution.get_obs(), cur_solution.get_ctl_pars(), tikhonov_weight);
@@ -571,11 +565,8 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	if (failed_jac_pars.size() > 0)
 	{
 		os << endl;
-		os << "  the following parameters have been frozen as the runs to compute their derivatives failed: " << endl;
-		for (auto &ipar : failed_jac_pars)
-		{
-			os << "    " << ipar.first << " frozen at " << ipar.second << endl;
-		}
+		jacobian.report_errors(os);
+		os << endl;
 	}
 
 
@@ -640,7 +631,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	os.precision(n_prec);
 
 	os << "    Summary of upgrade runs:" << endl;
-	for(int i=0; i<run_manager.get_nruns(); ++i) {
+	for (int i = 0; i < run_manager.get_nruns(); ++i) {
 		ModelRun upgrade_run(cur_solution);
 		Parameters tmp_pars;
 		Observations tmp_obs;
@@ -659,13 +650,13 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 			os << "; length = " << magnitude_vec[i];
 			os.precision(n_prec);
 			os.unsetf(ios_base::floatfield); // reset all flags to default
-			os << ";  phi = " << upgrade_run.get_phi(tikhonov_weight); 
+			os << ";  phi = " << upgrade_run.get_phi(tikhonov_weight);
 			os.precision(2);
 			os << setiosflags(ios::fixed);
-			os << " ("  << upgrade_run.get_phi(tikhonov_weight)/cur_solution.get_phi(tikhonov_weight)*100 << "%)" << endl;
+			os << " (" << upgrade_run.get_phi(tikhonov_weight) / cur_solution.get_phi(tikhonov_weight) * 100 << "%)" << endl;
 			os.precision(n_prec);
 			os.unsetf(ios_base::floatfield); // reset all flags to default
-			if (upgrade_run.obs_valid() && (!best_run_updated_flag || upgrade_run.get_phi(tikhonov_weight) <  best_upgrade_run.get_phi(tikhonov_weight))) {
+			if (upgrade_run.obs_valid() && (!best_run_updated_flag || upgrade_run.get_phi(tikhonov_weight) < best_upgrade_run.get_phi(tikhonov_weight))) {
 				best_run_updated_flag = true;
 				best_upgrade_run = upgrade_run;
 				best_lambda = i_lambda;
@@ -684,7 +675,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	}
 	// Print frozen parameter information
 	const Parameters &frz_ctl_pars = best_upgrade_run.get_frozen_ctl_pars();
-		
+
 	if (frz_ctl_pars.size() > 0)
 	{
 		vector<string> keys = frz_ctl_pars.get_keys();
@@ -705,25 +696,26 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	run_manager.free_memory();
 
 	// reload best parameters and set flag to switch to central derivatives next iteration
-	if (cur_solution.get_phi(tikhonov_weight) != 0 && !phiredswh_flag &&
-		(cur_solution.get_phi(tikhonov_weight) - best_upgrade_run.get_phi(tikhonov_weight) / cur_solution.get_phi(tikhonov_weight) < ctl_info->phiredswh) )
+	double cur_phi = cur_solution.get_phi(tikhonov_weight);
+	double best_phi = best_upgrade_run.get_phi(tikhonov_weight);
+
+	if (cur_phi != 0 && !phiredswh_flag &&
+		(cur_phi - best_phi) / cur_phi < ctl_info->phiredswh)
 	{
 		phiredswh_flag = true;
 		os << endl << "      Switching to central derivatives:" << endl;
 	}
 
-	cout << "  Starting phi = " << cur_solution.get_phi(tikhonov_weight) << ";  ending phi = " << best_upgrade_run.get_phi(tikhonov_weight) <<
-		"  (" << best_upgrade_run.get_phi(tikhonov_weight) / cur_solution.get_phi(tikhonov_weight) * 100 << "%)" << endl;
+	cout << "  Starting phi = " << cur_phi << ";  ending phi = " << best_phi <<
+		"  (" << best_phi / cur_phi * 100 << "%)" << endl;
 	cout << endl;
 	os << endl;
 	iteration_update_and_report(os, best_upgrade_run, termination_ctl);
-	prev_phi_percent = best_upgrade_run.get_phi(tikhonov_weight) / cur_solution.get_phi(tikhonov_weight) * 100;
 	cur_solution = best_upgrade_run;
 }
 
-
 void SVDSolver::check_limits(const Parameters &init_active_ctl_pars, const Parameters &upgrade_active_ctl_pars,
-						map<string, LimitType> &limit_type_map, Parameters &active_ctl_parameters_at_limit)
+	map<string, LimitType> &limit_type_map, Parameters &active_ctl_parameters_at_limit)
 {
 	const string *name;
 	double p_init;
@@ -809,9 +801,6 @@ void SVDSolver::check_limits(const Parameters &init_active_ctl_pars, const Param
 	}
 }
 
-
-
-
 Parameters SVDSolver::limit_parameters_freeze_all_ip(const Parameters &init_active_ctl_pars,
 	Parameters &upgrade_active_ctl_pars, const Parameters &prev_frozen_active_ctl_pars)
 {
@@ -823,7 +812,7 @@ Parameters SVDSolver::limit_parameters_freeze_all_ip(const Parameters &init_acti
 	double p_limit;
 	Parameters new_frozen_active_ctl_parameters;
 	pair<bool, double> par_limit;
-	
+
 	//remove frozen parameters
 	upgrade_active_ctl_pars.erase(prev_frozen_active_ctl_pars);
 
@@ -846,7 +835,7 @@ Parameters SVDSolver::limit_parameters_freeze_all_ip(const Parameters &init_acti
 	Parameters init_numeric_pars = par_transform.active_ctl2numeric_cp(init_active_ctl_pars);
 	Parameters upgrade_numeric_pars = par_transform.active_ctl2numeric_cp(upgrade_active_ctl_pars);
 	Parameters numeric_parameters_at_limit = par_transform.active_ctl2numeric_cp(limited_ctl_parameters);
-	for(auto &ipar : numeric_parameters_at_limit)
+	for (auto &ipar : numeric_parameters_at_limit)
 	{
 		name = &(ipar.first);
 		p_limit = ipar.second;
@@ -861,7 +850,7 @@ Parameters SVDSolver::limit_parameters_freeze_all_ip(const Parameters &init_acti
 	// Apply limit factor to PEST upgrade parameters
 	if (limit_factor != 1.0)
 	{
-		for(auto &ipar : upgrade_numeric_pars)
+		for (auto &ipar : upgrade_numeric_pars)
 		{
 			name = &(ipar.first);
 			p_init = init_numeric_pars.get_rec(*name);
@@ -872,12 +861,11 @@ Parameters SVDSolver::limit_parameters_freeze_all_ip(const Parameters &init_acti
 	//Transform parameters back their ative control state and freeze any that violate their bounds
 	upgrade_active_ctl_pars = par_transform.numeric2active_ctl_cp(upgrade_numeric_pars);
 
-
 	check_limits(init_active_ctl_pars, upgrade_active_ctl_pars, limit_type_map, limited_ctl_parameters);
 	for (auto &ipar : upgrade_active_ctl_pars)
 	{
 		name = &(ipar.first);
-		if(limit_type_map[*name] == LimitType::UBND)
+		if (limit_type_map[*name] == LimitType::UBND)
 		{
 			double limit_value = ctl_par_info_ptr->get_parameter_rec_ptr(*name)->ubnd;
 			new_frozen_active_ctl_parameters[*name] = limit_value;
@@ -887,7 +875,6 @@ Parameters SVDSolver::limit_parameters_freeze_all_ip(const Parameters &init_acti
 			double limit_value = ctl_par_info_ptr->get_parameter_rec_ptr(*name)->lbnd;
 			new_frozen_active_ctl_parameters[*name] = limit_value;
 		}
-
 	}
 
 	// Impose frozen Parameters
@@ -903,37 +890,36 @@ Parameters SVDSolver::limit_parameters_freeze_all_ip(const Parameters &init_acti
 	return new_frozen_active_ctl_parameters;
 }
 
-void SVDSolver::param_change_stats(double p_old, double p_new, bool &have_fac, double &fac_change, bool &have_rel, double &rel_change) 
+void SVDSolver::param_change_stats(double p_old, double p_new, bool &have_fac, double &fac_change, bool &have_rel, double &rel_change)
 {
 	have_rel = have_fac = true;
 	double a = max(abs(p_new), abs(p_old));
-		double b = min(abs(p_new), abs(p_old));
-		// compute relative change
-		if (p_old == 0) {
-			have_rel = false;
-			rel_change = -9999;
-		}
-		else 
-		{
-			rel_change = (p_old - p_new) / p_old;
-		}
-		//compute factor change
-		if (p_old == 0.0 || p_new == 0.0) {
-			have_fac = false;
-			fac_change = -9999;
-		}
-		else {
-			fac_change = a / b;
-		}
+	double b = min(abs(p_new), abs(p_old));
+	// compute relative change
+	if (p_old == 0) {
+		have_rel = false;
+		rel_change = -9999;
 	}
-
+	else
+	{
+		rel_change = (p_old - p_new) / p_old;
+	}
+	//compute factor change
+	if (p_old == 0.0 || p_new == 0.0) {
+		have_fac = false;
+		fac_change = -9999;
+	}
+	else {
+		fac_change = a / b;
+	}
+}
 
 void SVDSolver::iteration_update_and_report(ostream &os, ModelRun &upgrade, TerminationController &termination_ctl)
 {
 	const string *p_name;
 	double p_old, p_new;
-	double fac_change=-9999, rel_change=-9999;
-	bool have_fac=false, have_rel=false;
+	double fac_change = -9999, rel_change = -9999;
+	bool have_fac = false, have_rel = false;
 	double max_fac_change = 0;
 	double max_rel_change = 0;
 	const string *max_fac_par = 0;
@@ -946,13 +932,13 @@ void SVDSolver::iteration_update_and_report(ostream &os, ModelRun &upgrade, Term
 	os << "        Name         Value         Value         Change        Change" << endl;
 	os << "      ----------  ------------  ------------  ------------  ------------" << endl;
 
-	for( const auto &ipar : new_ctl_pars)
+	for (const auto &ipar : new_ctl_pars)
 	{
 		p_name = &(ipar.first);
-		p_new =  ipar.second;
+		p_new = ipar.second;
 		p_old = old_ctl_pars.get_rec(*p_name);
 		param_change_stats(p_old, p_new, have_fac, fac_change, have_rel, rel_change);
-		if (fac_change >= max_fac_change) 
+		if (fac_change >= max_fac_change)
 		{
 			max_fac_change = fac_change;
 			max_fac_par = p_name;
@@ -992,13 +978,13 @@ void SVDSolver::iteration_update_and_report(ostream &os, ModelRun &upgrade, Term
 
 	const Parameters old_numeric_pars = par_transform.ctl2numeric_cp(cur_solution.get_ctl_pars());
 	const Parameters new_numeric_pars = par_transform.ctl2numeric_cp(upgrade.get_ctl_pars());
-	for( const auto &ipar : new_numeric_pars)
+	for (const auto &ipar : new_numeric_pars)
 	{
 		p_name = &(ipar.first);
-		p_new =  ipar.second;
+		p_new = ipar.second;
 		p_old = old_numeric_pars.get_rec(*p_name);
 		param_change_stats(p_old, p_new, have_fac, fac_change, have_rel, rel_change);
-		if (fac_change >= max_fac_change) 
+		if (fac_change >= max_fac_change)
 		{
 			max_fac_change = fac_change;
 			max_fac_par = p_name;
@@ -1081,15 +1067,14 @@ int SVDSolver::check_bnd_par(Parameters &new_freeze_active_ctl_pars, const Param
 			}
 			if (par_going_out)
 				new_freeze_active_ctl_pars.insert(*name_ptr, p_org);
-
 		}
 	}
 	return num_upgrade_out_grad_in;
 }
 
-void SVDSolver::limit_parameters_ip(const Parameters &init_active_ctl_pars, Parameters &upgrade_active_ctl_pars, 
-										  LimitType &limit_type, const Parameters &frozen_active_ctl_pars, 
-										  bool ignore_upper_lower)
+void SVDSolver::limit_parameters_ip(const Parameters &init_active_ctl_pars, Parameters &upgrade_active_ctl_pars,
+	LimitType &limit_type, const Parameters &frozen_active_ctl_pars,
+	bool ignore_upper_lower)
 {
 	map<string, LimitType> limit_type_map;
 	limit_type = LimitType::NONE;
@@ -1097,7 +1082,7 @@ void SVDSolver::limit_parameters_ip(const Parameters &init_active_ctl_pars, Para
 	double p_init;
 	double p_upgrade;
 	double p_limit;
-	
+
 	Parameters limited_active_ctl_parameters;
 	//remove forozen parameters from upgrade pars
 	upgrade_active_ctl_pars.erase(frozen_active_ctl_pars);
@@ -1105,7 +1090,7 @@ void SVDSolver::limit_parameters_ip(const Parameters &init_active_ctl_pars, Para
 	check_limits(init_active_ctl_pars, upgrade_active_ctl_pars, limit_type_map, limited_active_ctl_parameters);
 
 	//delete any limits cooresponding to ignored types
-	for (auto it = limited_active_ctl_parameters.begin(); it != limited_active_ctl_parameters.end(); )
+	for (auto it = limited_active_ctl_parameters.begin(); it != limited_active_ctl_parameters.end();)
 	{
 		const string &name = (*it).first;
 		const LimitType l_type = limit_type_map[name];
@@ -1121,7 +1106,7 @@ void SVDSolver::limit_parameters_ip(const Parameters &init_active_ctl_pars, Para
 		it = temp_it;
 	}
 	// Calculate most stringent limit factor on a numeric PEST parameters
-	double limit_factor= 1.0;
+	double limit_factor = 1.0;
 	double tmp_limit;
 	string limit_parameter_name = "";
 	Parameters limited_numeric_parameters = par_transform.active_ctl2numeric_cp(limited_active_ctl_parameters);
@@ -1161,12 +1146,10 @@ void SVDSolver::limit_parameters_ip(const Parameters &init_active_ctl_pars, Para
 	}
 }
 
-
 PhiComponets SVDSolver::phi_estimate(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt,
 	const Eigen::VectorXd &residuals_vec, const vector<string> &obs_names_vec,
 	const Parameters &base_run_active_ctl_par, const Parameters &freeze_active_ctl_pars)
 {
-
 	Parameters upgrade_ctl_del_pars;
 	Parameters grad_ctl_del_pars;
 	map<string, LimitType> limit_type_map;
@@ -1214,7 +1197,6 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 	const Eigen::VectorXd &residuals_vec, const vector<string> &obs_names_vec,
 	const Parameters &base_run_active_ctl_par, const Parameters &freeze_active_ctl_pars)
 {
-
 	class MuPoint
 	{
 	public:
@@ -1222,7 +1204,7 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 		PhiComponets phi_comp;
 		double target_phi_meas;
 		void set(double _mu, const PhiComponets &_phi_comp) { mu = _mu; phi_comp = _phi_comp; }
-		double f() const { return phi_comp.meas - target_phi_meas;} 
+		double f() const { return phi_comp.meas - target_phi_meas; }
 		void print(ostream &fout)
 		{
 			fout << "  mu           = " << mu << endl;
@@ -1231,22 +1213,21 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 			fout << "  phi residual = " << f() << endl;
 		}
 		bool operator< (const MuPoint &rhs){ return abs(f()) < abs(rhs.f()); }
-
 	};
 
 	double philim = 8.0;
 
 	double fracphim = 0.3;
-	double wfmin =  1.0e-5;
+	double wfmin = 1.0e-5;
 	double wfmax = 1.0e5;
 	//If running in regularization mode, adjust the regularization weights
-	// define a function type for upgrade methods 
+	// define a function type for upgrade methods
 	Parameters new_pars;
 	LimitType limit_type = LimitType::NONE;
 
 	vector<MuPoint> mu_vec;
 	mu_vec.resize(4);
-	
+
 	PhiComponets phi_comp_cur = cur_solution.get_obj_func_ptr()->get_phi_comp(cur_solution.get_obs(), cur_solution.get_ctl_pars());
 	double mu_cur = Q_sqrt.get_tikhonov_weight();
 	double target_phi_meas_frac = phi_comp_cur.meas * (1.0 - fracphim);
@@ -1256,7 +1237,6 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 	{
 		i_mu.target_phi_meas = target_phi_meas;
 	}
-
 
 	PhiComponets proj_phi_cur = phi_estimate(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
 		base_run_active_ctl_par, freeze_active_ctl_pars);
@@ -1284,7 +1264,6 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 			base_run_active_ctl_par, freeze_active_ctl_pars);
 		mu_vec[0].set(mu_new, phi_proj_new);
 	}
-	
 
 	// make sure f[0] and f[3] bracket the solution
 
