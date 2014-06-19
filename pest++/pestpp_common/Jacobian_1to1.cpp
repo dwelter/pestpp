@@ -189,8 +189,9 @@ bool Jacobian_1to1::process_runs(vector<string> numeric_par_names, ParamTransfor
 			{
 				base_numeric_par_names.push_back(cur_par_name);
 				base_run.numeric_derivative_par = base_numeric_parameters.get_rec(cur_par_name);
+				double cur_numeric_value = base_run.numeric_derivative_par;
 				run_list.push_front(base_run);
-				std::vector<Eigen::Triplet<double> > tmp_triplet_vec = calc_derivative(cur_par_name, icol, run_list, group_info, prior_info);
+				std::vector<Eigen::Triplet<double> > tmp_triplet_vec = calc_derivative(cur_par_name, cur_numeric_value, icol, run_list, group_info, prior_info);
 				triplet_list.insert( triplet_list.end(), tmp_triplet_vec.begin(), tmp_triplet_vec.end() );
 				icol++;
 			}

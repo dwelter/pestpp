@@ -77,7 +77,7 @@ protected:
 	Eigen::SparseMatrix<double> matrix;
 	FileManager &file_manager;  // filemanger used to get name of jaobian file
 
-	virtual std::vector<Eigen::Triplet<double> > calc_derivative(const string &numeric_par_name, int jcol, list<JacobianRun> &run_list, const ParameterGroupInfo &group_info,
+	virtual std::vector<Eigen::Triplet<double> > calc_derivative(const string &numeric_par_name, double base_numeric_par_value, int jcol, list<JacobianRun> &run_list, const ParameterGroupInfo &group_info,
 		const PriorInformation &prior_info);
 	virtual bool forward_diff(const string &par_name, const Parameters &pest_parameters, 
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, const ParamTransformSeq &par_trans,

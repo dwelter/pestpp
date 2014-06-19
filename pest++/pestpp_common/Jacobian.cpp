@@ -261,7 +261,7 @@ bool Jacobian::process_runs(vector<string> numeric_par_names, ParamTransformSeq 
 				double base_numeric_par_value = base_numeric_parameters.get_rec(cur_par_name);
 				base_run.numeric_derivative_par = base_numeric_par_value;
 				run_list.push_front(base_run);
-				std::vector<Eigen::Triplet<double> > tmp_triplet_vec = calc_derivative(cur_par_name, icol, run_list, group_info, prior_info);
+				std::vector<Eigen::Triplet<double> > tmp_triplet_vec = calc_derivative(cur_par_name, base_numeric_par_value, icol, run_list, group_info, prior_info);
 				triplet_list.insert(triplet_list.end(), tmp_triplet_vec.begin(), tmp_triplet_vec.end());
 				icol++;
 				run_list.clear();
@@ -315,7 +315,7 @@ bool Jacobian::get_derivative_parameters(const string &par_name, Parameters &num
 }
 
 
-std::vector<Eigen::Triplet<double> >  Jacobian::calc_derivative(const string &numeric_par_name, int jcol, list<JacobianRun> &run_list,
+std::vector<Eigen::Triplet<double> >  Jacobian::calc_derivative(const string &numeric_par_name, double base_numeric_par_value, int jcol, list<JacobianRun> &run_list,
 							   const ParameterGroupInfo &group_info, const PriorInformation &prior_info)
 {
 	const ParameterGroupRec *g_rec;
@@ -350,7 +350,7 @@ std::vector<Eigen::Triplet<double> >  Jacobian::calc_derivative(const string &nu
 				//   A =  | p1**2  p1  1 |          c =  | c1 |        y = | o1 |
 				//        | p2**2  p2  1 |               | c2 |            | o2 |
 				// then compute the derivative as:
-				//   dy/dx = 2 * c0 * p1 + c1
+				//   dy/dx = 2 * c0 * base_numeric_par_value + c1
 				auto &run2 = (*(++run_list.begin()));
 				MatrixXd a_mat(3,3);
 				VectorXd c(3), y(3);
@@ -366,8 +366,8 @@ std::vector<Eigen::Triplet<double> >  Jacobian::calc_derivative(const string &nu
 					++i;
 				}
 				c = a_mat.colPivHouseholderQr().solve(y);
-				// assume for now that derivative is to be calculated around the second parameter location
-				der = 2.0 * c(0) *  run2.numeric_derivative_par + c(1);
+				//derivative is calculated around "base_numeric_par_value"
+				der = 2.0 * c(0) *  base_numeric_par_value + c(1);
 				if (der != 0)
 				{
 					triplet_list.push_back(Eigen::Triplet<double>(irow, jcol, der));

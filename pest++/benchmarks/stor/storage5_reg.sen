@@ -3,43 +3,37 @@
 
  OPTIMISATION ITERATION NO. 1   ----->
  Parameter name    Group        Current value        Sensitivity
-   COND            COND         -2.30102999566       17.4590545474       
-   SCOEFF          SCOEFF       -1.30102999566       3.33236682411       
+   COND            COND         -2.30102999566       17.5402699085       
+   SCOEFF          SCOEFF       -1.30102999566       3.33458091791       
 
 
  OPTIMISATION ITERATION NO. 2   ----->
  Parameter name    Group        Current value        Sensitivity
-   sup_1           g_sup_1      10.0000000000        42.0827377542       
+   sup_1           g_sup_1      10.0000000000        42.2020828592       
+   sup_2           g_sup_2      10.0000000000        9.94133908731       
 
 
  OPTIMISATION ITERATION NO. 3   ----->
  Parameter name    Group        Current value        Sensitivity
-   sup_1           g_sup_1      9.74010015478        70.5403648656       
+   sup_1           g_sup_1      9.73816334871        65.3654667244       
+   sup_2           g_sup_2      10.2222548455        19.0947783983       
 
 
  OPTIMISATION ITERATION NO. 4   ----->
  Parameter name    Group        Current value        Sensitivity
-   sup_1           g_sup_1      9.78649114133        64.5348647219       
+   sup_1           g_sup_1      9.78237050341        61.8533666840       
+   sup_2           g_sup_2      10.1474845369        16.1633923004       
 
 
  OPTIMISATION ITERATION NO. 5   ----->
  Parameter name    Group        Current value        Sensitivity
-   COND            COND         -2.98777290252       64.4676330435       
-   SCOEFF          SCOEFF       -0.831284388670      15.7189984000       
+   COND            COND         -2.99994788779       62.5904160091       
+   SCOEFF          SCOEFF       -0.699137340919      16.6186466583       
 
 
  OPTIMISATION ITERATION NO. 6   ----->
  Parameter name    Group        Current value        Sensitivity
-   sup_1           g_sup_1      10.0000000000        61.9874083656       
-
-
- OPTIMISATION ITERATION NO. 7   ----->
- Parameter name    Group        Current value        Sensitivity
-   sup_1           g_sup_1      9.99740658273        62.2913140056       
-
-
- OPTIMISATION ITERATION NO. 8   ----->
- Parameter name    Group        Current value        Sensitivity
-   sup_1           g_sup_1      9.99743488401        64.0832790753       
+   sup_1           g_sup_1      10.0000000000        62.8881057464       
+   sup_2           g_sup_2      10.0000000000        15.5279100814       
 
 
