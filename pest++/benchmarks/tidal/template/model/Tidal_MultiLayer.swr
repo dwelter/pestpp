@@ -1,0 +1,77 @@
+#Dataset 1a - dimensions and preliminaries
+        74          0          0          0        202          0          0          0          0 SWROPTIONS
+
+#Dataset 1b - swr1 options
+USE_TABFILES
+USE_NONCONVERGENCE_CONTINUE
+END
+
+#Dataset 2 - solution controls
+         1   8.64e+04          0          0          0          0          1          1      1e-06      0.001      0.000      0.000      0.000 
+
+#Dataset 3 - solver parameters
+#ISOLVER NOUTER NINNER IBT    TOLS     TOLR    TOLA DAMPSS DAMPTR IPRSWR MUTSWR IPC NLEVELS DROPTOL IBTPRT
+       1    031    100  10 1.0E-03    8640.   0.010    1.0    1.0      0      0   
+
+#Dataset 4a
+OPEN/CLOSE swrref\Dataset4a.ref
+
+#Dataset 4b
+OPEN/CLOSE swrref\Dataset4b.ref
+
+#Dataset 4c - tabular dimension data
+         1
+
+#Dataset 4d - tabular specification data
+         1 STAGE            201 NONE               25  50  51  52  53  54  55  56  57  58  59  60  61  62  63  64  65  66  67  68  69  70  71  72  73  74
+
+#Dataset 5 - Stress Period 1
+         1        74         0         0         0        74         1        74         1
+
+#Dataset 6
+OPEN/CLOSE swrref\Dataset6.ref
+
+#Dataset 10
+OPEN/CLOSE swrref\Dataset10.ref
+
+#Dataset 11
+OPEN/CLOSE swrref\Dataset11.ref
+
+#Dataset 12
+OPEN/CLOSE swrref\Dataset12.ref
+
+#Dataset 13
+OPEN/CLOSE swrref\Dataset13.ref
+
+#Dataset 14
+OPEN/CLOSE swrref\Dataset14.ref
+
+#Dataset 5 - Stress Period 2
+         0
+
+#Dataset 5 - Stress Period 3
+         0
+
+#Dataset 5 - Stress Period 4
+         0
+
+#Dataset 5 - Stress Period 5
+         0
+
+#Dataset 5 - Stress Period 6
+         0
+
+#Dataset 5 - Stress Period 7
+         0
+
+#Dataset 5 - Stress Period 8
+         0
+
+#Dataset 5 - Stress Period 9
+         0
+
+#Dataset 5 - Stress Period 10
+         0
+
+#Dataset 5 - Stress Period 11
+         0

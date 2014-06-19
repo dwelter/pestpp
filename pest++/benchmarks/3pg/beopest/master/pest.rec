@@ -1,0 +1,1215 @@
+                        PEST RUN RECORD: CASE pest
+
+
+ BEOPEST Version: 13.0
+
+
+ PEST run mode:-
+
+    Parameter estimation mode
+
+
+ Case dimensions:-
+
+    Number of parameters                           :    52
+    Number of adjustable parameters                :     5
+    Number of parameter groups                     :     9
+    Number of observations                         :   108
+    Number of prior estimates                      :     0
+
+
+ Model command line(s):-
+ 
+    model.bat
+
+
+ Jacobian command line:-
+
+    na
+
+
+ Model interface files:-
+
+    Templates:
+       misc\rsgparm1.tpl
+       misc\rsgparm2.tpl
+       misc\rsgparm3.tpl
+       misc\rsgparm4.tpl
+       misc\rsgsite1.tpl
+       misc\rsgsite2.tpl
+       misc\rsgsite3.tpl
+       misc\rsgsite4.tpl
+    for model input files:
+       misc\rsgparm1.txt
+       misc\rsgparm2.txt
+       misc\rsgparm3.txt
+       misc\rsgparm4.txt
+       misc\rsgsite1.txt
+       misc\rsgsite2.txt
+       misc\rsgsite3.txt
+       misc\rsgsite4.txt
+
+    (Parameter values written using single precision protocol.)
+    (Decimal point always included.)
+
+    Instruction files:
+       misc\rsgsite1.ins
+       misc\rsgsite2.ins
+       misc\rsgsite3.ins
+       misc\rsgsite4.ins
+    for reading model output files:
+       rsgsite1.out
+       rsgsite2.out
+       rsgsite3.out
+       rsgsite4.out
+
+
+ PEST-to-model message file:-
+
+    na
+
+
+ Derivatives calculation:-
+
+ Param        Increment   Increment   Increment   Forward or   Multiplier  Method
+ group        type                    low bound   central      (central)   (central)
+ fsp          relative    1.0000E-02   none         switch       2.000     parabolic
+ lr           relative    1.0000E-02   none         switch       2.000     parabolic
+ msc          relative    1.0000E-02   none         switch       2.000     parabolic
+ sla          relative    1.0000E-02   none         switch       2.000     parabolic
+ smdc         relative    1.0000E-02   none         switch       2.000     parabolic
+ smdp         relative    1.0000E-02   none         switch       2.000     parabolic
+ npp          relative    1.0000E-02   none         switch       2.000     parabolic
+ fert         relative    1.0000E-02   none         switch       2.000     parabolic
+ asw          relative    1.0000E-02   none         switch       2.000     parabolic
+
+
+ Parameter definitions:-
+
+ Name         Trans-            Change       Initial        Lower          Upper
+              formation         limit        value          bound          bound
+ fsp0_1       fixed               na       0.750000          na             na
+ fsp0_2       fixed               na       0.750000          na             na
+ fsp0_3       fixed               na       0.750000          na             na
+ fsp0_4       fixed               na       0.750000          na             na
+ fsp1_1       none              factor     3.000000E-02   2.500000E-02    1.50000    
+ fsp1_2       tied fsp1_1         na       3.000000E-02      na             na
+ fsp1_3       tied fsp1_1         na       3.000000E-02      na             na
+ fsp1_4       tied fsp1_1         na       3.000000E-02      na             na
+ npp1_1       none              factor     0.800000       0.500000        1.00000    
+ npp1_2       tied npp1_1         na       0.800000          na             na
+ npp1_3       tied npp1_1         na       0.800000          na             na
+ npp1_4       tied npp1_1         na       0.800000          na             na
+ npp0_1       fixed               na       0.229000          na             na
+ npp0_2       fixed               na       0.229000          na             na
+ npp0_3       fixed               na       0.229000          na             na
+ npp0_4       fixed               na       0.229000          na             na
+ smdc_1       none              factor     9.500000E-02   1.000000E-02    10.0000    
+ smdc_2       tied smdc_1         na       9.500000E-02      na             na
+ smdc_3       tied smdc_1         na       9.500000E-02      na             na
+ smdc_4       tied smdc_1         na       9.500000E-02      na             na
+ smdp_1       fixed               na        2.40000          na             na
+ smdp_2       fixed               na        2.40000          na             na
+ smdp_3       fixed               na        2.40000          na             na
+ smdp_4       fixed               na        2.40000          na             na
+ lrm_1        fixed               na       4.200000E-02      na             na
+ lrm_2        fixed               na       4.200000E-02      na             na
+ lrm_3        fixed               na       4.200000E-02      na             na
+ lrm_4        fixed               na       4.200000E-02      na             na
+ lr0_1        fixed               na       1.500000E-03      na             na
+ lr0_2        fixed               na       1.500000E-03      na             na
+ lr0_3        fixed               na       1.500000E-03      na             na
+ lr0_4        fixed               na       1.500000E-03      na             na
+ msc_1        none              factor     1.000000E-02   5.000000E-03   1.500000E-02
+ msc_2        tied msc_1          na       1.000000E-02      na             na
+ msc_3        tied msc_1          na       1.000000E-02      na             na
+ msc_4        tied msc_1          na       1.000000E-02      na             na
+ sla0_1       fixed               na        16.1000          na             na
+ sla0_2       fixed               na        16.1000          na             na
+ sla0_3       fixed               na        16.1000          na             na
+ sla0_4       fixed               na        16.1000          na             na
+ sla1_1       none              factor      5.70000        5.50000        6.00000    
+ sla1_2       tied sla1_1         na        5.70000          na             na
+ sla1_3       tied sla1_1         na        5.70000          na             na
+ sla1_4       tied sla1_1         na        5.70000          na             na
+ fert_1       fixed               na        1.00000          na             na
+ fert_2       fixed               na        1.00000          na             na
+ fert_3       fixed               na        1.00000          na             na
+ fert_4       fixed               na        1.00000          na             na
+ maxasw_1     fixed               na        300.000          na             na
+ maxasw_2     fixed               na        300.000          na             na
+ maxasw_3     fixed               na        300.000          na             na
+ maxasw_4     fixed               na        300.000          na             na
+
+ Name         Group          Scale         Offset        Model command number
+ fsp0_1       fsp           1.00000        0.00000            1
+ fsp0_2       fsp           1.00000        0.00000            1
+ fsp0_3       fsp           1.00000        0.00000            1
+ fsp0_4       fsp           1.00000        0.00000            1
+ fsp1_1       fsp           1.00000        0.00000            1
+ fsp1_2       fsp           1.00000        0.00000            1
+ fsp1_3       fsp           1.00000        0.00000            1
+ fsp1_4       fsp           1.00000        0.00000            1
+ npp1_1       npp           1.00000        0.00000            1
+ npp1_2       npp           1.00000        0.00000            1
+ npp1_3       npp           1.00000        0.00000            1
+ npp1_4       npp           1.00000        0.00000            1
+ npp0_1       npp           1.00000        0.00000            1
+ npp0_2       npp           1.00000        0.00000            1
+ npp0_3       npp           1.00000        0.00000            1
+ npp0_4       npp           1.00000        0.00000            1
+ smdc_1       smdc          1.00000        0.00000            1
+ smdc_2       smdc          1.00000        0.00000            1
+ smdc_3       smdc          1.00000        0.00000            1
+ smdc_4       smdc          1.00000        0.00000            1
+ smdp_1       smdp          1.00000        0.00000            1
+ smdp_2       smdp          1.00000        0.00000            1
+ smdp_3       smdp          1.00000        0.00000            1
+ smdp_4       smdp          1.00000        0.00000            1
+ lrm_1        lr            1.00000        0.00000            1
+ lrm_2        lr            1.00000        0.00000            1
+ lrm_3        lr            1.00000        0.00000            1
+ lrm_4        lr            1.00000        0.00000            1
+ lr0_1        lr            1.00000        0.00000            1
+ lr0_2        lr            1.00000        0.00000            1
+ lr0_3        lr            1.00000        0.00000            1
+ lr0_4        lr            1.00000        0.00000            1
+ msc_1        msc           1.00000        0.00000            1
+ msc_2        msc           1.00000        0.00000            1
+ msc_3        msc           1.00000        0.00000            1
+ msc_4        msc           1.00000        0.00000            1
+ sla0_1       sla           1.00000        0.00000            1
+ sla0_2       sla           1.00000        0.00000            1
+ sla0_3       sla           1.00000        0.00000            1
+ sla0_4       sla           1.00000        0.00000            1
+ sla1_1       sla           1.00000        0.00000            1
+ sla1_2       sla           1.00000        0.00000            1
+ sla1_3       sla           1.00000        0.00000            1
+ sla1_4       sla           1.00000        0.00000            1
+ fert_1       fert          1.00000        0.00000            1
+ fert_2       fert          1.00000        0.00000            1
+ fert_3       fert          1.00000        0.00000            1
+ fert_4       fert          1.00000        0.00000            1
+ maxasw_1     asw           1.00000        0.00000            1
+ maxasw_2     asw           1.00000        0.00000            1
+ maxasw_3     asw           1.00000        0.00000            1
+ maxasw_4     asw           1.00000        0.00000            1
+
+
+ Prior information:-
+
+    No prior information supplied
+
+
+ Observations:-
+
+ Observation name        Observation       Weight       Group
+  dbh1_1                  17.1000          1.000       site1       
+  dbh2_1                  24.9000          1.000       site1       
+  dbh3_1                  28.3000          1.000       site1       
+  dbh4_1                  29.9000          1.000       site1       
+  dbh5_1                  31.1000          1.000       site1       
+  dbh6_1                  32.4000          1.000       site1       
+  dbh7_1                  33.6000          1.000       site1       
+  dbh8_1                  35.2000          1.000       site1       
+  dbh9_1                  36.8000          1.000       site1       
+  dbh10_1                 38.9000          1.000       site1       
+  dbh11_1                 40.1000          1.000       site1       
+  dbh12_1                 40.7000          1.000       site1       
+  dbh13_1                 42.6000          1.000       site1       
+  dbh14_1                 45.6000          1.000       site1       
+  dbh15_1                 48.6000          1.000       site1       
+  dbh16_1                 50.6000          1.000       site1       
+  dbh17_1                 55.5000          1.000       site1       
+  dbh18_1                 59.1000          1.000       site1       
+  dbh19_1                 59.9000          1.000       site1       
+  dbh20_1                 61.5000          1.000       site1       
+  dbh21_1                 62.5000          1.000       site1       
+  dbh22_1                 63.9000          1.000       site1       
+  dbh23_1                 64.9000          1.000       site1       
+  dbh24_1                 66.7000          1.000       site1       
+  dbh25_1                 68.1000          1.000       site1       
+  dbh26_1                 69.4000          1.000       site1       
+  dbh27_1                 72.0000          1.000       site1       
+  dbh1_2                  17.7000          1.000       site2       
+  dbh2_2                  25.8000          1.000       site2       
+  dbh3_2                  28.8000          1.000       site2       
+  dbh4_2                  30.3000          1.000       site2       
+  dbh5_2                  31.2000          1.000       site2       
+  dbh6_2                  32.1000          1.000       site2       
+  dbh7_2                  32.9000          1.000       site2       
+  dbh8_2                  33.8000          1.000       site2       
+  dbh9_2                  35.4000          1.000       site2       
+  dbh10_2                 37.2000          1.000       site2       
+  dbh11_2                 38.0000          1.000       site2       
+  dbh12_2                 38.5000          1.000       site2       
+  dbh13_2                 39.8000          1.000       site2       
+  dbh14_2                 42.2000          1.000       site2       
+  dbh15_2                 44.6000          1.000       site2       
+  dbh16_2                 45.4000          1.000       site2       
+  dbh17_2                 45.5000          1.000       site2       
+  dbh18_2                 46.8000          1.000       site2       
+  dbh19_2                 47.3000          1.000       site2       
+  dbh20_2                 48.3000          1.000       site2       
+  dbh21_2                 48.9000          1.000       site2       
+  dbh22_2                 49.8000          1.000       site2       
+  dbh23_2                 50.4000          1.000       site2       
+  dbh24_2                 51.2000          1.000       site2       
+  dbh25_2                 52.5000          1.000       site2       
+  dbh26_2                 53.1000          1.000       site2       
+  dbh27_2                 54.2000          1.000       site2       
+  dbh1_3                  18.5000          1.000       site3       
+  dbh2_3                  26.5000          1.000       site3       
+  dbh3_3                  29.9000          1.000       site3       
+  dbh4_3                  31.4000          1.000       site3       
+  dbh5_3                  32.6000          1.000       site3       
+  dbh6_3                  34.0000          1.000       site3       
+  dbh7_3                  35.0000          1.000       site3       
+  dbh8_3                  36.6000          1.000       site3       
+  dbh9_3                  37.6000          1.000       site3       
+  dbh10_3                 39.3000          1.000       site3       
+  dbh11_3                 40.3000          1.000       site3       
+  dbh12_3                 40.8000          1.000       site3       
+  dbh13_3                 42.5000          1.000       site3       
+  dbh14_3                 44.6000          1.000       site3       
+  dbh15_3                 46.4000          1.000       site3       
+  dbh16_3                 47.8000          1.000       site3       
+  dbh17_3                 52.8000          1.000       site3       
+  dbh18_3                 55.5000          1.000       site3       
+  dbh19_3                 57.0000          1.000       site3       
+  dbh20_3                 58.6000          1.000       site3       
+  dbh21_3                 59.2000          1.000       site3       
+  dbh22_3                 60.9000          1.000       site3       
+  dbh23_3                 61.6000          1.000       site3       
+  dbh24_3                 63.0000          1.000       site3       
+  dbh25_3                 64.7000          1.000       site3       
+  dbh26_3                 65.6000          1.000       site3       
+  dbh27_3                 67.8000          1.000       site3       
+  dbh1_4                  20.9000          1.000       site4       
+  dbh2_4                  29.5000          1.000       site4       
+  dbh3_4                  30.3000          1.000       site4       
+  dbh4_4                  31.5000          1.000       site4       
+  dbh5_4                  32.6000          1.000       site4       
+  dbh6_4                  34.0000          1.000       site4       
+  dbh7_4                  35.0000          1.000       site4       
+  dbh8_4                  36.5000          1.000       site4       
+  dbh9_4                  37.6000          1.000       site4       
+  dbh10_4                 39.5000          1.000       site4       
+  dbh11_4                 40.4000          1.000       site4       
+  dbh12_4                 41.0000          1.000       site4       
+  dbh13_4                 42.4000          1.000       site4       
+  dbh14_4                 44.8000          1.000       site4       
+  dbh15_4                 47.3000          1.000       site4       
+  dbh16_4                 48.6000          1.000       site4       
+  dbh17_4                 48.9000          1.000       site4       
+  dbh18_4                 50.6000          1.000       site4       
+  dbh19_4                 51.5000          1.000       site4       
+  dbh20_4                 52.3000          1.000       site4       
+  dbh21_4                 52.8000          1.000       site4       
+  dbh22_4                 53.8000          1.000       site4       
+  dbh23_4                 54.1000          1.000       site4       
+  dbh24_4                 55.2000          1.000       site4       
+  dbh25_4                 56.1000          1.000       site4       
+  dbh26_4                 56.8000          1.000       site4       
+  dbh27_4                 58.4000          1.000       site4       
+
+
+ Control settings:-
+
+    Initial lambda                                               :  5.0000    
+    Lambda adjustment factor                                     :  2.0000    
+    Sufficient new/old phi ratio per optimisation iteration      : 0.30000    
+    Limiting relative phi reduction between lambdas              : 3.00000E-02
+    Maximum trial lambdas per iteration                          :  10
+    Forgive model run failure during lamda testing               : no
+    Forgive model run failure during Jacobian runs               : no
+
+    Perform Broyden's update of Jacobian matrix                  : no
+    Undertake observation re-referencing                         : no
+
+    Maximum  factor  parameter change (factor-limited changes)   :  3.0000
+    Maximum relative parameter change (relative-limited changes) : na
+    Fraction of initial parameter values used in computing
+    change limit for near-zero parameters                        : 1.00000E-03
+    Allow bending of parameter upgrade vector                    : no
+    Allow parameters to stick to their bounds                    : no
+
+    Relative phi reduction below which to begin use of
+    central derivatives                                          : 0.10000             
+    Iteration at which to first consider derivatives switch      :   1
+
+    Relative phi reduction indicating convergence                : 0.10000E-01
+    Number of phi values required within this range              :   3
+    Maximum number of consecutive failures to lower phi          :   3
+    Minimal relative parameter change indicating convergence     : 0.10000E-01
+    Number of consecutive iterations with minimal param change   :   3
+    Maximum number of optimisation iterations                    :  50
+
+    Attempt automatic user intervention                          : no
+
+    Attempt reuse of parameter sensitivities                     : no
+
+    Scale parameters by their bounds                             : no
+
+
+ File saving options: -
+
+    Save best JCO file                                           : yes
+    Save multiple JCO files                                      : no
+    Save multiple REI files                                      : no
+    Save multiple PAR files                                      : no
+ 
+ 
+                             OPTIMISATION RECORD
+
+
+ INITIAL CONDITIONS: 
+    Sum of squared weighted residuals (ie phi)               =   95440.    
+    Contribution to phi from observation group "site1"       =   30077.    
+    Contribution to phi from observation group "site2"       =   16978.    
+    Contribution to phi from observation group "site3"       =   26997.    
+    Contribution to phi from observation group "site4"       =   21387.    
+ 
+       Current parameter values
+       fsp0_1          0.750000    
+       fsp0_2          0.750000    
+       fsp0_3          0.750000    
+       fsp0_4          0.750000    
+       fsp1_1          3.000000E-02
+       fsp1_2          3.000000E-02
+       fsp1_3          3.000000E-02
+       fsp1_4          3.000000E-02
+       npp1_1          0.800000    
+       npp1_2          0.800000    
+       npp1_3          0.800000    
+       npp1_4          0.800000    
+       npp0_1          0.229000    
+       npp0_2          0.229000    
+       npp0_3          0.229000    
+       npp0_4          0.229000    
+       smdc_1          9.500000E-02
+       smdc_2          9.500000E-02
+       smdc_3          9.500000E-02
+       smdc_4          9.500000E-02
+       smdp_1           2.40000    
+       smdp_2           2.40000    
+       smdp_3           2.40000    
+       smdp_4           2.40000    
+       lrm_1           4.200000E-02
+       lrm_2           4.200000E-02
+       lrm_3           4.200000E-02
+       lrm_4           4.200000E-02
+       lr0_1           1.500000E-03
+       lr0_2           1.500000E-03
+       lr0_3           1.500000E-03
+       lr0_4           1.500000E-03
+       msc_1           1.000000E-02
+       msc_2           1.000000E-02
+       msc_3           1.000000E-02
+       msc_4           1.000000E-02
+       sla0_1           16.1000    
+       sla0_2           16.1000    
+       sla0_3           16.1000    
+       sla0_4           16.1000    
+       sla1_1           5.70000    
+       sla1_2           5.70000    
+       sla1_3           5.70000    
+       sla1_4           5.70000    
+       fert_1           1.00000    
+       fert_2           1.00000    
+       fert_3           1.00000    
+       fert_4           1.00000    
+       maxasw_1         300.000    
+       maxasw_2         300.000    
+       maxasw_3         300.000    
+       maxasw_4         300.000    
+
+
+ OPTIMISATION ITERATION NO.        : 1
+    Model calls so far             : 1
+    Starting phi for this iteration                          :   95440.    
+    Contribution to phi from observation group "site1"       :   30077.    
+    Contribution to phi from observation group "site2"       :   16978.    
+    Contribution to phi from observation group "site3"       :   26997.    
+    Contribution to phi from observation group "site4"       :   21387.    
+
+        Lambda =   5.0000     ----->
+           Phi =   48792.      (  0.511 of starting phi)
+
+        Lambda =   2.5000     ----->
+           Phi =   48867.      (  0.512 of starting phi)
+
+        Lambda =   10.000     ----->
+           Phi =   48682.      (  0.510 of starting phi)
+
+    No more lambdas: relative phi reduction between lambdas less than 0.0300
+    Lowest phi this iteration:   48682.    
+
+       Current parameter values                 Previous parameter values
+       fsp0_1          0.750000                 fsp0_1           0.750000    
+       fsp0_2          0.750000                 fsp0_2           0.750000    
+       fsp0_3          0.750000                 fsp0_3           0.750000    
+       fsp0_4          0.750000                 fsp0_4           0.750000    
+       fsp1_1          5.711533E-02             fsp1_1           3.000000E-02
+       fsp1_2          5.711533E-02             fsp1_2           3.000000E-02
+       fsp1_3          5.711533E-02             fsp1_3           3.000000E-02
+       fsp1_4          5.711533E-02             fsp1_4           3.000000E-02
+       npp1_1          0.799487                 npp1_1           0.800000    
+       npp1_2          0.799487                 npp1_2           0.800000    
+       npp1_3          0.799487                 npp1_3           0.800000    
+       npp1_4          0.799487                 npp1_4           0.800000    
+       npp0_1          0.229000                 npp0_1           0.229000    
+       npp0_2          0.229000                 npp0_2           0.229000    
+       npp0_3          0.229000                 npp0_3           0.229000    
+       npp0_4          0.229000                 npp0_4           0.229000    
+       smdc_1          3.166667E-02             smdc_1           9.500000E-02
+       smdc_2          3.166667E-02             smdc_2           9.500000E-02
+       smdc_3          3.166667E-02             smdc_3           9.500000E-02
+       smdc_4          3.166667E-02             smdc_4           9.500000E-02
+       smdp_1           2.40000                 smdp_1            2.40000    
+       smdp_2           2.40000                 smdp_2            2.40000    
+       smdp_3           2.40000                 smdp_3            2.40000    
+       smdp_4           2.40000                 smdp_4            2.40000    
+       lrm_1           4.200000E-02             lrm_1            4.200000E-02
+       lrm_2           4.200000E-02             lrm_2            4.200000E-02
+       lrm_3           4.200000E-02             lrm_3            4.200000E-02
+       lrm_4           4.200000E-02             lrm_4            4.200000E-02
+       lr0_1           1.500000E-03             lr0_1            1.500000E-03
+       lr0_2           1.500000E-03             lr0_2            1.500000E-03
+       lr0_3           1.500000E-03             lr0_3            1.500000E-03
+       lr0_4           1.500000E-03             lr0_4            1.500000E-03
+       msc_1           1.500000E-02             msc_1            1.000000E-02
+       msc_2           1.500000E-02             msc_2            1.000000E-02
+       msc_3           1.500000E-02             msc_3            1.000000E-02
+       msc_4           1.500000E-02             msc_4            1.000000E-02
+       sla0_1           16.1000                 sla0_1            16.1000    
+       sla0_2           16.1000                 sla0_2            16.1000    
+       sla0_3           16.1000                 sla0_3            16.1000    
+       sla0_4           16.1000                 sla0_4            16.1000    
+       sla1_1           5.69965                 sla1_1            5.70000    
+       sla1_2           5.69965                 sla1_2            5.70000    
+       sla1_3           5.69965                 sla1_3            5.70000    
+       sla1_4           5.69965                 sla1_4            5.70000    
+       fert_1           1.00000                 fert_1            1.00000    
+       fert_2           1.00000                 fert_2            1.00000    
+       fert_3           1.00000                 fert_3            1.00000    
+       fert_4           1.00000                 fert_4            1.00000    
+       maxasw_1         300.000                 maxasw_1          300.000    
+       maxasw_2         300.000                 maxasw_2          300.000    
+       maxasw_3         300.000                 maxasw_3          300.000    
+       maxasw_4         300.000                 maxasw_4          300.000    
+    Maximum   factor change:  3.000     ["smdc_1"]
+    Maximum relative change: 0.9038     ["fsp1_1"]
+
+
+ OPTIMISATION ITERATION NO.        : 2
+    Model calls so far             : 12
+    Starting phi for this iteration                          :   48682.    
+    Contribution to phi from observation group "site1"       :   16807.    
+    Contribution to phi from observation group "site2"       :   7250.4    
+    Contribution to phi from observation group "site3"       :   14399.    
+    Contribution to phi from observation group "site4"       :   10225.    
+        param "msc_1" frozen: - update vector out of bounds
+
+        Lambda =   10.000     ----->
+           Phi =   2861.9      (  0.059 of starting phi)
+
+    No more lambdas: phi is less than 0.3000 of starting phi
+    Lowest phi this iteration:   2861.9    
+
+       Current parameter values                 Previous parameter values
+       fsp0_1          0.750000                 fsp0_1           0.750000    
+       fsp0_2          0.750000                 fsp0_2           0.750000    
+       fsp0_3          0.750000                 fsp0_3           0.750000    
+       fsp0_4          0.750000                 fsp0_4           0.750000    
+       fsp1_1          0.133952                 fsp1_1           5.711533E-02
+       fsp1_2          0.133952                 fsp1_2           5.711533E-02
+       fsp1_3          0.133952                 fsp1_3           5.711533E-02
+       fsp1_4          0.133952                 fsp1_4           5.711533E-02
+       npp1_1          0.807975                 npp1_1           0.799487    
+       npp1_2          0.807975                 npp1_2           0.799487    
+       npp1_3          0.807975                 npp1_3           0.799487    
+       npp1_4          0.807975                 npp1_4           0.799487    
+       npp0_1          0.229000                 npp0_1           0.229000    
+       npp0_2          0.229000                 npp0_2           0.229000    
+       npp0_3          0.229000                 npp0_3           0.229000    
+       npp0_4          0.229000                 npp0_4           0.229000    
+       smdc_1          1.055556E-02             smdc_1           3.166667E-02
+       smdc_2          1.055556E-02             smdc_2           3.166667E-02
+       smdc_3          1.055556E-02             smdc_3           3.166667E-02
+       smdc_4          1.055556E-02             smdc_4           3.166667E-02
+       smdp_1           2.40000                 smdp_1            2.40000    
+       smdp_2           2.40000                 smdp_2            2.40000    
+       smdp_3           2.40000                 smdp_3            2.40000    
+       smdp_4           2.40000                 smdp_4            2.40000    
+       lrm_1           4.200000E-02             lrm_1            4.200000E-02
+       lrm_2           4.200000E-02             lrm_2            4.200000E-02
+       lrm_3           4.200000E-02             lrm_3            4.200000E-02
+       lrm_4           4.200000E-02             lrm_4            4.200000E-02
+       lr0_1           1.500000E-03             lr0_1            1.500000E-03
+       lr0_2           1.500000E-03             lr0_2            1.500000E-03
+       lr0_3           1.500000E-03             lr0_3            1.500000E-03
+       lr0_4           1.500000E-03             lr0_4            1.500000E-03
+       msc_1           1.500000E-02             msc_1            1.500000E-02
+       msc_2           1.500000E-02             msc_2            1.500000E-02
+       msc_3           1.500000E-02             msc_3            1.500000E-02
+       msc_4           1.500000E-02             msc_4            1.500000E-02
+       sla0_1           16.1000                 sla0_1            16.1000    
+       sla0_2           16.1000                 sla0_2            16.1000    
+       sla0_3           16.1000                 sla0_3            16.1000    
+       sla0_4           16.1000                 sla0_4            16.1000    
+       sla1_1           5.69930                 sla1_1            5.69965    
+       sla1_2           5.69930                 sla1_2            5.69965    
+       sla1_3           5.69930                 sla1_3            5.69965    
+       sla1_4           5.69930                 sla1_4            5.69965    
+       fert_1           1.00000                 fert_1            1.00000    
+       fert_2           1.00000                 fert_2            1.00000    
+       fert_3           1.00000                 fert_3            1.00000    
+       fert_4           1.00000                 fert_4            1.00000    
+       maxasw_1         300.000                 maxasw_1          300.000    
+       maxasw_2         300.000                 maxasw_2          300.000    
+       maxasw_3         300.000                 maxasw_3          300.000    
+       maxasw_4         300.000                 maxasw_4          300.000    
+    Maximum   factor change:  3.000     ["smdc_1"]
+    Maximum relative change:  1.345     ["fsp1_1"]
+
+
+ OPTIMISATION ITERATION NO.        : 3
+    Model calls so far             : 18
+    Starting phi for this iteration                          :   2861.9    
+    Contribution to phi from observation group "site1"       :   1558.5    
+    Contribution to phi from observation group "site2"       :   295.19    
+    Contribution to phi from observation group "site3"       :   831.59    
+    Contribution to phi from observation group "site4"       :   176.60    
+    All frozen parameters freed.
+
+        Lambda =   5.0000     ----->
+           Phi =   2410.9      (  0.842 of starting phi)
+
+        Lambda =   2.5000     ----->
+           Phi =   2391.1      (  0.836 of starting phi)
+
+    No more lambdas: relative phi reduction between lambdas less than 0.0300
+    Lowest phi this iteration:   2391.1    
+
+       Current parameter values                 Previous parameter values
+       fsp0_1          0.750000                 fsp0_1           0.750000    
+       fsp0_2          0.750000                 fsp0_2           0.750000    
+       fsp0_3          0.750000                 fsp0_3           0.750000    
+       fsp0_4          0.750000                 fsp0_4           0.750000    
+       fsp1_1          0.172611                 fsp1_1           0.133952    
+       fsp1_2          0.172611                 fsp1_2           0.133952    
+       fsp1_3          0.172611                 fsp1_3           0.133952    
+       fsp1_4          0.172611                 fsp1_4           0.133952    
+       npp1_1          0.954591                 npp1_1           0.807975    
+       npp1_2          0.954591                 npp1_2           0.807975    
+       npp1_3          0.954591                 npp1_3           0.807975    
+       npp1_4          0.954591                 npp1_4           0.807975    
+       npp0_1          0.229000                 npp0_1           0.229000    
+       npp0_2          0.229000                 npp0_2           0.229000    
+       npp0_3          0.229000                 npp0_3           0.229000    
+       npp0_4          0.229000                 npp0_4           0.229000    
+       smdc_1          1.176492E-02             smdc_1           1.055556E-02
+       smdc_2          1.176492E-02             smdc_2           1.055556E-02
+       smdc_3          1.176492E-02             smdc_3           1.055556E-02
+       smdc_4          1.176492E-02             smdc_4           1.055556E-02
+       smdp_1           2.40000                 smdp_1            2.40000    
+       smdp_2           2.40000                 smdp_2            2.40000    
+       smdp_3           2.40000                 smdp_3            2.40000    
+       smdp_4           2.40000                 smdp_4            2.40000    
+       lrm_1           4.200000E-02             lrm_1            4.200000E-02
+       lrm_2           4.200000E-02             lrm_2            4.200000E-02
+       lrm_3           4.200000E-02             lrm_3            4.200000E-02
+       lrm_4           4.200000E-02             lrm_4            4.200000E-02
+       lr0_1           1.500000E-03             lr0_1            1.500000E-03
+       lr0_2           1.500000E-03             lr0_2            1.500000E-03
+       lr0_3           1.500000E-03             lr0_3            1.500000E-03
+       lr0_4           1.500000E-03             lr0_4            1.500000E-03
+       msc_1           8.408002E-03             msc_1            1.500000E-02
+       msc_2           8.408002E-03             msc_2            1.500000E-02
+       msc_3           8.408002E-03             msc_3            1.500000E-02
+       msc_4           8.408002E-03             msc_4            1.500000E-02
+       sla0_1           16.1000                 sla0_1            16.1000    
+       sla0_2           16.1000                 sla0_2            16.1000    
+       sla0_3           16.1000                 sla0_3            16.1000    
+       sla0_4           16.1000                 sla0_4            16.1000    
+       sla1_1           5.66494                 sla1_1            5.69930    
+       sla1_2           5.66494                 sla1_2            5.69930    
+       sla1_3           5.66494                 sla1_3            5.69930    
+       sla1_4           5.66494                 sla1_4            5.69930    
+       fert_1           1.00000                 fert_1            1.00000    
+       fert_2           1.00000                 fert_2            1.00000    
+       fert_3           1.00000                 fert_3            1.00000    
+       fert_4           1.00000                 fert_4            1.00000    
+       maxasw_1         300.000                 maxasw_1          300.000    
+       maxasw_2         300.000                 maxasw_2          300.000    
+       maxasw_3         300.000                 maxasw_3          300.000    
+       maxasw_4         300.000                 maxasw_4          300.000    
+    Maximum   factor change:  1.784     ["msc_1"]
+    Maximum relative change: 0.4395     ["msc_1"]
+
+
+ OPTIMISATION ITERATION NO.        : 4
+    Model calls so far             : 29
+    Starting phi for this iteration                          :   2391.1    
+    Contribution to phi from observation group "site1"       :   643.53    
+    Contribution to phi from observation group "site2"       :   994.73    
+    Contribution to phi from observation group "site3"       :   326.42    
+    Contribution to phi from observation group "site4"       :   426.42    
+
+        Lambda =   1.2500     ----->
+           Phi =   2672.0      (  1.117 times starting phi)
+
+        Lambda =  0.62500     ----->
+           Phi =   2678.2      (  1.120 times starting phi)
+
+        Lambda =   2.5000     ----->
+           Phi =   2671.8      (  1.117 times starting phi)
+
+    No more lambdas: relative phi reduction between lambdas less than 0.0300
+    Lowest phi this iteration:   2671.8    
+    Relative phi reduction between optimisation iterations less than 0.1000
+    Switch to central derivatives calculation
+    (restart from best parameters so far - these achieved at iteration    3)
+
+       Current parameter values
+       fsp0_1          0.750000    
+       fsp0_2          0.750000    
+       fsp0_3          0.750000    
+       fsp0_4          0.750000    
+       fsp1_1          0.172611    
+       fsp1_2          0.172611    
+       fsp1_3          0.172611    
+       fsp1_4          0.172611    
+       npp1_1          0.954591    
+       npp1_2          0.954591    
+       npp1_3          0.954591    
+       npp1_4          0.954591    
+       npp0_1          0.229000    
+       npp0_2          0.229000    
+       npp0_3          0.229000    
+       npp0_4          0.229000    
+       smdc_1          1.176492E-02
+       smdc_2          1.176492E-02
+       smdc_3          1.176492E-02
+       smdc_4          1.176492E-02
+       smdp_1           2.40000    
+       smdp_2           2.40000    
+       smdp_3           2.40000    
+       smdp_4           2.40000    
+       lrm_1           4.200000E-02
+       lrm_2           4.200000E-02
+       lrm_3           4.200000E-02
+       lrm_4           4.200000E-02
+       lr0_1           1.500000E-03
+       lr0_2           1.500000E-03
+       lr0_3           1.500000E-03
+       lr0_4           1.500000E-03
+       msc_1           8.408002E-03
+       msc_2           8.408002E-03
+       msc_3           8.408002E-03
+       msc_4           8.408002E-03
+       sla0_1           16.1000    
+       sla0_2           16.1000    
+       sla0_3           16.1000    
+       sla0_4           16.1000    
+       sla1_1           5.66494    
+       sla1_2           5.66494    
+       sla1_3           5.66494    
+       sla1_4           5.66494    
+       fert_1           1.00000    
+       fert_2           1.00000    
+       fert_3           1.00000    
+       fert_4           1.00000    
+       maxasw_1         300.000    
+       maxasw_2         300.000    
+       maxasw_3         300.000    
+       maxasw_4         300.000    
+
+
+ OPTIMISATION ITERATION NO.        : 5
+    Model calls so far             : 40
+    Starting phi for this iteration                          :   2391.1    
+    Contribution to phi from observation group "site1"       :   643.53    
+    Contribution to phi from observation group "site2"       :   994.73    
+    Contribution to phi from observation group "site3"       :   326.42    
+    Contribution to phi from observation group "site4"       :   426.42    
+
+        Lambda =   1.2500     ----->
+           Phi =   2566.6      (  1.073 times starting phi)
+
+        Lambda =  0.62500     ----->
+           Phi =   2597.4      (  1.086 times starting phi)
+
+        Lambda =   2.5000     ----->
+           Phi =   2645.4      (  1.106 times starting phi)
+
+    No more lambdas: phi rising
+    Lowest phi this iteration:   2566.6    
+
+       Current parameter values                 Previous parameter values
+       fsp0_1          0.750000                 fsp0_1           0.750000    
+       fsp0_2          0.750000                 fsp0_2           0.750000    
+       fsp0_3          0.750000                 fsp0_3           0.750000    
+       fsp0_4          0.750000                 fsp0_4           0.750000    
+       fsp1_1          0.244109                 fsp1_1           0.172611    
+       fsp1_2          0.244109                 fsp1_2           0.172611    
+       fsp1_3          0.244109                 fsp1_3           0.172611    
+       fsp1_4          0.244109                 fsp1_4           0.172611    
+       npp1_1           1.00000                 npp1_1           0.954591    
+       npp1_2           1.00000                 npp1_2           0.954591    
+       npp1_3           1.00000                 npp1_3           0.954591    
+       npp1_4           1.00000                 npp1_4           0.954591    
+       npp0_1          0.229000                 npp0_1           0.229000    
+       npp0_2          0.229000                 npp0_2           0.229000    
+       npp0_3          0.229000                 npp0_3           0.229000    
+       npp0_4          0.229000                 npp0_4           0.229000    
+       smdc_1          1.000000E-02             smdc_1           1.176492E-02
+       smdc_2          1.000000E-02             smdc_2           1.176492E-02
+       smdc_3          1.000000E-02             smdc_3           1.176492E-02
+       smdc_4          1.000000E-02             smdc_4           1.176492E-02
+       smdp_1           2.40000                 smdp_1            2.40000    
+       smdp_2           2.40000                 smdp_2            2.40000    
+       smdp_3           2.40000                 smdp_3            2.40000    
+       smdp_4           2.40000                 smdp_4            2.40000    
+       lrm_1           4.200000E-02             lrm_1            4.200000E-02
+       lrm_2           4.200000E-02             lrm_2            4.200000E-02
+       lrm_3           4.200000E-02             lrm_3            4.200000E-02
+       lrm_4           4.200000E-02             lrm_4            4.200000E-02
+       lr0_1           1.500000E-03             lr0_1            1.500000E-03
+       lr0_2           1.500000E-03             lr0_2            1.500000E-03
+       lr0_3           1.500000E-03             lr0_3            1.500000E-03
+       lr0_4           1.500000E-03             lr0_4            1.500000E-03
+       msc_1           1.168330E-02             msc_1            8.408002E-03
+       msc_2           1.168330E-02             msc_2            8.408002E-03
+       msc_3           1.168330E-02             msc_3            8.408002E-03
+       msc_4           1.168330E-02             msc_4            8.408002E-03
+       sla0_1           16.1000                 sla0_1            16.1000    
+       sla0_2           16.1000                 sla0_2            16.1000    
+       sla0_3           16.1000                 sla0_3            16.1000    
+       sla0_4           16.1000                 sla0_4            16.1000    
+       sla1_1           5.50000                 sla1_1            5.66494    
+       sla1_2           5.50000                 sla1_2            5.66494    
+       sla1_3           5.50000                 sla1_3            5.66494    
+       sla1_4           5.50000                 sla1_4            5.66494    
+       fert_1           1.00000                 fert_1            1.00000    
+       fert_2           1.00000                 fert_2            1.00000    
+       fert_3           1.00000                 fert_3            1.00000    
+       fert_4           1.00000                 fert_4            1.00000    
+       maxasw_1         300.000                 maxasw_1          300.000    
+       maxasw_2         300.000                 maxasw_2          300.000    
+       maxasw_3         300.000                 maxasw_3          300.000    
+       maxasw_4         300.000                 maxasw_4          300.000    
+    Maximum   factor change:  1.414     ["fsp1_1"]
+    Maximum relative change: 0.4142     ["fsp1_1"]
+
+
+ OPTIMISATION ITERATION NO.        : 6
+    Model calls so far             : 56
+    Starting phi for this iteration                          :   2566.6    
+    Contribution to phi from observation group "site1"       :   733.20    
+    Contribution to phi from observation group "site2"       :   1048.0    
+    Contribution to phi from observation group "site3"       :   368.75    
+    Contribution to phi from observation group "site4"       :   416.60    
+        param "npp1_1" frozen: gradient and update vectors out of bounds
+        param "sla1_1" frozen: gradient and update vectors out of bounds
+
+        Lambda =   1.2500     ----->
+           Phi =   3561.1      (  1.387 times starting phi)
+
+        Lambda =  0.62500     ----->
+           Phi =   5644.0      (  2.199 times starting phi)
+
+        Lambda =   2.5000     ----->
+           Phi =   3111.1      (  1.212 times starting phi)
+
+        Lambda =   5.0000     ----->
+           Phi =   2851.9      (  1.111 times starting phi)
+
+        Lambda =   10.000     ----->
+           Phi =   2728.7      (  1.063 times starting phi)
+
+        Lambda =   20.000     ----->
+           Phi =   2659.9      (  1.036 times starting phi)
+
+    No more lambdas: relative phi reduction between lambdas less than 0.0300
+    Lowest phi this iteration:   2659.9    
+
+       Current parameter values                 Previous parameter values
+       fsp0_1          0.750000                 fsp0_1           0.750000    
+       fsp0_2          0.750000                 fsp0_2           0.750000    
+       fsp0_3          0.750000                 fsp0_3           0.750000    
+       fsp0_4          0.750000                 fsp0_4           0.750000    
+       fsp1_1          0.238612                 fsp1_1           0.244109    
+       fsp1_2          0.238612                 fsp1_2           0.244109    
+       fsp1_3          0.238612                 fsp1_3           0.244109    
+       fsp1_4          0.238612                 fsp1_4           0.244109    
+       npp1_1           1.00000                 npp1_1            1.00000    
+       npp1_2           1.00000                 npp1_2            1.00000    
+       npp1_3           1.00000                 npp1_3            1.00000    
+       npp1_4           1.00000                 npp1_4            1.00000    
+       npp0_1          0.229000                 npp0_1           0.229000    
+       npp0_2          0.229000                 npp0_2           0.229000    
+       npp0_3          0.229000                 npp0_3           0.229000    
+       npp0_4          0.229000                 npp0_4           0.229000    
+       smdc_1          1.186630E-02             smdc_1           1.000000E-02
+       smdc_2          1.186630E-02             smdc_2           1.000000E-02
+       smdc_3          1.186630E-02             smdc_3           1.000000E-02
+       smdc_4          1.186630E-02             smdc_4           1.000000E-02
+       smdp_1           2.40000                 smdp_1            2.40000    
+       smdp_2           2.40000                 smdp_2            2.40000    
+       smdp_3           2.40000                 smdp_3            2.40000    
+       smdp_4           2.40000                 smdp_4            2.40000    
+       lrm_1           4.200000E-02             lrm_1            4.200000E-02
+       lrm_2           4.200000E-02             lrm_2            4.200000E-02
+       lrm_3           4.200000E-02             lrm_3            4.200000E-02
+       lrm_4           4.200000E-02             lrm_4            4.200000E-02
+       lr0_1           1.500000E-03             lr0_1            1.500000E-03
+       lr0_2           1.500000E-03             lr0_2            1.500000E-03
+       lr0_3           1.500000E-03             lr0_3            1.500000E-03
+       lr0_4           1.500000E-03             lr0_4            1.500000E-03
+       msc_1           7.079420E-03             msc_1            1.168330E-02
+       msc_2           7.079420E-03             msc_2            1.168330E-02
+       msc_3           7.079420E-03             msc_3            1.168330E-02
+       msc_4           7.079420E-03             msc_4            1.168330E-02
+       sla0_1           16.1000                 sla0_1            16.1000    
+       sla0_2           16.1000                 sla0_2            16.1000    
+       sla0_3           16.1000                 sla0_3            16.1000    
+       sla0_4           16.1000                 sla0_4            16.1000    
+       sla1_1           5.50000                 sla1_1            5.50000    
+       sla1_2           5.50000                 sla1_2            5.50000    
+       sla1_3           5.50000                 sla1_3            5.50000    
+       sla1_4           5.50000                 sla1_4            5.50000    
+       fert_1           1.00000                 fert_1            1.00000    
+       fert_2           1.00000                 fert_2            1.00000    
+       fert_3           1.00000                 fert_3            1.00000    
+       fert_4           1.00000                 fert_4            1.00000    
+       maxasw_1         300.000                 maxasw_1          300.000    
+       maxasw_2         300.000                 maxasw_2          300.000    
+       maxasw_3         300.000                 maxasw_3          300.000    
+       maxasw_4         300.000                 maxasw_4          300.000    
+    Maximum   factor change:  1.650     ["msc_1"]
+    Maximum relative change: 0.3941     ["msc_1"]
+
+    Optimisation complete:   3 optimisation iterations have elapsed since lowest
+                           phi was achieved.
+    Total model calls:     72
+
+    The model has been run one final time using best parameters. 
+    Thus all model input files contain best parameter values, and model 
+    output files contain model results based on these parameters.
+
+
+                             OPTIMISATION RESULTS
+
+
+ Adjustable parameters ----->
+
+ Parameter        Estimated         95% percent confidence limits
+                  value             lower limit       upper limit
+  fsp1_1         0.172611          -0.416875          0.762098    
+  npp1_1         0.954591           -9.73185           11.6410    
+  smdc_1         1.176492E-02       3.464660E-03      2.006517E-02
+  msc_1          8.408002E-03      -2.433441E-02      4.115041E-02
+  sla1_1          5.66494           -36.0794           47.4093    
+
+ Note: confidence limits provide only an indication of parameter uncertainty.
+       They rely on a linearity assumption which  may not extend as far in 
+       parameter space as the confidence limits themselves - see PEST manual.
+
+
+ Tied parameters ----->
+
+ Parameter      Estimated value
+  fsp1_2         0.172611    
+  fsp1_3         0.172611    
+  fsp1_4         0.172611    
+  npp1_2         0.954591    
+  npp1_3         0.954591    
+  npp1_4         0.954591    
+  smdc_2         1.176492E-02
+  smdc_3         1.176492E-02
+  smdc_4         1.176492E-02
+  msc_2          8.408002E-03
+  msc_3          8.408002E-03
+  msc_4          8.408002E-03
+  sla1_2          5.66494    
+  sla1_3          5.66494    
+  sla1_4          5.66494    
+
+
+ Fixed parameters ----->
+
+ Parameter      Fixed value
+  fsp0_1         0.750000    
+  fsp0_2         0.750000    
+  fsp0_3         0.750000    
+  fsp0_4         0.750000    
+  npp0_1         0.229000    
+  npp0_2         0.229000    
+  npp0_3         0.229000    
+  npp0_4         0.229000    
+  smdp_1          2.40000    
+  smdp_2          2.40000    
+  smdp_3          2.40000    
+  smdp_4          2.40000    
+  lrm_1          4.200000E-02
+  lrm_2          4.200000E-02
+  lrm_3          4.200000E-02
+  lrm_4          4.200000E-02
+  lr0_1          1.500000E-03
+  lr0_2          1.500000E-03
+  lr0_3          1.500000E-03
+  lr0_4          1.500000E-03
+  sla0_1          16.1000    
+  sla0_2          16.1000    
+  sla0_3          16.1000    
+  sla0_4          16.1000    
+  fert_1          1.00000    
+  fert_2          1.00000    
+  fert_3          1.00000    
+  fert_4          1.00000    
+  maxasw_1        300.000    
+  maxasw_2        300.000    
+  maxasw_3        300.000    
+  maxasw_4        300.000    
+
+ See file pest.sen for parameter sensitivities.
+
+
+ Observations ----->
+
+ Observation            Measured       Calculated     Residual       Weight     Group
+                        value          value
+ dbh1_1                 17.1000        11.9155        5.18453        1.000      site1       
+ dbh2_1                 24.9000        21.0213        3.87874        1.000      site1       
+ dbh3_1                 28.3000        25.3077        2.99235        1.000      site1       
+ dbh4_1                 29.9000        28.5345        1.36550        1.000      site1       
+ dbh5_1                 31.1000        31.3933      -0.293282        1.000      site1       
+ dbh6_1                 32.4000        33.8236       -1.42355        1.000      site1       
+ dbh7_1                 33.6000        36.0998       -2.49977        1.000      site1       
+ dbh8_1                 35.2000        38.1782       -2.97820        1.000      site1       
+ dbh9_1                 36.8000        40.1016       -3.30164        1.000      site1       
+ dbh10_1                38.9000        41.8948       -2.99485        1.000      site1       
+ dbh11_1                40.1000        43.5681       -3.46805        1.000      site1       
+ dbh12_1                40.7000        45.1450       -4.44504        1.000      site1       
+ dbh13_1                42.6000        46.6428       -4.04277        1.000      site1       
+ dbh14_1                45.6000        48.0728       -2.47284        1.000      site1       
+ dbh15_1                48.6000        49.4360      -0.836031        1.000      site1       
+ dbh16_1                50.6000        50.7409      -0.140852        1.000      site1       
+ dbh17_1                55.5000        51.9947        3.50526        1.000      site1       
+ dbh18_1                59.1000        53.2035        5.89655        1.000      site1       
+ dbh19_1                59.9000        54.3715        5.52848        1.000      site1       
+ dbh20_1                61.5000        55.5025        5.99749        1.000      site1       
+ dbh21_1                62.5000        56.5982        5.90185        1.000      site1       
+ dbh22_1                63.9000        57.6512        6.24878        1.000      site1       
+ dbh23_1                64.9000        58.6584        6.24161        1.000      site1       
+ dbh24_1                66.7000        59.6202        7.07978        1.000      site1       
+ dbh25_1                68.1000        60.5072        7.59282        1.000      site1       
+ dbh26_1                69.4000        61.3151        8.08493        1.000      site1       
+ dbh27_1                72.0000        62.0422        9.95785        1.000      site1       
+ dbh1_2                 17.7000        11.9155        5.78453        1.000      site2       
+ dbh2_2                 25.8000        21.0213        4.77874        1.000      site2       
+ dbh3_2                 28.8000        25.3077        3.49235        1.000      site2       
+ dbh4_2                 30.3000        28.5345        1.76550        1.000      site2       
+ dbh5_2                 31.2000        31.3933      -0.193282        1.000      site2       
+ dbh6_2                 32.1000        33.8236       -1.72355        1.000      site2       
+ dbh7_2                 32.9000        36.0998       -3.19977        1.000      site2       
+ dbh8_2                 33.8000        38.1782       -4.37820        1.000      site2       
+ dbh9_2                 35.4000        40.1016       -4.70164        1.000      site2       
+ dbh10_2                37.2000        41.8948       -4.69485        1.000      site2       
+ dbh11_2                38.0000        43.5681       -5.56805        1.000      site2       
+ dbh12_2                38.5000        45.1450       -6.64504        1.000      site2       
+ dbh13_2                39.8000        46.6428       -6.84277        1.000      site2       
+ dbh14_2                42.2000        48.0728       -5.87284        1.000      site2       
+ dbh15_2                44.6000        49.4360       -4.83603        1.000      site2       
+ dbh16_2                45.4000        50.7409       -5.34085        1.000      site2       
+ dbh17_2                45.5000        51.9947       -6.49474        1.000      site2       
+ dbh18_2                46.8000        53.2035       -6.40345        1.000      site2       
+ dbh19_2                47.3000        54.3715       -7.07152        1.000      site2       
+ dbh20_2                48.3000        55.5025       -7.20251        1.000      site2       
+ dbh21_2                48.9000        56.5982       -7.69815        1.000      site2       
+ dbh22_2                49.8000        57.6512       -7.85122        1.000      site2       
+ dbh23_2                50.4000        58.6584       -8.25839        1.000      site2       
+ dbh24_2                51.2000        59.6202       -8.42022        1.000      site2       
+ dbh25_2                52.5000        60.5072       -8.00718        1.000      site2       
+ dbh26_2                53.1000        61.3151       -8.21507        1.000      site2       
+ dbh27_2                54.2000        62.0422       -7.84215        1.000      site2       
+ dbh1_3                 18.5000        11.9155        6.58453        1.000      site3       
+ dbh2_3                 26.5000        21.0213        5.47874        1.000      site3       
+ dbh3_3                 29.9000        25.3077        4.59235        1.000      site3       
+ dbh4_3                 31.4000        28.5345        2.86550        1.000      site3       
+ dbh5_3                 32.6000        31.3933        1.20672        1.000      site3       
+ dbh6_3                 34.0000        33.8236       0.176446        1.000      site3       
+ dbh7_3                 35.0000        36.0998       -1.09977        1.000      site3       
+ dbh8_3                 36.6000        38.1782       -1.57820        1.000      site3       
+ dbh9_3                 37.6000        40.1016       -2.50164        1.000      site3       
+ dbh10_3                39.3000        41.8948       -2.59485        1.000      site3       
+ dbh11_3                40.3000        43.5681       -3.26805        1.000      site3       
+ dbh12_3                40.8000        45.1450       -4.34504        1.000      site3       
+ dbh13_3                42.5000        46.6428       -4.14277        1.000      site3       
+ dbh14_3                44.6000        48.0728       -3.47284        1.000      site3       
+ dbh15_3                46.4000        49.4360       -3.03603        1.000      site3       
+ dbh16_3                47.8000        50.7409       -2.94085        1.000      site3       
+ dbh17_3                52.8000        51.9947       0.805260        1.000      site3       
+ dbh18_3                55.5000        53.2035        2.29655        1.000      site3       
+ dbh19_3                57.0000        54.3715        2.62848        1.000      site3       
+ dbh20_3                58.6000        55.5025        3.09749        1.000      site3       
+ dbh21_3                59.2000        56.5982        2.60185        1.000      site3       
+ dbh22_3                60.9000        57.6512        3.24878        1.000      site3       
+ dbh23_3                61.6000        58.6584        2.94161        1.000      site3       
+ dbh24_3                63.0000        59.6202        3.37978        1.000      site3       
+ dbh25_3                64.7000        60.5072        4.19282        1.000      site3       
+ dbh26_3                65.6000        61.3151        4.28493        1.000      site3       
+ dbh27_3                67.8000        62.0422        5.75785        1.000      site3       
+ dbh1_4                 20.9000        11.9155        8.98453        1.000      site4       
+ dbh2_4                 29.5000        21.0213        8.47874        1.000      site4       
+ dbh3_4                 30.3000        25.3077        4.99235        1.000      site4       
+ dbh4_4                 31.5000        28.5345        2.96550        1.000      site4       
+ dbh5_4                 32.6000        31.3933        1.20672        1.000      site4       
+ dbh6_4                 34.0000        33.8236       0.176446        1.000      site4       
+ dbh7_4                 35.0000        36.0998       -1.09977        1.000      site4       
+ dbh8_4                 36.5000        38.1782       -1.67820        1.000      site4       
+ dbh9_4                 37.6000        40.1016       -2.50164        1.000      site4       
+ dbh10_4                39.5000        41.8948       -2.39485        1.000      site4       
+ dbh11_4                40.4000        43.5681       -3.16805        1.000      site4       
+ dbh12_4                41.0000        45.1450       -4.14504        1.000      site4       
+ dbh13_4                42.4000        46.6428       -4.24277        1.000      site4       
+ dbh14_4                44.8000        48.0728       -3.27284        1.000      site4       
+ dbh15_4                47.3000        49.4360       -2.13603        1.000      site4       
+ dbh16_4                48.6000        50.7409       -2.14085        1.000      site4       
+ dbh17_4                48.9000        51.9947       -3.09474        1.000      site4       
+ dbh18_4                50.6000        53.2035       -2.60345        1.000      site4       
+ dbh19_4                51.5000        54.3715       -2.87152        1.000      site4       
+ dbh20_4                52.3000        55.5025       -3.20251        1.000      site4       
+ dbh21_4                52.8000        56.5982       -3.79815        1.000      site4       
+ dbh22_4                53.8000        57.6512       -3.85122        1.000      site4       
+ dbh23_4                54.1000        58.6584       -4.55839        1.000      site4       
+ dbh24_4                55.2000        59.6202       -4.42022        1.000      site4       
+ dbh25_4                56.1000        60.5072       -4.40718        1.000      site4       
+ dbh26_4                56.8000        61.3151       -4.51507        1.000      site4       
+ dbh27_4                58.4000        62.0422       -3.64215        1.000      site4       
+
+ See file pest.res for more details of residuals in graph-ready format.
+
+ See file pest.seo for composite observation sensitivities.
+
+
+ Objective function ----->
+
+   Sum of squared weighted residuals (ie phi)                =   2391.1    
+   Contribution to phi from observation group "site1"        =   643.53    
+   Contribution to phi from observation group "site2"        =   994.73    
+   Contribution to phi from observation group "site3"        =   326.42    
+   Contribution to phi from observation group "site4"        =   426.42    
+
+
+ Correlation Coefficient ----->
+
+   Correlation coefficient                                   =  0.93569    
+
+
+ Analysis of residuals ----->
+
+   All residuals:-
+      Number of residuals with non-zero weight                       =   108
+      Mean value of non-zero weighted residuals                      = -0.7302    
+      Maximum weighted residual [observation "dbh27_1"]              =   9.958    
+      Minimum weighted residual [observation "dbh24_2"]              =  -8.420    
+      Standard variance of weighted residuals                        =   23.21    
+      Standard error of weighted residuals                           =   4.818    
+
+      Note: the above variance was obtained by dividing the objective 
+      function by the number of system degrees of freedom (ie. number of 
+      observations with non-zero weight plus number of prior information 
+      articles with non-zero weight minus the number of adjustable parameters.)
+      If the degrees of freedom is negative the divisor becomes 
+      the number of observations with non-zero weight plus the number of 
+      prior information items with non-zero weight.
+
+   Residuals for observation group "site1":-
+      Number of residuals with non-zero weight                       =    27
+      Mean value of non-zero weighted residuals                      =   2.095    
+      Maximum weighted residual [observation "dbh27_1"]              =   9.958    
+      Minimum weighted residual [observation "dbh12_1"]              =  -4.445    
+      "Variance" of weighted residuals                               =   23.83    
+      "Standard error" of weighted residuals                         =   4.882    
+
+      Note: the above "variance" was obtained by dividing the sum of squared 
+      residuals by the number of items with non-zero weight.
+
+   Residuals for observation group "site2":-
+      Number of residuals with non-zero weight                       =    27
+      Mean value of non-zero weighted residuals                      =  -4.505    
+      Maximum weighted residual [observation "dbh1_2"]               =   5.785    
+      Minimum weighted residual [observation "dbh24_2"]              =  -8.420    
+      "Variance" of weighted residuals                               =   36.84    
+      "Standard error" of weighted residuals                         =   6.070    
+
+      Note: the above "variance" was obtained by dividing the sum of squared 
+      residuals by the number of items with non-zero weight.
+
+   Residuals for observation group "site3":-
+      Number of residuals with non-zero weight                       =    27
+      Mean value of non-zero weighted residuals                      =   1.006    
+      Maximum weighted residual [observation "dbh1_3"]               =   6.585    
+      Minimum weighted residual [observation "dbh12_3"]              =  -4.345    
+      "Variance" of weighted residuals                               =   12.09    
+      "Standard error" of weighted residuals                         =   3.477    
+
+      Note: the above "variance" was obtained by dividing the sum of squared 
+      residuals by the number of items with non-zero weight.
+
+   Residuals for observation group "site4":-
+      Number of residuals with non-zero weight                       =    27
+      Mean value of non-zero weighted residuals                      =  -1.516    
+      Maximum weighted residual [observation "dbh1_4"]               =   8.985    
+      Minimum weighted residual [observation "dbh23_4"]              =  -4.558    
+      "Variance" of weighted residuals                               =   15.79    
+      "Standard error" of weighted residuals                         =   3.974    
+
+      Note: the above "variance" was obtained by dividing the sum of squared 
+      residuals by the number of items with non-zero weight.
+ 
+
+ K-L information statistics ----->
+
+ 
+   AIC   =   346.5169    
+   AICC  =   347.3486    
+   BIC   =   362.6097    
+   KIC   =   355.1090    
+
+ Parameter covariance matrix ----->
+
+                 fsp1_1       npp1_1       smdc_1       msc_1        sla1_1   
+ fsp1_1         8.8132E-02   -1.535      -7.9447E-04   4.8415E-03   -6.212    
+ npp1_1         -1.535        28.96       9.5054E-03  -8.3702E-02    110.6    
+ smdc_1        -7.9447E-04   9.5054E-03   1.7473E-05  -4.5927E-05   5.2855E-02
+ msc_1          4.8415E-03  -8.3702E-02  -4.5927E-05   2.7190E-04  -0.3401    
+ sla1_1         -6.212        110.6       5.2855E-02  -0.3401        442.0    
+
+
+ Parameter correlation coefficient matrix ----->
+
+                 fsp1_1       npp1_1       smdc_1       msc_1        sla1_1   
+ fsp1_1          1.000      -0.9610      -0.6402       0.9890      -0.9953    
+ npp1_1        -0.9610        1.000       0.4225      -0.9432       0.9774    
+ smdc_1        -0.6402       0.4225        1.000      -0.6663       0.6015    
+ msc_1          0.9890      -0.9432      -0.6663        1.000      -0.9810    
+ sla1_1        -0.9953       0.9774       0.6015      -0.9810        1.000    
+
+
+ Normalized eigenvectors of parameter covariance matrix ----->
+
+               Vector_1     Vector_2     Vector_3     Vector_4     Vector_5   
+ fsp1_1         2.3427E-02   7.2093E-02  -0.9969      -1.8400E-02  -1.3621E-02
+ npp1_1        -2.8416E-03   7.2024E-04   1.4561E-02  -0.9698       0.2433    
+ smdc_1        -0.9665       0.2568      -4.2007E-03   2.9879E-03   1.1406E-04
+ msc_1         -0.2557      -0.9638      -7.5676E-02  -1.2898E-03  -7.4554E-04
+ sla1_1         9.5905E-04   6.0735E-05  -1.7712E-02   0.2431       0.9698    
+
+
+ Eigenvalues ----->
+
+                7.7242E-08   5.9633E-06   5.5927E-04    1.219        469.8    

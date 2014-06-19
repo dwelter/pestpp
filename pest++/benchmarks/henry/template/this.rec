@@ -1,8 +1,0 @@
-PEST++ Version 1.2.0
-
-Control file = this"
-
-OPTIMISATION ITERATION NUMBER: 1
-  Iteration type: base parameter solution
-  SVD Package: Eigen JacobiSVD
-    Model calls so far : 0

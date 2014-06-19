@@ -1,0 +1,117 @@
+                        PARAMETER SENSITIVITIES: CASE pest
+
+
+ OPTIMISATION ITERATION NO.  1 ----->
+ Parameter name    Group          Current value    Sensitivity
+   fsp1_1          fsp             3.000000E-02      9.21749    
+   npp1_1          npp             0.800000         0.134392    
+   smdc_1          smdc            9.500000E-02      5.48948    
+   msc_1           msc             1.000000E-02      20.7827    
+   sla1_1          sla              5.70000         7.321576E-02
+
+
+ OPTIMISATION ITERATION NO.  2 ----->
+ Parameter name    Group          Current value    Sensitivity
+   fsp1_1          fsp             5.711533E-02      8.87793    
+   npp1_1          npp             0.799487         0.231491    
+   smdc_1          smdc            3.166667E-02      26.6052    
+   msc_1           msc             1.500000E-02      20.4305    
+   sla1_1          sla              5.69965         0.124682    
+
+
+ OPTIMISATION ITERATION NO.  3 ----->
+ Parameter name    Group          Current value    Sensitivity
+   fsp1_1          fsp             0.133952          4.40597    
+   npp1_1          npp             0.807975         0.458821    
+   smdc_1          smdc            1.055556E-02      155.208    
+   msc_1           msc             1.500000E-02      44.6657    
+   sla1_1          sla              5.69930         0.157854    
+
+
+ OPTIMISATION ITERATION NO.  4 ----->
+ Parameter name    Group          Current value    Sensitivity
+   fsp1_1          fsp             0.172611         0.614058    
+   npp1_1          npp             0.954591         0.350919    
+   smdc_1          smdc            1.176492E-02      160.877    
+   msc_1           msc             8.408002E-03      114.866    
+   sla1_1          sla              5.66494         5.477610E-02
+
+
+ OPTIMISATION ITERATION NO.  5 ----->
+ Parameter name    Group          Current value    Sensitivity
+   fsp1_1          fsp             0.172611         0.627574    
+   npp1_1          npp             0.954591         0.353166    
+   smdc_1          smdc            1.176492E-02      161.573    
+   msc_1           msc             8.408002E-03      113.473    
+   sla1_1          sla              5.66494         6.143013E-02
+
+
+ OPTIMISATION ITERATION NO.  6 ----->
+ Parameter name    Group          Current value    Sensitivity
+   fsp1_1          fsp             0.244109         0.772968    
+   npp1_1          npp              1.00000         0.481061    
+   smdc_1          smdc            1.000000E-02      187.917    
+   msc_1           msc             1.168330E-02      51.2088    
+   sla1_1          sla              5.50000         0.138949    
+
+
+
+                        COMPLETION OF OPTIMISATION PROCESS
+
+ Composite sensitivities for observation group "site1" ----->
+
+ Number of observations with non-zero weight =    27
+ Parameter name    Group          Current value    Sensitivity
+   fsp1_1          fsp             0.172611          8.81193    
+   npp1_1          npp             0.954591         0.917642    
+   smdc_1          smdc            1.176492E-02      310.415    
+   msc_1           msc             8.408002E-03      89.3314    
+   sla1_1          sla              5.66494         0.315708    
+
+
+
+ Composite sensitivities for observation group "site2" ----->
+
+ Number of observations with non-zero weight =    27
+ Parameter name    Group          Current value    Sensitivity
+   fsp1_1          fsp             0.172611          8.81193    
+   npp1_1          npp             0.954591         0.917642    
+   smdc_1          smdc            1.176492E-02      310.415    
+   msc_1           msc             8.408002E-03      89.3314    
+   sla1_1          sla              5.66494         0.315708    
+
+
+
+ Composite sensitivities for observation group "site3" ----->
+
+ Number of observations with non-zero weight =    27
+ Parameter name    Group          Current value    Sensitivity
+   fsp1_1          fsp             0.172611          8.81193    
+   npp1_1          npp             0.954591         0.917642    
+   smdc_1          smdc            1.176492E-02      310.415    
+   msc_1           msc             8.408002E-03      89.3314    
+   sla1_1          sla              5.66494         0.315708    
+
+
+
+ Composite sensitivities for observation group "site4" ----->
+
+ Number of observations with non-zero weight =    27
+ Parameter name    Group          Current value    Sensitivity
+   fsp1_1          fsp             0.172611          8.81193    
+   npp1_1          npp             0.954591         0.917642    
+   smdc_1          smdc            1.176492E-02      310.415    
+   msc_1           msc             8.408002E-03      89.3314    
+   sla1_1          sla              5.66494         0.315708    
+
+
+
+ Composite sensitivities for all observations/prior info ----->
+
+ Number of observations with non-zero weight =   108
+ Parameter name    Group          Current value    Sensitivity
+   fsp1_1          fsp             0.172611          4.40597    
+   npp1_1          npp             0.954591         0.458821    
+   smdc_1          smdc            1.176492E-02      155.208    
+   msc_1           msc             8.408002E-03      44.6657    
+   sla1_1          sla              5.66494         0.157854    

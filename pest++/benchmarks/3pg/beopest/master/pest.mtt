@@ -1,0 +1,54 @@
+ PARAMETER STATISTICAL MATRICES: CASE pest
+
+ OPTIMISATION ITERATION NUMBER  6
+
+
+ Parameter standard deviations ----->
+
+ Adjustable        Group           Current          Standard
+ parameter                         value            deviation
+ fsp1_1            fsp             0.244109         0.349185    
+ npp1_1            npp              1.00000          6.08927    
+ smdc_1            smdc            1.000000E-02     4.397378E-03
+ msc_1             msc             1.168330E-02     1.577403E-02
+ sla1_1            sla              5.50000          17.7458    
+
+ Note that if a parameter is log-transformed, the standard deviation in the 
+ above table refers to the log of the parameter. Note also that the objective
+ function used in the calculation of the covariance matrix (and eigenvalues
+ of the covariance matrix) was calculated at the end of the previous iteration.
+
+
+ Parameter covariance matrix ----->
+
+                 fsp1_1       npp1_1       smdc_1       msc_1        sla1_1   
+ fsp1_1         0.1219      -0.9875      -1.0830E-03   3.6870E-03   -4.348    
+ npp1_1        -0.9875        37.08      -2.0796E-03  -9.0935E-02    102.1    
+ smdc_1        -1.0830E-03  -2.0796E-03   1.9337E-05  -1.6146E-05   1.9330E-02
+ msc_1          3.6870E-03  -9.0935E-02  -1.6146E-05   2.4882E-04  -0.2775    
+ sla1_1         -4.348        102.1       1.9330E-02  -0.2775        314.9    
+
+
+ Parameter correlation coefficient matrix ----->
+
+                 fsp1_1       npp1_1       smdc_1       msc_1        sla1_1   
+ fsp1_1          1.000      -0.4644      -0.7053       0.6694      -0.7017    
+ npp1_1        -0.4644        1.000      -7.7666E-02  -0.9467       0.9449    
+ smdc_1        -0.7053      -7.7666E-02    1.000      -0.2328       0.2477    
+ msc_1          0.6694      -0.9467      -0.2328        1.000      -0.9912    
+ sla1_1        -0.7017       0.9449       0.2477      -0.9912        1.000    
+
+
+ Normalized eigenvectors of covariance matrix ----->
+
+               Vector_1     Vector_2     Vector_3     Vector_4     Vector_5   
+ fsp1_1         3.5282E-03  -3.3554E-03  -0.9932      -0.1159      -1.2743E-02
+ npp1_1        -2.4748E-03   6.2382E-04   0.1061      -0.9443       0.3116    
+ smdc_1        -0.9709       0.2396      -4.5171E-03   2.2118E-03   5.0885E-05
+ msc_1         -0.2396      -0.9709       2.4413E-03  -1.5489E-05  -8.3800E-04
+ sla1_1         6.9961E-04  -1.1187E-03  -4.8130E-02   0.3081       0.9501    
+
+
+ Eigenvalues ----->
+
+                5.7069E-08   4.2591E-06   1.6747E-02    3.638        348.5    

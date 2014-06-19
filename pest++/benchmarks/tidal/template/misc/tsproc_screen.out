@@ -1,0 +1,711 @@
+ 
+ Program TSPROC is a general time-series processor. It can also be used for 
+   PEST input file preparation where time series data, or processed time 
+   series data, comprises at least part of the observation dataset.
+ 
+ Enter name of TSPROC input file:  Enter name for TSPROC run record file: 
+ Processing information contained in TSPROC input file misc\tsproc_setup.dat....
+
+ Processing SETTINGS block....
+    CONTEXT pest_prep
+    DATE_FORMAT dd/mm/yyyy
+    Processing of SETTINGS block complete.
+
+ Processing GET_MUL_SERIES_SSF block....
+    CONTEXT pest_prep
+    FILE smp\obs\hds.smp
+    SITE o10
+    NEW_SERIES_NAME o10oh
+    SITE o11
+    NEW_SERIES_NAME o11oh
+    SITE o12
+    NEW_SERIES_NAME o12oh
+    SITE o13
+    NEW_SERIES_NAME o13oh
+    SITE o14
+    NEW_SERIES_NAME o14oh
+    SITE o15
+    NEW_SERIES_NAME o15oh
+    SITE o16
+    NEW_SERIES_NAME o16oh
+    SITE o17
+    NEW_SERIES_NAME o17oh
+    SITE o18
+    NEW_SERIES_NAME o18oh
+    SITE o19
+    NEW_SERIES_NAME o19oh
+    SITE o110
+    NEW_SERIES_NAME o110oh
+    SITE o111
+    NEW_SERIES_NAME o111oh
+    SITE o112
+    NEW_SERIES_NAME o112oh
+    SITE o113
+    NEW_SERIES_NAME o113oh
+    SITE o114
+    NEW_SERIES_NAME o114oh
+    SITE o115
+    NEW_SERIES_NAME o115oh
+    SITE o116
+    NEW_SERIES_NAME o116oh
+    SITE o117
+    NEW_SERIES_NAME o117oh
+    SITE o118
+    NEW_SERIES_NAME o118oh
+    SITE o119
+    NEW_SERIES_NAME o119oh
+    SITE o30
+    NEW_SERIES_NAME o30oh
+    SITE o31
+    NEW_SERIES_NAME o31oh
+    SITE o32
+    NEW_SERIES_NAME o32oh
+    SITE o33
+    NEW_SERIES_NAME o33oh
+    SITE o34
+    NEW_SERIES_NAME o34oh
+    SITE o35
+    NEW_SERIES_NAME o35oh
+    SITE o36
+    NEW_SERIES_NAME o36oh
+    SITE o37
+    NEW_SERIES_NAME o37oh
+    SITE o38
+    NEW_SERIES_NAME o38oh
+    SITE o39
+    NEW_SERIES_NAME o39oh
+    SITE o310
+    NEW_SERIES_NAME o310oh
+    SITE o311
+    NEW_SERIES_NAME o311oh
+    SITE o312
+    NEW_SERIES_NAME o312oh
+    SITE o313
+    NEW_SERIES_NAME o313oh
+    SITE o314
+    NEW_SERIES_NAME o314oh
+    SITE o315
+    NEW_SERIES_NAME o315oh
+    SITE o316
+    NEW_SERIES_NAME o316oh
+    SITE o317
+    NEW_SERIES_NAME o317oh
+    SITE o318
+    NEW_SERIES_NAME o318oh
+    SITE o319
+    NEW_SERIES_NAME o319oh
+    Reading site sample file smp\obs\hds.smp....
+    Series "o10oh" successfully imported from file smp\obs\hds.smp
+    Series "o11oh" successfully imported from file smp\obs\hds.smp
+    Series "o12oh" successfully imported from file smp\obs\hds.smp
+    Series "o13oh" successfully imported from file smp\obs\hds.smp
+    Series "o14oh" successfully imported from file smp\obs\hds.smp
+    Series "o15oh" successfully imported from file smp\obs\hds.smp
+    Series "o16oh" successfully imported from file smp\obs\hds.smp
+    Series "o17oh" successfully imported from file smp\obs\hds.smp
+    Series "o18oh" successfully imported from file smp\obs\hds.smp
+    Series "o19oh" successfully imported from file smp\obs\hds.smp
+    Series "o110oh" successfully imported from file smp\obs\hds.smp
+    Series "o111oh" successfully imported from file smp\obs\hds.smp
+    Series "o112oh" successfully imported from file smp\obs\hds.smp
+    Series "o113oh" successfully imported from file smp\obs\hds.smp
+    Series "o114oh" successfully imported from file smp\obs\hds.smp
+    Series "o115oh" successfully imported from file smp\obs\hds.smp
+    Series "o116oh" successfully imported from file smp\obs\hds.smp
+    Series "o117oh" successfully imported from file smp\obs\hds.smp
+    Series "o118oh" successfully imported from file smp\obs\hds.smp
+    Series "o119oh" successfully imported from file smp\obs\hds.smp
+    Series "o30oh" successfully imported from file smp\obs\hds.smp
+    Series "o31oh" successfully imported from file smp\obs\hds.smp
+    Series "o32oh" successfully imported from file smp\obs\hds.smp
+    Series "o33oh" successfully imported from file smp\obs\hds.smp
+    Series "o34oh" successfully imported from file smp\obs\hds.smp
+    Series "o35oh" successfully imported from file smp\obs\hds.smp
+    Series "o36oh" successfully imported from file smp\obs\hds.smp
+    Series "o37oh" successfully imported from file smp\obs\hds.smp
+    Series "o38oh" successfully imported from file smp\obs\hds.smp
+    Series "o39oh" successfully imported from file smp\obs\hds.smp
+    Series "o310oh" successfully imported from file smp\obs\hds.smp
+    Series "o311oh" successfully imported from file smp\obs\hds.smp
+    Series "o312oh" successfully imported from file smp\obs\hds.smp
+    Series "o313oh" successfully imported from file smp\obs\hds.smp
+    Series "o314oh" successfully imported from file smp\obs\hds.smp
+    Series "o315oh" successfully imported from file smp\obs\hds.smp
+    Series "o316oh" successfully imported from file smp\obs\hds.smp
+    Series "o317oh" successfully imported from file smp\obs\hds.smp
+    Series "o318oh" successfully imported from file smp\obs\hds.smp
+    Series "o319oh" successfully imported from file smp\obs\hds.smp
+
+ Processing GET_MUL_SERIES_SSF block....
+    CONTEXT all
+    FILE smp\mod\hds.smp
+    SITE o10
+    NEW_SERIES_NAME o10sh
+    SITE o11
+    NEW_SERIES_NAME o11sh
+    SITE o12
+    NEW_SERIES_NAME o12sh
+    SITE o13
+    NEW_SERIES_NAME o13sh
+    SITE o14
+    NEW_SERIES_NAME o14sh
+    SITE o15
+    NEW_SERIES_NAME o15sh
+    SITE o16
+    NEW_SERIES_NAME o16sh
+    SITE o17
+    NEW_SERIES_NAME o17sh
+    SITE o18
+    NEW_SERIES_NAME o18sh
+    SITE o19
+    NEW_SERIES_NAME o19sh
+    SITE o110
+    NEW_SERIES_NAME o110sh
+    SITE o111
+    NEW_SERIES_NAME o111sh
+    SITE o112
+    NEW_SERIES_NAME o112sh
+    SITE o113
+    NEW_SERIES_NAME o113sh
+    SITE o114
+    NEW_SERIES_NAME o114sh
+    SITE o115
+    NEW_SERIES_NAME o115sh
+    SITE o116
+    NEW_SERIES_NAME o116sh
+    SITE o117
+    NEW_SERIES_NAME o117sh
+    SITE o118
+    NEW_SERIES_NAME o118sh
+    SITE o119
+    NEW_SERIES_NAME o119sh
+    SITE o30
+    NEW_SERIES_NAME o30sh
+    SITE o31
+    NEW_SERIES_NAME o31sh
+    SITE o32
+    NEW_SERIES_NAME o32sh
+    SITE o33
+    NEW_SERIES_NAME o33sh
+    SITE o34
+    NEW_SERIES_NAME o34sh
+    SITE o35
+    NEW_SERIES_NAME o35sh
+    SITE o36
+    NEW_SERIES_NAME o36sh
+    SITE o37
+    NEW_SERIES_NAME o37sh
+    SITE o38
+    NEW_SERIES_NAME o38sh
+    SITE o39
+    NEW_SERIES_NAME o39sh
+    SITE o310
+    NEW_SERIES_NAME o310sh
+    SITE o311
+    NEW_SERIES_NAME o311sh
+    SITE o312
+    NEW_SERIES_NAME o312sh
+    SITE o313
+    NEW_SERIES_NAME o313sh
+    SITE o314
+    NEW_SERIES_NAME o314sh
+    SITE o315
+    NEW_SERIES_NAME o315sh
+    SITE o316
+    NEW_SERIES_NAME o316sh
+    SITE o317
+    NEW_SERIES_NAME o317sh
+    SITE o318
+    NEW_SERIES_NAME o318sh
+    SITE o319
+    NEW_SERIES_NAME o319sh
+    Reading site sample file smp\mod\hds.smp....
+    Series "o10sh" successfully imported from file smp\mod\hds.smp
+    Series "o11sh" successfully imported from file smp\mod\hds.smp
+    Series "o12sh" successfully imported from file smp\mod\hds.smp
+    Series "o13sh" successfully imported from file smp\mod\hds.smp
+    Series "o14sh" successfully imported from file smp\mod\hds.smp
+    Series "o15sh" successfully imported from file smp\mod\hds.smp
+    Series "o16sh" successfully imported from file smp\mod\hds.smp
+    Series "o17sh" successfully imported from file smp\mod\hds.smp
+    Series "o18sh" successfully imported from file smp\mod\hds.smp
+    Series "o19sh" successfully imported from file smp\mod\hds.smp
+    Series "o110sh" successfully imported from file smp\mod\hds.smp
+    Series "o111sh" successfully imported from file smp\mod\hds.smp
+    Series "o112sh" successfully imported from file smp\mod\hds.smp
+    Series "o113sh" successfully imported from file smp\mod\hds.smp
+    Series "o114sh" successfully imported from file smp\mod\hds.smp
+    Series "o115sh" successfully imported from file smp\mod\hds.smp
+    Series "o116sh" successfully imported from file smp\mod\hds.smp
+    Series "o117sh" successfully imported from file smp\mod\hds.smp
+    Series "o118sh" successfully imported from file smp\mod\hds.smp
+    Series "o119sh" successfully imported from file smp\mod\hds.smp
+    Series "o30sh" successfully imported from file smp\mod\hds.smp
+    Series "o31sh" successfully imported from file smp\mod\hds.smp
+    Series "o32sh" successfully imported from file smp\mod\hds.smp
+    Series "o33sh" successfully imported from file smp\mod\hds.smp
+    Series "o34sh" successfully imported from file smp\mod\hds.smp
+    Series "o35sh" successfully imported from file smp\mod\hds.smp
+    Series "o36sh" successfully imported from file smp\mod\hds.smp
+    Series "o37sh" successfully imported from file smp\mod\hds.smp
+    Series "o38sh" successfully imported from file smp\mod\hds.smp
+    Series "o39sh" successfully imported from file smp\mod\hds.smp
+    Series "o310sh" successfully imported from file smp\mod\hds.smp
+    Series "o311sh" successfully imported from file smp\mod\hds.smp
+    Series "o312sh" successfully imported from file smp\mod\hds.smp
+    Series "o313sh" successfully imported from file smp\mod\hds.smp
+    Series "o314sh" successfully imported from file smp\mod\hds.smp
+    Series "o315sh" successfully imported from file smp\mod\hds.smp
+    Series "o316sh" successfully imported from file smp\mod\hds.smp
+    Series "o317sh" successfully imported from file smp\mod\hds.smp
+    Series "o318sh" successfully imported from file smp\mod\hds.smp
+    Series "o319sh" successfully imported from file smp\mod\hds.smp
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o10
+    EQUATION "o10sh"
+    Series "o10" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o11
+    EQUATION "o11sh"
+    Series "o11" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o12
+    EQUATION "o12sh"
+    Series "o12" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o13
+    EQUATION "o13sh"
+    Series "o13" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o14
+    EQUATION "o14sh"
+    Series "o14" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o15
+    EQUATION "o15sh"
+    Series "o15" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o16
+    EQUATION "o16sh"
+    Series "o16" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o17
+    EQUATION "o17sh"
+    Series "o17" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o18
+    EQUATION "o18sh"
+    Series "o18" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o19
+    EQUATION "o19sh"
+    Series "o19" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o110
+    EQUATION "o110sh"
+    Series "o110" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o111
+    EQUATION "o111sh"
+    Series "o111" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o112
+    EQUATION "o112sh"
+    Series "o112" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o113
+    EQUATION "o113sh"
+    Series "o113" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o114
+    EQUATION "o114sh"
+    Series "o114" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o115
+    EQUATION "o115sh"
+    Series "o115" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o116
+    EQUATION "o116sh"
+    Series "o116" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o117
+    EQUATION "o117sh"
+    Series "o117" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o118
+    EQUATION "o118sh"
+    Series "o118" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o119
+    EQUATION "o119sh"
+    Series "o119" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o30
+    EQUATION "o30sh"
+    Series "o30" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o31
+    EQUATION "o31sh"
+    Series "o31" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o32
+    EQUATION "o32sh"
+    Series "o32" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o33
+    EQUATION "o33sh"
+    Series "o33" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o34
+    EQUATION "o34sh"
+    Series "o34" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o35
+    EQUATION "o35sh"
+    Series "o35" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o36
+    EQUATION "o36sh"
+    Series "o36" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o37
+    EQUATION "o37sh"
+    Series "o37" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o38
+    EQUATION "o38sh"
+    Series "o38" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o39
+    EQUATION "o39sh"
+    Series "o39" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o310
+    EQUATION "o310sh"
+    Series "o310" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o311
+    EQUATION "o311sh"
+    Series "o311" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o312
+    EQUATION "o312sh"
+    Series "o312" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o313
+    EQUATION "o313sh"
+    Series "o313" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o314
+    EQUATION "o314sh"
+    Series "o314" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o315
+    EQUATION "o315sh"
+    Series "o315" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o316
+    EQUATION "o316sh"
+    Series "o316" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o317
+    EQUATION "o317sh"
+    Series "o317" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o318
+    EQUATION "o318sh"
+    Series "o318" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o319
+    EQUATION "o319sh"
+    Series "o319" successfully calculated using series equation.
+
+ Processing LIST_OUTPUT block....
+    CONTEXT all
+    FILE processed.dat
+    SERIES_NAME o10
+    SERIES_NAME o11
+    SERIES_NAME o12
+    SERIES_NAME o13
+    SERIES_NAME o14
+    SERIES_NAME o15
+    SERIES_NAME o16
+    SERIES_NAME o17
+    SERIES_NAME o18
+    SERIES_NAME o19
+    SERIES_NAME o110
+    SERIES_NAME o111
+    SERIES_NAME o112
+    SERIES_NAME o113
+    SERIES_NAME o114
+    SERIES_NAME o115
+    SERIES_NAME o116
+    SERIES_NAME o117
+    SERIES_NAME o118
+    SERIES_NAME o119
+    SERIES_NAME o30
+    SERIES_NAME o31
+    SERIES_NAME o32
+    SERIES_NAME o33
+    SERIES_NAME o34
+    SERIES_NAME o35
+    SERIES_NAME o36
+    SERIES_NAME o37
+    SERIES_NAME o38
+    SERIES_NAME o39
+    SERIES_NAME o310
+    SERIES_NAME o311
+    SERIES_NAME o312
+    SERIES_NAME o313
+    SERIES_NAME o314
+    SERIES_NAME o315
+    SERIES_NAME o316
+    SERIES_NAME o317
+    SERIES_NAME o318
+    SERIES_NAME o319
+    SERIES_FORMAT long
+    Writing output file processed.dat....
+    File processed.dat written ok.
+
+ Processing WRITE_PEST_FILES block....
+    CONTEXT pest_prep
+    TEMPLATE_FILE tpl\k_1.ref.tpl
+    MODEL_INPUT_FILE model\ref\k_1.ref
+    TEMPLATE_FILE tpl\k_2.ref.tpl
+    MODEL_INPUT_FILE model\ref\k_2.ref
+    TEMPLATE_FILE tpl\k_3.ref.tpl
+    MODEL_INPUT_FILE model\ref\k_3.ref
+    TEMPLATE_FILE tpl\sy_1.ref.tpl
+    MODEL_INPUT_FILE model\ref\sy_1.ref
+    TEMPLATE_FILE tpl\s_2.ref.tpl
+    MODEL_INPUT_FILE model\ref\s_2.ref
+    TEMPLATE_FILE tpl\s_3.ref.tpl
+    MODEL_INPUT_FILE model\ref\s_3.ref
+    NEW_INSTRUCTION_FILE tsproc.ins
+    MODEL_COMMAND_LINE model.bat
+    TRUNCATED_SVD .00100000
+    PARAMETER_DATA_FILE misc\par.info
+    PARAMETER_DATA_FILE misc\par.info
+    NEW_PEST_CONTROL_FILE pest.pst
+    OBSERVATION_SERIES_NAME o10oh
+    MODEL_SERIES_NAME o10
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o11oh
+    MODEL_SERIES_NAME o11
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o12oh
+    MODEL_SERIES_NAME o12
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o13oh
+    MODEL_SERIES_NAME o13
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o14oh
+    MODEL_SERIES_NAME o14
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o15oh
+    MODEL_SERIES_NAME o15
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o16oh
+    MODEL_SERIES_NAME o16
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o17oh
+    MODEL_SERIES_NAME o17
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o18oh
+    MODEL_SERIES_NAME o18
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o19oh
+    MODEL_SERIES_NAME o19
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o110oh
+    MODEL_SERIES_NAME o110
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o111oh
+    MODEL_SERIES_NAME o111
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o112oh
+    MODEL_SERIES_NAME o112
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o113oh
+    MODEL_SERIES_NAME o113
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o114oh
+    MODEL_SERIES_NAME o114
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o115oh
+    MODEL_SERIES_NAME o115
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o116oh
+    MODEL_SERIES_NAME o116
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o117oh
+    MODEL_SERIES_NAME o117
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o118oh
+    MODEL_SERIES_NAME o118
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o119oh
+    MODEL_SERIES_NAME o119
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o30oh
+    MODEL_SERIES_NAME o30
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o31oh
+    MODEL_SERIES_NAME o31
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o32oh
+    MODEL_SERIES_NAME o32
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o33oh
+    MODEL_SERIES_NAME o33
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o34oh
+    MODEL_SERIES_NAME o34
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o35oh
+    MODEL_SERIES_NAME o35
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o36oh
+    MODEL_SERIES_NAME o36
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o37oh
+    MODEL_SERIES_NAME o37
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o38oh
+    MODEL_SERIES_NAME o38
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o39oh
+    MODEL_SERIES_NAME o39
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o310oh
+    MODEL_SERIES_NAME o310
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o311oh
+    MODEL_SERIES_NAME o311
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o312oh
+    MODEL_SERIES_NAME o312
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o313oh
+    MODEL_SERIES_NAME o313
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o314oh
+    MODEL_SERIES_NAME o314
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o315oh
+    MODEL_SERIES_NAME o315
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o316oh
+    MODEL_SERIES_NAME o316
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o317oh
+    MODEL_SERIES_NAME o317
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o318oh
+    MODEL_SERIES_NAME o318
+    SERIES_WEIGHTS_EQUATION "1.0"
+    OBSERVATION_SERIES_NAME o319oh
+    MODEL_SERIES_NAME o319
+    SERIES_WEIGHTS_EQUATION "1.0"
+    Reading parameter data file misc\par.info ....
+    - data for 7500 parameters read from file misc\par.info
+    Reading template file tpl\k_1.ref.tpl ....
+    - 1250 parameter names read from file tpl\k_1.ref.tpl
+    Reading template file tpl\k_2.ref.tpl ....
+    - 1250 more parameter names read from file tpl\k_2.ref.tpl
+    Reading template file tpl\k_3.ref.tpl ....
+    - 1250 more parameter names read from file tpl\k_3.ref.tpl
+    Reading template file tpl\sy_1.ref.tpl ....
+    - 1250 more parameter names read from file tpl\sy_1.ref.tpl
+    Reading template file tpl\s_2.ref.tpl ....
+    - 1250 more parameter names read from file tpl\s_2.ref.tpl
+    Reading template file tpl\s_3.ref.tpl ....
+    - 1250 more parameter names read from file tpl\s_3.ref.tpl
+    Writing instruction file tsproc.ins ....
+ 
+ File tsproc.ins already exists. Overwrite it? [y/n]:     - file tsproc.ins written ok.
+    Writing PEST control file pest.pst ....
+    - file pest.pst written ok.
+ 
+ End of TSPROC input file misc\tsproc_setup.dat - no more blocks to process.

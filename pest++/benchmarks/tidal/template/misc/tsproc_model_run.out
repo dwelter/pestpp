@@ -1,0 +1,427 @@
+
+ Processing information contained in TSPROC input file misc\tsproc_model_run.dat....
+
+ Processing SETTINGS block....
+    CONTEXT model_run
+    DATE_FORMAT dd/mm/yyyy
+    Processing of SETTINGS block complete.
+
+ Processing GET_MUL_SERIES_SSF block....
+    CONTEXT pest_prep
+    Requested actions not undertaken because no CONTEXT option in the
+     block coincides with the current run context.
+
+ Processing GET_MUL_SERIES_SSF block....
+    CONTEXT all
+    FILE smp\mod\hds.smp
+    SITE o10
+    NEW_SERIES_NAME o10sh
+    SITE o11
+    NEW_SERIES_NAME o11sh
+    SITE o12
+    NEW_SERIES_NAME o12sh
+    SITE o13
+    NEW_SERIES_NAME o13sh
+    SITE o14
+    NEW_SERIES_NAME o14sh
+    SITE o15
+    NEW_SERIES_NAME o15sh
+    SITE o16
+    NEW_SERIES_NAME o16sh
+    SITE o17
+    NEW_SERIES_NAME o17sh
+    SITE o18
+    NEW_SERIES_NAME o18sh
+    SITE o19
+    NEW_SERIES_NAME o19sh
+    SITE o110
+    NEW_SERIES_NAME o110sh
+    SITE o111
+    NEW_SERIES_NAME o111sh
+    SITE o112
+    NEW_SERIES_NAME o112sh
+    SITE o113
+    NEW_SERIES_NAME o113sh
+    SITE o114
+    NEW_SERIES_NAME o114sh
+    SITE o115
+    NEW_SERIES_NAME o115sh
+    SITE o116
+    NEW_SERIES_NAME o116sh
+    SITE o117
+    NEW_SERIES_NAME o117sh
+    SITE o118
+    NEW_SERIES_NAME o118sh
+    SITE o119
+    NEW_SERIES_NAME o119sh
+    SITE o30
+    NEW_SERIES_NAME o30sh
+    SITE o31
+    NEW_SERIES_NAME o31sh
+    SITE o32
+    NEW_SERIES_NAME o32sh
+    SITE o33
+    NEW_SERIES_NAME o33sh
+    SITE o34
+    NEW_SERIES_NAME o34sh
+    SITE o35
+    NEW_SERIES_NAME o35sh
+    SITE o36
+    NEW_SERIES_NAME o36sh
+    SITE o37
+    NEW_SERIES_NAME o37sh
+    SITE o38
+    NEW_SERIES_NAME o38sh
+    SITE o39
+    NEW_SERIES_NAME o39sh
+    SITE o310
+    NEW_SERIES_NAME o310sh
+    SITE o311
+    NEW_SERIES_NAME o311sh
+    SITE o312
+    NEW_SERIES_NAME o312sh
+    SITE o313
+    NEW_SERIES_NAME o313sh
+    SITE o314
+    NEW_SERIES_NAME o314sh
+    SITE o315
+    NEW_SERIES_NAME o315sh
+    SITE o316
+    NEW_SERIES_NAME o316sh
+    SITE o317
+    NEW_SERIES_NAME o317sh
+    SITE o318
+    NEW_SERIES_NAME o318sh
+    SITE o319
+    NEW_SERIES_NAME o319sh
+    Reading site sample file smp\mod\hds.smp....
+    Series "o10sh" successfully imported from file smp\mod\hds.smp
+    Series "o11sh" successfully imported from file smp\mod\hds.smp
+    Series "o12sh" successfully imported from file smp\mod\hds.smp
+    Series "o13sh" successfully imported from file smp\mod\hds.smp
+    Series "o14sh" successfully imported from file smp\mod\hds.smp
+    Series "o15sh" successfully imported from file smp\mod\hds.smp
+    Series "o16sh" successfully imported from file smp\mod\hds.smp
+    Series "o17sh" successfully imported from file smp\mod\hds.smp
+    Series "o18sh" successfully imported from file smp\mod\hds.smp
+    Series "o19sh" successfully imported from file smp\mod\hds.smp
+    Series "o110sh" successfully imported from file smp\mod\hds.smp
+    Series "o111sh" successfully imported from file smp\mod\hds.smp
+    Series "o112sh" successfully imported from file smp\mod\hds.smp
+    Series "o113sh" successfully imported from file smp\mod\hds.smp
+    Series "o114sh" successfully imported from file smp\mod\hds.smp
+    Series "o115sh" successfully imported from file smp\mod\hds.smp
+    Series "o116sh" successfully imported from file smp\mod\hds.smp
+    Series "o117sh" successfully imported from file smp\mod\hds.smp
+    Series "o118sh" successfully imported from file smp\mod\hds.smp
+    Series "o119sh" successfully imported from file smp\mod\hds.smp
+    Series "o30sh" successfully imported from file smp\mod\hds.smp
+    Series "o31sh" successfully imported from file smp\mod\hds.smp
+    Series "o32sh" successfully imported from file smp\mod\hds.smp
+    Series "o33sh" successfully imported from file smp\mod\hds.smp
+    Series "o34sh" successfully imported from file smp\mod\hds.smp
+    Series "o35sh" successfully imported from file smp\mod\hds.smp
+    Series "o36sh" successfully imported from file smp\mod\hds.smp
+    Series "o37sh" successfully imported from file smp\mod\hds.smp
+    Series "o38sh" successfully imported from file smp\mod\hds.smp
+    Series "o39sh" successfully imported from file smp\mod\hds.smp
+    Series "o310sh" successfully imported from file smp\mod\hds.smp
+    Series "o311sh" successfully imported from file smp\mod\hds.smp
+    Series "o312sh" successfully imported from file smp\mod\hds.smp
+    Series "o313sh" successfully imported from file smp\mod\hds.smp
+    Series "o314sh" successfully imported from file smp\mod\hds.smp
+    Series "o315sh" successfully imported from file smp\mod\hds.smp
+    Series "o316sh" successfully imported from file smp\mod\hds.smp
+    Series "o317sh" successfully imported from file smp\mod\hds.smp
+    Series "o318sh" successfully imported from file smp\mod\hds.smp
+    Series "o319sh" successfully imported from file smp\mod\hds.smp
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o10
+    EQUATION "o10sh"
+    Series "o10" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o11
+    EQUATION "o11sh"
+    Series "o11" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o12
+    EQUATION "o12sh"
+    Series "o12" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o13
+    EQUATION "o13sh"
+    Series "o13" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o14
+    EQUATION "o14sh"
+    Series "o14" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o15
+    EQUATION "o15sh"
+    Series "o15" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o16
+    EQUATION "o16sh"
+    Series "o16" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o17
+    EQUATION "o17sh"
+    Series "o17" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o18
+    EQUATION "o18sh"
+    Series "o18" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o19
+    EQUATION "o19sh"
+    Series "o19" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o110
+    EQUATION "o110sh"
+    Series "o110" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o111
+    EQUATION "o111sh"
+    Series "o111" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o112
+    EQUATION "o112sh"
+    Series "o112" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o113
+    EQUATION "o113sh"
+    Series "o113" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o114
+    EQUATION "o114sh"
+    Series "o114" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o115
+    EQUATION "o115sh"
+    Series "o115" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o116
+    EQUATION "o116sh"
+    Series "o116" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o117
+    EQUATION "o117sh"
+    Series "o117" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o118
+    EQUATION "o118sh"
+    Series "o118" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o119
+    EQUATION "o119sh"
+    Series "o119" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o30
+    EQUATION "o30sh"
+    Series "o30" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o31
+    EQUATION "o31sh"
+    Series "o31" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o32
+    EQUATION "o32sh"
+    Series "o32" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o33
+    EQUATION "o33sh"
+    Series "o33" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o34
+    EQUATION "o34sh"
+    Series "o34" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o35
+    EQUATION "o35sh"
+    Series "o35" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o36
+    EQUATION "o36sh"
+    Series "o36" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o37
+    EQUATION "o37sh"
+    Series "o37" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o38
+    EQUATION "o38sh"
+    Series "o38" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o39
+    EQUATION "o39sh"
+    Series "o39" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o310
+    EQUATION "o310sh"
+    Series "o310" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o311
+    EQUATION "o311sh"
+    Series "o311" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o312
+    EQUATION "o312sh"
+    Series "o312" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o313
+    EQUATION "o313sh"
+    Series "o313" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o314
+    EQUATION "o314sh"
+    Series "o314" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o315
+    EQUATION "o315sh"
+    Series "o315" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o316
+    EQUATION "o316sh"
+    Series "o316" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o317
+    EQUATION "o317sh"
+    Series "o317" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o318
+    EQUATION "o318sh"
+    Series "o318" successfully calculated using series equation.
+
+ Processing SERIES_EQUATION block....
+    CONTEXT all
+    NEW_SERIES_NAME o319
+    EQUATION "o319sh"
+    Series "o319" successfully calculated using series equation.
+
+ Processing LIST_OUTPUT block....
+    CONTEXT all
+    FILE processed.dat
+    SERIES_NAME o10
+    SERIES_NAME o11
+    SERIES_NAME o12
+    SERIES_NAME o13
+    SERIES_NAME o14
+    SERIES_NAME o15
+    SERIES_NAME o16
+    SERIES_NAME o17
+    SERIES_NAME o18
+    SERIES_NAME o19
+    SERIES_NAME o110
+    SERIES_NAME o111
+    SERIES_NAME o112
+    SERIES_NAME o113
+    SERIES_NAME o114
+    SERIES_NAME o115
+    SERIES_NAME o116
+    SERIES_NAME o117
+    SERIES_NAME o118
+    SERIES_NAME o119
+    SERIES_NAME o30
+    SERIES_NAME o31
+    SERIES_NAME o32
+    SERIES_NAME o33
+    SERIES_NAME o34
+    SERIES_NAME o35
+    SERIES_NAME o36
+    SERIES_NAME o37
+    SERIES_NAME o38
+    SERIES_NAME o39
+    SERIES_NAME o310
+    SERIES_NAME o311
+    SERIES_NAME o312
+    SERIES_NAME o313
+    SERIES_NAME o314
+    SERIES_NAME o315
+    SERIES_NAME o316
+    SERIES_NAME o317
+    SERIES_NAME o318
+    SERIES_NAME o319
+    SERIES_FORMAT long
+    Writing output file processed.dat....
+    File processed.dat written ok.
+ 
+ End of TSPROC input file misc\tsproc_model_run.dat - no more blocks to 
+   process.
