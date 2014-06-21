@@ -229,11 +229,13 @@ void SVDSolver::calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSq
 	//Compute Scaling Matrix Sii
 	performance_log->log_event("commencing to scale JtQJ matrix");
 	svd_package->solve_ip(JtQJ, Sigma, U, Vt, Sigma_trunc, 0.0);
-
 	VectorXd Sigma_inv_sqrt = Sigma.array().inverse().sqrt();
-	VectorXd Sigma_sqrt = Sigma.array().sqrt();
 	Eigen::SparseMatrix<double> S = Vt.transpose() * Sigma_inv_sqrt.asDiagonal() * U.transpose();
-	Eigen::SparseMatrix<double> S_inv = Vt.transpose() * Sigma_sqrt.asDiagonal() * U.transpose();
+	VectorXd S_diag = S.diagonal();
+	MatrixXd S_tmp = S_diag.asDiagonal();
+	S = S_tmp.sparseView();
+	
+
 	JtQJ = (jac * S).transpose() * q_mat * jac * S;
 	performance_log->log_event("scaling of  JtQJ matrix complete");
 	if (marquardt_type == MarquardtMatrix::IDENT)
@@ -922,8 +924,8 @@ void SVDSolver::iteration_update_and_report(ostream &os, ModelRun &upgrade, Term
 	bool have_fac = false, have_rel = false;
 	double max_fac_change = 0;
 	double max_rel_change = 0;
-	const string *max_fac_par = 0;
-	const string *max_rel_par = 0;
+	string max_fac_par = "N/A";
+	string max_rel_par = "N/A";
 	const Parameters &old_ctl_pars = cur_solution.get_ctl_pars();
 	const Parameters &new_ctl_pars = upgrade.get_ctl_pars();
 
@@ -941,12 +943,12 @@ void SVDSolver::iteration_update_and_report(ostream &os, ModelRun &upgrade, Term
 		if (fac_change >= max_fac_change)
 		{
 			max_fac_change = fac_change;
-			max_fac_par = p_name;
+			max_fac_par = *p_name;
 		}
 		if (abs(rel_change) >= abs(max_rel_change))
 		{
 			max_rel_change = rel_change;
-			max_rel_par = p_name;
+			max_rel_par = *p_name;
 		}
 		os << right;
 		os << "    " << setw(12) << *p_name;
@@ -964,13 +966,13 @@ void SVDSolver::iteration_update_and_report(ostream &os, ModelRun &upgrade, Term
 		os << endl;
 	}
 	os << "       Maximum changes in \"control file\" parameters:" << endl;
-	os << "         Maximum relative change = " << max_rel_change << "   [" << *max_rel_par << "]" << endl;
-	os << "         Maximum factor change = " << max_fac_change << "   [" << *max_fac_par << "]" << endl;
+	os << "         Maximum relative change = " << max_rel_change << "   [" << max_rel_par << "]" << endl;
+	os << "         Maximum factor change = " << max_fac_change << "   [" << max_fac_par << "]" << endl;
 	os << endl;
 	max_fac_change = 0;
 	max_rel_change = 0;
-	max_fac_par = 0;
-	max_rel_par = 0;
+	max_fac_par = "N/A";
+	max_rel_par = "N/A";
 	os << "    Parameter Upgrades (Transformed Numeric Parameters)" << endl;
 	os << "      Parameter     Current       Previous       Factor       Relative" << endl;
 	os << "        Name         Value         Value         Change        Change" << endl;
@@ -987,12 +989,12 @@ void SVDSolver::iteration_update_and_report(ostream &os, ModelRun &upgrade, Term
 		if (fac_change >= max_fac_change)
 		{
 			max_fac_change = fac_change;
-			max_fac_par = p_name;
+			max_fac_par = *p_name;
 		}
 		if (abs(rel_change) >= abs(max_rel_change))
 		{
 			max_rel_change = rel_change;
-			max_rel_par = p_name;
+			max_rel_par = *p_name;
 		}
 		os << right;
 		os << "    " << setw(12) << *p_name;
@@ -1010,8 +1012,8 @@ void SVDSolver::iteration_update_and_report(ostream &os, ModelRun &upgrade, Term
 		os << endl;
 	}
 	os << "       Maximum changes in \"transformed numeric\" parameters:" << endl;
-	os << "         Maximum relative change = " << max_rel_change << "   [" << *max_rel_par << "]" << endl;
-	os << "         Maximum factor change = " << max_fac_change << "   [" << *max_fac_par << "]" << endl;
+	os << "         Maximum relative change = " << max_rel_change << "   [" << max_rel_par << "]" << endl;
+	os << "         Maximum factor change = " << max_fac_change << "   [" << max_fac_par << "]" << endl;
 	termination_ctl.process_iteration(upgrade.get_phi(), max_rel_change);
 }
 

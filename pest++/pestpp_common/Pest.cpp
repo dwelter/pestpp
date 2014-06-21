@@ -409,11 +409,11 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 				t_auto_norm->insert(*par_name, -avg, auto_norm/spread);
 		}
 	}
-	//Make sure we use Q1/2J is PROPACK is chosen
-	if (pestpp_options.get_svd_pack() == PestppOptions::SVD_PACK::PROPACK)
-	{
-		pestpp_options.set_mat_inv(PestppOptions::MAT_INV::Q12J);
-	}
+//	//Make sure we use Q1/2J is PROPACK is chosen
+//	if (pestpp_options.get_svd_pack() == PestppOptions::SVD_PACK::PROPACK)
+//	{
+//		pestpp_options.set_mat_inv(PestppOptions::MAT_INV::Q12J);
+//	}
 	return 0;
 }
 
