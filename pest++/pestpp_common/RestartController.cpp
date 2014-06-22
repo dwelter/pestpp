@@ -33,19 +33,19 @@ void RestartController::process_rst_file(std::ifstream &fin, TerminationControll
 		}
 		else if (tokens[0] == "termination_info_1")
 		{
-			convert_ip(tokens[1], term_ctl.noptmax);
+			//convert_ip(tokens[1], term_ctl.noptmax);
 			convert_ip(tokens[2], term_ctl.nopt_count);
-			convert_ip(tokens[3], term_ctl.nphinored);
+			//convert_ip(tokens[3], term_ctl.nphinored);
 			convert_ip(tokens[4], term_ctl.nphinored_count);
-			convert_ip(tokens[5], term_ctl.nrelpar);
+			//convert_ip(tokens[5], term_ctl.nrelpar);
 
 		}
 		else if (tokens[0] == "termination_info_2")
 		{
-			convert_ip(tokens[1], term_ctl.nrelpar);
-			convert_ip(tokens[2], term_ctl.nphistp);
-			convert_ip(tokens[3], term_ctl.phiredstp);
-			convert_ip(tokens[4], term_ctl.relparstp);
+			convert_ip(tokens[1], term_ctl.nrelpar_count);
+			//convert_ip(tokens[2], term_ctl.nphistp);
+			//convert_ip(tokens[3], term_ctl.phiredstp);
+			//convert_ip(tokens[4], term_ctl.relparstp);
 
 		}
 		else if (tokens[0] == "termination_info_3")
@@ -68,10 +68,10 @@ void RestartController::process_rst_file(std::ifstream &fin, TerminationControll
 		{
 			restart_option = RestartOption::RESUME_JACOBIAN_RUNS;
 		}
-		else if (tokens[0] == "upgrade_model_runs_built")
-		{
-			restart_option = RestartOption::RESUME_UPGRADE_RUNS;
-		}
+		//else if (tokens[0] == "upgrade_model_runs_built")
+		//{
+		//	restart_option = RestartOption::RESUME_UPGRADE_RUNS;
+		//}
 	}
 }
 

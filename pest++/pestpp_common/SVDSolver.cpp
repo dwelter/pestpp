@@ -481,6 +481,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	}
 	else if (restart_controller.get_restart_option() == RestartController::RestartOption::RESUME_JACOBIAN_RUNS)
 	{
+		restart_controller.get_restart_option() = RestartController::RestartOption::NONE;
 		Parameters tmp_pars;
 		ifstream &fin_par = file_manager.open_ifile_ext("rpb");
 		output_file_writer.read_par(fin_par, tmp_pars);

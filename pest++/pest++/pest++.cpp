@@ -162,11 +162,41 @@ int main(int argc, char* argv[])
 	filename = remove_file_ext(filename); // remove .pst extension
 	string pathname = get_pathname(complete_path);
 	if (pathname.empty()) pathname = ".";
-	FileManager file_manager(filename, pathname);
+
+	RestartController restart_ctl;
+	FileManager file_manager;
+	//process restart and reuse jacobian directives
+	vector<string>::const_iterator it_find_j = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/j");
+	vector<string>::const_iterator it_find_r = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/r");
+	bool restart_flag = false;
+	if (it_find_j != cmd_arg_vec.end())
+	{
+		restart_ctl.get_restart_option() = RestartController::RestartOption::REUSE_JACOBIAN;
+		file_manager.initialize(filename, pathname);
+	}
+	else if (it_find_r != cmd_arg_vec.end())
+	{
+		restart_ctl.get_restart_option() = RestartController::RestartOption::RESUME_JACOBIAN_RUNS;
+		restart_flag = true;
+		file_manager.initialize(filename, pathname, true);
+		ofstream &fout_rec_tmp = file_manager.rec_ofstream();
+		fout_rec_tmp << endl << endl;
+		fout_rec_tmp << "Restarting PEST++ ....." << endl << endl;
+	}
+	else
+	{
+		restart_ctl.get_restart_option() = RestartController::RestartOption::NONE;
+		file_manager.initialize(filename, pathname);
+	}
+
+	ofstream &fout_rec = file_manager.rec_ofstream();
+	//Initialize OutputFileWriter to hadle IO of suplementary files (.par, .par, .svd)
+	//bool save_eign = pest_scenario.get_svd_info().eigwrite > 0;
+	OutputFileWriter output_file_writer(file_manager, file_manager.get_base_filename(), restart_flag);
 
 	PerformanceLog performance_log(file_manager.open_ofile_ext("pfm"));
 
-	ofstream &fout_rec = file_manager.rec_ofstream();
+
 	fout_rec << "             PEST++ Version " << version << endl << endl;
 	fout_rec << "                 by Dave Welter" << endl;
 	fout_rec << "     Computational Water Resource Engineering"<< endl << endl << endl;
@@ -174,10 +204,6 @@ int main(int argc, char* argv[])
 	// create pest run and process control file to initialize it
 	Pest pest_scenario;
 	pest_scenario.set_defaults();
-
-	//Initialize OutputFileWriter to hadle IO of suplementary files (.par, .par, .svd)
-	//bool save_eign = pest_scenario.get_svd_info().eigwrite > 0;
-	OutputFileWriter output_file_writer(file_manager, file_manager.get_base_filename(), true);
 
 	try {
 		performance_log.log_event("starting to process control file", 1);
@@ -240,17 +266,9 @@ int main(int argc, char* argv[])
 		pest_scenario.get_control_info().nphistp, pest_scenario.get_control_info().nphinored, pest_scenario.get_control_info().relparstp,
 		pest_scenario.get_control_info().nrelpar);
 
-	RestartController restart_ctl;
-	//process restart and reuse jacobian directives
-	vector<string>::const_iterator it_find_j = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/j");
-	vector<string>::const_iterator it_find_r = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/r");
-	if (it_find_j != cmd_arg_vec.end())
+	//process restart file
+	if (restart_ctl.get_restart_option() == RestartController::RestartOption::RESUME_JACOBIAN_RUNS)
 	{
-		restart_ctl.get_restart_option() = RestartController::RestartOption::REUSE_JACOBIAN;
-	}
-	else if (it_find_r != cmd_arg_vec.end())
-	{
-		//restart_ctl.get_restart_option() = RestartController::RestartOption::RESUME_JACOBIAN_RUNS;
 		ifstream &fin_rst = file_manager.open_ifile_ext("rst");
 		restart_ctl.process_rst_file(fin_rst, termination_ctl);
 		file_manager.close_file("rst");
@@ -301,7 +319,15 @@ int main(int argc, char* argv[])
 	Parameters cur_ctl_parameters = pest_scenario.get_ctl_parameters();
 	//Allocates Space for Run Manager.  This initializes the model parameter names and observations names.
 	//Neither of these will change over the course of the simulation
-	run_manager_ptr->initialize(base_trans_seq.ctl2model_cp(cur_ctl_parameters), pest_scenario.get_ctl_observations());
+
+	if (restart_ctl.get_restart_option() == RestartController::RestartOption::RESUME_JACOBIAN_RUNS)
+	{
+		run_manager_ptr->initialize_restart(file_manager.build_filename("rnj"));
+	}
+	else
+	{
+		run_manager_ptr->initialize(base_trans_seq.ctl2model_cp(cur_ctl_parameters), pest_scenario.get_ctl_observations());
+	}
 
 
 	ModelRun optimum_run(&obj_func, pest_scenario.get_ctl_observations());

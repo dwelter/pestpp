@@ -167,7 +167,7 @@ void  TerminationController::read_state(const std::string &line)
 		}
 		else if (line_type == "TERMINATION_INFO_2")
 		{
-			convert_ip(tokens[1], nrelpar);
+			convert_ip(tokens[1], nrelpar_count);
 			convert_ip(tokens[2],nphistp);
 			convert_ip(tokens[3],phiredstp);
 			convert_ip(tokens[4],relparstp );

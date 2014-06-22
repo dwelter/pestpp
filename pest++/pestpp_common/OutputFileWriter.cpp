@@ -37,13 +37,22 @@ using namespace std;
 using namespace Eigen;
 using namespace::pest_utils;
 
-OutputFileWriter::OutputFileWriter(FileManager &_file_manager, const string &_case_name, bool _save_rei, int _eigenwrite)
-: file_manager(_file_manager), case_name(_case_name), save_rei(_save_rei), eigenwrite(_eigenwrite)
+OutputFileWriter::OutputFileWriter(FileManager &_file_manager, const string &_case_name, bool restart_flag, bool _save_rei, int _eigenwrite)
+	: file_manager(_file_manager), case_name(_case_name), save_rei(_save_rei), eigenwrite(_eigenwrite)
 {
-
-	ofstream &fout_sen = file_manager.open_ofile_ext("sen");
-	write_sen_header(fout_sen, case_name);
-	file_manager.open_ofile_ext("svd");
+	if (restart_flag)
+	{
+		ofstream &fout_sen = file_manager.open_ofile_ext("sen", ofstream::app);
+		write_restart_header(fout_sen);
+		ofstream &fout_svd = file_manager.open_ofile_ext("svd", ofstream::app);
+		write_restart_header(fout_svd);
+	}
+	else
+	{
+		ofstream &fout_sen = file_manager.open_ofile_ext("sen");
+		write_sen_header(fout_sen, case_name);
+		file_manager.open_ofile_ext("svd");
+	}
 }
 
 void OutputFileWriter::write_rei(ofstream &fout, int iter_no, const Observations &obs, const Observations &sim, 
@@ -147,6 +156,15 @@ void OutputFileWriter::write_sen_header(std::ostream &fout, const string &case_n
 	fout << "                    PARAMETER SENSITIVITIES: CASE " << case_name << endl;
 	fout << endl << endl;
 }
+
+void OutputFileWriter::write_restart_header(std::ostream &fout)
+{
+	fout << endl << endl;
+	fout << "Restarting PEST++ .... " << endl;
+	fout << endl << endl;
+}
+
+
 
 void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobian &jac, const ObjectiveFunc &obj_func, const ParameterGroupInfo &par_grp_info)
 {

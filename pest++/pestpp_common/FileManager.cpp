@@ -24,11 +24,32 @@
 
 using namespace pest_utils;
 
-FileManager::FileManager(const string &_base_filename, const string &_directory)
+FileManager::FileManager()
+	: directory(""), pest_base_filename("")
+{
+}
+FileManager::FileManager(const string &_base_filename, const string &_directory, bool restart)
   : directory(strip_cp(_directory)), pest_base_filename(strip_cp(_base_filename))
 {
-	open_ofile_ext("rec");
+	initialize(_base_filename, _directory, restart);
 }
+
+void FileManager::initialize(const string &_base_filename, const string &_directory, bool restart)
+{
+	directory = strip_cp(_directory);
+	pest_base_filename = strip_cp(_base_filename);
+
+	close_file("rec");
+	if (restart)
+	{
+		open_ofile_ext("rec", fstream::app);
+	}
+	else
+	{
+		open_ofile_ext("rec");
+	}
+}
+
 
 
 FileManager::~FileManager(void)
