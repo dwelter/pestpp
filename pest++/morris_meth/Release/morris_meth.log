@@ -1,26 +1,5 @@
-﻿Build started 6/23/2014 8:55:12 PM.
-     1>Project "C:\Users\Dave\Documents\Visual Studio 2013\Projects\pestpp\pest++\morris_meth\morris_meth.vcxproj" on node 4 (Build target(s)).
-     1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\Users\Dave\Documents\Visual Studio 2013\Projects\pestpp\pest++\\yamr" /I"C:\Users\Dave\Documents\Visual Studio 2013\Projects\pestpp\pest++\\" /I"C:\Users\Dave\Documents\Visual Studio 2013\Projects\pestpp\pest++\\pestpp_common" /I"C:\Users\Dave\Documents\Visual Studio 2013\Projects\pestpp\pest++\pest++" /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D _MBCS /Gm- /EHsc /MT /GS /Gy /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt GsaAbstractBase.cpp main.cpp MorrisMethod.cpp sobol.cpp Stats.cpp
-         GsaAbstractBase.cpp
-         main.cpp
-         MorrisMethod.cpp
-     1>MorrisMethod.cpp(452): warning C4244: '+=' : conversion from 'double' to 'int', possible loss of data
-         sobol.cpp
-         Stats.cpp
-     1>Stats.cpp(257): warning C4018: '<=' : signed/unsigned mismatch
-     1>Stats.cpp(270): warning C4018: '<=' : signed/unsigned mismatch
-       Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Dave\Documents\Visual Studio 2013\Projects\pestpp\pest++\Release\gsa.exe" /NOLOGO /LIBPATH:"C:\Program Files (x86)\Intel\Composer XE 2013 SP1\\compiler\lib\ia32" /LIBPATH:"C:\Program Files (x86)\Intel\Composer XE 2013 SP1\\mkl\lib\ia32" /LIBPATH:"C:\Users\Dave\Documents\Visual Studio 2013\Projects\pestpp\pest++\Win32\Release\\" mkl_blas95.lib mkl_lapack95.lib propack.lib ws2_32.lib genie.lib Advapi32.lib yamr.lib pestpp_common.lib pest_routines.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Dave\Documents\Visual Studio 2013\Projects\pestpp\pest++\Release\gsa.pdb" /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Dave\Documents\Visual Studio 2013\Projects\pestpp\pest++\Release\gsa.lib" /MACHINE:X86 /SAFESEH Release\GsaAbstractBase.obj
-         Release\main.obj
-         Release\MorrisMethod.obj
-         Release\sobol.obj
-         Release\Stats.obj
-         Generating code
-         Finished generating code
-         morris_meth.vcxproj -> C:\Users\Dave\Documents\Visual Studio 2013\Projects\pestpp\pest++\Release\gsa.exe
-     1>Done Building Project "C:\Users\Dave\Documents\Visual Studio 2013\Projects\pestpp\pest++\morris_meth\morris_meth.vcxproj" (Build target(s)).
+﻿Build started 6/24/2014 5:45:14 AM.
 
 Build succeeded.
 
-Time Elapsed 00:00:17.20
+Time Elapsed 00:00:00.04
