@@ -160,7 +160,7 @@ void SVDASolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_activ
 		new_frozen_ctl_pars = limit_parameters_freeze_all_ip(base_run_active_ctl_pars, upgrade_active_ctl_pars, prev_frozen_active_ctl_pars);
 		prev_frozen_active_ctl_pars.insert(new_frozen_ctl_pars.begin(), new_frozen_ctl_pars.end());
 }
-void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs)
+void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs, bool jacobian_only)
 {
 	ostream &fout_restart = file_manager.get_ofstream("rst");
 	fout_restart << "super_par_iteration" << endl;
@@ -204,9 +204,9 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		Parameters numeric_pars = par_transform.ctl2numeric_cp(base_run.get_ctl_pars());
 		numeric_par_names_vec = numeric_pars.get_keys();
 
-		if (!base_run.obs_valid() || calc_init_obs == true) {
+	//	if (!base_run.obs_valid() || calc_init_obs == true) {
 			calc_init_obs = true;
-		}
+	//	}
 		super_parameter_group_info = par_transform.get_svda_ptr()->build_par_group_info(*par_group_info_ptr);
 		performance_log->log_event("commencing to build jacobian parameter sets");
 		out_of_bound_pars.clear();
@@ -255,6 +255,10 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 	performance_log->log_event("saving jacobian and sen files");
 	// save jacobian
 	jacobian.save("jac");
+	if (jacobian_only)
+	{
+		return;
+	}
 	// sen file for this iteration
 	output_file_writer.append_sen(file_manager.sen_ofstream(), termination_ctl.get_iteration_number() + 1, jacobian, *(cur_solution.get_obj_func_ptr()), get_parameter_group_info());
 

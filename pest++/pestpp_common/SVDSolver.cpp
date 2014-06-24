@@ -83,6 +83,15 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 	// Start Solution iterations
 	bool save_nextjac = false;
 	string matrix_inv = (mat_inv == MAT_INV::Q12J) ? "\"Q 1/2 J\"" : "\"Jt Q J\"";
+	if (max_iter == -1)
+	{
+		cout << "COMPUTING JACOBIAN:" << endl << endl;
+		os << "COMPUTING JACOBIAN:" << endl << endl;
+		cout << "  Iteration type: " << get_description() << endl;
+		os << "    Iteration type: " << get_description() << endl;
+		os << "    Model calls so far : " << run_manager.get_total_runs() << endl << endl << endl;
+		iteration(run_manager, termination_ctl, false, true);
+	}
 	for (int iter_num = 1; iter_num <= max_iter; ++iter_num) {
 		int global_iter_num = termination_ctl.get_iteration_number() + 1;
 		cout << "OPTIMISATION ITERATION NUMBER: " << global_iter_num << endl;
@@ -480,7 +489,7 @@ void SVDSolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_active
 	prev_frozen_active_ctl_pars.insert(new_frozen_active_ctl_pars.begin(), new_frozen_active_ctl_pars.end());
 }
 
-void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs)
+void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs, bool jacobian_only)
 {
 	ostream &os = file_manager.rec_ofstream();
 	set<string> out_ofbound_pars;
@@ -561,8 +570,6 @@ restart_resume_jacobian_runs:
 	performance_log->log_event("saving jacobian and sen files");
 	// save jacobian
 	jacobian.save("jac");
-	// sen file for this iteration
-	output_file_writer.append_sen(file_manager.sen_ofstream(), termination_ctl.get_iteration_number() + 1, jacobian, *(cur_solution.get_obj_func_ptr()), get_parameter_group_info());
 
 	//Update parameters and observations for base run
 	{
@@ -572,6 +579,14 @@ restart_resume_jacobian_runs:
 		par_transform.model2ctl_ip(tmp_pars);
 		cur_solution.update_ctl(tmp_pars, tmp_obs);
 	}
+
+	if (jacobian_only)
+	{
+		return;
+	}
+	// sen file for this iteration
+	output_file_writer.append_sen(file_manager.sen_ofstream(), termination_ctl.get_iteration_number() + 1, jacobian, *(cur_solution.get_obj_func_ptr()), get_parameter_group_info());
+
 restart_reuse_jacoboian:
 	cout << endl;
 

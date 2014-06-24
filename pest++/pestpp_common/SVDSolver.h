@@ -57,7 +57,7 @@ public:
 		SVDSolver::MAT_INV _mat_inv, PerformanceLog *_performance_log, const std::vector<double> &_base_lambda_vec, 
 		const string &description = string("base parameter solution"), bool _phiredswh_flag = false, bool _save_next_jacobian = true);
 	virtual ModelRun& solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter, ModelRun &cur_run, ModelRun &optimum_run);
-	virtual void iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs=false);
+	virtual void iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs=false, bool jacobian_only=false);
 	ModelRun &cur_model_run() {return cur_solution;}
 	virtual void set_svd_package(PestppOptions::SVD_PACK _svd_pack);
 	bool get_phiredswh_flag() { return phiredswh_flag;}
