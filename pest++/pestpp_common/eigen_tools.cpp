@@ -109,6 +109,31 @@ void matrix_del_cols(Eigen::SparseMatrix<double> &mat, const vector<int> &col_id
 	}
 }
 
+Eigen::SparseMatrix<double> get_diag_matrix(Eigen::SparseMatrix<double> &mat)
+{
+	auto  ncols = mat.cols();
+	auto  nrows = mat.rows();
+
+	assert(ncols == nrows);
+	if (nrows != ncols)
+	{
+		PestError("Error in get_diag_matrix: Can not return the diagonal of a non-square matrix");
+	}
+	VectorXd diag_vec = mat.diagonal();
+	std::vector<Eigen::Triplet<double> > triplet_list;
+	triplet_list.reserve(nrows);
+	for (size_t i = 0; i<nrows; ++i)
+	{
+		triplet_list.push_back(Eigen::Triplet<double>(i, i, diag_vec(i)));
+	}
+
+	Eigen::SparseMatrix<double> diag_matrix;
+	diag_matrix.resize(nrows, ncols);
+	diag_matrix.setZero();
+	diag_matrix.setFromTriplets(triplet_list.begin(), triplet_list.end());
+	return diag_matrix;
+}
+
 void print(const MatrixXd &mat, ostream & fout)
 {
 	size_t nrows = mat.rows();

@@ -106,17 +106,17 @@ protected:
 		double &rel_change);
 	void calc_upgrade_vec(double i_lambda, Parameters &frozen_ctl_pars, QSqrtMatrix &Q_sqrt, Eigen::VectorXd &residuals_vec,
 		vector<string> &obs_names_vec, const Parameters &base_run_ctl_pars, LimitType &limit_type,
-		Parameters &new_ctl_pars, MarquardtMatrix marquardt_type);
+		Parameters &new_ctl_pars, MarquardtMatrix marquardt_type, bool scale_upgrade=false);
 	void calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
 		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
 		const Parameters &base_active_ctl_pars, const Parameters &freeze_active_ctl_pars,
 		double lambda, Parameters &active_ctl_upgrade_pars, Parameters &upgrade_active_ctl_del_pars,
-		Parameters &grad_active_ctl_del_pars, MarquardtMatrix marquardt_type);
+		Parameters &grad_active_ctl_del_pars, MarquardtMatrix marquardt_type, bool scale_upgrade);
 	void calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
 		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
 		const Parameters &active_base_ctl_pars, const Parameters &freeze_active_ctl_pars,
 		double lambda, Parameters &active_ctl_upgrade_pars, Parameters &upgrade_active_ctl_del_pars,
-		Parameters &grad_active_ctl_del_pars, MarquardtMatrix marquardt_type);
+		Parameters &grad_active_ctl_del_pars, MarquardtMatrix marquardt_type, bool scale_upgrade=false);
 	void check_limits(const Parameters &init_ctl_pars, const Parameters &upgrade_ctl_pars,
 		map<string, LimitType> &limit_type_map, Parameters &active_ctl_parameters_at_limit);
 	Eigen::VectorXd calc_residual_corrections(const Jacobian &jacobian, const Parameters &del_numeric_pars, 
@@ -127,7 +127,7 @@ protected:
 	bool par_heading_out_bnd(double org_par, double new_par, double lower_bnd, double upper_bnd);
 	PhiComponets phi_estimate(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt,
 		const Eigen::VectorXd &residuals_vec, const vector<string> &obs_names_vec,
-		const Parameters &base_run_active_ctl_par, const Parameters &freeze_active_ctl_pars);
+		const Parameters &base_run_active_ctl_par, const Parameters &freeze_active_ctl_pars, bool scale_upgrade = false);
 	int check_bnd_par(Parameters &new_freeze_active_ctl_pars, const Parameters &current_active_ctl_pars, const Parameters &new_upgrade_active_ctl_pars, const Parameters &new_grad_active_ctl_pars = Parameters());
 };
 

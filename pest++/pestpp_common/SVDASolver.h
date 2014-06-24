@@ -43,7 +43,7 @@ public:
 		Parameters &upgrade_active_ctl_pars, const Parameters &prev_frozen_active_ctl_pars);
 	virtual void calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_active_ctl_pars, QSqrtMatrix &Q_sqrt, Eigen::VectorXd &residuals_vec,
 		std::vector<std::string> &obs_names_vec, const Parameters &base_run_active_ctl_pars, LimitType &limit_type, Parameters &new_active_ctl_pars,
-		MarquardtMatrix marquardt_type);
+		MarquardtMatrix marquardt_type, bool scale_upgrade=false);
 	void iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs=false);
 	virtual const string &get_description(){return description;}
 	virtual ParameterGroupInfo get_parameter_group_info() const { return super_parameter_group_info; }

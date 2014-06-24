@@ -109,7 +109,7 @@ Parameters SVDASolver::limit_parameters_freeze_all_ip(const Parameters &init_act
 
 void SVDASolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_active_ctl_pars, QSqrtMatrix &Q_sqrt, VectorXd &residuals_vec,
 	vector<string> &obs_names_vec, const Parameters &base_run_active_ctl_pars, LimitType &limit_type, Parameters &upgrade_active_ctl_pars,
-	MarquardtMatrix marquardt_type)
+	MarquardtMatrix marquardt_type, bool scale_upgrade)
 {
 	Parameters upgrade_ctl_del_pars;
 	Parameters grad_ctl_del_pars;
@@ -121,7 +121,7 @@ void SVDASolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_activ
 		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
 		const Parameters &base_ctl_pars, const Parameters &prev_frozen_ctl_pars,
 		double lambda, Parameters &ctl_upgrade_pars, Parameters &upgrade_ctl_del_pars,
-		Parameters &grad_ctl_del_pars, MarquardtMatrix marquardt_type);
+		Parameters &grad_ctl_del_pars, MarquardtMatrix marquardt_type, bool scale_upgrade);
 
 	UPGRADE_FUNCTION calc_lambda_upgrade = &SVDASolver::calc_lambda_upgrade_vec_JtQJ;
 
@@ -134,7 +134,7 @@ void SVDASolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_activ
 		//Freeze Parameters at the boundary whose ugrade vector and gradient both head out of bounds
 		(*this.*calc_lambda_upgrade)(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
 			base_run_active_ctl_pars, prev_frozen_active_ctl_pars, i_lambda, upgrade_active_ctl_pars, upgrade_ctl_del_pars,
-			grad_ctl_del_pars, marquardt_type);
+			grad_ctl_del_pars, marquardt_type, scale_upgrade);
 		num_upgrade_out_grad_in = check_bnd_par(new_frozen_ctl_pars, base_run_active_ctl_pars, upgrade_ctl_del_pars, grad_ctl_del_pars);
 		prev_frozen_active_ctl_pars.insert(new_frozen_ctl_pars.begin(), new_frozen_ctl_pars.end());
 		//Recompute the ugrade vector without the newly frozen parameters and freeze those at the boundary whose upgrade still goes heads out of bounds
@@ -143,7 +143,7 @@ void SVDASolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_activ
 			new_frozen_ctl_pars.clear();
 			(*this.*calc_lambda_upgrade)(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
 				base_run_active_ctl_pars, prev_frozen_active_ctl_pars, i_lambda, upgrade_active_ctl_pars, upgrade_ctl_del_pars,
-				grad_ctl_del_pars, marquardt_type);
+				grad_ctl_del_pars, marquardt_type, scale_upgrade);
 			check_bnd_par(new_frozen_ctl_pars, base_run_active_ctl_pars, upgrade_active_ctl_pars);
 			prev_frozen_active_ctl_pars.insert(new_frozen_ctl_pars.begin(), new_frozen_ctl_pars.end());
 			new_frozen_ctl_pars.clear();
@@ -153,7 +153,7 @@ void SVDASolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_activ
 		{
 			(*this.*calc_lambda_upgrade)(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
 				base_run_active_ctl_pars, prev_frozen_active_ctl_pars, i_lambda, upgrade_active_ctl_pars, upgrade_ctl_del_pars,
-				grad_ctl_del_pars, marquardt_type);
+				grad_ctl_del_pars, marquardt_type, scale_upgrade);
 		}
 		//Freeze any new parameters that want to go out of bounds
 		new_frozen_ctl_pars.clear();
@@ -322,7 +322,36 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		frozen_derivative_par_vec.push_back(Parameters());
 		calc_upgrade_vec(i_lambda, frozen_derivative_par_vec.back(), Q_sqrt, residuals_vec,
 			obs_names_vec, base_run_active_ctl_pars, limit_type,
-			new_pars, MarquardtMatrix::IDENT);
+			new_pars, MarquardtMatrix::IDENT, false);
+
+		//transform new_pars to model parameters
+		magnitude_vec.push_back(Transformable::l2_norm(base_run_active_ctl_pars, new_pars));
+		par_transform.active_ctl2model_ip(new_pars);
+		run_manager.add_run(new_pars, "IDEN", i_lambda);
+		performance_log->add_indent(-1);
+	}
+
+	for (double i_lambda : lambda_vec)
+	{
+		prf_message.str("");
+		prf_message << "beginning upgrade vector calculations, lambda = " << i_lambda;
+		performance_log->log_event(prf_message.str());
+		performance_log->add_indent();
+		std::cout << string(message.str().size(), '\b');
+		message.str("");
+		message << "  computing upgrade vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
+		std::cout << message.str();
+		cout.flush();
+
+		Parameters new_pars;
+		const Parameters base_run_active_ctl_pars = par_transform.ctl2active_ctl_cp(base_run.get_ctl_pars());
+		Parameters base_numeric_pars = par_transform.ctl2numeric_cp(base_run.get_ctl_pars());
+		LimitType limit_type;
+
+		frozen_derivative_par_vec.push_back(Parameters());
+		calc_upgrade_vec(i_lambda, frozen_derivative_par_vec.back(), Q_sqrt, residuals_vec,
+			obs_names_vec, base_run_active_ctl_pars, limit_type,
+			new_pars, MarquardtMatrix::IDENT, true);
 
 		//transform new_pars to model parameters
 		magnitude_vec.push_back(Transformable::l2_norm(base_run_active_ctl_pars, new_pars));
