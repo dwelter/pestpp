@@ -279,7 +279,8 @@ void SVDSolver::calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSq
 	{
 		double beta = 1.0;
 		Eigen::VectorXd gama = jac * upgrade_vec;
-		Eigen::SparseMatrix<double> Q_diag = get_diag_matrix(Q_sqrt.get_sparse_matrix(obs_name_vec));
+		Eigen::SparseMatrix<double> Q_mat_tmp = Q_sqrt.get_sparse_matrix(obs_name_vec);
+		Eigen::SparseMatrix<double> Q_diag = get_diag_matrix(Q_mat_tmp);
 		Q_diag = (Q_diag * Q_diag).eval();
 		double top = corrected_residuals.transpose() * Q_diag * gama;
 		double bot = gama.transpose() * Q_diag * gama;
@@ -607,16 +608,17 @@ restart_reuse_jacoboian:
 	VectorXd residuals_vec = -1.0 * stlvec_2_egienvec(cur_solution.get_residuals_vec(obs_names_vec));
 
 	Parameters base_run_active_ctl_par = par_transform.ctl2active_ctl_cp(cur_solution.get_ctl_pars());
-	vector<double> magnitude_vec;
-	Parameters frozen_active_ctl_pars = failed_jac_pars;
 	LimitType limit_type = LimitType::NONE;
-	//If running in regularization mode, adjust the regularization weights
-	// define a function type for upgrade methods
-	//dynamic_weight_adj(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
-	//	base_run_active_ctl_par, frozen_active_ctl_pars);
-	//tikhonov_weight = Q_sqrt.get_tikhonov_weight();
-	//regul_scheme.set_weight(tikhonov_weight);
+	{
+		Parameters frozen_active_ctl_pars = failed_jac_pars;
+		//If running in regularization mode, adjust the regularization weights
+		// define a function type for upgrade methods
+		//dynamic_weight_adj(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+		//	base_run_active_ctl_par, frozen_active_ctl_pars);
+		//tikhonov_weight = Q_sqrt.get_tikhonov_weight();
+		//regul_scheme.set_weight(tikhonov_weight);
 
+	}
 	// write out report for starting phi
 	obj_func->phi_report(os, cur_solution.get_obs(), cur_solution.get_ctl_pars(), tikhonov_weight);
 	// write failed jacobian parameters out
@@ -644,6 +646,7 @@ restart_reuse_jacoboian:
 	stringstream message;
 	stringstream prf_message;
 	vector<Parameters> frozen_par_vec;
+	vector<double> magnitude_vec;
 	for (double i_lambda : lambda_vec)
 	{
 		prf_message.str("");
@@ -656,6 +659,8 @@ restart_reuse_jacoboian:
 		std::cout << message.str() << endl;
 
 		Parameters new_pars;
+		// reset frozen_active_ctl_pars
+		Parameters frozen_active_ctl_pars = failed_jac_pars;
 		calc_upgrade_vec(i_lambda, frozen_active_ctl_pars, Q_sqrt, residuals_vec,
 			obs_names_vec, base_run_active_ctl_par, limit_type,
 			new_pars, MarquardtMatrix::IDENT, false);
@@ -679,6 +684,8 @@ restart_reuse_jacoboian:
 	//	std::cout << message.str() << endl;
 
 	//	Parameters new_pars;
+	//	// reset frozen_active_ctl_pars
+	//	Parameters frozen_active_ctl_pars = failed_jac_pars;
 	//	calc_upgrade_vec(i_lambda, frozen_active_ctl_pars, Q_sqrt, residuals_vec,
 	//		obs_names_vec, base_run_active_ctl_par, limit_type,
 	//		new_pars, MarquardtMatrix::IDENT, true);
@@ -728,8 +735,9 @@ restart_reuse_jacoboian:
 			streamsize n_prec = os.precision(2);
 			os << "      Lambda = ";
 			os << setiosflags(ios::fixed) << setw(8) << i_lambda;
-			os << "; Type: " << setw(4) << lambda_type;
-			os << "; length = " << magnitude_vec[i];
+			os << "; Type: " << setw(4) << lambda_type;;
+			os << "; length = " <<std::scientific << magnitude_vec[i];
+			os << setiosflags(ios::fixed);
 			os.precision(n_prec);
 			os.unsetf(ios_base::floatfield); // reset all flags to default
 			os << ";  phi = " << upgrade_run.get_phi(tikhonov_weight);

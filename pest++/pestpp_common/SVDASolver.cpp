@@ -335,35 +335,6 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		performance_log->add_indent(-1);
 	}
 
-	for (double i_lambda : lambda_vec)
-	{
-		prf_message.str("");
-		prf_message << "beginning upgrade vector calculations, lambda = " << i_lambda;
-		performance_log->log_event(prf_message.str());
-		performance_log->add_indent();
-		std::cout << string(message.str().size(), '\b');
-		message.str("");
-		message << "  computing upgrade vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
-		std::cout << message.str();
-		cout.flush();
-
-		Parameters new_pars;
-		const Parameters base_run_active_ctl_pars = par_transform.ctl2active_ctl_cp(base_run.get_ctl_pars());
-		Parameters base_numeric_pars = par_transform.ctl2numeric_cp(base_run.get_ctl_pars());
-		LimitType limit_type;
-
-		frozen_derivative_par_vec.push_back(Parameters());
-		calc_upgrade_vec(i_lambda, frozen_derivative_par_vec.back(), Q_sqrt, residuals_vec,
-			obs_names_vec, base_run_active_ctl_pars, limit_type,
-			new_pars, MarquardtMatrix::IDENT, true);
-
-		//transform new_pars to model parameters
-		magnitude_vec.push_back(Transformable::l2_norm(base_run_active_ctl_pars, new_pars));
-		par_transform.active_ctl2model_ip(new_pars);
-		run_manager.add_run(new_pars, "IDEN", i_lambda);
-		performance_log->add_indent(-1);
-	}
-
 	cout << endl;
 
 	os << endl;
@@ -401,7 +372,8 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 			os << "      Lambda = ";
 			os << setiosflags(ios::fixed) << setw(8) << i_lambda;
 			os << "; Type: " << setw(4) << lambda_type;
-			os << ";   length = " << magnitude_vec[i];
+			os << "; length = " << std::scientific << magnitude_vec[i];
+			os << setiosflags(ios::fixed);
 			os.precision(n_prec);
 			os.unsetf(ios_base::floatfield); // reset all flags to default
 			os << ";   phi = " << upgrade_run.get_phi(tikhonov_weight); 
