@@ -109,7 +109,7 @@ void matrix_del_cols(Eigen::SparseMatrix<double> &mat, const vector<int> &col_id
 	}
 }
 
-Eigen::SparseMatrix<double> get_diag_matrix(Eigen::SparseMatrix<double> &mat)
+Eigen::SparseMatrix<double> get_diag_matrix(const Eigen::SparseMatrix<double> &mat)
 {
 	auto  ncols = mat.cols();
 	auto  nrows = mat.rows();

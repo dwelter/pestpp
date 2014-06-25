@@ -35,7 +35,7 @@ Eigen::VectorXd transformable_2_egien_vec(const Transformable &data, std::vector
 void print(const Eigen::MatrixXd &mat, std::ostream &fout);
 
 void matrix_del_cols(Eigen::SparseMatrix<double> &mat, const std::vector<int> &col_id_vec);
-Eigen::SparseMatrix<double> get_diag_matrix(Eigen::SparseMatrix<double> &mat);
+Eigen::SparseMatrix<double> get_diag_matrix(const Eigen::SparseMatrix<double> &mat);
 
 void print(const Eigen::MatrixXd &mat, std::ostream & fout, int n_per_line=7);
 void print(const Eigen::VectorXd &vec, std::ostream & fout, int n_per_line=7);
