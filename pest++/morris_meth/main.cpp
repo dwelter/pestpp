@@ -103,9 +103,9 @@ int main(int argc, char* argv[])
 		{
 			cerr << perr.what();
 		}
-		cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
+		/*cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
 		char buf[256];
-		OperSys::gets_s(buf, sizeof(buf));
+		OperSys::gets_s(buf, sizeof(buf));*/
 		exit(0);
 	}
 
