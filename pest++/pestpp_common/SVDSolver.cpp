@@ -498,10 +498,6 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	vector<string> obs_names_vec = cur_solution.get_obs_template().get_keys();
 	vector<string> numeric_parname_vec = par_transform.ctl2numeric_cp(cur_solution.get_ctl_pars()).get_keys();
 
-	//Save information necessary for restart
-	ostream &fout_restart = file_manager.get_ofstream("rst");
-	fout_restart << "base_par_iteration" << endl;
-
 	if (restart_controller.get_restart_option() == RestartController::RestartOption::REUSE_JACOBIAN)
 	{
 		restart_controller.get_restart_option() = RestartController::RestartOption::NONE;
@@ -539,6 +535,38 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 		cur_solution.set_ctl_parameters(tmp_pars);
 		goto restart_resume_jacobian_runs;
 	}
+	else if (restart_controller.get_restart_option() == RestartController::RestartOption::RESUME_NEW_ITERATION)
+	{
+		restart_controller.get_restart_option() = RestartController::RestartOption::NONE;
+		Parameters tmp_pars;
+		ifstream &fin_par = file_manager.open_ifile_ext("rpb");
+		output_file_writer.read_par(fin_par, tmp_pars);
+		file_manager.close_file("rpb");
+		cur_solution.set_ctl_parameters(tmp_pars);
+	}
+
+	else if (restart_controller.get_restart_option() == RestartController::RestartOption::RESUME_NEW_ITERATION)
+	{
+		restart_controller.get_restart_option() = RestartController::RestartOption::NONE;
+		Parameters tmp_pars;
+		ifstream &fin_par = file_manager.open_ifile_ext("rpb");
+		output_file_writer.read_par(fin_par, tmp_pars);
+		file_manager.close_file("rpb");
+		cur_solution.set_ctl_parameters(tmp_pars);
+	}
+
+	//Save information necessary for restart
+	ostream &fout_restart = file_manager.get_ofstream("rst");
+	fout_restart << "base_par_iteration" << endl;
+	// save current parameters
+	{
+		ofstream &fout_rpb = file_manager.open_ofile_ext("rpb");
+		output_file_writer.write_par(fout_rpb, cur_solution.get_ctl_pars(), *(par_transform.get_offset_ptr()),
+			*(par_transform.get_scale_ptr()));
+		file_manager.close_file("rpb");
+	}
+	// save state of termination controller
+	termination_ctl.save_state(fout_restart);
 
 	// Calculate Jacobian
 	if (!cur_solution.obs_valid() || calc_init_obs == true) {
@@ -550,15 +578,6 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 		*par_group_info_ptr, *ctl_par_info_ptr, run_manager, out_ofbound_pars,
 		phiredswh_flag, calc_init_obs);
 restart_resume_jacobian_runs:
-	// save current parameters
-	{
-		ofstream &fout_rpb = file_manager.open_ofile_ext("rpb");
-		output_file_writer.write_par(fout_rpb, cur_solution.get_ctl_pars(), *(par_transform.get_offset_ptr()),
-			*(par_transform.get_scale_ptr()));
-		file_manager.close_file("rpb");
-	}
-	// save state of termination controller
-	termination_ctl.save_state(fout_restart);
 
 	performance_log->log_event("jacobian parameter sets built, commencing model runs");
 	jacobian.make_runs(run_manager);

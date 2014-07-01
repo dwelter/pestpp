@@ -30,7 +30,8 @@ class FileManager
 public:
 	FileManager();
 	FileManager(const std::string &_base_filename, const std::string &_directory="", bool restart=false);
-	void initialize(const std::string &_base_filename = "", const std::string &_directory = "", bool restart = false);
+	void initialize_path(const std::string &_base_filename = "", const std::string &_directory = "");
+	void open_default_files(bool restart = false);
 	std::string build_filename(const std::string &ext);
 	std::string get_full_filename(const std::string &tag);
 	std::string jacobian_filename() {return build_filename("jco");}

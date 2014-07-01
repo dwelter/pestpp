@@ -31,14 +31,17 @@ FileManager::FileManager()
 FileManager::FileManager(const string &_base_filename, const string &_directory, bool restart)
   : directory(strip_cp(_directory)), pest_base_filename(strip_cp(_base_filename))
 {
-	initialize(_base_filename, _directory, restart);
+	initialize_path(_base_filename, _directory);
 }
 
-void FileManager::initialize(const string &_base_filename, const string &_directory, bool restart)
+void FileManager::initialize_path(const string &_base_filename, const string &_directory)
 {
 	directory = strip_cp(_directory);
 	pest_base_filename = strip_cp(_base_filename);
+}
 
+void  FileManager::open_default_files(bool restart)
+{
 	close_file("rec");
 	if (restart)
 	{
@@ -48,6 +51,7 @@ void FileManager::initialize(const string &_base_filename, const string &_direct
 	{
 		open_ofile_ext("rec");
 	}
+
 }
 
 

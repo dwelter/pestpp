@@ -169,16 +169,19 @@ int main(int argc, char* argv[])
 	vector<string>::const_iterator it_find_j = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/j");
 	vector<string>::const_iterator it_find_r = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/r");
 	bool restart_flag = false;
+	file_manager.initialize_path(filename, pathname);
 	if (it_find_j != cmd_arg_vec.end())
 	{
 		restart_ctl.get_restart_option() = RestartController::RestartOption::REUSE_JACOBIAN;
-		file_manager.initialize(filename, pathname);
+		file_manager.open_default_files();
 	}
 	else if (it_find_r != cmd_arg_vec.end())
 	{
-		restart_ctl.get_restart_option() = RestartController::RestartOption::RESUME_JACOBIAN_RUNS;
+		ifstream &fin_rst = file_manager.open_ifile_ext("rst");
+		restart_ctl.process_rst_file(fin_rst);
+		file_manager.close_file("rst");
 		restart_flag = true;
-		file_manager.initialize(filename, pathname, true);
+		file_manager.open_default_files(true);
 		ofstream &fout_rec_tmp = file_manager.rec_ofstream();
 		fout_rec_tmp << endl << endl;
 		fout_rec_tmp << "Restarting PEST++ ....." << endl << endl;
@@ -186,7 +189,7 @@ int main(int argc, char* argv[])
 	else
 	{
 		restart_ctl.get_restart_option() = RestartController::RestartOption::NONE;
-		file_manager.initialize(filename, pathname);
+		file_manager.open_default_files();
 	}
 
 	ofstream &fout_rec = file_manager.rec_ofstream();
@@ -266,16 +269,11 @@ int main(int argc, char* argv[])
 		pest_scenario.get_control_info().nphistp, pest_scenario.get_control_info().nphinored, pest_scenario.get_control_info().relparstp,
 		pest_scenario.get_control_info().nrelpar);
 
-	//process restart file
-	if (restart_ctl.get_restart_option() == RestartController::RestartOption::RESUME_JACOBIAN_RUNS)
+	//if we are doing a restart, update the termination_ctl
+	if (restart_flag)
 	{
-		ifstream &fin_rst = file_manager.open_ifile_ext("rst");
-		restart_ctl.process_rst_file(fin_rst, termination_ctl);
-		file_manager.close_file("rst");
-	}
-	else
-	{
-		restart_ctl.get_restart_option() = RestartController::RestartOption::NONE;
+		restart_ctl.update_termination_ctl(termination_ctl);
+
 	}
 
 	SVDSolver::MAT_INV mat_inv = SVDSolver::MAT_INV::JTQJ;

@@ -14,7 +14,7 @@ RestartController::RestartController(void)
 	restart_option = RestartOption::NONE;
 }
 
-void RestartController::process_rst_file(std::ifstream &fin, TerminationController &term_ctl)
+void RestartController::process_rst_file(std::ifstream &fin)
 {
 	string line;
 	vector<string> tokens;
@@ -30,22 +30,23 @@ void RestartController::process_rst_file(std::ifstream &fin, TerminationControll
 		{
 			convert_ip(tokens[1], local_iter_no);
 			convert_ip(tokens[1], global_iter_no);
+			restart_option = RestartOption::RESUME_NEW_ITERATION;
 		}
 		else if (tokens[0] == "termination_info_1")
 		{
-			//convert_ip(tokens[1], term_ctl.noptmax);
-			convert_ip(tokens[2], term_ctl.nopt_count);
-			//convert_ip(tokens[3], term_ctl.nphinored);
-			convert_ip(tokens[4], term_ctl.nphinored_count);
-			//convert_ip(tokens[5], term_ctl.nrelpar);
+			//tokens[1] is noptmax;
+			convert_ip(tokens[2], nopt_count);
+			//tokens[3] is nphinored);
+			convert_ip(tokens[4], nphinored_count);
+			//tokens[5] is term_ctl.nrelpar);
 
 		}
 		else if (tokens[0] == "termination_info_2")
 		{
-			convert_ip(tokens[1], term_ctl.nrelpar_count);
-			//convert_ip(tokens[2], term_ctl.nphistp);
-			//convert_ip(tokens[3], term_ctl.phiredstp);
-			//convert_ip(tokens[4], term_ctl.relparstp);
+			convert_ip(tokens[1], nrelpar_count);
+			//tokens[2] is nphistp;
+			//tokens[3] is phiredstp;
+			//tokens[4] is relparstp;
 
 		}
 		else if (tokens[0] == "termination_info_3")
@@ -53,7 +54,7 @@ void RestartController::process_rst_file(std::ifstream &fin, TerminationControll
 			for (int i = 1; i<tokens.size(); ++i)
 			{
 				double val = convert_cp<double>(tokens[1]);
-				term_ctl.lowest_phi.push_back(val);
+				lowest_phi.push_back(val);
 			}
 		}
 		else if (tokens[0] == "native_par_iteration")
@@ -75,6 +76,13 @@ void RestartController::process_rst_file(std::ifstream &fin, TerminationControll
 	}
 }
 
+void RestartController::update_termination_ctl(TerminationController &term_ctl)
+{
+	term_ctl.nopt_count = nopt_count;
+	term_ctl.nphinored_count = nphinored_count;
+	term_ctl.nrelpar_count = nrelpar_count;
+	term_ctl.lowest_phi = lowest_phi;
+}
 
 RestartController::~RestartController(void)
 {
