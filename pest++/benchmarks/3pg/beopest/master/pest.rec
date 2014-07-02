@@ -503,7 +503,7 @@
 
 
  OPTIMISATION ITERATION NO.        : 2
-    Model calls so far             : 12
+    Model calls so far             : 10
     Starting phi for this iteration                          :   48682.    
     Contribution to phi from observation group "site1"       :   16807.    
     Contribution to phi from observation group "site2"       :   7250.4    
@@ -575,7 +575,7 @@
 
 
  OPTIMISATION ITERATION NO.        : 3
-    Model calls so far             : 18
+    Model calls so far             : 16
     Starting phi for this iteration                          :   2861.9    
     Contribution to phi from observation group "site1"       :   1558.5    
     Contribution to phi from observation group "site2"       :   295.19    
@@ -650,7 +650,7 @@
 
 
  OPTIMISATION ITERATION NO.        : 4
-    Model calls so far             : 29
+    Model calls so far             : 25
     Starting phi for this iteration                          :   2391.1    
     Contribution to phi from observation group "site1"       :   643.53    
     Contribution to phi from observation group "site2"       :   994.73    
@@ -728,7 +728,7 @@
 
 
  OPTIMISATION ITERATION NO.        : 5
-    Model calls so far             : 40
+    Model calls so far             : 34
     Starting phi for this iteration                          :   2391.1    
     Contribution to phi from observation group "site1"       :   643.53    
     Contribution to phi from observation group "site2"       :   994.73    
@@ -805,7 +805,7 @@
 
 
  OPTIMISATION ITERATION NO.        : 6
-    Model calls so far             : 56
+    Model calls so far             : 50
     Starting phi for this iteration                          :   2566.6    
     Contribution to phi from observation group "site1"       :   733.20    
     Contribution to phi from observation group "site2"       :   1048.0    
@@ -893,7 +893,7 @@
 
     Optimisation complete:   3 optimisation iterations have elapsed since lowest
                            phi was achieved.
-    Total model calls:     72
+    Total model calls:     66
 
     The model has been run one final time using best parameters. 
     Thus all model input files contain best parameter values, and model 
