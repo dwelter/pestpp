@@ -4,3 +4,953 @@ running model 6 times
 
     waiting for slaves to appear...
 
+New Slave connection from: IGSBABEWLT109.gs.doi.net:49907   working dir: D:\Users\jwhite\git_repo\pestpp\pest++\benchmarks\3pg\pestpp\slaves\IGSBABEWLT109_1
+New Slave connection from: IGSBABEWLT109.gs.doi.net:49908   working dir: D:\Users\jwhite\git_repo\pestpp\pest++\benchmarks\3pg\pestpp\slaves\IGSBABEWLT109_2
+New Slave connection from: IGSBABEWLT109.gs.doi.net:49910   working dir: D:\Users\jwhite\git_repo\pestpp\pest++\benchmarks\3pg\pestpp\slaves\IGSBABEWLT109_4
+New Slave connection from: IGSBABEWLT109.gs.doi.net:49909   working dir: D:\Users\jwhite\git_repo\pestpp\pest++\benchmarks\3pg\pestpp\slaves\IGSBABEWLT109_3
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 2, run id = 0) at Wed Jul 02 09:09:59 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 2, run id = 1) at Wed Jul 02 09:09:59 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 2, run id = 2) at Wed Jul 02 09:09:59 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:09:59 2014
+  (run time = 0.0088 min: group id = 2, run id = 0)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 2, run id = 3) at Wed Jul 02 09:09:59 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 2, run id = 4) at Wed Jul 02 09:09:59 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:09:59 2014
+  (run time = 0.0086 min: group id = 2, run id = 1)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 2, run id = 5) at Wed Jul 02 09:09:59 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:00 2014
+  (run time = 0.008 min: group id = 2, run id = 3)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:00 2014
+  (run time = 0.012 min: group id = 2, run id = 2)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:00 2014
+  (run time = 0.0065 min: group id = 2, run id = 5)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:00 2014
+  (run time = 0.0082 min: group id = 2, run id = 4)
+
+running model 7 times
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 3, run id = 0) at Wed Jul 02 09:10:00 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 3, run id = 1) at Wed Jul 02 09:10:00 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 3, run id = 2) at Wed Jul 02 09:10:00 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 3, run id = 3) at Wed Jul 02 09:10:00 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:00 2014
+  (run time = 0.0043 min: group id = 3, run id = 2)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 3, run id = 4) at Wed Jul 02 09:10:00 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:00 2014
+  (run time = 0.0062 min: group id = 3, run id = 3)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 3, run id = 5) at Wed Jul 02 09:10:00 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:00 2014
+  (run time = 0.0067 min: group id = 3, run id = 1)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 3, run id = 6) at Wed Jul 02 09:10:00 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:00 2014
+  (run time = 0.0092 min: group id = 3, run id = 0)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:00 2014
+  (run time = 0.0041 min: group id = 3, run id = 4)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:00 2014
+  (run time = 0.0058 min: group id = 3, run id = 5)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:00 2014
+  (run time = 0.0066 min: group id = 3, run id = 6)
+
+running model 6 times
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 4, run id = 0) at Wed Jul 02 09:10:00 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 4, run id = 1) at Wed Jul 02 09:10:00 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 4, run id = 2) at Wed Jul 02 09:10:00 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 4, run id = 3) at Wed Jul 02 09:10:00 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:01 2014
+  (run time = 0.0031 min: group id = 4, run id = 2)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 4, run id = 4) at Wed Jul 02 09:10:01 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:01 2014
+  (run time = 0.0046 min: group id = 4, run id = 1)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 4, run id = 5) at Wed Jul 02 09:10:01 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:01 2014
+  (run time = 0.0063 min: group id = 4, run id = 3)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:01 2014
+  (run time = 0.0076 min: group id = 4, run id = 0)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:01 2014
+  (run time = 0.0035 min: group id = 4, run id = 4)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:01 2014
+  (run time = 0.0049 min: group id = 4, run id = 5)
+
+running model 7 times
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 5, run id = 0) at Wed Jul 02 09:10:01 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 5, run id = 1) at Wed Jul 02 09:10:01 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 5, run id = 2) at Wed Jul 02 09:10:01 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 5, run id = 3) at Wed Jul 02 09:10:01 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:01 2014
+  (run time = 0.0027 min: group id = 5, run id = 2)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 5, run id = 4) at Wed Jul 02 09:10:01 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:01 2014
+  (run time = 0.0045 min: group id = 5, run id = 3)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 5, run id = 5) at Wed Jul 02 09:10:01 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:01 2014
+  (run time = 0.0054 min: group id = 5, run id = 1)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 5, run id = 6) at Wed Jul 02 09:10:01 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:01 2014
+  (run time = 0.0031 min: group id = 5, run id = 4)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:01 2014
+  (run time = 0.0067 min: group id = 5, run id = 0)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:02 2014
+  (run time = 0.0054 min: group id = 5, run id = 5)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:02 2014
+  (run time = 0.0059 min: group id = 5, run id = 6)
+
+running model 6 times
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 6, run id = 0) at Wed Jul 02 09:10:02 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 6, run id = 1) at Wed Jul 02 09:10:02 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 6, run id = 2) at Wed Jul 02 09:10:02 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 6, run id = 3) at Wed Jul 02 09:10:02 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:02 2014
+  (run time = 0.0026 min: group id = 6, run id = 2)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 6, run id = 4) at Wed Jul 02 09:10:02 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:02 2014
+  (run time = 0.0056 min: group id = 6, run id = 0)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 6, run id = 5) at Wed Jul 02 09:10:02 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:02 2014
+  (run time = 0.0054 min: group id = 6, run id = 3)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:02 2014
+  (run time = 0.0055 min: group id = 6, run id = 1)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:02 2014
+  (run time = 0.0029 min: group id = 6, run id = 4)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:02 2014
+  (run time = 0.0051 min: group id = 6, run id = 5)
+
+running model 7 times
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 7, run id = 0) at Wed Jul 02 09:10:03 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 7, run id = 1) at Wed Jul 02 09:10:03 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 7, run id = 2) at Wed Jul 02 09:10:03 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 7, run id = 3) at Wed Jul 02 09:10:03 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:03 2014
+  (run time = 0.0025 min: group id = 7, run id = 2)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 7, run id = 4) at Wed Jul 02 09:10:03 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:03 2014
+  (run time = 0.0049 min: group id = 7, run id = 0)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 7, run id = 5) at Wed Jul 02 09:10:03 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:03 2014
+  (run time = 0.0047 min: group id = 7, run id = 3)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 7, run id = 6) at Wed Jul 02 09:10:03 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:03 2014
+  (run time = 0.0052 min: group id = 7, run id = 1)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:03 2014
+  (run time = 0.0031 min: group id = 7, run id = 4)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:03 2014
+  (run time = 0.0049 min: group id = 7, run id = 6)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:03 2014
+  (run time = 0.0053 min: group id = 7, run id = 5)
+
+running model 11 times
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 8, run id = 0) at Wed Jul 02 09:10:03 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 8, run id = 1) at Wed Jul 02 09:10:03 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 8, run id = 2) at Wed Jul 02 09:10:03 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 8, run id = 3) at Wed Jul 02 09:10:03 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:03 2014
+  (run time = 0.0027 min: group id = 8, run id = 2)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 8, run id = 4) at Wed Jul 02 09:10:03 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:03 2014
+  (run time = 0.0045 min: group id = 8, run id = 1)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:03 2014
+  (run time = 0.0047 min: group id = 8, run id = 0)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 8, run id = 5) at Wed Jul 02 09:10:03 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 8, run id = 6) at Wed Jul 02 09:10:03 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:04 2014
+  (run time = 0.0052 min: group id = 8, run id = 3)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 8, run id = 7) at Wed Jul 02 09:10:04 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:04 2014
+  (run time = 0.0031 min: group id = 8, run id = 4)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 8, run id = 8) at Wed Jul 02 09:10:04 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:04 2014
+  (run time = 0.005 min: group id = 8, run id = 5)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 8, run id = 9) at Wed Jul 02 09:10:04 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:04 2014
+  (run time = 0.0053 min: group id = 8, run id = 6)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:04 2014
+  (run time = 0.0037 min: group id = 8, run id = 8)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 8, run id = 10) at Wed Jul 02 09:10:04 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:04 2014
+  (run time = 0.0059 min: group id = 8, run id = 7)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:04 2014
+  (run time = 0.005 min: group id = 8, run id = 9)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:04 2014
+  (run time = 0.0061 min: group id = 8, run id = 10)
+
+running model 7 times
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 9, run id = 0) at Wed Jul 02 09:10:04 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 9, run id = 1) at Wed Jul 02 09:10:04 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 9, run id = 2) at Wed Jul 02 09:10:04 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 9, run id = 3) at Wed Jul 02 09:10:04 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:05 2014
+  (run time = 0.0032 min: group id = 9, run id = 2)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 9, run id = 4) at Wed Jul 02 09:10:05 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:05 2014
+  (run time = 0.0047 min: group id = 9, run id = 1)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 9, run id = 5) at Wed Jul 02 09:10:05 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:05 2014
+  (run time = 0.0054 min: group id = 9, run id = 0)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 9, run id = 6) at Wed Jul 02 09:10:05 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:05 2014
+  (run time = 0.0057 min: group id = 9, run id = 3)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:05 2014
+  (run time = 0.0034 min: group id = 9, run id = 4)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:05 2014
+  (run time = 0.0049 min: group id = 9, run id = 5)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:05 2014
+  (run time = 0.0056 min: group id = 9, run id = 6)
+
+running model 11 times
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 10, run id = 0) at Wed Jul 02 09:10:05 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 10, run id = 1) at Wed Jul 02 09:10:05 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 10, run id = 2) at Wed Jul 02 09:10:05 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 10, run id = 3) at Wed Jul 02 09:10:05 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:05 2014
+  (run time = 0.003 min: group id = 10, run id = 2)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 10, run id = 4) at Wed Jul 02 09:10:05 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:05 2014
+  (run time = 0.0043 min: group id = 10, run id = 1)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 10, run id = 5) at Wed Jul 02 09:10:05 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:05 2014
+  (run time = 0.0052 min: group id = 10, run id = 0)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 10, run id = 6) at Wed Jul 02 09:10:05 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:05 2014
+  (run time = 0.0056 min: group id = 10, run id = 3)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 10, run id = 7) at Wed Jul 02 09:10:05 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:06 2014
+  (run time = 0.0035 min: group id = 10, run id = 4)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 10, run id = 8) at Wed Jul 02 09:10:06 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:06 2014
+  (run time = 0.005 min: group id = 10, run id = 5)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 10, run id = 9) at Wed Jul 02 09:10:06 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:06 2014
+  (run time = 0.0056 min: group id = 10, run id = 6)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 10, run id = 10) at Wed Jul 02 09:10:06 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:06 2014
+  (run time = 0.0038 min: group id = 10, run id = 8)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:06 2014
+  (run time = 0.006 min: group id = 10, run id = 7)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:06 2014
+  (run time = 0.0051 min: group id = 10, run id = 9)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:06 2014
+  (run time = 0.0055 min: group id = 10, run id = 10)
+
+running model 7 times
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 11, run id = 0) at Wed Jul 02 09:10:06 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 11, run id = 1) at Wed Jul 02 09:10:06 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 11, run id = 2) at Wed Jul 02 09:10:06 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 11, run id = 3) at Wed Jul 02 09:10:06 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:06 2014
+  (run time = 0.0033 min: group id = 11, run id = 2)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 11, run id = 4) at Wed Jul 02 09:10:06 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:07 2014
+  (run time = 0.0048 min: group id = 11, run id = 3)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 11, run id = 5) at Wed Jul 02 09:10:07 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:07 2014
+  (run time = 0.0047 min: group id = 11, run id = 1)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 11, run id = 6) at Wed Jul 02 09:10:07 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:07 2014
+  (run time = 0.0056 min: group id = 11, run id = 0)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:07 2014
+  (run time = 0.0035 min: group id = 11, run id = 4)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:07 2014
+  (run time = 0.005 min: group id = 11, run id = 6)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:07 2014
+  (run time = 0.0055 min: group id = 11, run id = 5)
+
+running model 11 times
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 12, run id = 0) at Wed Jul 02 09:10:07 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 12, run id = 1) at Wed Jul 02 09:10:07 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 12, run id = 2) at Wed Jul 02 09:10:07 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 12, run id = 3) at Wed Jul 02 09:10:07 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:07 2014
+  (run time = 0.0031 min: group id = 12, run id = 2)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 12, run id = 4) at Wed Jul 02 09:10:07 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:07 2014
+  (run time = 0.0051 min: group id = 12, run id = 0)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:07 2014
+  (run time = 0.0047 min: group id = 12, run id = 1)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 12, run id = 5) at Wed Jul 02 09:10:07 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 12, run id = 6) at Wed Jul 02 09:10:07 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:07 2014
+  (run time = 0.0056 min: group id = 12, run id = 3)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 12, run id = 7) at Wed Jul 02 09:10:07 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:07 2014
+  (run time = 0.0035 min: group id = 12, run id = 4)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 12, run id = 8) at Wed Jul 02 09:10:07 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:08 2014
+  (run time = 0.0053 min: group id = 12, run id = 6)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 12, run id = 9) at Wed Jul 02 09:10:08 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:08 2014
+  (run time = 0.0057 min: group id = 12, run id = 5)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 12, run id = 10) at Wed Jul 02 09:10:08 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:08 2014
+  (run time = 0.0042 min: group id = 12, run id = 8)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:08 2014
+  (run time = 0.0061 min: group id = 12, run id = 7)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:08 2014
+  (run time = 0.0054 min: group id = 12, run id = 9)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:08 2014
+  (run time = 0.0058 min: group id = 12, run id = 10)
+
+running model 7 times
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 13, run id = 0) at Wed Jul 02 09:10:08 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 13, run id = 1) at Wed Jul 02 09:10:08 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 13, run id = 2) at Wed Jul 02 09:10:08 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 13, run id = 3) at Wed Jul 02 09:10:08 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:08 2014
+  (run time = 0.0037 min: group id = 13, run id = 2)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 13, run id = 4) at Wed Jul 02 09:10:08 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:08 2014
+  (run time = 0.0049 min: group id = 13, run id = 1)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 13, run id = 5) at Wed Jul 02 09:10:08 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:08 2014
+  (run time = 0.0054 min: group id = 13, run id = 0)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 13, run id = 6) at Wed Jul 02 09:10:08 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:08 2014
+  (run time = 0.0055 min: group id = 13, run id = 3)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:09 2014
+  (run time = 0.0037 min: group id = 13, run id = 4)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:09 2014
+  (run time = 0.0054 min: group id = 13, run id = 5)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:09 2014
+  (run time = 0.0064 min: group id = 13, run id = 6)
+
+running model 11 times
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 14, run id = 0) at Wed Jul 02 09:10:09 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 14, run id = 1) at Wed Jul 02 09:10:09 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 14, run id = 2) at Wed Jul 02 09:10:09 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 14, run id = 3) at Wed Jul 02 09:10:09 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:09 2014
+  (run time = 0.003 min: group id = 14, run id = 2)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 14, run id = 4) at Wed Jul 02 09:10:09 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:09 2014
+  (run time = 0.0051 min: group id = 14, run id = 1)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 14, run id = 5) at Wed Jul 02 09:10:09 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:09 2014
+  (run time = 0.0053 min: group id = 14, run id = 0)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 14, run id = 6) at Wed Jul 02 09:10:09 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:09 2014
+  (run time = 0.0063 min: group id = 14, run id = 3)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 14, run id = 7) at Wed Jul 02 09:10:09 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:09 2014
+  (run time = 0.0036 min: group id = 14, run id = 4)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 14, run id = 8) at Wed Jul 02 09:10:09 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:10 2014
+  (run time = 0.0057 min: group id = 14, run id = 5)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 14, run id = 9) at Wed Jul 02 09:10:10 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:10 2014
+  (run time = 0.0043 min: group id = 14, run id = 8)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 14, run id = 10) at Wed Jul 02 09:10:10 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:10 2014
+  (run time = 0.0072 min: group id = 14, run id = 7)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:10 2014
+  (run time = 0.0074 min: group id = 14, run id = 6)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:10 2014
+  (run time = 0.0047 min: group id = 14, run id = 10)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:10 2014
+  (run time = 0.0062 min: group id = 14, run id = 9)
+
+running model 7 times
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 15, run id = 0) at Wed Jul 02 09:10:10 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 15, run id = 1) at Wed Jul 02 09:10:10 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 15, run id = 2) at Wed Jul 02 09:10:10 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 15, run id = 3) at Wed Jul 02 09:10:10 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:10 2014
+  (run time = 0.0039 min: group id = 15, run id = 2)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 15, run id = 4) at Wed Jul 02 09:10:10 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:11 2014
+  (run time = 0.0053 min: group id = 15, run id = 3)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 15, run id = 5) at Wed Jul 02 09:10:11 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:11 2014
+  (run time = 0.0061 min: group id = 15, run id = 0)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 15, run id = 6) at Wed Jul 02 09:10:11 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:11 2014
+  (run time = 0.0065 min: group id = 15, run id = 1)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:11 2014
+  (run time = 0.0039 min: group id = 15, run id = 4)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:11 2014
+  (run time = 0.0056 min: group id = 15, run id = 5)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:11 2014
+  (run time = 0.0063 min: group id = 15, run id = 6)
+
+running model 11 times
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 16, run id = 0) at Wed Jul 02 09:10:11 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 16, run id = 1) at Wed Jul 02 09:10:11 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 16, run id = 2) at Wed Jul 02 09:10:11 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 16, run id = 3) at Wed Jul 02 09:10:11 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:11 2014
+  (run time = 0.0035 min: group id = 16, run id = 2)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 16, run id = 4) at Wed Jul 02 09:10:11 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:11 2014
+  (run time = 0.0051 min: group id = 16, run id = 1)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 16, run id = 5) at Wed Jul 02 09:10:11 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:11 2014
+  (run time = 0.0056 min: group id = 16, run id = 0)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 16, run id = 6) at Wed Jul 02 09:10:11 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:11 2014
+  (run time = 0.0064 min: group id = 16, run id = 3)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 16, run id = 7) at Wed Jul 02 09:10:11 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:11 2014
+  (run time = 0.0037 min: group id = 16, run id = 4)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 16, run id = 8) at Wed Jul 02 09:10:11 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:12 2014
+  (run time = 0.0056 min: group id = 16, run id = 5)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 16, run id = 9) at Wed Jul 02 09:10:12 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:12 2014
+  (run time = 0.0063 min: group id = 16, run id = 6)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 16, run id = 10) at Wed Jul 02 09:10:12 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:12 2014
+  (run time = 0.0043 min: group id = 16, run id = 8)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:12 2014
+  (run time = 0.0067 min: group id = 16, run id = 7)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:12 2014
+  (run time = 0.0057 min: group id = 16, run id = 9)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:12 2014
+  (run time = 0.0065 min: group id = 16, run id = 10)
+
+running model 7 times
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 17, run id = 0) at Wed Jul 02 09:10:12 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 17, run id = 1) at Wed Jul 02 09:10:12 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 17, run id = 2) at Wed Jul 02 09:10:12 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 17, run id = 3) at Wed Jul 02 09:10:12 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:12 2014
+  (run time = 0.0037 min: group id = 17, run id = 2)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 17, run id = 4) at Wed Jul 02 09:10:12 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:13 2014
+  (run time = 0.005 min: group id = 17, run id = 1)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 17, run id = 5) at Wed Jul 02 09:10:13 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:13 2014
+  (run time = 0.0057 min: group id = 17, run id = 0)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 17, run id = 6) at Wed Jul 02 09:10:13 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:13 2014
+  (run time = 0.0065 min: group id = 17, run id = 3)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:13 2014
+  (run time = 0.0039 min: group id = 17, run id = 4)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:13 2014
+  (run time = 0.0053 min: group id = 17, run id = 5)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:13 2014
+  (run time = 0.0059 min: group id = 17, run id = 6)
+
+running model 11 times
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 18, run id = 0) at Wed Jul 02 09:10:13 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 18, run id = 1) at Wed Jul 02 09:10:13 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 18, run id = 2) at Wed Jul 02 09:10:13 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 18, run id = 3) at Wed Jul 02 09:10:13 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:13 2014
+  (run time = 0.0034 min: group id = 18, run id = 2)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 18, run id = 4) at Wed Jul 02 09:10:13 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:13 2014
+  (run time = 0.0047 min: group id = 18, run id = 1)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 18, run id = 5) at Wed Jul 02 09:10:13 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:13 2014
+  (run time = 0.0057 min: group id = 18, run id = 0)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 18, run id = 6) at Wed Jul 02 09:10:13 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:13 2014
+  (run time = 0.0058 min: group id = 18, run id = 3)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 18, run id = 7) at Wed Jul 02 09:10:13 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:13 2014
+  (run time = 0.0036 min: group id = 18, run id = 4)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 18, run id = 8) at Wed Jul 02 09:10:13 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:14 2014
+  (run time = 0.0051 min: group id = 18, run id = 5)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 18, run id = 9) at Wed Jul 02 09:10:14 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:14 2014
+  (run time = 0.0039 min: group id = 18, run id = 8)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 18, run id = 10) at Wed Jul 02 09:10:14 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:14 2014
+  (run time = 0.0062 min: group id = 18, run id = 6)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:14 2014
+  (run time = 0.0061 min: group id = 18, run id = 7)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:14 2014
+  (run time = 0.004 min: group id = 18, run id = 10)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:14 2014
+  (run time = 0.0053 min: group id = 18, run id = 9)
+
+running model 8 times
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 19, run id = 0) at Wed Jul 02 09:10:14 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 19, run id = 1) at Wed Jul 02 09:10:14 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 19, run id = 2) at Wed Jul 02 09:10:14 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 19, run id = 3) at Wed Jul 02 09:10:14 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:14 2014
+  (run time = 0.0034 min: group id = 19, run id = 2)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 19, run id = 4) at Wed Jul 02 09:10:14 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:14 2014
+  (run time = 0.0047 min: group id = 19, run id = 3)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 19, run id = 5) at Wed Jul 02 09:10:14 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:14 2014
+  (run time = 0.0053 min: group id = 19, run id = 0)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 19, run id = 6) at Wed Jul 02 09:10:14 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:14 2014
+  (run time = 0.0053 min: group id = 19, run id = 1)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 19, run id = 7) at Wed Jul 02 09:10:14 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:15 2014
+  (run time = 0.0036 min: group id = 19, run id = 4)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:15 2014
+  (run time = 0.0054 min: group id = 19, run id = 5)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:15 2014
+  (run time = 0.0059 min: group id = 19, run id = 6)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:15 2014
+  (run time = 0.0063 min: group id = 19, run id = 7)
+
+running model 11 times
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 20, run id = 0) at Wed Jul 02 09:10:15 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 20, run id = 1) at Wed Jul 02 09:10:15 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 20, run id = 2) at Wed Jul 02 09:10:15 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 20, run id = 3) at Wed Jul 02 09:10:15 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:15 2014
+  (run time = 0.0032 min: group id = 20, run id = 2)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 20, run id = 4) at Wed Jul 02 09:10:15 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:15 2014
+  (run time = 0.0047 min: group id = 20, run id = 1)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 20, run id = 5) at Wed Jul 02 09:10:15 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:15 2014
+  (run time = 0.005 min: group id = 20, run id = 0)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 20, run id = 6) at Wed Jul 02 09:10:15 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:15 2014
+  (run time = 0.006 min: group id = 20, run id = 3)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 20, run id = 7) at Wed Jul 02 09:10:15 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:15 2014
+  (run time = 0.0036 min: group id = 20, run id = 4)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 20, run id = 8) at Wed Jul 02 09:10:15 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:15 2014
+  (run time = 0.005 min: group id = 20, run id = 5)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 20, run id = 9) at Wed Jul 02 09:10:15 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:16 2014
+  (run time = 0.0053 min: group id = 20, run id = 6)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 20, run id = 10) at Wed Jul 02 09:10:16 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:16 2014
+  (run time = 0.0038 min: group id = 20, run id = 8)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:16 2014
+  (run time = 0.0062 min: group id = 20, run id = 7)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:16 2014
+  (run time = 0.0052 min: group id = 20, run id = 9)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:16 2014
+  (run time = 0.0058 min: group id = 20, run id = 10)
+
+running model 8 times
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 21, run id = 0) at Wed Jul 02 09:10:16 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 21, run id = 1) at Wed Jul 02 09:10:16 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 21, run id = 2) at Wed Jul 02 09:10:16 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 21, run id = 3) at Wed Jul 02 09:10:16 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:16 2014
+  (run time = 0.0031 min: group id = 21, run id = 2)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 21, run id = 4) at Wed Jul 02 09:10:16 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:16 2014
+  (run time = 0.0051 min: group id = 21, run id = 0)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 21, run id = 5) at Wed Jul 02 09:10:16 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:16 2014
+  (run time = 0.0046 min: group id = 21, run id = 1)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 21, run id = 6) at Wed Jul 02 09:10:16 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:16 2014
+  (run time = 0.0053 min: group id = 21, run id = 3)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 21, run id = 7) at Wed Jul 02 09:10:16 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:16 2014
+  (run time = 0.0036 min: group id = 21, run id = 4)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:17 2014
+  (run time = 0.0049 min: group id = 21, run id = 6)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:17 2014
+  (run time = 0.0057 min: group id = 21, run id = 5)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:17 2014
+  (run time = 0.0059 min: group id = 21, run id = 7)
+
+running model 11 times
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 22, run id = 0) at Wed Jul 02 09:10:17 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 22, run id = 1) at Wed Jul 02 09:10:17 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 22, run id = 2) at Wed Jul 02 09:10:17 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 22, run id = 3) at Wed Jul 02 09:10:17 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:17 2014
+  (run time = 0.003 min: group id = 22, run id = 2)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 22, run id = 4) at Wed Jul 02 09:10:17 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:17 2014
+  (run time = 0.0042 min: group id = 22, run id = 1)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 22, run id = 5) at Wed Jul 02 09:10:17 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:17 2014
+  (run time = 0.0051 min: group id = 22, run id = 0)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 22, run id = 6) at Wed Jul 02 09:10:17 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:17 2014
+  (run time = 0.006 min: group id = 22, run id = 3)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 22, run id = 7) at Wed Jul 02 09:10:17 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:17 2014
+  (run time = 0.0036 min: group id = 22, run id = 4)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 22, run id = 8) at Wed Jul 02 09:10:17 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:17 2014
+  (run time = 0.0047 min: group id = 22, run id = 5)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 22, run id = 9) at Wed Jul 02 09:10:17 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:17 2014
+  (run time = 0.0036 min: group id = 22, run id = 8)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 22, run id = 10) at Wed Jul 02 09:10:17 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:17 2014
+  (run time = 0.0054 min: group id = 22, run id = 6)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:18 2014
+  (run time = 0.0062 min: group id = 22, run id = 7)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:18 2014
+  (run time = 0.0037 min: group id = 22, run id = 10)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:18 2014
+  (run time = 0.005 min: group id = 22, run id = 9)
+
+running model 7 times
+Sending run to: IGSBABEWLT109.gs.doi.net:49907  (group id = 23, run id = 0) at Wed Jul 02 09:10:18 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 23, run id = 1) at Wed Jul 02 09:10:18 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 23, run id = 2) at Wed Jul 02 09:10:18 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 23, run id = 3) at Wed Jul 02 09:10:18 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:18 2014
+  (run time = 0.0036 min: group id = 23, run id = 2)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49908  (group id = 23, run id = 4) at Wed Jul 02 09:10:18 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:18 2014
+  (run time = 0.0045 min: group id = 23, run id = 3)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:18 2014
+  (run time = 0.0048 min: group id = 23, run id = 1)
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49910  (group id = 23, run id = 5) at Wed Jul 02 09:10:18 2014
+
+Sending run to: IGSBABEWLT109.gs.doi.net:49909  (group id = 23, run id = 6) at Wed Jul 02 09:10:18 2014
+
+Run received from: IGSBABEWLT109.gs.doi.net:49907 at Wed Jul 02 09:10:18 2014
+  (run time = 0.0057 min: group id = 23, run id = 0)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49908 at Wed Jul 02 09:10:18 2014
+  (run time = 0.0038 min: group id = 23, run id = 4)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49910 at Wed Jul 02 09:10:18 2014
+  (run time = 0.0049 min: group id = 23, run id = 5)
+
+Run received from: IGSBABEWLT109.gs.doi.net:49909 at Wed Jul 02 09:10:18 2014
+  (run time = 0.0053 min: group id = 23, run id = 6)
+

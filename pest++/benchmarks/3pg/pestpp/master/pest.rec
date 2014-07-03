@@ -1,4 +1,4 @@
-             PEST++ Version 2.2.8
+             PEST++ Version 2.2.11
 
                  by Dave Welter
      Computational Water Resource Engineering
@@ -15,3 +15,1189 @@ OPTIMISATION ITERATION NUMBER: 1
     Matrix Inversion: "Jt Q J"
     Model calls so far : 0
 
+    Starting phi for this iteration                     Total : 95439.7
+    Contribution to phi from observation group        "SITE1" : 30077.3
+    Contribution to phi from observation group        "SITE2" : 16978.2
+    Contribution to phi from observation group        "SITE3" : 26997.2
+    Contribution to phi from observation group        "SITE4" : 21387.1
+    Number of terms in the jacobian equal to zero: 12 / 540 (2.2%)
+
+    Summary of upgrade runs:
+      Lambda =     0.10; Type: IDEN; length = 0.37;  phi = 59423.1 (62.26%)
+      Lambda =     1.00; Type: IDEN; length = 0.37;  phi = 37273.6 (39.05%)
+      Lambda =    10.00; Type: IDEN; length = 0.37;  phi = 37273.3 (39.05%)
+      Lambda =    20.00; Type: IDEN; length = 0.37;  phi = 37272.9 (39.05%)
+      Lambda =    40.00; Type: IDEN; length = 0.37;  phi = 37272.1 (39.05%)
+      Lambda =   100.00; Type: IDEN; length = 0.37;  phi = 37269.7 (39.05%)
+      Lambda =  1000.00; Type: IDEN; length = 0.37;  phi = 37234 (39.01%)
+
+    Parameters frozen during best upgrade:
+      MSC_1 frozen at 0.015
+      NPP1_1 frozen at 0.5
+      SLA1_1 frozen at 5.5
+
+    Parameter Upgrades (Control File Parameters)
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+          FSP0_1          0.75          0.75             1             0
+          FERT_4             1             1             1             0
+          FSP1_3      0.080778          0.03        2.6926       -1.6926
+           LRM_4         0.042         0.042             1             0
+          FSP0_2          0.75          0.75             1             0
+          FSP1_2      0.080778          0.03        2.6926       -1.6926
+           LR0_3        0.0015        0.0015             1             0
+          FSP0_3          0.75          0.75             1             0
+          FERT_2             1             1             1             0
+          FSP0_4          0.75          0.75             1             0
+          NPP1_1           0.5           0.8           1.6         0.375
+          SLA0_2          16.1          16.1             1             0
+          FSP1_1      0.080778          0.03        2.6926       -1.6926
+          FSP1_4      0.080778          0.03        2.6926       -1.6926
+          NPP1_2           0.5           0.8           1.6         0.375
+          NPP1_3           0.5           0.8           1.6         0.375
+          NPP1_4           0.5           0.8           1.6         0.375
+          NPP0_1         0.229         0.229             1             0
+          SMDC_1     0.0316667         0.095             3      0.666667
+          NPP0_2         0.229         0.229             1             0
+          NPP0_3         0.229         0.229             1             0
+           MSC_4         0.015          0.01           1.5          -0.5
+          NPP0_4         0.229         0.229             1             0
+           MSC_3         0.015          0.01           1.5          -0.5
+          SMDC_2     0.0316667         0.095             3      0.666667
+           MSC_1         0.015          0.01           1.5          -0.5
+          SMDC_3     0.0316667         0.095             3      0.666667
+          SMDC_4     0.0316667         0.095             3      0.666667
+          SMDP_1           2.4           2.4             1             0
+          SMDP_2           2.4           2.4             1             0
+          SMDP_3           2.4           2.4             1             0
+           LRM_2         0.042         0.042             1             0
+          SMDP_4           2.4           2.4             1             0
+           LRM_1         0.042         0.042             1             0
+           LRM_3         0.042         0.042             1             0
+          SLA1_2           5.5           5.7       1.03636     0.0350877
+           LR0_1        0.0015        0.0015             1             0
+           LR0_2        0.0015        0.0015             1             0
+           LR0_4        0.0015        0.0015             1             0
+           MSC_2         0.015          0.01           1.5          -0.5
+          SLA0_1          16.1          16.1             1             0
+          SLA0_3          16.1          16.1             1             0
+          SLA0_4          16.1          16.1             1             0
+          FERT_3             1             1             1             0
+          SLA1_1           5.5           5.7       1.03636     0.0350877
+          SLA1_3           5.5           5.7       1.03636     0.0350877
+          SLA1_4           5.5           5.7       1.03636     0.0350877
+          FERT_1             1             1             1             0
+        MAXASW_1           300           300             1             0
+        MAXASW_2           300           300             1             0
+        MAXASW_3           300           300             1             0
+        MAXASW_4           300           300             1             0
+       Maximum changes in "control file" parameters:
+         Maximum relative change = -1.6926   [FSP1_4]
+         Maximum factor change = 3   [SMDC_4]
+
+    Parameter Upgrades (Transformed Numeric Parameters)
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+          NPP1_1           0.5           0.8           1.6         0.375
+          FSP1_1      0.080778          0.03        2.6926       -1.6926
+          SMDC_1     0.0316667         0.095             3      0.666667
+           MSC_1         0.015          0.01           1.5          -0.5
+          SLA1_1           5.5           5.7       1.03636     0.0350877
+       Maximum changes in "transformed numeric" parameters:
+         Maximum relative change = -1.6926   [FSP1_1]
+         Maximum factor change = 3   [SMDC_1]
+
+
+OPTIMISATION ITERATION NUMBER: 2
+
+    Iteration type: base parameter solution
+    SVD Package: Eigen JacobiSVD
+    Matrix Inversion: "Jt Q J"
+    Model calls so far : 13
+
+    Starting phi for this iteration                     Total : 37234
+    Contribution to phi from observation group        "SITE1" : 13304.2
+    Contribution to phi from observation group        "SITE2" : 5095.35
+    Contribution to phi from observation group        "SITE3" : 11199.2
+    Contribution to phi from observation group        "SITE4" : 7635.27
+    Number of terms in the jacobian equal to zero: 14 / 540 (2.6%)
+
+    Summary of upgrade runs:
+      Lambda =     0.10; Type: IDEN; length = 0.71;  phi = 2762.44 (7.42%)
+      Lambda =     1.00; Type: IDEN; length = 0.72;  phi = 2610.57 (7.01%)
+      Lambda =    10.00; Type: IDEN; length = 0.72;  phi = 2610.57 (7.01%)
+      Lambda =   100.00; Type: IDEN; length = 0.72;  phi = 2610.6 (7.01%)
+      Lambda =   500.00; Type: IDEN; length = 0.72;  phi = 2610.89 (7.01%)
+      Lambda =  1000.00; Type: IDEN; length = 0.72;  phi = 2611.33 (7.01%)
+      Lambda =  2000.00; Type: IDEN; length = 0.72;  phi = 2612.26 (7.02%)
+
+    Parameters frozen during best upgrade:
+      MSC_1 frozen at 0.015
+      NPP1_1 frozen at 1
+      SLA1_1 frozen at 6
+
+    Parameter Upgrades (Control File Parameters)
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+          FSP0_1          0.75          0.75             1             0
+          FERT_4             1             1             1             0
+          FSP1_3      0.198954      0.080778       2.46297      -1.46297
+           LRM_4         0.042         0.042             1             0
+          FSP0_2          0.75          0.75             1             0
+          FSP1_2      0.198954      0.080778       2.46297      -1.46297
+           LR0_3        0.0015        0.0015             1             0
+          FSP0_3          0.75          0.75             1             0
+          FERT_2             1             1             1             0
+          FSP0_4          0.75          0.75             1             0
+          NPP1_1             1           0.5             2            -1
+          SLA0_2          16.1          16.1             1             0
+          FSP1_1      0.198954      0.080778       2.46297      -1.46297
+          FSP1_4      0.198954      0.080778       2.46297      -1.46297
+          NPP1_2             1           0.5             2            -1
+          NPP1_3             1           0.5             2            -1
+          NPP1_4             1           0.5             2            -1
+          NPP0_1         0.229         0.229             1             0
+          SMDC_1     0.0105556     0.0316667             3      0.666667
+          NPP0_2         0.229         0.229             1             0
+          NPP0_3         0.229         0.229             1             0
+           MSC_4         0.015         0.015             1             0
+          NPP0_4         0.229         0.229             1             0
+           MSC_3         0.015         0.015             1             0
+          SMDC_2     0.0105556     0.0316667             3      0.666667
+           MSC_1         0.015         0.015             1             0
+          SMDC_3     0.0105556     0.0316667             3      0.666667
+          SMDC_4     0.0105556     0.0316667             3      0.666667
+          SMDP_1           2.4           2.4             1             0
+          SMDP_2           2.4           2.4             1             0
+          SMDP_3           2.4           2.4             1             0
+           LRM_2         0.042         0.042             1             0
+          SMDP_4           2.4           2.4             1             0
+           LRM_1         0.042         0.042             1             0
+           LRM_3         0.042         0.042             1             0
+          SLA1_2             6           5.5       1.09091    -0.0909091
+           LR0_1        0.0015        0.0015             1             0
+           LR0_2        0.0015        0.0015             1             0
+           LR0_4        0.0015        0.0015             1             0
+           MSC_2         0.015         0.015             1             0
+          SLA0_1          16.1          16.1             1             0
+          SLA0_3          16.1          16.1             1             0
+          SLA0_4          16.1          16.1             1             0
+          FERT_3             1             1             1             0
+          SLA1_1             6           5.5       1.09091    -0.0909091
+          SLA1_3             6           5.5       1.09091    -0.0909091
+          SLA1_4             6           5.5       1.09091    -0.0909091
+          FERT_1             1             1             1             0
+        MAXASW_1           300           300             1             0
+        MAXASW_2           300           300             1             0
+        MAXASW_3           300           300             1             0
+        MAXASW_4           300           300             1             0
+       Maximum changes in "control file" parameters:
+         Maximum relative change = -1.46297   [FSP1_4]
+         Maximum factor change = 3   [SMDC_4]
+
+    Parameter Upgrades (Transformed Numeric Parameters)
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+          NPP1_1             1           0.5             2            -1
+          FSP1_1      0.198954      0.080778       2.46297      -1.46297
+          SMDC_1     0.0105556     0.0316667             3      0.666667
+           MSC_1         0.015         0.015             1             0
+          SLA1_1             6           5.5       1.09091    -0.0909091
+       Maximum changes in "transformed numeric" parameters:
+         Maximum relative change = -1.46297   [FSP1_1]
+         Maximum factor change = 3   [SMDC_1]
+
+
+OPTIMISATION ITERATION NUMBER: 3
+
+    Iteration type: base parameter solution
+    SVD Package: Eigen JacobiSVD
+    Matrix Inversion: "Jt Q J"
+    Model calls so far : 26
+
+    Starting phi for this iteration                     Total : 2610.57
+    Contribution to phi from observation group        "SITE1" : 1273.28
+    Contribution to phi from observation group        "SITE2" : 479.706
+    Contribution to phi from observation group        "SITE3" : 652.571
+    Contribution to phi from observation group        "SITE4" : 205.013
+    Number of terms in the jacobian equal to zero: 18 / 540 (3.3%)
+
+    Summary of upgrade runs:
+      Lambda =     0.10; Type: IDEN; length = 0.50;  phi = 2526.85 (96.79%)
+      Lambda =     0.50; Type: IDEN; length = 0.50;  phi = 2526.08 (96.76%)
+      Lambda =     1.00; Type: IDEN; length = 0.50;  phi = 2526.08 (96.76%)
+      Lambda =     2.00; Type: IDEN; length = 0.50;  phi = 2526.08 (96.76%)
+      Lambda =    10.00; Type: IDEN; length = 0.50;  phi = 2526.07 (96.76%)
+      Lambda =   100.00; Type: IDEN; length = 0.50;  phi = 2526.07 (96.76%)
+      Lambda =  1000.00; Type: IDEN; length = 0.50;  phi = 2525.99 (96.76%)
+
+    Parameters frozen during best upgrade:
+      MSC_1 frozen at 0.015
+      NPP1_1 frozen at 1
+      SLA1_1 frozen at 5.5
+      SMDC_1 frozen at 0.01
+
+      Switching to central derivatives:
+
+    Parameter Upgrades (Control File Parameters)
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+          FSP0_1          0.75          0.75             1             0
+          FERT_4             1             1             1             0
+          FSP1_3      0.180714      0.198954       1.10093     0.0916779
+           LRM_4         0.042         0.042             1             0
+          FSP0_2          0.75          0.75             1             0
+          FSP1_2      0.180714      0.198954       1.10093     0.0916779
+           LR0_3        0.0015        0.0015             1             0
+          FSP0_3          0.75          0.75             1             0
+          FERT_2             1             1             1             0
+          FSP0_4          0.75          0.75             1             0
+          NPP1_1             1             1             1             0
+          SLA0_2          16.1          16.1             1             0
+          FSP1_1      0.180714      0.198954       1.10093     0.0916779
+          FSP1_4      0.180714      0.198954       1.10093     0.0916779
+          NPP1_2             1             1             1             0
+          NPP1_3             1             1             1             0
+          NPP1_4             1             1             1             0
+          NPP0_1         0.229         0.229             1             0
+          SMDC_1          0.01     0.0105556       1.05556     0.0526316
+          NPP0_2         0.229         0.229             1             0
+          NPP0_3         0.229         0.229             1             0
+           MSC_4         0.015         0.015             1             0
+          NPP0_4         0.229         0.229             1             0
+           MSC_3         0.015         0.015             1             0
+          SMDC_2          0.01     0.0105556       1.05556     0.0526316
+           MSC_1         0.015         0.015             1             0
+          SMDC_3          0.01     0.0105556       1.05556     0.0526316
+          SMDC_4          0.01     0.0105556       1.05556     0.0526316
+          SMDP_1           2.4           2.4             1             0
+          SMDP_2           2.4           2.4             1             0
+          SMDP_3           2.4           2.4             1             0
+           LRM_2         0.042         0.042             1             0
+          SMDP_4           2.4           2.4             1             0
+           LRM_1         0.042         0.042             1             0
+           LRM_3         0.042         0.042             1             0
+          SLA1_2           5.5             6       1.09091     0.0833333
+           LR0_1        0.0015        0.0015             1             0
+           LR0_2        0.0015        0.0015             1             0
+           LR0_4        0.0015        0.0015             1             0
+           MSC_2         0.015         0.015             1             0
+          SLA0_1          16.1          16.1             1             0
+          SLA0_3          16.1          16.1             1             0
+          SLA0_4          16.1          16.1             1             0
+          FERT_3             1             1             1             0
+          SLA1_1           5.5             6       1.09091     0.0833333
+          SLA1_3           5.5             6       1.09091     0.0833333
+          SLA1_4           5.5             6       1.09091     0.0833333
+          FERT_1             1             1             1             0
+        MAXASW_1           300           300             1             0
+        MAXASW_2           300           300             1             0
+        MAXASW_3           300           300             1             0
+        MAXASW_4           300           300             1             0
+       Maximum changes in "control file" parameters:
+         Maximum relative change = 0.0916779   [FSP1_4]
+         Maximum factor change = 1.10093   [FSP1_4]
+
+    Parameter Upgrades (Transformed Numeric Parameters)
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+          NPP1_1             1             1             1             0
+          FSP1_1      0.180714      0.198954       1.10093     0.0916779
+          SMDC_1          0.01     0.0105556       1.05556     0.0526316
+           MSC_1         0.015         0.015             1             0
+          SLA1_1           5.5             6       1.09091     0.0833333
+       Maximum changes in "transformed numeric" parameters:
+         Maximum relative change = 0.0916779   [FSP1_1]
+         Maximum factor change = 1.10093   [FSP1_1]
+
+
+OPTIMISATION ITERATION NUMBER: 4
+
+    Iteration type: base parameter solution
+    SVD Package: Eigen JacobiSVD
+    Matrix Inversion: "Jt Q J"
+    Model calls so far : 39
+
+    Starting phi for this iteration                     Total : 2525.99
+    Contribution to phi from observation group        "SITE1" : 1266.18
+    Contribution to phi from observation group        "SITE2" : 442.209
+    Contribution to phi from observation group        "SITE3" : 637.665
+    Contribution to phi from observation group        "SITE4" : 179.929
+    Number of terms in the jacobian equal to zero: 11 / 540 (2%)
+
+    Summary of upgrade runs:
+      Lambda =     0.10; Type: IDEN; length = 0.12;  phi = 13412.2 (530.97%)
+      Lambda =     1.00; Type: IDEN; length = 0.12;  phi = 2952.94 (116.90%)
+      Lambda =    10.00; Type: IDEN; length = 0.12;  phi = 2952.01 (116.87%)
+      Lambda =   100.00; Type: IDEN; length = 0.12;  phi = 2942.82 (116.50%)
+      Lambda =   500.00; Type: IDEN; length = 0.12;  phi = 2904.62 (114.99%)
+      Lambda =  1000.00; Type: IDEN; length = 0.11;  phi = 2862.71 (113.33%)
+      Lambda =  2000.00; Type: IDEN; length = 0.10;  phi = 2794.49 (110.63%)
+
+    Parameters frozen during best upgrade:
+      NPP1_1 frozen at 1
+      SLA1_1 frozen at 5.5
+      SMDC_1 frozen at 0.01
+
+    Parameter Upgrades (Control File Parameters)
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+          FSP0_1          0.75          0.75             1             0
+          FERT_4             1             1             1             0
+          FSP1_3      0.284264      0.180714       1.57301     -0.573007
+           LRM_4         0.042         0.042             1             0
+          FSP0_2          0.75          0.75             1             0
+          FSP1_2      0.284264      0.180714       1.57301     -0.573007
+           LR0_3        0.0015        0.0015             1             0
+          FSP0_3          0.75          0.75             1             0
+          FERT_2             1             1             1             0
+          FSP0_4          0.75          0.75             1             0
+          NPP1_1             1             1             1             0
+          SLA0_2          16.1          16.1             1             0
+          FSP1_1      0.284264      0.180714       1.57301     -0.573007
+          FSP1_4      0.284264      0.180714       1.57301     -0.573007
+          NPP1_2             1             1             1             0
+          NPP1_3             1             1             1             0
+          NPP1_4             1             1             1             0
+          NPP0_1         0.229         0.229             1             0
+          SMDC_1          0.01          0.01             1             0
+          NPP0_2         0.229         0.229             1             0
+          NPP0_3         0.229         0.229             1             0
+           MSC_4     0.0140998         0.015       1.06384     0.0600105
+          NPP0_4         0.229         0.229             1             0
+           MSC_3     0.0140998         0.015       1.06384     0.0600105
+          SMDC_2          0.01          0.01             1             0
+           MSC_1     0.0140998         0.015       1.06384     0.0600105
+          SMDC_3          0.01          0.01             1             0
+          SMDC_4          0.01          0.01             1             0
+          SMDP_1           2.4           2.4             1             0
+          SMDP_2           2.4           2.4             1             0
+          SMDP_3           2.4           2.4             1             0
+           LRM_2         0.042         0.042             1             0
+          SMDP_4           2.4           2.4             1             0
+           LRM_1         0.042         0.042             1             0
+           LRM_3         0.042         0.042             1             0
+          SLA1_2           5.5           5.5             1             0
+           LR0_1        0.0015        0.0015             1             0
+           LR0_2        0.0015        0.0015             1             0
+           LR0_4        0.0015        0.0015             1             0
+           MSC_2     0.0140998         0.015       1.06384     0.0600105
+          SLA0_1          16.1          16.1             1             0
+          SLA0_3          16.1          16.1             1             0
+          SLA0_4          16.1          16.1             1             0
+          FERT_3             1             1             1             0
+          SLA1_1           5.5           5.5             1             0
+          SLA1_3           5.5           5.5             1             0
+          SLA1_4           5.5           5.5             1             0
+          FERT_1             1             1             1             0
+        MAXASW_1           300           300             1             0
+        MAXASW_2           300           300             1             0
+        MAXASW_3           300           300             1             0
+        MAXASW_4           300           300             1             0
+       Maximum changes in "control file" parameters:
+         Maximum relative change = -0.573007   [FSP1_4]
+         Maximum factor change = 1.57301   [FSP1_4]
+
+    Parameter Upgrades (Transformed Numeric Parameters)
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+          NPP1_1             1             1             1             0
+          FSP1_1      0.284264      0.180714       1.57301     -0.573007
+          SMDC_1          0.01          0.01             1             0
+           MSC_1     0.0140998         0.015       1.06384     0.0600105
+          SLA1_1           5.5           5.5             1             0
+       Maximum changes in "transformed numeric" parameters:
+         Maximum relative change = -0.573007   [FSP1_1]
+         Maximum factor change = 1.57301   [FSP1_1]
+
+
+OPTIMISATION ITERATION NUMBER: 5
+
+    Iteration type: base parameter solution
+    SVD Package: Eigen JacobiSVD
+    Matrix Inversion: "Jt Q J"
+    Model calls so far : 57
+
+    Starting phi for this iteration                     Total : 2794.49
+    Contribution to phi from observation group        "SITE1" : 815.058
+    Contribution to phi from observation group        "SITE2" : 1091.03
+    Contribution to phi from observation group        "SITE3" : 438.861
+    Contribution to phi from observation group        "SITE4" : 449.54
+    Number of terms in the jacobian equal to zero: 20 / 540 (3.7%)
+
+    Summary of upgrade runs:
+      Lambda =     0.10; Type: IDEN; length = 0.20;  phi = 3873.16 (138.60%)
+      Lambda =     1.00; Type: IDEN; length = 0.02;  phi = 11487.2 (411.07%)
+      Lambda =    10.00; Type: IDEN; length = 0.02;  phi = 11487.1 (411.06%)
+      Lambda =   100.00; Type: IDEN; length = 0.02;  phi = 11486.1 (411.03%)
+      Lambda =  1000.00; Type: IDEN; length = 0.02;  phi = 11476.7 (410.69%)
+      Lambda =  2000.00; Type: IDEN; length = 0.02;  phi = 11466.3 (410.32%)
+      Lambda =  4000.00; Type: IDEN; length = 0.02;  phi = 11446.3 (409.60%)
+
+    Parameters frozen during best upgrade:
+      MSC_1 frozen at 0.005
+      NPP1_1 frozen at 1
+      SLA1_1 frozen at 5.5
+      SMDC_1 frozen at 0.01
+
+    Parameter Upgrades (Control File Parameters)
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+          FSP0_1          0.75          0.75             1             0
+          FERT_4             1             1             1             0
+          FSP1_3      0.481036      0.284264       1.69221     -0.692213
+           LRM_4         0.042         0.042             1             0
+          FSP0_2          0.75          0.75             1             0
+          FSP1_2      0.481036      0.284264       1.69221     -0.692213
+           LR0_3        0.0015        0.0015             1             0
+          FSP0_3          0.75          0.75             1             0
+          FERT_2             1             1             1             0
+          FSP0_4          0.75          0.75             1             0
+          NPP1_1             1             1             1             0
+          SLA0_2          16.1          16.1             1             0
+          FSP1_1      0.481036      0.284264       1.69221     -0.692213
+          FSP1_4      0.481036      0.284264       1.69221     -0.692213
+          NPP1_2             1             1             1             0
+          NPP1_3             1             1             1             0
+          NPP1_4             1             1             1             0
+          NPP0_1         0.229         0.229             1             0
+          SMDC_1          0.01          0.01             1             0
+          NPP0_2         0.229         0.229             1             0
+          NPP0_3         0.229         0.229             1             0
+           MSC_4         0.005     0.0140998       2.81997      0.645386
+          NPP0_4         0.229         0.229             1             0
+           MSC_3         0.005     0.0140998       2.81997      0.645386
+          SMDC_2          0.01          0.01             1             0
+           MSC_1         0.005     0.0140998       2.81997      0.645386
+          SMDC_3          0.01          0.01             1             0
+          SMDC_4          0.01          0.01             1             0
+          SMDP_1           2.4           2.4             1             0
+          SMDP_2           2.4           2.4             1             0
+          SMDP_3           2.4           2.4             1             0
+           LRM_2         0.042         0.042             1             0
+          SMDP_4           2.4           2.4             1             0
+           LRM_1         0.042         0.042             1             0
+           LRM_3         0.042         0.042             1             0
+          SLA1_2           5.5           5.5             1             0
+           LR0_1        0.0015        0.0015             1             0
+           LR0_2        0.0015        0.0015             1             0
+           LR0_4        0.0015        0.0015             1             0
+           MSC_2         0.005     0.0140998       2.81997      0.645386
+          SLA0_1          16.1          16.1             1             0
+          SLA0_3          16.1          16.1             1             0
+          SLA0_4          16.1          16.1             1             0
+          FERT_3             1             1             1             0
+          SLA1_1           5.5           5.5             1             0
+          SLA1_3           5.5           5.5             1             0
+          SLA1_4           5.5           5.5             1             0
+          FERT_1             1             1             1             0
+        MAXASW_1           300           300             1             0
+        MAXASW_2           300           300             1             0
+        MAXASW_3           300           300             1             0
+        MAXASW_4           300           300             1             0
+       Maximum changes in "control file" parameters:
+         Maximum relative change = -0.692213   [FSP1_4]
+         Maximum factor change = 2.81997   [MSC_2]
+
+    Parameter Upgrades (Transformed Numeric Parameters)
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+          NPP1_1             1             1             1             0
+          FSP1_1      0.481036      0.284264       1.69221     -0.692213
+          SMDC_1          0.01          0.01             1             0
+           MSC_1         0.005     0.0140998       2.81997      0.645386
+          SLA1_1           5.5           5.5             1             0
+       Maximum changes in "transformed numeric" parameters:
+         Maximum relative change = -0.692213   [FSP1_1]
+         Maximum factor change = 2.81997   [MSC_1]
+
+
+OPTIMISATION ITERATION NUMBER: 6
+
+    Iteration type: base parameter solution
+    SVD Package: Eigen JacobiSVD
+    Matrix Inversion: "Jt Q J"
+    Model calls so far : 75
+
+    Starting phi for this iteration                     Total : 3873.16
+    Contribution to phi from observation group        "SITE1" : 417.907
+    Contribution to phi from observation group        "SITE2" : 2046.49
+    Contribution to phi from observation group        "SITE3" : 378.191
+    Contribution to phi from observation group        "SITE4" : 1030.57
+    Number of terms in the jacobian equal to zero: 9 / 540 (1.7%)
+
+    Summary of upgrade runs:
+      Lambda =     0.05; Type: IDEN; length = 0.33;  phi = 14462.8 (373.41%)
+      Lambda =     0.10; Type: IDEN; length = 0.43;  phi = 3901.97 (100.74%)
+      Lambda =     0.20; Type: IDEN; length = 0.43;  phi = 3901.88 (100.74%)
+      Lambda =     1.00; Type: IDEN; length = 0.43;  phi = 3901.13 (100.72%)
+      Lambda =    10.00; Type: IDEN; length = 0.03;  phi = 3935.99 (101.62%)
+      Lambda =   100.00; Type: IDEN; length = 0.03;  phi = 3930.55 (101.48%)
+      Lambda =  1000.00; Type: IDEN; length = 0.02;  phi = 3892.45 (100.50%)
+
+    Parameters frozen during best upgrade:
+      NPP1_1 frozen at 1
+      SLA1_1 frozen at 5.5
+      SMDC_1 frozen at 0.01
+
+    Parameter Upgrades (Control File Parameters)
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+          FSP0_1          0.75          0.75             1             0
+          FERT_4             1             1             1             0
+          FSP1_3      0.460542      0.481036        1.0445     0.0426024
+           LRM_4         0.042         0.042             1             0
+          FSP0_2          0.75          0.75             1             0
+          FSP1_2      0.460542      0.481036        1.0445     0.0426024
+           LR0_3        0.0015        0.0015             1             0
+          FSP0_3          0.75          0.75             1             0
+          FERT_2             1             1             1             0
+          FSP0_4          0.75          0.75             1             0
+          NPP1_1             1             1             1             0
+          SLA0_2          16.1          16.1             1             0
+          FSP1_1      0.460542      0.481036        1.0445     0.0426024
+          FSP1_4      0.460542      0.481036        1.0445     0.0426024
+          NPP1_2             1             1             1             0
+          NPP1_3             1             1             1             0
+          NPP1_4             1             1             1             0
+          NPP0_1         0.229         0.229             1             0
+          SMDC_1          0.01          0.01             1             0
+          NPP0_2         0.229         0.229             1             0
+          NPP0_3         0.229         0.229             1             0
+           MSC_4    0.00541768         0.005       1.08354    -0.0835364
+          NPP0_4         0.229         0.229             1             0
+           MSC_3    0.00541768         0.005       1.08354    -0.0835364
+          SMDC_2          0.01          0.01             1             0
+           MSC_1    0.00541768         0.005       1.08354    -0.0835364
+          SMDC_3          0.01          0.01             1             0
+          SMDC_4          0.01          0.01             1             0
+          SMDP_1           2.4           2.4             1             0
+          SMDP_2           2.4           2.4             1             0
+          SMDP_3           2.4           2.4             1             0
+           LRM_2         0.042         0.042             1             0
+          SMDP_4           2.4           2.4             1             0
+           LRM_1         0.042         0.042             1             0
+           LRM_3         0.042         0.042             1             0
+          SLA1_2           5.5           5.5             1             0
+           LR0_1        0.0015        0.0015             1             0
+           LR0_2        0.0015        0.0015             1             0
+           LR0_4        0.0015        0.0015             1             0
+           MSC_2    0.00541768         0.005       1.08354    -0.0835364
+          SLA0_1          16.1          16.1             1             0
+          SLA0_3          16.1          16.1             1             0
+          SLA0_4          16.1          16.1             1             0
+          FERT_3             1             1             1             0
+          SLA1_1           5.5           5.5             1             0
+          SLA1_3           5.5           5.5             1             0
+          SLA1_4           5.5           5.5             1             0
+          FERT_1             1             1             1             0
+        MAXASW_1           300           300             1             0
+        MAXASW_2           300           300             1             0
+        MAXASW_3           300           300             1             0
+        MAXASW_4           300           300             1             0
+       Maximum changes in "control file" parameters:
+         Maximum relative change = -0.0835364   [MSC_2]
+         Maximum factor change = 1.08354   [MSC_2]
+
+    Parameter Upgrades (Transformed Numeric Parameters)
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+          NPP1_1             1             1             1             0
+          FSP1_1      0.460542      0.481036        1.0445     0.0426024
+          SMDC_1          0.01          0.01             1             0
+           MSC_1    0.00541768         0.005       1.08354    -0.0835364
+          SLA1_1           5.5           5.5             1             0
+       Maximum changes in "transformed numeric" parameters:
+         Maximum relative change = -0.0835364   [MSC_1]
+         Maximum factor change = 1.08354   [MSC_1]
+
+
+OPTIMISATION ITERATION NUMBER: 7
+
+    Iteration type: base parameter solution
+    SVD Package: Eigen JacobiSVD
+    Matrix Inversion: "Jt Q J"
+    Model calls so far : 93
+
+    Starting phi for this iteration                     Total : 3892.45
+    Contribution to phi from observation group        "SITE1" : 425.702
+    Contribution to phi from observation group        "SITE2" : 2049.7
+    Contribution to phi from observation group        "SITE3" : 384.167
+    Contribution to phi from observation group        "SITE4" : 1032.88
+    Number of terms in the jacobian equal to zero: 9 / 540 (1.7%)
+
+    Summary of upgrade runs:
+      Lambda =     0.10; Type: IDEN; length = 0.31;  phi = 13189.3 (338.84%)
+      Lambda =     1.00; Type: IDEN; length = 0.53;  phi = 2414.59 (62.03%)
+      Lambda =    10.00; Type: IDEN; length = 0.53;  phi = 2411.56 (61.95%)
+      Lambda =   100.00; Type: IDEN; length = 0.52;  phi = 2383.08 (61.22%)
+      Lambda =   500.00; Type: IDEN; length = 0.48;  phi = 2290.5 (58.84%)
+      Lambda =  1000.00; Type: IDEN; length = 0.43;  phi = 2233.43 (57.38%)
+      Lambda =  2000.00; Type: IDEN; length = 0.37;  phi = 2233.42 (57.38%)
+
+    Parameters frozen during best upgrade:
+      MSC_1 frozen at 0.005
+      NPP1_1 frozen at 1
+      SLA1_1 frozen at 5.5
+      SMDC_1 frozen at 0.01
+
+    Parameter Upgrades (Control File Parameters)
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+          FSP0_1          0.75          0.75             1             0
+          FERT_4             1             1             1             0
+          FSP1_3      0.829404      0.460542       1.80093     -0.800929
+           LRM_4         0.042         0.042             1             0
+          FSP0_2          0.75          0.75             1             0
+          FSP1_2      0.829404      0.460542       1.80093     -0.800929
+           LR0_3        0.0015        0.0015             1             0
+          FSP0_3          0.75          0.75             1             0
+          FERT_2             1             1             1             0
+          FSP0_4          0.75          0.75             1             0
+          NPP1_1             1             1             1             0
+          SLA0_2          16.1          16.1             1             0
+          FSP1_1      0.829404      0.460542       1.80093     -0.800929
+          FSP1_4      0.829404      0.460542       1.80093     -0.800929
+          NPP1_2             1             1             1             0
+          NPP1_3             1             1             1             0
+          NPP1_4             1             1             1             0
+          NPP0_1         0.229         0.229             1             0
+          SMDC_1          0.01          0.01             1             0
+          NPP0_2         0.229         0.229             1             0
+          NPP0_3         0.229         0.229             1             0
+           MSC_4         0.005    0.00541768       1.08354     0.0770961
+          NPP0_4         0.229         0.229             1             0
+           MSC_3         0.005    0.00541768       1.08354     0.0770961
+          SMDC_2          0.01          0.01             1             0
+           MSC_1         0.005    0.00541768       1.08354     0.0770961
+          SMDC_3          0.01          0.01             1             0
+          SMDC_4          0.01          0.01             1             0
+          SMDP_1           2.4           2.4             1             0
+          SMDP_2           2.4           2.4             1             0
+          SMDP_3           2.4           2.4             1             0
+           LRM_2         0.042         0.042             1             0
+          SMDP_4           2.4           2.4             1             0
+           LRM_1         0.042         0.042             1             0
+           LRM_3         0.042         0.042             1             0
+          SLA1_2           5.5           5.5             1             0
+           LR0_1        0.0015        0.0015             1             0
+           LR0_2        0.0015        0.0015             1             0
+           LR0_4        0.0015        0.0015             1             0
+           MSC_2         0.005    0.00541768       1.08354     0.0770961
+          SLA0_1          16.1          16.1             1             0
+          SLA0_3          16.1          16.1             1             0
+          SLA0_4          16.1          16.1             1             0
+          FERT_3             1             1             1             0
+          SLA1_1           5.5           5.5             1             0
+          SLA1_3           5.5           5.5             1             0
+          SLA1_4           5.5           5.5             1             0
+          FERT_1             1             1             1             0
+        MAXASW_1           300           300             1             0
+        MAXASW_2           300           300             1             0
+        MAXASW_3           300           300             1             0
+        MAXASW_4           300           300             1             0
+       Maximum changes in "control file" parameters:
+         Maximum relative change = -0.800929   [FSP1_4]
+         Maximum factor change = 1.80093   [FSP1_4]
+
+    Parameter Upgrades (Transformed Numeric Parameters)
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+          NPP1_1             1             1             1             0
+          FSP1_1      0.829404      0.460542       1.80093     -0.800929
+          SMDC_1          0.01          0.01             1             0
+           MSC_1         0.005    0.00541768       1.08354     0.0770961
+          SLA1_1           5.5           5.5             1             0
+       Maximum changes in "transformed numeric" parameters:
+         Maximum relative change = -0.800929   [FSP1_1]
+         Maximum factor change = 1.80093   [FSP1_1]
+
+
+OPTIMISATION ITERATION NUMBER: 8
+
+    Iteration type: base parameter solution
+    SVD Package: Eigen JacobiSVD
+    Matrix Inversion: "Jt Q J"
+    Model calls so far : 111
+
+    Starting phi for this iteration                     Total : 2233.42
+    Contribution to phi from observation group        "SITE1" : 731.793
+    Contribution to phi from observation group        "SITE2" : 787.171
+    Contribution to phi from observation group        "SITE3" : 365.455
+    Contribution to phi from observation group        "SITE4" : 348.996
+    Number of terms in the jacobian equal to zero: 9 / 540 (1.7%)
+
+    Summary of upgrade runs:
+      Lambda =     0.10; Type: IDEN; length = 0.66;  phi = 9633.28 (431.32%)
+      Lambda =     1.00; Type: IDEN; length = 0.45;  phi = 3401 (152.28%)
+      Lambda =    10.00; Type: IDEN; length = 0.45;  phi = 3388.93 (151.74%)
+      Lambda =   100.00; Type: IDEN; length = 0.42;  phi = 3276.97 (146.72%)
+      Lambda =  1000.00; Type: IDEN; length = 0.29;  phi = 2683.11 (120.13%)
+      Lambda =  2000.00; Type: IDEN; length = 0.21;  phi = 2462.5 (110.26%)
+      Lambda =  4000.00; Type: IDEN; length = 0.14;  phi = 2322.61 (103.99%)
+
+    Parameters frozen during best upgrade:
+      MSC_1 frozen at 0.005
+      NPP1_1 frozen at 1
+      SMDC_1 frozen at 0.01
+
+    Parameter Upgrades (Control File Parameters)
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+          FSP0_1          0.75          0.75             1             0
+          FERT_4             1             1             1             0
+          FSP1_3      0.779413      0.829404       1.06414     0.0602739
+           LRM_4         0.042         0.042             1             0
+          FSP0_2          0.75          0.75             1             0
+          FSP1_2      0.779413      0.829404       1.06414     0.0602739
+           LR0_3        0.0015        0.0015             1             0
+          FSP0_3          0.75          0.75             1             0
+          FERT_2             1             1             1             0
+          FSP0_4          0.75          0.75             1             0
+          NPP1_1             1             1             1             0
+          SLA0_2          16.1          16.1             1             0
+          FSP1_1      0.779413      0.829404       1.06414     0.0602739
+          FSP1_4      0.779413      0.829404       1.06414     0.0602739
+          NPP1_2             1             1             1             0
+          NPP1_3             1             1             1             0
+          NPP1_4             1             1             1             0
+          NPP0_1         0.229         0.229             1             0
+          SMDC_1          0.01          0.01             1             0
+          NPP0_2         0.229         0.229             1             0
+          NPP0_3         0.229         0.229             1             0
+           MSC_4         0.005         0.005             1             0
+          NPP0_4         0.229         0.229             1             0
+           MSC_3         0.005         0.005             1             0
+          SMDC_2          0.01          0.01             1             0
+           MSC_1         0.005         0.005             1             0
+          SMDC_3          0.01          0.01             1             0
+          SMDC_4          0.01          0.01             1             0
+          SMDP_1           2.4           2.4             1             0
+          SMDP_2           2.4           2.4             1             0
+          SMDP_3           2.4           2.4             1             0
+           LRM_2         0.042         0.042             1             0
+          SMDP_4           2.4           2.4             1             0
+           LRM_1         0.042         0.042             1             0
+           LRM_3         0.042         0.042             1             0
+          SLA1_2       5.63232           5.5       1.02406    -0.0240576
+           LR0_1        0.0015        0.0015             1             0
+           LR0_2        0.0015        0.0015             1             0
+           LR0_4        0.0015        0.0015             1             0
+           MSC_2         0.005         0.005             1             0
+          SLA0_1          16.1          16.1             1             0
+          SLA0_3          16.1          16.1             1             0
+          SLA0_4          16.1          16.1             1             0
+          FERT_3             1             1             1             0
+          SLA1_1       5.63232           5.5       1.02406    -0.0240576
+          SLA1_3       5.63232           5.5       1.02406    -0.0240576
+          SLA1_4       5.63232           5.5       1.02406    -0.0240576
+          FERT_1             1             1             1             0
+        MAXASW_1           300           300             1             0
+        MAXASW_2           300           300             1             0
+        MAXASW_3           300           300             1             0
+        MAXASW_4           300           300             1             0
+       Maximum changes in "control file" parameters:
+         Maximum relative change = 0.0602739   [FSP1_4]
+         Maximum factor change = 1.06414   [FSP1_4]
+
+    Parameter Upgrades (Transformed Numeric Parameters)
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+          NPP1_1             1             1             1             0
+          FSP1_1      0.779413      0.829404       1.06414     0.0602739
+          SMDC_1          0.01          0.01             1             0
+           MSC_1         0.005         0.005             1             0
+          SLA1_1       5.63232           5.5       1.02406    -0.0240576
+       Maximum changes in "transformed numeric" parameters:
+         Maximum relative change = 0.0602739   [FSP1_1]
+         Maximum factor change = 1.06414   [FSP1_1]
+
+
+OPTIMISATION ITERATION NUMBER: 9
+
+    Iteration type: base parameter solution
+    SVD Package: Eigen JacobiSVD
+    Matrix Inversion: "Jt Q J"
+    Model calls so far : 129
+
+    Starting phi for this iteration                     Total : 2322.61
+    Contribution to phi from observation group        "SITE1" : 625.396
+    Contribution to phi from observation group        "SITE2" : 958.89
+    Contribution to phi from observation group        "SITE3" : 317.791
+    Contribution to phi from observation group        "SITE4" : 420.533
+    Number of terms in the jacobian equal to zero: 9 / 540 (1.7%)
+
+    Summary of upgrade runs:
+      Lambda =     0.10; Type: IDEN; length = 0.64;  phi = 10852.1 (467.24%)
+      Lambda =     1.00; Type: IDEN; length = 0.42;  phi = 3596.12 (154.83%)
+      Lambda =    10.00; Type: IDEN; length = 0.42;  phi = 3591.88 (154.65%)
+      Lambda =   100.00; Type: IDEN; length = 0.42;  phi = 3550.67 (152.87%)
+      Lambda =  1000.00; Type: IDEN; length = 0.40;  phi = 3237.01 (139.37%)
+      Lambda =  2000.00; Type: IDEN; length = 0.39;  phi = 3024.54 (130.22%)
+      Lambda =  4000.00; Type: IDEN; length = 0.38;  phi = 2795.3 (120.35%)
+      Lambda =  8000.00; Type: IDEN; length = 0.37;  phi = 2607.73 (112.28%)
+
+    Parameters frozen during best upgrade:
+      NPP1_1 frozen at 1
+      SLA1_1 frozen at 6
+      SMDC_1 frozen at 0.01
+
+    Parameter Upgrades (Control File Parameters)
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+          FSP0_1          0.75          0.75             1             0
+          FERT_4             1             1             1             0
+          FSP1_3      0.713654      0.779413       1.09214     0.0843701
+           LRM_4         0.042         0.042             1             0
+          FSP0_2          0.75          0.75             1             0
+          FSP1_2      0.713654      0.779413       1.09214     0.0843701
+           LR0_3        0.0015        0.0015             1             0
+          FSP0_3          0.75          0.75             1             0
+          FERT_2             1             1             1             0
+          FSP0_4          0.75          0.75             1             0
+          NPP1_1             1             1             1             0
+          SLA0_2          16.1          16.1             1             0
+          FSP1_1      0.713654      0.779413       1.09214     0.0843701
+          FSP1_4      0.713654      0.779413       1.09214     0.0843701
+          NPP1_2             1             1             1             0
+          NPP1_3             1             1             1             0
+          NPP1_4             1             1             1             0
+          NPP0_1         0.229         0.229             1             0
+          SMDC_1          0.01          0.01             1             0
+          NPP0_2         0.229         0.229             1             0
+          NPP0_3         0.229         0.229             1             0
+           MSC_4    0.00521156         0.005       1.04231    -0.0423125
+          NPP0_4         0.229         0.229             1             0
+           MSC_3    0.00521156         0.005       1.04231    -0.0423125
+          SMDC_2          0.01          0.01             1             0
+           MSC_1    0.00521156         0.005       1.04231    -0.0423125
+          SMDC_3          0.01          0.01             1             0
+          SMDC_4          0.01          0.01             1             0
+          SMDP_1           2.4           2.4             1             0
+          SMDP_2           2.4           2.4             1             0
+          SMDP_3           2.4           2.4             1             0
+           LRM_2         0.042         0.042             1             0
+          SMDP_4           2.4           2.4             1             0
+           LRM_1         0.042         0.042             1             0
+           LRM_3         0.042         0.042             1             0
+          SLA1_2             6       5.63232       1.06528     -0.065281
+           LR0_1        0.0015        0.0015             1             0
+           LR0_2        0.0015        0.0015             1             0
+           LR0_4        0.0015        0.0015             1             0
+           MSC_2    0.00521156         0.005       1.04231    -0.0423125
+          SLA0_1          16.1          16.1             1             0
+          SLA0_3          16.1          16.1             1             0
+          SLA0_4          16.1          16.1             1             0
+          FERT_3             1             1             1             0
+          SLA1_1             6       5.63232       1.06528     -0.065281
+          SLA1_3             6       5.63232       1.06528     -0.065281
+          SLA1_4             6       5.63232       1.06528     -0.065281
+          FERT_1             1             1             1             0
+        MAXASW_1           300           300             1             0
+        MAXASW_2           300           300             1             0
+        MAXASW_3           300           300             1             0
+        MAXASW_4           300           300             1             0
+       Maximum changes in "control file" parameters:
+         Maximum relative change = 0.0843701   [FSP1_4]
+         Maximum factor change = 1.09214   [FSP1_4]
+
+    Parameter Upgrades (Transformed Numeric Parameters)
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+          NPP1_1             1             1             1             0
+          FSP1_1      0.713654      0.779413       1.09214     0.0843701
+          SMDC_1          0.01          0.01             1             0
+           MSC_1    0.00521156         0.005       1.04231    -0.0423125
+          SLA1_1             6       5.63232       1.06528     -0.065281
+       Maximum changes in "transformed numeric" parameters:
+         Maximum relative change = 0.0843701   [FSP1_1]
+         Maximum factor change = 1.09214   [FSP1_1]
+
+
+OPTIMISATION ITERATION NUMBER: 10
+
+    Iteration type: base parameter solution
+    SVD Package: Eigen JacobiSVD
+    Matrix Inversion: "Jt Q J"
+    Model calls so far : 148
+
+    Starting phi for this iteration                     Total : 2607.73
+    Contribution to phi from observation group        "SITE1" : 507.038
+    Contribution to phi from observation group        "SITE2" : 1251.72
+    Contribution to phi from observation group        "SITE3" : 285.368
+    Contribution to phi from observation group        "SITE4" : 563.602
+    Number of terms in the jacobian equal to zero: 23 / 540 (4.3%)
+
+    Summary of upgrade runs:
+      Lambda =     0.10; Type: IDEN; length = 0.00;  phi = 2607.73 (100.00%)
+      Lambda =     1.00; Type: IDEN; length = 0.00;  phi = 2607.73 (100.00%)
+      Lambda =    10.00; Type: IDEN; length = 0.00;  phi = 2607.73 (100.00%)
+      Lambda =   100.00; Type: IDEN; length = 0.00;  phi = 2607.73 (100.00%)
+      Lambda =  1000.00; Type: IDEN; length = 0.00;  phi = 2607.73 (100.00%)
+      Lambda =  4000.00; Type: IDEN; length = 0.00;  phi = 2607.73 (100.00%)
+      Lambda =  8000.00; Type: IDEN; length = 0.00;  phi = 2607.73 (100.00%)
+      Lambda = 16000.00; Type: IDEN; length = 0.00;  phi = 2607.73 (100.00%)
+
+    Parameter Upgrades (Control File Parameters)
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+          FSP0_1          0.75          0.75             1             0
+          FERT_4             1             1             1             0
+          FSP1_3      0.713654      0.713654             1             0
+           LRM_4         0.042         0.042             1             0
+          FSP0_2          0.75          0.75             1             0
+          FSP1_2      0.713654      0.713654             1             0
+           LR0_3        0.0015        0.0015             1             0
+          FSP0_3          0.75          0.75             1             0
+          FERT_2             1             1             1             0
+          FSP0_4          0.75          0.75             1             0
+          NPP1_1             1             1             1             0
+          SLA0_2          16.1          16.1             1             0
+          FSP1_1      0.713654      0.713654             1             0
+          FSP1_4      0.713654      0.713654             1             0
+          NPP1_2             1             1             1             0
+          NPP1_3             1             1             1             0
+          NPP1_4             1             1             1             0
+          NPP0_1         0.229         0.229             1             0
+          SMDC_1          0.01          0.01             1             0
+          NPP0_2         0.229         0.229             1             0
+          NPP0_3         0.229         0.229             1             0
+           MSC_4    0.00521311    0.00521156        1.0003  -0.000295996
+          NPP0_4         0.229         0.229             1             0
+           MSC_3    0.00521311    0.00521156        1.0003  -0.000295996
+          SMDC_2          0.01          0.01             1             0
+           MSC_1    0.00521311    0.00521156        1.0003  -0.000295996
+          SMDC_3          0.01          0.01             1             0
+          SMDC_4          0.01          0.01             1             0
+          SMDP_1           2.4           2.4             1             0
+          SMDP_2           2.4           2.4             1             0
+          SMDP_3           2.4           2.4             1             0
+           LRM_2         0.042         0.042             1             0
+          SMDP_4           2.4           2.4             1             0
+           LRM_1         0.042         0.042             1             0
+           LRM_3         0.042         0.042             1             0
+          SLA1_2             6             6             1             0
+           LR0_1        0.0015        0.0015             1             0
+           LR0_2        0.0015        0.0015             1             0
+           LR0_4        0.0015        0.0015             1             0
+           MSC_2    0.00521311    0.00521156        1.0003  -0.000295996
+          SLA0_1          16.1          16.1             1             0
+          SLA0_3          16.1          16.1             1             0
+          SLA0_4          16.1          16.1             1             0
+          FERT_3             1             1             1             0
+          SLA1_1             6             6             1             0
+          SLA1_3             6             6             1             0
+          SLA1_4             6             6             1             0
+          FERT_1             1             1             1             0
+        MAXASW_1           300           300             1             0
+        MAXASW_2           300           300             1             0
+        MAXASW_3           300           300             1             0
+        MAXASW_4           300           300             1             0
+       Maximum changes in "control file" parameters:
+         Maximum relative change = -0.000295996   [MSC_2]
+         Maximum factor change = 1.0003   [MSC_2]
+
+    Parameter Upgrades (Transformed Numeric Parameters)
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+          NPP1_1             1             1             1             0
+          FSP1_1      0.713654      0.713654             1             0
+          SMDC_1          0.01          0.01             1             0
+           MSC_1    0.00521311    0.00521156        1.0003  -0.000295996
+          SLA1_1             6             6             1             0
+       Maximum changes in "transformed numeric" parameters:
+         Maximum relative change = -0.000295996   [MSC_1]
+         Maximum factor change = 1.0003   [MSC_1]
+
+
+OPTIMISATION ITERATION NUMBER: 11
+
+    Iteration type: base parameter solution
+    SVD Package: Eigen JacobiSVD
+    Matrix Inversion: "Jt Q J"
+    Model calls so far : 167
+
+    Starting phi for this iteration                     Total : 2607.73
+    Contribution to phi from observation group        "SITE1" : 507.038
+    Contribution to phi from observation group        "SITE2" : 1251.72
+    Contribution to phi from observation group        "SITE3" : 285.368
+    Contribution to phi from observation group        "SITE4" : 563.602
+    Number of terms in the jacobian equal to zero: 23 / 540 (4.3%)
+
+    Summary of upgrade runs:
+      Lambda =     0.05; Type: IDEN; length = 0.00;  phi = 2607.73 (100.00%)
+      Lambda =     0.10; Type: IDEN; length = 0.00;  phi = 2607.73 (100.00%)
+      Lambda =     0.20; Type: IDEN; length = 0.00;  phi = 2607.73 (100.00%)
+      Lambda =     1.00; Type: IDEN; length = 0.00;  phi = 2607.73 (100.00%)
+      Lambda =    10.00; Type: IDEN; length = 0.00;  phi = 2607.73 (100.00%)
+      Lambda =   100.00; Type: IDEN; length = 0.00;  phi = 2607.73 (100.00%)
+      Lambda =  1000.00; Type: IDEN; length = 0.00;  phi = 2607.73 (100.00%)
+
+    Parameter Upgrades (Control File Parameters)
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+          FSP0_1          0.75          0.75             1             0
+          FERT_4             1             1             1             0
+          FSP1_3      0.713654      0.713654             1             0
+           LRM_4         0.042         0.042             1             0
+          FSP0_2          0.75          0.75             1             0
+          FSP1_2      0.713654      0.713654             1             0
+           LR0_3        0.0015        0.0015             1             0
+          FSP0_3          0.75          0.75             1             0
+          FERT_2             1             1             1             0
+          FSP0_4          0.75          0.75             1             0
+          NPP1_1             1             1             1             0
+          SLA0_2          16.1          16.1             1             0
+          FSP1_1      0.713654      0.713654             1             0
+          FSP1_4      0.713654      0.713654             1             0
+          NPP1_2             1             1             1             0
+          NPP1_3             1             1             1             0
+          NPP1_4             1             1             1             0
+          NPP0_1         0.229         0.229             1             0
+          SMDC_1          0.01          0.01             1             0
+          NPP0_2         0.229         0.229             1             0
+          NPP0_3         0.229         0.229             1             0
+           MSC_4    0.00521795    0.00521311       1.00093  -0.000929676
+          NPP0_4         0.229         0.229             1             0
+           MSC_3    0.00521795    0.00521311       1.00093  -0.000929676
+          SMDC_2          0.01          0.01             1             0
+           MSC_1    0.00521795    0.00521311       1.00093  -0.000929676
+          SMDC_3          0.01          0.01             1             0
+          SMDC_4          0.01          0.01             1             0
+          SMDP_1           2.4           2.4             1             0
+          SMDP_2           2.4           2.4             1             0
+          SMDP_3           2.4           2.4             1             0
+           LRM_2         0.042         0.042             1             0
+          SMDP_4           2.4           2.4             1             0
+           LRM_1         0.042         0.042             1             0
+           LRM_3         0.042         0.042             1             0
+          SLA1_2             6             6             1             0
+           LR0_1        0.0015        0.0015             1             0
+           LR0_2        0.0015        0.0015             1             0
+           LR0_4        0.0015        0.0015             1             0
+           MSC_2    0.00521795    0.00521311       1.00093  -0.000929676
+          SLA0_1          16.1          16.1             1             0
+          SLA0_3          16.1          16.1             1             0
+          SLA0_4          16.1          16.1             1             0
+          FERT_3             1             1             1             0
+          SLA1_1             6             6             1             0
+          SLA1_3             6             6             1             0
+          SLA1_4             6             6             1             0
+          FERT_1             1             1             1             0
+        MAXASW_1           300           300             1             0
+        MAXASW_2           300           300             1             0
+        MAXASW_3           300           300             1             0
+        MAXASW_4           300           300             1             0
+       Maximum changes in "control file" parameters:
+         Maximum relative change = -0.000929676   [MSC_2]
+         Maximum factor change = 1.00093   [MSC_2]
+
+    Parameter Upgrades (Transformed Numeric Parameters)
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+          NPP1_1             1             1             1             0
+          FSP1_1      0.713654      0.713654             1             0
+          SMDC_1          0.01          0.01             1             0
+           MSC_1    0.00521795    0.00521311       1.00093  -0.000929676
+          SLA1_1             6             6             1             0
+       Maximum changes in "transformed numeric" parameters:
+         Maximum relative change = -0.000929676   [MSC_1]
+         Maximum factor change = 1.00093   [MSC_1]
+
+
+Reason for terminating PEST++ simulation: NPHINORED criterion met
+Summary of termination criteria:
+  NOPTMAX = 50 :  NOPT at termination = 11
+  NPHINORED = 3 :  NPHINORED at termination = 4
+  NRELPAR = 3: RELPARSTP = 0.01 :  NRELPAR at termination = 0
+  PHIREDSTP = 0.01; NPHISTP = 3
+  NPHISTP lowest PHI's:
+        2233.42
+        2322.61
+        2525.99
+
+FINAL OPTIMISATION RESULTS
+
+    Phi                                                 Total : 2233.42
+    Contribution to phi from observation group        "SITE1" : 731.793
+    Contribution to phi from observation group        "SITE2" : 787.171
+    Contribution to phi from observation group        "SITE3" : 365.455
+    Contribution to phi from observation group        "SITE4" : 348.996
+
+     Parameter      Optimal
+        Name         Value
+    ------------  ------------
+    FSP0_1                0.75
+    FERT_4                   1
+    FSP1_3            0.829404
+    LRM_4                0.042
+    FSP0_2                0.75
+    FSP1_2            0.829404
+    LR0_3               0.0015
+    FSP0_3                0.75
+    FERT_2                   1
+    FSP0_4                0.75
+    NPP1_1                   1
+    SLA0_2                16.1
+    FSP1_1            0.829404
+    FSP1_4            0.829404
+    NPP1_2                   1
+    NPP1_3                   1
+    NPP1_4                   1
+    NPP0_1               0.229
+    SMDC_1                0.01
+    NPP0_2               0.229
+    NPP0_3               0.229
+    MSC_4                0.005
+    NPP0_4               0.229
+    MSC_3                0.005
+    SMDC_2                0.01
+    MSC_1                0.005
+    SMDC_3                0.01
+    SMDC_4                0.01
+    SMDP_1                 2.4
+    SMDP_2                 2.4
+    SMDP_3                 2.4
+    LRM_2                0.042
+    SMDP_4                 2.4
+    LRM_1                0.042
+    LRM_3                0.042
+    SLA1_2                 5.5
+    LR0_1               0.0015
+    LR0_2               0.0015
+    LR0_4               0.0015
+    MSC_2                0.005
+    SLA0_1                16.1
+    SLA0_3                16.1
+    SLA0_4                16.1
+    FERT_3                   1
+    SLA1_1                 5.5
+    SLA1_3                 5.5
+    SLA1_4                 5.5
+    FERT_1                   1
+    MAXASW_1               300
+    MAXASW_2               300
+    MAXASW_3               300
+    MAXASW_4               300

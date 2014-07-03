@@ -1,3 +1,102 @@
                     PARAMETER SENSITIVITIES: CASE pest
 
 
+ OPTIMISATION ITERATION NO. 1   ----->
+ Parameter name    Group        Current value        Sensitivity
+   NPP1_1          NPP          0.800000000000       0.134392470911      
+   FSP1_1          FSP          0.0300000000000      7.24414676385       
+   SMDC_1          SMDC         0.0950000000000      4.88685764398       
+   MSC_1           MSC          0.0100000000000      55.0505121232       
+   SLA1_1          SLA          5.70000000000        0.0716448370550     
+
+
+ OPTIMISATION ITERATION NO. 2   ----->
+ Parameter name    Group        Current value        Sensitivity
+   NPP1_1          NPP          0.500000000000       0.445611161888      
+   FSP1_1          FSP          0.0807780390000      5.80821397608       
+   SMDC_1          SMDC         0.0316666670000      26.7227517269       
+   MSC_1           MSC          0.0150000000000      37.2392513045       
+   SLA1_1          SLA          5.50000000000        0.143785294334      
+
+
+ OPTIMISATION ITERATION NO. 3   ----->
+ Parameter name    Group        Current value        Sensitivity
+   NPP1_1          NPP          1.00000000000        0.479118717683      
+   FSP1_1          FSP          0.198953535000       3.92090862128       
+   SMDC_1          SMDC         0.0105555560000      110.045044762       
+   MSC_1           MSC          0.0150000000000      36.6461998927       
+   SLA1_1          SLA          6.00000000000        0.208734859113      
+
+
+ OPTIMISATION ITERATION NO. 4   ----->
+ Parameter name    Group        Current value        Sensitivity
+   NPP1_1          NPP          1.00000000000        0.417793319284      
+   FSP1_1          FSP          0.180713895000       1.56260642470       
+   SMDC_1          SMDC         0.0100000000000      109.162727393       
+   MSC_1           MSC          0.0150000000000      205.527973430       
+   SLA1_1          SLA          5.50000000000        0.393493709155      
+
+
+ OPTIMISATION ITERATION NO. 5   ----->
+ Parameter name    Group        Current value        Sensitivity
+   NPP1_1          NPP          1.00000000000        0.648911761674      
+   FSP1_1          FSP          0.284264207000       3.23853715102       
+   SMDC_1          SMDC         0.0100000000000      119.578952036       
+   MSC_1           MSC          0.0140998429000      6.31730972601       
+   SLA1_1          SLA          5.50000000000        0.337666845533      
+
+
+ OPTIMISATION ITERATION NO. 6   ----->
+ Parameter name    Group        Current value        Sensitivity
+   NPP1_1          NPP          1.00000000000        0.492961035367      
+   FSP1_1          FSP          0.481035563000       0.925729736341      
+   SMDC_1          SMDC         0.0100000000000      192.611465733       
+   MSC_1           MSC          0.00500000000000     1028.59258175       
+   SLA1_1          SLA          5.50000000000        0.874395846136      
+
+
+ OPTIMISATION ITERATION NO. 7   ----->
+ Parameter name    Group        Current value        Sensitivity
+   NPP1_1          NPP          1.00000000000        0.527858431742      
+   FSP1_1          FSP          0.460542313000       0.633804820028      
+   SMDC_1          SMDC         0.0100000000000      172.685797246       
+   MSC_1           MSC          0.00541768220000     17.3506839669       
+   SLA1_1          SLA          5.50000000000        0.766307040894      
+
+
+ OPTIMISATION ITERATION NO. 8   ----->
+ Parameter name    Group        Current value        Sensitivity
+   NPP1_1          NPP          1.00000000000        0.422846825563      
+   FSP1_1          FSP          0.829404214000       1.08292004135       
+   SMDC_1          SMDC         0.0100000000000      238.298306720       
+   MSC_1           MSC          0.00500000000000     1053.58127793       
+   SLA1_1          SLA          5.50000000000        0.929410097806      
+
+
+ OPTIMISATION ITERATION NO. 9   ----->
+ Parameter name    Group        Current value        Sensitivity
+   NPP1_1          NPP          1.00000000000        0.433526292454      
+   FSP1_1          FSP          0.779412758000       1.10870051573       
+   SMDC_1          SMDC         0.0100000000000      236.571593993       
+   MSC_1           MSC          0.00500000000000     1059.76209425       
+   SLA1_1          SLA          5.63231691800        0.0405624803471     
+
+
+ OPTIMISATION ITERATION NO. 10  ----->
+ Parameter name    Group        Current value        Sensitivity
+   NPP1_1          NPP          1.00000000000        0.444201016903      
+   FSP1_1          FSP          0.713653645000       1.15551996189       
+   SMDC_1          SMDC         0.0100000000000      235.604439842       
+   MSC_1           MSC          0.00521156250000     5.31184520486e-011  
+   SLA1_1          SLA          6.00000000000        0.922592277346      
+
+
+ OPTIMISATION ITERATION NO. 11  ----->
+ Parameter name    Group        Current value        Sensitivity
+   NPP1_1          NPP          1.00000000000        0.444201016903      
+   FSP1_1          FSP          0.713653645000       1.15551996189       
+   SMDC_1          SMDC         0.0100000000000      235.604439842       
+   MSC_1           MSC          0.00521310510000     8.38473134596e-011  
+   SLA1_1          SLA          6.00000000000        0.922592277346      
+
+

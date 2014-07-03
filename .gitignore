@@ -27,3 +27,10 @@ Debug
 Win32
 x64
 /pest++/run_manager_fortran_test/Release
+/pest++/benchmarks/3pg/pestpp/
+/pest++/benchmarks/10par_xsec/pestpp/
+/pest++/benchmarks/box/pestpp/
+/pest++/benchmarks/henry/pestpp/
+/pest++/benchmarks/kirishima/pestpp/
+/pest++/benchmarks/stor/pestpp/
+/pest++/benchmarks/tidal/pestpp/
