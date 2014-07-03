@@ -246,9 +246,9 @@ void SVDSolver::calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSq
 		VectorXd S_diag = S.diagonal();
 		MatrixXd S_tmp = S_diag.asDiagonal();
 		S = S_tmp.sparseView();
-		JtQJ = (jac * S).transpose() * q_mat * jac * S;
+		performance_log->log_event("multiplying JtQJ matrix");
+		JtQJ = (jac * S).transpose() * q_mat * jac * S + lambda * S.transpose() * S;
 		performance_log->log_event("scaling of  JtQJ matrix complete");
-		JtQJ += lambda * S.transpose() * S;
 		// Returns truncated Sigma, U and Vt arrays with small singular parameters trimed off
 		performance_log->log_event("commencing SVD factorization");
 		svd_package->solve_ip(JtQJ, Sigma, U, Vt, Sigma_trunc);
@@ -498,6 +498,10 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 	vector<string> obs_names_vec = cur_solution.get_obs_template().get_keys();
 	vector<string> numeric_parname_vec = par_transform.ctl2numeric_cp(cur_solution.get_ctl_pars()).get_keys();
 
+	//Save information necessary for restart
+	ostream &fout_restart = file_manager.get_ofstream("rst");
+       
+	fout_restart << "base_par_iteration" << endl;
 	if (restart_controller.get_restart_option() == RestartController::RestartOption::REUSE_JACOBIAN)
 	{
 		restart_controller.get_restart_option() = RestartController::RestartOption::NONE;
@@ -554,10 +558,6 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 		file_manager.close_file("rpb");
 		cur_solution.set_ctl_parameters(tmp_pars);
 	}
-
-	//Save information necessary for restart
-	ostream &fout_restart = file_manager.get_ofstream("rst");
-	fout_restart << "base_par_iteration" << endl;
 	// save current parameters
 	{
 		ofstream &fout_rpb = file_manager.open_ofile_ext("rpb");
