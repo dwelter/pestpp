@@ -31,6 +31,7 @@
 #include "utilities.h"
 #include "FileManager.h"
 #include "PriorInformation.h"
+#include "debug.h"
 
 using namespace std;
 using namespace pest_utils;
@@ -143,6 +144,7 @@ bool Jacobian::build_runs(ModelRun &init_model_run, vector<string> numeric_par_n
 	run_manager.reinitialize();
 	failed_parameter_names.clear();
 	
+	debug_msg("Jacobian::build_runs method: begin");
 	// add base run
 	Parameters model_pars = par_transform.ctl2model_cp(init_model_run.get_ctl_pars());
 	int run_id = run_manager.add_run(model_pars, "", 0);
@@ -160,11 +162,14 @@ bool Jacobian::build_runs(ModelRun &init_model_run, vector<string> numeric_par_n
 	vector<double> del_numeric_par_vec;
 	for(const auto &ipar_name : numeric_par_names)
 	{
+		debug_print(ipar_name);
 		del_numeric_par_vec.clear();
 		// need to optimize already computing model pars in get_derivative_parameters.  should not need to compute them again
 		bool success = get_derivative_parameters(ipar_name, numeric_pars, par_transform, group_info, ctl_par_info, del_numeric_par_vec, phiredswh_flag, out_of_bound_par);
+		debug_print(out_of_bound_par);
 		if (success && !del_numeric_par_vec.empty())
 		{
+			debug_msg("success");
 			Parameters numeric_parameters = par_transform.ctl2numeric_cp(init_model_run.get_ctl_pars());
 			for (double ipar_val : del_numeric_par_vec)
 			{
@@ -175,9 +180,12 @@ bool Jacobian::build_runs(ModelRun &init_model_run, vector<string> numeric_par_n
 		}
 		else
 		{
+			debug_msg("fail");
 			failed_parameter_names.insert(ipar_name);
 		}
 	}
+	debug_print(failed_parameter_names);
+	debug_msg("Jacobian::build_runs method: end");
 	if (failed_parameter_names.size() > 0)
 	{
 		return false;
@@ -286,16 +294,19 @@ bool Jacobian::get_derivative_parameters(const string &par_name, Parameters &num
 {
 	bool success = false;
 	const ParameterGroupRec *g_rec;
-
+	debug_msg("Jacobian::get_derivative_parameters begin");
+	debug_print(par_name);
 	g_rec = group_info.get_group_rec_ptr(par_name);
 
 	if (g_rec->forcen == "ALWAYS_3" || phiredswh_flag == true) {
+		debug_msg("trying central");
 		// Central Difference
 		vector<double> new_par_vec;
 		vector<Parameters> dir_numeric_pars_vec;
 		success = central_diff(par_name, numeric_pars, group_info, ctl_par_info, par_transform, new_par_vec, dir_numeric_pars_vec, out_of_bound_par);
 		if (success)
 		{
+			debug_msg("central successful");
 			for (auto & ipar : new_par_vec)
 			{
 				delta_numeric_par_vec.push_back(ipar);
@@ -305,12 +316,16 @@ bool Jacobian::get_derivative_parameters(const string &par_name, Parameters &num
 	if (!success) {
 	  double par_1;
 		// Forward Difference
+	  debug_msg("trying forward");
 		success = forward_diff(par_name, numeric_pars, group_info, ctl_par_info, par_transform, par_1, out_of_bound_par);
 		if (success)
 		{
+			debug_msg("forward successful");
 			delta_numeric_par_vec.push_back(par_1);
 		}
 	}
+	debug_print(success);
+	debug_msg("Jacobian::get_derivative_parameters end");
 	return success;
 }
 

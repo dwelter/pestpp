@@ -43,6 +43,7 @@
 #include "pest_error.h"
 #include "RestartController.h"
 #include "PerformanceLog.h"
+#include "debug.h"
 
 using namespace std;
 using namespace pest_utils;
@@ -51,7 +52,7 @@ using namespace pest_utils;
 
 int main(int argc, char* argv[])
 {
-	string version = "2.2.15";
+	string version = "2.2.16 w/debug";
 	cout << endl << endl;
 	cout << "             PEST++ Version " << version << endl << endl;
 	cout << "                 by Dave Welter" << endl;
@@ -170,6 +171,7 @@ int main(int argc, char* argv[])
 	vector<string>::const_iterator it_find_r = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/r");
 	bool restart_flag = false;
 	file_manager.initialize_path(filename, pathname);
+	debug_initialize(file_manager.build_filename("dbg"));
 	if (it_find_j != cmd_arg_vec.end())
 	{
 		restart_ctl.get_restart_option() = RestartController::RestartOption::REUSE_JACOBIAN;
@@ -405,6 +407,7 @@ int main(int argc, char* argv[])
 			super_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 			cur_run = super_svd.solve(*run_manager_ptr, termination_ctl, n_super_iter, cur_run, optimum_run);
 			cur_ctl_parameters = super_svd.cur_model_run().get_ctl_pars();
+			base_svd.set_phiredswh_flag(super_svd.get_phiredswh_flag());
 		}
 		catch(exception &e)
 		{

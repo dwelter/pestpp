@@ -32,6 +32,8 @@
 #include "Jacobian.h"
 #include "QSqrtMatrix.h"
 #include "pest_data_structs.h"
+#include "debug.h"
+
 using namespace std;
 using namespace Eigen;
 
@@ -516,10 +518,17 @@ void TranSVD::set_SVD_pack_propack()
 
 void TranSVD::calc_svd()
 {
+	debug_msg("TranSVD::calc_svd begin");
 	stringstream sup_name;
 	VectorXd Sigma_trunc;
 	tran_svd_pack->solve_ip(SqrtQ_J, Sigma, U, Vt, Sigma_trunc);
 	// calculate the number of singluar values above the threshold
+
+	debug_print(Sigma);
+	debug_print(U);
+	debug_print(Vt);
+	debug_print(Sigma_trunc);
+
 
 	int n_sing_val = Sigma.size();
 
@@ -534,12 +543,16 @@ void TranSVD::calc_svd()
 	{
 		throw PestError("TranSVD::update() - super parameter transformation returned 0 super parameters.  Jacobian must equal 0.");
 	}
+	debug_print(super_parameter_names);
+	debug_msg("TranSVD::calc_svd end");
 }
 
 void TranSVD::update_reset_frozen_pars(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt, const Parameters &base_numeric_pars,
 		int maxsing, double _eigthresh, const vector<string> &par_names, const vector<string> &_obs_names,
 		const Parameters &_frozen_derivative_pars)
 {
+	debug_msg("TranSVD::update_reset_frozen_pars begin");
+	debug_print(_frozen_derivative_pars);
 	stringstream sup_name;
 	super_parameter_names.clear();
 
@@ -564,10 +577,15 @@ void TranSVD::update_reset_frozen_pars(const Jacobian &jacobian, const QSqrtMatr
 	SqrtQ_J = Q_sqrt.get_sparse_matrix(obs_names) * jacobian.get_matrix(obs_names, base_parameter_names);
 
 	calc_svd();
+	debug_print(this->base_parameter_names);
+	debug_print(this->frozen_derivative_parameters);
+	debug_msg("TranSVD::update_reset_frozen_pars end");
 }
 
 void TranSVD::update_add_frozen_pars(const Parameters &frozen_pars)
 {
+	debug_msg("TranSVD::update_reset_frozen_pars begin");
+	debug_print(frozen_pars);
 	vector<int> del_col_ids;
 	Parameters new_frozen_pars;
 	for (auto &ipar : frozen_pars)
@@ -600,6 +618,9 @@ void TranSVD::update_add_frozen_pars(const Parameters &frozen_pars)
 	base_parameter_names.resize(std::distance(base_parameter_names.begin(), end_iter));
 	matrix_del_cols(SqrtQ_J, del_col_ids);
 	calc_svd();
+	debug_print(this->base_parameter_names);
+	debug_print(this->frozen_derivative_parameters);
+	debug_msg("TranSVD::update_reset_frozen_pars end");
 }
 void TranSVD::reverse(Transformable &data)
 {

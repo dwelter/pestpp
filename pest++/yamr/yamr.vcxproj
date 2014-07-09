@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config_os.h" />
+    <ClInclude Include="debug.h" />
     <ClInclude Include="network_package.h" />
     <ClInclude Include="network_wrapper.h" />
     <ClInclude Include="pest_error.h" />
@@ -69,6 +70,7 @@
     <ClInclude Include="YamrSlave.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="debug.cpp" />
     <ClCompile Include="linpackc.cpp" />
     <ClCompile Include="network_package.cpp" />
     <ClCompile Include="network_wrapper.cpp" />

@@ -36,6 +36,7 @@
 #include "SVD_PROPACK.h"
 #include "OutputFileWriter.h"
 #include <sstream>
+#include "debug.h"
 
 using namespace std;
 using namespace pest_utils;
@@ -106,6 +107,10 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 		fout_restart << "start_iteration " << iter_num << "  " << global_iter_num << endl;
 		cout << endl;
 		os << endl;
+
+		debug_msg("========================================================================");
+		debug_msg("Iteration Number");
+		debug_print(global_iter_num);
 
 		// write header for SVD file
 		output_file_writer.write_svd_iteration(global_iter_num);
@@ -500,7 +505,7 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 
 	//Save information necessary for restart
 	ostream &fout_restart = file_manager.get_ofstream("rst");
-       
+	   
 	fout_restart << "base_par_iteration" << endl;
 	if (restart_controller.get_restart_option() == RestartController::RestartOption::REUSE_JACOBIAN)
 	{

@@ -60,7 +60,8 @@ public:
 	virtual void iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs=false, bool jacobian_only=false);
 	ModelRun &cur_model_run() {return cur_solution;}
 	virtual void set_svd_package(PestppOptions::SVD_PACK _svd_pack);
-	bool get_phiredswh_flag() { return phiredswh_flag;}
+	bool get_phiredswh_flag() const { return phiredswh_flag;}
+	void set_phiredswh_flag(bool _phiredswh_flag) { phiredswh_flag = _phiredswh_flag;}
 	virtual ParameterGroupInfo get_parameter_group_info() const { return *par_group_info_ptr; }
 	virtual ~SVDSolver(void);
 protected:

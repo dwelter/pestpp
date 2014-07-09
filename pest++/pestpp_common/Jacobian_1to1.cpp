@@ -35,6 +35,8 @@
 #include "utilities.h"
 #include "FileManager.h"
 #include "PriorInformation.h"
+#include "debug.h"
+
 
 using namespace std;
 using namespace pest_utils;
@@ -53,6 +55,7 @@ bool Jacobian_1to1::build_runs(ModelRun &init_model_run, vector<string> numeric_
 	Parameters model_parameters(par_transform.ctl2model_cp(init_model_run.get_ctl_pars()));
 	base_numeric_parameters = par_transform.ctl2numeric_cp( init_model_run.get_ctl_pars());
 	run_manager.reinitialize(file_manager.build_filename("rnj"));
+	debug_msg("Jacobian_1to1::build_runs begin");
 
 	failed_parameter_names.clear();
 	failed_ctl_parameters.clear();
@@ -105,6 +108,8 @@ bool Jacobian_1to1::build_runs(ModelRun &init_model_run, vector<string> numeric_
 	}
 	ofstream &fout_restart = file_manager.get_ofstream("rst");
 	fout_restart << "jacobian_model_runs_built " << run_manager.get_cur_groupid() << endl;
+	debug_print(failed_parameter_names);
+	debug_msg("Jacobian_1to1::build_runs end");
 	return true;
 }
 
@@ -119,6 +124,7 @@ bool Jacobian_1to1::process_runs(vector<string> numeric_par_names, ParamTransfor
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
 		RunManagerAbstract &run_manager,  const PriorInformation &prior_info, set<string> &out_of_bound_par, bool phiredswh_flag, bool calc_init_obs)
 {
+	debug_msg("Jacobian_1to1::process_runs begin");
        base_sim_obs_names = run_manager.get_obs_name_vec();
 	vector<string> prior_info_name = prior_info.get_keys();
 	base_sim_obs_names.insert(base_sim_obs_names.end(), prior_info_name.begin(), prior_info_name.end());
@@ -210,6 +216,8 @@ bool Jacobian_1to1::process_runs(vector<string> numeric_par_names, ParamTransfor
 	ofstream &fout_restart = file_manager.get_ofstream("rst");
 	fout_restart << "jacobian_saved" << endl;
 	run_manager.free_memory();
+	debug_print(failed_parameter_names);
+	debug_msg("Jacobian_1to1::process_runs end");
 	return true;
 }
 

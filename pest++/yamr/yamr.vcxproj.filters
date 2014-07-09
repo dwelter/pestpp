@@ -49,6 +49,7 @@
     <ClCompile Include="linpackc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="debug.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="network_package.h">
@@ -99,6 +100,7 @@
     <ClInclude Include="config_os.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="debug.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">

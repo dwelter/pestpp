@@ -31,6 +31,7 @@
 #include "ParamTransformSeq.h"
 #include "Transformation.h"
 #include "PriorInformation.h"
+#include "debug.h"
 
 using namespace std;
 using namespace pest_utils;
@@ -197,6 +198,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 	while (true) //loop and feeeze any base parameters that go out of bounds when computing the jacobian
 	{
 		// fix frozen parameters in SVDA transformation
+		debug_print(base_run.get_frozen_ctl_pars());
 		par_transform.get_svda_ptr()->update_add_frozen_pars(base_run.get_frozen_ctl_pars());
 		par_transform.get_svda_fixed_ptr()->reset(par_transform.get_svda_ptr()->get_frozen_derivative_pars());
 		// need to reset parameters and the numeric parameters changed when the SVDA transformation was changed above
