@@ -553,6 +553,84 @@ void RunStorage::check_rec_id(int run_id)
 	}
 }
 
+void RunStorage::export_diff_to_text_file(const std::string &in1_filename, const std::string &in2_filename, const std::string &out_filename)
+{
+	RunStorage rs1("");
+	RunStorage rs2("");
+	rs1.init_restart(in1_filename);
+	rs2.init_restart(in2_filename);
+
+	ofstream fout;
+	fout.open(out_filename);
+
+	vector<string> par_name_vec_1 = rs1.get_par_name_vec();
+	vector<string> par_name_vec_2 = rs2.get_par_name_vec();
+	vector<string> obs_name_vec_1 = rs1.get_obs_name_vec();
+	vector<string> obs_name_vec_2 = rs2.get_obs_name_vec();
+	
+	auto npar = par_name_vec_1.size();
+	auto nobs = obs_name_vec_1.size();
+	//check parameter names are the same
+	if (par_name_vec_1.size() != par_name_vec_2.size())
+		fout << "Parameter name arrays sizes differ: " << par_name_vec_1.size() << ", " << par_name_vec_2.size() << endl;
+	
+	for (auto ipar = npar; ipar < npar; ++ipar)
+	{
+		if (par_name_vec_1[ipar] != par_name_vec_2[ipar])
+			fout << "Parmeter name diff index =  " << ipar << ": " << par_name_vec_1[ipar] << ", " << par_name_vec_2[ipar] << endl;
+	}
+
+	//check observation names are the same
+	if (obs_name_vec_1.size() != obs_name_vec_2.size())
+		fout << "Observation name arrays sizes differ: " << obs_name_vec_1.size() << ", " << obs_name_vec_2.size() << endl;
+
+	for (auto iobs = nobs; iobs < nobs; ++iobs)
+	{
+		if (obs_name_vec_1[iobs] != obs_name_vec_2[iobs])
+			fout << "Observation  name diff index =  " << iobs << ": " << obs_name_vec_1[iobs] << ", " << obs_name_vec_2[iobs] << endl;
+	}
+
+	vector<double> pars_vec1;
+	vector<double> pars_vec2;
+	vector<double> obs_vec1;
+	vector<double> obs_vec2;
+	string info_txt1;
+	string info_txt2;
+	double info_value1;
+	double info_value2;
+
+	int nruns = rs1.get_nruns();
+	for (int irun = 0; irun < nruns; ++irun)
+	{
+		rs1.get_run(irun, pars_vec1, obs_vec1, info_txt1, info_value1);
+		rs2.get_run(irun, pars_vec1, obs_vec1, info_txt1, info_value1);
+		if (info_txt1 != info_txt2)
+		{
+			fout << "infotext diff at run id = " << irun <<  endl;
+			fout << info_txt1 << endl;
+			fout << info_txt2 << endl;
+		}
+		if (info_value1 != info_value2)
+		{
+			fout << "info_value diff at run id = " << irun << endl;
+			fout << info_value1 << endl;
+			fout << info_value2 << endl;
+		}
+
+		for (auto ipar = npar; ipar < npar; ++ipar)
+		{
+			if (pars_vec1[ipar] != pars_vec1[ipar])
+				fout << "Parameter diff at index =  " << ipar << ": " << "name = " << par_name_vec_1[ipar] << ":  " << pars_vec2[ipar] << ", " << pars_vec2[ipar] << endl;
+		}
+
+		for (auto iobs = nobs; iobs < nobs; ++iobs)
+		{
+			if (obs_vec1[iobs] != obs_vec1[iobs])
+				fout << "Observation diff at index =  " << iobs << ": " << "name = " << obs_name_vec_1[iobs] << ":  " << obs_vec2[iobs] << ", " << obs_vec2[iobs] << endl;
+		}
+	}
+}
+
 RunStorage::~RunStorage()
 {
   //free_memory();

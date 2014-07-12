@@ -78,6 +78,7 @@ public:
 	int get_parameters(int run_id, Parameters &pars);
 	std::vector<char> get_serial_pars(int run_id);
 	int get_observations_vec(int run_id, std::vector<double> &data_vec);
+	static void export_diff_to_text_file(const std::string &in1_filename, const std::string &in2_filename, const std::string &out_filename);
 	void free_memory();
 	~RunStorage();
 private:
