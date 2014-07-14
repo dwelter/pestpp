@@ -27,6 +27,9 @@
 #include "RunStorage.h"
 #include "Serialization.h"
 #include "Transformable.h"
+#include <limits>
+
+using std::numeric_limits;
 
 using namespace std;
 
@@ -562,6 +565,7 @@ void RunStorage::export_diff_to_text_file(const std::string &in1_filename, const
 
 	ofstream fout;
 	fout.open(out_filename);
+	fout.precision(numeric_limits<double>::digits10 + 1);
 
 	vector<string> par_name_vec_1 = rs1.get_par_name_vec();
 	vector<string> par_name_vec_2 = rs2.get_par_name_vec();
@@ -570,11 +574,15 @@ void RunStorage::export_diff_to_text_file(const std::string &in1_filename, const
 	
 	auto npar = par_name_vec_1.size();
 	auto nobs = obs_name_vec_1.size();
+	fout << in1_filename << endl;
+	fout << in2_filename << endl;
+	fout << "npar = " << npar << endl;
+	fout << "nobs = " << nobs << endl;
 	//check parameter names are the same
 	if (par_name_vec_1.size() != par_name_vec_2.size())
 		fout << "Parameter name arrays sizes differ: " << par_name_vec_1.size() << ", " << par_name_vec_2.size() << endl;
 	
-	for (auto ipar = npar; ipar < npar; ++ipar)
+	for (size_t ipar = 0; ipar < npar; ++ipar)
 	{
 		if (par_name_vec_1[ipar] != par_name_vec_2[ipar])
 			fout << "Parmeter name diff index =  " << ipar << ": " << par_name_vec_1[ipar] << ", " << par_name_vec_2[ipar] << endl;
@@ -584,7 +592,7 @@ void RunStorage::export_diff_to_text_file(const std::string &in1_filename, const
 	if (obs_name_vec_1.size() != obs_name_vec_2.size())
 		fout << "Observation name arrays sizes differ: " << obs_name_vec_1.size() << ", " << obs_name_vec_2.size() << endl;
 
-	for (auto iobs = nobs; iobs < nobs; ++iobs)
+	for (size_t iobs = 0; iobs < nobs; ++iobs)
 	{
 		if (obs_name_vec_1[iobs] != obs_name_vec_2[iobs])
 			fout << "Observation  name diff index =  " << iobs << ": " << obs_name_vec_1[iobs] << ", " << obs_name_vec_2[iobs] << endl;
@@ -600,10 +608,11 @@ void RunStorage::export_diff_to_text_file(const std::string &in1_filename, const
 	double info_value2;
 
 	int nruns = rs1.get_nruns();
+	fout << "nruns = " << nruns << endl;
 	for (int irun = 0; irun < nruns; ++irun)
 	{
 		rs1.get_run(irun, pars_vec1, obs_vec1, info_txt1, info_value1);
-		rs2.get_run(irun, pars_vec1, obs_vec1, info_txt1, info_value1);
+		rs2.get_run(irun, pars_vec2, obs_vec2, info_txt2, info_value2);
 		if (info_txt1 != info_txt2)
 		{
 			fout << "infotext diff at run id = " << irun <<  endl;
@@ -617,18 +626,19 @@ void RunStorage::export_diff_to_text_file(const std::string &in1_filename, const
 			fout << info_value2 << endl;
 		}
 
-		for (auto ipar = npar; ipar < npar; ++ipar)
+		for (size_t ipar = 0; ipar < npar; ++ipar)
 		{
-			if (pars_vec1[ipar] != pars_vec1[ipar])
-				fout << "Parameter diff at index =  " << ipar << ": " << "name = " << par_name_vec_1[ipar] << ":  " << pars_vec2[ipar] << ", " << pars_vec2[ipar] << endl;
+			if (pars_vec1[ipar] != pars_vec2[ipar])
+				fout << "Parameter diff at index =  " << ipar << ": " << "name = " << par_name_vec_1[ipar] << ":  " << pars_vec1[ipar] << ", " << pars_vec2[ipar] << endl;
 		}
 
-		for (auto iobs = nobs; iobs < nobs; ++iobs)
+		for (size_t iobs = 0; iobs < nobs; ++iobs)
 		{
-			if (obs_vec1[iobs] != obs_vec1[iobs])
-				fout << "Observation diff at index =  " << iobs << ": " << "name = " << obs_name_vec_1[iobs] << ":  " << obs_vec2[iobs] << ", " << obs_vec2[iobs] << endl;
+			if (obs_vec1[iobs] != obs_vec2[iobs])
+				fout << "Observation diff at index =  " << iobs << ": " << "name = " << obs_name_vec_1[iobs] << ":  " << obs_vec1[iobs] << ", " << obs_vec2[iobs] << endl;
 		}
 	}
+	fout.close();
 }
 
 RunStorage::~RunStorage()

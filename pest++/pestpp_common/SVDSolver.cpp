@@ -594,7 +594,7 @@ restart_resume_jacobian_runs:
 
 	performance_log->log_event("saving jacobian and sen files");
 	// save jacobian
-	jacobian.save("jac");
+	jacobian.save("jcb");
 
 	//Update parameters and observations for base run
 	{

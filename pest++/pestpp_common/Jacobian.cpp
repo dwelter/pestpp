@@ -141,7 +141,7 @@ bool Jacobian::build_runs(ModelRun &init_model_run, vector<string> numeric_par_n
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
 		RunManagerAbstract &run_manager, set<string> &out_of_bound_par, bool phiredswh_flag, bool calc_init_obs)
 {
-	run_manager.reinitialize();
+	run_manager.reinitialize("rns");
 	failed_parameter_names.clear();
 	
 	debug_msg("Jacobian::build_runs method: begin");

@@ -256,7 +256,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 
 	performance_log->log_event("saving jacobian and sen files");
 	// save jacobian
-	jacobian.save("jac");
+	jacobian.save("jcs");
 	if (jacobian_only)
 	{
 		return;

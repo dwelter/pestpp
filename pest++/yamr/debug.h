@@ -8,7 +8,7 @@
 #include <vector>
 
 
-//#define DEBUG
+#define DEBUG
 
 #ifdef DEBUG
 extern std::ofstream fout_dbg;
