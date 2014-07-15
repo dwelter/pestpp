@@ -611,6 +611,8 @@ void RunStorage::export_diff_to_text_file(const std::string &in1_filename, const
 	fout << "nruns = " << nruns << endl;
 	for (int irun = 0; irun < nruns; ++irun)
 	{
+		fout << "Run Id = " << irun << " --------------------" << endl;
+		fout << "Run Description " << info_txt1 << endl;
 		rs1.get_run(irun, pars_vec1, obs_vec1, info_txt1, info_value1);
 		rs2.get_run(irun, pars_vec2, obs_vec2, info_txt2, info_value2);
 		if (info_txt1 != info_txt2)

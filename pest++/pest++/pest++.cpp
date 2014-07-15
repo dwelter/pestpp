@@ -53,9 +53,7 @@ using namespace pest_utils;
 
 int main(int argc, char* argv[])
 {
-//	RunStorage::export_diff_to_text_file("C:\\Users\\Dave\\Desktop\\randy_new_new\\step14_12jun14_1.rnj", "C:\\Users\\Dave\\Desktop\\randy_new_new\\step14_12jun14_2.rnj", "C:\\Users\\Dave\\Desktop\\randy_new_new\\diff12_rnj");
-	//exit(0);
-	string version = "2.3.0 w/debug";
+	string version = "2.3.1";
 	cout << endl << endl;
 	cout << "             PEST++ Version " << version << endl << endl;
 	cout << "                 by Dave Welter" << endl;
