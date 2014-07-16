@@ -19,6 +19,37 @@ template <class T> const T& min ( const T& a, const T& b );
 
 
 using namespace std;
+
+std::ostream& operator<< (std::ostream &os, const std::set<std::string> val)
+{
+	for (const auto &i : val)
+	{
+		os << i << endl;
+	}
+	return os;
+}
+
+std::ostream& operator<< (std::ostream &os, const std::vector<std::string> val)
+{
+	for (const auto &i : val)
+	{
+		os << i << endl;
+	}
+	return os;
+}
+
+void print(std::set<std::string> val, std::ostream &os, int indent)
+{
+	string space(indent, ' ');
+	for (const auto &i : val)
+	{
+		os << space << i << endl;
+	}
+}
+
+
+
+
 namespace pest_utils
 {
 

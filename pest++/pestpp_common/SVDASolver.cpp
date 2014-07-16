@@ -172,7 +172,6 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 
 
 	// Calculate Jacobian
-	cout << "  calculating jacobian... ";
 
 	Parameters base_ctl_pars = base_run.get_ctl_pars();
 	// make sure these are all in bounds
@@ -195,8 +194,20 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 	performance_log->log_event("commencing to build jacobian parameter sets");
 	bool success_build_runs = false;
 	set<string> out_of_bound_pars;
+	cout << "  calculating jacobian... ";
+	int n_freeze_iter=0;
 	while (true) //loop and feeeze any base parameters that go out of bounds when computing the jacobian
 	{
+		++n_freeze_iter;
+		if (n_freeze_iter > 5)
+		{
+			terminate_local_iteration = true;
+			cout << "Terminating super parameter iterations." << endl;
+		    cout << "Max number of iterations to freeze parameters to compute jacobian exceeded" << endl;
+			os <<  "Terminating super parameter iterations." << endl;
+			os << "Max number of iterations to freeze parameters to compute jacobian exceeded" << endl;
+			return;
+		}
 		// fix frozen parameters in SVDA transformation
 		debug_print(base_run.get_frozen_ctl_pars());
 		par_transform.get_svda_ptr()->update_add_frozen_pars(base_run.get_frozen_ctl_pars());
@@ -221,6 +232,9 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		}
 		else if (!success_build_runs && out_of_bound_pars.size() > 0)
 		{
+			cout << "  can not compute jacobian without the following parameters going out of bounds... " << endl;
+			print(out_of_bound_pars, cout, 4);
+			cout << "  freezing parameters and recalculating the jacobian" << endl;
 			//add out of bound parameters to frozen parameter list
 			Parameters new_frz_derivative_pars;
 			for (auto &ipar : out_of_bound_pars)

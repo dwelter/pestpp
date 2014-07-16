@@ -6,14 +6,12 @@
 #include <set>
 #include <string>
 #include <vector>
+#include "utilities.h"
 
 
 //#define DEBUG
-
 #ifdef DEBUG
 extern std::ofstream fout_dbg;
-std::ostream& operator<< (std::ostream &os, const std::set<std::string> val);
-std::ostream& operator<< (std::ostream &os, const std::vector<std::string> val);
 #define debug_initialize(filename) fout_dbg.open(filename); fout_dbg.precision(numeric_limits<double>::digits10 + 1)
 #define debug_print(x) fout_dbg << #x << ": " << x << endl
 #define debug_msg(message) fout_dbg << message << endl

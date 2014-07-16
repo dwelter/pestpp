@@ -15,8 +15,14 @@
 #include <set>
 #include "pest_error.h"
 
+//printing functions
+std::ostream& operator<< (std::ostream &os, const std::set<std::string> val);
+std::ostream& operator<< (std::ostream &os, const std::vector<std::string> val);
+void print(std::set<std::string> val, std::ostream &os, int indent=0);
+
 namespace pest_utils
 {
+
 	enum CASE_CONV{NO_CONV, TO_UPPER, TO_LOWER};
 
    /* @brief Sign of a number

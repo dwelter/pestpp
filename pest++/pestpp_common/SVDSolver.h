@@ -96,6 +96,7 @@ protected:
 	RestartController &restart_controller;
 	PerformanceLog *performance_log;
 	std::vector<double> base_lambda_vec;
+	bool terminate_local_iteration;
 
 	virtual void limit_parameters_ip(const Parameters &init_active_ctl_pars, Parameters &upgrade_active_ctl_pars,
 		LimitType &limit_type, const Parameters &frozen_ative_ctl_pars, bool ignore_upper_lower=false);

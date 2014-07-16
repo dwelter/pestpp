@@ -51,7 +51,7 @@ SVDSolver::SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, con
 	file_manager(_file_manager), observations_ptr(_observations), par_transform(_par_transform),
 	cur_solution(_obj_func, *_observations), phiredswh_flag(_phiredswh_flag), save_next_jacobian(_save_next_jacobian), prior_info_ptr(_prior_info_ptr), jacobian(_jacobian),
 	regul_scheme(*_regul_scheme_ptr), output_file_writer(_output_file_writer), mat_inv(_mat_inv), description(_description), best_lambda(20.0),
-	restart_controller(_restart_controller), performance_log(_performance_log), base_lambda_vec(_base_lambda_vec)
+	restart_controller(_restart_controller), performance_log(_performance_log), base_lambda_vec(_base_lambda_vec), terminate_local_iteration(false)
 {
 	svd_package = new SVD_EIGEN();
 }
@@ -84,6 +84,7 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 	// Start Solution iterations
 	bool save_nextjac = false;
 	string matrix_inv = (mat_inv == MAT_INV::Q12J) ? "\"Q 1/2 J\"" : "\"Jt Q J\"";
+	terminate_local_iteration = false;
 	if (max_iter == -1)
 	{
 		cout << "COMPUTING JACOBIAN:" << endl << endl;
@@ -93,7 +94,8 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 		os << "    Model calls so far : " << run_manager.get_total_runs() << endl << endl << endl;
 		iteration(run_manager, termination_ctl, false, true);
 	}
-	for (int iter_num = 1; iter_num <= max_iter; ++iter_num) {
+
+	for (int iter_num = 1; iter_num <= max_iter && !terminate_local_iteration; ++iter_num) {
 		int global_iter_num = termination_ctl.get_iteration_number() + 1;
 		cout << "OPTIMISATION ITERATION NUMBER: " << global_iter_num << endl;
 		os << "OPTIMISATION ITERATION NUMBER: " << global_iter_num << endl << endl;
@@ -122,6 +124,10 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 		performance_log->log_event(tmp_str.str(), 0, "start_iter");
 		performance_log->add_indent();
 		iteration(run_manager, termination_ctl, false);
+		if (terminate_local_iteration)
+		{
+			break;
+		}
 		tmp_str.str("");
 		tmp_str.clear();
 		tmp_str << "completed iteration " << global_iter_num;
