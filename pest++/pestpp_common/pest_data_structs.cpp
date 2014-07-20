@@ -293,6 +293,9 @@ void PestppOptions::parce_line(const string &line)
 		else if (key == "SUPER_RELPARMAX"){
 			convert_ip(value, super_relparmax);
 		}
+		else if (key == "MAX_SUPER_FRZ_ITER"){
+			convert_ip(value, max_super_frz_iter);
+		}
 		else if (key == "MAT_INV"){
 			if (value == "Q1/2J") mat_inv = Q12J;
 		}

@@ -193,6 +193,7 @@ public:
 	double get_auto_norm() const{return auto_norm;}
 	double get_super_relparmax() const{ return super_relparmax; }
 	int get_max_run_fail() const{ return max_run_fail; }
+	int get_max_super_frz_iter()const { return max_super_frz_iter; }
 	const vector<double>& get_base_lambda_vec() const {return base_lambda_vec;}
 
 	void set_max_n_super(int _max_n_super) {max_n_super = _max_n_super;}
@@ -204,9 +205,9 @@ public:
 	void set_auto_norm(double _auto_norm) {auto_norm = _auto_norm;};
 	void set_super_relparmax(double _super_relparmax) { super_relparmax = _super_relparmax; };
 	void set_max_run_fail(int _max_run_fail){ max_run_fail = _max_run_fail; }
-
+	void set_max_super_frz_iter(int n) { max_super_frz_iter = n; }
 private:
-	int max_n_super;;
+	int max_n_super;
 	double super_eigthres;
 	int n_iter_base;
 	int n_iter_super;
@@ -215,6 +216,7 @@ private:
 	double auto_norm;
 	double super_relparmax;
 	int max_run_fail;
+	int max_super_frz_iter;
 	vector<double> base_lambda_vec;
 };
 
