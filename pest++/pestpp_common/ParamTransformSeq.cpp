@@ -727,6 +727,54 @@ TranFixed *ParamTransformSeq::get_svda_fixed_ptr()const
 }
 
 
+
+void ParamTransformSeq::jac_test_ip(Jacobian &jac) const
+{
+	vector<Transformation*>::const_reverse_iterator iter, e;
+	vector<Transformation*> test_seq;;
+	test_seq.push_back(tranSeq_active_ctl2numeric[1]);
+
+	jac.print(cout);
+	for (iter = test_seq.rbegin(), e = test_seq.rend();
+		iter != e; ++iter)
+	{
+		(*iter)->jacobian_reverse(jac);
+		cout << (*iter)->get_name() << endl;
+		jac.print(cout);
+	}
+
+	vector<Transformation*>::const_iterator iter2, e2;
+	for (iter2 = test_seq.begin(), e2 = test_seq.end();
+		iter2 != e2; ++iter2)
+	{
+		(*iter2)->jacobian_forward(jac);
+		cout << (*iter2)->get_name() << endl;
+		jac.print(cout);
+	}
+}
+
+void ParamTransformSeq::jac_numeric2active_ctl_ip(Jacobian &jac) const
+{
+	vector<Transformation*>::const_reverse_iterator iter, e;
+
+	for (iter = tranSeq_active_ctl2numeric.rbegin(), e = tranSeq_active_ctl2numeric.rend();
+		iter != e; ++iter)
+	{
+		(*iter)->jacobian_reverse(jac);
+	}
+}
+
+void ParamTransformSeq::jac_active_ctl_ip2numeric_ip(Jacobian &jac) const
+{
+	vector<Transformation*>::const_iterator iter, e;
+
+	for (iter = tranSeq_active_ctl2numeric.begin(), e = tranSeq_active_ctl2numeric.end();
+		iter != e; ++iter)
+	{
+		(*iter)->jacobian_forward(jac);
+	}
+}
+
 ostream& operator<< (ostream &os, const ParamTransformSeq& val)
 {
 	val.print(os);

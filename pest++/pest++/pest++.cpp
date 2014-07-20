@@ -406,9 +406,27 @@ int main(int argc, char* argv[])
 				trans_svda, &pest_scenario.get_prior_info(), *super_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(),
 				output_file_writer, restart_ctl, mat_inv, &performance_log, pest_scenario.get_pestpp_options().get_base_lambda_vec(), base_svd.get_phiredswh_flag());
 			super_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
+			//use base jacobian to compute first super jacobian if there was not a super upgrade
+			if (n_base_iter == -1)
+			{
+				//use base jacobian to compute first super jacobian if there was not a super upgrade
+				if (n_base_iter == -1)
+				{
+					super_svd.get_jacobian() = base_svd.get_jacobian();
+					super_svd.get_jacobian().transform(base_trans_seq, &ParamTransformSeq::jac_numeric2active_ctl_ip);
+					super_svd.get_jacobian().transform(trans_svda, &ParamTransformSeq::jac_active_ctl_ip2numeric_ip);
+					//super_svd.get_jacobian().transform(base_trans_seq, &ParamTransformSeq::jac_test_ip);
+					super_svd.set_calc_jacobian(false);
+				}
+
+			}
 			cur_run = super_svd.solve(*run_manager_ptr, termination_ctl, n_super_iter, cur_run, optimum_run);
 			cur_ctl_parameters = super_svd.cur_model_run().get_ctl_pars();
 			base_svd.set_phiredswh_flag(super_svd.get_phiredswh_flag());
+			if (super_svd.local_iteration_terminatated() && n_base_iter == -1)
+			{
+				n_base_iter = 1;
+			}
 		}
 		catch(exception &e)
 		{

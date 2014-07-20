@@ -106,6 +106,9 @@ public:
 	set <Transformation *> get_default_deep_copy_vec() const {return default_deep_copy_tran_set;}
 	bool is_one_to_one() const;
 	void print(ostream &os) const;
+	void jac_numeric2active_ctl_ip(Jacobian &jac) const;
+	void jac_active_ctl_ip2numeric_ip(Jacobian &jac) const;
+	void ParamTransformSeq::jac_test_ip(Jacobian &jac) const;
 private:
 	vector<Transformation*> tranSeq_ctl2model;
 	vector<Transformation*> tranSeq_ctl2active_ctl;

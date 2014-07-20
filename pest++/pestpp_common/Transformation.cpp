@@ -139,13 +139,16 @@ void TranOffset::reverse(Transformable &data)
 	}
 }
 
-void TranOffset::print(ostream &os) const
+void TranOffset::jacobian_forward(Jacobian &jac)
 {
-	os << "Transformation name = " << name << "; (type=TranOffset)" << endl; 
-	for (map<string,double>::const_iterator b=items.begin(), e=items.end();
-		b!=e; ++b) {
-			os << "  item name = " << (*b).first << ";  offset value = " << (*b).second << endl;   
-	}
+	Transformable &data = jac.base_numeric_parameters;
+	forward(data);
+}
+
+void TranOffset::jacobian_reverse(Jacobian &jac)
+{
+	Transformable &data = jac.base_numeric_parameters;
+	reverse(data);
 }
 
 void TranOffset::d2_to_d1(Transformable &del_data, Transformable &data)
@@ -162,6 +165,14 @@ void TranOffset::d1_to_d2(Transformable &del_data, Transformable &data)
 	forward(data);
 }
 
+void TranOffset::print(ostream &os) const
+{
+	os << "Transformation name = " << name << "; (type=TranOffset)" << endl;
+	for (map<string, double>::const_iterator b = items.begin(), e = items.end();
+		b != e; ++b) {
+		os << "  item name = " << (*b).first << ";  offset value = " << (*b).second << endl;
+	}
+}
 
 ///////////////// TranScale Methods /////////////////
 void TranScale::forward(Transformable &data)
@@ -191,6 +202,52 @@ void TranScale::reverse(Transformable &data)
 	}
 }
 
+void TranScale::jacobian_forward(Jacobian &jac)
+{
+	size_t icol = 0;
+	double factor = 0;
+	Transformable &data = jac.base_numeric_parameters;
+	unordered_map<string, int> par_2_col_map = jac.get_par2col_map();
+	auto iter_end = par_2_col_map.end();
+	for (const auto &irec : items)
+	{
+		auto iter = par_2_col_map.find(irec.first);
+		if (iter == iter_end)
+		{
+			ostringstream str;
+			str << "TranScale::jacobian_forward - Can not retriece index for " << irec.first;
+			throw PestError(str.str());
+		}
+		icol = iter->second;
+		factor = irec.second;
+		jac.matrix.col(icol) /= factor;
+	}
+	forward(data);
+}
+
+void TranScale::jacobian_reverse(Jacobian &jac)
+{
+	size_t icol = 0;
+	double factor = 0;
+	Transformable &data = jac.base_numeric_parameters;
+	unordered_map<string, int> par_2_col_map = jac.get_par2col_map();
+	auto iter_end = par_2_col_map.end();
+	for (const auto &irec : items)
+	{
+		auto iter = par_2_col_map.find(irec.first);
+		if (iter == iter_end)
+		{
+			ostringstream str;
+			str << "TranScale::jacobian_forward - Can not retriece index for " << irec.first;
+			throw PestError(str.str());
+		}
+		icol = iter->second;
+		factor = irec.second;
+		jac.matrix.col(icol) *= factor;
+	}
+	reverse(data);
+}
+
 void TranScale::d1_to_d2(Transformable &del_data, Transformable &data)
 {
 	Transformable::iterator del_data_iter, del_data_end = del_data.end();
@@ -199,7 +256,7 @@ void TranScale::d1_to_d2(Transformable &del_data, Transformable &data)
 		del_data_iter = del_data.find(b->first);
 		if (del_data_iter != del_data_end)
 		{
-			(*del_data_iter).second *= b->second;
+			(*del_data_iter).second /= b->second;
 		}
 	}
 	forward(data);
@@ -213,7 +270,7 @@ void TranScale::d2_to_d1(Transformable &del_data, Transformable &data)
 		del_data_iter = del_data.find(b->first);
 		if (del_data_iter != del_data_end)
 		{
-			(*del_data_iter).second /= b->second;
+			(*del_data_iter).second *= b->second;
 		}
 	}
 	reverse(data);
@@ -256,8 +313,61 @@ void TranLog10::reverse(Transformable &data)
 }
 
 
+
+void TranLog10::jacobian_forward(Jacobian &jac)
+{
+	size_t icol = 0;
+	double factor = 0;
+	double d = 0;
+	Transformable &data = jac.base_numeric_parameters;
+	forward(data);
+	unordered_map<string, int> par_2_col_map = jac.get_par2col_map();
+	auto iter_end = par_2_col_map.end();
+	for (const auto &ipar : items)
+	{
+		auto iter = par_2_col_map.find(ipar);
+		if (iter == iter_end)
+		{
+			ostringstream str;
+			str << "TranScale::jacobian_forward - Can not retreive index for " << ipar;
+			throw PestError(str.str());
+		}
+		d = data.get_rec(ipar);
+		icol = iter->second;
+		factor = pow(10, d) * log(10.0);
+		jac.matrix.col(icol) *= factor;
+	}
+}
+
+void TranLog10::jacobian_reverse(Jacobian &jac)
+{
+	size_t icol = 0;
+	double factor = 0;
+	double d = 0;
+	Transformable &data = jac.base_numeric_parameters;
+	reverse(data);
+	unordered_map<string, int> par_2_col_map = jac.get_par2col_map();
+	auto iter_end = par_2_col_map.end();
+	for (const auto &ipar : items)
+	{
+		auto iter = par_2_col_map.find(ipar);
+		if (iter == iter_end)
+		{
+			ostringstream str;
+			str << "TranScale::jacobian_forward - Can not retriece index for " << ipar;
+			throw PestError(str.str());
+		}
+		d = data.get_rec(ipar);
+		icol = iter->second;
+		factor = 1.0 / (d * log(10.0));
+		jac.matrix.col(icol) *= factor;
+	}
+}
+
+
 void TranLog10::d1_to_d2(Transformable &del_data, Transformable &data)
 {
+	forward(data);
 	Transformable::iterator del_data_iter, del_data_end = del_data.end();
 	for (set<string>::const_iterator b = items.begin(), e = items.end(); b != e; ++b)
 	{
@@ -265,17 +375,15 @@ void TranLog10::d1_to_d2(Transformable &del_data, Transformable &data)
 		if (del_data_iter != del_data_end)
 		{
 			double d1 = data.get_rec(*b);
-			double factor = 1.0 / (d1 * log(10.0));
+			double factor = pow(10.0, d1) * log(10.0);
 			(*del_data_iter).second *= factor;
 		}
 	}
-	forward(data);
 }
 
 void TranLog10::d2_to_d1(Transformable &del_data, Transformable &data)
 {
-	// this transformation takes x -> y = log10(x)
-	// the factors = dy/dx = d/dx(log10(x) =  1/(y * ln(10))
+	reverse(data);
 	Transformable::iterator del_data_iter, del_data_end = del_data.end();
 	for (set<string>::const_iterator b = items.begin(), e = items.end(); b != e; ++b)
 	{
@@ -283,7 +391,7 @@ void TranLog10::d2_to_d1(Transformable &del_data, Transformable &data)
 		if (del_data_iter != del_data_end)
 		{
 			double d2 = data.get_rec(*b);
-			double factor = pow(d2, 10.0) * log(10.0);
+			double factor = 1.0 / (d2 * log(10.0));
 			(*del_data_iter).second *= factor;
 		}
 	}
@@ -298,78 +406,6 @@ void TranLog10::print(ostream &os) const
 			os << "  item name = " << *b << endl;   
 	}
 }
-
-///////////////// TranInvLog10 Methods /////////////////
-void TranInvLog10::forward(Transformable &data)
-{
-	Transformable::iterator data_iter, data_end = data.end();
-	for (set<string>::const_iterator b=items.begin(), e=items.end();
-		b!=e; ++b) {
-		data_iter = data.find(*b);
-		if (data_iter != data_end)
-		{
-			(*data_iter).second = pow(10.0,(*data_iter).second);
-		}
-	}
-}
-
-void TranInvLog10::reverse(Transformable &data)
-{
-	Transformable::iterator data_iter, data_end = data.end();
-	for (set<string>::const_iterator b=items.begin(), e=items.end();
-		b!=e; ++b) {
-		data_iter = data.find(*b);
-		if (data_iter != data_end)
-		{
-			(*data_iter).second = log10((*data_iter).second);
-		}
-	}
-}
-
-
-void TranInvLog10::d2_to_d1(Transformable &del_data, Transformable &data)
-{
-	Transformable::iterator del_data_iter, del_data_end = del_data.end();
-	for (set<string>::const_iterator b = items.begin(), e = items.end(); b != e; ++b)
-	{
-		del_data_iter = del_data.find(*b);
-		if (del_data_iter != del_data_end)
-		{
-			double d1 = data.get_rec(*b);
-			double factor = 1.0 / (d1 * log(10.0));
-			(*del_data_iter).second *= factor;
-		}
-	}
-	reverse(data);
-}
-
-void TranInvLog10::d1_to_d2(Transformable &del_data, Transformable &data)
-{
-	// this transformation takes x -> y = log10(x)
-	// the factors = dy/dx = d/dx(log10(x) =  1/(y * ln(10))
-	Transformable::iterator del_data_iter, del_data_end = del_data.end();
-	for (set<string>::const_iterator b = items.begin(), e = items.end(); b != e; ++b)
-	{
-		del_data_iter = data.find(*b);
-		if (del_data_iter != del_data_end)
-		{
-			double d2 = data.get_rec(*b);
-			double factor = pow(d2, 10.0) * log(10.0);
-			(*del_data_iter).second *= factor;
-		}
-	}
-	forward(data);
-}
-
-void TranInvLog10::print(ostream &os) const
-{
-	os << "Transformation name = " << name << "; (type=TranInvLog10)" << endl;
-	for (set<string>::const_iterator b=items.begin(), e=items.end();
-		b!=e; ++b) {
-			os << "  item name = " << *b << endl;   
-	}
-}
-
 
 ///////////////// TranFixed Methods /////////////////
 void TranFixed::forward(Transformable &data)
@@ -387,6 +423,34 @@ void TranFixed::reverse(Transformable &data)
 		data.insert(b->first, b->second);
 	}
 }
+
+
+void TranFixed::jacobian_forward(Jacobian &jac)
+{
+	Transformable &data = jac.base_numeric_parameters;
+	set<string> rm_par_set;
+	for (const auto &irec : items)
+	{
+		rm_par_set.insert(irec.first);
+	}
+	//remove Fixed parameters from base_parameter_names
+	jac.remove_cols(rm_par_set);
+	forward(data);
+}
+
+void TranFixed::jacobian_reverse(Jacobian &jac)
+{
+	Transformable &data = jac.base_numeric_parameters;
+	set<string> new_pars;
+	for (auto &i : items)
+	{
+		new_pars.insert(i.first);
+	}
+	jac.add_cols(new_pars);
+	reverse(data);
+}
+
+
 
 void TranFixed::d1_to_d2(Transformable &del_data, Transformable &data)
 {
@@ -431,33 +495,14 @@ void TranTied::insert(const string &item_name, const pair<string, double> &item_
 }
 
 
-void TranTied::d1_to_d2(Transformable &del_data, Transformable &data)
+void TranTied::forward(Transformable &data)
 {
 	for (map<string, pair_string_double>::iterator ii = items.begin(); ii != items.end(); ++ii)
 	{
-		del_data.erase(ii->first);
+		data.erase(ii->first);
 	}
-	forward(data);
 }
 
-void TranTied::d2_to_d1(Transformable &del_data, Transformable &data)
-{
-	string const *base_name;
-	double *factor;
-	Transformable::iterator base_iter;
-	for (map<string, pair_string_double>::iterator b = items.begin(), e = items.end();
-		b != e; ++b)
-	{
-		base_name = &(b->second.first);
-		factor = &(b->second.second);
-		base_iter = data.find(*base_name);
-		if (base_iter != data.end())
-		{
-			del_data.insert(b->first, (*base_iter).second * (*factor));
-		}
-	}
-	reverse(data);
-}
 
 void TranTied::reverse(Transformable &data)
 {
@@ -477,14 +522,27 @@ void TranTied::reverse(Transformable &data)
 	}
 }
 
-void TranTied::forward(Transformable &data)
+void TranTied::jacobian_forward(Jacobian &jac)
 {
-	for (map<string, pair_string_double>::iterator ii=items.begin(); ii!=items.end(); ++ii)
-	{
-		data.erase(ii->first);
-	}
+	throw(PestError("Error: TranTied::jacobian_forward - TranTied does not support Jacobian transformations"));
 }
 
+
+
+void TranTied::jacobian_reverse(Jacobian &jac)
+{
+	throw(PestError("Error: TranTied::jacobian_forward - TranTied does not support Jacobian transformations"));
+}
+
+void TranTied::d1_to_d2(Transformable &del_data, Transformable &data)
+{
+	throw(PestError("Error: TranTied::d1_to_d2 - TranTied does not support d1_to_d2 transformations"));
+}
+
+void TranTied::d2_to_d1(Transformable &del_data, Transformable &data)
+{
+	throw(PestError("Error: TranTied::d2_to_d1 - TranTied does not support d2_to_d1 transformations"));
+}
 
 void TranTied::print(ostream &os) const
 {
@@ -586,7 +644,7 @@ void TranSVD::update_add_frozen_pars(const Parameters &frozen_pars)
 {
 	debug_msg("TranSVD::update_reset_frozen_pars begin");
 	debug_print(frozen_pars);
-	vector<int> del_col_ids;
+	vector<size_t> del_col_ids;
 	Parameters new_frozen_pars;
 	for (auto &ipar : frozen_pars)
 	{
@@ -664,6 +722,28 @@ void TranSVD::forward(Transformable &data)
 	data = super_pars;
 }
 
+void TranSVD::jacobian_forward(Jacobian &jac)
+{
+	Transformable &data = jac.base_numeric_parameters;
+	Eigen::SparseMatrix<double> old_matrix = jac.get_matrix(jac.observation_list(), base_parameter_names);
+	Eigen::SparseMatrix<double> super_jacobian;
+	super_jacobian = old_matrix * Vt.transpose();
+	jac.matrix = super_jacobian;
+	jac.base_numeric_par_names = super_parameter_names;
+
+	forward(data);
+}
+
+void TranSVD::jacobian_reverse(Jacobian &jac)
+{
+	Transformable &data = jac.base_numeric_parameters;
+	Eigen::SparseMatrix<double> old_matrix = jac.get_matrix(jac.observation_list(), super_parameter_names);
+	Eigen::SparseMatrix<double> base_jacobian;
+	base_jacobian = old_matrix * Vt;
+	jac.matrix = base_jacobian;
+	jac.base_numeric_par_names = base_parameter_names;
+	reverse(data);
+}
 
 void TranSVD::d1_to_d2(Transformable &del_data, Transformable &data)
 {
@@ -673,7 +753,7 @@ void TranSVD::d1_to_d2(Transformable &del_data, Transformable &data)
 	for (int i = 0; i<Sigma.size(); ++i) {
 		new_data[super_parameter_names[i]] = d2_vec[i];
 	}
-	new_data = del_data;
+	del_data = new_data;
 	forward(data);
 }
 
@@ -770,6 +850,51 @@ void TranNormalize::reverse(Transformable &data)
 }
 
 
+void TranNormalize::jacobian_forward(Jacobian &jac)
+{
+	size_t icol = 0;
+	double factor = 0;
+	Transformable &data = jac.base_numeric_parameters;
+	unordered_map<string, int> par_2_col_map = jac.get_par2col_map();
+	auto iter_end = par_2_col_map.end();
+	for (const auto &irec : items)
+	{
+		auto iter = par_2_col_map.find(irec.first);
+		if (iter == iter_end)
+		{
+			ostringstream str;
+			str << "TranNormalize::jacobian_forward - Can not retriece index for " << irec.first;
+			throw PestError(str.str());
+		}
+		icol = iter->second;
+		factor = irec.second.scale;
+		jac.matrix.col(icol) /= factor;
+	}
+	forward(data);
+}
+
+void TranNormalize::jacobian_reverse(Jacobian &jac)
+{
+	size_t icol = 0;
+	double factor = 0;
+	Transformable &data = jac.base_numeric_parameters;
+	unordered_map<string, int> par_2_col_map = jac.get_par2col_map();
+	auto iter_end = par_2_col_map.end();
+	for (const auto &irec : items)
+	{
+		auto iter = par_2_col_map.find(irec.first);
+		if (iter == iter_end)
+		{
+			ostringstream str;
+			str << "TranNormalize::jacobian_forward - Can not retriece index for " << irec.first;
+			throw PestError(str.str());
+		}
+		icol = iter->second;
+		factor = irec.second.scale;
+		jac.matrix.col(icol) *= factor;
+	}
+	reverse(data);
+}
 
 void TranNormalize::d1_to_d2(Transformable &del_data, Transformable &data)
 {
@@ -779,7 +904,7 @@ void TranNormalize::d1_to_d2(Transformable &del_data, Transformable &data)
 		del_data_iter = data.find(b->first);
 		if (del_data_iter != del_data_end)
 		{
-			(*del_data_iter).second *= b->second.scale;
+			(*del_data_iter).second /= b->second.scale;
 		}
 	}
 	forward(data);
@@ -793,7 +918,7 @@ void TranNormalize::d2_to_d1(Transformable &del_data, Transformable &data)
 		del_data_iter = del_data.find(b->first);
 		if (del_data_iter != del_data_end)
 		{
-			(*del_data_iter).second /= b->second.scale;
+			(*del_data_iter).second *= b->second.scale;
 		}
 	}
 	reverse(data);

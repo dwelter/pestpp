@@ -63,6 +63,8 @@ public:
 	bool get_phiredswh_flag() const { return phiredswh_flag;}
 	void set_phiredswh_flag(bool _phiredswh_flag) { phiredswh_flag = _phiredswh_flag;}
 	virtual ParameterGroupInfo get_parameter_group_info() const { return *par_group_info_ptr; }
+	Jacobian & get_jacobian() {return jacobian; }
+	bool local_iteration_terminatated()const { return terminate_local_iteration; }
 	virtual ~SVDSolver(void);
 protected:
 	class Upgrade {

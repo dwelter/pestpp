@@ -32,6 +32,7 @@
 #include "FileManager.h"
 #include "PriorInformation.h"
 #include "debug.h"
+#include "eigen_tools.h"
 
 using namespace std;
 using namespace pest_utils;
@@ -43,6 +44,64 @@ Jacobian::Jacobian(FileManager &_file_manager) : file_manager(_file_manager)
 
 Jacobian::~Jacobian() {
 }
+
+
+void Jacobian::remove_cols(std::set<string> &rm_parameter_names)
+{
+	vector<size_t> del_col_ids;
+	
+	// build list of columns that needs to be removed from the matrix
+	auto iter_rm_end = rm_parameter_names.end();
+	size_t npar = base_numeric_par_names.size();
+	for (int i = 0; i<npar; ++i)
+	{
+		if (rm_parameter_names.find(base_numeric_par_names[i]) != iter_rm_end)
+		{
+			del_col_ids.push_back(i);
+		}
+	}
+
+	//remove frozen parameters from base_parameter_names
+	auto end_iter = std::remove_if(base_numeric_par_names.begin(), base_numeric_par_names.end(),
+		[&rm_parameter_names](string &str)->bool{return rm_parameter_names.find(str) != rm_parameter_names.end(); });
+	base_numeric_par_names.resize(std::distance(base_numeric_par_names.begin(), end_iter));
+	matrix_del_cols(matrix, del_col_ids);
+}
+
+void Jacobian::add_cols(set<string> &new_pars_names)
+{
+	//Note:  This method does not add the parameters in the base_numeric_parameters container.
+	//       The values must already be in that container 
+	// check if any of new_par parameters are already in the jacobian
+	set<string> par_name_set;
+	set<string> repeated_pars;
+	par_name_set.insert(base_numeric_par_names.begin(), base_numeric_par_names.end());
+	for_each(new_pars_names.begin(), new_pars_names.end(), [&par_name_set, &repeated_pars](const string &p) {
+		if ((par_name_set.find(p)) != par_name_set.end())
+		{
+			repeated_pars.insert(p);
+		}
+	});
+	if (repeated_pars.size() > 0)
+	{
+		ostringstream str;
+		str << " Jacobian::add_cols - parameters already present in jacobian: ";
+		for (auto &ipar : repeated_pars)
+		{
+			str << " " << ipar;
+		}
+		throw PestError(str.str());
+	}
+
+
+	for (const auto &ipar : new_pars_names)
+	{
+		base_numeric_par_names.push_back(ipar);
+	}
+	// add empty columns for new parameter.  sensitivities for new parameters will all = 0.
+	matrix.resize(matrix.rows(), matrix.cols() + new_pars_names.size());
+}
+
 
 
 const vector<string>& Jacobian::obs_and_reg_list() const
@@ -564,6 +623,33 @@ double Jacobian::derivative_inc(const string &name, const ParameterGroupInfo &gr
 const set<string>& Jacobian::get_failed_parameter_names() const
 {
 	return failed_parameter_names;
+}
+
+Jacobian& Jacobian::operator=(const Jacobian &rhs)
+{
+	base_numeric_par_names = rhs.base_numeric_par_names;
+	base_numeric_parameters = rhs.base_numeric_parameters;
+	failed_parameter_names = rhs.failed_parameter_names;
+	base_sim_obs_names = rhs.base_sim_obs_names;
+	base_sim_observations = rhs.base_sim_observations;
+	matrix = rhs.matrix;
+	file_manager = rhs.file_manager;
+	return *this;
+}
+void Jacobian::transform(const ParamTransformSeq &par_trans, void(ParamTransformSeq::*meth_prt)(Jacobian &jac) const)
+{
+	(par_trans.*meth_prt)(*this);
+}
+
+void Jacobian::print(std::ostream &fout)
+{ 
+	fout << "Jacobian:" << endl;
+	fout << "base_numeric_par_names: " << base_numeric_par_names << endl;
+	fout << "base_numeric_parameters: " << base_numeric_parameters << endl;
+	fout << "failed_parameter_names: " << failed_parameter_names << endl;
+	fout << "base_sim_obs_names: " << base_sim_obs_names << endl;
+	fout << "base_sim_observations: " << base_sim_observations << endl;
+	fout << "matrix: " << matrix << endl;
 }
 
 void Jacobian::save(const string &ext) const

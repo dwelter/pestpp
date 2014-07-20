@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pest++", "pest++\pest++.vcxproj", "{38231990-B7FE-469D-9DCD-C588D81163E3}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -57,11 +57,11 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{38231990-B7FE-469D-9DCD-C588D81163E3}.debug_dll|Any CPU.ActiveCfg = debug_dll|ARM
-		{38231990-B7FE-469D-9DCD-C588D81163E3}.debug_dll|Any CPU.Build.0 = debug_dll|ARM
-		{38231990-B7FE-469D-9DCD-C588D81163E3}.debug_dll|Win32.ActiveCfg = debug_dll|Win32
-		{38231990-B7FE-469D-9DCD-C588D81163E3}.debug_dll|Win32.Build.0 = debug_dll|Win32
-		{38231990-B7FE-469D-9DCD-C588D81163E3}.debug_dll|x64.ActiveCfg = debug_dll|x64
+		{38231990-B7FE-469D-9DCD-C588D81163E3}.debug_dll|Any CPU.ActiveCfg = Debug|Win32
+		{38231990-B7FE-469D-9DCD-C588D81163E3}.debug_dll|Win32.ActiveCfg = Debug|Win32
+		{38231990-B7FE-469D-9DCD-C588D81163E3}.debug_dll|Win32.Build.0 = Debug|Win32
+		{38231990-B7FE-469D-9DCD-C588D81163E3}.debug_dll|x64.ActiveCfg = Debug|x64
+		{38231990-B7FE-469D-9DCD-C588D81163E3}.debug_dll|x64.Build.0 = Debug|x64
 		{38231990-B7FE-469D-9DCD-C588D81163E3}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{38231990-B7FE-469D-9DCD-C588D81163E3}.Debug|Win32.ActiveCfg = Debug|Win32
 		{38231990-B7FE-469D-9DCD-C588D81163E3}.Debug|Win32.Build.0 = Debug|Win32
@@ -72,11 +72,11 @@ Global
 		{38231990-B7FE-469D-9DCD-C588D81163E3}.Release|Win32.Build.0 = Release|Win32
 		{38231990-B7FE-469D-9DCD-C588D81163E3}.Release|x64.ActiveCfg = Release|x64
 		{38231990-B7FE-469D-9DCD-C588D81163E3}.Release|x64.Build.0 = Release|x64
-		{D25CC810-E9E9-4920-82A4-6F585214480E}.debug_dll|Any CPU.ActiveCfg = debug_dll|ARM
-		{D25CC810-E9E9-4920-82A4-6F585214480E}.debug_dll|Any CPU.Build.0 = debug_dll|ARM
-		{D25CC810-E9E9-4920-82A4-6F585214480E}.debug_dll|Win32.ActiveCfg = debug_dll|Win32
-		{D25CC810-E9E9-4920-82A4-6F585214480E}.debug_dll|Win32.Build.0 = debug_dll|Win32
-		{D25CC810-E9E9-4920-82A4-6F585214480E}.debug_dll|x64.ActiveCfg = debug_dll|x64
+		{D25CC810-E9E9-4920-82A4-6F585214480E}.debug_dll|Any CPU.ActiveCfg = Debug|Win32
+		{D25CC810-E9E9-4920-82A4-6F585214480E}.debug_dll|Win32.ActiveCfg = Debug|Win32
+		{D25CC810-E9E9-4920-82A4-6F585214480E}.debug_dll|Win32.Build.0 = Debug|Win32
+		{D25CC810-E9E9-4920-82A4-6F585214480E}.debug_dll|x64.ActiveCfg = Debug|x64
+		{D25CC810-E9E9-4920-82A4-6F585214480E}.debug_dll|x64.Build.0 = Debug|x64
 		{D25CC810-E9E9-4920-82A4-6F585214480E}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{D25CC810-E9E9-4920-82A4-6F585214480E}.Debug|Win32.ActiveCfg = Debug|Win32
 		{D25CC810-E9E9-4920-82A4-6F585214480E}.Debug|Win32.Build.0 = Debug|Win32
@@ -101,12 +101,11 @@ Global
 		{BCE6DA73-3B26-460E-95C0-EC1905760FA2}.Release|Win32.Build.0 = Release|Win32
 		{BCE6DA73-3B26-460E-95C0-EC1905760FA2}.Release|x64.ActiveCfg = Release|x64
 		{BCE6DA73-3B26-460E-95C0-EC1905760FA2}.Release|x64.Build.0 = Release|x64
-		{AA6E1EC6-2E3D-42EE-B997-2F40814DD2C9}.debug_dll|Any CPU.ActiveCfg = debug_dll|ARM
-		{AA6E1EC6-2E3D-42EE-B997-2F40814DD2C9}.debug_dll|Any CPU.Build.0 = debug_dll|ARM
-		{AA6E1EC6-2E3D-42EE-B997-2F40814DD2C9}.debug_dll|Win32.ActiveCfg = debug_dll|Win32
-		{AA6E1EC6-2E3D-42EE-B997-2F40814DD2C9}.debug_dll|Win32.Build.0 = debug_dll|Win32
-		{AA6E1EC6-2E3D-42EE-B997-2F40814DD2C9}.debug_dll|x64.ActiveCfg = debug_dll|x64
-		{AA6E1EC6-2E3D-42EE-B997-2F40814DD2C9}.debug_dll|x64.Build.0 = debug_dll|x64
+		{AA6E1EC6-2E3D-42EE-B997-2F40814DD2C9}.debug_dll|Any CPU.ActiveCfg = Debug|Win32
+		{AA6E1EC6-2E3D-42EE-B997-2F40814DD2C9}.debug_dll|Win32.ActiveCfg = Debug|Win32
+		{AA6E1EC6-2E3D-42EE-B997-2F40814DD2C9}.debug_dll|Win32.Build.0 = Debug|Win32
+		{AA6E1EC6-2E3D-42EE-B997-2F40814DD2C9}.debug_dll|x64.ActiveCfg = Debug|x64
+		{AA6E1EC6-2E3D-42EE-B997-2F40814DD2C9}.debug_dll|x64.Build.0 = Debug|x64
 		{AA6E1EC6-2E3D-42EE-B997-2F40814DD2C9}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{AA6E1EC6-2E3D-42EE-B997-2F40814DD2C9}.Debug|Win32.ActiveCfg = Debug|Win32
 		{AA6E1EC6-2E3D-42EE-B997-2F40814DD2C9}.Debug|Win32.Build.0 = Debug|Win32

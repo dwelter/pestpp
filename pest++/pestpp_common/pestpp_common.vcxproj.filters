@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Transformation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="TerminationController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -79,6 +76,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PerformanceLog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Transformation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -144,6 +144,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PerformanceLog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JacobianSuper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

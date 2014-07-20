@@ -74,7 +74,7 @@ Eigen::VectorXd transformable_2_egien_vec(const Transformable &data, vector<stri
 }
 
 
-void matrix_del_cols(Eigen::SparseMatrix<double> &mat, const vector<int> &col_id_vec)
+void matrix_del_cols(Eigen::SparseMatrix<double> &mat, const vector<size_t> &col_id_vec)
 {
 	if (!col_id_vec.empty())
 	{

@@ -61,6 +61,9 @@ public:
 	 */
 	virtual void reverse(Transformable &data) = 0;
 
+	virtual void jacobian_forward(Jacobian &jac) = 0;
+	virtual void jacobian_reverse(Jacobian &jac) = 0;
+
 	virtual void d1_to_d2(Transformable &del_data, Transformable &data) = 0;
 	virtual void d2_to_d1(Transformable &del_data, Transformable &data) = 0;
 
@@ -151,6 +154,8 @@ public:
 	TranOffset(const string &_name="unnamed TranOffset"): TranMapBase(_name){};
 	virtual void forward(Transformable &data);
 	virtual void reverse(Transformable &data);
+	virtual void jacobian_forward(Jacobian &jac);
+	virtual void jacobian_reverse(Jacobian &jac);
 	virtual void d1_to_d2(Transformable &del_data, Transformable &data);
 	virtual void d2_to_d1(Transformable &del_data, Transformable &data);
 	virtual ~TranOffset(){};
@@ -171,6 +176,8 @@ public:
 	TranScale(const string &_name="unnamed TranScale"): TranMapBase(_name){};
 	virtual void forward(Transformable &data);
 	virtual void reverse(Transformable &data);
+	virtual void jacobian_forward(Jacobian &jac);
+	virtual void jacobian_reverse(Jacobian &jac);
 	virtual void d1_to_d2(Transformable &del_data, Transformable &data);
 	virtual void d2_to_d1(Transformable &del_data, Transformable &data);
 	virtual ~TranScale(){};
@@ -192,31 +199,14 @@ public:
 	TranLog10(const string &_name="unnamed TranLog10"): TranSetBase(_name){};
 	virtual void forward(Transformable &data);
 	virtual void reverse(Transformable &data);
+	virtual void jacobian_forward(Jacobian &jac);
+	virtual void jacobian_reverse(Jacobian &jac);
 	virtual void d1_to_d2(Transformable &del_data, Transformable &data);
 	virtual void d2_to_d1(Transformable &del_data, Transformable &data);
 	virtual ~TranLog10(){};
 	virtual void print(ostream &os) const;
 	virtual bool is_one_to_one() const {return true;}
 	virtual TranLog10* clone() {return new TranLog10(*this);}
-};
-
-/**
- @brief Inverse log10 Transformation Class
- 
- This class provides an inverse log10 transformation in which value is inverserse log10  transformed is applied in the forward direction
- and the log10 transform is applied in the reverse direction.    
-*/
-class TranInvLog10: public TranSetBase {
-public:
-	TranInvLog10(const string &_name="unnamed TranInvLog10"): TranSetBase(_name){};
-	virtual void forward(Transformable &data);
-	virtual void reverse(Transformable &data);
-	virtual void d1_to_d2(Transformable &del_data, Transformable &data);
-	virtual void d2_to_d1(Transformable &del_data, Transformable &data);
-	virtual ~TranInvLog10(){};
-	virtual void print(ostream &os) const;
-	virtual bool is_one_to_one() const {return true;}
-	virtual TranInvLog10* clone() {return new TranInvLog10(*this);}
 };
 
 /**
@@ -230,6 +220,8 @@ public:
 	TranFixed(const string &_name="unknown TranFixed"): TranMapBase(_name){};
 	virtual void forward(Transformable &data);
 	virtual void reverse(Transformable &data);
+	virtual void jacobian_forward(Jacobian &jac);
+	virtual void jacobian_reverse(Jacobian &jac);
 	virtual void d1_to_d2(Transformable &del_data, Transformable &data);
 	virtual void d2_to_d1(Transformable &del_data, Transformable &data);
 	virtual ~TranFixed(){};
@@ -265,6 +257,8 @@ public:
 	void insert(const string &item_name, const pair<string, double> &item_value);
 	virtual void forward(Transformable &data);
 	virtual void reverse(Transformable &data);
+	virtual void jacobian_forward(Jacobian &jac);
+	virtual void jacobian_reverse(Jacobian &jac);
 	virtual void d1_to_d2(Transformable &del_data, Transformable &data);
 	virtual void d2_to_d1(Transformable &del_data, Transformable &data);
 	virtual ~TranTied(){};
@@ -289,13 +283,15 @@ public:
 	void update_reset_frozen_pars(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt, const Parameters &base_numeric_pars,
 		int maxsing, double eigthresh, const vector<string> &par_names, const vector<string> &obs_names,
 		const Parameters &_frozen_derivative_pars=Parameters());
-	virtual void d1_to_d2(Transformable &del_data, Transformable &data);
-	virtual void d2_to_d1(Transformable &del_data, Transformable &data);
 	void update_add_frozen_pars(const Parameters &_frozen_derivative_pars);
 	Parameters& get_frozen_derivative_pars() {return frozen_derivative_parameters;}
 	const vector<string>& get_super_parameter_names(){return super_parameter_names;}
 	virtual void forward(Transformable &data);
 	virtual void reverse(Transformable &data);
+	virtual void jacobian_forward(Jacobian &jac);
+	virtual void jacobian_reverse(Jacobian &jac);
+	virtual void d1_to_d2(Transformable &del_data, Transformable &data);
+	virtual void d2_to_d1(Transformable &del_data, Transformable &data);
 	void insert(const string &item_name, double item_value)
 	    {/*can't insert into SVD.  This is intentionally a no-op*/};
 	virtual ~TranSVD();
@@ -320,7 +316,6 @@ protected:
 	void calc_svd();
 };
 
-
 class TranNormalize: public Transformation {
 public:
 	class NormData {
@@ -334,6 +329,8 @@ public:
 	void insert(const string &item_name, double _offset, double _scale);
 	virtual void forward(Transformable &data);
 	virtual void reverse(Transformable &data);
+	virtual void jacobian_forward(Jacobian &jac);
+	virtual void jacobian_reverse(Jacobian &jac);
 	virtual void d1_to_d2(Transformable &del_data, Transformable &data);
 	virtual void d2_to_d1(Transformable &del_data, Transformable &data);
 	virtual ~TranNormalize(){};

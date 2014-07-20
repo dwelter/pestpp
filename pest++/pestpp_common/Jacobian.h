@@ -27,6 +27,7 @@
 #include<Eigen/Dense>
 #include<Eigen/Sparse>
 #include "Transformable.h"
+#include "Transformation.h"
 
 class ParamTransformSeq;
 class ParameterInfo;
@@ -36,6 +37,7 @@ class ObjectiveFunc;
 class ModelRun;
 class FileManager;
 class PriorInformation;
+class JacobianSuper;
 
 class JacobianRun{
 public:
@@ -47,6 +49,22 @@ public:
 
 class Jacobian {
 public:
+	friend JacobianSuper;
+	friend void TranOffset::jacobian_forward(Jacobian &jac);
+	friend void TranOffset::jacobian_reverse(Jacobian &jac);
+	friend void TranScale::jacobian_forward(Jacobian &jac);
+	friend void TranScale::jacobian_reverse(Jacobian &jac);
+	friend void TranFixed::jacobian_forward(Jacobian &jac);
+	friend void TranFixed::jacobian_reverse(Jacobian &jac);
+	friend void TranLog10::jacobian_forward(Jacobian &jac);
+	friend void TranLog10::jacobian_reverse(Jacobian &jac);
+	friend void TranFixed::jacobian_forward(Jacobian &jac);
+	friend void TranFixed::jacobian_reverse(Jacobian &jac);
+	friend void TranSVD::jacobian_forward(Jacobian &jac);
+	friend void TranSVD::jacobian_reverse(Jacobian &jac);
+	friend void TranNormalize::jacobian_forward(Jacobian &jac);
+	friend void TranNormalize::jacobian_reverse(Jacobian &jac);
+
 	Jacobian(FileManager &_file_manager);
 	virtual const vector<string>& parameter_list() const{return base_numeric_par_names;}
 	virtual const vector<string>& observation_list() const {return  base_sim_obs_names;}
@@ -63,10 +81,15 @@ public:
 
 	virtual void save(const std::string &ext="jco") const;
 	void read(const std::string &filename);
+	void print(std::ostream &fout);
 	virtual const set<string>& get_failed_parameter_names() const;
 	virtual long get_nonzero() const { return matrix.nonZeros();}
 	virtual long get_size() const { return matrix.size(); }
 	virtual void report_errors(std::ostream &fout) {}
+	virtual void remove_cols(std::set<string> &rm_parameter_names);
+	virtual void add_cols(set<string> &new_pars_names);
+	virtual void transform(const ParamTransformSeq &par_trans, void(ParamTransformSeq::*meth_prt)(Jacobian &jac) const);
+	Jacobian& operator=(const Jacobian &rhs);
 	virtual ~Jacobian();
 protected:
 	vector<string> base_numeric_par_names;  //ordered names of base parameters used to calculate the jacobian

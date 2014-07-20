@@ -47,9 +47,12 @@ public:
 	void iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs = false, bool jacobian_only=false);
 	virtual const string &get_description(){return description;}
 	virtual ParameterGroupInfo get_parameter_group_info() const { return super_parameter_group_info; }
+	bool get_calc_jacobian() const { return calc_jacobian;}
+	void set_calc_jacobian(bool tmp) { calc_jacobian=tmp; }
 	~SVDASolver(void);
 private:
 	ParameterGroupInfo super_parameter_group_info;
+	bool calc_jacobian;
 };
 
 
