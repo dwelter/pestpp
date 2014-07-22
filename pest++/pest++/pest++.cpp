@@ -444,8 +444,8 @@ int main(int argc, char* argv[])
 	fout_rec << endl;
 	cout << "FINAL OPTIMISATION RESULTS" << endl << endl;
 	fout_rec << "FINAL OPTIMISATION RESULTS" << endl << endl;
-	optimum_run.full_report(cout);
-	optimum_run.full_report(fout_rec);
+	optimum_run.full_report(cout, DynamicRegularization(false));
+	optimum_run.full_report(fout_rec, DynamicRegularization(false));
 	fout_rec.close();
 	// clean up
 	delete base_jacobian_ptr;

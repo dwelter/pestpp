@@ -21,15 +21,21 @@
 #include "ModelRunPP.h"
 
 
-DynamicRegularization::DynamicRegularization(double _phi_m_lim,
+DynamicRegularization::DynamicRegularization(bool _use_dynamic_reg, double _phi_m_lim,
 	double _phi_m_accept, double _frac_phi_m, double _wf_min, double _wf_max,
-	double _wffac, double _wftol, double _tikhonov_weight)
-	: phi_m_lim(_phi_m_lim), phi_m_accept(_phi_m_accept), frac_phi_m(_frac_phi_m),
-	wf_min(_wf_min), wf_max(_wf_max), wffac(_wffac), wftol(_wftol), 
-	tikhonov_weight(_tikhonov_weight)
+	double _wffac, double _wftol, double _wf_init)
+	: use_dynamic_reg(_use_dynamic_reg), phi_m_lim(_phi_m_lim), phi_m_accept(_phi_m_accept), frac_phi_m(_frac_phi_m),
+	wf_min(_wf_min), wf_max(_wf_max), wffac(_wffac), wftol(_wftol), wf_init(_wf_init),
+	tikhonov_weight(_wf_init)
 {
 }
 
+DynamicRegularization::DynamicRegularization(const DynamicRegularization &rhs)
+	: phi_m_lim(rhs.phi_m_lim), phi_m_accept(rhs.phi_m_accept), frac_phi_m(rhs.frac_phi_m),
+	wf_min(rhs.wf_min), wf_max(rhs.wf_max), wffac(rhs.wffac), wftol(rhs.wftol), wf_init(rhs.wf_init),
+	tikhonov_weight(rhs.wf_init)
+{
+}
 double DynamicRegularization::get_weight() const
 {
 	return tikhonov_weight;

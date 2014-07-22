@@ -45,8 +45,8 @@ public:
 	double get_phi(const Observations &sim_obs, const Parameters &pars, double tikhonov_weight=1.0) const;
 	PhiComponets get_phi_comp(const Observations &sim_obs, const Parameters &pars) const;
 	map<string, double> get_group_phi(const Observations &sim_obs, const Parameters &pars) const;
-	PhiComponets phi_report(ostream &os, const Observations &sim_obs, const Parameters &pars, double tikhonov_weight=1.0) const;
-	PhiComponets full_report(ostream &os, const Observations &sim_obs, const Parameters &pars, double tikhonov_weight=1.0) const;
+	PhiComponets phi_report(ostream &os, const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg) const;
+	PhiComponets full_report(ostream &os, const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg) const;
 	vector<double> get_residuals_vec(const Observations &sim_obs, const Parameters &pars, const vector<string> &obs_names) const;
 	const Observations* get_obs_ptr() const;
 	const ObservationInfo* get_obs_info_ptr() const;

@@ -147,21 +147,12 @@ vector<double> ModelRun::get_residuals_vec(const vector<string> &obs_names)
 	return obj_func_ptr->get_residuals_vec(get_obs(), get_ctl_pars(), obs_names);
 }
 
-void ModelRun::phi_report(ostream &os) 
-{
-	if( !obs_is_valid) {
-		throw PestError("ModelRun::phi_report() - Simulated observations are invalid.  Can not produce phi report.");
-	}
-	phi_comp = obj_func_ptr->phi_report(os, sim_obs, get_ctl_pars());
-	phi_is_valid = true;
-}
-
-void ModelRun::full_report(ostream &os) 
+void ModelRun::full_report(ostream &os, const DynamicRegularization &dynamic_reg)
 {
 	if( !obs_is_valid) {
 		throw PestError("ModelRun::full_report() - Simulated observations are invalid.  Can not produce full report.");
 	}
-	phi_comp = obj_func_ptr->full_report(os, sim_obs, get_ctl_pars());
+	phi_comp = obj_func_ptr->full_report(os, sim_obs, get_ctl_pars(), dynamic_reg);
 	phi_is_valid = true;
 }
 

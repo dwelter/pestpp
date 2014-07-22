@@ -98,9 +98,10 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 	double wfmax;
 	double wffac; 
 	double wftol;
+	bool use_dynamic_reg = false;
 	vector<string> pestpp_input;
 
-	regul_scheme_ptr = new DynamicRegularization();
+	regul_scheme_ptr = new DynamicRegularization(use_dynamic_reg);
 
 	TranTied *t_tied = new TranTied("PEST to model tied transformation");
 	TranOffset *t_offset = new TranOffset("PEST to model offset transformation");
@@ -141,6 +142,14 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 		}
 		else if (section == "CONTROL DATA")
 		{
+			if (sec_lnum == 1)
+			{
+				if (tokens[1] == "REGULARIZATION" || tokens[1] == "REGULARISATION")
+				{
+					use_dynamic_reg = true;
+				}
+			}
+
 			if (sec_lnum == 2)
 			{
 				convert_ip(tokens[0], num_par);
@@ -351,8 +360,8 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 				convert_ip(tokens[0], wffac);
 				convert_ip(tokens[1], wftol);
 				delete regul_scheme_ptr;
-				regul_scheme_ptr = new DynamicRegularization(phimlim, phimaccept, fracphim, wfmin, wfmax,
-								   wffac, wftol);
+				regul_scheme_ptr = new DynamicRegularization(use_dynamic_reg, phimlim,
+					phimaccept, fracphim, wfmin, wfmax, wffac, wftol, wfinit);
 			}
 		}
 	}

@@ -48,8 +48,7 @@ public:
 	virtual double get_phi(double regul_weight=1.0);
 	virtual PhiComponets get_phi_comp();
 	virtual vector<double> get_residuals_vec(const vector<string> &obs_names);
-	virtual void phi_report(ostream &os);
-	void full_report(ostream &os);
+	void full_report(ostream &os, const DynamicRegularization &dynamic_reg=DynamicRegularization(false));
 	virtual bool obs_valid() const;
 	virtual bool phi_valid() const;
 	virtual ~ModelRun();

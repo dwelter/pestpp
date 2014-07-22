@@ -60,7 +60,7 @@ public:
 	const  vector<string> &get_insfile_vec();
 	const  vector<string> &get_outfile_vec();
 	const PestppOptions &get_pestpp_options() const {return pestpp_options;}
-	const DynamicRegularization* get_regul_scheme_ptr() { return regul_scheme_ptr; }
+	DynamicRegularization* get_regul_scheme_ptr() { return regul_scheme_ptr; }
 	vector<string> get_nonregul_obs() const;
 	virtual ~Pest();
 private:

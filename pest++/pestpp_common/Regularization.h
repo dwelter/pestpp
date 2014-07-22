@@ -24,13 +24,24 @@ class ModelRun;
 class DynamicRegularization
 {
 public:
-	DynamicRegularization(double _phi_m_lim = 0, double _phi_m_accept = 0,
+	DynamicRegularization(bool _use_dynamic_reg = false, double _phi_m_lim = 0, double _phi_m_accept = 0,
 		double _frac_phi_m = 1, double _wf_min = 1e-10, double _wf_max = 1e10,
-		double _wffac = 0, double _wftol = 1000, double _tikhonov_weight = 1);
+		double _wffac = 0, double _wftol = 1000, double _wf_init = 1.0);
+	DynamicRegularization(const DynamicRegularization &rhs);
 	virtual double get_weight() const;
+	virtual double get_phimlim() const { return phi_m_lim; }
+	virtual double get_phimaccept() const { return phi_m_accept; }
+	virtual double get_fracphim() const { return frac_phi_m; }
+	virtual double get_wfmin() const { return wf_min; }
+	virtual double get_wfmax() const { return wf_max; }
+	virtual double get_wffac() const { return wffac; }
+	virtual double get_wftol() const { return wftol; }
+	virtual double get_wfinit() const { return wf_init; }
+	bool get_use_dynamic_reg() const { return use_dynamic_reg; }
 	virtual void set_weight(double _tikhonov_weight) {tikhonov_weight = _tikhonov_weight;}
 	virtual ~DynamicRegularization(void){}
 protected:
+	bool use_dynamic_reg;
 	double phi_m_lim;
 	double phi_m_accept;
 	double frac_phi_m;
@@ -38,6 +49,7 @@ protected:
 	double wf_max;
 	double wffac;
 	double wftol;
+	double wf_init;
 	double tikhonov_weight;
 };
 

@@ -120,12 +120,16 @@ map<string, double> ObjectiveFunc::get_group_phi(const Observations &sim_obs, co
 	return group_phi;
 }
 
-PhiComponets ObjectiveFunc::phi_report(ostream &os, const Observations &sim_obs, const Parameters &pars, double tikhonov_weight) const
+PhiComponets ObjectiveFunc::phi_report(ostream &os, const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg) const
 {
 	map<string, double> group_phi;
 	PhiComponets phi_comp = get_phi_comp(sim_obs, pars);
+	double tikhonov_weight = dynamic_reg.get_weight();
 	double total_phi = phi_comp.meas + phi_comp.regul * tikhonov_weight;
-	//os << "    Current regularization weight factor                      : " << tikhonov_weight << endl;
+	if (dynamic_reg.get_use_dynamic_reg())
+	{
+		os << "    Current regularization weight factor                      : " << tikhonov_weight << endl;
+	}
 	os << "    Starting phi for this iteration                     Total : " << total_phi << endl;
 	group_phi = get_group_phi(sim_obs, pars);
 	for (auto &igrp : group_phi)
@@ -145,10 +149,11 @@ PhiComponets ObjectiveFunc::phi_report(ostream &os, const Observations &sim_obs,
 }
 
 
-PhiComponets ObjectiveFunc::full_report(ostream &os, const Observations &sim_obs, const Parameters &pars, double tikhonov_weight) const
+PhiComponets ObjectiveFunc::full_report(ostream &os, const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg) const
 {
 	map<string, double> group_phi;
 	PhiComponets phi_comp = get_phi_comp(sim_obs, pars);
+	double tikhonov_weight = dynamic_reg.get_weight();
 	double total_phi = phi_comp.meas + phi_comp.regul * tikhonov_weight;
 	os << "    Phi                                                 Total : " << total_phi << endl;
 	group_phi = get_group_phi(sim_obs, pars);

@@ -53,7 +53,7 @@ public:
 	SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_par_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, 
-		const DynamicRegularization *regul_scheme_ptr, OutputFileWriter &_output_file_writer, RestartController &_restart_controller,
+		DynamicRegularization *_regul_scheme_ptr, OutputFileWriter &_output_file_writer, RestartController &_restart_controller,
 		SVDSolver::MAT_INV _mat_inv, PerformanceLog *_performance_log, const std::vector<double> &_base_lambda_vec, 
 		const string &description = string("base parameter solution"), bool _phiredswh_flag = false, bool _save_next_jacobian = true);
 	virtual ModelRun& solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter, ModelRun &cur_run, ModelRun &optimum_run);
@@ -88,7 +88,7 @@ protected:
 	const Observations *observations_ptr;
 	const ObservationInfo *obs_info_ptr;
 	const PriorInformation *prior_info_ptr;
-	DynamicRegularization regul_scheme;
+	DynamicRegularization *regul_scheme_ptr;
 	FileManager &file_manager;
 	Jacobian &jacobian;
 	bool phiredswh_flag;

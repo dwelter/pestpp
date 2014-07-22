@@ -12,7 +12,6 @@ class ParamTransformSeq;
 class ParameterInfo;
 class ParameterGroupInfo;
 class RunManagerAbstract;
-class ObjectiveFunc;
 class ModelRun;
 class FileManager;
 class PriorInformation;
