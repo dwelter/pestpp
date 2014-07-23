@@ -295,8 +295,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 	cout << "  computing upgrade vectors... " << endl;
 	cout.flush();
 	performance_log->log_event("computing upgrade vectors");
-	// update regularization weight factor
-	double tikhonov_weight = regul_scheme_ptr->get_weight();
+
 	// write out report for starting phi
 	obj_func->phi_report(os, base_run.get_obs(), base_run.get_ctl_pars(), *regul_scheme_ptr);
 	// populate vectors with sorted observations (standard and prior info) and parameters
@@ -314,12 +313,26 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 
 	//Marquardt Lambda Update Vector
 	Upgrade ml_upgrade;
-	
-	vector<Parameters> frozen_derivative_par_vec;
-	Parameters *new_frozen_par_ptr = 0;
 
 	// build weights matrix sqrt(Q)
-	QSqrtMatrix Q_sqrt(obs_info_ptr, prior_info_ptr, tikhonov_weight);
+	QSqrtMatrix Q_sqrt(obs_info_ptr, prior_info_ptr, regul_scheme_ptr->get_weight());
+
+
+	{
+		const Parameters base_run_active_ctl_pars = par_transform.ctl2active_ctl_cp(base_run.get_ctl_pars());
+		Parameters frozen_active_ctl_pars;
+		//If running in regularization mode, adjust the regularization weights
+		// define a function type for upgrade methods
+		if (regul_scheme_ptr->get_use_dynamic_reg())
+		{
+			os << endl;
+			dynamic_weight_adj(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+				base_run_active_ctl_pars, frozen_active_ctl_pars);
+		}
+	}
+
+	vector<Parameters> frozen_derivative_par_vec;
+	Parameters *new_frozen_par_ptr = 0;
 
 	vector<double> lambda_vec = base_lambda_vec;
 	lambda_vec.push_back(best_lambda);
@@ -401,13 +414,15 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 			os << setiosflags(ios::fixed);
 			os.precision(n_prec);
 			os.unsetf(ios_base::floatfield); // reset all flags to default
-			os << ";   phi = " << upgrade_run.get_phi(tikhonov_weight); 
+			os << ";   phi = " << upgrade_run.get_phi(*regul_scheme_ptr);
 			os.precision(2);
 			os << setiosflags(ios::fixed);
-			os << " ("  << upgrade_run.get_phi(tikhonov_weight)/base_run.get_phi(tikhonov_weight)*100 << "%)" << endl;
+			os << " (" << upgrade_run.get_phi(*regul_scheme_ptr) / base_run.get_phi(*regul_scheme_ptr) * 100 << "%)" << endl;
 			os.precision(n_prec);
 			os.unsetf(ios_base::floatfield); // reset all flags to default
-			if ( upgrade_run.obs_valid() &&  !best_run_updated_flag || upgrade_run.get_phi() <  best_upgrade_run.get_phi()) {
+			if (upgrade_run.obs_valid() && (!best_run_updated_flag ||
+				ModelRun::cmp_lt(upgrade_run, best_upgrade_run, *regul_scheme_ptr)))
+			{
 				best_run_updated_flag = true;
 				best_upgrade_run = upgrade_run;
 				new_frozen_par_ptr = &frozen_derivative_par_vec[i];
@@ -463,8 +478,8 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 	run_manager.free_memory();
 
 	// reload best parameters and set flag to switch to central derivatives next iteration
-	double cur_phi = cur_solution.get_phi(tikhonov_weight);
-	double best_phi = best_upgrade_run.get_phi(tikhonov_weight);
+	double cur_phi = cur_solution.get_phi(*regul_scheme_ptr);
+	double best_phi = best_upgrade_run.get_phi(*regul_scheme_ptr);
 
 	if (cur_phi != 0 && !phiredswh_flag &&
 		(cur_phi - best_phi) / cur_phi < ctl_info->phiredswh)

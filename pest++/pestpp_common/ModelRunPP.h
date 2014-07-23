@@ -45,8 +45,8 @@ public:
 	virtual const Observations &get_obs() const;
 	virtual Observations get_obs_template() const;
 	const ObjectiveFunc *get_obj_func_ptr()  {return obj_func_ptr;}
-	virtual double get_phi(double regul_weight=1.0);
-	virtual PhiComponets get_phi_comp() const;
+	virtual double get_phi(const DynamicRegularization &dynamic_reg);
+	virtual PhiComponets get_phi_comp(const DynamicRegularization &dynamic_reg) const;
 	virtual vector<double> get_residuals_vec(const vector<string> &obs_names);
 	void full_report(ostream &os, const DynamicRegularization &dynamic_reg=DynamicRegularization(false));
 	virtual bool obs_valid() const;

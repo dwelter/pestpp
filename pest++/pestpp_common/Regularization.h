@@ -19,6 +19,8 @@
 #ifndef REGULARIZATION_H_
 #define REGULARIZATION_H_
 
+#include <unordered_map>
+
 class ModelRun;
 
 class DynamicRegularization
@@ -41,6 +43,7 @@ public:
 	bool get_use_dynamic_reg() const { return use_dynamic_reg; }
 	virtual void set_weight(double _tikhonov_weight) {tikhonov_weight = _tikhonov_weight;}
 	virtual void set_max_reg_iter(int _max_reg_iter) { max_reg_iter = _max_reg_iter; }
+	static DynamicRegularization get_unit_reg_instance() { return DynamicRegularization(); }
 	virtual ~DynamicRegularization(void){}
 protected:
 	bool use_dynamic_reg;
@@ -54,6 +57,7 @@ protected:
 	double wftol;
 	double wf_init;
 	double tikhonov_weight;
+	std::unordered_map<std::string, double> regul_grp_weights;
 };
 
 

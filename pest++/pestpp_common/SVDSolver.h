@@ -131,7 +131,8 @@ protected:
 	bool par_heading_out_bnd(double org_par, double new_par, double lower_bnd, double upper_bnd);
 	PhiComponets phi_estimate(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt,
 		const Eigen::VectorXd &residuals_vec, const vector<string> &obs_names_vec,
-		const Parameters &base_run_active_ctl_par, const Parameters &freeze_active_ctl_pars, bool scale_upgrade = false);
+		const Parameters &base_run_active_ctl_par, const Parameters &freeze_active_ctl_pars, 
+		DynamicRegularization &tmp_regul_scheme, bool scale_upgrade = false);
 	int check_bnd_par(Parameters &new_freeze_active_ctl_pars, const Parameters &current_active_ctl_pars, const Parameters &new_upgrade_active_ctl_pars, const Parameters &new_grad_active_ctl_pars = Parameters());
 };
 

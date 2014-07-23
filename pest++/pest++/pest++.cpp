@@ -270,7 +270,7 @@ int main(int argc, char* argv[])
 
 	TerminationController termination_ctl(pest_scenario.get_control_info().noptmax, pest_scenario.get_control_info().phiredstp,
 		pest_scenario.get_control_info().nphistp, pest_scenario.get_control_info().nphinored, pest_scenario.get_control_info().relparstp,
-		pest_scenario.get_control_info().nrelpar);
+		pest_scenario.get_control_info().nrelpar, pest_scenario.get_regul_scheme_ptr()->get_use_dynamic_reg(), pest_scenario.get_regul_scheme_ptr()->get_phimaccept());
 
 	//if we are doing a restart, update the termination_ctl
 	if (restart_flag)
@@ -446,6 +446,8 @@ int main(int argc, char* argv[])
 	fout_rec << "FINAL OPTIMISATION RESULTS" << endl << endl;
 	optimum_run.full_report(cout, DynamicRegularization(false));
 	optimum_run.full_report(fout_rec, DynamicRegularization(false));
+	fout_rec << endl;
+	fout_rec << "    Number of forward model runs performed: " << run_manager_ptr->get_total_runs() << endl;
 	fout_rec.close();
 	// clean up
 	delete base_jacobian_ptr;

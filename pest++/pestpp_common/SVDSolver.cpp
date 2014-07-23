@@ -21,6 +21,7 @@
 #include <iomanip>
 #include <map>
 #include <algorithm>
+#include <sstream>
 #include "SVDSolver.h"
 #include "RunManagerAbstract.h"
 #include "QSqrtMatrix.h"
@@ -35,7 +36,6 @@
 #include "Regularization.h"
 #include "SVD_PROPACK.h"
 #include "OutputFileWriter.h"
-#include <sstream>
 #include "debug.h"
 
 using namespace std;
@@ -123,7 +123,12 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 		tmp_str << "beginning iteration " << global_iter_num;
 		performance_log->log_event(tmp_str.str(), 0, "start_iter");
 		performance_log->add_indent();
+		int nruns_start_iter = run_manager.get_total_runs();
 		iteration(run_manager, termination_ctl, false);
+		int nruns_end_iter = run_manager.get_total_runs();
+		os << endl;
+		os << "  Model calls in iteration " << global_iter_num << ": " << nruns_end_iter - nruns_start_iter << endl;
+		os << "  Total model calls at end of iteration " << global_iter_num << ": " << nruns_end_iter << endl;
 		if (terminate_local_iteration)
 		{
 			break;
@@ -160,7 +165,7 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 		if (save_nextjac) {
 			jacobian.save();
 		}
-		if (!optimum_run.obs_valid() || cur_solution.get_phi() < optimum_run.get_phi())
+		if (!optimum_run.obs_valid() || ModelRun::cmp_lt(cur_solution, optimum_run, *regul_scheme_ptr) )
 		{
 			optimum_run.set_ctl_parameters(cur_solution.get_ctl_pars());
 			optimum_run.set_observations(cur_solution.get_obs());
@@ -632,23 +637,26 @@ restart_reuse_jacoboian:
 	}
 
 	// build weights matrix sqrt(Q)
-	double tikhonov_weight = regul_scheme_ptr->get_weight();
-	QSqrtMatrix Q_sqrt(obs_info_ptr, prior_info_ptr, tikhonov_weight);
+	QSqrtMatrix Q_sqrt(obs_info_ptr, prior_info_ptr, regul_scheme_ptr->get_weight());
 	//build residuals vector
 	VectorXd residuals_vec = -1.0 * stlvec_2_egienvec(cur_solution.get_residuals_vec(obs_names_vec));
 
 	Parameters base_run_active_ctl_par = par_transform.ctl2active_ctl_cp(cur_solution.get_ctl_pars());
 	LimitType limit_type = LimitType::NONE;
+
+	//If running in regularization mode, adjust the regularization weights
+	// define a function type for upgrade methods
 	{
+		Parameters tmp_new_par;
 		Parameters frozen_active_ctl_pars = failed_jac_pars;
-		//If running in regularization mode, adjust the regularization weights
-		// define a function type for upgrade methods
+		//use call to calc_upgrade_vec to compute frozen parameters
+		calc_upgrade_vec(0, frozen_active_ctl_pars, Q_sqrt, residuals_vec,
+			obs_names_vec, base_run_active_ctl_par, limit_type,
+			tmp_new_par, MarquardtMatrix::IDENT, false);
 		if (regul_scheme_ptr->get_use_dynamic_reg())
 		{
 			dynamic_weight_adj(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
 				base_run_active_ctl_par, frozen_active_ctl_pars);
-			tikhonov_weight = Q_sqrt.get_tikhonov_weight();
-			regul_scheme_ptr->set_weight(tikhonov_weight);
 		}
 	}
 	// write out report for starting phi
@@ -746,10 +754,10 @@ restart_reuse_jacoboian:
 			os << setiosflags(ios::fixed);
 			os.precision(n_prec);
 			os.unsetf(ios_base::floatfield); // reset all flags to default
-			os << ";  phi = " << upgrade_run.get_phi(tikhonov_weight);
+			os << ";  phi = " << upgrade_run.get_phi(*regul_scheme_ptr);
 			os.precision(2);
 			os << setiosflags(ios::fixed);
-			os << " (" << upgrade_run.get_phi(tikhonov_weight) / cur_solution.get_phi(tikhonov_weight) * 100 << "%)" << endl;
+			os << " (" << upgrade_run.get_phi(*regul_scheme_ptr) / cur_solution.get_phi(*regul_scheme_ptr) * 100 << "%)" << endl;
 			os.precision(n_prec);
 			os.unsetf(ios_base::floatfield); // reset all flags to default
 			if (upgrade_run.obs_valid() && (!best_run_updated_flag ||
@@ -794,8 +802,8 @@ restart_reuse_jacoboian:
 	run_manager.free_memory();
 
 	// reload best parameters and set flag to switch to central derivatives next iteration
-	double cur_phi = cur_solution.get_phi(tikhonov_weight);
-	double best_phi = best_upgrade_run.get_phi(tikhonov_weight);
+	double cur_phi = cur_solution.get_phi(*regul_scheme_ptr);
+	double best_phi = best_upgrade_run.get_phi(*regul_scheme_ptr);
 
 	if (cur_phi != 0 && !phiredswh_flag &&
 		(cur_phi - best_phi) / cur_phi < ctl_info->phiredswh)
@@ -1020,6 +1028,7 @@ void SVDSolver::iteration_update_and_report(ostream &os, ModelRun &upgrade, Term
 	bool have_fac = false, have_rel = false;
 	double max_fac_change = 0;
 	double max_rel_change = 0;
+	double max_rel_change_base = 0;
 	string max_fac_par = "N/A";
 	string max_rel_par = "N/A";
 	const Parameters &old_ctl_pars = cur_solution.get_ctl_pars();
@@ -1064,6 +1073,7 @@ void SVDSolver::iteration_update_and_report(ostream &os, ModelRun &upgrade, Term
 	os << "       Maximum changes in \"control file\" parameters:" << endl;
 	os << "         Maximum relative change = " << max_rel_change << "   [" << max_rel_par << "]" << endl;
 	os << "         Maximum factor change = " << max_fac_change << "   [" << max_fac_par << "]" << endl;
+	max_rel_change_base = max_rel_change;
 	os << endl;
 	max_fac_change = 0;
 	max_rel_change = 0;
@@ -1110,7 +1120,8 @@ void SVDSolver::iteration_update_and_report(ostream &os, ModelRun &upgrade, Term
 	os << "       Maximum changes in \"transformed numeric\" parameters:" << endl;
 	os << "         Maximum relative change = " << max_rel_change << "   [" << max_rel_par << "]" << endl;
 	os << "         Maximum factor change = " << max_fac_change << "   [" << max_fac_par << "]" << endl;
-	termination_ctl.process_iteration(upgrade.get_phi(), max_rel_change);
+	//Need to pass defualt regularization weights so this comparision is consistent across iterations
+	termination_ctl.process_iteration(upgrade.get_phi_comp(DynamicRegularization::get_unit_reg_instance()), max_rel_change_base);
 }
 
 bool SVDSolver::par_heading_out_bnd(double p_org, double p_del, double lower_bnd, double upper_bnd)
@@ -1246,7 +1257,8 @@ void SVDSolver::limit_parameters_ip(const Parameters &init_active_ctl_pars, Para
 
 PhiComponets SVDSolver::phi_estimate(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt,
 	const Eigen::VectorXd &residuals_vec, const vector<string> &obs_names_vec,
-	const Parameters &base_run_active_ctl_par, const Parameters &freeze_active_ctl_pars, bool scale_upgrade)
+	const Parameters &base_run_active_ctl_par, const Parameters &freeze_active_ctl_pars, 
+	DynamicRegularization &regul_scheme, bool scale_upgrade)
 {
 	Parameters upgrade_ctl_del_pars;
 	Parameters grad_ctl_del_pars;
@@ -1267,19 +1279,18 @@ PhiComponets SVDSolver::phi_estimate(const Jacobian &jacobian, QSqrtMatrix &Q_sq
 	{
 		calc_lambda_upgrade = &SVDSolver::calc_lambda_upgrade_vecQ12J;
 	}
-	// need to remove parameters frozen due to failed jacobian runs when calling calc_lambda_upgrade_vec
-	//Freeze Parameters at the boundary whose ugrade vector and gradient both head out of bounds
 
 	(*this.*calc_lambda_upgrade)(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
 		base_run_active_ctl_par, freeze_active_ctl_pars, 0, new_pars, upgrade_ctl_del_pars,
 		grad_ctl_del_pars, MarquardtMatrix::IDENT, scale_upgrade);
-	limit_parameters_ip(base_run_active_ctl_par, new_pars,
-		limit_type, freeze_active_ctl_pars, true);
+	//Don't limit parameters as this is just an estimate
+	//limit_parameters_ip(base_run_active_ctl_par, new_pars,
+	//	limit_type, freeze_active_ctl_pars, true);
 
 	Parameters new_ctl_pars = par_transform.active_ctl2ctl_cp(new_pars);
 	Parameters delta_par = par_transform.active_ctl2numeric_cp(new_pars)
 		- par_transform.active_ctl2numeric_cp(base_run_active_ctl_par);
-	vector<string> numeric_par_names = new_pars.get_keys();
+	vector<string> numeric_par_names = delta_par.get_keys();
 	VectorXd delta_par_vec = transformable_2_egien_vec(delta_par, numeric_par_names);
 	Eigen::SparseMatrix<double> jac = jacobian.get_matrix(obs_names_vec, numeric_par_names);
 	VectorXd delta_obs_vec = jac * delta_par_vec;
@@ -1287,7 +1298,7 @@ PhiComponets SVDSolver::phi_estimate(const Jacobian &jacobian, QSqrtMatrix &Q_sq
 	Observations projected_obs = cur_solution.get_obs();
 	projected_obs += delta_obs;
 
-	PhiComponets proj_phi_comp = cur_solution.get_obj_func_ptr()->get_phi_comp(projected_obs, new_ctl_pars);
+	PhiComponets proj_phi_comp = cur_solution.get_obj_func_ptr()->get_phi_comp(projected_obs, new_ctl_pars, regul_scheme);
 	return proj_phi_comp;
 }
 
@@ -1308,10 +1319,10 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 		void print(ostream &os)
 		{
 			streamsize n = os.precision(numeric_limits<double>::digits10 + 1);
-			os << "    recalculating regularization weight factor:" << endl;
-			os << "      updated regularization  weight factor   : " << mu << endl;
-			os << "      adjusted measurement objective function : " << phi_comp.meas << endl;
-			os << "      percent error                          : " << error_percent() << endl;
+			os << "    recalculating regularization weight factor         :" << endl;
+			os << "      updated regularization  weight factor            : " << mu << endl;
+			os << "      FRACPHIM adjusted measurement objective function : " << phi_comp.meas << endl;
+			os << "      percent error                                    : " << error_percent() << endl;
 			os.precision(n);
 		}
 		bool operator< (const MuPoint &rhs){ return abs(f()) < abs(rhs.f()); }
@@ -1328,15 +1339,16 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 	double mu_cur = regul_scheme_ptr->get_weight();
 	double wftol = regul_scheme_ptr->get_wftol();
 	int max_iter = regul_scheme_ptr->get_max_reg_iter();
+	DynamicRegularization tmp_regul_scheme = *regul_scheme_ptr;
+
 	//If running in regularization mode, adjust the regularization weights
 	// define a function type for upgrade methods
 	Parameters new_pars;
-	LimitType limit_type = LimitType::NONE;
 
 	vector<MuPoint> mu_vec;
 	mu_vec.resize(4);
 
-	PhiComponets phi_comp_cur = cur_solution.get_obj_func_ptr()->get_phi_comp(cur_solution.get_obs(), cur_solution.get_ctl_pars());
+	PhiComponets phi_comp_cur = cur_solution.get_obj_func_ptr()->get_phi_comp(cur_solution.get_obs(), cur_solution.get_ctl_pars(), *regul_scheme_ptr);
 	double target_phi_meas_frac = phi_comp_cur.meas * fracphim;
 	double target_phi_meas = max(phimlim, target_phi_meas_frac);
 
@@ -1353,9 +1365,8 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 	{
 		i_mu.target_phi_meas = target_phi_meas;
 	}
-
 	PhiComponets proj_phi_cur = phi_estimate(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
-		base_run_active_ctl_par, freeze_active_ctl_pars);
+	base_run_active_ctl_par, freeze_active_ctl_pars, *regul_scheme_ptr);
 	double f_cur = proj_phi_cur.meas - target_phi_meas;
 
 	if (f_cur < 0)
@@ -1365,8 +1376,9 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 		mu_new = max(wfmin, mu_new);
 		mu_new = min(mu_new, wfmax);
 		Q_sqrt.set_tikhonov_weight(mu_new);
+		tmp_regul_scheme.set_weight(mu_new);
 		PhiComponets phi_proj_new = phi_estimate(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
-			base_run_active_ctl_par, freeze_active_ctl_pars);
+			base_run_active_ctl_par, freeze_active_ctl_pars, tmp_regul_scheme);
 		mu_vec[3].set(mu_new, phi_proj_new);
 	}
 	else
@@ -1376,8 +1388,9 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 		mu_new = max(wfmin, mu_new);
 		mu_new = min(mu_new, wfmax);
 		Q_sqrt.set_tikhonov_weight(mu_new);
+		tmp_regul_scheme.set_weight(mu_new);
 		PhiComponets phi_proj_new = phi_estimate(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
-			base_run_active_ctl_par, freeze_active_ctl_pars);
+			base_run_active_ctl_par, freeze_active_ctl_pars, tmp_regul_scheme);
 		mu_vec[0].set(mu_new, phi_proj_new);
 	}
 
@@ -1395,8 +1408,9 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 			mu_vec[3] = mu_vec[0];
 			mu_vec[0].mu = max(mu_vec[0].mu / wffac, wfmin);
 			Q_sqrt.set_tikhonov_weight(mu_vec[0].mu);
+			tmp_regul_scheme.set_weight(mu_vec[0].mu);
 			mu_vec[0].phi_comp = phi_estimate(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
-				base_run_active_ctl_par, freeze_active_ctl_pars);
+				base_run_active_ctl_par, freeze_active_ctl_pars, tmp_regul_scheme);
 			mu_vec[0].print(os);
 			os << endl;
 			mu_vec[0].print(cout);
@@ -1416,8 +1430,9 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 			mu_vec[0] = mu_vec[3];
 			mu_vec[3].mu = min(mu_vec[3].mu * wffac, wfmax);
 			Q_sqrt.set_tikhonov_weight(mu_vec[3].mu);
+			tmp_regul_scheme.set_weight(mu_vec[3].mu);
 			mu_vec[3].phi_comp = phi_estimate(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
-				base_run_active_ctl_par, freeze_active_ctl_pars);
+				base_run_active_ctl_par, freeze_active_ctl_pars, tmp_regul_scheme);
 			mu_vec[3].print(os);
 			os << endl;
 			mu_vec[0].print(cout);
@@ -1430,20 +1445,24 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 	double lw = mu_vec[3].mu - mu_vec[0].mu;
 	mu_vec[1].mu = mu_vec[0].mu + (1.0 - tau) * lw;
 	Q_sqrt.set_tikhonov_weight(mu_vec[1].mu);
+	tmp_regul_scheme.set_weight(mu_vec[1].mu);
 	mu_vec[1].phi_comp = phi_estimate(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
-		base_run_active_ctl_par, freeze_active_ctl_pars);
+		base_run_active_ctl_par, freeze_active_ctl_pars, tmp_regul_scheme);
 
 	mu_vec[2].mu = mu_vec[3].mu - (1.0 - tau) * lw;
 	Q_sqrt.set_tikhonov_weight(mu_vec[2].mu);
+	tmp_regul_scheme.set_weight(mu_vec[2].mu);
 	mu_vec[2].phi_comp = phi_estimate(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
-		base_run_active_ctl_par, freeze_active_ctl_pars);
+		base_run_active_ctl_par, freeze_active_ctl_pars, tmp_regul_scheme);
 
 	if (mu_vec[0].f() > 0)
 	{
+		regul_scheme_ptr->set_weight(mu_vec[0].mu);
 		Q_sqrt.set_tikhonov_weight(mu_vec[0].mu);
 	}
 	else if (mu_vec[3].f() < 0)
 	{
+		regul_scheme_ptr->set_weight(mu_vec[3].mu);
 		Q_sqrt.set_tikhonov_weight(mu_vec[3].mu);
 	}
 
@@ -1458,8 +1477,9 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 				lw = mu_vec[3].mu - mu_vec[0].mu;
 				mu_vec[2].mu = mu_vec[3].mu - (1.0 - tau) * lw;
 				Q_sqrt.set_tikhonov_weight(mu_vec[2].mu);
+				tmp_regul_scheme.set_weight(mu_vec[2].mu);
 				mu_vec[2].phi_comp = phi_estimate(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
-					base_run_active_ctl_par, freeze_active_ctl_pars);
+					base_run_active_ctl_par, freeze_active_ctl_pars, tmp_regul_scheme);
 			}
 			else
 			{
@@ -1468,8 +1488,9 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 				lw = mu_vec[3].mu - mu_vec[0].mu;
 				mu_vec[1].mu = mu_vec[0].mu + (1.0 - tau) * lw;
 				Q_sqrt.set_tikhonov_weight(mu_vec[1].mu);
+				tmp_regul_scheme.set_weight(mu_vec[1].mu);
 				mu_vec[1].phi_comp = phi_estimate(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
-					base_run_active_ctl_par, freeze_active_ctl_pars);
+					base_run_active_ctl_par, freeze_active_ctl_pars, tmp_regul_scheme);
 			}
 
 			auto min_mu = std::min_element(mu_vec.begin(), mu_vec.end());

@@ -122,20 +122,20 @@ Observations ModelRun::get_obs_template() const
 	return ret_val;
 }
 
-double ModelRun::get_phi(double regul_weight)
+double ModelRun::get_phi(const DynamicRegularization &dynamic_reg)
 {
-	PhiComponets phi_comp_temp = get_phi_comp();
-	return phi_comp_temp.meas + regul_weight * phi_comp_temp.regul;
+	PhiComponets phi_comp_temp = get_phi_comp(dynamic_reg);
+	return phi_comp_temp.meas + phi_comp_temp.regul;
 }
 
 
-PhiComponets ModelRun::get_phi_comp() const
+PhiComponets ModelRun::get_phi_comp(const DynamicRegularization &dynamic_reg) const
 {
 	if( !obs_is_valid) {
 		throw PestError("ModelRun::get_phi() - Simulated observations are invalid.  Can not calculate phi.");
 	}
 	if(!phi_is_valid) {
-		phi_comp = obj_func_ptr->get_phi_comp(sim_obs, get_ctl_pars());
+		phi_comp = obj_func_ptr->get_phi_comp(sim_obs, get_ctl_pars(), dynamic_reg);
 		phi_is_valid = true;
 	}
 	return phi_comp;
@@ -171,13 +171,19 @@ bool ModelRun::cmp_lt(const ModelRun &r1, const ModelRun &r2, const DynamicRegul
 	bool cmp_flg = 0;
 	bool use_dyamic_reg = reg.get_use_dynamic_reg();
 	double phi_accept = reg.get_phimaccept();
-	PhiComponets phi_1 = r1.get_phi_comp();
-	PhiComponets phi_2 = r2.get_phi_comp();
+	PhiComponets phi_1 = r1.get_phi_comp(reg);
+	PhiComponets phi_2 = r2.get_phi_comp(reg);
 	if (!use_dyamic_reg)
+	{
+		PhiComponets phi_1n = r1.get_phi_comp(DynamicRegularization::get_unit_reg_instance());
+		PhiComponets phi_2n = r2.get_phi_comp(DynamicRegularization::get_unit_reg_instance());
+		cmp_flg = ((phi_1n.meas + phi_1n.regul) < (phi_2n.meas + phi_2n.regul));
+	}
+	else if (phi_1.meas > phi_accept && phi_2.meas > phi_accept)
 	{
 		cmp_flg = ((phi_1.meas + phi_1.regul) < (phi_2.meas + phi_2.regul));
 	}
-	if (phi_1.meas > phi_accept || phi_2.meas > phi_accept)
+	else if (phi_1.meas > phi_accept || phi_2.meas > phi_accept)
 	{
 		cmp_flg = (phi_1.meas < phi_2.meas) ? true : false;
 	}

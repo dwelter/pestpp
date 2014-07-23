@@ -24,15 +24,17 @@
 #include <iostream>
 
 class RestartController;
+class PhiComponets;
 
 class TerminationController
 {
 	friend RestartController;
 public:
-	TerminationController(int _noptmax=0, double _phiredstp=0.0, int _nphistp=0, int _nphinored=0,
-		double _relparstp=0.0, int _nrelpar=0);
+	TerminationController(int _noptmax=0, double _phiredstp=0.0, int _nphistp=0,
+		int _nphinored=0, double _relparstp = 0.0, int _nrelpar = 0, 
+		bool _use_dynaimc_regul = false, double _phim_accept=0.0);
 	TerminationController(const TerminationController &rhs) {*this = rhs;}
-	bool process_iteration(double phi, double relpar);
+	bool process_iteration(const PhiComponets &phi, double relpar);
 	void set_terminate(bool _terminate_code) { terminate_code = _terminate_code; }
 	bool check_last_iteration();
 	void reset();
@@ -53,8 +55,11 @@ private:
 	unsigned nphistp;
 	double phiredstp;
 	double relparstp;
+	double phim_accept;
 	std::vector<double> lowest_phi;
 	bool terminate_code;
+	bool use_dynaimc_regul;
+	bool phi_accept_achieved;
 	std::string termimate_reason;
 };
 

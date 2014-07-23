@@ -20,16 +20,20 @@
 #include <vector>
 #include <algorithm>
 #include "utilities.h"
+#include "ObjectiveFunc.h"
+
 using namespace pest_utils;
 
 using namespace std;
 
 TerminationController::TerminationController(int _noptmax, double _phiredstp,
-	int _nphistp, int _nphinored, double _relparstp, int _nrelpar) 
+	int _nphistp, int _nphinored, double _relparstp, int _nrelpar, 
+	bool _use_dynaimc_regul, double _phim_accept)
 	: noptmax(_noptmax), phiredstp(_phiredstp), nphistp(_nphistp),
 	nphinored(_nphinored), relparstp(_relparstp), 
 	nrelpar(_nrelpar), nphinored_count(0), nrelpar_count(0), nopt_count(0), 
-	terminate_code(false)
+	terminate_code(false), use_dynaimc_regul(_use_dynaimc_regul), phim_accept(_phim_accept),
+	phi_accept_achieved(false)
 {
 }
 
@@ -40,25 +44,55 @@ void TerminationController::reset() {
 	terminate_code = false;
 }
 
-bool TerminationController::process_iteration(double phi, double relpar)
+bool TerminationController::process_iteration(const PhiComponets &phi_comp, double relpar)
 {
 	++nopt_count;
-	// keep track of number of iterations since lowest phi
-	if (lowest_phi.size() == 0 || phi <= lowest_phi.front()) {
-		nphinored_count = 0;
+	double phi_m = phi_comp.meas;
+	double phi_r = phi_comp.regul;
+	double phi = 9e99;
+	bool regul_reject = false;
+
+
+	if (use_dynaimc_regul == false || (!phi_accept_achieved && phi_m > phim_accept))
+	{
+		phi = phi_m;
+		regul_reject = false;
 	}
-	else {
-		++nphinored_count;
+	else if (use_dynaimc_regul && !phi_accept_achieved && phi_m > phim_accept)
+	{
+		lowest_phi.clear();
+		phi = phi_r;
+		regul_reject = false;
+	}
+	else if (use_dynaimc_regul && phi_m < phim_accept)
+	{
+		phi = phi_r;
+		regul_reject = false;
+	}
+	else
+	{
+		regul_reject = true;
 	}
 
-	// keep track of NPHISTP lowest phi's
-	if (lowest_phi.size() < nphistp) {
-		lowest_phi.push_back(phi);
+	if (!regul_reject)
+	{
+		// keep track of number of iterations since lowest phi
+		if (lowest_phi.size() == 0 || phi <= lowest_phi.front()) {
+			nphinored_count = 0;
+		}
+		else {
+			++nphinored_count;
+		}
+
+		// keep track of NPHISTP lowest phi's
+		if (lowest_phi.size() < nphistp) {
+			lowest_phi.push_back(phi);
+		}
+		else if (phi < lowest_phi.back()) {
+			lowest_phi.back() = phi;
+		}
+		sort(lowest_phi.begin(), lowest_phi.end());
 	}
-	else if (phi < lowest_phi.back()) {
-		lowest_phi.back() = phi;
-	}
-	sort(lowest_phi.begin(), lowest_phi.end());
 
 	// Check maximum relative parameter change
 	if (relpar >= relparstp) {
