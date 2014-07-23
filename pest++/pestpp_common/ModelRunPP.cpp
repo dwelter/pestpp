@@ -99,7 +99,7 @@ void ModelRun::set_observations(const Observations &observations)
 	phi_is_valid = false;
 }
 
-const Parameters &ModelRun::get_ctl_pars()
+const Parameters &ModelRun::get_ctl_pars() const
 {
 	return ctl_pars;
 }
@@ -129,7 +129,7 @@ double ModelRun::get_phi(double regul_weight)
 }
 
 
-PhiComponets ModelRun::get_phi_comp()
+PhiComponets ModelRun::get_phi_comp() const
 {
 	if( !obs_is_valid) {
 		throw PestError("ModelRun::get_phi() - Simulated observations are invalid.  Can not calculate phi.");
@@ -164,6 +164,28 @@ bool ModelRun::phi_valid() const
 bool ModelRun::obs_valid() const
 {
 	return obs_is_valid;
+}
+
+bool ModelRun::cmp_lt(const ModelRun &r1, const ModelRun &r2, const DynamicRegularization &reg)
+{
+	bool cmp_flg = 0;
+	bool use_dyamic_reg = reg.get_use_dynamic_reg();
+	double phi_accept = reg.get_phimaccept();
+	PhiComponets phi_1 = r1.get_phi_comp();
+	PhiComponets phi_2 = r2.get_phi_comp();
+	if (!use_dyamic_reg)
+	{
+		cmp_flg = ((phi_1.meas + phi_1.regul) < (phi_2.meas + phi_2.regul));
+	}
+	if (phi_1.meas > phi_accept || phi_2.meas > phi_accept)
+	{
+		cmp_flg = (phi_1.meas < phi_2.meas) ? true : false;
+	}
+	else
+	{
+		cmp_flg = (phi_1.regul < phi_2.regul) ? true : false;
+	}
+	return cmp_flg;
 }
 
 ModelRun::~ModelRun()

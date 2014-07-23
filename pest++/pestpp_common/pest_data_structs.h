@@ -194,6 +194,7 @@ public:
 	double get_super_relparmax() const{ return super_relparmax; }
 	int get_max_run_fail() const{ return max_run_fail; }
 	int get_max_super_frz_iter()const { return max_super_frz_iter; }
+	int get_max_reg_iter()const { return max_reg_iter; }
 	const vector<double>& get_base_lambda_vec() const {return base_lambda_vec;}
 
 	void set_max_n_super(int _max_n_super) {max_n_super = _max_n_super;}
@@ -206,6 +207,7 @@ public:
 	void set_super_relparmax(double _super_relparmax) { super_relparmax = _super_relparmax; };
 	void set_max_run_fail(int _max_run_fail){ max_run_fail = _max_run_fail; }
 	void set_max_super_frz_iter(int n) { max_super_frz_iter = n; }
+	void set_max_reg_iter(int n) { max_reg_iter = n; }
 private:
 	int max_n_super;
 	double super_eigthres;
@@ -217,6 +219,7 @@ private:
 	double super_relparmax;
 	int max_run_fail;
 	int max_super_frz_iter;
+	int max_reg_iter;
 	vector<double> base_lambda_vec;
 };
 

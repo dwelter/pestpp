@@ -302,6 +302,9 @@ void PestppOptions::parce_line(const string &line)
 		else if (key == "MAX_RUN_FAIL"){
 			convert_ip(value, max_run_fail);
 		}
+		else if (key == "MAX_REG_ITER"){
+			convert_ip(value, max_reg_iter);
+		}
 		else if (key == "LAMBDAS")
 		{
 			base_lambda_vec.clear();

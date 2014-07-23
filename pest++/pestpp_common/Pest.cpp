@@ -387,7 +387,7 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 	pestpp_options.set_super_eigthres(svd_info.eigthresh);
 	pestpp_options.set_max_n_super(ctl_parameters.size());
 	pestpp_options.set_max_super_frz_iter(5);
-
+	pestpp_options.set_max_reg_iter(20);
 	for(vector<string>::const_iterator b=pestpp_input.begin(),e=pestpp_input.end();
 		b!=e; ++b) {
 			pestpp_options.parce_line(*b);
@@ -420,6 +420,8 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 				t_auto_norm->insert(*par_name, -avg, auto_norm/spread);
 		}
 	}
+
+	regul_scheme_ptr->set_max_reg_iter(pestpp_options.get_max_reg_iter());
 //	//Make sure we use Q1/2J is PROPACK is chosen
 //	if (pestpp_options.get_svd_pack() == PestppOptions::SVD_PACK::PROPACK)
 //	{
