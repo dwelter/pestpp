@@ -71,6 +71,7 @@ PhiComponets ObjectiveFunc::get_phi_comp(const Observations &sim_obs, const Para
 		b!=e; ++b) {
 			tmp_phi = (*b).second.calc_phi(pars);
 			if( (*b).second.is_regularization() ) {
+				if (dynamic_reg.get_use_dynamic_reg()) tmp_phi *= dynamic_reg.get_weight();
 				phi.regul += tmp_phi;
 			}
 			else {
@@ -82,7 +83,7 @@ PhiComponets ObjectiveFunc::get_phi_comp(const Observations &sim_obs, const Para
 
 
 
-map<string, double> ObjectiveFunc::get_group_phi(const Observations &sim_obs, const Parameters &pars) const
+map<string, double> ObjectiveFunc::get_group_phi(const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg) const
 {
 	map<string, double> group_phi;
 	unordered_map<string, ObservationRec>::const_iterator info_iter;
@@ -106,6 +107,10 @@ map<string, double> ObjectiveFunc::get_group_phi(const Observations &sim_obs, co
 			if (info_iter != info_end && obs_iter !=obs_end) {
 				tmp_phi = pow(((*sim_iter).second - (*obs_iter).second),2.0) * (*info_iter).second.weight;
 				group = &(*info_iter).second.group;
+				if ((*info_iter).second.is_regularization() && dynamic_reg.get_use_dynamic_reg())
+				{
+					tmp_phi *= dynamic_reg.get_weight();
+				}
 				group_phi[*group] += tmp_phi;
 			}
 	}
@@ -113,6 +118,7 @@ map<string, double> ObjectiveFunc::get_group_phi(const Observations &sim_obs, co
 		b!=e; ++b) {
 			group = (*b).second.get_group_ptr();
 			tmp_phi = (*b).second.calc_phi(pars);
+			if ((*b).second.is_regularization()  && dynamic_reg.get_use_dynamic_reg()) tmp_phi *= dynamic_reg.get_weight();
 			group_phi[*group] += tmp_phi;
 	}
 	return group_phi;
@@ -122,21 +128,16 @@ PhiComponets ObjectiveFunc::phi_report(ostream &os, const Observations &sim_obs,
 {
 	map<string, double> group_phi;
 	PhiComponets phi_comp = get_phi_comp(sim_obs, pars, dynamic_reg);
-	double tikhonov_weight = dynamic_reg.get_weight();
 	double total_phi = phi_comp.meas + phi_comp.regul;
 	if (dynamic_reg.get_use_dynamic_reg())
 	{
-		os << "    Current regularization weight factor                      : " << tikhonov_weight << endl;
+		os << "    Current regularization weight factor                      : " << dynamic_reg.get_weight() << endl;
 	}
 	os << "    Starting phi for this iteration                     Total : " << total_phi << endl;
-	group_phi = get_group_phi(sim_obs, pars);
-	for (auto &igrp : group_phi)
-	{
-		if (ObservationGroupRec::is_regularization(igrp.first))
-		{
-			igrp.second *= tikhonov_weight;
-		}
-	}
+	os << "    Starting measurement phi for this iteration         Total : " << phi_comp.meas << endl;
+	os << "    Starting regularization phi for this iteration      Total : " << phi_comp.regul << endl;
+	group_phi = get_group_phi(sim_obs, pars, dynamic_reg);
+
 	for(map<string, double>::const_iterator b=group_phi.begin(), e=group_phi.end();
 		b!=e; ++b) {
 			os << "    Contribution to phi from observation group ";
@@ -147,14 +148,16 @@ PhiComponets ObjectiveFunc::phi_report(ostream &os, const Observations &sim_obs,
 }
 
 
+
 PhiComponets ObjectiveFunc::full_report(ostream &os, const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg) const
 {
 	map<string, double> group_phi;
 	PhiComponets phi_comp = get_phi_comp(sim_obs, pars, dynamic_reg);
-	double tikhonov_weight = dynamic_reg.get_weight();
 	double total_phi = phi_comp.meas + phi_comp.regul;
 	os << "    Phi                                                 Total : " << total_phi << endl;
-	group_phi = get_group_phi(sim_obs, pars);
+	os << "    Measurement Phi                                     Total : " << phi_comp.meas << endl;
+	os << "    Regularization Phi                                  Total : " << phi_comp.regul << endl;
+	group_phi = get_group_phi(sim_obs, pars, dynamic_reg);
 	for(map<string, double>::const_iterator b=group_phi.begin(), e=group_phi.end();
 		b!=e; ++b) {
 			os << "    Contribution to phi from observation group ";
