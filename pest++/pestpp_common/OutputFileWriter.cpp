@@ -166,7 +166,8 @@ void OutputFileWriter::write_restart_header(std::ostream &fout)
 
 
 
-void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobian &jac, const ObjectiveFunc &obj_func, const ParameterGroupInfo &par_grp_info)
+void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobian &jac,
+	const ObjectiveFunc &obj_func, const ParameterGroupInfo &par_grp_info, const DynamicRegularization &regul)
 {
 	fout << setiosflags(ios::left);
 	fout.unsetf(ios::floatfield);
@@ -177,7 +178,7 @@ void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobia
 	const vector<string> &obs_list = jac.obs_and_reg_list();
 	Parameters pars = jac.get_base_numeric_parameters();
 	QSqrtMatrix Q_sqrt(obj_func.get_obs_info_ptr(), obj_func.get_prior_info_ptr(), 1.0);
-	Eigen::SparseMatrix<double> q_sqrt = Q_sqrt.get_sparse_matrix(obs_list);
+	Eigen::SparseMatrix<double> q_sqrt = Q_sqrt.get_sparse_matrix(obs_list, regul);
 	Eigen::SparseMatrix<double> w_sen_mat = q_sqrt * jac.get_matrix(obs_list, par_list);
 	int n_par = par_list.size();
 	int n_nonzero_weights = q_sqrt.nonZeros();

@@ -34,6 +34,7 @@ class TranScale;
 class Jacobian;
 class QSqrtMatrix;
 class ParameterGroupInfo;
+class DynamicRegularization;
 
 
 
@@ -49,7 +50,7 @@ public:
 	void write_restart_header(std::ostream &fout);
 	void write_sen_header(std::ostream &fout, const std::string &case_name);
 	void set_svd_output_opt(int _eigenwrite);
-	void append_sen(std::ostream &fout, int iter_no, const Jacobian &jac, const ObjectiveFunc &obj_func, const ParameterGroupInfo &par_grp_info);
+	void append_sen(std::ostream &fout, int iter_no, const Jacobian &jac, const ObjectiveFunc &obj_func, const ParameterGroupInfo &par_grp_info, const DynamicRegularization &regul);
 	void write_svd(Eigen::VectorXd &Sigma, Eigen::SparseMatrix<double> &Vt, double lambda, const Parameters &freeze_numeric_pars, Eigen::VectorXd &Sigma_trunc);
 	void write_svd_iteration(int iteration_no);
 private:

@@ -25,17 +25,18 @@
 #include "Transformable.h"
 #include "PriorInformation.h"
 #include "pest_data_structs.h"
+#include "Regularization.h"
 
 
 using namespace std;
 using namespace Eigen;
 
 QSqrtMatrix::QSqrtMatrix(const ObservationInfo *_obs_info_ptr, const PriorInformation *_prior_info_ptr, double _tikhonov_weight)
-: obs_info_ptr(_obs_info_ptr), prior_info_ptr(_prior_info_ptr), tikhonov_weight(_tikhonov_weight)
+: obs_info_ptr(_obs_info_ptr), prior_info_ptr(_prior_info_ptr)
 {
 }
 
-Eigen::SparseMatrix<double> QSqrtMatrix::get_sparse_matrix(const vector<string> &obs_names, bool get_sqaure) const
+Eigen::SparseMatrix<double> QSqrtMatrix::get_sparse_matrix(const vector<string> &obs_names, const DynamicRegularization &regul, bool get_sqaure) const
 {
 
 	Eigen::SparseMatrix<double> weights(obs_names.size(), obs_names.size());
@@ -47,6 +48,8 @@ Eigen::SparseMatrix<double> QSqrtMatrix::get_sparse_matrix(const vector<string> 
 	vector<string>::const_iterator e;
 	int i = 0;
 	double weight = 0;
+	double tikhonov_weight = 1.0;
+	if (regul.get_use_dynamic_reg()) tikhonov_weight = regul.get_weight();
 	std::vector<Eigen::Triplet<double> > triplet_list;
 	for (i = 0, b = obs_names.begin(), e = obs_names.end(); b != e; ++b, ++i)
 	{

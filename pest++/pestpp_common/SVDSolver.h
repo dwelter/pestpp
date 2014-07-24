@@ -108,15 +108,15 @@ protected:
 	virtual void iteration_update_and_report(ostream &os, ModelRun &upgrade, TerminationController &termination_ctl); 
 	void param_change_stats(double p_old, double p_new, bool &have_fac, double &fac_change, bool &have_rel,
 		double &rel_change);
-	void calc_upgrade_vec(double i_lambda, Parameters &frozen_ctl_pars, QSqrtMatrix &Q_sqrt, Eigen::VectorXd &residuals_vec,
-		vector<string> &obs_names_vec, const Parameters &base_run_ctl_pars, LimitType &limit_type,
+	void calc_upgrade_vec(double i_lambda, Parameters &frozen_ctl_pars, QSqrtMatrix &Q_sqrt, const DynamicRegularization &regul,
+		Eigen::VectorXd &residuals_vec, vector<string> &obs_names_vec, const Parameters &base_run_ctl_pars, LimitType &limit_type,
 		Parameters &new_ctl_pars, MarquardtMatrix marquardt_type, bool scale_upgrade=false);
-	void calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
+	void calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt, const DynamicRegularization &regul,
 		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
 		const Parameters &base_active_ctl_pars, const Parameters &freeze_active_ctl_pars,
 		double lambda, Parameters &active_ctl_upgrade_pars, Parameters &upgrade_active_ctl_del_pars,
 		Parameters &grad_active_ctl_del_pars, MarquardtMatrix marquardt_type, bool scale_upgrade);
-	void calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
+	void calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt, const DynamicRegularization &regul,
 		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
 		const Parameters &active_base_ctl_pars, const Parameters &freeze_active_ctl_pars,
 		double lambda, Parameters &active_ctl_upgrade_pars, Parameters &upgrade_active_ctl_del_pars,
@@ -129,7 +129,7 @@ protected:
 		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
 		const Parameters &base_active_ctl_pars, const Parameters &freeze_active_ctl_pars);
 	bool par_heading_out_bnd(double org_par, double new_par, double lower_bnd, double upper_bnd);
-	PhiComponets phi_estimate(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt,
+	PhiComponets phi_estimate(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt, const DynamicRegularization &regul,
 		const Eigen::VectorXd &residuals_vec, const vector<string> &obs_names_vec,
 		const Parameters &base_run_active_ctl_par, const Parameters &freeze_active_ctl_pars, 
 		DynamicRegularization &tmp_regul_scheme, bool scale_upgrade = false);

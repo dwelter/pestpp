@@ -111,7 +111,8 @@ Parameters SVDASolver::limit_parameters_freeze_all_ip(const Parameters &init_act
 	return freeze_active_ctl_par;
 }
 
-void SVDASolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_active_ctl_pars, QSqrtMatrix &Q_sqrt, VectorXd &residuals_vec,
+void SVDASolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_active_ctl_pars, QSqrtMatrix &Q_sqrt,
+	const DynamicRegularization &regul, VectorXd &residuals_vec,
 	vector<string> &obs_names_vec, const Parameters &base_run_active_ctl_pars, LimitType &limit_type, Parameters &upgrade_active_ctl_pars,
 	MarquardtMatrix marquardt_type, bool scale_upgrade)
 {
@@ -121,7 +122,7 @@ void SVDASolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_activ
 	Parameters new_frozen_ctl_pars;
 
 	// define a function type for upgrade methods 
-	typedef void(SVDSolver::*UPGRADE_FUNCTION) (const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
+	typedef void(SVDSolver::*UPGRADE_FUNCTION) (const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt, const DynamicRegularization &regul,
 		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
 		const Parameters &base_ctl_pars, const Parameters &prev_frozen_ctl_pars,
 		double lambda, Parameters &ctl_upgrade_pars, Parameters &upgrade_ctl_del_pars,
@@ -136,7 +137,7 @@ void SVDASolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_activ
 
 		// need to remove parameters frozen due to failed jacobian runs when calling calc_lambda_upgrade_vec
 		//Freeze Parameters at the boundary whose ugrade vector and gradient both head out of bounds
-		(*this.*calc_lambda_upgrade)(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+	(*this.*calc_lambda_upgrade)(jacobian, Q_sqrt, regul, residuals_vec, obs_names_vec,
 			base_run_active_ctl_pars, prev_frozen_active_ctl_pars, i_lambda, upgrade_active_ctl_pars, upgrade_ctl_del_pars,
 			grad_ctl_del_pars, marquardt_type, scale_upgrade);
 		num_upgrade_out_grad_in = check_bnd_par(new_frozen_ctl_pars, base_run_active_ctl_pars, upgrade_ctl_del_pars, grad_ctl_del_pars);
@@ -145,7 +146,7 @@ void SVDASolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_activ
 		if (num_upgrade_out_grad_in > 0)
 		{
 			new_frozen_ctl_pars.clear();
-			(*this.*calc_lambda_upgrade)(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+			(*this.*calc_lambda_upgrade)(jacobian, Q_sqrt, regul, residuals_vec, obs_names_vec,
 				base_run_active_ctl_pars, prev_frozen_active_ctl_pars, i_lambda, upgrade_active_ctl_pars, upgrade_ctl_del_pars,
 				grad_ctl_del_pars, marquardt_type, scale_upgrade);
 			check_bnd_par(new_frozen_ctl_pars, base_run_active_ctl_pars, upgrade_active_ctl_pars);
@@ -155,7 +156,7 @@ void SVDASolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_activ
 		//If there are newly frozen parameters recompute the upgrade vector
 		if (new_frozen_ctl_pars.size() > 0)
 		{
-			(*this.*calc_lambda_upgrade)(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+			(*this.*calc_lambda_upgrade)(jacobian, Q_sqrt, regul, residuals_vec, obs_names_vec,
 				base_run_active_ctl_pars, prev_frozen_active_ctl_pars, i_lambda, upgrade_active_ctl_pars, upgrade_ctl_del_pars,
 				grad_ctl_del_pars, marquardt_type, scale_upgrade);
 		}
@@ -289,15 +290,14 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		return;
 	}
 	// sen file for this iteration
-	output_file_writer.append_sen(file_manager.sen_ofstream(), termination_ctl.get_iteration_number() + 1, jacobian, *(cur_solution.get_obj_func_ptr()), get_parameter_group_info());
+	output_file_writer.append_sen(file_manager.sen_ofstream(), termination_ctl.get_iteration_number() + 1,
+		jacobian, *(cur_solution.get_obj_func_ptr()), get_parameter_group_info(), *regul_scheme_ptr);
 
 	cout << endl;
 	cout << "  computing upgrade vectors... " << endl;
 	cout.flush();
 	performance_log->log_event("computing upgrade vectors");
 
-	// write out report for starting phi
-	obj_func->phi_report(os, base_run.get_obs(), base_run.get_ctl_pars(), *regul_scheme_ptr);
 	// populate vectors with sorted observations (standard and prior info) and parameters
 	{
 		vector<string> prior_info_names = prior_info_ptr->get_keys();
@@ -331,6 +331,9 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		}
 	}
 
+	// write out report for starting phi
+	obj_func->phi_report(os, base_run.get_obs(), base_run.get_ctl_pars(), *regul_scheme_ptr);
+
 	vector<Parameters> frozen_derivative_par_vec;
 	Parameters *new_frozen_par_ptr = 0;
 
@@ -362,7 +365,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		LimitType limit_type;
 
 		frozen_derivative_par_vec.push_back(Parameters());
-		calc_upgrade_vec(i_lambda, frozen_derivative_par_vec.back(), Q_sqrt, residuals_vec,
+		calc_upgrade_vec(i_lambda, frozen_derivative_par_vec.back(), Q_sqrt, *regul_scheme_ptr, residuals_vec,
 			obs_names_vec, base_run_active_ctl_pars, limit_type,
 			new_pars, MarquardtMatrix::IDENT, false);
 
