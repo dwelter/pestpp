@@ -213,15 +213,12 @@ void TranScale::jacobian_forward(Jacobian &jac)
 	for (const auto &irec : items)
 	{
 		auto iter = par_2_col_map.find(irec.first);
-		if (iter == iter_end)
+		if (iter != iter_end)
 		{
-			ostringstream str;
-			str << "TranScale::jacobian_forward - Can not retriece index for " << irec.first;
-			throw PestError(str.str());
+			icol = iter->second;
+			factor = irec.second;
+			jac.matrix.col(icol) /= factor;
 		}
-		icol = iter->second;
-		factor = irec.second;
-		jac.matrix.col(icol) /= factor;
 	}
 	forward(data);
 }
@@ -236,15 +233,12 @@ void TranScale::jacobian_reverse(Jacobian &jac)
 	for (const auto &irec : items)
 	{
 		auto iter = par_2_col_map.find(irec.first);
-		if (iter == iter_end)
+		if (iter != iter_end)
 		{
-			ostringstream str;
-			str << "TranScale::jacobian_forward - Can not retriece index for " << irec.first;
-			throw PestError(str.str());
+			icol = iter->second;
+			factor = irec.second;
+			jac.matrix.col(icol) *= factor;
 		}
-		icol = iter->second;
-		factor = irec.second;
-		jac.matrix.col(icol) *= factor;
 	}
 	reverse(data);
 }
@@ -327,15 +321,12 @@ void TranLog10::jacobian_forward(Jacobian &jac)
 	for (const auto &ipar : items)
 	{
 		auto iter = par_2_col_map.find(ipar);
-		if (iter == iter_end)
+		if (iter != iter_end)
 		{
-			ostringstream str;
-			str << "TranScale::jacobian_forward - Can not retreive index for " << ipar;
-			throw PestError(str.str());
+			d = data.get_rec(ipar);
+			icol = iter->second;
+			factor = pow(10, d) * log(10.0);
 		}
-		d = data.get_rec(ipar);
-		icol = iter->second;
-		factor = pow(10, d) * log(10.0);
 		jac.matrix.col(icol) *= factor;
 	}
 }
@@ -352,16 +343,13 @@ void TranLog10::jacobian_reverse(Jacobian &jac)
 	for (const auto &ipar : items)
 	{
 		auto iter = par_2_col_map.find(ipar);
-		if (iter == iter_end)
+		if (iter != iter_end)
 		{
-			ostringstream str;
-			str << "TranScale::jacobian_forward - Can not retriece index for " << ipar;
-			throw PestError(str.str());
+			d = data.get_rec(ipar);
+			icol = iter->second;
+			factor = 1.0 / (d * log(10.0));
+			jac.matrix.col(icol) *= factor;
 		}
-		d = data.get_rec(ipar);
-		icol = iter->second;
-		factor = 1.0 / (d * log(10.0));
-		jac.matrix.col(icol) *= factor;
 	}
 }
 
@@ -861,15 +849,12 @@ void TranNormalize::jacobian_forward(Jacobian &jac)
 	for (const auto &irec : items)
 	{
 		auto iter = par_2_col_map.find(irec.first);
-		if (iter == iter_end)
+		if (iter != iter_end)
 		{
-			ostringstream str;
-			str << "TranNormalize::jacobian_forward - Can not retriece index for " << irec.first;
-			throw PestError(str.str());
+			icol = iter->second;
+			factor = irec.second.scale;
+			jac.matrix.col(icol) /= factor;
 		}
-		icol = iter->second;
-		factor = irec.second.scale;
-		jac.matrix.col(icol) /= factor;
 	}
 	forward(data);
 }
@@ -884,15 +869,12 @@ void TranNormalize::jacobian_reverse(Jacobian &jac)
 	for (const auto &irec : items)
 	{
 		auto iter = par_2_col_map.find(irec.first);
-		if (iter == iter_end)
+		if (iter != iter_end)
 		{
-			ostringstream str;
-			str << "TranNormalize::jacobian_forward - Can not retriece index for " << irec.first;
-			throw PestError(str.str());
+			icol = iter->second;
+			factor = irec.second.scale;
+			jac.matrix.col(icol) *= factor;
 		}
-		icol = iter->second;
-		factor = irec.second.scale;
-		jac.matrix.col(icol) *= factor;
 	}
 	reverse(data);
 }
