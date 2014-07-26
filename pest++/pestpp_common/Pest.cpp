@@ -99,6 +99,7 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 	double wffac; 
 	double wftol;
 	bool use_dynamic_reg = false;
+	bool reg_adj_grp_weights = false;
 	vector<string> pestpp_input;
 
 	regul_scheme_ptr = new DynamicRegularization(use_dynamic_reg);
@@ -356,10 +357,16 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 				convert_ip(tokens[2], wfmax);
 			}
 			else if (sec_lnum == 3) {
+				int iregadj;
 				convert_ip(tokens[0], wffac);
 				convert_ip(tokens[1], wftol);
+				if (tokens.size() > 2)
+				{
+					convert_ip(tokens[2], iregadj);
+					if (iregadj == 1) reg_adj_grp_weights = true;
+				}
 				delete regul_scheme_ptr;
-				regul_scheme_ptr = new DynamicRegularization(use_dynamic_reg, phimlim,
+				regul_scheme_ptr = new DynamicRegularization(use_dynamic_reg, reg_adj_grp_weights, phimlim,
 					phimaccept, fracphim, wfmin, wfmax, wffac, wftol, wfinit);
 			}
 		}

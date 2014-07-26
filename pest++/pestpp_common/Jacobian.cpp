@@ -471,10 +471,9 @@ std::vector<Eigen::Triplet<double> >  Jacobian::calc_derivative(const string &nu
 			if (prior_info_it != prior_info.end())
 			{
 				pi_rec = &(prior_info_it->second);
-				del_prior_info = pi_rec->calc_phi(ctl_pars_2) - pi_rec->calc_phi(ctl_pars_1);
+				del_prior_info = pi_rec->calc_residual(ctl_pars_2) - pi_rec->calc_residual(ctl_pars_1);
 				if (del_prior_info != 0) {
-					triplet_list.push_back(Eigen::Triplet<double>(irow, jcol,
-					(pi_rec->calc_residual(ctl_pars_2) - pi_rec->calc_residual(ctl_pars_1)) / del_par));
+					triplet_list.push_back(Eigen::Triplet<double>(irow, jcol, del_prior_info / del_par));
 				}
 			}
 		}

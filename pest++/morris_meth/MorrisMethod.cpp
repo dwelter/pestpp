@@ -100,7 +100,7 @@ void MorrisMethod::process_pooled_var_file()
 	{
 		ifstream &fin = file_manager_ptr->open_ifile_ext("pgp");
 		std::set<string> obs_group_names;
-		for (const auto imap : obs_info_ptr->groups)
+		for (const auto &imap : obs_info_ptr->groups)
 			obs_group_names.insert(imap.first);
 
 		string line;
@@ -423,7 +423,7 @@ void  MorrisMethod::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run
 		{
 			//Compute Pooled Standard Deviations
 			map<string, vector<RunningStats> > tmp_pool_grps;
-			for (const auto it : obs_stats_map)
+			for (const auto &it : obs_stats_map)
 			{
 				const string &obs_name = it.first;
 				const string &obs_group = obs_info_ptr->get_group(obs_name);
@@ -440,7 +440,7 @@ void  MorrisMethod::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run
 			}
 			////compute pooled standard deviations
 			map<string, double> obs_pooled_grp_std_dev;
-			for (const auto i_pgrp : tmp_pool_grps)
+			for (const auto &i_pgrp : tmp_pool_grps)
 			{
 				const string &pool_group = i_pgrp.first;
 				double var_sum = 0;
@@ -456,7 +456,7 @@ void  MorrisMethod::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run
 					obs_pooled_grp_std_dev[pool_group] = sqrt(var_sum / weight_sum);
 				}
 			}
-			for (const auto iobs : obs_name_vec)
+			for (const auto &iobs : obs_name_vec)
 			{
 				const string &obs_name = iobs;
 				const string &obs_group = obs_info_ptr->get_group(obs_name);

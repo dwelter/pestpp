@@ -49,29 +49,48 @@ Eigen::SparseMatrix<double> QSqrtMatrix::get_sparse_matrix(const vector<string> 
 	int i = 0;
 	double weight = 0;
 	double tikhonov_weight = 1.0;
+	const string *group = nullptr;
 	// PEST convention is the the weights are 1/standard deviation but the regualrizatio weight is the square
 	// of this
-	if (regul.get_use_dynamic_reg()) tikhonov_weight = sqrt(regul.get_weight());
+	bool use_regul = regul.get_use_dynamic_reg();
+	if (use_regul) tikhonov_weight = sqrt(regul.get_weight());
 	std::vector<Eigen::Triplet<double> > triplet_list;
 	for (i = 0, b = obs_names.begin(), e = obs_names.end(); b != e; ++b, ++i)
 	{
 		found_obsinfo_iter = obs_info_ptr->observations.find(*b);
 		found_prior_info = prior_info_ptr->find(*b);
+		// This section handles Observations
 		if (found_obsinfo_iter != non_found_obsinfo_iter)
 		{
+			group = &((*found_obsinfo_iter).second.group);
 			weight = (*found_obsinfo_iter).second.weight;
-			if ((*found_obsinfo_iter).second.is_regularization()) {
+			bool is_reg_grp = ObservationGroupRec::is_regularization(*group);
+			if (use_regul && is_reg_grp) 
+			{
+				if (regul.get_adj_grp_weights() && is_reg_grp)
+				{
+					double grp_factor = regul.get_grp_weight_fact(*group);
+					weight *= grp_factor;
+				}
 				weight *= tikhonov_weight;
 			}
 			if (get_sqaure) weight = weight * weight;
 			triplet_list.push_back(Eigen::Triplet<double>(i, i, weight));
 		}
+		// This section handles Prior Information
 		else if (found_prior_info != not_found_prior_info)
 		{
-			//calculate weights for prior information
+			group = &((*found_prior_info).second.get_group());
 			weight = (*found_prior_info).second.get_weight();
-			if ((*found_prior_info).second.is_regularization()) {
-				weight *= tikhonov_weight;
+			bool is_reg_grp = (*found_prior_info).second.is_regularization();
+			if (use_regul && is_reg_grp)
+			{
+				if (regul.get_adj_grp_weights())
+				{
+					double grp_factor = regul.get_grp_weight_fact(*group);
+					weight *= grp_factor;
+				}
+				weight *= sqrt(regul.get_weight());
 			}
 			if (get_sqaure) weight = weight * weight;
 			triplet_list.push_back(Eigen::Triplet<double>(i, i, weight));

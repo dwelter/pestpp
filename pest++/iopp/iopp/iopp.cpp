@@ -894,7 +894,7 @@ void InstructionFile::parse_instruction_line(string ins_line)
 		vector<pair<int,int>> indices = get_marker_indices(ins_line);
 		string subline;
 		size_t start = 0,end;
-		for (auto idx : indices)
+		for (auto &idx : indices)
 		{
 			end = idx.first;
 			//first process tokens to the left of this starting index
@@ -940,7 +940,7 @@ void InstructionFile::parse_instruction_line(string ins_line)
 	}
 
 	vector<Instruction> instructs;
-	for ( auto ins : ins_strings)
+	for ( auto &ins : ins_strings)
 	{
 		Instruction i(ins,marker_delim);
 		i.parse();
@@ -987,7 +987,7 @@ vector<pair<int,int>> InstructionFile::get_marker_indices(string line)
 unordered_map<string,double> InstructionFile::read(ifstream* out)
 {
 	unordered_map<string,double> obs_map,line_map;
-	for (auto i : instruction_lines)
+	for (auto &i : instruction_lines)
 	{
 		line_map = i.execute(out);
 		obs_map.insert(line_map.begin(),line_map.end());

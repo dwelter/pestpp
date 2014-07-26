@@ -72,12 +72,6 @@ double PriorInformationRec::calc_residual(const Parameters &pars) const
 	return (sim_value - pival);
 }
 
-double PriorInformationRec::calc_phi(const Parameters &pars) const
-{
-	return pow(calc_residual(pars) * weight, 2.0);
-}
-
-
 bool PriorInformationRec::is_regularization() const
 {
 	bool is_reg = false;
@@ -85,9 +79,6 @@ bool PriorInformationRec::is_regularization() const
 	if (found == 0) is_reg=true;
 	return is_reg;
 }
-
-
-
 
 PriorInformationRec::~PriorInformationRec(void)
 {

@@ -51,15 +51,29 @@ PhiComponets ObjectiveFunc::get_phi_comp(const Observations &sim_obs, const Para
 
 
 	PhiComponets phi;
-	double tmp_phi;
-	for(Observations::const_iterator sim_iter=sim_obs.begin(),
-	sim_end=sim_obs.end(); sim_iter!=sim_end; ++sim_iter) {
-		info_iter = obs_info_ptr->observations.find((*sim_iter).first);
-		obs_iter = observations_ptr->find((*sim_iter).first);
-		if (info_iter != info_end && obs_iter !=obs_end) {
-			tmp_phi = pow(((*sim_iter).second - (*obs_iter).second) * (*info_iter).second.weight, 2.0);
-			if( (*info_iter).second.is_regularization() ) {
-				if (dynamic_reg.get_use_dynamic_reg()) tmp_phi *= dynamic_reg.get_weight();
+	double tmp_phi = 0;
+	double tmp_weight = 1;
+	const string *group = 0;
+	for (const auto &i_sim : sim_obs)
+	{ 
+		info_iter = obs_info_ptr->observations.find(i_sim.first);
+		obs_iter = observations_ptr->find(i_sim.first);
+		if (info_iter != info_end && obs_iter !=obs_end) 
+		{
+			group = &((*info_iter).second.group);
+			tmp_weight = (*info_iter).second.weight;
+			bool is_reg_grp = ObservationGroupRec::is_regularization(*group);
+			if (dynamic_reg.get_use_dynamic_reg() && is_reg_grp)
+			{
+				if (dynamic_reg.get_adj_grp_weights())
+				{
+					double grp_factor = dynamic_reg.get_grp_weight_fact(*group);
+					tmp_weight *= grp_factor;
+				}
+				tmp_weight *= sqrt(dynamic_reg.get_weight());
+			}
+			tmp_phi = pow((i_sim.second - (*obs_iter).second) * tmp_weight, 2.0);
+			if (is_reg_grp) {
 				phi.regul += tmp_phi;
 			}
 			else {
@@ -67,59 +81,110 @@ PhiComponets ObjectiveFunc::get_phi_comp(const Observations &sim_obs, const Para
 			}
 		}
 	}
-	for(PriorInformation::const_iterator b=(*prior_info_ptr).begin(), e=(*prior_info_ptr).end();
-		b!=e; ++b) {
-			tmp_phi = (*b).second.calc_phi(pars);
-			if( (*b).second.is_regularization() ) {
-				if (dynamic_reg.get_use_dynamic_reg()) tmp_phi *= dynamic_reg.get_weight();
-				phi.regul += tmp_phi;
+	for (const auto &i_prior : *prior_info_ptr)
+	{
+		group = &(i_prior.second.get_group());
+		tmp_weight = i_prior.second.get_weight();
+		bool is_reg_grp = i_prior.second.is_regularization();
+		if (dynamic_reg.get_use_dynamic_reg() && is_reg_grp)
+		{
+			if (dynamic_reg.get_adj_grp_weights())
+			{
+				double grp_factor = dynamic_reg.get_grp_weight_fact(*group);
+				tmp_weight *= grp_factor;
 			}
-			else {
-				phi.meas += tmp_phi;
-			}
+			tmp_weight *= sqrt(dynamic_reg.get_weight());
+		}
+		double tmp_residual = i_prior.second.calc_residual(pars);
+		tmp_phi = pow(tmp_residual * tmp_weight, 2.0);
+		if (is_reg_grp) {
+			phi.regul += tmp_phi;
+		}
+		else {
+			phi.meas += tmp_phi;
+		}
 	}
 	return phi;
 }
 
 
 
-map<string, double> ObjectiveFunc::get_group_phi(const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg) const
+map<string, double> ObjectiveFunc::get_group_phi(const Observations &sim_obs, const Parameters &pars, 
+	const DynamicRegularization &dynamic_reg, PhiComponets::OBS_TYPE obs_type) const
 {
 	map<string, double> group_phi;
 	unordered_map<string, ObservationRec>::const_iterator info_iter;
 	unordered_map<string, ObservationRec>::const_iterator info_end = obs_info_ptr->observations.end();
 	Observations::const_iterator obs_iter;
 	Observations::const_iterator obs_end = observations_ptr->end();
-	double tmp_phi;
-	const string *group;
+	double tmp_phi = 0;
+	double tmp_weight = 1;
+	const string *group = 0;
 
+	bool use_regul = dynamic_reg.get_use_dynamic_reg();
 	// first add all groups to group_phi
-	for(unordered_map<string, ObservationGroupRec>::const_iterator grp_iter=obs_info_ptr->groups.begin(),
-		grp_end=obs_info_ptr->groups.end(); grp_iter!=grp_end; ++grp_iter) {
-			group = &(*grp_iter).first;
+	for (const auto &i_grp : obs_info_ptr->groups)
+	{ 
+		group = &(i_grp.first);
+		bool is_reg = ObservationGroupRec::is_regularization(*group);
+		if (obs_type == PhiComponets::OBS_TYPE::ALL 
+			|| (is_reg && obs_type == PhiComponets::OBS_TYPE::REGUL)
+			|| (!is_reg && obs_type == PhiComponets::OBS_TYPE::MEAS) )
+		{
 			group_phi[*group] = 0.0;
+		}
 	}
 
-	for(Observations::const_iterator sim_iter=sim_obs.begin(),
-		sim_end=sim_obs.end(); sim_iter!=sim_end; ++sim_iter) {
-			info_iter = (*obs_info_ptr).observations.find((*sim_iter).first);
-			obs_iter = observations_ptr->find((*sim_iter).first);
-			if (info_iter != info_end && obs_iter !=obs_end) {
-				tmp_phi = pow(((*sim_iter).second - (*obs_iter).second) * (*info_iter).second.weight, 2.0);
-				group = &(*info_iter).second.group;
-				if ((*info_iter).second.is_regularization() && dynamic_reg.get_use_dynamic_reg())
+	for (const auto &i_sim : sim_obs)
+	{
+		info_iter = (*obs_info_ptr).observations.find(i_sim.first);
+		obs_iter = observations_ptr->find(i_sim.first);
+		if (info_iter != info_end && obs_iter !=obs_end) 
+		{
+			group = &((*info_iter).second.group);
+			tmp_weight = (*info_iter).second.weight;
+			bool is_reg = ObservationGroupRec::is_regularization(*group);
+
+			if (use_regul && is_reg)
+			{
+				if (dynamic_reg.get_adj_grp_weights())
 				{
-					tmp_phi *= dynamic_reg.get_weight();
+					double grp_factor = dynamic_reg.get_grp_weight_fact(*group);
+					tmp_weight *= grp_factor;
 				}
+				tmp_weight *= sqrt(dynamic_reg.get_weight());
+			}
+			tmp_phi = pow((i_sim.second - (*obs_iter).second) * tmp_weight, 2.0);
+			if (obs_type == PhiComponets::OBS_TYPE::ALL
+				|| (is_reg && obs_type == PhiComponets::OBS_TYPE::REGUL)
+				|| (!is_reg && obs_type == PhiComponets::OBS_TYPE::MEAS))
+			{
 				group_phi[*group] += tmp_phi;
 			}
+		}
 	}
-	for(PriorInformation::const_iterator b=(*prior_info_ptr).begin(), e=(*prior_info_ptr).end();
-		b!=e; ++b) {
-			group = (*b).second.get_group_ptr();
-			tmp_phi = (*b).second.calc_phi(pars);
-			if ((*b).second.is_regularization()  && dynamic_reg.get_use_dynamic_reg()) tmp_phi *= dynamic_reg.get_weight();
+	for (const auto &i_prior : *prior_info_ptr)
+	{
+		group = &(i_prior.second.get_group());
+		tmp_weight = i_prior.second.get_weight();
+		bool is_reg = i_prior.second.is_regularization();
+		if (use_regul && is_reg)
+		{
+			if (dynamic_reg.get_adj_grp_weights())
+			{
+				double grp_factor = dynamic_reg.get_grp_weight_fact(*group);
+				tmp_weight *= grp_factor;
+			}
+			tmp_weight *= sqrt(dynamic_reg.get_weight());
+		}
+		double tmp_residual = i_prior.second.calc_residual(pars);
+		tmp_phi = pow(tmp_residual * tmp_weight, 2.0);
+		if (obs_type == PhiComponets::OBS_TYPE::ALL
+			|| (is_reg && obs_type == PhiComponets::OBS_TYPE::REGUL)
+			|| (!is_reg && obs_type == PhiComponets::OBS_TYPE::MEAS))
+		{
 			group_phi[*group] += tmp_phi;
+		}
 	}
 	return group_phi;
 }

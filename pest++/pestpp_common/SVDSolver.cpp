@@ -1342,15 +1342,36 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 	double mu_cur = regul_scheme_ptr->get_weight();
 	double wftol = regul_scheme_ptr->get_wftol();
 	int max_iter = regul_scheme_ptr->get_max_reg_iter();
-	DynamicRegularization tmp_regul_scheme = *regul_scheme_ptr;
-
-	//If running in regularization mode, adjust the regularization weights
-	// define a function type for upgrade methods
 	Parameters new_pars;
-
 	vector<MuPoint> mu_vec;
 	mu_vec.resize(4);
 
+	// Equalize Reqularization Groups if IREGADJ = 1
+	std::unordered_map<std::string, double> regul_grp_weights;
+	auto reg_grp_phi = cur_solution.get_obj_func_ptr()->get_group_phi(cur_solution.get_obs(), cur_solution.get_ctl_pars(),
+		DynamicRegularization::get_unit_reg_instance(), PhiComponets::OBS_TYPE::REGUL);
+	double avg_reg_grp_phi = 0;
+	for (const auto &igrp : reg_grp_phi)
+	{
+		avg_reg_grp_phi += igrp.second;
+	}
+	if (reg_grp_phi.size() > 0)
+	{
+		avg_reg_grp_phi /= reg_grp_phi.size();
+	}
+	if (avg_reg_grp_phi>0)
+	{
+		for (const auto &igrp : reg_grp_phi)
+		{
+			if (igrp.second > 0)
+			{
+				regul_grp_weights[igrp.first] = sqrt(avg_reg_grp_phi / igrp.second);
+			}
+		}
+	}
+	regul_scheme_ptr->set_regul_grp_weights(regul_grp_weights);
+
+	DynamicRegularization tmp_regul_scheme = *regul_scheme_ptr;
 	PhiComponets phi_comp_cur = cur_solution.get_obj_func_ptr()->get_phi_comp(cur_solution.get_obs(), cur_solution.get_ctl_pars(), *regul_scheme_ptr);
 	double target_phi_meas_frac = phi_comp_cur.meas * fracphim;
 	double target_phi_meas = max(phimlim, target_phi_meas_frac);

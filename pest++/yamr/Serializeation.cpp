@@ -90,7 +90,7 @@ vector<char> Serialization::serialize(const Transformable &tr_data)
 vector<char> Serialization::serialize(const vector< const Transformable*> tr_vec)
 {
 	vector<char> buf;
-	for (auto i : tr_vec)
+	for (auto &i : tr_vec)
 	{
 		vector<char> serial_data = serialize(*i);
 		buf.insert(buf.end(), serial_data.begin(), serial_data.end());
