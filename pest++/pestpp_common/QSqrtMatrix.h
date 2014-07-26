@@ -35,7 +35,7 @@ class QSqrtMatrix
 {
 public:
 	QSqrtMatrix(){};
-	QSqrtMatrix(const ObservationInfo *obs_info_ptr, const PriorInformation *prior_info_ptr, double tikhonov_weight);
+	QSqrtMatrix(const ObservationInfo *obs_info_ptr, const PriorInformation *prior_info_ptr);
 	Eigen::SparseMatrix<double> get_sparse_matrix(const vector<string> &obs_names, const DynamicRegularization &regul, bool get_square = false) const;
 	~QSqrtMatrix(void);
 private:

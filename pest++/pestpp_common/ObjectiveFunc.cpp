@@ -57,7 +57,7 @@ PhiComponets ObjectiveFunc::get_phi_comp(const Observations &sim_obs, const Para
 		info_iter = obs_info_ptr->observations.find((*sim_iter).first);
 		obs_iter = observations_ptr->find((*sim_iter).first);
 		if (info_iter != info_end && obs_iter !=obs_end) {
-			tmp_phi = pow(((*sim_iter).second - (*obs_iter).second), 2.0) * (*info_iter).second.weight;
+			tmp_phi = pow(((*sim_iter).second - (*obs_iter).second) * (*info_iter).second.weight, 2.0);
 			if( (*info_iter).second.is_regularization() ) {
 				if (dynamic_reg.get_use_dynamic_reg()) tmp_phi *= dynamic_reg.get_weight();
 				phi.regul += tmp_phi;
@@ -105,7 +105,7 @@ map<string, double> ObjectiveFunc::get_group_phi(const Observations &sim_obs, co
 			info_iter = (*obs_info_ptr).observations.find((*sim_iter).first);
 			obs_iter = observations_ptr->find((*sim_iter).first);
 			if (info_iter != info_end && obs_iter !=obs_end) {
-				tmp_phi = pow(((*sim_iter).second - (*obs_iter).second),2.0) * (*info_iter).second.weight;
+				tmp_phi = pow(((*sim_iter).second - (*obs_iter).second) * (*info_iter).second.weight, 2.0);
 				group = &(*info_iter).second.group;
 				if ((*info_iter).second.is_regularization() && dynamic_reg.get_use_dynamic_reg())
 				{

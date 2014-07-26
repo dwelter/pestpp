@@ -315,7 +315,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 	Upgrade ml_upgrade;
 
 	// build weights matrix sqrt(Q)
-	QSqrtMatrix Q_sqrt(obs_info_ptr, prior_info_ptr, regul_scheme_ptr->get_weight());
+	QSqrtMatrix Q_sqrt(obs_info_ptr, prior_info_ptr);
 
 
 	{

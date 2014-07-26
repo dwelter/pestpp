@@ -289,7 +289,6 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 			name = tokens[0];
 			convert_ip(tokens[1], value);
 			convert_ip(tokens[2], obs_i.weight);
-			obs_i.weight *= obs_i.weight;
 			obs_i.group = tokens[3];
 			ctl_ordered_obs_names.push_back(name);
 			observation_info.observations[name] = obs_i;

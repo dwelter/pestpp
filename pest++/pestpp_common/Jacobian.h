@@ -57,8 +57,6 @@ public:
 	friend void TranFixed::jacobian_reverse(Jacobian &jac);
 	friend void TranLog10::jacobian_forward(Jacobian &jac);
 	friend void TranLog10::jacobian_reverse(Jacobian &jac);
-	friend void TranFixed::jacobian_forward(Jacobian &jac);
-	friend void TranFixed::jacobian_reverse(Jacobian &jac);
 	friend void TranSVD::jacobian_forward(Jacobian &jac);
 	friend void TranSVD::jacobian_reverse(Jacobian &jac);
 	friend void TranNormalize::jacobian_forward(Jacobian &jac);

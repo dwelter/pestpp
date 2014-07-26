@@ -44,6 +44,7 @@ public:
 	virtual void set_weight(double _tikhonov_weight) {tikhonov_weight = _tikhonov_weight;}
 	virtual void set_max_reg_iter(int _max_reg_iter) { max_reg_iter = _max_reg_iter; }
 	static DynamicRegularization get_unit_reg_instance() { return DynamicRegularization(); }
+	static DynamicRegularization get_zero_reg_instance() { return DynamicRegularization(true, 0,0,0,0,0,0); }
 	virtual ~DynamicRegularization(void){}
 protected:
 	bool use_dynamic_reg;

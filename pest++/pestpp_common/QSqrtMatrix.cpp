@@ -17,7 +17,7 @@
 	along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
 #include <utility>
-#include <math.h>
+#include <cmath>
 #include <Eigen/Dense>
 #include <algorithm>
 #include <vector>
@@ -31,7 +31,7 @@
 using namespace std;
 using namespace Eigen;
 
-QSqrtMatrix::QSqrtMatrix(const ObservationInfo *_obs_info_ptr, const PriorInformation *_prior_info_ptr, double _tikhonov_weight)
+QSqrtMatrix::QSqrtMatrix(const ObservationInfo *_obs_info_ptr, const PriorInformation *_prior_info_ptr)
 : obs_info_ptr(_obs_info_ptr), prior_info_ptr(_prior_info_ptr)
 {
 }
@@ -49,7 +49,9 @@ Eigen::SparseMatrix<double> QSqrtMatrix::get_sparse_matrix(const vector<string> 
 	int i = 0;
 	double weight = 0;
 	double tikhonov_weight = 1.0;
-	if (regul.get_use_dynamic_reg()) tikhonov_weight = regul.get_weight();
+	// PEST convention is the the weights are 1/standard deviation but the regualrizatio weight is the square
+	// of this
+	if (regul.get_use_dynamic_reg()) tikhonov_weight = sqrt(regul.get_weight());
 	std::vector<Eigen::Triplet<double> > triplet_list;
 	for (i = 0, b = obs_names.begin(), e = obs_names.end(); b != e; ++b, ++i)
 	{
@@ -61,7 +63,7 @@ Eigen::SparseMatrix<double> QSqrtMatrix::get_sparse_matrix(const vector<string> 
 			if ((*found_obsinfo_iter).second.is_regularization()) {
 				weight *= tikhonov_weight;
 			}
-			if (!get_sqaure) weight = sqrt(weight);
+			if (get_sqaure) weight = weight * weight;
 			triplet_list.push_back(Eigen::Triplet<double>(i, i, weight));
 		}
 		else if (found_prior_info != not_found_prior_info)
@@ -71,7 +73,7 @@ Eigen::SparseMatrix<double> QSqrtMatrix::get_sparse_matrix(const vector<string> 
 			if ((*found_prior_info).second.is_regularization()) {
 				weight *= tikhonov_weight;
 			}
-			if (!get_sqaure) weight = sqrt(weight);
+			if (get_sqaure) weight = weight * weight;
 			triplet_list.push_back(Eigen::Triplet<double>(i, i, weight));
 		}
 		else {

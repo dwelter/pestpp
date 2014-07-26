@@ -398,7 +398,7 @@ int main(int argc, char* argv[])
 			const vector<string> &nonregul_obs = pest_scenario.get_nonregul_obs();
 			Parameters base_numeric_pars = base_trans_seq.ctl2numeric_cp( base_svd.cur_model_run().get_ctl_pars());
 			const vector<string> &pars = base_numeric_pars.get_keys();
-			QSqrtMatrix Q_sqrt(&(pest_scenario.get_ctl_observation_info()), &pest_scenario.get_prior_info(), 1.0);
+			QSqrtMatrix Q_sqrt(&(pest_scenario.get_ctl_observation_info()), &pest_scenario.get_prior_info());
 			(*tran_svd).update_reset_frozen_pars(*base_jacobian_ptr, Q_sqrt, base_numeric_pars, max_n_super, super_eigthres, pars, nonregul_obs, cur_run.get_frozen_ctl_pars());
 			(*tr_svda_fixed).reset((*tran_svd).get_frozen_derivative_pars());
 			SVDASolver super_svd(&svd_control_info, pest_scenario.get_svd_info(), &pest_scenario.get_base_group_info(), &pest_scenario.get_ctl_parameter_info(),

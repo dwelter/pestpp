@@ -172,35 +172,47 @@ void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobia
 	fout << setiosflags(ios::left);
 	fout.unsetf(ios::floatfield);
 	fout.precision(12);
-	fout << " OPTIMISATION ITERATION NO. " << setw(3) << iter_no << " ----->" << endl;
-	fout << " Parameter name    Group        Current value        Sensitivity" << endl;
+	fout << " NUMERIC PARAMETER SENSITIVITIES FOR OPTIMISATION ITERATION NO. " << setw(3) << iter_no << " ----->" << endl;
+	fout << " Parameter name   Group        Current Value           CSS w/reg           CSS w/o reg" << endl;
 	const vector<string> &par_list = jac.parameter_list();
 	const vector<string> &obs_list = jac.obs_and_reg_list();
 	Parameters pars = jac.get_base_numeric_parameters();
-	QSqrtMatrix Q_sqrt(obj_func.get_obs_info_ptr(), obj_func.get_prior_info_ptr(), 1.0);
-	Eigen::SparseMatrix<double> q_sqrt = Q_sqrt.get_sparse_matrix(obs_list, regul);
-	Eigen::SparseMatrix<double> w_sen_mat = q_sqrt * jac.get_matrix(obs_list, par_list);
+	VectorXd par_vec = pars.get_data_eigen_vec(par_list);
+	MatrixXd par_mat_tmp = par_vec.asDiagonal();
+	Eigen::SparseMatrix<double> par_mat = par_mat_tmp.sparseView();
+	QSqrtMatrix Q_sqrt(obj_func.get_obs_info_ptr(), obj_func.get_prior_info_ptr());
+	Eigen::SparseMatrix<double> q_sqrt_reg = Q_sqrt.get_sparse_matrix(obs_list, regul);
+	Eigen::SparseMatrix<double> dss_mat_reg = q_sqrt_reg * jac.get_matrix(obs_list, par_list) * par_mat;
+	Eigen::SparseMatrix<double> q_sqrt_no_reg = Q_sqrt.get_sparse_matrix(obs_list, DynamicRegularization::get_zero_reg_instance());
+	Eigen::SparseMatrix<double> dss_mat_no_reg = q_sqrt_no_reg * jac.get_matrix(obs_list, par_list) * par_mat;
+
 	int n_par = par_list.size();
-	int n_nonzero_weights = q_sqrt.nonZeros();
-	double nonzero_weights_fac = 0.0;
-	if (n_nonzero_weights > 0) nonzero_weights_fac = 1.0 / double(n_nonzero_weights);
+	int n_nonzero_weights_reg = q_sqrt_reg.nonZeros();
+	int n_nonzero_weights_no_reg = q_sqrt_no_reg.nonZeros();
+
 	size_t size_par_vec = pars.size();
-	for (int i=0; i<n_par; ++i) 
+	for (int i = 0; i < n_par; ++i)
 	{
-		 if (size_par_vec==0)
-		 {
-			fout << "   " << setw(15) << par_list[i]
+		fout << "   " << setw(15) << par_list[i]
 			<< " " << setw(12) << par_grp_info.get_group_name(par_list[i])
-			<< " " << showpoint <<   setw(20) << "NA"
-			<< " " << showpoint <<   setw(20) << w_sen_mat.col(i).norm() * nonzero_weights_fac << endl;
-		 }
-		 else
-		 {
-			fout << "   " << setw(15) << par_list[i]
-			<< " " << setw(12) << par_grp_info.get_group_name(par_list[i])
-			<< " " << showpoint <<   setw(20) << pars.get_rec(par_list[i])
-			<< " " << showpoint <<   setw(20) << w_sen_mat.col(i).norm() * nonzero_weights_fac << endl;
-		 }
+			<< " " << showpoint << setw(20) << pars.get_rec(par_list[i]);
+		if (n_nonzero_weights_reg > 0)
+		{
+			fout << " " << showpoint << setw(20) << dss_mat_reg.col(i).norm() / double(n_nonzero_weights_reg);
+		}
+		else
+		{
+			fout << " " << showpoint << setw(20) << "NA";
+		}
+		if (n_nonzero_weights_no_reg > 0)
+		{
+			fout << " " << showpoint << setw(20) << dss_mat_no_reg.col(i).norm() / double(n_nonzero_weights_no_reg);
+		}
+		else
+		{
+			fout << " " << showpoint << setw(20) << "NA";
+		}
+		fout << endl;
 	}
 	fout << endl << endl;
 }

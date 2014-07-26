@@ -640,7 +640,7 @@ restart_reuse_jacoboian:
 	}
 
 	// build weights matrix sqrt(Q)
-	QSqrtMatrix Q_sqrt(obs_info_ptr, prior_info_ptr, regul_scheme_ptr->get_weight());
+	QSqrtMatrix Q_sqrt(obs_info_ptr, prior_info_ptr);
 	//build residuals vector
 	VectorXd residuals_vec = -1.0 * stlvec_2_egienvec(cur_solution.get_residuals_vec(obs_names_vec));
 

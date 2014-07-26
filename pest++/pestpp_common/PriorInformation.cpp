@@ -74,7 +74,7 @@ double PriorInformationRec::calc_residual(const Parameters &pars) const
 
 double PriorInformationRec::calc_phi(const Parameters &pars) const
 {
-	return pow(calc_residual(pars), 2) * weight;
+	return pow(calc_residual(pars) * weight, 2.0);
 }
 
 
@@ -135,7 +135,6 @@ void PriorInformation::AddRecord(const string &pi_line)
 	int n_tokens = tokens.size();
 	group = tokens[n_tokens-1];
 	convert_ip(tokens[n_tokens-2], weight);
-	weight *= weight;
 	convert_ip(tokens[n_tokens-3], pival);
 
 	string prior_info_name = tokens[0];
