@@ -146,8 +146,5 @@
     <ClCompile Include="PerformanceLog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JacobianSuper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>

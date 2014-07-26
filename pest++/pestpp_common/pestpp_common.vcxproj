@@ -46,7 +46,6 @@
     <ClCompile Include="eigen_tools.cpp" />
     <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="Jacobian.cpp" />
-    <ClCompile Include="JacobianSuper.cpp" />
     <ClCompile Include="Jacobian_1to1.cpp" />
     <ClCompile Include="ModelRunPP.cpp" />
     <ClCompile Include="ObjectiveFunc.cpp" />

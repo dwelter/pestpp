@@ -36,7 +36,6 @@ class RunManagerAbstract;
 class ModelRun;
 class FileManager;
 class PriorInformation;
-class JacobianSuper;
 
 class JacobianRun{
 public:
@@ -48,7 +47,6 @@ public:
 
 class Jacobian {
 public:
-	friend JacobianSuper;
 	friend void TranOffset::jacobian_forward(Jacobian &jac);
 	friend void TranOffset::jacobian_reverse(Jacobian &jac);
 	friend void TranScale::jacobian_forward(Jacobian &jac);
