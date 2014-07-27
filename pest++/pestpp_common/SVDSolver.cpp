@@ -1321,11 +1321,13 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 		double error_percent() { return (phi_comp.meas - target_phi_meas) / target_phi_meas; }
 		void print(ostream &os)
 		{
-			streamsize n = os.precision(numeric_limits<double>::digits10 + 1);
+			//streamsize n = os.precision(numeric_limits<double>::digits10 + 1);
+			streamsize n = os.precision(6);
 			os << "    recalculating regularization weight factor         :" << endl;
 			os << "      updated regularization  weight factor            : " << mu << endl;
 			os << "      FRACPHIM adjusted measurement objective function : " << phi_comp.meas << endl;
-			os << "      percent error                                    : " << error_percent() << endl;
+			os.precision(3);
+			os << "      discrepancy                                      : " << abs(error_percent()*100) <<"%"<< endl;
 			os.precision(n);
 		}
 		bool operator< (const MuPoint &rhs){ return abs(f()) < abs(rhs.f()); }
@@ -1376,14 +1378,14 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 	double target_phi_meas_frac = phi_comp_cur.meas * fracphim;
 	double target_phi_meas = max(phimlim, target_phi_meas_frac);
 
-	os << "    starting regularization weight factor      : " << mu_cur << endl;
-	os << "    starting measurement objective function    : " << phi_comp_cur.meas << endl;
-	os << "    starting regularization objective function : " << phi_comp_cur.regul << endl;
-	os << "    target measurement objective function      : " << target_phi_meas << endl << endl;
-	cout << "    starting regularization weight factor      : " << mu_cur << endl;
-	cout << "    starting measurement objective function    : " << phi_comp_cur.meas << endl;
-	cout << "    starting regularization objective function : " << phi_comp_cur.regul << endl;
-	cout << "    target measurement objective function      : " << target_phi_meas << endl << endl;
+	os << "    Starting regularization weight factor      : " << mu_cur << endl;
+	os << "    Starting measurement objective function    : " << phi_comp_cur.meas << endl;
+	os << "    Starting regularization objective function : " << phi_comp_cur.regul << endl;
+	os << "    Sarget measurement objective function      : " << target_phi_meas << endl << endl;
+	cout << "    Starting regularization weight factor      : " << mu_cur << endl;
+	cout << "    Starting measurement objective function    : " << phi_comp_cur.meas << endl;
+	cout << "    Starting regularization objective function : " << phi_comp_cur.regul << endl;
+	cout << "    Sarget measurement objective function      : " << target_phi_meas << endl << endl;
 
 	for (auto &i_mu : mu_vec)
 	{
