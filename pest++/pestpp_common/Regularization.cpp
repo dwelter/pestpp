@@ -45,7 +45,7 @@ double DynamicRegularization::get_grp_weight_fact(const string &grp_name) const
 {
 	double fact = 1.0;
 	auto iter = regul_grp_weights.find(grp_name);
-	if (iter != regul_grp_weights.end() )
+	if (use_dynamic_reg && adj_grp_weights && iter != regul_grp_weights.end())
 	{
 		fact = iter->second;
 	}

@@ -1048,12 +1048,12 @@ void SVDSolver::iteration_update_and_report(ostream &os, ModelRun &upgrade, Term
 		p_new = ipar.second;
 		p_old = old_ctl_pars.get_rec(*p_name);
 		param_change_stats(p_old, p_new, have_fac, fac_change, have_rel, rel_change);
-		if (fac_change >= max_fac_change)
+		if (have_fac && fac_change >= max_fac_change)
 		{
 			max_fac_change = fac_change;
 			max_fac_par = *p_name;
 		}
-		if (abs(rel_change) >= abs(max_rel_change))
+		if (have_rel && abs(rel_change) >= abs(max_rel_change))
 		{
 			max_rel_change = rel_change;
 			max_rel_par = *p_name;
@@ -1095,12 +1095,12 @@ void SVDSolver::iteration_update_and_report(ostream &os, ModelRun &upgrade, Term
 		p_new = ipar.second;
 		p_old = old_numeric_pars.get_rec(*p_name);
 		param_change_stats(p_old, p_new, have_fac, fac_change, have_rel, rel_change);
-		if (fac_change >= max_fac_change)
+		if (have_fac && fac_change >= max_fac_change)
 		{
 			max_fac_change = fac_change;
 			max_fac_par = *p_name;
 		}
-		if (abs(rel_change) >= abs(max_rel_change))
+		if (have_rel && abs(rel_change) >= abs(max_rel_change))
 		{
 			max_rel_change = rel_change;
 			max_rel_par = *p_name;

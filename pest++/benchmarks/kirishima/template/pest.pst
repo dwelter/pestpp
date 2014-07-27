@@ -168,4 +168,3 @@ pi_32  1.0 * log(eruptiona) =    1.074036E+01     1.000000E+00  regul
 63 65  0.1
 1.0  1.0e-10  1.0e+10  linreg  continue
 1.3  1.0e-2  1
- 

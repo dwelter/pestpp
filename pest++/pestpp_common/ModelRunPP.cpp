@@ -36,8 +36,7 @@ using namespace std;
 using namespace pest_utils;
 
 ModelRun::ModelRun(const ObjectiveFunc *_obj_func_ptr, const Observations &_sim_obs) 
-	: obj_func_ptr(_obj_func_ptr), sim_obs(_sim_obs), phi_comp(),
-	obs_is_valid(false), phi_is_valid(false)
+	: obj_func_ptr(_obj_func_ptr), sim_obs(_sim_obs), obs_is_valid(false)
 {
 }
 
@@ -47,9 +46,7 @@ ModelRun& ModelRun::operator=(const ModelRun &rhs)
 	obj_func_ptr = rhs.obj_func_ptr;
 	ctl_pars = rhs.ctl_pars;
 	sim_obs = rhs.sim_obs; 
-	phi_comp = rhs.phi_comp;
 	obs_is_valid = rhs.obs_is_valid;
-	phi_is_valid = rhs.phi_is_valid;
 	return *this;
 }
 
@@ -96,7 +93,6 @@ void ModelRun::set_observations(const Observations &observations)
 {
 	sim_obs = observations;
 	obs_is_valid = true;
-	phi_is_valid = false;
 }
 
 const Parameters &ModelRun::get_ctl_pars() const
@@ -131,13 +127,7 @@ double ModelRun::get_phi(const DynamicRegularization &dynamic_reg)
 
 PhiComponets ModelRun::get_phi_comp(const DynamicRegularization &dynamic_reg) const
 {
-	if( !obs_is_valid) {
-		throw PestError("ModelRun::get_phi() - Simulated observations are invalid.  Can not calculate phi.");
-	}
-	if(!phi_is_valid) {
-		phi_comp = obj_func_ptr->get_phi_comp(sim_obs, get_ctl_pars(), dynamic_reg);
-		phi_is_valid = true;
-	}
+	PhiComponets phi_comp = obj_func_ptr->get_phi_comp(sim_obs, get_ctl_pars(), dynamic_reg);
 	return phi_comp;
 }
 
@@ -152,14 +142,9 @@ void ModelRun::full_report(ostream &os, const DynamicRegularization &dynamic_reg
 	if( !obs_is_valid) {
 		throw PestError("ModelRun::full_report() - Simulated observations are invalid.  Can not produce full report.");
 	}
-	phi_comp = obj_func_ptr->full_report(os, sim_obs, get_ctl_pars(), dynamic_reg);
-	phi_is_valid = true;
+	PhiComponets phi_comp = obj_func_ptr->full_report(os, sim_obs, get_ctl_pars(), dynamic_reg);
 }
 
-bool ModelRun::phi_valid() const
-{
-	return phi_is_valid;
-}
 
 bool ModelRun::obs_valid() const
 {

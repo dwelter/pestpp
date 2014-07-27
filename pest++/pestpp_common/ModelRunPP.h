@@ -50,13 +50,10 @@ public:
 	virtual vector<double> get_residuals_vec(const vector<string> &obs_names);
 	void full_report(ostream &os, const DynamicRegularization &dynamic_reg=DynamicRegularization(false));
 	virtual bool obs_valid() const;
-	virtual bool phi_valid() const;
 	static  bool cmp_lt(const ModelRun &r1, const ModelRun &r2, const DynamicRegularization &reg);
 	virtual ~ModelRun();
 protected:
-	mutable PhiComponets phi_comp;
 	mutable bool obs_is_valid;
-	mutable bool phi_is_valid;
 	const ObjectiveFunc *obj_func_ptr;
 	Parameters ctl_pars;
 	Observations sim_obs;

@@ -52,15 +52,15 @@ bool TerminationController::process_iteration(const PhiComponets &phi_comp, doub
 	double phi = 9e99;
 	bool regul_reject = false;
 
-
 	if (use_dynaimc_regul == false || (!phi_accept_achieved && phi_m > phim_accept))
 	{
 		phi = phi_m;
 		regul_reject = false;
 	}
-	else if (use_dynaimc_regul && !phi_accept_achieved && phi_m > phim_accept)
+	else if (use_dynaimc_regul && !phi_accept_achieved && phi_m <= phim_accept)
 	{
 		lowest_phi.clear();
+		phi_accept_achieved = true;
 		phi = phi_r;
 		regul_reject = false;
 	}
@@ -95,7 +95,7 @@ bool TerminationController::process_iteration(const PhiComponets &phi_comp, doub
 	}
 
 	// Check maximum relative parameter change
-	if (relpar >= relparstp) {
+	if (abs(relpar) < relparstp) {
 		++nrelpar_count;
 	}
 	else {
@@ -144,7 +144,14 @@ void TerminationController::termination_summary(std::ostream &fout)
 	fout << "  NPHINORED = " << nphinored << " :  NPHINORED at termination = " << nphinored_count << endl;
 	fout << "  NRELPAR = " << nrelpar << ": RELPARSTP = " << relparstp << " :  NRELPAR at termination = " << nrelpar_count << endl;
 	fout << "  PHIREDSTP = " << phiredstp << "; NPHISTP = " << nphistp << endl;
-	fout << "  NPHISTP lowest PHI's:" << endl;
+	if (!use_dynaimc_regul || !phi_accept_achieved)
+	{
+		fout << "  NPHISTP lowest PHI's:" << endl;
+	}
+	else
+	{
+		fout << "  NPHISTP lowest regularization PHI componets:" << endl;
+	}
 	for (const auto &it : lowest_phi)
 	{
 		fout << "        " << it << endl;
