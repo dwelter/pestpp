@@ -33,16 +33,16 @@ const PhiComponets& PhiComponets::operator=(const PhiComponets &rhs)
 	regul=rhs.regul;
 	return * this;
 }
-double ObjectiveFunc::get_phi(const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg) const
+double ObjectiveFunc::get_phi(const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg, int norm) const
 {
 	double phi;
 	PhiComponets phi_comp;
-	phi_comp = get_phi_comp(sim_obs, pars, dynamic_reg);
+	phi_comp = get_phi_comp(sim_obs, pars, dynamic_reg, norm);
 	phi = phi_comp.meas + phi_comp.regul;
 	return phi;
 }
 
-PhiComponets ObjectiveFunc::get_phi_comp(const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg) const
+PhiComponets ObjectiveFunc::get_phi_comp(const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg, int norm) const
 {
 	unordered_map<string, ObservationRec>::const_iterator info_iter;
 	unordered_map<string, ObservationRec>::const_iterator info_end = obs_info_ptr->observations.end();
@@ -72,7 +72,7 @@ PhiComponets ObjectiveFunc::get_phi_comp(const Observations &sim_obs, const Para
 				}
 				tmp_weight *= sqrt(dynamic_reg.get_weight());
 			}
-			tmp_phi = pow((i_sim.second - (*obs_iter).second) * tmp_weight, 2.0);
+			tmp_phi = pow((i_sim.second - (*obs_iter).second) * tmp_weight, norm);
 			if (is_reg_grp) {
 				phi.regul += tmp_phi;
 			}
@@ -96,7 +96,7 @@ PhiComponets ObjectiveFunc::get_phi_comp(const Observations &sim_obs, const Para
 			tmp_weight *= sqrt(dynamic_reg.get_weight());
 		}
 		double tmp_residual = i_prior.second.calc_residual(pars);
-		tmp_phi = pow(tmp_residual * tmp_weight, 2.0);
+		tmp_phi = pow(tmp_residual * tmp_weight, norm);
 		if (is_reg_grp) {
 			phi.regul += tmp_phi;
 		}

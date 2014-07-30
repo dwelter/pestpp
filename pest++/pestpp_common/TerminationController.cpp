@@ -52,7 +52,11 @@ bool TerminationController::process_iteration(const PhiComponets &phi_comp, doub
 	double phi = 9e99;
 	bool regul_reject = false;
 
-	if (use_dynaimc_regul == false || (!phi_accept_achieved && phi_m > phim_accept))
+	if (use_dynaimc_regul == false)
+	{
+		phi = phi_m + phi_r;
+	}
+	else if (!phi_accept_achieved && phi_m > phim_accept)
 	{
 		phi = phi_m;
 		regul_reject = false;
@@ -74,6 +78,7 @@ bool TerminationController::process_iteration(const PhiComponets &phi_comp, doub
 		regul_reject = true;
 	}
 
+	current_phi = phi;
 	if (!regul_reject)
 	{
 		// keep track of number of iterations since lowest phi
@@ -112,7 +117,7 @@ bool TerminationController::check_last_iteration()
 		terminate_code = true;
 		termimate_reason = "NPHINORED criterion met";
 	}
-	else if (lowest_phi.size() >= nphistp && min_phi_diff <= phiredstp)
+	else if (lowest_phi.size() >= nphistp && min_phi_diff <= phiredstp*current_phi)
 	{
 		terminate_code = true;
 		termimate_reason = "PHIREDSTP / NPHISTP criterion met";

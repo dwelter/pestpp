@@ -118,16 +118,16 @@ Observations ModelRun::get_obs_template() const
 	return ret_val;
 }
 
-double ModelRun::get_phi(const DynamicRegularization &dynamic_reg)
+double ModelRun::get_phi(const DynamicRegularization &dynamic_reg, double norm)
 {
-	PhiComponets phi_comp_temp = get_phi_comp(dynamic_reg);
+	PhiComponets phi_comp_temp = get_phi_comp(dynamic_reg, norm);
 	return phi_comp_temp.meas + phi_comp_temp.regul;
 }
 
 
-PhiComponets ModelRun::get_phi_comp(const DynamicRegularization &dynamic_reg) const
+PhiComponets ModelRun::get_phi_comp(const DynamicRegularization &dynamic_reg, double norm) const
 {
-	PhiComponets phi_comp = obj_func_ptr->get_phi_comp(sim_obs, get_ctl_pars(), dynamic_reg);
+	PhiComponets phi_comp = obj_func_ptr->get_phi_comp(sim_obs, get_ctl_pars(), dynamic_reg, norm);
 	return phi_comp;
 }
 

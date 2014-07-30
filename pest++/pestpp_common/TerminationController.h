@@ -56,6 +56,7 @@ private:
 	double phiredstp;
 	double relparstp;
 	double phim_accept;
+	double current_phi;
 	std::vector<double> lowest_phi;
 	bool terminate_code;
 	bool use_dynaimc_regul;

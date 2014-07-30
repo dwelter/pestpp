@@ -149,22 +149,23 @@ MorrisMethod::MorrisMethod(const vector<string> &_adj_par_name_vec,  const Param
 						   const Parameters &_lower_bnd, const Parameters &_upper_bnd, const set<string> &_log_trans_pars, 
 			   int _p, int _r, ParamTransformSeq *_base_partran_seq_ptr, 
 			   const std::vector<std::string> &_obs_name_vec, FileManager *file_manager_ptr, const ObservationInfo *_obs_info_ptr,
-			   bool _calc_pooled_obs)
+			   double _norm, bool _calc_pooled_obs, double _delta)
 						   : GsaAbstractBase(_base_partran_seq_ptr, _adj_par_name_vec, _fixed_pars, _lower_bnd, _upper_bnd, 
-						   _obs_name_vec, file_manager_ptr, PARAM_DIST::uniform), obs_info_ptr(_obs_info_ptr), calc_obs_sen(_calc_pooled_obs)
+						   _obs_name_vec, file_manager_ptr, PARAM_DIST::uniform), obs_info_ptr(_obs_info_ptr),
+						   norm(_norm), calc_obs_sen(_calc_pooled_obs)
 {
-	initialize(_log_trans_pars, _p, _r);
+	initialize(_log_trans_pars, _p, _r, _delta);
 }
 
 
 void MorrisMethod::initialize(const set<string> &_log_trans_pars, 
-						   int _p, int _r)
+	int _p, int _r, double _delta)
 {
 	log_trans_pars = _log_trans_pars;
 	p = _p;
 	r = _r;
-
-	delta = p / (2.0 * (p - 1));
+	delta = _delta;
+	//delta = p / (2.0 * (p - 1));
 }
 
 MatrixXd MorrisMethod::create_B_mat(int k)
@@ -366,9 +367,9 @@ void  MorrisMethod::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run
 		if (run0_ok && run1_ok && !par_name_1.empty())
 		{
 			run0.update_ctl(pars0, obs0);
-			double phi0 = run0.get_phi(0.0);
+			double phi0 = run0.get_phi(DynamicRegularization::get_zero_reg_instance(), 1.0);
 			run1.update_ctl(pars1, obs1);
-			double phi1 = run1.get_phi(0.0);
+			double phi1 = run1.get_phi(DynamicRegularization::get_zero_reg_instance(), 1.0);
 			double p0 = pars0[par_name_1];
 			double p1 = pars1[par_name_1];
 			if (log_trans_pars.find(par_name_1) != log_trans_pars.end())
@@ -411,7 +412,7 @@ void  MorrisMethod::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run
 		const auto &it_senmap = sen_map.find(it_par);
 		if (it_senmap != sen_map.end())
 		{
-			fout_morris << log_name(it_par) << ", " << it_senmap->second.comp_mean() << ", " << it_senmap->second.comp_abs_mean() << ", " << it_senmap->second.comp_var() << endl;
+			fout_morris << log_name(it_par) << ", " << it_senmap->second.comp_mean() << ", " << it_senmap->second.comp_abs_mean() << ", " << sqrt(it_senmap->second.comp_var()) << endl;
 		}
 	}
 

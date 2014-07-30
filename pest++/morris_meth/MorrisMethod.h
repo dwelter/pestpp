@@ -41,12 +41,12 @@ class MorrisMethod : public GsaAbstractBase
 {
 public:
 	MorrisMethod(const std::vector<std::string> &_adj_par_name_vec, const Parameters &_fixed_ctl_pars, const Parameters &lower_bnd,
-		const Parameters &upper_bnd, const set<string> &_log_trans_pars, int _p, int _r,
+		const Parameters &upper_bnd, const set<string> &_log_trans_pars, int _p, int _r, 
 		ParamTransformSeq *base_partran_seq,
 		const std::vector<std::string> &_obs_name_vec, FileManager *_file_manager_ptr,
-		const ObservationInfo *_obs_info_ptr, bool _calc_pooled_obs);
+		const ObservationInfo *_obs_info_ptr, double norm, bool _calc_pooled_obs, double _delta);
 	void process_pooled_var_file();
-	void initialize(const set<string> &_log_trans_pars, int _p, int _r);
+	void initialize(const set<string> &_log_trans_pars, int _p, int _r, double _delta);
 	void assemble_runs(RunManagerAbstract &run_manager);
 	void calc_sen(RunManagerAbstract &run_manager, ModelRun model_run);
 	~MorrisMethod(void);
@@ -56,6 +56,7 @@ private:
 	int r;
 	bool calc_obs_sen;
 	double delta;
+	double norm;
 	MatrixXd b_star_mat;
 	static MatrixXd create_B_mat(int k);
 	static MatrixXd create_J_mat(int k);
