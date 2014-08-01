@@ -120,9 +120,9 @@ void Jacobian_1to1::make_runs(RunManagerAbstract &run_manager)
 	run_manager.run();
 }
 
-bool Jacobian_1to1::process_runs(vector<string> numeric_par_names, ParamTransformSeq &par_transform,
-		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
-		RunManagerAbstract &run_manager,  const PriorInformation &prior_info, set<string> &out_of_bound_par, bool phiredswh_flag, bool calc_init_obs)
+bool Jacobian_1to1::process_runs(ParamTransformSeq &par_transform,
+		const ParameterGroupInfo &group_info, 
+		RunManagerAbstract &run_manager,  const PriorInformation &prior_info)
 {
 	debug_msg("Jacobian_1to1::process_runs begin");
        base_sim_obs_names = run_manager.get_obs_name_vec();
@@ -355,9 +355,6 @@ bool Jacobian_1to1::out_of_bounds(const Parameters &ctl_parameters,
 
 void Jacobian_1to1::report_errors(std::ostream &fout)
 {
-
-	failed_to_increment_parmaeters.insert("insert1", 1.12312312321);
-	failed_to_increment_parmaeters.insert("insert2", 1.12312312321);
 	if (failed_to_increment_parmaeters.size() > 0)
 	{
 		fout << "    Parameters that went out of bounds while comuting jacobian" << endl;

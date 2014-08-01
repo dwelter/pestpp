@@ -46,22 +46,22 @@ public:
 	void termination_summary(std::ostream &fout);
 	~TerminationController(void);
 private:
-	int noptmax;
-	int nopt_count;
-	int nphinored;
-	int nphinored_count;
-	int nrelpar;
-	int nrelpar_count;
-	unsigned nphistp;
 	double phiredstp;
 	double relparstp;
 	double phim_accept;
 	double current_phi;
-	std::vector<double> lowest_phi;
+	unsigned nphistp;
+	int noptmax;
+	int nphinored;
+	int nopt_count;
+	int nphinored_count;
+	int nrelpar;
+	int nrelpar_count;
 	bool terminate_code;
 	bool use_dynaimc_regul;
 	bool phi_accept_achieved;
 	std::string termimate_reason;
+	std::vector<double> lowest_phi;
 };
 
 #endif //TERMINATIONCONTROLLER_H_

@@ -39,10 +39,12 @@ class PriorInformation;
 
 class JacobianRun{
 public:
- JacobianRun(std::vector<double> _obs_vec = std::vector<double>(), Parameters _ctl_pars = Parameters(), double _numeric_derivative_par = Parameters::no_data) : obs_vec(_obs_vec), ctl_pars(_ctl_pars), numeric_derivative_par(_numeric_derivative_par){}
+ JacobianRun(std::vector<double> _obs_vec = std::vector<double>(), Parameters _ctl_pars = Parameters(),
+	 double _numeric_derivative_par = Parameters::no_data) : obs_vec(_obs_vec), ctl_pars(_ctl_pars),
+	 numeric_derivative_par(_numeric_derivative_par){}
+	std::vector<double> obs_vec;
 	Parameters ctl_pars;
 	double numeric_derivative_par;
-	std::vector<double> obs_vec;
 };
 
 class Jacobian {
@@ -70,9 +72,9 @@ public:
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
 		RunManagerAbstract &run_manager, set<string> &out_of_bound_par, bool phiredswh_flag=false, bool calc_init_obs=true);
 	virtual void make_runs(RunManagerAbstract &run_manager);
-	virtual bool process_runs(vector<string> numeric_par_names, ParamTransformSeq &par_transform,
-		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
-		RunManagerAbstract &run_manager,  const PriorInformation &prior_info, set<string> &out_of_bound_par, bool phiredswh_flag, bool calc_init_obs);
+	virtual bool process_runs(ParamTransformSeq &par_transform,
+		const ParameterGroupInfo &group_info, 
+		RunManagerAbstract &run_manager,  const PriorInformation &prior_info);
 
 	virtual void save(const std::string &ext="jco") const;
 	void read(const std::string &filename);

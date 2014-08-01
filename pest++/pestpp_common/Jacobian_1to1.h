@@ -25,9 +25,9 @@ public:
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
 		RunManagerAbstract &run_manager, set<string> &out_of_bound_par, bool phiredswh_flag=false, bool calc_init_obs=true);
 	virtual void make_runs(RunManagerAbstract &run_manager);
-	virtual bool process_runs(vector<string> numeric_par_names, ParamTransformSeq &par_transform,
-		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
-		RunManagerAbstract &run_manager,  const PriorInformation &prior_info, set<string> &out_of_bound_par, bool phiredswh_flag, bool calc_init_obs);
+	virtual bool process_runs(ParamTransformSeq &par_transform,
+		const ParameterGroupInfo &group_info, 
+		RunManagerAbstract &run_manager,  const PriorInformation &prior_info);
 	virtual void report_errors(std::ostream &fout);
 	virtual ~Jacobian_1to1();
 protected:

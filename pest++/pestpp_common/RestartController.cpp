@@ -51,7 +51,7 @@ void RestartController::process_rst_file(std::ifstream &fin)
 		}
 		else if (tokens[0] == "termination_info_3")
 		{
-			for (int i = 1; i<tokens.size(); ++i)
+			for (size_t i = 1; i<tokens.size(); ++i)
 			{
 				double val = convert_cp<double>(tokens[1]);
 				lowest_phi.push_back(val);

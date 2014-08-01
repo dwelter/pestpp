@@ -29,11 +29,11 @@ using namespace std;
 TerminationController::TerminationController(int _noptmax, double _phiredstp,
 	int _nphistp, int _nphinored, double _relparstp, int _nrelpar, 
 	bool _use_dynaimc_regul, double _phim_accept)
-	: noptmax(_noptmax), phiredstp(_phiredstp), nphistp(_nphistp),
-	nphinored(_nphinored), relparstp(_relparstp), 
-	nrelpar(_nrelpar), nphinored_count(0), nrelpar_count(0), nopt_count(0), 
-	terminate_code(false), use_dynaimc_regul(_use_dynaimc_regul), phim_accept(_phim_accept),
-	phi_accept_achieved(false)
+	: 
+	phiredstp(_phiredstp), relparstp(_relparstp), phim_accept(_phim_accept),
+	current_phi(99e99), nphistp(_nphistp), noptmax(_noptmax), nphinored(_nphinored),
+	nopt_count(0), nphinored_count(0), nrelpar(_nrelpar), nrelpar_count(0),
+	terminate_code(false), use_dynaimc_regul(_use_dynaimc_regul), phi_accept_achieved(false)
 {
 }
 

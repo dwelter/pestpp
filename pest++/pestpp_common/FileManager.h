@@ -29,7 +29,7 @@ class FileManager
 {
 public:
 	FileManager();
-	FileManager(const std::string &_base_filename, const std::string &_directory="", bool restart=false);
+	FileManager(const std::string &_base_filename, const std::string &_directory="");
 	void initialize_path(const std::string &_base_filename = "", const std::string &_directory = "");
 	void open_default_files(bool restart = false);
 	std::string build_filename(const std::string &ext);

@@ -101,7 +101,7 @@ protected:
 	bool terminate_local_iteration;
 
 	virtual void limit_parameters_ip(const Parameters &init_active_ctl_pars, Parameters &upgrade_active_ctl_pars,
-		LimitType &limit_type, const Parameters &frozen_ative_ctl_pars, bool ignore_upper_lower=false);
+		LimitType &limit_type, const Parameters &frozen_ative_ctl_pars);
 	virtual Parameters limit_parameters_freeze_all_ip(const Parameters &init_active_ctl_pars,
 		Parameters &upgrade_active_ctl_pars, const Parameters &frozen_active_ctl_pars = Parameters());
 	virtual const string &get_description(){return description;}
@@ -109,7 +109,7 @@ protected:
 	void param_change_stats(double p_old, double p_new, bool &have_fac, double &fac_change, bool &have_rel,
 		double &rel_change);
 	void calc_upgrade_vec(double i_lambda, Parameters &frozen_ctl_pars, QSqrtMatrix &Q_sqrt, const DynamicRegularization &regul,
-		Eigen::VectorXd &residuals_vec, vector<string> &obs_names_vec, const Parameters &base_run_ctl_pars, LimitType &limit_type,
+		Eigen::VectorXd &residuals_vec, vector<string> &obs_names_vec, const Parameters &base_run_ctl_pars,
 		Parameters &new_ctl_pars, MarquardtMatrix marquardt_type, bool scale_upgrade=false);
 	void calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt, const DynamicRegularization &regul,
 		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,

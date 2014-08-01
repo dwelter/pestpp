@@ -146,7 +146,7 @@ namespace pest_utils
 	void string_to_fortran_char(string in, char out[], int length, CASE_CONV conv_type=NO_CONV);
 
 
-	string remove_file_ext(const string &filename, size_t max_len=string::npos);
+	string remove_file_ext(const string &filename);
 	/* @brief Given a combined path and filename return just the filename.
 
 		Given path the combined path and filname complete_path, return just the filename.

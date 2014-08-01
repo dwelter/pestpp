@@ -258,18 +258,14 @@ void Jacobian::make_runs(RunManagerAbstract &run_manager)
 	run_manager.run();
 }
 
-bool Jacobian::process_runs(vector<string> numeric_par_names, ParamTransformSeq &par_transform,
-		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
-		RunManagerAbstract &run_manager,  const PriorInformation &prior_info, set<string> &out_of_bound_par, bool phiredswh_flag, bool calc_init_obs)
+bool Jacobian::process_runs(ParamTransformSeq &par_transform,
+		const ParameterGroupInfo &group_info, 
+		RunManagerAbstract &run_manager,  const PriorInformation &prior_info)
 {
 	// calculate jacobian
   base_sim_obs_names = run_manager.get_obs_name_vec();
 	vector<string> prior_info_name = prior_info.get_keys();
 	base_sim_obs_names.insert(base_sim_obs_names.end(), prior_info_name.begin(), prior_info_name.end());
-	if(matrix.rows() != base_sim_obs_names.size() || matrix.cols() !=numeric_par_names.size())
-	{
-		matrix.resize(base_sim_obs_names.size(), numeric_par_names.size());
-	}
 	std::vector<Eigen::Triplet<double> > triplet_list;
 
 	JacobianRun base_run;
@@ -341,6 +337,7 @@ bool Jacobian::process_runs(vector<string> numeric_par_names, ParamTransformSeq 
 			}
 		}
 	}
+	matrix.resize(base_sim_obs_names.size(), base_numeric_par_names.size());
 	matrix.setZero();
 	matrix.setFromTriplets(triplet_list.begin(), triplet_list.end());
 	// clean up

@@ -752,7 +752,7 @@ void TranSVD::d2_to_d1(Transformable &del_data, Transformable &data)
 	Transformable new_data;
 	VectorXd d2_vec = del_data.get_partial_data_eigen_vec(super_parameter_names);
 	VectorXd d1_vec = Vt.transpose() * d2_vec;
-	for (int i = 0; i < base_parameter_names.size(); ++i)
+	for (size_t i = 0; i < base_parameter_names.size(); ++i)
 	{
 		new_data[base_parameter_names[i]] = d1_vec[i];
 	}
@@ -791,7 +791,7 @@ Parameters TranSVD::map_basepar_to_super(const Parameters &base_pars)
 	Parameters super_pars;
 	VectorXd base_par_vec = base_pars.get_partial_data_eigen_vec(base_parameter_names);
 	VectorXd super_par_vec = Vt * base_par_vec;
-	for (int i=0; i<super_parameter_names.size(); ++i)
+	for (size_t i=0; i<super_parameter_names.size(); ++i)
 	{
 		super_pars[super_parameter_names[i]] = super_par_vec(i);
 	}

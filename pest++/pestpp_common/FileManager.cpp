@@ -28,7 +28,7 @@ FileManager::FileManager()
 	: directory(""), pest_base_filename("")
 {
 }
-FileManager::FileManager(const string &_base_filename, const string &_directory, bool restart)
+FileManager::FileManager(const string &_base_filename, const string &_directory)
   : directory(strip_cp(_directory)), pest_base_filename(strip_cp(_base_filename))
 {
 	initialize_path(_base_filename, _directory);

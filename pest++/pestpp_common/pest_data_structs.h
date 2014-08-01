@@ -181,8 +181,10 @@ class PestppOptions {
 public:
 	enum SVD_PACK{EIGEN, PROPACK};
 	enum MAT_INV{Q12J, JTQJ};
-	PestppOptions(int _n_iter_base = 50, int n_iter_super=0, int _max_n_super = 50, double _super_eigthres = 1.0E-6, SVD_PACK _svd_pack = PestppOptions::EIGEN,
-		MAT_INV _mat_inv = PestppOptions::JTQJ, double _auto_norm = -999, double _super_relparmax = 0.1, int max_run_fail=3);
+	PestppOptions(int _n_iter_base = 50, int _n_iter_super=0, int _max_n_super = 50, 
+		double _super_eigthres = 1.0E-6, SVD_PACK _svd_pack = PestppOptions::EIGEN,
+		MAT_INV _mat_inv = PestppOptions::JTQJ, double _auto_norm = -999,
+		double _super_relparmax = 0.1, int max_run_fail=3);
 	void parce_line(const string &line);
 	int get_max_n_super() const{return max_n_super;}
 	double get_super_eigthres() const{return super_eigthres;}
@@ -209,10 +211,10 @@ public:
 	void set_max_super_frz_iter(int n) { max_super_frz_iter = n; }
 	void set_max_reg_iter(int n) { max_reg_iter = n; }
 private:
-	int max_n_super;
-	double super_eigthres;
 	int n_iter_base;
 	int n_iter_super;
+	int max_n_super;
+	double super_eigthres;
 	SVD_PACK svd_pack;
 	MAT_INV mat_inv;
 	double auto_norm;

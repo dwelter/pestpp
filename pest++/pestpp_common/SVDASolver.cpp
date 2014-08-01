@@ -113,7 +113,7 @@ Parameters SVDASolver::limit_parameters_freeze_all_ip(const Parameters &init_act
 
 void SVDASolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_active_ctl_pars, QSqrtMatrix &Q_sqrt,
 	const DynamicRegularization &regul, VectorXd &residuals_vec,
-	vector<string> &obs_names_vec, const Parameters &base_run_active_ctl_pars, LimitType &limit_type, Parameters &upgrade_active_ctl_pars,
+	vector<string> &obs_names_vec, const Parameters &base_run_active_ctl_pars, Parameters &upgrade_active_ctl_pars,
 	MarquardtMatrix marquardt_type, bool scale_upgrade)
 {
 	Parameters upgrade_ctl_del_pars;
@@ -272,9 +272,8 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		jacobian.make_runs(run_manager);
 		performance_log->log_event("jacobian runs complete, processing runs");
 		out_of_bound_pars.clear();
-		bool success_process_runs = jacobian.process_runs(numeric_par_names_vec, par_transform,
-			super_parameter_group_info, *ctl_par_info_ptr, run_manager, *prior_info_ptr, out_of_bound_pars,
-			phiredswh_flag, calc_init_obs);
+		bool success_process_runs = jacobian.process_runs(par_transform,
+			super_parameter_group_info, run_manager, *prior_info_ptr);
 		if (out_of_bound_pars.size()>0 || !success_process_runs)
 		{
 			throw PestError("Error in SVDASolver::iteration: Can not compute super parameter derivatives");
@@ -362,11 +361,10 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		Parameters new_pars;
 		const Parameters base_run_active_ctl_pars = par_transform.ctl2active_ctl_cp(  base_run.get_ctl_pars());
 		Parameters base_numeric_pars = par_transform.ctl2numeric_cp(base_run.get_ctl_pars());
-		LimitType limit_type;
 
 		frozen_derivative_par_vec.push_back(Parameters());
 		calc_upgrade_vec(i_lambda, frozen_derivative_par_vec.back(), Q_sqrt, *regul_scheme_ptr, residuals_vec,
-			obs_names_vec, base_run_active_ctl_pars, limit_type,
+			obs_names_vec, base_run_active_ctl_pars,
 			new_pars, MarquardtMatrix::IDENT, false);
 
 		//transform new_pars to model parameters

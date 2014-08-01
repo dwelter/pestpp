@@ -318,7 +318,7 @@ void SVDSolver::calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSq
 
 	string *name_ptr;
 	auto it_nf_end = pars_nf.end();
-	for (int i = 0; i < numeric_par_names.size(); ++i)
+	for (size_t i = 0; i < numeric_par_names.size(); ++i)
 	{
 		name_ptr = &(numeric_par_names[i]);
 		upgrade_active_ctl_del_pars[*name_ptr] = upgrade_vec(i);
@@ -421,7 +421,7 @@ void SVDSolver::calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqr
 
 	string *name_ptr;
 	auto it_nf_end = pars_nf.end();
-	for (int i = 0; i < numeric_par_names.size(); ++i)
+	for (size_t i = 0; i < numeric_par_names.size(); ++i)
 	{
 		name_ptr = &(numeric_par_names[i]);
 		upgrade_active_ctl_del_pars[*name_ptr] = upgrade_vec(i);
@@ -448,7 +448,7 @@ void SVDSolver::calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqr
 
 	void SVDSolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_active_ctl_pars, QSqrtMatrix &Q_sqrt, 
 		const DynamicRegularization &regul, VectorXd &residuals_vec, vector<string> &obs_names_vec,
-		const Parameters &base_run_active_ctl_pars, LimitType &limit_type, Parameters &upgrade_active_ctl_pars, 
+		const Parameters &base_run_active_ctl_pars, Parameters &upgrade_active_ctl_pars, 
 		MarquardtMatrix marquardt_type, bool scale_upgrade)
 {
 	Parameters upgrade_ctl_del_pars;
@@ -600,9 +600,8 @@ restart_resume_jacobian_runs:
 	performance_log->log_event("jacobian parameter sets built, commencing model runs");
 	jacobian.make_runs(run_manager);
 	performance_log->log_event("jacobian runs complete, processing runs");
-	jacobian.process_runs(numeric_parname_vec, par_transform,
-		*par_group_info_ptr, *ctl_par_info_ptr, run_manager, *prior_info_ptr, out_ofbound_pars,
-		phiredswh_flag, calc_init_obs);
+	jacobian.process_runs(par_transform,
+		*par_group_info_ptr, run_manager, *prior_info_ptr);
 	performance_log->log_event("processing jacobian runs complete");
 
 	performance_log->log_event("saving jacobian and sen files");
@@ -645,7 +644,6 @@ restart_reuse_jacoboian:
 	VectorXd residuals_vec = -1.0 * stlvec_2_egienvec(cur_solution.get_residuals_vec(obs_names_vec));
 
 	Parameters base_run_active_ctl_par = par_transform.ctl2active_ctl_cp(cur_solution.get_ctl_pars());
-	LimitType limit_type = LimitType::NONE;
 
 	//If running in regularization mode, adjust the regularization weights
 	// define a function type for upgrade methods
@@ -654,7 +652,7 @@ restart_reuse_jacoboian:
 		Parameters frozen_active_ctl_pars = failed_jac_pars;
 		//use call to calc_upgrade_vec to compute frozen parameters
 		calc_upgrade_vec(0, frozen_active_ctl_pars, Q_sqrt, *regul_scheme_ptr, residuals_vec,
-			obs_names_vec, base_run_active_ctl_par, limit_type,
+			obs_names_vec, base_run_active_ctl_par,
 			tmp_new_par, MarquardtMatrix::IDENT, false);
 		if (regul_scheme_ptr->get_use_dynamic_reg())
 		{
@@ -705,7 +703,7 @@ restart_reuse_jacoboian:
 		// reset frozen_active_ctl_pars
 		Parameters frozen_active_ctl_pars = failed_jac_pars;
 		calc_upgrade_vec(i_lambda, frozen_active_ctl_pars, Q_sqrt, *regul_scheme_ptr, residuals_vec,
-			obs_names_vec, base_run_active_ctl_par, limit_type,
+			obs_names_vec, base_run_active_ctl_par,
 			new_pars, MarquardtMatrix::IDENT, false);
 
 		magnitude_vec.push_back(Transformable::l2_norm(base_run_active_ctl_par, new_pars));
@@ -1185,8 +1183,7 @@ int SVDSolver::check_bnd_par(Parameters &new_freeze_active_ctl_pars, const Param
 }
 
 void SVDSolver::limit_parameters_ip(const Parameters &init_active_ctl_pars, Parameters &upgrade_active_ctl_pars,
-	LimitType &limit_type, const Parameters &frozen_active_ctl_pars,
-	bool ignore_upper_lower)
+	LimitType &limit_type, const Parameters &frozen_active_ctl_pars)
 {
 	map<string, LimitType> limit_type_map;
 	limit_type = LimitType::NONE;
@@ -1265,10 +1262,7 @@ PhiComponets SVDSolver::phi_estimate(const Jacobian &jacobian, QSqrtMatrix &Q_sq
 {
 	Parameters upgrade_ctl_del_pars;
 	Parameters grad_ctl_del_pars;
-	map<string, LimitType> limit_type_map;
-	Parameters limited_ctl_parameters;
 	Parameters new_pars;
-	LimitType limit_type = LimitType::NONE;
 
 	typedef void(SVDSolver::*UPGRADE_FUNCTION) (const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt, const DynamicRegularization &regul,
 		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,

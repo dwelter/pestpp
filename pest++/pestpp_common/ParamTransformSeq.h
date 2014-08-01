@@ -101,9 +101,9 @@ public:
 	const vector<Transformation*> get_custom_tran_seq(const string &name) const;
 	void add_custom_tran_seq(const std::string &name,  const vector<Transformation*> &tran_seq);
 	void custom_tran_seq_forward_ip(const std::string &name, Parameters &data) const;
-	void add_default_deep_copy(Transformation *tr){default_deep_copy_tran_set.insert(tr);}
-	void clear_default_deep_copies(Transformation *tr){default_deep_copy_tran_set.clear();}
-	set <Transformation *> get_default_deep_copy_vec() const {return default_deep_copy_tran_set;}
+	//void add_default_deep_copy(Transformation *tr){default_deep_copy_tran_set.insert(tr);}
+	//void clear_default_deep_copies(Transformation *tr){default_deep_copy_tran_set.clear();}
+	//set <Transformation *> get_default_deep_copy_vec() const {return default_deep_copy_tran_set;}
 	bool is_one_to_one() const;
 	void print(ostream &os) const;
 	void jac_numeric2active_ctl_ip(Jacobian &jac) const;

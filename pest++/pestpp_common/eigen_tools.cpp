@@ -86,7 +86,7 @@ void matrix_del_cols(Eigen::SparseMatrix<double> &mat, const vector<size_t> &col
 		// add rows to be retained to the beginning of the  permuatation matrix
 		int icol_new = 0;
 		int n_col_save = 0;
-		for (int icol_old=0; icol_old<ncols; ++icol_old)
+		for (int icol_old = 0; icol_old<ncols; ++icol_old)
 		{
 			if (del_col_set.find(icol_old) == del_col_set.end())
 			{

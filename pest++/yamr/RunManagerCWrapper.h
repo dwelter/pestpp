@@ -40,7 +40,6 @@ RunManager* rmic_create_genie(char **comline, int comline_array_len,
 	char **ins, int ins_array_len,
 	char **out, int out_array_len,
 	char *storfile,
-	char *host,
 	char *genie_tag);
 
 #ifdef OS_WIN

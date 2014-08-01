@@ -8,7 +8,6 @@
 
 typedef struct RunManagerAbstract RunManagerAbstract;
 
-static RunManagerAbstract *_run_manager_ptr_ = nullptr;
 static ofstream fout_run_manager_log_file;
 
 using namespace pest_utils;
@@ -65,7 +64,6 @@ RunManager* rmic_create_genie(char **comline, int comline_array_len,
 	char **ins, int ins_array_len,
 	char **out, int out_array_len,
 	char *storfile,
-	char *host,
 	char *genie_tag)
 {
 	RunManager *run_manager_ptr = nullptr;
@@ -182,6 +180,7 @@ int rmic_get_failed_runs_alloc(RunManager *run_manager_ptr, int *run_id_array, i
         n_failed = fail_set.size();
         run_id_array = new int[n_failed];
         std::copy_n(fail_set.begin(), n_failed, run_id_array);
+	*nfail = n_failed; 
 	}
     catch(PestIndexError ex)
 	{

@@ -207,11 +207,11 @@ StringvecFortranCharArray::~StringvecFortranCharArray()
 }
 
 
-string remove_file_ext(const string &filename, size_t max_len)
+string remove_file_ext(const string &filename)
 {
 	// remove .pst or .PST from the end of the filename
 	string new_str = filename;
-	int found = filename.find_last_of(".");
+	size_t found = filename.find_last_of(".");
 	if (found != string::npos)
 	{
 		new_str.erase(found, string::npos);
@@ -299,7 +299,7 @@ vector<string> fortran_str_array_2_vec(char *fstr, int str_len, int array_len)
 	vector<string> str_vec;
 	str_vec.reserve(array_len);
 
-	for (size_t ia=0; ia < array_len; ++ia)
+	for (int ia=0; ia < array_len; ++ia)
 	{
 	    string new_str(fstr+ia*str_len, str_len);
             strip_ip(new_str);

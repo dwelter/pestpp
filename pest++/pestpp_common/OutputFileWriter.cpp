@@ -190,7 +190,6 @@ void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobia
 	int n_nonzero_weights_reg = q_sqrt_reg.nonZeros();
 	int n_nonzero_weights_no_reg = q_sqrt_no_reg.nonZeros();
 
-	size_t size_par_vec = pars.size();
 	for (int i = 0; i < n_par; ++i)
 	{
 		fout << "   " << setw(15) << par_list[i]
