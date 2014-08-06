@@ -28,13 +28,15 @@ public:
 	RunManagerSerial(const std::vector<std::string> _comline_vec,
 		const std::vector<std::string> _tplfile_vec, const std::vector<std::string> _inpfile_vec,
 		const std::vector<std::string> _insfile_vec, const std::vector<std::string> _outfile_vec,
-		const std::string &stor_filename, const std::string &run_dir, int _max_run_fail=1);
+		const std::string &stor_filename, const std::string &run_dir, int _max_run_fail=1,
+		bool _io_fortran=true);
 	virtual void run();
 	~RunManagerSerial(void);
 private:
 	std::string run_dir;
 	static std::string tpl_err_msg(int i);
 	static std::string ins_err_msg(int i);
+	bool io_fortran;
 };
 
 #endif /* RUNMANAGERSERIAL_H */

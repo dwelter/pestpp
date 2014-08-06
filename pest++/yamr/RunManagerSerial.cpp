@@ -102,10 +102,11 @@ string RunManagerSerial::ins_err_msg(int i)
 RunManagerSerial::RunManagerSerial(const vector<string> _comline_vec,
 	const vector<string> _tplfile_vec, const vector<string> _inpfile_vec,
 	const vector<string> _insfile_vec, const vector<string> _outfile_vec,
-	const string &stor_filename, const string &_run_dir, int _max_run_fail)
+	const string &stor_filename, const string &_run_dir, int _max_run_fail,
+	const bool _io_fortran)
 	: RunManagerAbstract(_comline_vec, _tplfile_vec, _inpfile_vec,
 	_insfile_vec, _outfile_vec, stor_filename, _max_run_fail),
-		run_dir(_run_dir)
+	run_dir(_run_dir), io_fortran(_io_fortran)
 {
 	cout << "              starting serial run manager ..." << endl << endl;
 }
@@ -127,7 +128,6 @@ void RunManagerSerial::run()
 	//TemplateFiles tpl_files(isDouble,forceRadix,tplfile_vec,inpfile_vec,par_name_vec);
 	//InstructionFiles ins_files(insfile_vec,outfile_vec,obs_name_vec);
 	std::vector<double> obs_vec;
-
 	// This is necessary to support restart as some run many already be complete
 	vector<int> run_id_vec;
 	int nruns = get_outstanding_run_ids().size();
@@ -135,7 +135,6 @@ void RunManagerSerial::run()
 	{
 		for (int i_run : run_id_vec)
 		{
-
 			Observations obs;
 			vector<double> par_values;
 			Parameters pars;
@@ -155,10 +154,18 @@ void RunManagerSerial::run()
 				{
 					throw PestError("Error running model: invalid parameter value returned");
 				}
-				wrttpl_(&ntpl, StringvecFortranCharArray(tplfile_vec, 50).get_prt(),
-					StringvecFortranCharArray(inpfile_vec, 50).get_prt(),
-					&npar, StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
-					&par_values[0], &ifail);
+				if (io_fortran)
+				{
+					wrttpl_(&ntpl, StringvecFortranCharArray(tplfile_vec, 50).get_prt(),
+						StringvecFortranCharArray(inpfile_vec, 50).get_prt(),
+						&npar, StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
+						&par_values[0], &ifail);
+				}
+				else
+				{					
+					throw PestError("non-fortran IO not implemented for TPL files");
+				}
+
 				if (ifail != 0)
 				{
 					throw PestError("Error processing template file");
@@ -169,10 +176,17 @@ void RunManagerSerial::run()
 					system(comline_vec[i].c_str());
 				}
 				obs_vec.resize(nobs, RunStorage::no_data);
-				readins_(&nins, StringvecFortranCharArray(insfile_vec, 50).get_prt(),
-					StringvecFortranCharArray(outfile_vec, 50).get_prt(),
-					&nobs, StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
-					&obs_vec[0], &ifail);
+				if (io_fortran)
+				{
+					readins_(&nins, StringvecFortranCharArray(insfile_vec, 50).get_prt(),
+						StringvecFortranCharArray(outfile_vec, 50).get_prt(),
+						&nobs, StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
+						&obs_vec[0], &ifail);
+				}
+				else
+				{
+					throw PestError("non-fortran IO not implemented for INS files");
+				}
 				if (ifail != 0)
 				{
 					throw PestError("Error processing instruction file");

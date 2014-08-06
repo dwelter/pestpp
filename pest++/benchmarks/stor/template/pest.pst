@@ -61,3 +61,4 @@ pri_2 1.0 * log(scoeff) = -0.7 0.8 regul
 ++# MAT_INV(Q1/2J)
 ++ AUTO_NORM(4)
 ++ LAMBDAS(.05, 1, 5, 50, 500, 5000)
+++ io_fortran(true)

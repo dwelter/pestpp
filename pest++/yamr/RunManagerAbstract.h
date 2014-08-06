@@ -36,7 +36,7 @@ public:
 	RunManagerAbstract(const std::vector<std::string> _comline_vec,
 		const std::vector<std::string> _tplfile_vec, const std::vector<std::string> _inpfile_vec,
 		const std::vector<std::string> _insfile_vec, const std::vector<std::string> _outfile_vec,
-		const std::string &stor_filename, int _max_n_failure=1);
+		const std::string &stor_filename, int _max_n_failure=1,bool _io_fortran=true);
 	virtual void initialize(const std::vector<std::string> &model_par_names, std::vector<std::string> &obs_names, const std::string &_filename = std::string(""));
 	virtual void initialize(const Parameters &model_pars, const Observations &obs, const std::string &_filename = std::string(""));
 	virtual void initialize_restart(const std::string &_filename);
@@ -78,6 +78,7 @@ protected:
 	std::vector<std::string> insfile_vec;
 	std::vector<std::string> outfile_vec;
 	bool run_requried(int run_id);
+	bool io_fortran;
 };
 
 #endif /*  RUNMANAGERABSTRACT_H */
