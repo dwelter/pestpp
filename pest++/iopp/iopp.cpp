@@ -1807,56 +1807,6 @@ void TemplateFile::process_templatefile(unordered_map<string,double> &parameter_
 
 }
 
-void TemplateFile::read_templatefile()
-{
-	ifstream f(template_filename);
-	if (!f.is_open())
-	{
-		throw TemplateFileError("unable to open template file: "+template_filename);
-	}	
-	string smarker;
-	f >> template_filetype >> smarker;
-	if (smarker.size() != 1)
-	{		
-		throw TemplateFileError("template file "+template_filename+" marker must be a single character, not "+smarker);	
-	}
-	marker = char(smarker[0]);
-
-	if ((string2upper(template_filetype) != "PTF") && (string2upper(template_filetype) != "JTF"))			
-	{
-		throw TemplateFileError("template file "+template_filename+" must start with 'PTF' or 'JTF', not "+template_filetype);
-	}
-	//build a regex for the marker - fast
-	regex rmarker(smarker);
-	smatch mresults; 
-	//read the remaining lines and error check markers
-	string line;
-	int lnum = 1;
-	vector<pair<int, int>> indices;
-	vector<string> line_parameter_names;
-	while (getline(f,line))
-	{
-		//check for marker in line
-		if (regex_search(line,mresults,rmarker))
-		{						
-			//get marker indices on this line
-			indices = get_marker_indices(marker,line);	
-			//get the parameter names within the markers
-			line_parameter_names = get_line_parameters(indices,line);
-			vector<TemplateParameter> line_parameters;
-			//for each parameter on this line, create TemplateParameter objects		
-			for (vector<string>::size_type i=0;i<line_parameter_names.size();i++)
-			{
-				TemplateParameter tp(line_parameter_names[i],-1.0e+10,indices[i].first,indices[i].second,lnum,isDouble,forceRadix);				
-				line_parameters.push_back(tp);
-			}
-			parameter_line_index.insert(pair<int,vector<TemplateParameter>>(lnum,line_parameters));
-			line_numbers.push_back(lnum);
-		}
-		lnum++;
-	}
-	
-}
 
 vector<string> TemplateFile::get_line_parameters(vector<pair<int,int>> indices,string line)
 {
@@ -1945,7 +1895,7 @@ TemplateFiles::TemplateFiles(bool isDouble, bool forceRadix,vector<string> tpl_f
 		template_files.push_back(tpl);
 	}
 	//this one will throw errors...
-	check_parameter_names();
+	//check_parameter_names();
 	
 }
 
@@ -1986,23 +1936,26 @@ void TemplateFiles::check_parameter_names()
 	}
 }
 
-int TemplateFiles::writtpl(vector<double> parameter_values)
+void TemplateFiles::write(const vector<string> par_names, vector<double> &par_values)
 {	
 	unordered_map <string,double> parameter_map;
-	for (auto &pname : parameter_names)
+	/*for (auto &pname : par_names)
 	{
 		transform(pname.begin(), pname.end(), pname.begin(), ::toupper);
-	}
-	for (vector<double>::size_type i=0;i<parameter_values.size();i++)
+	}*/
+	for (vector<double>::size_type i=0;i<par_values.size();i++)
 	{
-		pair <string,double> p(parameter_names[i],parameter_values[i]);
+		pair <string,double> p(par_names[i],par_values[i]);
 		parameter_map.insert(p);
 	}
-	for (vector<TemplateFile>::iterator tpl=template_files.begin();tpl != template_files.end();++tpl)
+	for (auto &tpl : template_files)
 	{
 		//tpl->set_parameter_values(parameter_map);
 		//tpl->write_inputfile();
-		tpl->process_templatefile(parameter_map);
+		tpl.process_templatefile(parameter_map);
 	}
-	return 0;
+	for (int i = 0;i < par_names.size();i++)
+	{
+		par_values[i] = parameter_map.at(par_names[i]);
+	}
 }

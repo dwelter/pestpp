@@ -432,7 +432,7 @@ private:
 class TemplateFiles{
 public:	
 	TemplateFiles(bool isDouble, bool forceRadix, vector<string> tpl_filenames,vector<string> ipt_filenames,vector<string> pnames);	
-	int writtpl(vector<double> parameter_values);
+	void write(const vector<string> par_names,vector<double> &par_values);
 	void check_parameter_names();
 private:
 	vector<string> parameter_names;	

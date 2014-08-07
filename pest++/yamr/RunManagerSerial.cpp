@@ -123,9 +123,9 @@ void RunManagerSerial::run()
 	int ntpl = tplfile_vec.size();
 	int nins = insfile_vec.size();
 	stringstream message;
-	//bool isDouble = true;
-	//bool forceRadix = true;
-	//TemplateFiles tpl_files(isDouble,forceRadix,tplfile_vec,inpfile_vec,par_name_vec);
+	bool isDouble = true;
+	bool forceRadix = true;
+	TemplateFiles tpl_files(isDouble,forceRadix,tplfile_vec,inpfile_vec,par_name_vec);
 	//InstructionFiles ins_files(insfile_vec,outfile_vec,obs_name_vec);
 	std::vector<double> obs_vec;
 	// This is necessary to support restart as some run many already be complete
@@ -160,17 +160,18 @@ void RunManagerSerial::run()
 						StringvecFortranCharArray(inpfile_vec, 50).get_prt(),
 						&npar, StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
 						&par_values[0], &ifail);
+					if (ifail != 0)
+					{
+						throw PestError("Error processing template file");
+					}
 				}
 				else
 				{					
-					throw PestError("non-fortran IO not implemented for TPL files");
-				}
+					tpl_files.write(par_name_vec, par_values);
 
-				if (ifail != 0)
-				{
-					throw PestError("Error processing template file");
+					//throw PestError("non-fortran IO not implemented for TPL files");
 				}
-				//tpl_files.writtpl(par_values);			
+								
 				for (int i = 0, n_exec = comline_vec.size(); i < n_exec; ++i)
 				{
 					system(comline_vec[i].c_str());
