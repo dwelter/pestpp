@@ -371,8 +371,7 @@ void Instruction::parse_fixed()
 void Instruction::execute_fixed(ifstream* out,int* lpos, streampos* line_start)
 {
 	start_point = out->tellg();
-	streampos curr_point;
-	long line_length;
+	streampos curr_point;	
 	string line;
 	if (rtype == Instruction::read_type::line)
 	{
@@ -829,14 +828,16 @@ vector<string> InstructionLine::get_observation_names()
 
 InstructionFile::InstructionFile(string ins_filename)
 {
-	instruction_filename = ins_filename;
-	ins.open(ins_filename);
+	instruction_filename = ins_filename;	
+	string line, ftype, mstring;
+	ins.open(instruction_filename);
 	if (!ins.is_open())
 	{
-		throw InstructionFileError("could not open instruction file "+ins_filename);
+		throw InstructionFileError("could not open instruction file " +
+			instruction_filename);
 	}
-	string line,ftype,mstring;
-	getline(ins,line);
+
+	getline(ins, line);
 	istringstream iss(line);
 
 	iss >> ftype >> mstring;
@@ -846,7 +847,8 @@ InstructionFile::InstructionFile(string ins_filename)
 	}
 	if (mstring.size() != 1)
 	{
-		throw InstructionFileError("marker delimiter must be a single character, not " + mstring);
+		throw InstructionFileError("marker delimiter must be a single character, not " +
+			mstring);
 	}
 	marker_delim = mstring[0];
 	build_instruction_set();
@@ -854,11 +856,11 @@ InstructionFile::InstructionFile(string ins_filename)
 
 void InstructionFile::build_instruction_set()
 {
-	string iline;
+	string line;
 	while (!ins.eof())
 	{
-		iline = get_instruction_line();
-		parse_instruction_line(iline);
+		line = get_instruction_line();
+		parse_instruction_line(line);
 	}
 	return;
 
@@ -997,6 +999,16 @@ unordered_map<string,double> InstructionFile::read(ifstream* out)
 	return obs_map;
 }
 
+void InstructionFile::read(ifstream* out,unordered_map<string,double> &ifile_map)
+{
+	unordered_map<string, double> line_map;
+	for (auto &i : instruction_lines)
+	{
+		line_map = i.execute(out);
+		ifile_map.insert(line_map.begin(), line_map.end());
+	}
+}
+
 vector<string> InstructionFile::get_observation_names()
 {
 	vector<string> obs_names,line_names;
@@ -1014,22 +1026,32 @@ InstructionFiles::InstructionFiles(vector<string> ins_files,vector<string>out_fi
 	instruction_filenames = ins_files;
 	output_filenames = out_files;
 	obs_names = onames;
+	InstructionFile* ifile;
+	/*for (auto &ifile_name : instruction_filenames)
+	{
+		ifile = new InstructionFile(ifile_name);
+		instruction_files.push_back(*ifile);
+	}*/
 }
 
-vector<double> InstructionFiles::readins()
+//void InstructionFiles::build_instruction_sets()
+//{
+//	for (auto &ifile : instruction_files)
+//	{
+//		ifile.build_instruction_set();
+//	}
+//}
+
+vector<double> InstructionFiles::read(const vector<string> obs_name_vec)
 {
 	size_t i;
-	vector<double> obs_vals(obs_names.size());
-	unordered_map<string,double> ifile_map;
-	vector<string> ifile_onames;
+	vector<double> obs_vals(obs_name_vec.size());
+	unordered_map<string,double> ifile_map;	
 	unordered_map<string,double>::iterator miter;
-	//should be initialize to false
-	vector<bool> obs_found(obs_names.size());
-
+	
 	for (i=0;i<instruction_filenames.size();i++)
 	{
-		InstructionFile ins(instruction_filenames[i]);
-		ifile_onames = ins.get_observation_names();
+		InstructionFile ins(instruction_filenames[i]);		
 		ifstream out(output_filenames[i]);
 		if (out.fail())
 		{
@@ -1037,41 +1059,33 @@ vector<double> InstructionFiles::readins()
 		}
 		try
 		{
-			ifile_map = ins.read(&out);
+			ins.read(&out,ifile_map);			
 		}
 		catch (runtime_error& e)
 		{
 			cout << "unable to read instruction file" << instruction_filenames[i] << e.what() << endl;
 			throw e;
 		}
-
-		for (int ii=0;ii<obs_names.size();ii++)
-		{
-			miter = ifile_map.find(obs_names[ii]);
-			if (miter != ifile_map.end())
-			{
-				obs_vals[ii] = miter->second;
-				obs_found[ii] = true;
-			}
-		}
-
+		out.close();		
 	}
+	
 	//check that all requested obs have been read
 	bool missing=false;
 	string missing_obs = "";
-	for (i=0;i<obs_names.size();i++)
+	for (i=0;i<obs_name_vec.size();i++)
 	{
-		if (!obs_found[i])
+		miter = ifile_map.find(obs_name_vec[i]);
+		if (miter == ifile_map.end())
 		{
-			missing_obs += " "+obs_names[i];
+			missing_obs += " "+obs_name_vec[i];
 			missing = true;
 		}
+		obs_vals[i] = ifile_map.at(obs_name_vec[i]);
 	}
 	if (missing)
 	{
 		throw InstructionFileError(" observation values not found in model output files: "+missing_obs);
-	}
-
+	}	
 	return obs_vals;
 }
 

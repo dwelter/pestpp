@@ -126,7 +126,7 @@ void RunManagerSerial::run()
 	bool isDouble = true;
 	bool forceRadix = true;
 	TemplateFiles tpl_files(isDouble,forceRadix,tplfile_vec,inpfile_vec,par_name_vec);
-	//InstructionFiles ins_files(insfile_vec,outfile_vec,obs_name_vec);
+	InstructionFiles ins_files(insfile_vec,outfile_vec,obs_name_vec);		
 	std::vector<double> obs_vec;
 	// This is necessary to support restart as some run many already be complete
 	vector<int> run_id_vec;
@@ -176,24 +176,25 @@ void RunManagerSerial::run()
 				{
 					system(comline_vec[i].c_str());
 				}
-				obs_vec.resize(nobs, RunStorage::no_data);
+				
 				if (io_fortran)
 				{
+					obs_vec.resize(nobs, RunStorage::no_data);
 					readins_(&nins, StringvecFortranCharArray(insfile_vec, 50).get_prt(),
 						StringvecFortranCharArray(outfile_vec, 50).get_prt(),
 						&nobs, StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
 						&obs_vec[0], &ifail);
+					if (ifail != 0)
+					{
+						throw PestError("Error processing instruction file");
+					}
 				}
 				else
 				{
-					throw PestError("non-fortran IO not implemented for INS files");
+					//throw PestError("non-fortran IO not implemented for INS files");
+					obs_vec = ins_files.read(obs_name_vec);
 				}
-				if (ifail != 0)
-				{
-					throw PestError("Error processing instruction file");
-				}
-				//obs_vec = ins_files.readins();
-
+								
 				// check parameters and observations for inf and nan
 				if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))
 				{

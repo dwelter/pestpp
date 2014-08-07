@@ -291,15 +291,16 @@ public:
 	InstructionFile();
 	InstructionFile(string ins_filename);
 	unordered_map<string,double> read(ifstream* out);
+	void read(ifstream* out, unordered_map<string,double> &ifile_map);
 	vector<pair<int,int>> get_marker_indices(string line);
 	vector<string> get_observation_names();
 	void set_filename(string ins_file){instruction_filename=ins_file;}
+	void build_instruction_set();
 private:
 	string instruction_filename;
 	vector<InstructionLine> instruction_lines;
 	ifstream ins;
-	char marker_delim;
-	void build_instruction_set();
+	char marker_delim;	
 	void parse_instruction_line(string ins_line);
 	string get_instruction_line();
 	
@@ -309,8 +310,9 @@ private:
 class InstructionFiles{
 public:
 	InstructionFiles(vector<string> ins_files,vector<string>out_files,vector<string>onames);
-	vector<double> readins();
+	vector<double> read(const vector<string> obs_name_vec);
 	void check_obs_names(vector<string> onames);
+	void build_instruction_sets();
 private:
 	vector<string> instruction_filenames;
 	vector<string> output_filenames;
