@@ -15,6 +15,7 @@
 #include <exception>
 #include <io.h>
 #include "iopp.h"
+#include "Transformable.h"
 
 using namespace std;
 
@@ -1756,19 +1757,17 @@ double TemplateFile::write_value_to_line(string &name, string &line, int &start_
 	return fwv.get_templatefile_double();
 }
 
-void TemplateFile::process_templatefile(unordered_map<string,double> &parameter_map)
+
+
+
+void TemplateFile::build_marker()
 {
 	ifstream f(template_filename);
 	if (!f.is_open())
 	{
 		throw TemplateFileError("unable to open template file: " + template_filename);
 	}
-	ofstream ofs(input_filename);
-	if (!ofs.is_open())
-	{
-		throw TemplateFileError("unable to open model input file: " + input_filename);
-	}
-	string smarker,line;
+	string smarker, line;
 	getline(f, line);
 	stringstream ss(line);
 	ss >> template_filetype >> smarker;
@@ -1782,14 +1781,34 @@ void TemplateFile::process_templatefile(unordered_map<string,double> &parameter_
 		throw TemplateFileError("template file " + template_filename + " must start with 'PTF' or 'JTF', not " + template_filetype);
 	}
 	//build a regex for the marker - fast
-	regex rmarker(smarker);
+	rmarker = regex(smarker);
+	f.close();
+
+}
+
+void TemplateFile::process(Parameters &pars)
+{
+	build_marker();
+	ifstream f(template_filename);
+	if (!f.is_open())
+	{
+		throw TemplateFileError("unable to open template file: " + template_filename);
+	}
+	ofstream ofs(input_filename);
+	if (!ofs.is_open())
+	{
+		throw TemplateFileError("unable to open model input file: " + input_filename);
+	}
+	string line;
+	//read the ptf marker line
+	getline(f, line);
 	smatch mresults;
-	//read the remaining lines and error check markers	
-	int lnum = 1;
+	//read the remaining lines and error check markers		
 	double val;
 	vector<pair<int, int>> indices;
 	vector<string> line_parameter_names;
-	vector<TemplateParameter> line_parameters;
+	vector<string>::iterator is;
+	vector<pair<int, int>>::iterator ip;
 	while (getline(f, line))
 	{
 		//check for marker in line
@@ -1799,27 +1818,68 @@ void TemplateFile::process_templatefile(unordered_map<string,double> &parameter_
 			indices = get_marker_indices(marker, line);
 			//get the parameter names within the markers
 			line_parameter_names = get_line_parameters(indices, line);
-			line_parameters.clear();
-			//for each parameter on this line, create TemplateParameter objects		
-			for (vector<string>::size_type i = 0; i<line_parameter_names.size(); i++)
+			for (is = line_parameter_names.begin(), ip = indices.begin(); is != line_parameter_names.end(), ip != indices.end(); ++is, ++ip)
 			{
-				//TemplateParameter tp(line_parameter_names[i], -1.0e+10, indices[i].first, indices[i].second, lnum, isDouble, forceRadix);
-				//line_parameters.push_back(tp);
-				val = parameter_map.at(line_parameter_names[i]);
-				string name = line_parameter_names[i];
-				val = write_value_to_line(line_parameter_names[i], line, indices[i].first, indices[i].second, parameter_map.at(line_parameter_names[i]));
-				parameter_map[line_parameter_names[i]] = val;
+				val = pars.get_rec(*is);
+				val = write_value_to_line(*is, line, ip->first, ip->second, val);
+				pars.update_rec(*is,val);
 			}
-			parameter_line_index.insert(pair<int, vector<TemplateParameter>>(lnum, line_parameters));
-			line_numbers.push_back(lnum);
 		}
 		ofs << line << "\n";
-		lnum++;
 	}
 	f.close();
 	ofs.close();
 
 }
+
+
+void TemplateFile::process(unordered_map<string,double> &parameter_map)
+{
+	build_marker();
+	ifstream f(template_filename);
+	if (!f.is_open())
+	{
+		throw TemplateFileError("unable to open template file: " + template_filename);
+	}
+	ofstream ofs(input_filename);
+	if (!ofs.is_open())
+	{
+		throw TemplateFileError("unable to open model input file: " + input_filename);
+	}
+	string line;
+	//read the ptf marker line
+	getline(f, line);	
+	smatch mresults;
+	//read the remaining lines and error check markers		
+	double val;
+	vector<pair<int, int>> indices;
+	vector<string> line_parameter_names;	
+	vector<string>::iterator is;
+	vector<pair<int, int>>::iterator ip;
+	while (getline(f, line))
+	{
+		//check for marker in line
+		if (regex_search(line, mresults, rmarker))
+		{
+			//get marker indices on this line
+			indices = get_marker_indices(marker, line);
+			//get the parameter names within the markers
+			line_parameter_names = get_line_parameters(indices, line);			
+			
+			for (is = line_parameter_names.begin(), ip = indices.begin(); is != line_parameter_names.end(), ip != indices.end(); ++is, ++ip)
+			{
+				val = write_value_to_line(*is, line, ip->first, ip->second, parameter_map.at(*is));
+				parameter_map[*is] = val;
+			}			
+		}
+		ofs << line << "\n";		
+	}
+	f.close();
+	ofs.close();
+
+}
+
+
 
 
 vector<string> TemplateFile::get_line_parameters(vector<pair<int,int>> indices,string line)
@@ -1950,6 +2010,17 @@ void TemplateFiles::check_parameter_names()
 	}
 }
 
+void TemplateFiles::write(Parameters &pars)
+{
+	for (auto &tpl : template_files)
+	{
+		tpl.process(pars);
+	}
+	cout << endl;
+	return;
+}
+
+
 void TemplateFiles::write(const vector<string> par_names, vector<double> &par_values)
 {	
 	unordered_map <string,double> parameter_map;
@@ -1966,7 +2037,7 @@ void TemplateFiles::write(const vector<string> par_names, vector<double> &par_va
 	{
 		//tpl->set_parameter_values(parameter_map);
 		//tpl->write_inputfile();
-		tpl.process_templatefile(parameter_map);
+		tpl.process(parameter_map);
 	}
 	for (int i = 0;i < par_names.size();i++)
 	{

@@ -122,11 +122,11 @@ void RunManagerSerial::run()
 	int nobs = obs_name_vec.size();
 	int ntpl = tplfile_vec.size();
 	int nins = insfile_vec.size();
-	stringstream message;
+	stringstream message;		
 	bool isDouble = true;
 	bool forceRadix = true;
-	TemplateFiles tpl_files(isDouble,forceRadix,tplfile_vec,inpfile_vec,par_name_vec);
-	InstructionFiles ins_files(insfile_vec,outfile_vec,obs_name_vec);		
+	TemplateFiles tpl_files(isDouble, forceRadix, tplfile_vec, inpfile_vec, par_name_vec);
+	InstructionFiles ins_files(insfile_vec, outfile_vec, obs_name_vec);
 	std::vector<double> obs_vec;
 	// This is necessary to support restart as some run many already be complete
 	vector<int> run_id_vec;
@@ -167,7 +167,7 @@ void RunManagerSerial::run()
 				}
 				else
 				{					
-					tpl_files.write(par_name_vec, par_values);
+					tpl_files.write(pars);
 
 					//throw PestError("non-fortran IO not implemented for TPL files");
 				}
@@ -204,11 +204,15 @@ void RunManagerSerial::run()
 				{
 					throw PestError("Error running model: invalid observation value returned");
 				}
+
 				success_runs += 1;
-				pars.clear();
-				pars.insert(par_name_vec, par_values);
-				obs.clear();
-				obs.insert(obs_name_vec, obs_vec);
+				if (io_fortran)
+				{
+					pars.clear();
+					pars.insert(par_name_vec, par_values);
+					obs.clear();
+					obs.insert(obs_name_vec, obs_vec);
+				}								
 				file_stor.update_run(i_run, pars, obs);
 			}
 			catch (const std::exception& ex)

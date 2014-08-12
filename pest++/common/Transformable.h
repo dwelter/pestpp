@@ -21,7 +21,6 @@
 #define TRANSFORMABLE_H_
 
 #include <unordered_map>
-#include <vector>
 #include <string>
 #include <ostream>
 #include <utility>

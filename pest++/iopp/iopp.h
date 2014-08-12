@@ -10,6 +10,7 @@
 #include <map>
 #include <unordered_map>
 #include <algorithm>
+#include "Transformable.h"
 
 using namespace std;
 
@@ -400,15 +401,18 @@ private:
 };
 
 
-class TemplateFile{
+class TemplateFile{	
 public:
 	TemplateFile() {template_filename = "", input_filename = "",isDouble=true,forceRadix=false,warn_width=5;}
-	TemplateFile( const string tpl_filename, const string ipt_filename,const bool isDbl,const bool frcRad){forceRadix = frcRad, isDouble = isDbl, template_filename = tpl_filename, input_filename = ipt_filename;}
+	TemplateFile( const string _template_filename, const string _input_filename,const bool _isDouble,const bool _forceRadix)
+	   {forceRadix = _forceRadix, isDouble = _isDouble, template_filename = _template_filename, input_filename = _input_filename;}
 	void set_parameter_values(unordered_map<string,double> parameter_map);	
+	
 	void write_inputfile();
 	//bool check_templatefile();
 	void read_templatefile();
-	void process_templatefile(unordered_map<string,double> &parameter_map);
+	void process(unordered_map<string,double> &parameter_map);
+	void process(Parameters &pars);
 	vector<string> get_parameter_names();
 	double write_value_to_line(string &name, string &line, int &start_idx, int &end_idx, double &value);
 private:
@@ -416,6 +420,7 @@ private:
 	bool forceRadix;
 	int warn_width;
 	char marker;
+	regex rmarker;
 	string template_filetype;
 	string template_filename;
 	string input_filename;	
@@ -429,12 +434,14 @@ private:
 	vector<string> get_line_parameters(vector<pair<int,int>> indices,string line);
 	string build_input_line(string line,vector<TemplateParameter> line_parameters);
 	vector<double> get_line_values(vector<string> line_parameters);
+	void build_marker();
 };
 
-class TemplateFiles{
+class TemplateFiles{	
 public:	
 	TemplateFiles(bool isDouble, bool forceRadix, vector<string> tpl_filenames,vector<string> ipt_filenames,vector<string> pnames);	
 	void write(const vector<string> par_names,vector<double> &par_values);
+	void write(Parameters &pars);
 	void check_parameter_names();
 private:
 	vector<string> parameter_names;	
