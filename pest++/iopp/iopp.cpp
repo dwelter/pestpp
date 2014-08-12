@@ -1010,6 +1010,17 @@ void InstructionFile::read(ifstream* out,unordered_map<string,double> &ifile_map
 	}
 }
 
+void InstructionFile::read(ifstream* out, Observations &obs)
+{
+	unordered_map<string, double> line_map;
+	for (auto &i : instruction_lines)
+	{
+		line_map = i.execute(out);
+		obs.insert(line_map.begin(), line_map.end());
+	}
+
+}
+
 vector<string> InstructionFile::get_observation_names()
 {
 	vector<string> obs_names,line_names;
@@ -1022,12 +1033,11 @@ vector<string> InstructionFile::get_observation_names()
 }
 
 
-InstructionFiles::InstructionFiles(vector<string> ins_files,vector<string>out_files,vector<string>onames)
+InstructionFiles::InstructionFiles(vector<string> _instruction_filenames,vector<string>_output_filenames)
 {
-	instruction_filenames = ins_files;
-	output_filenames = out_files;
-	obs_names = onames;
-	InstructionFile* ifile;
+	instruction_filenames = _instruction_filenames;
+	output_filenames = _output_filenames;
+	//InstructionFile* ifile;
 	/*for (auto &ifile_name : instruction_filenames)
 	{
 		ifile = new InstructionFile(ifile_name);
@@ -1043,7 +1053,7 @@ InstructionFiles::InstructionFiles(vector<string> ins_files,vector<string>out_fi
 //	}
 //}
 
-vector<double> InstructionFiles::read(const vector<string> obs_name_vec)
+vector<double> InstructionFiles::read(const vector<string> &obs_name_vec)
 {
 	size_t i;
 	vector<double> obs_vals(obs_name_vec.size());
@@ -1090,7 +1100,53 @@ vector<double> InstructionFiles::read(const vector<string> obs_name_vec)
 	return obs_vals;
 }
 
+void InstructionFiles::read(const vector<string> &obs_name_vec, Observations &obs)
+{
+	size_t i;		
+	unordered_map<string, double>::iterator miter;
+	vector<string>::iterator iins, iout;
 
+
+	for (iins = instruction_filenames.begin(), iout = output_filenames.begin(); 
+		iins != instruction_filenames.end(), iout != output_filenames.end();
+		++iins,++iout)
+	{
+		InstructionFile ins(*iins);
+		ifstream out(*iout);
+		if (out.fail())
+		{
+			throw InstructionFileError(" could not open model output file " + *iout);
+		}
+		try
+		{
+			ins.read(&out, obs);
+		}
+		catch (runtime_error& e)
+		{
+			cout << "unable to read instruction file" << *iins << e.what() << endl;
+			throw e;
+		}
+		out.close();
+	}
+
+	//check that all requested obs have been read
+	bool missing = false;
+	string missing_obs = "";
+	for (auto &oname : obs_name_vec)
+	{
+		miter = obs.find(oname);
+		if (miter == obs.end())
+		{
+			missing_obs += " " + oname;
+			missing = true;
+		}		
+	}
+	if (missing)
+	{
+		throw InstructionFileError(" observation values not found in model output files: " + missing_obs);
+	}	
+
+}
 
 
 
@@ -2015,9 +2071,7 @@ void TemplateFiles::write(Parameters &pars)
 	for (auto &tpl : template_files)
 	{
 		tpl.process(pars);
-	}
-	cout << endl;
-	return;
+	}	
 }
 
 

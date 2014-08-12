@@ -126,7 +126,7 @@ void RunManagerSerial::run()
 	bool isDouble = true;
 	bool forceRadix = true;
 	TemplateFiles tpl_files(isDouble, forceRadix, tplfile_vec, inpfile_vec, par_name_vec);
-	InstructionFiles ins_files(insfile_vec, outfile_vec, obs_name_vec);
+	InstructionFiles ins_files(insfile_vec, outfile_vec);
 	std::vector<double> obs_vec;
 	// This is necessary to support restart as some run many already be complete
 	vector<int> run_id_vec;
@@ -138,12 +138,7 @@ void RunManagerSerial::run()
 			Observations obs;
 			vector<double> par_values;
 			Parameters pars;
-			file_stor.get_parameters(i_run, pars);
-
-			for (auto &i : par_name_vec)
-			{
-				par_values.push_back(pars.get_rec(i));
-			}
+			file_stor.get_parameters(i_run, pars);						
 			try {
 				std::cout << string(message.str().size(), '\b');
 				message.str("");
@@ -156,6 +151,10 @@ void RunManagerSerial::run()
 				}
 				if (io_fortran)
 				{
+					for (auto &i : par_name_vec)
+					{
+						par_values.push_back(pars.get_rec(i));
+					}
 					wrttpl_(&ntpl, StringvecFortranCharArray(tplfile_vec, 50).get_prt(),
 						StringvecFortranCharArray(inpfile_vec, 50).get_prt(),
 						&npar, StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
@@ -192,7 +191,7 @@ void RunManagerSerial::run()
 				else
 				{
 					//throw PestError("non-fortran IO not implemented for INS files");
-					obs_vec = ins_files.read(obs_name_vec);
+					ins_files.read(obs_name_vec,obs);
 				}
 								
 				// check parameters and observations for inf and nan

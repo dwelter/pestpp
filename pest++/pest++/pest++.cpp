@@ -443,7 +443,7 @@ int main(int argc, char* argv[])
 	fout_rec << endl;
 	cout << "FINAL OPTIMISATION RESULTS" << endl << endl;
 	fout_rec << "FINAL OPTIMISATION RESULTS" << endl << endl;
-	optimum_run.full_report(cout, DynamicRegularization(false));
+	optimum_run.full_report(cout, DynamicRegularization(false),true);
 	optimum_run.full_report(fout_rec, DynamicRegularization(false));
 	fout_rec << endl;
 	fout_rec << "    Number of forward model runs performed: " << run_manager_ptr->get_total_runs() << endl;
