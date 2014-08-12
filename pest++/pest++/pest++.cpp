@@ -277,7 +277,6 @@ int main(int argc, char* argv[])
 	if (restart_flag)
 	{
 		restart_ctl.update_termination_ctl(termination_ctl);
-
 	}
 
 	SVDSolver::MAT_INV mat_inv = SVDSolver::MAT_INV::JTQJ;
@@ -301,7 +300,6 @@ int main(int argc, char* argv[])
 	{
 		tran_svd->set_SVD_pack_propack();
 	}
-
 
 	TranFixed *tr_svda_fixed = new TranFixed("SVDA Fixed Parameter Transformation");
 	trans_svda = base_trans_seq;

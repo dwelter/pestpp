@@ -1,15 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="network_package.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="network_wrapper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="pest_error.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="RunManagerAbstract.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -28,15 +19,6 @@
     <ClCompile Include="Serializeation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="system_variables.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Transformable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="utilities.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="YamrSlave.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -52,16 +34,7 @@
     <ClCompile Include="debug.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="network_package.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="network_wrapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="RunManagerAbstract.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="pest_error.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RunManagerGenie.h">
@@ -79,15 +52,6 @@
     <ClInclude Include="Serialization.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="system_variables.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Transformable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="utilities.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="YamrSlave.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -95,9 +59,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RunManagerCWrapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="config_os.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="debug.h" />
