@@ -111,7 +111,7 @@ ostream& operator<< (ostream& out, const PriorInformationRec &rhs)
 	return out;
 }
 
-void PriorInformation::AddRecord(const string &pi_line)
+pair<string,string> PriorInformation::AddRecord(const string &pi_line)
 {
 	string par_name;
 	double pifac;
@@ -159,6 +159,7 @@ void PriorInformation::AddRecord(const string &pi_line)
 		}
 	}
 	prior_info_map[prior_info_name] = PriorInformationRec(pival, weight, group, pi_atoms);
+	return pair<string, string>(prior_info_name, group);
 }
 
 vector<string> PriorInformation::get_keys() const

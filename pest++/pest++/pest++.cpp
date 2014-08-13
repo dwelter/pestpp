@@ -196,9 +196,7 @@ int main(int argc, char* argv[])
 	}
 
 	ofstream &fout_rec = file_manager.rec_ofstream();
-	//Initialize OutputFileWriter to hadle IO of suplementary files (.par, .par, .svd)
-	//bool save_eign = pest_scenario.get_svd_info().eigwrite > 0;
-	OutputFileWriter output_file_writer(file_manager, file_manager.get_base_filename(), restart_flag);
+	
 
 	PerformanceLog performance_log(file_manager.open_ofile_ext("pfm"));
 
@@ -224,6 +222,9 @@ int main(int argc, char* argv[])
 		throw(e);
 	}
 	pest_scenario.check_inputs();
+	//Initialize OutputFileWriter to hadle IO of suplementary files (.par, .par, .svd)
+	//bool save_eign = pest_scenario.get_svd_info().eigwrite > 0;
+	OutputFileWriter output_file_writer(file_manager, pest_scenario, restart_flag);
 	output_file_writer.set_svd_output_opt(pest_scenario.get_svd_info().eigwrite);
 
 	RunManagerAbstract *run_manager_ptr;

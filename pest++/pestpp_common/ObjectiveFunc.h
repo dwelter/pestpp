@@ -43,10 +43,15 @@ class ObjectiveFunc
 public:
 	ObjectiveFunc(const Observations *_observations_ptr, const ObservationInfo *_obs_info_ptr, const PriorInformation *_prior_info_ptr) 
 		: observations_ptr(_observations_ptr), obs_info_ptr(_obs_info_ptr), prior_info_ptr(_prior_info_ptr) {} 
+	
+	ObjectiveFunc(const Observations *_observations_ptr, const ObservationInfo *_obs_info_ptr, const PriorInformation *_prior_info_ptr,
+			      const Pest *_ctl_file_ptr)
+		: observations_ptr(_observations_ptr), obs_info_ptr(_obs_info_ptr), prior_info_ptr(_prior_info_ptr),ctl_file_ptr(_ctl_file_ptr) {}
+
 	double get_phi(const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg, int norm = 2) const;
 	PhiComponets get_phi_comp(const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg, int norm = 2) const;
 	map<string, double> get_group_phi(const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg,
-		PhiComponets::OBS_TYPE obs_type = PhiComponets::OBS_TYPE::ALL) const;
+		PhiComponets::OBS_TYPE obs_type = PhiComponets::OBS_TYPE::ALL) const;	
 	PhiComponets phi_report(ostream &os, const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg) const;
 	PhiComponets full_report(ostream &os, const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg,bool limit_par=false) const;
 	vector<double> get_residuals_vec(const Observations &sim_obs, const Parameters &pars, const vector<string> &obs_names) const;
@@ -58,6 +63,7 @@ private:
 	const Observations *observations_ptr;
 	const ObservationInfo *obs_info_ptr;
 	const PriorInformation *prior_info_ptr;
+	const Pest *ctl_file_ptr;
 };
 
 #endif /* OBJECTIVEFUNC_H_ */

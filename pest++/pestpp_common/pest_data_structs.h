@@ -128,7 +128,7 @@ public:
 	const ParameterRec* get_parameter_rec_ptr(const string &name) const;
 	void insert(const string &name, const ParameterRec &rec) {parameter_info[name] = rec;}
 	ParameterInfo() {}
-	~ParameterInfo() {}
+	~ParameterInfo() {}	
 private:
 	unordered_map<string, ParameterRec> parameter_info;
 };
@@ -165,7 +165,7 @@ public:
 	string get_group(const string &obs_name) const;
 	const ObservationRec* get_observation_rec_ptr(const string &name) const;
 	const ObservationGroupRec* get_group_rec_ptr(const string &name) const;
-	Observations get_regulatization_obs(const Observations &obs_in);
+	Observations get_regulatization_obs(const Observations &obs_in);	
 };
 
 class ModelExecInfo {

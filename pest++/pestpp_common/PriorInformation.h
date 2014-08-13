@@ -64,9 +64,9 @@ class PriorInformation
 public:
 	typedef std::map<std::string, PriorInformationRec>::iterator iterator;
 	typedef std::map<std::string, PriorInformationRec>::const_iterator const_iterator;
-	PriorInformation() {}
-	void AddRecord(const std::string &pi_line);
+	PriorInformation() {}	
 	~PriorInformation() {}
+	std::pair<std::string, std::string> AddRecord(const std::string &pi_line);
 	PriorInformation::iterator begin(){return prior_info_map.begin();}
 	PriorInformation::const_iterator begin() const {return prior_info_map.begin();}
 	PriorInformation::iterator end() {return prior_info_map.end();}

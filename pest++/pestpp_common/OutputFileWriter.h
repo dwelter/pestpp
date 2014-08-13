@@ -25,6 +25,7 @@
 #include<Eigen/Dense>
 #include<Eigen/Sparse>
 #include "FileManager.h"
+#include "Pest.h"
 
 class Observations;
 class ObjectiveFunc;
@@ -36,13 +37,10 @@ class QSqrtMatrix;
 class ParameterGroupInfo;
 class DynamicRegularization;
 
-
-
-
 class OutputFileWriter
 {
 public:
-	OutputFileWriter(FileManager &_file_manager, const std::string &_case_name, bool restart_flag = false, bool _save_rei = true, int _eigenwrite = 0);
+	OutputFileWriter(FileManager &_file_manager, Pest &_pest_scenario, bool restart_flag = false, bool _save_rei = true, int _eigenwrite = 0);
 	void write_rei(std::ofstream &fout, int iter_no, const Observations &obs,
 		const Observations &sim, const ObjectiveFunc &obj_func, const Parameters &pars);
 	void write_par(std::ofstream &fout, const Parameters &pars, const TranOffset &offset_tran, const TranScale &scale_tran);
@@ -55,6 +53,7 @@ public:
 	void write_svd_iteration(int iteration_no);
 private:
 	FileManager &file_manager;
+	Pest &pest_scenario;
 	std::string case_name;
 	int eigenwrite;
 	bool save_rei;

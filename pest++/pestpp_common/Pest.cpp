@@ -86,6 +86,7 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 	string name;
 	string *trans_type;
 	string prior_info_string;
+	pair<string, string> pi_name_group;
 	int lnum;
 	int num_par;
 	int num_tpl_file;
@@ -207,6 +208,7 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 			ParameterGroupRec pgi;
 			name = tokens[0];
 			pgi.name = name;
+			ctl_ordered_par_group_names.push_back(name);
 			convert_ip(tokens[1], pgi.inctyp);
 			convert_ip(tokens[2], pgi.derinc);
 			convert_ip(tokens[3], pgi.derinclb);
@@ -301,7 +303,9 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 			//This section processes the prior information.  It does not write out the
 			//last prior infomration.  THis is because it must check for line continuations
 			if (!prior_info_string.empty() && tokens[0] != "&"){
-				prior_info.AddRecord(prior_info_string);
+				pi_name_group = prior_info.AddRecord(prior_info_string);
+				ctl_ordered_pi_names.push_back(pi_name_group.first);
+				ctl_ordered_obs_group_names.push_back(pi_name_group.second);
 				prior_info_string.clear();
 			}
 			else if (tokens[0] == "&") {
@@ -315,7 +319,9 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 			//This section processes the prior information.  It does not write out the
 			//last prior infomration
 			if (!prior_info_string.empty() && tokens[0] != "&") {
-				prior_info.AddRecord(prior_info_string);
+				pi_name_group = prior_info.AddRecord(prior_info_string);
+				ctl_ordered_pi_names.push_back(pi_name_group.first);
+				ctl_ordered_obs_group_names.push_back(pi_name_group.second);
 				prior_info_string.clear();
 			}
 			else if (tokens[0] != "&") {

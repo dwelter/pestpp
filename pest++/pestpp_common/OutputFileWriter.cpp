@@ -37,8 +37,8 @@ using namespace std;
 using namespace Eigen;
 using namespace::pest_utils;
 
-OutputFileWriter::OutputFileWriter(FileManager &_file_manager, const string &_case_name, bool restart_flag, bool _save_rei, int _eigenwrite)
-	: file_manager(_file_manager), case_name(_case_name), save_rei(_save_rei), eigenwrite(_eigenwrite)
+OutputFileWriter::OutputFileWriter(FileManager &_file_manager, Pest &_pest_scenario, bool restart_flag, bool _save_rei, int _eigenwrite)
+	: file_manager(_file_manager), pest_scenario(_pest_scenario),case_name(_file_manager.get_base_filename()), save_rei(_save_rei), eigenwrite(_eigenwrite)
 {
 	if (restart_flag)
 	{
@@ -64,32 +64,38 @@ void OutputFileWriter::write_rei(ofstream &fout, int iter_no, const Observations
 	fout << " MODEL OUTPUTS AT END OF OPTIMISATION ITERATION NO. " <<  iter_no << ":-" << endl;
 	fout << endl << endl;
 	fout <<  setw(21) << " Name" << setw(13) << " Group" <<  setw(21) << " Measured" << setw(21) << " Modelled" << setw(21) << " Residual" << setw(21) << " Weight" << endl;
-	vector<string> obs_name_vec = obs.get_keys();
+	//vector<string> obs_name_vec = obs.get_keys();
+	vector<string> obs_name_vec = pest_scenario.get_ctl_ordered_obs_names();
 	double obs_val, sim_val, residual;
-	for(vector<string>::const_iterator b = obs_name_vec.begin(), 
-		e = obs_name_vec.end(); b!=e; ++b)
+	//for(vector<string>::const_iterator b = obs_name_vec.begin(), 
+	//	e = obs_name_vec.end(); b!=e; ++b)
+	for (auto &b : obs_name_vec)
 	{
-		obs_val = obs.get_rec(*b);
-		sim_val = sim.get_rec(*b);
-		fout << " " << setw(20) << *b
-			<< " " << setw(12) << obj_func.get_obs_info_ptr()->get_observation_rec_ptr(*b)->group
+		obs_val = obs.get_rec(b);
+		sim_val = sim.get_rec(b);
+		fout << " " << setw(20) << lower_cp(b)
+			<< " " << setw(12) << lower_cp(obj_func.get_obs_info_ptr()->get_observation_rec_ptr(b)->group)
 			<< " " << showpoint <<   setw(20) << obs_val 
 			<< " " << showpoint <<  setw(20) << sim_val 
 			<<  " " << showpoint <<  setw(20) << obs_val - sim_val
-			<< " " << showpoint << setw(20)  << sqrt(obj_func.get_obs_info_ptr()->get_observation_rec_ptr(*b)->weight) <<endl;
+			<< " " << showpoint << setw(20)  << sqrt(obj_func.get_obs_info_ptr()->get_observation_rec_ptr(b)->weight) <<endl;
 	}
 	//process prior information
 	const PriorInformation *prior_info_ptr = obj_func.get_prior_info_ptr();
 	const PriorInformationRec *pi_rec_ptr;
-	for(PriorInformation::const_iterator b = prior_info_ptr->begin(), 
-		e = prior_info_ptr->end(); b!=e; ++b)
+	PriorInformation::const_iterator ipi;
+	//for(PriorInformation::const_iterator b = prior_info_ptr->begin(), 
+	//	e = prior_info_ptr->end(); b!=e; ++b)
+	obs_name_vec = pest_scenario.get_ctl_ordered_pi_names();
+	for (auto &b : obs_name_vec)
 	{
-		pi_rec_ptr = &(*b).second;
+		ipi = prior_info_ptr->find(b);
+		pi_rec_ptr = &(*ipi).second;
 		obs_val = pi_rec_ptr->get_obs_value();
 		residual = pi_rec_ptr->calc_residual(pars);
 		sim_val = obs_val + residual;
-		fout << " " << setw(20) << (*b).first
-		<< " " << setw(12) << pi_rec_ptr->get_group()
+		fout << " " << setw(20) << lower_cp(b)
+		<< " " << setw(12) << lower_cp(pi_rec_ptr->get_group())
 		<< " " << showpoint <<   setw(20) << obs_val
 		<< " " << showpoint <<  setw(20) << sim_val
 		<<  " " << showpoint <<  setw(20) << residual
@@ -107,23 +113,25 @@ void OutputFileWriter::write_par(ofstream &fout, const Parameters &pars, const T
 	fout.unsetf(ios::floatfield);
 	fout.precision(15);
 	fout << "single point" << endl;
-	for(Parameters::const_iterator b=pars.begin(), e=pars.end();
-		b!=e; ++b)
+	//for(Parameters::const_iterator b=pars.begin(), e=pars.end();
+	//	b!=e; ++b)
+	vector<string> par_name_vec = pest_scenario.get_ctl_ordered_par_names();
+	for (auto &b : par_name_vec)
 	{
-		name_ptr = &(*b).first;
-		val_pair = offset_tran.get_value(*name_ptr);
+		//name_ptr = &(*b).first;		
+		val_pair = offset_tran.get_value(b);
 		if (val_pair.first == true)
 			offset = val_pair.second;
 		else
 			offset = 0.0;
-		val_pair = scale_tran.get_value(*name_ptr);
+		val_pair = scale_tran.get_value(b);
 		if (val_pair.first == true)
 			scale = val_pair.second;
 		else
 			scale = 1.0;
 
-		fout << setw(14) << *name_ptr << setw(22) 
-		<<  showpoint<< (*b).second << " " << setw(20) << showpoint << scale << " " << setw(20) << showpoint << offset << endl;
+		fout << setw(14) << lower_cp(b) << setw(22) 
+		<<  showpoint<< pars.get_rec(b) << " " << setw(20) << showpoint << scale << " " << setw(20) << showpoint << offset << endl;
 	}
 }
 
@@ -175,6 +183,7 @@ void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobia
 	fout << " NUMERIC PARAMETER SENSITIVITIES FOR OPTIMISATION ITERATION NO. " << setw(3) << iter_no << " ----->" << endl;
 	fout << " Parameter name   Group        Current Value           CSS w/reg           CSS w/o reg" << endl;
 	const vector<string> &par_list = jac.parameter_list();
+	//const vector<string> &par_list = pest_scenario.get_ctl_ordered_par_names();
 	const vector<string> &obs_list = jac.obs_and_reg_list();
 	Parameters pars = jac.get_base_numeric_parameters();
 	VectorXd par_vec = pars.get_data_eigen_vec(par_list);
@@ -189,11 +198,19 @@ void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobia
 	int n_par = par_list.size();
 	int n_nonzero_weights_reg = q_sqrt_reg.nonZeros();
 	int n_nonzero_weights_no_reg = q_sqrt_no_reg.nonZeros();
+	const vector<string> ordered_par_names = pest_scenario.get_ctl_ordered_par_names();
+	//drop any names that aren't in par_list
 
-	for (int i = 0; i < n_par; ++i)
+	vector<string>::const_iterator is;
+	int i;
+	//for (int i = 0; i < n_par; ++i)
+	for (auto &pname : ordered_par_names)
 	{
-		fout << "   " << setw(15) << par_list[i]
-			<< " " << setw(12) << par_grp_info.get_group_name(par_list[i])
+		is = find(par_list.begin(), par_list.end(), pname);
+		if (is == par_list.end()) continue;		
+		i = is - par_list.begin();
+		fout << "   " << setw(15) << lower_cp(par_list[i])
+			<< " " << setw(12) << lower_cp(par_grp_info.get_group_name(par_list[i]))
 			<< " " << showpoint << setw(20) << pars.get_rec(par_list[i]);
 		if (n_nonzero_weights_reg > 0)
 		{
