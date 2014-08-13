@@ -184,7 +184,7 @@ public:
 	PestppOptions(int _n_iter_base = 50, int _n_iter_super=0, int _max_n_super = 50, 
 		double _super_eigthres = 1.0E-6, SVD_PACK _svd_pack = PestppOptions::EIGEN,
 		MAT_INV _mat_inv = PestppOptions::JTQJ, double _auto_norm = -999,
-		double _super_relparmax = 0.1, int max_run_fail=3);
+		double _super_relparmax = 0.1, int max_run_fail=3,bool io_fortran=true);
 	void parce_line(const string &line);
 	int get_max_n_super() const{return max_n_super;}
 	double get_super_eigthres() const{return super_eigthres;}
@@ -198,6 +198,7 @@ public:
 	int get_max_super_frz_iter()const { return max_super_frz_iter; }
 	int get_max_reg_iter()const { return max_reg_iter; }
 	const vector<double>& get_base_lambda_vec() const {return base_lambda_vec;}
+	bool get_io_fortran()const { return io_fortran; }
 
 	void set_max_n_super(int _max_n_super) {max_n_super = _max_n_super;}
 	void set_super_eigthres(double _super_eigthres) {super_eigthres = _super_eigthres;}
@@ -210,6 +211,7 @@ public:
 	void set_max_run_fail(int _max_run_fail){ max_run_fail = _max_run_fail; }
 	void set_max_super_frz_iter(int n) { max_super_frz_iter = n; }
 	void set_max_reg_iter(int n) { max_reg_iter = n; }
+	void set_io_fortran(bool _io_fortran) { io_fortran = _io_fortran; }
 private:
 	int n_iter_base;
 	int n_iter_super;
@@ -223,6 +225,7 @@ private:
 	int max_super_frz_iter;
 	int max_reg_iter;
 	vector<double> base_lambda_vec;
+	bool io_fortran;
 };
 
 ostream& operator<< (ostream &os, const ObservationInfo& val);

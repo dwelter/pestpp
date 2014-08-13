@@ -48,7 +48,7 @@ public:
 	virtual double get_phi(const DynamicRegularization &dynamic_reg, double norm=2);
 	virtual PhiComponets get_phi_comp(const DynamicRegularization &dynamic_reg, double norm=2) const;
 	virtual vector<double> get_residuals_vec(const vector<string> &obs_names);
-	void full_report(ostream &os, const DynamicRegularization &dynamic_reg=DynamicRegularization(false));
+	void full_report(ostream &os, const DynamicRegularization &dynamic_reg=DynamicRegularization(false),bool limit_par=false);
 	virtual bool obs_valid() const;
 	static  bool cmp_lt(const ModelRun &r1, const ModelRun &r2, const DynamicRegularization &reg);
 	virtual ~ModelRun();

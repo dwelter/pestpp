@@ -242,10 +242,12 @@ Parameters ParameterInfo::get_init_value(const vector<string> &keys) const
 
 
 PestppOptions::PestppOptions(int _n_iter_base, int _n_iter_super, int _max_n_super, double _super_eigthres,
-	SVD_PACK _svd_pack, MAT_INV _mat_inv, double _auto_norm, double _super_relparmax, int _max_run_fail)
+	SVD_PACK _svd_pack, MAT_INV _mat_inv, double _auto_norm, double _super_relparmax, int _max_run_fail,
+	bool _io_fortran)
 	: n_iter_base(_n_iter_base), n_iter_super(_n_iter_super), max_n_super(_max_n_super), super_eigthres(_super_eigthres), 
 	svd_pack(_svd_pack), mat_inv(_mat_inv), auto_norm(_auto_norm), super_relparmax(_super_relparmax),
-	max_run_fail(_max_run_fail), max_super_frz_iter(50), max_reg_iter(50), base_lambda_vec({ 0.1, 1.0, 10.0, 100.0, 1000.0 })
+	max_run_fail(_max_run_fail), max_super_frz_iter(50), max_reg_iter(50), base_lambda_vec({ 0.1, 1.0, 10.0, 100.0, 1000.0 }),
+	io_fortran(_io_fortran)
 {
 }
 
@@ -314,6 +316,12 @@ void PestppOptions::parce_line(const string &line)
 			{
 				base_lambda_vec.push_back(convert_cp<double>(ilambda));
 			}
+		}
+		else if (key == "IO_FORTRAN")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> io_fortran;			
 		}
 		else {
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");

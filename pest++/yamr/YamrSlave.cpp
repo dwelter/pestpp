@@ -6,7 +6,6 @@
 #include <cstring>
 #include <algorithm>
 #include "system_variables.h"
-#include "iopp.h"
 
 using namespace pest_utils;
 
@@ -174,10 +173,6 @@ string YAMRSlave::ins_err_msg(int i)
 int YAMRSlave::run_model(Parameters &pars, Observations &obs)
 {
 	int success = 1;
-	//bool isDouble = true;
-	//bool forceRadix = true;
-	//TemplateFiles tpl_files(isDouble,forceRadix,tplfile_vec,inpfile_vec,par_name_vec);
-	//InstructionFiles ins_files(insfile_vec,outfile_vec,obs_name_vec);
 	std::vector<double> obs_vec;
 	try 
 	{
@@ -200,8 +195,7 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs)
 		{
 			throw PestError("Error processing template file:" + tpl_err_msg(ifail));
 		}
-		//tpl_files.writtpl(par_values);
-
+		
 		// update parameter values
 		pars.clear();
 		for (int i=0; i<npar; ++i)
@@ -232,8 +226,6 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs)
 		{
 			throw PestError("Error processing instruction file");
 		}
-		//obs_vec = ins_files.readins();
-
 
 		// check parameters and observations for inf and nan
 		if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))

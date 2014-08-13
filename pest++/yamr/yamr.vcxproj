@@ -19,11 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="config_os.h" />
     <ClInclude Include="debug.h" />
-    <ClInclude Include="network_package.h" />
-    <ClInclude Include="network_wrapper.h" />
-    <ClInclude Include="pest_error.h" />
     <ClInclude Include="RunManagerAbstract.h" />
     <ClInclude Include="RunManagerCWrapper.h" />
     <ClInclude Include="RunManagerFortranWrapper.h" />
@@ -32,17 +28,11 @@
     <ClInclude Include="RunManagerYAMR.h" />
     <ClInclude Include="RunStorage.h" />
     <ClInclude Include="Serialization.h" />
-    <ClInclude Include="system_variables.h" />
-    <ClInclude Include="Transformable.h" />
-    <ClInclude Include="utilities.h" />
     <ClInclude Include="YamrSlave.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="debug.cpp" />
     <ClCompile Include="linpackc.cpp" />
-    <ClCompile Include="network_package.cpp" />
-    <ClCompile Include="network_wrapper.cpp" />
-    <ClCompile Include="pest_error.cpp" />
     <ClCompile Include="RunManagerAbstract.cpp" />
     <ClCompile Include="RunManagerCWrapper.cpp" />
     <ClCompile Include="RunManagerFortranWrapper.cpp" />
@@ -51,9 +41,6 @@
     <ClCompile Include="RunManagerYAMR.cpp" />
     <ClCompile Include="RunStorage.cpp" />
     <ClCompile Include="Serializeation.cpp" />
-    <ClCompile Include="system_variables.cpp" />
-    <ClCompile Include="Transformable.cpp" />
-    <ClCompile Include="utilities.cpp" />
     <ClCompile Include="YamrSlave.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -119,7 +106,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)\iopp\iopp</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)\iopp</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -127,6 +114,7 @@
     <Lib>
       <LinkTimeCodeGeneration>
       </LinkTimeCodeGeneration>
+      <AdditionalDependencies>iopp.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -134,7 +122,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(IFORT_COMPILER14)\mkl\include;$(SolutionDir);$(SolutionDir)\iopp\iopp</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(IFORT_COMPILER14)\mkl\include;$(SolutionDir);$(SolutionDir)\iopp;$(SolutionDir)\common</AdditionalIncludeDirectories>
       <OpenMPSupport>false</OpenMPSupport>
       <PreprocessorDefinitions>;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -142,7 +130,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>iopp.lib</AdditionalDependencies>
+      <AdditionalDependencies>iopp.lib;common.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -168,7 +156,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(IFORT_COMPILER14)\mkl\include;$(SolutionDir);$(ProjectDir);..\iopp\iopp</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\common;$(IFORT_COMPILER14)\mkl\include;$(SolutionDir);$(ProjectDir);$(SolutionDir)\iopp</AdditionalIncludeDirectories>
       <OpenMPSupport>true</OpenMPSupport>
       <PreprocessorDefinitions>WIN32;WIN64;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <EnableParallelCodeGeneration>
@@ -182,7 +170,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>iopp.lib</AdditionalDependencies>
+      <AdditionalDependencies>iopp.lib;common.lib</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>

@@ -254,7 +254,8 @@ int main(int argc, char* argv[])
 		run_manager_ptr = new RunManagerSerial(exi.comline_vec,
 		exi.tplfile_vec, exi.inpfile_vec, exi.insfile_vec, exi.outfile_vec,
 		file_manager.build_filename("rns"), pathname,
-		pest_scenario.get_pestpp_options().get_max_run_fail());
+		pest_scenario.get_pestpp_options().get_max_run_fail(),
+		pest_scenario.get_pestpp_options().get_io_fortran());
 	}
 
 
@@ -276,7 +277,6 @@ int main(int argc, char* argv[])
 	if (restart_flag)
 	{
 		restart_ctl.update_termination_ctl(termination_ctl);
-
 	}
 
 	SVDSolver::MAT_INV mat_inv = SVDSolver::MAT_INV::JTQJ;
@@ -300,7 +300,6 @@ int main(int argc, char* argv[])
 	{
 		tran_svd->set_SVD_pack_propack();
 	}
-
 
 	TranFixed *tr_svda_fixed = new TranFixed("SVDA Fixed Parameter Transformation");
 	trans_svda = base_trans_seq;
@@ -444,7 +443,7 @@ int main(int argc, char* argv[])
 	fout_rec << endl;
 	cout << "FINAL OPTIMISATION RESULTS" << endl << endl;
 	fout_rec << "FINAL OPTIMISATION RESULTS" << endl << endl;
-	optimum_run.full_report(cout, DynamicRegularization(false));
+	optimum_run.full_report(cout, DynamicRegularization(false),true);
 	optimum_run.full_report(fout_rec, DynamicRegularization(false));
 	fout_rec << endl;
 	fout_rec << "    Number of forward model runs performed: " << run_manager_ptr->get_total_runs() << endl;

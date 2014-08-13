@@ -102,10 +102,11 @@ string RunManagerSerial::ins_err_msg(int i)
 RunManagerSerial::RunManagerSerial(const vector<string> _comline_vec,
 	const vector<string> _tplfile_vec, const vector<string> _inpfile_vec,
 	const vector<string> _insfile_vec, const vector<string> _outfile_vec,
-	const string &stor_filename, const string &_run_dir, int _max_run_fail)
+	const string &stor_filename, const string &_run_dir, int _max_run_fail,
+	const bool _io_fortran)
 	: RunManagerAbstract(_comline_vec, _tplfile_vec, _inpfile_vec,
 	_insfile_vec, _outfile_vec, stor_filename, _max_run_fail),
-		run_dir(_run_dir)
+	run_dir(_run_dir), io_fortran(_io_fortran)
 {
 	cout << "              starting serial run manager ..." << endl << endl;
 }
@@ -121,13 +122,12 @@ void RunManagerSerial::run()
 	int nobs = obs_name_vec.size();
 	int ntpl = tplfile_vec.size();
 	int nins = insfile_vec.size();
-	stringstream message;
-	//bool isDouble = true;
-	//bool forceRadix = true;
-	//TemplateFiles tpl_files(isDouble,forceRadix,tplfile_vec,inpfile_vec,par_name_vec);
-	//InstructionFiles ins_files(insfile_vec,outfile_vec,obs_name_vec);
+	stringstream message;		
+	bool isDouble = true;
+	bool forceRadix = true;
+	TemplateFiles tpl_files(isDouble, forceRadix, tplfile_vec, inpfile_vec, par_name_vec);
+	InstructionFiles ins_files(insfile_vec, outfile_vec);
 	std::vector<double> obs_vec;
-
 	// This is necessary to support restart as some run many already be complete
 	vector<int> run_id_vec;
 	int nruns = get_outstanding_run_ids().size();
@@ -135,16 +135,10 @@ void RunManagerSerial::run()
 	{
 		for (int i_run : run_id_vec)
 		{
-
 			Observations obs;
 			vector<double> par_values;
 			Parameters pars;
-			file_stor.get_parameters(i_run, pars);
-
-			for (auto &i : par_name_vec)
-			{
-				par_values.push_back(pars.get_rec(i));
-			}
+			file_stor.get_parameters(i_run, pars);						
 			try {
 				std::cout << string(message.str().size(), '\b');
 				message.str("");
@@ -155,30 +149,51 @@ void RunManagerSerial::run()
 				{
 					throw PestError("Error running model: invalid parameter value returned");
 				}
-				wrttpl_(&ntpl, StringvecFortranCharArray(tplfile_vec, 50).get_prt(),
-					StringvecFortranCharArray(inpfile_vec, 50).get_prt(),
-					&npar, StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
-					&par_values[0], &ifail);
-				if (ifail != 0)
+				if (io_fortran)
 				{
-					throw PestError("Error processing template file");
+					for (auto &i : par_name_vec)
+					{
+						par_values.push_back(pars.get_rec(i));
+					}
+					wrttpl_(&ntpl, StringvecFortranCharArray(tplfile_vec, 50).get_prt(),
+						StringvecFortranCharArray(inpfile_vec, 50).get_prt(),
+						&npar, StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
+						&par_values[0], &ifail);
+					if (ifail != 0)
+					{
+						throw PestError("Error processing template file");
+					}
 				}
-				//tpl_files.writtpl(par_values);			
+				else
+				{					
+					tpl_files.write(pars);
+
+					//throw PestError("non-fortran IO not implemented for TPL files");
+				}
+								
 				for (int i = 0, n_exec = comline_vec.size(); i < n_exec; ++i)
 				{
 					system(comline_vec[i].c_str());
 				}
-				obs_vec.resize(nobs, RunStorage::no_data);
-				readins_(&nins, StringvecFortranCharArray(insfile_vec, 50).get_prt(),
-					StringvecFortranCharArray(outfile_vec, 50).get_prt(),
-					&nobs, StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
-					&obs_vec[0], &ifail);
-				if (ifail != 0)
+				
+				if (io_fortran)
 				{
-					throw PestError("Error processing instruction file");
+					obs_vec.resize(nobs, RunStorage::no_data);
+					readins_(&nins, StringvecFortranCharArray(insfile_vec, 50).get_prt(),
+						StringvecFortranCharArray(outfile_vec, 50).get_prt(),
+						&nobs, StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
+						&obs_vec[0], &ifail);
+					if (ifail != 0)
+					{
+						throw PestError("Error processing instruction file");
+					}
 				}
-				//obs_vec = ins_files.readins();
-
+				else
+				{
+					//throw PestError("non-fortran IO not implemented for INS files");
+					ins_files.read(obs_name_vec,obs);
+				}
+								
 				// check parameters and observations for inf and nan
 				if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))
 				{
@@ -188,11 +203,15 @@ void RunManagerSerial::run()
 				{
 					throw PestError("Error running model: invalid observation value returned");
 				}
+
 				success_runs += 1;
-				pars.clear();
-				pars.insert(par_name_vec, par_values);
-				obs.clear();
-				obs.insert(obs_name_vec, obs_vec);
+				if (io_fortran)
+				{
+					pars.clear();
+					pars.insert(par_name_vec, par_values);
+					obs.clear();
+					obs.insert(obs_name_vec, obs_vec);
+				}								
 				file_stor.update_run(i_run, pars, obs);
 			}
 			catch (const std::exception& ex)
