@@ -55,6 +55,146 @@ OutputFileWriter::OutputFileWriter(FileManager &_file_manager, Pest &_pest_scena
 	}
 }
 
+void OutputFileWriter::par_report(std::ostream &os, Parameters const &new_ctl_pars)
+{
+	double val;
+	os << endl;
+	os << "     Parameter            " << endl;
+	os << "        Name         Value" << endl;
+	os << "    ------------  ------------" << endl;
+	for (auto &p_name : pest_scenario.get_ctl_ordered_par_names())
+	{
+		val = new_ctl_pars.get_rec(p_name);		
+		os << left;
+		os << "    " << setw(12) << lower_cp(p_name);
+		os << right;
+		os << "  " << setw(12) << val << endl;
+	}
+	os << endl;
+
+}
+
+void OutputFileWriter::par_report(std::ostream &os, Parameters const &new_ctl_pars, Parameters const &old_ctl_pars,string par_type)
+{	
+	double p_old, p_new;
+	double fac_change = -9999, rel_change = -9999;
+	bool have_fac = false, have_rel = false;
+	double max_fac_change = 0;
+	double max_rel_change = 0;	
+	string max_fac_par = "N/A";
+	string max_rel_par = "N/A";
+	
+	os << "    Parameter Upgrades (" << par_type << " Parameters)" << endl;
+	os << "      Parameter     Current       Previous       Factor       Relative" << endl;
+	os << "        Name         Value         Value         Change        Change" << endl;
+	os << "      ----------  ------------  ------------  ------------  ------------" << endl;
+	
+	//for (const auto &ipar : new_ctl_pars)
+	for (auto &p_name : pest_scenario.get_ctl_ordered_par_names())
+	{
+		Parameters::const_iterator pi = new_ctl_pars.find(p_name);
+		if (pi == new_ctl_pars.end()) continue;
+		p_new = new_ctl_pars.get_rec(p_name);
+		p_old = old_ctl_pars.get_rec(p_name);		
+		param_change_stats(p_old, p_new, have_fac, fac_change, have_rel, rel_change);
+		if (have_fac && fac_change >= max_fac_change)
+		{
+			max_fac_change = fac_change;
+			max_fac_par = p_name;
+		}
+		if (have_rel && abs(rel_change) >= abs(max_rel_change))
+		{
+			max_rel_change = rel_change;
+			max_rel_par = p_name;
+		}
+		os << right;
+		os << "    " << setw(12) << lower_cp(p_name);
+		os << right;
+		os << "  " << setw(12) << p_new;
+		os << "  " << setw(12) << p_old;
+		if (have_fac)
+			os << "  " << setw(12) << fac_change;
+		else
+			os << "  " << setw(12) << "N/A";
+		if (have_rel)
+			os << "  " << setw(12) << rel_change;
+		else
+			os << "  " << setw(12) << "N/A";
+		os << endl;
+	}
+	os << "       Maximum changes in \"" << par_type << "\" parameters:" << endl;
+	os << "         Maximum relative change = " << max_rel_change << "   [" << lower_cp(max_rel_par) << "]" << endl;
+	os << "         Maximum factor change = " << max_fac_change << "   [" << lower_cp(max_fac_par) << "]" << endl;	
+	os << endl;	
+}
+
+void OutputFileWriter::param_change_stats(double p_old, double p_new, bool &have_fac, 
+	double &fac_change, bool &have_rel, double &rel_change)
+{
+	have_rel = have_fac = true;
+	double a = max(abs(p_new), abs(p_old));
+	double b = min(abs(p_new), abs(p_old));
+	// compute relative change
+	if (p_old == 0) {
+		have_rel = false;
+		rel_change = -9999;
+	}
+	else
+	{
+		rel_change = (p_old - p_new) / p_old;
+	}
+	//compute factor change
+	if (p_old == 0.0 || p_new == 0.0) {
+		have_fac = false;
+		fac_change = -9999;
+	}
+	else {
+		fac_change = a / b;
+	}
+}
+
+void OutputFileWriter::phi_report(std::ostream &os, map<string, double> const phi_comps, double const dynamic_reg_weight,bool final)
+{
+	if (!dynamic_reg_weight)
+	{
+		if (final)
+		{
+			os << "    Final phi                                           Total : " << phi_comps.at("TOTAL") << endl;
+		}
+		else
+		{
+			os << "    Starting phi for this iteration                     Total : " << phi_comps.at("TOTAL") << endl;
+		}
+		
+	}
+	else
+	{
+		if (final)
+		{
+			os << "    Final regularization weight factor                        : " << dynamic_reg_weight << endl;
+			os << "    Final phi                                           Total : " << phi_comps.at("TOTAL") << endl;
+			os << "    Final measurement phi for this iteration            Total : " << phi_comps.at("MEAS") << endl;
+			os << "    Final regularization phi for this iteration         Total : " << phi_comps.at("REGUL") << endl;
+		}
+		else
+		{
+			os << "    Current regularization weight factor                      : " << dynamic_reg_weight << endl;
+			os << "    Starting phi for this iteration                     Total : " << phi_comps.at("TOTAL") << endl;
+			os << "    Starting measurement phi for this iteration         Total : " << phi_comps.at("MEAS") << endl;
+			os << "    Starting regularization phi for this iteration      Total : " << phi_comps.at("REGUL") << endl;
+		}
+	}
+	
+	double val;
+	for (auto &gname : pest_scenario.get_ctl_ordered_obs_group_names())
+	{
+		os << "    Contribution to phi from observation group ";
+		os << setw(17) << setiosflags(ios::right) << "\"" + lower_cp(gname) + "\" : ";
+		os << phi_comps.at(gname) << endl;
+	}
+}
+
+
 void OutputFileWriter::write_rei(ofstream &fout, int iter_no, const Observations &obs, const Observations &sim, 
 	const ObjectiveFunc &obj_func, const Parameters &pars)
 {

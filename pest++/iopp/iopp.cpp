@@ -973,7 +973,8 @@ vector<pair<int,int>> InstructionFile::get_marker_indices(string line)
 			{				
 				if (i == (key+1))
 				{					
-					cout << " only one space between marker delimiters in file" << instruction_filename << "on line " << line << endl;
+					//cout << " only one space between marker delimiters in file" << instruction_filename << "on line " << line << endl;
+					throw InstructionFileError(" only one space between marker delimiters in file" + instruction_filename + "on line " + line);
 				}
 				
 				pair<int,int> p(key,i+1);
@@ -985,6 +986,7 @@ vector<pair<int,int>> InstructionFile::get_marker_indices(string line)
 	if (key != -1)
 	{		
 		cout << "unbalanced marker on line " << line << endl;
+		throw InstructionFileError(" unbalanced marker on line " + line);
 	}
 	return indices;
 }
@@ -1993,7 +1995,7 @@ vector<pair<int,int>> TemplateFile::get_marker_indices(char marker,string line)
 				}
 				else if (i-key+1<=warn_width)
 				{
-					cout << "warning - narrow parameter space in template file " << template_filename+" on line " << line << endl;
+					//cout << "warning - narrow parameter space in template file " << template_filename+" on line " << line << endl;
 				}
 				indices.push_back(pair<int,int>(key,i+1));
 				key = -1;

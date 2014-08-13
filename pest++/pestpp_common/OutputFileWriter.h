@@ -51,6 +51,12 @@ public:
 	void append_sen(std::ostream &fout, int iter_no, const Jacobian &jac, const ObjectiveFunc &obj_func, const ParameterGroupInfo &par_grp_info, const DynamicRegularization &regul);
 	void write_svd(Eigen::VectorXd &Sigma, Eigen::SparseMatrix<double> &Vt, double lambda, const Parameters &freeze_numeric_pars, Eigen::VectorXd &Sigma_trunc);
 	void write_svd_iteration(int iteration_no);
+
+	void phi_report(std::ostream &os,map<string, double> const phi_comps, double const dynamic_reg_weight,bool final=false);
+	void par_report(std::ostream &os, Parameters const &new_ctl_pars);
+	void par_report(std::ostream &os, Parameters const &new_ctl_pars, Parameters const &old_ctl_pars,string par_type);
+	void param_change_stats(double p_old, double p_new, bool &have_fac, double &fac_change, bool &have_rel, double &rel_change);
+	
 private:
 	FileManager &file_manager;
 	Pest &pest_scenario;

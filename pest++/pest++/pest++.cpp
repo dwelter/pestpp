@@ -444,8 +444,13 @@ int main(int argc, char* argv[])
 	fout_rec << endl;
 	cout << "FINAL OPTIMISATION RESULTS" << endl << endl;
 	fout_rec << "FINAL OPTIMISATION RESULTS" << endl << endl;
-	optimum_run.full_report(cout, DynamicRegularization(false),true);
-	optimum_run.full_report(fout_rec, DynamicRegularization(false));
+	//optimum_run.full_report(cout, DynamicRegularization(false),true);
+	//optimum_run.full_report(fout_rec, DynamicRegularization(false));
+	fout_rec << "  Optimal Parameter Values  " << endl;
+	output_file_writer.par_report(fout_rec, optimum_run.get_ctl_pars());
+	map<string, double> phi_report = obj_func.phi_report(optimum_run.get_obs(), optimum_run.get_ctl_pars(), DynamicRegularization(false));
+	output_file_writer.phi_report(fout_rec,phi_report,0.0,true);
+	output_file_writer.phi_report(cout, phi_report, 0.0,true);
 	fout_rec << endl;
 	fout_rec << "    Number of forward model runs performed: " << run_manager_ptr->get_total_runs() << endl;
 	fout_rec.close();
@@ -454,6 +459,7 @@ int main(int argc, char* argv[])
 	delete super_jacobian_ptr;
 	delete run_manager_ptr;
 	cout << endl << endl << "Simulation Complete..." << endl;
+	cout << flush;
 	//cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
 	//char buf[256];
 	//OperSys::gets_s(buf, sizeof(buf));

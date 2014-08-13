@@ -331,7 +331,8 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 	}
 
 	// write out report for starting phi
-	obj_func->phi_report(os, base_run.get_obs(), base_run.get_ctl_pars(), *regul_scheme_ptr);
+	map<string, double> phi_report = obj_func->phi_report(base_run.get_obs(), base_run.get_ctl_pars(), *regul_scheme_ptr);
+	output_file_writer.phi_report(os,phi_report,regul_scheme_ptr->get_weight());
 
 	vector<Parameters> frozen_derivative_par_vec;
 	Parameters *new_frozen_par_ptr = 0;

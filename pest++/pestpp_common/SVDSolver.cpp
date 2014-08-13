@@ -661,7 +661,8 @@ restart_reuse_jacoboian:
 		}
 	}
 	// write out report for starting phi
-	obj_func->phi_report(os, cur_solution.get_obs(), cur_solution.get_ctl_pars(), *regul_scheme_ptr);
+	map<string,double> phi_report = obj_func->phi_report(cur_solution.get_obs(), cur_solution.get_ctl_pars(), *regul_scheme_ptr);
+	output_file_writer.phi_report(os, phi_report,regul_scheme_ptr->get_weight());
 	// write failed jacobian parameters out
 	if (failed_jac_pars.size() > 0)
 	{
@@ -1025,104 +1026,30 @@ void SVDSolver::iteration_update_and_report(ostream &os, ModelRun &upgrade, Term
 {
 	const string *p_name;
 	double p_old, p_new;
-	double fac_change = -9999, rel_change = -9999;
+	double rel_change = -9999;
 	bool have_fac = false, have_rel = false;
-	double max_fac_change = 0;
-	double max_rel_change = 0;
-	double max_rel_change_base = 0;
-	string max_fac_par = "N/A";
-	string max_rel_par = "N/A";
+	double max_rel_change = 0;		
 	const Parameters &old_ctl_pars = cur_solution.get_ctl_pars();
 	const Parameters &new_ctl_pars = upgrade.get_ctl_pars();
-
-	os << "    Parameter Upgrades (Control File Parameters)" << endl;
-	os << "      Parameter     Current       Previous       Factor       Relative" << endl;
-	os << "        Name         Value         Value         Change        Change" << endl;
-	os << "      ----------  ------------  ------------  ------------  ------------" << endl;
-
+	output_file_writer.par_report(os, new_ctl_pars, old_ctl_pars, "Control File");
+	
 	for (const auto &ipar : new_ctl_pars)
 	{
 		p_name = &(ipar.first);
 		p_new = ipar.second;
-		p_old = old_ctl_pars.get_rec(*p_name);
-		param_change_stats(p_old, p_new, have_fac, fac_change, have_rel, rel_change);
-		if (have_fac && fac_change >= max_fac_change)
-		{
-			max_fac_change = fac_change;
-			max_fac_par = *p_name;
-		}
-		if (have_rel && abs(rel_change) >= abs(max_rel_change))
+		p_old = old_ctl_pars.get_rec(*p_name);		
+		rel_change = (p_old - p_new) / p_old;
+		if ((p_old != 0.0) && abs(rel_change) >= abs(max_rel_change))
 		{
 			max_rel_change = rel_change;
-			max_rel_par = *p_name;
 		}
-		os << right;
-		os << "    " << setw(12) << *p_name;
-		os << right;
-		os << "  " << setw(12) << p_new;
-		os << "  " << setw(12) << p_old;
-		if (have_fac)
-			os << "  " << setw(12) << fac_change;
-		else
-			os << "  " << setw(12) << "N/A";
-		if (have_rel)
-			os << "  " << setw(12) << rel_change;
-		else
-			os << "  " << setw(12) << "N/A";
-		os << endl;
 	}
-	os << "       Maximum changes in \"control file\" parameters:" << endl;
-	os << "         Maximum relative change = " << max_rel_change << "   [" << max_rel_par << "]" << endl;
-	os << "         Maximum factor change = " << max_fac_change << "   [" << max_fac_par << "]" << endl;
-	max_rel_change_base = max_rel_change;
-	os << endl;
-	max_fac_change = 0;
-	max_rel_change = 0;
-	max_fac_par = "N/A";
-	max_rel_par = "N/A";
-	os << "    Parameter Upgrades (Transformed Numeric Parameters)" << endl;
-	os << "      Parameter     Current       Previous       Factor       Relative" << endl;
-	os << "        Name         Value         Value         Change        Change" << endl;
-	os << "      ----------  ------------  ------------  ------------  ------------" << endl;
-
 	const Parameters old_numeric_pars = par_transform.ctl2numeric_cp(cur_solution.get_ctl_pars());
 	const Parameters new_numeric_pars = par_transform.ctl2numeric_cp(upgrade.get_ctl_pars());
-	for (const auto &ipar : new_numeric_pars)
-	{
-		p_name = &(ipar.first);
-		p_new = ipar.second;
-		p_old = old_numeric_pars.get_rec(*p_name);
-		param_change_stats(p_old, p_new, have_fac, fac_change, have_rel, rel_change);
-		if (have_fac && fac_change >= max_fac_change)
-		{
-			max_fac_change = fac_change;
-			max_fac_par = *p_name;
-		}
-		if (have_rel && abs(rel_change) >= abs(max_rel_change))
-		{
-			max_rel_change = rel_change;
-			max_rel_par = *p_name;
-		}
-		os << right;
-		os << "    " << setw(12) << *p_name;
-		os << right;
-		os << "  " << setw(12) << p_new;
-		os << "  " << setw(12) << p_old;
-		if (have_fac)
-			os << "  " << setw(12) << fac_change;
-		else
-			os << "  " << setw(12) << "N/A";
-		if (have_rel)
-			os << "  " << setw(12) << rel_change;
-		else
-			os << "  " << setw(12) << "N/A";
-		os << endl;
-	}
-	os << "       Maximum changes in \"transformed numeric\" parameters:" << endl;
-	os << "         Maximum relative change = " << max_rel_change << "   [" << max_rel_par << "]" << endl;
-	os << "         Maximum factor change = " << max_fac_change << "   [" << max_fac_par << "]" << endl;
+	output_file_writer.par_report(os,new_numeric_pars, old_numeric_pars, "Transformed Numeric");
+
 	//Need to pass defualt regularization weights so this comparision is consistent across iterations
-	termination_ctl.process_iteration(upgrade.get_phi_comp(DynamicRegularization::get_unit_reg_instance()), max_rel_change_base);
+	termination_ctl.process_iteration(upgrade.get_phi_comp(DynamicRegularization::get_unit_reg_instance()), max_rel_change);
 }
 
 bool SVDSolver::par_heading_out_bnd(double p_org, double p_del, double lower_bnd, double upper_bnd)
@@ -1317,7 +1244,7 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 		{
 			//streamsize n = os.precision(numeric_limits<double>::digits10 + 1);
 			streamsize n = os.precision(6);
-			os << "    recalculating regularization weight factor         :" << endl;
+			//os << "    recalculating regularization weight factor         :" << endl;
 			os << "      updated regularization  weight factor            : " << mu << endl;
 			os << "      FRACPHIM adjusted measurement objective function : " << phi_comp.meas << endl;
 			os.precision(3);
@@ -1372,14 +1299,16 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 	double target_phi_meas_frac = phi_comp_cur.meas * fracphim;
 	double target_phi_meas = max(phimlim, target_phi_meas_frac);
 
+	os << endl << "    ---  Solving for regularization weight factor   ---   " << endl;
 	os << "    Starting regularization weight factor      : " << mu_cur << endl;
 	os << "    Starting measurement objective function    : " << phi_comp_cur.meas << endl;
 	os << "    Starting regularization objective function : " << phi_comp_cur.regul << endl;
-	os << "    Sarget measurement objective function      : " << target_phi_meas << endl << endl;
+	os << endl <<  "    Target measurement objective function      : " << target_phi_meas << endl << endl;
+	cout << "    ---  Solving for regularization weight factor   ---   " << endl;
 	cout << "    Starting regularization weight factor      : " << mu_cur << endl;
 	cout << "    Starting measurement objective function    : " << phi_comp_cur.meas << endl;
 	cout << "    Starting regularization objective function : " << phi_comp_cur.regul << endl;
-	cout << "    Sarget measurement objective function      : " << target_phi_meas << endl << endl;
+	cout << "    Target measurement objective function      : " << target_phi_meas << endl << endl;
 
 	for (auto &i_mu : mu_vec)
 	{
@@ -1428,10 +1357,10 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 			tmp_regul_scheme.set_weight(mu_vec[0].mu);
 			mu_vec[0].phi_comp = phi_estimate(jacobian, Q_sqrt, tmp_regul_scheme, residuals_vec, obs_names_vec,
 				base_run_active_ctl_par, freeze_active_ctl_pars, tmp_regul_scheme);
-			mu_vec[0].print(os);
-			os << endl;
-			mu_vec[0].print(cout);
-			cout << endl;
+			//mu_vec[0].print(os);
+			//os << endl;
+			//mu_vec[0].print(cout);
+			//cout << endl;
 		}
 		if (mu_vec[0].mu <= wfmin) break;
 	}
@@ -1449,10 +1378,10 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 			tmp_regul_scheme.set_weight(mu_vec[3].mu);
 			mu_vec[3].phi_comp = phi_estimate(jacobian, Q_sqrt, tmp_regul_scheme, residuals_vec, obs_names_vec,
 				base_run_active_ctl_par, freeze_active_ctl_pars, tmp_regul_scheme);
-			mu_vec[3].print(os);
-			os << endl;
-			mu_vec[0].print(cout);
-			cout << endl;
+			//mu_vec[3].print(os);
+			//os << endl;
+			//mu_vec[0].print(cout);
+			//cout << endl;
 		}
 		if (mu_vec[3].mu >= wfmax) break;
 	}
@@ -1471,11 +1400,25 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 
 	if (mu_vec[0].f() > 0)
 	{
+		auto min_mu = (mu_vec[0] < mu_vec[3]) ? mu_vec[0] : mu_vec[3];
+		os << "    ---  optimal regularization weight factor found  ---   " << endl;
+		min_mu.print(os);
+		os << endl;
+		cout << "    ---  optimal regularization weight factor found  ---   " << endl;
+		min_mu.print(cout);
+		cout << endl;
 		double m = (mu_vec[0] < mu_vec[3]) ? mu_vec[0].mu : mu_vec[3].mu;
 		regul_scheme_ptr->set_weight(m);
 	}
 	else if (mu_vec[3].f() < 0)
 	{
+		auto min_mu = (mu_vec[0] < mu_vec[3]) ? mu_vec[0] : mu_vec[3];
+		os << "    ---  optimal regularization weight factor found  ---   " << endl;
+		min_mu.print(os);
+		os << endl;
+		cout << "    ---  optimal regularization weight factor found  ---   " << endl;
+		min_mu.print(cout);
+		cout << endl;
 		double m = (mu_vec[0] < mu_vec[3]) ? mu_vec[0].mu : mu_vec[3].mu;
 		regul_scheme_ptr->set_weight(m);
 	}
@@ -1506,12 +1449,20 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 			}
 
 			auto min_mu = std::min_element(mu_vec.begin(), mu_vec.end());
-			min_mu->print(os);
+			/*min_mu->print(os);
 			os << endl;
 			mu_vec[0].print(cout);
-			cout << endl;
+			cout << endl;*/
 			if (min_mu->error_frac() <= wftol) break;
 		}
+		auto min_mu = std::min_element(mu_vec.begin(), mu_vec.end());
+		
+	    os << "    ---  optimal regularization weight factor found  ---   " << endl;
+		min_mu->print(os);
+		os << endl;
+	    cout << "    ---  optimal regularization weight factor found  ---   " << endl;
+		min_mu->print(cout);
+		cout << endl;
 		double new_mu = std::min_element(mu_vec.begin(), mu_vec.end())->mu;
 		regul_scheme_ptr->set_weight(new_mu);
 	}

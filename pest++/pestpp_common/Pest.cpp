@@ -74,7 +74,6 @@ vector<string> Pest::get_nonregul_obs() const
 	return ret_val;
 }
 
-
 int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 {
 	string line;
@@ -285,6 +284,11 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 			string name = tokens[0];
 			ObservationGroupRec group_rec;
 			observation_info.groups[name] = group_rec;
+			vector<string>::iterator is = find(ctl_ordered_obs_group_names.begin(), ctl_ordered_obs_group_names.end(), name);
+			if (is == ctl_ordered_obs_group_names.end())
+			{
+				ctl_ordered_obs_group_names.push_back(name);
+			}
 		}
 		else if (section == "OBSERVATION DATA")
 		{
@@ -305,7 +309,11 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 			if (!prior_info_string.empty() && tokens[0] != "&"){
 				pi_name_group = prior_info.AddRecord(prior_info_string);
 				ctl_ordered_pi_names.push_back(pi_name_group.first);
-				ctl_ordered_obs_group_names.push_back(pi_name_group.second);
+				vector<string>::iterator is = find(ctl_ordered_obs_group_names.begin(), ctl_ordered_obs_group_names.end(), pi_name_group.second);
+				if (is == ctl_ordered_obs_group_names.end())
+				{
+					ctl_ordered_obs_group_names.push_back(pi_name_group.second);
+				}				
 				prior_info_string.clear();
 			}
 			else if (tokens[0] == "&") {
@@ -321,7 +329,11 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 			if (!prior_info_string.empty() && tokens[0] != "&") {
 				pi_name_group = prior_info.AddRecord(prior_info_string);
 				ctl_ordered_pi_names.push_back(pi_name_group.first);
-				ctl_ordered_obs_group_names.push_back(pi_name_group.second);
+				vector<string>::iterator is = find(ctl_ordered_obs_group_names.begin(), ctl_ordered_obs_group_names.end(), pi_name_group.second);
+				if (is == ctl_ordered_obs_group_names.end())
+				{
+					ctl_ordered_obs_group_names.push_back(pi_name_group.second);
+				}
 				prior_info_string.clear();
 			}
 			else if (tokens[0] != "&") {
@@ -381,7 +393,13 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 	// write out last prior information record
 	if (!prior_info_string.empty())
 	{
-		prior_info.AddRecord(prior_info_string);
+		pi_name_group = prior_info.AddRecord(prior_info_string);
+		ctl_ordered_pi_names.push_back(pi_name_group.first);
+		vector<string>::iterator is = find(ctl_ordered_obs_group_names.begin(), ctl_ordered_obs_group_names.end(), pi_name_group.second);
+		if (is == ctl_ordered_obs_group_names.end())
+		{
+			ctl_ordered_obs_group_names.push_back(pi_name_group.second);
+		}
 		prior_info_string.clear();
 	}
 	}

@@ -36,6 +36,7 @@ public:
 	const PhiComponets& operator=(const PhiComponets &rhs);
 	double meas;
 	double regul;
+	pair<double, double> as_pair(){ return pair<double, double>(meas, regul); }
 };
 
 class ObjectiveFunc
@@ -52,8 +53,8 @@ public:
 	PhiComponets get_phi_comp(const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg, int norm = 2) const;
 	map<string, double> get_group_phi(const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg,
 		PhiComponets::OBS_TYPE obs_type = PhiComponets::OBS_TYPE::ALL) const;	
-	PhiComponets phi_report(ostream &os, const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg) const;
-	PhiComponets full_report(ostream &os, const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg,bool limit_par=false) const;
+	map<string,double> phi_report(const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg) const;
+	//PhiComponets full_report(ostream &os, const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg,bool limit_par=false) const;
 	vector<double> get_residuals_vec(const Observations &sim_obs, const Parameters &pars, const vector<string> &obs_names) const;
 	const Observations* get_obs_ptr() const;
 	const ObservationInfo* get_obs_info_ptr() const;
