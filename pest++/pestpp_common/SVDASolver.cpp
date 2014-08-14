@@ -287,7 +287,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 	
 	// sen file for this iteration
 	output_file_writer.append_sen(file_manager.sen_ofstream(), termination_ctl.get_iteration_number() + 1,
-		jacobian, *(cur_solution.get_obj_func_ptr()), get_parameter_group_info(), *regul_scheme_ptr,"NUMERIC");
+		jacobian, *(cur_solution.get_obj_func_ptr()), get_parameter_group_info(), *regul_scheme_ptr,true);
 	
 	if (jacobian_only)
 	{
@@ -333,7 +333,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 
 	// write out report for starting phi
 	map<string, double> phi_report = obj_func->phi_report(base_run.get_obs(), base_run.get_ctl_pars(), *regul_scheme_ptr);
-	output_file_writer.phi_report(os, run_manager.get_total_runs(), termination_ctl.get_iteration_number() + 1,phi_report, regul_scheme_ptr->get_weight());
+	output_file_writer.phi_report(os, termination_ctl.get_iteration_number() + 1, run_manager.get_total_runs(), phi_report, regul_scheme_ptr->get_weight());
 	vector<Parameters> frozen_derivative_par_vec;
 	Parameters *new_frozen_par_ptr = 0;
 
@@ -489,7 +489,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		phiredswh_flag = true;
 		os << endl << "      Switching to central derivatives:" << endl;
 	}
-	cout << "  ...Lambda testing complete for iteration " << termination_ctl.get_iteration_number()+1 << endl;
+	cout << endl << "  ...Lambda testing complete for iteration " << termination_ctl.get_iteration_number()+1 << endl;
 	cout << "  Starting phi = " << cur_phi << ";  ending phi = " << best_phi <<
 		"  (" << best_phi / cur_phi * 100 << "%)" << endl;
 	cout << endl;

@@ -73,13 +73,18 @@ void OutputFileWriter::prepare_iteration_summary_files()
 {
 	file_manager.open_ofile_ext("ipar");
 	file_manager.open_ofile_ext("iobj");
+	file_manager.open_ofile_ext("isen");
 	ofstream &os_ipar = file_manager.get_ofstream("ipar");
+	ofstream &os_isen = file_manager.get_ofstream("isen");
 	os_ipar << "iteration";
+	os_isen << "iteration";
 	for (auto &par_name : pest_scenario.get_ctl_ordered_par_names())
 	{
 		os_ipar << ',' << lower_cp(par_name);
+		os_isen << ',' << lower_cp(par_name);
 	}
 	os_ipar << endl;
+	os_isen << endl;
 	ofstream &os_iobj = file_manager.get_ofstream("iobj");
 	os_iobj << "iteration,model_runs_completed,total_phi,measurement_phi,regularization_phi";
 	for (auto &obs_grp : pest_scenario.get_ctl_ordered_obs_group_names())
@@ -87,6 +92,22 @@ void OutputFileWriter::prepare_iteration_summary_files()
 		os_iobj << ',' << lower_cp(obs_grp);
 	}
 	os_iobj << endl;
+}
+
+void OutputFileWriter::write_sen_iter(int iter, map<string, double> &ctl_par_sens)
+{
+	ofstream &os = file_manager.get_ofstream("isen");
+	os << iter;
+	map<string, double>::iterator is;
+	for (auto &par_name : pest_scenario.get_ctl_ordered_par_names())
+	{
+		is = ctl_par_sens.find(par_name);
+		if (is == ctl_par_sens.end())
+			os << ',' << -999;
+		else
+			os << ',' << ctl_par_sens.at(par_name);
+	}
+	os << endl;
 }
 
 void OutputFileWriter::write_par_iter(int iter, Parameters const &ctl_pars)
@@ -100,22 +121,22 @@ void OutputFileWriter::write_par_iter(int iter, Parameters const &ctl_pars)
 	os << endl;
 }
 
-void OutputFileWriter::write_obj_iter(int iter, int nruns, map<string, double> &phi_report)
+void OutputFileWriter::write_obj_iter(int iter, int nruns, map<string, double> const &phi_report)
 {
 	ofstream &os = file_manager.get_ofstream("iobj");
 	os << iter << ',' << nruns;
-	os << ',' << phi_report["TOTAL"];
-	os << ',' << phi_report["MEAS"];
-	map<string, double>::iterator iregul = phi_report.find("REGUL");
+	os << ',' << phi_report.at("TOTAL");
+	os << ',' << phi_report.at("MEAS");
+	map<string, double>::const_iterator iregul = phi_report.find("REGUL");
 	double val = 0.0;	
 	if (iregul != phi_report.end())
 	{
-		val = phi_report["REGUL"];
+		val = phi_report.at("REGUL");
 	}
 	os << ',' << val;
 	for (auto &obs_grp : pest_scenario.get_ctl_ordered_obs_group_names())
 	{
-		os << ',' << phi_report[obs_grp];
+		os << ',' << phi_report.at(obs_grp);
 	}
 	os << endl;
 }
@@ -297,8 +318,7 @@ void OutputFileWriter::phi_report(std::ostream &os, int const iter, int const nr
 		else
 		{
 			os << "    Starting phi for this iteration                     Total : " << phi_comps.at("TOTAL") << endl;
-		}
-		
+		}		
 	}
 	else
 	{
@@ -324,6 +344,10 @@ void OutputFileWriter::phi_report(std::ostream &os, int const iter, int const nr
 		os << "    Contribution to phi from observation group ";
 		os << setw(17) << setiosflags(ios::right) << "\"" + lower_cp(gname) + "\" : ";
 		os << phi_comps.at(gname) << endl;
+	}
+	if (pest_scenario.get_pestpp_options().get_iter_summary_flag())
+	{
+		write_obj_iter(iter, nruns,phi_comps);
 	}
 }
 
@@ -409,26 +433,6 @@ void OutputFileWriter::write_par(ofstream &fout, const Parameters &pars, const T
 	}
 }
 
-
-void OutputFileWriter::read_par(ifstream &fin, Parameters &pars)
-{
-	string line;
-	string name;
-	double value;
-	vector<string> tokens;
-	getline(fin, line);
-	while (getline(fin, line))
-	{
-		strip_ip(line);
-		tokens.clear();
-		tokenize(line, tokens);
-		name = tokens[0];
-		convert_ip(tokens[1], value);
-		pars[name] = value;
-	}
-}
-
-
 void OutputFileWriter::write_sen_header(std::ostream &fout, const string &case_name)
 {
 	fout << "                    PARAMETER SENSITIVITIES: CASE " << case_name << endl;
@@ -446,12 +450,12 @@ void OutputFileWriter::write_restart_header(std::ostream &fout)
 
 void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobian &jac,
 	const ObjectiveFunc &obj_func, const ParameterGroupInfo &par_grp_info, const DynamicRegularization &regul,
-	string par_type)
+	bool is_super)
 {
 	fout << setiosflags(ios::left);
 	fout.unsetf(ios::floatfield);
 	fout.precision(12);
-	fout << upper_cp(par_type) << " PARAMETER SENSITIVITIES FOR OPTIMISATION ITERATION NO. " << setw(3) << iter_no << " ----->" << endl;
+	fout << "NUMERIC PARAMETER SENSITIVITIES FOR OPTIMISATION ITERATION NO. " << setw(3) << iter_no << " ----->" << endl;
 	fout << " Parameter name   Group        Current Value           CSS w/reg           CSS w/o reg" << endl;
 	const vector<string> &par_list = jac.parameter_list();
 	//const vector<string> &par_list = pest_scenario.get_ctl_ordered_par_names();
@@ -469,15 +473,19 @@ void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobia
 	int n_par = par_list.size();
 	int n_nonzero_weights_reg = q_sqrt_reg.nonZeros();
 	int n_nonzero_weights_no_reg = q_sqrt_no_reg.nonZeros();
-	vector<string> par_names;
-	if (upper_cp(par_type) == "CONTROL FILE")
-		par_names = pest_scenario.get_ctl_ordered_par_names();
-	else
+	vector<string> par_names;	
+	if (is_super)
 	{
 		par_names = par_list;
-		sort(par_names.begin(), par_names.end());
+		sort(par_names.begin(), par_names.end());		
 	}
-		
+	else
+	{
+		par_names = pest_scenario.get_ctl_ordered_par_names();
+	}
+	//for isen file
+	map<string, double> par_sens;
+	double val;
 	//drop any names that aren't in par_list
 	vector<string>::const_iterator is;
 	int i;
@@ -500,15 +508,23 @@ void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobia
 		}
 		if (n_nonzero_weights_no_reg > 0)
 		{
-			fout << " " << showpoint << setw(20) << dss_mat_no_reg.col(i).norm() / double(n_nonzero_weights_no_reg);
+			val = dss_mat_no_reg.col(i).norm() / double(n_nonzero_weights_no_reg);
+			par_sens[pname] = val;
+			fout << " " << showpoint << setw(20) << val;
+
 		}
 		else
 		{
 			fout << " " << showpoint << setw(20) << "NA";
+			par_sens[pname] = -999;
 		}
 		fout << endl;
 	}
 	fout << endl << endl;
+	if (!is_super)
+	{
+		write_sen_iter(iter_no, par_sens);
+	}
 }
 
 
