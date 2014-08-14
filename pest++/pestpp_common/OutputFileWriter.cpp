@@ -55,6 +55,50 @@ OutputFileWriter::OutputFileWriter(FileManager &_file_manager, Pest &_pest_scena
 	}
 }
 
+
+void OutputFileWriter::scenario_report(std::ostream &os)
+{
+	os << pest_scenario.get_control_info() << endl;
+	const ParameterGroupRec *grp_rec;
+	/*os << "PEST Parameter Group Information" << endl;
+	os << "    name   = " << val.name << endl;
+	os << "    inctyp = " << val.inctyp << endl;
+	os << "    derinc = " << val.derinc << endl;
+	os << "    derinclb = " << val.derinclb << endl;
+	os << "    forcen = " << val.forcen << endl;
+	os << "    derincmul = " << val.derincmul << endl;*/
+	os << "Pest Parameter Group Information" << endl;
+	os << setw(15) << "name" << setw(15) << "inctyp" << setw(15) << "derinc";
+	os << setw(15) << "derinclb" << setw(15) << "forcen" << setw(15) << "derincmul" << endl;
+	for (auto &grp_name : pest_scenario.get_ctl_ordered_par_group_names())
+	{
+		grp_rec = pest_scenario.get_base_group_info().get_group_by_groupname(grp_name);
+		os << setw(15) << grp_rec->name << setw(15) << grp_rec->inctyp << setw(15) << grp_rec->derinc;
+		os << setw(15) << grp_rec->derinclb << setw(15) << grp_rec->forcen << setw(15) << grp_rec->derincmul << endl;
+	}
+	os << "Pest Parameter Information" << endl;
+	os << setw(15) << "name" << setw(20) << "change limit" << setw(15) << "initial value";
+	os << setw(15) << "lower bound";	
+	os << setw(15) << "upper bound" << setw(15) << "group" << setw(15) << "dercom" << endl;
+	const ParameterRec* par_rec;
+	for (auto &par_name : pest_scenario.get_ctl_ordered_par_names())
+	{
+		par_rec = pest_scenario.get_ctl_parameter_info().get_parameter_rec_ptr(par_name);
+		os << setw(15) << par_name;
+		//os << setw(10) << par_rec->enum_trans[par_rec->tranform_type];
+		os << setw(20) << par_rec->chglim;
+		os << setw(15) << par_rec->init_value;
+		os << setw(15) << par_rec->lbnd;
+		os << setw(15) << par_rec->ubnd;
+		os << setw(15) << par_rec->group;
+		os << setw(15) << par_rec->dercom << endl;
+
+
+	}
+
+	os << endl << endl;
+}
+
 void OutputFileWriter::par_report(std::ostream &os, Parameters const &new_ctl_pars)
 {
 	double val;

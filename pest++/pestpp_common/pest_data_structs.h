@@ -93,6 +93,7 @@ public:
 	*/
 	void insert_parameter_link(const string &parameter_name, const string & group_name);
 	const ParameterGroupRec* get_group_rec_ptr(const string &par_name) const;
+	const ParameterGroupRec* get_group_by_groupname(const string &group_name) const { return groups.at(group_name); }
 	string get_group_name(const string &par_name) const;
 	const ParameterGroupInfo& operator=(const ParameterGroupInfo &rhs);
 	~ParameterGroupInfo();

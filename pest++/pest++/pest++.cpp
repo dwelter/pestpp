@@ -224,9 +224,10 @@ int main(int argc, char* argv[])
 	pest_scenario.check_inputs();
 	//Initialize OutputFileWriter to hadle IO of suplementary files (.par, .par, .svd)
 	//bool save_eign = pest_scenario.get_svd_info().eigwrite > 0;
+	fout_rec << pest_scenario << endl;
 	OutputFileWriter output_file_writer(file_manager, pest_scenario, restart_flag);
 	output_file_writer.set_svd_output_opt(pest_scenario.get_svd_info().eigwrite);
-
+	output_file_writer.scenario_report(fout_rec);
 	RunManagerAbstract *run_manager_ptr;
 	if (run_manager_type == RunManagerType::YAMR)
 	{

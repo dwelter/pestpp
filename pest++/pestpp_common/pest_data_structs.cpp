@@ -79,7 +79,6 @@ ostream& operator<< (ostream &os, const ParameterGroupRec& val)
 }
 
 /////////////////////////////////////  ParameterGroupInfo Methods ///////////////////////
-
 const ParameterGroupRec* ParameterGroupInfo::get_group_rec_ptr(const string &name) const
 {
 	const ParameterGroupRec *ret_val = 0;

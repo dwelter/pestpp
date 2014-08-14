@@ -55,6 +55,8 @@ public:
 	void phi_report(std::ostream &os,map<string, double> const phi_comps, double const dynamic_reg_weight,bool final=false);
 	void par_report(std::ostream &os, Parameters const &new_ctl_pars);
 	void par_report(std::ostream &os, Parameters const &new_ctl_pars, Parameters const &old_ctl_pars,string par_type);
+	void scenario_report(std::ostream &os);
+	
 	void param_change_stats(double p_old, double p_new, bool &have_fac, double &fac_change, bool &have_rel, double &rel_change);
 	
 private:
