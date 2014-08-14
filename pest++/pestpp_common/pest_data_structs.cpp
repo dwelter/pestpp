@@ -19,6 +19,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <iomanip>
 #include <vector>
 #include <map>
 #include <sstream>
@@ -239,6 +240,30 @@ Parameters ParameterInfo::get_init_value(const vector<string> &keys) const
 	return init_value;
 }
 
+
+ostream& operator<< (ostream &os, const PestppOptions& val)
+{
+	os << "PEST++ Options" << endl;
+	os << "    n_iter_base = " << left << setw(20) << val.get_n_iter_base() << endl;
+	os << "    n_iter_super = " << left << setw(20) << val.get_n_iter_super() << endl;
+	os << "    max_n_super = " << left << setw(20) << val.get_max_n_super() << endl;
+	os << "    super eigthres = " << left << setw(20) << val.get_super_eigthres() << endl;
+	os << "    svd pack = " << left << setw(20) << val.get_svd_pack() << endl;
+	os << "    auto norm = " << left << setw(20) << val.get_auto_norm() << endl;
+	os << "    super relparmax = " << left << setw(20) << val.get_super_relparmax() << endl;
+	os << "    max super frz iter = " << left << setw(20) << val.get_max_super_frz_iter() << endl;
+	os << "    mat inv = " << left << setw(20) << val.get_mat_inv() << endl;
+	os << "    max run fail = " << left << setw(20) << val.get_max_run_fail() << endl;
+	os << "    max reg iter = " << left << setw(20) << val.get_max_reg_iter() << endl;
+	os << "    io fortran = " << left << setw(20) << val.get_io_fortran() << endl;
+	os << "    lambdas = " << endl;
+	for (auto &lam : val.get_base_lambda_vec())
+	{
+		os << right << setw(15) << lam << endl;
+	}
+	os << endl;
+	return os;
+}
 
 PestppOptions::PestppOptions(int _n_iter_base, int _n_iter_super, int _max_n_super, double _super_eigthres,
 	SVD_PACK _svd_pack, MAT_INV _mat_inv, double _auto_norm, double _super_relparmax, int _max_run_fail,

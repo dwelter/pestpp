@@ -290,7 +290,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 	}
 	// sen file for this iteration
 	output_file_writer.append_sen(file_manager.sen_ofstream(), termination_ctl.get_iteration_number() + 1,
-		jacobian, *(cur_solution.get_obj_func_ptr()), get_parameter_group_info(), *regul_scheme_ptr);
+		jacobian, *(cur_solution.get_obj_func_ptr()), get_parameter_group_info(), *regul_scheme_ptr,"NUMERIC");
 
 	cout << endl;
 	cout << "  computing upgrade vectors... " << endl;

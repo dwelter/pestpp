@@ -623,7 +623,7 @@ restart_resume_jacobian_runs:
 	}
 	// sen file for this iteration
 	output_file_writer.append_sen(file_manager.sen_ofstream(), termination_ctl.get_iteration_number() + 1, jacobian,
-		*(cur_solution.get_obj_func_ptr()), get_parameter_group_info(), *regul_scheme_ptr);
+		*(cur_solution.get_obj_func_ptr()), get_parameter_group_info(), *regul_scheme_ptr,"NUMERIC");
 
 restart_reuse_jacoboian:
 	cout << endl;
@@ -1357,10 +1357,10 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 			tmp_regul_scheme.set_weight(mu_vec[0].mu);
 			mu_vec[0].phi_comp = phi_estimate(jacobian, Q_sqrt, tmp_regul_scheme, residuals_vec, obs_names_vec,
 				base_run_active_ctl_par, freeze_active_ctl_pars, tmp_regul_scheme);
-			//mu_vec[0].print(os);
-			//os << endl;
-			//mu_vec[0].print(cout);
-			//cout << endl;
+			mu_vec[0].print(os);
+			os << endl;
+			mu_vec[0].print(cout);
+			cout << endl;
 		}
 		if (mu_vec[0].mu <= wfmin) break;
 	}
@@ -1378,10 +1378,10 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 			tmp_regul_scheme.set_weight(mu_vec[3].mu);
 			mu_vec[3].phi_comp = phi_estimate(jacobian, Q_sqrt, tmp_regul_scheme, residuals_vec, obs_names_vec,
 				base_run_active_ctl_par, freeze_active_ctl_pars, tmp_regul_scheme);
-			//mu_vec[3].print(os);
-			//os << endl;
-			//mu_vec[0].print(cout);
-			//cout << endl;
+			mu_vec[3].print(os);
+			os << endl;
+			mu_vec[0].print(cout);
+			cout << endl;
 		}
 		if (mu_vec[3].mu >= wfmax) break;
 	}
@@ -1449,10 +1449,10 @@ void SVDSolver::dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt
 			}
 
 			auto min_mu = std::min_element(mu_vec.begin(), mu_vec.end());
-			/*min_mu->print(os);
+			min_mu->print(os);
 			os << endl;
 			mu_vec[0].print(cout);
-			cout << endl;*/
+			cout << endl;
 			if (min_mu->error_frac() <= wftol) break;
 		}
 		auto min_mu = std::min_element(mu_vec.begin(), mu_vec.end());

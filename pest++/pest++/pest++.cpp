@@ -196,14 +196,17 @@ int main(int argc, char* argv[])
 	}
 
 	ofstream &fout_rec = file_manager.rec_ofstream();
-	
-
 	PerformanceLog performance_log(file_manager.open_ofile_ext("pfm"));
 
 
 	fout_rec << "             PEST++ Version " << version << endl << endl;
 	fout_rec << "                 by Dave Welter" << endl;
 	fout_rec << "     Computational Water Resource Engineering"<< endl << endl << endl;
+
+	cout << endl;
+	fout_rec << endl;
+	cout << "using control file: \"" << complete_path << "\"" << endl << endl << endl;
+	fout_rec << "using control file: \"" << complete_path << "\"" << endl << endl << endl;
 
 	// create pest run and process control file to initialize it
 	Pest pest_scenario;
@@ -223,8 +226,7 @@ int main(int argc, char* argv[])
 	}
 	pest_scenario.check_inputs();
 	//Initialize OutputFileWriter to hadle IO of suplementary files (.par, .par, .svd)
-	//bool save_eign = pest_scenario.get_svd_info().eigwrite > 0;
-	fout_rec << pest_scenario << endl;
+	//bool save_eign = pest_scenario.get_svd_info().eigwrite > 0;	
 	OutputFileWriter output_file_writer(file_manager, pest_scenario, restart_flag);
 	output_file_writer.set_svd_output_opt(pest_scenario.get_svd_info().eigwrite);
 	output_file_writer.scenario_report(fout_rec);
@@ -261,10 +263,7 @@ int main(int argc, char* argv[])
 	}
 
 
-	cout << endl;
-	fout_rec << endl;
-	cout << "using control file: \"" << complete_path << "\"" << endl << endl << endl;
-	fout_rec << "using control file: \"" << complete_path << "\"" << endl << endl << endl;
+	
 
 	const ParamTransformSeq &base_trans_seq = pest_scenario.get_base_par_tran_seq();
 	

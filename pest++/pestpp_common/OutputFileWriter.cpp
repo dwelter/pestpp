@@ -17,7 +17,6 @@
 	along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
 
-
 #include <fstream>
 #include <iostream>
 #include <iomanip>
@@ -36,6 +35,7 @@
 using namespace std;
 using namespace Eigen;
 using namespace::pest_utils;
+
 
 OutputFileWriter::OutputFileWriter(FileManager &_file_manager, Pest &_pest_scenario, bool restart_flag, bool _save_rei, int _eigenwrite)
 	: file_manager(_file_manager), pest_scenario(_pest_scenario),case_name(_file_manager.get_base_filename()), save_rei(_save_rei), eigenwrite(_eigenwrite)
@@ -59,45 +59,55 @@ OutputFileWriter::OutputFileWriter(FileManager &_file_manager, Pest &_pest_scena
 void OutputFileWriter::scenario_report(std::ostream &os)
 {
 	os << pest_scenario.get_control_info() << endl;
+	os << pest_scenario.get_pestpp_options() << endl;
+
 	const ParameterGroupRec *grp_rec;
-	/*os << "PEST Parameter Group Information" << endl;
-	os << "    name   = " << val.name << endl;
-	os << "    inctyp = " << val.inctyp << endl;
-	os << "    derinc = " << val.derinc << endl;
-	os << "    derinclb = " << val.derinclb << endl;
-	os << "    forcen = " << val.forcen << endl;
-	os << "    derincmul = " << val.derincmul << endl;*/
-	os << "Pest Parameter Group Information" << endl;
-	os << setw(15) << "name" << setw(15) << "inctyp" << setw(15) << "derinc";
-	os << setw(15) << "derinclb" << setw(15) << "forcen" << setw(15) << "derincmul" << endl;
+	os << "PEST Parameter Group Information" << endl;
+	os << left << setw(15) << "NAME" << right << setw(15) << "INCREMENT TYPE" << setw(25) << "DERIVATIVE INCREMENT";
+	os << setw(25) << "INCREMENT LOWER BOUND" << setw(15) << "FORCE CENTRAL" << setw(25) << "INCREMENT MULTIPLIER" << endl;
 	for (auto &grp_name : pest_scenario.get_ctl_ordered_par_group_names())
 	{
 		grp_rec = pest_scenario.get_base_group_info().get_group_by_groupname(grp_name);
-		os << setw(15) << grp_rec->name << setw(15) << grp_rec->inctyp << setw(15) << grp_rec->derinc;
-		os << setw(15) << grp_rec->derinclb << setw(15) << grp_rec->forcen << setw(15) << grp_rec->derincmul << endl;
+		os << left << setw(15) << lower_cp(grp_rec->name) << right << setw(15) << grp_rec->inctyp << setw(25) << grp_rec->derinc;
+		os << setw(25) << grp_rec->derinclb << setw(15) << grp_rec->forcen << setw(25) << grp_rec->derincmul << endl;
 	}
-	os << "Pest Parameter Information" << endl;
-	os << setw(15) << "name" << setw(20) << "change limit" << setw(15) << "initial value";
-	os << setw(15) << "lower bound";	
-	os << setw(15) << "upper bound" << setw(15) << "group" << setw(15) << "dercom" << endl;
+	os << endl << "PEST Parameter Information" << endl;
+	os << left << setw(15) << "NAME" << right << setw(20) << "CHANGE LIMIT" << setw(15) << "INITIAL VALUE";
+	os << setw(15) << "LOWER BOUND";	
+	os << setw(15) << "UPPER BOUND" << setw(15) << "GROUP";
+	
+	os << setw(15) << "SCALE" << setw(15) << "OFFSET" << setw(20) << "DERIVATIVE COMMAND" << endl;
 	const ParameterRec* par_rec;
 	for (auto &par_name : pest_scenario.get_ctl_ordered_par_names())
 	{
 		par_rec = pest_scenario.get_ctl_parameter_info().get_parameter_rec_ptr(par_name);
-		os << setw(15) << par_name;
+		os << left <<setw(15) << lower_cp(par_name);
 		//os << setw(10) << par_rec->enum_trans[par_rec->tranform_type];
-		os << setw(20) << par_rec->chglim;
+		os << right << setw(20) << par_rec->chglim;
 		os << setw(15) << par_rec->init_value;
 		os << setw(15) << par_rec->lbnd;
 		os << setw(15) << par_rec->ubnd;
 		os << setw(15) << par_rec->group;
-		os << setw(15) << par_rec->dercom << endl;
-
-
+		os << setw(15) << par_rec->scale;
+		os << setw(15) << par_rec->offset;
+		os << setw(20) << par_rec->dercom << endl;
 	}
-
+	os << endl << "PEST Observation Data" << endl;
+	os << left << setw(25) << "NAME" << right << setw(20) << "VALUE" << setw(20) << "GROUP" << endl;
+	const ObservationRec* obs_rec;
+	double val;
+	const Observations &obs = pest_scenario.get_ctl_observations();
+	for (auto &obs_name : pest_scenario.get_ctl_ordered_obs_names())
+	{
+		obs_rec = pest_scenario.get_ctl_observation_info().get_observation_rec_ptr(obs_name);		
+		os << left << setw(25) << lower_cp(obs_name);
+		os << right << setw(20) << obs.get_rec(obs_name);
+		os << setw(20) << obs_rec->group << endl;
+	}
+	os << endl << pest_scenario.get_svd_info() << endl;
 	os << endl << endl;
 }
+
 
 void OutputFileWriter::par_report(std::ostream &os, Parameters const &new_ctl_pars)
 {
@@ -118,7 +128,9 @@ void OutputFileWriter::par_report(std::ostream &os, Parameters const &new_ctl_pa
 
 }
 
-void OutputFileWriter::par_report(std::ostream &os, Parameters const &new_ctl_pars, Parameters const &old_ctl_pars,string par_type)
+
+void OutputFileWriter::par_report(std::ostream &os, Parameters const &new_pars, Parameters const &old_pars,
+	string par_type)
 {	
 	double p_old, p_new;
 	double fac_change = -9999, rel_change = -9999;
@@ -132,14 +144,21 @@ void OutputFileWriter::par_report(std::ostream &os, Parameters const &new_ctl_pa
 	os << "      Parameter     Current       Previous       Factor       Relative" << endl;
 	os << "        Name         Value         Value         Change        Change" << endl;
 	os << "      ----------  ------------  ------------  ------------  ------------" << endl;
-	
-	//for (const auto &ipar : new_ctl_pars)
-	for (auto &p_name : pest_scenario.get_ctl_ordered_par_names())
+	vector<string> par_names;
+	if (lower_cp(par_type) == "control file")
+		par_names = pest_scenario.get_ctl_ordered_par_names();
+	else
 	{
-		Parameters::const_iterator pi = new_ctl_pars.find(p_name);
-		if (pi == new_ctl_pars.end()) continue;
-		p_new = new_ctl_pars.get_rec(p_name);
-		p_old = old_ctl_pars.get_rec(p_name);		
+		par_names = new_pars.get_keys();
+		sort(par_names.begin(), par_names.end());
+	}
+	//for (const auto &ipar : new_ctl_pars)	
+	for (auto &p_name : par_names)
+	{
+		Parameters::const_iterator pi = new_pars.find(p_name);
+		if (pi == new_pars.end()) continue;
+		p_new = new_pars.get_rec(p_name);
+		p_old = old_pars.get_rec(p_name);		
 		param_change_stats(p_old, p_new, have_fac, fac_change, have_rel, rel_change);
 		if (have_fac && fac_change >= max_fac_change)
 		{
@@ -172,6 +191,7 @@ void OutputFileWriter::par_report(std::ostream &os, Parameters const &new_ctl_pa
 	os << endl;	
 }
 
+
 void OutputFileWriter::param_change_stats(double p_old, double p_new, bool &have_fac, 
 	double &fac_change, bool &have_rel, double &rel_change)
 {
@@ -196,6 +216,7 @@ void OutputFileWriter::param_change_stats(double p_old, double p_new, bool &have
 		fac_change = a / b;
 	}
 }
+
 
 void OutputFileWriter::phi_report(std::ostream &os, map<string, double> const phi_comps, double const dynamic_reg_weight,bool final)
 {
@@ -288,6 +309,7 @@ void OutputFileWriter::write_rei(ofstream &fout, int iter_no, const Observations
 	}
 }
 
+
 void OutputFileWriter::write_par(ofstream &fout, const Parameters &pars, const TranOffset &offset_tran, const TranScale &scale_tran)
 {
 	const string *name_ptr;
@@ -327,10 +349,7 @@ void OutputFileWriter::read_par(ifstream &fin, Parameters &pars)
 	string name;
 	double value;
 	vector<string> tokens;
-
-
 	getline(fin, line);
-
 	while (getline(fin, line))
 	{
 		strip_ip(line);
@@ -343,12 +362,12 @@ void OutputFileWriter::read_par(ifstream &fin, Parameters &pars)
 }
 
 
-
 void OutputFileWriter::write_sen_header(std::ostream &fout, const string &case_name)
 {
 	fout << "                    PARAMETER SENSITIVITIES: CASE " << case_name << endl;
 	fout << endl << endl;
 }
+
 
 void OutputFileWriter::write_restart_header(std::ostream &fout)
 {
@@ -358,14 +377,14 @@ void OutputFileWriter::write_restart_header(std::ostream &fout)
 }
 
 
-
 void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobian &jac,
-	const ObjectiveFunc &obj_func, const ParameterGroupInfo &par_grp_info, const DynamicRegularization &regul)
+	const ObjectiveFunc &obj_func, const ParameterGroupInfo &par_grp_info, const DynamicRegularization &regul,
+	string par_type)
 {
 	fout << setiosflags(ios::left);
 	fout.unsetf(ios::floatfield);
 	fout.precision(12);
-	fout << " NUMERIC PARAMETER SENSITIVITIES FOR OPTIMISATION ITERATION NO. " << setw(3) << iter_no << " ----->" << endl;
+	fout << upper_cp(par_type) << " PARAMETER SENSITIVITIES FOR OPTIMISATION ITERATION NO. " << setw(3) << iter_no << " ----->" << endl;
 	fout << " Parameter name   Group        Current Value           CSS w/reg           CSS w/o reg" << endl;
 	const vector<string> &par_list = jac.parameter_list();
 	//const vector<string> &par_list = pest_scenario.get_ctl_ordered_par_names();
@@ -383,13 +402,20 @@ void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobia
 	int n_par = par_list.size();
 	int n_nonzero_weights_reg = q_sqrt_reg.nonZeros();
 	int n_nonzero_weights_no_reg = q_sqrt_no_reg.nonZeros();
-	const vector<string> ordered_par_names = pest_scenario.get_ctl_ordered_par_names();
+	vector<string> par_names;
+	if (upper_cp(par_type) == "CONTROL FILE")
+		par_names = pest_scenario.get_ctl_ordered_par_names();
+	else
+	{
+		par_names = par_list;
+		sort(par_names.begin(), par_names.end());
+	}
+		
 	//drop any names that aren't in par_list
-
 	vector<string>::const_iterator is;
 	int i;
 	//for (int i = 0; i < n_par; ++i)
-	for (auto &pname : ordered_par_names)
+	for (auto &pname : par_names)
 	{
 		is = find(par_list.begin(), par_list.end(), pname);
 		if (is == par_list.end()) continue;		
@@ -418,6 +444,7 @@ void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobia
 	fout << endl << endl;
 }
 
+
 void OutputFileWriter::set_svd_output_opt(int _eigenwrite)
 {
 	eigenwrite = _eigenwrite;
@@ -443,6 +470,7 @@ void OutputFileWriter::write_svd(VectorXd &Sigma, Eigen::SparseMatrix<double> &V
 		}
 		fout_svd << "Number of singular values used in solution = " << Sigma.size() << endl << endl << endl;
 }
+
 
 void OutputFileWriter::write_svd_iteration(int iteration_no)
 {

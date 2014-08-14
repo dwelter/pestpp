@@ -111,11 +111,13 @@ public:
 	double lbnd;
 	double ubnd;
 	double init_value;
+	double scale;
+	double offset;
 	string group;
 	bool dercom;
 	TRAN_TYPE tranform_type;
 	ParameterRec() : chglim(""), lbnd(0.0), ubnd(0.0), init_value(0.0), group(""),
-		dercom(false), tranform_type(TRAN_TYPE::NONE){}
+		dercom(false), tranform_type(TRAN_TYPE::NONE), scale(1.0), offset(0.0){}
 	bool is_active() const { return !(tranform_type == TRAN_TYPE::FIXED || tranform_type == TRAN_TYPE::TIED); }
 };
 ostream& operator<< (ostream &os, const ParameterRec& val);
@@ -178,6 +180,8 @@ public:
 	std::vector<std::string> outfile_vec;
 };
 
+
+
 class PestppOptions {
 public:
 	enum SVD_PACK{EIGEN, PROPACK};
@@ -228,6 +232,6 @@ private:
 	vector<double> base_lambda_vec;
 	bool io_fortran;
 };
-
+ostream& operator<< (ostream &os, const PestppOptions& val);
 ostream& operator<< (ostream &os, const ObservationInfo& val);
 #endif  /* PEST_DATAS_STRUCTS_H_ */

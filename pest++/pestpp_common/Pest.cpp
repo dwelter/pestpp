@@ -231,6 +231,8 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 				convert_ip(tokens[6], pi.group);
 				convert_ip(tokens[7], scale);
 				convert_ip(tokens[8], offset);
+				pi.scale = scale;
+				pi.offset = offset;
 				// add parameters to model parameter and paramter_info datasets
 				ctl_ordered_par_names.push_back(name);
 				if (*trans_type == "FIXED")
