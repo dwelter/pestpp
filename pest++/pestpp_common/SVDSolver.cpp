@@ -85,6 +85,7 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 	bool save_nextjac = false;
 	string matrix_inv = (mat_inv == MAT_INV::Q12J) ? "\"Q 1/2 J\"" : "\"Jt Q J\"";
 	terminate_local_iteration = false;
+	os << "   -----    Starting PEST++ Iterations    ----    " << endl;
 	if (max_iter == -1)
 	{
 		cout << "COMPUTING JACOBIAN:" << endl << endl;
@@ -97,19 +98,10 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 
 	for (int iter_num = 1; iter_num <= max_iter && !terminate_local_iteration; ++iter_num) {
 		int global_iter_num = termination_ctl.get_iteration_number() + 1;
-		cout << "OPTIMISATION ITERATION NUMBER: " << global_iter_num << endl;
-		os << "OPTIMISATION ITERATION NUMBER: " << global_iter_num << endl << endl;
-		cout << "  Iteration type: " << get_description() << endl;
-		os << "    Iteration type: " << get_description() << endl;
-		cout << "  SVD Package: " << svd_package->description << endl;
-		os << "    SVD Package: " << svd_package->description << endl;
-		cout << "  Matrix Inversion: " << matrix_inv << endl;
-		os << "    Matrix Inversion: " << matrix_inv << endl;
-		os << "    Model calls so far : " << run_manager.get_total_runs() << endl;
+		output_file_writer.iteration_report(os, global_iter_num, run_manager.get_total_runs(), get_description(), svd_package->description, matrix_inv);
+		output_file_writer.iteration_report(cout, global_iter_num, run_manager.get_total_runs(), get_description(), svd_package->description, matrix_inv);
 		fout_restart << "start_iteration " << iter_num << "  " << global_iter_num << endl;
-		cout << endl;
-		os << endl;
-
+		
 		debug_msg("========================================================================");
 		debug_msg("Iteration Number");
 		debug_print(global_iter_num);
@@ -617,14 +609,14 @@ restart_resume_jacobian_runs:
 		cur_solution.update_ctl(tmp_pars, tmp_obs);
 	}
 
+	
+	// sen file for this iteration
+	output_file_writer.append_sen(file_manager.sen_ofstream(), termination_ctl.get_iteration_number() + 1, jacobian,
+		*(cur_solution.get_obj_func_ptr()), get_parameter_group_info(), *regul_scheme_ptr,"NUMERIC");
 	if (jacobian_only)
 	{
 		return;
 	}
-	// sen file for this iteration
-	output_file_writer.append_sen(file_manager.sen_ofstream(), termination_ctl.get_iteration_number() + 1, jacobian,
-		*(cur_solution.get_obj_func_ptr()), get_parameter_group_info(), *regul_scheme_ptr,"NUMERIC");
-
 restart_reuse_jacoboian:
 	cout << endl;
 
@@ -662,7 +654,7 @@ restart_reuse_jacoboian:
 	}
 	// write out report for starting phi
 	map<string,double> phi_report = obj_func->phi_report(cur_solution.get_obs(), cur_solution.get_ctl_pars(), *regul_scheme_ptr);
-	output_file_writer.phi_report(os, phi_report,regul_scheme_ptr->get_weight());
+	output_file_writer.phi_report(os,termination_ctl.get_iteration_number()+1,run_manager.get_total_runs(), phi_report,regul_scheme_ptr->get_weight());
 	// write failed jacobian parameters out
 	if (failed_jac_pars.size() > 0)
 	{
@@ -723,7 +715,7 @@ restart_reuse_jacoboian:
 	// process model runs
 	cout << endl;
 	cout << "  testing upgrade vectors... ";
-	cout << endl;
+	//cout << endl;
 	bool best_run_updated_flag = false;
 	ModelRun best_upgrade_run(cur_solution);
 
@@ -813,8 +805,8 @@ restart_reuse_jacoboian:
 		phiredswh_flag = true;
 		os << endl << "      Switching to central derivatives:" << endl;
 	}
-
-	cout << "  Starting phi = " << cur_phi << ";  ending phi = " << best_phi <<
+	cout << "  ...Lambda testing complete for iteration " << termination_ctl.get_iteration_number() + 1 << endl;
+	cout << "    Starting phi = " << cur_phi << ";  ending phi = " << best_phi <<
 		"  (" << best_phi / cur_phi * 100 << "%)" << endl;
 	cout << endl;
 	os << endl;
@@ -1031,7 +1023,8 @@ void SVDSolver::iteration_update_and_report(ostream &os, ModelRun &upgrade, Term
 	double max_rel_change = 0;		
 	const Parameters &old_ctl_pars = cur_solution.get_ctl_pars();
 	const Parameters &new_ctl_pars = upgrade.get_ctl_pars();
-	output_file_writer.par_report(os, new_ctl_pars, old_ctl_pars, "Control File");
+	
+	output_file_writer.par_report(os, termination_ctl.get_iteration_number()+1, new_ctl_pars, old_ctl_pars, "Control File");
 	
 	for (const auto &ipar : new_ctl_pars)
 	{
@@ -1046,7 +1039,7 @@ void SVDSolver::iteration_update_and_report(ostream &os, ModelRun &upgrade, Term
 	}
 	const Parameters old_numeric_pars = par_transform.ctl2numeric_cp(cur_solution.get_ctl_pars());
 	const Parameters new_numeric_pars = par_transform.ctl2numeric_cp(upgrade.get_ctl_pars());
-	output_file_writer.par_report(os,new_numeric_pars, old_numeric_pars, "Transformed Numeric");
+	output_file_writer.par_report(os, termination_ctl.get_iteration_number()+1, new_numeric_pars, old_numeric_pars, "Transformed Numeric");
 
 	//Need to pass defualt regularization weights so this comparision is consistent across iterations
 	termination_ctl.process_iteration(upgrade.get_phi_comp(DynamicRegularization::get_unit_reg_instance()), max_rel_change);

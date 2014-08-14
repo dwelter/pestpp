@@ -167,8 +167,6 @@ void RunManagerSerial::run()
 				else
 				{					
 					tpl_files.write(pars);
-
-					//throw PestError("non-fortran IO not implemented for TPL files");
 				}
 								
 				for (int i = 0, n_exec = comline_vec.size(); i < n_exec; ++i)
@@ -190,7 +188,6 @@ void RunManagerSerial::run()
 				}
 				else
 				{
-					//throw PestError("non-fortran IO not implemented for INS files");
 					ins_files.read(obs_name_vec,obs);
 				}
 								
@@ -213,6 +210,7 @@ void RunManagerSerial::run()
 					obs.insert(obs_name_vec, obs_vec);
 				}								
 				file_stor.update_run(i_run, pars, obs);
+				
 			}
 			catch (const std::exception& ex)
 			{
@@ -230,6 +228,7 @@ void RunManagerSerial::run()
 			}
 		}
 	}
+
 	total_runs += success_runs;
 	std::cout << string(message.str().size(), '\b');
 	message.str("");
@@ -244,6 +243,7 @@ void RunManagerSerial::run()
 	{			cout << endl << endl;
 		cout << "WARNING: " << nruns - success_runs << " out of " << nruns << " runs failed" << endl << endl;
 	}
+	std::cout << endl << endl;
 }
 
 

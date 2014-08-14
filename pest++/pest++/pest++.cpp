@@ -449,8 +449,8 @@ int main(int argc, char* argv[])
 	fout_rec << "  Optimal Parameter Values  " << endl;
 	output_file_writer.par_report(fout_rec, optimum_run.get_ctl_pars());
 	map<string, double> phi_report = obj_func.phi_report(optimum_run.get_obs(), optimum_run.get_ctl_pars(), DynamicRegularization(false));
-	output_file_writer.phi_report(fout_rec,phi_report,0.0,true);
-	output_file_writer.phi_report(cout, phi_report, 0.0,true);
+	output_file_writer.phi_report(fout_rec,termination_ctl.get_iteration_number()+1,run_manager_ptr->get_total_runs(),phi_report,0.0,true);
+	output_file_writer.phi_report(cout, termination_ctl.get_iteration_number() + 1, run_manager_ptr->get_total_runs(), phi_report, 0.0, true);
 	fout_rec << endl;
 	fout_rec << "    Number of forward model runs performed: " << run_manager_ptr->get_total_runs() << endl;
 	fout_rec.close();

@@ -53,8 +53,72 @@ OutputFileWriter::OutputFileWriter(FileManager &_file_manager, Pest &_pest_scena
 		write_sen_header(fout_sen, case_name);
 		file_manager.open_ofile_ext("svd");
 	}
+	if (pest_scenario.get_pestpp_options().get_iter_summary_flag())
+	{
+		prepare_iteration_summary_files();
+	}
 }
 
+void OutputFileWriter::iteration_report(std::ostream &os, int iter, int nruns, string iteration_type, string svd_type, string mat_inv)
+{
+	os << "OPTIMISATION ITERATION NUMBER: " << iter << endl << endl;
+	os << "  Iteration type: " << iteration_type << endl;
+	os << "    SVD Package: " << svd_type << endl;
+	os << "    Matrix Inversion: " << mat_inv << endl;
+	os << "    Model calls so far : " << nruns << endl;
+	os << endl;
+}
+
+void OutputFileWriter::prepare_iteration_summary_files()
+{
+	file_manager.open_ofile_ext("ipar");
+	file_manager.open_ofile_ext("iobj");
+	ofstream &os_ipar = file_manager.get_ofstream("ipar");
+	os_ipar << "iteration";
+	for (auto &par_name : pest_scenario.get_ctl_ordered_par_names())
+	{
+		os_ipar << ',' << lower_cp(par_name);
+	}
+	os_ipar << endl;
+	ofstream &os_iobj = file_manager.get_ofstream("iobj");
+	os_iobj << "iteration,model_runs_completed,total_phi,measurement_phi,regularization_phi";
+	for (auto &obs_grp : pest_scenario.get_ctl_ordered_obs_group_names())
+	{
+		os_iobj << ',' << lower_cp(obs_grp);
+	}
+	os_iobj << endl;
+}
+
+void OutputFileWriter::write_par_iter(int iter, Parameters const &ctl_pars)
+{
+	ofstream &os = file_manager.get_ofstream("ipar");
+	os << iter;
+	for (auto &par_name : pest_scenario.get_ctl_ordered_par_names())
+	{
+		os << ',' << ctl_pars.get_rec(par_name);
+	}
+	os << endl;
+}
+
+void OutputFileWriter::write_obj_iter(int iter, int nruns, map<string, double> &phi_report)
+{
+	ofstream &os = file_manager.get_ofstream("iobj");
+	os << iter << ',' << nruns;
+	os << ',' << phi_report["TOTAL"];
+	os << ',' << phi_report["MEAS"];
+	map<string, double>::iterator iregul = phi_report.find("REGUL");
+	double val = 0.0;	
+	if (iregul != phi_report.end())
+	{
+		val = phi_report["REGUL"];
+	}
+	os << ',' << val;
+	for (auto &obs_grp : pest_scenario.get_ctl_ordered_obs_group_names())
+	{
+		os << ',' << phi_report[obs_grp];
+	}
+	os << endl;
+}
 
 void OutputFileWriter::scenario_report(std::ostream &os)
 {
@@ -87,7 +151,7 @@ void OutputFileWriter::scenario_report(std::ostream &os)
 		os << setw(15) << par_rec->init_value;
 		os << setw(15) << par_rec->lbnd;
 		os << setw(15) << par_rec->ubnd;
-		os << setw(15) << par_rec->group;
+		os << setw(15) << lower_cp(par_rec->group);
 		os << setw(15) << par_rec->scale;
 		os << setw(15) << par_rec->offset;
 		os << setw(20) << par_rec->dercom << endl;
@@ -102,7 +166,7 @@ void OutputFileWriter::scenario_report(std::ostream &os)
 		obs_rec = pest_scenario.get_ctl_observation_info().get_observation_rec_ptr(obs_name);		
 		os << left << setw(25) << lower_cp(obs_name);
 		os << right << setw(20) << obs.get_rec(obs_name);
-		os << setw(20) << obs_rec->group << endl;
+		os << setw(20) << lower_cp(obs_rec->group) << endl;
 	}
 	os << endl << pest_scenario.get_svd_info() << endl;
 	os << endl << endl;
@@ -125,11 +189,10 @@ void OutputFileWriter::par_report(std::ostream &os, Parameters const &new_ctl_pa
 		os << "  " << setw(12) << val << endl;
 	}
 	os << endl;
-
 }
 
 
-void OutputFileWriter::par_report(std::ostream &os, Parameters const &new_pars, Parameters const &old_pars,
+void OutputFileWriter::par_report(std::ostream &os, int const iter, Parameters const &new_pars, Parameters const &old_pars,
 	string par_type)
 {	
 	double p_old, p_new;
@@ -140,7 +203,7 @@ void OutputFileWriter::par_report(std::ostream &os, Parameters const &new_pars, 
 	string max_fac_par = "N/A";
 	string max_rel_par = "N/A";
 	
-	os << "    Parameter Upgrades (" << par_type << " Parameters)" << endl;
+	os << "    Iteration "<<iter<<" Parameter Upgrades (" << par_type << " Parameters) " << endl;
 	os << "      Parameter     Current       Previous       Factor       Relative" << endl;
 	os << "        Name         Value         Value         Change        Change" << endl;
 	os << "      ----------  ------------  ------------  ------------  ------------" << endl;
@@ -189,6 +252,10 @@ void OutputFileWriter::par_report(std::ostream &os, Parameters const &new_pars, 
 	os << "         Maximum relative change = " << max_rel_change << "   [" << lower_cp(max_rel_par) << "]" << endl;
 	os << "         Maximum factor change = " << max_fac_change << "   [" << lower_cp(max_fac_par) << "]" << endl;	
 	os << endl;	
+	if ((lower_cp(par_type) == "control file") && (pest_scenario.get_pestpp_options().get_iter_summary_flag()))
+	{
+		write_par_iter(iter, new_pars);
+	}
 }
 
 
@@ -218,7 +285,7 @@ void OutputFileWriter::param_change_stats(double p_old, double p_new, bool &have
 }
 
 
-void OutputFileWriter::phi_report(std::ostream &os, map<string, double> const phi_comps, double const dynamic_reg_weight,bool final)
+void OutputFileWriter::phi_report(std::ostream &os, int const iter, int const nruns, map<string, double> const phi_comps, double const dynamic_reg_weight,bool final)
 {
 	map<string, double>::const_iterator it = phi_comps.find("REGUL");
 	if ((!dynamic_reg_weight) || (it == phi_comps.end()))

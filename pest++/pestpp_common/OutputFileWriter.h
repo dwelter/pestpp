@@ -52,18 +52,23 @@ public:
 	void write_svd(Eigen::VectorXd &Sigma, Eigen::SparseMatrix<double> &Vt, double lambda, const Parameters &freeze_numeric_pars, Eigen::VectorXd &Sigma_trunc);
 	void write_svd_iteration(int iteration_no);
 
-	void phi_report(std::ostream &os,map<string, double> const phi_comps, double const dynamic_reg_weight,bool final=false);
+	void phi_report(std::ostream &os,int const iter, int const nruns,map<string, double> const phi_comps, double const dynamic_reg_weight,bool final=false);
 	void par_report(std::ostream &os, Parameters const &new_ctl_pars);
-	void par_report(std::ostream &os, Parameters const &new_pars, Parameters const &old_pars, string par_type);
+	void par_report(std::ostream &os, int const iter, Parameters const &new_pars, Parameters const &old_pars, string par_type);
+	void iteration_report(std::ostream &os, int iter, int nruns, string iteration_type, string svd_type, string mat_inv);
 	void scenario_report(std::ostream &os);
 	
 	void param_change_stats(double p_old, double p_new, bool &have_fac, double &fac_change, bool &have_rel, double &rel_change);
-	
+	void write_par_iter(int iter, Parameters const &ctl_pars);
+	void write_obj_iter(int iter, int nruns, map<string, double> &phi_report);
 private:
 	FileManager &file_manager;
 	Pest &pest_scenario;
 	std::string case_name;
 	int eigenwrite;
 	bool save_rei;
+	
+	void prepare_iteration_summary_files();	
+
 };
 #endif /* OUTPUTFILEWRITER_H */
