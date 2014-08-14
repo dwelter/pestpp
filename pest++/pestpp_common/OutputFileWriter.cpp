@@ -155,7 +155,8 @@ void OutputFileWriter::param_change_stats(double p_old, double p_new, bool &have
 
 void OutputFileWriter::phi_report(std::ostream &os, map<string, double> const phi_comps, double const dynamic_reg_weight,bool final)
 {
-	if (!dynamic_reg_weight)
+	map<string, double>::const_iterator it = phi_comps.find("REGUL");
+	if ((!dynamic_reg_weight) || (it == phi_comps.end()))
 	{
 		if (final)
 		{
