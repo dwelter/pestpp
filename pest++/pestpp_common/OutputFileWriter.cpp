@@ -189,6 +189,13 @@ void OutputFileWriter::scenario_report(std::ostream &os)
 		os << right << setw(20) << obs.get_rec(obs_name);
 		os << setw(20) << lower_cp(obs_rec->group) << endl;
 	}
+	const PriorInformationRec * pi_rec;
+	const PriorInformation &pi = pest_scenario.get_prior_info();
+	os << endl << "PEST Prior Information" << endl;
+	for (auto &pi_name : pi)
+	{
+		os << pi_name.first << "  " << pi_name.second;
+	}
 	os << endl << pest_scenario.get_svd_info() << endl;
 	os << endl << endl;
 }
