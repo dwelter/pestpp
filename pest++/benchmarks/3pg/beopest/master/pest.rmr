@@ -17,200 +17,192 @@
  RUNNING MODEL FOR FIRST TIME  -----> 
 
  Running model 1 time....
-   02 Jul 09:15:01.39:- index of 1 assigned to node at working directory "10.211.55.4\\D:\Users\jwhite\git_repo\pestpp\pest++\benchmarks\3pg\beopest\slaves\IGSBABEWLT109_1".
-   02 Jul 09:15:01.39:- model run 1 commencing on node 1.
-   02 Jul 09:15:01.79:- index of 2 assigned to node at working directory "10.211.55.4\\D:\Users\jwhite\git_repo\pestpp\pest++\benchmarks\3pg\beopest\slaves\IGSBABEWLT109_2".
-   02 Jul 09:15:02.05:- index of 3 assigned to node at working directory "10.211.55.4\\D:\Users\jwhite\git_repo\pestpp\pest++\benchmarks\3pg\beopest\slaves\IGSBABEWLT109_3".
-   02 Jul 09:15:02.07:- index of 4 assigned to node at working directory "10.211.55.4\\D:\Users\jwhite\git_repo\pestpp\pest++\benchmarks\3pg\beopest\slaves\IGSBABEWLT109_4".
-   02 Jul 09:15:02.25:- model run 1 completed on node 1.
+   15 Aug 10:00:16.36:- index of 1 assigned to node at working directory "10.211.55.4\\D:\Users\jwhite\git_repo\pestpp\pest++\benchmarks\3pg\beopest\slaves\IGSBABEWLT109_2".
+   15 Aug 10:00:16.37:- model run 1 commencing on node 1.
+   15 Aug 10:00:16.60:- index of 2 assigned to node at working directory "10.211.55.4\\D:\Users\jwhite\git_repo\pestpp\pest++\benchmarks\3pg\beopest\slaves\IGSBABEWLT109_1".
+   15 Aug 10:00:16.76:- index of 3 assigned to node at working directory "10.211.55.4\\D:\Users\jwhite\git_repo\pestpp\pest++\benchmarks\3pg\beopest\slaves\IGSBABEWLT109_3".
+   15 Aug 10:00:16.97:- model run 1 completed on node 1.
 
 
  OPTIMISATION ITERATION NO.  1 ----->
 
  Calculating Jacobian matrix: running model 5 times .....
-   02 Jul 09:15:02.28:- model run 1 commencing on node 4.
-   02 Jul 09:15:02.28:- model run 2 commencing on node 2.
-   02 Jul 09:15:02.29:- model run 3 commencing on node 3.
-   02 Jul 09:15:02.29:- model run 4 commencing on node 1.
-   02 Jul 09:15:02.72:- model run 2 completed on node 2.
-   02 Jul 09:15:02.72:- model run 5 commencing on node 2.
-   02 Jul 09:15:02.91:- model run 3 completed on node 3.
-   02 Jul 09:15:02.95:- model run 4 completed on node 1.
-   02 Jul 09:15:03.02:- model run 5 completed on node 2.
-   02 Jul 09:15:03.08:- model run 1 completed on node 4.
+   15 Aug 10:00:17.00:- model run 1 commencing on node 2.
+   15 Aug 10:00:17.00:- model run 2 commencing on node 1.
+   15 Aug 10:00:17.00:- model run 3 commencing on node 3.
+   15 Aug 10:00:17.25:- index of 4 assigned to node at working directory "10.211.55.4\\D:\Users\jwhite\git_repo\pestpp\pest++\benchmarks\3pg\beopest\slaves\IGSBABEWLT109_4".
+   15 Aug 10:00:17.26:- model run 4 commencing on node 4.
+   15 Aug 10:00:17.61:- model run 1 completed on node 2.
+   15 Aug 10:00:17.61:- model run 5 commencing on node 2.
+   15 Aug 10:00:17.67:- model run 3 completed on node 3.
+   15 Aug 10:00:17.68:- model run 2 completed on node 1.
+   15 Aug 10:00:18.43:- model run 4 completed on node 4.
+   15 Aug 10:00:18.56:- model run 5 completed on node 2.
 
  Testing parameter upgrades .....
-   02 Jul 09:15:03.09:- model run 1 commencing on node 2.
-   02 Jul 09:15:03.10:- model run 2 commencing on node 3.
-   02 Jul 09:15:03.11:- model run 3 commencing on node 1.
-   02 Jul 09:15:03.11:- model run 4 commencing on node 4.
-   02 Jul 09:15:03.51:- model run 3 completed on node 1.
-   02 Jul 09:15:03.54:- model run 1 completed on node 2.
-   02 Jul 09:15:03.60:- model run 4 completed on node 4.
-   02 Jul 09:15:03.60:- model run 2 completed on node 3.
+   15 Aug 10:00:18.57:- model run 1 commencing on node 3.
+   15 Aug 10:00:18.57:- model run 2 commencing on node 1.
+   15 Aug 10:00:18.57:- model run 3 commencing on node 2.
+   15 Aug 10:00:18.57:- model run 4 commencing on node 4.
+   15 Aug 10:00:19.49:- model run 2 completed on node 1.
+   15 Aug 10:00:19.51:- model run 1 completed on node 3.
+   15 Aug 10:00:19.66:- model run 4 completed on node 4.
+   15 Aug 10:00:19.80:- model run 3 completed on node 2.
 
 
  OPTIMISATION ITERATION NO.  2 ----->
 
  Calculating Jacobian matrix: running model 5 times .....
-   02 Jul 09:15:03.63:- model run 1 commencing on node 1.
-   02 Jul 09:15:03.63:- model run 2 commencing on node 2.
-   02 Jul 09:15:03.63:- model run 3 commencing on node 4.
-   02 Jul 09:15:03.63:- model run 4 commencing on node 3.
-   02 Jul 09:15:03.95:- model run 2 completed on node 2.
-   02 Jul 09:15:03.95:- model run 5 commencing on node 2.
-   02 Jul 09:15:04.01:- model run 4 completed on node 3.
-   02 Jul 09:15:04.15:- model run 1 completed on node 1.
-   02 Jul 09:15:04.17:- model run 3 completed on node 4.
-   02 Jul 09:15:04.31:- model run 5 completed on node 2.
+   15 Aug 10:00:19.84:- model run 1 commencing on node 1.
+   15 Aug 10:00:19.84:- model run 2 commencing on node 3.
+   15 Aug 10:00:19.84:- model run 3 commencing on node 4.
+   15 Aug 10:00:19.84:- model run 4 commencing on node 2.
+   15 Aug 10:00:20.14:- model run 1 completed on node 1.
+   15 Aug 10:00:20.14:- model run 5 commencing on node 1.
+   15 Aug 10:00:20.41:- model run 4 completed on node 2.
+   15 Aug 10:00:20.48:- model run 5 completed on node 1.
+   15 Aug 10:00:20.66:- model run 2 completed on node 3.
+   15 Aug 10:00:20.85:- model run 3 completed on node 4.
 
  Testing parameter upgrades .....
-   02 Jul 09:15:04.32:- model run 1 commencing on node 2.
-   02 Jul 09:15:04.76:- model run 1 completed on node 2.
+   15 Aug 10:00:20.86:- model run 1 commencing on node 1.
+   15 Aug 10:00:21.16:- model run 1 completed on node 1.
 
 
  OPTIMISATION ITERATION NO.  3 ----->
 
  Calculating Jacobian matrix: running model 5 times .....
-   02 Jul 09:15:04.79:- model run 1 commencing on node 3.
-   02 Jul 09:15:04.79:- model run 2 commencing on node 2.
-   02 Jul 09:15:04.80:- model run 3 commencing on node 1.
-   02 Jul 09:15:04.80:- model run 4 commencing on node 4.
-   02 Jul 09:15:05.11:- model run 3 completed on node 1.
-   02 Jul 09:15:05.11:- model run 5 commencing on node 1.
-   02 Jul 09:15:05.16:- model run 2 completed on node 2.
-   02 Jul 09:15:05.28:- model run 4 completed on node 4.
-   02 Jul 09:15:05.36:- model run 1 completed on node 3.
-   02 Jul 09:15:05.54:- model run 5 completed on node 1.
+   15 Aug 10:00:21.19:- model run 1 commencing on node 1.
+   15 Aug 10:00:21.19:- model run 2 commencing on node 2.
+   15 Aug 10:00:21.19:- model run 3 commencing on node 3.
+   15 Aug 10:00:21.19:- model run 4 commencing on node 4.
+   15 Aug 10:00:21.53:- model run 1 completed on node 1.
+   15 Aug 10:00:21.53:- model run 5 commencing on node 1.
+   15 Aug 10:00:21.67:- model run 2 completed on node 2.
+   15 Aug 10:00:21.96:- model run 5 completed on node 1.
+   15 Aug 10:00:22.12:- model run 3 completed on node 3.
+   15 Aug 10:00:22.33:- model run 4 completed on node 4.
 
  Testing parameter upgrades .....
-   02 Jul 09:15:05.55:- model run 1 commencing on node 2.
-   02 Jul 09:15:05.55:- model run 2 commencing on node 1.
-   02 Jul 09:15:05.55:- model run 3 commencing on node 4.
-   02 Jul 09:15:05.55:- model run 4 commencing on node 3.
-   02 Jul 09:15:05.88:- model run 1 completed on node 2.
-   02 Jul 09:15:05.90:- model run 4 completed on node 3.
-   02 Jul 09:15:06.27:- model run 3 completed on node 4.
-   02 Jul 09:15:06.32:- model run 2 completed on node 1.
+   15 Aug 10:00:22.34:- model run 1 commencing on node 1.
+   15 Aug 10:00:22.34:- model run 2 commencing on node 2.
+   15 Aug 10:00:22.34:- model run 3 commencing on node 3.
+   15 Aug 10:00:22.34:- model run 4 commencing on node 4.
+   15 Aug 10:00:22.65:- model run 1 completed on node 1.
+   15 Aug 10:00:22.84:- model run 2 completed on node 2.
+   15 Aug 10:00:23.05:- model run 4 completed on node 4.
+   15 Aug 10:00:23.70:- model run 3 completed on node 3.
 
 
  OPTIMISATION ITERATION NO.  4 ----->
 
  Calculating Jacobian matrix: running model 5 times .....
-   02 Jul 09:15:06.35:- model run 1 commencing on node 2.
-   02 Jul 09:15:06.35:- model run 2 commencing on node 3.
-   02 Jul 09:15:06.35:- model run 3 commencing on node 4.
-   02 Jul 09:15:06.36:- model run 4 commencing on node 1.
-   02 Jul 09:15:06.57:- model run 4 completed on node 1.
-   02 Jul 09:15:06.57:- model run 5 commencing on node 1.
-   02 Jul 09:15:06.74:- model run 2 completed on node 3.
-   02 Jul 09:15:06.74:- model run 1 completed on node 2.
-   02 Jul 09:15:06.84:- model run 5 completed on node 1.
-   02 Jul 09:15:06.94:- model run 3 completed on node 4.
+   15 Aug 10:00:23.73:- model run 1 commencing on node 1.
+   15 Aug 10:00:23.73:- model run 2 commencing on node 2.
+   15 Aug 10:00:23.73:- model run 3 commencing on node 4.
+   15 Aug 10:00:23.73:- model run 4 commencing on node 3.
+   15 Aug 10:00:24.02:- model run 1 completed on node 1.
+   15 Aug 10:00:24.02:- model run 5 commencing on node 1.
+   15 Aug 10:00:24.20:- model run 4 completed on node 3.
+   15 Aug 10:00:24.27:- model run 5 completed on node 1.
+   15 Aug 10:00:24.44:- model run 2 completed on node 2.
+   15 Aug 10:00:24.48:- model run 3 completed on node 4.
 
  Testing parameter upgrades .....
-   02 Jul 09:15:06.95:- model run 1 commencing on node 1.
-   02 Jul 09:15:06.95:- model run 2 commencing on node 3.
-   02 Jul 09:15:06.96:- model run 3 commencing on node 2.
-   02 Jul 09:15:06.96:- model run 4 commencing on node 4.
-   02 Jul 09:15:07.16:- model run 3 completed on node 2.
-   02 Jul 09:15:07.18:- model run 1 completed on node 1.
-   02 Jul 09:15:07.69:- model run 4 completed on node 4.
-   02 Jul 09:15:08.31:- overdue run on node 3; model run 2 may be re-assigned to another node.
-   02 Jul 09:15:08.31:- model run 2 commencing on node 2.
-   02 Jul 09:15:08.49:- model run 2 completed on node 2.
+   15 Aug 10:00:24.49:- model run 1 commencing on node 1.
+   15 Aug 10:00:24.49:- model run 2 commencing on node 3.
+   15 Aug 10:00:24.49:- model run 3 commencing on node 2.
+   15 Aug 10:00:24.49:- model run 4 commencing on node 4.
+   15 Aug 10:00:24.72:- model run 1 completed on node 1.
+   15 Aug 10:00:25.05:- model run 2 completed on node 3.
+   15 Aug 10:00:25.05:- model run 4 completed on node 4.
+   15 Aug 10:00:25.07:- model run 3 completed on node 2.
 
 
  OPTIMISATION ITERATION NO.  5 ----->
 
  Calculating Jacobian matrix: running model 10 times .....
-   02 Jul 09:15:08.52:- model run 1 commencing on node 2.
-   02 Jul 09:15:08.52:- model run 2 commencing on node 1.
-   02 Jul 09:15:08.52:- model run 3 commencing on node 4.
-   02 Jul 09:15:08.52:- model run 4 commencing on node 3.
-   02 Jul 09:15:08.72:- model run 1 completed on node 2.
-   02 Jul 09:15:08.72:- model run 5 commencing on node 2.
-   02 Jul 09:15:08.73:- model run 2 completed on node 1.
-   02 Jul 09:15:08.73:- model run 6 commencing on node 1.
-   02 Jul 09:15:08.91:- model run 5 completed on node 2.
-   02 Jul 09:15:08.91:- model run 7 commencing on node 2.
-   02 Jul 09:15:08.91:- model run 6 completed on node 1.
-   02 Jul 09:15:08.91:- model run 8 commencing on node 1.
-   02 Jul 09:15:09.10:- model run 8 completed on node 1.
-   02 Jul 09:15:09.10:- model run 9 commencing on node 1.
-   02 Jul 09:15:09.12:- model run 7 completed on node 2.
-   02 Jul 09:15:09.12:- model run 10 commencing on node 2.
-   02 Jul 09:15:09.28:- overdue run on node 3; model run 4 may be re-assigned to another node.
-   02 Jul 09:15:09.28:- overdue run on node 4; model run 3 may be re-assigned to another node.
-   02 Jul 09:15:09.30:- model run 9 completed on node 1.
-   02 Jul 09:15:09.30:- model run 3 commencing on node 1.
-   02 Jul 09:15:09.40:- model run 10 completed on node 2.
-   02 Jul 09:15:09.40:- model run 4 commencing on node 2.
-   02 Jul 09:15:09.43:- model run 4 completed on node 3.
-   02 Jul 09:15:09.52:- model run 3 completed on node 4.
+   15 Aug 10:00:25.11:- model run 1 commencing on node 1.
+   15 Aug 10:00:25.11:- model run 2 commencing on node 4.
+   15 Aug 10:00:25.11:- model run 3 commencing on node 3.
+   15 Aug 10:00:25.11:- model run 4 commencing on node 2.
+   15 Aug 10:00:25.40:- model run 3 completed on node 3.
+   15 Aug 10:00:25.40:- model run 5 commencing on node 3.
+   15 Aug 10:00:25.48:- model run 4 completed on node 2.
+   15 Aug 10:00:25.48:- model run 6 commencing on node 2.
+   15 Aug 10:00:25.54:- model run 1 completed on node 1.
+   15 Aug 10:00:25.54:- model run 7 commencing on node 1.
+   15 Aug 10:00:25.69:- model run 2 completed on node 4.
+   15 Aug 10:00:25.69:- model run 8 commencing on node 4.
+   15 Aug 10:00:25.82:- model run 7 completed on node 1.
+   15 Aug 10:00:25.82:- model run 9 commencing on node 1.
+   15 Aug 10:00:25.92:- model run 6 completed on node 2.
+   15 Aug 10:00:25.92:- model run 10 commencing on node 2.
+   15 Aug 10:00:26.08:- model run 9 completed on node 1.
+   15 Aug 10:00:26.30:- model run 5 completed on node 3.
+   15 Aug 10:00:26.36:- model run 10 completed on node 2.
+   15 Aug 10:00:26.44:- model run 8 completed on node 4.
 
  Testing parameter upgrades .....
-   02 Jul 09:15:09.54:- model run 1 commencing on node 3.
-   02 Jul 09:15:09.54:- model run 2 commencing on node 4.
-   02 Jul 09:15:09.73:- model run 1 completed on node 3.
-   02 Jul 09:15:10.16:- model run 2 completed on node 4.
-   02 Jul 09:15:10.18:- model run 1 commencing on node 3.
-   02 Jul 09:15:10.18:- model run 2 commencing on node 2.
-   02 Jul 09:15:10.18:- model run 3 commencing on node 1.
-   02 Jul 09:15:10.18:- model run 4 commencing on node 4.
-   02 Jul 09:15:10.38:- model run 3 completed on node 1.
-   02 Jul 09:15:10.48:- model run 2 completed on node 2.
-   02 Jul 09:15:10.71:- model run 1 completed on node 3.
-   02 Jul 09:15:10.81:- model run 4 completed on node 4.
+   15 Aug 10:00:26.45:- model run 1 commencing on node 1.
+   15 Aug 10:00:26.45:- model run 2 commencing on node 2.
+   15 Aug 10:00:26.45:- model run 3 commencing on node 4.
+   15 Aug 10:00:26.45:- model run 4 commencing on node 3.
+   15 Aug 10:00:26.71:- model run 1 completed on node 1.
+   15 Aug 10:00:27.02:- model run 4 completed on node 3.
+   15 Aug 10:00:27.06:- model run 2 completed on node 2.
+   15 Aug 10:00:27.10:- model run 3 completed on node 4.
 
 
  OPTIMISATION ITERATION NO.  6 ----->
 
  Calculating Jacobian matrix: running model 10 times .....
-   02 Jul 09:15:10.83:- model run 1 commencing on node 1.
-   02 Jul 09:15:10.83:- model run 2 commencing on node 2.
-   02 Jul 09:15:10.84:- model run 3 commencing on node 3.
-   02 Jul 09:15:10.84:- model run 4 commencing on node 4.
-   02 Jul 09:15:11.11:- model run 2 completed on node 2.
-   02 Jul 09:15:11.11:- model run 5 commencing on node 2.
-   02 Jul 09:15:11.19:- model run 3 completed on node 3.
-   02 Jul 09:15:11.19:- model run 6 commencing on node 3.
-   02 Jul 09:15:11.32:- model run 1 completed on node 1.
-   02 Jul 09:15:11.33:- model run 7 commencing on node 1.
-   02 Jul 09:15:11.39:- model run 5 completed on node 2.
-   02 Jul 09:15:11.39:- model run 4 completed on node 4.
-   02 Jul 09:15:11.39:- model run 8 commencing on node 2.
-   02 Jul 09:15:11.39:- model run 9 commencing on node 4.
-   02 Jul 09:15:11.53:- model run 6 completed on node 3.
-   02 Jul 09:15:11.53:- model run 10 commencing on node 3.
-   02 Jul 09:15:11.62:- model run 7 completed on node 1.
-   02 Jul 09:15:11.70:- model run 8 completed on node 2.
-   02 Jul 09:15:11.77:- model run 9 completed on node 4.
-   02 Jul 09:15:12.03:- model run 10 completed on node 3.
+   15 Aug 10:00:27.13:- model run 1 commencing on node 1.
+   15 Aug 10:00:27.13:- model run 2 commencing on node 3.
+   15 Aug 10:00:27.13:- model run 3 commencing on node 2.
+   15 Aug 10:00:27.13:- model run 4 commencing on node 4.
+   15 Aug 10:00:27.35:- model run 1 completed on node 1.
+   15 Aug 10:00:27.35:- model run 5 commencing on node 1.
+   15 Aug 10:00:27.59:- model run 5 completed on node 1.
+   15 Aug 10:00:27.59:- model run 6 commencing on node 1.
+   15 Aug 10:00:27.81:- model run 3 completed on node 2.
+   15 Aug 10:00:27.81:- model run 7 commencing on node 2.
+   15 Aug 10:00:27.85:- model run 6 completed on node 1.
+   15 Aug 10:00:27.85:- model run 8 commencing on node 1.
+   15 Aug 10:00:28.09:- model run 8 completed on node 1.
+   15 Aug 10:00:28.09:- model run 9 commencing on node 1.
+   15 Aug 10:00:28.13:- model run 2 completed on node 3.
+   15 Aug 10:00:28.13:- model run 10 commencing on node 3.
+   15 Aug 10:00:28.19:- model run 7 completed on node 2.
+   15 Aug 10:00:28.36:- model run 10 completed on node 3.
+   15 Aug 10:00:28.40:- model run 9 completed on node 1.
+   15 Aug 10:00:28.40:- overdue run on node 4; model run 4 may be re-assigned to another node.
+   15 Aug 10:00:28.40:- model run 4 commencing on node 3.
+   15 Aug 10:00:28.56:- model run 4 completed on node 4.
 
  Testing parameter upgrades .....
-   02 Jul 09:15:12.03:- model run 1 commencing on node 1.
-   02 Jul 09:15:12.23:- model run 1 completed on node 1.
-   02 Jul 09:15:12.23:- model run 1 commencing on node 1.
-   02 Jul 09:15:12.54:- model run 1 completed on node 1.
-   02 Jul 09:15:12.55:- model run 1 commencing on node 2.
-   02 Jul 09:15:12.76:- model run 1 completed on node 2.
-   02 Jul 09:15:12.76:- model run 1 commencing on node 2.
-   02 Jul 09:15:12.97:- model run 1 completed on node 2.
-   02 Jul 09:15:12.97:- model run 1 commencing on node 2.
-   02 Jul 09:15:13.17:- model run 1 completed on node 2.
-   02 Jul 09:15:13.17:- model run 1 commencing on node 2.
-   02 Jul 09:15:13.38:- model run 1 completed on node 2.
+   15 Aug 10:00:28.57:- model run 1 commencing on node 1.
+   15 Aug 10:00:28.82:- model run 1 completed on node 1.
+   15 Aug 10:00:28.82:- model run 1 commencing on node 1.
+   15 Aug 10:00:29.06:- model run 1 completed on node 1.
+   15 Aug 10:00:29.06:- model run 1 commencing on node 1.
+   15 Aug 10:00:29.33:- model run 1 completed on node 1.
+   15 Aug 10:00:29.33:- model run 1 commencing on node 1.
+   15 Aug 10:00:29.60:- model run 1 completed on node 1.
+   15 Aug 10:00:29.60:- model run 1 commencing on node 1.
+   15 Aug 10:00:29.88:- model run 1 completed on node 1.
+   15 Aug 10:00:29.88:- model run 1 commencing on node 1.
+   15 Aug 10:00:30.16:- model run 1 completed on node 1.
 
  RUNNING MODEL ONE LAST TIME WITH BEST PARAMETERS  -----> 
-   02 Jul 09:15:13.38:- model run 1 commencing on node 2.
-   02 Jul 09:15:13.57:- model run 1 completed on node 2.
+   15 Aug 10:00:30.17:- model run 1 commencing on node 1.
+   15 Aug 10:00:30.44:- model run 1 completed on node 1.
  
  BEOSTATS:-
-   Node   1     0.315   20 10.211.55.4\\D:\Users\jwhite\git_repo\pestpp\pest++\benchmarks\3pg\beopest\slaves\IGSBABEWLT109_1
-   Node   2     0.191   25 10.211.55.4\\D:\Users\jwhite\git_repo\pestpp\pest++\benchmarks\3pg\beopest\slaves\IGSBABEWLT109_2
-   Node   3     0.500   13 10.211.55.4\\D:\Users\jwhite\git_repo\pestpp\pest++\benchmarks\3pg\beopest\slaves\IGSBABEWLT109_3
-   Node   4     0.380   12 10.211.55.4\\D:\Users\jwhite\git_repo\pestpp\pest++\benchmarks\3pg\beopest\slaves\IGSBABEWLT109_4
-   Total CPU time             29.2
-   Total elapsed time         14.3
-   Speedup                   2.034
+   Node   1     0.265   28 10.211.55.4\\D:\Users\jwhite\git_repo\pestpp\pest++\benchmarks\3pg\beopest\slaves\IGSBABEWLT109_2
+   Node   2     0.375   14 10.211.55.4\\D:\Users\jwhite\git_repo\pestpp\pest++\benchmarks\3pg\beopest\slaves\IGSBABEWLT109_1
+   Node   3     0.674   13 10.211.55.4\\D:\Users\jwhite\git_repo\pestpp\pest++\benchmarks\3pg\beopest\slaves\IGSBABEWLT109_3
+   Node   4     1.429   11 10.211.55.4\\D:\Users\jwhite\git_repo\pestpp\pest++\benchmarks\3pg\beopest\slaves\IGSBABEWLT109_4
+   Total CPU time             37.1
+   Total elapsed time         17.2
+   Speedup                   2.153
