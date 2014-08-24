@@ -274,6 +274,18 @@ void SVDSolver::calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSq
 
 		VectorXd Sigma_inv = Sigma.array().inverse();
 		performance_log->log_event("commencing linear algebra multiplication to compute ugrade");
+		stringstream info_str;
+		info_str << "Vt info: " << "rows = " << Vt.rows() << ": cols = " << Vt.cols() << ": size = " << Vt.size() << ": nonzeros = " << Vt.nonZeros();
+		performance_log->log_event(info_str.str());
+		info_str.str("");
+		info_str << "U info: " << "rows = " << U.rows() << ": cols = " << U.cols() << ": size = " << U.size() << ": nonzeros = " << U.nonZeros();
+		performance_log->log_event(info_str.str());
+		info_str.str("");
+		info_str << "S info: " << "rows = " << S.rows() << ": cols = " << S.cols() << ": size = " << S.size() << ": nonzeros = " << S.nonZeros();
+		performance_log->log_event(info_str.str());
+		info_str.str("");
+		info_str << "jac info: " << "rows = " << jac.rows() << ": cols = " << jac.cols() << ": size = " << jac.size() << ": nonzeros = " << jac.nonZeros();
+		performance_log->log_event(info_str.str());
 		upgrade_vec = S * (Vt.transpose() * (Sigma_inv.asDiagonal() * (U.transpose() * ((jac * S).transpose()* (q_mat  * (corrected_residuals))))));
 	}
 	else
@@ -287,6 +299,15 @@ void SVDSolver::calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSq
 		VectorXd Sigma_inv = Sigma.array().inverse();
 
 		performance_log->log_event("commencing linear algebra multiplication to compute ugrade");
+		stringstream info_str;
+		info_str << "Vt info: " << "rows = " << Vt.rows() << ": cols = " << Vt.cols() << ": size = " << Vt.size() << ": nonzeros = " << Vt.nonZeros();
+		performance_log->log_event(info_str.str());
+		info_str.str("");
+		info_str << "U info: " << "rows = " << U.rows() << ": cols = " << U.cols() << ": size = " << U.size() << ": nonzeros = " << U.nonZeros();
+		performance_log->log_event(info_str.str());
+		info_str.str("");
+		info_str << "jac info: " << "rows = " << jac.rows() << ": cols = " << jac.cols() << ": size = " << jac.size() << ": nonzeros = " << jac.nonZeros();
+		performance_log->log_event(info_str.str());
 		upgrade_vec = Vt.transpose() * (Sigma_inv.asDiagonal() * (U.transpose() * (jac * (q_mat  * corrected_residuals))));
 	}
 
@@ -391,6 +412,12 @@ void SVDSolver::calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqr
 	VectorXd Sigma_inv = Sigma.array().inverse();
 
 	performance_log->log_event("commencing linear algebra multiplication to compute ugrade");
+	stringstream info_str;
+	info_str << "Vt info: " << "rows = " << Vt.rows() << ": cols = " << Vt.cols() << ": size = " << Vt.size() << ": nonzeros = " << Vt.nonZeros();
+	performance_log->log_event(info_str.str());
+	info_str.str("");
+	info_str << "U info: " << "rows = " << U.rows() << ": cols = " << U.cols() << ": size = " << U.size() << ": nonzeros = " << U.nonZeros();
+	performance_log->log_event(info_str.str());
 	Eigen::VectorXd upgrade_vec;
 	upgrade_vec = Vt.transpose() * (Sigma_inv.asDiagonal() * (U.transpose() * (q_sqrt  * corrected_residuals)));
 
