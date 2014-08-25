@@ -110,9 +110,14 @@ bool TerminationController::process_iteration(const PhiComponets &phi_comp, doub
 }
 bool TerminationController::check_last_iteration()
 {
-	double min_phi_diff = lowest_phi.back() - lowest_phi.front();
+	double min_phi_diff = lowest_phi.back() - lowest_phi.front();		
+	if (current_phi <= std::numeric_limits<double>::denorm_min())
+	{
+		terminate_code = true;
+		termimate_reason = "PHI is zero";
+	}
 	// Impose Termination Criteria
-	if (nphinored_count > nphinored)
+	else if (nphinored_count > nphinored)
 	{
 		terminate_code = true;
 		termimate_reason = "NPHINORED criterion met";

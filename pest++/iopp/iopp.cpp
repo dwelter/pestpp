@@ -951,8 +951,11 @@ void InstructionFile::parse_instruction_line(string ins_line)
 		i.parse();
 		instructs.push_back(i);
 	}
-	InstructionLine iline(instructs);
-	instruction_lines.push_back(iline);
+	if (instructs.size() > 0)
+	{
+		InstructionLine iline(instructs);
+		instruction_lines.push_back(iline);
+	}
 	return;
 }
 
