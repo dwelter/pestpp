@@ -813,7 +813,7 @@ restart_reuse_jacoboian:
 		"  (" << best_phi / cur_phi * 100 << "%)" << endl;
 	cout << endl;
 	os << endl;
-	iteration_update_and_report(os, best_upgrade_run, termination_ctl);
+	iteration_update_and_report(os, best_upgrade_run, termination_ctl, run_manager);
 	cur_solution = best_upgrade_run;
 }
 
@@ -1017,7 +1017,7 @@ void SVDSolver::param_change_stats(double p_old, double p_new, bool &have_fac, d
 	}
 }
 
-void SVDSolver::iteration_update_and_report(ostream &os, ModelRun &upgrade, TerminationController &termination_ctl)
+void SVDSolver::iteration_update_and_report(ostream &os, ModelRun &upgrade, TerminationController &termination_ctl, RunManagerAbstract &run_manager)
 {
 	const string *p_name;
 	double p_old, p_new;
@@ -1027,8 +1027,15 @@ void SVDSolver::iteration_update_and_report(ostream &os, ModelRun &upgrade, Term
 	const Parameters &old_ctl_pars = cur_solution.get_ctl_pars();
 	const Parameters &new_ctl_pars = upgrade.get_ctl_pars();
 	
+	if (termination_ctl.get_iteration_number() == 0)
+	{
+		map<string, double> phi_report = obj_func->phi_report(cur_solution.get_obs(), cur_solution.get_ctl_pars(), *regul_scheme_ptr);
+		output_file_writer.write_obj_iter(0, 0, phi_report);
+	}
+
 	output_file_writer.par_report(os, termination_ctl.get_iteration_number()+1, new_ctl_pars, old_ctl_pars, "Control File");
-	
+	map<string, double> phi_report = obj_func->phi_report(upgrade.get_obs(), upgrade.get_ctl_pars(), *regul_scheme_ptr);
+	output_file_writer.write_obj_iter(termination_ctl.get_iteration_number() + 1, run_manager.get_total_runs(), phi_report);
 	for (const auto &ipar : new_ctl_pars)
 	{
 		p_name = &(ipar.first);

@@ -189,7 +189,7 @@ public:
 	PestppOptions(int _n_iter_base = 50, int _n_iter_super=0, int _max_n_super = 50, 
 		double _super_eigthres = 1.0E-6, SVD_PACK _svd_pack = PestppOptions::EIGEN,
 		MAT_INV _mat_inv = PestppOptions::JTQJ, double _auto_norm = -999,
-		double _super_relparmax = 0.1, int max_run_fail=3,bool io_fortran=true,
+		double _super_relparmax = 0.1, int max_run_fail=3,
 		bool iter_summary_flag=true);
 	void parce_line(const string &line);
 	int get_max_n_super() const{return max_n_super;}
@@ -203,8 +203,7 @@ public:
 	int get_max_run_fail() const{ return max_run_fail; }
 	int get_max_super_frz_iter()const { return max_super_frz_iter; }
 	int get_max_reg_iter()const { return max_reg_iter; }
-	const vector<double>& get_base_lambda_vec() const {return base_lambda_vec;}
-	bool get_io_fortran()const { return io_fortran; }
+	const vector<double>& get_base_lambda_vec() const {return base_lambda_vec;}	
 	bool get_iter_summary_flag() const { return iter_summary_flag;  }
 
 	void set_max_n_super(int _max_n_super) {max_n_super = _max_n_super;}
@@ -217,8 +216,7 @@ public:
 	void set_super_relparmax(double _super_relparmax) { super_relparmax = _super_relparmax; };
 	void set_max_run_fail(int _max_run_fail){ max_run_fail = _max_run_fail; }
 	void set_max_super_frz_iter(int n) { max_super_frz_iter = n; }
-	void set_max_reg_iter(int n) { max_reg_iter = n; }
-	void set_io_fortran(bool _io_fortran) { io_fortran = _io_fortran; }
+	void set_max_reg_iter(int n) { max_reg_iter = n; }	
 	void set_iter_summary_flag(bool _iter_summary_flag){iter_summary_flag = _iter_summary_flag;}
 private:
 	int n_iter_base;
@@ -232,8 +230,7 @@ private:
 	int max_run_fail;
 	int max_super_frz_iter;
 	int max_reg_iter;
-	vector<double> base_lambda_vec;
-	bool io_fortran;
+	vector<double> base_lambda_vec;	
 	bool iter_summary_flag;
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);

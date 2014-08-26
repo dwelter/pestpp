@@ -102,11 +102,10 @@ string RunManagerSerial::ins_err_msg(int i)
 RunManagerSerial::RunManagerSerial(const vector<string> _comline_vec,
 	const vector<string> _tplfile_vec, const vector<string> _inpfile_vec,
 	const vector<string> _insfile_vec, const vector<string> _outfile_vec,
-	const string &stor_filename, const string &_run_dir, int _max_run_fail,
-	const bool _io_fortran)
+	const string &stor_filename, const string &_run_dir, int _max_run_fail)
 	: RunManagerAbstract(_comline_vec, _tplfile_vec, _inpfile_vec,
 	_insfile_vec, _outfile_vec, stor_filename, _max_run_fail),
-	run_dir(_run_dir), io_fortran(_io_fortran)
+	run_dir(_run_dir)
 {
 	cout << "              starting serial run manager ..." << endl << endl;
 }
@@ -136,7 +135,7 @@ void RunManagerSerial::run()
 		for (int i_run : run_id_vec)
 		{
 			Observations obs;
-			vector<double> par_values;
+			//vector<double> par_values;
 			Parameters pars;
 			file_stor.get_parameters(i_run, pars);						
 			try {
@@ -145,70 +144,60 @@ void RunManagerSerial::run()
 				message << "(" << success_runs << "/" << nruns << " runs complete)";
 				std::cout << message.str();
 				OperSys::chdir(run_dir.c_str());
-				if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))
+				//if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))
+				//{
+				//	throw PestError("Error running model: invalid parameter value returned");
+				//}
+				
+				/*for (auto &i : par_name_vec)
 				{
-					throw PestError("Error running model: invalid parameter value returned");
+					par_values.push_back(pars.get_rec(i));
 				}
-				if (io_fortran)
+				wrttpl_(&ntpl, StringvecFortranCharArray(tplfile_vec, 50).get_prt(),
+					StringvecFortranCharArray(inpfile_vec, 50).get_prt(),
+					&npar, StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
+					&par_values[0], &ifail);
+				if (ifail != 0)
 				{
-					for (auto &i : par_name_vec)
-					{
-						par_values.push_back(pars.get_rec(i));
-					}
-					wrttpl_(&ntpl, StringvecFortranCharArray(tplfile_vec, 50).get_prt(),
-						StringvecFortranCharArray(inpfile_vec, 50).get_prt(),
-						&npar, StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
-						&par_values[0], &ifail);
-					if (ifail != 0)
-					{
-						throw PestError("Error processing template file");
-					}
-				}
-				else
-				{					
-					tpl_files.write(pars);
-				}
-								
+					throw PestError("Error processing template file");
+				}*/									
+				tpl_files.write(pars);											
 				for (int i = 0, n_exec = comline_vec.size(); i < n_exec; ++i)
 				{
 					system(comline_vec[i].c_str());
 				}
 				
-				if (io_fortran)
-				{
-					obs_vec.resize(nobs, RunStorage::no_data);
-					readins_(&nins, StringvecFortranCharArray(insfile_vec, 50).get_prt(),
-						StringvecFortranCharArray(outfile_vec, 50).get_prt(),
-						&nobs, StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
-						&obs_vec[0], &ifail);
-					if (ifail != 0)
-					{
-						throw PestError("Error processing instruction file");
-					}
-				}
-				else
-				{
-					ins_files.read(obs_name_vec,obs);
-				}
+				
+				//obs_vec.resize(nobs, RunStorage::no_data);
+				//readins_(&nins, StringvecFortranCharArray(insfile_vec, 50).get_prt(),
+				//	StringvecFortranCharArray(outfile_vec, 50).get_prt(),
+				//	&nobs, StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
+				//	&obs_vec[0], &ifail);
+				//if (ifail != 0)
+				//{
+				//	throw PestError("Error processing instruction file");
+				//}
+				
+				ins_files.read(obs_name_vec,obs);
+				
 								
 				// check parameters and observations for inf and nan
-				if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))
+				/*if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))
 				{
 					throw PestError("Error running model: invalid parameter value returned");
 				}
 				if (std::any_of(obs_vec.begin(), obs_vec.end(), OperSys::double_is_invalid))
 				{
 					throw PestError("Error running model: invalid observation value returned");
-				}
+				}*/
 
 				success_runs += 1;
-				if (io_fortran)
-				{
-					pars.clear();
-					pars.insert(par_name_vec, par_values);
-					obs.clear();
-					obs.insert(obs_name_vec, obs_vec);
-				}								
+				
+				/*pars.clear();
+				pars.insert(par_name_vec, par_values);
+				obs.clear();
+				obs.insert(obs_name_vec, obs_vec);
+				*/								
 				file_stor.update_run(i_run, pars, obs);
 				
 			}

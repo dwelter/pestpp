@@ -494,7 +494,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		"  (" << best_phi / cur_phi * 100 << "%)" << endl;
 	cout << endl;
 	os << endl;
-	iteration_update_and_report(os, best_upgrade_run, termination_ctl);
+	iteration_update_and_report(os, best_upgrade_run, termination_ctl, run_manager);
 	cur_solution = best_upgrade_run;
 }
 

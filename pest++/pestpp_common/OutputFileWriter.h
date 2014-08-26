@@ -69,7 +69,7 @@ private:
 	int eigenwrite;
 	bool save_rei;
 	
-	void prepare_iteration_summary_files();	
+	void prepare_iteration_summary_files(bool restart_flag);	
 
 };
 #endif /* OUTPUTFILEWRITER_H */

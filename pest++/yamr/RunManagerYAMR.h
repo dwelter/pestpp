@@ -99,8 +99,7 @@ public:
 	RunManagerYAMR(const std::vector<std::string> _comline_vec,
 		const std::vector<std::string> _tplfile_vec, const std::vector<std::string> _inpfile_vec,
 		const std::vector<std::string> _insfile_vec, const std::vector<std::string> _outfile_vec,
-		const std::string &stor_filename, const std::string &port, std::ofstream &_f_rmr, int _max_n_failure=3,
-		bool _io_fortran=true);
+		const std::string &stor_filename, const std::string &port, std::ofstream &_f_rmr, int _max_n_failure=3);
 	virtual void initialize(const Parameters &model_pars, const Observations &obs, const std::string &_filename = std::string(""));
 	virtual void initialize_restart(const std::string &_filename);
 	virtual void reinitialize(const std::string &_filename = std::string(""));
@@ -130,8 +129,7 @@ private:
 	bool schedule_run(int run_id);
 	void schedule_runs();
 	void init_slaves();
-	std::unordered_multimap<int, YamrModelRun>::iterator get_active_run_id(int socket);
-	bool io_fortran;
+	std::unordered_multimap<int, YamrModelRun>::iterator get_active_run_id(int socket);	
 };
 
 #endif /* RUNMANAGERYAMR_H */

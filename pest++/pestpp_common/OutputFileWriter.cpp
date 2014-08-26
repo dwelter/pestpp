@@ -55,7 +55,7 @@ OutputFileWriter::OutputFileWriter(FileManager &_file_manager, Pest &_pest_scena
 	}
 	if (pest_scenario.get_pestpp_options().get_iter_summary_flag())
 	{
-		prepare_iteration_summary_files();
+		prepare_iteration_summary_files(restart_flag);
 	}
 }
 
@@ -69,29 +69,38 @@ void OutputFileWriter::iteration_report(std::ostream &os, int iter, int nruns, s
 	os << endl;
 }
 
-void OutputFileWriter::prepare_iteration_summary_files()
+void OutputFileWriter::prepare_iteration_summary_files(bool restart_flag)
 {
-	file_manager.open_ofile_ext("ipar");
-	file_manager.open_ofile_ext("iobj");
-	file_manager.open_ofile_ext("isen");
-	ofstream &os_ipar = file_manager.get_ofstream("ipar");
-	ofstream &os_isen = file_manager.get_ofstream("isen");
-	os_ipar << "iteration";
-	os_isen << "iteration";
-	for (auto &par_name : pest_scenario.get_ctl_ordered_par_names())
+	if (restart_flag)
 	{
-		os_ipar << ',' << lower_cp(par_name);
-		os_isen << ',' << lower_cp(par_name);
+		file_manager.open_ofile_ext("ipar", ofstream::app);
+		file_manager.open_ofile_ext("iobj", ofstream::app);
+		file_manager.open_ofile_ext("isen", ofstream::app);
 	}
-	os_ipar << endl;
-	os_isen << endl;
-	ofstream &os_iobj = file_manager.get_ofstream("iobj");
-	os_iobj << "iteration,model_runs_completed,total_phi,measurement_phi,regularization_phi";
-	for (auto &obs_grp : pest_scenario.get_ctl_ordered_obs_group_names())
+	else
 	{
-		os_iobj << ',' << lower_cp(obs_grp);
+		file_manager.open_ofile_ext("ipar");
+		file_manager.open_ofile_ext("iobj");
+		file_manager.open_ofile_ext("isen");
+		ofstream &os_ipar = file_manager.get_ofstream("ipar");
+		ofstream &os_isen = file_manager.get_ofstream("isen");
+		os_ipar << "iteration";
+		os_isen << "iteration";
+		for (auto &par_name : pest_scenario.get_ctl_ordered_par_names())
+		{
+			os_ipar << ',' << lower_cp(par_name);
+			os_isen << ',' << lower_cp(par_name);
+		}
+		os_ipar << endl;
+		os_isen << endl;
+		ofstream &os_iobj = file_manager.get_ofstream("iobj");
+		os_iobj << "iteration,model_runs_completed,total_phi,measurement_phi,regularization_phi";
+		for (auto &obs_grp : pest_scenario.get_ctl_ordered_obs_group_names())
+		{
+			os_iobj << ',' << lower_cp(obs_grp);
+		}
+		os_iobj << endl;
 	}
-	os_iobj << endl;
 }
 
 void OutputFileWriter::write_sen_iter(int iter, map<string, double> &ctl_par_sens)
@@ -352,10 +361,10 @@ void OutputFileWriter::phi_report(std::ostream &os, int const iter, int const nr
 		os << setw(17) << setiosflags(ios::right) << "\"" + lower_cp(gname) + "\" : ";
 		os << phi_comps.at(gname) << endl;
 	}
-	if (pest_scenario.get_pestpp_options().get_iter_summary_flag())
+	/*if (pest_scenario.get_pestpp_options().get_iter_summary_flag())
 	{
 		write_obj_iter(iter, nruns,phi_comps);
-	}
+	}*/
 }
 
 

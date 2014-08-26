@@ -254,8 +254,7 @@ ostream& operator<< (ostream &os, const PestppOptions& val)
 	os << "    max super frz iter = " << left << setw(20) << val.get_max_super_frz_iter() << endl;
 	os << "    mat inv = " << left << setw(20) << val.get_mat_inv() << endl;
 	os << "    max run fail = " << left << setw(20) << val.get_max_run_fail() << endl;
-	os << "    max reg iter = " << left << setw(20) << val.get_max_reg_iter() << endl;
-	os << "    io fortran = " << left << setw(20) << val.get_io_fortran() << endl;
+	os << "    max reg iter = " << left << setw(20) << val.get_max_reg_iter() << endl;	
 	os << "    lambdas = " << endl;
 	for (auto &lam : val.get_base_lambda_vec())
 	{
@@ -267,11 +266,11 @@ ostream& operator<< (ostream &os, const PestppOptions& val)
 
 PestppOptions::PestppOptions(int _n_iter_base, int _n_iter_super, int _max_n_super, double _super_eigthres,
 	SVD_PACK _svd_pack, MAT_INV _mat_inv, double _auto_norm, double _super_relparmax, int _max_run_fail,
-	bool _io_fortran,bool _iter_summary_flag)
+    bool _iter_summary_flag)
 	: n_iter_base(_n_iter_base), n_iter_super(_n_iter_super), max_n_super(_max_n_super), super_eigthres(_super_eigthres), 
 	svd_pack(_svd_pack), mat_inv(_mat_inv), auto_norm(_auto_norm), super_relparmax(_super_relparmax),
 	max_run_fail(_max_run_fail), max_super_frz_iter(50), max_reg_iter(50), base_lambda_vec({ 0.1, 1.0, 10.0, 100.0, 1000.0 }),
-	io_fortran(_io_fortran), iter_summary_flag(_iter_summary_flag)
+	iter_summary_flag(_iter_summary_flag)
 {
 }
 
@@ -340,13 +339,7 @@ void PestppOptions::parce_line(const string &line)
 			{
 				base_lambda_vec.push_back(convert_cp<double>(ilambda));
 			}
-		}
-		else if (key == "IO_FORTRAN")
-		{
-			transform(value.begin(), value.end(), value.begin(), ::tolower);
-			istringstream is(value);
-			is >> boolalpha >> io_fortran;			
-		}
+		}		
 		else if (key == "ITERATION_SUMMARY")
 		{
 			transform(value.begin(), value.end(), value.begin(), ::tolower);

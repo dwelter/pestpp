@@ -230,6 +230,10 @@ int main(int argc, char* argv[])
 	OutputFileWriter output_file_writer(file_manager, pest_scenario, restart_flag);
 	output_file_writer.set_svd_output_opt(pest_scenario.get_svd_info().eigwrite);
 	output_file_writer.scenario_report(fout_rec);
+	if (pest_scenario.get_pestpp_options().get_iter_summary_flag())
+	{
+		output_file_writer.write_par_iter(0, pest_scenario.get_ctl_parameters());
+	}
 	RunManagerAbstract *run_manager_ptr;
 	if (run_manager_type == RunManagerType::YAMR)
 	{
@@ -258,12 +262,8 @@ int main(int argc, char* argv[])
 		run_manager_ptr = new RunManagerSerial(exi.comline_vec,
 		exi.tplfile_vec, exi.inpfile_vec, exi.insfile_vec, exi.outfile_vec,
 		file_manager.build_filename("rns"), pathname,
-		pest_scenario.get_pestpp_options().get_max_run_fail(),
-		pest_scenario.get_pestpp_options().get_io_fortran());
+		pest_scenario.get_pestpp_options().get_max_run_fail());
 	}
-
-
-	
 
 	const ParamTransformSeq &base_trans_seq = pest_scenario.get_base_par_tran_seq();
 	
