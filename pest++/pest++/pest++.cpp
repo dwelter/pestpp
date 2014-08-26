@@ -205,8 +205,8 @@ int main(int argc, char* argv[])
 
 	cout << endl;
 	fout_rec << endl;
-	cout << "using control file: \"" << complete_path << "\"" << endl << endl << endl;
-	fout_rec << "using control file: \"" << complete_path << "\"" << endl << endl << endl;
+	cout << "using control file: \"" << complete_path << "\"" << endl << endl;
+	fout_rec << "using control file: \"" << complete_path << "\"" << endl << endl;
 
 	// create pest run and process control file to initialize it
 	Pest pest_scenario;
@@ -372,6 +372,7 @@ int main(int argc, char* argv[])
 	//open restart file
 	file_manager.open_ofile_ext("rst");
 	//Define model Run for Base Parameters (uses base parameter tranformations)
+	fout_rec << "   -----    Starting PEST++ Iterations    ----    " << endl;
 	ModelRun cur_run(&obj_func, pest_scenario.get_ctl_observations());
 	cur_run.set_ctl_parameters(cur_ctl_parameters);
 	while (!termination_ctl.terminate())
@@ -446,13 +447,19 @@ int main(int argc, char* argv[])
 	fout_rec << "FINAL OPTIMISATION RESULTS" << endl << endl;
 	//optimum_run.full_report(cout, DynamicRegularization(false),true);
 	//optimum_run.full_report(fout_rec, DynamicRegularization(false));
-	fout_rec << "  Optimal Parameter Values  " << endl;
+	
+	fout_rec << "  Optimal parameter values  " << endl;
 	output_file_writer.par_report(fout_rec, optimum_run.get_ctl_pars());
+	
+	fout_rec << endl <<  "  Observations with optimal model-simulated equivalents and residuals" << endl;
+	output_file_writer.obs_report(fout_rec, *obj_func.get_obs_ptr(), optimum_run.get_obs(),obj_func);
+
+	fout_rec << endl << "Final composite objective function " << endl;
 	map<string, double> phi_report = obj_func.phi_report(optimum_run.get_obs(), optimum_run.get_ctl_pars(), DynamicRegularization(false));
 	output_file_writer.phi_report(fout_rec,termination_ctl.get_iteration_number()+1,run_manager_ptr->get_total_runs(),phi_report,0.0,true);
 	output_file_writer.phi_report(cout, termination_ctl.get_iteration_number() + 1, run_manager_ptr->get_total_runs(), phi_report, 0.0, true);
-	fout_rec << endl;
-	fout_rec << "    Number of forward model runs performed: " << run_manager_ptr->get_total_runs() << endl;
+	fout_rec << endl << endl;
+	fout_rec << "Number of forward model runs performed during optimiztion: " << run_manager_ptr->get_total_runs() << endl;
 	fout_rec.close();
 	// clean up
 	delete base_jacobian_ptr;

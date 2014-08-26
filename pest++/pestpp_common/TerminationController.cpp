@@ -148,8 +148,10 @@ bool TerminationController::check_last_iteration()
 
 void TerminationController::termination_summary(std::ostream &fout)
 {
-	fout << "Reason for terminating PEST++ simulation: " << termimate_reason << endl;
-	fout << "Summary of termination criteria:" << endl;
+	fout << "-----------------------------------------" << endl;
+	fout << "     ---   OPTIMIZATION COMPLETE   ---   " << endl;
+	fout << "  Reason for terminating PEST++ simulation: " << termimate_reason << endl;
+	fout << "  Summary of termination criteria:" << endl;
 	fout << "  NOPTMAX = " << noptmax << " :  NOPT at termination = " << nopt_count << endl;
 	fout << "  NPHINORED = " << nphinored << " :  NPHINORED at termination = " << nphinored_count << endl;
 	fout << "  NRELPAR = " << nrelpar << ": RELPARSTP = " << relparstp << " :  NRELPAR at termination = " << nrelpar_count << endl;

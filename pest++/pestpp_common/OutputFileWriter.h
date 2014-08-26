@@ -56,6 +56,7 @@ public:
 	void par_report(std::ostream &os, int const iter, Parameters const &new_pars, Parameters const &old_pars, string par_type);
 	void iteration_report(std::ostream &os, int iter, int nruns, string iteration_type, string svd_type, string mat_inv);
 	void scenario_report(std::ostream &os);
+	void obs_report(std::ostream &os, const Observations &obs, const Observations &sim, const ObjectiveFunc &obj_func);
 	
 	void param_change_stats(double p_old, double p_new, bool &have_fac, double &fac_change, bool &have_rel, double &rel_change);
 	void write_par_iter(int iter, Parameters const &ctl_pars);

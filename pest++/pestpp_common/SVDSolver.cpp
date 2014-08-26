@@ -85,7 +85,7 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 	bool save_nextjac = false;
 	string matrix_inv = (mat_inv == MAT_INV::Q12J) ? "\"Q 1/2 J\"" : "\"Jt Q J\"";
 	terminate_local_iteration = false;
-	os << "   -----    Starting PEST++ Iterations    ----    " << endl;
+	//os << "   -----    Starting PEST++ Iterations    ----    " << endl;
 	if (max_iter == -1)
 	{
 		cout << "COMPUTING JACOBIAN:" << endl << endl;
