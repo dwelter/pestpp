@@ -805,7 +805,7 @@
 
 
  OPTIMISATION ITERATION NO.        : 6
-    Model calls so far             : 50
+    Model calls so far             : 48
     Starting phi for this iteration                          :   2566.6    
     Contribution to phi from observation group "site1"       :   733.20    
     Contribution to phi from observation group "site2"       :   1048.0    
@@ -893,7 +893,7 @@
 
     Optimisation complete:   3 optimisation iterations have elapsed since lowest
                            phi was achieved.
-    Total model calls:     66
+    Total model calls:     64
 
     The model has been run one final time using best parameters. 
     Thus all model input files contain best parameter values, and model 

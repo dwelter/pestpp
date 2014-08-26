@@ -3,8 +3,8 @@ import shutil
 import socket
 import subprocess as sp
 
-BENCHMARK_DIRS = ["3pg","10par_xsec","box","henry","kirishima","stor"]#,"tidal"]
-#BENCHMARK_DIRS = ["henry"]
+#BENCHMARK_DIRS = ["3pg","10par_xsec","box","henry","kirishima","stor"]#,"tidal"]
+BENCHMARK_DIRS = ["10par_xsec","henry","kirishima","stor"]
 NSLAVES = 4
 BEOPEST_EXE = os.path.join("exe","beopest.exe")
 PSTNAME = "pest.pst"
@@ -103,7 +103,7 @@ def pestpp():
 		    "-cmdArgs: \' "+PSTNAME+" /H "+HOSTNAME+":4004 \'",\
 			"-src:"+os.path.join("..","..","template"),"-n:"+str(NSLAVES)]					
 		print args
-		sp.call(args,shell=False)
+		sp.call(args,shell=False,stdout=open("junk.dat",'w'))
 		os.chdir(os.path.join("..","..",".."))
 	
 
@@ -196,7 +196,7 @@ def get_phi_pestpp(rec_file):
 
 
 if __name__ == "__main__":
-	beopest()
-	#pestpp()
+	#beopest()
+	pestpp()
 
 

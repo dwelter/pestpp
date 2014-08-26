@@ -105,7 +105,7 @@ protected:
 	virtual Parameters limit_parameters_freeze_all_ip(const Parameters &init_active_ctl_pars,
 		Parameters &upgrade_active_ctl_pars, const Parameters &frozen_active_ctl_pars = Parameters());
 	virtual const string &get_description(){return description;}
-	virtual void iteration_update_and_report(ostream &os, ModelRun &upgrade, TerminationController &termination_ctl); 
+	virtual void iteration_update_and_report(ostream &os, ModelRun &upgrade, TerminationController &termination_ctl, RunManagerAbstract &run_manager); 
 	void param_change_stats(double p_old, double p_new, bool &have_fac, double &fac_change, bool &have_rel,
 		double &rel_change);
 	void calc_upgrade_vec(double i_lambda, Parameters &frozen_ctl_pars, QSqrtMatrix &Q_sqrt, const DynamicRegularization &regul,

@@ -89,16 +89,12 @@
            MATRIX CONDITION NUMBER =   483.32    
 
 
- CURRENT VALUE OF MARQUARDT LAMBDA =     5.00    
-           MATRIX CONDITION NUMBER =   325.59    
+ CURRENT VALUE OF MARQUARDT LAMBDA =     2.50    
+           MATRIX CONDITION NUMBER =   300.81    
 
 
- CURRENT VALUE OF MARQUARDT LAMBDA =     10.0    
-           MATRIX CONDITION NUMBER =   447.27    
-
-
- CURRENT VALUE OF MARQUARDT LAMBDA =     20.0    
-           MATRIX CONDITION NUMBER =   726.74    
+ CURRENT VALUE OF MARQUARDT LAMBDA =    0.312    
+           MATRIX CONDITION NUMBER =   688.40    
 
 
  ------------------------------------------------------------------------------

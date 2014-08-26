@@ -10,6 +10,8 @@
 #include <cmath>
 #include <cassert>
 
+#include "Transformable.h"
+
 template <class T> const T& min ( const T& a, const T& b );
 
 
@@ -308,6 +310,23 @@ vector<string> fortran_str_array_2_vec(char *fstr, int str_len, int array_len)
 	return str_vec;
 }
 
+void read_par(ifstream &fin, Parameters &pars)
+{
+	string line;
+	string name;
+	double value;
+	vector<string> tokens;
+	getline(fin, line);
+	while (getline(fin, line))
+	{
+		strip_ip(line);
+		tokens.clear();
+		tokenize(line, tokens);
+		name = tokens[0];
+		convert_ip(tokens[1], value);
+		pars[name] = value;
+	}
+}
 
 } // end of namespace pest_utils
 

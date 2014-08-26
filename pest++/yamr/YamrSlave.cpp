@@ -6,6 +6,7 @@
 #include <cstring>
 #include <algorithm>
 #include "system_variables.h"
+#include "iopp.h"
 
 using namespace pest_utils;
 
@@ -174,6 +175,10 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs)
 {
 	int success = 1;
 	std::vector<double> obs_vec;
+	bool isDouble = true;
+	bool forceRadix = true;
+	TemplateFiles tpl_files(isDouble, forceRadix, tplfile_vec, inpfile_vec, par_name_vec);
+	InstructionFiles ins_files(insfile_vec, outfile_vec);	
 	try 
 	{
 	//	message.str("");
@@ -196,13 +201,13 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs)
 			throw PestError("Error processing template file:" + tpl_err_msg(ifail));
 		}
 		
-		// update parameter values
-		pars.clear();
+		// update parameter values		
+		/*pars.clear();	
 		for (int i=0; i<npar; ++i)
-		{
-			pars[par_name_vec[i]] = par_values[i];
-		}
-
+		{			
+			pars[par_name_vec[i]] = par_values[i];			
+		}*/
+		tpl_files.write(pars);		
 		// run model
 		for (auto &i : comline_vec)
 		{
@@ -214,35 +219,36 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs)
 		}
 		}
 		// process instructio files
-		int nins = insfile_vec.size();
-		int nobs = obs_name_vec.size();
-		std::vector<double> obs_vec;
-		obs_vec.resize(nobs, -9999.00);
-		readins_(&nins, StringvecFortranCharArray(insfile_vec, 50).get_prt(),
-			StringvecFortranCharArray(outfile_vec, 50).get_prt(),
-			&nobs, StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
-			obs_vec.data(), &ifail);
-		if(ifail != 0)
-		{
-			throw PestError("Error processing instruction file");
-		}
+		//int nins = insfile_vec.size();
+		//int nobs = obs_name_vec.size();
+		//std::vector<double> obs_vec;
+		//obs_vec.resize(nobs, -9999.00);
+		//readins_(&nins, StringvecFortranCharArray(insfile_vec, 50).get_prt(),
+		//	StringvecFortranCharArray(outfile_vec, 50).get_prt(),
+		//	&nobs, StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
+		//	obs_vec.data(), &ifail);
+		//if(ifail != 0)
+		//{
+		//	throw PestError("Error processing instruction file");
+		//}
 
-		// check parameters and observations for inf and nan
-		if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))
-		{
-			throw PestError("Error running model: invalid parameter value returned");
-		}
-		if (std::any_of(obs_vec.begin(), obs_vec.end(), OperSys::double_is_invalid))
-		{
-			throw PestError("Error running model: invalid observation value returned");
-		}
-		// update observation values
+		//// check parameters and observations for inf and nan
+		//if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))
+		//{
+		//	throw PestError("Error running model: invalid parameter value returned");
+		//}
+		//if (std::any_of(obs_vec.begin(), obs_vec.end(), OperSys::double_is_invalid))
+		//{
+		//	throw PestError("Error running model: invalid observation value returned");
+		//}
+		//// update observation values		
+		//obs.clear();
+		//for (int i=0; i<nobs; ++i)
+		//{
+		//	obs[obs_name_vec[i]] = obs_vec[i];
+		//}
 		obs.clear();
-		for (int i=0; i<nobs; ++i)
-		{
-			obs[obs_name_vec[i]] = obs_vec[i];
-		}
-
+		ins_files.read(obs_name_vec, obs);		
 	}
 	catch(const std::exception& ex)
 	{

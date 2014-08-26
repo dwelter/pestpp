@@ -14,6 +14,7 @@
 #include <map>
 #include <set>
 #include "pest_error.h"
+#include "Transformable.h"
 
 //printing functions
 std::ostream& operator<< (std::ostream &os, const std::set<std::string> val);
@@ -202,5 +203,8 @@ void copyfile(const string &from_file, const string &to_file);
 std::string fortran_str_2_string(char *fstr, int str_len);
 
 std::vector<std::string> fortran_str_array_2_vec(char *fstr, int str_len, int fstr_len);
+
+void read_par(ifstream &fin, Parameters &pars);
+
 }  // end namespace pest_utils
 #endif /* UTILITIES_H_ */

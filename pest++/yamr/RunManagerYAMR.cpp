@@ -195,11 +195,10 @@ void SlaveInfo::sort_queue(deque<int> &slave_fd)
 RunManagerYAMR::RunManagerYAMR(const vector<string> _comline_vec,
 	const vector<string> _tplfile_vec, const vector<string> _inpfile_vec,
 	const vector<string> _insfile_vec, const vector<string> _outfile_vec,
-	const string &stor_filename, const string &_port, ofstream &_f_rmr, int _max_n_failure,
-	bool _io_fortran)
+	const string &stor_filename, const string &_port, ofstream &_f_rmr, int _max_n_failure)
 	: RunManagerAbstract(_comline_vec, _tplfile_vec, _inpfile_vec,
 	_insfile_vec, _outfile_vec, stor_filename, _max_n_failure),
-	port(_port), f_rmr(_f_rmr), io_fortran(_io_fortran)
+	port(_port), f_rmr(_f_rmr)
 {
 	w_init();
 	int status;
@@ -235,11 +234,7 @@ RunManagerYAMR::RunManagerYAMR(const vector<string> _comline_vec,
 	freeaddrinfo(servinfo);
 	fdmax = listener;
 	FD_ZERO(&master);
-	FD_SET(listener, &master);
-	if (!io_fortran)
-	{
-		throw PestError("non-fortran IO is not implemented for YAMR");
-	}
+	FD_SET(listener, &master);	
 	return;
 }
 
@@ -477,7 +472,7 @@ void RunManagerYAMR::process_message(int i_sock)
 		std::time_t tt =  std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 		streamsize n_prec = f_rmr.precision(2);
 		f_rmr << "Run received from: " << sock_name[0] << ":" << sock_name[1] << " at " << ctime(&tt) << "  (run time = " << slave_info.get_runtime_minute(i_sock) << " min: group id = " << group_id << ", run id = " << run_id << ")" << endl << endl;
-		//cout << "Run received from: " << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << group_id << ", run id = " << run_id << ") at " << ctime(&tt) << endl;
+		cout << "Run received from: " << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << group_id << ", run id = " << run_id << ") at " << ctime(&tt) << endl;		
 		f_rmr.precision(n_prec);
 		process_model_run(i_sock, net_pack);
 
