@@ -35,6 +35,8 @@ public:
 	bool is_log_trans_par(const string &name) const;
 	std::vector<double> calc_interval_midpoints(int n_interval, double min, double max);
 	double ltqnorm(double p);
+	void set_seed(unsigned int _seed) { seed = _seed;}
+	unsigned int get_seed() { return seed; }
 	virtual ~GsaAbstractBase(void);
 
 protected:
@@ -50,6 +52,7 @@ protected:
 	static void parce_line(const std::string &line, std::map<std::string, std::string> &arg_map);
 	map<string, double> calc_parameter_norm_std_dev();
 	map<string, double> calc_parameter_unif_std_dev();
+	unsigned int seed;
 };
 
 std::ostream& operator<< (std::ostream& out, const std::vector<double> &rhs);

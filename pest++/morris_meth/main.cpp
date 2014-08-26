@@ -304,7 +304,14 @@ int main(int argc, char* argv[])
 		throw PestError("A valid method for computing the sensitivity must be specified in the *.gsa file");
 	}
 
-
+	unsigned int seed = gsa_method->get_seed();
+	auto morris_r_it = gsa_opt_map.find("RAND_SEED");
+	if (morris_r_it != gsa_opt_map.end())
+	{
+		seed = convert_cp<unsigned int>(morris_r_it->second);
+		gsa_method->set_seed(seed);
+	}
+	srand(seed);
 	// make model runs
 	if (gsa_restart == GSA_RESTART::NONE)
 	{

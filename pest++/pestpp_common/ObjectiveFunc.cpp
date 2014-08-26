@@ -73,7 +73,7 @@ PhiComponets ObjectiveFunc::get_phi_comp(const Observations &sim_obs, const Para
 				}
 				tmp_weight *= sqrt(dynamic_reg.get_weight());
 			}
-			tmp_phi = pow((i_sim.second - (*obs_iter).second) * tmp_weight, norm);
+			tmp_phi = pow( abs((i_sim.second - (*obs_iter).second) * tmp_weight), norm);
 			if (is_reg_grp) {
 				phi.regul += tmp_phi;
 			}
@@ -97,7 +97,7 @@ PhiComponets ObjectiveFunc::get_phi_comp(const Observations &sim_obs, const Para
 			tmp_weight *= sqrt(dynamic_reg.get_weight());
 		}
 		double tmp_residual = i_prior.second.calc_residual(pars);
-		tmp_phi = pow(tmp_residual * tmp_weight, norm);
+		tmp_phi = pow(abs(tmp_residual * tmp_weight), norm);
 		if (is_reg_grp) {
 			phi.regul += tmp_phi;
 		}
@@ -155,7 +155,7 @@ map<string, double> ObjectiveFunc::get_group_phi(const Observations &sim_obs, co
 				}
 				tmp_weight *= sqrt(dynamic_reg.get_weight());
 			}
-			tmp_phi = pow((i_sim.second - (*obs_iter).second) * tmp_weight, 2.0);
+			tmp_phi = pow(abs((i_sim.second - (*obs_iter).second) * tmp_weight), 2.0);
 			if (obs_type == PhiComponets::OBS_TYPE::ALL
 				|| (is_reg && obs_type == PhiComponets::OBS_TYPE::REGUL)
 				|| (!is_reg && obs_type == PhiComponets::OBS_TYPE::MEAS))
@@ -179,7 +179,7 @@ map<string, double> ObjectiveFunc::get_group_phi(const Observations &sim_obs, co
 			tmp_weight *= sqrt(dynamic_reg.get_weight());
 		}
 		double tmp_residual = i_prior.second.calc_residual(pars);
-		tmp_phi = pow(tmp_residual * tmp_weight, 2.0);
+		tmp_phi = pow(abs(tmp_residual * tmp_weight), 2.0);
 		if (obs_type == PhiComponets::OBS_TYPE::ALL
 			|| (is_reg && obs_type == PhiComponets::OBS_TYPE::REGUL)
 			|| (!is_reg && obs_type == PhiComponets::OBS_TYPE::MEAS))
@@ -200,51 +200,6 @@ map<string,double> ObjectiveFunc::phi_report(const Observations &sim_obs, const 
 	group_phi["TOTAL"] = total_phi;
 	return group_phi;
 }
-
-
-
-//PhiComponets ObjectiveFunc::full_report(ostream &os, const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg,bool limit_par) const
-//{
-//	map<string, double> group_phi;
-//	PhiComponets phi_comp = get_phi_comp(sim_obs, pars, dynamic_reg);
-//	double total_phi = phi_comp.meas + phi_comp.regul;
-//	os << "    Phi                                                 Total : " << total_phi << endl;
-//	os << "    Measurement Phi                                     Total : " << phi_comp.meas << endl;
-//	os << "    Regularization Phi                                  Total : " << phi_comp.regul << endl;
-//	group_phi = get_group_phi(sim_obs, pars, dynamic_reg);
-//	for(map<string, double>::const_iterator b=group_phi.begin(), e=group_phi.end();
-//		b!=e; ++b) {
-//			os << "    Contribution to phi from observation group ";
-//			os << setw(17) << setiosflags(ios::right) << "\"" + (*b).first + "\" : ";
-//			os << (*b).second << endl;
-//	}
-//	if ((limit_par) && (pars.size() > 50))
-//	{
-//		os << endl << endl << "     see .rec file for a full report of optimal parameter values" << endl << endl;
-//	}
-//	else
-//	{
-//
-//		os << endl;
-//		os << "     Parameter      Optimal" << endl;
-//		os << "        Name         Value" << endl;
-//		os << "    ------------  ------------" << endl;
-//
-//		const string *p_name;
-//		double par_value;
-//		for (Parameters::const_iterator nb = pars.begin(), ne = pars.end();
-//			nb != ne; ++nb) {
-//			p_name = &((*nb).first);
-//			par_value = (*nb).second;
-//			os << left;
-//			os << "    " << setw(12) << *p_name
-//				;
-//			os << right;
-//			os << "  " << setw(12) << par_value << endl;
-//		}
-//	}
-//	return phi_comp;
-//}
 
 
 vector<double> ObjectiveFunc::get_residuals_vec(const Observations &sim_obs, const Parameters &pars, const vector<string> &obs_names) const

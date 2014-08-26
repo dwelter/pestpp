@@ -331,7 +331,7 @@ void  MorrisMethod::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run
 	const vector<string> &run_mngr_obs_name_vec = run_manager.get_obs_name_vec();
 	obs_sen_file.initialize(adj_par_name_vec, run_mngr_obs_name_vec, Observations::no_data, this);
 
-	fout_raw << "parameter_name, phi_0, phi_1, par_0, par_1, sen" << endl;
+	fout_raw << "parameter_name, phi_0, phi_1, par_0, par_1, elem_effect" << endl;
 	int n_runs = run_manager.get_nruns();
 	bool run0_ok = false;
 	bool run1_ok = false;
@@ -367,9 +367,9 @@ void  MorrisMethod::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run
 		if (run0_ok && run1_ok && !par_name_1.empty())
 		{
 			run0.update_ctl(pars0, obs0);
-			double phi0 = run0.get_phi(DynamicRegularization::get_zero_reg_instance(), 1.0);
+			double phi0 = run0.get_phi(DynamicRegularization::get_zero_reg_instance(), norm);
 			run1.update_ctl(pars1, obs1);
-			double phi1 = run1.get_phi(DynamicRegularization::get_zero_reg_instance(), 1.0);
+			double phi1 = run1.get_phi(DynamicRegularization::get_zero_reg_instance(), norm);
 			double p0 = pars0[par_name_1];
 			double p1 = pars1[par_name_1];
 			if (log_trans_pars.find(par_name_1) != log_trans_pars.end())

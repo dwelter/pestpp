@@ -18,7 +18,7 @@ GsaAbstractBase::GsaAbstractBase(ParamTransformSeq *_base_partran_seq_ptr,
 		: base_partran_seq_ptr(_base_partran_seq_ptr), 
 		  adj_par_name_vec(_adj_par_name_vec), fixed_ctl_pars(_fixed_ctl_pars),
 		  lower_bnd(_lower_bnd), upper_bnd(_upper_bnd), obs_name_vec(_obs_name_vec),
-		  file_manager_ptr(_file_manager_ptr), par_dist(_par_dist)
+		  file_manager_ptr(_file_manager_ptr), par_dist(_par_dist), seed(1)
 {
 }
 
@@ -117,6 +117,8 @@ void GsaAbstractBase::parce_line(const string &line, map<string, string> &arg_ma
 		value = tokens.front();
 		tokens.pop_front();
 		if (key=="METHOD"){
+		}
+		else if (key == "RAND_SEED"){
 		}
 		else if (key=="MORRIS_R"){
 		}
