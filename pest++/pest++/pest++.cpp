@@ -53,7 +53,7 @@ using namespace pest_utils;
 
 int main(int argc, char* argv[])
 {
-	string version = "2.3.9_b1";
+	string version = "2.4.0";
 	cout << endl << endl;
 	cout << "             PEST++ Version " << version << endl << endl;
 	cout << "                 by Dave Welter" << endl;
