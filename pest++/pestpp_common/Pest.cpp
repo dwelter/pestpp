@@ -180,6 +180,13 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 			else if (sec_lnum == 6)
 			{
 				convert_ip(tokens[0], control_info.phiredswh);
+				if (tokens.size() >= 2) {
+					convert_ip(tokens[1], control_info.noptswitch);
+				}
+				if (tokens.size() >= 3) {
+					convert_ip(tokens[2], control_info.splitswh);
+				}
+
 			}
 			else if (sec_lnum == 7)
 			{
@@ -206,6 +213,7 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 		{
 			ParameterGroupRec pgi;
 			name = tokens[0];
+			size_t n_tokens = tokens.size();
 			pgi.name = name;
 			ctl_ordered_par_group_names.push_back(name);
 			convert_ip(tokens[1], pgi.inctyp);
@@ -214,6 +222,8 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 			convert_ip(tokens[4], pgi.forcen);
 			convert_ip(tokens[5], pgi.derincmul);
 			convert_ip(tokens[6], pgi.dermthd);
+			if (n_tokens >= 8) convert_ip(tokens[7], pgi.splitthresh);
+			if (n_tokens >= 9) convert_ip(tokens[8], pgi.splitthresh);
 			base_group_info.insert_group(name, pgi);
 		}
 		else if (section == "PARAMETER DATA")

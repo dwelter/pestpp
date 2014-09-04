@@ -55,13 +55,15 @@ public:
 		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, 
 		DynamicRegularization *_regul_scheme_ptr, OutputFileWriter &_output_file_writer, RestartController &_restart_controller,
 		SVDSolver::MAT_INV _mat_inv, PerformanceLog *_performance_log, const std::vector<double> &_base_lambda_vec, 
-		const string &description = string("base parameter solution"), bool _phiredswh_flag = false, bool _save_next_jacobian = true);
+		const string &description = string("base parameter solution"), bool _phiredswh_flag = false, bool _splitswh_flag = false, bool _save_next_jacobian = true);
 	virtual ModelRun& solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter, ModelRun &cur_run, ModelRun &optimum_run);
 	virtual void iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs=false, bool jacobian_only=false);
 	ModelRun &cur_model_run() {return cur_solution;}
 	virtual void set_svd_package(PestppOptions::SVD_PACK _svd_pack);
 	bool get_phiredswh_flag() const { return phiredswh_flag;}
 	void set_phiredswh_flag(bool _phiredswh_flag) { phiredswh_flag = _phiredswh_flag;}
+	bool get_splitswh_flag() const { return splitswh_flag; }
+	void set_splitswh_flag(bool _splitswh_flag) { splitswh_flag = _splitswh_flag; }
 	virtual ParameterGroupInfo get_parameter_group_info() const { return *par_group_info_ptr; }
 	Jacobian & get_jacobian() {return jacobian; }
 	bool local_iteration_terminatated()const { return terminate_local_iteration; }
@@ -92,6 +94,7 @@ protected:
 	FileManager &file_manager;
 	Jacobian &jacobian;
 	bool phiredswh_flag;
+	bool splitswh_flag;
 	bool save_next_jacobian;
 	double best_lambda;
 	OutputFileWriter &output_file_writer;

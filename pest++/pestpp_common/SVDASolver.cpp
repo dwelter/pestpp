@@ -41,11 +41,11 @@ SVDASolver::SVDASolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, c
 	const ParameterInfo *_ctl_par_info_ptr, const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 	const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, DynamicRegularization *_regul_scheme,
 	OutputFileWriter &_output_file_writer, RestartController &_restart_controller, SVDSolver::MAT_INV _mat_inv, PerformanceLog *_performance_log, 
-	const std::vector<double> &_base_lambda_vec, bool _phiredswh_flag, int _max_super_frz_iter)
+	const std::vector<double> &_base_lambda_vec, bool _phiredswh_flag, bool _splitswh_flag, int _max_super_frz_iter)
 	: SVDSolver(_ctl_info, _svd_info, _base_parameter_group_info_ptr, _ctl_par_info_ptr, _obs_info,
 		_file_manager, _observations, _obj_func, _par_transform, _prior_info_ptr, _jacobian, 
 		_regul_scheme, _output_file_writer, _restart_controller, _mat_inv, _performance_log,
-		_base_lambda_vec, "super parameter solution", _phiredswh_flag, false), calc_jacobian(true),
+		_base_lambda_vec, "super parameter solution", _phiredswh_flag, _splitswh_flag, false), calc_jacobian(true),
 		max_super_frz_iter(_max_super_frz_iter)
 {
 }
@@ -221,14 +221,11 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 			debug_print(base_run.get_frozen_ctl_pars());
 			par_transform.get_svda_ptr()->update_add_frozen_pars(base_run.get_frozen_ctl_pars());
 			par_transform.get_svda_fixed_ptr()->reset(par_transform.get_svda_ptr()->get_frozen_derivative_pars());
-			// need to reset parameters and the numeric parameters changed when the SVDA transformation was changed above
-			base_run.set_ctl_parameters(base_run.get_ctl_pars());
 			Parameters numeric_pars = par_transform.ctl2numeric_cp(base_run.get_ctl_pars());
 			numeric_par_names_vec = numeric_pars.get_keys();
 
-			//	if (!base_run.obs_valid() || calc_init_obs == true) {
 			calc_init_obs = true;
-			//	}
+
 			super_parameter_group_info = par_transform.get_svda_ptr()->build_par_group_info(*par_group_info_ptr);
 			performance_log->log_event("commencing to build jacobian parameter sets");
 			out_of_bound_pars.clear();
@@ -273,7 +270,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		performance_log->log_event("jacobian runs complete, processing runs");
 		out_of_bound_pars.clear();
 		bool success_process_runs = jacobian.process_runs(par_transform,
-			super_parameter_group_info, run_manager, *prior_info_ptr);
+			super_parameter_group_info, run_manager, *prior_info_ptr, splitswh_flag);
 		if (out_of_bound_pars.size()>0 || !success_process_runs)
 		{
 			throw PestError("Error in SVDASolver::iteration: Can not compute super parameter derivatives");
@@ -483,16 +480,28 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 	double cur_phi = cur_solution.get_phi(*regul_scheme_ptr);
 	double best_phi = best_upgrade_run.get_phi(*regul_scheme_ptr);
 
+	cout << endl << "  ...Lambda testing complete for iteration " << termination_ctl.get_iteration_number() + 1 << endl;
+	cout << "  Starting phi = " << cur_phi << ";  ending phi = " << best_phi <<
+		"  (" << best_phi / cur_phi * 100 << "%)" << endl;
+	cout << endl;
+
+	if (phiredswh_flag && cur_phi != 0 &&
+		cur_phi / best_phi >= ctl_info->splitswh)
+	{
+		splitswh_flag = true;
+		os << endl << "      Switching to split threshold derivatives" << endl;
+		cout << endl << "      Switching to split threshold derivatives" << endl;
+	}
+
 	if (cur_phi != 0 && !phiredswh_flag &&
+		termination_ctl.get_iteration_number() + 1 > ctl_info->noptswitch &&
 		(cur_phi - best_phi) / cur_phi < ctl_info->phiredswh)
 	{
 		phiredswh_flag = true;
 		os << endl << "      Switching to central derivatives:" << endl;
+		cout << endl << "      Switching to central derivatives:" << endl;
 	}
-	cout << endl << "  ...Lambda testing complete for iteration " << termination_ctl.get_iteration_number()+1 << endl;
-	cout << "  Starting phi = " << cur_phi << ";  ending phi = " << best_phi <<
-		"  (" << best_phi / cur_phi * 100 << "%)" << endl;
-	cout << endl;
+
 	os << endl;
 	iteration_update_and_report(os, best_upgrade_run, termination_ctl, run_manager);
 	cur_solution = best_upgrade_run;

@@ -188,6 +188,7 @@ int main(int argc, char* argv[])
 		ofstream &fout_rec_tmp = file_manager.rec_ofstream();
 		fout_rec_tmp << endl << endl;
 		fout_rec_tmp << "Restarting PEST++ ....." << endl << endl;
+		cout << "    Restarting PEST++ ....." << endl << endl;
 	}
 	else
 	{
@@ -229,7 +230,10 @@ int main(int argc, char* argv[])
 	//bool save_eign = pest_scenario.get_svd_info().eigwrite > 0;	
 	OutputFileWriter output_file_writer(file_manager, pest_scenario, restart_flag);
 	output_file_writer.set_svd_output_opt(pest_scenario.get_svd_info().eigwrite);
-	output_file_writer.scenario_report(fout_rec);
+	if (!restart_flag)
+	{
+		output_file_writer.scenario_report(fout_rec);
+	}
 	if (pest_scenario.get_pestpp_options().get_iter_summary_flag())
 	{
 		output_file_writer.write_par_iter(0, pest_scenario.get_ctl_parameters());
@@ -397,7 +401,7 @@ int main(int argc, char* argv[])
 	try
 		{
 			const vector<string> &nonregul_obs = pest_scenario.get_nonregul_obs();
-			Parameters base_numeric_pars = base_trans_seq.ctl2numeric_cp( base_svd.cur_model_run().get_ctl_pars());
+			Parameters base_numeric_pars = base_trans_seq.ctl2numeric_cp(cur_ctl_parameters);
 			const vector<string> &pars = base_numeric_pars.get_keys();
 			QSqrtMatrix Q_sqrt(&(pest_scenario.get_ctl_observation_info()), &pest_scenario.get_prior_info());
 			(*tran_svd).update_reset_frozen_pars(*base_jacobian_ptr, Q_sqrt, base_numeric_pars, max_n_super, super_eigthres, pars, nonregul_obs, cur_run.get_frozen_ctl_pars());
@@ -405,26 +409,21 @@ int main(int argc, char* argv[])
 			SVDASolver super_svd(&svd_control_info, pest_scenario.get_svd_info(), &pest_scenario.get_base_group_info(), &pest_scenario.get_ctl_parameter_info(),
 				&pest_scenario.get_ctl_observation_info(),  file_manager, &pest_scenario.get_ctl_observations(), &obj_func,
 				trans_svda, &pest_scenario.get_prior_info(), *super_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(),
-				output_file_writer, restart_ctl, mat_inv, &performance_log, pest_scenario.get_pestpp_options().get_base_lambda_vec(), base_svd.get_phiredswh_flag(),
+				output_file_writer, restart_ctl, mat_inv, &performance_log, pest_scenario.get_pestpp_options().get_base_lambda_vec(), base_svd.get_phiredswh_flag(), base_svd.get_splitswh_flag(),
 				pest_scenario.get_pestpp_options().get_max_super_frz_iter());
 			super_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 			//use base jacobian to compute first super jacobian if there was not a super upgrade
 			if (n_base_iter == -1)
 			{
-				//use base jacobian to compute first super jacobian if there was not a super upgrade
-				if (n_base_iter == -1)
-				{
-					super_svd.get_jacobian() = base_svd.get_jacobian();
-					super_svd.get_jacobian().transform(base_trans_seq, &ParamTransformSeq::jac_numeric2active_ctl_ip);
-					super_svd.get_jacobian().transform(trans_svda, &ParamTransformSeq::jac_active_ctl_ip2numeric_ip);
-					//super_svd.get_jacobian().transform(base_trans_seq, &ParamTransformSeq::jac_test_ip);
-					super_svd.set_calc_jacobian(false);
-				}
-
+				super_svd.get_jacobian() = base_svd.get_jacobian();
+				super_svd.get_jacobian().transform(base_trans_seq, &ParamTransformSeq::jac_numeric2active_ctl_ip);
+				super_svd.get_jacobian().transform(trans_svda, &ParamTransformSeq::jac_active_ctl_ip2numeric_ip);
+				super_svd.set_calc_jacobian(false);
 			}
 			cur_run = super_svd.solve(*run_manager_ptr, termination_ctl, n_super_iter, cur_run, optimum_run);
 			cur_ctl_parameters = super_svd.cur_model_run().get_ctl_pars();
 			base_svd.set_phiredswh_flag(super_svd.get_phiredswh_flag());
+			base_svd.set_splitswh_flag(super_svd.get_splitswh_flag());
 			if (super_svd.local_iteration_terminatated() && n_base_iter == -1)
 			{
 				n_base_iter = 1;

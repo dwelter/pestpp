@@ -46,10 +46,10 @@ SVDSolver::SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, con
 	const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 	const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian,
 	DynamicRegularization *_regul_scheme_ptr, OutputFileWriter &_output_file_writer, RestartController &_restart_controller, SVDSolver::MAT_INV _mat_inv,
-	PerformanceLog *_performance_log, const vector<double> &_base_lambda_vec, const string &_description, bool _phiredswh_flag, bool _save_next_jacobian)
+	PerformanceLog *_performance_log, const vector<double> &_base_lambda_vec, const string &_description, bool _phiredswh_flag, bool _splitswh_flag, bool _save_next_jacobian)
 	: ctl_info(_ctl_info), svd_info(_svd_info), par_group_info_ptr(_par_group_info_ptr), ctl_par_info_ptr(_ctl_par_info_ptr), obs_info_ptr(_obs_info), obj_func(_obj_func),
 	file_manager(_file_manager), observations_ptr(_observations), par_transform(_par_transform),
-	cur_solution(_obj_func, *_observations), phiredswh_flag(_phiredswh_flag), save_next_jacobian(_save_next_jacobian), prior_info_ptr(_prior_info_ptr), jacobian(_jacobian),
+	cur_solution(_obj_func, *_observations), phiredswh_flag(_phiredswh_flag), splitswh_flag(_splitswh_flag), save_next_jacobian(_save_next_jacobian), prior_info_ptr(_prior_info_ptr), jacobian(_jacobian),
 	regul_scheme_ptr(_regul_scheme_ptr), output_file_writer(_output_file_writer), mat_inv(_mat_inv), description(_description), best_lambda(20.0),
 	restart_controller(_restart_controller), performance_log(_performance_log), base_lambda_vec(_base_lambda_vec), terminate_local_iteration(false)
 {
@@ -559,12 +559,14 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 		{
 			par_transform.model2ctl_ip(tmp_pars);
 			cur_solution.update_ctl(tmp_pars, tmp_obs);
+			jacobian.process_base_run(par_transform, run_manager, *prior_info_ptr);
 			goto restart_reuse_jacoboian;
 		}
 		else
 		{
 			throw(PestError("Error: Base parameter run failed.  Can not continue."));
 		}
+
 	}
 	else if (restart_controller.get_restart_option() == RestartController::RestartOption::RESUME_JACOBIAN_RUNS)
 	{
@@ -577,17 +579,6 @@ void SVDSolver::iteration(RunManagerAbstract &run_manager, TerminationController
 		cur_solution.set_ctl_parameters(tmp_pars);
 		goto restart_resume_jacobian_runs;
 	}
-	else if (restart_controller.get_restart_option() == RestartController::RestartOption::RESUME_NEW_ITERATION)
-	{
-		restart_controller.get_restart_option() = RestartController::RestartOption::NONE;
-		Parameters tmp_pars;
-		ifstream &fin_par = file_manager.open_ifile_ext("rpb");
-		//output_file_writer.read_par(fin_par, tmp_pars);
-		read_par(fin_par, tmp_pars);
-		file_manager.close_file("rpb");
-		cur_solution.set_ctl_parameters(tmp_pars);
-	}
-
 	else if (restart_controller.get_restart_option() == RestartController::RestartOption::RESUME_NEW_ITERATION)
 	{
 		restart_controller.get_restart_option() = RestartController::RestartOption::NONE;
@@ -623,7 +614,7 @@ restart_resume_jacobian_runs:
 	jacobian.make_runs(run_manager);
 	performance_log->log_event("jacobian runs complete, processing runs");
 	jacobian.process_runs(par_transform,
-		*par_group_info_ptr, run_manager, *prior_info_ptr);
+		*par_group_info_ptr, run_manager, *prior_info_ptr, splitswh_flag);
 	performance_log->log_event("processing jacobian runs complete");
 
 	performance_log->log_event("saving jacobian and sen files");
@@ -643,12 +634,11 @@ restart_resume_jacobian_runs:
 	// sen file for this iteration
 	output_file_writer.append_sen(file_manager.sen_ofstream(), termination_ctl.get_iteration_number() + 1, jacobian,
 		*(cur_solution.get_obj_func_ptr()), get_parameter_group_info(), *regul_scheme_ptr,false);
+	restart_reuse_jacoboian:
 	if (jacobian_only)
 	{
 		return;
 	}
-restart_reuse_jacoboian:
-	cout << endl;
 
 	//Freeze Parameter for which the jacobian could not be calculated
 	auto &failed_jac_pars_names = jacobian.get_failed_parameter_names();
@@ -829,15 +819,27 @@ restart_reuse_jacoboian:
 	double cur_phi = cur_solution.get_phi(*regul_scheme_ptr);
 	double best_phi = best_upgrade_run.get_phi(*regul_scheme_ptr);
 
+	cout << endl << "  ...Lambda testing complete for iteration " << termination_ctl.get_iteration_number() + 1 << endl;
+	cout << "    Starting phi = " << cur_phi << ";  ending phi = " << best_phi <<
+		"  (" << best_phi / cur_phi * 100 << "%)" << endl;
+
+	if (phiredswh_flag && cur_phi != 0 &&
+		cur_phi / best_phi >= ctl_info->splitswh)
+	{
+		splitswh_flag = true;
+		os << endl << "      Switching to split threshold derivatives" << endl;
+		cout << endl << "    Switching to split threshold derivatives" << endl;
+	}
+
 	if (cur_phi != 0 && !phiredswh_flag &&
+		termination_ctl.get_iteration_number() + 1 > ctl_info->noptswitch &&
 		(cur_phi - best_phi) / cur_phi < ctl_info->phiredswh)
 	{
 		phiredswh_flag = true;
 		os << endl << "      Switching to central derivatives:" << endl;
+		cout << endl << "    Switching to central derivatives:" << endl;
 	}
-	cout << endl << "  ...Lambda testing complete for iteration " << termination_ctl.get_iteration_number() + 1 << endl;
-	cout << "    Starting phi = " << cur_phi << ";  ending phi = " << best_phi <<
-		"  (" << best_phi / cur_phi * 100 << "%)" << endl;
+
 	cout << endl;
 	os << endl;
 	iteration_update_and_report(os, best_upgrade_run, termination_ctl, run_manager);

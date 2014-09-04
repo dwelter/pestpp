@@ -64,6 +64,8 @@ ParameterGroupRec& ParameterGroupRec::operator=(const ParameterGroupRec &rhs)
 	forcen = rhs.forcen;
 	derincmul = rhs.derincmul;
 	dermthd = rhs.dermthd;
+	splitthresh = rhs.splitthresh;
+	splitreldiff = rhs.splitreldiff;
 	return *this;
 }
 

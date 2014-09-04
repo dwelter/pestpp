@@ -122,7 +122,7 @@ void Jacobian_1to1::make_runs(RunManagerAbstract &run_manager)
 
 bool Jacobian_1to1::process_runs(ParamTransformSeq &par_transform,
 		const ParameterGroupInfo &group_info, 
-		RunManagerAbstract &run_manager,  const PriorInformation &prior_info)
+		RunManagerAbstract &run_manager, const PriorInformation &prior_info, bool splitswh_flag)
 {
 	debug_msg("Jacobian_1to1::process_runs begin");
        base_sim_obs_names = run_manager.get_obs_name_vec();
@@ -197,7 +197,7 @@ bool Jacobian_1to1::process_runs(ParamTransformSeq &par_transform,
 				base_run.numeric_derivative_par = base_numeric_parameters.get_rec(cur_par_name);
 				double cur_numeric_value = base_run.numeric_derivative_par;
 				run_list.push_front(base_run);
-				std::vector<Eigen::Triplet<double> > tmp_triplet_vec = calc_derivative(cur_par_name, cur_numeric_value, icol, run_list, group_info, prior_info);
+				std::vector<Eigen::Triplet<double> > tmp_triplet_vec = calc_derivative(cur_par_name, cur_numeric_value, icol, run_list, group_info, prior_info, splitswh_flag);
 				triplet_list.insert( triplet_list.end(), tmp_triplet_vec.begin(), tmp_triplet_vec.end() );
 				icol++;
 			}

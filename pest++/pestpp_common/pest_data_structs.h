@@ -44,8 +44,11 @@ public:
 	int nphinored;
 	double relparstp;
 	int nrelpar;
+	int noptswitch;
+	double splitswh;
 	ControlInfo() : relparmax(0.0), facparmax(0.0), facorig(0.0), phiredswh(0.0), noptmax(0),
-		phiredstp(0.0), nphistp(0), nphinored(0), relparstp(0.0), nrelpar(0){}
+		phiredstp(0.0), nphistp(0), nphinored(0), relparstp(0.0), nrelpar(0), noptswitch(0),
+		splitswh(0.0) {}
 };
 ostream& operator<< (ostream &os, const ControlInfo& val);
 
@@ -68,10 +71,14 @@ public:
 	string forcen;
 	double derincmul;
 	string dermthd;
+	double splitthresh;
+	double splitreldiff;
 	ParameterGroupRec(const string &_name="", const string &_inctyp="", double _derinc=0.0, double _derinclb=0.0, 
 		const string &_forcen="", double _derincmul=0.0, 
-		const string &_dermthd="") : name(_name), inctyp(_inctyp), derinc(_derinc), derinclb(_derinclb), forcen(_forcen),
-			derincmul(_derincmul), dermthd(_dermthd) {}
+		const string &_dermthd = "", double _splitthresh = 0.0, double _splitreldiff=.50)
+		: name(_name), inctyp(_inctyp), derinc(_derinc), derinclb(_derinclb), forcen(_forcen),
+		derincmul(_derincmul), dermthd(_dermthd), splitthresh(_splitthresh), 
+		splitreldiff(_splitreldiff){}
 	ParameterGroupRec(const ParameterGroupRec &rhs) {*this=rhs;}
 	ParameterGroupRec& operator=(const ParameterGroupRec &rhs);
 };

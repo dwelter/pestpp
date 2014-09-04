@@ -112,7 +112,6 @@ RunManagerSerial::RunManagerSerial(const vector<string> _comline_vec,
 
 void RunManagerSerial::run()
 {
-	int ifail;
 	int success_runs = 0;
 	int prev_sucess_runs = 0;
 	const vector<string> &par_name_vec = file_stor.get_par_name_vec();

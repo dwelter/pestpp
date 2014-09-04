@@ -647,7 +647,7 @@ double Instruction::read_fixedObs(ifstream* out,int* lpos,const streampos* line_
 		}
 		
 		//find an entry that meets the requirements of the instruction
-		int i,e;
+		int i;
 		bool found = false;
 		for (i=0;i<entries.size();i++)
 		{			

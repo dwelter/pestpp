@@ -72,9 +72,11 @@ public:
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
 		RunManagerAbstract &run_manager, set<string> &out_of_bound_par, bool phiredswh_flag=false, bool calc_init_obs=true);
 	virtual void make_runs(RunManagerAbstract &run_manager);
+	virtual bool process_base_run(ParamTransformSeq &par_transform,
+		RunManagerAbstract &run_manager, const PriorInformation &prior_info);
 	virtual bool process_runs(ParamTransformSeq &par_transform,
 		const ParameterGroupInfo &group_info, 
-		RunManagerAbstract &run_manager,  const PriorInformation &prior_info);
+		RunManagerAbstract &run_manager, const PriorInformation &prior_info, bool splitswh_flag);
 
 	virtual void save(const std::string &ext="jco") const;
 	void read(const std::string &filename);
@@ -98,7 +100,7 @@ protected:
 	FileManager &file_manager;  // filemanger used to get name of jaobian file
 
 	virtual std::vector<Eigen::Triplet<double> > calc_derivative(const string &numeric_par_name, double base_numeric_par_value, int jcol, list<JacobianRun> &run_list, const ParameterGroupInfo &group_info,
-		const PriorInformation &prior_info);
+		const PriorInformation &prior_info, bool splitswh_flag);
 	virtual bool forward_diff(const string &par_name, const Parameters &pest_parameters, 
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, const ParamTransformSeq &par_trans,
 		double &new_par, set<string> &out_of_bound_par);

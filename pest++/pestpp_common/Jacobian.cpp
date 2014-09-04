@@ -258,9 +258,35 @@ void Jacobian::make_runs(RunManagerAbstract &run_manager)
 	run_manager.run();
 }
 
+
+bool Jacobian::process_base_run(ParamTransformSeq &par_transform,
+	RunManagerAbstract &run_manager, const PriorInformation &prior_info)
+{
+	bool success = false;
+	// calculate jacobian
+	base_sim_obs_names = run_manager.get_obs_name_vec();
+	vector<string> prior_info_name = prior_info.get_keys();
+	base_sim_obs_names.insert(base_sim_obs_names.end(), prior_info_name.begin(), prior_info_name.end());
+	std::vector<Eigen::Triplet<double> > triplet_list;
+
+	JacobianRun base_run;
+	int i_run = 0;
+	// get base run parameters and observation for initial model run from run manager storage
+	run_manager.get_model_parameters(i_run, base_run.ctl_pars);
+	success = run_manager.get_observations_vec(i_run, base_run.obs_vec);
+	if (!success)
+	{
+		throw(PestError("Error: Super-parameter base parameter run failed.  Can not compute the Jacobian"));
+	}
+	par_transform.model2ctl_ip(base_run.ctl_pars);
+	base_numeric_parameters = par_transform.ctl2numeric_cp(base_run.ctl_pars);
+	return success;
+}
+
+
 bool Jacobian::process_runs(ParamTransformSeq &par_transform,
 		const ParameterGroupInfo &group_info, 
-		RunManagerAbstract &run_manager,  const PriorInformation &prior_info)
+		RunManagerAbstract &run_manager, const PriorInformation &prior_info, bool splitswh_flag)
 {
 	// calculate jacobian
   base_sim_obs_names = run_manager.get_obs_name_vec();
@@ -324,7 +350,7 @@ bool Jacobian::process_runs(ParamTransformSeq &par_transform,
 				double base_numeric_par_value = base_numeric_parameters.get_rec(cur_par_name);
 				base_run.numeric_derivative_par = base_numeric_par_value;
 				run_list.push_front(base_run);
-				std::vector<Eigen::Triplet<double> > tmp_triplet_vec = calc_derivative(cur_par_name, base_numeric_par_value, icol, run_list, group_info, prior_info);
+				std::vector<Eigen::Triplet<double> > tmp_triplet_vec = calc_derivative(cur_par_name, base_numeric_par_value, icol, run_list, group_info, prior_info, splitswh_flag);
 				triplet_list.insert(triplet_list.end(), tmp_triplet_vec.begin(), tmp_triplet_vec.end());
 				icol++;
 				run_list.clear();
@@ -387,7 +413,7 @@ bool Jacobian::get_derivative_parameters(const string &par_name, Parameters &num
 
 
 std::vector<Eigen::Triplet<double> >  Jacobian::calc_derivative(const string &numeric_par_name, double base_numeric_par_value, int jcol, list<JacobianRun> &run_list,
-							   const ParameterGroupInfo &group_info, const PriorInformation &prior_info)
+	const ParameterGroupInfo &group_info, const PriorInformation &prior_info, bool splitswh_flag)
 {
 	const ParameterGroupRec *g_rec;
 	double del_par;
@@ -406,14 +432,45 @@ std::vector<Eigen::Triplet<double> >  Jacobian::calc_derivative(const string &nu
 
 	//p_rec = group_info.get_parameter_rec_ptr(*par_name);
 	g_rec = group_info.get_group_rec_ptr(numeric_par_name);
+	double splitthresh = g_rec->splitthresh;
+	double splitreldiff = g_rec->splitreldiff;
 
 	irow = 0;
+	vector<double> sen_vec;
 	for (auto &iobs_name : base_sim_obs_names)
 	{
 		// Check if this is not prior infomation
 		if (prior_info.find(iobs_name) == prior_info.end())
 		{
-			if (run_list.size() ==3 && g_rec->dermthd == "PARABOLIC")
+			//Apply Split threshold on derivative if applicable
+			bool success = false;
+			if (run_list.size() == 3 && splitswh_flag == true && splitthresh > 0)
+			{
+				sen_vec.clear();
+				list<JacobianRun>::const_iterator iter_run = run_list.begin();
+				list<JacobianRun>::const_iterator run_2 = run_list.begin();
+				for (++iter_run; iter_run != run_list.end(); ++iter_run)
+				{
+					list<JacobianRun>::const_iterator run_1 = run_2;
+					run_2 = iter_run;
+					del_par = run_2->numeric_derivative_par - run_1->numeric_derivative_par;
+					del_obs = run_2->obs_vec[irow] - run_1->obs_vec[irow];
+					sen_vec.push_back(del_obs / del_par);
+				}
+				std::sort(sen_vec.begin(), sen_vec.end(), [](double a, double b) {
+					return std::abs(a) < std::abs(b);});
+				if (abs(sen_vec.back()) >= splitthresh && 
+					abs(sen_vec.back() - sen_vec.front()) / sen_vec.front() > splitreldiff )
+				{
+					success = true;
+					if (sen_vec.front() != 0)
+					{
+						triplet_list.push_back(Eigen::Triplet<double>(irow, jcol, sen_vec.front() ));
+					}
+				}
+			}
+
+			if (run_list.size() == 3 && g_rec->dermthd == "PARABOLIC" && !success)
 			{
 				// Central Difference Parabola
 				// Solve Ac = o for c to get the equation for a parabola where:
@@ -444,7 +501,7 @@ std::vector<Eigen::Triplet<double> >  Jacobian::calc_derivative(const string &nu
 					triplet_list.push_back(Eigen::Triplet<double>(irow, jcol, der));
 				}
 			}
-			else 
+			else if (!success)
 			{
 				// Forward Difference and Central Difference Outer
 				del_par = run_last.numeric_derivative_par - run_first.numeric_derivative_par;
