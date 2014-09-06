@@ -301,6 +301,8 @@ public:
 	ParameterGroupInfo build_par_group_info(const ParameterGroupInfo &base_pg_info);
 	Parameters map_basepar_to_super(const Parameters &base_pars);
 	const Eigen::SparseMatrix<double>& get_vt() const;
+	void save(ostream &fout) const;
+	void read(istream &fin);
 protected:
 	SVDPackage *tran_svd_pack;
 

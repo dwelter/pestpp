@@ -264,6 +264,14 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		{
 			throw PestError("Error in SVDASolver::iteration: Can not compute super parameter derivatives without base parameters going out of bounds");
 		}
+		//DEW testing
+		ofstream &fout_rst = file_manager.open_ofile_ext("rtj", ios_base::out | ios_base::binary);
+		par_transform.get_svda_ptr()->save(fout_rst);
+		file_manager.close_file("rtj");
+		ifstream &fin_rst = file_manager.open_ifile_ext("rtj", ios_base::in | ios_base::binary);
+		par_transform.get_svda_ptr()->read(fin_rst);
+		file_manager.close_file("rtj");
+
 		//make model runs
 		performance_log->log_event("jacobian parameter sets built, commencing model runs");
 		jacobian.make_runs(run_manager);

@@ -34,6 +34,8 @@
 #include "pest_data_structs.h"
 #include "debug.h"
 #include "Regularization.h"
+#include "Serialization.h"
+#include "eigen_tools.h"
 
 using namespace std;
 using namespace Eigen;
@@ -760,6 +762,86 @@ void TranSVD::d2_to_d1(Transformable &del_data, Transformable &data)
 	reverse(data);
 }
 
+void TranSVD::save(ostream &fout) const
+{
+	size_t size;
+	vector<char> serial_data;
+	serial_data = Serialization::serialize(base_parameter_names);
+	size = serial_data.size();
+	fout.write((char*)&size, sizeof(size));
+	fout.write((char*)serial_data.data(), size);
+
+	serial_data = Serialization::serialize(super_parameter_names);
+	size = serial_data.size();
+	fout.write((char*)&size, sizeof(size));
+	fout.write((char*)serial_data.data(), size);
+
+	serial_data = Serialization::serialize(obs_names);
+	size = serial_data.size();
+	fout.write((char*)&size, sizeof(size));
+	fout.write((char*)serial_data.data(), size);
+
+	save_triplets_bin(SqrtQ_J, fout);
+	save_vector_bin(Sigma, fout);
+	save_triplets_bin(U, fout);
+	save_triplets_bin(Vt, fout);
+
+	serial_data = Serialization::serialize(init_base_numeric_parameters);
+	size = serial_data.size();
+	fout.write((char*)&size, sizeof(size));
+	fout.write((char*)serial_data.data(), size);
+
+	serial_data = Serialization::serialize(frozen_derivative_parameters);
+	size = serial_data.size();
+	fout.write((char*)&size, sizeof(size));
+	fout.write((char*)serial_data.data(), size);
+}
+
+void TranSVD::read(istream &fin)
+{
+	size_t size;
+	vector<char> serial_data;
+
+	base_parameter_names.clear();
+	fin.read((char*)&size, sizeof(size));
+	serial_data.clear();
+	serial_data.resize(size);
+	fin.read((char*)serial_data.data(), size);
+	Serialization::unserialize(serial_data, base_parameter_names);
+
+	super_parameter_names.clear();
+	fin.read((char*)&size, sizeof(size));
+	serial_data.clear();
+	serial_data.resize(size);
+	fin.read((char*)serial_data.data(), size);
+	Serialization::unserialize(serial_data, super_parameter_names);
+
+	obs_names.clear();
+	fin.read((char*)&size, sizeof(size));
+	serial_data.clear();
+	serial_data.resize(size);
+	fin.read((char*)serial_data.data(), size);
+	Serialization::unserialize(serial_data, obs_names);
+
+	load_triplets_bin(SqrtQ_J, fin);
+	load_vector_bin(Sigma, fin);
+	load_triplets_bin(U, fin);
+	load_triplets_bin(Vt, fin);
+
+	init_base_numeric_parameters.clear();
+	fin.read((char*)&size, sizeof(size));
+	serial_data.clear();
+	serial_data.resize(size);
+	fin.read((char*)serial_data.data(), size);
+	Serialization::unserialize(serial_data, init_base_numeric_parameters);
+
+	frozen_derivative_parameters.clear();
+	fin.read((char*)&size, sizeof(size));
+	serial_data.clear();
+	serial_data.resize(size);
+	fin.read((char*)serial_data.data(), size);
+	Serialization::unserialize(serial_data, frozen_derivative_parameters);
+}
 
 ParameterGroupInfo TranSVD::build_par_group_info(const ParameterGroupInfo &base_pg_info)
 {

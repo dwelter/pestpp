@@ -56,34 +56,37 @@ vector<char> Serialization::serialize(const Transformable &tr_data)
 	unsigned long names_buf_sz = 0;;
 	unsigned long data_buf_sz = 0;
 	// calculate buffer size
- 	for(auto &b : tr_data) 
+	for (auto &b : tr_data)
 	{
 		names_buf_sz += b.first.size() + 1;
 	}
 	data_buf_sz = sizeof(double)*tr_data.size();
 	buf_sz = sizeof(unsigned long) + names_buf_sz + sizeof(unsigned long) + data_buf_sz;
 	// allocate space
-	buf.resize(buf_sz,'\0');
+	buf.resize(buf_sz, '\0');
 	// build string with space deliminated names and array of numbers
 	vector<char> names;
-    names.reserve(names_buf_sz);
+	names.reserve(names_buf_sz);
 	vector<double> values;
 	for (auto &b : tr_data)
 	{
 		names.insert(names.end(), b.first.begin(), b.first.end());
-        names.push_back(' ');
+		names.push_back(' ');
 		values.push_back(b.second);
 	}
 	unsigned long n_rec = values.size();
 	//write information to buffer
 	size_t i_start = 0;
-	w_memcpy_s(&buf[i_start], buf_sz-i_start, &names_buf_sz, sizeof(names_buf_sz));
+	w_memcpy_s(&buf[i_start], buf_sz - i_start, &names_buf_sz, sizeof(names_buf_sz));
 	i_start += sizeof(names_buf_sz);
-	w_memcpy_s(&buf[i_start], buf_sz-i_start, names.data(), names_buf_sz);
-	i_start +=names_buf_sz;
-	w_memcpy_s(&buf[i_start], buf_sz-i_start, &n_rec, sizeof(n_rec));
-	i_start +=sizeof(n_rec);
-	w_memcpy_s(&buf[i_start], buf_sz-i_start, &values[0], data_buf_sz);
+	w_memcpy_s(&buf[i_start], buf_sz - i_start, names.data(), names_buf_sz);
+	i_start += names_buf_sz;
+	w_memcpy_s(&buf[i_start], buf_sz - i_start, &n_rec, sizeof(n_rec));
+	i_start += sizeof(n_rec);
+	if (n_rec > 0)
+	{
+		w_memcpy_s(&buf[i_start], buf_sz - i_start, &values[0], data_buf_sz);
+	}
 	return buf;
 }
 

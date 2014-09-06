@@ -29,6 +29,7 @@ class Transformable;
 void get_MatrixXd_row_abs_max(const Eigen::MatrixXd &m, int row, int *max_col, double *max_val);
 
 Eigen::VectorXd stlvec_2_egienvec(const std::vector<double> &stl_vec);
+std::vector<double> egienvec_2_stlvec(const Eigen::VectorXd &eigen_vec);
 
 Eigen::VectorXd transformable_2_egien_vec(const Transformable &data, std::vector<std::string> oredered_names);
 
@@ -39,5 +40,10 @@ Eigen::SparseMatrix<double> get_diag_matrix(const Eigen::SparseMatrix<double> &m
 
 void print(const Eigen::MatrixXd &mat, std::ostream & fout, int n_per_line=7);
 void print(const Eigen::VectorXd &vec, std::ostream & fout, int n_per_line=7);
+
+bool save_triplets_bin(const Eigen::SparseMatrix<double> &mat, std::ostream &fout);
+bool load_triplets_bin(Eigen::SparseMatrix<double> &a, std::istream &fin);
+bool save_vector_bin(const Eigen::VectorXd vec, std::ostream &fout);
+bool load_vector_bin(Eigen::VectorXd vec, std::istream &fin);
 
 #endif /* EIGEN_TOOLS_H_ */
