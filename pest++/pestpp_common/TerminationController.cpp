@@ -110,7 +110,14 @@ bool TerminationController::process_iteration(const PhiComponets &phi_comp, doub
 }
 bool TerminationController::check_last_iteration()
 {
-	double min_phi_diff = lowest_phi.back() - lowest_phi.front();		
+	if (nopt_count >= noptmax)
+	{
+		terminate_code = true;
+		termimate_reason = "NOPTMAX criterion met";
+		return terminate_code;
+	}
+
+	double min_phi_diff = lowest_phi.back() - lowest_phi.front();	
 	if (current_phi <= std::numeric_limits<double>::denorm_min())
 	{
 		terminate_code = true;
@@ -121,7 +128,7 @@ bool TerminationController::check_last_iteration()
 	{
 		terminate_code = true;
 		termimate_reason = "NPHINORED criterion met";
-	}
+	}	
 	else if (lowest_phi.size() >= nphistp && min_phi_diff <= phiredstp*current_phi)
 	{
 		terminate_code = true;
@@ -132,12 +139,7 @@ bool TerminationController::check_last_iteration()
 	{
 		terminate_code = true;
 		termimate_reason = "RELPARSTP / NRELPAR criterion met";
-	}
-	else if (nopt_count >= noptmax)
-	{
-		terminate_code = true;
-		termimate_reason = "NOPTMAX criterion met";
-	}
+	}	
 	else
 	{
 		terminate_code = false;

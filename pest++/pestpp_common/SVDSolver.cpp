@@ -86,7 +86,7 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 	string matrix_inv = (mat_inv == MAT_INV::Q12J) ? "\"Q 1/2 J\"" : "\"Jt Q J\"";
 	terminate_local_iteration = false;
 	//os << "   -----    Starting PEST++ Iterations    ----    " << endl;
-	if (max_iter == -1)
+	if ((max_iter == -1) || (ctl_info->noptmax < 0))
 	{
 		cout << "COMPUTING JACOBIAN:" << endl << endl;
 		os << "COMPUTING JACOBIAN:" << endl << endl;
@@ -94,9 +94,11 @@ ModelRun& SVDSolver::solve(RunManagerAbstract &run_manager, TerminationControlle
 		os << "    Iteration type: " << get_description() << endl;
 		os << "    Model calls so far : " << run_manager.get_total_runs() << endl << endl << endl;
 		iteration(run_manager, termination_ctl, false, true);
+		return cur_solution;
 	}
 
-	for (int iter_num = 1; iter_num <= max_iter && !terminate_local_iteration; ++iter_num) {
+	for (int iter_num = 1; iter_num <= max_iter && !terminate_local_iteration; ++iter_num) 
+	{
 		int global_iter_num = termination_ctl.get_iteration_number() + 1;
 		output_file_writer.iteration_report(os, global_iter_num, run_manager.get_total_runs(), get_description(), svd_package->description, matrix_inv);
 		output_file_writer.iteration_report(cout, global_iter_num, run_manager.get_total_runs(), get_description(), svd_package->description, matrix_inv);
