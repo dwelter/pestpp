@@ -348,9 +348,11 @@ int main(int argc, char* argv[])
 		Observations tmp_obs;
 		bool success = run_manager_ptr->get_run(0, tmp_pars, tmp_obs);
 		base_trans_seq.model2ctl_ip(tmp_pars);
-		termination_ctl.set_terminate(true);
+		//termination_ctl.set_terminate(true);
+
 		if (success)
 		{
+			termination_ctl.check_last_iteration();
 			optimum_run.update_ctl(tmp_pars, tmp_obs);
 			// save parameters to .par file
 			output_file_writer.write_par(file_manager.open_ofile_ext("par"), optimum_run.get_ctl_pars(), *(base_trans_seq.get_offset_ptr()), 
@@ -385,7 +387,12 @@ int main(int argc, char* argv[])
 		{
 			cur_run = base_svd.solve(*run_manager_ptr, termination_ctl, n_base_iter, cur_run, optimum_run);
 			cur_ctl_parameters = base_svd.cur_model_run().get_ctl_pars();
-			if (termination_ctl.terminate()) break;
+			if (pest_scenario.get_control_info().noptmax < 1)
+			{
+				optimum_run = cur_run;
+				termination_ctl.check_last_iteration();
+			}
+			if (termination_ctl.terminate())  break;
 		}
 		catch(exception &e)
 		{
