@@ -1,0 +1,2323 @@
+*RZWQM2 OUTPUTS Version 2.4               Sep 09, 2014; 13:54:42
+
+
+ NO CONVERGENCE -- RESETTING --    1    5300   0.108E-01   0.345E-01
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    121  ==>  1/ 5/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          81.4535
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1944    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)                0.000    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                         0.5907E-01
+    LATERAL FLOW LOSS (CM)                            0.2000    
+
+ STORAGE AT END OF CURRENT DAY (CM)                      80.9809
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                          0.1918E-01
+ NOTE... RICHARDS EQUATION DIDNT CONVERGE - MASS BALANCE MAY BE OFF
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    122  ==>  2/ 5/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          80.9809
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1844    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)                0.000    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                         0.5912E-02
+    LATERAL FLOW LOSS (CM)                            0.1249    
+
+ STORAGE AT END OF CURRENT DAY (CM)                      80.6657
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.5019E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    123  ==>  3/ 5/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          80.6657
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1951    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)                0.000    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.8347E-01
+
+ STORAGE AT END OF CURRENT DAY (CM)                      80.3871
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.4377E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    124  ==>  4/ 5/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          80.3871
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1939    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)                0.000    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.5363E-01
+
+ STORAGE AT END OF CURRENT DAY (CM)                      80.1395
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.3578E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    125  ==>  5/ 5/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          80.1395
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1876    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)                0.000    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.3444E-01
+
+ STORAGE AT END OF CURRENT DAY (CM)                      79.9175
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.2946E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    126  ==>  6/ 5/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          79.9175
+
+ INPUT:
+    PRECIPITATION (CM)                                0.2032    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2507    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)                0.000    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.1276E-01
+
+ STORAGE AT END OF CURRENT DAY (CM)                      79.8572
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.2435E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    127  ==>  7/ 5/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          79.8572
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2035    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)                0.000    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.5080E-02
+
+ STORAGE AT END OF CURRENT DAY (CM)                      79.6487
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                          0.2710E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    128  ==>  8/ 5/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          79.6487
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1755    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)                0.000    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.9137E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      79.4722
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                          0.2571E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    129  ==>  9/ 5/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          79.4722
+
+ INPUT:
+    PRECIPITATION (CM)                                0.2286    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1431    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)                0.000    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6323E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      79.5571
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                          0.1109E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    130  ==> 10/ 5/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          79.5571
+
+ INPUT:
+    PRECIPITATION (CM)                                 2.565    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.8505E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)                0.000    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6288E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      82.0368
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                          0.4807E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    131  ==> 11/ 5/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          82.0368
+
+ INPUT:
+    PRECIPITATION (CM)                                 2.083    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1139    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)                0.000    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                         0.2215E-03
+    LATERAL FLOW LOSS (CM)                            0.1332E-01
+
+ STORAGE AT END OF CURRENT DAY (CM)                      83.9922
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                          0.5053E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    132  ==> 12/ 5/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          83.9922
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2677    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)                0.000    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                         0.7450E-01
+    LATERAL FLOW LOSS (CM)                            0.2191    
+
+ STORAGE AT END OF CURRENT DAY (CM)                      83.4309
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                          0.2086E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    133  ==> 13/ 5/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          83.4309
+
+ INPUT:
+    PRECIPITATION (CM)                                0.6858    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1076    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)                0.000    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                         0.7151E-01
+    LATERAL FLOW LOSS (CM)                            0.1624    
+
+ STORAGE AT END OF CURRENT DAY (CM)                      83.7753
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                          0.3428E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    134  ==> 14/ 5/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          83.7753
+
+ INPUT:
+    PRECIPITATION (CM)                                0.5080    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2662    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)                0.000    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                         0.7635E-01
+    LATERAL FLOW LOSS (CM)                            0.1674    
+
+ STORAGE AT END OF CURRENT DAY (CM)                      83.7734
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                          0.2775E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    135  ==> 15/ 5/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          83.7734
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1779    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)                0.000    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                         0.8382E-01
+    LATERAL FLOW LOSS (CM)                            0.2295    
+
+ STORAGE AT END OF CURRENT DAY (CM)                      83.2822
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                          0.9757E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    136  ==> 16/ 5/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          83.2822
+
+ INPUT:
+    PRECIPITATION (CM)                                 1.041    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1625    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.5138E-03
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                         0.5975E-01
+    LATERAL FLOW LOSS (CM)                            0.1556    
+
+ STORAGE AT END OF CURRENT DAY (CM)                      83.9452
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                          0.2734E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    137  ==> 17/ 5/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          83.9452
+
+ INPUT:
+    PRECIPITATION (CM)                                0.1016    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2136    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.1522E-02
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                         0.9056E-01
+    LATERAL FLOW LOSS (CM)                            0.1761    
+
+ STORAGE AT END OF CURRENT DAY (CM)                      83.5650
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.6443E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    138  ==> 18/ 5/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          83.5650
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.3674    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.4055E-02
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                         0.7141E-01
+    LATERAL FLOW LOSS (CM)                            0.2182    
+
+ STORAGE AT END OF CURRENT DAY (CM)                      82.9039
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.1976E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    139  ==> 19/ 5/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          82.9039
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.3338    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.5918E-02
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                         0.3857E-01
+    LATERAL FLOW LOSS (CM)                            0.1826    
+
+ STORAGE AT END OF CURRENT DAY (CM)                      82.3431
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.2446E-08
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    140  ==> 20/ 5/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          82.3431
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.3346    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.9668E-02
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                         0.1551E-01
+    LATERAL FLOW LOSS (CM)                            0.1476    
+
+ STORAGE AT END OF CURRENT DAY (CM)                      81.8356
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.2611E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    141  ==> 21/ 5/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          81.8356
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2870    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.1566E-01
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                         0.1783E-02
+    LATERAL FLOW LOSS (CM)                            0.1143    
+
+ STORAGE AT END OF CURRENT DAY (CM)                      81.4169
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.1299E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    142  ==> 22/ 5/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          81.4169
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2607    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.1475E-01
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.8956E-01
+
+ STORAGE AT END OF CURRENT DAY (CM)                      81.0519
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.2397E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    143  ==> 23/ 5/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          81.0519
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2186    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.1015E-01
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6218E-01
+
+ STORAGE AT END OF CURRENT DAY (CM)                      80.7610
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.3411E-12
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    144  ==> 24/ 5/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          80.7610
+
+ INPUT:
+    PRECIPITATION (CM)                                0.2540E-01
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2022    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.1369E-01
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.3680E-01
+
+ STORAGE AT END OF CURRENT DAY (CM)                      80.5336
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.1809E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    145  ==> 25/ 5/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          80.5336
+
+ INPUT:
+    PRECIPITATION (CM)                                0.7112    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1434    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.6973E-02
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.2783E-01
+
+ STORAGE AT END OF CURRENT DAY (CM)                      81.0667
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.3363E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    146  ==> 26/ 5/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          81.0667
+
+ INPUT:
+    PRECIPITATION (CM)                                 4.267    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.9709E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.4331E-02
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                         0.8617E-01
+    LATERAL FLOW LOSS (CM)                            0.1204    
+
+ STORAGE AT END OF CURRENT DAY (CM)                      85.0259
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.1954E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    147  ==> 27/ 5/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          85.0259
+
+ INPUT:
+    PRECIPITATION (CM)                                 1.245    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1247    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.7050E-02
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                         0.2877    
+    LATERAL FLOW LOSS (CM)                            0.2066    
+
+ STORAGE AT END OF CURRENT DAY (CM)                      85.6445
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.2514E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    148  ==> 28/ 5/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          85.6445
+
+ INPUT:
+    PRECIPITATION (CM)                                0.7620E-01
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1831    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.1224E-01
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                         0.3134    
+    LATERAL FLOW LOSS (CM)                            0.2066    
+
+ STORAGE AT END OF CURRENT DAY (CM)                      85.0053
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.4137E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    149  ==> 29/ 5/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          85.0053
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1906    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.1714E-01
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                         0.2297    
+    LATERAL FLOW LOSS (CM)                            0.2755    
+
+ STORAGE AT END OF CURRENT DAY (CM)                      84.2924
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.3219E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    150  ==> 30/ 5/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          84.2924
+
+ INPUT:
+    PRECIPITATION (CM)                                0.2540E-01
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.3272    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.3273E-01
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                         0.1409    
+    LATERAL FLOW LOSS (CM)                            0.2054    
+
+ STORAGE AT END OF CURRENT DAY (CM)                      83.6116
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.7083E-08
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    151  ==> 31/ 5/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          83.6116
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.4151    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.7416E-01
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                         0.9736E-01
+    LATERAL FLOW LOSS (CM)                            0.2397    
+
+ STORAGE AT END OF CURRENT DAY (CM)                      82.7852
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.1855E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    152  ==>  1/ 6/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          82.7852
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.3200    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.8416E-01
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                         0.4290E-01
+    LATERAL FLOW LOSS (CM)                            0.1878    
+
+ STORAGE AT END OF CURRENT DAY (CM)                      82.1504
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.1754E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    153  ==>  2/ 6/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          82.1504
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2828    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.8699E-01
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                         0.1500E-01
+    LATERAL FLOW LOSS (CM)                            0.1465    
+
+ STORAGE AT END OF CURRENT DAY (CM)                      81.6191
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.4783E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    154  ==>  3/ 6/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          81.6191
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2519    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.1247    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                         0.1068E-02
+    LATERAL FLOW LOSS (CM)                            0.1107    
+
+ STORAGE AT END OF CURRENT DAY (CM)                      81.1308
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.8844E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    155  ==>  4/ 6/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          81.1308
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2231    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.8540E-01
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.8223E-01
+
+ STORAGE AT END OF CURRENT DAY (CM)                      80.7401
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                          0.2041E-09
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    156  ==>  5/ 6/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          80.7401
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1592    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.6998E-01
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.5635E-01
+
+ STORAGE AT END OF CURRENT DAY (CM)                      80.4545
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.9805E-12
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    157  ==>  6/ 6/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          80.4545
+
+ INPUT:
+    PRECIPITATION (CM)                                0.1778    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1742    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.7534E-01
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.3183E-01
+
+ STORAGE AT END OF CURRENT DAY (CM)                      80.3509
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.3963E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    158  ==>  7/ 6/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          80.3509
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2532    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.1835    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.2656E-01
+
+ STORAGE AT END OF CURRENT DAY (CM)                      79.8876
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                          0.1931E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    159  ==>  8/ 6/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          79.8876
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1646    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.3034    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.9882E-02
+
+ STORAGE AT END OF CURRENT DAY (CM)                      79.4097
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.4140E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    160  ==>  9/ 6/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          79.4097
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1254    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.3628    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.2170E-02
+
+ STORAGE AT END OF CURRENT DAY (CM)                      78.9194
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.2139E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    161  ==> 10/ 6/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          78.9194
+
+ INPUT:
+    PRECIPITATION (CM)                                0.3048    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1577    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.2337    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6344E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      78.8321
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.3848E-08
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    162  ==> 11/ 6/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          78.8321
+
+ INPUT:
+    PRECIPITATION (CM)                                 1.295    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.9311E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.9807E-01
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6310E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      79.9357
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.2621E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    163  ==> 12/ 6/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          79.9357
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2718    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.3842    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.8350E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      79.2789
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.5931E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    164  ==> 13/ 6/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          79.2789
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1318    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.3521    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.8268E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      78.7942
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.6618E-10
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    165  ==> 14/ 6/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          78.7942
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1479    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.3193    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.8183E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      78.3262
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                          0.3987E-08
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    166  ==> 15/ 6/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          78.3262
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1032    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.4374    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.8090E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      77.7848
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.1391E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    167  ==> 16/ 6/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          77.7848
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.7383E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.8590    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.8005E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      76.8512
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.1756E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    168  ==> 17/ 6/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          76.8512
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.4674E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.5784    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.7951E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      76.2252
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.1229E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    169  ==> 18/ 6/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          76.2252
+
+ INPUT:
+    PRECIPITATION (CM)                                0.5588    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.8373E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.3754    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.5920E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      76.3243
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.5082E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    170  ==> 19/ 6/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          76.3243
+
+ INPUT:
+    PRECIPITATION (CM)                                 1.270    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1240    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.6618    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.5878E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      76.8079
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.8883E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    171  ==> 20/ 6/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          76.8079
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1145    
+    PLANT UPTAKE FOR TRANSPIRATION (CM)                1.106    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.7767E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      75.5863
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.3023E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    172  ==> 21/ 6/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          75.5863
+
+ INPUT:
+    PRECIPITATION (CM)                                0.4826    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.5172E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.3586    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.5768E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      75.6580
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.1036E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    173  ==> 22/ 6/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          75.6580
+
+ INPUT:
+    PRECIPITATION (CM)                                0.4064    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.6734E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.4144    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.5732E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      75.5821
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.7968E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    174  ==> 23/ 6/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          75.5821
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.6841E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.8565    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.7618E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      74.6564
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.1881E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    175  ==> 24/ 6/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          74.6564
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2646E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.5962    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.7576E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      74.0330
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.4528E-08
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    176  ==> 25/ 6/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          74.0330
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1499E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.7544    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.7527E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      73.2628
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.3169E-08
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    177  ==> 26/ 6/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          73.2628
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.8948E-02
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.4726    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.7472E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      72.7806
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.1125E-08
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    178  ==> 27/ 6/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          72.7806
+
+ INPUT:
+    PRECIPITATION (CM)                                0.7620E-01
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2740E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.2545    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.5565E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      72.5743
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.7234E-08
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    179  ==> 28/ 6/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          72.5743
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1306E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.2616    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.7366E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      72.2989
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.3855E-08
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    180  ==> 29/ 6/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          72.2989
+
+ INPUT:
+    PRECIPITATION (CM)                                0.1270    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1804E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.2050    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.5482E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      72.2023
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.9119E-08
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    181  ==> 30/ 6/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          72.2023
+
+ INPUT:
+    PRECIPITATION (CM)                                0.5588    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1959E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.1870    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.5459E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      72.5539
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.8531E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    182  ==>  1/ 7/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          72.5539
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2656E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.2520    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.7262E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      72.2746
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.7257E-09
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    183  ==>  2/ 7/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          72.2746
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2109E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.3195    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.7237E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      71.9332
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.5430E-08
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    184  ==>  3/ 7/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          71.9332
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1011E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.2357    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.7208E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      71.6867
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.1234E-08
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    185  ==>  4/ 7/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          71.6867
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.6720E-02
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.1888    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.7176E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      71.4905
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.4049E-08
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    186  ==>  5/ 7/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          71.4905
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.4961E-02
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.1486    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.7141E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      71.3362
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.2257E-08
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    187  ==>  6/ 7/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          71.3362
+
+ INPUT:
+    PRECIPITATION (CM)                                 3.785    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1478E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.2489    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.5332E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      74.8566
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.3775E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    188  ==>  7/ 7/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          74.8566
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2974E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.3187    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.7075E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      74.5074
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.2496E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    189  ==>  8/ 7/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          74.5074
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2564E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.2777    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.7035E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      74.2034
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.6981E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    190  ==>  9/ 7/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          74.2034
+
+ INPUT:
+    PRECIPITATION (CM)                                 3.404    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2180E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.2661    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.5249E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      77.3185
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.5916E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    191  ==> 10/ 7/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          77.3185
+
+ INPUT:
+    PRECIPITATION (CM)                                 2.896    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1375E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.1474    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.5225E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      80.0525
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.4789E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    192  ==> 11/ 7/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          80.0525
+
+ INPUT:
+    PRECIPITATION (CM)                                 1.194    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2846E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.3245    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.5200E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      80.8929
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.7132E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    193  ==> 12/ 7/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          80.8929
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2887E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.3583    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6915E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      80.5050
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.4736E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    194  ==> 13/ 7/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          80.5050
+
+ INPUT:
+    PRECIPITATION (CM)                                0.9144    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.3798E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.4712    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.5177E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      80.9097
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.4427E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    195  ==> 14/ 7/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          80.9097
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2335E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.3096    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6888E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      80.5760
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.4744E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    196  ==> 15/ 7/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          80.5760
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2832E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.3343    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6871E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      80.2128
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.2316E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    197  ==> 16/ 7/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          80.2128
+
+ INPUT:
+    PRECIPITATION (CM)                                0.2540E-01
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.3949E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.5123    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.5144E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      79.6859
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.2723E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    198  ==> 17/ 7/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          79.6859
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.6055E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.7752    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6852E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      78.8495
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.1664E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    199  ==> 18/ 7/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          78.8495
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.5212E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.7180    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6853E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      78.0787
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.1160E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    200  ==> 19/ 7/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          78.0787
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.3771E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.5041    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6862E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      77.5362
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.8549E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    201  ==> 20/ 7/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          77.5362
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.4108E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.5370    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6873E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      76.9575
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.7459E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    202  ==> 21/ 7/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          76.9575
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.3420E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.4791    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6882E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      76.4435
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.5795E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    203  ==> 22/ 7/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          76.4435
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.4351E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.5912    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6889E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      75.8081
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.8695E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    204  ==> 23/ 7/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          75.8081
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.5196E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.6247    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6891E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      75.1308
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.5867E-08
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    205  ==> 24/ 7/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          75.1308
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.5094E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.6946    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6890E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      74.3845
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.9791E-11
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    206  ==> 25/ 7/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          74.3845
+
+ INPUT:
+    PRECIPITATION (CM)                                 4.318    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2669E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.3794    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.5165E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      78.2959
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.5722E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    207  ==> 26/ 7/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          78.2959
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.3800E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.4754    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6880E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      77.7819
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.2663E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    208  ==> 27/ 7/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          77.7819
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2457E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.3264    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6871E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      77.4302
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.2575E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    209  ==> 28/ 7/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          77.4302
+
+ INPUT:
+    PRECIPITATION (CM)                                 1.168    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2938E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.3716    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.5146E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      78.1971
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.3967E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    210  ==> 29/ 7/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          78.1971
+
+ INPUT:
+    PRECIPITATION (CM)                                0.2794    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.3258E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.4078    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.5138E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      78.0356
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.3714E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    211  ==> 30/ 7/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          78.0356
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.3213E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.4281    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6838E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      77.5747
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.2338E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    212  ==> 31/ 7/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          77.5747
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.3692E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.5217    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6822E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      77.0154
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.1180E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    213  ==>  1/ 8/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          77.0154
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.4025E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.4951    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6804E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      76.4794
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.8516E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    214  ==>  2/ 8/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          76.4794
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.3905E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.4745    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6786E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      75.9651
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.5373E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    215  ==>  3/ 8/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          75.9651
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.3889E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.4874    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6766E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      75.4382
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.5226E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    216  ==>  4/ 8/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          75.4382
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.3429E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.4559    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6746E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      74.9473
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.4010E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    217  ==>  5/ 8/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          74.9473
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1913E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.2521    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6725E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      74.6754
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.1690E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    218  ==>  6/ 8/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          74.6754
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.3050E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.3855    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6703E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      74.2587
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.1518E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    219  ==>  7/ 8/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          74.2587
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.3463E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.4612    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6680E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      73.7622
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.1855E-09
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    220  ==>  8/ 8/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          73.7622
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.3742E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.5392    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6657E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      73.1849
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                           0.000    
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    221  ==>  9/ 8/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          73.1849
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1621E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.2952    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6633E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      72.8728
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.7829E-10
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    222  ==> 10/ 8/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          72.8728
+
+ INPUT:
+    PRECIPITATION (CM)                                0.2286    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2648E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.3367    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.4959E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      72.7378
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.1860E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    223  ==> 11/ 8/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          72.7378
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.3519E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.4599    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6589E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      72.2420
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.6722E-11
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    224  ==> 12/ 8/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          72.2420
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2518E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.4696    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6564E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      71.7466
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.2966E-08
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    225  ==> 13/ 8/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          71.7466
+
+ INPUT:
+    PRECIPITATION (CM)                                0.1016    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1525E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.1687    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.4915E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      71.6637
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.2004E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    226  ==> 14/ 8/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          71.6637
+
+ INPUT:
+    PRECIPITATION (CM)                                 3.302    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2845E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.3528    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.4910E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      74.5839
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.3535E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    227  ==> 15/ 8/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          74.5839
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.3869E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.4800    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6538E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      74.0646
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.2505E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    228  ==> 16/ 8/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          74.0646
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.4125E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.5093    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6526E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      73.5134
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.7920E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    229  ==> 17/ 8/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          73.5134
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.3696E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.4738    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6514E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      73.0019
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.3384E-08
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    230  ==> 18/ 8/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          73.0019
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2768E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.3773    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6500E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      72.5963
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.4218E-09
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    231  ==> 19/ 8/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          72.5963
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2687E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.3733    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6487E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      72.1955
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.4263E-12
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    232  ==> 20/ 8/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          72.1955
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1698E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.2523    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6472E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      71.9255
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.5258E-11
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    233  ==> 21/ 8/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          71.9255
+
+ INPUT:
+    PRECIPITATION (CM)                                0.7620E-01
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2550E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.3530    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.4844E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      71.6228
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.1585E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    234  ==> 22/ 8/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          71.6228
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2585E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.3806    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6445E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      71.2157
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.1445E-08
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    235  ==> 23/ 8/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          71.2157
+
+ INPUT:
+    PRECIPITATION (CM)                                0.2286    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1886E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.2749    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.4824E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      71.1500
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.9467E-08
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    236  ==> 24/ 8/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          71.1500
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1939E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.2410    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6417E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      70.8890
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.9294E-11
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    237  ==> 25/ 8/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          70.8890
+
+ INPUT:
+    PRECIPITATION (CM)                                0.7620E-01
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1793E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.2624    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.4802E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      70.6844
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.1425E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    238  ==> 26/ 8/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          70.6844
+
+ INPUT:
+    PRECIPITATION (CM)                                 1.829    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.1696E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.2280    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.4792E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      72.2678
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.1774E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    239  ==> 27/ 8/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          72.2678
+
+ INPUT:
+    PRECIPITATION (CM)                                0.6350    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.2501E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.2802    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.4782E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      72.5972
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.2542E-06
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    240  ==> 28/ 8/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          72.5972
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.3697E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.4952    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6361E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      72.0643
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.3316E-07
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    241  ==> 29/ 8/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          72.0643
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.4340E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.4521    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6343E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      71.5682
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.1166E-08
+
+ **********************************
+ DAILY MASS BALANCE SUMMARY FOR DAY:    242  ==> 30/ 8/1986
+ **********************************
+ STORAGE FROM PREVIOUS DAY (CM)                          71.5682
+
+ INPUT:
+    PRECIPITATION (CM)                                 0.000    
+ OUTPUT:
+    TOTAL SURFACE RUNOFF (CM)                          0.000    
+    EVAPORATION FROM SOIL SURFACE (CM)                0.3676E-01
+    PLANT UPTAKE FOR TRANSPIRATION (CM)               0.5286    
+    DEEP SEEPAGE OUT OF PROFILE (CM)                   0.000    
+    SEEPAGE OUT OF DRAIN (CM)                          0.000    
+    LATERAL FLOW LOSS (CM)                            0.6324E-03
+
+ STORAGE AT END OF CURRENT DAY (CM)                      71.0022
+                                                 ---------------
+ MASS BALANCE AT END OF DAY:                         -0.6030E-08

@@ -1,0 +1,36 @@
+.\cntrl.dat
+.\rzwqm.dat
+.\Nash51-2003.met
+.\Nash51-2003_pest_mesonet.Brk
+.\rzinit.dat
+.\plgen.dat
+.\Nash75-2003.sno
+.\nashua13.ana
+1  5  1986  30  9  1995
+0  0  0  0  0  0  0  0  0  0  0  0  
+0  0  0  0  0  0  0  0  0  0  0  0  
+100  100  100  100  100  100  100  100  100  100  100  100  
+100  100  100  100  100  100  100  100  100  100  100  100  
+100  100  100  100  100  100  100  100  100  100  100  100  
+100  100  100  100  100  100  100  100  100  100  100  100  
+100  100  100  100  100  100  100  100  100  100  100  100  
+100  100  100  100  100  100  100  100  100  100  100  100  
+=================================================================
+= file location for simulation controls used in RZWQM2
+= file location for main parameters for RZWQM2
+= file location for Weather data excluding rainfall
+= file location for rainfall data
+= file location for initial soil status
+= file locaiton for parameters used in the generic plant growth module
+= file location for the snow parameters
+= file location for the *.ana file storing daily outputs
+= begining simulation (DD MM YYYY) and end simulation date (DD MM YYYY)
+= increase in Tmin in oC
+= increase in Tmax in oC
+= % used to modify windrun
+= % used to modify solar radiation
+= % used to modify Pan Evaporation
+= % used to modify relative humdity
+= % used to modify rainfall amount
+= % used to modify Co2
+=================================================================

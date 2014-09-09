@@ -1,0 +1,6 @@
+'GROUP OF PARAMETERS TO FIT'                                          
+' KLAT     N parameters    CORN     SOYBEAN'                          
+    1         0         0         0
+'                                                '                    
+'MAXIMUM ITERATION NUMBER                (MIT)  ='        10
+'TOTAL NUMBER OF PARAMETERS              (TNP)  ='        11

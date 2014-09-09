@@ -103,31 +103,34 @@ pair<int,int> parse_indices(const string strg, const char delim)
 	return idx;
 }
 
-void rewind_file(ifstream *f,const streampos line_start,int num_chars)
+void rewind_file(ifstream &f,const streampos line_start,int num_chars)
 {
-	f->clear();
-	f->seekg(line_start);
-	if (f->fail())
+	f.clear();
+	f.seekg(line_start);
+	if (f.fail())
 	{
 		throw RewindError("could not reset g pointer to position: " + line_start);
 	}
-	f->clear();
+	f.clear();
 	char c;
 	for (int i=0;i<num_chars;i++)
 	{
-		f->clear(); 
-		c = f->get();
-		if (f->fail())
+		f.clear(); 
+		c = f.get();
+		if (f.fail())
 		{
-			f->clear();
-			f->seekg(line_start);
+			f.clear();
+			f.seekg(line_start);
 			string line;
-			getline(*f,line);
+			getline(f,line);
 			throw RewindError("could not read character from line "+line);
 		}
 
 	}
-	f->clear();
+	f.clear();
+	//string line;
+	//getline(*f, line);
+	//cout << line << endl;
 }
 
 int get_nonnumeric(string str)
@@ -168,35 +171,35 @@ double text_to_num(string text,bool strict)
 	return val;
 }
 
-string read_line(ifstream* out)
+string read_line(ifstream &out)
 {
 	string line;
-	out->clear();
-	getline(*out,line);
-	if (out->fail())
+	out.clear();
+	getline(out,line);
+	if (out.fail())
 	{
 		throw ReadLineError();
 	}
-	out->clear();
+	out.clear();
 	return line;
 }
 
-string read_line(ifstream* out,streampos seekpoint)
+string read_line(ifstream &out,streampos seekpoint)
 {
 	string line;
-	out->clear();
-	out->seekg(seekpoint);
-	if (out->fail())
+	out.clear();
+	out.seekg(seekpoint);
+	if (out.fail())
 	{
 		throw ReadLineError(" unable to seek to streampos");
 	}
-	out->clear();
-	getline(*out,line);
-	if (out->fail())
+	out.clear();
+	getline(out,line);
+	if (out.fail())
 	{
 		throw ReadLineError(" unable to read line ");
 	}
-	out->clear();
+	out.clear();
 	return line;
 }
 
@@ -226,15 +229,16 @@ Instruction::Instruction (string i_string,char m_delim)
 	mtype = Instruction::marker_type::secondary;
 }
 
-void Instruction::execute(ifstream* out,int* lpos,streampos* line_start)
+void Instruction::execute(ifstream &out,int* lpos,streampos* line_start)
 {
+	string tline;
 	switch (itype)
 	{
 	case instruction_type::fixedLine:
 		execute_fixed(out,lpos,line_start);
 		break;
 	case instruction_type::marker:
-		execute_marker(out,lpos);
+		execute_marker(out,lpos,line_start);		
 		break;
 	case instruction_type::whitespace:
 		execute_whitespace(out,lpos);
@@ -244,7 +248,7 @@ void Instruction::execute(ifstream* out,int* lpos,streampos* line_start)
 	}
 }
 
-double Instruction::read(ifstream* out,int* lpos,const streampos* line_start)
+double Instruction::read(ifstream &out,int* lpos,const streampos* line_start)
 {
 	double val;
 	switch (itype)
@@ -312,9 +316,9 @@ void Instruction::parse_whitespace()
 {
 }
 
-void Instruction::execute_whitespace(ifstream* out, int* lpos)
+void Instruction::execute_whitespace(ifstream &out, int* lpos)
 {
-	start_point = out->tellg();
+	start_point = out.tellg();
 	string line,subline;
 	try
 	{
@@ -369,9 +373,9 @@ void Instruction::parse_fixed()
 	return;
 }
 
-void Instruction::execute_fixed(ifstream* out,int* lpos, streampos* line_start)
+void Instruction::execute_fixed(ifstream &out,int* lpos, streampos* line_start)
 {
-	start_point = out->tellg();
+	start_point = out.tellg();
 	streampos curr_point;	
 	string line;
 	if (rtype == Instruction::read_type::line)
@@ -379,13 +383,13 @@ void Instruction::execute_fixed(ifstream* out,int* lpos, streampos* line_start)
 
 		for (int i=0;i<number;i++)
 		{
-			start_point = out->tellg();
+			start_point = out.tellg();
 			line = read_line(out);
-			curr_point == out->tellg();	
+			curr_point == out.tellg();	
 		}
-		out->seekg(start_point);
+		out.seekg(start_point);
 		*line_start = start_point;
-		if (out->fail())
+		if (out.fail())
 		{
 			throw runtime_error(" could not set g-pointer to start of line in fixed-line read");
 		}
@@ -403,7 +407,6 @@ void Instruction::execute_fixed(ifstream* out,int* lpos, streampos* line_start)
 		}
 		//getline(*out,line);
 		int i=0;
-
 	}
 	return;		
 }
@@ -423,8 +426,14 @@ void Instruction::parse_marker()
 	return;
 }
 
-void Instruction::execute_marker(ifstream* out,int* lpos)
+void Instruction::execute_marker(ifstream &out,int* lpos,streampos* line_start)
 {
+	/*string tline;
+	tline = read_line(out);
+	tline = read_line(out);
+	tline = read_line(out);
+	tline = read_line(out);*/
+	streampos start = out.tellg();
 	//build a regex for the marker - fast
 	regex rmarker;
 	try
@@ -438,7 +447,7 @@ void Instruction::execute_marker(ifstream* out,int* lpos)
 	smatch mresults; 
 	string line,subline;
 	int mstart;
-	start_point = out->tellg();
+	start_point = out.tellg();
 	if (mtype == marker_type::primary)
 	{
 		
@@ -467,10 +476,11 @@ void Instruction::execute_marker(ifstream* out,int* lpos)
 					throw MarkerError(message.append(e.what()));
 				}		
 				
-				*lpos = mstart + marker_string.size();
+				*lpos = mstart + marker_string.size();	
+				*line_start = out.tellg();
 				return;
 			}
-			start_point = out->tellg();
+			start_point = out.tellg();
 			*lpos = 0;
 		}
 		throw PrimaryMarkerEOFError(marker_string);
@@ -478,43 +488,42 @@ void Instruction::execute_marker(ifstream* out,int* lpos)
 	//this is a secondary marker
 	else
 	{
-		//get the current line
+		//get the current line		
 		try
 		{
 			line = read_line(out);
-			if (regex_search(line,mresults,rmarker))
-			{	
-				//seek to the end of the marker
-				mstart = line.find(marker_string);
-				try
-				{
-					rewind_file(out,start_point,mstart+marker_string.size());
-				}
-				catch (RewindError& e)
-				{
-					string message = " error rewinding file ";
-					throw MarkerError(message.append(e.what()));
-				}		
-				*lpos += mstart + marker_string.size();
-				return;
-			}
-			else
-			{
-				throw SecondaryMarkerNotFound(marker_string);
-			}	
 		}
 		catch (ReadLineError)
 		{
 			throw SecondaryMarkerReadError("unable to read line from file while searching for secondary marker: " + marker_string);
 		}
+		if (regex_search(line,mresults,rmarker))
+		{	
+			//seek to the end of the marker
+			mstart = line.find(marker_string);
+			try
+			{
+				rewind_file(out,start_point,mstart+marker_string.size());
+			}
+			catch (RewindError& e)
+			{
+				string message = " error rewinding file ";
+				throw MarkerError(message.append(e.what()));
+			}		
+			*lpos += mstart + marker_string.size();		
+			*line_start = out.tellg();
+			return;				
+		}
+		else
+		{
+			throw SecondaryMarkerNotFound(marker_string);
+		}			
 	}
-
-	
 }
 
-double Instruction::read_nonFixedObs(ifstream* out,int* lpos,const streampos* line_start)
+double Instruction::read_nonFixedObs(ifstream &out,int* lpos,const streampos* line_start)
 {
-	start_point = out->tellg();
+	start_point = out.tellg();
 	string line,subline;
 	double dval = -1.0E+10;
 	line = read_line(out);
@@ -552,7 +561,6 @@ double Instruction::read_nonFixedObs(ifstream* out,int* lpos,const streampos* li
 		throw MarkerError(message.append(e.what()));
 	}		
 	*lpos += lend;
-	//getline(*out,line);
 	return dval;
 }
 
@@ -564,7 +572,7 @@ void Instruction::parse_nonFixedObs()
 	return;
 }
 
-double Instruction::read_fixedObs(ifstream* out,int* lpos,const streampos* line_start)
+double Instruction::read_fixedObs(ifstream &out,int* lpos,const streampos* line_start)
 {
 	//always reset to the start of the current line
 	if (*lpos != 0)
@@ -581,11 +589,12 @@ double Instruction::read_fixedObs(ifstream* out,int* lpos,const streampos* line_
 		*lpos = 0;		
 	}
 	
-	start_point = out->tellg();
+	start_point = out.tellg();
 	string line,sval;
 	double dval = -1.0E+10;
 	line = read_line(out);
-	
+	//line = read_line(out);
+	//line = read_line(out);
 	if (ftype == fixed_type::strict)
 	{		
 		
@@ -724,9 +733,18 @@ InstructionLine::InstructionLine(vector<Instruction> instructs)
 	{
 		throw InstructionLineError("first instruction must be marker of fixed-line read");
 	}
+	//set the first marker instruction as a primary marker
+	for (int i = 0; i != instructions.size(); ++i)
+	{
+		if (instructions[i].itype == Instruction::instruction_type::marker)
+		{
+			instructions[i].mtype = Instruction::marker_type::primary;
+			break;
+		}
+	}
 }
 
-unordered_map<string,double> InstructionLine::execute(ifstream* out)
+unordered_map<string,double> InstructionLine::execute(ifstream &out)
 {
 	vector<double> ovals;
 	double oval;
@@ -737,7 +755,7 @@ unordered_map<string,double> InstructionLine::execute(ifstream* out)
 	streampos line_start;
 	unordered_map<string,double> obs_map; 
 	pair<string,double> opair;
-	line_start = out->tellg();
+	line_start = out.tellg();
 	
 	while (icount < instructions.size())
 	{
@@ -800,7 +818,7 @@ unordered_map<string,double> InstructionLine::execute(ifstream* out)
 			}
 			catch (runtime_error& e)
 			{
-				getline(*out,line);
+				getline(out,line);
 				throw InstructionLineError(" executing instruction " + i.get_name()+" "+e.what());
 			}
 		}
@@ -994,7 +1012,7 @@ vector<pair<int,int>> InstructionFile::get_marker_indices(string line)
 	return indices;
 }
 
-unordered_map<string,double> InstructionFile::read(ifstream* out)
+unordered_map<string,double> InstructionFile::read(ifstream &out)
 {
 	unordered_map<string,double> obs_map,line_map;
 	for (auto &i : instruction_lines)
@@ -1005,7 +1023,7 @@ unordered_map<string,double> InstructionFile::read(ifstream* out)
 	return obs_map;
 }
 
-void InstructionFile::read(ifstream* out,unordered_map<string,double> &ifile_map)
+void InstructionFile::read(ifstream &out,unordered_map<string,double> &ifile_map)
 {
 	unordered_map<string, double> line_map;
 	for (auto &i : instruction_lines)
@@ -1015,15 +1033,22 @@ void InstructionFile::read(ifstream* out,unordered_map<string,double> &ifile_map
 	}
 }
 
-void InstructionFile::read(ifstream* out, Observations &obs)
+void InstructionFile::read(ifstream &out, Observations &obs)
 {
 	unordered_map<string, double> line_map;
-	for (auto &i : instruction_lines)
+	for (auto &il : instruction_lines)
 	{
-		line_map = i.execute(out);
-		obs.insert(line_map.begin(), line_map.end());
+		streampos start = out.tellg();
+		string line;
+		//getline(out, line);
+		//rewind_file(out, start, 0);
+		line_map = il.execute(out);
+		obs.insert(line_map.begin(), line_map.end());				
+		/*getline(out, line);
+		getline(out, line);
+		getline(out, line);
+		cout << line << endl;*/
 	}
-
 }
 
 vector<string> InstructionFile::get_observation_names()
@@ -1075,7 +1100,7 @@ vector<double> InstructionFiles::read(const vector<string> &obs_name_vec)
 		}
 		try
 		{
-			ins.read(&out,ifile_map);			
+			ins.read(out,ifile_map);			
 		}
 		catch (runtime_error& e)
 		{
@@ -1123,8 +1148,8 @@ void InstructionFiles::read(const vector<string> &obs_name_vec, Observations &ob
 			throw InstructionFileError(" could not open model output file " + *iout);
 		}
 		try
-		{
-			ins.read(&out, obs);
+		{			
+			ins.read(out, obs);
 		}
 		catch (runtime_error& e)
 		{

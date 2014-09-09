@@ -240,8 +240,8 @@ public:
 	marker_type mtype;
 	Instruction(){ins_string="defaul",marker_delim='a';}
 	Instruction(string i_string,char m_delim);
-	void execute(ifstream* out,int* lpos,streampos* line_start);
-	double read(ifstream* out,int* lpos,const streampos* line_start);
+	void execute(ifstream &out,int* lpos,streampos* line_start);
+	double read(ifstream &out,int* lpos,const streampos* line_start);
 	void parse();
 	int get_cursor(){return cursor_pos;}
 	string get_name(){return obs_name;}
@@ -258,26 +258,26 @@ protected:
 
 
 	void parse_marker();
-	void execute_marker(ifstream* out,int* lpos);
+	void execute_marker(ifstream &out,int* lpos,streampos* line_start);
 
 	void parse_fixedObs();
-	double read_fixedObs(ifstream* out,int* lpos,const streampos* line_start);
+	double read_fixedObs(ifstream &out,int* lpos,const streampos* line_start);
 
 	void parse_nonFixedObs();
-	double read_nonFixedObs(ifstream* out,int* lpos,const streampos* line_start);
+	double read_nonFixedObs(ifstream &out,int* lpos,const streampos* line_start);
 
 	void parse_fixed();
-	void execute_fixed(ifstream* out,int* lpos,streampos* line_start);
+	void execute_fixed(ifstream &out,int* lpos,streampos* line_start);
 
 	void parse_whitespace();
-	void execute_whitespace(ifstream* out, int* lpos);
+	void execute_whitespace(ifstream &out, int* lpos);
 };
 
 
 class InstructionLine{
 public:
 	InstructionLine(vector<Instruction> instructs);
-	unordered_map<string,double> execute(ifstream* out);
+	unordered_map<string,double> execute(ifstream &out);
 	vector<string> get_observation_names();
 private:
 	vector<Instruction> instructions;
@@ -291,9 +291,9 @@ class InstructionFile{
 public:
 	InstructionFile();
 	InstructionFile(string ins_filename);
-	unordered_map<string,double> read(ifstream* out);
-	void read(ifstream* out, unordered_map<string,double> &ifile_map);
-	void read(ifstream* out, Observations &obs);
+	unordered_map<string,double> read(ifstream &out);
+	void read(ifstream &out, unordered_map<string,double> &ifile_map);
+	void read(ifstream &out, Observations &obs);
 	vector<pair<int,int>> get_marker_indices(string line);
 	vector<string> get_observation_names();
 	void set_filename(string ins_file){instruction_filename=ins_file;}

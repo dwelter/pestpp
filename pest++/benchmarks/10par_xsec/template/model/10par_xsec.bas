@@ -2,4 +2,4 @@
  FREE
 OPEN/CLOSE      ref_cal\ibound_Layer_1.ref               1    (10I10) -1  #ibound Layer 1                
         -999.99
-OPEN/CLOSE        ref_cal\strt_Layer_1.ref               1  (10G15.6) -1  #strt Layer 1                  
+OPEN/CLOSE        ref_cal\strt_Layer_1.ref               1  (FREE) -1  #strt Layer 1                  
