@@ -444,8 +444,6 @@ int main(int argc, char* argv[])
 	fout_rec << endl;
 	cout << "FINAL OPTIMISATION RESULTS" << endl << endl;
 	fout_rec << "FINAL OPTIMISATION RESULTS" << endl << endl;
-	//optimum_run.full_report(cout, DynamicRegularization(false),true);
-	//optimum_run.full_report(fout_rec, DynamicRegularization(false));
 	
 	fout_rec << "  Optimal parameter values  " << endl;
 	output_file_writer.par_report(fout_rec, optimum_run.get_ctl_pars());
