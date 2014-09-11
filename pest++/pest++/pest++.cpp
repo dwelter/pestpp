@@ -45,7 +45,6 @@
 #include "PerformanceLog.h"
 #include "debug.h"
 
-
 using namespace std;
 using namespace pest_utils;
 
@@ -53,7 +52,7 @@ using namespace pest_utils;
 
 int main(int argc, char* argv[])
 {
-	string version = "2.4.0";
+	string version = "2.4.1";
 	cout << endl << endl;
 	cout << "             PEST++ Version " << version << endl << endl;
 	cout << "                 by Dave Welter" << endl;
@@ -160,10 +159,12 @@ int main(int argc, char* argv[])
 	}
 
 
-	string filename = get_filename(complete_path);
+	//string filename = get_filename(complete_path);
+	string filename = complete_path;
 	filename = remove_file_ext(filename); // remove .pst extension
-	string pathname = get_pathname(complete_path);
-	if (pathname.empty()) pathname = ".";
+	//string pathname = get_pathname(complete_path);
+	//if (pathname.empty()) pathname = ".";
+	string pathname = ".";
 
 	RestartController restart_ctl;
 	FileManager file_manager;
@@ -341,8 +342,16 @@ int main(int argc, char* argv[])
 		Parameters init_model_pars = base_trans_seq.ctl2model_cp(cur_ctl_parameters);
 		optimum_run.set_ctl_parameters(init_model_pars);
 		run_manager_ptr->reinitialize();
-		run_manager_ptr->add_run(init_model_pars);
-		run_manager_ptr->run();
+		run_manager_ptr->add_run(init_model_pars);		
+		try{
+			run_manager_ptr->run();
+		}
+		catch (exception &e)
+		{
+			cout << "Model run failed.  No results were recorded." << endl << e.what() << endl;
+			fout_rec << "Model run failed.  No results were recorded." << endl << e.what() << endl;
+			exit(1);
+		}
 
 		Parameters tmp_pars;
 		Observations tmp_obs;

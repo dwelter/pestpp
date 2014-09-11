@@ -328,6 +328,19 @@ void read_par(ifstream &fin, Parameters &pars)
 	}
 }
 
+bool check_exist(std::string filename)
+{
+	std::ifstream f(filename.c_str());
+	if (f.good())
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 } // end of namespace pest_utils
 
 

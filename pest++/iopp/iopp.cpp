@@ -1873,7 +1873,7 @@ void TemplateFile::build_marker()
 }
 
 void TemplateFile::process(Parameters &pars)
-{
+{	
 	build_marker();
 	ifstream f(template_filename);
 	if (!f.is_open())

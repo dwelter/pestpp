@@ -182,8 +182,19 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs)
 	try 
 	{
 	//	message.str("");
+		//first delete any existing input and output files			
+		for (auto &out_file : outfile_vec)
+		{
+			if ((check_exist(out_file)) && (remove(out_file.c_str()) != 0))
+				throw PestError("model interface error: Cannot delete existing model output file " + out_file);
+		}
+		for (auto &in_file : inpfile_vec)
+		{
+			if ((check_exist(in_file)) && (remove(in_file.c_str()) != 0))
+				throw PestError("model interface error: Cannot delete existing model input file " + in_file);
+		}
 		int ifail;
-		int ntpl = tplfile_vec.size();
+		/*int ntpl = tplfile_vec.size();
 		int npar = pars.size();
 		vector<string> par_name_vec;
 		vector<double> par_values;
@@ -199,7 +210,7 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs)
 		if(ifail != 0)
 		{
 			throw PestError("Error processing template file:" + tpl_err_msg(ifail));
-		}
+		}*/
 		
 		// update parameter values		
 		/*pars.clear();	
