@@ -229,7 +229,6 @@ int main(int argc, char* argv[])
 			cerr << e.what() << endl << endl;
 			throw(e);
 		}
-		//this checks some basic input assumptions
 		pest_scenario.check_inputs();		
 		//Initialize OutputFileWriter to hadle IO of suplementary files (.par, .par, .svd)
 		//bool save_eign = pest_scenario.get_svd_info().eigwrite > 0;	
@@ -267,6 +266,7 @@ int main(int argc, char* argv[])
 		}
 		else
 		{
+			pest_scenario.check_io();
 			const ModelExecInfo &exi = pest_scenario.get_model_exec_info();
 			run_manager_ptr = new RunManagerSerial(exi.comline_vec,
 				exi.tplfile_vec, exi.inpfile_vec, exi.insfile_vec, exi.outfile_vec,

@@ -52,6 +52,9 @@ void Pest::check_inputs()
 	if (svd_info.maxsing == 0) {
 		svd_info.maxsing = min(numeric_pars.size(), observation_values.size());
 	}
+}
+void Pest::check_io()
+{
 	//make sure we can atleast access the model IO files
 	vector<string> inaccessible_files;
 	for (auto &file : model_exec_info.insfile_vec)

@@ -277,6 +277,27 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs)
 	return success;
 }
 
+void YAMRSlave::check_io()
+{
+	vector<string> inaccessible_files;
+	for (auto &file : insfile_vec)
+	if (!check_exist(file)) inaccessible_files.push_back(file);
+	for (auto &file : outfile_vec)
+	if (!check_exist(file)) inaccessible_files.push_back(file);
+	for (auto &file : tplfile_vec)
+	if (!check_exist(file)) inaccessible_files.push_back(file);
+	for (auto &file : inpfile_vec)
+	if (!check_exist(file)) inaccessible_files.push_back(file);
+
+	if (inaccessible_files.size() != 0)
+	{
+		string missing;
+		for (auto &file : inaccessible_files)
+			missing += file + " , ";
+		throw PestError("Could not access the following model interface files: " + missing);
+	}
+}
+
 
 void YAMRSlave::start(const string &host, const string &port)
 {
@@ -312,6 +333,7 @@ void YAMRSlave::start(const string &host, const string &port)
 			outfile_vec = tmp_vec_vec[4];
 			par_name_vec= tmp_vec_vec[5];
 			obs_name_vec= tmp_vec_vec[6];
+			check_io();
 		}
 		else if(net_pack.get_type() == NetPackage::PackType::REQ_LINPACK)
 		{
