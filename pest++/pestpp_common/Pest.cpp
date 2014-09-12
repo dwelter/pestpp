@@ -22,6 +22,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <numeric>
 #include "Pest.h"
 #include "utilities.h"
 #include "pest_error.h"
@@ -50,6 +51,25 @@ void Pest::check_inputs()
 	Parameters numeric_pars = base_par_transform.ctl2model_cp(ctl_parameters);
 	if (svd_info.maxsing == 0) {
 		svd_info.maxsing = min(numeric_pars.size(), observation_values.size());
+	}
+	//make sure we can atleast access the model IO files
+	vector<string> inaccessible_files;
+	for (auto &file : model_exec_info.insfile_vec)
+		if (!check_exist(file)) inaccessible_files.push_back(file);
+	for (auto &file : model_exec_info.outfile_vec)
+		if (!check_exist(file)) inaccessible_files.push_back(file);
+	for (auto &file : model_exec_info.tplfile_vec)
+		if (!check_exist(file)) inaccessible_files.push_back(file);
+	for (auto &file : model_exec_info.inpfile_vec)
+		if (!check_exist(file)) inaccessible_files.push_back(file);
+	
+	if (inaccessible_files.size() != 0)
+	{
+		string missing;
+		for (auto &file : inaccessible_files)
+			missing += file + " , ";
+
+		throw PestError("Could not access the following model interface files: "+missing);
 	}
 }
 const map<string, string> Pest::get_observation_groups() const
