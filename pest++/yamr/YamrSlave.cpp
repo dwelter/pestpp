@@ -185,12 +185,12 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs)
 		//first delete any existing input and output files			
 		for (auto &out_file : outfile_vec)
 		{
-			if ((check_exist(out_file)) && (remove(out_file.c_str()) != 0))
+			if ((check_exist_out(out_file)) && (remove(out_file.c_str()) != 0))
 				throw PestError("model interface error: Cannot delete existing model output file " + out_file);
 		}
 		for (auto &in_file : inpfile_vec)
 		{
-			if ((check_exist(in_file)) && (remove(in_file.c_str()) != 0))
+			if ((check_exist_out(in_file)) && (remove(in_file.c_str()) != 0))
 				throw PestError("model interface error: Cannot delete existing model input file " + in_file);
 		}
 		int ifail;
@@ -281,13 +281,13 @@ void YAMRSlave::check_io()
 {
 	vector<string> inaccessible_files;
 	for (auto &file : insfile_vec)
-	if (!check_exist(file)) inaccessible_files.push_back(file);
+	if (!check_exist_in(file)) inaccessible_files.push_back(file);
 	for (auto &file : outfile_vec)
-	if (!check_exist(file)) inaccessible_files.push_back(file);
+	if (!check_exist_out(file)) inaccessible_files.push_back(file);
 	for (auto &file : tplfile_vec)
-	if (!check_exist(file)) inaccessible_files.push_back(file);
+	if (!check_exist_in(file)) inaccessible_files.push_back(file);
 	for (auto &file : inpfile_vec)
-	if (!check_exist(file)) inaccessible_files.push_back(file);
+	if (!check_exist_out(file)) inaccessible_files.push_back(file);
 
 	if (inaccessible_files.size() != 0)
 	{

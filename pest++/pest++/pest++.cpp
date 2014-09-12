@@ -487,11 +487,15 @@ int main(int argc, char* argv[])
 	}
 	catch (exception &e)
 	{
-		cout << "Error condition prevents further execution: " << endl << e.what() << endl;		
+		cout << "Error condition prevents further execution: " << endl << e.what() << endl;	
+		cout << "press enter to continue" << endl;
+  		cin.get();
 	}
 	catch (...)
 	{
 		cout << "Unknown error condition prevents further execution, please contact Dave Welter" << endl;
+		cout << "press enter to continue" << endl;
+		cin.get();
 	}
 	//cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
 	//char buf[256];

@@ -136,12 +136,12 @@ void RunManagerSerial::run()
 			//first delete any existing input and output files			
 			for (auto &out_file : outfile_vec)
 			{
-				if((check_exist(out_file)) && (remove(out_file.c_str()) != 0))
+				if((check_exist_out(out_file)) && (remove(out_file.c_str()) != 0))
 					throw PestError("model interface error: Cannot delete existing model output file "+out_file);				
 			}
 			for (auto &in_file : inpfile_vec)
 			{
-				if ((check_exist(in_file)) && (remove(in_file.c_str()) != 0))
+				if ((check_exist_out(in_file)) && (remove(in_file.c_str()) != 0))
 					throw PestError("model interface error: Cannot delete existing model input file " + in_file);
 			}
 			Observations obs;

@@ -58,13 +58,13 @@ void Pest::check_io()
 	//make sure we can atleast access the model IO files
 	vector<string> inaccessible_files;
 	for (auto &file : model_exec_info.insfile_vec)
-		if (!check_exist(file)) inaccessible_files.push_back(file);
+		if (!check_exist_in(file)) inaccessible_files.push_back(file);
 	for (auto &file : model_exec_info.outfile_vec)
-		if (!check_exist(file)) inaccessible_files.push_back(file);
+		if (!check_exist_out(file)) inaccessible_files.push_back(file);
 	for (auto &file : model_exec_info.tplfile_vec)
-		if (!check_exist(file)) inaccessible_files.push_back(file);
+		if (!check_exist_in(file)) inaccessible_files.push_back(file);
 	for (auto &file : model_exec_info.inpfile_vec)
-		if (!check_exist(file)) inaccessible_files.push_back(file);
+		if (!check_exist_out(file)) inaccessible_files.push_back(file);
 	
 	if (inaccessible_files.size() != 0)
 	{
