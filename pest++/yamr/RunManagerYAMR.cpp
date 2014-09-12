@@ -381,6 +381,10 @@ void RunManagerYAMR::listen()
 				process_message(i);				
 			} // END handle data from client
 		} // END got new incoming connection
+		else
+		{
+
+		}
 	} // END looping through file descriptors
 }
 

@@ -22,6 +22,8 @@
 #include <cmath>
 #include "system_variables.h"
 
+const int OperSys::thread_sleep_milli = 1000;
+
 #ifdef OS_WIN
  #include <direct.h>
 #endif

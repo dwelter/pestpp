@@ -38,14 +38,19 @@ public:
 	~YAMRSlave();
 	void run();
 	int recv_message(NetPackage &net_pack);
+	int recv_message(NetPackage &net_pack,int timeout_sec);
 	int send_message(NetPackage &net_pack, const void *data=NULL, unsigned long data_len=0);
+	int run_model(Parameters &pars, Observations &obs, NetPackage &net_pack);
 	int run_model(Parameters &pars, Observations &obs);
 	std::string tpl_err_msg(int i);
 	std::string ins_err_msg(int i);
 	void check_io();
+	//void listener(pest_utils::thread_flag* terminate, pest_utils::thread_flag* finished);
+	void listener();
 private:
 	int sockfd;
 	int fdmax;
+	int max_recv_fails = 10;
 	fd_set master;
 	std::vector<std::string> comline_vec;
 	std::vector<std::string> tplfile_vec;
@@ -54,6 +59,7 @@ private:
 	std::vector<std::string> outfile_vec;
 	std::vector<std::string> obs_name_vec;
 	std::vector<std::string> par_name_vec;
+	
 };
 
 #endif /* YAMRSLAVE_H_ */
