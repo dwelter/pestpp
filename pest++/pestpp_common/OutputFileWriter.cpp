@@ -237,7 +237,6 @@ void OutputFileWriter::scenario_report(std::ostream &os)
 	os << endl << "Observation information" << endl;
 	os << left << setw(25) << "NAME" << right << setw(20) << "VALUE" << setw(20) << "GROUP" << endl;
 	const ObservationRec* obs_rec;
-	double val;
 	const Observations &obs = pest_scenario.get_ctl_observations();
 	for (auto &obs_name : pest_scenario.get_ctl_ordered_obs_names())
 	{
@@ -246,7 +245,6 @@ void OutputFileWriter::scenario_report(std::ostream &os)
 		os << right << setw(20) << obs.get_rec(obs_name);
 		os << setw(20) << lower_cp(obs_rec->group) << endl;
 	}
-	const PriorInformationRec * pi_rec;
 	const PriorInformation &pi = pest_scenario.get_prior_info();
 	os << endl << "Prior information" << endl;
 	if (pi.size() == 0)
@@ -406,7 +404,6 @@ void OutputFileWriter::phi_report(std::ostream &os, int const iter, int const nr
 		}
 	}
 	
-	double val;
 	for (auto &gname : pest_scenario.get_ctl_ordered_obs_group_names())
 	{
 		os << "    Contribution to phi from observation group ";
@@ -426,7 +423,7 @@ void OutputFileWriter::obs_report(ostream &os, const Observations &obs, const Ob
 	os << setw(21) << " Name" << setw(13) << " Group" << setw(21) << " Measured" << setw(21) << " Modelled" << setw(21) << " Residual" << setw(21) << " Weight" << endl;
 	//vector<string> obs_name_vec = obs.get_keys();
 	vector<string> obs_name_vec = pest_scenario.get_ctl_ordered_obs_names();
-	double obs_val, sim_val, residual;
+	double obs_val, sim_val;
 	//for(vector<string>::const_iterator b = obs_name_vec.begin(), 
 	//	e = obs_name_vec.end(); b!=e; ++b)
 	for (auto &b : obs_name_vec)
@@ -485,7 +482,7 @@ void OutputFileWriter::write_par(ofstream &fout, const Parameters &pars, const T
 	double scale, offset;
 
 	fout.unsetf(ios::floatfield);
-	fout.precision(15);
+	fout.precision(numeric_limits<double>::digits10 + 1);
 	fout << "single point" << endl;
 	//for(Parameters::const_iterator b=pars.begin(), e=pars.end();
 	//	b!=e; ++b)
@@ -504,7 +501,7 @@ void OutputFileWriter::write_par(ofstream &fout, const Parameters &pars, const T
 		else
 			scale = 1.0;
 
-		fout << setw(14) << lower_cp(b) << setw(22) 
+		fout << setw(14) << lower_cp(b) << setw(22) << " "
 		<<  showpoint<< pars.get_rec(b) << " " << setw(20) << showpoint << scale << " " << setw(20) << showpoint << offset << endl;
 	}
 }

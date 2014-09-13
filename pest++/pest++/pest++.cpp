@@ -380,13 +380,14 @@ int main(int argc, char* argv[])
 	//Define model Run for Base Parameters (uses base parameter tranformations)
 	fout_rec << "   -----    Starting PEST++ Iterations    ----    " << endl;
 	ModelRun cur_run(&obj_func, pest_scenario.get_ctl_observations());
+	//If this is a restart we need to get the latest ctl parameters
 	cur_run.set_ctl_parameters(cur_ctl_parameters);
 	while (!termination_ctl.terminate())
 	{
 		try
 		{
 			cur_run = base_svd.solve(*run_manager_ptr, termination_ctl, n_base_iter, cur_run, optimum_run);
-			cur_ctl_parameters = base_svd.cur_model_run().get_ctl_pars();
+			cur_ctl_parameters = cur_run.get_ctl_pars();
 			if (pest_scenario.get_control_info().noptmax < 1)
 			{
 				optimum_run = cur_run;
@@ -428,7 +429,7 @@ int main(int argc, char* argv[])
 				super_svd.set_calc_jacobian(false);
 			}
 			cur_run = super_svd.solve(*run_manager_ptr, termination_ctl, n_super_iter, cur_run, optimum_run);
-			cur_ctl_parameters = super_svd.cur_model_run().get_ctl_pars();
+			cur_ctl_parameters = cur_run.get_ctl_pars();
 			base_svd.set_phiredswh_flag(super_svd.get_phiredswh_flag());
 			base_svd.set_splitswh_flag(super_svd.get_splitswh_flag());
 			if (super_svd.local_iteration_terminatated() && n_base_iter == -1)
