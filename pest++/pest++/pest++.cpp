@@ -117,20 +117,19 @@ int main(int argc, char* argv[])
 			// This is a YAMR Slave, start PEST++ as a YAMR Slave
 			vector<string> sock_parts;
 			tokenize(next_item, sock_parts, ":");
-			try
+			
+			if (sock_parts.size() != 2)
 			{
-				if (sock_parts.size() != 2)
-				{
-					cerr << "YAMR slave requires the master be specified as /H hostname:port" << endl << endl;
-					throw(PestCommandlineError(commandline));
-				}
-				YAMRSlave yam_slave;
-				yam_slave.start(sock_parts[0], sock_parts[1]);
+				cerr << "YAMR slave requires the master be specified as /H hostname:port" << endl << endl;
+				throw(PestCommandlineError(commandline));
 			}
-			catch (PestError &perr)
+			YAMRSlave yam_slave;
+			yam_slave.start(sock_parts[0], sock_parts[1]);
+			
+			/*catch (PestError &perr)
 			{
 				cerr << perr.what();
-			}
+			}*/
 			cout << endl << "Simulation Complete..." << endl;
 			//cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
 			//char buf[256];

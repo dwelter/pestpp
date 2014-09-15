@@ -217,9 +217,11 @@ string YAMRSlave::ins_err_msg(int i)
 
 int YAMRSlave::run_model(Parameters &pars, Observations &obs,NetPackage &net_pack)
 {
+	bool done = false;
 	int success = 1,err = 0;
 	int recv_fails = 0;
 	int recv_timeout_secs = 1;
+	int send_fails = 0;
 	std::vector<double> obs_vec;
 	bool isDouble = true;
 	bool forceRadix = true;
@@ -244,15 +246,25 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs,NetPackage &net_pac
 		tpl_files.write(pars);		
 		thread run_thread(run_commands, &terminate, &finished, comline_vec);
 		while (true)
-		{			
-			this_thread::sleep_for(chrono::milliseconds(OperSys::thread_sleep_milli));			
-			err = recv_message(net_pack,recv_timeout_secs);
+		{							
+			//check if the runner thread has finished
+			if (finished.get())
+			{
+				cout << "received finished signal from runner " << std::endl;
+				run_thread.join();
+				//don't break here, need to check one last time for incoming messages
+				done = true;
+			}
+			//this call includes a "sleep" for the timeout
+			err = recv_message(net_pack, recv_timeout_secs);
 			if (err == -1)
 			{
 				recv_fails++;
 				if (recv_fails >= max_recv_fails)
 				{
-					cout << "recv from master failed " << max_recv_fails << " times, exiting..." << endl;
+					cerr << "recv from master failed " << max_recv_fails << " times, exiting..." << endl;
+					terminate.set(true);
+					run_thread.join();
 					exit(-1);
 				}
 			}
@@ -260,26 +272,46 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs,NetPackage &net_pac
 			else if (err == 0){}
 			else if (net_pack.get_type() == NetPackage::PackType::PING)
 			{
+				cout << "ping request recieved" << endl;
 				net_pack.reset(NetPackage::PackType::PING, 0, 0, "");
-				char data;
+				char* data = "\0";
 				err = send_message(net_pack, &data, 0);
+				if (err == -1)
+				{
+					send_fails++;
+					if (send_fails >= max_send_fails)
+					{
+						cerr << "send to master failed " << max_send_fails << " times, exiting..." << endl;
+						terminate.set(true);
+						run_thread.join();
+						exit(-1);
+					}
+				}
+				cout << "ping response sent" << endl;
 			}
 			else if (net_pack.get_type() == NetPackage::PackType::REQ_KILL)
 			{
 				cout << "sending terminate signal to runner" << std::endl;
 				terminate.set(true);
+				run_thread.join();
 				success = 0;
 				break;
 			}
-			//check if the runner thread has finished
-			if (finished.get())
+			else
 			{
-				cout << "received finished signal from runner " << std::endl;				
-				break;
-			}
+				cerr << "Received unsupported message from master, only PING or REQ_KILL can be sent during model run" << endl;
+				cerr << "something is wrong...exiting" << endl;
+				terminate.set(true);
+				run_thread.join();
+				exit(-1);
+			}	
+			if (done) break;
+		}		
+		//if this run was terminated, throw an error to signal a failed run
+		if (terminate.get())
+		{
+			throw PestError("model run terminated");
 		}
-		//this could be a deadlock if the run_thread can't quit...
-		run_thread.join();
 		// process instruction files		
 		obs.clear();
 		ins_files.read(obs_name_vec, obs);		
@@ -499,7 +531,7 @@ void YAMRSlave::start(const string &host, const string &port)
 				cout << "sending results to master (group id = " << group_id << ", run id = " << run_id << ")..." <<endl;
 				cout << "results sent" << endl << endl;
 				serialized_data = Serialization::serialize(pars, par_name_vec, obs, obs_name_vec);
-				net_pack.reset(NetPackage::PackType::RUN_FINISH, net_pack.get_groud_id(), net_pack.get_run_id(), "");
+				net_pack.reset(NetPackage::PackType::RUN_FINISH, group_id, run_id, "");
 				err = send_message(net_pack, serialized_data.data(), serialized_data.size());
 				// Send READY Message to master
 				net_pack.reset(NetPackage::PackType::READY, 0, 0,"");
@@ -510,7 +542,7 @@ void YAMRSlave::start(const string &host, const string &port)
 			{
 				serialized_data.clear();
 				serialized_data.push_back('\0');
-				net_pack.reset(NetPackage::PackType::RUN_FAILED, net_pack.get_groud_id(), net_pack.get_run_id(), "");
+				net_pack.reset(NetPackage::PackType::RUN_FAILED, group_id, run_id, "");
 				err = send_message(net_pack, serialized_data.data(), serialized_data.size());
 				// Send READY Message to master
 				net_pack.reset(NetPackage::PackType::READY, 0, 0,"");
@@ -522,6 +554,14 @@ void YAMRSlave::start(const string &host, const string &port)
 		else if (net_pack.get_type() == NetPackage::PackType::TERMINATE)
 		{
 			terminate = true;
+		}
+		else if (net_pack.get_type() == NetPackage::PackType::PING)
+		{
+			cout << "ping request recieved" << endl;
+			net_pack.reset(NetPackage::PackType::PING, 0, 0, "");
+			char* data = "\0";
+			err = send_message(net_pack, &data, 0);
+			cout << "ping response sent" << endl;
 		}
 		else 
 		{

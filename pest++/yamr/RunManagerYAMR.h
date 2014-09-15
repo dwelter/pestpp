@@ -53,10 +53,13 @@ public:
 			SlaveRec();
 			~SlaveRec(){}
 		private:
+			bool ping;
+			int failed_pings;
 			State state;
 			std::chrono::system_clock::duration linpack_time;
 			std::chrono::system_clock::duration run_time;
 			std::chrono::system_clock::time_point start_time;
+			std::chrono::system_clock::time_point last_ping_time;
 			std::string work_dir;
 		};
 	typedef std::unordered_map<int, SlaveRec>::iterator iterator;
@@ -80,6 +83,13 @@ public:
 	double get_runtime_minute(int sock_id);
 	double get_linpack_time(int sock_id);
 	void sort_queue(std::deque<int> &slave_fd);
+	int add_failed_ping(int sock_id);
+	void set_ping(int sock_id,bool val);
+	bool get_ping(int sock_id);
+	void reset_failed_pings(int sock_id);
+	void reset_last_ping_time(int sock_id);
+	//chrono::time_point<chrono::system_clock> get_last_ping_time(int sock_id);
+	int duration_since_last_ping_time(int sock_id);
 	~SlaveInfo();
 private:
 	class CompareTimes
@@ -112,6 +122,8 @@ public:
 private:
 	std::string port;
 	static const int BACKLOG = 10;
+	static const int MAX_FAILED_PINGS = 3;
+	static const int PING_INTERVAL_SECS = 5;
 	int listener;
 	int fdmax;
 	std::deque<int> slave_fd; // list of slaves ready to accept a model run
@@ -129,6 +141,7 @@ private:
 	bool schedule_run(int run_id);
 	void schedule_runs();
 	void init_slaves();
+	void close_slave(int i_sock);
 	std::unordered_multimap<int, YamrModelRun>::iterator get_active_run_id(int socket);	
 };
 

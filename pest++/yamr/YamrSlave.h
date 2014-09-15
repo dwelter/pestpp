@@ -51,6 +51,7 @@ private:
 	int sockfd;
 	int fdmax;
 	int max_recv_fails = 10;
+	int max_send_fails = 10;
 	fd_set master;
 	std::vector<std::string> comline_vec;
 	std::vector<std::string> tplfile_vec;

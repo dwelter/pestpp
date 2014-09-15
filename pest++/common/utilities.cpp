@@ -420,7 +420,7 @@ void run_commands(thread_flag* terminate, thread_flag* finished, vector<string> 
 		while (true)
 		{
 			//sleep
-			std::this_thread::sleep_for(std::chrono::milliseconds(OperSys::thread_sleep_milli));
+			std::this_thread::sleep_for(std::chrono::milliseconds(OperSys::thread_sleep_secs*1000));
 			//check if process is still active
 			GetExitCodeProcess(pi.hProcess, &exitcode);
 			//if the process ended, break
