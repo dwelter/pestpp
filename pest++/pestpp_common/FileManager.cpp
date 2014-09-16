@@ -75,9 +75,16 @@ FileManager::~FileManager(void)
 	}
 }
 
-string FileManager::build_filename(const string &ext)
+string FileManager::build_filename(const string &ext, bool include_dir)
 {
-	return directory + OperSys::DIR_SEP + pest_base_filename +"." + strip_cp(ext);
+	if (!include_dir)
+	{
+		return  pest_base_filename + "." + strip_cp(ext);
+	}
+	else
+	{
+		return directory + OperSys::DIR_SEP + pest_base_filename + "." + strip_cp(ext);
+	}
 }
 
 string FileManager::get_full_filename(const string &tag)

@@ -51,8 +51,10 @@ public:
 	virtual ParameterGroupInfo get_parameter_group_info() const { return super_parameter_group_info; }
 	bool get_calc_jacobian() const { return calc_jacobian;}
 	void set_calc_jacobian(bool tmp) { calc_jacobian=tmp; }
+	virtual string get_solver_type() const { return svda_solver_type_name; }
 	~SVDASolver(void);
 private:
+	const static string svda_solver_type_name;
 	ParameterGroupInfo super_parameter_group_info;
 	bool calc_jacobian;
 	int max_super_frz_iter;

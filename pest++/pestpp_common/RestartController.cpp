@@ -5,13 +5,43 @@
 #include "RestartController.h"
 #include "TerminationController.h"
 #include "utilities.h"
+#include "SVDASolver.h"
 
 using namespace std;
 using namespace::pest_utils;
 
 RestartController::RestartController(void)
+	: global_iter_no(0), local_iter_no(0), restart_option(RestartOption::NONE),
+	iteration_type(IterationType::BASE), nopt_count(0), nphinored_count(0),
+	nrelpar_count(), best_par_file("")
 {
-	restart_option = RestartOption::NONE;
+}
+
+void RestartController::write_start_iteration(ostream &fout, const SVDSolver &svd_solver, int _iter_num, int _global_iter_num)
+{
+	fout << "start_iteration " << _iter_num << "  " << _global_iter_num << "  " << svd_solver.get_solver_type() << endl;
+
+}
+
+void RestartController::write_start_parameters_updated(ostream &fout, const string &parameter_filename)
+{
+	fout << "parameter_file_saved_started " << parameter_filename << endl;
+}
+
+
+void RestartController::write_finish_parameters_updated(ostream &fout, const string &parameter_filename)
+{
+	fout << "parameter_file_saved_finished " << parameter_filename << endl;
+}
+
+void RestartController::write_jac_runs_built(ostream &fout)
+{
+	fout << "jacobian_model_runs_built " << endl;
+}
+
+void RestartController::write_iteration_complete(ostream &fout)
+{
+	fout << "iteration_complete" << endl;
 }
 
 void RestartController::process_rst_file(std::ifstream &fin)
@@ -69,10 +99,6 @@ void RestartController::process_rst_file(std::ifstream &fin)
 		{
 			restart_option = RestartOption::RESUME_JACOBIAN_RUNS;
 		}
-		//else if (tokens[0] == "upgrade_model_runs_built")
-		//{
-		//	restart_option = RestartOption::RESUME_UPGRADE_RUNS;
-		//}
 	}
 }
 

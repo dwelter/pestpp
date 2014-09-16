@@ -37,6 +37,8 @@ using namespace std;
 using namespace pest_utils;
 using namespace Eigen;
 
+const string SVDASolver::svda_solver_type_name = "svda_super_par";
+
 SVDASolver::SVDASolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_base_parameter_group_info_ptr, 
 	const ParameterInfo *_ctl_par_info_ptr, const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 	const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, DynamicRegularization *_regul_scheme,
@@ -168,7 +170,6 @@ void SVDASolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_activ
 void SVDASolver::iteration_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool calc_init_obs)
 {
 	ostream &fout_restart = file_manager.get_ofstream("rst");
-	fout_restart << "super_par_iteration" << endl;
 	ostream &os = file_manager.rec_ofstream();
 	vector<string> numeric_par_names_vec;
 
@@ -269,8 +270,7 @@ void SVDASolver::iteration_jac(RunManagerAbstract &run_manager, TerminationContr
 		//ifstream &fin_rst = file_manager.open_ifile_ext("rtj", ios_base::in | ios_base::binary);
 		//par_transform.get_svda_ptr()->read(fin_rst);
 		//file_manager.close_file("rtj");
-
-		fout_restart << "jacobian runs built" << endl;
+		RestartController::write_jac_runs_built(fout_restart);
 		//make model runs
 		performance_log->log_event("jacobian parameter sets built, commencing model runs");
 		jacobian.make_runs(run_manager);
@@ -387,7 +387,6 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 	// process model runs
 	cout << "  testing upgrade vectors... ";
 	cout.flush();
-	fout_restart << "upgrade_model_runs_built " << run_manager.get_cur_groupid() << endl;
 	run_manager.run();
 	//cout << endl;
 	bool best_run_updated_flag = false;

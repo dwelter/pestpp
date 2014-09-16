@@ -42,6 +42,8 @@ using namespace std;
 using namespace pest_utils;
 using namespace Eigen;
 
+const string SVDSolver::svd_solver_type_name = "svd_base_par";
+
 SVDSolver::SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_par_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
 	const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 	const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian,
@@ -89,11 +91,14 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 	//os << "   -----    Starting PEST++ Iterations    ----    " << endl;
 	if ((max_iter == -1) || (ctl_info->noptmax < 0))
 	{
+		RestartController::write_start_iteration(fout_restart, *this, -9999, -9999);
+
 		//write current parameters so we have a backup for restarting
+		RestartController::write_start_parameters_updated(fout_restart, file_manager.build_filename("parb", false));
 		output_file_writer.write_par(file_manager.open_ofile_ext("parb"), best_upgrade_run.get_ctl_pars(), *(par_transform.get_offset_ptr()),
 			*(par_transform.get_scale_ptr()));
 		file_manager.close_file("parb");
-		fout_restart << "backup parameter file written" << endl;
+		RestartController::write_finish_parameters_updated(fout_restart, file_manager.build_filename("parb", false));
 
 		cout << "COMPUTING JACOBIAN:" << endl << endl;
 		os << "COMPUTING JACOBIAN:" << endl << endl;
@@ -106,7 +111,6 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 		output_file_writer.write_par(file_manager.open_ofile_ext("par"), best_upgrade_run.get_ctl_pars(), *(par_transform.get_offset_ptr()),
 			*(par_transform.get_scale_ptr()));
 		file_manager.close_file("par");
-		fout_restart << "final parameter file written" << endl;
 		return best_upgrade_run;
 	}
 
@@ -115,7 +119,8 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 		int global_iter_num = termination_ctl.get_iteration_number() + 1;
 		output_file_writer.iteration_report(os, global_iter_num, run_manager.get_total_runs(), get_description(), svd_package->description, matrix_inv);
 		output_file_writer.iteration_report(cout, global_iter_num, run_manager.get_total_runs(), get_description(), svd_package->description, matrix_inv);
-		fout_restart << "start_iteration " << iter_num << "  " << global_iter_num << endl;
+
+		RestartController::write_start_iteration(fout_restart, *this, iter_num, global_iter_num);
 		
 		debug_msg("========================================================================");
 		debug_msg("Iteration Number");
@@ -125,7 +130,7 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 		output_file_writer.write_par(file_manager.open_ofile_ext("parb"), best_upgrade_run.get_ctl_pars(), *(par_transform.get_offset_ptr()),
 			*(par_transform.get_scale_ptr()));
 		file_manager.close_file("parb");
-		fout_restart << "backup parameter file written" << endl;
+		RestartController::write_start_parameters_updated(fout_restart, file_manager.build_filename("parb", false));
 
 		// write header for SVD file
 		output_file_writer.write_svd_iteration(global_iter_num);
@@ -178,7 +183,6 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 		output_file_writer.write_par(file_manager.open_ofile_ext("par"), best_upgrade_run.get_ctl_pars(), *(par_transform.get_offset_ptr()),
 			*(par_transform.get_scale_ptr()));
 		file_manager.close_file("par");
-		fout_restart << "final parameter file written" << endl;
 
 		filename.str(""); // reset the stringstream
 		filename << "par" << global_iter_num;
@@ -211,7 +215,7 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 		if (termination_ctl.check_last_iteration()){
 			break;
 		}
-		fout_restart << "iteration complete" << endl;
+		RestartController::write_iteration_complete(fout_restart);
 	}
 	return best_upgrade_run;
 }
@@ -569,7 +573,6 @@ void SVDSolver::iteration_reuse_jac(RunManagerAbstract &run_manager, Termination
 	//Save information necessary for restart
 	ostream &fout_restart = file_manager.get_ofstream("rst");
 
-	fout_restart << "base_par_iteration" << endl;
 	cout << "  reading previosuly computed jacobian... ";
 	jacobian.read(file_manager.build_filename("jco"));
 
@@ -644,7 +647,7 @@ void SVDSolver::iteration_jac(RunManagerAbstract &run_manager, TerminationContro
 		*par_group_info_ptr, *ctl_par_info_ptr, run_manager, out_ofbound_pars,
 		phiredswh_flag, calc_init_obs);
 
-	fout_restart << "jacobian runs built" << endl;
+	RestartController::write_jac_runs_built(fout_restart);
 restart_resume_jacobian_runs:
 
 	performance_log->log_event("jacobian parameter sets built, commencing model runs");
@@ -766,7 +769,6 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 
 	performance_log->add_indent(-1);
 	cout << endl;
-	fout_restart << "upgrade_model_runs_built " << run_manager.get_cur_groupid() << endl;
 	cout << "  performing upgrade vector runs... ";
 	run_manager.run();
 

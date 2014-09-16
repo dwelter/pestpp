@@ -69,6 +69,7 @@ public:
 	Jacobian & get_jacobian() {return jacobian; }
 	bool local_iteration_terminatated()const { return terminate_local_iteration; }
 	virtual ~SVDSolver(void);
+	virtual string get_solver_type() const { return svd_solver_type_name; }
 protected:
 	class Upgrade {
 	public:
@@ -78,6 +79,7 @@ protected:
 		Parameters frozen_numeric_pars; 
 	};
 
+	const static string svd_solver_type_name;
 	SVDPackage *svd_package;
 	MAT_INV mat_inv;
 	const string description;
