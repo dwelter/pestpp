@@ -142,6 +142,7 @@ private:
 	void schedule_runs();
 	void init_slaves();
 	void close_slave(int i_sock);
+	void ping(int i_sock);
 	std::unordered_multimap<int, YamrModelRun>::iterator get_active_run_id(int socket);	
 };
 

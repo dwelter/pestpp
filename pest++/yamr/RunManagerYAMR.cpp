@@ -427,62 +427,65 @@ void RunManagerYAMR::listen()
 			} // END handle data from client
 		} // END got new incoming connection
 		else
-		{
-			int ii = -999;
+		{						
 			for (auto it_slv = slave_info.begin(); it_slv != slave_info.end(); ++it_slv)
 			{
 				if ((i == it_slv->first) && (slave_info.get_state(i) == SlaveInfo::State::ACTIVE))
 				{
-					ii = i;
+					//if i is in the slave fds, ping
+					ping(i);
 					break;
 				}
-			}
-			if (ii != -999)
-			{
-				if (slave_info.get_ping(ii))
-				{
-					int fails = slave_info.add_failed_ping(ii);
-					vector<string> sock_name = w_getnameinfo_vec(i);
-					f_rmr << fails << " failed ping request to slave:" << sock_name[0] << ":" << sock_name[1] << endl;
-					cout << fails << " failed ping request to slave:" << sock_name[0] << ":" << sock_name[1] << endl;					
-					if (fails >= MAX_FAILED_PINGS)
-					{
-						f_rmr << MAX_FAILED_PINGS << " failed ping request to slave:" << sock_name[0] << ":" << sock_name[1] << "  -> terminating" << endl;
-						cout << MAX_FAILED_PINGS << " failed ping request to slave:" << sock_name[0] << ":" << sock_name[1] << "  -> terminating" << endl;
-						close_slave(ii);
-						continue;
-					}
-				}
-				
-				if (slave_info.duration_since_last_ping_time(ii) >= PING_INTERVAL_SECS)
-				{
-
-					//ping the slave to make sure it is still alive
-					vector<string> sock_name = w_getnameinfo_vec(i);
-					char* data = "\0";
-					NetPackage net_pack(NetPackage::PackType::PING, 0, 0, "");
-					int err = net_pack.send(i, data, 0);
-					if (err <= 0)
-					{
-						int fails = slave_info.add_failed_ping(ii);						
-						f_rmr << fails << " failed ping request to slave:" << sock_name[0] << ":" << sock_name[1] << endl;
-						cout << fails << " failed ping request to slave:" << sock_name[0] << ":" << sock_name[1] << endl;
-						if (fails >= MAX_FAILED_PINGS)
-						{
-							f_rmr << MAX_FAILED_PINGS << " failed ping request to slave:" << sock_name[0] << ":" << sock_name[1] << "  -> terminating" << endl;
-							cout << MAX_FAILED_PINGS << " failed ping request to slave:" << sock_name[0] << ":" << sock_name[1] << "  -> terminating" << endl;
-							close_slave(ii);
-						}
-					}
-					else slave_info.set_ping(ii, true);
-					slave_info.reset_last_ping_time(ii);
-					cout << "sent ping request to " << sock_name[0] << ":" << sock_name[1] << endl;
-				}
-			}
+			}			
 		}
 	} // END looping through file descriptors
 }
 
+void RunManagerYAMR::ping(int i_sock)
+{
+	//if the ping flag is set, then the previous ping attempt failed
+	if (slave_info.get_ping(i_sock))
+	{
+		int fails = slave_info.add_failed_ping(i_sock);
+		vector<string> sock_name = w_getnameinfo_vec(i_sock);
+		f_rmr << fails << " failed ping request to slave:" << sock_name[0] << ":" << sock_name[1] << endl;
+		cout << fails << " failed ping request to slave:" << sock_name[0] << ":" << sock_name[1] << endl;
+		if (fails >= MAX_FAILED_PINGS)
+		{
+			f_rmr << "max failed ping requests since last successful run for slave:" << sock_name[0] << ":" << sock_name[1] << "  -> terminating" << endl;
+			cout << "max failed ping requests since last successful run for slave:" << sock_name[0] << ":" << sock_name[1] << "  -> terminating" << endl;
+			close_slave(i_sock);
+			return;
+		}
+		slave_info.set_ping(i_sock, false);
+	}
+	double dura = (double)slave_info.duration_since_last_ping_time(i_sock);
+	double comp = max(PING_INTERVAL_SECS, slave_info.get_runtime_minute(i_sock) * 60 * 0.25);
+	if (dura >= comp)
+	{
+		//ping the slave to make sure it is still alive
+		vector<string> sock_name = w_getnameinfo_vec(i_sock);
+		char* data = "\0";
+		NetPackage net_pack(NetPackage::PackType::PING, 0, 0, "");
+		int err = net_pack.send(i_sock, data, 0);
+		if (err <= 0)
+		{
+			int fails = slave_info.add_failed_ping(i_sock);
+			f_rmr << fails << " failed ping request to slave:" << sock_name[0] << ":" << sock_name[1] << endl;
+			cout << fails << " failed ping request to slave:" << sock_name[0] << ":" << sock_name[1] << endl;
+			if (fails >= MAX_FAILED_PINGS)
+			{
+				f_rmr << "max failed ping requests since last successful run for slave:" << sock_name[0] << ":" << sock_name[1] << "  -> terminating" << endl;
+				cout << "max failed ping requests since last successful run for slave:" << sock_name[0] << ":" << sock_name[1] << "  -> terminating" << endl;
+				close_slave(i_sock);
+			}
+		}
+		else slave_info.set_ping(i_sock, true);
+		slave_info.reset_last_ping_time(i_sock);
+		//cout << "sent ping request to " << sock_name[0] << ":" << sock_name[1] << endl;
+	}
+
+}
 
 void RunManagerYAMR::close_slave(int i_sock)
 {	
@@ -506,8 +509,6 @@ void RunManagerYAMR::close_slave(int i_sock)
 		}
 		active_runs.erase(it_active);
 	}
-
-
 }
 
 void RunManagerYAMR::schedule_runs()
@@ -562,13 +563,15 @@ void RunManagerYAMR::process_message(int i_sock)
 	{
 		// ready message received from slave add slave to slave_fd
 		slave_fd.push_back(i_sock);
+		slave_info.reset_failed_pings(i_sock);
 	}
 
 	else if (net_pack.get_type() == NetPackage::PackType::RUN_FINISH && net_pack.get_groud_id() != cur_group_id)
 	{
-		cout << "here" << endl;
+		
 		// this is an old run that did not finish on time
 		// just ignore it
+		slave_info.reset_failed_pings(i_sock);
 	}
 	else if (net_pack.get_type() == NetPackage::PackType::RUN_FINISH)
 	{
@@ -601,19 +604,21 @@ void RunManagerYAMR::process_message(int i_sock)
 			//put model run back into the waiting queue
 			waiting_runs.push_front(YamrModelRun(run_id, i_sock));
 		}
+		slave_info.reset_failed_pings(i_sock);
 	}
 	else if (net_pack.get_type() == NetPackage::PackType::PING)
 	{
-		std::time_t tt = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-		if (!slave_info.get_ping(i_sock))
-		{
-			f_rmr << "Error: unrequested slave ping received: " << sock_name[0] << ":" << sock_name[1] << endl;
-			cerr << "Error: unrequested slave ping received: " << sock_name[0] << ":" << sock_name[1] << endl;
-			throw PestError("Error: unrequested slave ping recieved");
-		}
+		//std::time_t tt = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+		//if (!slave_info.get_ping(i_sock))
+		//{
+		//	f_rmr << "Warning: unrequested slave ping received: " << sock_name[0] << ":" << sock_name[1] << endl;
+		//	cerr << "Warning: unrequested slave ping received: " << sock_name[0] << ":" << sock_name[1] << endl;
+			//throw PestError("Error: unrequested slave ping recieved");
+		//}
 		//f_rmr << "slave ping recieved:" << sock_name[0] << ":" << sock_name[1] << " at " << ctime(&tt) << endl;
 		//cout << "slave ping recieved:" << sock_name[0] << ":" << sock_name[1] << " at " << ctime(&tt) << endl;	
-		slave_info.set_ping(i_sock, false);
+		//reset the ping flag for this socket
+		
 	}
 	else
 	{
@@ -621,6 +626,7 @@ void RunManagerYAMR::process_message(int i_sock)
 		net_pack.print_header(f_rmr);
 		//save results from model run
 	}
+	slave_info.set_ping(i_sock, false);
 }
 
  bool RunManagerYAMR::process_model_run(int sock_id, NetPackage &net_pack)
@@ -700,6 +706,7 @@ void RunManagerYAMR::process_message(int i_sock)
 		{
 			//start run timer
 			slave_info.start_timer(*it_sock);
+			//reset the last ping time so we don't ping immediately after run is started
 			slave_info.reset_last_ping_time(*it_sock);
 			std::time_t tt =  std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 			f_rmr << "Sending run to: " << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << cur_group_id << ", run id = " << run_id << ") at " << ctime(&tt) << endl;
@@ -776,7 +783,7 @@ RunManagerYAMR::~RunManagerYAMR(void)
 	err = w_close(listener);
 	FD_CLR(listener, &master);
 	// this is needed to ensure that the first slave closes properly
-	w_sleep(2000);
+	w_sleep(2000);	
 	for(int i = 0; i <= fdmax; i++) {
 		if (FD_ISSET(i, &master)) 
 		{

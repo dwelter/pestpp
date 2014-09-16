@@ -52,9 +52,10 @@ using namespace pest_utils;
 
 int main(int argc, char* argv[])
 {
+#ifndef _DEBUG
 	try
 	{
-
+#endif
 		string version = "2.4.1";
 		cout << endl << endl;
 		cout << "             PEST++ Version " << version << endl << endl;
@@ -483,6 +484,8 @@ int main(int argc, char* argv[])
 		delete run_manager_ptr;
 		cout << endl << endl << "Simulation Complete..." << endl;
 		cout << flush;
+
+#ifndef _DEBUG
 	}
 	catch (exception &e)
 	{
@@ -496,6 +499,7 @@ int main(int argc, char* argv[])
 		cout << "press enter to continue" << endl;
 		cin.get();
 	}
+#endif
 	//cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
 	//char buf[256];
 	//OperSys::gets_s(buf, sizeof(buf));

@@ -50,8 +50,9 @@ public:
 private:
 	int sockfd;
 	int fdmax;
-	int max_recv_fails = 10;
-	int max_send_fails = 10;
+	static const int max_recv_fails = 10;
+	static const int max_send_fails = 10;
+	static const int recv_timeout_secs = 1;	
 	fd_set master;
 	std::vector<std::string> comline_vec;
 	std::vector<std::string> tplfile_vec;

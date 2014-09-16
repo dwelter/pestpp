@@ -167,6 +167,11 @@ int YAMRSlave::send_message(NetPackage &net_pack, const void *data, unsigned lon
 	for (err = -1, n=0; err==-1; ++n)
 	{
 		err = net_pack.send(sockfd, data, data_len);
+		if (n >= max_send_fails)
+		{
+			cout << "YAMRSlave::send_message send failed max times, giving up..." << endl;
+			break;
+		}
 	}
 	return err;
 }
@@ -219,8 +224,7 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs,NetPackage &net_pac
 {
 	bool done = false;
 	int success = 1,err = 0;
-	int recv_fails = 0;
-	int recv_timeout_secs = 1;
+	int recv_fails = 0;	
 	int send_fails = 0;
 	std::vector<double> obs_vec;
 	bool isDouble = true;
@@ -256,7 +260,7 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs,NetPackage &net_pac
 				done = true;
 			}
 			//this call includes a "sleep" for the timeout
-			err = recv_message(net_pack, recv_timeout_secs);
+			err = recv_message(net_pack, OperSys::thread_sleep_secs);
 			if (err == -1)
 			{
 				recv_fails++;
@@ -441,9 +445,6 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs)
 	return success;
 }
 
-
-
-
 void YAMRSlave::check_io()
 {
 	vector<string> inaccessible_files;
@@ -473,7 +474,7 @@ void YAMRSlave::start(const string &host, const string &port)
 	vector<char> serialized_data;
 	int err;
 	bool terminate = false;	
-	int recv_fails = 0;
+	int recv_fails = 0,send_fails = 0;
 	init_network(host, port);
 	while (!terminate)
 	{
@@ -495,6 +496,15 @@ void YAMRSlave::start(const string &host, const string &port)
 			net_pack.reset(NetPackage::PackType::RUNDIR, 0, 0,"");
 			string cwd =  OperSys::getcwd();
 			err = send_message(net_pack, cwd.c_str(), cwd.size());
+			if (err == -1)
+			{
+				send_fails++;
+				if (send_fails >= max_send_fails)
+				{
+					cerr << "send to master failed " << max_send_fails << " times, exiting..." << endl;					
+					exit(-1);
+				}
+			}
 		}
 		else if(net_pack.get_type() == NetPackage::PackType::CMD)
 		{
@@ -515,6 +525,15 @@ void YAMRSlave::start(const string &host, const string &port)
 			net_pack.reset(NetPackage::PackType::LINPACK, 0, 0,"");
 			char data;
 			err = send_message(net_pack, &data, 0);
+			if (err == -1)
+			{
+				send_fails++;
+				if (send_fails >= max_send_fails)
+				{
+					cerr << "send to master failed " << max_send_fails << " times, exiting..." << endl;
+					exit(-1);
+				}
+			}
 		}
 		else if(net_pack.get_type() == NetPackage::PackType::START_RUN)
 		{
@@ -533,10 +552,28 @@ void YAMRSlave::start(const string &host, const string &port)
 				serialized_data = Serialization::serialize(pars, par_name_vec, obs, obs_name_vec);
 				net_pack.reset(NetPackage::PackType::RUN_FINISH, group_id, run_id, "");
 				err = send_message(net_pack, serialized_data.data(), serialized_data.size());
+				if (err == -1)
+				{
+					send_fails++;
+					if (send_fails >= max_send_fails)
+					{
+						cerr << "send to master failed " << max_send_fails << " times, exiting..." << endl;
+						exit(-1);
+					}
+				}
 				// Send READY Message to master
 				net_pack.reset(NetPackage::PackType::READY, 0, 0,"");
 				char data;
 				err = send_message(net_pack, &data, 0);
+				if (err == -1)
+				{
+					send_fails++;
+					if (send_fails >= max_send_fails)
+					{
+						cerr << "send to master failed " << max_send_fails << " times, exiting..." << endl;
+						exit(-1);
+					}
+				}
 			}
 			else
 			{
@@ -548,7 +585,16 @@ void YAMRSlave::start(const string &host, const string &port)
 				net_pack.reset(NetPackage::PackType::READY, 0, 0,"");
 				char data;
 				err = send_message(net_pack, &data, 0);
-				w_sleep(500);
+				if (err == -1)
+				{
+					send_fails++;
+					if (send_fails >= max_send_fails)
+					{
+						cerr << "send to master failed " << max_send_fails << " times, exiting..." << endl;
+						exit(-1);
+					}
+				}
+				//w_sleep(500);
 			}
 		}
 		else if (net_pack.get_type() == NetPackage::PackType::TERMINATE)
@@ -557,17 +603,27 @@ void YAMRSlave::start(const string &host, const string &port)
 		}
 		else if (net_pack.get_type() == NetPackage::PackType::PING)
 		{
-			cout << "ping request recieved" << endl;
+			cout << "ping request recieved..." << endl;
 			net_pack.reset(NetPackage::PackType::PING, 0, 0, "");
 			char* data = "\0";
 			err = send_message(net_pack, &data, 0);
-			cout << "ping response sent" << endl;
+			if (err == -1)
+			{
+				send_fails++;
+				if (send_fails >= max_send_fails)
+				{
+					cerr << "send to master failed " << max_send_fails << " times, exiting..." << endl;
+					exit(-1);
+				}
+			}
+			cout << "...ping response sent" << endl;
 		}
 		else 
 		{
 			cout << "received unsupported messaged type: " << int(net_pack.get_type()) << endl;
 		}
-		w_sleep(100);
+		//w_sleep(100);
+		this_thread::sleep_for(chrono::milliseconds(100));
 	}
 }
 
