@@ -65,7 +65,7 @@ string OperSys::getcwd()
 	char *buffer;
 	buffer = _getcwd( NULL, 0 );
 	string cwd(buffer);
-        free(buffer);
+    free(buffer);
 	return cwd;
     #endif
     #ifdef OS_LINUX

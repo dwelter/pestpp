@@ -423,6 +423,7 @@ void RunManagerYAMR::listen()
 			}
 			else  // handle data from a client
 			{
+				slave_info.set_ping(i, false);
 				process_message(i);				
 			} // END handle data from client
 		} // END got new incoming connection
@@ -448,12 +449,12 @@ void RunManagerYAMR::ping(int i_sock)
 	{
 		int fails = slave_info.add_failed_ping(i_sock);
 		vector<string> sock_name = w_getnameinfo_vec(i_sock);
-		f_rmr << fails << " failed ping request to slave:" << sock_name[0] << ":" << sock_name[1] << endl;
-		cout << fails << " failed ping request to slave:" << sock_name[0] << ":" << sock_name[1] << endl;
+		f_rmr << fails << " failed to receive ping response from slave:" << sock_name[0] <<"\\"<<slave_info.get_work_dir(i_sock) << endl;
+		cout << fails << " failed to recieve ping response from slave:" << sock_name[0] << "\\"<<slave_info.get_work_dir(i_sock) << endl;
 		if (fails >= MAX_FAILED_PINGS)
 		{
-			f_rmr << "max failed ping requests since last successful run for slave:" << sock_name[0] << ":" << sock_name[1] << "  -> terminating" << endl;
-			cout << "max failed ping requests since last successful run for slave:" << sock_name[0] << ":" << sock_name[1] << "  -> terminating" << endl;
+			f_rmr << "max failed ping communications since last successful run for slave:" << sock_name[0] << "\\" << slave_info.get_work_dir(i_sock) << "  -> terminating" << endl;
+			cout << "max failed ping communications since last successful run for slave:" << sock_name[0] << "\\" << slave_info.get_work_dir(i_sock) << "  -> terminating" << endl;
 			close_slave(i_sock);
 			return;
 		}
@@ -461,28 +462,31 @@ void RunManagerYAMR::ping(int i_sock)
 	}
 	double dura = (double)slave_info.duration_since_last_ping_time(i_sock);
 	double comp = max(PING_INTERVAL_SECS, slave_info.get_runtime_minute(i_sock) * 60 * 0.25);
-	if (dura >= comp)
+	//if (dura >= comp)
+	if (true)
 	{
 		//ping the slave to make sure it is still alive
-		vector<string> sock_name = w_getnameinfo_vec(i_sock);
+		//vector<string> sock_name = w_getnameinfo_vec(i_sock);
 		char* data = "\0";
 		NetPackage net_pack(NetPackage::PackType::PING, 0, 0, "");
 		int err = net_pack.send(i_sock, data, 0);
 		if (err <= 0)
 		{
 			int fails = slave_info.add_failed_ping(i_sock);
-			f_rmr << fails << " failed ping request to slave:" << sock_name[0] << ":" << sock_name[1] << endl;
-			cout << fails << " failed ping request to slave:" << sock_name[0] << ":" << sock_name[1] << endl;
+			vector<string> sock_name = w_getnameinfo_vec(i_sock);
+			f_rmr << fails << " failed to send ping request to slave:" << sock_name[0] << "\\" << slave_info.get_work_dir(i_sock) << endl;
+			cout << fails << " failed to send ping request to slave:" << sock_name[0] << "\\" << slave_info.get_work_dir(i_sock) << endl;
 			if (fails >= MAX_FAILED_PINGS)
 			{
-				f_rmr << "max failed ping requests since last successful run for slave:" << sock_name[0] << ":" << sock_name[1] << "  -> terminating" << endl;
-				cout << "max failed ping requests since last successful run for slave:" << sock_name[0] << ":" << sock_name[1] << "  -> terminating" << endl;
+				f_rmr << "max failed ping communications since last successful run for slave:" << sock_name[0] <<"\\"<< slave_info.get_work_dir(i_sock) << "  -> terminating" << endl;
+				cout << "max failed ping communications since last successful run for slave:" << sock_name[0] <<"||"<< slave_info.get_work_dir(i_sock) << "  -> terminating" << endl;
 				close_slave(i_sock);
+				return;
 			}
 		}
 		else slave_info.set_ping(i_sock, true);
 		slave_info.reset_last_ping_time(i_sock);
-		//cout << "sent ping request to " << sock_name[0] << ":" << sock_name[1] << endl;
+		cout << "sent ping request to " << slave_info.get_work_dir(i_sock) << endl;
 	}
 
 }
@@ -537,20 +541,20 @@ void RunManagerYAMR::process_message(int i_sock)
 	if(( err=net_pack.recv(i_sock)) <=0) // error or lost connection
 	{
 		if (err < 0) {
-			f_rmr << "receive failed from slave: " << sock_name[0] <<":" <<sock_name[1] << " - terminating slave" << endl;
-			cerr << "receive failed from slave: " << sock_name[0] <<":" <<sock_name[1] << " - terminating slave" << endl;
+			f_rmr << "receive failed from slave: " << sock_name[0] <<"\\" <<slave_info.get_work_dir(i_sock) << " - terminating slave" << endl;
+			cerr << "receive failed from slave: " << sock_name[0] << "\\" << slave_info.get_work_dir(i_sock) << " - terminating slave" << endl;
 		}
 		else {
-			f_rmr << "lost connection to slave: " << sock_name[0] <<":" <<sock_name[1] << endl;
-			cerr << "lost connection to slave: " << sock_name[0] <<":" <<sock_name[1] << endl;
+			f_rmr << "lost connection to slave: " << sock_name[0] << "\\" << slave_info.get_work_dir(i_sock) << endl;
+			cerr << "lost connection to slave: " << sock_name[0] << "\\" << slave_info.get_work_dir(i_sock) << endl;
 		}
 		close_slave(i_sock);
 	}
 	else if (net_pack.get_type() == NetPackage::PackType::RUNDIR)
 	{
 		string work_dir(net_pack.get_data().data(), net_pack.get_data().size());
-		f_rmr << "New Slave connection from: " << sock_name[0] <<":" <<sock_name[1] << "   working dir: " << work_dir << endl;
-		cout << endl << "New Slave connection from: " << sock_name[0] <<":" <<sock_name[1] << "   working dir: " << work_dir << endl << endl;
+		f_rmr << "New Slave connection from: " << sock_name[0] <<"\\" <<sock_name[1] << "   working dir: " << work_dir << endl;
+		cout << endl << "New Slave connection from: " << sock_name[0] <<"\\" <<sock_name[1] << "   working dir: " << work_dir << endl << endl;
 		slave_info.set_work_dir(i_sock, work_dir);
 		slave_info.set_state(i_sock, SlaveInfo::State::CWD_RCV);
 	}
@@ -581,8 +585,8 @@ void RunManagerYAMR::process_message(int i_sock)
 		slave_info.end_run(i_sock);
 		std::time_t tt =  std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 		streamsize n_prec = f_rmr.precision(2);
-		f_rmr << "Run received from: " << sock_name[0] << ":" << sock_name[1] << " at " << ctime(&tt) << "  (run time = " << slave_info.get_runtime_minute(i_sock) << " min: group id = " << group_id << ", run id = " << run_id << ")" << endl << endl;
-		cout << "Run received from: " << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << group_id << ", run id = " << run_id << ") at " << ctime(&tt) << endl;		
+		f_rmr << "Run received from: " << sock_name[0] << "\\" << slave_info.get_work_dir(i_sock) << " at " << ctime(&tt) << "  (run time = " << slave_info.get_runtime_minute(i_sock) << " min: group id = " << group_id << ", run id = " << run_id << ")" << endl << endl;
+		cout << "Run received from: " << sock_name[0] << "\\" << slave_info.get_work_dir(i_sock) << "  (group id = " << group_id << ", run id = " << run_id << ") at " << ctime(&tt) << endl;
 		f_rmr.precision(n_prec);
 		process_model_run(i_sock, net_pack);
 
@@ -592,8 +596,8 @@ void RunManagerYAMR::process_message(int i_sock)
 		int run_id = net_pack.get_run_id();
 		int group_id = net_pack.get_groud_id();
 		std::time_t tt =  std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-		f_rmr << "Run failed on slave:" << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << group_id << ", run id = " << run_id << ") at " << ctime(&tt) << endl;
-		cout << "Run failed on slave:" << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << group_id << ", run id = " << run_id << ") at " << ctime(&tt) << endl;
+		f_rmr << "Run failed on slave:" << sock_name[0] << "\\" << slave_info.get_work_dir(i_sock) << "  (group id = " << group_id << ", run id = " << run_id << ") at " << ctime(&tt) << endl;
+		cout << "Run failed on slave:" << sock_name[0] << "\\" << slave_info.get_work_dir(i_sock) << "  (group id = " << group_id << ", run id = " << run_id << ") at " << ctime(&tt) << endl;
 		file_stor.update_run_failed(run_id);
 		failure_map.insert(make_pair(run_id, i_sock));
 		auto it = get_active_run_id(i_sock);
@@ -626,7 +630,7 @@ void RunManagerYAMR::process_message(int i_sock)
 		net_pack.print_header(f_rmr);
 		//save results from model run
 	}
-	slave_info.set_ping(i_sock, false);
+	
 }
 
  bool RunManagerYAMR::process_model_run(int sock_id, NetPackage &net_pack)
@@ -709,8 +713,8 @@ void RunManagerYAMR::process_message(int i_sock)
 			//reset the last ping time so we don't ping immediately after run is started
 			slave_info.reset_last_ping_time(*it_sock);
 			std::time_t tt =  std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-			f_rmr << "Sending run to: " << sock_name[0] <<":" <<sock_name[1] << "  (group id = " << cur_group_id << ", run id = " << run_id << ") at " << ctime(&tt) << endl;
-			cout << "Sending run to: " << sock_name[0] << ":" << sock_name[1] << "  (group id = " << cur_group_id << ", run id = " << run_id << ") at " << ctime(&tt) << endl;
+			f_rmr << "Sending run to: " << sock_name[0] << "\\" << slave_info.get_work_dir(*it_sock) << "  (group id = " << cur_group_id << ", run id = " << run_id << ") at " << ctime(&tt) << endl;
+			cout << "Sending run to: " << sock_name[0] << "\\" << slave_info.get_work_dir(*it_sock) << "  (group id = " << cur_group_id << ", run id = " << run_id << ") at " << ctime(&tt) << endl;
 			active_runs.insert(pair<int, YamrModelRun>(run_id, tmp_run));
 			slave_fd.erase(it_sock);
 			scheduled = true;			
