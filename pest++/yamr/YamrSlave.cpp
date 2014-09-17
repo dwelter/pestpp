@@ -115,13 +115,13 @@ int YAMRSlave::recv_message(NetPackage &net_pack)
 	return err;
 }
 
-int YAMRSlave::recv_message(NetPackage &net_pack,int timeout_sec)
+int YAMRSlave::recv_message(NetPackage &net_pack,int timeout_secs)
 {
 	fd_set read_fds;
 	int err = -1;
 	int result = 0;
 	struct timeval tv;
-	tv.tv_sec = timeout_sec;
+	tv.tv_sec = timeout_secs;
 	tv.tv_usec = 0;
 	for (;;) {
 		read_fds = master; // copy master
@@ -276,7 +276,7 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs,NetPackage &net_pac
 			else if (err == 0){}
 			else if (net_pack.get_type() == NetPackage::PackType::PING)
 			{
-				cout << "ping request recieved" << endl;
+				cout << "ping request recieved...";
 				net_pack.reset(NetPackage::PackType::PING, 0, 0, "");
 				char* data = "\0";
 				err = send_message(net_pack, &data, 0);
@@ -295,19 +295,17 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs,NetPackage &net_pac
 			}
 			else if (net_pack.get_type() == NetPackage::PackType::REQ_KILL)
 			{
-				cout << "received kill request signal from master" << endl;
-				cout << "sending terminate signal to runner" << endl;
-
+			    cout << "received kill request signal from master" << endl;
+				cout << "sending terminate signal to run thread" << endl;
 				f_terminate.set(true);
 				run_thread.join();
-				success = 0;
-				
+				success = 0;				
 				break;
 			}
 			else if (net_pack.get_type() == NetPackage::PackType::TERMINATE)
 			{
 				cout << "received terminate signal from master" << endl;
-				cout << "sending terminate signal to runner" << endl;
+				cout << "sending terminate signal to run thread" << endl;
 				f_terminate.set(true);
 				run_thread.join();
 				success = 0;
@@ -618,7 +616,7 @@ void YAMRSlave::start(const string &host, const string &port)
 		else if (net_pack.get_type() == NetPackage::PackType::PING)
 		{
 			std::time_t tt = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-			cout << ctime(&tt) << "ping request recieved...";
+			cout << "ping request recieved...";
 			net_pack.reset(NetPackage::PackType::PING, 0, 0, "");
 			char* data = "\0";
 			err = send_message(net_pack, &data, 0);
