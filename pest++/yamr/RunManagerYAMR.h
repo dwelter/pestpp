@@ -124,6 +124,7 @@ private:
 	static const int BACKLOG = 10;
 	static const int MAX_FAILED_PINGS = 3;
 	static const int PING_INTERVAL_SECS = 5;
+	int model_runs_done;
 	int listener;
 	int fdmax;
 	std::deque<int> slave_fd; // list of slaves ready to accept a model run
@@ -143,6 +144,7 @@ private:
 	void init_slaves();
 	void close_slave(int i_sock);
 	void ping(int i_sock);
+	void report(std::string message,bool to_cout);
 	std::unordered_multimap<int, YamrModelRun>::iterator get_active_run_id(int socket);	
 };
 

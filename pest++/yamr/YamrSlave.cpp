@@ -231,8 +231,8 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs,NetPackage &net_pac
 	bool forceRadix = true;
 	TemplateFiles tpl_files(isDouble, forceRadix, tplfile_vec, inpfile_vec, par_name_vec);
 	InstructionFiles ins_files(insfile_vec, outfile_vec);	
-	thread_flag terminate(false);
-	thread_flag finished(false);
+	thread_flag f_terminate(false);
+	thread_flag f_finished(false);
 	try 
 	{
 	//	message.str("");
@@ -248,11 +248,11 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs,NetPackage &net_pac
 				throw PestError("model interface error: Cannot delete existing model input file " + in_file);
 		}				
 		tpl_files.write(pars);		
-		thread run_thread(run_commands, &terminate, &finished, comline_vec);
+		thread run_thread(run_commands, &f_terminate, &f_finished, comline_vec);
 		while (true)
 		{							
 			//check if the runner thread has finished
-			if (finished.get())
+			if (f_finished.get())
 			{
 				cout << "received finished signal from runner " << std::endl;
 				run_thread.join();
@@ -267,7 +267,7 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs,NetPackage &net_pac
 				if (recv_fails >= max_recv_fails)
 				{
 					cerr << "recv from master failed " << max_recv_fails << " times, exiting..." << endl;
-					terminate.set(true);
+					f_terminate.set(true);
 					run_thread.join();
 					exit(-1);
 				}
@@ -286,7 +286,7 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs,NetPackage &net_pac
 					if (send_fails >= max_send_fails)
 					{
 						cerr << "send to master failed " << max_send_fails << " times, exiting..." << endl;
-						terminate.set(true);
+						f_terminate.set(true);
 						run_thread.join();
 						exit(-1);
 					}
@@ -295,24 +295,37 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs,NetPackage &net_pac
 			}
 			else if (net_pack.get_type() == NetPackage::PackType::REQ_KILL)
 			{
-				cout << "sending terminate signal to runner" << std::endl;
-				terminate.set(true);
+				cout << "received kill request signal from master" << endl;
+				cout << "sending terminate signal to runner" << endl;
+
+				f_terminate.set(true);
 				run_thread.join();
 				success = 0;
+				
+				break;
+			}
+			else if (net_pack.get_type() == NetPackage::PackType::TERMINATE)
+			{
+				cout << "received terminate signal from master" << endl;
+				cout << "sending terminate signal to runner" << endl;
+				f_terminate.set(true);
+				run_thread.join();
+				success = 0;
+				terminate = true;
 				break;
 			}
 			else
 			{
-				cerr << "Received unsupported message from master, only PING or REQ_KILL can be sent during model run" << endl;
+				cerr << "Received unsupported message from master, only PING REQ_KILL or TERMINATE can be sent during model run" << endl;
 				cerr << "something is wrong...exiting" << endl;
-				terminate.set(true);
+				f_terminate.set(true);
 				run_thread.join();
 				exit(-1);
 			}	
 			if (done) break;
 		}		
 		//if this run was terminated, throw an error to signal a failed run
-		if (terminate.get())
+		if (f_terminate.get())
 		{
 			throw PestError("model run terminated");
 		}
@@ -473,7 +486,8 @@ void YAMRSlave::start(const string &host, const string &port)
 	Parameters pars;
 	vector<char> serialized_data;
 	int err;
-	bool terminate = false;	
+	//class attribute - can be modified in run_model()
+	terminate = false;	
 	int recv_fails = 0,send_fails = 0;
 	init_network(host, port);
 	while (!terminate)
@@ -603,7 +617,8 @@ void YAMRSlave::start(const string &host, const string &port)
 		}
 		else if (net_pack.get_type() == NetPackage::PackType::PING)
 		{
-			cout << "ping request recieved..." << endl;
+			std::time_t tt = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+			cout << ctime(&tt) << "ping request recieved...";
 			net_pack.reset(NetPackage::PackType::PING, 0, 0, "");
 			char* data = "\0";
 			err = send_message(net_pack, &data, 0);
@@ -616,7 +631,7 @@ void YAMRSlave::start(const string &host, const string &port)
 					exit(-1);
 				}
 			}
-			cout << "...ping response sent" << endl;
+			cout << "ping response sent" << endl;
 		}
 		else 
 		{

@@ -773,7 +773,7 @@ restart_resume_jacobian_runs:
 			os << ";  phi = " << upgrade_run.get_phi(*regul_scheme_ptr);
 			os.precision(2);
 			os << setiosflags(ios::fixed);
-			os << " (" << upgrade_run.get_phi(*regul_scheme_ptr) / cur_solution.get_phi(*regul_scheme_ptr) * 100 << "%)" << endl;
+			os << " (" << upgrade_run.get_phi(*regul_scheme_ptr) / cur_solution.get_phi(*regul_scheme_ptr) * 100 << "% of starting phi)" << endl;
 			os.precision(n_prec);
 			os.unsetf(ios_base::floatfield); // reset all flags to default
 			if (upgrade_run.obs_valid() && (!best_run_updated_flag ||
@@ -822,8 +822,8 @@ restart_resume_jacobian_runs:
 	double best_phi = best_upgrade_run.get_phi(*regul_scheme_ptr);
 
 	cout << endl << "  ...Lambda testing complete for iteration " << termination_ctl.get_iteration_number() + 1 << endl;
-	cout << "    Starting phi = " << cur_phi << ";  ending phi = " << best_phi <<
-		"  (" << best_phi / cur_phi * 100 << "%)" << endl;
+	cout << "    starting phi = " << cur_phi << ";  ending phi = " << best_phi <<
+		"  (" << best_phi / cur_phi * 100 << "% of starting phi)" << endl;
 
 	if (phiredswh_flag && cur_phi != 0 &&
 		cur_phi / best_phi >= ctl_info->splitswh)
