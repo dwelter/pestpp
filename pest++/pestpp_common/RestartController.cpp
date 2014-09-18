@@ -13,7 +13,7 @@ using namespace::pest_utils;
 RestartController::RestartController(void)
 	: global_iter_no(0), local_iter_no(0), restart_option(RestartOption::NONE),
 	iteration_type(IterationType::BASE), nopt_count(0), nphinored_count(0),
-	nrelpar_count(), best_par_file("")
+	nrelpar_count(), parameter_state(PARAMETER_STATE::INIT_PAR), best_par_file("")
 {
 }
 
@@ -25,18 +25,18 @@ void RestartController::write_start_iteration(ostream &fout, const SVDSolver &sv
 
 void RestartController::write_start_parameters_updated(ostream &fout, const string &parameter_filename)
 {
-	fout << "parameter_file_saved_started " << parameter_filename << endl;
+	fout << "parameter_file_save_started " << parameter_filename << endl;
 }
 
 
 void RestartController::write_finish_parameters_updated(ostream &fout, const string &parameter_filename)
 {
-	fout << "parameter_file_saved_finished " << parameter_filename << endl;
+	fout << "parameter_file_save_finished " << parameter_filename << endl;
 }
 
 void RestartController::write_jac_runs_built(ostream &fout)
 {
-	fout << "jacobian_model_runs_built " << endl;
+	fout << "jacobian_model_runs_built" << endl;
 }
 
 void RestartController::write_iteration_complete(ostream &fout)
@@ -60,7 +60,26 @@ void RestartController::process_rst_file(std::ifstream &fin)
 		{
 			convert_ip(tokens[1], local_iter_no);
 			convert_ip(tokens[1], global_iter_no);
+			if (tokens[2] == "svd_base_par")
+			{
+				iteration_type = IterationType::BASE;
+			}
+			else if (tokens[2] == "svda_base_par")
+			{
+				iteration_type = IterationType::SUPER;
+			}
 			restart_option = RestartOption::RESUME_NEW_ITERATION;
+		}
+		else if (tokens[0] == "parameter_file_save_started")
+		{
+			if (parameter_state != PARAMETER_STATE::INIT_PAR)
+			{
+				parameter_state = PARAMETER_STATE::PREV_PAR;
+			}
+		}
+		else if (tokens[0] == "parameter_file_save_finished")
+		{
+			parameter_state = PARAMETER_STATE::RESTART_PAR;
 		}
 		else if (tokens[0] == "termination_info_1")
 		{
@@ -87,20 +106,33 @@ void RestartController::process_rst_file(std::ifstream &fin)
 				lowest_phi.push_back(val);
 			}
 		}
-		else if (tokens[0] == "native_par_iteration")
-		{
-			iteration_type = IterationType::BASE;
-		}
-		else if (tokens[0] == "super_par_iteration")
-		{
-			iteration_type = IterationType::SUPER;
-		}
 		else if (tokens[0] == "jacobian_model_runs_built")
 		{
 			restart_option = RestartOption::RESUME_JACOBIAN_RUNS;
 		}
 	}
 }
+
+Parameters RestartController::get_restart_parameters(const string &restart_par_file, const string &prev_par_file)
+{
+	Parameters new_pars;
+	map<string, double> offset;
+	map<string, double> scale;
+	if (parameter_state == PARAMETER_STATE::INIT_PAR)
+	{}
+	else if (parameter_state == PARAMETER_STATE::RESTART_PAR)
+	{
+		ifstream fin(restart_par_file);
+		new_pars.read_par_file(fin, offset, scale);
+	}
+	else if (parameter_state == PARAMETER_STATE::PREV_PAR)
+	{
+		ifstream fin(prev_par_file);
+		new_pars.read_par_file(fin, offset, scale);
+	}
+	return new_pars;
+}
+
 
 void RestartController::update_termination_ctl(TerminationController &term_ctl)
 {

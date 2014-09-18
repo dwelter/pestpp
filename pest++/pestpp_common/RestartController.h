@@ -7,6 +7,7 @@
 
 class TerminationController;
 class SVDSolver;
+class Parameters;
 
 class RestartController
 {
@@ -21,11 +22,14 @@ public:
 	static void RestartController::write_iteration_complete(std::ostream &fout);
 	RestartOption get_restart_option() const { return restart_option; }
 	RestartOption& get_restart_option() { return restart_option; }
+	IterationType get_iteration_type() { return iteration_type; }
 	void process_rst_file(std::ifstream &fin);
 	void update_termination_ctl(TerminationController &term_ctl);
-	//void update_best_par_file(const std::string &_best_par_file) { best_par_file = _best_par_file; }
+	Parameters get_restart_parameters(const std::string &restart_par_file, const std::string &prev_par_file);
 	~RestartController(void);
 private:
+	enum class PARAMETER_STATE {INIT_PAR, RESTART_PAR, PREV_PAR};
+	PARAMETER_STATE parameter_state;
 	int global_iter_no;
 	int local_iter_no;
 	RestartOption restart_option; 

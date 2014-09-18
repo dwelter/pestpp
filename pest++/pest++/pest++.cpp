@@ -372,27 +372,45 @@ int main(int argc, char* argv[])
 			fout_rec << "Model run failed.  No results were recorded." << endl << endl;
 			exit(1);
 		}
-
+		termination_ctl.set_terminate(true);
 	}
 
 	//open restart file
 	file_manager.open_ofile_ext("rst");
 	//Define model Run for Base Parameters (uses base parameter tranformations)
-	fout_rec << "   -----    Starting PEST++ Iterations    ----    " << endl;
 	ModelRun cur_run(&obj_func, pest_scenario.get_ctl_observations());
 	//If this is a restart we need to get the latest ctl parameters
+	if (restart_ctl.get_restart_option() == RestartController::RestartOption::RESUME_JACOBIAN_RUNS)
+	{
+		Parameters restart_pars = restart_ctl.get_restart_parameters(file_manager.get_full_filename("parb"), file_manager.get_full_filename("par"));
+		if (restart_pars.size() > 0)
+		{
+			cur_run.set_ctl_parameters(restart_pars);
+		}
+	}
 	cur_run.set_ctl_parameters(cur_ctl_parameters);
+	fout_rec << "   -----    Starting PEST++ Iterations    ----    " << endl;
 	while (!termination_ctl.terminate())
 	{
+		//base parameter iterations
 		try
 		{
-			cur_run = base_svd.solve(*run_manager_ptr, termination_ctl, n_base_iter, cur_run, optimum_run);
-			cur_ctl_parameters = cur_run.get_ctl_pars();
-			if (pest_scenario.get_control_info().noptmax < 1)
+			if (restart_ctl.get_iteration_type() == RestartController::IterationType::SUPER)
+			if (n_base_iter < 0 || pest_scenario.get_control_info().noptmax < 0)
 			{
-				optimum_run = cur_run;
+				cur_run = base_svd.compute_jacobian(*run_manager_ptr, termination_ctl, cur_run);
+				if (pest_scenario.get_control_info().noptmax < 0)
+				{
+					optimum_run = cur_run;
+					termination_ctl.set_terminate(true);
+				}
+			}
+			else
+			{
+				cur_run = base_svd.solve(*run_manager_ptr, termination_ctl, n_base_iter, cur_run, optimum_run);
 				termination_ctl.check_last_iteration();
 			}
+			cur_ctl_parameters = cur_run.get_ctl_pars();
 			if (termination_ctl.terminate())  break;
 		}
 		catch(exception &e)
@@ -421,14 +439,15 @@ int main(int argc, char* argv[])
 				pest_scenario.get_pestpp_options().get_max_super_frz_iter());
 			super_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 			//use base jacobian to compute first super jacobian if there was not a super upgrade
+			bool reuse_jacobian = false;
 			if (n_base_iter == -1)
 			{
 				super_svd.get_jacobian() = base_svd.get_jacobian();
 				super_svd.get_jacobian().transform(base_trans_seq, &ParamTransformSeq::jac_numeric2active_ctl_ip);
 				super_svd.get_jacobian().transform(trans_svda, &ParamTransformSeq::jac_active_ctl_ip2numeric_ip);
-				super_svd.set_calc_jacobian(false);
+				reuse_jacobian = true;
 			}
-			cur_run = super_svd.solve(*run_manager_ptr, termination_ctl, n_super_iter, cur_run, optimum_run);
+			cur_run = super_svd.solve(*run_manager_ptr, termination_ctl, n_super_iter, cur_run, optimum_run, reuse_jacobian);
 			cur_ctl_parameters = cur_run.get_ctl_pars();
 			base_svd.set_phiredswh_flag(super_svd.get_phiredswh_flag());
 			base_svd.set_splitswh_flag(super_svd.get_splitswh_flag());

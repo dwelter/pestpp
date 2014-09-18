@@ -42,21 +42,19 @@ public:
 	virtual Parameters limit_parameters_freeze_all_ip(const Parameters &init_active_ctl_pars,
 		Parameters &upgrade_active_ctl_pars, const Parameters &prev_frozen_active_ctl_pars);
 	virtual void calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_active_ctl_pars, QSqrtMatrix &Q_sqrt, 
-        const DynamicRegularization &regul, Eigen::VectorXd &residuals_vec,
+		const DynamicRegularization &regul, Eigen::VectorXd &residuals_vec,
 		std::vector<std::string> &obs_names_vec, const Parameters &base_run_active_ctl_pars, Parameters &new_active_ctl_pars,
 		MarquardtMatrix marquardt_type, bool scale_upgrade=false);
+	void iteration_reuse_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run);
 	void iteration_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool calc_init_obs = false);
 	ModelRun iteration_upgrd(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run);
 	virtual const string &get_description(){return description;}
 	virtual ParameterGroupInfo get_parameter_group_info() const { return super_parameter_group_info; }
-	bool get_calc_jacobian() const { return calc_jacobian;}
-	void set_calc_jacobian(bool tmp) { calc_jacobian=tmp; }
 	virtual string get_solver_type() const { return svda_solver_type_name; }
 	~SVDASolver(void);
 private:
 	const static string svda_solver_type_name;
 	ParameterGroupInfo super_parameter_group_info;
-	bool calc_jacobian;
 	int max_super_frz_iter;
 };
 

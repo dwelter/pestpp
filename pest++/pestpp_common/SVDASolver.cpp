@@ -47,7 +47,7 @@ SVDASolver::SVDASolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, c
 	: SVDSolver(_ctl_info, _svd_info, _base_parameter_group_info_ptr, _ctl_par_info_ptr, _obs_info,
 		_file_manager, _observations, _obj_func, _par_transform, _prior_info_ptr, _jacobian, 
 		_regul_scheme, _output_file_writer, _restart_controller, _mat_inv, _performance_log,
-		_base_lambda_vec, "super parameter solution", _phiredswh_flag, _splitswh_flag, false), calc_jacobian(true),
+		_base_lambda_vec, "super parameter solution", _phiredswh_flag, _splitswh_flag, false),
 		max_super_frz_iter(_max_super_frz_iter)
 {
 }
@@ -167,6 +167,57 @@ void SVDASolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_activ
 		new_frozen_ctl_pars = limit_parameters_freeze_all_ip(base_run_active_ctl_pars, upgrade_active_ctl_pars, prev_frozen_active_ctl_pars);
 		prev_frozen_active_ctl_pars.insert(new_frozen_ctl_pars.begin(), new_frozen_ctl_pars.end());
 }
+
+void SVDASolver::iteration_reuse_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run)
+{
+	ostream &fout_restart = file_manager.get_ofstream("rst");
+	ostream &os = file_manager.rec_ofstream();
+	vector<string> numeric_par_names_vec;
+
+	cout << "  reading previosuly computed jacobian... ";
+	jacobian.read(file_manager.build_filename("jco"));
+
+	Parameters base_ctl_pars = base_run.get_ctl_pars();
+	// make sure these are all in bounds
+	for (auto &ipar : base_ctl_pars)
+	{
+		const string &name = ipar.first;
+		const ParameterRec *p_info = ctl_par_info_ptr->get_parameter_rec_ptr(name);
+		if (ipar.second > p_info->ubnd)
+		{
+			ipar.second = p_info->ubnd;
+		}
+		// Check parameter lower bound
+		else if (ipar.second < p_info->lbnd)
+		{
+			ipar.second = p_info->lbnd;
+		}
+	}
+
+	run_manager.reinitialize(file_manager.build_filename("rnr"));
+	int run_id = run_manager.add_run(par_transform.ctl2model_cp(base_run.get_ctl_pars()));
+	run_manager.run();
+	Parameters tmp_pars;
+	Observations tmp_obs;
+	bool success = run_manager.get_run(run_id, tmp_pars, tmp_obs);
+	if (success)
+	{
+		par_transform.model2ctl_ip(tmp_pars);
+		base_run.update_ctl(tmp_pars, tmp_obs);
+		jacobian.process_base_run(par_transform, run_manager, *prior_info_ptr);
+		return;
+	}
+	else
+	{
+		throw(PestError("Error: Base super parameter run failed."));
+	}
+	jacobian.save("jcs");
+	// sen file for this iteration
+	output_file_writer.append_sen(file_manager.sen_ofstream(), termination_ctl.get_iteration_number() + 1,
+		jacobian, *(base_run.get_obj_func_ptr()), get_parameter_group_info(), *regul_scheme_ptr, true);
+}
+
+
 void SVDASolver::iteration_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool calc_init_obs)
 {
 	ostream &fout_restart = file_manager.get_ofstream("rst");
@@ -191,107 +242,98 @@ void SVDASolver::iteration_jac(RunManagerAbstract &run_manager, TerminationContr
 	}
 
 	set<string> out_of_bound_pars;
-	if (!calc_jacobian)
+	// Calculate Jacobian
+	// build model runs
+	performance_log->log_event("commencing to build jacobian parameter sets");
+	bool success_build_runs = false;
+	cout << "  calculating jacobian... ";
+	int n_freeze_iter = 0;
+	while (true) //loop and feeeze any base parameters that go out of bounds when computing the jacobian
 	{
-		calc_jacobian = true;
+		++n_freeze_iter;
+		if (n_freeze_iter > max_super_frz_iter)
+		{
+			terminate_local_iteration = true;
+			cout << "Terminating super parameter iterations." << endl;
+			cout << "Max number of iterations to freeze parameters to compute jacobian exceeded" << endl;
+			os << "Terminating super parameter iterations." << endl;
+			os << "Max number of iterations to freeze parameters to compute jacobian exceeded" << endl;
+			return;
+		}
+		// fix frozen parameters in SVDA transformation
+		debug_print(base_run.get_frozen_ctl_pars());
+		par_transform.get_svda_ptr()->update_add_frozen_pars(base_run.get_frozen_ctl_pars());
+		par_transform.get_svda_fixed_ptr()->reset(par_transform.get_svda_ptr()->get_frozen_derivative_pars());
+		Parameters numeric_pars = par_transform.ctl2numeric_cp(base_run.get_ctl_pars());
+		numeric_par_names_vec = numeric_pars.get_keys();
+
+		calc_init_obs = true;
+
 		super_parameter_group_info = par_transform.get_svda_ptr()->build_par_group_info(*par_group_info_ptr);
-	}
-	else
-	{
-		// Calculate Jacobian
-		// build model runs
 		performance_log->log_event("commencing to build jacobian parameter sets");
-		bool success_build_runs = false;
-		cout << "  calculating jacobian... ";
-		int n_freeze_iter = 0;
-		while (true) //loop and feeeze any base parameters that go out of bounds when computing the jacobian
-		{
-			++n_freeze_iter;
-			if (n_freeze_iter > max_super_frz_iter)
-			{
-				terminate_local_iteration = true;
-				cout << "Terminating super parameter iterations." << endl;
-				cout << "Max number of iterations to freeze parameters to compute jacobian exceeded" << endl;
-				os << "Terminating super parameter iterations." << endl;
-				os << "Max number of iterations to freeze parameters to compute jacobian exceeded" << endl;
-				return;
-			}
-			// fix frozen parameters in SVDA transformation
-			debug_print(base_run.get_frozen_ctl_pars());
-			par_transform.get_svda_ptr()->update_add_frozen_pars(base_run.get_frozen_ctl_pars());
-			par_transform.get_svda_fixed_ptr()->reset(par_transform.get_svda_ptr()->get_frozen_derivative_pars());
-			Parameters numeric_pars = par_transform.ctl2numeric_cp(base_run.get_ctl_pars());
-			numeric_par_names_vec = numeric_pars.get_keys();
-
-			calc_init_obs = true;
-
-			super_parameter_group_info = par_transform.get_svda_ptr()->build_par_group_info(*par_group_info_ptr);
-			performance_log->log_event("commencing to build jacobian parameter sets");
-			out_of_bound_pars.clear();
-			success_build_runs = jacobian.build_runs(base_run, numeric_par_names_vec, par_transform,
-				super_parameter_group_info, *ctl_par_info_ptr, run_manager, out_of_bound_pars,
-				phiredswh_flag, calc_init_obs);
-			if (success_build_runs)
-			{
-				break;
-			}
-			else if (!success_build_runs && out_of_bound_pars.size() > 0)
-			{
-				cout << "  can not compute jacobian without the following parameters going out of bounds... " << endl;
-				print(out_of_bound_pars, cout, 4);
-				cout << "  freezing parameters and recalculating the jacobian" << endl;
-				//add out of bound parameters to frozen parameter list
-				Parameters new_frz_derivative_pars;
-				for (auto &ipar : out_of_bound_pars)
-				{
-					const auto iter = base_ctl_pars.find(ipar);
-					assert(iter != base_ctl_pars.end());
-					new_frz_derivative_pars.insert(iter->first, iter->second);
-				}
-				if (new_frz_derivative_pars.size() > 0)
-				{
-					base_run.add_frozen_ctl_parameters(new_frz_derivative_pars);
-				}
-			}
-			else
-			{
-				break;
-			}
-		}
-
-		if (!success_build_runs)
-		{
-			throw PestError("Error in SVDASolver::iteration: Can not compute super parameter derivatives without base parameters going out of bounds");
-		}
-		//DEW testing
-		//ofstream &fout_rst = file_manager.open_ofile_ext("rtj", ios_base::out | ios_base::binary);
-		//par_transform.get_svda_ptr()->save(fout_rst);
-		//file_manager.close_file("rtj");
-		//ifstream &fin_rst = file_manager.open_ifile_ext("rtj", ios_base::in | ios_base::binary);
-		//par_transform.get_svda_ptr()->read(fin_rst);
-		//file_manager.close_file("rtj");
-		RestartController::write_jac_runs_built(fout_restart);
-		//make model runs
-		performance_log->log_event("jacobian parameter sets built, commencing model runs");
-		jacobian.make_runs(run_manager);
-		performance_log->log_event("jacobian runs complete, processing runs");
 		out_of_bound_pars.clear();
-		bool success_process_runs = jacobian.process_runs(par_transform,
-			super_parameter_group_info, run_manager, *prior_info_ptr, splitswh_flag);
-		if (out_of_bound_pars.size() > 0 || !success_process_runs)
+		success_build_runs = jacobian.build_runs(base_run, numeric_par_names_vec, par_transform,
+			super_parameter_group_info, *ctl_par_info_ptr, run_manager, out_of_bound_pars,
+			phiredswh_flag, calc_init_obs);
+		if (success_build_runs)
 		{
-			throw PestError("Error in SVDASolver::iteration: Can not compute super parameter derivatives");
+			break;
 		}
-		performance_log->log_event("processing jacobian runs complete");
-
-		performance_log->log_event("saving jacobian and sen files");
-		// save jacobian
+		else if (!success_build_runs && out_of_bound_pars.size() > 0)
+		{
+			cout << "  can not compute jacobian without the following parameters going out of bounds... " << endl;
+			print(out_of_bound_pars, cout, 4);
+			cout << "  freezing parameters and recalculating the jacobian" << endl;
+			//add out of bound parameters to frozen parameter list
+			Parameters new_frz_derivative_pars;
+			for (auto &ipar : out_of_bound_pars)
+			{
+				const auto iter = base_ctl_pars.find(ipar);
+				assert(iter != base_ctl_pars.end());
+				new_frz_derivative_pars.insert(iter->first, iter->second);
+			}
+			if (new_frz_derivative_pars.size() > 0)
+			{
+				base_run.add_frozen_ctl_parameters(new_frz_derivative_pars);
+			}
+		}
+		else
+		{
+			break;
+		}
 	}
+
+	if (!success_build_runs)
+	{
+		throw PestError("Error in SVDASolver::iteration: Can not compute super parameter derivatives without base parameters going out of bounds");
+	}
+	//DEW testing
+	//ofstream &fout_rst = file_manager.open_ofile_ext("rtj", ios_base::out | ios_base::binary);
+	//par_transform.get_svda_ptr()->save(fout_rst);
+	//file_manager.close_file("rtj");
+	//ifstream &fin_rst = file_manager.open_ifile_ext("rtj", ios_base::in | ios_base::binary);
+	//par_transform.get_svda_ptr()->read(fin_rst);
+	//file_manager.close_file("rtj");
+	RestartController::write_jac_runs_built(fout_restart);
+	//make model runs
+	performance_log->log_event("jacobian parameter sets built, commencing model runs");
+	jacobian.make_runs(run_manager);
+	performance_log->log_event("jacobian runs complete, processing runs");
+	out_of_bound_pars.clear();
+	bool success_process_runs = jacobian.process_runs(par_transform,
+		super_parameter_group_info, run_manager, *prior_info_ptr, splitswh_flag);
+	if (out_of_bound_pars.size() > 0 || !success_process_runs)
+	{
+		throw PestError("Error in SVDASolver::iteration: Can not compute super parameter derivatives");
+	}
+	performance_log->log_event("saving jacobian and sen files");
+	// save jacobian
 	jacobian.save("jcs");
 	// sen file for this iteration
 	output_file_writer.append_sen(file_manager.sen_ofstream(), termination_ctl.get_iteration_number() + 1,
 		jacobian, *(base_run.get_obj_func_ptr()), get_parameter_group_info(), *regul_scheme_ptr, true);
 }
+
 ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run)
 {
 	ostream &os = file_manager.rec_ofstream();

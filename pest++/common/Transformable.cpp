@@ -21,6 +21,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <map>
 #include <fstream>
 #include <iomanip>
 #include <utility>
@@ -396,3 +397,31 @@ ostream& operator<<(ostream& out, const Transformable &rhs)
 	return out;
 }
 
+
+
+
+void Parameters::read_par_file(ifstream &fin,  map<string, double> offset, map<string, double> &scale)
+{
+	clear();
+	offset.clear();
+	scale.clear();
+
+	vector<string> tokens;
+	string line;
+	getline(fin, line);
+	while (getline(fin, line))
+	{
+		strip_ip(line);
+		if (line.length() > 0)
+		{
+			tokenize(line, tokens);
+			string name = upper_cp(tokens[0]);
+			double par_val = convert_cp<double>(tokens[1]);
+			double offset_val = convert_cp<double>(tokens[2]);
+			double scale_val = convert_cp<double>(tokens[3]);
+			insert(name, par_val);
+			offset[name] = offset_val;
+			scale[name] = scale_val;
+		}
+	}
+}
