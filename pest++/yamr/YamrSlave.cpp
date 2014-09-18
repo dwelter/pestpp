@@ -115,14 +115,14 @@ int YAMRSlave::recv_message(NetPackage &net_pack)
 	return err;
 }
 
-int YAMRSlave::recv_message(NetPackage &net_pack,int timeout_secs)
+int YAMRSlave::recv_message(NetPackage &net_pack,int timeout_microsecs)
 {
 	fd_set read_fds;
 	int err = -1;
 	int result = 0;
 	struct timeval tv;
-	tv.tv_sec = timeout_secs;
-	tv.tv_usec = 0;
+	tv.tv_sec = 0;
+	tv.tv_usec = timeout_microsecs;
 	for (;;) {
 		read_fds = master; // copy master
 		result = w_select(fdmax + 1, &read_fds, NULL, NULL, &tv);
@@ -260,7 +260,7 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs,NetPackage &net_pac
 				done = true;
 			}
 			//this call includes a "sleep" for the timeout
-			err = recv_message(net_pack, OperSys::thread_sleep_secs);
+			err = recv_message(net_pack, OperSys::thread_sleep_milli_secs*1000);
 			if (err == -1)
 			{
 				recv_fails++;
@@ -612,6 +612,10 @@ void YAMRSlave::start(const string &host, const string &port)
 		else if (net_pack.get_type() == NetPackage::PackType::TERMINATE)
 		{
 			terminate = true;
+		}
+		else if (net_pack.get_type() == NetPackage::PackType::REQ_KILL)
+		{
+			cout << "received kill request from master. run already finished" << endl;
 		}
 		else if (net_pack.get_type() == NetPackage::PackType::PING)
 		{

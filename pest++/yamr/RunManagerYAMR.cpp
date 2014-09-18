@@ -162,6 +162,31 @@ void SlaveInfo::end_linpack(int sock_id)
 	linpack_time = std::chrono::system_clock::now() - it->second.start_time;
 }
 
+double SlaveInfo::get_duration_secs(int sock_id)
+{
+	auto it = slave_info_map.find(sock_id);
+	assert(it != slave_info_map.end());	
+	chrono::system_clock::duration dt = chrono::system_clock::now() - it->second.start_time;
+	return (double)std::chrono::duration_cast<std::chrono::milliseconds>(dt).count() / 1000.0;
+}
+
+double SlaveInfo::get_runtime_secs(int sock_id)
+{
+	auto it = slave_info_map.find(sock_id);
+	assert(it != slave_info_map.end());
+	auto &run_time = it->second.run_time;
+	return(double)std::chrono::duration_cast<std::chrono::milliseconds>(run_time).count() / 1000.0;
+}
+
+bool SlaveInfo::is_overdue(int sock_id)
+{
+	auto it = slave_info_map.find(sock_id);
+	assert(it != slave_info_map.end());
+	//if runtime hasn't been calculated
+	if (it->second.run_time <= std::chrono::hours(0)) return false;	
+	if (this->get_duration_secs(sock_id) > this->get_runtime_secs(sock_id)) return true;
+	else return false;
+}
 
 double SlaveInfo::get_runtime_minute(int sock_id)
 {
@@ -242,16 +267,6 @@ int SlaveInfo::seconds_since_last_ping_time(int sock_id)
 		(chrono::system_clock::now() - it->second.last_ping_time).count();
 }
 
-bool SlaveInfo::is_overdue(int sock_id)
-{
-	auto it = slave_info_map.find(sock_id);
-	assert(it != slave_info_map.end());
-	//if runtime hasn't been calculated
-	if (it->second.run_time <= std::chrono::hours(0)) return false;
-	chrono::system_clock::duration dt = chrono::system_clock::now() - it->second.start_time;
-	if (dt > it->second.run_time) return true;
-	else return true;
-}
 
 RunManagerYAMR::RunManagerYAMR(const vector<string> _comline_vec,
 	const vector<string> _tplfile_vec, const vector<string> _inpfile_vec,
@@ -581,15 +596,16 @@ bool RunManagerYAMR::schedule_run(int run_id)
 		if (err != -1)
 		{
 			//start run timer
-			slave_info.start_timer(*it_sock);
-			//reset the last ping time so we don't ping immediately after run is started
-			slave_info.reset_last_ping_time(*it_sock);
+			slave_info.start_timer(*it_sock);			
 			stringstream ss;
 			ss << "Sending run to: " << sock_name[0] << "$" << slave_info.get_work_dir(*it_sock) << "  (group id = " << cur_group_id << ", run id = " << run_id << ")";
 			report(ss.str(), false);
 			active_runs.insert(pair<int, YamrModelRun>(run_id, tmp_run));
+			//reset the last ping time so we don't ping immediately after run is started
+			slave_info.reset_last_ping_time(*it_sock);
 			slave_fd.erase(it_sock);
 			scheduled = true;
+			
 		}
 	}
 	return scheduled;
@@ -599,6 +615,8 @@ void RunManagerYAMR::schedule_runs()
 {
 	NetPackage net_pack;
 	slave_info.sort_queue(slave_fd);
+	double duration, avg_runtime;
+	double runtime_noise_secs;
 	for (auto it_run=waiting_runs.begin(); !slave_fd.empty() &&  it_run!=waiting_runs.end();)
 	{
 		bool success = schedule_run(it_run->get_id());
@@ -615,13 +633,16 @@ void RunManagerYAMR::schedule_runs()
 	for (auto it_active = active_runs.begin(); !slave_fd.empty() && it_active != active_runs.end();)
 	{		
 		int act_sock_id = it_active->second.get_socket();
-		if (slave_info.is_overdue(act_sock_id))
-		{		
+		duration = slave_info.get_duration_secs(act_sock_id);
+		avg_runtime = slave_info.get_runtime_secs(act_sock_id);
+		//runtime_noise_secs = max(1, avg_runtime*1.1);//a hueristic to keep from finding too many overdue runs
+		if (duration > avg_runtime)
+		{					
 			vector<string> sock_name = w_getnameinfo_vec(act_sock_id);
 			stringstream ss;
 			int run_id = it_active->second.get_id();
-			ss << "Overdue run on: " << sock_name[0] << "$" << slave_info.get_work_dir(act_sock_id) << "  (group id = " << cur_group_id << ", run id = " << run_id << ")";
-			report(ss.str(), true);
+			ss << "Overdue run (" << duration << "|"<<avg_runtime <<" seconds) on: " << sock_name[0] <<"$"<<slave_info.get_work_dir(act_sock_id) <<" (group id = " << cur_group_id << ", run id = " << run_id << ")";
+			report(ss.str(), false);
 			bool success = schedule_run(run_id);
 			if (success)
 			{
@@ -642,7 +663,7 @@ void RunManagerYAMR::report(std::string message,bool to_cout)
 	string t_str = ctime(&tt);
 	t_str = t_str.substr(0, t_str.length() - 1);
 	f_rmr << t_str << "->" << message << endl;
-	if (to_cout) cout << t_str << "->" << message << endl;
+	if (to_cout) cout << endl << t_str << "->" << message << endl;
 }
 
 void RunManagerYAMR::process_message(int i_sock)
@@ -689,16 +710,24 @@ void RunManagerYAMR::process_message(int i_sock)
 	{
 		int run_id = net_pack.get_run_id();
 		int group_id = net_pack.get_groud_id();
-		// keep track of model run time
-		slave_info.end_run(i_sock);
-		//std::time_t tt =  std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-		//streamsize n_prec = f_rmr.precision(2);
-		//f_rmr << ctime(&tt) << " Run received from: " << sock_name[0] << "$" << slave_info.get_work_dir(i_sock) << "  (run time = " << slave_info.get_runtime_minute(i_sock) << " min, group id = " << group_id << ", run id = " << run_id << ")" << endl << endl;
-		//f_rmr.precision(n_prec);
-		stringstream ss;
-		ss << " Run received from: " << sock_name[0] << "$" << slave_info.get_work_dir(i_sock) << "  (run time = " << slave_info.get_runtime_minute(i_sock) << " min, group id = " << group_id << ", run id = " << run_id << ")";
-		report(ss.str(),false);
-		process_model_run(i_sock, net_pack);
+		//check if this was a zombie run
+		auto it_zombie = get_zombie_run_id(i_sock);
+		if (it_zombie != zombie_runs.end())
+		{
+			stringstream ss;
+			ss << " zombie run finished on: " << sock_name[0] << "$" << slave_info.get_work_dir(i_sock) << "  (run time = " << slave_info.get_runtime_minute(i_sock) << " min, group id = " << group_id << ", run id = " << run_id << ")";
+			report(ss.str(), false);
+			zombie_runs.erase(it_zombie);
+		}
+		else
+		{
+			// keep track of model run time
+			slave_info.end_run(i_sock);
+			stringstream ss;
+			ss << " Run received from: " << sock_name[0] << "$" << slave_info.get_work_dir(i_sock) << "  (run time = " << slave_info.get_runtime_minute(i_sock) << " min, group id = " << group_id << ", run id = " << run_id << ")";
+			report(ss.str(), false);
+			process_model_run(i_sock, net_pack);
+		}
 
 	}
 	else if (net_pack.get_type() == NetPackage::PackType::RUN_FAILED)
@@ -709,7 +738,7 @@ void RunManagerYAMR::process_message(int i_sock)
 		auto it_zombie = get_zombie_run_id(i_sock);
 		if (it_zombie != zombie_runs.end())
 		{
-			report("zombie run killed on slave:" + sock_name[0] + "$" + slave_info.get_work_dir(i_sock),true);
+			report("zombie run killed on slave:" + sock_name[0] + "$" + slave_info.get_work_dir(i_sock),false);
 			zombie_runs.erase(it_zombie);
 		}
 		else
@@ -772,7 +801,7 @@ void RunManagerYAMR::process_message(int i_sock)
 	{
 		int zombie_id = it_zombie->second.get_socket();
 		vector<string> sock_name = w_getnameinfo_vec(zombie_id);
-		report("killing zombie run on slave:" + sock_name[0] + "$" + slave_info.get_work_dir(zombie_id), true);
+		report("killing zombie run on slave:" + sock_name[0] + "$" + slave_info.get_work_dir(zombie_id), false);
 		NetPackage net_pack(NetPackage::PackType::REQ_KILL, 0, 0, "");
 		char data = '\0';
 		int err = net_pack.send(zombie_id, &data, sizeof(data));

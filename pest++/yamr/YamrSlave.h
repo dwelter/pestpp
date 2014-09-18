@@ -38,7 +38,7 @@ public:
 	~YAMRSlave();
 	void run();
 	int recv_message(NetPackage &net_pack);
-	int recv_message(NetPackage &net_pack,int timeout_sec);
+	int recv_message(NetPackage &net_pack,int timeout_microsec);
 	int send_message(NetPackage &net_pack, const void *data=NULL, unsigned long data_len=0);
 	int run_model(Parameters &pars, Observations &obs, NetPackage &net_pack);
 	int run_model(Parameters &pars, Observations &obs);

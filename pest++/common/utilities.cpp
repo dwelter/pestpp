@@ -419,8 +419,8 @@ void run_commands(thread_flag* terminate, thread_flag* finished, vector<string> 
 		DWORD exitcode;
 		while (true)
 		{
-			//sleep
-			std::this_thread::sleep_for(std::chrono::milliseconds(OperSys::thread_sleep_secs*1000));
+			//sleep			
+			std::this_thread::sleep_for(std::chrono::milliseconds(OperSys::thread_sleep_milli_secs));
 			//check if process is still active
 			GetExitCodeProcess(pi.hProcess, &exitcode);
 			//if the process ended, break

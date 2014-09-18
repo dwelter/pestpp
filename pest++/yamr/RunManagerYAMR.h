@@ -80,7 +80,8 @@ public:
 	void end_run(int sock_id);
 	void end_linpack(int sock_id);
 	double get_runtime(int sock_id);
-	double get_st_dev(int sock_id);
+	double get_duration_secs(int sock_id);
+	double get_runtime_secs(int sock_id);
 	double get_runtime_minute(int sock_id);
 	double get_linpack_time(int sock_id);
 	void sort_queue(std::deque<int> &slave_fd);

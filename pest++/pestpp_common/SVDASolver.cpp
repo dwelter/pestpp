@@ -361,7 +361,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		std::cout << string(message.str().size(), '\b');
 		message.str("");
 		message << "  computing upgrade vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
-		std::cout << message.str();
+		std::cout << message.str()  << endl;
 		cout.flush();
 
 		Parameters new_pars;
