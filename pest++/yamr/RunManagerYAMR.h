@@ -89,8 +89,7 @@ public:
 	void set_ping(int sock_id,bool val);
 	bool get_ping(int sock_id);
 	void reset_failed_pings(int sock_id);
-	void reset_last_ping_time(int sock_id);
-	bool is_overdue(int sock_id);	
+	void reset_last_ping_time(int sock_id);	
 	int seconds_since_last_ping_time(int sock_id);
 	~SlaveInfo();
 private:

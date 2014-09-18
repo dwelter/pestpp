@@ -178,16 +178,6 @@ double SlaveInfo::get_runtime_secs(int sock_id)
 	return(double)std::chrono::duration_cast<std::chrono::milliseconds>(run_time).count() / 1000.0;
 }
 
-bool SlaveInfo::is_overdue(int sock_id)
-{
-	auto it = slave_info_map.find(sock_id);
-	assert(it != slave_info_map.end());
-	//if runtime hasn't been calculated
-	if (it->second.run_time <= std::chrono::hours(0)) return false;	
-	if (this->get_duration_secs(sock_id) > this->get_runtime_secs(sock_id)) return true;
-	else return false;
-}
-
 double SlaveInfo::get_runtime_minute(int sock_id)
 {
 	auto it = slave_info_map.find(sock_id);
@@ -617,6 +607,7 @@ void RunManagerYAMR::schedule_runs()
 	slave_info.sort_queue(slave_fd);
 	double duration, avg_runtime;
 	double runtime_noise_secs;
+	//first try to schedule waiting runs
 	for (auto it_run=waiting_runs.begin(); !slave_fd.empty() &&  it_run!=waiting_runs.end();)
 	{
 		bool success = schedule_run(it_run->get_id());
