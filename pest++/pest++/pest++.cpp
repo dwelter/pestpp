@@ -395,8 +395,11 @@ int main(int argc, char* argv[])
 		//base parameter iterations
 		try
 		{
-			if (restart_ctl.get_iteration_type() == RestartController::IterationType::SUPER)
-			if (n_base_iter < 0 || pest_scenario.get_control_info().noptmax < 0)
+			if (restart_ctl.get_restart_option() != RestartController::RestartOption::NONE  && restart_ctl.get_iteration_type() == RestartController::IterationType::SUPER)
+			{
+
+			}
+			else if (n_base_iter < 0 || pest_scenario.get_control_info().noptmax < 0)
 			{
 				cur_run = base_svd.compute_jacobian(*run_manager_ptr, termination_ctl, cur_run);
 				if (pest_scenario.get_control_info().noptmax < 0)
@@ -430,8 +433,18 @@ int main(int argc, char* argv[])
 			Parameters base_numeric_pars = base_trans_seq.ctl2numeric_cp(cur_ctl_parameters);
 			const vector<string> &pars = base_numeric_pars.get_keys();
 			QSqrtMatrix Q_sqrt(&(pest_scenario.get_ctl_observation_info()), &pest_scenario.get_prior_info());
-			(*tran_svd).update_reset_frozen_pars(*base_jacobian_ptr, Q_sqrt, base_numeric_pars, max_n_super, super_eigthres, pars, nonregul_obs, cur_run.get_frozen_ctl_pars());
-			(*tr_svda_fixed).reset((*tran_svd).get_frozen_derivative_pars());
+			if (restart_ctl.get_restart_option() == RestartController::RestartOption::RESUME_JACOBIAN_RUNS)
+			{
+				//read previously computed super parameter transformation
+				ifstream &fin_rst = file_manager.open_ifile_ext("rtj", ios_base::in | ios_base::binary);
+				(*tran_svd).read(fin_rst);
+				file_manager.close_file("rtj");
+			}
+			else
+			{
+				(*tran_svd).update_reset_frozen_pars(*base_jacobian_ptr, Q_sqrt, base_numeric_pars, max_n_super, super_eigthres, pars, nonregul_obs, cur_run.get_frozen_ctl_pars());
+				(*tr_svda_fixed).reset((*tran_svd).get_frozen_derivative_pars());
+			}
 			SVDASolver super_svd(&svd_control_info, pest_scenario.get_svd_info(), &pest_scenario.get_base_group_info(), &pest_scenario.get_ctl_parameter_info(),
 				&pest_scenario.get_ctl_observation_info(),  file_manager, &pest_scenario.get_ctl_observations(), &obj_func,
 				trans_svda, &pest_scenario.get_prior_info(), *super_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(),

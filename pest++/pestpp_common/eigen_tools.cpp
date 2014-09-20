@@ -220,7 +220,7 @@ bool save_triplets_bin(const SparseMatrix<double> &mat, ostream &fout)
 	return true;
 }
 
-bool save_vector_bin(const VectorXd vec, ostream &fout)
+bool save_vector_bin(const VectorXd &vec, ostream &fout)
 {
 	int size = vec.size();
 	//vector<double> buf = egienvec_2_stlvec(vec);
@@ -229,7 +229,7 @@ bool save_vector_bin(const VectorXd vec, ostream &fout)
 	return true;
 }
 
-bool load_vector_bin(VectorXd vec, istream &fin)
+bool load_vector_bin(VectorXd &vec, istream &fin)
 {
 	int size = 0;
 	fin.read((char*)&size, sizeof(__int32) * 1);

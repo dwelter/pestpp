@@ -59,12 +59,12 @@ void RestartController::process_rst_file(std::ifstream &fin)
 		else if (tokens[0] == "start_iteration")
 		{
 			convert_ip(tokens[1], local_iter_no);
-			convert_ip(tokens[1], global_iter_no);
-			if (tokens[2] == "svd_base_par")
+			convert_ip(tokens[2], global_iter_no);
+			if (tokens[3] == "svd_base_par")
 			{
 				iteration_type = IterationType::BASE;
 			}
-			else if (tokens[2] == "svda_base_par")
+			else if (tokens[3] == "svda_super_par")
 			{
 				iteration_type = IterationType::SUPER;
 			}

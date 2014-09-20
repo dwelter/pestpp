@@ -121,7 +121,6 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 {
 	ostream &os = file_manager.rec_ofstream();
 	ostream &fout_restart = file_manager.get_ofstream("rst");
-	ModelRun base_run(cur_run);
 	ModelRun best_upgrade_run(cur_run);
 	// Start Solution iterations
 	bool save_nextjac = false;
@@ -171,6 +170,7 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 		if (!calc_jacobian || restart_controller.get_restart_option() == RestartController::RestartOption::REUSE_JACOBIAN)
 		{
 			iteration_reuse_jac(run_manager, termination_ctl, best_upgrade_run);
+			calc_jacobian = true;
 		}
 		else
 		{
@@ -617,6 +617,16 @@ void SVDSolver::iteration_reuse_jac(RunManagerAbstract &run_manager, Termination
 		throw(PestError("Error: Base parameter run failed.  Can not continue."));
 	}
 	jacobian.save("jcb");
+
+	//Update parameters and observations for base run
+	{
+		Parameters tmp_pars;
+		Observations tmp_obs;
+		bool success = run_manager.get_run(0, tmp_pars, tmp_obs);
+		par_transform.model2ctl_ip(tmp_pars);
+		base_run.update_ctl(tmp_pars, tmp_obs);
+	}
+
 	// sen file for this iteration
 	output_file_writer.append_sen(file_manager.sen_ofstream(), termination_ctl.get_iteration_number() + 1,
 		jacobian, *(base_run.get_obj_func_ptr()), get_parameter_group_info(), *regul_scheme_ptr, true);
