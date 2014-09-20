@@ -476,7 +476,6 @@ void OutputFileWriter::write_rei(ofstream &fout, int iter_no, const Observations
 
 void OutputFileWriter::write_par(ofstream &fout, const Parameters &pars, const TranOffset &offset_tran, const TranScale &scale_tran)
 {
-	const string *name_ptr;
 	Parameters::const_iterator it;
 	pair<bool, double> val_pair;
 	double scale, offset;

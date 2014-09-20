@@ -694,7 +694,7 @@ void Jacobian::transform(const ParamTransformSeq &par_trans, void(ParamTransform
 	(par_trans.*meth_prt)(*this);
 }
 
-void Jacobian::print(std::ostream &fout)
+void Jacobian::print(std::ostream &fout) const
 { 
 	fout << "Jacobian:" << endl;
 	fout << "base_numeric_par_names: " << base_numeric_par_names << endl;

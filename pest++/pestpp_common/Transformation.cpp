@@ -584,7 +584,7 @@ void TranSVD::calc_svd()
 	super_parameter_names.clear();
 	for(int i=0; i<n_sing_val; ++i) {
 		sup_name.str("");
-		sup_name << "sup_";
+		sup_name << "SUP_";
 		sup_name << i+1;
 		super_parameter_names.push_back(sup_name.str());
 	}
