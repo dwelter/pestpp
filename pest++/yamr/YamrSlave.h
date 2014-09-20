@@ -42,6 +42,7 @@ public:
 	int run_model(Parameters &pars, Observations &obs);
 	std::string tpl_err_msg(int i);
 	std::string ins_err_msg(int i);
+	void check_io();
 private:
 	int sockfd;
 	int fdmax;

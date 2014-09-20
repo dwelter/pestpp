@@ -1,0 +1,70 @@
+'GROUP OF PARAMETERS TO FIT'                                          
+' KLAT     N parameters    CORN     SOYBEAN'         
+    1         0         0              0
+'                                                '                                  
+'MAXIMUM ITERATION NUMBER                (MIT)  ='        10
+'TOTAL NUMBER OF PARAMETERS              (TNP)  ='        11
+'KLAT AND HYDRGRAD OPTIMIZATION'                                      
+' X(1)=KL1                     ='       0.47000E+01
+' X(2)=KL2                     ='       0.59400E-01
+' X(3)=KL3                     ='       0.37175E+01
+' X(4)=KL4                     ='       0.12478E+01
+' X(5)=KL5                     ='       0.29654E+01
+' X(6)=KL6                     ='       0.94106E+01
+' X(7)=KL7                     ='       0.17219E+02
+' X(8)=KL8                     ='       0.96868E-01
+' X(9)=KL9                     ='       0.16565E-01
+' X(10)=KL10                   ='       0.46969E-01
+' X(11)=HYGD                   ='       2.40000E-05
+'FITTED PARAMETERS                       (NP)   ='        11
+'PARAMETER FITTED                     (PNAME(I))='
+**KL1 **KL2 **KL3 **KL4 **KL5 **KL6 **KL7 **KL8 **KL9 **KL10**HYGD**
+'                                  '                                  
+'SOIL N DYNAMICS Rij VALUES'                                          
+' X(1)=DEC1                    ='       1.67300E-07
+' X(2)=DEC2                    ='       8.14000E-06
+' X(3)=DEC3                    ='       2.50000E-07
+' X(4)=DEC4                    ='       5.00000E-08
+' X(5)=DEC5                    ='       1.50000E-09
+' X(6)=DTH1                    ='       5.00000E-35
+' X(7)=DTH2                    ='       4.77001E-40
+' X(8)=DTH3                    ='       3.40000E-32
+' X(9)=                        ='       0.00000E+00
+' X(10)=                       ='       0.00000E+00
+' X(11)=                       ='       0.00000E+00
+'FITTED PARAMETERS                       (NP)   ='         8
+'PARAMETER FITTED                     (PNAME(I))='
+**DEC1**DEC2**DEC3**DEC4**DEC5**DTH1**DTH2**DTH3**    **    **    **
+'                                  '                                  
+'CORN PLANT PARAMETER OPTIMIZATION'                                   
+' X(1)=P1                      ='      240.0
+' X(2)=P2                      ='       0.4
+' X(3)=P5                      ='       810.0
+' X(4)=G2                      ='       700.0
+' X(5)=G3                      ='       8.0
+' X(6)=                        ='     38.90      
+' X(7)=                        ='       0.0
+' X(8)=                        ='       0.0
+' X(9)=                        ='       0.0
+' X(10)=CNUP,MAXIMUM N UPTAKE  ='       0.0
+' X(11)=ALFA,RESPIRATION LOSS  ='       0.0
+'FITTED PARAMETERS                       (NP)   ='         5
+'PARAMETER FITTED                     (PNAME(I))='
+**P1  **P2  **P5  **G2  **G3  **    **
+'                                  '                                  
+'SOYBEAN PLANT PARAMETER OPTIMIZATION'                                
+' X(1)=CSDL                    ='       14.45 
+' X(2)=PSEN                    ='       0.245
+' X(3)=EMFL                    ='       19.0
+' X(4)=FLSH                    ='       7.9
+' X(5)=FLSD                    ='       14.8
+' X(6)=SDPM                    ='       32.0
+' X(7)=FLLF                    ='       26.0
+' X(8)=SFDR                    ='       22.0
+' X(9)=PODR                    ='       08.0
+' X(10)=                       ='       0.00
+' X(11)=                       ='       0.00
+'FITTED PARAMETERS                       (NP)   ='         9
+'PARAMETER FITTED                     (PNAME(I))='
+**CSDL**PSEN**EMFL**FLSH**FLSD**SDPM**FLLF**SFDR**PODR**
+'                                            '                        

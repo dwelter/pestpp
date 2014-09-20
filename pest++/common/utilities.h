@@ -206,5 +206,8 @@ std::vector<std::string> fortran_str_array_2_vec(char *fstr, int str_len, int fs
 
 void read_par(ifstream &fin, Parameters &pars);
 
+bool check_exist_in(std::string filename);
+
+bool check_exist_out(std::string filename);
 }  // end namespace pest_utils
 #endif /* UTILITIES_H_ */

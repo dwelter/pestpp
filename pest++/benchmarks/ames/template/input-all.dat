@@ -1,0 +1,88 @@
+'GROUP OF PARAMETERS TO FIT'                                          
+' KLAT    KSAT    A2 SLOPE     Decay rate    CORN     SOYBEAN'        
+    1         1         1         1         1         1
+'WT YEARLY-TF SW-STORAGE  YEARLY-N-TF  NO3-STORAGE  YIELD  BIOMASS'   
+    0         0         0         1         1         0         0
+'                                  '                                  
+'MAXIMUM ITERATION NUMBER                (MIT)  ='         4
+'TOTAL NUMBER OF PARAMETERS              (TNP)  ='        11
+'KLAT AND HYDRGRAD OPTIMIZATION'                                      
+' X(1)=KL1                     ='       0.88979E+01
+' X(2)=KL2                     ='       0.71503E+00
+' X(3)=KL3                     ='       0.52360E+00
+' X(4)=KL4                     ='       0.42292E+00
+' X(5)=KL5                     ='       0.96119E+00
+' X(6)=KL6                     ='       0.11413E+02
+' X(7)=KL7                     ='       0.13168E+02
+' X(8)=KL8                     ='       0.11679E-01
+' X(9)=KL9                     ='       0.27014E-01
+' X(10)=KL10                   ='       0.16231E-01
+' X(11)=HYGD                   ='       0.37009E-04
+'FITTED PARAMETERS                       (NP)   ='        11
+'PARAMETER FITTED                     (PNAME(I))='
+**KL1 **KL2 **KL3 **KL4 **KL5 **KL6 **KL7 **KL8 **KL9 **KL10**HYGD**
+'                                  '                                  
+'KSAT OPTIMIZATION'                                                   
+' X(1)=Ks1                     ='       0.57429E+01
+' X(2)=Ks2                     ='       0.44375E+01
+' X(3)=Ks3                     ='       0.72172E+01
+' X(4)=Ks4                     ='       0.95189E+00
+' X(5)=Ks5                     ='       0.60312E+01
+' X(6)=Ks6                     ='       0.10588E+00
+' X(7)=Ks7                     ='       0.84958E+00
+' X(8)=Ks8                     ='       0.40476E-01
+' X(9)=Ks9                     ='       0.86735E-01
+' X(10)=Ks10                   ='       0.11182E+00
+' X(11)=                       ='       0.00000E+00
+'FITTED PARAMETERS                       (NP)   ='        10
+'PARAMETER FITTED                     (PNAME(I))='
+**Ks1 **Ks2 **Ks3 **Ks4 **Ks5 **Ks6 **Ks7 **Ks8 **Ks9 **Ks10**    **
+'                                  '                                  
+'SOIL N DYNAMICS decay VALUES'                                        
+' X(1)=DEC1                    ='       0.11012E-06
+' X(2)=DEC2                    ='       0.14330E-05
+' X(3)=DEC3                    ='       0.64959E-06
+' X(4)=DEC4                    ='       0.14494E-07
+' X(5)=DEC5                    ='       0.78204E-09
+' X(6)=DTH1                    ='       0.25960E-34
+' X(7)=DTH2                    ='       0.14766E-38
+' X(8)=DTH3                    ='       0.13852E-32
+' X(9)=                        ='       0.00000E+00
+' X(10)=                       ='       0.00000E+00
+' X(11)=                       ='       0.00000E+00
+'FITTED PARAMETERS                       (NP)   ='         8
+'PARAMETER FITTED                     (PNAME(I))='
+**DEC1**DEC2**DEC3**DEC4**DEC5**DTH1**DTH2**DTH3**    **    **    **
+'                                  '                                  
+'CORN PLANT PARAMETER OPTIMIZATION'                                   
+' X(1)=CVLA, CONVLA            ='       0.99387E+01
+' X(2)=DEV1                    ='       0.37259E+01
+' X(3)=DEV2                    ='       0.17370E+02
+' X(4)=DEV3                    ='       0.77133E+01
+' X(5)=DEV4                    ='       0.38321E+02
+' X(6)=DEV5                    ='       0.25068E+02
+' X(7)=                        ='       0.00000E+00
+' X(8)=AGE1, AGE FOR PROPAGUL  ='       0.80000E+00
+' X(9)=AGE2, AGE FOR SEED     ='        0.90000E+00
+' X(10)=CNUP,MAXIMUM N UPTAKE  ='       0.21000E+01
+' X(11)=ALFA, RESPIRATION LOSS  ='      0.63603E+00
+'FITTED PARAMETERS                       (NP)   ='         6
+'PARAMETER FITTED                     (PNAME(I))='
+**CVLA**DEV1**DEV2**DEV3**DEV4**DEV5**    **AGE1**AGE2**CNUP**ALFA**
+'                                  '                                  
+'SOYBEAN PLANT PARAMETER OPTIMIZATION'                                
+' X(1)=CVLA, CONVLA            ='       0.59325E+00
+' X(2)=DEV1                    ='       0.61049E+01
+' X(3)=DEV2                    ='       0.27587E+01
+' X(4)=DEV3                    ='       0.11391E+02
+' X(5)=DEV4                    ='       0.37687E+02
+' X(6)=DEV5                    ='       0.60767E+01
+' X(7)=                        ='       0.00000E+00
+' X(8)=AGE1, AGE FOR PROPAGUL  ='       0.80000E+00
+' X(9)=AGE2, AGE FOR SEED     ='        0.70000E+00
+' X(10)=CNUP,MAXIMUM N UPTAKE  ='       0.10000E+01
+' X(11)=ALFA,RESPIRATION LOSS  ='       0.19267E+00
+'FITTED PARAMETERS                       (NP)   ='         6
+'PARAMETER FITTED                     (PNAME(I))='
+**CVLA**DEV1**DEV2**DEV3**DEV4**DEV5**    **AGE1**AGE2**CNUP**ALFA**
+'                                            '                        

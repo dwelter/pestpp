@@ -132,7 +132,18 @@ void RunManagerSerial::run()
 	while (!(run_id_vec = get_outstanding_run_ids()).empty())
 	{
 		for (int i_run : run_id_vec)
-		{
+		{			
+			//first delete any existing input and output files			
+			for (auto &out_file : outfile_vec)
+			{
+				if((check_exist_out(out_file)) && (remove(out_file.c_str()) != 0))
+					throw PestError("model interface error: Cannot delete existing model output file "+out_file);				
+			}
+			for (auto &in_file : inpfile_vec)
+			{
+				if ((check_exist_out(in_file)) && (remove(in_file.c_str()) != 0))
+					throw PestError("model interface error: Cannot delete existing model input file " + in_file);
+			}
 			Observations obs;
 			//vector<double> par_values;
 			Parameters pars;
@@ -142,7 +153,7 @@ void RunManagerSerial::run()
 				message.str("");
 				message << "(" << success_runs << "/" << nruns << " runs complete)";
 				std::cout << message.str();
-				OperSys::chdir(run_dir.c_str());
+				//OperSys::chdir(run_dir.c_str());
 				//if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))
 				//{
 				//	throw PestError("Error running model: invalid parameter value returned");
