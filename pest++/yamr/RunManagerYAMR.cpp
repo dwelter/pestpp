@@ -750,6 +750,12 @@ void RunManagerYAMR::process_message(int i_sock)
 		}
 	}
 	else if (net_pack.get_type() == NetPackage::PackType::PING){}
+	else if (net_pack.get_type() == NetPackage::PackType::IO_ERROR)
+	{
+		//string err(net_pack.get_data().begin(),net_pack.get_data().end());		
+		report("error in model IO files on slave: " + sock_name[0] + "$" + slave_info.get_work_dir(i_sock) + "-terminating slave. ",true);
+		close_slave(i_sock);
+	}
 	else
 	{
 		report("Received unsupported message from slave: ", false);
@@ -757,6 +763,7 @@ void RunManagerYAMR::process_message(int i_sock)
 		//save results from model run
 	}
 }
+
 
  bool RunManagerYAMR::process_model_run(int sock_id, NetPackage &net_pack)
  {

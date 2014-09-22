@@ -45,6 +45,7 @@ public:
 	std::string tpl_err_msg(int i);
 	std::string ins_err_msg(int i);
 	void check_io();
+	void check_par_obs();
 	//void listener(pest_utils::thread_flag* terminate, pest_utils::thread_flag* finished);
 	void listener();
 private:
