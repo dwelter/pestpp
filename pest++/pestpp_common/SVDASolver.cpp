@@ -168,16 +168,11 @@ void SVDASolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_activ
 		prev_frozen_active_ctl_pars.insert(new_frozen_ctl_pars.begin(), new_frozen_ctl_pars.end());
 }
 
-void SVDASolver::iteration_reuse_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run)
+
+ModelRun SVDASolver::update_run(RunManagerAbstract &run_manager, ModelRun &base_run)
 {
-	ostream &fout_restart = file_manager.get_ofstream("rst");
-	ostream &os = file_manager.rec_ofstream();
-	vector<string> numeric_par_names_vec;
-
-	cout << "  reading previosuly computed jacobian... ";
-	jacobian.read(file_manager.build_filename("jco"));
-
-	Parameters base_ctl_pars = base_run.get_ctl_pars();
+	ModelRun new_base_run = base_run;
+	Parameters base_ctl_pars = new_base_run.get_ctl_pars();
 	// make sure these are all in bounds
 	for (auto &ipar : base_ctl_pars)
 	{
@@ -195,39 +190,49 @@ void SVDASolver::iteration_reuse_jac(RunManagerAbstract &run_manager, Terminatio
 	}
 
 	run_manager.reinitialize(file_manager.build_filename("rnr"));
-	int run_id = run_manager.add_run(par_transform.ctl2model_cp(base_run.get_ctl_pars()));
+	int run_id = run_manager.add_run(par_transform.ctl2model_cp(new_base_run.get_ctl_pars()));
 
 	run_manager.run();
 	Parameters tmp_pars;
 	Observations tmp_obs;
 	bool success = run_manager.get_run(run_id, tmp_pars, tmp_obs);
-	if (success)
-	{
-		par_transform.model2ctl_ip(tmp_pars);
-		base_run.update_ctl(tmp_pars, tmp_obs);
-		jacobian.process_base_run(par_transform, run_manager, *prior_info_ptr);
-		return;
-	}
-	else
+	if (!success)
 	{
 		throw(PestError("Error: Base super parameter run failed."));
 	}
-	jacobian.save("jcs");
+	par_transform.model2ctl_ip(tmp_pars);
+	new_base_run.update_ctl(tmp_pars, tmp_obs);
+	return new_base_run;
+}
 
-	//Update parameters and observations for base run
+
+ModelRun SVDASolver::iteration_reuse_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool rerun_base, const string &filename)
+{
+	ModelRun new_base_run = base_run;
+
+	ostream &fout_restart = file_manager.get_ofstream("rst");
+	ostream &os = file_manager.rec_ofstream();
+	vector<string> numeric_par_names_vec;
+
+	cout << "  reading previosuly computed jacobian... ";
+
+	string jac_filenane = filename;
+	if (filename.empty()) jac_filenane = file_manager.build_filename("jcs");
+	jacobian.read(jac_filenane);
+
+	if (rerun_base)
 	{
-		Parameters tmp_pars;
-		Observations tmp_obs;
-		bool success = run_manager.get_run(0, tmp_pars, tmp_obs);
-		par_transform.model2ctl_ip(tmp_pars);
-		base_run.update_ctl(tmp_pars, tmp_obs);
+		new_base_run = update_run(run_manager, base_run);
 	}
+
+	jacobian.save("jcs");
 
 	// sen file for this iteration
 	output_file_writer.append_sen(file_manager.sen_ofstream(), termination_ctl.get_iteration_number() + 1,
-		jacobian, *(base_run.get_obj_func_ptr()), get_parameter_group_info(), *regul_scheme_ptr, true);
-}
+		jacobian, *(new_base_run.get_obj_func_ptr()), get_parameter_group_info(), *regul_scheme_ptr, true);
 
+	return new_base_run;
+}
 
 void SVDASolver::iteration_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool calc_init_obs)
 {

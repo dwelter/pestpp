@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
 {
 	try
 	{
-		string version = "2.4.2";
+		string version = "2.4.3";
 		cout << endl << endl;
 		cout << "             PEST++ Version " << version << endl << endl;
 		cout << "                 by Dave Welter" << endl;
@@ -403,22 +403,36 @@ int main(int argc, char* argv[])
 			//base parameter iterations
 			try
 			{
+
 				if (restart_ctl.get_restart_option() != RestartController::RestartOption::NONE  && restart_ctl.get_iteration_type() == RestartController::IterationType::SUPER)
 				{
 
 				}
-				else if (n_base_iter < 0 || pest_scenario.get_control_info().noptmax < 0)
+				else if (restart_ctl.get_restart_option() == RestartController::RestartOption::REUSE_JACOBIAN && n_base_iter < 0)
+				{
+					base_svd.iteration_reuse_jac(*run_manager_ptr, termination_ctl, cur_run, false, file_manager.build_filename("jco"));
+				}
+				else if (n_base_iter < 0)
 				{
 					cur_run = base_svd.compute_jacobian(*run_manager_ptr, termination_ctl, cur_run);
-					if (pest_scenario.get_control_info().noptmax < 0)
-					{
-						optimum_run = cur_run;
-						termination_ctl.set_terminate(true);
-					}
+				}
+				else if (pest_scenario.get_control_info().noptmax < 0)
+				{
+					cur_run = base_svd.compute_jacobian(*run_manager_ptr, termination_ctl, cur_run);
+					optimum_run = cur_run;
+					termination_ctl.set_terminate(true);
+				}
+				else if (restart_ctl.get_restart_option() == RestartController::RestartOption::REUSE_JACOBIAN)
+				{
+					bool calc_first_jacobian = false;
+					base_svd.iteration_reuse_jac(*run_manager_ptr, termination_ctl, cur_run, false, file_manager.build_filename("jco"));
+					cur_run = base_svd.solve(*run_manager_ptr, termination_ctl, n_base_iter, cur_run, optimum_run, calc_first_jacobian);
+					termination_ctl.check_last_iteration();
 				}
 				else
 				{
-					cur_run = base_svd.solve(*run_manager_ptr, termination_ctl, n_base_iter, cur_run, optimum_run);
+					bool calc_first_jacobian = true;
+					cur_run = base_svd.solve(*run_manager_ptr, termination_ctl, n_base_iter, cur_run, optimum_run, calc_first_jacobian);
 					termination_ctl.check_last_iteration();
 				}
 				cur_ctl_parameters = cur_run.get_ctl_pars();
@@ -460,15 +474,18 @@ int main(int argc, char* argv[])
 					pest_scenario.get_pestpp_options().get_max_super_frz_iter());
 				super_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 				//use base jacobian to compute first super jacobian if there was not a super upgrade
-				bool reuse_jacobian = false;
+				bool calc_first_jacobian = true;
 				if (n_base_iter == -1)
-				{
+				{ 
+					//transform base jacobian to super jacobian
 					super_svd.get_jacobian() = base_svd.get_jacobian();
 					super_svd.get_jacobian().transform(base_trans_seq, &ParamTransformSeq::jac_numeric2active_ctl_ip);
 					super_svd.get_jacobian().transform(trans_svda, &ParamTransformSeq::jac_active_ctl_ip2numeric_ip);
-					reuse_jacobian = true;
+					//rerun base run to account for round off error in super parameters
+					cur_run = super_svd.update_run(*run_manager_ptr, cur_run);
+					calc_first_jacobian = false;
 				}
-				cur_run = super_svd.solve(*run_manager_ptr, termination_ctl, n_super_iter, cur_run, optimum_run, reuse_jacobian);
+				cur_run = super_svd.solve(*run_manager_ptr, termination_ctl, n_super_iter, cur_run, optimum_run, calc_first_jacobian);
 				cur_ctl_parameters = cur_run.get_ctl_pars();
 				base_svd.set_phiredswh_flag(super_svd.get_phiredswh_flag());
 				base_svd.set_splitswh_flag(super_svd.get_splitswh_flag());

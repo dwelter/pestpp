@@ -503,6 +503,7 @@ void OutputFileWriter::write_par(ofstream &fout, const Parameters &pars, const T
 		fout << setw(14) << lower_cp(b) << setw(22) << " "
 		<<  showpoint<< pars.get_rec(b) << " " << setw(20) << showpoint << scale << " " << setw(20) << showpoint << offset << endl;
 	}
+	fout.flush();
 }
 
 void OutputFileWriter::write_sen_header(std::ostream &fout, const string &case_name)

@@ -258,32 +258,6 @@ void Jacobian::make_runs(RunManagerAbstract &run_manager)
 	run_manager.run();
 }
 
-
-bool Jacobian::process_base_run(ParamTransformSeq &par_transform,
-	RunManagerAbstract &run_manager, const PriorInformation &prior_info)
-{
-	bool success = false;
-	// calculate jacobian
-	base_sim_obs_names = run_manager.get_obs_name_vec();
-	vector<string> prior_info_name = prior_info.get_keys();
-	base_sim_obs_names.insert(base_sim_obs_names.end(), prior_info_name.begin(), prior_info_name.end());
-	std::vector<Eigen::Triplet<double> > triplet_list;
-
-	JacobianRun base_run;
-	int i_run = 0;
-	// get base run parameters and observation for initial model run from run manager storage
-	run_manager.get_model_parameters(i_run, base_run.ctl_pars);
-	success = run_manager.get_observations_vec(i_run, base_run.obs_vec);
-	if (!success)
-	{
-		throw(PestError("Error: Super-parameter base parameter run failed.  Can not compute the Jacobian"));
-	}
-	par_transform.model2ctl_ip(base_run.ctl_pars);
-	base_numeric_parameters = par_transform.ctl2numeric_cp(base_run.ctl_pars);
-	return success;
-}
-
-
 bool Jacobian::process_runs(ParamTransformSeq &par_transform,
 		const ParameterGroupInfo &group_info, 
 		RunManagerAbstract &run_manager, const PriorInformation &prior_info, bool splitswh_flag)

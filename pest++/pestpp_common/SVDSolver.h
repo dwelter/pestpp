@@ -58,8 +58,8 @@ public:
 		const string &description = string("base parameter solution"), bool _phiredswh_flag = false, bool _splitswh_flag = false, bool _save_next_jacobian = true);
 	virtual ModelRun compute_jacobian(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &cur_run);
 	virtual ModelRun solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter, ModelRun &cur_run,
-		ModelRun &optimum_run, bool reuse_first_jacobian=false);
-	virtual void iteration_reuse_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run);
+		ModelRun &optimum_run, bool calc_first_jacobian = true);
+	virtual ModelRun iteration_reuse_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool rerun_base = true, const std::string &filename = "");
 	virtual void iteration_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool calc_init_obs = false);
 	virtual ModelRun iteration_upgrd(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run);
 	virtual void set_svd_package(PestppOptions::SVD_PACK _svd_pack);

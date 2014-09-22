@@ -82,11 +82,8 @@ ModelRun SVDSolver::compute_jacobian(RunManagerAbstract &run_manager, Terminatio
 {
 	ostream &os = file_manager.rec_ofstream();
 	ostream &fout_restart = file_manager.get_ofstream("rst");
-	ModelRun base_run(cur_run);
 	ModelRun best_upgrade_run(cur_run);
 	// Start Solution iterations
-	bool save_nextjac = false;
-	string matrix_inv = (mat_inv == MAT_INV::Q12J) ? "\"Q 1/2 J\"" : "\"Jt Q J\"";
 	terminate_local_iteration = false;
 
 	RestartController::write_start_iteration(fout_restart, *this, -9999, -9999);
@@ -117,7 +114,7 @@ ModelRun SVDSolver::compute_jacobian(RunManagerAbstract &run_manager, Terminatio
 
 
 ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter,
-	ModelRun &cur_run, ModelRun &optimum_run, bool reuse_first_jacobian)
+	ModelRun &cur_run, ModelRun &optimum_run, bool calc_first_jacobian)
 {
 	ostream &os = file_manager.rec_ofstream();
 	ostream &fout_restart = file_manager.get_ofstream("rst");
@@ -127,16 +124,7 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 	string matrix_inv = (mat_inv == MAT_INV::Q12J) ? "\"Q 1/2 J\"" : "\"Jt Q J\"";
 	terminate_local_iteration = false;
 
-	bool calc_jacobian = true;
-	if (reuse_first_jacobian ||
-		restart_controller.get_restart_option() == RestartController::RestartOption::REUSE_JACOBIAN)
-	{
-		calc_jacobian = false;
-	}
-	else
-	{
-		calc_jacobian = true;
-	}
+	bool calc_jacobian = calc_first_jacobian;
 
 	for (int iter_num = 1; iter_num <= max_iter && !terminate_local_iteration; ++iter_num) 
 	{
@@ -167,9 +155,8 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 		performance_log->log_event(tmp_str.str(), 0, "start_iter");
 		performance_log->add_indent();
 		int nruns_start_iter = run_manager.get_total_runs();
-		if (!calc_jacobian || restart_controller.get_restart_option() == RestartController::RestartOption::REUSE_JACOBIAN)
+		if (!calc_jacobian)
 		{
-			iteration_reuse_jac(run_manager, termination_ctl, best_upgrade_run);
 			calc_jacobian = true;
 		}
 		else
@@ -589,47 +576,42 @@ void SVDSolver::calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqr
 }
 
 
-void SVDSolver::iteration_reuse_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run)
+ModelRun SVDSolver::iteration_reuse_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool rerun_base, const string &filename)
 {
+	ModelRun new_base_run(base_run);
 	ostream &os = file_manager.rec_ofstream();
 
-	vector<string> numeric_parname_vec = par_transform.ctl2numeric_cp(base_run.get_ctl_pars()).get_keys();
+	vector<string> numeric_parname_vec = par_transform.ctl2numeric_cp(new_base_run.get_ctl_pars()).get_keys();
 
 	cout << "  reading previosuly computed jacobian... ";
-	jacobian.read(file_manager.build_filename("jco"));
+	string jac_filenane = filename;
+	if (filename.empty()) jac_filenane = file_manager.build_filename("jcb");
+	jacobian.read(jac_filenane);
 
-	cout << endl << endl;
-	cout << "  running the model once with the current parameters... ";
-	run_manager.reinitialize(file_manager.build_filename("rnr"));
-	int run_id = run_manager.add_run(par_transform.ctl2model_cp(base_run.get_ctl_pars()));
-	run_manager.run();
-	Parameters tmp_pars;
-	Observations tmp_obs;
-	bool success = run_manager.get_run(run_id, tmp_pars, tmp_obs);
-	if (success)
+	if (rerun_base)
 	{
-		par_transform.model2ctl_ip(tmp_pars);
-		base_run.update_ctl(tmp_pars, tmp_obs);
-		jacobian.process_base_run(par_transform, run_manager, *prior_info_ptr);
-	}
-	else
-	{
-		throw(PestError("Error: Base parameter run failed.  Can not continue."));
-	}
-	jacobian.save("jcb");
-
-	//Update parameters and observations for base run
-	{
+		cout << endl << endl;
+		cout << "  running the model once with the current parameters... ";
+		run_manager.reinitialize(file_manager.build_filename("rnr"));
+		int run_id = run_manager.add_run(par_transform.ctl2model_cp(new_base_run.get_ctl_pars()));
+		run_manager.run();
 		Parameters tmp_pars;
 		Observations tmp_obs;
-		bool success = run_manager.get_run(0, tmp_pars, tmp_obs);
-		par_transform.model2ctl_ip(tmp_pars);
-		base_run.update_ctl(tmp_pars, tmp_obs);
-	}
+		bool success = run_manager.get_run(run_id, tmp_pars, tmp_obs);
+		if (!success)
+		{
+			throw(PestError("Error: Base parameter run failed.  Can not continue."));
+		}
 
+		//Update parameters and observations for base run
+		par_transform.model2ctl_ip(tmp_pars);
+		new_base_run.update_ctl(tmp_pars, tmp_obs);
+	}
+	jacobian.save("jcb");
 	// sen file for this iteration
 	output_file_writer.append_sen(file_manager.sen_ofstream(), termination_ctl.get_iteration_number() + 1,
-		jacobian, *(base_run.get_obj_func_ptr()), get_parameter_group_info(), *regul_scheme_ptr, true);
+		jacobian, *(new_base_run.get_obj_func_ptr()), get_parameter_group_info(), *regul_scheme_ptr, false);
+	return new_base_run;
 }
 
 void SVDSolver::iteration_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool calc_init_obs)
