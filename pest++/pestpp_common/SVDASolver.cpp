@@ -42,11 +42,11 @@ const string SVDASolver::svda_solver_type_name = "svda_super_par";
 SVDASolver::SVDASolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_base_parameter_group_info_ptr, 
 	const ParameterInfo *_ctl_par_info_ptr, const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 	const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, DynamicRegularization *_regul_scheme,
-	OutputFileWriter &_output_file_writer, RestartController &_restart_controller, SVDSolver::MAT_INV _mat_inv, PerformanceLog *_performance_log, 
+	OutputFileWriter &_output_file_writer, SVDSolver::MAT_INV _mat_inv, PerformanceLog *_performance_log, 
 	const std::vector<double> &_base_lambda_vec, bool _phiredswh_flag, bool _splitswh_flag, int _max_super_frz_iter)
 	: SVDSolver(_ctl_info, _svd_info, _base_parameter_group_info_ptr, _ctl_par_info_ptr, _obs_info,
 		_file_manager, _observations, _obj_func, _par_transform, _prior_info_ptr, _jacobian, 
-		_regul_scheme, _output_file_writer, _restart_controller, _mat_inv, _performance_log,
+		_regul_scheme, _output_file_writer, _mat_inv, _performance_log,
 		_base_lambda_vec, "super parameter solution", _phiredswh_flag, _splitswh_flag, false),
 		max_super_frz_iter(_max_super_frz_iter)
 {
@@ -214,7 +214,7 @@ ModelRun SVDASolver::iteration_reuse_jac(RunManagerAbstract &run_manager, Termin
 	ostream &os = file_manager.rec_ofstream();
 	vector<string> numeric_par_names_vec;
 
-	cout << "  reading previosuly computed jacobian... ";
+	cout << "  reading previously computed jacobian... " << endl;
 
 	string jac_filenane = filename;
 	if (filename.empty()) jac_filenane = file_manager.build_filename("jcs");
@@ -230,18 +230,18 @@ ModelRun SVDASolver::iteration_reuse_jac(RunManagerAbstract &run_manager, Termin
 	// sen file for this iteration
 	output_file_writer.append_sen(file_manager.sen_ofstream(), termination_ctl.get_iteration_number() + 1,
 		jacobian, *(new_base_run.get_obj_func_ptr()), get_parameter_group_info(), *regul_scheme_ptr, true);
-
+	cout << endl;
 	return new_base_run;
 }
 
-void SVDASolver::iteration_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool calc_init_obs)
+void SVDASolver::iteration_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool calc_init_obs, bool restart_runs)
 {
 	ostream &fout_restart = file_manager.get_ofstream("rst");
 	ostream &os = file_manager.rec_ofstream();
 	vector<string> numeric_par_names_vec;
 
 	// save state of termination controller
-	termination_ctl.save_state(fout_restart);
+	//termination_ctl.save_state(fout_restart);
 
 	Parameters base_ctl_pars = base_run.get_ctl_pars();
 	// make sure these are all in bounds
@@ -260,7 +260,11 @@ void SVDASolver::iteration_jac(RunManagerAbstract &run_manager, TerminationContr
 		}
 	}
 
-	if (restart_controller.get_restart_option() != RestartController::RestartOption::RESUME_JACOBIAN_RUNS)
+	if (restart_runs)
+	{
+		super_parameter_group_info = par_transform.get_svda_ptr()->build_par_group_info(*par_group_info_ptr);
+	}
+	else
 	{
 		set<string> out_of_bound_pars;
 		// Calculate Jacobian
@@ -330,20 +334,11 @@ void SVDASolver::iteration_jac(RunManagerAbstract &run_manager, TerminationContr
 		}
 		performance_log->log_event("jacobian parameter sets built, commencing model runs");
 
-		// save super parameter transformation
-		ofstream &fout_rst = file_manager.open_ofile_ext("rtj", ios_base::out | ios_base::binary);
-		par_transform.get_svda_ptr()->save(fout_rst);
-		file_manager.close_file("rtj");
 	}
-	if (restart_controller.get_restart_option() == RestartController::RestartOption::RESUME_JACOBIAN_RUNS)
-	{
-		//read previously computed super parameter transformation
-		ifstream &fin_rst = file_manager.open_ifile_ext("rtj", ios_base::in | ios_base::binary);
-		par_transform.get_svda_ptr()->read(fin_rst);
-		file_manager.close_file("rtj");
-		restart_controller.get_restart_option() = RestartController::RestartOption::NONE;
-		super_parameter_group_info = par_transform.get_svda_ptr()->build_par_group_info(*par_group_info_ptr);
-	}
+	// save super parameter transformation
+	ofstream &fout_rst = file_manager.open_ofile_ext("rtj", ios_base::out | ios_base::binary);
+	par_transform.get_svda_ptr()->save(fout_rst);
+	file_manager.close_file("rtj");
 	RestartController::write_jac_runs_built(fout_restart);
 	//make model runs
 	jacobian.make_runs(run_manager);

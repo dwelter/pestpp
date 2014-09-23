@@ -49,7 +49,7 @@ map<string, string>  GsaAbstractBase::process_gsa_file(ifstream &fin, FileManage
 	}
 	catch (PestConversionError &e) {
 		std::stringstream out;
-		out << "Error parsing \"" << file_manager.get_full_filename("gsa") << "\" on line number " << lnum << endl;
+		out << "Error parsing \"" << file_manager.build_filename("gsa") << "\" on line number " << lnum << endl;
 		out << e.what() << endl;
 		e.add_front(out.str());
 		e.raise();

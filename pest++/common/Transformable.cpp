@@ -414,6 +414,7 @@ void Parameters::read_par_file(ifstream &fin,  map<string, double> offset, map<s
 		strip_ip(line);
 		if (line.length() > 0)
 		{
+			tokens.clear();
 			tokenize(line, tokens);
 			string name = upper_cp(tokens[0]);
 			double par_val = convert_cp<double>(tokens[1]);

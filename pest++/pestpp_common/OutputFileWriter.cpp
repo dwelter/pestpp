@@ -534,69 +534,77 @@ void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobia
 	//const vector<string> &par_list = pest_scenario.get_ctl_ordered_par_names();
 	const vector<string> &obs_list = jac.obs_and_reg_list();
 	Parameters pars = jac.get_base_numeric_parameters();
-	VectorXd par_vec = pars.get_data_eigen_vec(par_list);
-	MatrixXd par_mat_tmp = par_vec.asDiagonal();
-	Eigen::SparseMatrix<double> par_mat = par_mat_tmp.sparseView();
-	QSqrtMatrix Q_sqrt(obj_func.get_obs_info_ptr(), obj_func.get_prior_info_ptr());
-	Eigen::SparseMatrix<double> q_sqrt_reg = Q_sqrt.get_sparse_matrix(obs_list, regul);
-	Eigen::SparseMatrix<double> dss_mat_reg = q_sqrt_reg * jac.get_matrix(obs_list, par_list) * par_mat;
-	Eigen::SparseMatrix<double> q_sqrt_no_reg = Q_sqrt.get_sparse_matrix(obs_list, DynamicRegularization::get_zero_reg_instance());
-	Eigen::SparseMatrix<double> dss_mat_no_reg = q_sqrt_no_reg * jac.get_matrix(obs_list, par_list) * par_mat;
-
-	int n_par = par_list.size();
-	int n_nonzero_weights_reg = q_sqrt_reg.nonZeros();
-	int n_nonzero_weights_no_reg = q_sqrt_no_reg.nonZeros();
-	vector<string> par_names;	
-	if (is_super)
+	if (pars.size() == 0)
 	{
-		par_names = par_list;
-		sort(par_names.begin(), par_names.end());		
+		fout << "parameter values are not avaialble to compute CSS" << endl;
+		fout << endl << endl;
 	}
 	else
 	{
-		par_names = pest_scenario.get_ctl_ordered_par_names();
-	}
-	//for isen file
-	map<string, double> par_sens;
-	double val;
-	//drop any names that aren't in par_list
-	vector<string>::const_iterator is;
-	int i;
-	//for (int i = 0; i < n_par; ++i)
-	for (auto &pname : par_names)
-	{
-		is = find(par_list.begin(), par_list.end(), pname);
-		if (is == par_list.end()) continue;		
-		i = is - par_list.begin();
-		fout << "   " << setw(15) << lower_cp(par_list[i])
-			<< " " << setw(12) << lower_cp(par_grp_info.get_group_name(par_list[i]))
-			<< " " << showpoint << setw(20) << pars.get_rec(par_list[i]);
-		if (n_nonzero_weights_reg > 0)
-		{
-			fout << " " << showpoint << setw(20) << dss_mat_reg.col(i).norm() / double(n_nonzero_weights_reg);
-		}
-		else
-		{
-			fout << " " << showpoint << setw(20) << "NA";
-		}
-		if (n_nonzero_weights_no_reg > 0)
-		{
-			val = dss_mat_no_reg.col(i).norm() / double(n_nonzero_weights_no_reg);
-			par_sens[pname] = val;
-			fout << " " << showpoint << setw(20) << val;
+		VectorXd par_vec = pars.get_data_eigen_vec(par_list);
+		MatrixXd par_mat_tmp = par_vec.asDiagonal();
+		Eigen::SparseMatrix<double> par_mat = par_mat_tmp.sparseView();
+		QSqrtMatrix Q_sqrt(obj_func.get_obs_info_ptr(), obj_func.get_prior_info_ptr());
+		Eigen::SparseMatrix<double> q_sqrt_reg = Q_sqrt.get_sparse_matrix(obs_list, regul);
+		Eigen::SparseMatrix<double> dss_mat_reg = q_sqrt_reg * jac.get_matrix(obs_list, par_list) * par_mat;
+		Eigen::SparseMatrix<double> q_sqrt_no_reg = Q_sqrt.get_sparse_matrix(obs_list, DynamicRegularization::get_zero_reg_instance());
+		Eigen::SparseMatrix<double> dss_mat_no_reg = q_sqrt_no_reg * jac.get_matrix(obs_list, par_list) * par_mat;
 
+		int n_par = par_list.size();
+		int n_nonzero_weights_reg = q_sqrt_reg.nonZeros();
+		int n_nonzero_weights_no_reg = q_sqrt_no_reg.nonZeros();
+		vector<string> par_names;
+		if (is_super)
+		{
+			par_names = par_list;
+			sort(par_names.begin(), par_names.end());
 		}
 		else
 		{
-			fout << " " << showpoint << setw(20) << "NA";
-			par_sens[pname] = -999;
+			par_names = pest_scenario.get_ctl_ordered_par_names();
 		}
-		fout << endl;
-	}
-	fout << endl << endl;
-	if (!is_super)
-	{
-		write_sen_iter(iter_no, par_sens);
+		//for isen file
+		map<string, double> par_sens;
+		double val;
+		//drop any names that aren't in par_list
+		vector<string>::const_iterator is;
+		int i;
+		//for (int i = 0; i < n_par; ++i)
+		for (auto &pname : par_names)
+		{
+			is = find(par_list.begin(), par_list.end(), pname);
+			if (is == par_list.end()) continue;
+			i = is - par_list.begin();
+			fout << "   " << setw(15) << lower_cp(par_list[i])
+				<< " " << setw(12) << lower_cp(par_grp_info.get_group_name(par_list[i]))
+				<< " " << showpoint << setw(20) << pars.get_rec(par_list[i]);
+			if (n_nonzero_weights_reg > 0)
+			{
+				fout << " " << showpoint << setw(20) << dss_mat_reg.col(i).norm() / double(n_nonzero_weights_reg);
+			}
+			else
+			{
+				fout << " " << showpoint << setw(20) << "NA";
+			}
+			if (n_nonzero_weights_no_reg > 0)
+			{
+				val = dss_mat_no_reg.col(i).norm() / double(n_nonzero_weights_no_reg);
+				par_sens[pname] = val;
+				fout << " " << showpoint << setw(20) << val;
+
+			}
+			else
+			{
+				fout << " " << showpoint << setw(20) << "NA";
+				par_sens[pname] = -999;
+			}
+			fout << endl;
+		}
+		fout << endl << endl;
+		if (!is_super)
+		{
+			write_sen_iter(iter_no, par_sens);
+		}
 	}
 }
 

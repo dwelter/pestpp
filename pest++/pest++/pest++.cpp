@@ -289,7 +289,7 @@ int main(int argc, char* argv[])
 			&pest_scenario.get_ctl_parameter_info(), &pest_scenario.get_ctl_observation_info(), file_manager,
 			&pest_scenario.get_ctl_observations(), &obj_func, base_trans_seq, pest_scenario.get_prior_info_ptr(),
 			*base_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(),
-			output_file_writer, restart_ctl, mat_inv, &performance_log, pest_scenario.get_pestpp_options().get_base_lambda_vec());
+			output_file_writer, mat_inv, &performance_log, pest_scenario.get_pestpp_options().get_base_lambda_vec());
 
 		base_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 		//Build Super-Parameter problem
@@ -387,16 +387,16 @@ int main(int argc, char* argv[])
 		file_manager.open_ofile_ext("rst");
 		//Define model Run for Base Parameters (uses base parameter tranformations)
 		ModelRun cur_run(&obj_func, pest_scenario.get_ctl_observations());
+		cur_run.set_ctl_parameters(cur_ctl_parameters);
 		//If this is a restart we need to get the latest ctl parameters
-		if (restart_ctl.get_restart_option() == RestartController::RestartOption::RESUME_JACOBIAN_RUNS)
+		if (restart_ctl.get_restart_option() != RestartController::RestartOption::NONE)
 		{
-			Parameters restart_pars = restart_ctl.get_restart_parameters(file_manager.get_full_filename("parb"), file_manager.get_full_filename("par"));
+			Parameters restart_pars = restart_ctl.get_restart_parameters(file_manager.build_filename("parb"), file_manager.build_filename("par"));
 			if (restart_pars.size() > 0)
 			{
 				cur_run.set_ctl_parameters(restart_pars);
 			}
 		}
-		cur_run.set_ctl_parameters(cur_ctl_parameters);
 		fout_rec << "   -----    Starting PEST++ Iterations    ----    " << endl;
 		while (!termination_ctl.terminate())
 		{
@@ -406,7 +406,7 @@ int main(int argc, char* argv[])
 
 				if (restart_ctl.get_restart_option() != RestartController::RestartOption::NONE  && restart_ctl.get_iteration_type() == RestartController::IterationType::SUPER)
 				{
-
+					base_svd.iteration_reuse_jac(*run_manager_ptr, termination_ctl, cur_run, false, file_manager.build_filename("jcb"));
 				}
 				else if (restart_ctl.get_restart_option() == RestartController::RestartOption::REUSE_JACOBIAN && n_base_iter < 0)
 				{
@@ -414,11 +414,14 @@ int main(int argc, char* argv[])
 				}
 				else if (n_base_iter < 0)
 				{
-					cur_run = base_svd.compute_jacobian(*run_manager_ptr, termination_ctl, cur_run);
+					bool restart_runs = (restart_ctl.get_restart_option() == RestartController::RestartOption::REUSE_JACOBIAN);
+					cur_run = base_svd.compute_jacobian(*run_manager_ptr, termination_ctl, cur_run, restart_runs);
 				}
 				else if (pest_scenario.get_control_info().noptmax < 0)
 				{
-					cur_run = base_svd.compute_jacobian(*run_manager_ptr, termination_ctl, cur_run);
+					bool restart_runs = (restart_ctl.get_restart_option() == RestartController::RestartOption::RESUME_JACOBIAN_RUNS);
+					cur_run = base_svd.compute_jacobian(*run_manager_ptr, termination_ctl, cur_run, restart_runs);
+					if (restart_runs) restart_ctl.get_restart_option() = RestartController::RestartOption::NONE;
 					optimum_run = cur_run;
 					termination_ctl.set_terminate(true);
 				}
@@ -426,13 +429,13 @@ int main(int argc, char* argv[])
 				{
 					bool calc_first_jacobian = false;
 					base_svd.iteration_reuse_jac(*run_manager_ptr, termination_ctl, cur_run, false, file_manager.build_filename("jco"));
-					cur_run = base_svd.solve(*run_manager_ptr, termination_ctl, n_base_iter, cur_run, optimum_run, calc_first_jacobian);
+					cur_run = base_svd.solve(*run_manager_ptr, termination_ctl, n_base_iter, cur_run, optimum_run, restart_ctl, calc_first_jacobian);
 					termination_ctl.check_last_iteration();
 				}
 				else
 				{
 					bool calc_first_jacobian = true;
-					cur_run = base_svd.solve(*run_manager_ptr, termination_ctl, n_base_iter, cur_run, optimum_run, calc_first_jacobian);
+					cur_run = base_svd.solve(*run_manager_ptr, termination_ctl, n_base_iter, cur_run, optimum_run, restart_ctl, calc_first_jacobian);
 					termination_ctl.check_last_iteration();
 				}
 				cur_ctl_parameters = cur_run.get_ctl_pars();
@@ -470,7 +473,7 @@ int main(int argc, char* argv[])
 				SVDASolver super_svd(&svd_control_info, pest_scenario.get_svd_info(), &pest_scenario.get_base_group_info(), &pest_scenario.get_ctl_parameter_info(),
 					&pest_scenario.get_ctl_observation_info(), file_manager, &pest_scenario.get_ctl_observations(), &obj_func,
 					trans_svda, &pest_scenario.get_prior_info(), *super_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(),
-					output_file_writer, restart_ctl, mat_inv, &performance_log, pest_scenario.get_pestpp_options().get_base_lambda_vec(), base_svd.get_phiredswh_flag(), base_svd.get_splitswh_flag(),
+					output_file_writer, mat_inv, &performance_log, pest_scenario.get_pestpp_options().get_base_lambda_vec(), base_svd.get_phiredswh_flag(), base_svd.get_splitswh_flag(),
 					pest_scenario.get_pestpp_options().get_max_super_frz_iter());
 				super_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 				//use base jacobian to compute first super jacobian if there was not a super upgrade
@@ -485,7 +488,7 @@ int main(int argc, char* argv[])
 					cur_run = super_svd.update_run(*run_manager_ptr, cur_run);
 					calc_first_jacobian = false;
 				}
-				cur_run = super_svd.solve(*run_manager_ptr, termination_ctl, n_super_iter, cur_run, optimum_run, calc_first_jacobian);
+				cur_run = super_svd.solve(*run_manager_ptr, termination_ctl, n_super_iter, cur_run, optimum_run, restart_ctl, calc_first_jacobian);
 				cur_ctl_parameters = cur_run.get_ctl_pars();
 				base_svd.set_phiredswh_flag(super_svd.get_phiredswh_flag());
 				base_svd.set_splitswh_flag(super_svd.get_splitswh_flag());

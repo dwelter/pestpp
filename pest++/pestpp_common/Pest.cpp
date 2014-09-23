@@ -440,7 +440,7 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 	}
 	catch (PestConversionError &e) {
 		std::stringstream out;
-		out << "Error parsing \"" << file_manager.get_full_filename("pst") << "\" on line number " << lnum << endl;
+		out << "Error parsing \"" << file_manager.build_filename("pst") << "\" on line number " << lnum << endl;
 		out << e.what() << endl;
 		e.add_front(out.str());
 		e.raise();
