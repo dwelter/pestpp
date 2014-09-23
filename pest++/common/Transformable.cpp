@@ -400,7 +400,7 @@ ostream& operator<<(ostream& out, const Transformable &rhs)
 
 
 
-void Parameters::read_par_file(ifstream &fin,  map<string, double> offset, map<string, double> &scale)
+void Parameters::read_par_file(ifstream &fin,  map<string, double> &offset, map<string, double> &scale)
 {
 	clear();
 	offset.clear();

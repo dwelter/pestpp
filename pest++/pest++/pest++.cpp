@@ -56,8 +56,8 @@ int main(int argc, char* argv[])
 #ifndef _DEBUG
 	try
 	{
-		string version = "2.4.3";
 #endif
+		string version = "2.4.3";
 		cout << endl << endl;
 		cout << "             PEST++ Version " << version << endl << endl;
 		cout << "                 by Dave Welter" << endl;
