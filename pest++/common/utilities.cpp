@@ -9,10 +9,20 @@
 #include <cstring>
 #include <cmath>
 #include <cassert>
+#include <mutex>
+#include <thread>
+
+#include "config_os.h"
+
+#ifdef OS_WIN
+#include <Windows.h>
+#include <conio.h>
+#endif
 
 #include "Transformable.h"
+#include "network_package.h"
 
-template <class T> const T& min ( const T& a, const T& b );
+//template <class T> const T& min ( const T& a, const T& b );
 
 
 
@@ -184,7 +194,7 @@ void string_to_fortran_char(string in, char out[], int length, CASE_CONV conv_ty
 	{
 		upper_ip(in);
 	}
-	str_len = std::min(str_len, length);
+	str_len = min(str_len, length);
 	memset(out, ' ', length);
 	memcpy(out, in.data(), str_len);
 }
@@ -354,6 +364,101 @@ bool check_exist_out(std::string filename)
 	}
 }
 
+thread_flag::thread_flag(bool _flag)
+{
+	flag = _flag;
+}
+
+bool thread_flag::set(bool f)
+{
+	std::lock_guard<std::mutex> lock(m);
+	flag = f;
+	return flag;
+}
+bool thread_flag::get()
+{
+	std::lock_guard<std::mutex> lock(m);
+	if (flag) return true;
+	else return false;
+}
+
+#ifdef OS_WIN
+
+PROCESS_INFORMATION start_command(char* &cmd_line)
+{
+	STARTUPINFO si;
+	PROCESS_INFORMATION pi;
+	ZeroMemory(&si, sizeof(si));
+	ZeroMemory(&pi, sizeof(pi));
+	if (!CreateProcess(NULL, cmd_line, NULL, NULL, false, 0, NULL, NULL, &si, &pi))
+	{
+		std::string cmd_string(cmd_line);
+		throw std::runtime_error("CreateProcess() failed for command: " + cmd_string);
+	}
+	return pi;
+}
+
+void run_commands(thread_flag* terminate, thread_flag* finished, vector<string> commands)
+{
+	//a flag to track if the run was terminated
+	bool term_break = false;
+	for (auto &cmd_string : commands)
+	{
+		char* cmd_line = _strdup(cmd_string.c_str());
+		//start the command
+		PROCESS_INFORMATION pi;
+		try
+		{
+			pi = start_command(cmd_line);
+		}
+		catch (...)
+		{
+			finished->set(true);
+			throw std::runtime_error("start_command() failed for command: " + cmd_string);
+		}
+		DWORD exitcode;
+		while (true)
+		{
+			//sleep			
+			std::this_thread::sleep_for(std::chrono::milliseconds(OperSys::thread_sleep_milli_secs));
+			//check if process is still active
+			GetExitCodeProcess(pi.hProcess, &exitcode);
+			//if the process ended, break
+			if (exitcode != STILL_ACTIVE)
+			{
+				break;
+			}
+			//check for termination flag
+			if (terminate->get())
+			{
+				std::cout << "recieved terminate signal" << std::endl;
+				//try to kill the process
+				bool success = TerminateProcess(pi.hProcess, 0);
+				if (!success)
+				{
+					finished->set(true);
+					throw std::runtime_error("unable to terminate process for command: " + cmd_string);
+				}
+				term_break = true;
+				break;
+			}
+		}
+		//jump out of the for loop if terminated
+		if (term_break) break;
+	}
+	//set the finished flag for the listener thread
+	finished->set(true);
+	return;
+}
+
+
+
+
+
+#else
+
+
+#endif
 
 } // end of namespace pest_utils
 

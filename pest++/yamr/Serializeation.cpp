@@ -40,6 +40,7 @@ vector<char> Serialization::serialize(unsigned long data)
 	return buf;
 }
 
+
 unsigned long Serialization::unserialize(const vector<char> &buf, unsigned long &data, unsigned long start_loc)
 {
 	assert(buf.size()-start_loc >= sizeof(data));

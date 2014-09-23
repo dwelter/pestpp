@@ -30,6 +30,7 @@
 #include "pest_data_structs.h"
 #include "Transformation.h"
 #include "FileManager.h"
+#include "iopp.h"
 
 using namespace::std;
 using namespace::pest_utils;
@@ -75,6 +76,17 @@ void Pest::check_io()
 		throw PestError("Could not access the following model interface files: "+missing);
 	}
 }
+
+void Pest::check_par_obs()
+{
+	TemplateFiles templatefiles(false, false, get_tplfile_vec(), get_inpfile_vec(), get_ctl_ordered_par_names());
+	templatefiles.check_parameter_names();
+
+	InstructionFiles instructionfiles(get_insfile_vec(), get_outfile_vec());
+	instructionfiles.check_obs_names(get_ctl_ordered_obs_names());
+
+}
+
 const map<string, string> Pest::get_observation_groups() const
 {
 	map<string, string> obs_grp_map;

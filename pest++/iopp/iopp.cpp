@@ -1051,16 +1051,16 @@ void InstructionFile::read(ifstream &out, Observations &obs)
 	}
 }
 
-vector<string> InstructionFile::get_observation_names()
-{
-	vector<string> obs_names,line_names;
-	for (auto &iline : instruction_lines)
-	{
-		line_names = iline.get_observation_names();
-		obs_names.insert(obs_names.end(),line_names.begin(),line_names.end());
-	}
-	return obs_names;
-}
+//vector<string> InstructionFile::get_observation_names()
+//{
+//	vector<string> obs_names,line_names;
+//	for (auto &iline : instruction_lines)
+//	{
+//		line_names = iline.get_observation_names();
+//		obs_names.insert(obs_names.end(),line_names.begin(),line_names.end());
+//	}
+//	return obs_names;
+//}
 
 
 InstructionFiles::InstructionFiles(vector<string> _instruction_filenames,vector<string>_output_filenames)
@@ -1082,6 +1082,53 @@ InstructionFiles::InstructionFiles(vector<string> _instruction_filenames,vector<
 //		ifile.build_instruction_set();
 //	}
 //}
+
+void InstructionFiles::check_obs_names(vector<string> onames)
+{
+	bool problem = false;
+	string error_str = "***errors in model IO files: \n";
+	//build a vector of observation in the ins files
+	vector<string> ins_obs_names;
+	vector<string> iline_names;
+	for (auto &ins_filename : instruction_filenames)
+	{
+		InstructionFile ifile(ins_filename);
+		ifile.build_instruction_set();		
+		for (auto &iline : ifile.get_instruction_lines())
+		{
+			iline_names = iline.get_observation_names();
+			ins_obs_names.insert(ins_obs_names.end(), iline_names.begin(), iline_names.end());
+		}
+	}
+	sort(ins_obs_names.begin(), ins_obs_names.end());
+	sort(onames.begin(), onames.end());
+	if (onames != ins_obs_names)
+	{
+		problem = true;
+		//cout << "***errors in model IO files: " << endl;
+		for (auto &pst_name : onames)
+		{
+			if (find(ins_obs_names.begin(), ins_obs_names.end(), pst_name) == ins_obs_names.end())
+			{
+				//cout << "observation not found in instruction files: " << pst_name << endl;
+				error_str += "observation not found in instruction files: " + pst_name + " \n";
+			}
+		}
+		for (auto &ins_name : ins_obs_names)
+		{
+			if (find(onames.begin(), onames.end(), ins_name) == onames.end())
+			{
+				//cout << "instruction file observation not found in pest control file: " << ins_name << endl;
+				error_str += "instruction file observation not found in pest control file: " + ins_name + " \n";
+			}
+		}
+	}
+	if (problem)
+	{
+		throw InstructionFileError(error_str);
+	}
+
+}
 
 vector<double> InstructionFiles::read(const vector<string> &obs_name_vec)
 {
@@ -1780,21 +1827,6 @@ string TemplateFile::build_input_line(string line,vector<TemplateParameter> line
 	return line;
 }
 
-vector<string> TemplateFile::get_parameter_names() 
-{
-	//returns a non-unique list
-	vector<string> parameter_names;
-	if (parameter_line_index.size() == 0)
-	{
-		return parameter_names;
-	}
-	vector<TemplateParameter>::iterator tp;
-	for (map<int,vector<TemplateParameter>>::iterator tpv = parameter_line_index.begin();tpv != parameter_line_index.end();++tpv)
-		for (tp = tpv->second.begin(); tp != tpv->second.end();++tp)
-			parameter_names.push_back(string2upper(tp->get_name()));
-	return parameter_names;
-}
-
 void TemplateFile::set_parameter_values(unordered_map<string,double> parameter_map)
 {	
 	for (map<int,vector<TemplateParameter>>::iterator tpv = parameter_line_index.begin();tpv!=parameter_line_index.end();++tpv)
@@ -1844,8 +1876,6 @@ double TemplateFile::write_value_to_line(string &name, string &line, int &start_
 }
 
 
-
-
 void TemplateFile::build_marker()
 {
 	ifstream f(template_filename);
@@ -1871,6 +1901,39 @@ void TemplateFile::build_marker()
 	f.close();
 
 }
+
+void TemplateFile::read_templatefile()
+{
+	build_marker();
+	ifstream f(template_filename);
+	if (!f.is_open())
+	{
+		throw TemplateFileError("unable to open template file: " + template_filename);
+	}
+	string line;
+	//read the ptf marker line
+	getline(f, line);
+	smatch mresults;
+	//read the remaining lines and error check markers		
+	vector<pair<int, int>> indices;
+	vector<string> line_parameter_names;
+	vector<string>::iterator is;
+	vector<pair<int, int>>::iterator ip;
+	while (getline(f, line))
+	{
+		//check for marker in line
+		if (regex_search(line, mresults, rmarker))
+		{
+			//get marker indices on this line
+			indices = get_marker_indices(marker, line);
+			//get the parameter names within the markers
+			line_parameter_names = get_line_parameters(indices, line);
+			parameter_names.insert(parameter_names.begin(), line_parameter_names.begin(), line_parameter_names.end());
+		}		
+	}
+	f.close();	
+}
+
 
 void TemplateFile::process(Parameters &pars)
 {	
@@ -1966,8 +2029,6 @@ void TemplateFile::process(unordered_map<string,double> &parameter_map)
 }
 
 
-
-
 vector<string> TemplateFile::get_line_parameters(vector<pair<int,int>> indices,string line)
 {
 	vector<string> line_parameters;	
@@ -2061,38 +2122,42 @@ TemplateFiles::TemplateFiles(bool isDouble, bool forceRadix,vector<string> tpl_f
 
 void TemplateFiles::check_parameter_names()
 {
-	vector<bool> parameter_found;
-	for (vector<string>::size_type i=0;i< parameter_names.size();i++)
+	string error_str = "";
+	bool problem = false;
+	
+	//build a vector of template parameter names
+	vector<string> tpl_par_names;
+	for (vector<TemplateFile>::iterator tpl = template_files.begin(); tpl != template_files.end(); ++tpl)
 	{
-		parameter_found.push_back(false);
+		tpl->read_templatefile();
+		vector<string> tpl_names = tpl->get_parameter_names();
+		tpl_par_names.insert(tpl_par_names.end(), tpl_names.begin(), tpl_names.end());
 	}
-	for (vector<string>::size_type i=0;i< parameter_names.size();i++)
+	sort(tpl_par_names.begin(),tpl_par_names.end());
+	sort(parameter_names.begin(), parameter_names.end());
+	if (tpl_par_names != parameter_names)
 	{
-		string pname = parameter_names[i];
-		for (vector<TemplateFile>::iterator tpl=template_files.begin();tpl != template_files.end();++tpl)
+		problem = true;
+		for (auto &pst_name : parameter_names)
 		{
-			vector<string> tpl_names = tpl->get_parameter_names();
-			if(find(tpl_names.begin(),tpl_names.end(),pname) != tpl_names.end())
+			if (find(tpl_par_names.begin(), tpl_par_names.end(), pst_name) == tpl_par_names.end())
 			{
-				parameter_found[i] = true;
+				cout << "\n\n***Error: parameter not found in template files: " << pst_name << endl;
+				error_str += "parameter not found in template files: " + pst_name + " \n";
 			}
 		}
-	}
-	bool missing = false;
-	string missing_str = "";
-	for (vector<string>::size_type i=0;i< parameter_names.size();i++)
-	{
-		if (!parameter_found[i])
+		for (auto &tpl_name : tpl_par_names)
 		{
-			cout << "\n\nError: parameter not found in template files: " << parameter_names[i] <<endl;
-			missing_str += "parameter not found in template files: " + parameter_names[i] + " \n";
-			missing = true;
-		}
+			if (find(parameter_names.begin(), parameter_names.end(), tpl_name) == parameter_names.end())
+			{
+				cout << "\n\n***Error: template file parameter not found in pest control file: " << tpl_name << endl;
+				error_str += "template file parameter not found in pest control file: " + tpl_name + " \n";				
+			}
+		}	
 	}
-
-	if (missing)
+	if (problem)
 	{
-		throw TemplateFileError(" missing parameters :"+missing_str);
+		throw TemplateFileError(error_str);
 	}
 }
 

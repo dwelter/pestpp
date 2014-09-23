@@ -1,0 +1,26 @@
+Pest++ version 3.0 release notes
+
+Pest++ has undergone substainial improvments and enhanced for the version 3.0 release. \\
+
+Major enhancements:
+
+1.) regularization mode that support dynamic regularization weight adjustment 
+2.) restart capabilities, during both base and super parameter iterations
+3.) c++ implementation of model interface (instruction and templates)
+4.) first super parameter jacobian calculated from base sensitivities
+5.) threaded YAMR slaves for easier detection of failed runs and load balancing
+6.) support for both J^TQJ and Q^(0.5)J in SVD factorization
+7.) support for propack iterative SVD factorization
+
+Minor tweaks:
+
+1.) more verbose .rec and .rmr file
+2.) creation of an iobj,isen,ipar csv file that summarized the iteration-specific objection function components, sensitivities, and parameters, resepctively
+3.) case insensitivity for parameters and observations
+4.) maintaining order of parameters and observations in output
+5.) checking of template and instruction files at start of run
+6.) writing sensitivity files
+
+
+In addition, the code base has undergone a lot of refactoring and cleanup.
+

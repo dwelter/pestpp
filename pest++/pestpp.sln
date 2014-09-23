@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pest++", "pest++\pest++.vcxproj", "{38231990-B7FE-469D-9DCD-C588D81163E3}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -14,6 +14,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pest++", "pest++\pest++.vcx
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pestpp_common", "pestpp_common\pestpp_common.vcxproj", "{D25CC810-E9E9-4920-82A4-6F585214480E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0193689C-8ED2-4DCA-9389-5D233739B1F0} = {0193689C-8ED2-4DCA-9389-5D233739B1F0}
+		{ED02A2E0-4505-485D-8007-1DF45497AADA} = {ED02A2E0-4505-485D-8007-1DF45497AADA}
+	EndProjectSection
 EndProject
 Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "run_manager_fortran_test", "run_manager_fortran_test\run_manager_fortran_test.vfproj", "{BCE6DA73-3B26-460E-95C0-EC1905760FA2}"
 	ProjectSection(ProjectDependencies) = postProject
