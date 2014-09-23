@@ -117,7 +117,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>;WIN32;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CompileAsManaged>false</CompileAsManaged>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(SolutionDir)\common;$(IFORT_COMPILER14)\mkl\include;$(SolutionDir);$(SolutionDir)\yamr;$(SolutionDir)\pestpp_common;$(SolutionDir)pest++;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

@@ -827,7 +827,7 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 			os << ";  phi = " << upgrade_run.get_phi(*regul_scheme_ptr);
 			os.precision(2);
 			os << setiosflags(ios::fixed);
-			os << " (" << upgrade_run.get_phi(*regul_scheme_ptr) / base_run.get_phi(*regul_scheme_ptr) * 100 << "%)" << endl;
+			os << " (" << upgrade_run.get_phi(*regul_scheme_ptr) / base_run.get_phi(*regul_scheme_ptr) * 100 << "% of starting phi)" << endl;
 			os.precision(n_prec);
 			os.unsetf(ios_base::floatfield); // reset all flags to default
 			if (upgrade_run.obs_valid() && (!best_run_updated_flag ||
@@ -876,8 +876,8 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 	double best_phi = best_upgrade_run.get_phi(*regul_scheme_ptr);
 
 	cout << endl << "  ...Lambda testing complete for iteration " << termination_ctl.get_iteration_number() + 1 << endl;
-	cout << "    Starting phi = " << cur_phi << ";  ending phi = " << best_phi <<
-		"  (" << best_phi / cur_phi * 100 << "%)" << endl;
+	cout << "    starting phi = " << cur_phi << ";  ending phi = " << best_phi <<
+		"  (" << best_phi / cur_phi * 100 << "% of starting phi)" << endl;
 
 	if (!splitswh_flag && phiredswh_flag && cur_phi != 0 &&
 		cur_phi / best_phi >= ctl_info->splitswh)

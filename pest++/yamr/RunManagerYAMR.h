@@ -53,10 +53,13 @@ public:
 			SlaveRec();
 			~SlaveRec(){}
 		private:
+			bool ping;
+			int failed_pings;
 			State state;
 			std::chrono::system_clock::duration linpack_time;
-			std::chrono::system_clock::duration run_time;
+			std::chrono::system_clock::duration run_time;			
 			std::chrono::system_clock::time_point start_time;
+			std::chrono::system_clock::time_point last_ping_time;
 			std::string work_dir;
 		};
 	typedef std::unordered_map<int, SlaveRec>::iterator iterator;
@@ -77,9 +80,17 @@ public:
 	void end_run(int sock_id);
 	void end_linpack(int sock_id);
 	double get_runtime(int sock_id);
+	double get_duration_secs(int sock_id);
+	double get_runtime_secs(int sock_id);
 	double get_runtime_minute(int sock_id);
 	double get_linpack_time(int sock_id);
 	void sort_queue(std::deque<int> &slave_fd);
+	int add_failed_ping(int sock_id);
+	void set_ping(int sock_id,bool val);
+	bool get_ping(int sock_id);
+	void reset_failed_pings(int sock_id);
+	void reset_last_ping_time(int sock_id);	
+	int seconds_since_last_ping_time(int sock_id);
 	~SlaveInfo();
 private:
 	class CompareTimes
@@ -89,7 +100,6 @@ private:
 		bool operator() (int a, int b);
 		SlaveInfo *my_class_ptr;
 	};
-
 	std::unordered_map<int, SlaveRec> slave_info_map;
 };
 
@@ -112,6 +122,9 @@ public:
 private:
 	std::string port;
 	static const int BACKLOG = 10;
+	static const int MAX_FAILED_PINGS = 3;
+	static const int PING_INTERVAL_SECS = 5;
+	int model_runs_done;
 	int listener;
 	int fdmax;
 	std::deque<int> slave_fd; // list of slaves ready to accept a model run
@@ -129,7 +142,11 @@ private:
 	bool schedule_run(int run_id);
 	void schedule_runs();
 	void init_slaves();
-	std::unordered_multimap<int, YamrModelRun>::iterator get_active_run_id(int socket);	
+	void close_slave(int i_sock);
+	void ping(int i_sock);
+	void report(std::string message,bool to_cout);
+	std::unordered_multimap<int, YamrModelRun>::iterator get_active_run_id(int socket);
+	std::unordered_multimap<int, YamrModelRun>::iterator get_zombie_run_id(int socket);
 };
 
 #endif /* RUNMANAGERYAMR_H */

@@ -53,9 +53,11 @@ using namespace pest_utils;
 
 int main(int argc, char* argv[])
 {
+#ifndef _DEBUG
 	try
 	{
 		string version = "2.4.3";
+#endif
 		cout << endl << endl;
 		cout << "             PEST++ Version " << version << endl << endl;
 		cout << "                 by Dave Welter" << endl;
@@ -117,20 +119,19 @@ int main(int argc, char* argv[])
 			// This is a YAMR Slave, start PEST++ as a YAMR Slave
 			vector<string> sock_parts;
 			tokenize(next_item, sock_parts, ":");
-			try
+			
+			if (sock_parts.size() != 2)
 			{
-				if (sock_parts.size() != 2)
-				{
-					cerr << "YAMR slave requires the master be specified as /H hostname:port" << endl << endl;
-					throw(PestCommandlineError(commandline));
-				}
-				YAMRSlave yam_slave;
-				yam_slave.start(sock_parts[0], sock_parts[1]);
+				cerr << "YAMR slave requires the master be specified as /H hostname:port" << endl << endl;
+				throw(PestCommandlineError(commandline));
 			}
-			catch (PestError &perr)
+			YAMRSlave yam_slave;
+			yam_slave.start(sock_parts[0], sock_parts[1]);
+			
+			/*catch (PestError &perr)
 			{
 				cerr << perr.what();
-			}
+			}*/
 			cout << endl << "Simulation Complete..." << endl;
 			exit(0);
 		}
@@ -261,6 +262,12 @@ int main(int argc, char* argv[])
 		}
 		else
 		{
+			performance_log.log_event("starting basic model IO error checking", 1);
+			cout << "checking model IO files...";
+			pest_scenario.check_io();
+			pest_scenario.check_par_obs();
+			performance_log.log_event("finished basic model IO error checking");
+			cout << "done" << endl;
 			const ModelExecInfo &exi = pest_scenario.get_model_exec_info();
 			run_manager_ptr = new RunManagerSerial(exi.comline_vec,
 				exi.tplfile_vec, exi.inpfile_vec, exi.insfile_vec, exi.outfile_vec,
@@ -529,6 +536,8 @@ int main(int argc, char* argv[])
 		delete run_manager_ptr;
 		cout << endl << endl << "Simulation Complete..." << endl;
 		cout << flush;
+
+#ifndef _DEBUG
 	}
 	catch (exception &e)
 	{
@@ -537,4 +546,8 @@ int main(int argc, char* argv[])
 		char buf[256];
 		OperSys::gets_s(buf, sizeof(buf));
 	}
+#endif
+	//cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
+	//char buf[256];
+	//OperSys::gets_s(buf, sizeof(buf));
 }

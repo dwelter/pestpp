@@ -5,7 +5,7 @@ restart estimation
       2      5     single  point  1   0   0
  10.0  2.0  0.3  0.03  10  999  lamforgive
  3.0  3.0  0.001
- 0.1  noaui
+ 0.1
  30 0.005  4  4  0.001  4
  1  1  1
 * singular value decomposition
@@ -1319,4 +1319,3 @@ kr10c60       1.0 * log(kr10c60) =   2.301030      1.0 regul_p
 ++ SUPER_EIGTHRES(1.0e-8)
 ++ MAX_N_SUPER(77)
 ++ AUTO_NORM(4)
-++ io_fortran(false)
