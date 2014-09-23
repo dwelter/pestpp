@@ -51,8 +51,8 @@ public:
 private:
 	int sockfd;
 	int fdmax;
-	static const int max_recv_fails = 10;
-	static const int max_send_fails = 10;
+	static const int max_recv_fails = 1000;
+	static const int max_send_fails = 1000;
 	static const int recv_timeout_secs = 1;	
 	bool terminate;
 	fd_set master;
