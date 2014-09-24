@@ -117,7 +117,7 @@ public:
 	Parameters(const std::vector<std::string> &names, const Eigen::VectorXd &values) : Transformable(names, values) {}
 	template <class NameIterator>
 	Parameters get_subset (NameIterator first, NameIterator last)const;
-	void read_par_file(std::ifstream &fin, std::map<std::string, double> offset, std::map<std::string, double> &scale);
+	void read_par_file(std::ifstream &fin, std::map<std::string, double> &offset, std::map<std::string, double> &scale);
 	virtual ~Parameters(){}
 private:
 };

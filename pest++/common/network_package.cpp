@@ -65,7 +65,7 @@ int NetPackage::send(int sockfd, const void *data, unsigned long data_len_l)
 		i_start += data_len_l;
 	}
 	if (i_start!=buf_sz) {
-		cerr << "NetPackage::send error: could ony send" << i_start
+		cerr << "NetPackage::send error: could only send" << i_start
 			<< " out of " << buf_sz << "bytes" << endl;
 	}
 	assert (i_start==buf_sz);

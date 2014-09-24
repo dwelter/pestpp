@@ -53,8 +53,10 @@ using namespace pest_utils;
 
 int main(int argc, char* argv[])
 {
+#ifndef _DEBUG
 	try
 	{
+#endif
 		string version = "3.0.0_rc1";
 		cout << endl << endl;
 		cout << "             PEST++ Version " << version << endl << endl;
@@ -130,6 +132,7 @@ int main(int argc, char* argv[])
 			catch (PestError &perr)
 			{
 				cerr << perr.what();
+				throw(perr);
 			}
 			cout << endl << "Simulation Complete..." << endl;
 			exit(0);
@@ -261,6 +264,12 @@ int main(int argc, char* argv[])
 		}
 		else
 		{
+			performance_log.log_event("starting basic model IO error checking", 1);
+			cout << "checking model IO files...";
+			pest_scenario.check_io();
+			pest_scenario.check_par_obs();
+			performance_log.log_event("finished basic model IO error checking");
+			cout << "done" << endl;
 			const ModelExecInfo &exi = pest_scenario.get_model_exec_info();
 			run_manager_ptr = new RunManagerSerial(exi.comline_vec,
 				exi.tplfile_vec, exi.inpfile_vec, exi.insfile_vec, exi.outfile_vec,
@@ -532,6 +541,7 @@ int main(int argc, char* argv[])
 		delete run_manager_ptr;
 		cout << endl << endl << "Simulation Complete..." << endl;
 		cout << flush;
+#ifndef _DEBUG
 	}
 	catch (exception &e)
 	{
@@ -540,4 +550,5 @@ int main(int argc, char* argv[])
 		char buf[256];
 		OperSys::gets_s(buf, sizeof(buf));
 	}
+#endif
 }
