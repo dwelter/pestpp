@@ -20,6 +20,7 @@ Minor tweaks:
 4.) maintaining order of parameters and observations in output
 5.) checking of template and instruction files at start of run
 6.) writing sensitivity files
+7.) option for user specified lamdas
 
 
 In addition, the code base has undergone a lot of refactoring and cleanup.
