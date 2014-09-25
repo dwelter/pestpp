@@ -435,7 +435,7 @@ void OutputFileWriter::obs_report(ostream &os, const Observations &obs, const Ob
 			<< " " << showpoint << setw(20) << obs_val
 			<< " " << showpoint << setw(20) << sim_val
 			<< " " << showpoint << setw(20) << obs_val - sim_val
-			<< " " << showpoint << setw(20) << sqrt(obj_func.get_obs_info_ptr()->get_observation_rec_ptr(b)->weight) << endl;
+			<< " " << showpoint << setw(20) << obj_func.get_obs_info_ptr()->get_observation_rec_ptr(b)->weight << endl;
 	}
 
 }

@@ -639,7 +639,7 @@ double Instruction::read_fixedObs(ifstream &out,int* lpos,const streampos* line_
 	{
 		//split the line on white spaces and built a vector of start index and length of each entry
 		string subline;
-		int s,c = 0;
+		int s,c = -1;
 		vector<string> entries;
 		vector<int> entry_start,entry_end;
 		stringstream sline(line);
