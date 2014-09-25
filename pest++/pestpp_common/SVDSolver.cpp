@@ -730,6 +730,8 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 	run_manager.reinitialize(file_manager.build_filename("rnu"));
 	cout << endl;
 	cout << "  computing upgrade vectors... " << endl;
+	os << endl;
+	os << "  computing upgrade vectors... " << endl;
 	//Marquardt Lambda Update Vector
 	vector<double> lambda_vec = base_lambda_vec;
 	lambda_vec.push_back(best_lambda);

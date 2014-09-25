@@ -376,6 +376,9 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 	cout << endl;
 	cout << "  computing upgrade vectors... " << endl;
 	cout.flush();
+	os << endl;
+	os << "  computing upgrade vectors... " << endl;
+	os.flush();
 	performance_log->log_event("computing upgrade vectors");
 
 	// populate vectors with sorted observations (standard and prior info) and parameters
@@ -580,8 +583,8 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 		(cur_phi - best_phi) / cur_phi < ctl_info->phiredswh)
 	{
 		phiredswh_flag = true;
-		os << endl << "      Switching to central derivatives:" << endl;
-		cout << endl << "      Switching to central derivatives:" << endl;
+		os << endl << "     PHIREDSWH criteria not met, switching to central derivatives." << endl << endl;
+		cout << endl << "     PHIREDSWH criteria not met, switching to central derivatives." << endl << endl;
 	}
 
 	os << endl;

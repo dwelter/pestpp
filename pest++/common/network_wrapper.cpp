@@ -179,7 +179,7 @@ int w_recvall(int sockfd, char *buf, unsigned long *len)
 	}
 	*len = total; // return number actually received here
 	if (n < 0){
-		cerr << "w_recvall error: " << n << endl;
+		//cerr << "w_recvall error: " << n << endl;
 	}
 	if (n > 0) {n = 1;}
 	return n; // return -1 on failure, 0 closed connection or 1 on success

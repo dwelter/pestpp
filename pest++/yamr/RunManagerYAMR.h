@@ -124,9 +124,12 @@ private:
 	static const int BACKLOG = 10;
 	static const int MAX_FAILED_PINGS = 3;
 	static const int PING_INTERVAL_SECS = 5;
-	int model_runs_done;
+	static const int MAX_CONCURRENT_RUNS = 3;
+	const double PERCENT_OVERDUE_RESCHED = 1.15; //15% past average runtime
+	const double PERCENT_OVERDUE_GIVEUP = 2.0; //100% past average runtime	
 	int listener;
 	int fdmax;
+	int model_runs_done;
 	std::deque<int> slave_fd; // list of slaves ready to accept a model run
 	fd_set master; // master file descriptor list
 	std::deque<YamrModelRun> waiting_runs;
@@ -136,6 +139,7 @@ private:
 	std::unordered_map<int, YamrModelRun> completed_runs;
 	SlaveInfo slave_info;
 	std::unordered_multimap<int, int> failure_map;
+	std::unordered_map<int, int> concurrent_map;
 	void listen();
 	bool process_model_run(int sock_id, NetPackage &net_pack);
 	void process_message(int i);
@@ -144,7 +148,7 @@ private:
 	void init_slaves();
 	void close_slave(int i_sock);
 	void ping(int i_sock);
-	void report(std::string message,bool to_cout);
+	void report(std::string message,bool to_cout);	
 	std::unordered_multimap<int, YamrModelRun>::iterator get_active_run_id(int socket);
 	std::unordered_multimap<int, YamrModelRun>::iterator get_zombie_run_id(int socket);
 };
