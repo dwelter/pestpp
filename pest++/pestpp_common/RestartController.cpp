@@ -39,6 +39,11 @@ void RestartController::write_jac_runs_built(ostream &fout)
 	fout << "jacobian_model_runs_built" << endl;
 }
 
+void RestartController::write_upgrade_runs_built(ostream &fout)
+{
+	fout << "upgrade_model_runs_built" << endl;
+}
+
 void RestartController::write_iteration_complete(ostream &fout)
 {
 	fout << "iteration_complete" << endl;

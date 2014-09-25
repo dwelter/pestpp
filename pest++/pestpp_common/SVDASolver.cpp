@@ -372,101 +372,123 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 	ostream &os = file_manager.rec_ofstream();
 	ostream &fout_restart = file_manager.get_ofstream("rst");
 
-	vector<string> obs_names_vec = base_run.get_obs_template().get_keys();
-	cout << endl;
-	cout << "  computing upgrade vectors... " << endl;
-	cout.flush();
-	performance_log->log_event("computing upgrade vectors");
-
-	// populate vectors with sorted observations (standard and prior info) and parameters
 	{
-		vector<string> prior_info_names = prior_info_ptr->get_keys();
-		obs_names_vec.insert(obs_names_vec.end(), prior_info_names.begin(), prior_info_names.end());
-	}
-
-	//build residuals vector
-	VectorXd residuals_vec = -1.0 * stlvec_2_egienvec(base_run.get_residuals_vec(obs_names_vec));
-
-	//Build model runs
-	run_manager.reinitialize(file_manager.build_filename("rnu"));
-	vector<double> magnitude_vec;
-
-	//Marquardt Lambda Update Vector
-	Upgrade ml_upgrade;
-
-	// build weights matrix sqrt(Q)
-	QSqrtMatrix Q_sqrt(obs_info_ptr, prior_info_ptr);
-
-
-	{
-		const Parameters base_run_active_ctl_pars = par_transform.ctl2active_ctl_cp(base_run.get_ctl_pars());
-		Parameters frozen_active_ctl_pars;
-		//If running in regularization mode, adjust the regularization weights
-		// define a function type for upgrade methods
-		if (regul_scheme_ptr->get_use_dynamic_reg())
-		{
-			os << endl;
-			dynamic_weight_adj(base_run, jacobian, Q_sqrt, residuals_vec, obs_names_vec,
-				base_run_active_ctl_pars, frozen_active_ctl_pars);
-		}
-	}
-
-	// write out report for starting phi
-	map<string, double> phi_report = obj_func->phi_report(base_run.get_obs(), base_run.get_ctl_pars(), *regul_scheme_ptr);
-	output_file_writer.phi_report(os, termination_ctl.get_iteration_number() + 1, run_manager.get_total_runs(), phi_report, regul_scheme_ptr->get_weight());
-	vector<Parameters> frozen_derivative_par_vec;
-	Parameters *new_frozen_par_ptr = 0;
-
-	vector<double> lambda_vec = base_lambda_vec;
-	lambda_vec.push_back(best_lambda);
-	lambda_vec.push_back(best_lambda / 2.0);
-	lambda_vec.push_back(best_lambda * 2.0);
-	std::sort(lambda_vec.begin(), lambda_vec.end());
-	auto iter = std::unique(lambda_vec.begin(), lambda_vec.end());
-	lambda_vec.resize(std::distance(lambda_vec.begin(), iter));
-	stringstream message;
-	stringstream prf_message;
-	int i_update_vec = 0;
-	for (double i_lambda : lambda_vec)
-	{
-		prf_message.str("");
-		prf_message << "beginning upgrade vector calculations, lambda = " << i_lambda;
-		performance_log->log_event(prf_message.str());
-		performance_log->add_indent();
-		std::cout << string(message.str().size(), '\b');
-		message.str("");
-		message << "  computing upgrade vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
-		std::cout << message.str()  << endl;
+		vector<string> obs_names_vec = base_run.get_obs_template().get_keys();
+		cout << endl;
+		cout << "  computing upgrade vectors... " << endl;
 		cout.flush();
+		performance_log->log_event("computing upgrade vectors");
 
-		Parameters new_pars;
-		const Parameters base_run_active_ctl_pars = par_transform.ctl2active_ctl_cp(  base_run.get_ctl_pars());
-		Parameters base_numeric_pars = par_transform.ctl2numeric_cp(base_run.get_ctl_pars());
+		// populate vectors with sorted observations (standard and prior info) and parameters
+		{
+			vector<string> prior_info_names = prior_info_ptr->get_keys();
+			obs_names_vec.insert(obs_names_vec.end(), prior_info_names.begin(), prior_info_names.end());
+		}
 
-		frozen_derivative_par_vec.push_back(Parameters());
-		calc_upgrade_vec(i_lambda, frozen_derivative_par_vec.back(), Q_sqrt, *regul_scheme_ptr, residuals_vec,
-			obs_names_vec, base_run_active_ctl_pars,
-			new_pars, MarquardtMatrix::IDENT, false);
+		//build residuals vector
+		VectorXd residuals_vec = -1.0 * stlvec_2_egienvec(base_run.get_residuals_vec(obs_names_vec));
 
-		//transform new_pars to model parameters
-		magnitude_vec.push_back(Transformable::l2_norm(base_run_active_ctl_pars, new_pars));
-		par_transform.active_ctl2model_ip(new_pars);
-		run_manager.add_run(new_pars, "IDEN", i_lambda);
-		performance_log->add_indent(-1);
+		//Build model runs
+		run_manager.reinitialize(file_manager.build_filename("rnu"));
+
+		// Save base run as first model run so it is eassily accessible
+		Parameters base_model_pars = par_transform.ctl2model_cp(base_run.get_ctl_pars());
+		int run_id = run_manager.add_run(base_model_pars, "base_run");
+		run_manager.update_run(run_id, base_model_pars, base_run.get_obs());
+
+		//Marquardt Lambda Update Vector
+		Upgrade ml_upgrade;
+
+		// build weights matrix sqrt(Q)
+		QSqrtMatrix Q_sqrt(obs_info_ptr, prior_info_ptr);
+		{
+			const Parameters base_run_active_ctl_pars = par_transform.ctl2active_ctl_cp(base_run.get_ctl_pars());
+			Parameters frozen_active_ctl_pars;
+			//If running in regularization mode, adjust the regularization weights
+			// define a function type for upgrade methods
+			if (regul_scheme_ptr->get_use_dynamic_reg())
+			{
+				os << endl;
+				dynamic_weight_adj(base_run, jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+					base_run_active_ctl_pars, frozen_active_ctl_pars);
+			}
+		}
+
+		// write out report for starting phi
+		map<string, double> phi_report = obj_func->phi_report(base_run.get_obs(), base_run.get_ctl_pars(), *regul_scheme_ptr);
+		output_file_writer.phi_report(os, termination_ctl.get_iteration_number() + 1, run_manager.get_total_runs(), phi_report, regul_scheme_ptr->get_weight());
+
+		vector<double> lambda_vec = base_lambda_vec;
+		lambda_vec.push_back(best_lambda);
+		lambda_vec.push_back(best_lambda / 2.0);
+		lambda_vec.push_back(best_lambda * 2.0);
+		std::sort(lambda_vec.begin(), lambda_vec.end());
+		auto iter = std::unique(lambda_vec.begin(), lambda_vec.end());
+		lambda_vec.resize(std::distance(lambda_vec.begin(), iter));
+		stringstream message;
+		stringstream prf_message;
+
+		ofstream &fout_frz = file_manager.open_ofile_ext("fpr");
+		int i_update_vec = 0;
+		for (double i_lambda : lambda_vec)
+		{
+			prf_message.str("");
+			prf_message << "beginning upgrade vector calculations, lambda = " << i_lambda;
+			performance_log->log_event(prf_message.str());
+			performance_log->add_indent();
+			std::cout << string(message.str().size(), '\b');
+			message.str("");
+			message << "  computing upgrade vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
+			std::cout << message.str() << endl;
+			cout.flush();
+
+			Parameters new_pars;
+			const Parameters base_run_active_ctl_pars = par_transform.ctl2active_ctl_cp(base_run.get_ctl_pars());
+			Parameters base_numeric_pars = par_transform.ctl2numeric_cp(base_run.get_ctl_pars());
+
+			Parameters frzn_pars;
+			calc_upgrade_vec(i_lambda, frzn_pars, Q_sqrt, *regul_scheme_ptr, residuals_vec,
+				obs_names_vec, base_run_active_ctl_pars,
+				new_pars, MarquardtMatrix::IDENT, false);
+
+			//transform new_pars to model parameters
+			par_transform.active_ctl2model_ip(new_pars);
+			int run_id = run_manager.add_run(new_pars, "upgrade_run", i_lambda);
+			save_frozen_pars(fout_frz, frzn_pars, run_id);
+			performance_log->add_indent(-1);
+		}
+		file_manager.close_file("fpr");
 	}
+	RestartController::write_upgrade_runs_built(fout_restart);
 
 	cout << endl;
-
 	os << endl;
 
 	// process model runs
 	cout << "  testing upgrade vectors... ";
 	cout.flush();
 	run_manager.run();
-	//cout << endl;
-	bool best_run_updated_flag = false;
-	ModelRun best_upgrade_run(base_run);
 
+	// process model runs
+	cout << endl;
+	cout << "  testing upgrade vectors... ";
+	ifstream &fin_frz = file_manager.open_ifile_ext("fpr");
+	bool best_run_updated_flag = false;
+	ModelRun base_run_tmp;
+	{
+		Parameters tmp_pars;
+		Observations tmp_obs;
+		bool success = run_manager.get_run(0, tmp_pars, tmp_obs);
+		if (!success)
+		{
+			throw(PestError("Error: Cannot retrieve the base run to compute upgrade vectors."));
+		}
+		par_transform.model2ctl_ip(tmp_pars);
+		base_run_tmp.update_ctl(tmp_pars, tmp_obs);
+	}
+	Parameters base_run_active_ctl_par_tmp = par_transform.ctl2active_ctl_cp(base_run_tmp.get_ctl_pars());
+	ModelRun best_upgrade_run(base_run_tmp);
+	
 	long jac_num_nonzero = jacobian.get_nonzero();
 	long jac_num_total = jacobian.get_size();
 	long jac_num_zero = jac_num_total - jac_num_nonzero;
@@ -476,7 +498,8 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 	os.precision(n_prec);
 
 	os << "    Summary of upgrade runs:" << endl;
-	for(int i=0; i<run_manager.get_nruns(); ++i) {
+	Parameters new_frozen_pars;
+	for (int i = 1; i < run_manager.get_nruns(); ++i) {
 		ModelRun upgrade_run(base_run);
 		Parameters tmp_pars;
 		Observations tmp_obs;
@@ -487,11 +510,14 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 		{
 			par_transform.model2ctl_ip(tmp_pars);
 			upgrade_run.update_ctl(tmp_pars, tmp_obs);
+			par_transform.ctl2active_ctl_ip(tmp_pars);
+			double magnitude = Transformable::l2_norm(base_run_active_ctl_par_tmp, tmp_pars);
+
 			streamsize n_prec = os.precision(2);
 			os << "      Lambda = ";
 			os << setiosflags(ios::fixed) << setw(8) << i_lambda;
 			os << "; Type: " << setw(4) << lambda_type;
-			os << "; length = " << std::scientific << magnitude_vec[i];
+			os << "; length = " << std::scientific << magnitude;
 			os << setiosflags(ios::fixed);
 			os.precision(n_prec);
 			os.unsetf(ios_base::floatfield); // reset all flags to default
@@ -501,12 +527,13 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 			os << " (" << upgrade_run.get_phi(*regul_scheme_ptr) / base_run.get_phi(*regul_scheme_ptr) * 100 << "% of starting phi)" << endl;
 			os.precision(n_prec);
 			os.unsetf(ios_base::floatfield); // reset all flags to default
+
 			if (upgrade_run.obs_valid() && (!best_run_updated_flag ||
 				ModelRun::cmp_lt(upgrade_run, best_upgrade_run, *regul_scheme_ptr)))
 			{
 				best_run_updated_flag = true;
 				best_upgrade_run = upgrade_run;
-				new_frozen_par_ptr = &frozen_derivative_par_vec[i];
+				new_frozen_pars = read_frozen_pars(fin_frz, i);
 				best_lambda = i_lambda;
 			}
 		}
@@ -515,7 +542,7 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 			streamsize n_prec = os.precision(2);
 			os << "     Marquardt Lambda = ";
 			os << setiosflags(ios::fixed) << setw(8) << i_lambda;
-			os << ";   length = " << magnitude_vec[i];
+			os << ";   length = " << "NA";
 			os.precision(n_prec);
 			os.unsetf(ios_base::floatfield); // reset all flags to default
 			os << ";    run failed" << endl;
@@ -539,22 +566,22 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 		}
 	}
 
-	if (new_frozen_par_ptr!= 0 && new_frozen_par_ptr->size() > 0)
+	if (new_frozen_pars.size() > 0)
 	{
-		vector<string> keys = new_frozen_par_ptr->get_keys();
+		vector<string> keys = new_frozen_pars.get_keys();
 		std::sort(keys.begin(), keys.end());
 		os << endl;
 		os << "    Parameters frozen during upgrades:" << endl;
 		for (auto &ikey : keys)
 		{
-			auto iter = new_frozen_par_ptr->find(ikey);
-			if (iter != new_frozen_par_ptr->end())
+			auto iter = new_frozen_pars.find(ikey);
+			if (iter != new_frozen_pars.end())
 			{
 				os << "      " << iter->first << " frozen at " << iter->second << endl;
 			}
 		}
 	}
-	if (new_frozen_par_ptr!=0) best_upgrade_run.add_frozen_ctl_parameters(*new_frozen_par_ptr);
+	if (new_frozen_pars.size() > 0) best_upgrade_run.add_frozen_ctl_parameters(new_frozen_pars);
 	// clean up run_manager memory
 	run_manager.free_memory();
 

@@ -19,6 +19,7 @@ public:
 	static void write_start_parameters_updated(std::ostream &fout, const std::string &parameter_filename);
 	static void write_finish_parameters_updated(std::ostream &fout, const std::string &parameter_filename);
 	static void write_jac_runs_built(std::ostream &fout); 
+	static void write_upgrade_runs_built(std::ostream &fout);
 	static void RestartController::write_iteration_complete(std::ostream &fout);
 	RestartOption get_restart_option() const { return restart_option; }
 	RestartOption& get_restart_option() { return restart_option; }
