@@ -228,7 +228,5 @@ private:
 
 };
 
-void run_commands(thread_flag* terminate, thread_flag* finished, vector<string> commands);
-
 }  // end namespace pest_utils
 #endif /* UTILITIES_H_ */

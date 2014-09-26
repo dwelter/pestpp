@@ -1,14 +1,26 @@
 #include "network_wrapper.h"
 #include "network_package.h"
+#include "utilities.h"
+#include "system_variables.h"
 #include <iostream>
 #include <fstream>
 #include <vector>
 #include <cstring>
 #include <sstream>
+#include <thread>
+
+#ifdef OS_WIN
+#include <Windows.h>
+#include <conio.h>
+#endif
+
 
 #ifdef OS_LINUX
   #include <arpa/inet.h>
   #include <unistd.h>
+#include <sys\types.h>
+#include <sys\select.h>
+#include <errno.h>
 #endif
 
 using namespace std;
@@ -97,8 +109,9 @@ int w_connect(int sockfd, struct sockaddr *serv_addr, socklen_t addrlen)
 int w_bind(int sockfd, struct sockaddr *my_addr, socklen_t addrlen)
 {
 	int n=0;
-	if ((n=bind(sockfd, my_addr, addrlen)) == -1 )
+	if ((n=::bind(sockfd, my_addr, addrlen)) == -1 )
 	{
+		
 		cerr << "bind error: " << w_get_error_msg() << endl;
 	}
 	return n;
@@ -345,3 +358,151 @@ void w_sleep(int millisec)
 	sleep(millisec / 1000);
    #endif
 }
+
+
+#ifdef OS_WIN
+PROCESS_INFORMATION start_command(char* &cmd_line)
+{
+
+	STARTUPINFO si;
+	PROCESS_INFORMATION pi;
+	ZeroMemory(&si, sizeof(si));
+	ZeroMemory(&pi, sizeof(pi));
+	if (!CreateProcess(NULL, cmd_line, NULL, NULL, false, 0, NULL, NULL, &si, &pi))
+	{
+		std::string cmd_string(cmd_line);
+		throw std::runtime_error("CreateProcess() failed for command: " + cmd_string);
+	}
+	return pi;
+}
+#endif
+
+
+#ifdef OS_LINUX
+int start_command(char* &cmd_line)
+{
+	pid_t pid = fork();
+	if (pid == 0)
+	{
+		int success = execl(cmd_line);
+		if (sucess == -1)
+		{
+			std::string cmd_string(cmd_line);
+			throw std::runtime_error("execl() failed for command: " + cmd_string);
+		}
+	}
+	else
+	{
+		return pid;
+	}
+}
+
+#endif
+
+
+void w_run_commands(pest_utils::thread_flag* terminate, pest_utils::thread_flag* finished, vector<string> commands)
+{
+#ifdef OS_WIN
+	//a flag to track if the run was terminated
+	bool term_break = false;
+	for (auto &cmd_string : commands)
+	{
+		char* cmd_line = _strdup(cmd_string.c_str());
+		//start the command
+		PROCESS_INFORMATION pi;
+		try
+		{
+			pi = start_command(cmd_line);
+		}
+		catch (...)
+		{
+			finished->set(true);
+			throw std::runtime_error("start_command() failed for command: " + cmd_string);
+		}
+		DWORD exitcode;
+		while (true)
+		{
+			//sleep			
+			std::this_thread::sleep_for(std::chrono::milliseconds(OperSys::thread_sleep_milli_secs));
+			//check if process is still active
+			GetExitCodeProcess(pi.hProcess, &exitcode);
+			//if the process ended, break
+			if (exitcode != STILL_ACTIVE)
+			{
+				break;
+			}
+			//check for termination flag
+			if (terminate->get())
+			{
+				std::cout << "recieved terminate signal" << std::endl;
+				//try to kill the process
+				bool success = TerminateProcess(pi.hProcess, 0);
+				if (!success)
+				{
+					finished->set(true);
+					throw std::runtime_error("unable to terminate process for command: " + cmd_string);
+				}
+				term_break = true;
+				break;
+			}
+		}
+		//jump out of the for loop if terminated
+		if (term_break) break;
+	}
+	//set the finished flag for the listener thread
+	finished->set(true);
+	return;
+
+#endif
+
+#ifdef OS_LINUX
+	//a flag to track if the run was terminated
+	bool term_break = false;
+	for (auto &cmd_string : commands)
+	{
+		char* cmd_line = _strdup(cmd_string.c_str());
+		//start the command
+		int command_pid = start_command(cmd_line);
+		int exit_code;
+		while (true)
+		{
+			//sleep
+			std::this_thread::sleep_for(std::chrono::milliseconds(g_sleeptime));
+			//check if process is still active
+			pid_t exit_code = waitpid(command_pid, &status, WNOHANG);
+			//if the process ended, break
+			if (exitcode == -1)
+			{
+				finished->set(true);
+				throw std::runtime_error("waitpid() returned error status for command: " + cmd_string);
+			}
+			else if exitcode != 0)
+			{
+				break;
+			}
+			//check for termination flag
+			if (terminate->get())
+			{
+				std::cout << "recieved terminate signal" << std::endl;
+				//try to kill the process
+				errno = 0;
+				int success = kill(command_pid, SIGKILL);
+				if (success == -1)
+				{
+					finished->set(true);
+					throw std::runtime_error("unable to terminate process for command: " + cmd_string);
+				}
+				term_break = true;
+				break;
+			}
+		}
+		//jump out of the for loop if terminated
+		if (term_break) break;
+	}
+	//set the finished flag for the listener thread
+	finished->set(true);
+	return;
+#endif
+
+}
+

@@ -649,6 +649,10 @@ double Instruction::read_fixedObs(ifstream &out,int* lpos,const streampos* line_
 			if (!sline)
 				break;
 			s = line.find(subline,c+1);
+			if (s == string::npos)
+			{
+				throw SemiFixedObsReadError(" Internal Error: could find starting index of substring: " + subline + " on line: " + line);
+			}
 			entries.push_back(subline);
 			entry_start.push_back(s);
 			entry_end.push_back(s + subline.size());
