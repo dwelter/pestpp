@@ -32,9 +32,8 @@ public:
 	FileManager(const std::string &_base_filename, const std::string &_directory="");
 	void initialize_path(const std::string &_base_filename = "", const std::string &_directory = "");
 	void open_default_files(bool restart = false);
-	std::string build_filename(const std::string &ext);
-	std::string get_full_filename(const std::string &tag);
-	std::string jacobian_filename() {return build_filename("jco");}
+	std::string build_filename(const std::string &ext, bool include_dir = false);
+	//std::string get_full_filename(const std::string &tag);
 	std::string get_base_filename() {return pest_base_filename;}
 	std::ofstream &rec_ofstream();
 	std::ofstream &sen_ofstream();

@@ -45,6 +45,7 @@
 #include "PerformanceLog.h"
 #include "debug.h"
 
+
 using namespace std;
 using namespace pest_utils;
 
@@ -52,10 +53,11 @@ using namespace pest_utils;
 
 int main(int argc, char* argv[])
 {
+#ifndef _DEBUG
 	try
 	{
-
-		string version = "2.4.1";
+#endif
+		string version = "3.0.0_rc1";
 		cout << endl << endl;
 		cout << "             PEST++ Version " << version << endl << endl;
 		cout << "                 by Dave Welter" << endl;
@@ -130,11 +132,9 @@ int main(int argc, char* argv[])
 			catch (PestError &perr)
 			{
 				cerr << perr.what();
+				throw(perr);
 			}
 			cout << endl << "Simulation Complete..." << endl;
-			//cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
-			//char buf[256];
-			//OperSys::gets_s(buf, sizeof(buf));
 			exit(0);
 		}
 		//Check for YAMR Master
@@ -161,9 +161,7 @@ int main(int argc, char* argv[])
 			socket_str = next_item;
 		}
 
-
-		//string filename = get_filename(complete_path);
-		string filename = complete_path;
+		string filename = get_filename(complete_path);
 		filename = remove_file_ext(filename); // remove .pst extension
 		//string pathname = get_pathname(complete_path);
 		//if (pathname.empty()) pathname = ".";
@@ -229,7 +227,7 @@ int main(int argc, char* argv[])
 			cerr << e.what() << endl << endl;
 			throw(e);
 		}
-		pest_scenario.check_inputs();		
+		pest_scenario.check_inputs();
 		//Initialize OutputFileWriter to hadle IO of suplementary files (.par, .par, .svd)
 		//bool save_eign = pest_scenario.get_svd_info().eigwrite > 0;	
 		OutputFileWriter output_file_writer(file_manager, pest_scenario, restart_flag);
@@ -266,7 +264,12 @@ int main(int argc, char* argv[])
 		}
 		else
 		{
+			performance_log.log_event("starting basic model IO error checking", 1);
+			cout << "checking model IO files...";
 			pest_scenario.check_io();
+			pest_scenario.check_par_obs();
+			performance_log.log_event("finished basic model IO error checking");
+			cout << "done" << endl;
 			const ModelExecInfo &exi = pest_scenario.get_model_exec_info();
 			run_manager_ptr = new RunManagerSerial(exi.comline_vec,
 				exi.tplfile_vec, exi.inpfile_vec, exi.insfile_vec, exi.outfile_vec,
@@ -295,7 +298,7 @@ int main(int argc, char* argv[])
 			&pest_scenario.get_ctl_parameter_info(), &pest_scenario.get_ctl_observation_info(), file_manager,
 			&pest_scenario.get_ctl_observations(), &obj_func, base_trans_seq, pest_scenario.get_prior_info_ptr(),
 			*base_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(),
-			output_file_writer, restart_ctl, mat_inv, &performance_log, pest_scenario.get_pestpp_options().get_base_lambda_vec());
+			output_file_writer, mat_inv, &performance_log, pest_scenario.get_pestpp_options().get_base_lambda_vec());
 
 		base_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 		//Build Super-Parameter problem
@@ -347,7 +350,8 @@ int main(int argc, char* argv[])
 			optimum_run.set_ctl_parameters(init_model_pars);
 			run_manager_ptr->reinitialize();
 			run_manager_ptr->add_run(init_model_pars);
-			try{
+			try
+			{
 				run_manager_ptr->run();
 			}
 			catch (exception &e)
@@ -385,26 +389,65 @@ int main(int argc, char* argv[])
 				fout_rec << "Model run failed.  No results were recorded." << endl << endl;
 				exit(1);
 			}
-
+			termination_ctl.set_terminate(true);
 		}
 
 		//open restart file
 		file_manager.open_ofile_ext("rst");
 		//Define model Run for Base Parameters (uses base parameter tranformations)
-		fout_rec << "   -----    Starting PEST++ Iterations    ----    " << endl;
 		ModelRun cur_run(&obj_func, pest_scenario.get_ctl_observations());
 		cur_run.set_ctl_parameters(cur_ctl_parameters);
+		//If this is a restart we need to get the latest ctl parameters
+		if (restart_ctl.get_restart_option() != RestartController::RestartOption::NONE)
+		{
+			Parameters restart_pars = restart_ctl.get_restart_parameters(file_manager.build_filename("parb"), file_manager.build_filename("par"));
+			if (restart_pars.size() > 0)
+			{
+				cur_run.set_ctl_parameters(restart_pars);
+			}
+		}
+		fout_rec << "   -----    Starting PEST++ Iterations    ----    " << endl;
 		while (!termination_ctl.terminate())
 		{
+			//base parameter iterations
 			try
 			{
-				cur_run = base_svd.solve(*run_manager_ptr, termination_ctl, n_base_iter, cur_run, optimum_run);
-				cur_ctl_parameters = base_svd.cur_model_run().get_ctl_pars();
-				if (pest_scenario.get_control_info().noptmax < 1)
+
+				if (restart_ctl.get_restart_option() != RestartController::RestartOption::NONE  && restart_ctl.get_iteration_type() == RestartController::IterationType::SUPER)
 				{
+					base_svd.iteration_reuse_jac(*run_manager_ptr, termination_ctl, cur_run, false, file_manager.build_filename("jcb"));
+				}
+				else if (restart_ctl.get_restart_option() == RestartController::RestartOption::REUSE_JACOBIAN && n_base_iter < 0)
+				{
+					base_svd.iteration_reuse_jac(*run_manager_ptr, termination_ctl, cur_run, false, file_manager.build_filename("jco"));
+				}
+				else if (n_base_iter < 0)
+				{
+					bool restart_runs = (restart_ctl.get_restart_option() == RestartController::RestartOption::REUSE_JACOBIAN);
+					cur_run = base_svd.compute_jacobian(*run_manager_ptr, termination_ctl, cur_run, restart_runs);
+				}
+				else if (pest_scenario.get_control_info().noptmax < 0)
+				{
+					bool restart_runs = (restart_ctl.get_restart_option() == RestartController::RestartOption::RESUME_JACOBIAN_RUNS);
+					cur_run = base_svd.compute_jacobian(*run_manager_ptr, termination_ctl, cur_run, restart_runs);
+					if (restart_runs) restart_ctl.get_restart_option() = RestartController::RestartOption::NONE;
 					optimum_run = cur_run;
+					termination_ctl.set_terminate(true);
+				}
+				else if (restart_ctl.get_restart_option() == RestartController::RestartOption::REUSE_JACOBIAN)
+				{
+					bool calc_first_jacobian = false;
+					base_svd.iteration_reuse_jac(*run_manager_ptr, termination_ctl, cur_run, false, file_manager.build_filename("jco"));
+					cur_run = base_svd.solve(*run_manager_ptr, termination_ctl, n_base_iter, cur_run, optimum_run, restart_ctl, calc_first_jacobian);
 					termination_ctl.check_last_iteration();
 				}
+				else
+				{
+					bool calc_first_jacobian = true;
+					cur_run = base_svd.solve(*run_manager_ptr, termination_ctl, n_base_iter, cur_run, optimum_run, restart_ctl, calc_first_jacobian);
+					termination_ctl.check_last_iteration();
+				}
+				cur_ctl_parameters = cur_run.get_ctl_pars();
 				if (termination_ctl.terminate())  break;
 			}
 			catch (exception &e)
@@ -424,24 +467,38 @@ int main(int argc, char* argv[])
 				Parameters base_numeric_pars = base_trans_seq.ctl2numeric_cp(cur_ctl_parameters);
 				const vector<string> &pars = base_numeric_pars.get_keys();
 				QSqrtMatrix Q_sqrt(&(pest_scenario.get_ctl_observation_info()), &pest_scenario.get_prior_info());
-				(*tran_svd).update_reset_frozen_pars(*base_jacobian_ptr, Q_sqrt, base_numeric_pars, max_n_super, super_eigthres, pars, nonregul_obs, cur_run.get_frozen_ctl_pars());
-				(*tr_svda_fixed).reset((*tran_svd).get_frozen_derivative_pars());
+				if (restart_ctl.get_restart_option() == RestartController::RestartOption::RESUME_JACOBIAN_RUNS)
+				{
+					//read previously computed super parameter transformation
+					ifstream &fin_rst = file_manager.open_ifile_ext("rtj", ios_base::in | ios_base::binary);
+					(*tran_svd).read(fin_rst);
+					file_manager.close_file("rtj");
+				}
+				else
+				{
+					(*tran_svd).update_reset_frozen_pars(*base_jacobian_ptr, Q_sqrt, base_numeric_pars, max_n_super, super_eigthres, pars, nonregul_obs, cur_run.get_frozen_ctl_pars());
+					(*tr_svda_fixed).reset((*tran_svd).get_frozen_derivative_pars());
+				}
 				SVDASolver super_svd(&svd_control_info, pest_scenario.get_svd_info(), &pest_scenario.get_base_group_info(), &pest_scenario.get_ctl_parameter_info(),
 					&pest_scenario.get_ctl_observation_info(), file_manager, &pest_scenario.get_ctl_observations(), &obj_func,
 					trans_svda, &pest_scenario.get_prior_info(), *super_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(),
-					output_file_writer, restart_ctl, mat_inv, &performance_log, pest_scenario.get_pestpp_options().get_base_lambda_vec(), base_svd.get_phiredswh_flag(), base_svd.get_splitswh_flag(),
+					output_file_writer, mat_inv, &performance_log, pest_scenario.get_pestpp_options().get_base_lambda_vec(), base_svd.get_phiredswh_flag(), base_svd.get_splitswh_flag(),
 					pest_scenario.get_pestpp_options().get_max_super_frz_iter());
 				super_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 				//use base jacobian to compute first super jacobian if there was not a super upgrade
+				bool calc_first_jacobian = true;
 				if (n_base_iter == -1)
-				{
+				{ 
+					//transform base jacobian to super jacobian
 					super_svd.get_jacobian() = base_svd.get_jacobian();
 					super_svd.get_jacobian().transform(base_trans_seq, &ParamTransformSeq::jac_numeric2active_ctl_ip);
 					super_svd.get_jacobian().transform(trans_svda, &ParamTransformSeq::jac_active_ctl_ip2numeric_ip);
-					super_svd.set_calc_jacobian(false);
+					//rerun base run to account for round off error in super parameters
+					cur_run = super_svd.update_run(*run_manager_ptr, cur_run);
+					calc_first_jacobian = false;
 				}
-				cur_run = super_svd.solve(*run_manager_ptr, termination_ctl, n_super_iter, cur_run, optimum_run);
-				cur_ctl_parameters = super_svd.cur_model_run().get_ctl_pars();
+				cur_run = super_svd.solve(*run_manager_ptr, termination_ctl, n_super_iter, cur_run, optimum_run, restart_ctl, calc_first_jacobian);
+				cur_ctl_parameters = cur_run.get_ctl_pars();
 				base_svd.set_phiredswh_flag(super_svd.get_phiredswh_flag());
 				base_svd.set_splitswh_flag(super_svd.get_splitswh_flag());
 				if (super_svd.local_iteration_terminatated() && n_base_iter == -1)
@@ -484,20 +541,14 @@ int main(int argc, char* argv[])
 		delete run_manager_ptr;
 		cout << endl << endl << "Simulation Complete..." << endl;
 		cout << flush;
+#ifndef _DEBUG
 	}
 	catch (exception &e)
 	{
-		cout << "Error condition prevents further execution: " << endl << e.what() << endl;	
+		cout << "Error condition prevents further execution: " << endl << e.what() << endl;
 		cout << "press enter to continue" << endl;
-  		cin.get();
+		char buf[256];
+		OperSys::gets_s(buf, sizeof(buf));
 	}
-	catch (...)
-	{
-		cout << "Unknown error condition prevents further execution, please contact Dave Welter" << endl;
-		cout << "press enter to continue" << endl;
-		cin.get();
-	}
-	//cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
-	//char buf[256];
-	//OperSys::gets_s(buf, sizeof(buf));
+#endif
 }

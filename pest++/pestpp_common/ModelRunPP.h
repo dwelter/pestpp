@@ -33,6 +33,7 @@ class ModelRun
 {
 public:
 	ModelRun(const ObjectiveFunc *_objectiveFunc, const Observations &_sim_obs);
+	ModelRun() : obj_func_ptr(nullptr){}
 	ModelRun& operator=(const ModelRun &rhs);
 	virtual Parameters get_frozen_ctl_pars() const;
 	virtual void set_frozen_ctl_parameters(const Parameters &frz_pars);
@@ -44,7 +45,7 @@ public:
 	virtual const Parameters &get_ctl_pars() const;
 	virtual const Observations &get_obs() const;
 	virtual Observations get_obs_template() const;
-	const ObjectiveFunc *get_obj_func_ptr()  {return obj_func_ptr;}
+	const ObjectiveFunc *get_obj_func_ptr() const {return obj_func_ptr;}
 	virtual double get_phi(const DynamicRegularization &dynamic_reg, double norm=2);
 	virtual PhiComponets get_phi_comp(const DynamicRegularization &dynamic_reg, double norm=2) const;
 	virtual vector<double> get_residuals_vec(const vector<string> &obs_names);

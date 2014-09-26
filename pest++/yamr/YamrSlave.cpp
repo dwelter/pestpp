@@ -5,6 +5,7 @@
 #include <cassert>
 #include <cstring>
 #include <algorithm>
+#include <thread>
 #include "system_variables.h"
 #include "iopp.h"
 
@@ -114,6 +115,49 @@ int YAMRSlave::recv_message(NetPackage &net_pack)
 	return err;
 }
 
+int YAMRSlave::recv_message(NetPackage &net_pack,int timeout_microsecs)
+{
+	fd_set read_fds;
+	int err = -1;
+	int result = 0;
+	struct timeval tv;
+	tv.tv_sec = 0;
+	tv.tv_usec = timeout_microsecs;
+	for (;;) {
+		read_fds = master; // copy master
+		result = w_select(fdmax + 1, &read_fds, NULL, NULL, &tv);
+		if (result == -1) exit(4);
+		if (result == 0) return 0;
+		else
+		{		
+			for (int i = 0; i <= fdmax; i++) {
+				if (FD_ISSET(i, &read_fds)) { // got message to read
+					if ((err = net_pack.recv(i)) <= 0) // error or lost connection
+					{
+						vector<string> sock_name = w_getnameinfo_vec(i);
+						if (err < 0) {
+							cerr << "receive from master failed: " << sock_name[0] << ":" << sock_name[1] << endl;
+						}
+						else {
+							cerr << "lost connection to master: " << sock_name[0] << ":" << sock_name[1] << endl;
+							w_close(i); // bye!
+							FD_CLR(i, &master); // remove from master set
+						}
+					}
+					else
+					{
+						// received data sored in net_pack return to calling routine to process it
+					}
+					return err;
+
+				}
+			}
+		}
+	}
+	return err;
+}
+
+
 
 int YAMRSlave::send_message(NetPackage &net_pack, const void *data, unsigned long data_len)
 {
@@ -123,6 +167,11 @@ int YAMRSlave::send_message(NetPackage &net_pack, const void *data, unsigned lon
 	for (err = -1, n=0; err==-1; ++n)
 	{
 		err = net_pack.send(sockfd, data, data_len);
+		if (n >= max_send_fails)
+		{
+			cout << "YAMRSlave::send_message send failed max times, giving up..." << endl;
+			break;
+		}
 	}
 	return err;
 }
@@ -171,6 +220,133 @@ string YAMRSlave::ins_err_msg(int i)
 	return err_msg;
 }
 
+int YAMRSlave::run_model(Parameters &pars, Observations &obs,NetPackage &net_pack)
+{
+	bool done = false;
+	int success = 1,err = 0;
+	int recv_fails = 0;	
+	int send_fails = 0;
+	std::vector<double> obs_vec;
+	bool isDouble = true;
+	bool forceRadix = true;
+	TemplateFiles tpl_files(isDouble, forceRadix, tplfile_vec, inpfile_vec, par_name_vec);
+	InstructionFiles ins_files(insfile_vec, outfile_vec);	
+	thread_flag f_terminate(false);
+	thread_flag f_finished(false);
+	try 
+	{
+	//	message.str("");
+		//first delete any existing input and output files			
+		for (auto &out_file : outfile_vec)
+		{
+			if ((check_exist_out(out_file)) && (remove(out_file.c_str()) != 0))
+				throw PestError("model interface error: Cannot delete existing model output file " + out_file);
+		}
+		for (auto &in_file : inpfile_vec)
+		{
+			if ((check_exist_out(in_file)) && (remove(in_file.c_str()) != 0))
+				throw PestError("model interface error: Cannot delete existing model input file " + in_file);
+		}				
+		tpl_files.write(pars);		
+		thread run_thread(run_commands, &f_terminate, &f_finished, comline_vec);
+		while (true)
+		{							
+			//check if the runner thread has finished
+			if (f_finished.get())
+			{
+				cout << "received finished signal from runner " << std::endl;
+				run_thread.join();
+				//don't break here, need to check one last time for incoming messages
+				done = true;
+			}
+			//this call includes a "sleep" for the timeout
+			err = recv_message(net_pack, OperSys::thread_sleep_milli_secs*1000);
+			if (err == -1)
+			{
+				recv_fails++;
+				if (recv_fails >= max_recv_fails)
+				{
+					cerr << "recv from master failed " << max_recv_fails << " times, exiting..." << endl;
+					f_terminate.set(true);
+					run_thread.join();
+					exit(-1);
+				}
+			}
+			//timeout on recv
+			else if (err == 0){}
+			else if (net_pack.get_type() == NetPackage::PackType::PING)
+			{
+				cout << "ping request recieved...";
+				net_pack.reset(NetPackage::PackType::PING, 0, 0, "");
+				char* data = "\0";
+				err = send_message(net_pack, &data, 0);
+				if (err == -1)
+				{
+					send_fails++;
+					if (send_fails >= max_send_fails)
+					{
+						cerr << "send to master failed " << max_send_fails << " times, exiting..." << endl;
+						f_terminate.set(true);
+						run_thread.join();
+						exit(-1);
+					}
+				}
+				cout << "ping response sent" << endl;
+			}
+			else if (net_pack.get_type() == NetPackage::PackType::REQ_KILL)
+			{
+			    cout << "received kill request signal from master" << endl;
+				cout << "sending terminate signal to run thread" << endl;
+				f_terminate.set(true);
+				run_thread.join();
+				success = 0;				
+				break;
+			}
+			else if (net_pack.get_type() == NetPackage::PackType::TERMINATE)
+			{
+				cout << "received terminate signal from master" << endl;
+				cout << "sending terminate signal to run thread" << endl;
+				f_terminate.set(true);
+				run_thread.join();
+				success = 0;
+				terminate = true;
+				break;
+			}
+			else
+			{
+				cerr << "Received unsupported message from master, only PING REQ_KILL or TERMINATE can be sent during model run" << endl;
+				cerr << "something is wrong...exiting" << endl;
+				f_terminate.set(true);
+				run_thread.join();
+				exit(-1);
+			}	
+			if (done) break;
+		}		
+		//if this run was terminated, throw an error to signal a failed run
+		if (f_terminate.get())
+		{
+			throw PestError("model run terminated");
+		}
+		// process instruction files		
+		obs.clear();
+		ins_files.read(obs_name_vec, obs);		
+	}
+	catch(const std::exception& ex)
+	{
+		cerr << endl;
+		cerr << "   " << ex.what() << endl;
+		cerr << "   Aborting model run" << endl << endl;
+		success = 0;
+	}
+	catch(...)
+	{
+		cerr << "   Error running model" << endl;
+		cerr << "   Aborting model run" << endl;
+		success = 0;
+	}
+	return success;
+}
+
 int YAMRSlave::run_model(Parameters &pars, Observations &obs)
 {
 	int success = 1;
@@ -178,10 +354,12 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs)
 	bool isDouble = true;
 	bool forceRadix = true;
 	TemplateFiles tpl_files(isDouble, forceRadix, tplfile_vec, inpfile_vec, par_name_vec);
-	InstructionFiles ins_files(insfile_vec, outfile_vec);	
-	try 
+	InstructionFiles ins_files(insfile_vec, outfile_vec);
+	thread_flag terminate(false);
+	thread_flag finished(false);
+	try
 	{
-	//	message.str("");
+		//	message.str("");
 		//first delete any existing input and output files			
 		for (auto &out_file : outfile_vec)
 		{
@@ -200,34 +378,35 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs)
 		vector<double> par_values;
 		for(auto &i : pars)
 		{
-			par_name_vec.push_back(i.first);
-			par_values.push_back(i.second);
+		par_name_vec.push_back(i.first);
+		par_values.push_back(i.second);
 		}
 		wrttpl_(&ntpl, StringvecFortranCharArray(tplfile_vec, 50).get_prt(),
-			StringvecFortranCharArray(inpfile_vec, 50).get_prt(),
-			&npar, StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
-			par_values.data(), &ifail);
+		StringvecFortranCharArray(inpfile_vec, 50).get_prt(),
+		&npar, StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
+		par_values.data(), &ifail);
 		if(ifail != 0)
 		{
-			throw PestError("Error processing template file:" + tpl_err_msg(ifail));
+		throw PestError("Error processing template file:" + tpl_err_msg(ifail));
 		}*/
-		
+
 		// update parameter values		
-		/*pars.clear();	
+		/*pars.clear();
 		for (int i=0; i<npar; ++i)
-		{			
-			pars[par_name_vec[i]] = par_values[i];			
+		{
+		pars[par_name_vec[i]] = par_values[i];
 		}*/
-		tpl_files.write(pars);		
-		// run model
+		tpl_files.write(pars);
+
+		// run model - single thread
 		for (auto &i : comline_vec)
 		{
 			ifail = system(i.c_str());
 			if(ifail != 0)
-		{
-			cerr << "Error executing command line: " << i << endl;
-			throw PestError("Error executing command line: " + i);
-		}
+			{
+				cerr << "Error executing command line: " << i << endl;
+				throw PestError("Error executing command line: " + i);
+			}
 		}
 		// process instructio files
 		//int nins = insfile_vec.size();
@@ -259,16 +438,16 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs)
 		//	obs[obs_name_vec[i]] = obs_vec[i];
 		//}
 		obs.clear();
-		ins_files.read(obs_name_vec, obs);		
+		ins_files.read(obs_name_vec, obs);
 	}
-	catch(const std::exception& ex)
+	catch (const std::exception& ex)
 	{
 		cerr << endl;
 		cerr << "   " << ex.what() << endl;
 		cerr << "   Aborting model run" << endl << endl;
 		success = 0;
 	}
-	catch(...)
+	catch (...)
 	{
 		cerr << "   Error running model" << endl;
 		cerr << "   Aborting model run" << endl;
@@ -298,6 +477,13 @@ void YAMRSlave::check_io()
 	}
 }
 
+void YAMRSlave::check_par_obs()
+{
+	TemplateFiles templatefiles(false, false, tplfile_vec, inpfile_vec,par_name_vec);
+	templatefiles.check_parameter_names();
+	InstructionFiles instructionfiles(insfile_vec, outfile_vec);
+	instructionfiles.check_obs_names(obs_name_vec);
+}
 
 void YAMRSlave::start(const string &host, const string &port)
 {
@@ -306,14 +492,23 @@ void YAMRSlave::start(const string &host, const string &port)
 	Parameters pars;
 	vector<char> serialized_data;
 	int err;
-	bool terminate = false;
-
+	//class attribute - can be modified in run_model()
+	terminate = false;	
+	int recv_fails = 0,send_fails = 0;
 	init_network(host, port);
 	while (!terminate)
 	{
 		//get message from master
 		err = recv_message(net_pack);
-		if (err == -1) {}
+		if (err == -1)
+		{
+			recv_fails++;
+			if (recv_fails >= max_recv_fails)
+			{
+				cerr << "recv from master failed " << max_recv_fails << " times: terminating" << endl;
+				terminate = true;
+			}
+		}
 		else if(net_pack.get_type() == NetPackage::PackType::REQ_RUNDIR)
 		{
 			// Send Master the local run directory.  This information is only used by the master
@@ -321,6 +516,15 @@ void YAMRSlave::start(const string &host, const string &port)
 			net_pack.reset(NetPackage::PackType::RUNDIR, 0, 0,"");
 			string cwd =  OperSys::getcwd();
 			err = send_message(net_pack, cwd.c_str(), cwd.size());
+			if (err == -1)
+			{
+				send_fails++;
+				if (send_fails >= max_send_fails)
+				{
+					cerr << "send to master failed " << max_send_fails << " times, exiting..." << endl;					
+					exit(-1);
+				}
+			}
 		}
 		else if(net_pack.get_type() == NetPackage::PackType::CMD)
 		{
@@ -333,7 +537,23 @@ void YAMRSlave::start(const string &host, const string &port)
 			outfile_vec = tmp_vec_vec[4];
 			par_name_vec= tmp_vec_vec[5];
 			obs_name_vec= tmp_vec_vec[6];
-			check_io();
+			cout << "checking model IO files...";
+			try
+			{
+				check_io();
+				check_par_obs();
+			}
+			catch (exception &e)
+			{
+				cout << e.what() << endl;
+				net_pack.reset(NetPackage::PackType::IO_ERROR, 0, 0,"");
+				string err(e.what());
+				vector<char> data(err.begin(), err.end());
+				data.push_back('\0');
+				err = send_message(net_pack, &data, data.size());
+				exit(-1);
+			}
+			cout << "done" << endl;
 		}
 		else if(net_pack.get_type() == NetPackage::PackType::REQ_LINPACK)
 		{
@@ -341,6 +561,15 @@ void YAMRSlave::start(const string &host, const string &port)
 			net_pack.reset(NetPackage::PackType::LINPACK, 0, 0,"");
 			char data;
 			err = send_message(net_pack, &data, 0);
+			if (err == -1)
+			{
+				send_fails++;
+				if (send_fails >= max_send_fails)
+				{
+					cerr << "send to master failed " << max_send_fails << " times, exiting..." << endl;
+					exit(-1);
+				}
+			}
 		}
 		else if(net_pack.get_type() == NetPackage::PackType::START_RUN)
 		{
@@ -350,41 +579,92 @@ void YAMRSlave::start(const string &host, const string &port)
 			int run_id = net_pack.get_run_id();
 			cout << "received parameters (group id = " << group_id << ", run id = " << run_id << ")" << endl;
 			cout << "starting model run..." << endl;
-			if (run_model(pars, obs))
+			if (run_model(pars, obs, net_pack))
 			{
 				//send model results back
 				cout << "run complete" << endl;
 				cout << "sending results to master (group id = " << group_id << ", run id = " << run_id << ")..." <<endl;
 				cout << "results sent" << endl << endl;
 				serialized_data = Serialization::serialize(pars, par_name_vec, obs, obs_name_vec);
-				net_pack.reset(NetPackage::PackType::RUN_FINISH, net_pack.get_groud_id(), net_pack.get_run_id(), "");
+				net_pack.reset(NetPackage::PackType::RUN_FINISH, group_id, run_id, "");
 				err = send_message(net_pack, serialized_data.data(), serialized_data.size());
+				if (err == -1)
+				{
+					send_fails++;
+					if (send_fails >= max_send_fails)
+					{
+						cerr << "send to master failed " << max_send_fails << " times, exiting..." << endl;
+						exit(-1);
+					}
+				}
 				// Send READY Message to master
 				net_pack.reset(NetPackage::PackType::READY, 0, 0,"");
 				char data;
 				err = send_message(net_pack, &data, 0);
+				if (err == -1)
+				{
+					send_fails++;
+					if (send_fails >= max_send_fails)
+					{
+						cerr << "send to master failed " << max_send_fails << " times, exiting..." << endl;
+						exit(-1);
+					}
+				}
 			}
 			else
 			{
 				serialized_data.clear();
 				serialized_data.push_back('\0');
-				net_pack.reset(NetPackage::PackType::RUN_FAILED, net_pack.get_groud_id(), net_pack.get_run_id(), "");
+				net_pack.reset(NetPackage::PackType::RUN_FAILED, group_id, run_id, "");
 				err = send_message(net_pack, serialized_data.data(), serialized_data.size());
 				// Send READY Message to master
 				net_pack.reset(NetPackage::PackType::READY, 0, 0,"");
 				char data;
 				err = send_message(net_pack, &data, 0);
-				w_sleep(500);
+				if (err == -1)
+				{
+					send_fails++;
+					if (send_fails >= max_send_fails)
+					{
+						cerr << "send to master failed " << max_send_fails << " times, exiting..." << endl;
+						exit(-1);
+					}
+				}
+				//w_sleep(500);
 			}
 		}
 		else if (net_pack.get_type() == NetPackage::PackType::TERMINATE)
 		{
 			terminate = true;
 		}
+		else if (net_pack.get_type() == NetPackage::PackType::REQ_KILL)
+		{
+			cout << "received kill request from master. run already finished" << endl;
+		}
+		else if (net_pack.get_type() == NetPackage::PackType::PING)
+		{
+			std::time_t tt = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+			cout << "ping request recieved...";
+			net_pack.reset(NetPackage::PackType::PING, 0, 0, "");
+			char* data = "\0";
+			err = send_message(net_pack, &data, 0);
+			if (err == -1)
+			{
+				send_fails++;
+				if (send_fails >= max_send_fails)
+				{
+					cerr << "send to master failed " << max_send_fails << " times, exiting..." << endl;
+					exit(-1);
+				}
+			}
+			cout << "ping response sent" << endl;
+		}
 		else 
 		{
 			cout << "received unsupported messaged type: " << int(net_pack.get_type()) << endl;
 		}
-		w_sleep(100);
+		//w_sleep(100);
+		this_thread::sleep_for(chrono::milliseconds(100));
 	}
 }
+

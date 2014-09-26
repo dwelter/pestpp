@@ -295,9 +295,10 @@ public:
 	void read(ifstream &out, unordered_map<string,double> &ifile_map);
 	void read(ifstream &out, Observations &obs);
 	vector<pair<int,int>> get_marker_indices(string line);
-	vector<string> get_observation_names();
+	//vector<string> get_observation_names();
 	void set_filename(string ins_file){instruction_filename=ins_file;}
 	void build_instruction_set();
+	vector<InstructionLine> get_instruction_lines(){ return instruction_lines; }
 private:
 	string instruction_filename;
 	vector<InstructionLine> instruction_lines;
@@ -415,7 +416,7 @@ public:
 	void read_templatefile();
 	void process(unordered_map<string,double> &parameter_map);
 	void process(Parameters &pars);
-	vector<string> get_parameter_names();
+	vector<string> get_parameter_names(){ return parameter_names;}
 	double write_value_to_line(string &name, string &line, int &start_idx, int &end_idx, double &value);
 private:
 	bool isDouble;
@@ -430,7 +431,7 @@ private:
 	vector<int> line_numbers;
 	vector<string> warnings;
 	vector<string> errors;
-	
+	vector<string> parameter_names;
 	vector<pair<int,int>> get_marker_indices(char marker,string line);
 	void reduce_parameter_name(string &pname);
 	vector<string> get_line_parameters(vector<pair<int,int>> indices,string line);

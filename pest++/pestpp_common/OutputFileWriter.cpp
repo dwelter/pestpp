@@ -237,7 +237,6 @@ void OutputFileWriter::scenario_report(std::ostream &os)
 	os << endl << "Observation information" << endl;
 	os << left << setw(25) << "NAME" << right << setw(20) << "VALUE" << setw(20) << "GROUP" << endl;
 	const ObservationRec* obs_rec;
-	double val;
 	const Observations &obs = pest_scenario.get_ctl_observations();
 	for (auto &obs_name : pest_scenario.get_ctl_ordered_obs_names())
 	{
@@ -246,7 +245,6 @@ void OutputFileWriter::scenario_report(std::ostream &os)
 		os << right << setw(20) << obs.get_rec(obs_name);
 		os << setw(20) << lower_cp(obs_rec->group) << endl;
 	}
-	const PriorInformationRec * pi_rec;
 	const PriorInformation &pi = pest_scenario.get_prior_info();
 	os << endl << "Prior information" << endl;
 	if (pi.size() == 0)
@@ -406,7 +404,6 @@ void OutputFileWriter::phi_report(std::ostream &os, int const iter, int const nr
 		}
 	}
 	
-	double val;
 	for (auto &gname : pest_scenario.get_ctl_ordered_obs_group_names())
 	{
 		os << "    Contribution to phi from observation group ";
@@ -426,7 +423,7 @@ void OutputFileWriter::obs_report(ostream &os, const Observations &obs, const Ob
 	os << setw(21) << " Name" << setw(13) << " Group" << setw(21) << " Measured" << setw(21) << " Modelled" << setw(21) << " Residual" << setw(21) << " Weight" << endl;
 	//vector<string> obs_name_vec = obs.get_keys();
 	vector<string> obs_name_vec = pest_scenario.get_ctl_ordered_obs_names();
-	double obs_val, sim_val, residual;
+	double obs_val, sim_val;
 	//for(vector<string>::const_iterator b = obs_name_vec.begin(), 
 	//	e = obs_name_vec.end(); b!=e; ++b)
 	for (auto &b : obs_name_vec)
@@ -438,7 +435,7 @@ void OutputFileWriter::obs_report(ostream &os, const Observations &obs, const Ob
 			<< " " << showpoint << setw(20) << obs_val
 			<< " " << showpoint << setw(20) << sim_val
 			<< " " << showpoint << setw(20) << obs_val - sim_val
-			<< " " << showpoint << setw(20) << sqrt(obj_func.get_obs_info_ptr()->get_observation_rec_ptr(b)->weight) << endl;
+			<< " " << showpoint << setw(20) << obj_func.get_obs_info_ptr()->get_observation_rec_ptr(b)->weight << endl;
 	}
 
 }
@@ -479,13 +476,12 @@ void OutputFileWriter::write_rei(ofstream &fout, int iter_no, const Observations
 
 void OutputFileWriter::write_par(ofstream &fout, const Parameters &pars, const TranOffset &offset_tran, const TranScale &scale_tran)
 {
-	const string *name_ptr;
 	Parameters::const_iterator it;
 	pair<bool, double> val_pair;
 	double scale, offset;
 
 	fout.unsetf(ios::floatfield);
-	fout.precision(15);
+	fout.precision(numeric_limits<double>::digits10 + 1);
 	fout << "single point" << endl;
 	//for(Parameters::const_iterator b=pars.begin(), e=pars.end();
 	//	b!=e; ++b)
@@ -504,9 +500,10 @@ void OutputFileWriter::write_par(ofstream &fout, const Parameters &pars, const T
 		else
 			scale = 1.0;
 
-		fout << setw(14) << lower_cp(b) << setw(22) 
+		fout << setw(14) << lower_cp(b) << setw(22) << " "
 		<<  showpoint<< pars.get_rec(b) << " " << setw(20) << showpoint << scale << " " << setw(20) << showpoint << offset << endl;
 	}
+	fout.flush();
 }
 
 void OutputFileWriter::write_sen_header(std::ostream &fout, const string &case_name)
@@ -537,69 +534,77 @@ void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobia
 	//const vector<string> &par_list = pest_scenario.get_ctl_ordered_par_names();
 	const vector<string> &obs_list = jac.obs_and_reg_list();
 	Parameters pars = jac.get_base_numeric_parameters();
-	VectorXd par_vec = pars.get_data_eigen_vec(par_list);
-	MatrixXd par_mat_tmp = par_vec.asDiagonal();
-	Eigen::SparseMatrix<double> par_mat = par_mat_tmp.sparseView();
-	QSqrtMatrix Q_sqrt(obj_func.get_obs_info_ptr(), obj_func.get_prior_info_ptr());
-	Eigen::SparseMatrix<double> q_sqrt_reg = Q_sqrt.get_sparse_matrix(obs_list, regul);
-	Eigen::SparseMatrix<double> dss_mat_reg = q_sqrt_reg * jac.get_matrix(obs_list, par_list) * par_mat;
-	Eigen::SparseMatrix<double> q_sqrt_no_reg = Q_sqrt.get_sparse_matrix(obs_list, DynamicRegularization::get_zero_reg_instance());
-	Eigen::SparseMatrix<double> dss_mat_no_reg = q_sqrt_no_reg * jac.get_matrix(obs_list, par_list) * par_mat;
-
-	int n_par = par_list.size();
-	int n_nonzero_weights_reg = q_sqrt_reg.nonZeros();
-	int n_nonzero_weights_no_reg = q_sqrt_no_reg.nonZeros();
-	vector<string> par_names;	
-	if (is_super)
+	if (pars.size() == 0)
 	{
-		par_names = par_list;
-		sort(par_names.begin(), par_names.end());		
+		fout << "parameter values are not avaialble to compute CSS" << endl;
+		fout << endl << endl;
 	}
 	else
 	{
-		par_names = pest_scenario.get_ctl_ordered_par_names();
-	}
-	//for isen file
-	map<string, double> par_sens;
-	double val;
-	//drop any names that aren't in par_list
-	vector<string>::const_iterator is;
-	int i;
-	//for (int i = 0; i < n_par; ++i)
-	for (auto &pname : par_names)
-	{
-		is = find(par_list.begin(), par_list.end(), pname);
-		if (is == par_list.end()) continue;		
-		i = is - par_list.begin();
-		fout << "   " << setw(15) << lower_cp(par_list[i])
-			<< " " << setw(12) << lower_cp(par_grp_info.get_group_name(par_list[i]))
-			<< " " << showpoint << setw(20) << pars.get_rec(par_list[i]);
-		if (n_nonzero_weights_reg > 0)
-		{
-			fout << " " << showpoint << setw(20) << dss_mat_reg.col(i).norm() / double(n_nonzero_weights_reg);
-		}
-		else
-		{
-			fout << " " << showpoint << setw(20) << "NA";
-		}
-		if (n_nonzero_weights_no_reg > 0)
-		{
-			val = dss_mat_no_reg.col(i).norm() / double(n_nonzero_weights_no_reg);
-			par_sens[pname] = val;
-			fout << " " << showpoint << setw(20) << val;
+		VectorXd par_vec = pars.get_data_eigen_vec(par_list);
+		MatrixXd par_mat_tmp = par_vec.asDiagonal();
+		Eigen::SparseMatrix<double> par_mat = par_mat_tmp.sparseView();
+		QSqrtMatrix Q_sqrt(obj_func.get_obs_info_ptr(), obj_func.get_prior_info_ptr());
+		Eigen::SparseMatrix<double> q_sqrt_reg = Q_sqrt.get_sparse_matrix(obs_list, regul);
+		Eigen::SparseMatrix<double> dss_mat_reg = q_sqrt_reg * jac.get_matrix(obs_list, par_list) * par_mat;
+		Eigen::SparseMatrix<double> q_sqrt_no_reg = Q_sqrt.get_sparse_matrix(obs_list, DynamicRegularization::get_zero_reg_instance());
+		Eigen::SparseMatrix<double> dss_mat_no_reg = q_sqrt_no_reg * jac.get_matrix(obs_list, par_list) * par_mat;
 
+		int n_par = par_list.size();
+		int n_nonzero_weights_reg = q_sqrt_reg.nonZeros();
+		int n_nonzero_weights_no_reg = q_sqrt_no_reg.nonZeros();
+		vector<string> par_names;
+		if (is_super)
+		{
+			par_names = par_list;
+			sort(par_names.begin(), par_names.end());
 		}
 		else
 		{
-			fout << " " << showpoint << setw(20) << "NA";
-			par_sens[pname] = -999;
+			par_names = pest_scenario.get_ctl_ordered_par_names();
 		}
-		fout << endl;
-	}
-	fout << endl << endl;
-	if (!is_super)
-	{
-		write_sen_iter(iter_no, par_sens);
+		//for isen file
+		map<string, double> par_sens;
+		double val;
+		//drop any names that aren't in par_list
+		vector<string>::const_iterator is;
+		int i;
+		//for (int i = 0; i < n_par; ++i)
+		for (auto &pname : par_names)
+		{
+			is = find(par_list.begin(), par_list.end(), pname);
+			if (is == par_list.end()) continue;
+			i = is - par_list.begin();
+			fout << "   " << setw(15) << lower_cp(par_list[i])
+				<< " " << setw(12) << lower_cp(par_grp_info.get_group_name(par_list[i]))
+				<< " " << showpoint << setw(20) << pars.get_rec(par_list[i]);
+			if (n_nonzero_weights_reg > 0)
+			{
+				fout << " " << showpoint << setw(20) << dss_mat_reg.col(i).norm() / double(n_nonzero_weights_reg);
+			}
+			else
+			{
+				fout << " " << showpoint << setw(20) << "NA";
+			}
+			if (n_nonzero_weights_no_reg > 0)
+			{
+				val = dss_mat_no_reg.col(i).norm() / double(n_nonzero_weights_no_reg);
+				par_sens[pname] = val;
+				fout << " " << showpoint << setw(20) << val;
+
+			}
+			else
+			{
+				fout << " " << showpoint << setw(20) << "NA";
+				par_sens[pname] = -999;
+			}
+			fout << endl;
+		}
+		fout << endl << endl;
+		if (!is_super)
+		{
+			write_sen_iter(iter_no, par_sens);
+		}
 	}
 }
 

@@ -13,8 +13,12 @@
 #include <vector>
 #include <map>
 #include <set>
+#include <mutex>
 #include "pest_error.h"
 #include "Transformable.h"
+#include "network_package.h"
+
+
 
 //printing functions
 std::ostream& operator<< (std::ostream &os, const std::set<std::string> val);
@@ -209,5 +213,22 @@ void read_par(ifstream &fin, Parameters &pars);
 bool check_exist_in(std::string filename);
 
 bool check_exist_out(std::string filename);
+
+class thread_flag
+{
+public:
+
+	thread_flag(bool _flag);
+	bool set(bool _flag);
+	bool get();
+
+private:
+	bool flag;
+	std::mutex m;
+
+};
+
+void run_commands(thread_flag* terminate, thread_flag* finished, vector<string> commands);
+
 }  // end namespace pest_utils
 #endif /* UTILITIES_H_ */

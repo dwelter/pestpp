@@ -37,15 +37,17 @@ using namespace std;
 using namespace pest_utils;
 using namespace Eigen;
 
+const string SVDASolver::svda_solver_type_name = "svda_super_par";
+
 SVDASolver::SVDASolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_base_parameter_group_info_ptr, 
 	const ParameterInfo *_ctl_par_info_ptr, const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 	const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, DynamicRegularization *_regul_scheme,
-	OutputFileWriter &_output_file_writer, RestartController &_restart_controller, SVDSolver::MAT_INV _mat_inv, PerformanceLog *_performance_log, 
+	OutputFileWriter &_output_file_writer, SVDSolver::MAT_INV _mat_inv, PerformanceLog *_performance_log, 
 	const std::vector<double> &_base_lambda_vec, bool _phiredswh_flag, bool _splitswh_flag, int _max_super_frz_iter)
 	: SVDSolver(_ctl_info, _svd_info, _base_parameter_group_info_ptr, _ctl_par_info_ptr, _obs_info,
 		_file_manager, _observations, _obj_func, _par_transform, _prior_info_ptr, _jacobian, 
-		_regul_scheme, _output_file_writer, _restart_controller, _mat_inv, _performance_log,
-		_base_lambda_vec, "super parameter solution", _phiredswh_flag, _splitswh_flag, false), calc_jacobian(true),
+		_regul_scheme, _output_file_writer, _mat_inv, _performance_log,
+		_base_lambda_vec, "super parameter solution", _phiredswh_flag, _splitswh_flag, false),
 		max_super_frz_iter(_max_super_frz_iter)
 {
 }
@@ -165,40 +167,106 @@ void SVDASolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_activ
 		new_frozen_ctl_pars = limit_parameters_freeze_all_ip(base_run_active_ctl_pars, upgrade_active_ctl_pars, prev_frozen_active_ctl_pars);
 		prev_frozen_active_ctl_pars.insert(new_frozen_ctl_pars.begin(), new_frozen_ctl_pars.end());
 }
-void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs, bool jacobian_only)
-{
-	ostream &fout_restart = file_manager.get_ofstream("rst");
-	fout_restart << "super_par_iteration" << endl;
-	ostream &os = file_manager.rec_ofstream();
-	ModelRun base_run(cur_solution);
-	vector<string> obs_names_vec = base_run.get_obs_template().get_keys(); 
-	vector<string> numeric_par_names_vec;
 
-	Parameters base_ctl_pars = base_run.get_ctl_pars();
+
+ModelRun SVDASolver::update_run(RunManagerAbstract &run_manager, ModelRun &base_run)
+{
+	ModelRun new_base_run = base_run;
+	Parameters base_ctl_pars = new_base_run.get_ctl_pars();
 	// make sure these are all in bounds
-	for (auto &ipar :  base_ctl_pars)
+	for (auto &ipar : base_ctl_pars)
 	{
 		const string &name = ipar.first;
 		const ParameterRec *p_info = ctl_par_info_ptr->get_parameter_rec_ptr(name);
-		if(ipar.second > p_info->ubnd)
+		if (ipar.second > p_info->ubnd)
 		{
 			ipar.second = p_info->ubnd;
 		}
 		// Check parameter lower bound
-		else if(ipar.second < p_info->lbnd)
+		else if (ipar.second < p_info->lbnd)
 		{
 			ipar.second = p_info->lbnd;
 		}
 	}
 
-	set<string> out_of_bound_pars;
-	if (!calc_jacobian)
+	run_manager.reinitialize(file_manager.build_filename("rnr"));
+	int run_id = run_manager.add_run(par_transform.ctl2model_cp(new_base_run.get_ctl_pars()));
+
+	run_manager.run();
+	Parameters tmp_pars;
+	Observations tmp_obs;
+	bool success = run_manager.get_run(run_id, tmp_pars, tmp_obs);
+	if (!success)
 	{
-		calc_jacobian = true;
+		throw(PestError("Error: Base super parameter run failed."));
+	}
+	par_transform.model2ctl_ip(tmp_pars);
+	new_base_run.update_ctl(tmp_pars, tmp_obs);
+	return new_base_run;
+}
+
+
+ModelRun SVDASolver::iteration_reuse_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool rerun_base, const string &filename)
+{
+	ModelRun new_base_run = base_run;
+
+	ostream &fout_restart = file_manager.get_ofstream("rst");
+	ostream &os = file_manager.rec_ofstream();
+	vector<string> numeric_par_names_vec;
+
+	cout << "  reading previously computed jacobian... " << endl;
+
+	string jac_filenane = filename;
+	if (filename.empty()) jac_filenane = file_manager.build_filename("jcs");
+	jacobian.read(jac_filenane);
+
+	if (rerun_base)
+	{
+		new_base_run = update_run(run_manager, base_run);
+	}
+
+	jacobian.save("jcs");
+
+	// sen file for this iteration
+	output_file_writer.append_sen(file_manager.sen_ofstream(), termination_ctl.get_iteration_number() + 1,
+		jacobian, *(new_base_run.get_obj_func_ptr()), get_parameter_group_info(), *regul_scheme_ptr, true);
+	cout << endl;
+	return new_base_run;
+}
+
+void SVDASolver::iteration_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool calc_init_obs, bool restart_runs)
+{
+	ostream &fout_restart = file_manager.get_ofstream("rst");
+	ostream &os = file_manager.rec_ofstream();
+	vector<string> numeric_par_names_vec;
+
+	// save state of termination controller
+	//termination_ctl.save_state(fout_restart);
+
+	Parameters base_ctl_pars = base_run.get_ctl_pars();
+	// make sure these are all in bounds
+	for (auto &ipar : base_ctl_pars)
+	{
+		const string &name = ipar.first;
+		const ParameterRec *p_info = ctl_par_info_ptr->get_parameter_rec_ptr(name);
+		if (ipar.second > p_info->ubnd)
+		{
+			ipar.second = p_info->ubnd;
+		}
+		// Check parameter lower bound
+		else if (ipar.second < p_info->lbnd)
+		{
+			ipar.second = p_info->lbnd;
+		}
+	}
+
+	if (restart_runs)
+	{
 		super_parameter_group_info = par_transform.get_svda_ptr()->build_par_group_info(*par_group_info_ptr);
 	}
 	else
 	{
+		set<string> out_of_bound_pars;
 		// Calculate Jacobian
 		// build model runs
 		performance_log->log_event("commencing to build jacobian parameter sets");
@@ -264,43 +332,53 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		{
 			throw PestError("Error in SVDASolver::iteration: Can not compute super parameter derivatives without base parameters going out of bounds");
 		}
-		//DEW testing
-	    //ofstream &fout_rst = file_manager.open_ofile_ext("rtj", ios_base::out | ios_base::binary);
-		//par_transform.get_svda_ptr()->save(fout_rst);
-		//file_manager.close_file("rtj");
-		//ifstream &fin_rst = file_manager.open_ifile_ext("rtj", ios_base::in | ios_base::binary);
-		//par_transform.get_svda_ptr()->read(fin_rst);
-		//file_manager.close_file("rtj");
-
-		//make model runs
 		performance_log->log_event("jacobian parameter sets built, commencing model runs");
-		jacobian.make_runs(run_manager);
-		performance_log->log_event("jacobian runs complete, processing runs");
-		out_of_bound_pars.clear();
-		bool success_process_runs = jacobian.process_runs(par_transform,
-			super_parameter_group_info, run_manager, *prior_info_ptr, splitswh_flag);
-		if (out_of_bound_pars.size()>0 || !success_process_runs)
-		{
-			throw PestError("Error in SVDASolver::iteration: Can not compute super parameter derivatives");
-		}
-		performance_log->log_event("processing jacobian runs complete");
 
-		performance_log->log_event("saving jacobian and sen files");
-		// save jacobian
 	}
+	// save super parameter transformation
+	ofstream &fout_rst = file_manager.open_ofile_ext("rtj", ios_base::out | ios_base::binary);
+	par_transform.get_svda_ptr()->save(fout_rst);
+	file_manager.close_file("rtj");
+	RestartController::write_jac_runs_built(fout_restart);
+	//make model runs
+	jacobian.make_runs(run_manager);
+	performance_log->log_event("jacobian runs complete, processing runs");
+	bool success_process_runs = jacobian.process_runs(par_transform,
+		super_parameter_group_info, run_manager, *prior_info_ptr, splitswh_flag);
+	if (!success_process_runs)
+	{
+		throw PestError("Error in SVDASolver::iteration: Can not compute super parameter derivatives");
+	}
+	performance_log->log_event("saving jacobian and sen files");
+	// save jacobian
 	jacobian.save("jcs");
-	
+
+	//Update parameters and observations for base run
+	{
+		Parameters tmp_pars;
+		Observations tmp_obs;
+		bool success = run_manager.get_run(0, tmp_pars, tmp_obs);
+		par_transform.model2ctl_ip(tmp_pars);
+		base_run.update_ctl(tmp_pars, tmp_obs);
+	}
+
 	// sen file for this iteration
 	output_file_writer.append_sen(file_manager.sen_ofstream(), termination_ctl.get_iteration_number() + 1,
-		jacobian, *(cur_solution.get_obj_func_ptr()), get_parameter_group_info(), *regul_scheme_ptr,true);
-	
-	if (jacobian_only)
-	{
-		return;
-	}
+		jacobian, *(base_run.get_obj_func_ptr()), get_parameter_group_info(), *regul_scheme_ptr, true);
+}
+
+ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run)
+{
+	ostream &os = file_manager.rec_ofstream();
+	ostream &fout_restart = file_manager.get_ofstream("rst");
+
+	vector<string> obs_names_vec = base_run.get_obs_template().get_keys();
 	cout << endl;
 	cout << "  computing upgrade vectors... " << endl;
 	cout.flush();
+	os << endl;
+	os << "  computing upgrade vectors... " << endl;
+	os.flush();
 	performance_log->log_event("computing upgrade vectors");
 
 	// populate vectors with sorted observations (standard and prior info) and parameters
@@ -331,7 +409,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		if (regul_scheme_ptr->get_use_dynamic_reg())
 		{
 			os << endl;
-			dynamic_weight_adj(jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+			dynamic_weight_adj(base_run, jacobian, Q_sqrt, residuals_vec, obs_names_vec,
 				base_run_active_ctl_pars, frozen_active_ctl_pars);
 		}
 	}
@@ -361,7 +439,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		std::cout << string(message.str().size(), '\b');
 		message.str("");
 		message << "  computing upgrade vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
-		std::cout << message.str();
+		std::cout << message.str()  << endl;
 		cout.flush();
 
 		Parameters new_pars;
@@ -387,7 +465,6 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 	// process model runs
 	cout << "  testing upgrade vectors... ";
 	cout.flush();
-	fout_restart << "upgrade_model_runs_built " << run_manager.get_cur_groupid() << endl;
 	run_manager.run();
 	//cout << endl;
 	bool best_run_updated_flag = false;
@@ -424,7 +501,7 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 			os << ";   phi = " << upgrade_run.get_phi(*regul_scheme_ptr);
 			os.precision(2);
 			os << setiosflags(ios::fixed);
-			os << " (" << upgrade_run.get_phi(*regul_scheme_ptr) / base_run.get_phi(*regul_scheme_ptr) * 100 << "%)" << endl;
+			os << " (" << upgrade_run.get_phi(*regul_scheme_ptr) / base_run.get_phi(*regul_scheme_ptr) * 100 << "% of starting phi)" << endl;
 			os.precision(n_prec);
 			os.unsetf(ios_base::floatfield); // reset all flags to default
 			if (upgrade_run.obs_valid() && (!best_run_updated_flag ||
@@ -485,20 +562,20 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 	run_manager.free_memory();
 
 	// reload best parameters and set flag to switch to central derivatives next iteration
-	double cur_phi = cur_solution.get_phi(*regul_scheme_ptr);
+	double cur_phi = base_run.get_phi(*regul_scheme_ptr);
 	double best_phi = best_upgrade_run.get_phi(*regul_scheme_ptr);
 
 	cout << endl << "  ...Lambda testing complete for iteration " << termination_ctl.get_iteration_number() + 1 << endl;
-	cout << "  Starting phi = " << cur_phi << ";  ending phi = " << best_phi <<
-		"  (" << best_phi / cur_phi * 100 << "%)" << endl;
+	cout << "  starting phi = " << cur_phi << ";  ending phi = " << best_phi <<
+		"  (" << best_phi / cur_phi * 100 << "% of starting phi)" << endl;
 	cout << endl;
 
-	if (phiredswh_flag && cur_phi != 0 &&
+	if (!splitswh_flag  && phiredswh_flag && cur_phi != 0 &&
 		cur_phi / best_phi >= ctl_info->splitswh)
 	{
 		splitswh_flag = true;
-		os << endl << "      Switching to split threshold derivatives" << endl;
-		cout << endl << "      Switching to split threshold derivatives" << endl;
+		os << endl << "    Switching to split threshold derivatives" << endl << endl;
+		cout << endl << "  Switching to split threshold derivatives" << endl << endl;
 	}
 
 	if (cur_phi != 0 && !phiredswh_flag &&
@@ -506,13 +583,13 @@ void SVDASolver::iteration(RunManagerAbstract &run_manager, TerminationControlle
 		(cur_phi - best_phi) / cur_phi < ctl_info->phiredswh)
 	{
 		phiredswh_flag = true;
-		os << endl << "      Switching to central derivatives:" << endl;
-		cout << endl << "      Switching to central derivatives:" << endl;
+		os << endl << "     PHIREDSWH criteria not met, switching to central derivatives." << endl << endl;
+		cout << endl << "     PHIREDSWH criteria not met, switching to central derivatives." << endl << endl;
 	}
 
 	os << endl;
-	iteration_update_and_report(os, best_upgrade_run, termination_ctl, run_manager);
-	cur_solution = best_upgrade_run;
+	iteration_update_and_report(os, base_run, best_upgrade_run, termination_ctl, run_manager);
+	return best_upgrade_run;
 }
 
 

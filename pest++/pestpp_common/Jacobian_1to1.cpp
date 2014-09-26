@@ -107,7 +107,6 @@ bool Jacobian_1to1::build_runs(ModelRun &init_model_run, vector<string> numeric_
 		}
 	}
 	ofstream &fout_restart = file_manager.get_ofstream("rst");
-	fout_restart << "jacobian_model_runs_built " << run_manager.get_cur_groupid() << endl;
 	debug_print(failed_parameter_names);
 	debug_msg("Jacobian_1to1::build_runs end");
 	return true;
@@ -214,7 +213,6 @@ bool Jacobian_1to1::process_runs(ParamTransformSeq &par_transform,
 	matrix.setFromTriplets(triplet_list.begin(), triplet_list.end());
 	// clean up
 	ofstream &fout_restart = file_manager.get_ofstream("rst");
-	fout_restart << "jacobian_saved" << endl;
 	run_manager.free_memory();
 	debug_print(failed_parameter_names);
 	debug_msg("Jacobian_1to1::process_runs end");

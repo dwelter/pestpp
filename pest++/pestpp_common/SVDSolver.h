@@ -53,12 +53,15 @@ public:
 	SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_par_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
 		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, 
-		DynamicRegularization *_regul_scheme_ptr, OutputFileWriter &_output_file_writer, RestartController &_restart_controller,
+		DynamicRegularization *_regul_scheme_ptr, OutputFileWriter &_output_file_writer,
 		SVDSolver::MAT_INV _mat_inv, PerformanceLog *_performance_log, const std::vector<double> &_base_lambda_vec, 
 		const string &description = string("base parameter solution"), bool _phiredswh_flag = false, bool _splitswh_flag = false, bool _save_next_jacobian = true);
-	virtual ModelRun& solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter, ModelRun &cur_run, ModelRun &optimum_run);
-	virtual void iteration(RunManagerAbstract &run_manager, TerminationController &termination_ctl, bool calc_init_obs=false, bool jacobian_only=false);
-	ModelRun &cur_model_run() {return cur_solution;}
+	virtual ModelRun compute_jacobian(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &cur_run, bool restart_runs = false);
+	virtual ModelRun solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter, ModelRun &cur_run,
+		ModelRun &optimum_run, RestartController &restart_controller, bool calc_first_jacobian = true);
+	virtual ModelRun iteration_reuse_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool rerun_base = true, const std::string &filename = "");
+	virtual void iteration_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool calc_init_obs = false, bool restart_runs = false);
+	virtual ModelRun iteration_upgrd(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run);
 	virtual void set_svd_package(PestppOptions::SVD_PACK _svd_pack);
 	bool get_phiredswh_flag() const { return phiredswh_flag;}
 	void set_phiredswh_flag(bool _phiredswh_flag) { phiredswh_flag = _phiredswh_flag;}
@@ -68,6 +71,7 @@ public:
 	Jacobian & get_jacobian() {return jacobian; }
 	bool local_iteration_terminatated()const { return terminate_local_iteration; }
 	virtual ~SVDSolver(void);
+	virtual string get_solver_type() const { return svd_solver_type_name; }
 protected:
 	class Upgrade {
 	public:
@@ -77,13 +81,13 @@ protected:
 		Parameters frozen_numeric_pars; 
 	};
 
+	const static string svd_solver_type_name;
 	SVDPackage *svd_package;
 	MAT_INV mat_inv;
 	const string description;
 	const ControlInfo *ctl_info;
 	SVDInfo svd_info;
 	ObjectiveFunc *obj_func;
-	ModelRun cur_solution;
 	const ParameterInfo *ctl_par_info_ptr;
 	const ParameterGroupInfo *par_group_info_ptr;
 	ParamTransformSeq par_transform;
@@ -98,7 +102,6 @@ protected:
 	bool save_next_jacobian;
 	double best_lambda;
 	OutputFileWriter &output_file_writer;
-	RestartController &restart_controller;
 	PerformanceLog *performance_log;
 	std::vector<double> base_lambda_vec;
 	bool terminate_local_iteration;
@@ -108,7 +111,7 @@ protected:
 	virtual Parameters limit_parameters_freeze_all_ip(const Parameters &init_active_ctl_pars,
 		Parameters &upgrade_active_ctl_pars, const Parameters &frozen_active_ctl_pars = Parameters());
 	virtual const string &get_description(){return description;}
-	virtual void iteration_update_and_report(ostream &os, ModelRun &upgrade, TerminationController &termination_ctl, RunManagerAbstract &run_manager); 
+	virtual void iteration_update_and_report(ostream &os, const ModelRun &base_run, ModelRun &upgrade, TerminationController &termination_ctl, RunManagerAbstract &run_manager);
 	void param_change_stats(double p_old, double p_new, bool &have_fac, double &fac_change, bool &have_rel,
 		double &rel_change);
 	void calc_upgrade_vec(double i_lambda, Parameters &frozen_ctl_pars, QSqrtMatrix &Q_sqrt, const DynamicRegularization &regul,
@@ -128,11 +131,11 @@ protected:
 		map<string, LimitType> &limit_type_map, Parameters &active_ctl_parameters_at_limit);
 	Eigen::VectorXd calc_residual_corrections(const Jacobian &jacobian, const Parameters &del_numeric_pars, 
 							   const vector<string> obs_name_vec);
-	void dynamic_weight_adj(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt,
+	void dynamic_weight_adj(const ModelRun &base_run, const Jacobian &jacobian, QSqrtMatrix &Q_sqrt,
 		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
 		const Parameters &base_active_ctl_pars, const Parameters &freeze_active_ctl_pars);
 	bool par_heading_out_bnd(double org_par, double new_par, double lower_bnd, double upper_bnd);
-	PhiComponets phi_estimate(const Jacobian &jacobian, QSqrtMatrix &Q_sqrt, const DynamicRegularization &regul,
+	PhiComponets phi_estimate(const ModelRun &base_run, const Jacobian &jacobian, QSqrtMatrix &Q_sqrt, const DynamicRegularization &regul,
 		const Eigen::VectorXd &residuals_vec, const vector<string> &obs_names_vec,
 		const Parameters &base_run_active_ctl_par, const Parameters &freeze_active_ctl_pars, 
 		DynamicRegularization &tmp_regul_scheme, bool scale_upgrade = false);

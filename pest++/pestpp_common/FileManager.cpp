@@ -75,21 +75,28 @@ FileManager::~FileManager(void)
 	}
 }
 
-string FileManager::build_filename(const string &ext)
+string FileManager::build_filename(const string &ext, bool include_dir)
 {
-	return directory + OperSys::DIR_SEP + pest_base_filename +"." + strip_cp(ext);
+	if (!include_dir)
+	{
+		return  pest_base_filename + "." + strip_cp(ext);
+	}
+	else
+	{
+		return directory + OperSys::DIR_SEP + pest_base_filename + "." + strip_cp(ext);
+	}
 }
 
-string FileManager::get_full_filename(const string &tag)
-{
-	string name = "NOT_FOUND";
-	auto i = filename_map.find(tag);
-	if (i != filename_map.end())
-	{
-		name = i->second;
-	}
-	return directory + OperSys::DIR_SEP + name;
-}
+//string FileManager::get_full_filename(const string &tag)
+//{
+//	string name = "NOT_FOUND";
+//	auto i = filename_map.find(tag);
+//	if (i != filename_map.end())
+//	{
+//		name = i->second;
+//	}
+//	return directory + OperSys::DIR_SEP + name;
+//}
 
 ofstream &FileManager::open_ofile_absolute(const string &tag, const string &filename, ofstream::openmode mode)
 {

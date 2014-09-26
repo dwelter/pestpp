@@ -43,7 +43,7 @@ void print(const Eigen::VectorXd &vec, std::ostream & fout, int n_per_line=7);
 
 bool save_triplets_bin(const Eigen::SparseMatrix<double> &mat, std::ostream &fout);
 bool load_triplets_bin(Eigen::SparseMatrix<double> &a, std::istream &fin);
-bool save_vector_bin(const Eigen::VectorXd vec, std::ostream &fout);
-bool load_vector_bin(Eigen::VectorXd vec, std::istream &fin);
+bool save_vector_bin(const Eigen::VectorXd &vec, std::ostream &fout);
+bool load_vector_bin(Eigen::VectorXd &vec, std::istream &fin);
 
 #endif /* EIGEN_TOOLS_H_ */
