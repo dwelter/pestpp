@@ -1,7 +1,7 @@
 #include <iostream>
 #include <list>
 #include "GsaAbstractBase.h"
-#include "utilities.h"
+#include "../common/utilities.h"
 #include "FileManager.h"
 
 using namespace std;

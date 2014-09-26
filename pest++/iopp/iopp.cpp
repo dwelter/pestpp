@@ -13,7 +13,7 @@
 #include <unordered_map>
 #include <algorithm>
 #include <exception>
-#include <io.h>
+#include <sys/io.h>
 #include "iopp.h"
 #include "Transformable.h"
 
@@ -55,7 +55,7 @@ string::size_type find_index(const string strg,const char target)
 	}
 	return i;
 }
-	
+
 pair<int,int> parse_indices(const string strg, const char delim)
 {
 	vector<string> elems;
@@ -71,7 +71,7 @@ pair<int,int> parse_indices(const string strg, const char delim)
 	}
 
 	int start,end;
-	
+
 	try
 	{
 		stringstream convert(elems[0]);
@@ -85,7 +85,7 @@ pair<int,int> parse_indices(const string strg, const char delim)
 	{
 		throw runtime_error("could not cast start column index : " + elems[0] +" for instruction : "+strg);
 	}
-	
+
 	try
 	{
 		stringstream convert(elems[1]);
@@ -115,7 +115,7 @@ void rewind_file(ifstream &f,const streampos line_start,int num_chars)
 	char c;
 	for (int i=0;i<num_chars;i++)
 	{
-		f.clear(); 
+		f.clear();
 		c = f.get();
 		if (f.fail())
 		{
@@ -161,7 +161,7 @@ double text_to_num(string text,bool strict)
 	}
 	if (strict)
 	{
-		
+
 		int nnpos = get_nonnumeric(text);
 		if (nnpos == -1)
 		{
@@ -238,7 +238,7 @@ void Instruction::execute(ifstream &out,int* lpos,streampos* line_start)
 		execute_fixed(out,lpos,line_start);
 		break;
 	case instruction_type::marker:
-		execute_marker(out,lpos,line_start);		
+		execute_marker(out,lpos,line_start);
 		break;
 	case instruction_type::whitespace:
 		execute_whitespace(out,lpos);
@@ -268,8 +268,8 @@ double Instruction::read(ifstream &out,int* lpos,const streampos* line_start)
 
 void Instruction::parse()
 {
-	char first_char = ins_string[0]; 
-		
+	char first_char = ins_string[0];
+
 	//observation instructions
 	if ((first_char == '[') || (first_char == '(') || (first_char ==  '!'))
 	{
@@ -283,11 +283,11 @@ void Instruction::parse()
 			itype = instruction_type::fixedObs;
 			parse_fixedObs();
 		}
-	}	
-	
-        
+	}
+
+
 	//other instructions
-	else 
+	else
 	{
 		if((toupper(first_char) ==  'L') || (toupper(first_char) == 'T'))
 		{
@@ -303,7 +303,7 @@ void Instruction::parse()
 		{
 			itype = instruction_type::whitespace;
 			parse_whitespace();
-		}	
+		}
 		else
 		{
 			throw runtime_error(" unrecognized instruction: "+ ins_string);
@@ -333,7 +333,7 @@ void Instruction::execute_whitespace(ifstream &out, int* lpos)
 	int i,ii;
 	for (i=0;i<line.size();i++)
 	{
-		c = line[i];		
+		c = line[i];
 		if (isspace(c))
 		{
 			break;
@@ -376,7 +376,7 @@ void Instruction::parse_fixed()
 void Instruction::execute_fixed(ifstream &out,int* lpos, streampos* line_start)
 {
 	start_point = out.tellg();
-	streampos curr_point;	
+	streampos curr_point;
 	string line;
 	if (rtype == Instruction::read_type::line)
 	{
@@ -385,7 +385,7 @@ void Instruction::execute_fixed(ifstream &out,int* lpos, streampos* line_start)
 		{
 			start_point = out.tellg();
 			line = read_line(out);
-			curr_point == out.tellg();	
+			curr_point == out.tellg();
 		}
 		out.seekg(start_point);
 		*line_start = start_point;
@@ -408,7 +408,7 @@ void Instruction::execute_fixed(ifstream &out,int* lpos, streampos* line_start)
 		//getline(*out,line);
 		int i=0;
 	}
-	return;		
+	return;
 }
 
 void Instruction::parse_marker()
@@ -444,13 +444,13 @@ void Instruction::execute_marker(ifstream &out,int* lpos,streampos* line_start)
 	{
 		throw MarkerError(" building regex from expression: "+marker_string);
 	}
-	smatch mresults; 
+	smatch mresults;
 	string line,subline;
 	int mstart;
 	start_point = out.tellg();
 	if (mtype == marker_type::primary)
 	{
-		
+
 		while (true)
 		{
 			try
@@ -463,7 +463,7 @@ void Instruction::execute_marker(ifstream &out,int* lpos,streampos* line_start)
 			}
 			//check for marker string in line
 			if (regex_search(line,mresults,rmarker))
-			{	
+			{
 				//seek to the end of the marker
 				mstart = line.find(marker_string);
 				try
@@ -474,9 +474,9 @@ void Instruction::execute_marker(ifstream &out,int* lpos,streampos* line_start)
 				{
 					string message = " error rewinding file ";
 					throw MarkerError(message.append(e.what()));
-				}		
-				
-				*lpos = mstart + marker_string.size();	
+				}
+
+				*lpos = mstart + marker_string.size();
 				*line_start = out.tellg();
 				return;
 			}
@@ -488,7 +488,7 @@ void Instruction::execute_marker(ifstream &out,int* lpos,streampos* line_start)
 	//this is a secondary marker
 	else
 	{
-		//get the current line		
+		//get the current line
 		try
 		{
 			line = read_line(out);
@@ -498,7 +498,7 @@ void Instruction::execute_marker(ifstream &out,int* lpos,streampos* line_start)
 			throw SecondaryMarkerReadError("unable to read line from file while searching for secondary marker: " + marker_string);
 		}
 		if (regex_search(line,mresults,rmarker))
-		{	
+		{
 			//seek to the end of the marker
 			mstart = line.find(marker_string);
 			try
@@ -509,15 +509,15 @@ void Instruction::execute_marker(ifstream &out,int* lpos,streampos* line_start)
 			{
 				string message = " error rewinding file ";
 				throw MarkerError(message.append(e.what()));
-			}		
-			*lpos += mstart + marker_string.size();		
+			}
+			*lpos += mstart + marker_string.size();
 			*line_start = out.tellg();
-			return;				
+			return;
 		}
 		else
 		{
 			throw SecondaryMarkerNotFound(marker_string);
-		}			
+		}
 	}
 }
 
@@ -549,7 +549,7 @@ double Instruction::read_nonFixedObs(ifstream &out,int* lpos,const streampos* li
 	//if nonnumeric characters are detected, then read the file forward to the last numeric character
 	if (nnpos != -1)
 	{
-		lend = lstart + nnpos+1;	
+		lend = lstart + nnpos+1;
 	}
 	try
 	{
@@ -559,16 +559,18 @@ double Instruction::read_nonFixedObs(ifstream &out,int* lpos,const streampos* li
 	{
 		string message = " error rewinding file ";
 		throw MarkerError(message.append(e.what()));
-	}		
+	}
 	*lpos += lend;
 	return dval;
 }
 
 void Instruction::parse_nonFixedObs()
 {
+    string tmpcopy;
 	ins_string.erase(0,1);
 	string::size_type i = find_index(ins_string,'!');
-	obs_name = string2upper(ins_string.substr(0,i));
+    tmpcopy = ins_string.substr(0, i);
+	obs_name = string2upper(tmpcopy);
 	return;
 }
 
@@ -586,9 +588,9 @@ double Instruction::read_fixedObs(ifstream &out,int* lpos,const streampos* line_
 			string message = " error rewinding file ";
 			throw MarkerError(message.append(e.what()));
 		}
-		*lpos = 0;		
+		*lpos = 0;
 	}
-	
+
 	start_point = out.tellg();
 	string line,sval;
 	double dval = -1.0E+10;
@@ -596,15 +598,15 @@ double Instruction::read_fixedObs(ifstream &out,int* lpos,const streampos* line_
 	//line = read_line(out);
 	//line = read_line(out);
 	if (ftype == fixed_type::strict)
-	{		
-		
+	{
+
 		try
 		{
 			sval = line.substr(start-1,end-start+1);
 		}
 		catch (...)
-		{			
-			throw FixedObsReadError(" forming substring from line " + line + "from positions: " + 
+		{
+			throw FixedObsReadError(" forming substring from line " + line + "from positions: " +
 				to_string(start-1) + " " + to_string(end-start+1));
 		}
 		try
@@ -614,7 +616,7 @@ double Instruction::read_fixedObs(ifstream &out,int* lpos,const streampos* line_
 		catch (Text2NumParseError)
 		{
 			throw FixedObsReadError(" casting string to double " + sval);
-		}	
+		}
 		int i;
 		for (i=sval.size()-1;i>=0;i--)
 		{
@@ -623,7 +625,7 @@ double Instruction::read_fixedObs(ifstream &out,int* lpos,const streampos* line_
 				break;
 			}
 		}
-		
+
 		try
 		{
 			rewind_file(out,start_point,start+i);
@@ -658,17 +660,17 @@ double Instruction::read_fixedObs(ifstream &out,int* lpos,const streampos* line_
 			entry_end.push_back(s + subline.size());
 			c = s;
 		}
-		
+
 		//find an entry that meets the requirements of the instruction
 		int i;
 		bool found = false;
 		for (i=0;i<entries.size();i++)
-		{			
+		{
 			if ((entry_start[i] >= start) || (start <= entry_end[i]))
 			{
 				found = true;
 				break;
-			}			
+			}
 		}
 		if (!found)
 		{
@@ -681,17 +683,17 @@ double Instruction::read_fixedObs(ifstream &out,int* lpos,const streampos* line_
 		catch (Text2NumParseError& e)
 		{
 			throw SemiFixedObsReadError(" casting string to double " + entries[i] + e.what());
-		}		
+		}
 		try
 		{
-			rewind_file(out,start_point,entry_end[i]);			
+			rewind_file(out,start_point,entry_end[i]);
 		}
 		catch (RewindError& e)
 		{
 			string message = " error rewinding file ";
 			throw MarkerError(message.append(e.what()));
-		}		
-		*lpos = entry_end[i];		
+		}
+		*lpos = entry_end[i];
 	}
 	return dval;
 }
@@ -699,6 +701,7 @@ double Instruction::read_fixedObs(ifstream &out,int* lpos,const streampos* line_
 void Instruction::parse_fixedObs()
 {
 	char end_char;
+    string tmpcopy;
 	if (ins_string[0] == '['){
 		end_char = ']';
 		ftype = fixed_type::strict;
@@ -711,7 +714,8 @@ void Instruction::parse_fixedObs()
 	ins_string.erase(0,1);
 	string::size_type i = find_index(ins_string,end_char);
 	//get the obs name
-	obs_name = string2upper(ins_string.substr(0, i));
+    tmpcopy = ins_string.substr(0, i);
+	obs_name = string2upper(tmpcopy);
 	ins_string.erase(0,i+1);
 	pair<int,int> idx = parse_indices(ins_string,':');
 	start = idx.first;
@@ -757,17 +761,17 @@ unordered_map<string,double> InstructionLine::execute(ifstream &out)
 	Instruction i;
 	size_t icount = 0;
 	streampos line_start;
-	unordered_map<string,double> obs_map; 
+	unordered_map<string,double> obs_map;
 	pair<string,double> opair;
 	line_start = out.tellg();
-	
+
 	while (icount < instructions.size())
 	{
 		i = instructions[icount];
 		if ((i.itype == Instruction::instruction_type::fixedObs) ||
 			(i.itype == Instruction::instruction_type::nonFixedObs))
 		{
-			
+
 			try
 			{
 				oval = i.read(out,&lpos,&line_start);
@@ -802,10 +806,10 @@ unordered_map<string,double> InstructionLine::execute(ifstream &out)
 		{
 			try
 			{
-				i.execute(out,&lpos,&line_start);				
+				i.execute(out,&lpos,&line_start);
 				icount++;
 			}
-			
+
 			//if a secondary marker was not found, start looking for a new line
 			catch (SecondaryMarkerNotFound& e)
 			{
@@ -851,7 +855,7 @@ vector<string> InstructionLine::get_observation_names()
 
 InstructionFile::InstructionFile(string ins_filename)
 {
-	instruction_filename = ins_filename;	
+	instruction_filename = ins_filename;
 	string line, ftype, mstring;
 	ins.open(instruction_filename);
 	if (!ins.is_open())
@@ -940,7 +944,7 @@ void InstructionFile::parse_instruction_line(string ins_line)
 			end = idx.second;
 			ins_strings.push_back(ins_line.substr(start,end-start));
 
-			//now reset the start index to the end 
+			//now reset the start index to the end
 			start = end;
 		}
 		//process any tokens right of the last index
@@ -989,19 +993,19 @@ vector<pair<int,int>> InstructionFile::get_marker_indices(string line)
 	for (string::size_type i=0;i < line.size();i++)
 	{
 		if (line[i] == marker_delim)
-		{						
+		{
 			if (key == -1)
 			{
 				key = i;
 			}
 			else
-			{				
+			{
 				if (i == (key+1))
-				{					
+				{
 					//cout << " only one space between marker delimiters in file" << instruction_filename << "on line " << line << endl;
 					throw InstructionFileError(" only one space between marker delimiters in file" + instruction_filename + "on line " + line);
 				}
-				
+
 				pair<int,int> p(key,i+1);
 				indices.push_back(p);
 				key = -1;
@@ -1009,7 +1013,7 @@ vector<pair<int,int>> InstructionFile::get_marker_indices(string line)
 		}
 	}
 	if (key != -1)
-	{		
+	{
 		cout << "unbalanced marker on line " << line << endl;
 		throw InstructionFileError(" unbalanced marker on line " + line);
 	}
@@ -1047,7 +1051,7 @@ void InstructionFile::read(ifstream &out, Observations &obs)
 		//getline(out, line);
 		//rewind_file(out, start, 0);
 		line_map = il.execute(out);
-		obs.insert(line_map.begin(), line_map.end());				
+		obs.insert(line_map.begin(), line_map.end());
 		/*getline(out, line);
 		getline(out, line);
 		getline(out, line);
@@ -1097,7 +1101,7 @@ void InstructionFiles::check_obs_names(vector<string> onames)
 	for (auto &ins_filename : instruction_filenames)
 	{
 		InstructionFile ifile(ins_filename);
-		ifile.build_instruction_set();		
+		ifile.build_instruction_set();
 		for (auto &iline : ifile.get_instruction_lines())
 		{
 			iline_names = iline.get_observation_names();
@@ -1138,12 +1142,12 @@ vector<double> InstructionFiles::read(const vector<string> &obs_name_vec)
 {
 	size_t i;
 	vector<double> obs_vals(obs_name_vec.size());
-	unordered_map<string,double> ifile_map;	
+	unordered_map<string,double> ifile_map;
 	unordered_map<string,double>::iterator miter;
-	
+
 	for (i=0;i<instruction_filenames.size();i++)
 	{
-		InstructionFile ins(instruction_filenames[i]);		
+		InstructionFile ins(instruction_filenames[i]);
 		ifstream out(output_filenames[i]);
 		if (out.fail())
 		{
@@ -1151,16 +1155,16 @@ vector<double> InstructionFiles::read(const vector<string> &obs_name_vec)
 		}
 		try
 		{
-			ins.read(out,ifile_map);			
+			ins.read(out,ifile_map);
 		}
 		catch (runtime_error& e)
 		{
 			cout << "unable to read instruction file" << instruction_filenames[i] << e.what() << endl;
 			throw e;
 		}
-		out.close();		
+		out.close();
 	}
-	
+
 	//check that all requested obs have been read
 	bool missing=false;
 	string missing_obs = "";
@@ -1177,7 +1181,7 @@ vector<double> InstructionFiles::read(const vector<string> &obs_name_vec)
 	if (missing)
 	{
 		throw InstructionFileError(" observation values not found in model output files: "+missing_obs);
-	}	
+	}
 	return obs_vals;
 }
 
@@ -1187,7 +1191,7 @@ void InstructionFiles::read(const vector<string> &obs_name_vec, Observations &ob
 	vector<string>::iterator iins, iout;
 
 
-	for (iins = instruction_filenames.begin(), iout = output_filenames.begin(); 
+	for (iins = instruction_filenames.begin(), iout = output_filenames.begin();
 		iins != instruction_filenames.end(), iout != output_filenames.end();
 		++iins,++iout)
 	{
@@ -1198,7 +1202,7 @@ void InstructionFiles::read(const vector<string> &obs_name_vec, Observations &ob
 			throw InstructionFileError(" could not open model output file " + *iout);
 		}
 		try
-		{			
+		{
 			ins.read(out, obs);
 		}
 		catch (runtime_error& e)
@@ -1219,12 +1223,12 @@ void InstructionFiles::read(const vector<string> &obs_name_vec, Observations &ob
 		{
 			missing_obs += " " + oname;
 			missing = true;
-		}		
+		}
 	}
 	if (missing)
 	{
 		throw InstructionFileError(" observation values not found in model output files: " + missing_obs);
-	}	
+	}
 
 }
 
@@ -1242,7 +1246,7 @@ FixedWidthValue::FixedWidthValue(bool isDblPres, bool frcRad,int wdth)
 	needRadix = true;
 	isRace = false;
 	(isDoublePrecision) ? max_exponent=278:max_exponent=38;
-	(isDoublePrecision) ? max_sig=16:max_sig=8;	
+	(isDoublePrecision) ? max_sig=16:max_sig=8;
 	(isDoublePrecision) ? max_width=23:max_width=16;
 	width = min(text_width,max_width);
 }
@@ -1255,15 +1259,15 @@ double FixedWidthValue::get_templatefile_double()
 
 
 string FixedWidthValue::get_templatefile_string(double val)
-{	
+{
 	value = val;
 	set_precision_components();
 	//check for overflow
 	if (abs(exponent) > max_exponent)
 	{
-		//cout << "value over flow " << value;		
+		//cout << "value over flow " << value;
 		throw ValueOverflowError(max_str);
-	}	
+	}
 
 	//try to squeeze some digits using clever tricks that john developed
 	maximize_precision();
@@ -1273,13 +1277,13 @@ string FixedWidthValue::get_templatefile_string(double val)
 
 	//get the output string
 	string value_str = as_string();
-	
-	size_t s = value_str.size(); 
+
+	size_t s = value_str.size();
 	if (s != text_width)
 		throw FixedWidthError("internal error - string representation not the right number of characters"+value_str);
 
 	return value_str;
-}	
+}
 
 void FixedWidthValue::maximize_precision()
 {
@@ -1287,47 +1291,47 @@ void FixedWidthValue::maximize_precision()
 	// try to drop scientific - the base, exponent sign and exponent
 	drop_scientific();
 	update();
-	
+
 
 	//try to gain a digit by reducing the exponent
-	if ((needScientific) && (forceRadix)) 
+	if ((needScientific) && (forceRadix))
 	{
 		reduce_exponent();
 		update();
 	}
-	
+
 	//if we can, try to drop the radix
 	if (!forceRadix)
 	{
 		drop_radix();
 		update();
 	}
-	
+
 	//if we still don't have any digits, this space is too narrow
 	if (sig_digits == 0)
 		throw FixedWidthError("not enought spaces to represent value "+ max_str);
-	
+
 }
 
 void FixedWidthValue::prepare_output_significand()
 {
-	
+
 	// reset output_significand
 	output_significand.clear();
 
 	//if the significant is too short, pad with zeros if needed - only on the right
 	if (sig_digits > significand.size())
 	{
-		output_significand = pad_zeros(significand,false);						
+		output_significand = pad_zeros(significand,false);
 	}
 
 	//truncate if needed
 	else if (sig_digits < significand.size())
-	{				
+	{
 		for (vector<int>::size_type i=0;i<sig_digits;i++)
 		{
 			output_significand.push_back(significand[i]);
-		}		
+		}
 		//round if nessecary
 		if (sig_digits < significand.size())
 		{
@@ -1338,16 +1342,16 @@ void FixedWidthValue::prepare_output_significand()
 				//add one
 				trunc_d += 1;
 				//convert back to int vector
-				output_significand = number_to_digits(trunc_d);	
-				//if the rounding triggered a digit increase (if the rightmost value if 9)			
+				output_significand = number_to_digits(trunc_d);
+				//if the rounding triggered a digit increase (if the rightmost value if 9)
 				while (output_significand.size() > sig_digits)
 				{
 					shift_left();
 					output_significand.pop_back();
 				}
-				
+
 				//replace any missing zeros, could be left or right, depending on if abs(value) < 1.0
-				output_significand = pad_zeros(output_significand,needEsign);						
+				output_significand = pad_zeros(output_significand,needEsign);
 			}
 		}
 	}
@@ -1362,64 +1366,64 @@ void FixedWidthValue::drop_radix()
 {
 	//if we need to squeeze this value into a narrower space
 	if ((width < max_width) && (sig_digits < width))
-	{		
+	{
 		//hypothesis: we can drop the radix
 		needRadix = false;
 		update();
 		//see if we are in a position to gain any digits by reducing the exponent
-		reduce_exponent();		
+		reduce_exponent();
 		while (radix_pos < sig_digits)
-		{										
+		{
 			//if we dropped the exponent to zero, we don't need scientific but we need the radix
 			if (exponent == 0)
 			{
 				needScientific = false;
-				needRadix = true;	
+				needRadix = true;
 				update();
 				break;
-			}				
-			shift_right();													
+			}
+			shift_right();
 		}
 		//check for race condition - happens when exponent gains a digit: -9 -> -10 or -99 -> -100
 		if (radix_pos > sig_digits)
-		{			
+		{
 			isRace = true;
 			exponent++;
 			radix_pos--;
 			update();
 		}
-		//if we successfully moved the radix to the last position, try to move the exponent to gain a digit...		
-		if (needRadix) reduce_exponent();		
+		//if we successfully moved the radix to the last position, try to move the exponent to gain a digit...
+		if (needRadix) reduce_exponent();
 		update();
 	}
 }
 
 void FixedWidthValue::drop_scientific()
-{	
+{
 	//if we need to squeeze the value into a narrower space
 	if (width < max_width)
-	{		
+	{
 		if ((exponent == 0) || (value == 0.0)) needScientific = false;
-		//if this is a really small value	
+		//if this is a really small value
 		else if ((needEsign) && (abs(exponent) < 3))
 		{
 			needScientific = false;
 			update();
-			while (exponent != 0)	
-				shift_left();				
+			while (exponent != 0)
+				shift_left();
 		}
-		else 
-		{						
+		else
+		{
 			//hypothesis: we can drop scientific
-			needScientific = false;	
+			needScientific = false;
 			//...and the radix
 			if(!forceRadix) needRadix = false;
 			update();
 			// abs(values) greater than 1.0
 			if ((!needEsign) && (sig_digits >= exponent))
 			{
-				while (exponent != 0)	
-					shift_right();	
+				while (exponent != 0)
+					shift_right();
 			}
 			//otherwise, we need to undo our hypothesis and keep scientific
 			else
@@ -1436,22 +1440,22 @@ void FixedWidthValue::drop_scientific()
 }
 
 void FixedWidthValue::reduce_exponent()
-{	
+{
 	if (sig_digits < max_sig)
 	{
 		if ((exponent == 100) || ((exponent > 100) && (exponent - sig_digits -1 < 100)))
 		{
 			while (exponent >= 100)
 			{
-				shift_right();			
+				shift_right();
 			}
-		}	
+		}
 
 		if ((exponent == 10) || ((exponent > 10) && (exponent - sig_digits -1 < 10)))
 		{
 			while (exponent >= 10)
 			{
-				shift_right();	
+				shift_right();
 			}
 		}
 	}
@@ -1459,12 +1463,12 @@ void FixedWidthValue::reduce_exponent()
 
 string FixedWidthValue::as_string()
 {
-	
-	stringstream value_str;	
-	int position = 0;		
+
+	stringstream value_str;
+	int position = 0;
 	if (needSign)
 		value_str << sign;
-	
+
 	if ((needRadix) && (position == radix_pos))
 	{
 		value_str << '.';
@@ -1473,57 +1477,57 @@ string FixedWidthValue::as_string()
 
 	for (vector<int>::size_type i=0;i<output_significand.size();i++)
 	{
-		if ((needRadix) && (position == radix_pos)) value_str << '.';			
-		value_str << output_significand[i];		
+		if ((needRadix) && (position == radix_pos)) value_str << '.';
+		value_str << output_significand[i];
 		position++;
 	}
 	if ((needRadix) && (position == radix_pos))
-		value_str << '.';	
-		
+		value_str << '.';
+
 	if (needScientific)
 	{
-		//append the base	
+		//append the base
 		value_str << base;
 
 		//if the value needs a sign on the exponent
 		if (needEsign) value_str << eSign;
-		
-		//append the exponent - pretty hackish, but needed to control the digits of the exponent explicitly	
-		char buf[5];		
-		int pos_exp = abs(exponent);	
-		//switch on the number of exponent digits needed 
+
+		//append the exponent - pretty hackish, but needed to control the digits of the exponent explicitly
+		char buf[5];
+		int pos_exp = abs(exponent);
+		//switch on the number of exponent digits needed
 		switch (exp_digits)
 		{
 			case (1):
-			{			
-				sprintf_s(buf,"%01d",pos_exp);
+			{
+				snprintf(buf, exp_digits, "%01d",pos_exp);
 				for (int i=0;i<exp_digits;i++)
-				{		
+				{
 					value_str << buf[i];
 				}
 				break;
 			}
 			case (2):
-			{			
-				sprintf_s(buf,"%02d",pos_exp);
+			{
+				snprintf(buf, exp_digits, "%02d",pos_exp);
 				for (int i=0;i<exp_digits;i++)
-				{		
+				{
 					value_str << buf[i];
 				}
 				break;
 			}
 			case (3):
-			{		
-				sprintf_s(buf,"%03d",pos_exp);
+			{
+				snprintf(buf, exp_digits, "%03d",pos_exp);
 				for (int i=0;i<exp_digits;i++)
-				{		
+				{
 					value_str << buf[i];
 				}
 				break;
-			}	
+			}
 		}
 	}
-	
+
 	string v_string = value_str.str();
 
 	//fill any remaining characters - on the left with spaces
@@ -1558,17 +1562,17 @@ void FixedWidthValue::update()
 		exp_digits--;
 	}
 	//count up the number of non-numeric characters
-	int nn = 0;	
-	if (needSign) nn++;	
+	int nn = 0;
+	if (needSign) nn++;
 	if (needRadix) nn++;
 	if (isRace) nn++;
 	if (needScientific)
 	{
 		//the base 'E'
 		nn++;
-		//the exp sign 
+		//the exp sign
 		if (needEsign) nn++;
-			
+
 		nn += exp_digits;
 	}
 	(nn > width) ? sig_digits=0:sig_digits=width-nn;
@@ -1615,43 +1619,43 @@ void FixedWidthValue::shift_right()
 {
 	if (radix_pos > significand.size()) significand.push_back(0);
 	radix_pos++;
-	exponent--;		
+	exponent--;
 	(exponent<0) ? needEsign=true:needEsign==false;
 	update();
 }
 
 void FixedWidthValue::set_precision_components()
 {
-	needSign = false;	
+	needSign = false;
 	if (value < 0.0)
 	{
 		sign = '-';
-		needSign = true;		
+		needSign = true;
 	}
-	
+
 	needEsign = false;
-	if ((abs(value) < 1.0) && (value != 0.0))	
+	if ((abs(value) < 1.0) && (value != 0.0))
 	{
 		eSign = '-';
 		needEsign = true;
 	}
-	
+
 	//print the string representation maximum precision
-	char buf[50];	
-	sprintf_s(buf,"%#23.16E",value);
+	char buf[50];
+	snprintf(buf, 50, "%#23.16E",value);
 	max_str = buf;
-	
+
 	//strip off any whitespace
-	max_str.erase(remove_if(max_str.begin(),max_str.end(),isspace),max_str.end());
+	max_str.erase(remove_if(max_str.begin(),max_str.end(),::isspace),max_str.end());
 
 	size_t max_size = max_str.size();
 
 	//set exponent
-	string str_exp = max_str.substr(max_str.size()-3,3);	
+	string str_exp = max_str.substr(max_str.size()-3,3);
 	exponent = atoi(str_exp.c_str());
 	if (needEsign) exponent *= -1;
 	exp_digits = 3;
-	
+
 	//get the radix position
 	radix_pos = max_str.find('.');
 	//if negative, move the radix left one
@@ -1662,7 +1666,7 @@ void FixedWidthValue::set_precision_components()
 		throw FixedWidthError("no radix found in max_str representation " + max_str);
 	}
 
-	//find the base	
+	//find the base
 	size_t e_idx = max_str.find('E');
 	if (e_idx == max_str.size()-1)
 	{
@@ -1670,24 +1674,24 @@ void FixedWidthValue::set_precision_components()
 		throw FixedWidthError("no 'E' found in max_str representation " + max_str);;
 	}
 	string significand_str = max_str.substr(0,e_idx);
-	
+
 	//remove the leading sign
 	if (needSign) significand_str.erase(0,1);
 
 	//remove the radix
-	significand_str = significand_str.erase(radix_pos,1);	
+	significand_str = significand_str.erase(radix_pos,1);
 
-	//populate significand	
+	//populate significand
 	int si;
-	for (vector<int>::size_type i=0;i<significand_str.size();i++)	
-	{		
+	for (vector<int>::size_type i=0;i<significand_str.size();i++)
+	{
 		si = significand_str[i] - '0';
 		if ((si < 0) || (si > 9))
 		{
 			//cout << "error casting significand component to intergers" << si;
 			throw FixedWidthError("error casting significand component to intergers" + significand_str[i]);
 		}
-		significand.push_back(si);			
+		significand.push_back(si);
 	}
 	//set the radix to position 0
 	while (radix_pos > 0)
@@ -1700,7 +1704,7 @@ void FixedWidthValue::set_precision_components()
 
 vector<int> FixedWidthValue::number_to_digits(long long val)
 {
-	vector<int> iv;	
+	vector<int> iv;
 	long long digit;
 	do
 	{
@@ -1708,15 +1712,15 @@ vector<int> FixedWidthValue::number_to_digits(long long val)
 		iv.push_back((int)digit);
 		val  /= 10;
 	}while (val > 0);
-	reverse(iv.begin(),iv.end());	
+	reverse(iv.begin(),iv.end());
 	return iv;
 }
 
 long long FixedWidthValue::digits_to_number(vector<int> iv)
-{	
+{
 	long long val = 0 ;
 	long long s;
-	double e;	
+	double e;
 	for (vector<int>::size_type i=0;i<iv.size();i++)
 	{
 		s = iv[i];
@@ -1730,7 +1734,7 @@ long long FixedWidthValue::digits_to_number(vector<int> iv)
 
 TemplateParameter::TemplateParameter(string nm,double val, int start, int end,int lnum,bool isDbl, bool frcRad)
 {
-	
+
 	name = nm;
 	value = val;
 	start_idx = start;
@@ -1757,7 +1761,7 @@ void TemplateParameter::write_value(string &line)
 	string val_string = "";
 	try
 	{
-		val_string = fwv.get_templatefile_string(value);	
+		val_string = fwv.get_templatefile_string(value);
 	}
 	catch (exception &e)
 	{
@@ -1771,7 +1775,7 @@ void TemplateParameter::write_value(string &line)
 		string start = line.substr(0,istr);
 		string end = line.substr(iend1,iend2 - iend1);
 		start.append(val_string);
-		start.append(end);		
+		start.append(end);
 		line = start;
 	}
 	catch (exception &e)
@@ -1786,14 +1790,14 @@ void TemplateFile::write_inputfile()
 {
 	ofstream ofs(input_filename);
 	if (!ofs.is_open())
-	{		
-		throw TemplateFileError("unable to open model input file: "+input_filename);				
+	{
+		throw TemplateFileError("unable to open model input file: "+input_filename);
 	}
 	ifstream ifs(template_filename);
 	if (!ifs.is_open())
 	{
-		throw TemplateFileError("unable to open model input file: "+template_filename);						
-	}	
+		throw TemplateFileError("unable to open model input file: "+template_filename);
+	}
 	string smarker;
 	string tpl_typ;
 	string line;
@@ -1803,49 +1807,51 @@ void TemplateFile::write_inputfile()
 	//read-write remaining lines
 	int lnum = 2;
 	while (getline(ifs,line))
-	{				
+	{
 		it = find(line_numbers.begin(),line_numbers.end(),lnum);
 		if (it != line_numbers.end())
 		{
 			line = build_input_line(line,parameter_line_index[lnum]);
-		}		
+		}
 		ofs << line << "\n";
 		lnum++;
 	}
 }
 
 string TemplateFile::build_input_line(string line,vector<TemplateParameter> line_parameters)
-{		
+{
 	for (vector<TemplateParameter>::iterator tp=line_parameters.begin();tp != line_parameters.end();++tp)
-	{		
+	{
 		try
 		{
 			tp->write_value(line);
 		}
 		catch (exception &e)
 		{
-			throw TemplateFileError("error writing template file "+template_filename+" on line "+line+" : "+e.what());			
+			throw TemplateFileError("error writing template file "+template_filename+" on line "+line+" : "+e.what());
 		}
 	}
 	return line;
 }
 
 void TemplateFile::set_parameter_values(unordered_map<string,double> parameter_map)
-{	
+{
+    string tmpcopy;
 	for (map<int,vector<TemplateParameter>>::iterator tpv = parameter_line_index.begin();tpv!=parameter_line_index.end();++tpv)
 	{
 		for (vector<TemplateParameter>::iterator tp = tpv->second.begin();tp != tpv->second.end();++tp)
 		{
 			try{
-				tp->set_value(parameter_map.at(string2upper(tp->get_name())));
+                tmpcopy = tp->get_name();
+				tp->set_value(parameter_map.at(string2upper(tmpcopy)));
 			}
 			catch (out_of_range& oor)
 			{
 
 			}
-			
+
 		}
-	}	
+	}
 }
 
 double TemplateFile::write_value_to_line(string &name, string &line, int &start_idx, int &end_idx, double &value)
@@ -1917,7 +1923,7 @@ void TemplateFile::read_templatefile()
 	//read the ptf marker line
 	getline(f, line);
 	smatch mresults;
-	//read the remaining lines and error check markers		
+	//read the remaining lines and error check markers
 	vector<pair<int, int>> indices;
 	vector<string> line_parameter_names;
 	vector<string>::iterator is;
@@ -1932,14 +1938,14 @@ void TemplateFile::read_templatefile()
 			//get the parameter names within the markers
 			line_parameter_names = get_line_parameters(indices, line);
 			parameter_names.insert(parameter_names.begin(), line_parameter_names.begin(), line_parameter_names.end());
-		}		
+		}
 	}
-	f.close();	
+	f.close();
 }
 
 
 void TemplateFile::process(Parameters &pars)
-{	
+{
 	build_marker();
 	ifstream f(template_filename);
 	if (!f.is_open())
@@ -1955,7 +1961,7 @@ void TemplateFile::process(Parameters &pars)
 	//read the ptf marker line
 	getline(f, line);
 	smatch mresults;
-	//read the remaining lines and error check markers		
+	//read the remaining lines and error check markers
 	double val;
 	vector<pair<int, int>> indices;
 	vector<string> line_parameter_names;
@@ -2000,12 +2006,12 @@ void TemplateFile::process(unordered_map<string,double> &parameter_map)
 	}
 	string line;
 	//read the ptf marker line
-	getline(f, line);	
+	getline(f, line);
 	smatch mresults;
-	//read the remaining lines and error check markers		
+	//read the remaining lines and error check markers
 	double val;
 	vector<pair<int, int>> indices;
-	vector<string> line_parameter_names;	
+	vector<string> line_parameter_names;
 	vector<string>::iterator is;
 	vector<pair<int, int>>::iterator ip;
 	while (getline(f, line))
@@ -2016,15 +2022,15 @@ void TemplateFile::process(unordered_map<string,double> &parameter_map)
 			//get marker indices on this line
 			indices = get_marker_indices(marker, line);
 			//get the parameter names within the markers
-			line_parameter_names = get_line_parameters(indices, line);			
-			
+			line_parameter_names = get_line_parameters(indices, line);
+
 			for (is = line_parameter_names.begin(), ip = indices.begin(); is != line_parameter_names.end(), ip != indices.end(); ++is, ++ip)
 			{
 				val = write_value_to_line(*is, line, ip->first, ip->second, parameter_map.at(*is));
 				parameter_map[*is] = val;
-			}			
+			}
 		}
-		ofs << line << "\n";		
+		ofs << line << "\n";
 	}
 	f.close();
 	ofs.close();
@@ -2034,10 +2040,10 @@ void TemplateFile::process(unordered_map<string,double> &parameter_map)
 
 vector<string> TemplateFile::get_line_parameters(vector<pair<int,int>> indices,string line)
 {
-	vector<string> line_parameters;	
+	vector<string> line_parameters;
 	//int npos;
 	string pname;
-	for (vector<pair<int,int>>::iterator index=indices.begin();index != indices.end();++index)	
+	for (vector<pair<int,int>>::iterator index=indices.begin();index != indices.end();++index)
 	{
 	    //npos= index->second - index->first;
 		pname = line.substr(index->first, index->second - index->first);
@@ -2045,7 +2051,7 @@ vector<string> TemplateFile::get_line_parameters(vector<pair<int,int>> indices,s
 		line_parameters.push_back(string2upper(pname));
 	}
 	if (line_parameters.size() == 0)
-	{		
+	{
 		throw TemplateFileError(" Internal Error - no valid parameter names found in " + template_filename + "on line " + line);
 	}
 	return line_parameters;
@@ -2056,7 +2062,7 @@ void TemplateFile::reduce_parameter_name(string &pname)
 	pname = pname.erase(pname.size()-1,1);
 	pname = pname.erase(0,1);
 	for (size_t i=pname.size();i>0;i--)
-	{		
+	{
 		if ((pname[i-1] == ' ') || (pname[i-1] == '	'))
 		{
 			pname = pname.erase(i-1,1);
@@ -2074,15 +2080,15 @@ vector<pair<int,int>> TemplateFile::get_marker_indices(char marker,string line)
 	for (string::size_type i=0;i < line.size();i++)
 	{
 		if (line[i] == marker)
-		{						
+		{
 			if (key == -1)
 			{
 				key = i;
 			}
 			else
-			{				
+			{
 				if (i == (key+1))
-				{					
+				{
 					throw TemplateFileError(" only one space between markers in file" + template_filename + "on line " + line);
 				}
 				else if (i-key+1<=warn_width)
@@ -2095,7 +2101,7 @@ vector<pair<int,int>> TemplateFile::get_marker_indices(char marker,string line)
 		}
 	}
 	if (key != -1)
-	{		
+	{
 		throw TemplateFileError("unbalanced marker on line" + line);
 	}
 	return indices;
@@ -2120,14 +2126,14 @@ TemplateFiles::TemplateFiles(bool isDouble, bool forceRadix,vector<string> tpl_f
 	}
 	//this one will throw errors...
 	//check_parameter_names();
-	
+
 }
 
 void TemplateFiles::check_parameter_names()
 {
 	string error_str = "";
 	bool problem = false;
-	
+
 	//build a vector of template parameter names
 	vector<string> tpl_par_names;
 	for (vector<TemplateFile>::iterator tpl = template_files.begin(); tpl != template_files.end(); ++tpl)
@@ -2154,9 +2160,9 @@ void TemplateFiles::check_parameter_names()
 			if (find(parameter_names.begin(), parameter_names.end(), tpl_name) == parameter_names.end())
 			{
 				cout << "\n\n***Error: template file parameter not found in pest control file: " << tpl_name << endl;
-				error_str += "template file parameter not found in pest control file: " + tpl_name + " \n";				
+				error_str += "template file parameter not found in pest control file: " + tpl_name + " \n";
 			}
-		}	
+		}
 	}
 	if (problem)
 	{
@@ -2169,12 +2175,12 @@ void TemplateFiles::write(Parameters &pars)
 	for (auto &tpl : template_files)
 	{
 		tpl.process(pars);
-	}	
+	}
 }
 
 
 void TemplateFiles::write(const vector<string> par_names, vector<double> &par_values)
-{	
+{
 	unordered_map <string,double> parameter_map;
 	/*for (auto &pname : par_names)
 	{

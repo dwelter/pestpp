@@ -19,6 +19,7 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
+#include <exception>
 #include "SVD_PROPACK.h"
 #include "config_os.h"
 

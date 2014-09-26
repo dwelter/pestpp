@@ -6,7 +6,7 @@
 #include <cmath>
 #include <iterator>
 #include "sobol.h"
-#include "Transformable.h"
+#include "../common/Transformable.h"
 #include "RunManagerAbstract.h"
 #include "ParamTransformSeq.h"
 #include "ModelRunPP.h"

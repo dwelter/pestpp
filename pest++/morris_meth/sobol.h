@@ -5,7 +5,7 @@
 #include <string>
 #include <Eigen/Dense>
 #include "GsaAbstractBase.h"
-#include "Transformable.h"
+#include "../common/Transformable.h"
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 

@@ -23,7 +23,7 @@
 #include <list>
 #include <utility>
 #include <string>
-#include "Transformable.h"
+#include "../common/Transformable.h"
 #include "ObjectiveFunc.h"
 #include "ParamTransformSeq.h"
 

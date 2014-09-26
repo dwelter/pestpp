@@ -1,7 +1,8 @@
 CXX := g++
 CC := g++
 CFLAGS := -g -c -std=c++0x -Wextra -Wall -pedantic -P -Wswitch-enum -Wunreachable-code
-INCLUDES := -I../ -I../iopp/iopp
+INCLUDES := -I../ -I../iopp -I../common
+VPATH=.:../common
 
 OUT = librunmanager.a
 OBJECTS	:= network_package.o \
@@ -19,7 +20,8 @@ OBJECTS	:= network_package.o \
            YamrSlave.o \
            linpackc.o \
            RunManagerCWrapper.o \
-           RunManagerFortranWrapper.o 
+           RunManagerFortranWrapper.o \
+		   ../iopp/iopp.o
  
 $(OUT): $(OBJECTS)
 	ar rcs $(OUT) $(OBJECTS)

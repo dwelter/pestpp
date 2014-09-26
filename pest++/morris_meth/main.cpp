@@ -25,11 +25,11 @@
 #include "MorrisMethod.h"
 #include "sobol.h"
 #include "Pest.h"
-#include "Transformable.h"
+#include "../common/Transformable.h"
 #include "Transformation.h"
 #include "ParamTransformSeq.h"
-#include "utilities.h"
-#include "pest_error.h"
+#include "../common/utilities.h"
+#include "../common/pest_error.h"
 #include "ModelRunPP.h"
 #include "FileManager.h"
 #include "RunManagerGenie.h"
@@ -37,7 +37,7 @@
 #include "OutputFileWriter.h"
 #include "YamrSlave.h"
 #include "Serialization.h"
-#include "system_variables.h"
+#include "../common/system_variables.h"
 
 
 

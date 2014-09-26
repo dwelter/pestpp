@@ -2,7 +2,8 @@ CXX := g++
 FC := gfortran
 CFLAGS := -g -c -std=c++0x -Wextra -Wall -pedantic -P -Wswitch-enum -Wunreachable-code
 FFLAGS := -g -c -cpp 
-INCLUDES := -I ../ -I ../yamr -I ../pestpp_common
+INCLUDES := -I../ -I../yamr -I../common
+VPATH = ../common
 
 LIB = libpestpp_com.a
 OBJECTS	:= FileManager.o \

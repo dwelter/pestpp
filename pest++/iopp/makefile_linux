@@ -1,0 +1,25 @@
+CXX := g++
+FC := gfortran
+CFLAGS := -O2 -c -std=c++0x 
+FFLAGS := -O2 -c -cpp
+INCLUDES := -I../common -I../
+VPATH := ../common
+
+OUT := libiopp.a
+
+OBJECTS	:= iopp.o
+
+$(OUT): $(OBJECTS)
+	ar rcs $(OUT) $(OBJECTS)
+
+%.o: %.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@
+
+%.o: %.F
+	$(FC) $(FFLAGS) $(INCLUDES) $< -c $(input) -o $@
+
+%.o: %.for
+	$(FC) $(FFLAGS) $(INCLUDES) $< -c $(input) -o $@
+
+clean:
+	rm $(OBJECTS) $(OUT)

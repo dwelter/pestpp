@@ -24,7 +24,6 @@
 #include <deque>
 #include <unordered_map>
 #include <chrono>
-#include "network_wrapper.h"
 #include "network_package.h"
 #include "RunManagerAbstract.h"
 #include "RunStorage.h"
