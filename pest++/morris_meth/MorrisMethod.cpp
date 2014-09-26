@@ -11,11 +11,11 @@
 #include <algorithm>
 #include <regex>
 #include "MorrisMethod.h"
-#include "Transformable.h"
+#include "./common/Transformable.h"
 #include "RunManagerAbstract.h"
 #include "ParamTransformSeq.h"
 #include "ModelRunPP.h"
-#include "utilities.h"
+#include "./common/utilities.h"
 #include "FileManager.h"
 #include "Stats.h"
 

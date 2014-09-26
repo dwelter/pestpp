@@ -1,5 +1,5 @@
 /*  
-	© Copyright 2012, David Welter
+	ï¿½ Copyright 2012, David Welter
 	
 	This file is part of PEST++.
    
@@ -19,6 +19,7 @@
 #ifndef REGULARIZATION_H_
 #define REGULARIZATION_H_
 
+#include <string>
 #include <unordered_map>
 
 class ModelRun;

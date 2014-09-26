@@ -32,7 +32,7 @@
 #include <vector>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
-#include "Transformable.h"
+#include "../common/Transformable.h"
 #include "SVD_PROPACK.h"
 
 class Jacobian;

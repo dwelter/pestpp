@@ -25,6 +25,7 @@
 #include <iomanip>
 #include <string>
 #include <cstdio>
+#include <stdint.h>
 
 
 using namespace Eigen;
@@ -204,15 +205,15 @@ void print(const VectorXd &vec, ostream & fout, int n_per_line)
 bool save_triplets_bin(const SparseMatrix<double> &mat, ostream &fout)
 {
 	int xyn[3] = { mat.rows(), mat.cols(), mat.nonZeros() };
-	fout.write((char*)xyn, sizeof(__int32)*3);
+	fout.write((char*)xyn, sizeof(int32_t)*3);
 
 	for (int k = 0; k < mat.outerSize(); ++k)
 	{
 		SparseMatrix<double>::InnerIterator it(mat, k);
 		for (; it; ++it)
 		{
-			__int32 rc[2] = { it.row(), it.col() };
-			fout.write((char*)rc, sizeof(__int32)*2);
+			int32_t rc[2] = { it.row(), it.col() };
+			fout.write((char*)rc, sizeof(int32_t)*2);
 			double v = it.value();
 			fout.write((char*)&v, sizeof(double)*1);
 		}
@@ -224,7 +225,7 @@ bool save_vector_bin(const VectorXd vec, ostream &fout)
 {
 	int size = vec.size();
 	//vector<double> buf = egienvec_2_stlvec(vec);
-	fout.write((char*)&size, sizeof(__int32)* 1);
+	fout.write((char*)&size, sizeof(int32_t)* 1);
 	fout.write((char*)vec.data(), sizeof(double)*size);
 	return true;
 }
@@ -232,7 +233,7 @@ bool save_vector_bin(const VectorXd vec, ostream &fout)
 bool load_vector_bin(VectorXd vec, istream &fin)
 {
 	int size = 0;
-	fin.read((char*)&size, sizeof(__int32) * 1);
+	fin.read((char*)&size, sizeof(int32_t) * 1);
 	vec.resize(size);
 	fin.read((char*)vec.data(), sizeof(double)*size);
 	return true;
@@ -241,14 +242,14 @@ bool load_vector_bin(VectorXd vec, istream &fin)
 bool load_triplets_bin(SparseMatrix<double> &a, istream &fin)
 {
 	int xyn[3];
-	fin.read((char*)xyn, sizeof(__int32)*3);
+	fin.read((char*)xyn, sizeof(int32_t)*3);
 	a.resize(xyn[0], xyn[1]);
 	vector<Triplet<double>> trips(xyn[2]);
 
 	for (int k = 0; k < trips.size(); ++k)
 	{
-		__int32 rc[2];
-		fin.read((char*)rc, sizeof(__int32)*2);
+		int32_t rc[2];
+		fin.read((char*)rc, sizeof(int32_t)*2);
 		double v;
 		fin.read((char*)&v, sizeof(double)*1);
 

@@ -13,7 +13,7 @@
 #include <unordered_map>
 #include <algorithm>
 #include <exception>
-#include <io.h>
+#include <sys/io.h>
 #include "iopp.h"
 #include "Transformable.h"
 
@@ -566,9 +566,11 @@ double Instruction::read_nonFixedObs(ifstream &out,int* lpos,const streampos* li
 
 void Instruction::parse_nonFixedObs()
 {
+    string tmpcopy;
 	ins_string.erase(0,1);
 	string::size_type i = find_index(ins_string,'!');
-	obs_name = string2upper(ins_string.substr(0,i));
+    tmpcopy = ins_string.substr(0, i);
+	obs_name = string2upper(tmpcopy);
 	return;
 }
 
@@ -695,6 +697,7 @@ double Instruction::read_fixedObs(ifstream &out,int* lpos,const streampos* line_
 void Instruction::parse_fixedObs()
 {
 	char end_char;
+    string tmpcopy;
 	if (ins_string[0] == '['){
 		end_char = ']';
 		ftype = fixed_type::strict;
@@ -707,7 +710,8 @@ void Instruction::parse_fixedObs()
 	ins_string.erase(0,1);
 	string::size_type i = find_index(ins_string,end_char);
 	//get the obs name
-	obs_name = string2upper(ins_string.substr(0, i));
+    tmpcopy = ins_string.substr(0, i);
+	obs_name = string2upper(tmpcopy);
 	ins_string.erase(0,i+1);
 	pair<int,int> idx = parse_indices(ins_string,':');
 	start = idx.first;
@@ -1446,7 +1450,7 @@ string FixedWidthValue::as_string()
 		{
 			case (1):
 			{			
-				sprintf_s(buf,"%01d",pos_exp);
+				snprintf(buf, exp_digits, "%01d",pos_exp);
 				for (int i=0;i<exp_digits;i++)
 				{		
 					value_str << buf[i];
@@ -1455,7 +1459,7 @@ string FixedWidthValue::as_string()
 			}
 			case (2):
 			{			
-				sprintf_s(buf,"%02d",pos_exp);
+				snprintf(buf, exp_digits, "%02d",pos_exp);
 				for (int i=0;i<exp_digits;i++)
 				{		
 					value_str << buf[i];
@@ -1464,7 +1468,7 @@ string FixedWidthValue::as_string()
 			}
 			case (3):
 			{		
-				sprintf_s(buf,"%03d",pos_exp);
+				snprintf(buf, exp_digits, "%03d",pos_exp);
 				for (int i=0;i<exp_digits;i++)
 				{		
 					value_str << buf[i];
@@ -1588,11 +1592,11 @@ void FixedWidthValue::set_precision_components()
 	
 	//print the string representation maximum precision
 	char buf[50];	
-	sprintf_s(buf,"%#23.16E",value);
+	snprintf(buf, 50, "%#23.16E",value);
 	max_str = buf;
 	
 	//strip off any whitespace
-	max_str.erase(remove_if(max_str.begin(),max_str.end(),isspace),max_str.end());
+	max_str.erase(remove_if(max_str.begin(),max_str.end(),::isspace),max_str.end());
 
 	size_t max_size = max_str.size();
 
@@ -1782,6 +1786,7 @@ string TemplateFile::build_input_line(string line,vector<TemplateParameter> line
 
 vector<string> TemplateFile::get_parameter_names() 
 {
+    string tmpcopy;
 	//returns a non-unique list
 	vector<string> parameter_names;
 	if (parameter_line_index.size() == 0)
@@ -1791,18 +1796,21 @@ vector<string> TemplateFile::get_parameter_names()
 	vector<TemplateParameter>::iterator tp;
 	for (map<int,vector<TemplateParameter>>::iterator tpv = parameter_line_index.begin();tpv != parameter_line_index.end();++tpv)
 		for (tp = tpv->second.begin(); tp != tpv->second.end();++tp)
-			parameter_names.push_back(string2upper(tp->get_name()));
+            tmpcopy = tp->get_name();
+			parameter_names.push_back(string2upper(tmpcopy));
 	return parameter_names;
 }
 
 void TemplateFile::set_parameter_values(unordered_map<string,double> parameter_map)
 {	
+    string tmpcopy;
 	for (map<int,vector<TemplateParameter>>::iterator tpv = parameter_line_index.begin();tpv!=parameter_line_index.end();++tpv)
 	{
 		for (vector<TemplateParameter>::iterator tp = tpv->second.begin();tp != tpv->second.end();++tp)
 		{
 			try{
-				tp->set_value(parameter_map.at(string2upper(tp->get_name())));
+                tmpcopy = tp->get_name();
+				tp->set_value(parameter_map.at(string2upper(tmpcopy)));
 			}
 			catch (out_of_range& oor)
 			{

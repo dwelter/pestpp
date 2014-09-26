@@ -23,7 +23,7 @@
 #include <utility>
 #include "pest_data_structs.h"
 #include "Pest.h"
-#include "Transformable.h"
+#include "../common/Transformable.h"
 
 using namespace std;
 
