@@ -361,9 +361,9 @@ void w_sleep(int millisec)
 
 
 #ifdef OS_WIN
-PROCESS_INFORMATION start_command(char* &cmd_line)
+PROCESS_INFORMATION start_command(string &cmd_string)
 {
-
+	char* cmd_line = _strdup(cmd_string.c_str());
 	STARTUPINFO si;
 	PROCESS_INFORMATION pi;
 	ZeroMemory(&si, sizeof(si));
@@ -379,16 +379,31 @@ PROCESS_INFORMATION start_command(char* &cmd_line)
 
 
 #ifdef OS_LINUX
-int start_command(char* &cmd_line)
+int start_command(string &cmd_string)
 {
+	//split cmd_string on whitespaces
+	stringstream cmd_ss(cmd_string);
+	string cmd;
+	vector<string> cmds;
+	while (getline(cmd_ss,cmd))
+	{
+		cmds.push_back(cmd);
+	}
+	//create the strurture for execv
+	const char ** argv = new const char* [cmds.size()+1];
+	for (auto &icmd : cmds.size())
+	{
+		argv[icmd] = cmds[icmd];
+	}
+	argv[cmds.size() + 1] = NULL; //last arg must be NULL
 	pid_t pid = fork();
 	if (pid == 0)
 	{
-		int success = execl(cmd_line);
+		int success = execv(argv);
 		if (sucess == -1)
 		{
 			std::string cmd_string(cmd_line);
-			throw std::runtime_error("execl() failed for command: " + cmd_string);
+			throw std::runtime_error("execv() failed for command: " + cmd_string);
 		}
 	}
 	else
@@ -406,13 +421,12 @@ void w_run_commands(pest_utils::thread_flag* terminate, pest_utils::thread_flag*
 	//a flag to track if the run was terminated
 	bool term_break = false;
 	for (auto &cmd_string : commands)
-	{
-		char* cmd_line = _strdup(cmd_string.c_str());
+	{		
 		//start the command
 		PROCESS_INFORMATION pi;
 		try
 		{
-			pi = start_command(cmd_line);
+			pi = start_command(cmd_string);
 		}
 		catch (...)
 		{
@@ -459,10 +473,9 @@ void w_run_commands(pest_utils::thread_flag* terminate, pest_utils::thread_flag*
 	//a flag to track if the run was terminated
 	bool term_break = false;
 	for (auto &cmd_string : commands)
-	{
-		char* cmd_line = _strdup(cmd_string.c_str());
+	{		
 		//start the command
-		int command_pid = start_command(cmd_line);
+		int command_pid = start_command(cmd_string);
 		int exit_code;
 		while (true)
 		{

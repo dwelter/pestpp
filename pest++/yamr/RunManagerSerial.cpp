@@ -31,6 +31,8 @@
 #include "utilities.h"
 #include "iopp.h"
 
+#include "network_wrapper.h"
+
 using namespace std;
 using namespace pest_utils;
 
@@ -172,11 +174,14 @@ void RunManagerSerial::run()
 					throw PestError("Error processing template file");
 				}*/									
 				tpl_files.write(pars);											
-				for (int i = 0, n_exec = comline_vec.size(); i < n_exec; ++i)
+				/*for (int i = 0, n_exec = comline_vec.size(); i < n_exec; ++i)
 				{
 					system(comline_vec[i].c_str());
-				}
-				
+				}*/
+
+				pest_utils::thread_flag* tf1(false);
+				pest_utils::thread_flag* tf2(false);
+				w_run_commands(tf1,tf2,comline_vec);
 				
 				//obs_vec.resize(nobs, RunStorage::no_data);
 				//readins_(&nins, StringvecFortranCharArray(insfile_vec, 50).get_prt(),
