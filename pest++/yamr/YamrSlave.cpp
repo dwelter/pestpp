@@ -248,7 +248,7 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs,NetPackage &net_pac
 				throw PestError("model interface error: Cannot delete existing model input file " + in_file);
 		}				
 		tpl_files.write(pars);		
-		thread run_thread(run_commands, &f_terminate, &f_finished, comline_vec);
+		thread run_thread(w_run_commands, &f_terminate, &f_finished, comline_vec);
 		while (true)
 		{							
 			//check if the runner thread has finished

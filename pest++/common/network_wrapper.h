@@ -2,7 +2,7 @@
 #define NETWORK_H_
 
 #include "config_os.h"
-
+#include "utilities.h"
 //for windows
 #ifdef OS_WIN
   #define FD_SETSIZE 2048
@@ -47,5 +47,6 @@ void w_print_servinfo(struct addrinfo *res, std::ostream &fout);
 std::string w_get_addrinfo_string(struct addrinfo *p);
 std::string w_get_error_msg();
 void w_sleep(int millisec);
+void w_run_commands(pest_utils::thread_flag* terminate, pest_utils::thread_flag* finished, vector<string> commands);
 #endif /* NETWORK_H_ */
 
