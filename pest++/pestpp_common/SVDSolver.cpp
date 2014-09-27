@@ -798,7 +798,7 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 
 	cout << endl;
 	performance_log->add_indent(-1);
-	cout << "  performing upgrade vector runs... ";
+	cout << "  performing upgrade vector model runs... ";
 	run_manager.run();
 
 	// process model runs

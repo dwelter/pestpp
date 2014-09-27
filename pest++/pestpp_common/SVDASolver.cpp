@@ -375,6 +375,15 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 	if (restart_runs)
 	{
 		run_manager.initialize_restart(file_manager.build_filename("rnu"));
+		Parameters tmp_pars;
+		Observations tmp_obs;
+		bool success = run_manager.get_run(0, tmp_pars, tmp_obs);
+		if (!success)
+		{
+			throw(PestError("Error: Cannot retrieve the base run to compute upgrade vectors."));
+		}
+		par_transform.model2ctl_ip(tmp_pars);
+		base_run.update_ctl(tmp_pars, tmp_obs);
 	}
 	else
 	{
@@ -469,8 +478,8 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 	cout << endl;
 	os << endl;
 
-	// process model runs
-	cout << "  testing upgrade vectors... ";
+	// make upgrade model runs
+	cout << "  performing upgrade vector model runs... ";
 	cout.flush();
 	run_manager.run();
 
@@ -479,20 +488,8 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 	cout << "  testing upgrade vectors... ";
 	ifstream &fin_frz = file_manager.open_ifile_ext("fpr");
 	bool best_run_updated_flag = false;
-	ModelRun base_run_tmp;
-	{
-		Parameters tmp_pars;
-		Observations tmp_obs;
-		bool success = run_manager.get_run(0, tmp_pars, tmp_obs);
-		if (!success)
-		{
-			throw(PestError("Error: Cannot retrieve the base run to compute upgrade vectors."));
-		}
-		par_transform.model2ctl_ip(tmp_pars);
-		base_run_tmp.update_ctl(tmp_pars, tmp_obs);
-	}
-	Parameters base_run_active_ctl_par_tmp = par_transform.ctl2active_ctl_cp(base_run_tmp.get_ctl_pars());
-	ModelRun best_upgrade_run(base_run_tmp);
+	Parameters base_run_active_ctl_par_tmp = par_transform.ctl2active_ctl_cp(base_run.get_ctl_pars());
+	ModelRun best_upgrade_run(base_run);
 	
 	long jac_num_nonzero = jacobian.get_nonzero();
 	long jac_num_total = jacobian.get_size();
