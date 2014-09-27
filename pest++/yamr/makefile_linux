@@ -1,21 +1,15 @@
 CXX := g++
 CC := g++
 CFLAGS := -g -c -std=c++0x -Wextra -Wall -pedantic -P -Wswitch-enum -Wunreachable-code
-INCLUDES := -I../ -I../iopp/iopp
+INCLUDES := -I../ -I ../common -I../iopp
 
 OUT = librunmanager.a
-OBJECTS	:= network_package.o \
-           RunManagerSerial.o \
-           Transformable.o \
-           network_wrapper.o \
+OBJECTS	:= RunManagerSerial.o \
            RunManagerYAMR.o \
            RunManagerGenie.o \
-           utilities.o \
-           pest_error.o \
            RunStorage.o \
            RunManagerAbstract.o \
            Serializeation.o \
-           system_variables.o \
            YamrSlave.o \
            linpackc.o \
            RunManagerCWrapper.o \

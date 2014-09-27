@@ -78,41 +78,6 @@ SVDSolver::~SVDSolver(void)
 }
 
 
-ModelRun SVDSolver::compute_jacobian(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &cur_run, bool restart_runs)
-{
-	ostream &os = file_manager.rec_ofstream();
-	ostream &fout_restart = file_manager.get_ofstream("rst");
-	ModelRun best_upgrade_run(cur_run);
-	// Start Solution iterations
-	terminate_local_iteration = false;
-
-	RestartController::write_start_iteration(fout_restart, *this, -9999, -9999);
-
-	//write current parameters so we have a backup for restarting
-	RestartController::write_start_parameters_updated(fout_restart, file_manager.build_filename("parb", false));
-	output_file_writer.write_par(file_manager.open_ofile_ext("parb"), best_upgrade_run.get_ctl_pars(), *(par_transform.get_offset_ptr()),
-		*(par_transform.get_scale_ptr()));
-	file_manager.close_file("parb");
-	RestartController::write_finish_parameters_updated(fout_restart, file_manager.build_filename("parb", false));
-
-	cout << "COMPUTING JACOBIAN:" << endl << endl;
-	os << "COMPUTING JACOBIAN:" << endl << endl;
-	cout << "  Iteration type: " << get_description() << endl;
-	os << "    Iteration type: " << get_description() << endl;
-	os << "    Model calls so far : " << run_manager.get_total_runs() << endl << endl << endl;
-	iteration_jac(run_manager, termination_ctl, best_upgrade_run, false, restart_runs);
-
-	//write final parameters for restarting
-	output_file_writer.write_par(file_manager.open_ofile_ext("par"), best_upgrade_run.get_ctl_pars(), *(par_transform.get_offset_ptr()),
-		*(par_transform.get_scale_ptr()));
-	file_manager.close_file("par");
-	return best_upgrade_run;
-}
-
-
-
-
-
 ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter,
 	ModelRun &cur_run, ModelRun &optimum_run, RestartController &restart_controller, bool calc_first_jacobian)
 {
@@ -131,52 +96,60 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 		restart_controller.get_restart_option() = RestartController::RestartOption::NONE;
 	}
 
-	for (int iter_num = 1; iter_num <= max_iter && !terminate_local_iteration; ++iter_num) 
+	for (int iter_num = 1; iter_num <= max_iter && !terminate_local_iteration; ++iter_num)
 	{
-		
+
 		//only processed when debugging is turned on
 		int global_iter_num = termination_ctl.get_iteration_number() + 1;
+		int nruns_start_iter = run_manager.get_total_runs();
+		ostringstream tmp_str;
+
 		debug_msg("========================================================================");
 		debug_msg("Iteration Number");
 		debug_print(global_iter_num);
 
-		//
-		//Save information necessary for restart
-		RestartController::write_start_iteration(fout_restart, *this, iter_num, global_iter_num);
-		// save state of termination controller
-		termination_ctl.save_state(fout_restart);
-		//write current parameters so we have a backup for restarting
-		RestartController::write_start_parameters_updated(fout_restart, file_manager.build_filename("parb", false));
-		output_file_writer.write_par(file_manager.open_ofile_ext("parb"), best_upgrade_run.get_ctl_pars(), *(par_transform.get_offset_ptr()),
-			*(par_transform.get_scale_ptr()));
-		file_manager.close_file("parb");
-		RestartController::write_finish_parameters_updated(fout_restart, file_manager.build_filename("parb", false));
-
-		output_file_writer.iteration_report(os, global_iter_num, run_manager.get_total_runs(), get_description(), svd_package->description, matrix_inv);
-		output_file_writer.iteration_report(cout, global_iter_num, run_manager.get_total_runs(), get_description(), svd_package->description, matrix_inv);
-		
-		// write header for SVD file
-		output_file_writer.write_svd_iteration(global_iter_num);
-
-		performance_log->log_blank_lines();
-		performance_log->add_indent(-10);
-
-		ostringstream tmp_str;
-		tmp_str << "beginning iteration " << global_iter_num;
-		performance_log->log_event(tmp_str.str(), 0, "start_iter");
-		performance_log->add_indent();
-		int nruns_start_iter = run_manager.get_total_runs();
-		if (!calc_jacobian)
+		if (restart_controller.get_restart_option() != RestartController::RestartOption::RESUME_UPGRADE_RUNS)
 		{
-			calc_jacobian = true;
+			//
+			//Save information necessary for restart
+			RestartController::write_start_iteration(fout_restart, *this, iter_num, global_iter_num);
+			// save state of termination controller
+			termination_ctl.save_state(fout_restart);
+			//write current parameters so we have a backup for restarting
+			RestartController::write_start_parameters_updated(fout_restart, file_manager.build_filename("parb", false));
+			output_file_writer.write_par(file_manager.open_ofile_ext("parb"), best_upgrade_run.get_ctl_pars(), *(par_transform.get_offset_ptr()),
+				*(par_transform.get_scale_ptr()));
+			file_manager.close_file("parb");
+			RestartController::write_finish_parameters_updated(fout_restart, file_manager.build_filename("parb", false));
+
+			output_file_writer.iteration_report(os, global_iter_num, run_manager.get_total_runs(), get_description(), svd_package->description, matrix_inv);
+			output_file_writer.iteration_report(cout, global_iter_num, run_manager.get_total_runs(), get_description(), svd_package->description, matrix_inv);
+
+			// write header for SVD file
+			output_file_writer.write_svd_iteration(global_iter_num);
+
+			performance_log->log_blank_lines();
+			performance_log->add_indent(-10);
+
+			tmp_str << "beginning iteration " << global_iter_num;
+			performance_log->log_event(tmp_str.str(), 0, "start_iter");
+			performance_log->add_indent();
+			if (!calc_jacobian)
+			{
+				calc_jacobian = true;
+			}
+			else
+			{
+				bool restart_runs = (restart_controller.get_restart_option() == RestartController::RestartOption::RESUME_JACOBIAN_RUNS);
+				iteration_jac(run_manager, termination_ctl, best_upgrade_run, false, restart_runs);
+				if (restart_runs) restart_controller.get_restart_option() = RestartController::RestartOption::NONE;
+			}
 		}
-		else
-		{
-			bool restart_runs = (restart_controller.get_restart_option() == RestartController::RestartOption::RESUME_JACOBIAN_RUNS);
-			iteration_jac(run_manager, termination_ctl, best_upgrade_run, false, restart_runs);
-			if (restart_runs) restart_controller.get_restart_option() = RestartController::RestartOption::NONE;
-		}
-		best_upgrade_run = iteration_upgrd(run_manager, termination_ctl, best_upgrade_run);
+
+		bool upgrade_start = (restart_controller.get_restart_option() == RestartController::RestartOption::RESUME_UPGRADE_RUNS);
+		best_upgrade_run = iteration_upgrd(run_manager, termination_ctl, best_upgrade_run, upgrade_start);
+		restart_controller.get_restart_option() = RestartController::RestartOption::NONE;
+
 
 		int nruns_end_iter = run_manager.get_total_runs();
 		os << endl;
@@ -526,9 +499,9 @@ void SVDSolver::calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqr
 	}
 }
 
-	void SVDSolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_active_ctl_pars, QSqrtMatrix &Q_sqrt, 
+	void SVDSolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_active_ctl_pars, QSqrtMatrix &Q_sqrt,
 		const DynamicRegularization &regul, VectorXd &residuals_vec, vector<string> &obs_names_vec,
-		const Parameters &base_run_active_ctl_pars, Parameters &upgrade_active_ctl_pars, 
+		const Parameters &base_run_active_ctl_pars, Parameters &upgrade_active_ctl_pars,
 		MarquardtMatrix marquardt_type, bool scale_upgrade)
 {
 	Parameters upgrade_ctl_del_pars;
@@ -538,8 +511,8 @@ void SVDSolver::calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqr
 
 	upgrade_active_ctl_pars.clear();
 	// define a function type for upgrade methods
-	typedef void(SVDSolver::*UPGRADE_FUNCTION) (const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt, 
-		const DynamicRegularization &regul, 
+	typedef void(SVDSolver::*UPGRADE_FUNCTION) (const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt,
+		const DynamicRegularization &regul,
 		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
 		const Parameters &base_ctl_pars, const Parameters &prev_frozen_ctl_pars,
 		double lambda, Parameters &ctl_upgrade_pars, Parameters &upgrade_ctl_del_pars,
@@ -587,6 +560,37 @@ void SVDSolver::calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqr
 	new_frozen_active_ctl_pars = limit_parameters_freeze_all_ip(base_run_active_ctl_pars, upgrade_active_ctl_pars, prev_frozen_active_ctl_pars);
 	prev_frozen_active_ctl_pars.insert(new_frozen_active_ctl_pars.begin(), new_frozen_active_ctl_pars.end());
 }
+
+	ModelRun SVDSolver::compute_jacobian(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &cur_run, bool restart_runs)
+	{
+		ostream &os = file_manager.rec_ofstream();
+		ostream &fout_restart = file_manager.get_ofstream("rst");
+		ModelRun best_upgrade_run(cur_run);
+		// Start Solution iterations
+		terminate_local_iteration = false;
+
+		RestartController::write_start_iteration(fout_restart, *this, -9999, -9999);
+
+		//write current parameters so we have a backup for restarting
+		RestartController::write_start_parameters_updated(fout_restart, file_manager.build_filename("parb", false));
+		output_file_writer.write_par(file_manager.open_ofile_ext("parb"), best_upgrade_run.get_ctl_pars(), *(par_transform.get_offset_ptr()),
+			*(par_transform.get_scale_ptr()));
+		file_manager.close_file("parb");
+		RestartController::write_finish_parameters_updated(fout_restart, file_manager.build_filename("parb", false));
+
+		cout << "COMPUTING JACOBIAN:" << endl << endl;
+		os << "COMPUTING JACOBIAN:" << endl << endl;
+		cout << "  Iteration type: " << get_description() << endl;
+		os << "    Iteration type: " << get_description() << endl;
+		os << "    Model calls so far : " << run_manager.get_total_runs() << endl << endl << endl;
+		iteration_jac(run_manager, termination_ctl, best_upgrade_run, false, restart_runs);
+
+		//write final parameters for restarting
+		output_file_writer.write_par(file_manager.open_ofile_ext("par"), best_upgrade_run.get_ctl_pars(), *(par_transform.get_offset_ptr()),
+			*(par_transform.get_scale_ptr()));
+		file_manager.close_file("par");
+		return best_upgrade_run;
+	}
 
 
 ModelRun SVDSolver::iteration_reuse_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool rerun_base, const string &filename)
@@ -639,6 +643,7 @@ void SVDSolver::iteration_jac(RunManagerAbstract &run_manager, TerminationContro
 
 	if (!restart_runs)
 	{
+
 		// Calculate Jacobian
 		if (!base_run.obs_valid() || calc_init_obs == true) {
 			calc_init_obs = true;
@@ -676,110 +681,138 @@ void SVDSolver::iteration_jac(RunManagerAbstract &run_manager, TerminationContro
 		*(base_run.get_obj_func_ptr()), get_parameter_group_info(), *regul_scheme_ptr, false);
 }
 
-ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run)
+ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool restart_runs)
 {
 	ostream &os = file_manager.rec_ofstream();
 	ostream &fout_restart = file_manager.get_ofstream("rst");
 
-	vector<string> obs_names_vec = base_run.get_obs_template().get_keys();
-
-	//Freeze Parameter for which the jacobian could not be calculated
-	auto &failed_jac_pars_names = jacobian.get_failed_parameter_names();
-	auto  failed_jac_pars = base_run.get_ctl_pars().get_subset(failed_jac_pars_names.begin(), failed_jac_pars_names.end());
-
-	// populate vectors with sorted observations (standard and prior info) and parameters
+	if (restart_runs)
 	{
-		vector<string> prior_info_names = prior_info_ptr->get_keys();
-		obs_names_vec.insert(obs_names_vec.end(), prior_info_names.begin(), prior_info_names.end());
-	}
-
-	// build weights matrix sqrt(Q)
-	QSqrtMatrix Q_sqrt(obs_info_ptr, prior_info_ptr);
-	//build residuals vector
-	VectorXd residuals_vec = -1.0 * stlvec_2_egienvec(base_run.get_residuals_vec(obs_names_vec));
-
-	Parameters base_run_active_ctl_par = par_transform.ctl2active_ctl_cp(base_run.get_ctl_pars());
-
-	//If running in regularization mode, adjust the regularization weights
-	// define a function type for upgrade methods
-	{
-		Parameters tmp_new_par;
-		Parameters frozen_active_ctl_pars = failed_jac_pars;
-		//use call to calc_upgrade_vec to compute frozen parameters
-		calc_upgrade_vec(0, frozen_active_ctl_pars, Q_sqrt, *regul_scheme_ptr, residuals_vec,
-			obs_names_vec, base_run_active_ctl_par,
-			tmp_new_par, MarquardtMatrix::IDENT, false);
-		if (regul_scheme_ptr->get_use_dynamic_reg())
+		run_manager.initialize_restart(file_manager.build_filename("rnu"));
 		{
-			dynamic_weight_adj(base_run, jacobian, Q_sqrt, residuals_vec, obs_names_vec,
-				base_run_active_ctl_par, frozen_active_ctl_pars);
+			Parameters tmp_pars;
+			Observations tmp_obs;
+			bool success = run_manager.get_run(0, tmp_pars, tmp_obs);
+			if (!success)
+			{
+				throw(PestError("Error: Cannot retrieve the base run to compute upgrade vectors."));
+			}
+			par_transform.model2ctl_ip(tmp_pars);
+			base_run.update_ctl(tmp_pars, tmp_obs);
 		}
 	}
-	// write out report for starting phi
-	map<string,double> phi_report = obj_func->phi_report(base_run.get_obs(), base_run.get_ctl_pars(), *regul_scheme_ptr);
-	output_file_writer.phi_report(os,termination_ctl.get_iteration_number()+1,run_manager.get_total_runs(), phi_report,regul_scheme_ptr->get_weight());
-	// write failed jacobian parameters out
-	if (failed_jac_pars.size() > 0)
+	else
 	{
+		vector<string> obs_names_vec = base_run.get_obs_template().get_keys();
+
+		//Freeze Parameter for which the jacobian could not be calculated
+		auto &failed_jac_pars_names = jacobian.get_failed_parameter_names();
+		auto  failed_jac_pars = base_run.get_ctl_pars().get_subset(failed_jac_pars_names.begin(), failed_jac_pars_names.end());
+
+		// populate vectors with sorted observations (standard and prior info) and parameters
+		{
+			vector<string> prior_info_names = prior_info_ptr->get_keys();
+			obs_names_vec.insert(obs_names_vec.end(), prior_info_names.begin(), prior_info_names.end());
+		}
+
+		// build weights matrix sqrt(Q)
+		QSqrtMatrix Q_sqrt(obs_info_ptr, prior_info_ptr);
+		//build residuals vector
+		VectorXd residuals_vec = -1.0 * stlvec_2_egienvec(base_run.get_residuals_vec(obs_names_vec));
+
+		Parameters base_run_active_ctl_par = par_transform.ctl2active_ctl_cp(base_run.get_ctl_pars());
+
+		//If running in regularization mode, adjust the regularization weights
+		// define a function type for upgrade methods
+		{
+			Parameters tmp_new_par;
+			Parameters frozen_active_ctl_pars = failed_jac_pars;
+			//use call to calc_upgrade_vec to compute frozen parameters
+			calc_upgrade_vec(0, frozen_active_ctl_pars, Q_sqrt, *regul_scheme_ptr, residuals_vec,
+				obs_names_vec, base_run_active_ctl_par,
+				tmp_new_par, MarquardtMatrix::IDENT, false);
+			if (regul_scheme_ptr->get_use_dynamic_reg())
+			{
+				dynamic_weight_adj(base_run, jacobian, Q_sqrt, residuals_vec, obs_names_vec,
+					base_run_active_ctl_par, frozen_active_ctl_pars);
+			}
+		}
+		// write out report for starting phi
+		map<string, double> phi_report = obj_func->phi_report(base_run.get_obs(), base_run.get_ctl_pars(), *regul_scheme_ptr);
+		output_file_writer.phi_report(os, termination_ctl.get_iteration_number() + 1, run_manager.get_total_runs(), phi_report, regul_scheme_ptr->get_weight());
+		// write failed jacobian parameters out
+		if (failed_jac_pars.size() > 0)
+		{
+			os << endl;
+			jacobian.report_errors(os);
+			os << endl;
+		}
+
+		//Build model runs
+		run_manager.reinitialize(file_manager.build_filename("rnu"));
+		cout << endl;
+		cout << "  computing upgrade vectors... " << endl;
+		cout.flush();
 		os << endl;
-		jacobian.report_errors(os);
-		os << endl;
+		os << "  computing upgrade vectors... " << endl;
+		os.flush();
+		// Save base run as first model run so it is eassily accessible
+		Parameters base_model_pars = par_transform.ctl2model_cp(base_run.get_ctl_pars());
+		int run_id = run_manager.add_run(base_model_pars, "base_run");
+		run_manager.update_run(run_id, base_model_pars, base_run.get_obs());
+		//Marquardt Lambda Update Vector
+		vector<double> lambda_vec = base_lambda_vec;
+		lambda_vec.push_back(best_lambda);
+		lambda_vec.push_back(best_lambda / 2.0);
+		lambda_vec.push_back(best_lambda * 2.0);
+		std::sort(lambda_vec.begin(), lambda_vec.end());
+		auto iter = std::unique(lambda_vec.begin(), lambda_vec.end());
+		lambda_vec.resize(std::distance(lambda_vec.begin(), iter));
+		int i_update_vec = 0;
+		stringstream message;
+		stringstream prf_message;
+
+		ofstream &fout_frz = file_manager.open_ofile_ext("fpr");
+		for (double i_lambda : lambda_vec)
+		{
+			prf_message.str("");
+			prf_message << "beginning upgrade vector calculations, lambda = " << i_lambda;
+			performance_log->log_event(prf_message.str());
+			performance_log->add_indent();
+			std::cout << string(message.str().size(), '\b');
+			message.str("");
+			message << "  computing upgrade vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
+			std::cout << message.str() << endl;
+
+			Parameters new_pars;
+			// reset frozen_active_ctl_pars
+			Parameters frozen_active_ctl_pars = failed_jac_pars;
+			calc_upgrade_vec(i_lambda, frozen_active_ctl_pars, Q_sqrt, *regul_scheme_ptr, residuals_vec,
+				obs_names_vec, base_run_active_ctl_par,
+				new_pars, MarquardtMatrix::IDENT, false);
+
+			par_transform.active_ctl2model_ip(new_pars);
+			int run_id = run_manager.add_run(new_pars, "upgrade_run", i_lambda);
+			save_frozen_pars(fout_frz, frozen_active_ctl_pars, run_id);
+			performance_log->add_indent(-1);
+		}
+		file_manager.close_file("fpr");
+		RestartController::write_upgrade_runs_built(fout_restart);
 	}
 
-	//Build model runs
-	run_manager.reinitialize(file_manager.build_filename("rnu"));
 	cout << endl;
-	cout << "  computing upgrade vectors... " << endl;
-	os << endl;
-	os << "  computing upgrade vectors... " << endl;
-	//Marquardt Lambda Update Vector
-	vector<double> lambda_vec = base_lambda_vec;
-	lambda_vec.push_back(best_lambda);
-	lambda_vec.push_back(best_lambda / 2.0);
-	lambda_vec.push_back(best_lambda * 2.0);
-	std::sort(lambda_vec.begin(), lambda_vec.end());
-	auto iter = std::unique(lambda_vec.begin(), lambda_vec.end());
-	lambda_vec.resize(std::distance(lambda_vec.begin(), iter));
-	int i_update_vec = 0;
-	stringstream message;
-	stringstream prf_message;
-	vector<Parameters> frozen_par_vec;
-	vector<double> magnitude_vec;
-	for (double i_lambda : lambda_vec)
-	{
-		prf_message.str("");
-		prf_message << "beginning upgrade vector calculations, lambda = " << i_lambda;
-		performance_log->log_event(prf_message.str());
-		performance_log->add_indent();
-		std::cout << string(message.str().size(), '\b');
-		message.str("");
-		message << "  computing upgrade vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
-		std::cout << message.str() << endl;
-
-		Parameters new_pars;
-		// reset frozen_active_ctl_pars
-		Parameters frozen_active_ctl_pars = failed_jac_pars;
-		calc_upgrade_vec(i_lambda, frozen_active_ctl_pars, Q_sqrt, *regul_scheme_ptr, residuals_vec,
-			obs_names_vec, base_run_active_ctl_par,
-			new_pars, MarquardtMatrix::IDENT, false);
-
-		magnitude_vec.push_back(Transformable::l2_norm(base_run_active_ctl_par, new_pars));
-		par_transform.active_ctl2model_ip(new_pars);
-		run_manager.add_run(new_pars, "IDEN", i_lambda);
-		frozen_par_vec.push_back(frozen_active_ctl_pars);
-		performance_log->add_indent(-1);
-	}
-
 	performance_log->add_indent(-1);
-	cout << endl;
-	cout << "  performing upgrade vector runs... ";
+	cout << "  performing upgrade vector model runs... ";
 	run_manager.run();
 
 	// process model runs
 	cout << endl;
 	cout << "  testing upgrade vectors... ";
-	//cout << endl;
+
+	ifstream &fin_frz = file_manager.open_ifile_ext("fpr");
 	bool best_run_updated_flag = false;
+
+	Parameters base_run_active_ctl_par_tmp = par_transform.ctl2active_ctl_cp(base_run.get_ctl_pars());
 	ModelRun best_upgrade_run(base_run);
 
 	long jac_num_nonzero = jacobian.get_nonzero();
@@ -791,23 +824,31 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 	os.precision(n_prec);
 
 	os << "    Summary of upgrade runs:" << endl;
-	for (int i = 0; i < run_manager.get_nruns(); ++i) {
+
+	int n_runs = run_manager.get_nruns();
+	for (int i = 1; i < n_runs; ++i) {
 		ModelRun upgrade_run(base_run);
 		Parameters tmp_pars;
 		Observations tmp_obs;
 		string lambda_type;
 		double i_lambda;
+		//This must be outside the loop to insure all parrameter sets are read in order
 		bool success = run_manager.get_run(i, tmp_pars, tmp_obs, lambda_type, i_lambda);
 		if (success)
 		{
 			par_transform.model2ctl_ip(tmp_pars);
 			upgrade_run.update_ctl(tmp_pars, tmp_obs);
-			upgrade_run.set_frozen_ctl_parameters(frozen_par_vec[i]);
+
+			Parameters frozen_pars = read_frozen_pars(fin_frz, i);
+			upgrade_run.set_frozen_ctl_parameters(frozen_pars);
+
+			par_transform.ctl2active_ctl_ip(tmp_pars);
+			double magnitude = Transformable::l2_norm(base_run_active_ctl_par_tmp, tmp_pars);
 			streamsize n_prec = os.precision(2);
 			os << "      Lambda = ";
 			os << setiosflags(ios::fixed) << setw(8) << i_lambda;
 			os << "; Type: " << setw(4) << lambda_type;;
-			os << "; length = " <<std::scientific << magnitude_vec[i];
+			os << "; length = " << std::scientific << magnitude;
 			os << setiosflags(ios::fixed);
 			os.precision(n_prec);
 			os.unsetf(ios_base::floatfield); // reset all flags to default
@@ -818,8 +859,8 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 			os.precision(n_prec);
 			os.unsetf(ios_base::floatfield); // reset all flags to default
 			if (upgrade_run.obs_valid() && (!best_run_updated_flag ||
-				ModelRun::cmp_lt(upgrade_run, best_upgrade_run, *regul_scheme_ptr) ) )
-			 {
+				ModelRun::cmp_lt(upgrade_run, best_upgrade_run, *regul_scheme_ptr)))
+			{
 				best_run_updated_flag = true;
 				best_upgrade_run = upgrade_run;
 				best_lambda = i_lambda;
@@ -830,12 +871,14 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 			streamsize n_prec = os.precision(2);
 			os << "      Marquardt Lambda = ";
 			os << setiosflags(ios::fixed) << setw(4) << i_lambda;
-			os << "; length = " << magnitude_vec[i];
+			os << "; length = " << "NA";
 			os.precision(n_prec);
 			os.unsetf(ios_base::floatfield); // reset all flags to default
 			os << ";  run failed" << endl;
 		}
 	}
+	file_manager.close_file("fpr");
+
 	// Print frozen parameter information
 	const Parameters &frz_ctl_pars = best_upgrade_run.get_frozen_ctl_pars();
 
@@ -1095,10 +1138,10 @@ void SVDSolver::iteration_update_and_report(ostream &os, const ModelRun &base_ru
 	double p_old, p_new;
 	double rel_change = -9999;
 	bool have_fac = false, have_rel = false;
-	double max_rel_change = 0;		
+	double max_rel_change = 0;
 	const Parameters &old_ctl_pars = base_run.get_ctl_pars();
 	const Parameters &new_ctl_pars = upgrade.get_ctl_pars();
-	
+
 	if (termination_ctl.get_iteration_number() == 0)
 	{
 		map<string, double> phi_report = obj_func->phi_report(base_run.get_obs(), base_run.get_ctl_pars(), *regul_scheme_ptr);
@@ -1112,7 +1155,7 @@ void SVDSolver::iteration_update_and_report(ostream &os, const ModelRun &base_ru
 	{
 		p_name = &(ipar.first);
 		p_new = ipar.second;
-		p_old = old_ctl_pars.get_rec(*p_name);		
+		p_old = old_ctl_pars.get_rec(*p_name);
 		rel_change = (p_old - p_new) / p_old;
 		if ((p_old != 0.0) && abs(rel_change) >= abs(max_rel_change))
 		{
@@ -1259,7 +1302,7 @@ void SVDSolver::limit_parameters_ip(const Parameters &init_active_ctl_pars, Para
 
 PhiComponets SVDSolver::phi_estimate(const ModelRun &base_run, const Jacobian &jacobian, QSqrtMatrix &Q_sqrt, const DynamicRegularization &regul,
 	const Eigen::VectorXd &residuals_vec, const vector<string> &obs_names_vec,
-	const Parameters &base_run_active_ctl_par, const Parameters &freeze_active_ctl_pars, 
+	const Parameters &base_run_active_ctl_par, const Parameters &freeze_active_ctl_pars,
 	DynamicRegularization &regul_scheme, bool scale_upgrade)
 {
 	Parameters upgrade_ctl_del_pars;
@@ -1531,7 +1574,7 @@ void SVDSolver::dynamic_weight_adj(const ModelRun &base_run, const Jacobian &jac
 			if (min_mu->error_frac() <= wftol) break;
 		}
 		auto min_mu = std::min_element(mu_vec.begin(), mu_vec.end());
-		
+
 	    os << "    ---  optimal regularization weight factor found  ---   " << endl;
 		min_mu->print(os);
 		os << endl;
@@ -1542,4 +1585,57 @@ void SVDSolver::dynamic_weight_adj(const ModelRun &base_run, const Jacobian &jac
 		regul_scheme_ptr->set_weight(new_mu);
 	}
 	os << endl;
+ }
+
+ void SVDSolver::save_frozen_pars(std::ostream &fout, const Parameters &frozen_pars, int id)
+ {
+		 fout << "frozen_parameter_set_begin  " << id << endl;
+		 fout << frozen_pars;
+		 fout << "frozen_parameter_set_end  " << id << endl;
+		 fout.flush();
+ }
+
+ Parameters SVDSolver::read_frozen_pars(std::istream &fin, int id)
+ {
+	 Parameters fz_pars;
+	 string line;
+	 vector<string> tokens;
+	 double value;
+	 int cur_read_id = 0;
+	 bool failed = true;
+
+	 while (getline(fin, line))
+	 {
+		strip_ip(line);
+		tokens.clear();
+		tokenize(line, tokens);
+
+		if (tokens[0] == "frozen_parameter_set_begin")
+		{
+			fz_pars.clear();
+		}
+		else if (tokens[0] == "frozen_parameter_set_end")
+		{
+			failed = false;
+			convert_ip(tokens[1], cur_read_id);
+			if (cur_read_id == id)
+			{
+				break;
+			}
+			else
+			{
+				failed = true;
+			}
+		}
+		else
+		{
+			convert_ip(tokens[2], value);
+			fz_pars.insert(tokens[0], value);
+		}
+	 }
+	 if (failed)
+	 {
+		 throw PestError("Error: reading past end of frozen parameter file (SVDSolver::read_frozen_pars)");
+	 }
+	 return fz_pars;
  }

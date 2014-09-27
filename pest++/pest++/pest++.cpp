@@ -391,9 +391,6 @@ int main(int argc, char* argv[])
 			}
 			termination_ctl.set_terminate(true);
 		}
-
-		//open restart file
-		file_manager.open_ofile_ext("rst");
 		//Define model Run for Base Parameters (uses base parameter tranformations)
 		ModelRun cur_run(&obj_func, pest_scenario.get_ctl_observations());
 		cur_run.set_ctl_parameters(cur_ctl_parameters);
@@ -443,6 +440,10 @@ int main(int argc, char* argv[])
 				}
 				else
 				{
+					if (restart_ctl.get_restart_option() == RestartController::RestartOption::RESUME_UPGRADE_RUNS)
+					{
+						base_svd.iteration_reuse_jac(*run_manager_ptr, termination_ctl, cur_run, false, file_manager.build_filename("jcb"));
+					}
 					bool calc_first_jacobian = true;
 					cur_run = base_svd.solve(*run_manager_ptr, termination_ctl, n_base_iter, cur_run, optimum_run, restart_ctl, calc_first_jacobian);
 					termination_ctl.check_last_iteration();

@@ -46,11 +46,14 @@ void  FileManager::open_default_files(bool restart)
 	if (restart)
 	{
 		open_ofile_ext("rec", fstream::app);
+		open_ofile_ext("rst", fstream::app);
 	}
 	else
 	{
 		open_ofile_ext("rec");
+		open_ofile_ext("rst");
 	}
+
 
 }
 
