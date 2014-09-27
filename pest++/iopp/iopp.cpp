@@ -13,29 +13,15 @@
 #include <unordered_map>
 #include <algorithm>
 #include <exception>
-#include <io.h>
+//#include <io.h>
+#include <cstdio>
+#include <cctype>
+#include <algorithm>
 #include "iopp.h"
 #include "Transformable.h"
+#include "utilities.h"
 
 using namespace std;
-
-string string2upper(string& str)
-{
-	for(string::iterator s = str.begin();s != str.end();++s)
-	{
-		*s = toupper((unsigned char)*s);
-	}
-	return str;
-}
-
-string string2lower(string& str)
-{
-	for(string::iterator s = str.begin();s != str.end();++s)
-	{
-		*s = tolower((unsigned char)*s);
-	}
-	return str;
-}
 
 string::size_type find_index(const string strg,const char target)
 {
@@ -51,7 +37,7 @@ string::size_type find_index(const string strg,const char target)
 	}
 	if (found == false)
 	{
-		throw runtime_error(" fixed parameter misssing ']'" + strg);
+		throw runtime_error(" fixed parameter missing ']'" + strg);
 	}
 	return i;
 }
@@ -406,7 +392,6 @@ void Instruction::execute_fixed(ifstream &out,int* lpos, streampos* line_start)
 			throw runtime_error("could not reset file g-pointer to line position: "+number);
 		}
 		//getline(*out,line);
-		int i=0;
 	}
 	return;		
 }
@@ -568,7 +553,7 @@ void Instruction::parse_nonFixedObs()
 {
 	ins_string.erase(0,1);
 	string::size_type i = find_index(ins_string,'!');
-	obs_name = string2upper(ins_string.substr(0,i));
+	obs_name = pest_utils::upper_cp(ins_string.substr(0,i));
 	return;
 }
 
@@ -711,7 +696,7 @@ void Instruction::parse_fixedObs()
 	ins_string.erase(0,1);
 	string::size_type i = find_index(ins_string,end_char);
 	//get the obs name
-	obs_name = string2upper(ins_string.substr(0, i));
+	obs_name = pest_utils::upper_cp(ins_string.substr(0, i));
 	ins_string.erase(0,i+1);
 	pair<int,int> idx = parse_indices(ins_string,':');
 	start = idx.first;
@@ -864,7 +849,7 @@ InstructionFile::InstructionFile(string ins_filename)
 	istringstream iss(line);
 
 	iss >> ftype >> mstring;
-	if (string2upper(ftype) != "PIF")
+	if (pest_utils::upper_cp(ftype) != "PIF")
 	{
 		throw InstructionFileError("instruction file doesn't start with 'PIF'");
 	}
@@ -1496,7 +1481,7 @@ string FixedWidthValue::as_string()
 		{
 			case (1):
 			{			
-				sprintf_s(buf,"%01d",pos_exp);
+				sprintf(buf,"%01d",pos_exp);
 				for (int i=0;i<exp_digits;i++)
 				{		
 					value_str << buf[i];
@@ -1505,7 +1490,7 @@ string FixedWidthValue::as_string()
 			}
 			case (2):
 			{			
-				sprintf_s(buf,"%02d",pos_exp);
+				sprintf(buf,"%02d",pos_exp);
 				for (int i=0;i<exp_digits;i++)
 				{		
 					value_str << buf[i];
@@ -1514,7 +1499,7 @@ string FixedWidthValue::as_string()
 			}
 			case (3):
 			{		
-				sprintf_s(buf,"%03d",pos_exp);
+				sprintf(buf,"%03d",pos_exp);
 				for (int i=0;i<exp_digits;i++)
 				{		
 					value_str << buf[i];
@@ -1638,11 +1623,11 @@ void FixedWidthValue::set_precision_components()
 	
 	//print the string representation maximum precision
 	char buf[50];	
-	sprintf_s(buf,"%#23.16E",value);
+	sprintf(buf,"%#23.16E",value);
 	max_str = buf;
 	
 	//strip off any whitespace
-	max_str.erase(remove_if(max_str.begin(),max_str.end(),isspace),max_str.end());
+	max_str.erase(remove_if(max_str.begin(),max_str.end(), (int(*)(int))isspace),max_str.end());
 
 	size_t max_size = max_str.size();
 
@@ -1837,7 +1822,7 @@ void TemplateFile::set_parameter_values(unordered_map<string,double> parameter_m
 		for (vector<TemplateParameter>::iterator tp = tpv->second.begin();tp != tpv->second.end();++tp)
 		{
 			try{
-				tp->set_value(parameter_map.at(string2upper(tp->get_name())));
+			  tp->set_value(parameter_map.at(pest_utils::upper_cp(tp->get_name())));
 			}
 			catch (out_of_range& oor)
 			{
@@ -1895,7 +1880,7 @@ void TemplateFile::build_marker()
 		throw TemplateFileError("template file " + template_filename + " marker must be a single character, not " + smarker);
 	}
 	marker = char(smarker[0]);
-	if ((string2upper(template_filetype) != "PTF") && (string2upper(template_filetype) != "JTF"))
+	if ((pest_utils::upper_cp(template_filetype) != "PTF") && (pest_utils::upper_cp(template_filetype) != "JTF"))
 	{
 		throw TemplateFileError("template file " + template_filename + " must start with 'PTF' or 'JTF', not " + template_filetype);
 	}
@@ -2042,7 +2027,7 @@ vector<string> TemplateFile::get_line_parameters(vector<pair<int,int>> indices,s
 	    //npos= index->second - index->first;
 		pname = line.substr(index->first, index->second - index->first);
 		reduce_parameter_name(pname);
-		line_parameters.push_back(string2upper(pname));
+		line_parameters.push_back(pest_utils::upper_cp(pname));
 	}
 	if (line_parameters.size() == 0)
 	{		
@@ -2068,7 +2053,6 @@ vector<pair<int,int>> TemplateFile::get_marker_indices(char marker,string line)
 {
 	warn_width = 5;
 	size_t key = -1;
-	size_t value = -1;
 	vector<pair<int,int>> indices;
 	pair<int, int> p;
 	for (string::size_type i=0;i < line.size();i++)

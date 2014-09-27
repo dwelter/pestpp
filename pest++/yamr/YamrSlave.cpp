@@ -182,25 +182,25 @@ string YAMRSlave::tpl_err_msg(int i)
 	switch (i)
 	{
 	case 0:
-		err_msg = "Routine completed successfully";
+	  err_msg = string("Routine completed successfully");
 		break;
 	case 1:
-		err_msg = "TPL file does not exist";
+	  err_msg = string("TPL file does not exist");
 		break;
 	case 2:
-		err_msg = "Not all parameters listed in TPL file";
+	  err_msg = string("Not all parameters listed in TPL file");
 		break;
 	case 3:
-		err_msg = "Illegal header specified in TPL file";
+	  err_msg = string("Illegal header specified in TPL file");
 		break;
 	case 4:
-		err_msg = "Error getting parameter name from template";
+	  err_msg = string("Error getting parameter name from template");
 		break;
 	case 5:
-		err_msg = "Error getting parameter name from template";
+	  err_msg = string("Error getting parameter name from template");
 		break;
 	case 10:
-		err_msg = "Error writing to model input file";
+	  err_msg = string("Error writing to model input file");
 	}
 	return err_msg;
 }
@@ -278,7 +278,7 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs,NetPackage &net_pac
 			{
 				cout << "ping request recieved...";
 				net_pack.reset(NetPackage::PackType::PING, 0, 0, "");
-				char* data = "\0";
+				const char* data = "\0";
 				err = send_message(net_pack, &data, 0);
 				if (err == -1)
 				{
@@ -643,10 +643,9 @@ void YAMRSlave::start(const string &host, const string &port)
 		}
 		else if (net_pack.get_type() == NetPackage::PackType::PING)
 		{
-			std::time_t tt = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 			cout << "ping request recieved...";
 			net_pack.reset(NetPackage::PackType::PING, 0, 0, "");
-			char* data = "\0";
+			const char* data = "\0";
 			err = send_message(net_pack, &data, 0);
 			if (err == -1)
 			{

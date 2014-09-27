@@ -61,7 +61,7 @@ public:
 		ModelRun &optimum_run, RestartController &restart_controller, bool calc_first_jacobian = true);
 	virtual ModelRun iteration_reuse_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool rerun_base = true, const std::string &filename = "");
 	virtual void iteration_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool calc_init_obs = false, bool restart_runs = false);
-	virtual ModelRun iteration_upgrd(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run);
+	virtual ModelRun iteration_upgrd(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool restart_runs = false);
 	virtual void set_svd_package(PestppOptions::SVD_PACK _svd_pack);
 	bool get_phiredswh_flag() const { return phiredswh_flag;}
 	void set_phiredswh_flag(bool _phiredswh_flag) { phiredswh_flag = _phiredswh_flag;}
@@ -135,6 +135,8 @@ protected:
 		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
 		const Parameters &base_active_ctl_pars, const Parameters &freeze_active_ctl_pars);
 	bool par_heading_out_bnd(double org_par, double new_par, double lower_bnd, double upper_bnd);
+	void save_frozen_pars(std::ostream &fout, const Parameters &frozen_pars, int id);
+	Parameters read_frozen_pars(std::istream &fin, int id);
 	PhiComponets phi_estimate(const ModelRun &base_run, const Jacobian &jacobian, QSqrtMatrix &Q_sqrt, const DynamicRegularization &regul,
 		const Eigen::VectorXd &residuals_vec, const vector<string> &obs_names_vec,
 		const Parameters &base_run_active_ctl_par, const Parameters &freeze_active_ctl_pars, 
