@@ -61,7 +61,7 @@ public:
 		ModelRun &optimum_run, RestartController &restart_controller, bool calc_first_jacobian = true);
 	virtual ModelRun iteration_reuse_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool rerun_base = true, const std::string &filename = "");
 	virtual void iteration_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool calc_init_obs = false, bool restart_runs = false);
-	virtual ModelRun iteration_upgrd(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run);
+	virtual ModelRun iteration_upgrd(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool restart_runs = false);
 	virtual void set_svd_package(PestppOptions::SVD_PACK _svd_pack);
 	bool get_phiredswh_flag() const { return phiredswh_flag;}
 	void set_phiredswh_flag(bool _phiredswh_flag) { phiredswh_flag = _phiredswh_flag;}

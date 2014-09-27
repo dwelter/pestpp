@@ -115,6 +115,10 @@ void RestartController::process_rst_file(std::ifstream &fin)
 		{
 			restart_option = RestartOption::RESUME_JACOBIAN_RUNS;
 		}
+		else if (tokens[0] == "upgrade_model_runs_built")
+		{
+			restart_option = RestartOption::RESUME_UPGRADE_RUNS;
+		}
 	}
 }
 

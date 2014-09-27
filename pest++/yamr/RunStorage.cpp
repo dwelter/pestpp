@@ -54,8 +54,6 @@ void RunStorage::reset(const vector<string> &_par_names, const vector<string> &_
 	{
 		buf_stream.close();
 	}
-	buf_stream.open(filename.c_str(), ios_base::out | ios_base::binary);
-	buf_stream.close();
 	buf_stream.open(filename.c_str(), ios_base::out | ios_base::in | ios_base::binary);
 	assert(buf_stream.good() == true);
 	if (!buf_stream.good())
@@ -85,6 +83,11 @@ void RunStorage::reset(const vector<string> &_par_names, const vector<string> &_
 	buf_stream.write((char*) &o_name_size_64, sizeof(o_name_size_64));
 	buf_stream.write(serial_pnames.data(), serial_pnames.size());
 	buf_stream.write(serial_onames.data(), serial_onames.size());
+	//add flag for double buffering
+	std::int8_t buf_status = 0;
+	int end_of_runs = get_nruns();
+	buf_stream.seekp(get_stream_pos(end_of_runs), ios_base::beg);
+	buf_stream.write(reinterpret_cast<char*>(&buf_status), sizeof(buf_status));
 	buf_stream.flush();
 }
 
@@ -94,6 +97,11 @@ void RunStorage::init_restart(const std::string &_filename)
 	filename = _filename;
 	par_names.clear();
 	obs_names.clear();
+
+	if (buf_stream.is_open())
+	{
+		buf_stream.close();
+	}
 
 	buf_stream.open(filename.c_str(), ios_base::out | ios_base::in | ios_base::binary | ios_base::ate);
 	assert(buf_stream.good() == true);
@@ -219,6 +227,11 @@ streamoff RunStorage::get_stream_pos(int run_id)
 	buf_stream.write(reinterpret_cast<char*>(info_txt_buf.data()), sizeof(char)*info_txt_buf.size());
 	buf_stream.write(reinterpret_cast<char*>(&info_value), sizeof(double));
 	buf_stream.write(reinterpret_cast<const char*>(&model_pars[0]), model_pars.size()*sizeof(double));
+	//add flag for double buffering
+	std::int8_t buf_status = 0;
+	int end_of_runs = get_nruns();
+	buf_stream.seekp(get_stream_pos(end_of_runs), ios_base::beg);
+	buf_stream.write(reinterpret_cast<char*>(&buf_status), sizeof(buf_status));
 	buf_stream.flush();
 	return run_id;
  }
@@ -235,6 +248,11 @@ streamoff RunStorage::get_stream_pos(int run_id)
 	buf_stream.write(reinterpret_cast<char*>(info_txt_buf.data()), sizeof(char)*info_txt_buf.size());
 	buf_stream.write(reinterpret_cast<char*>(&info_value), sizeof(double));
 	buf_stream.write(reinterpret_cast<const char*>(&model_pars(0)), model_pars.size()*sizeof(model_pars(0)));
+	//add flag for double buffering
+	std::int8_t buf_status = 0;
+	int end_of_runs = get_nruns();
+	buf_stream.seekp(get_stream_pos(end_of_runs), ios_base::beg);
+	buf_stream.write(reinterpret_cast<char*>(&buf_status), sizeof(buf_status));
 	buf_stream.flush();
 	return run_id;
  }

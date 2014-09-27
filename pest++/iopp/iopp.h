@@ -14,11 +14,6 @@
 
 using namespace std;
 
-string string2upper(string& str);
-string string2lower(string& str);
-
-
-
 class ValueOverflowError : public runtime_error {
 public:
 	ValueOverflowError(const string &_message="") : runtime_error(_message), message(_message) 

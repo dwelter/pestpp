@@ -78,41 +78,6 @@ SVDSolver::~SVDSolver(void)
 }
 
 
-ModelRun SVDSolver::compute_jacobian(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &cur_run, bool restart_runs)
-{
-	ostream &os = file_manager.rec_ofstream();
-	ostream &fout_restart = file_manager.get_ofstream("rst");
-	ModelRun best_upgrade_run(cur_run);
-	// Start Solution iterations
-	terminate_local_iteration = false;
-
-	RestartController::write_start_iteration(fout_restart, *this, -9999, -9999);
-
-	//write current parameters so we have a backup for restarting
-	RestartController::write_start_parameters_updated(fout_restart, file_manager.build_filename("parb", false));
-	output_file_writer.write_par(file_manager.open_ofile_ext("parb"), best_upgrade_run.get_ctl_pars(), *(par_transform.get_offset_ptr()),
-		*(par_transform.get_scale_ptr()));
-	file_manager.close_file("parb");
-	RestartController::write_finish_parameters_updated(fout_restart, file_manager.build_filename("parb", false));
-
-	cout << "COMPUTING JACOBIAN:" << endl << endl;
-	os << "COMPUTING JACOBIAN:" << endl << endl;
-	cout << "  Iteration type: " << get_description() << endl;
-	os << "    Iteration type: " << get_description() << endl;
-	os << "    Model calls so far : " << run_manager.get_total_runs() << endl << endl << endl;
-	iteration_jac(run_manager, termination_ctl, best_upgrade_run, false, restart_runs);
-
-	//write final parameters for restarting
-	output_file_writer.write_par(file_manager.open_ofile_ext("par"), best_upgrade_run.get_ctl_pars(), *(par_transform.get_offset_ptr()),
-		*(par_transform.get_scale_ptr()));
-	file_manager.close_file("par");
-	return best_upgrade_run;
-}
-
-
-
-
-
 ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter,
 	ModelRun &cur_run, ModelRun &optimum_run, RestartController &restart_controller, bool calc_first_jacobian)
 {
@@ -136,47 +101,55 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 		
 		//only processed when debugging is turned on
 		int global_iter_num = termination_ctl.get_iteration_number() + 1;
+		int nruns_start_iter = run_manager.get_total_runs();
+		ostringstream tmp_str;
+
 		debug_msg("========================================================================");
 		debug_msg("Iteration Number");
 		debug_print(global_iter_num);
 
-		//
-		//Save information necessary for restart
-		RestartController::write_start_iteration(fout_restart, *this, iter_num, global_iter_num);
-		// save state of termination controller
-		termination_ctl.save_state(fout_restart);
-		//write current parameters so we have a backup for restarting
-		RestartController::write_start_parameters_updated(fout_restart, file_manager.build_filename("parb", false));
-		output_file_writer.write_par(file_manager.open_ofile_ext("parb"), best_upgrade_run.get_ctl_pars(), *(par_transform.get_offset_ptr()),
-			*(par_transform.get_scale_ptr()));
-		file_manager.close_file("parb");
-		RestartController::write_finish_parameters_updated(fout_restart, file_manager.build_filename("parb", false));
-
-		output_file_writer.iteration_report(os, global_iter_num, run_manager.get_total_runs(), get_description(), svd_package->description, matrix_inv);
-		output_file_writer.iteration_report(cout, global_iter_num, run_manager.get_total_runs(), get_description(), svd_package->description, matrix_inv);
-		
-		// write header for SVD file
-		output_file_writer.write_svd_iteration(global_iter_num);
-
-		performance_log->log_blank_lines();
-		performance_log->add_indent(-10);
-
-		ostringstream tmp_str;
-		tmp_str << "beginning iteration " << global_iter_num;
-		performance_log->log_event(tmp_str.str(), 0, "start_iter");
-		performance_log->add_indent();
-		int nruns_start_iter = run_manager.get_total_runs();
-		if (!calc_jacobian)
+		if (restart_controller.get_restart_option() != RestartController::RestartOption::RESUME_UPGRADE_RUNS)
 		{
-			calc_jacobian = true;
+			//
+			//Save information necessary for restart
+			RestartController::write_start_iteration(fout_restart, *this, iter_num, global_iter_num);
+			// save state of termination controller
+			termination_ctl.save_state(fout_restart);
+			//write current parameters so we have a backup for restarting
+			RestartController::write_start_parameters_updated(fout_restart, file_manager.build_filename("parb", false));
+			output_file_writer.write_par(file_manager.open_ofile_ext("parb"), best_upgrade_run.get_ctl_pars(), *(par_transform.get_offset_ptr()),
+				*(par_transform.get_scale_ptr()));
+			file_manager.close_file("parb");
+			RestartController::write_finish_parameters_updated(fout_restart, file_manager.build_filename("parb", false));
+
+			output_file_writer.iteration_report(os, global_iter_num, run_manager.get_total_runs(), get_description(), svd_package->description, matrix_inv);
+			output_file_writer.iteration_report(cout, global_iter_num, run_manager.get_total_runs(), get_description(), svd_package->description, matrix_inv);
+
+			// write header for SVD file
+			output_file_writer.write_svd_iteration(global_iter_num);
+
+			performance_log->log_blank_lines();
+			performance_log->add_indent(-10);
+
+			tmp_str << "beginning iteration " << global_iter_num;
+			performance_log->log_event(tmp_str.str(), 0, "start_iter");
+			performance_log->add_indent();
+			if (!calc_jacobian)
+			{
+				calc_jacobian = true;
+			}
+			else
+			{
+				bool restart_runs = (restart_controller.get_restart_option() == RestartController::RestartOption::RESUME_JACOBIAN_RUNS);
+				iteration_jac(run_manager, termination_ctl, best_upgrade_run, false, restart_runs);
+				if (restart_runs) restart_controller.get_restart_option() = RestartController::RestartOption::NONE;
+			}
 		}
-		else
-		{
-			bool restart_runs = (restart_controller.get_restart_option() == RestartController::RestartOption::RESUME_JACOBIAN_RUNS);
-			iteration_jac(run_manager, termination_ctl, best_upgrade_run, false, restart_runs);
-			if (restart_runs) restart_controller.get_restart_option() = RestartController::RestartOption::NONE;
-		}
-		best_upgrade_run = iteration_upgrd(run_manager, termination_ctl, best_upgrade_run);
+
+		bool upgrade_start = (restart_controller.get_restart_option() == RestartController::RestartOption::RESUME_UPGRADE_RUNS);
+		best_upgrade_run = iteration_upgrd(run_manager, termination_ctl, best_upgrade_run, upgrade_start);
+		restart_controller.get_restart_option() = RestartController::RestartOption::NONE;
+
 
 		int nruns_end_iter = run_manager.get_total_runs();
 		os << endl;
@@ -588,6 +561,37 @@ void SVDSolver::calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqr
 	prev_frozen_active_ctl_pars.insert(new_frozen_active_ctl_pars.begin(), new_frozen_active_ctl_pars.end());
 }
 
+	ModelRun SVDSolver::compute_jacobian(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &cur_run, bool restart_runs)
+	{
+		ostream &os = file_manager.rec_ofstream();
+		ostream &fout_restart = file_manager.get_ofstream("rst");
+		ModelRun best_upgrade_run(cur_run);
+		// Start Solution iterations
+		terminate_local_iteration = false;
+
+		RestartController::write_start_iteration(fout_restart, *this, -9999, -9999);
+
+		//write current parameters so we have a backup for restarting
+		RestartController::write_start_parameters_updated(fout_restart, file_manager.build_filename("parb", false));
+		output_file_writer.write_par(file_manager.open_ofile_ext("parb"), best_upgrade_run.get_ctl_pars(), *(par_transform.get_offset_ptr()),
+			*(par_transform.get_scale_ptr()));
+		file_manager.close_file("parb");
+		RestartController::write_finish_parameters_updated(fout_restart, file_manager.build_filename("parb", false));
+
+		cout << "COMPUTING JACOBIAN:" << endl << endl;
+		os << "COMPUTING JACOBIAN:" << endl << endl;
+		cout << "  Iteration type: " << get_description() << endl;
+		os << "    Iteration type: " << get_description() << endl;
+		os << "    Model calls so far : " << run_manager.get_total_runs() << endl << endl << endl;
+		iteration_jac(run_manager, termination_ctl, best_upgrade_run, false, restart_runs);
+
+		//write final parameters for restarting
+		output_file_writer.write_par(file_manager.open_ofile_ext("par"), best_upgrade_run.get_ctl_pars(), *(par_transform.get_offset_ptr()),
+			*(par_transform.get_scale_ptr()));
+		file_manager.close_file("par");
+		return best_upgrade_run;
+	}
+
 
 ModelRun SVDSolver::iteration_reuse_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool rerun_base, const string &filename)
 {
@@ -677,10 +681,27 @@ void SVDSolver::iteration_jac(RunManagerAbstract &run_manager, TerminationContro
 		*(base_run.get_obj_func_ptr()), get_parameter_group_info(), *regul_scheme_ptr, false);
 }
 
-ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run)
+ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool restart_runs)
 {
 	ostream &os = file_manager.rec_ofstream();
 	ostream &fout_restart = file_manager.get_ofstream("rst");
+	
+	if (restart_runs)
+	{
+		run_manager.initialize_restart(file_manager.build_filename("rnu"));
+		{
+			Parameters tmp_pars;
+			Observations tmp_obs;
+			bool success = run_manager.get_run(0, tmp_pars, tmp_obs);
+			if (!success)
+			{
+				throw(PestError("Error: Cannot retrieve the base run to compute upgrade vectors."));
+			}
+			par_transform.model2ctl_ip(tmp_pars);
+			base_run.update_ctl(tmp_pars, tmp_obs);
+		}
+	}
+	else
 	{
 		vector<string> obs_names_vec = base_run.get_obs_template().get_keys();
 
@@ -772,8 +793,8 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 			performance_log->add_indent(-1);
 		}
 		file_manager.close_file("fpr");
+		RestartController::write_upgrade_runs_built(fout_restart);
 	}
-	RestartController::write_upgrade_runs_built(fout_restart);
 
 	cout << endl;
 	performance_log->add_indent(-1);
@@ -786,21 +807,9 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 
 	ifstream &fin_frz = file_manager.open_ifile_ext("fpr");
 	bool best_run_updated_flag = false;
-	ModelRun base_run_tmp;
-	{
-		Parameters tmp_pars;
-		Observations tmp_obs;
-		bool success = run_manager.get_run(0, tmp_pars, tmp_obs);
-		if (!success)
-		{
-			throw(PestError("Error: Cannot retrieve the base run to compute upgrade vectors."));
-		}
-		par_transform.model2ctl_ip(tmp_pars);
-		base_run_tmp.update_ctl(tmp_pars, tmp_obs);
-	}
-	Parameters base_run_active_ctl_par_tmp = par_transform.ctl2active_ctl_cp(base_run_tmp.get_ctl_pars());
 
-	ModelRun best_upgrade_run(base_run_tmp);
+	Parameters base_run_active_ctl_par_tmp = par_transform.ctl2active_ctl_cp(base_run.get_ctl_pars());
+	ModelRun best_upgrade_run(base_run);
 
 	long jac_num_nonzero = jacobian.get_nonzero();
 	long jac_num_total = jacobian.get_size();
@@ -812,7 +821,8 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 
 	os << "    Summary of upgrade runs:" << endl;
 
-	for (int i = 1; i < run_manager.get_nruns(); ++i) {
+	int n_runs = run_manager.get_nruns();
+	for (int i = 1; i < n_runs; ++i) {
 		ModelRun upgrade_run(base_run);
 		Parameters tmp_pars;
 		Observations tmp_obs;

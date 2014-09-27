@@ -382,7 +382,7 @@ bool thread_flag::get()
 	else return false;
 }
 
-#ifdef OS_WIN
+  //#ifdef OS_WIN
 
 PROCESS_INFORMATION start_command(char* &cmd_line)
 {
@@ -455,10 +455,10 @@ void run_commands(thread_flag* terminate, thread_flag* finished, vector<string> 
 
 
 
-#else
+  //#else
 
 
-#endif
+//#endif
 
 } // end of namespace pest_utils
 

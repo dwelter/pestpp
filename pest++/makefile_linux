@@ -9,6 +9,8 @@ FFLAGS := '-O2 -c -cpp'
 #FFLAGS := '-g -c -cpp'
 
 all:
+	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} -C common -f makefile_linux libcommon.a
+	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} -C iopp -f makefile_linux libiopp.a
 	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} -C yamr -f makefile_linux librunmanager.a
 	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} -C propack -f makefile_linux libpropack.a
 	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} -C pest_routines -f makefile_linux libpest_routines.a
@@ -17,6 +19,8 @@ all:
 	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} -C morris_meth -f makefile_linux gsa.exe
 	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} -C run_manager_fortran_test -f makefile_linux fortran_test
 clean:
+	make -C common -f makefile_linux clean
+	make -C iopp -f makefile_linux clean
 	make -C yamr -f makefile_linux clean
 	make -C propack -f makefile_linux clean
 	make -C pest_routines -f makefile_linux clean

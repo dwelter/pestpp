@@ -367,11 +367,16 @@ void SVDASolver::iteration_jac(RunManagerAbstract &run_manager, TerminationContr
 		jacobian, *(base_run.get_obj_func_ptr()), get_parameter_group_info(), *regul_scheme_ptr, true);
 }
 
-ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run)
+ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool restart_runs)
 {
 	ostream &os = file_manager.rec_ofstream();
 	ostream &fout_restart = file_manager.get_ofstream("rst");
 
+	if (restart_runs)
+	{
+		run_manager.initialize_restart(file_manager.build_filename("rnu"));
+	}
+	else
 	{
 		vector<string> obs_names_vec = base_run.get_obs_template().get_keys();
 		cout << endl;
@@ -458,8 +463,8 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 			performance_log->add_indent(-1);
 		}
 		file_manager.close_file("fpr");
+		RestartController::write_upgrade_runs_built(fout_restart);
 	}
-	RestartController::write_upgrade_runs_built(fout_restart);
 
 	cout << endl;
 	os << endl;
@@ -499,7 +504,9 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 
 	os << "    Summary of upgrade runs:" << endl;
 	Parameters new_frozen_pars;
-	for (int i = 1; i < run_manager.get_nruns(); ++i) {
+
+	int n_runs = run_manager.get_nruns();
+	for (int i = 1; i < n_runs; ++i) {
 		ModelRun upgrade_run(base_run);
 		Parameters tmp_pars;
 		Observations tmp_obs;

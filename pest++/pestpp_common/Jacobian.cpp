@@ -215,7 +215,6 @@ bool Jacobian::build_runs(ModelRun &init_model_run, vector<string> numeric_par_n
 
 	// compute runs for to jacobain calculation as it is influenced by derivative type( forward or central)
 	out_of_bound_par.clear();
-	bool all_par_in_bound = true;
 	Parameters numeric_pars = par_transform.ctl2numeric_cp(init_model_run.get_ctl_pars());
 
 	vector<double> del_numeric_par_vec;
