@@ -59,6 +59,7 @@ public:
 	virtual int add_run(const Parameters &pars, const std::string &info_txt="", double info_value=no_data);
 	virtual int add_run(const Eigen::VectorXd &model_pars, const std::string &info_txt="", double info_value=no_data);
 	void update_run(int run_id, const Parameters &pars, const Observations &obs);
+	void update_run(int run_id, const Observations &obs);
 	void update_run(int run_id, const std::vector<char> serial_data);
 	void update_run_failed(int run_id);
 	void set_run_nfailed(int run_id, int nfail);
@@ -80,6 +81,7 @@ public:
 	int get_observations_vec(int run_id, std::vector<double> &data_vec);
 	static void export_diff_to_text_file(const std::string &in1_filename, const std::string &in2_filename, const std::string &out_filename);
 	void free_memory();
+	std::string get_filename() { return filename; }
 	~RunStorage();
 private:
 	static const int info_txt_length = 41;

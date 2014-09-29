@@ -31,7 +31,12 @@
     <ClCompile Include="linpackc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="debug.cpp" />
+    <ClCompile Include="RunManagerExternal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="debug.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RunManagerAbstract.h">
@@ -61,7 +66,12 @@
     <ClInclude Include="RunManagerCWrapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="debug.h" />
+    <ClInclude Include="RunManagerExternal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="debug.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">

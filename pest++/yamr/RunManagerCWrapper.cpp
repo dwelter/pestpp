@@ -6,7 +6,7 @@
 #include "RunManagerGenie.h"
 #include "pest_error.h"
 
-typedef struct RunManagerAbstract RunManagerAbstract;
+typedef class RunManagerAbstract RunManagerAbstract;
 
 static ofstream fout_run_manager_log_file;
 

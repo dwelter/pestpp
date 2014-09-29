@@ -20,27 +20,28 @@ along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <string>
 #include <sstream>
 #include "RunStorage.h"
+#include "utilities.h"
 
 using namespace std;
 
-
-ostream & usage(ostream &fout)
+void usage(ostream &fout)
 {
 	fout << "--------------------------------------------------------" << endl;
 	fout << "usage:" << endl << endl;
-	fout << "    pbin2ascii.exe bin_file  runs_file  par_prefix" << endl << endl;
+	fout << "    pbin2ascii.exe ext_file  runs_file  par_prefix" << endl << endl;
 	fout << "    where:" << endl;
-	fout << "        bin_file:    pest++ binary model run file to be read" << endl;
-	fout << "        runs_file:   name of file to be created with list of required runs" << endl;
-	fout << "        par_prefix:  prefix used to create parameter files" << endl;
+	fout << "        ext_file:   name of the pest++ .ext file containing the name binary run file" << endl;
+	fout << "        runs_file:  name of file to be created with list of required runs" << endl;
+	fout << "        par_prefix: prefix used to create parameter files" << endl;
 	fout << "--------------------------------------------------------" << endl;
 }
 
 int main(int argc, char* argv[])
 {
-	string in_filename = argv[1];
+	string ext_filename = argv[1];
 	string out_filename = argv[2];
 	string base_par_filename = argv[3];
 
@@ -48,23 +49,38 @@ int main(int argc, char* argv[])
 	{
 		cerr << "incorect number of command line arguements" << endl << endl;
 		usage(cerr);
-		exit(0);
+		throw PestError("Error: incorect number of command line arguements");
 	}
+
+
+	string pbin_filename;
+	try
+	{
+		ifstream fin_ext(ext_filename);
+		getline(fin_ext, pbin_filename);
+		pest_utils::strip_ip(pbin_filename);
+	}
+	catch (exception &e)
+	{
+		cerr << "Error processing external run manager *.ext \"" << pbin_filename << "\"";
+		cerr << e.what() << endl;
+		usage(cerr);
+		throw(e);
+	}
+
 
 	RunStorage rs("");
 	try
 	{
-		rs.init_restart(in_filename);
+		rs.init_restart(pbin_filename);
 	}
 	catch (exception &e)
 	{
-		cerr << "Error processing PEST++ binary file \"" << in_filename << "\"";
+		cerr << "Error processing PEST++ binary file \"" << pbin_filename << "\"";
 		cerr << e.what() << endl;
 		usage(cerr);
-		exit(0);
+		throw(e);
 	}
-
-
 
 	vector<string> par_name_vec = rs.get_par_name_vec();
 	vector<string> obs_name_vec = rs.get_obs_name_vec();
@@ -98,11 +114,11 @@ int main(int argc, char* argv[])
 			{
 				fout_par << par_name_vec[ipar] << " ";
 				int prec = fout_par.precision(numeric_limits<double>::digits10 + 1);
-				fout_par << pars_vec[ipar] << " " << 1.0 << " " << 0.0 << endl;
+				fout_par << pars_vec[ipar] << endl;
 				fout_par.precision(prec);
 			}
 			fout_par.close();
-			fout << "RUN-" << i << " " << par_file_name.str() << endl;
+			fout << i << " " << par_file_name.str() << endl;
 		}
 	}
 	fout.close();

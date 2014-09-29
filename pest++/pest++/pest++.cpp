@@ -35,6 +35,7 @@
 #include "TerminationController.h"
 #include "RunManagerGenie.h"
 #include "RunManagerSerial.h"
+#include "RunManagerExternal.h"
 #include "SVD_PROPACK.h"
 #include "OutputFileWriter.h"
 #include "YamrSlave.h"
@@ -70,7 +71,6 @@ int main(int argc, char* argv[])
 			commandline.append(argv[i]);
 		}
 
-		//transform(commandline.begin(), commandline.end(), commandline.begin(), ::tolower);
 		vector<string> cmd_arg_vec(argc);
 		copy(argv, argv + argc, cmd_arg_vec.begin());
 		for (vector<string>::iterator it = cmd_arg_vec.begin(); it != cmd_arg_vec.end(); ++it)
@@ -79,7 +79,7 @@ int main(int argc, char* argv[])
 		}
 
 		string complete_path;
-		enum class RunManagerType { SERIAL, YAMR, GENIE };
+		enum class RunManagerType { SERIAL, YAMR, GENIE, EXTERNAL };
 
 		if (argc >= 2) {
 			complete_path = argv[1];
@@ -95,6 +95,8 @@ int main(int argc, char* argv[])
 			cerr << "        pest++ /H hostname:port " << endl << endl;
 			cerr << "    GENIE:" << endl;
 			cerr << "        pest++ control_file.pst /G hostname:port" << endl;
+			cerr << "    external run manager:" << endl;
+			cerr << "        pest++ control_file.pst /E" << endl;
 			cerr << "--------------------------------------------------------" << endl;
 			exit(0);
 		}
@@ -106,6 +108,12 @@ int main(int argc, char* argv[])
 		vector<string>::const_iterator it_find, it_find_next;
 		string next_item;
 		string socket_str = "";
+		//Check for external run manager
+		it_find = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/e");
+		if (it_find != cmd_arg_vec.end() )
+		{
+			run_manager_type = RunManagerType::EXTERNAL;
+		}
 		//Check for YAMR Slave
 		it_find = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/h");
 		next_item.clear();
@@ -173,6 +181,8 @@ int main(int argc, char* argv[])
 		vector<string>::const_iterator it_find_j = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/j");
 		vector<string>::const_iterator it_find_r = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/r");
 		bool restart_flag = false;
+		bool save_restart_rec_header = true;
+
 		file_manager.initialize_path(filename, pathname);
 		debug_initialize(file_manager.build_filename("dbg"));
 		if (it_find_j != cmd_arg_vec.end())
@@ -189,8 +199,15 @@ int main(int argc, char* argv[])
 			file_manager.open_default_files(true);
 			ofstream &fout_rec_tmp = file_manager.rec_ofstream();
 			fout_rec_tmp << endl << endl;
-			fout_rec_tmp << "Restarting PEST++ ....." << endl << endl;
-			cout << "    Restarting PEST++ ....." << endl << endl;
+			if (run_manager_type == RunManagerType::EXTERNAL)
+			{
+				save_restart_rec_header = false;
+			}
+			else
+			{
+				fout_rec_tmp << "Restarting PEST++ ....." << endl << endl;
+				cout << "    Restarting PEST++ ....." << endl << endl;
+			}
 		}
 		else
 		{
@@ -201,15 +218,17 @@ int main(int argc, char* argv[])
 		ofstream &fout_rec = file_manager.rec_ofstream();
 		PerformanceLog performance_log(file_manager.open_ofile_ext("pfm"));
 
-
-		fout_rec << "             PEST++ Version " << version << endl << endl;
-		fout_rec << "                 by Dave Welter" << endl;
-		fout_rec << "     Computational Water Resource Engineering" << endl << endl << endl;
+		if (!restart_flag || save_restart_rec_header)
+		{
+			fout_rec << "             PEST++ Version " << version << endl << endl;
+			fout_rec << "                 by Dave Welter" << endl;
+			fout_rec << "     Computational Water Resource Engineering" << endl << endl << endl;
+			fout_rec << endl;
+			fout_rec << "using control file: \"" << complete_path << "\"" << endl << endl;
+		}
 
 		cout << endl;
-		fout_rec << endl;
 		cout << "using control file: \"" << complete_path << "\"" << endl << endl;
-		fout_rec << "using control file: \"" << complete_path << "\"" << endl << endl;
 
 		// create pest run and process control file to initialize it
 		Pest pest_scenario;
@@ -261,6 +280,14 @@ int main(int argc, char* argv[])
 			run_manager_ptr = new RunManagerGenie(exi.comline_vec,
 				exi.tplfile_vec, exi.inpfile_vec, exi.insfile_vec, exi.outfile_vec,
 				file_manager.build_filename("rns"), socket_str);
+		}
+		else if (run_manager_type == RunManagerType::EXTERNAL)
+		{
+			const ModelExecInfo &exi = pest_scenario.get_model_exec_info();
+			run_manager_ptr = new RunManagerExternal(exi.comline_vec,
+				exi.tplfile_vec, exi.inpfile_vec, exi.insfile_vec, exi.outfile_vec,
+				file_manager.build_filename("rns"), file_manager.build_filename("ext"),
+				pest_scenario.get_pestpp_options().get_max_run_fail());
 		}
 		else
 		{
@@ -403,7 +430,10 @@ int main(int argc, char* argv[])
 				cur_run.set_ctl_parameters(restart_pars);
 			}
 		}
-		fout_rec << "   -----    Starting PEST++ Iterations    ----    " << endl;
+		if (!restart_flag || save_restart_rec_header)
+		{
+			fout_rec << "   -----    Starting PEST++ Iterations    ----    " << endl;
+		}
 		while (!termination_ctl.terminate())
 		{
 			//base parameter iterations

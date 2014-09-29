@@ -67,6 +67,7 @@ public:
 	virtual int get_cur_groupid(void);
 	virtual std::vector<int> get_outstanding_run_ids();
 	virtual ~RunManagerAbstract(void) {}
+	virtual std::string get_run_filename() { return file_stor.get_filename(); }
 protected:
 	int total_runs;
 	int max_n_failure; // maximium number of times to retry a failed model run

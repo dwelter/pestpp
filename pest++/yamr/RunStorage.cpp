@@ -301,6 +301,46 @@ void RunStorage::update_run(int run_id, const Parameters &pars, const Observatio
 	buf_stream.flush();
 }
 
+void RunStorage::update_run(int run_id, const Observations &obs)
+{
+	//set run status flage to complete
+	std::int8_t r_status = 1;
+	check_rec_id(run_id);
+	vector<double> obs_data(obs.get_data_vec(obs_names));
+	size_t n_pars = par_names.size();
+
+	//write data to buffer at end of file and set buffer flag to 1
+	std::int8_t buf_status = 0;
+	std::int32_t buf_run_id = run_id;
+	int end_of_runs = get_nruns();
+	buf_stream.seekp(get_stream_pos(end_of_runs), ios_base::beg);
+	buf_stream.write(reinterpret_cast<char*>(&buf_status), sizeof(buf_status));
+	buf_stream.write(reinterpret_cast<char*>(&buf_run_id), sizeof(buf_run_id));
+	buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	//skip over parameter section
+	buf_stream.seekp(n_pars * sizeof(double), ios_base::cur);
+	buf_stream.write(reinterpret_cast<char*>(obs_data.data()), obs_data.size() * sizeof(double));
+	buf_status = 1;
+	buf_stream.seekp(get_stream_pos(end_of_runs), ios_base::beg);
+	buf_stream.write(reinterpret_cast<char*>(&buf_status), sizeof(buf_status));
+	buf_stream.flush();
+
+	//write data to main part of file
+	buf_stream.seekp(get_stream_pos(run_id), ios_base::beg);
+	buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	//skip over info_txt and info_value fields
+	buf_stream.seekp(sizeof(char)*info_txt_length + sizeof(double), ios_base::cur);
+	//skip over parameter section
+	buf_stream.seekp(n_pars * sizeof(double), ios_base::cur);
+	buf_stream.write(reinterpret_cast<char*>(obs_data.data()), obs_data.size() * sizeof(double));
+	buf_stream.flush();
+	//reset flag for buffer at end of file to 0 to signal it is no longer relavent
+	buf_status = 0;
+	buf_stream.seekp(get_stream_pos(end_of_runs), ios_base::beg);
+	buf_stream.write(reinterpret_cast<char*>(&buf_status), sizeof(buf_status));
+	buf_stream.flush();
+}
+
 void RunStorage::update_run(int run_id, const vector<char> serial_data)
 {
 	//set run status flage to complete

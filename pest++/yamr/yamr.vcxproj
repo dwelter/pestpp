@@ -22,6 +22,7 @@
     <ClInclude Include="debug.h" />
     <ClInclude Include="RunManagerAbstract.h" />
     <ClInclude Include="RunManagerCWrapper.h" />
+    <ClInclude Include="RunManagerExternal.h" />
     <ClInclude Include="RunManagerFortranWrapper.h" />
     <ClInclude Include="RunManagerGenie.h" />
     <ClInclude Include="RunManagerSerial.h" />
@@ -35,6 +36,7 @@
     <ClCompile Include="linpackc.cpp" />
     <ClCompile Include="RunManagerAbstract.cpp" />
     <ClCompile Include="RunManagerCWrapper.cpp" />
+    <ClCompile Include="RunManagerExternal.cpp" />
     <ClCompile Include="RunManagerFortranWrapper.cpp" />
     <ClCompile Include="RunManagerGenie.cpp" />
     <ClCompile Include="RunManagerSerial.cpp" />
