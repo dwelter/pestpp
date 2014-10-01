@@ -588,7 +588,7 @@ void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobia
 			}
 			if (n_nonzero_weights_no_reg > 0)
 			{
-				val = dss_mat_no_reg.col(i).norm() / double(n_nonzero_weights_no_reg);
+				val = dss_mat_no_reg.col(i).norm() / pow(n_nonzero_weights_no_reg, 2.0);
 				par_sens[pname] = val;
 				fout << " " << showpoint << setw(20) << val;
 

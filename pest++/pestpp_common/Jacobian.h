@@ -87,6 +87,7 @@ public:
 	virtual void add_cols(set<string> &new_pars_names);
 	virtual void transform(const ParamTransformSeq &par_trans, void(ParamTransformSeq::*meth_prt)(Jacobian &jac) const);
 	Jacobian& operator=(const Jacobian &rhs);
+	virtual const std::set<std::string>&  failed_runs_par_names(){ return  failed_parameter_names; }
 	virtual ~Jacobian();
 protected:
 	vector<string> base_numeric_par_names;  //ordered names of base parameters used to calculate the jacobian

@@ -498,10 +498,10 @@ void RunManagerYAMR::ping(int i_sock)
 	}
 	//check if it is time to ping again...
 	double duration = (double)slave_info.seconds_since_last_ping_time(i_sock);
-	double ping_time = max(PING_INTERVAL_SECS, slave_info.get_runtime_secs(i_sock));
+	double ping_time = max(double(PING_INTERVAL_SECS), slave_info.get_runtime_secs(i_sock));
 	if (duration >= ping_time)
 	{		
-		char* data = "\0";
+		const char* data = "\0";
 		NetPackage net_pack(NetPackage::PackType::PING, 0, 0, "");
 		int err = net_pack.send(i_sock, data, 0);
 		if (err <= 0)

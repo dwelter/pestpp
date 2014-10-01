@@ -3,7 +3,8 @@ FC := gfortran
 CFLAGS := -O2 -c -std=c++0x 
 FFLAGS := -O2 -c -cpp
 
-LIBS := -L /opt/hesm/apps/gcc-4.9.0/lib64 -L /opt/hesm/lib64 -L /usr/lib64 -L/opt/local/lib64  -L ../pest_routines -L ../yamr -L ../pestpp_common -L ../pestpp_common -L ../propack -l runmanager  -lpestpp_com -l pest_routines -l propack -llapack -lblas -lgfortran  /opt/hesm/apps/gcc-4.9.0/lib64/libquadmath.a
+LIBS :=  -L /usr/lib64 -L/opt/local/lib64 -L ../common -L ../iopp -L ../yamr -L ../pestpp_common -L ../pest_routines  -L ../propack -lpestpp_com -lrunmanager  -liopp  -lcommon -lpest_routines -l propack -llapack -lblas  -lgfortran /opt/local/gcc-4.9.0/lib64/libquadmath.a
+
 
 EXE = gsa.exe
 OBJECTS	:= main.o \
@@ -16,7 +17,7 @@ $(EXE): $(OBJECTS)
 	$(CXX) -static $(OBJECTS) $(LIBS) -o $(EXE)
 
 %.o: %.cpp
-	$(CXX) -I ../yamr -I  ../ -I ../pestpp_common  $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@
+	$(CXX) -I ../common -I ../yamr -I  ../ -I ../pestpp_common  $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@
 
 %.o: %.for
 	$(FC) $(FFLAGS) $(INCLUDES) $< -c $(input) -o $@

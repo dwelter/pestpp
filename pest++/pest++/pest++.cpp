@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
 	try
 	{
 #endif
-		string version = "3.0.0_rc1";
+		string version = "3.0.0_rc2";
 		cout << endl << endl;
 		cout << "             PEST++ Version " << version << endl << endl;
 		cout << "                 by Dave Welter" << endl;
@@ -90,11 +90,11 @@ int main(int argc, char* argv[])
 			cerr << "    serial run manager:" << endl;
 			cerr << "        pest++ pest_ctl_file.pst" << endl << endl;
 			cerr << "    YAMR master:" << endl;
-			cerr << "        pest++ control_file.pst /H :port" << endl;
+			cerr << "        pest++ control_file.pst /H :port" << endl << endl;
 			cerr << "    YAMR runner:" << endl;
 			cerr << "        pest++ /H hostname:port " << endl << endl;
 			cerr << "    GENIE:" << endl;
-			cerr << "        pest++ control_file.pst /G hostname:port" << endl;
+			cerr << "        pest++ control_file.pst /G hostname:port" << endl << endl;
 			cerr << "    external run manager:" << endl;
 			cerr << "        pest++ control_file.pst /E" << endl;
 			cerr << "--------------------------------------------------------" << endl;
@@ -325,7 +325,8 @@ int main(int argc, char* argv[])
 			&pest_scenario.get_ctl_parameter_info(), &pest_scenario.get_ctl_observation_info(), file_manager,
 			&pest_scenario.get_ctl_observations(), &obj_func, base_trans_seq, pest_scenario.get_prior_info_ptr(),
 			*base_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(),
-			output_file_writer, mat_inv, &performance_log, pest_scenario.get_pestpp_options().get_base_lambda_vec());
+			output_file_writer, mat_inv, &performance_log, pest_scenario.get_pestpp_options().get_base_lambda_vec(), 
+			"base parameter solution", pest_scenario.get_pestpp_options().get_der_forgive());
 
 		base_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 		//Build Super-Parameter problem
@@ -513,7 +514,7 @@ int main(int argc, char* argv[])
 				SVDASolver super_svd(&svd_control_info, pest_scenario.get_svd_info(), &pest_scenario.get_base_group_info(), &pest_scenario.get_ctl_parameter_info(),
 					&pest_scenario.get_ctl_observation_info(), file_manager, &pest_scenario.get_ctl_observations(), &obj_func,
 					trans_svda, &pest_scenario.get_prior_info(), *super_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(),
-					output_file_writer, mat_inv, &performance_log, pest_scenario.get_pestpp_options().get_base_lambda_vec(), base_svd.get_phiredswh_flag(), base_svd.get_splitswh_flag(),
+					output_file_writer, mat_inv, &performance_log, pest_scenario.get_pestpp_options().get_base_lambda_vec(), false, base_svd.get_phiredswh_flag(), base_svd.get_splitswh_flag(),
 					pest_scenario.get_pestpp_options().get_max_super_frz_iter());
 				super_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 				//use base jacobian to compute first super jacobian if there was not a super upgrade

@@ -27,18 +27,22 @@
 #endif
 
 #ifdef OS_LINUX
- #include <unistd.h>
+#include <unistd.h>
 #endif
-using namespace std;
 
 #ifdef OS_WIN
 const std::string OperSys::DIR_SEP = "\\";
 const std::string OperSys::COMMAND_LINE_APPEND = " ; ";
 #endif
+
 #ifdef OS_LINUX
 const std::string OperSys::DIR_SEP = "/";
 const std::string OperSys::COMMAND_LINE_APPEND = " & ";
 #endif
+
+const int OperSys::thread_sleep_milli_secs=100;
+
+using namespace std;
 
 void OperSys::string2pathname(string &s)
 {

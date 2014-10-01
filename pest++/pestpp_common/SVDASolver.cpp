@@ -43,11 +43,11 @@ SVDASolver::SVDASolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, c
 	const ParameterInfo *_ctl_par_info_ptr, const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 	const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, DynamicRegularization *_regul_scheme,
 	OutputFileWriter &_output_file_writer, SVDSolver::MAT_INV _mat_inv, PerformanceLog *_performance_log, 
-	const std::vector<double> &_base_lambda_vec, bool _phiredswh_flag, bool _splitswh_flag, int _max_super_frz_iter)
+	const std::vector<double> &_base_lambda_vec, bool _der_forgive, bool _phiredswh_flag, bool _splitswh_flag, int _max_super_frz_iter)
 	: SVDSolver(_ctl_info, _svd_info, _base_parameter_group_info_ptr, _ctl_par_info_ptr, _obs_info,
 		_file_manager, _observations, _obj_func, _par_transform, _prior_info_ptr, _jacobian, 
 		_regul_scheme, _output_file_writer, _mat_inv, _performance_log,
-		_base_lambda_vec, "super parameter solution", _phiredswh_flag, _splitswh_flag, false),
+		_base_lambda_vec, "super parameter solution", _der_forgive, _phiredswh_flag, _splitswh_flag, false),
 		max_super_frz_iter(_max_super_frz_iter)
 {
 }

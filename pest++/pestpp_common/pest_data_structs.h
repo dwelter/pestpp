@@ -197,7 +197,7 @@ public:
 		double _super_eigthres = 1.0E-6, SVD_PACK _svd_pack = PestppOptions::EIGEN,
 		MAT_INV _mat_inv = PestppOptions::JTQJ, double _auto_norm = -999,
 		double _super_relparmax = 0.1, int max_run_fail=3,
-		bool iter_summary_flag=true);
+		bool iter_summary_flag = true, bool der_forgive = true);
 	void parce_line(const string &line);
 	int get_max_n_super() const{return max_n_super;}
 	double get_super_eigthres() const{return super_eigthres;}
@@ -212,7 +212,7 @@ public:
 	int get_max_reg_iter()const { return max_reg_iter; }
 	const vector<double>& get_base_lambda_vec() const {return base_lambda_vec;}	
 	bool get_iter_summary_flag() const { return iter_summary_flag;  }
-
+	bool get_der_forgive() const { return der_forgive; }
 	void set_max_n_super(int _max_n_super) {max_n_super = _max_n_super;}
 	void set_super_eigthres(double _super_eigthres) {super_eigthres = _super_eigthres;}
 	void set_n_iter_base(int _n_iter_base) {n_iter_base = _n_iter_base;}
@@ -239,6 +239,7 @@ private:
 	int max_reg_iter;
 	vector<double> base_lambda_vec;	
 	bool iter_summary_flag;
+	bool der_forgive;
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);
 ostream& operator<< (ostream &os, const ObservationInfo& val);

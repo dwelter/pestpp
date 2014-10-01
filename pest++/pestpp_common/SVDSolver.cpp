@@ -48,9 +48,9 @@ SVDSolver::SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, con
 	const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 	const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian,
 	DynamicRegularization *_regul_scheme_ptr, OutputFileWriter &_output_file_writer, SVDSolver::MAT_INV _mat_inv,
-	PerformanceLog *_performance_log, const vector<double> &_base_lambda_vec, const string &_description, bool _phiredswh_flag, bool _splitswh_flag, bool _save_next_jacobian)
+	PerformanceLog *_performance_log, const vector<double> &_base_lambda_vec, const string &_description, bool _der_forgive , bool _phiredswh_flag, bool _splitswh_flag, bool _save_next_jacobian)
 	: ctl_info(_ctl_info), svd_info(_svd_info), par_group_info_ptr(_par_group_info_ptr), ctl_par_info_ptr(_ctl_par_info_ptr), obs_info_ptr(_obs_info), obj_func(_obj_func),
-	file_manager(_file_manager), observations_ptr(_observations), par_transform(_par_transform), phiredswh_flag(_phiredswh_flag),
+	file_manager(_file_manager), observations_ptr(_observations), par_transform(_par_transform), der_forgive(_der_forgive), phiredswh_flag(_phiredswh_flag),
 	splitswh_flag(_splitswh_flag), save_next_jacobian(_save_next_jacobian), prior_info_ptr(_prior_info_ptr), jacobian(_jacobian),
 	regul_scheme_ptr(_regul_scheme_ptr), output_file_writer(_output_file_writer), mat_inv(_mat_inv), description(_description), best_lambda(20.0),
 	performance_log(_performance_log), base_lambda_vec(_base_lambda_vec), terminate_local_iteration(false)
@@ -143,6 +143,24 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 				bool restart_runs = (restart_controller.get_restart_option() == RestartController::RestartOption::RESUME_JACOBIAN_RUNS);
 				iteration_jac(run_manager, termination_ctl, best_upgrade_run, false, restart_runs);
 				if (restart_runs) restart_controller.get_restart_option() = RestartController::RestartOption::NONE;
+			}
+		}
+
+		if (!der_forgive)
+		{
+			const set<string> &failed_parameter_runs = jacobian.get_failed_parameter_names();
+			if (!failed_parameter_runs.empty())
+			{
+				cout << "  The runs for the following parameters failed while computing the jacobian:" << endl;
+				os << "  The runs for the following parameters failed while computing the jacobian:" << endl;
+				for (const auto &ipar : failed_parameter_runs)
+				{
+					cout << "     " << ipar << endl;
+					os << "     " << ipar << endl;
+				}
+				os.flush();
+				cout.flush();
+				exit(0);
 			}
 		}
 

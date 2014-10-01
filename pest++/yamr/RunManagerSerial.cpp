@@ -114,6 +114,7 @@ RunManagerSerial::RunManagerSerial(const vector<string> _comline_vec,
 
 void RunManagerSerial::run()
 {
+	int ifail;
 	int success_runs = 0;
 	int prev_sucess_runs = 0;
 	const vector<string> &par_name_vec = file_stor.get_par_name_vec();
@@ -147,7 +148,7 @@ void RunManagerSerial::run()
 					throw PestError("model interface error: Cannot delete existing model input file " + in_file);
 			}
 			Observations obs;
-			//vector<double> par_values;
+			vector<double> par_values;
 			Parameters pars;
 			file_stor.get_parameters(i_run, pars);						
 			try {
@@ -155,15 +156,14 @@ void RunManagerSerial::run()
 				message.str("");
 				message << "(" << success_runs << "/" << nruns << " runs complete)";
 				std::cout << message.str();
-				//OperSys::chdir(run_dir.c_str());
-				//if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))
-				//{
-				//	throw PestError("Error running model: invalid parameter value returned");
-				//}
-				
-				/*for (auto &i : par_name_vec)
+				OperSys::chdir(run_dir.c_str());
+				for (auto &i : par_name_vec)
 				{
 					par_values.push_back(pars.get_rec(i));
+				}
+				if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))
+				{
+					throw PestError("Error running model: invalid parameter value returned");
 				}
 				wrttpl_(&ntpl, StringvecFortranCharArray(tplfile_vec, 50).get_prt(),
 					StringvecFortranCharArray(inpfile_vec, 50).get_prt(),
@@ -172,47 +172,48 @@ void RunManagerSerial::run()
 				if (ifail != 0)
 				{
 					throw PestError("Error processing template file");
-				}*/									
-				tpl_files.write(pars);											
+				}								
 				for (int i = 0, n_exec = comline_vec.size(); i < n_exec; ++i)
 				{
 					system(comline_vec[i].c_str());
 				}
-
-				/*pest_utils::thread_flag* tf1(false);
-				pest_utils::thread_flag* tf2(false);
-				w_run_commands(tf1,tf2,comline_vec);
-				*/
-				//obs_vec.resize(nobs, RunStorage::no_data);
-				//readins_(&nins, StringvecFortranCharArray(insfile_vec, 50).get_prt(),
-				//	StringvecFortranCharArray(outfile_vec, 50).get_prt(),
-				//	&nobs, StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
-				//	&obs_vec[0], &ifail);
-				//if (ifail != 0)
-				//{
-				//	throw PestError("Error processing instruction file");
-				//}
-				
-				ins_files.read(obs_name_vec,obs);
-				
-								
+				obs_vec.resize(nobs, RunStorage::no_data);
+				readins_(&nins, StringvecFortranCharArray(insfile_vec, 50).get_prt(),
+					StringvecFortranCharArray(outfile_vec, 50).get_prt(),
+					&nobs, StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
+					&obs_vec[0], &ifail);
+				if (ifail != 0)
+				{
+					throw PestError("Error processing instruction file");
+				}				
 				// check parameters and observations for inf and nan
-				/*if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))
+				if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))
 				{
 					throw PestError("Error running model: invalid parameter value returned");
 				}
 				if (std::any_of(obs_vec.begin(), obs_vec.end(), OperSys::double_is_invalid))
 				{
 					throw PestError("Error running model: invalid observation value returned");
-				}*/
+				}
+
+				/*
+				// IOPP version
+				for (int i = 0, n_exec = comline_vec.size(); i < n_exec; ++i)
+				{
+				system(comline_vec[i].c_str());
+				}
+				//pest_utils::thread_flag* tf1(false);
+				//pest_utils::thread_flag* tf2(false);
+				//w_run_commands(tf1,tf2,comline_vec);
+				ins_files.read(obs_name_vec, obs);
+				*/
 
 				success_runs += 1;
 				
-				/*pars.clear();
+				pars.clear();
 				pars.insert(par_name_vec, par_values);
 				obs.clear();
-				obs.insert(obs_name_vec, obs_vec);
-				*/								
+				obs.insert(obs_name_vec, obs_vec);								
 				file_stor.update_run(i_run, pars, obs);
 				
 			}

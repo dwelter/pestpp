@@ -54,6 +54,8 @@ void RunStorage::reset(const vector<string> &_par_names, const vector<string> &_
 	{
 		buf_stream.close();
 	}
+	buf_stream.open(filename.c_str(), ios_base::out |  ios_base::binary);
+        buf_stream.close();
 	buf_stream.open(filename.c_str(), ios_base::out | ios_base::in | ios_base::binary);
 	assert(buf_stream.good() == true);
 	if (!buf_stream.good())

@@ -7,6 +7,7 @@ OUT = librunmanager.a
 OBJECTS	:= RunManagerSerial.o \
            RunManagerYAMR.o \
            RunManagerGenie.o \
+           RunManagerExternal.o \
            RunStorage.o \
            RunManagerAbstract.o \
            Serializeation.o \

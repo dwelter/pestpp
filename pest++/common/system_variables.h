@@ -26,9 +26,9 @@ class OperSys
 {
 public:
 	//const static int thread_sleep_secs = 1;
-	const static int thread_sleep_milli_secs = 100;
-	const static std::string DIR_SEP;
-	const static std::string COMMAND_LINE_APPEND;
+	static const int thread_sleep_milli_secs;
+	static const std::string DIR_SEP;
+	static const std::string COMMAND_LINE_APPEND;
 	void string2pathname(std::string &s);
 	static std::string getcwd();
 	static void chdir(const char *str);

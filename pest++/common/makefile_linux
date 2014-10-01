@@ -1,0 +1,24 @@
+CXX := g++
+CC := g++
+CFLAGS := -g -c -std=c++0x -Wextra -Wall -pedantic -P -Wswitch-enum -Wunreachable-code
+INCLUDES := -I../ -I ../common -I../iopp
+
+OUT = libcommon.a
+OBJECTS	:= network_package.o \
+           pest_error.o \
+           Transformable.o \
+           network_wrapper.o \
+           system_variables.o \
+           utilities.o
+
+$(OUT): $(OBJECTS)
+	ar rcs $(OUT) $(OBJECTS)
+
+%.o: %.cpp
+	$(CXX) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@
+
+%.o: %.c
+	$(CC) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@
+
+clean:
+	-rm $(OBJECTS) $(OUT)

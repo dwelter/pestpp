@@ -16,10 +16,11 @@
 
 
 #ifdef OS_LINUX
-  #include <arpa/inet.h>
-  #include <unistd.h>
-#include <sys\types.h>
-#include <sys\select.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/select.h>
+#include<sys/wait.h>
 #include <errno.h>
 #endif
 
@@ -390,26 +391,29 @@ int start_command(string &cmd_string)
 		cmds.push_back(cmd);
 	}
 	//create the strurture for execv
-	const char ** argv = new const char* [cmds.size()+1];
-	for (auto &icmd : cmds.size())
-	{
-		argv[icmd] = cmds[icmd];
-	}
-	argv[cmds.size() + 1] = NULL; //last arg must be NULL
+	vector<char const*> arg_v;
+	for (size_t icmd=0; icmd<cmds.size(); ++icmd)
+	  {
+	    arg_v.push_back(cmds[icmd].data());
+	  }
+	//char * const*argv = new char* [cmds.size()+1];
+	//for (size_t icmd=0; icmd<cmds.size(); ++icmd)
+	//{
+	//  argv[icmd] = cmds[icmd].data();
+	//}
+	//argv[cmds.size() + 1] = NULL; //last arg must be NULL
+		arg_v.push_back(NULL);
+	      	
 	pid_t pid = fork();
 	if (pid == 0)
 	{
-		int success = execv(argv);
-		if (sucess == -1)
-		{
-			std::string cmd_string(cmd_line);
-			throw std::runtime_error("execv() failed for command: " + cmd_string);
-		}
+	  int success = execv(arg_v[0], const_cast<char* const*>(&(arg_v[0])));
+	     if (success == -1)
+	     {
+	       throw std::runtime_error("execv() failed for command: " + cmd_string);
+	     }
 	}
-	else
-	{
-		return pid;
-	}
+	return pid;
 }
 
 #endif
@@ -476,20 +480,20 @@ void w_run_commands(pest_utils::thread_flag* terminate, pest_utils::thread_flag*
 	{		
 		//start the command
 		int command_pid = start_command(cmd_string);
-		int exit_code;
 		while (true)
 		{
 			//sleep
-			std::this_thread::sleep_for(std::chrono::milliseconds(g_sleeptime));
+			std::this_thread::sleep_for(std::chrono::milliseconds(OperSys::thread_sleep_milli_secs));
 			//check if process is still active
+			int status;
 			pid_t exit_code = waitpid(command_pid, &status, WNOHANG);
 			//if the process ended, break
-			if (exitcode == -1)
+			if (exit_code == -1)
 			{
 				finished->set(true);
 				throw std::runtime_error("waitpid() returned error status for command: " + cmd_string);
 			}
-			else if exitcode != 0)
+			else if (exit_code != 0)
 			{
 				break;
 			}
