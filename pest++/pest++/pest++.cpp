@@ -287,6 +287,7 @@ int main(int argc, char* argv[])
 			run_manager_ptr = new RunManagerExternal(exi.comline_vec,
 				exi.tplfile_vec, exi.inpfile_vec, exi.insfile_vec, exi.outfile_vec,
 				file_manager.build_filename("rns"), file_manager.build_filename("ext"),
+				file_manager.build_filename("exi"), 
 				pest_scenario.get_pestpp_options().get_max_run_fail());
 		}
 		else

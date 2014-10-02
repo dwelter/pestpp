@@ -31,11 +31,12 @@ public:
 	RunManagerExternal(const std::vector<std::string> _comline_vec,
 		const std::vector<std::string> _tplfile_vec, const std::vector<std::string> _inpfile_vec,
 		const std::vector<std::string> _insfile_vec, const std::vector<std::string> _outfile_vec,
-		const std::string &stor_filename, const std::string &_ext_filename, int _max_n_failure = 1);
+		const std::string &stor_filename, const std::string &_ext_filename, const std::string &_exi_filename, int _max_n_failure = 1);
 	virtual ~RunManagerExternal();
 	virtual void run();
 private:
 	std::string ext_filename;
+	std::string exi_filename;
 };
 
 #endif /* _RUNMANAGEEXTERNAL_H_ */
