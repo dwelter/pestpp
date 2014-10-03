@@ -1,10 +1,4 @@
-CXX := g++
-FC := gfortran
-CFLAGS := -g -c -std=c++0x -Wextra -Wall -pedantic -P -Wswitch-enum -Wunreachable-code
-FFLAGS := -g -c -cpp 
-INCLUDES := -I ../ -I ../common -I ../iopp -I ../yamr
-
-LIB = libpestpp_com.a
+OUT = libpestpp_com.a
 OBJECTS	:= FileManager.o \
            ParamTransformSeq.o \
            SVDPackage.o \
@@ -27,8 +21,8 @@ OBJECTS	:= FileManager.o \
 	   PerformanceLog.o \
            SVDASolver.o
  
-$(LIB): $(OBJECTS)
-	ar rcs $(LIB) $(OBJECTS)
+$(OUT): $(OBJECTS)
+	ar rcs $(OUT) $(OBJECTS)
 
 %.o: %.cpp
 	$(CXX) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@

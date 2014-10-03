@@ -23,6 +23,12 @@ void RestartController::write_start_iteration(ostream &fout, const SVDSolver &sv
 
 }
 
+void RestartController::write_start_failed_super(ostream &fout)
+{
+	fout << "failed_super" << endl;
+
+}
+
 void RestartController::write_start_parameters_updated(ostream &fout, const string &parameter_filename)
 {
 	fout << "parameter_file_save_started " << parameter_filename << endl;
@@ -118,6 +124,11 @@ void RestartController::process_rst_file(std::ifstream &fin)
 		else if (tokens[0] == "upgrade_model_runs_built")
 		{
 			restart_option = RestartOption::RESUME_UPGRADE_RUNS;
+		}
+		else if (tokens[0] == "failed_super")
+		{
+			restart_option = RestartOption::RESUME_NEW_ITERATION;
+			iteration_type = IterationType::BASE;
 		}
 	}
 }

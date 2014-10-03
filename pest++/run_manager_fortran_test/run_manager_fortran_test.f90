@@ -41,8 +41,8 @@
     integer rmif_get_num_total_runs
     
     
-    external rmfi_delete
-    integer rmfi_delete
+    external rmif_delete
+    integer rmif_delete
     
     character*20 comline(1)
     character*20 tpl(1)
@@ -223,7 +223,7 @@
     write(*,*) 'Total number of successful model runs:', n_total_runs
     
     !clean up
-    err = rmfi_delete()
+    err = rmif_delete()
    
     write (*,*) ""
     write (*,*) "Press ENTER to continue"

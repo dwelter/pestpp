@@ -1,18 +1,15 @@
-CXX := g++
-FC := gfortran
-CFLAGS := -g -c -std=c++0x  -Wextra -Wall  -Wswitch-enum -Wunreachable-code
-FFLAGS := -g -c -cpp  -Wextra -Wall  -Wswitch-enum -Wunreachable-code
-INCLUDES := -I ../ -I ../yamr -I ../pestpp_common
-
-LIBS :=  -L /usr/lib64 -L/opt/local/lib64 -L ../common -L ../iopp -L ../yamr -L ../pestpp_common -L ../pest_routines  -L ../propack -lpestpp_com -lrunmanager  -liopp  -lcommon -lpest_routines -l propack -llapack -lblas  -lgfortran /opt/local/gcc-4.9.0/lib64/libquadmath.a
-EXE = fortran_test
+OUT := fortran_test
 OBJECTS	:= run_manager_fortran_test.o
  
-$(EXE): $(OBJECTS)
-	$(CXX) -static -static-libgcc -static-libgfortran  $(OBJECTS) $(LIBS) -o $(EXE)
+
+$(OUT): $(OBJECTS)
+	$(CXX) $(CFLAGS) $(LFLAGS) $(OBJECTS) $(LIBLDIR) $(LIBS) -o $(OUT)
 
 %.o: %.cpp
 	$(CXX) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@
+
+%.o: %.for
+	$(FC) $(FFLAGS) $(INCLUDES) $< -c $(input) -o $@
 
 %.o: %.f90
 	$(FC) $(FFLAGS) $(INCLUDES) $< -c $(input) -o $@

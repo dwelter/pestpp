@@ -1,8 +1,3 @@
-CXX := g++
-CC := g++
-CFLAGS := -g -c -std=c++0x -Wextra -Wall -pedantic -P -Wswitch-enum -Wunreachable-code
-INCLUDES := -I../ -I ../common -I../iopp
-
 OUT = libcommon.a
 OBJECTS	:= network_package.o \
            pest_error.o \

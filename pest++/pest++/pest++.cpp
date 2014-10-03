@@ -545,6 +545,9 @@ int main(int argc, char* argv[])
 				fout_rec << e.what() << endl;
 				cout << "WARNING: super parameter run failed.  Switching to base parameters" << endl << endl;
 				fout_rec << "WARNING: super parameter run failed.  Switching to base parameters" << endl << endl;
+				ofstream &fout_restart = file_manager.get_ofstream("rst");
+				RestartController::write_start_failed_super(fout_restart);
+				restart_ctl.get_restart_option() = RestartController::RestartOption::NONE;
 			}
 		}
 		cout << endl;

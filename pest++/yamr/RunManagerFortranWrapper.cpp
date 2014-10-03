@@ -232,7 +232,7 @@ int rmif_get_run_with_info_(int *run_id, double *parameter_data, int *npar, doub
 
 
 
-int rmfi_delete_()
+int rmif_delete_()
 {
 	int err = 0;
 	try {

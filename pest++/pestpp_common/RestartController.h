@@ -15,6 +15,7 @@ public:
 	enum class RestartOption {NONE, REUSE_JACOBIAN, RESUME_NEW_ITERATION, RESUME_JACOBIAN_RUNS, RESUME_UPGRADE_RUNS};
 	enum class IterationType{BASE, SUPER};
 	RestartController(void);
+	static void write_start_failed_super(std::ostream &fout);
 	static void write_start_iteration(std::ostream &fout, const SVDSolver &svd_solver, int _iter_num, int _global_iter_num);
 	static void write_start_parameters_updated(std::ostream &fout, const std::string &parameter_filename);
 	static void write_finish_parameters_updated(std::ostream &fout, const std::string &parameter_filename);
