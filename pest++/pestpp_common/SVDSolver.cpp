@@ -98,7 +98,7 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 
 	for (int iter_num = 1; iter_num <= max_iter && !terminate_local_iteration; ++iter_num)
 	{
-
+		ModelRun prev_run(best_upgrade_run);
 		//only processed when debugging is turned on
 		int global_iter_num = termination_ctl.get_iteration_number() + 1;
 		int nruns_start_iter = run_manager.get_total_runs();
@@ -146,21 +146,19 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 			}
 		}
 
-		if (!der_forgive)
 		{
 			const set<string> &failed_parameter_runs = jacobian.get_failed_parameter_names();
 			if (!failed_parameter_runs.empty())
 			{
-				cout << "  The runs for the following parameters failed while computing the jacobian:" << endl;
-				os << "  The runs for the following parameters failed while computing the jacobian:" << endl;
-				for (const auto &ipar : failed_parameter_runs)
-				{
-					cout << "     " << ipar << endl;
-					os << "     " << ipar << endl;
-				}
+				os << endl;
+				jacobian.report_errors(os);
+				os << endl;
+				cout << endl;
+				jacobian.report_errors(cout);
+				cout << endl;
 				os.flush();
 				cout.flush();
-				exit(0);
+				if (!der_forgive) exit(0);
 			}
 		}
 
@@ -229,6 +227,7 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 			save_nextjac = true;
 		}
 		os << endl << endl;
+		//iteration_update_and_report(os, prev_run, best_upgrade_run, termination_ctl, run_manager);
 		if (termination_ctl.check_last_iteration()){
 			break;
 		}
@@ -758,13 +757,6 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 		// write out report for starting phi
 		map<string, double> phi_report = obj_func->phi_report(base_run.get_obs(), base_run.get_ctl_pars(), *regul_scheme_ptr);
 		output_file_writer.phi_report(os, termination_ctl.get_iteration_number() + 1, run_manager.get_total_runs(), phi_report, regul_scheme_ptr->get_weight());
-		// write failed jacobian parameters out
-		if (failed_jac_pars.size() > 0)
-		{
-			os << endl;
-			jacobian.report_errors(os);
-			os << endl;
-		}
 
 		//Build model runs
 		run_manager.reinitialize(file_manager.build_filename("rnu"));

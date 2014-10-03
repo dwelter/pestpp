@@ -82,7 +82,7 @@ public:
 	virtual const set<string>& get_failed_parameter_names() const;
 	virtual long get_nonzero() const { return matrix.nonZeros();}
 	virtual long get_size() const { return matrix.size(); }
-	virtual void report_errors(std::ostream &fout) {}
+	virtual void report_errors(std::ostream &fout);
 	virtual void remove_cols(std::set<string> &rm_parameter_names);
 	virtual void add_cols(set<string> &new_pars_names);
 	virtual void transform(const ParamTransformSeq &par_trans, void(ParamTransformSeq::*meth_prt)(Jacobian &jac) const);

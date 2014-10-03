@@ -196,6 +196,6 @@ int main(int argc, char* argv[])
 			cerr << endl;
 			cerr.flush();
 		}
-		fin_results.close();
 	}
+	fin_results.close();
 }

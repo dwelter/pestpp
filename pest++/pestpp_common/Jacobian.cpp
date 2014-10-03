@@ -20,6 +20,7 @@
 #include <cstdlib>
 #include <vector>
 #include <fstream>
+#include <iomanip>
 #include "Jacobian.h"
 #include "Transformable.h"
 #include "ParamTransformSeq.h"
@@ -803,3 +804,20 @@ void Jacobian::read(const string &filename)
 	fin.close();
 }
 
+void Jacobian::report_errors(std::ostream &fout)
+{
+	if (failed_parameter_names.size() > 0)
+	{
+		fout << "    Parameters whose perturbation runs failed while computing jacobian" << endl;
+		fout << "      Parameter     Failed" << endl;
+		fout << "        Name        Value" << endl;
+		fout << "      ----------  ------------" << endl;
+
+		for (const auto & ipar : failed_parameter_names)
+		{
+			fout << right;
+			fout << "  " << setw(12) << ipar;
+		}
+	}
+
+}

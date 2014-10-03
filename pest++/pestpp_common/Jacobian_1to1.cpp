@@ -371,8 +371,6 @@ void Jacobian_1to1::report_errors(std::ostream &fout)
 		fout << endl;
 	}
 
-	failed_ctl_parameters.insert("failed1", 4.312321);
-	failed_ctl_parameters.insert("failed2", 5.2321);
 	if (failed_ctl_parameters.size() > 0)
 	{
 		fout << "    Parameters whose perturbation runs failed while computing jacobian" << endl;

@@ -99,6 +99,7 @@ bool TerminationController::process_iteration(const PhiComponets &phi_comp, doub
 		sort(lowest_phi.begin(), lowest_phi.end());
 	}
 
+
 	// Check maximum relative parameter change
 	if (abs(relpar) < relparstp) {
 		++nrelpar_count;
@@ -166,6 +167,7 @@ void TerminationController::termination_summary(std::ostream &fout)
 	{
 		fout << "  NPHISTP lowest regularization PHI componets:" << endl;
 	}
+
 	for (const auto &it : lowest_phi)
 	{
 		fout << "        " << it << endl;
@@ -229,6 +231,7 @@ void  TerminationController::read_state(const std::string &line)
 		}
 		else if (line_type == "TERMINATION_INFO_3")
 		{
+			lowest_phi.clear();
 			for (int i=1; i<tokens.size(); ++i)
 			{
 				double val = convert_cp<double>(tokens[1]);

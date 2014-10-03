@@ -619,7 +619,7 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 	}
 
 	os << endl;
-	iteration_update_and_report(os, base_run, best_upgrade_run, termination_ctl, run_manager);
+	//iteration_update_and_report(os, base_run, best_upgrade_run, termination_ctl, run_manager);
 	return best_upgrade_run;
 }
 
