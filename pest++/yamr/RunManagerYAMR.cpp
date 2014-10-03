@@ -730,7 +730,7 @@ void RunManagerYAMR::process_message(int i_sock)
 			report("lost connection to slave: " + sock_name[0] + "$" + slave_info.get_work_dir(i_sock),false);
 		}
 		close_slave(i_sock);
-		cout << setw(7) << completed_runs.size() << " | " << setw(7) << slave_info.size() << " runs completed | number of slaves\r" << flush;
+		cout << setw(7) << model_runs_done << " runs complete " << setw(7) << slave_info.size() << " slaves initialized\r" << flush;
 	}
 	else if (net_pack.get_type() == NetPackage::PackType::RUNDIR)
 	{
