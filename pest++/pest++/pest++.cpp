@@ -169,7 +169,8 @@ int main(int argc, char* argv[])
 			socket_str = next_item;
 		}
 
-		string filename = get_filename(complete_path);
+		//string filename = get_filename(complete_path);
+		string filename = complete_path;
 		filename = remove_file_ext(filename); // remove .pst extension
 		//string pathname = get_pathname(complete_path);
 		//if (pathname.empty()) pathname = ".";
