@@ -229,8 +229,8 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs,NetPackage &net_pac
 	std::vector<double> obs_vec;
 	bool isDouble = true;
 	bool forceRadix = true;
-	TemplateFiles tpl_files(isDouble, forceRadix, tplfile_vec, inpfile_vec, par_name_vec);
-	InstructionFiles ins_files(insfile_vec, outfile_vec);	
+	//TemplateFiles tpl_files(isDouble, forceRadix, tplfile_vec, inpfile_vec, par_name_vec);
+	//InstructionFiles ins_files(insfile_vec, outfile_vec);	
 	thread_flag f_terminate(false);
 	thread_flag f_finished(false);
 	try 
@@ -493,8 +493,8 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs)
 	std::vector<double> obs_vec;
 	bool isDouble = true;
 	bool forceRadix = true;
-	TemplateFiles tpl_files(isDouble, forceRadix, tplfile_vec, inpfile_vec, par_name_vec);
-	InstructionFiles ins_files(insfile_vec, outfile_vec);
+	//TemplateFiles tpl_files(isDouble, forceRadix, tplfile_vec, inpfile_vec, par_name_vec);
+	//InstructionFiles ins_files(insfile_vec, outfile_vec);
 	thread_flag terminate(false);
 	thread_flag finished(false);
 	try
@@ -698,7 +698,7 @@ void YAMRSlave::start(const string &host, const string &port)
 			try
 			{
 				check_io();
-				check_par_obs();
+				//check_par_obs();
 			}
 			catch (exception &e)
 			{

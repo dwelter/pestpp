@@ -126,8 +126,8 @@ void RunManagerSerial::run()
 	stringstream message;		
 	bool isDouble = true;
 	bool forceRadix = true;
-	TemplateFiles tpl_files(isDouble, forceRadix, tplfile_vec, inpfile_vec, par_name_vec);
-	InstructionFiles ins_files(insfile_vec, outfile_vec);
+	//TemplateFiles tpl_files(isDouble, forceRadix, tplfile_vec, inpfile_vec, par_name_vec);
+	//InstructionFiles ins_files(insfile_vec, outfile_vec);
 	std::vector<double> obs_vec;
 	// This is necessary to support restart as some run many already be complete
 	vector<int> run_id_vec;

@@ -4,7 +4,7 @@ import socket
 import subprocess as sp
 
 #BENCHMARK_DIRS = ["3pg","10par_xsec","box","henry","kirishima","stor"]#,"tidal"]
-BENCHMARK_DIRS = ["10par_xsec","henry","kirishima","stor"]
+BENCHMARK_DIRS = ["10par_xsec"]#,"henry","kirishima","stor"]
 NSLAVES = 4
 BEOPEST_EXE = os.path.join("exe","beopest.exe")
 PSTNAME = "pest.pst"
