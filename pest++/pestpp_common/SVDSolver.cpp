@@ -98,7 +98,7 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 
 	for (int iter_num = 1; iter_num <= max_iter && !terminate_local_iteration; ++iter_num)
 	{
-		ModelRun prev_run(best_upgrade_run);
+		
 		//only processed when debugging is turned on
 		int global_iter_num = termination_ctl.get_iteration_number() + 1;
 		int nruns_start_iter = run_manager.get_total_runs();
@@ -161,7 +161,7 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 				if (!der_forgive) exit(0);
 			}
 		}
-
+		ModelRun prev_run(best_upgrade_run);
 		bool upgrade_start = (restart_controller.get_restart_option() == RestartController::RestartOption::RESUME_UPGRADE_RUNS);
 		best_upgrade_run = iteration_upgrd(run_manager, termination_ctl, best_upgrade_run, upgrade_start);
 		restart_controller.get_restart_option() = RestartController::RestartOption::NONE;
@@ -227,7 +227,7 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 			save_nextjac = true;
 		}
 		os << endl << endl;
-		//iteration_update_and_report(os, prev_run, best_upgrade_run, termination_ctl, run_manager);
+		iteration_update_and_report(os, prev_run, best_upgrade_run, termination_ctl, run_manager);
 		if (termination_ctl.check_last_iteration()){
 			break;
 		}
@@ -938,7 +938,7 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 
 	cout << endl;
 	os << endl;
-	iteration_update_and_report(os, base_run, best_upgrade_run, termination_ctl, run_manager);
+	//iteration_update_and_report(os, base_run, best_upgrade_run, termination_ctl, run_manager);
 	return best_upgrade_run;
 }
 
