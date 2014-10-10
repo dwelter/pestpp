@@ -98,7 +98,6 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 
 	for (int iter_num = 1; iter_num <= max_iter && !terminate_local_iteration; ++iter_num)
 	{
-		
 		//only processed when debugging is turned on
 		int global_iter_num = termination_ctl.get_iteration_number() + 1;
 		int nruns_start_iter = run_manager.get_total_runs();
@@ -144,7 +143,7 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 				iteration_jac(run_manager, termination_ctl, best_upgrade_run, false, restart_runs);
 				if (restart_runs) restart_controller.get_restart_option() = RestartController::RestartOption::NONE;
 			}
-		}
+		}	
 
 		{
 			const set<string> &failed_parameter_runs = jacobian.get_failed_parameter_names();
@@ -161,11 +160,12 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 				if (!der_forgive) exit(0);
 			}
 		}
-		ModelRun prev_run(best_upgrade_run);
 		bool upgrade_start = (restart_controller.get_restart_option() == RestartController::RestartOption::RESUME_UPGRADE_RUNS);
 		best_upgrade_run = iteration_upgrd(run_manager, termination_ctl, best_upgrade_run, upgrade_start);
 		restart_controller.get_restart_option() = RestartController::RestartOption::NONE;
-
+		// This must be located after the call to iteration_upgrd.  As   iteration_upgrd will update the base run
+		//observations when performing a restart
+		ModelRun prev_run(best_upgrade_run);
 
 		int nruns_end_iter = run_manager.get_total_runs();
 		os << endl;
