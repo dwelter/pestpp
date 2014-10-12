@@ -161,11 +161,11 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 			}
 		}
 		bool upgrade_start = (restart_controller.get_restart_option() == RestartController::RestartOption::RESUME_UPGRADE_RUNS);
-		best_upgrade_run = iteration_upgrd(run_manager, termination_ctl, best_upgrade_run, upgrade_start);
-		restart_controller.get_restart_option() = RestartController::RestartOption::NONE;
-		// This must be located after the call to iteration_upgrd.  As   iteration_upgrd will update the base run
+		// This must be located before the call to iteration_upgrd.  As teration_upgrd will update the base run
 		//observations when performing a restart
 		ModelRun prev_run(best_upgrade_run);
+		best_upgrade_run = iteration_upgrd(run_manager, termination_ctl, prev_run, upgrade_start);
+		restart_controller.get_restart_option() = RestartController::RestartOption::NONE;
 
 		int nruns_end_iter = run_manager.get_total_runs();
 		os << endl;
