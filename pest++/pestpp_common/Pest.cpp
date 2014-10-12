@@ -214,6 +214,14 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 			}
 			else if (sec_lnum == 6)
 			{
+				// remove text arguements from the line as these can be specified out of order
+				// and PEST++ does not use them
+				set<string> remove_tags = { "aui", "auid", "noaui", "senreuse", "nsenreuse", "boundscale", "noboundscale" };
+				auto end_iter = std::remove_if(tokens.begin(), tokens.end(),
+					[&remove_tags](string &str)->bool{return (remove_tags.find(upper_cp(str)) != remove_tags.end() 
+					|| remove_tags.find(lower_cp(str)) != remove_tags.end()); });
+				tokens.resize(std::distance(tokens.begin(), end_iter));
+
 				convert_ip(tokens[0], control_info.phiredswh);
 				if (tokens.size() >= 2) {
 					convert_ip(tokens[1], control_info.noptswitch);
