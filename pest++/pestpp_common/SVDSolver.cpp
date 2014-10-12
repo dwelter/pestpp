@@ -185,6 +185,31 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 		//observations when performing a restart
 		ModelRun prev_run(best_upgrade_run);
 		best_upgrade_run = iteration_upgrd(run_manager, termination_ctl, prev_run, upgrade_start);
+
+		// reload best parameters and set flag to switch to central derivatives next iteration
+		double cur_phi = prev_run.get_phi(*regul_scheme_ptr);
+		double best_phi = best_upgrade_run.get_phi(*regul_scheme_ptr);
+
+		cout << endl << "  ...Lambda testing complete for iteration " << termination_ctl.get_iteration_number() + 1 << endl;
+		cout << "    starting phi = " << cur_phi << ";  ending phi = " << best_phi <<
+			"  (" << best_phi / cur_phi * 100 << "% of starting phi)" << endl;
+
+		if (!splitswh_flag && phiredswh_flag && cur_phi != 0 &&
+			cur_phi / best_phi >= ctl_info->splitswh)
+		{
+			splitswh_flag = true;
+			os << endl << "    Switching to split threshold derivatives" << endl << endl;
+			cout << endl << "  Switching to split threshold derivatives" << endl << endl;
+		}
+
+		if (cur_phi != 0 && !phiredswh_flag &&
+			termination_ctl.get_iteration_number() + 1 > ctl_info->noptswitch &&
+			(cur_phi - best_phi) / cur_phi < ctl_info->phiredswh)
+		{
+			phiredswh_flag = true;
+			os << endl << "      Switching to central derivatives:" << endl;
+			cout << endl << "    Switching to central derivatives:" << endl;
+		}
 		restart_controller.get_restart_option() = RestartController::RestartOption::NONE;
 
 		int nruns_end_iter = run_manager.get_total_runs();
@@ -248,6 +273,7 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 		}
 		os << endl << endl;
 		iteration_update_and_report(os, prev_run, best_upgrade_run, termination_ctl, run_manager);
+
 		if (termination_ctl.check_last_iteration()){
 			break;
 		}
@@ -915,33 +941,6 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 	// clean up run_manager memory
 	run_manager.free_memory();
 
-	// reload best parameters and set flag to switch to central derivatives next iteration
-	double cur_phi = base_run.get_phi(*regul_scheme_ptr);
-	double best_phi = best_upgrade_run.get_phi(*regul_scheme_ptr);
-
-	cout << endl << "  ...Lambda testing complete for iteration " << termination_ctl.get_iteration_number() + 1 << endl;
-	cout << "    starting phi = " << cur_phi << ";  ending phi = " << best_phi <<
-		"  (" << best_phi / cur_phi * 100 << "% of starting phi)" << endl;
-
-	if (!splitswh_flag && phiredswh_flag && cur_phi != 0 &&
-		cur_phi / best_phi >= ctl_info->splitswh)
-	{
-		splitswh_flag = true;
-		os << endl << "    Switching to split threshold derivatives" << endl << endl;
-		cout << endl << "  Switching to split threshold derivatives" << endl << endl;
-	}
-
-	if (cur_phi != 0 && !phiredswh_flag &&
-		termination_ctl.get_iteration_number() + 1 > ctl_info->noptswitch &&
-		(cur_phi - best_phi) / cur_phi < ctl_info->phiredswh)
-	{
-		phiredswh_flag = true;
-		os << endl << "      Switching to central derivatives:" << endl;
-		cout << endl << "    Switching to central derivatives:" << endl;
-	}
-
-	cout << endl;
-	//iteration_update_and_report(os, base_run, best_upgrade_run, termination_ctl, run_manager);
 	return best_upgrade_run;
 }
 
