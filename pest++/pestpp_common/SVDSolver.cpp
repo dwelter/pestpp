@@ -107,6 +107,13 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 		debug_msg("Iteration Number");
 		debug_print(global_iter_num);
 
+		output_file_writer.iteration_report(cout, global_iter_num, run_manager.get_total_runs(), get_description(), svd_package->description, matrix_inv);
+
+		if (restart_controller.get_restart_option() == RestartController::RestartOption::NONE)
+		{
+			output_file_writer.iteration_report(os, global_iter_num, run_manager.get_total_runs(), get_description(), svd_package->description, matrix_inv);
+		}
+
 		if (restart_controller.get_restart_option() != RestartController::RestartOption::RESUME_UPGRADE_RUNS)
 		{
 			//
@@ -120,9 +127,6 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 				*(par_transform.get_scale_ptr()));
 			file_manager.close_file("parb");
 			RestartController::write_finish_parameters_updated(fout_restart, file_manager.build_filename("parb", false));
-
-			output_file_writer.iteration_report(os, global_iter_num, run_manager.get_total_runs(), get_description(), svd_package->description, matrix_inv);
-			output_file_writer.iteration_report(cout, global_iter_num, run_manager.get_total_runs(), get_description(), svd_package->description, matrix_inv);
 
 			// write header for SVD file
 			output_file_writer.write_svd_iteration(global_iter_num);
@@ -143,6 +147,17 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 				iteration_jac(run_manager, termination_ctl, best_upgrade_run, false, restart_runs);
 				if (restart_runs) restart_controller.get_restart_option() = RestartController::RestartOption::NONE;
 			}
+			// write out report for starting phi
+			map<string, double> phi_report = obj_func->phi_report(best_upgrade_run.get_obs(), best_upgrade_run.get_ctl_pars(), *regul_scheme_ptr);
+			output_file_writer.phi_report(os, termination_ctl.get_iteration_number() + 1, run_manager.get_total_runs(), phi_report, regul_scheme_ptr->get_weight());
+			//print out number of zero terms in jacobian
+			long jac_num_nonzero = jacobian.get_nonzero();
+			long jac_num_total = jacobian.get_size();
+			long jac_num_zero = jac_num_total - jac_num_nonzero;
+			streamsize n_prec = os.precision(2);
+			os << "    Number of terms in the jacobian equal to zero: " << jac_num_zero << " / " << jac_num_total
+				<< " (" << double(jac_num_zero) / double(jac_num_total) * 100 << "%)" << endl << endl;
+			os.precision(n_prec);
 		}	
 
 		{
@@ -160,6 +175,11 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 				if (!der_forgive) exit(0);
 			}
 		}
+
+		cout << endl;
+		cout << "  computing upgrade vectors... " << endl;
+		cout.flush();
+
 		bool upgrade_start = (restart_controller.get_restart_option() == RestartController::RestartOption::RESUME_UPGRADE_RUNS);
 		// This must be located before the call to iteration_upgrd.  As teration_upgrd will update the base run
 		//observations when performing a restart
@@ -754,18 +774,10 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 					base_run_active_ctl_par, frozen_active_ctl_pars);
 			}
 		}
-		// write out report for starting phi
-		map<string, double> phi_report = obj_func->phi_report(base_run.get_obs(), base_run.get_ctl_pars(), *regul_scheme_ptr);
-		output_file_writer.phi_report(os, termination_ctl.get_iteration_number() + 1, run_manager.get_total_runs(), phi_report, regul_scheme_ptr->get_weight());
 
 		//Build model runs
 		run_manager.reinitialize(file_manager.build_filename("rnu"));
-		cout << endl;
-		cout << "  computing upgrade vectors... " << endl;
-		cout.flush();
-		os << endl;
-		os << "  computing upgrade vectors... " << endl;
-		os.flush();
+		
 		// Save base run as first model run so it is eassily accessible
 		Parameters base_model_pars = par_transform.ctl2model_cp(base_run.get_ctl_pars());
 		int run_id = run_manager.add_run(base_model_pars, "base_run");
@@ -824,14 +836,6 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 
 	Parameters base_run_active_ctl_par_tmp = par_transform.ctl2active_ctl_cp(base_run.get_ctl_pars());
 	ModelRun best_upgrade_run(base_run);
-
-	long jac_num_nonzero = jacobian.get_nonzero();
-	long jac_num_total = jacobian.get_size();
-	long jac_num_zero = jac_num_total - jac_num_nonzero;
-	streamsize n_prec = os.precision(2);
-	os << "    Number of terms in the jacobian equal to zero: " << jac_num_zero << " / " << jac_num_total
-		<< " (" << double(jac_num_zero) / double(jac_num_total) * 100 << "%)" << endl << endl;
-	os.precision(n_prec);
 
 	os << "    Summary of upgrade runs:" << endl;
 
@@ -937,7 +941,6 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 	}
 
 	cout << endl;
-	os << endl;
 	//iteration_update_and_report(os, base_run, best_upgrade_run, termination_ctl, run_manager);
 	return best_upgrade_run;
 }

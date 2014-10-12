@@ -388,12 +388,6 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 	else
 	{
 		vector<string> obs_names_vec = base_run.get_obs_template().get_keys();
-		cout << endl;
-		cout << "  computing upgrade vectors... " << endl;
-		cout.flush();
-		os << endl;
-		os << "  computing upgrade vectors... " << endl;
-		os.flush();
 		performance_log->log_event("computing upgrade vectors");
 
 		// populate vectors with sorted observations (standard and prior info) and parameters
@@ -430,10 +424,6 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 					base_run_active_ctl_pars, frozen_active_ctl_pars);
 			}
 		}
-
-		// write out report for starting phi
-		map<string, double> phi_report = obj_func->phi_report(base_run.get_obs(), base_run.get_ctl_pars(), *regul_scheme_ptr);
-		output_file_writer.phi_report(os, termination_ctl.get_iteration_number() + 1, run_manager.get_total_runs(), phi_report, regul_scheme_ptr->get_weight());
 
 		vector<double> lambda_vec = base_lambda_vec;
 		lambda_vec.push_back(best_lambda);
@@ -479,7 +469,6 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 	}
 
 	cout << endl;
-	os << endl;
 
 	// make upgrade model runs
 	cout << "  performing upgrade vector model runs... ";
@@ -493,14 +482,6 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 	bool best_run_updated_flag = false;
 	Parameters base_run_active_ctl_par_tmp = par_transform.ctl2active_ctl_cp(base_run.get_ctl_pars());
 	ModelRun best_upgrade_run(base_run);
-	
-	long jac_num_nonzero = jacobian.get_nonzero();
-	long jac_num_total = jacobian.get_size();
-	long jac_num_zero = jac_num_total - jac_num_nonzero;
-	streamsize n_prec = os.precision(2);
-	os << "    Number of terms in the jacobian equal to zero: " << jac_num_zero << " / " << jac_num_total
-		<< " (" << double(jac_num_zero) / double(jac_num_total) * 100 << "%)" << endl << endl;
-	os.precision(n_prec);
 
 	os << "    Summary of upgrade runs:" << endl;
 	Parameters new_frozen_pars;
@@ -617,8 +598,6 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 		os << endl << "      Switching to central derivatives:" << endl;
 		cout << endl << "      Switching to central derivatives:" << endl;
 	}
-
-	os << endl;
 	//iteration_update_and_report(os, base_run, best_upgrade_run, termination_ctl, run_manager);
 	return best_upgrade_run;
 }
