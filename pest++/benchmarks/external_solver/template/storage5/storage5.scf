@@ -1,0 +1,14 @@
+ sCf 
+ * Control data 
+2
+1 1
+* sensan files
+storage5.csv
+storage5.obs
+* model command line
+storageD
+* model input/output
+input.tpl   input.dat
+output.ins  output.dat
+* genie host
+10.211.55.3:4010
