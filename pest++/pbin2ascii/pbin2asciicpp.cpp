@@ -18,6 +18,7 @@ along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
 
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <vector>
 #include <string>
@@ -25,31 +26,56 @@ along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 #include "RunStorage.h"
 #include "utilities.h"
 
+#ifdef ASCIIMATRIX
+	// show headers
+	#define ASCIIMATRIX_PAR_HEADERS
+	#define ASCIIMATRIX_RUN_HEADERS
+
+	#define EXPECTED_ARG_COUNT 3
+#else
+	#ifndef PARFILES
+		#define ASCII
+	#endif
+	#define EXPECTED_ARG_COUNT 4
+	#define GENERATE_INDIVIDUAL_FILES
+#endif
+
 using namespace std;
 
-void usage(ostream &fout)
+void usage(string exeName, ostream &fout)
 {
 	fout << "--------------------------------------------------------" << endl;
 	fout << "usage:" << endl << endl;
-	fout << "    pbin2ascii.exe ext_file  runs_file  par_prefix" << endl << endl;
-	fout << "    where:" << endl;
-	fout << "        ext_file:   name of the pest++ .ext file containing the name binary run file" << endl;
-	fout << "        runs_file:  name of file to be created with list of required runs" << endl;
-	fout << "        par_prefix: prefix used to create parameter files" << endl;
+	fout << " " << exeName << " ext_file  runs_file  par_prefix" << endl << endl;
+	fout << " where:" << endl;
+	fout << "  ext_file:   name of the pest++ .ext file containing the binary run file name" << endl;
+	fout << "  runs_file:  name of file to be created with list of required runs" << endl;
+	if(EXPECTED_ARG_COUNT > 3)
+	{
+		fout << "  par_prefix: prefix used to create parameter files" << endl;
+	}
 	fout << "--------------------------------------------------------" << endl;
 }
 
 int main(int argc, char* argv[])
 {
+	string exeName = argv[0];
+	exeName = exeName.substr(exeName.find_last_of("/\\") + 1);
+
 	string ext_filename = argv[1];
 	string out_filename = argv[2];
-	string base_par_filename = argv[3];
+	string base_par_filename;
+	if(EXPECTED_ARG_COUNT > 3)
+	{
+		base_par_filename = argv[3];
+	}
 
-	if (argc != 4)
+	if(argc != EXPECTED_ARG_COUNT)
 	{
 		cerr << "incorect number of command line arguements" << endl << endl;
-		usage(cerr);
-		throw PestError("Error: incorect number of command line arguements");
+		usage(exeName, cerr);
+		return 1;
+		//throw PestError("Error: incorect number of command line arguements");
 	}
 
 
@@ -64,7 +90,7 @@ int main(int argc, char* argv[])
 	{
 		cerr << "Error processing external run manager *.ext \"" << pbin_filename << "\"";
 		cerr << e.what() << endl;
-		usage(cerr);
+		usage(exeName, cerr);
 		throw(e);
 	}
 
@@ -78,7 +104,7 @@ int main(int argc, char* argv[])
 	{
 		cerr << "Error processing PEST++ binary file \"" << pbin_filename << "\"";
 		cerr << e.what() << endl;
-		usage(cerr);
+		usage(exeName, cerr);
 		throw(e);
 	}
 
@@ -95,6 +121,9 @@ int main(int argc, char* argv[])
 	double info_value;
 	vector<double> pars_vec;
 	vector<double> obs_vec;
+	bool headersPrinted = false;
+	int maxParNameLength = -1;
+
 	for (int i = 0; i < n_runs; ++i)
 	{
 		obs_vec.clear();
@@ -104,21 +133,76 @@ int main(int argc, char* argv[])
 		{
 			rs.get_run(i, pars_vec, obs_vec);
 
+#ifdef GENERATE_INDIVIDUAL_FILES
 			stringstream par_file_name;
 			par_file_name << base_par_filename << "_" << i << ".par";
 			ofstream fout_par;
 			fout_par.open(par_file_name.str());
+#endif
 			assert(par_name_vec.size() == pars_vec.size());
 			size_t n_par = par_name_vec.size();
+
+			if(maxParNameLength < 0)
+			{
+				maxParNameLength = 19;  //set the baseline
+				for(size_t ipar = 0; ipar < n_par; ++ipar)
+				{
+					maxParNameLength = (maxParNameLength < (int)par_name_vec[ipar].length()) ? (int)par_name_vec[ipar].length() : maxParNameLength;
+				}
+				maxParNameLength++;
+			}
+
+#ifdef PARFILES
+			fout_par << "single point" << endl;
+#endif
+#ifdef ASCIIMATRIX
+	#ifdef ASCIIMATRIX_PAR_HEADERS
+			if(!headersPrinted)
+			{
+				headersPrinted = true;
+		#ifdef ASCIIMATRIX_RUN_HEADERS
+				fout << setw(10) << left << "RUN";
+		#endif
+				for(size_t ipar = 0; ipar < n_par; ++ipar)
+				{
+					fout << setw(maxParNameLength) << par_name_vec[ipar] << " ";
+				}
+				fout << endl;
+			}
+	#endif
+	#ifdef ASCIIMATRIX_RUN_HEADERS
+			fout << setw(9) << left << i << " ";
+	#endif
+#endif
+
 			for (size_t ipar = 0; ipar < n_par; ++ipar)
 			{
-				fout_par << par_name_vec[ipar] << " ";
+#ifdef ASCII
+				fout_par << setw(maxParNameLength) << par_name_vec[ipar] << " ";
 				int prec = fout_par.precision(numeric_limits<double>::digits10 + 1);
-				fout_par << pars_vec[ipar] << endl;
 				fout_par.precision(prec);
+				fout_par << pars_vec[ipar] << endl;
+#else
+	#ifdef PARFILES
+				fout_par << setw(maxParNameLength) << par_name_vec[ipar] << " ";
+				fout_par << setprecision(16) << fixed << setw(20) << pars_vec[ipar];
+				fout_par << setprecision(2) << fixed << setw(7) << 1.0;				//scalar
+				fout_par << setprecision(2) << fixed << setw(7) << 0.0 << endl;		//offset
+	#else
+		#ifdef ASCIIMATRIX
+				fout << setprecision(16) << fixed << setw(20) << pars_vec[ipar] << " ";
+		#endif
+	#endif
+#endif
 			}
+#ifdef GENERATE_INDIVIDUAL_FILES
 			fout_par.close();
 			fout << i << " " << par_file_name.str() << endl;
+#else
+	#ifdef ASCIIMATRIX
+			fout << endl;
+	#endif
+#endif
 		}
 	}
 	fout.close();
