@@ -71,6 +71,7 @@ bool Jacobian_1to1::build_runs(ModelRun &init_model_run, vector<string> numeric_
 	Parameters new_derivative_pars;
 	bool success;
 	Parameters base_derivative_parameters = par_transform.numeric2active_ctl_cp(base_numeric_parameters);
+	Parameters base_model_parameters = par_transform.numeric2model_cp(base_numeric_parameters);
 	//Loop through derivative parameters and build the parameter sets necessary for computing the jacobian
 	for (auto &i_name : numeric_par_names)
 	{
@@ -84,19 +85,18 @@ bool Jacobian_1to1::build_runs(ModelRun &init_model_run, vector<string> numeric_
 			// update changed model parameters in model_parameters
 			for (const auto &par : tmp_del_numeric_par_vec)
 			{
-				Parameters org_pars;
 				Parameters new_pars;
-				org_pars.insert(make_pair(i_name, model_parameters.get_rec(i_name)));
 				new_pars.insert(make_pair(i_name, par));
 				par_transform.active_ctl2model_ip(new_pars);
 				for (auto &ipar : new_pars)
 				{
 					model_parameters[ipar.first] = ipar.second;
 				}
-				run_manager.add_run(model_parameters, i_name, par);
-				for (const auto &ipar : org_pars)
+				int id = run_manager.add_run(model_parameters, i_name, par);
+				//reset the perturbed parameters back to the values associated with the base condition
+				for (const auto &ipar : new_pars)
 				{
-					model_parameters[ipar.first] = ipar.second;
+					model_parameters[ipar.first] = base_model_parameters[ipar.first];
 				}
 			}
 		}
