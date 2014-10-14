@@ -162,7 +162,7 @@ void SlaveInfo::end_linpack(int sock_id)
 	linpack_time = std::chrono::system_clock::now() - it->second.start_time;
 }
 
-double SlaveInfo::get_duration_secs(int sock_id)
+double SlaveInfo::get_duration_sec(int sock_id)
 {
 	auto it = slave_info_map.find(sock_id);
 	assert(it != slave_info_map.end());	
@@ -170,7 +170,12 @@ double SlaveInfo::get_duration_secs(int sock_id)
 	return (double)std::chrono::duration_cast<std::chrono::milliseconds>(dt).count() / 1000.0;
 }
 
-double SlaveInfo::get_runtime_secs(int sock_id)
+double SlaveInfo::get_duration_minute(int sock_id)
+{
+	return this->get_duration_sec(sock_id) / 60.0;
+}
+
+double SlaveInfo::get_runtime_sec(int sock_id)
 {
 	auto it = slave_info_map.find(sock_id);
 	assert(it != slave_info_map.end());
@@ -185,6 +190,23 @@ double SlaveInfo::get_runtime_minute(int sock_id)
 	auto &run_time = it->second.run_time;
 	double run_minutes = std::chrono::duration_cast<std::chrono::milliseconds>(run_time).count() / 60000.0;
 	return run_minutes;
+}
+
+double SlaveInfo::get_global_runtime_minute()
+{
+	double global_runtime = 0;
+	double temp = 0;
+	int count = 0;
+	for (auto &si : slave_info_map)
+	{
+		temp = std::chrono::duration_cast<std::chrono::milliseconds>(si.second.run_time).count() / 60000.0;
+		if (temp > 0)
+		{
+			count++;
+			global_runtime += temp;
+		}
+	}
+	return global_runtime / (double)count;
 }
 
 double SlaveInfo::get_runtime(int sock_id)
@@ -353,6 +375,7 @@ void RunManagerYAMR::reinitialize(const std::string &_filename)
 	completed_runs.clear();
 	zombie_runs.clear();
 	failure_map.clear();
+	concurrent_map.clear();
 	RunManagerAbstract::reinitialize(_filename);
 	cur_group_id = NetPackage::get_new_group_id();
 }
@@ -498,7 +521,7 @@ void RunManagerYAMR::ping(int i_sock)
 	}
 	//check if it is time to ping again...
 	double duration = (double)slave_info.seconds_since_last_ping_time(i_sock);
-	double ping_time = max(double(PING_INTERVAL_SECS), slave_info.get_runtime_secs(i_sock));
+	double ping_time = max(double(PING_INTERVAL_SECS), slave_info.get_runtime_sec(i_sock));
 	if (duration >= ping_time)
 	{		
 		const char* data = "\0";
@@ -517,10 +540,9 @@ void RunManagerYAMR::ping(int i_sock)
 		}
 		else slave_info.set_ping(i_sock, true);
 #ifdef _DEBUG
-		report("ping sent to slave:" + sock_name[0] + "$" + slave_info.get_work_dir(i_sock), false);
+		//report("ping sent to slave:" + sock_name[0] + "$" + slave_info.get_work_dir(i_sock), false);
 #endif
 	}
-
 }
 
 void RunManagerYAMR::close_slave(int i_sock)
@@ -602,7 +624,7 @@ bool RunManagerYAMR::schedule_run(int run_id)
 			auto it_concur = concurrent_map.find(run_id);
 			if (it_concur != concurrent_map.end()) concur = it_concur->second;
 			stringstream ss;
-			ss << "Sending run " << run_id << " to: " << sock_name[0] << "$" << slave_info.get_work_dir(*it_sock) << "  (group id = " << cur_group_id << ", run id = " << run_id << ")";
+			ss << "Sending run " << run_id << " to: " << sock_name[0] << "$" << slave_info.get_work_dir(*it_sock) << "  (group id = " << cur_group_id << ", run id = " << run_id << ", concurrent runs = " << concur << ")";
 			report(ss.str(), false);
 			active_runs.insert(pair<int, YamrModelRun>(run_id, tmp_run));
 			//reset the last ping time so we don't ping immediately after run is started
@@ -635,11 +657,13 @@ void RunManagerYAMR::schedule_runs()
 
 	//check for overdue runs
 	double duration, avg_runtime;
-	for (auto it_active = active_runs.begin(); !slave_fd.empty() && it_active != active_runs.end();)
+	double global_avg_runtime = slave_info.get_global_runtime_minute();
+	for (auto it_active = active_runs.begin(); !slave_fd.empty() && it_active != active_runs.end();++it_active)
 	{		
 		int act_sock_id = it_active->second.get_socket();
-		duration = slave_info.get_duration_secs(act_sock_id);
-		avg_runtime = slave_info.get_runtime_secs(act_sock_id);	
+		duration = slave_info.get_duration_minute(act_sock_id);
+		avg_runtime = slave_info.get_runtime_minute(act_sock_id);
+		if (avg_runtime <= 0) avg_runtime = global_avg_runtime;
 		if (avg_runtime <= 0) avg_runtime = 1.0E+10;
 		if (duration > avg_runtime*PERCENT_OVERDUE_GIVEUP)
 		{
@@ -647,7 +671,7 @@ void RunManagerYAMR::schedule_runs()
 			int run_id = it_active->second.get_id();
 			vector<string> sock_name = w_getnameinfo_vec(act_id);
 			stringstream ss;
-			ss << "killing overdue run " << run_id << " (" << duration << "|" << avg_runtime << " seconds) on: " << sock_name[0] << "$" << slave_info.get_work_dir(act_sock_id);
+			ss << "killing overdue run " << run_id << " (" << duration << "|" << avg_runtime << " minutes) on: " << sock_name[0] << "$" << slave_info.get_work_dir(act_sock_id);
 			report(ss.str(), false);
 			NetPackage net_pack(NetPackage::PackType::REQ_KILL, 0, 0, "");
 			char data = '\0';
@@ -655,11 +679,11 @@ void RunManagerYAMR::schedule_runs()
 			if (err <= 0)
 			{
 				report("error sending kill request to slave:" + sock_name[0] + "$" + slave_info.get_work_dir(act_id), true);
-			}
-
+				close_slave(act_sock_id);
+			}				
 		}
-
-		if (duration > avg_runtime*PERCENT_OVERDUE_RESCHED)
+		
+		else if (duration > avg_runtime*PERCENT_OVERDUE_RESCHED)
 		{					
 			//check how many concurrent runs are going
 			int concur = 1;
@@ -675,7 +699,7 @@ void RunManagerYAMR::schedule_runs()
 				vector<string> sock_name = w_getnameinfo_vec(act_sock_id);
 				stringstream ss;
 				int run_id = it_active->second.get_id();
-				ss << "rescheduling overdue run " << run_id << " (" << duration << "|" << avg_runtime << " seconds) on: " << sock_name[0] << "$" << slave_info.get_work_dir(act_sock_id);
+				ss << "rescheduling overdue run " << run_id << " (" << duration << "|" << avg_runtime << " minutes) on: " << sock_name[0] << "$" << slave_info.get_work_dir(act_sock_id);
 				report(ss.str(), false);
 				bool success = schedule_run(run_id);
 				if (success)
@@ -690,17 +714,16 @@ void RunManagerYAMR::schedule_runs()
 				{
 					stringstream ss;
 					ss << "failed to schedule concurrent run for run id = " << run_id;
-					report(ss.str(), false);
-					++it_active;
+					report(ss.str(), false);				
 				}
 			}
 			else
 			{
 				//cout << "max concurrent runs for runid: " << it_active->second.get_id() << endl;
-				++it_active;
+				//++it_active;
 			}
 		}
-		else ++it_active;
+		//else ++it_active;
 
 	}
 }
@@ -730,7 +753,6 @@ void RunManagerYAMR::process_message(int i_sock)
 			report("lost connection to slave: " + sock_name[0] + "$" + slave_info.get_work_dir(i_sock),false);
 		}
 		close_slave(i_sock);
-		cout << setw(7) << model_runs_done << " runs complete " << setw(7) << slave_info.size() << " slaves initialized\r" << flush;
 	}
 	else if (net_pack.get_type() == NetPackage::PackType::RUNDIR)
 	{
@@ -759,21 +781,40 @@ void RunManagerYAMR::process_message(int i_sock)
 	else if (net_pack.get_type() == NetPackage::PackType::RUN_FINISH && net_pack.get_groud_id() != cur_group_id)
 	{		
 		// this is an old run that did not finish on time
-		// just ignore it		
+		// just ignore it
+		//should never have this situation with the threaded slave
+		int run_id = net_pack.get_run_id();
+		int group_id = net_pack.get_groud_id();
+		stringstream ss;
+		ss << "run " << run_id << " received from unexpected group id: " << group_id << ", should be group: " << cur_group_id;
+		throw PestError(ss.str());
 	}
 	else if (net_pack.get_type() == NetPackage::PackType::RUN_FINISH)
 	{
+		
 		int run_id = net_pack.get_run_id();
 		int group_id = net_pack.get_groud_id();
-		//check if this is a concurrent run - a successful finish means we are done with needing concurrent runs
-		//auto it_concur = concurrent_map.find(run_id);
-		//if (it_concur != concurrent_map.end()) concurrent_map.insert(pair<int, int>(run_id, 1000)); //make sure no other concurrent runs are started for this run
+		//check if this is a concurrent run - decrement
+		auto it_concur = concurrent_map.find(run_id);
+		int concur;
+		if (it_concur != concurrent_map.end())
+		{
+			concurrent_map[it_concur->first]--;
+			concur = concurrent_map[it_concur->first];
+		}
+		else
+		{
+			concur = 0;
+		}
+
 		//check if this was a zombie run
 		auto it_zombie = get_zombie_run_id(i_sock);
 		if (it_zombie != zombie_runs.end())
 		{
 			stringstream ss;
-			ss << "zombie run " << run_id << " finished on: " << sock_name[0] << "$" << slave_info.get_work_dir(i_sock) << "  (run time = " << slave_info.get_runtime_minute(i_sock) << " min, group id = " << group_id << ", run id = " << run_id << ")";
+			ss << "zombie run " << run_id << " finished on: " << sock_name[0] << "$" << slave_info.get_work_dir(i_sock) << 
+				"  (run time = " << slave_info.get_runtime_minute(i_sock) << " min, group id = " << group_id <<
+				", run id = " << run_id << " concurrent = " << concur << ")";
 			report(ss.str(), false);
 			zombie_runs.erase(it_zombie);
 		}
@@ -782,7 +823,9 @@ void RunManagerYAMR::process_message(int i_sock)
 			// keep track of model run time
 			slave_info.end_run(i_sock);
 			stringstream ss;
-			ss << "run " << run_id << " received from: " << sock_name[0] << "$" << slave_info.get_work_dir(i_sock) << "  (run time = " << slave_info.get_runtime_minute(i_sock) << " min, group id = " << group_id << ", run id = " << run_id << ")";
+			ss << "run " << run_id << " received from: " << sock_name[0] << "$" << slave_info.get_work_dir(i_sock) << 
+				"  (run time = " << slave_info.get_runtime_minute(i_sock) << " min, group id = " << group_id <<
+				", run id = " << run_id << " concurrent = " << concur << ")";
 			report(ss.str(), false);
 			process_model_run(i_sock, net_pack);
 		}
@@ -794,20 +837,29 @@ void RunManagerYAMR::process_message(int i_sock)
 		int group_id = net_pack.get_groud_id();
 		//check if this was a concurrent run - decrement
 		auto it_concur = concurrent_map.find(run_id);
-		if (it_concur != concurrent_map.end()) concurrent_map.insert(pair<int, int>(run_id, it_concur->second--));
+		int concur;
+		if (it_concur != concurrent_map.end())
+		{
+			concurrent_map[it_concur->first]--;
+			concur = concurrent_map[it_concur->first];
+		}
+		else
+		{
+			concur = 0;
+		}
 		// remove run from active queue and return it to the waiting queue
 		auto it_zombie = get_zombie_run_id(i_sock);
 		if (it_zombie != zombie_runs.end())
 		{
 			stringstream ss;
-			ss << "zombie run " << run_id << " killed on slave: " << sock_name[0] << "$" << slave_info.get_work_dir(i_sock) << "run id = " << run_id;
+			ss << "zombie run " << run_id << " killed on slave: " << sock_name[0] << "$" << slave_info.get_work_dir(i_sock) << ", run id = " << run_id << " concurrent = " << concur;
 			report(ss.str(),false);
 			zombie_runs.erase(it_zombie);
 		}
 		else
 		{
 			stringstream ss;
-			ss << "Run " << run_id << " failed on slave:" << sock_name[0] << "$" << slave_info.get_work_dir(i_sock) << "  (group id = " << group_id << ", run id = " << run_id << ") ";
+			ss << "Run " << run_id << " failed on slave:" << sock_name[0] << "$" << slave_info.get_work_dir(i_sock) << "  (group id = " << group_id << ", run id = " << run_id << ", concurrent = " << concur << ") ";
 			report(ss.str(), true);
 			file_stor.update_run_failed(run_id);
 			failure_map.insert(make_pair(run_id, i_sock));
@@ -824,7 +876,7 @@ void RunManagerYAMR::process_message(int i_sock)
 	else if (net_pack.get_type() == NetPackage::PackType::PING)
 	{
 #ifdef _DEBUG
-		report("ping received from slave" + sock_name[0] + "$" + slave_info.get_work_dir(i_sock),false);
+		//report("ping received from slave" + sock_name[0] + "$" + slave_info.get_work_dir(i_sock),false);
 #endif
 	}
 	else if (net_pack.get_type() == NetPackage::PackType::IO_ERROR)
@@ -871,7 +923,7 @@ void RunManagerYAMR::process_message(int i_sock)
 		}
 	}
 	active_runs.erase(range_pair.first, range_pair.second);
-	//TODO: kill all zombies
+	//kill all zombies
 	for (auto it_zombie = zombie_runs.begin(); it_zombie != zombie_runs.end(); ++it_zombie)
 	{
 		if (it_zombie->second.get_id() == run_id)
