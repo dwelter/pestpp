@@ -417,6 +417,7 @@ void RunManagerYAMR::run()
 	stringstream message;
 	NetPackage net_pack;
 	model_runs_done = 0;
+	model_runs_failed = 0;
 	cout << "    running model " << waiting_runs.size() << " times" << endl;
 	f_rmr << "running model " << waiting_runs.size() << " times" << endl;
 	if(slave_info.size() == 0) // first entry is the listener, slave apper after this
@@ -435,7 +436,7 @@ void RunManagerYAMR::run()
 		listen();		
 	}
 	total_runs += model_runs_done;
-	cout << setw(7) << model_runs_done << " runs complete " << setw(7) << slave_info.size() << " slaves initialized\r" << flush;
+	echo();
 	//kill any remaining active runs
 	message.str("");
 	message  << "    " << completed_runs.size() << " runs complete";
@@ -570,7 +571,7 @@ void RunManagerYAMR::close_slave(int i_sock)
 	}
 	stringstream ss;
 	
-	ss << "closed connection to slave: " << sock_name[0] << "$" << sock_name[1];
+	ss << "closed connection to slave: " << sock_name[0] << ":" << sock_name[1] << "; number of slaves: " << slave_info.size();
 	report(ss.str(), false);
 	//cout << "---closed slave connection to slave " << sock_name[0] << "$" << sock_name[1] << "---" << endl;
 }
@@ -620,9 +621,19 @@ bool RunManagerYAMR::schedule_run(int run_id)
 		{
 			//start run timer
 			slave_info.start_timer(*it_sock);
-			int concur = 1;
+			int concur;
 			auto it_concur = concurrent_map.find(run_id);
-			if (it_concur != concurrent_map.end()) concur = it_concur->second;
+			if (it_concur != concurrent_map.end())
+			{
+				concurrent_map[it_concur->first]++;
+				concur = it_concur->second;
+			}
+			else
+			{
+				concur = 1;
+				concurrent_map.insert(pair<int, int>(run_id, concur));				
+			}
+
 			stringstream ss;
 			ss << "Sending run " << run_id << " to: " << sock_name[0] << "$" << slave_info.get_work_dir(*it_sock) << "  (group id = " << cur_group_id << ", run id = " << run_id << ", concurrent runs = " << concur << ")";
 			report(ss.str(), false);
@@ -658,88 +669,94 @@ void RunManagerYAMR::schedule_runs()
 	//check for overdue runs
 	double duration, avg_runtime;
 	double global_avg_runtime = slave_info.get_global_runtime_minute();
+	bool should_schedule = false;
 	for (auto it_active = active_runs.begin(); !slave_fd.empty() && it_active != active_runs.end();++it_active)
 	{		
+		should_schedule = false;
 		int act_sock_id = it_active->second.get_socket();
+		int run_id = it_active->second.get_id();
+		unordered_map<int, int>::iterator it_concur;
 		duration = slave_info.get_duration_minute(act_sock_id);
 		avg_runtime = slave_info.get_runtime_minute(act_sock_id);
 		if (avg_runtime <= 0) avg_runtime = global_avg_runtime;
 		if (avg_runtime <= 0) avg_runtime = 1.0E+10;
 		if (duration > avg_runtime*PERCENT_OVERDUE_GIVEUP)
 		{
-			int act_id = it_active->second.get_socket();
-			int run_id = it_active->second.get_id();
-			vector<string> sock_name = w_getnameinfo_vec(act_id);
+			vector<string> sock_name = w_getnameinfo_vec(act_sock_id);
 			stringstream ss;
-			ss << "killing overdue run " << run_id << " (" << duration << "|" << avg_runtime << " minutes) on: " << sock_name[0] << "$" << slave_info.get_work_dir(act_sock_id);
-			report(ss.str(), false);
+			ss << "killing overdue run " << run_id << " (" << duration << "|" << avg_runtime <<
+				" minutes) on: " << sock_name[0] << "$" << slave_info.get_work_dir(act_sock_id);
+ 			report(ss.str(), false);
 			NetPackage net_pack(NetPackage::PackType::REQ_KILL, 0, 0, "");
 			char data = '\0';
-			int err = net_pack.send(act_id, &data, sizeof(data));
+			int err = net_pack.send(act_sock_id, &data, sizeof(data));
 			if (err <= 0)
 			{
-				report("error sending kill request to slave:" + sock_name[0] + "$" + slave_info.get_work_dir(act_id), true);
+				report("error sending kill request to slave:" + sock_name[0] + "$" +
+					slave_info.get_work_dir(act_sock_id), true);
 				close_slave(act_sock_id);
-			}				
+			}			
 		}
-		
-		else if (duration > avg_runtime*PERCENT_OVERDUE_RESCHED)
-		{					
-			//check how many concurrent runs are going
-			int concur = 1;
-			unordered_map<int, int>::iterator it_concur = concurrent_map.find(it_active->first);
-			if (it_concur == concurrent_map.end())
-			{
-				concurrent_map.insert(pair<int, int>(it_active->first, 1));
-			}
-			else concur = it_concur->second;
-			if (concur < MAX_CONCURRENT_RUNS)
-			{
+		if (duration > avg_runtime*PERCENT_OVERDUE_RESCHED)
+		{
+			//check how many concurrent runs are going			
+			it_concur = concurrent_map.find(it_active->first);
+			if (it_concur == concurrent_map.end()) throw PestError("active run id not found in concurrent map");
+			if (it_concur->second < MAX_CONCURRENT_RUNS) should_schedule = true;			
+		}
 
-				vector<string> sock_name = w_getnameinfo_vec(act_sock_id);
+		if (should_schedule)
+		{
+			vector<string> sock_name = w_getnameinfo_vec(act_sock_id);
+			stringstream ss;
+			int run_id = it_active->second.get_id();
+			ss << "rescheduling overdue run " << run_id << " (" << duration << "|" <<
+				avg_runtime << " minutes) on: " << sock_name[0] << "$" << 
+				slave_info.get_work_dir(act_sock_id);
+			report(ss.str(), false);
+			bool success = schedule_run(run_id);
+			if (success)
+			{
 				stringstream ss;
-				int run_id = it_active->second.get_id();
-				ss << "rescheduling overdue run " << run_id << " (" << duration << "|" << avg_runtime << " minutes) on: " << sock_name[0] << "$" << slave_info.get_work_dir(act_sock_id);
+				ss << concurrent_map[it_concur->first] << " concurrent runs for run id = " << run_id;
 				report(ss.str(), false);
-				bool success = schedule_run(run_id);
-				if (success)
-				{
-					concur++;
-					concurrent_map[it_active->first]++;
-					stringstream ss;
-					ss << concur << " concurrent runs for run id = " << run_id;
- 					report(ss.str(), false);
-				}
-				else
-				{
-					stringstream ss;
-					ss << "failed to schedule concurrent run for run id = " << run_id;
-					report(ss.str(), false);				
-				}
 			}
 			else
 			{
-				//cout << "max concurrent runs for runid: " << it_active->second.get_id() << endl;
-				//++it_active;
+				stringstream ss;
+				ss << "failed to schedule concurrent run for run id = " << run_id;
+				report(ss.str(), false);
 			}
 		}
-		//else ++it_active;
-
 	}
+}
+
+void RunManagerYAMR::echo()
+{
+	cout << get_time_string() << "->" << setw(6) << model_runs_done << " runs complete " <<
+		setw(6) << model_runs_failed << " runs failed " <<
+		setw(4) << slave_info.size() << " slaves\r" << flush;
+
+}
+
+string RunManagerYAMR::get_time_string()
+{
+	std::time_t tt = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	string t_str = ctime(&tt);
+	return t_str.substr(0, t_str.length() - 1);
+
 }
 
 void RunManagerYAMR::report(std::string message,bool to_cout)
 {
-	std::time_t tt = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-	string t_str = ctime(&tt);
-	t_str = t_str.substr(0, t_str.length() - 1);
+	string t_str = get_time_string();
 	f_rmr << t_str << "->" << message << endl;
 	if (to_cout) cout << endl << t_str << "->" << message << endl;
 }
 
 void RunManagerYAMR::process_message(int i_sock)
 {	
-	cout << setw(7) << model_runs_done << " runs complete " << setw(7) << slave_info.size() << " slaves initialized\r" << flush;
+	echo();
 	NetPackage net_pack;
 	int err;
 	vector<string> sock_name = w_getnameinfo_vec(i_sock);
@@ -790,22 +807,16 @@ void RunManagerYAMR::process_message(int i_sock)
 		throw PestError(ss.str());
 	}
 	else if (net_pack.get_type() == NetPackage::PackType::RUN_FINISH)
-	{
-		
+	{		
 		int run_id = net_pack.get_run_id();
 		int group_id = net_pack.get_groud_id();
-		//check if this is a concurrent run - decrement
+		//decrement concurrent run counter
 		auto it_concur = concurrent_map.find(run_id);
-		int concur;
-		if (it_concur != concurrent_map.end())
-		{
-			concurrent_map[it_concur->first]--;
-			concur = concurrent_map[it_concur->first];
-		}
-		else
-		{
-			concur = 0;
-		}
+		
+		if (it_concur == concurrent_map.end()) throw PestError("active run id not in concurrent map");		
+		concurrent_map[it_concur->first]--;
+		int concur = concurrent_map[it_concur->first];
+		
 
 		//check if this was a zombie run
 		auto it_zombie = get_zombie_run_id(i_sock);
@@ -836,17 +847,10 @@ void RunManagerYAMR::process_message(int i_sock)
 		int run_id = net_pack.get_run_id();
 		int group_id = net_pack.get_groud_id();
 		//check if this was a concurrent run - decrement
-		auto it_concur = concurrent_map.find(run_id);
-		int concur;
-		if (it_concur != concurrent_map.end())
-		{
-			concurrent_map[it_concur->first]--;
-			concur = concurrent_map[it_concur->first];
-		}
-		else
-		{
-			concur = 0;
-		}
+		auto it_concur = concurrent_map.find(run_id);		
+		if (it_concur == concurrent_map.end()) throw PestError("active run id not in concurrent map");
+		concurrent_map[it_concur->first]--;
+		int concur = concurrent_map[it_concur->first];
 		// remove run from active queue and return it to the waiting queue
 		auto it_zombie = get_zombie_run_id(i_sock);
 		if (it_zombie != zombie_runs.end())
@@ -860,7 +864,8 @@ void RunManagerYAMR::process_message(int i_sock)
 		{
 			stringstream ss;
 			ss << "Run " << run_id << " failed on slave:" << sock_name[0] << "$" << slave_info.get_work_dir(i_sock) << "  (group id = " << group_id << ", run id = " << run_id << ", concurrent = " << concur << ") ";
-			report(ss.str(), true);
+			report(ss.str(), false);
+			model_runs_failed++;
 			file_stor.update_run_failed(run_id);
 			failure_map.insert(make_pair(run_id, i_sock));
 			auto it = get_active_run_id(i_sock);
@@ -892,7 +897,6 @@ void RunManagerYAMR::process_message(int i_sock)
 		//save results from model run
 	}
 }
-
 
  bool RunManagerYAMR::process_model_run(int sock_id, NetPackage &net_pack)
  {
