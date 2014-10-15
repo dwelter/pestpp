@@ -435,7 +435,7 @@ int main(int argc, char* argv[])
 		}
 		if (!restart_flag || save_restart_rec_header)
 		{
-			fout_rec << "   -----    Starting PEST++ Iterations    ----    " << endl;
+			fout_rec << "   -----    Starting PEST++ Iterations    ----    " << endl << endl << endl;
 		}
 		while (!termination_ctl.terminate())
 		{
