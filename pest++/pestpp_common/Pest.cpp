@@ -295,6 +295,7 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 				else if (*trans_type == "LOG")
 				{
 					pi.tranform_type = ParameterRec::TRAN_TYPE::LOG;
+					n_adj_par++;
 				}
 				else if (*trans_type == "TIED")
 				{
@@ -303,11 +304,13 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 				else if (*trans_type == "NONE")
 				{
 					pi.tranform_type = ParameterRec::TRAN_TYPE::NONE;
+					n_adj_par++;
 				}
 				else
 				{
 					pi.tranform_type = ParameterRec::TRAN_TYPE::NONE;
 					assert(true);
+					n_adj_par++;
 				}
 				ctl_parameter_info.insert(name, pi);
 				ctl_parameters.insert(name, pi.init_value);

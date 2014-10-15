@@ -160,10 +160,10 @@ void OutputFileWriter::scenario_report(std::ostream &os)
 	os << endl << "PEST++ run mode:- " << endl << "   " << mode << endl << endl;
 
 	os << "Case dimensions:- " << endl;
-	os << setw(30) << "    Number of parameters: " << pest_scenario.get_ctl_ordered_par_names().size() << endl;
-	//os << setw(30) << "    Number of adjustable parameters: " << endl;
-	os << setw(30) << "    Number of observations: " << pest_scenario.get_ctl_ordered_obs_names().size() << endl;
-	os << setw(30) << "    Number of prior estimates: " << pest_scenario.get_ctl_ordered_pi_names().size() << endl << endl;
+	os << setw(0) << "    Number of parameters = " << pest_scenario.get_ctl_ordered_par_names().size() << endl;
+	os << setw(0) << "    Number of adjustable parameters = " << pest_scenario.get_n_adj_par() << endl;
+	os << setw(0) << "    Number of observations = " << pest_scenario.get_ctl_ordered_obs_names().size() << endl;
+	os << setw(0) << "    Number of prior estimates = "  << pest_scenario.get_ctl_ordered_pi_names().size() << endl << endl;
 
 	os << "Model command line(s):- " << endl;
 	for (auto &cmd : pest_scenario.get_comline_vec())
@@ -235,7 +235,7 @@ void OutputFileWriter::scenario_report(std::ostream &os)
 		os << setw(20) << par_rec->dercom << endl;
 	}
 	os << endl << "Observation information" << endl;
-	os << left << setw(25) << "NAME" << right << setw(20) << "VALUE" << setw(20) << "GROUP" << endl;
+	os << left << setw(25) << "NAME" << right << setw(20) << "VALUE" << setw(20) << "GROUP" << setw(20) << "WEIGHT" << endl;
 	const ObservationRec* obs_rec;
 	const Observations &obs = pest_scenario.get_ctl_observations();
 	for (auto &obs_name : pest_scenario.get_ctl_ordered_obs_names())
@@ -243,7 +243,8 @@ void OutputFileWriter::scenario_report(std::ostream &os)
 		obs_rec = pest_scenario.get_ctl_observation_info().get_observation_rec_ptr(obs_name);		
 		os << left << setw(25) << lower_cp(obs_name);
 		os << right << setw(20) << obs.get_rec(obs_name);
-		os << setw(20) << lower_cp(obs_rec->group) << endl;
+		os << setw(20) << lower_cp(obs_rec->group);
+		os << setw(20) << obs_rec->weight << endl;
 	}
 	const PriorInformation &pi = pest_scenario.get_prior_info();
 	os << endl << "Prior information" << endl;
