@@ -27,7 +27,6 @@
 #include "pest_data_structs.h"
 #include "Regularization.h"
 
-
 using namespace std;
 using namespace Eigen;
 
@@ -104,7 +103,6 @@ Eigen::SparseMatrix<double> QSqrtMatrix::get_sparse_matrix(const vector<string> 
 	weights.setFromTriplets(triplet_list.begin(), triplet_list.end());
 	return weights;
 }
-
 
 QSqrtMatrix::~QSqrtMatrix(void)
 {

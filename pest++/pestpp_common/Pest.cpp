@@ -109,7 +109,7 @@ vector<string> Pest::get_nonregul_obs() const
 	return ret_val;
 }
 
-int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
+int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 {
 	string line;
 	string line_upper;
@@ -463,7 +463,7 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 	}
 	catch (PestConversionError &e) {
 		std::stringstream out;
-		out << "Error parsing \"" << file_manager.build_filename("pst") << "\" on line number " << lnum << endl;
+		out << "Error parsing \"" << pst_filename << "\" on line number " << lnum << endl;
 		out << e.what() << endl;
 		e.add_front(out.str());
 		e.raise();

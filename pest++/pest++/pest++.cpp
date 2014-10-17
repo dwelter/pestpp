@@ -46,7 +46,6 @@
 #include "PerformanceLog.h"
 #include "debug.h"
 
-
 using namespace std;
 using namespace pest_utils;
 
@@ -237,7 +236,7 @@ int main(int argc, char* argv[])
 
 		try {
 			performance_log.log_event("starting to process control file", 1);
-			pest_scenario.process_ctl_file(file_manager.open_ifile_ext("pst"), file_manager);
+			pest_scenario.process_ctl_file(file_manager.open_ifile_ext("pst"), file_manager.build_filename("pst"));
 			file_manager.close_file("pst");
 			performance_log.log_event("finished processing control file");
 		}
