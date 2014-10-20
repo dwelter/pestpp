@@ -407,11 +407,16 @@ int start_command(string &cmd_string)
 	pid_t pid = fork();
 	if (pid == 0)
 	{
+	  setpgid(0,0);
 	  int success = execv(arg_v[0], const_cast<char* const*>(&(arg_v[0])));
 	     if (success == -1)
 	     {
 	       throw std::runtime_error("execv() failed for command: " + cmd_string);
 	     }
+	}
+	else
+	{ 
+	  setpgid(pid,pid);
 	}
 	return pid;
 }
@@ -517,7 +522,7 @@ void w_run_commands(pest_utils::thread_flag* terminate, pest_utils::thread_flag*
 				std::cout << "recieved terminate signal" << std::endl;
 				//try to kill the process
 				errno = 0;
-				int success = kill(command_pid, SIGKILL);
+				int success = kill(-command_pid, SIGKILL);
 				if (success == -1)
 				{
 					finished->set(true);
