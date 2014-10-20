@@ -17,6 +17,7 @@ int main(int argc, char* argv[])
 	ipst.close();
 	Mat m;
 	m.from_ascii("c_obs10_2");
+	m.to_ascii("test.vec");
 	return 0;
 }
 

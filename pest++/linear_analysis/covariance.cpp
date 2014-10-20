@@ -43,13 +43,49 @@ void Mat::to_ascii(const string &filename)
 		throw runtime_error("cannot open " + filename + " to write ASCII matrix");
 	}
 	out << setw(6) << nrow() << setw(6) << ncol() << setw(6) << icode << endl;
-	for (int i = 0; i < nrow(); i++)
+	//Eigen::MatrixXd dmatrix(matrix)
+	//int i, j;	
+	//for (int irow = 0; irow < dmatrix.rows(); irow++)
+	//{		
+	//	//for (Eigen::SparseMatrix<double>::InnerIterator jcol(matrix, irow); jcol; ++jcol)
+	//	//for (int jcol = 0; jcol < dmatrix.cols(); jcol++)
+	//	for (auto &row : dmatrix.row(irow))
+	//	{						
+	//		out << left << setw(20) << dmatrix.value(irow,jcol);
+	//	}
+	//	out << endl;
+	//}
+	/*stringstream ss;
+	ss << matrix;
+	string smatrix(ss.str());
+	string delim = "$";
+	out << smatrix.substr(smatrix.find(delim)+3,smatrix.size());*/
+
+	out << matrix;
+
+
+	if (icode == 1)
 	{
-		for (int j = 0; j < ncol(); j++)
+		out<< "* row and column names" << endl;
+		for (auto &name : row_names)
 		{
-			out << setw(20);//HERE
+			out << name << endl;
 		}
 	}
+	else
+	{
+		out << "* row names" << endl;
+		for (auto &name : row_names)
+		{
+			out << name << endl;
+		}
+		out << "* column names" << endl;
+		for (auto &name : col_names)
+		{
+			out << name << endl;
+		}
+	}
+	out.close();
 }
 
 void Mat::from_ascii(const string &filename)
@@ -68,17 +104,28 @@ void Mat::from_ascii(const string &filename)
 	{
 		throw runtime_error("error reading nrow ncol icode from first line of ASCII matrix file: " + filename);
 	}
-	vector<double> vals;	
+	//vector<double> vals;	
+	vector<Eigen::Triplet<double>> triplet_list;
 	double val;
-	for (int i = 0; i < nrow*ncol;i++)
+	int irow = 0, jcol = 0;
+	for (int inode = 0; inode < nrow*ncol;inode++)
 	{
 		if (in >> val)
-		{
-			vals.push_back(val);
+		{			
+			if (val != 0.0)
+			{
+				triplet_list.push_back(Eigen::Triplet<double>(irow,jcol,val));
+			}	
+			jcol++;
+			if (jcol >= ncol)
+			{
+				irow++;
+				jcol = 0;
+			}
 		}
 		else
 		{
-			string i_str = to_string(i);
+			string i_str = to_string(inode);
 			throw runtime_error("error reading entry number "+i_str+" from ASCII matrix file: "+filename);
 		}
 	}
@@ -93,6 +140,7 @@ void Mat::from_ascii(const string &filename)
 	string name;
 	if (icode == 1)
 	{
+		assert(nrow == ncol);
 		assert((header.find("row") != string::npos) && (header.find("column") != string::npos));
 		try
 		{
@@ -102,6 +150,8 @@ void Mat::from_ascii(const string &filename)
 		{
 			throw runtime_error("error reading row/column names from ASCII matrix file: " + filename + "\n" + e.what());
 		}
+		assert(nrow == row_names.size());
+		assert(ncol == row_names.size());
 	}
 	else
 	{
@@ -127,10 +177,17 @@ void Mat::from_ascii(const string &filename)
 		{
 			throw runtime_error("error reading column names from ASCII matrix file: " + filename + "\n" + e.what());
 		}
+		assert(nrow == row_names.size());
+		assert(ncol == col_names.size());
 	}
-
 	in.close();
 
+
+	//
+	Eigen::SparseMatrix<double> new_matrix(nrow, ncol);
+	new_matrix.setZero();  // initialize all entries to 0
+	new_matrix.setFromTriplets(triplet_list.begin(), triplet_list.end());
+	matrix = new_matrix;
 }
 
 vector<string> Mat::read_namelist(ifstream &in, int &nitems)
