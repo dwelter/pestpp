@@ -80,9 +80,11 @@ public:
 	void end_run(int sock_id);
 	void end_linpack(int sock_id);
 	double get_runtime(int sock_id);
-	double get_duration_secs(int sock_id);
-	double get_runtime_secs(int sock_id);
+	double get_duration_sec(int sock_id);
+	double get_duration_minute(int sock_id);
+	double get_runtime_sec(int sock_id);
 	double get_runtime_minute(int sock_id);
+	double get_global_runtime_minute();
 	double get_linpack_time(int sock_id);
 	void sort_queue(std::deque<int> &slave_fd);
 	int add_failed_ping(int sock_id);
@@ -126,10 +128,11 @@ private:
 	static const int PING_INTERVAL_SECS = 5;
 	static const int MAX_CONCURRENT_RUNS = 3;
 	const double PERCENT_OVERDUE_RESCHED = 1.15; //15% past average runtime
-	const double PERCENT_OVERDUE_GIVEUP = 2.0; //100% past average runtime	
+	const double PERCENT_OVERDUE_GIVEUP = 10.0; //1000% past average runtime	
 	int listener;
 	int fdmax;
 	int model_runs_done;
+	int model_runs_failed;
 	std::deque<int> slave_fd; // list of slaves ready to accept a model run
 	fd_set master; // master file descriptor list
 	std::deque<YamrModelRun> waiting_runs;
@@ -149,6 +152,8 @@ private:
 	void close_slave(int i_sock);
 	void ping(int i_sock);
 	void report(std::string message,bool to_cout);	
+	string get_time_string();
+	void echo();
 	std::unordered_multimap<int, YamrModelRun>::iterator get_active_run_id(int socket);
 	std::unordered_multimap<int, YamrModelRun>::iterator get_zombie_run_id(int socket);
 };

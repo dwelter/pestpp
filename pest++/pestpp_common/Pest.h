@@ -42,6 +42,7 @@ public:
 	void check_io();
 	void check_par_obs();
 	int process_ctl_file(ifstream &fin, FileManager &file_manager);
+	int get_n_adj_par(){ return n_adj_par; }
 	const Parameters& get_ctl_parameters() const {return ctl_parameters;}
 	const Observations& get_ctl_observations() const {return observation_values;}
 	const ParameterInfo& get_ctl_parameter_info()const {return ctl_parameter_info;}
@@ -69,6 +70,7 @@ public:
 	vector<string> get_nonregul_obs() const;	
 	virtual ~Pest();
 private:
+	int n_adj_par = 0;
 	ControlInfo control_info;
 	SVDInfo svd_info;
 	Parameters ctl_parameters;

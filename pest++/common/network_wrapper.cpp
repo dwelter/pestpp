@@ -424,6 +424,15 @@ void w_run_commands(pest_utils::thread_flag* terminate, pest_utils::thread_flag*
 #ifdef OS_WIN
 	//a flag to track if the run was terminated
 	bool term_break = false;
+	//create a job object to track child and grandchild process
+	HANDLE job = CreateJobObject(NULL, NULL);
+	if (job == NULL) throw PestError("could not create job object handle");
+	JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli = { 0 };
+	jeli.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+	if (0 == SetInformationJobObject(job, JobObjectExtendedLimitInformation, &jeli, sizeof(jeli)))
+	{
+		throw PestError("could not assign job limit flag to job object");
+	}
 	for (auto &cmd_string : commands)
 	{		
 		//start the command
@@ -436,6 +445,10 @@ void w_run_commands(pest_utils::thread_flag* terminate, pest_utils::thread_flag*
 		{
 			finished->set(true);
 			throw std::runtime_error("start_command() failed for command: " + cmd_string);
+		}
+		if (0 == AssignProcessToJobObject(job, pi.hProcess))
+		{
+			throw PestError("could not add process to job object: " + cmd_string);
 		}
 		DWORD exitcode;
 		while (true)
@@ -454,7 +467,8 @@ void w_run_commands(pest_utils::thread_flag* terminate, pest_utils::thread_flag*
 			{
 				std::cout << "recieved terminate signal" << std::endl;
 				//try to kill the process
-				bool success = TerminateProcess(pi.hProcess, 0);
+				bool success = CloseHandle(job);
+				//bool success = TerminateProcess(pi.hProcess, 0);
 				if (!success)
 				{
 					finished->set(true);
