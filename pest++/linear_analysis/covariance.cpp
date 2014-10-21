@@ -12,7 +12,9 @@
 
 using namespace std;
 
-
+//---------------------------------------
+//Mat constructors
+//---------------------------------------
 Mat::Mat(vector<string> _row_names, vector<string> _col_names)
 {
 	row_names = _row_names;
@@ -29,12 +31,9 @@ Mat::Mat(vector<string> _row_names, vector<string> _col_names, Eigen::SparseMatr
 	matrix = _matrix;
 }
 
-Mat Mat::get_matrix(const vector<string> &row_names, const vector<string> &col_names)
-{
-	Mat new_matrix;
-	return new_matrix;
-}
-
+//-----------------------------------------
+//Mat IO
+//-----------------------------------------
 void Mat::to_ascii(const string &filename)
 {
 	ofstream out(filename);
@@ -43,27 +42,7 @@ void Mat::to_ascii(const string &filename)
 		throw runtime_error("cannot open " + filename + " to write ASCII matrix");
 	}
 	out << setw(6) << nrow() << setw(6) << ncol() << setw(6) << icode << endl;
-	//Eigen::MatrixXd dmatrix(matrix)
-	//int i, j;	
-	//for (int irow = 0; irow < dmatrix.rows(); irow++)
-	//{		
-	//	//for (Eigen::SparseMatrix<double>::InnerIterator jcol(matrix, irow); jcol; ++jcol)
-	//	//for (int jcol = 0; jcol < dmatrix.cols(); jcol++)
-	//	for (auto &row : dmatrix.row(irow))
-	//	{						
-	//		out << left << setw(20) << dmatrix.value(irow,jcol);
-	//	}
-	//	out << endl;
-	//}
-	/*stringstream ss;
-	ss << matrix;
-	string smatrix(ss.str());
-	string delim = "$";
-	out << smatrix.substr(smatrix.find(delim)+3,smatrix.size());*/
-
 	out << matrix;
-
-
 	if (icode == 1)
 	{
 		out<< "* row and column names" << endl;
@@ -221,51 +200,98 @@ void Mat::from_binary(const string &filename)
 
 }
 
-void Mat::align_rows(vector<string> &other_row_names)
-{
 
-}
-
-void Mat::align_cols(vector<string> &other_col_names)
-{
-
-}
-
+//-----------------------------------------
+//Maninpulate the shape and ordering of Mats
+//-----------------------------------------
 void Mat::align(vector<string> &other_row_names, vector<string> &other_col_names)
 {
 
 }
 
-Covariance::Covariance(vector<string> names)
+Mat Mat::get(vector<string> &other_row_names, vector<string> &other_col_names)
+{
+	return Mat();
+}
+
+Mat Mat::extract(vector<string> &other_row_names, vector<string> &other_col_names)
+{
+	return Mat();
+}
+
+void Mat::drop(vector<string> &other_row_names, vector<string> &other_col_names)
 {
 
+}
+
+
+
+//-----------------------------------------
+//covariance matrices
+//-----------------------------------------
+Covariance::Covariance(vector<string> &names)
+{
+	row_names = names;
+	icode = 1;
 }
 
 Covariance::Covariance()
 {
-
+	icode = 1;
 }
 
-void Covariance::from_uncertainty_file(string &filename)
+void Covariance::from_uncertainty_file(const string &filename)
 {
 
 }
 
 void Covariance::from_parameter_bounds(Pest &pest_scenario)
 {
-	
+	vector<Eigen::Triplet<double>> triplet_list;
+	const ParameterRec* par_rec;
+	int i = 0;
+	double upper, lower;
+	for (auto &par_name : pest_scenario.get_ctl_ordered_par_names())
+	{
+		par_rec = pest_scenario.get_ctl_parameter_info().get_parameter_rec_ptr(par_name);
+		upper = par_rec->ubnd;
+		lower = par_rec->lbnd;
+		if (par_rec->tranform_type == ParameterRec::TRAN_TYPE::LOG)
+		{
+			upper = log10(upper);
+			lower = log10(lower);
+		}
+		if ((par_rec->tranform_type != ParameterRec::TRAN_TYPE::FIXED) && (par_rec->tranform_type != ParameterRec::TRAN_TYPE::TIED))
+		{
+			row_names.push_back(par_name);
+			triplet_list.push_back(Eigen::Triplet<double>(i, i, pow((upper - lower) / 4.0, 2.0)));
+			i++;
+		}
+	}
+	if (triplet_list.size() > 0)
+	{
+		matrix.resize(row_names.size(), row_names.size());
+		matrix.setFromTriplets(triplet_list.begin(), triplet_list.end());
+	}
+	else
+	{
+		throw runtime_error("Error loading covariance from parameter bounds: no non-fixed/non-tied parameters found");
+	}
+	mattype = Mat::MatType::DIAGONAL;
 }
 
-void Covariance::from_parameter_bounds(string &pst_filename)
+void Covariance::from_parameter_bounds(const string &pst_filename)
 {
 	ifstream ipst(pst_filename);
+	Pest pest_scenario;
 	pest_scenario.process_ctl_file(ipst, pst_filename);
 	from_parameter_bounds(pest_scenario);
 }
 
-void Covariance::from_observation_weights(string &pst_filename)
+void Covariance::from_observation_weights(const string &pst_filename)
 {
 	ifstream ipst(pst_filename);
+	Pest pest_scenario;
 	pest_scenario.process_ctl_file(ipst, pst_filename);
 	from_observation_weights(pest_scenario);
 
@@ -273,10 +299,62 @@ void Covariance::from_observation_weights(string &pst_filename)
 
 void Covariance::from_observation_weights(Pest &pest_scenario)
 {
+	vector<Eigen::Triplet<double>> triplet_list;
+	const ObservationRec* obs_rec;
+	int i = 0;	
+	for (auto &obs_name : pest_scenario.get_ctl_ordered_obs_names())
+	{
+		obs_rec = pest_scenario.get_ctl_observation_info().get_observation_rec_ptr(obs_name);
+		if (obs_rec->weight > 0.0)
+		{
+			row_names.push_back(obs_name);
+			triplet_list.push_back(Eigen::Triplet<double>(i, i, pow(1.0 / obs_rec->weight, 2.0)));
+			i++;
+		}
+	}
+	if (row_names.size() > 0)
+	{
+		matrix.resize(row_names.size(), row_names.size());
+		matrix.setFromTriplets(triplet_list.begin(), triplet_list.end());
+	}
+	else
+	{
+		throw runtime_error("Error loading covariance from obs weights: no non-zero weighted obs found");
+	}
+	mattype = Mat::MatType::DIAGONAL;
+
 
 }
 
-void Covariance::to_uncertainty_file(string &filename)
+void Covariance::to_uncertainty_file(const string &filename)
 {
+	ofstream out(filename);
+	if (!out.good())
+	{
+		throw runtime_error("Error opening file: " + filename + " to write an uncertainty file");
+	}
+
+	//check if diagonal, write stdevs
+	if (mattype == Mat::MatType::DIAGONAL)
+	{
+		Eigen::VectorXd vec(matrix.diagonal());
+		out << "START STANDARD_DEVIATION" << endl;
+		int i=0;
+		for (vector<string>::iterator name = row_names.begin(); name != row_names.end(); ++name, i++)
+		{
+			out << "  " << setw(20) << left << *name << "  " << setw(20) << left << vec(i) << endl;
+		}
+		out << "END STANDARD_DEVIATION" << endl;
+		out.close();
+	}
+	else
+	{
+		out << "START COVARIANCE_MATRIX" << endl;
+		out << "  file emu_cov.mat" << endl;
+		out << " variance multiplier 1.0" << endl;
+		out << "END COVARIANCE_MATRIX" << endl;
+		out.close();
+		to_ascii("emu_cov.mat");
+	}
 
 }
