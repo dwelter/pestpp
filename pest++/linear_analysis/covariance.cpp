@@ -209,18 +209,81 @@ void Mat::align(vector<string> &other_row_names, vector<string> &other_col_names
 
 }
 
-Mat Mat::get(vector<string> &other_row_names, vector<string> &other_col_names)
+Mat Mat::get(vector<string> &new_row_names, vector<string> &new_col_names)
 {
-	return Mat();
+	//todo: add tracking to make sure every new_row_name and every new_col_name is found atleast once
+
+
+	int nrow = new_row_names.size();
+	int ncol = new_col_names.size();
+	int irow_new;
+	int icol_new;
+
+	unordered_map<string, int> row_name2newindex_map;
+	unordered_map<string, int> col_name2new_index_map;
+
+	// Build mapping of parameter names to column number in new matrix to be returned
+	icol_new = 0;
+	for (vector<string>::const_iterator b = new_col_names.begin(), e = new_col_names.end();
+		b != e; ++b, ++icol_new) {
+		col_name2new_index_map[(*b)] = icol_new;
+	}
+
+	// Build mapping of observation names to row  number in new matrix to be returned
+	irow_new = 0;
+	for (vector<string>::const_iterator b = new_row_names.begin(), e = new_row_names.end();
+		b != e; ++b, ++irow_new) {
+		row_name2newindex_map[(*b)] = irow_new;
+	}
+	
+	unordered_map<string, int>::const_iterator found_col;
+	unordered_map<string, int>::const_iterator found_row;
+	unordered_map<string, int>::const_iterator not_found_col_map = col_name2new_index_map.end();
+	unordered_map<string, int>::const_iterator not_found_row_map = row_name2newindex_map.end();
+
+	const string *row_name;
+	const string *col_name;
+	std::vector<Eigen::Triplet<double> > triplet_list;
+	for (int icol = 0; icol<matrix.outerSize(); ++icol)
+	{
+		for (Eigen::SparseMatrix<double>::InnerIterator it(matrix, icol); it; ++it)
+		{			
+			col_name = &col_names[it.col()];
+			row_name = &row_names[it.row()];
+			found_col = col_name2new_index_map.find(*row_name);
+			found_row = row_name2newindex_map.find(*col_name);
+
+			if (found_col != not_found_col_map && found_row != not_found_row_map)
+			{
+				triplet_list.push_back(Eigen::Triplet<double>(found_row->second, found_col->second, it.value()));
+			}
+		}
+	}
+	Eigen::SparseMatrix<double> new_matrix(nrow, ncol);
+	new_matrix.setZero();
+	new_matrix.setFromTriplets(triplet_list.begin(), triplet_list.end());
+	return Mat(new_row_names,new_col_names,new_matrix);
+
 }
 
-Mat Mat::extract(vector<string> &other_row_names, vector<string> &other_col_names)
+Mat Mat::extract(vector<string> &ext_row_names, vector<string> &ext_col_names)
 {
-	return Mat();
+	Mat new_mat = get(ext_row_names, ext_col_names);
+	drop(ext_row_names, ext_col_names);
+	return new_mat;
 }
 
-void Mat::drop(vector<string> &other_row_names, vector<string> &other_col_names)
+void Mat::drop(vector<string> &drop_row_names, vector<string> &drop_col_names)
 {
+	vector<string> new_row_names, new_col_names;
+	vector<Eigen::Triplet<double>> triplet_list;
+
+	//check that each of the drop_row_names and drop_col_names in row_names and col_names
+
+
+
+
+	 
 
 }
 
