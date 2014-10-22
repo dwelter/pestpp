@@ -263,6 +263,7 @@ void SVDASolver::iteration_jac(RunManagerAbstract &run_manager, TerminationContr
 	if (restart_runs)
 	{
 		super_parameter_group_info = par_transform.get_svda_ptr()->build_par_group_info(*par_group_info_ptr);
+		par_transform.get_svda_fixed_ptr()->reset(par_transform.get_svda_ptr()->get_frozen_derivative_pars());
 	}
 	else
 	{
