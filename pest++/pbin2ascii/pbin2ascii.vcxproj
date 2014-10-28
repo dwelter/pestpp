@@ -189,10 +189,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='pbin2par-Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <TargetName>pbin2par</TargetName>
+    <OutDir>$(SolutionDir)$(Platform)\Debug\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='pbin2ascmat-Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <TargetName>pbin2ascmat</TargetName>
+    <OutDir>$(SolutionDir)$(Platform)\Debug\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -209,10 +211,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='pbin2par-Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <TargetName>pbin2par</TargetName>
+    <OutDir>$(SolutionDir)$(Platform)\Release\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='pbin2ascmat-Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <TargetName>pbin2ascmat</TargetName>
+    <OutDir>$(SolutionDir)$(Platform)\Release\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

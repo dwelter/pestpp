@@ -46,10 +46,18 @@ void usage(string exeName, ostream &fout)
 {
 	fout << "--------------------------------------------------------" << endl;
 	fout << "usage:" << endl << endl;
-	fout << " " << exeName << " ext_file  runs_file  par_prefix" << endl << endl;
+	fout << " " << exeName << " ext_file runs_file";
+	if(EXPECTED_ARG_COUNT > 3)
+	{
+		fout << " par_prefix";
+	}
+	fout << endl << endl;
+
 	fout << " where:" << endl;
-	fout << "  ext_file:   name of the pest++ .ext file containing the binary run file name" << endl;
-	fout << "  runs_file:  name of file to be created with list of required runs" << endl;
+	fout << "  ext_file:   name of the pest++ .ext file containing the" << endl;
+	fout << "              binary run file name" << endl;
+	fout << "  runs_file:  name of file to be created with list of" << endl;
+	fout << "              required runs" << endl;
 	if(EXPECTED_ARG_COUNT > 3)
 	{
 		fout << "  par_prefix: prefix used to create parameter files" << endl;
@@ -62,20 +70,20 @@ int main(int argc, char* argv[])
 	string exeName = argv[0];
 	exeName = exeName.substr(exeName.find_last_of("/\\") + 1);
 
+	if(argc != EXPECTED_ARG_COUNT)
+	{
+		cerr << "Error: incorrect number of command line arguements" << endl << endl;
+		usage(exeName, cerr);
+		return 1;
+		//throw PestError("Error: incorect number of command line arguements");
+	}
+
 	string ext_filename = argv[1];
 	string out_filename = argv[2];
 	string base_par_filename;
 	if(EXPECTED_ARG_COUNT > 3)
 	{
 		base_par_filename = argv[3];
-	}
-
-	if(argc != EXPECTED_ARG_COUNT)
-	{
-		cerr << "incorect number of command line arguements" << endl << endl;
-		usage(exeName, cerr);
-		return 1;
-		//throw PestError("Error: incorect number of command line arguements");
 	}
 
 

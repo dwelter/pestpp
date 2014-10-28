@@ -29,13 +29,15 @@ using namespace std;
 
 void usage(ostream &fout)
 {
-	fout << "--------------------------------------------------------" << endl;
+	fout << "----------------------------------------------------------" << endl;
 	fout << "usage:" << endl << endl;
-	fout << "    ascii2pbin.exe bin_file  results_file" << endl << endl;
-	fout << "    where:" << endl;
-	fout << "          ext_file:   name of the pest++ .ext file containing the name binary run file" << endl;
-	fout << "        results_file:   name of file which conatains the list of completed runs" << endl;
-	fout << "--------------------------------------------------------" << endl;
+	fout << "  ascii2pbin.exe ext_file results_file" << endl << endl;
+	fout << " where:" << endl;
+	fout << "  ext_file:       name of the pest++ .ext file containing" << endl;
+	fout << "                  the name binary run file" << endl;
+	fout << "  results_file:   name of file which conatains the list" << endl;
+	fout << "                  of completed runs" << endl;
+	fout << "----------------------------------------------------------" << endl;
 }
 
 void read_data_file(const string &filename, Transformable &data)
@@ -72,17 +74,19 @@ void read_data_file(const string &filename, Transformable &data)
 
 int main(int argc, char* argv[])
 {
+	// Error checking
+	if(argc != 3)
+	{
+		cerr << "Error: incorrect number of command line arguements" << endl << endl;
+		usage(cerr);
+		cerr.flush();
+		return 1;
+		//throw PestError("Error: incorect number of command line arguements");
+	}
+
 	string ext_filename = argv[1];
 	string results_filename = argv[2];
 
-	// Error checking
-	if (argc != 3)
-	{
-		cerr << "Error: incorect number of command line arguements" << endl << endl;
-		usage(cerr);
-		cerr.flush();
-		throw PestError("Error: incorect number of command line arguements");
-	}
 
 	string pbin_filename;
 	int max_n_fail = 1;

@@ -30,10 +30,11 @@ void usage(ostream &fout)
 {
 	fout << "--------------------------------------------------------" << endl;
 	fout << "usage:" << endl << endl;
-	fout << "    pbin_dump.exe bin_file  ascii_file" << endl << endl;
-	fout << "    where:" << endl;
-	fout << "        bin_file:    pest++ binary model run file to be read" << endl;
-	fout << "        ascii_file:  name of ascii file where results will be saved" << endl;
+	fout << "  pbin_dump.exe bin_file  ascii_file" << endl << endl;
+	fout << " where:" << endl;
+	fout << "  bin_file:    pest++ binary model run file to be read" << endl;
+	fout << "  ascii_file:  name of ascii file where results will be" << endl;
+	fout << "               saved" << endl;
 	fout << "--------------------------------------------------------" << endl;
 }
 
