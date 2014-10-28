@@ -93,8 +93,22 @@ int main(int argc, char* argv[])
 	try
 	{
 		ifstream fin_ext(ext_filename);
+		if(!fin_ext.good())
+		{
+			fin_ext.close();
+			throw PestFileError(ext_filename);
+		}
 		getline(fin_ext, pbin_filename);
 		pest_utils::strip_ip(pbin_filename);
+
+
+		if(pbin_filename == "")
+		{
+			fin_ext.close();
+			throw runtime_error("PEST binary file not specified in *.ext \"" + ext_filename + "\": line 1");
+
+		}
+
 		string tmp_str;
 		getline(fin_ext, tmp_str);
 		pest_utils::strip_ip(tmp_str);
@@ -105,8 +119,9 @@ int main(int argc, char* argv[])
 	{
 		cerr << "Error processing external run manager *.ext \"" << pbin_filename << "\"";
 		cerr << e.what() << endl;
-		usage(cerr);
-		throw(e);
+		//usage(cerr);
+		//throw(e);
+		return 1;
 	}
 	// Open PEST++ binary storage file
 	RunStorage rs("");
@@ -118,9 +133,10 @@ int main(int argc, char* argv[])
 	{
 		cerr << "Error opening PEST++ binary file \"" << pbin_filename << "\"";
 		cerr << e.what() << endl;
-		usage(cerr);
+		//usage(cerr);
 		cerr.flush();
-		throw(e);
+		//throw(e);
+		return 1;
 	}
 
 	//Open resutls file

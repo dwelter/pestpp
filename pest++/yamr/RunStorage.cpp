@@ -611,7 +611,7 @@ void RunStorage::check_rec_id(int run_id)
 	if ( run_id + 1 > n_runs)
 	{
 		ostringstream msg;
-		msg << "Error in RunStorage routine: run id = " << run_id << " is not valid.  Valid values are 0 to " << n_runs - 1;
+		msg << "Error in RunStorage routine: run id = " << run_id << " is not valid.  Valid values are 0 to " << n_runs - 1 << endl;
 		throw PestError(msg.str());
 	}
 }
