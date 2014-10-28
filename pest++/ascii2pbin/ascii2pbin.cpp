@@ -112,12 +112,19 @@ int main(int argc, char* argv[])
 		string tmp_str;
 		getline(fin_ext, tmp_str);
 		pest_utils::strip_ip(tmp_str);
+		if(tmp_str == "")
+		{
+			fin_ext.close();
+			throw runtime_error("max_n_fail not specified in *.ext \"" + ext_filename + "\": line 2");
+
+		}
 		max_n_fail = pest_utils::convert_cp<int>(tmp_str);
 
+		fin_ext.close();
 	}
 	catch (exception &e)
 	{
-		cerr << "Error processing external run manager *.ext \"" << pbin_filename << "\"";
+		cerr << "Error processing external run manager *.ext \"" << ext_filename << "\"" << endl;
 		cerr << e.what() << endl;
 		//usage(cerr);
 		//throw(e);
@@ -144,14 +151,20 @@ int main(int argc, char* argv[])
 	try
 	{
 		fin_results.open(results_filename);
+		if(!fin_results.good())
+		{
+			fin_results.close();
+			throw PestFileError(results_filename);
+		}
 	}
 	catch (exception &e)
 	{
-		cerr << "Error opening results file \"" << results_filename << "\"";
+		//cerr << "Error opening results file \"" << results_filename << "\"";
 		cerr << e.what() << endl;
-		usage(cerr);
+		//usage(cerr);
 		cerr.flush();
-		throw(e);
+		//throw(e);
+		return 1;
 	}
 
 	// Finished with initial error checking.  Start the main program 
@@ -163,7 +176,7 @@ int main(int argc, char* argv[])
 	vector<string> par_name_vec = rs.get_par_name_vec();
 	vector<string> obs_name_vec = rs.get_obs_name_vec();
 	int n_runs = rs.get_nruns();
-	cout << "processing runs" << endl;
+	cout << "processing runs" << "(" << n_runs << ")" <<  endl;
 
 	//set the status of all outstanding runs to failed
 	for (int id = 0; id < n_runs; ++id)
