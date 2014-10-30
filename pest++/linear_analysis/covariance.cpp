@@ -1,11 +1,14 @@
 
 #include <string>
+#include <sstream>
 #include <iostream>
 #include <fstream>
 #include <iomanip>
 #include <vector>
-#include<Eigen/Dense>
-#include<Eigen/Sparse>
+#include <Eigen/Dense>
+#include <Eigen/Sparse>
+#include <Eigen/IterativeLinearSolvers>
+#include <Eigen/SparseCholesky>
 
 #include "Pest.h"
 #include "utilities.h"
@@ -35,10 +38,129 @@ Mat::Mat(vector<string> _row_names, vector<string> _col_names, Eigen::SparseMatr
 	mattype = _mattype;
 }
 
+//--------------------------------------
+//Mat convience functions
+//--------------------------------------
+const Eigen::SparseMatrix<double>* Mat::get_matrix_ptr()
+{
+	const Eigen::SparseMatrix<double>* ptr = &matrix;
+	return ptr;
+}
+
+Mat Mat::transpose()
+{
+	return Mat(col_names, row_names, matrix.transpose());
+}
+
+Mat Mat::T()
+{
+	return Mat(col_names, row_names, matrix.transpose());
+}
+
+void Mat::transpose_ip()
+{
+	if (mattype != MatType::DIAGONAL)
+	{
+		matrix = matrix.transpose();
+		vector<string> temp = row_names;
+		row_names = col_names;
+		col_names = temp;
+	}
+}
+
+Mat Mat::inv()
+{
+	if (nrow() != ncol()) throw runtime_error("only symmetric positive definite matrices can be inverted with Mat::inv()");
+	if (mattype == MatType::DIAGONAL)
+	{
+		Eigen::VectorXd diag = matrix.diagonal();
+		diag = 1.0 / diag.array();
+		vector<Eigen::Triplet<double>> triplet_list;
+		
+		for (int i = 0; i != diag.size(); ++i)
+		{
+			triplet_list.push_back(Eigen::Triplet<double>(i, i, diag[i]));
+		}
+		Eigen::SparseMatrix<double> inv_mat(triplet_list.size(),triplet_list.size());
+		inv_mat.setZero();
+		inv_mat.setFromTriplets(triplet_list.begin(), triplet_list.end());
+
+		return Mat(row_names, col_names, inv_mat,MatType::DIAGONAL);
+	}
+	
+	//Eigen::ConjugateGradient<Eigen::SparseMatrix<double>> solver;
+	Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver;
+	solver.compute(matrix);
+	Eigen::SparseMatrix<double> I(nrow(), nrow());
+	I.setIdentity();
+	Eigen::SparseMatrix<double> matrix_inv = solver.solve(I);
+	return Mat(row_names, col_names, matrix_inv, MatType::DENSE);
+}
+
 
 //---------------------------------------
 //Mat operator
 //--------------------------------------
+
+ostream& operator<< (ostream &os, Mat mat)
+{
+	cout << "row names : ";
+	for (auto &name : mat.get_row_names())
+		cout << name << ',';
+	cout << endl << "col names";
+	for (auto &name : mat.get_col_names())
+		cout << name << ',';
+	cout << endl;
+	cout << *mat.get_matrix_ptr();
+	return os;
+}
+
+Mat Mat::operator+(Mat &other_mat)
+{
+	vector<string> common_rows, common_cols;
+	MatType new_mattype = MatType::DENSE;
+	if ((mattype == MatType::DIAGONAL) && (other_mat.get_mattype() == MatType::DIAGONAL))
+		new_mattype = MatType::DIAGONAL;
+	for (auto &name : other_mat.get_col_names())
+		if (find(col_names.begin(), col_names.end(), name) != col_names.end())
+			common_cols.push_back(name);
+	for (auto &name : other_mat.get_row_names())
+		if (find(row_names.begin(), row_names.end(), name) != row_names.end())
+			common_rows.push_back(name);
+	if (common_cols.size() == 0) throw runtime_error("Mat::operator+ error: no common cols found");
+	if (common_rows.size() == 0) throw runtime_error("Mat::operator+ error: no common rows found");
+	//no realignment needed
+	if ((common_cols == col_names) && (common_cols == other_mat.get_col_names())
+		&& (common_rows == row_names) && (common_rows == other_mat.get_row_names()))
+		return Mat(row_names, col_names, matrix + *other_mat.get_matrix_ptr(), new_mattype);
+
+	//only other_mat needs realignment
+	else if ((common_rows == row_names) && (common_cols == col_names))
+	{
+		Mat new_other_mat = other_mat.get(common_rows, common_cols);
+		return Mat(common_rows, common_cols, matrix + *new_other_mat.get_matrix_ptr(), new_mattype);
+	}
+	//only this needs realignment
+	else if ((common_rows == other_mat.get_row_names()) && (common_cols == other_mat.get_col_names()))
+	{
+		Mat new_this = get(common_rows, common_cols);
+		return Mat(common_rows, common_cols, *new_this.get_matrix_ptr() + *other_mat.get_matrix_ptr(), new_mattype);
+	}
+	else
+	{
+		Mat new_other_mat = other_mat.get(common_rows, common_cols);
+		Mat new_this = get(common_rows, common_cols);
+		return Mat(common_rows, common_cols, *new_this.get_matrix_ptr() + *new_other_mat.get_matrix_ptr(), new_mattype);
+	}
+}
+
+
+
+Mat Mat::operator*(double val)
+{
+	return Mat(row_names, col_names, matrix*val);
+}
+
 Mat Mat::operator*(Mat &other_mat)
 {
 	//find common this.col_names and other_mat.row_names
@@ -64,7 +186,7 @@ Mat Mat::operator*(Mat &other_mat)
 	//no realignment needed...
 	if ((common == col_names) && (common == other_mat.get_row_names()))
 	{
-		Eigen::SparseMatrix<double> new_matrix = matrix * other_mat.get_matrix();
+		Eigen::SparseMatrix<double> new_matrix = matrix * *other_mat.get_matrix_ptr();
 		Mat new_mat(row_names, other_mat.col_names, new_matrix, new_mattype);
 		return new_mat;
 	}
@@ -73,8 +195,8 @@ Mat Mat::operator*(Mat &other_mat)
 	else if (common == col_names)
 	{
 		Mat new_other_mat = other_mat.get(common, other_mat.get_col_names());
-		Eigen::SparseMatrix<double> new_matrix = matrix * new_other_mat.get_matrix();
-		Mat new_mat(common, other_mat.col_names, new_matrix, new_mattype);
+		Eigen::SparseMatrix<double> new_matrix = matrix * *new_other_mat.get_matrix_ptr();
+		Mat new_mat(row_names, new_other_mat.get_col_names(), new_matrix, new_mattype);
 		return new_mat;
 	}
 	
@@ -82,8 +204,8 @@ Mat Mat::operator*(Mat &other_mat)
 	else if (common == other_mat.get_row_names())
 	{
 		Mat new_this = get(row_names, common);
-		Eigen::SparseMatrix<double> new_matrix = new_this.get_matrix() * other_mat.get_matrix();
-		Mat new_mat(row_names, other_mat.col_names, new_matrix, new_mattype);
+		Eigen::SparseMatrix<double> new_matrix = *new_this.get_matrix_ptr() * *other_mat.get_matrix_ptr();
+		Mat new_mat(new_this.get_row_names(), other_mat.col_names, new_matrix, new_mattype);
 		return new_mat;
 
 	}
@@ -92,8 +214,8 @@ Mat Mat::operator*(Mat &other_mat)
 	{
 		Mat new_other_mat = other_mat.get(common, other_mat.get_col_names());
 		Mat new_this = get(row_names, common);
-		Eigen::SparseMatrix<double> new_matrix = new_this.get_matrix() * new_other_mat.get_matrix();
-		Mat new_mat(row_names, other_mat.col_names, new_matrix, new_mattype);
+		Eigen::SparseMatrix<double> new_matrix = *new_this.get_matrix_ptr() * *new_other_mat.get_matrix_ptr();
+		Mat new_mat(new_this.get_col_names(),new_other_mat.get_row_names(),new_matrix, new_mattype);
 		return new_mat;
 	}
 
@@ -101,16 +223,6 @@ Mat Mat::operator*(Mat &other_mat)
 }
 
 
-void Mat::transpose()
-{
-	if (mattype != MatType::DIAGONAL)
-	{
-		matrix = matrix.transpose();
-		vector<string> temp = row_names;
-		row_names = col_names;
-		col_names = temp;
-	}
-}
 
 //-----------------------------------------
 //Mat IO
@@ -123,27 +235,22 @@ void Mat::to_ascii(const string &filename)
 		throw runtime_error("cannot open " + filename + " to write ASCII matrix");
 	}
 	out << setw(6) << nrow() << setw(6) << ncol() << setw(6) << icode << endl;
-	out << matrix;
+	out << setprecision(9) << matrix;
 	if (icode == 1)
 	{
 		out<< "* row and column names" << endl;
 		for (auto &name : row_names)
-		{
 			out << name << endl;
-		}
+		
 	}
 	else
 	{
 		out << "* row names" << endl;
 		for (auto &name : row_names)
-		{
 			out << name << endl;
-		}
 		out << "* column names" << endl;
 		for (auto &name : col_names)
-		{
 			out << name << endl;
-		}
 	}
 	out.close();
 }
@@ -151,31 +258,23 @@ void Mat::to_ascii(const string &filename)
 void Mat::from_ascii(const string &filename)
 {
 	ifstream in(filename);
-	if (!in.good())
-	{
+	if (!in.good()) 
 		throw runtime_error("cannot open " + filename + " to read ASCII matrix");
-	}
 	int nrow = -999, ncol = -999;
-	if (in >> nrow >> ncol >> icode)
-	{
-
-	}
+	if (in >> nrow >> ncol >> icode){}
 	else
-	{
-		throw runtime_error("error reading nrow ncol icode from first line of ASCII matrix file: " + filename);
-	}
-	//vector<double> vals;	
+		throw runtime_error("error reading nrow ncol icode from first line\
+							 of ASCII matrix file: " + filename);
+
 	vector<Eigen::Triplet<double>> triplet_list;
 	double val;
 	int irow = 0, jcol = 0;
 	for (int inode = 0; inode < nrow*ncol;inode++)
 	{
 		if (in >> val)
-		{			
+		{
 			if (val != 0.0)
-			{
-				triplet_list.push_back(Eigen::Triplet<double>(irow,jcol,val));
-			}	
+				triplet_list.push_back(Eigen::Triplet<double>(irow,jcol,val));	
 			jcol++;
 			if (jcol >= ncol)
 			{
@@ -186,16 +285,17 @@ void Mat::from_ascii(const string &filename)
 		else
 		{
 			string i_str = to_string(inode);
-			throw runtime_error("error reading entry number "+i_str+" from ASCII matrix file: "+filename);
+			throw runtime_error("error reading entry number "+i_str+" from\
+								 ASCII matrix file: "+filename);
 		}
 	}
-	//read the newline char
+	
 	string header;
+	//read the newline char
 	getline(in, header);
 	if (!getline(in,header))
-	{
-		throw runtime_error("error reading row/col description line from ASCII matrix file: " + filename);
-	}
+		throw runtime_error("error reading row/col description\
+							 line from ASCII matrix file: " + filename);
 	pest_utils::upper_ip(header);
 	string name;
 	if (icode == 1)
@@ -203,7 +303,8 @@ void Mat::from_ascii(const string &filename)
 		if (nrow != ncol)
 			throw runtime_error("nrow != ncol for icode type 1 ASCII matrix file:" + filename);
 		if((header.find("ROW") == string::npos) || (header.find("COLUMN") == string::npos))
-			throw runtime_error("expecting row and column names header instead of:" + header + " in ASCII matrix file: " + filename);
+			throw runtime_error("expecting row and column names header instead\
+								 of:" + header + " in ASCII matrix file: " + filename);
 		try
 		{
 			row_names = read_namelist(in, nrow);
@@ -252,8 +353,6 @@ void Mat::from_ascii(const string &filename)
 	}
 	in.close();
 
-
-	//
 	Eigen::SparseMatrix<double> new_matrix(nrow, ncol);
 	new_matrix.setZero();  // initialize all entries to 0
 	new_matrix.setFromTriplets(triplet_list.begin(), triplet_list.end());
@@ -291,18 +390,77 @@ void Mat::to_binary(const string &filename)
 
 void Mat::from_binary(const string &filename)
 {
+	ifstream in;
+	in.open(filename.c_str(), ifstream::binary);
 
+	int n_par;
+	int n_nonzero;
+	int n_obs_and_pi;
+	int i, j, n;
+	double data;
+	char col_name[12];
+	char row_name[20];
+
+	// read header
+	in.read((char*)&n_par, sizeof(n_par));
+	in.read((char*)&n_obs_and_pi, sizeof(n_obs_and_pi));
+	if (n_par > 0) throw runtime_error("binary matrix file " + filename + " was produced by deprecated version of PEST");
+
+	n_par = -n_par;
+	n_obs_and_pi = -n_obs_and_pi;
+	////read number nonzero elements in jacobian (observations + prior information)
+	in.read((char*)&n_nonzero, sizeof(n_nonzero));
+
+	// record current position in file
+	streampos begin_sen_pos = in.tellg();
+
+	//advance to parameter names section
+	in.seekg(n_nonzero*(sizeof(double)+sizeof(int)), ios_base::cur);
+
+	//read parameter names	
+	for (int i_rec = 0; i_rec<n_par; ++i_rec)
+	{
+		in.read(col_name, 12);
+		string temp_col = string(col_name, 12);
+		pest_utils::strip_ip(temp_col);
+		pest_utils::upper_ip(temp_col);
+		col_names.push_back(temp_col);
+	}
+	//read observation and Prior info names
+	for (int i_rec = 0; i_rec<n_obs_and_pi; ++i_rec)
+	{
+		in.read(row_name, 20);
+		string temp_row = pest_utils::strip_cp(string(row_name, 20));
+		pest_utils::upper_ip(temp_row);
+		row_names.push_back(temp_row);
+	}
+
+	//return to sensitivity section of file
+	in.seekg(begin_sen_pos, ios_base::beg);
+
+	// read matrix
+	std::vector<Eigen::Triplet<double> > triplet_list;
+	triplet_list.reserve(n_nonzero);
+	for (int i_rec = 0; i_rec<n_nonzero; ++i_rec)
+	{
+		in.read((char*)&(n), sizeof(n));
+		--n;
+		in.read((char*)&(data), sizeof(data));
+		j = int(n / (n_obs_and_pi)); // column index
+		i = (n - n_obs_and_pi*j) % n_obs_and_pi;  //row index
+		triplet_list.push_back(Eigen::Triplet<double>(i, j, data));
+	}
+	matrix.resize(n_obs_and_pi, n_par);
+	matrix.setZero();
+	matrix.setFromTriplets(triplet_list.begin(), triplet_list.end());
+	in.close();
 }
+
 
 
 //-----------------------------------------
 //Maninpulate the shape and ordering of Mats
 //-----------------------------------------
-void Mat::align(vector<string> &other_row_names, vector<string> &other_col_names)
-{
-
-}
-
 Mat Mat::get(vector<string> &new_row_names, vector<string> &new_col_names)
 {
 	//check that every row and col name is listed
@@ -377,8 +535,8 @@ Mat Mat::get(vector<string> &new_row_names, vector<string> &new_col_names)
 		{			
 			col_name = &col_names[it.col()];
 			row_name = &row_names[it.row()];
-			found_col = col_name2new_index_map.find(*row_name);
-			found_row = row_name2newindex_map.find(*col_name);
+			found_col = col_name2new_index_map.find(*col_name);
+			found_row = row_name2newindex_map.find(*row_name);
 
 			if (found_col != not_found_col_map && found_row != not_found_row_map)
 			{
@@ -386,31 +544,98 @@ Mat Mat::get(vector<string> &new_row_names, vector<string> &new_col_names)
 			}
 		}
 	}
+	if (triplet_list.size() == 0)
+		throw runtime_error("Mat::get(): triplet list is empty");
 	Eigen::SparseMatrix<double> new_matrix(nrow, ncol);
 	new_matrix.setZero();
 	new_matrix.setFromTriplets(triplet_list.begin(), triplet_list.end());
 	return Mat(new_row_names,new_col_names,new_matrix,mattype);
 }
 
-Mat Mat::extract(vector<string> &ext_row_names, vector<string> &ext_col_names)
+Mat Mat::extract(vector<string> &extract_row_names, vector<string> &extract_col_names)
 {
-	Mat new_mat = get(ext_row_names, ext_col_names);
-	drop(ext_row_names, ext_col_names);
+	Mat new_mat;
+	if ((extract_row_names.size() == 0) && (extract_col_names.size() == 0))
+		throw runtime_error("Mat::extract() error: extract_rows and extract_cols both empty");	
+	else if (extract_row_names.size() == 0)
+	{
+		new_mat = get(row_names, extract_col_names);
+		drop_cols(extract_col_names);
+	}
+	else if (extract_col_names.size() == 0)
+	{
+		new_mat = get(extract_row_names, col_names);
+		drop_rows(extract_row_names);
+	}
+	else
+	{
+		new_mat = get(extract_row_names, extract_col_names);
+		drop_rows(extract_row_names);
+		drop_cols(extract_col_names);
+	}
 	return new_mat;
 }
 
-void Mat::drop(vector<string> &drop_row_names, vector<string> &drop_col_names)
+void Mat::drop_cols(vector<string> &drop_col_names)
 {
-	vector<string> new_row_names, new_col_names;
-	vector<Eigen::Triplet<double>> triplet_list;
+	vector<string> missing_col_names;
+	for (auto &name : drop_col_names)
+		if (find(col_names.begin(), col_names.end(), name) == col_names.end())
+			missing_col_names.push_back(name);
 
-	//check that each of the drop_row_names and drop_col_names in row_names and col_names
+	if (missing_col_names.size() != 0)
+	{
+		cout << "Mat::drop() error: the following drop_col_names were not found:" << endl;
+		for (auto &name : drop_col_names)
+			cout << name << ',';
+		cout << endl;
+		throw runtime_error("Mat::drop() error: atleast one drop col name not found");
+	}
+	vector<string> new_col_names;
+	if (drop_col_names.size() == 0) new_col_names = col_names;
+	else
+	{
+		vector<string> new_col_names;
+		for (auto &name : col_names)
+			if (find(drop_col_names.begin(), drop_col_names.end(), name) == drop_col_names.end())
+				new_col_names.push_back(name);
+	}
+	Mat new_mat = get(row_names, new_col_names);
+	matrix = new_mat.get_matrix();
+	col_names = new_col_names;
+	mattype = new_mat.get_mattype();
+}
 
-
-
-
+void Mat::drop_rows(vector<string> &drop_row_names)
+{
+	
+	vector<string> missing_row_names;	
+	for (auto &name : drop_row_names)
+		if (find(row_names.begin(), row_names.end(), name) == row_names.end())
+			missing_row_names.push_back(name);
+		
+	if (missing_row_names.size() != 0)
+	{
+		cout << "Mat::drop() error: the following drop_row_names were not found:" << endl;
+		for (auto &name : drop_row_names)
+			cout << name << ',';
+		cout << endl;
+		throw runtime_error("Mat::drop() error: atleast one drop row name not found");
+	}
 	 
-
+	vector<string> new_row_names;
+	if (drop_row_names.size() == 0) new_row_names = row_names;
+	else
+	{
+		for (auto &name : row_names)
+			if (find(drop_row_names.begin(), drop_row_names.end(), name) == drop_row_names.end())
+				new_row_names.push_back(name);
+	}
+	
+	Mat new_mat = get(new_row_names, col_names);
+	matrix = new_mat.get_matrix();
+	row_names = new_row_names;
+	mattype = new_mat.get_mattype();
 }
 
 
@@ -455,7 +680,18 @@ Covariance Covariance::get(vector<string> &other_names)
 {
 	Covariance new_cov(Mat::get(other_names, other_names));
 	return new_cov;
+}
 
+Covariance Covariance::extract(vector<string> &extract_names)
+{
+	Covariance new_cov(Mat::extract(extract_names, extract_names));
+	return new_cov;
+}
+
+void Covariance::drop(vector<string> &drop_names)
+{
+	drop_rows(drop_names);
+	drop_cols(drop_names);
 }
 
 void Covariance::from_uncertainty_file(const string &filename)
@@ -466,7 +702,6 @@ void Covariance::from_uncertainty_file(const string &filename)
 		throw runtime_error("cannot open " + filename + " to read uncertainty file: "+filename);
 	}
 	mattype = MatType::DIAGONAL;
-	
 	vector<Eigen::Triplet<double>> triplet_list;
 	vector<string> names;
 	string line,name;
@@ -489,7 +724,6 @@ void Covariance::from_uncertainty_file(const string &filename)
 							from uncertainty file:" + filename);
 					pest_utils::upper_ip(line);
 					if (line.find("END") != string::npos) break;
-
 					tokens.clear();
 					pest_utils::tokenize(line, tokens);
 					pest_utils::convert_ip(tokens[1], val);					
