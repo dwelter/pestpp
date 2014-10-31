@@ -10,11 +10,12 @@
 
 int main(int argc, char* argv[])
 {
+	//todos: schur: normalize weights by residuals; 
+	//errvar: KL scaling, qhalf calc, R, I-R, G
+
+
 	Pest pest_scenario;
 	string pst_filename = "pest_1par.pst";
-	//ifstream ipst(pst_filename);
-	//pest_scenario.process_ctl_file(ipst, pst_filename);
-	//ipst.close();
 
 	Covariance parcov;
 	parcov.from_parameter_bounds(pst_filename);
@@ -29,7 +30,7 @@ int main(int argc, char* argv[])
 	//Eigen::SparseMatrix<double> prod = parcov_t.get_matrix() * jacobian.transpose().get_matrix() * parcov.get_matrix();
 	//Mat result(parcov.get_row_names(), parcov.get_row_names(), prod, Mat::MatType::DENSE);
 	vector<string> empty{}; 
-	Mat pvec_t = jacobian.extract(vector<string>{"H02_08"},empty );
+	Mat pvec_t = jacobian.extract(vector<string>{"H02_08"},vector<string>() );
 	Mat pvec = pvec_t.T();
  	Mat posterior = ((jacobian.T() * obscov.inv() * jacobian) + parcov.inv()).inv();
 	Mat inv = posterior.inv();

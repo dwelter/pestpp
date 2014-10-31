@@ -19,16 +19,35 @@ using namespace std;
 //---------------------------------------
 //Mat constructors
 //---------------------------------------
-Mat::Mat(vector<string> _row_names, vector<string> _col_names, Eigen::SparseMatrix<double> _matrix)
+
+Mat::Mat(string filename)
+{
+	//todo: load from filename -> .jco/.jcb or .mat or...throw on .pst
+	pest_utils::upper_ip(filename);
+	if ((filename.find(".JCO") != string::npos) || (filename.find(".JCB")))
+		from_binary(filename);
+	else if (filename.find(".MAT") != string::npos)
+		from_ascii(filename);
+	else
+		throw runtime_error("Mat::Mat() error: only .jco/.jcb or .mat\
+							 files can be used to instatiate a Mat");
+
+}
+
+
+Mat::Mat(vector<string> _row_names, vector<string> _col_names, 
+	Eigen::SparseMatrix<double> _matrix,bool _autoalign)
 {
 	row_names = _row_names;
 	col_names = _col_names;
 	assert(row_names.size() == _matrix.rows());
 	assert(col_names.size() == _matrix.cols());
 	matrix = _matrix;
+	autoalign = _autoalign;
 }
 
-Mat::Mat(vector<string> _row_names, vector<string> _col_names, Eigen::SparseMatrix<double> _matrix, MatType _mattype)
+Mat::Mat(vector<string> _row_names, vector<string> _col_names, 
+	Eigen::SparseMatrix<double> _matrix, MatType _mattype, bool _autoalign)
 {
 	row_names = _row_names;
 	col_names = _col_names;
@@ -36,6 +55,7 @@ Mat::Mat(vector<string> _row_names, vector<string> _col_names, Eigen::SparseMatr
 	assert(col_names.size() == _matrix.cols());
 	matrix = _matrix;
 	mattype = _mattype;
+	autoalign = _autoalign;
 }
 
 //--------------------------------------
@@ -45,6 +65,87 @@ const Eigen::SparseMatrix<double>* Mat::get_matrix_ptr()
 {
 	const Eigen::SparseMatrix<double>* ptr = &matrix;
 	return ptr;
+}
+
+const Eigen::SparseMatrix<double>* Mat::get_U_ptr()
+{
+	if (U.rows() == 0)
+	{
+		SVD();
+	}
+	const Eigen::SparseMatrix<double>* ptr = &U;
+	return ptr;
+}
+
+const Eigen::SparseMatrix<double>* Mat::get_V_ptr()
+{
+	if (V.rows() == 0)
+	{
+		SVD();
+	}
+	const Eigen::SparseMatrix<double>* ptr = &V;
+	return ptr;
+}
+
+const Eigen::VectorXd* Mat::get_s_ptr()
+{
+	if (s.size() == 0)
+	{
+		SVD();
+	}
+	const Eigen::VectorXd* ptr = &s;
+	return ptr;
+}
+
+Mat Mat::get_U()
+{
+	if (U.rows() == 0) SVD();
+	vector<string> u_col_names;
+	stringstream ss;
+	for (int i = 0; i < nrow(); i++)
+	{
+	ss.clear();
+	ss << "left_sing_vec_";
+	ss << i + 1;
+	u_col_names.push_back(ss.str());
+	}
+	return Mat(row_names, u_col_names, U, MatType::DENSE,false);
+}
+
+Mat Mat::get_V()
+{
+	if (V.rows() == 0) SVD();
+	vector<string> v_col_names;
+	stringstream ss;
+	for (int i = 0; i < ncol(); i++)
+	{
+		ss.clear();
+		ss << "right_sing_vec_";
+		ss << i + 1;
+		v_col_names.push_back(ss.str());
+	}
+	return Mat(col_names, v_col_names, V, MatType::DENSE,false);
+}
+
+
+Mat Mat::get_s()
+{
+	if (V.rows() == 0) SVD();
+	vector<string> s_names;
+	vector<Eigen::Triplet<double>> triplet_list;
+	stringstream ss;
+	for (int i = 0; i < s.size(); i++)
+	{
+		ss.clear();
+		ss << "sing_val_";
+		ss << i + 1;
+		s_names.push_back(ss.str());
+		triplet_list.push_back(Eigen::Triplet<double>(i, i, s[i]));
+	}
+	Eigen::SparseMatrix<double> s_mat;
+	s_mat.setZero();
+	s_mat.setFromTriplets(triplet_list.begin(), triplet_list.end());
+	return Mat(s_names, s_names, s_mat , MatType::DIAGONAL,false);
 }
 
 Mat Mat::transpose()
@@ -70,7 +171,7 @@ void Mat::transpose_ip()
 
 Mat Mat::inv()
 {
-	if (nrow() != ncol()) throw runtime_error("only symmetric positive definite matrices can be inverted with Mat::inv()");
+	if (nrow() != ncol()) throw runtime_error("Mat::inv() error: only symmetric positive definite matrices can be inverted with Mat::inv()");
 	if (mattype == MatType::DIAGONAL)
 	{
 		Eigen::VectorXd diag = matrix.diagonal();
@@ -94,8 +195,17 @@ Mat Mat::inv()
 	Eigen::SparseMatrix<double> I(nrow(), nrow());
 	I.setIdentity();
 	Eigen::SparseMatrix<double> matrix_inv = solver.solve(I);
-	return Mat(row_names, col_names, matrix_inv, MatType::DENSE);
+	return Mat(row_names, col_names, matrix_inv, MatType::DENSE,autoalign);
 }
+
+void Mat::SVD()
+{
+	Eigen::JacobiSVD<Eigen::MatrixXd> svd_fac(matrix, Eigen::DecompositionOptions::ComputeFullU | Eigen::DecompositionOptions::ComputeFullV);
+	s = svd_fac.singularValues();
+	U = svd_fac.matrixU().sparseView();
+	V = svd_fac.matrixV().sparseView();
+}
+
 
 
 //---------------------------------------
@@ -121,14 +231,28 @@ Mat Mat::operator+(Mat &other_mat)
 	MatType new_mattype = MatType::DENSE;
 	if ((mattype == MatType::DIAGONAL) && (other_mat.get_mattype() == MatType::DIAGONAL))
 		new_mattype = MatType::DIAGONAL;
+	//if someone isn't wanting to autoalign, then just check the dimensions
+	if ((!autoalign) || (!other_mat.get_autoalign()))
+	{
+		if ((nrow() != other_mat.nrow()) || (ncol() != other_mat.ncol()))
+		{
+			stringstream ss;
+			ss << "Mat objects not aligned for '+': (" << nrow() << ',' << ncol();
+			ss << ") | (" << other_mat.nrow() << ',' << other_mat.ncol() << ')';
+			throw runtime_error("Mat::operator+ss() error:" +ss.str());
+		}
+		return Mat(row_names, col_names, matrix + *other_mat.get_matrix_ptr(), MatType::DENSE, false);
+	}
+
+	//auto align for element-wise addition
 	for (auto &name : other_mat.get_col_names())
 		if (find(col_names.begin(), col_names.end(), name) != col_names.end())
 			common_cols.push_back(name);
 	for (auto &name : other_mat.get_row_names())
 		if (find(row_names.begin(), row_names.end(), name) != row_names.end())
 			common_rows.push_back(name);
-	if (common_cols.size() == 0) throw runtime_error("Mat::operator+ error: no common cols found");
-	if (common_rows.size() == 0) throw runtime_error("Mat::operator+ error: no common rows found");
+	if (common_cols.size() == 0) throw runtime_error("Mat::operator+() error: no common cols found");
+	if (common_rows.size() == 0) throw runtime_error("Mat::operator+() error: no common rows found");
 	//no realignment needed
 	if ((common_cols == col_names) && (common_cols == other_mat.get_col_names())
 		&& (common_rows == row_names) && (common_rows == other_mat.get_row_names()))
@@ -154,8 +278,6 @@ Mat Mat::operator+(Mat &other_mat)
 	}
 }
 
-
-
 Mat Mat::operator*(double val)
 {
 	return Mat(row_names, col_names, matrix*val);
@@ -163,11 +285,23 @@ Mat Mat::operator*(double val)
 
 Mat Mat::operator*(Mat &other_mat)
 {
-	//find common this.col_names and other_mat.row_names
-	//if (row_names != other_mat.get_col_names())
+	
 	MatType new_mattype = MatType::DENSE;
 	if ((mattype == MatType::DIAGONAL) && (other_mat.get_mattype() == MatType::DIAGONAL))
 		new_mattype = MatType::DIAGONAL;
+	
+	if ((!autoalign) || (!other_mat.get_autoalign()))
+	{
+		if (nrow() != other_mat.ncol())
+		{
+			stringstream ss;
+			ss << "Mat objects not aligned for '*': (" << nrow() << ',' << ncol();
+			ss << ") | (" << other_mat.nrow() << ',' << other_mat.ncol() << ')';
+			throw runtime_error("Mat::operator*() error: "+ss.str());
+		}
+		return Mat(row_names, other_mat.get_col_names(), matrix * *other_mat.get_matrix_ptr(), MatType::DENSE, false);
+	}
+
 	vector<string> common;
 	for (auto &row_name : other_mat.get_row_names())
 	{
@@ -181,7 +315,7 @@ Mat Mat::operator*(Mat &other_mat)
 		cout << endl << "other_mat.row_names:" << endl;
 		for (auto &name : other_mat.get_row_names()) cout << name << ',';
 		cout << endl;
-		throw runtime_error("no common elements found in Mat::operator*");
+		throw runtime_error("Mat::operator+() error: no common elements found in Mat::operator*");
 	}
 	//no realignment needed...
 	if ((common == col_names) && (common == other_mat.get_row_names()))
@@ -232,7 +366,8 @@ void Mat::to_ascii(const string &filename)
 	ofstream out(filename);
 	if (!out.good())
 	{
-		throw runtime_error("cannot open " + filename + " to write ASCII matrix");
+		throw runtime_error("Mat::to_ascii() error: cannot open " + filename + "\
+													 to write ASCII matrix");
 	}
 	out << setw(6) << nrow() << setw(6) << ncol() << setw(6) << icode << endl;
 	out << setprecision(9) << matrix;
@@ -259,11 +394,12 @@ void Mat::from_ascii(const string &filename)
 {
 	ifstream in(filename);
 	if (!in.good()) 
-		throw runtime_error("cannot open " + filename + " to read ASCII matrix");
+		throw runtime_error("Mat::from_ascii() error: cannot open " + filename + " \
+												to read ASCII matrix");
 	int nrow = -999, ncol = -999;
 	if (in >> nrow >> ncol >> icode){}
 	else
-		throw runtime_error("error reading nrow ncol icode from first line\
+		throw runtime_error("Mat::from_ascii() error reading nrow ncol icode from first line\
 							 of ASCII matrix file: " + filename);
 
 	vector<Eigen::Triplet<double>> triplet_list;
@@ -285,7 +421,7 @@ void Mat::from_ascii(const string &filename)
 		else
 		{
 			string i_str = to_string(inode);
-			throw runtime_error("error reading entry number "+i_str+" from\
+			throw runtime_error("Mat::from_ascii() error reading entry number "+i_str+" from\
 								 ASCII matrix file: "+filename);
 		}
 	}
@@ -294,16 +430,16 @@ void Mat::from_ascii(const string &filename)
 	//read the newline char
 	getline(in, header);
 	if (!getline(in,header))
-		throw runtime_error("error reading row/col description\
+		throw runtime_error("Mat::from_ascii() error reading row/col description\
 							 line from ASCII matrix file: " + filename);
 	pest_utils::upper_ip(header);
 	string name;
 	if (icode == 1)
 	{
 		if (nrow != ncol)
-			throw runtime_error("nrow != ncol for icode type 1 ASCII matrix file:" + filename);
+			throw runtime_error("Mat::from_ascii() error: nrow != ncol for icode type 1 ASCII matrix file:" + filename);
 		if((header.find("ROW") == string::npos) || (header.find("COLUMN") == string::npos))
-			throw runtime_error("expecting row and column names header instead\
+			throw runtime_error("Mat::from_ascii() error: expecting row and column names header instead\
 								 of:" + header + " in ASCII matrix file: " + filename);
 		try
 		{
@@ -311,44 +447,44 @@ void Mat::from_ascii(const string &filename)
 		}
 		catch (exception &e)
 		{
-			throw runtime_error("error reading row/column names from ASCII matrix file: " + filename + "\n" + e.what());
+			throw runtime_error("Mat::from_ascii() error reading row/column names from ASCII matrix file: " + filename + "\n" + e.what());
 		}
 		if ((nrow != row_names.size()) || (ncol != row_names.size()))
-			throw runtime_error("nuymber of row/col names does not match matrix dimensions");
+			throw runtime_error("Mat::from_ascii() error: number of row/col names does not match matrix dimensions");
 		col_names = row_names;
 	}
 	else
 	{
 		if(header.find("ROW") == string::npos)
-			throw runtime_error("expecting row names header instead of:" + header + " in ASCII matrix file: " + filename);
+			throw runtime_error("Mat::from_ascii() error: expecting row names header instead of:" + header + " in ASCII matrix file: " + filename);
 		try
 		{
 			row_names = read_namelist(in, nrow);
 		}
 		catch (exception &e)
 		{
-			throw runtime_error("error reading row names from ASCII matrix file: " + filename + "\n" + e.what());
+			throw runtime_error("Mat::from_ascii() error reading row names from ASCII matrix file: " + filename + "\n" + e.what());
 		}
 		if (!getline(in, header))
 		{
-			throw runtime_error("error reading column name descriptor from ASCII matrix file: " + filename);
+			throw runtime_error("Mat::from_ascii() error reading column name descriptor from ASCII matrix file: " + filename);
 		}
 		pest_utils::upper_ip(header);
 		if (header.find("COLUMN") == string::npos)
-			throw runtime_error("expecting column names header instead of:" + header + " in ASCII matrix file: " + filename);
+			throw runtime_error("Mat::from_ascii() error: expecting column names header instead of:" + header + " in ASCII matrix file: " + filename);
 		try
 		{
 			col_names = read_namelist(in, ncol);
 		}
 		catch (exception &e)
 		{
-			throw runtime_error("error reading column names from ASCII matrix file: " + filename + "\n" + e.what());
+			throw runtime_error("Mat::from_ascii() error reading column names from ASCII matrix file: " + filename + "\n" + e.what());
 		}
 		if (nrow != row_names.size())
-			throw runtime_error("nrow != row_names.size() in ASCII matrix file: " + filename);
+			throw runtime_error("Mat::from_ascii() error: nrow != row_names.size() in ASCII matrix file: " + filename);
 
 		if(ncol != col_names.size())
-			throw runtime_error("ncol != col_names.size() in ASCII matrix file: " + filename);
+			throw runtime_error("Mat::from_ascii() error: ncol != col_names.size() in ASCII matrix file: " + filename);
 
 	}
 	in.close();
@@ -368,16 +504,16 @@ vector<string> Mat::read_namelist(ifstream &in, int &nitems)
 		if (!getline(in, name))
 		{
 			string i_str = to_string(i);
-			throw runtime_error("error name for entry " + i_str);
+			throw runtime_error("Mat::read_namelist() error reading name for entry " + i_str);
 		}
 		if (name.find("*") != string::npos)
 		{
 			string i_str = to_string(i);
-			throw runtime_error("'*' found in item name: " + name+", item number: "+i_str);
+			throw runtime_error("Mat::read_namelist() error: '*' found in item name: " + name+", item number: "+i_str);
 		}
 		pest_utils::upper_ip(name);
 		if (find(names.begin(), names.end(), name) != names.end())
-			throw runtime_error("duplicate name: " + name + " found in name list");
+			throw runtime_error("Mat::read_namelist() error: duplicate name: " + name + " found in name list");
 		names.push_back(name);
 	}
 	return names;
@@ -404,7 +540,7 @@ void Mat::from_binary(const string &filename)
 	// read header
 	in.read((char*)&n_par, sizeof(n_par));
 	in.read((char*)&n_obs_and_pi, sizeof(n_obs_and_pi));
-	if (n_par > 0) throw runtime_error("binary matrix file " + filename + " was produced by deprecated version of PEST");
+	if (n_par > 0) throw runtime_error("Mat:::from_binary() error: binary matrix file " + filename + " was produced by deprecated version of PEST");
 
 	n_par = -n_par;
 	n_obs_and_pi = -n_obs_and_pi;
@@ -479,7 +615,7 @@ Mat Mat::get(vector<string> &new_row_names, vector<string> &new_col_names)
 
 	if (row_not_found.size() != 0)
 	{
-		cout << "error in Mat::get(): the following row names were not found:" << endl;
+		cout << "Mat::get() error: the following row names were not found:" << endl;
 		for (auto &name : row_not_found)
 			cout << name << ",";
 		cout << endl;
@@ -487,7 +623,7 @@ Mat Mat::get(vector<string> &new_row_names, vector<string> &new_col_names)
 
 	if (col_not_found.size() != 0)
 	{
-		cout << "error in Mat::get(): the following col names were not found:" << endl;
+		cout << "Mat::get() error: the following col names were not found:" << endl;
 		for (auto &name : col_not_found)
 			cout << name << ",";
 		cout << endl;
@@ -495,7 +631,7 @@ Mat Mat::get(vector<string> &new_row_names, vector<string> &new_col_names)
 
 	if ((row_not_found.size() != 0) || (col_not_found.size() != 0))
 	{
-		throw runtime_error("atleast one row or col name not found in Mat::get()");
+		throw runtime_error("Mat::get() error: atleast one row or col name not found in Mat::get()");
 	}
 
 
@@ -545,7 +681,7 @@ Mat Mat::get(vector<string> &new_row_names, vector<string> &new_col_names)
 		}
 	}
 	if (triplet_list.size() == 0)
-		throw runtime_error("Mat::get(): triplet list is empty");
+		throw runtime_error("Mat::get() error: triplet list is empty");
 	Eigen::SparseMatrix<double> new_matrix(nrow, ncol);
 	new_matrix.setZero();
 	new_matrix.setFromTriplets(triplet_list.begin(), triplet_list.end());
@@ -643,6 +779,21 @@ void Mat::drop_rows(vector<string> &drop_row_names)
 //-----------------------------------------
 //covariance matrices
 //-----------------------------------------
+Covariance::Covariance(string filename)
+{
+	//todo: load from filename -> .jco/.jcb or .mat or...throw on .pst
+	pest_utils::upper_ip(filename);
+	if (filename.find(".PST"))
+		throw runtime_error("Cov::Cov() error: cannot instantiate a cov with PST");
+	else if (filename.find(".MAT") != string::npos)
+		from_ascii(filename);
+	else if (filename.find(".UNC") != string::npos)
+		from_uncertainty_file(filename);
+	else
+		throw runtime_error("Cov::Cov() error: only .unc or .mat\
+														 files can be used to instatiate a Cov");
+}
+
 Covariance::Covariance(vector<string> &names)
 {
 	row_names = names;
@@ -658,7 +809,7 @@ Covariance::Covariance()
 Covariance::Covariance(vector<string> _names, Eigen::SparseMatrix<double> _matrix)
 {	
 	if ((_names.size() != _matrix.rows()) || (_names.size() != _matrix.cols()))
-		throw runtime_error("Covariance::Covariance(): names.size() does not match matrix dimensions");
+		throw runtime_error("Covariance::Covariance() error: names.size() does not match matrix dimensions");
 	matrix = _matrix;
 	row_names = _names;
 	col_names = _names;
@@ -668,7 +819,7 @@ Covariance::Covariance(vector<string> _names, Eigen::SparseMatrix<double> _matri
 Covariance::Covariance(Mat _mat)
 {
 	if (_mat.get_row_names() != _mat.get_col_names())
-		throw runtime_error("error instantiating Covariance from Mat: row_names != col_names");
+		throw runtime_error("Cov::Cov() error instantiating Covariance from Mat: row_names != col_names");
 	row_names = _mat.get_row_names();
 	col_names = _mat.get_col_names();
 	matrix = _mat.get_matrix();
@@ -699,7 +850,7 @@ void Covariance::from_uncertainty_file(const string &filename)
 	ifstream in(filename);
 	if (!in.good())
 	{
-		throw runtime_error("cannot open " + filename + " to read uncertainty file: "+filename);
+		throw runtime_error("Cov::from_uncertainty_file() error: cannot open " + filename + " to read uncertainty file: "+filename);
 	}
 	mattype = MatType::DIAGONAL;
 	vector<Eigen::Triplet<double>> triplet_list;
@@ -720,7 +871,7 @@ void Covariance::from_uncertainty_file(const string &filename)
 				while (true)
 				{
 					if (!getline(in, line))
-						throw runtime_error("EOF encountered while reading standard_deviation block\
+						throw runtime_error("Cov::from_uncertainty_file() error:EOF encountered while reading standard_deviation block\
 							from uncertainty file:" + filename);
 					pest_utils::upper_ip(line);
 					if (line.find("END") != string::npos) break;
@@ -742,7 +893,7 @@ void Covariance::from_uncertainty_file(const string &filename)
 				while (true)
 				{
 					if (!getline(in, line))
-						throw runtime_error("EOF encountered while reading covariance_matrix block\
+						throw runtime_error("Cov::from_uncertainty_file() error:EOF encountered while reading covariance_matrix block\
 							from uncertainty file:" + filename);
 					pest_utils::upper_ip(line);
 					if (line.find("END") != string::npos) break;
@@ -754,7 +905,7 @@ void Covariance::from_uncertainty_file(const string &filename)
 					else if (tokens[0].find("VARIANCE") != string::npos)
 						pest_utils::convert_ip(tokens[1], var_mult);
 					else
-						throw runtime_error("unrecognized token:" + tokens[0] + " in covariance matrix block in uncertainty file:" + filename);
+						throw runtime_error("Cov::from_uncertainty_file() error:unrecognized token:" + tokens[0] + " in covariance matrix block in uncertainty file:" + filename);
 				}
 				//read the covariance matrix
 				Covariance cov;
@@ -775,7 +926,7 @@ void Covariance::from_uncertainty_file(const string &filename)
 					for (auto &name : dup_names)
 						cout << name << ',';
 					cout << endl;
-					throw runtime_error("atleast one name in covariance matrix " + cov_filename + " is already listed in uncertainty file: " + filename);
+					throw runtime_error("Cov::from_uncertainty_file() error:atleast one name in covariance matrix " + cov_filename + " is already listed in uncertainty file: " + filename);
 				}
 
 				//build triplets from the covariance matrix
@@ -795,7 +946,7 @@ void Covariance::from_uncertainty_file(const string &filename)
 				irow = jcol;
 			}
 			else
-				throw runtime_error("unrecognized block:" + line + " in uncertainty file:" + filename);
+				throw runtime_error("Cov::from_uncertainty_file() error:unrecognized block:" + line + " in uncertainty file:" + filename);
 		}
 	}
 
@@ -839,7 +990,7 @@ void Covariance::from_parameter_bounds(Pest &pest_scenario)
 	}
 	else
 	{
-		throw runtime_error("Error loading covariance from parameter bounds: no non-fixed/non-tied parameters found");
+		throw runtime_error("Cov::from_parameter_bounds() error:Error loading covariance from parameter bounds: no non-fixed/non-tied parameters found");
 	}
 	mattype = Mat::MatType::DIAGONAL;
 }
@@ -885,7 +1036,7 @@ void Covariance::from_observation_weights(Pest &pest_scenario)
 	}
 	else
 	{
-		throw runtime_error("Error loading covariance from obs weights: no non-zero weighted obs found");
+		throw runtime_error("Cov::from_observation_weights() error:Error loading covariance from obs weights: no non-zero weighted obs found");
 	}
 	mattype = Mat::MatType::DIAGONAL;
 
@@ -897,7 +1048,7 @@ void Covariance::to_uncertainty_file(const string &filename)
 	ofstream out(filename);
 	if (!out.good())
 	{
-		throw runtime_error("Error opening file: " + filename + " to write an uncertainty file");
+		throw runtime_error("Cov::to_uncertainty_file() error opening file: " + filename + " to write an uncertainty file");
 	}
 
 	//check if diagonal, write stdevs
