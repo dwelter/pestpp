@@ -17,6 +17,23 @@ You should have received a copy of the GNU General Public License
 along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
 
+
+/*
+NOTE:
+	This project can be compiled under different configurations, and produces a different binary
+	based on the configuration chosen.  To change configurations, you will need to go into the 
+	configuration manager and choose the configuration that matches your need.
+
+	Default Configuration:
+	pbin2ascii.exe - Choose the Debug/Release configuration
+
+
+	pbin2par.exe - Choose the pbin2par-Debug/pbin2par-Release configuration
+
+	pbin2ascmat.exe - Choose the pbin2ascmat-Debug/pbin2ascmat-Release configuration
+
+*/
+
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -44,6 +61,7 @@ using namespace std;
 
 void usage(string exeName, ostream &fout)
 {
+
 	fout << "--------------------------------------------------------" << endl;
 	fout << "usage:" << endl << endl;
 	fout << " " << exeName << " ext_file runs_file";
@@ -65,6 +83,7 @@ void usage(string exeName, ostream &fout)
 	fout << "--------------------------------------------------------" << endl;
 }
 
+
 int main(int argc, char* argv[])
 {
 	string exeName = argv[0];
@@ -72,10 +91,9 @@ int main(int argc, char* argv[])
 
 	if(argc != EXPECTED_ARG_COUNT)
 	{
-		cerr << "Error: incorrect number of command line arguements" << endl << endl;
+		cerr << "Error: incorrect number of command line arguments" << endl << endl;
 		usage(exeName, cerr);
 		return 1;
-		//throw PestError("Error: incorect number of command line arguements");
 	}
 
 	string ext_filename = argv[1];
@@ -88,18 +106,31 @@ int main(int argc, char* argv[])
 
 
 	string pbin_filename;
+	string errorMessage;
 	try
 	{
 		ifstream fin_ext(ext_filename);
+		if(!fin_ext.good())
+		{	
+			fin_ext.close();
+			throw PestFileError(ext_filename);
+		}
 		getline(fin_ext, pbin_filename);
 		pest_utils::strip_ip(pbin_filename);
+		fin_ext.close();
+
+		if(pbin_filename == "")
+		{
+			throw runtime_error("PEST binary file not specified in *.ext \"" + ext_filename + "\": line 1");
+		}
 	}
 	catch (exception &e)
 	{
-		cerr << "Error processing external run manager *.ext \"" << pbin_filename << "\"";
-		cerr << e.what() << endl;
-		usage(exeName, cerr);
-		throw(e);
+		cerr << "Error processing external run manager *.ext \"" << ext_filename << "\"" << endl;
+		cerr << e.what() << endl << endl;
+		//usage(exeName, cerr);
+		return 1;
+	//	throw(e);
 	}
 
 
@@ -110,10 +141,11 @@ int main(int argc, char* argv[])
 	}
 	catch (exception &e)
 	{
-		cerr << "Error processing PEST++ binary file \"" << pbin_filename << "\"";
+		cerr << "Error processing PEST++ binary file \"" << pbin_filename << "\"" << endl;
 		cerr << e.what() << endl;
-		usage(exeName, cerr);
-		throw(e);
+		//usage(exeName, cerr);
+		return 1;
+		//throw(e);
 	}
 
 	vector<string> par_name_vec = rs.get_par_name_vec();
@@ -122,7 +154,7 @@ int main(int argc, char* argv[])
 	ofstream fout(out_filename);
 
 	int n_runs = rs.get_nruns();
-	cout << "processing " << n_runs << " runs" << endl;
+	std::cout << "processing " << n_runs << " runs" << endl;
 
 	int status = 0;
 	string info_text;
