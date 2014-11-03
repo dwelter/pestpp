@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iomanip>
 #include <vector>
+#include <random>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include <Eigen/IterativeLinearSolvers>
@@ -105,6 +106,7 @@ Mat Mat::get_U()
 	for (int i = 0; i < nrow(); i++)
 	{
 	ss.clear();
+	ss.str(string());
 	ss << "left_sing_vec_";
 	ss << i + 1;
 	u_col_names.push_back(ss.str());
@@ -120,6 +122,7 @@ Mat Mat::get_V()
 	for (int i = 0; i < ncol(); i++)
 	{
 		ss.clear();
+		ss.str(string());
 		ss << "right_sing_vec_";
 		ss << i + 1;
 		v_col_names.push_back(ss.str());
@@ -137,12 +140,13 @@ Mat Mat::get_s()
 	for (int i = 0; i < s.size(); i++)
 	{
 		ss.clear();
+		ss.str(string());
 		ss << "sing_val_";
 		ss << i + 1;
 		s_names.push_back(ss.str());
 		triplet_list.push_back(Eigen::Triplet<double>(i, i, s[i]));
 	}
-	Eigen::SparseMatrix<double> s_mat;
+	Eigen::SparseMatrix<double> s_mat(s.size(),s.size());
 	s_mat.setZero();
 	s_mat.setFromTriplets(triplet_list.begin(), triplet_list.end());
 	return Mat(s_names, s_names, s_mat , MatType::DIAGONAL,false);
@@ -174,6 +178,7 @@ Mat Mat::inv()
 	if (nrow() != ncol()) throw runtime_error("Mat::inv() error: only symmetric positive definite matrices can be inverted with Mat::inv()");
 	if (mattype == MatType::DIAGONAL)
 	{
+		cout << "diagonal" << endl;
 		Eigen::VectorXd diag = matrix.diagonal();
 		diag = 1.0 / diag.array();
 		vector<Eigen::Triplet<double>> triplet_list;
@@ -217,7 +222,7 @@ ostream& operator<< (ostream &os, Mat mat)
 	cout << "row names : ";
 	for (auto &name : mat.get_row_names())
 		cout << name << ',';
-	cout << endl << "col names";
+	cout << endl << "col names : ";
 	for (auto &name : mat.get_col_names())
 		cout << name << ',';
 	cout << endl;
@@ -781,7 +786,6 @@ void Mat::drop_rows(vector<string> &drop_row_names)
 //-----------------------------------------
 Covariance::Covariance(string filename)
 {
-	//todo: load from filename -> .jco/.jcb or .mat or...throw on .pst
 	pest_utils::upper_ip(filename);
 	if (filename.find(".PST"))
 		throw runtime_error("Cov::Cov() error: cannot instantiate a cov with PST");
@@ -998,6 +1002,7 @@ void Covariance::from_parameter_bounds(Pest &pest_scenario)
 void Covariance::from_parameter_bounds(const string &pst_filename)
 {
 	ifstream ipst(pst_filename);
+	if (!ipst.good()) throw runtime_error("Cov::from_parameter_bounds() error opening pst file: " + pst_filename);
 	Pest pest_scenario;
 	pest_scenario.process_ctl_file(ipst, pst_filename);
 	from_parameter_bounds(pest_scenario);
@@ -1006,6 +1011,7 @@ void Covariance::from_parameter_bounds(const string &pst_filename)
 void Covariance::from_observation_weights(const string &pst_filename)
 {
 	ifstream ipst(pst_filename);
+	if (!ipst.good()) throw runtime_error("Cov::from_observation_weights() error opening pst file: " + pst_filename);
 	Pest pest_scenario;
 	pest_scenario.process_ctl_file(ipst, pst_filename);
 	from_observation_weights(pest_scenario);
@@ -1020,12 +1026,18 @@ void Covariance::from_observation_weights(Pest &pest_scenario)
 	for (auto obs_name : pest_scenario.get_ctl_ordered_obs_names())
 	{
 		pest_utils::upper_ip(obs_name);
-		obs_rec = pest_scenario.get_ctl_observation_info().get_observation_rec_ptr(obs_name);
-		if (obs_rec->weight > 0.0)
+		obs_rec = pest_scenario.get_ctl_observation_info().get_observation_rec_ptr(obs_name);		
+		
+		if (obs_rec->weight <= 0.0)
 		{
+			//cout << "warnging->assigning an artificial weight of 1.0e-30 to observation " << obs_name << endl;
+			//triplet_list.push_back(Eigen::Triplet<double>(i, i, 1.0e-30));
+		}
+		else
+		{
+			triplet_list.push_back(Eigen::Triplet<double>(i, i, pow(1.0 / obs_rec->weight, 2.0)));
 			row_names.push_back(obs_name);
 			col_names.push_back(obs_name);
-			triplet_list.push_back(Eigen::Triplet<double>(i, i, pow(1.0 / obs_rec->weight, 2.0)));
 			i++;
 		}
 	}
@@ -1073,5 +1085,26 @@ void Covariance::to_uncertainty_file(const string &filename)
 		out.close();
 		to_ascii("emu_cov.mat");
 	}
+}
 
+void Covariance::cholesky()
+{	
+	Eigen::SimplicialLLT<Eigen::SparseMatrix<double>> llt;
+	lower_cholesky = llt.matrixL();
+}
+
+vector<Eigen::VectorXd> Covariance::draw(int ndraws)
+{
+	throw runtime_error("Covariance::draw() not implemented");
+}
+
+vector<double> Covariance::standard_normal(default_random_engine gen)
+{
+	normal_distribution<double> stanard_normal(0.0, 1.0);
+	vector<double> sn_vec;
+	for (auto &name : row_names)
+	{
+		sn_vec.push_back(stanard_normal(gen));
+	}
+	return sn_vec;
 }

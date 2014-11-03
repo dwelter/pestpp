@@ -2,9 +2,11 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <random>
 #include<Eigen/Sparse>
 
 #include "Pest.h"
+#include "logger.h"
 
 using namespace std;
 
@@ -76,6 +78,7 @@ protected:
 	Eigen::SparseMatrix<double> U;
 	Eigen::SparseMatrix<double> V;
 	Eigen::VectorXd s;
+	Eigen::SparseMatrix<double> lower_chol;
 	vector<string> row_names;
 	vector<string> col_names;
 	int icode = 2;
@@ -108,6 +111,12 @@ public:
 
 	void to_uncertainty_file(const string &filename);
 
+	vector<Eigen::VectorXd> draw(int ndraws);
+	vector<double> standard_normal(default_random_engine gen);
+	void cholesky();
+
+private:
+	Eigen::SparseMatrix<double> lower_cholesky;
 };
 
 ostream& operator<< (std::ostream &os, Mat mat);

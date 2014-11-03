@@ -6,39 +6,77 @@
 #include <iostream>
 #include "Pest.h"
 #include "covariance.h"
+#include "logger.h"
 
 
 int main(int argc, char* argv[])
 {
 	//todos: schur: normalize weights by residuals; 
 	//errvar: KL scaling, qhalf calc, R, I-R, G
-
+	ofstream fout("emu.log");
+	Logger log(fout,true);
 
 	Pest pest_scenario;
-	string pst_filename = "pest_1par.pst";
+	string pst_filename = "pest.pst";
 
+	log.log("load parcov");
 	Covariance parcov;
 	parcov.from_parameter_bounds(pst_filename);
+	log.log("load parcov");
 
+	log.log("load obscov");
 	Covariance obscov;
 	obscov.from_observation_weights(pst_filename);
+	log.log("load obscov");
+	
+	//vector<string> obs_names = obscov.get_row_names();
+	//obs_names.erase(find(obs_names.begin(),obs_names.end(),string("O319_286")));
+	//Covariance test = obscov.get(obs_names);
 
+	log.log("load jco");
 	Mat jacobian;
-	jacobian.from_binary("pest_1par.jcb");
-	jacobian.to_ascii("pest_1par_jcb.mat");
+	jacobian.from_binary("pest.jco");
+	//jacobian.to_ascii("pest_jco.mat");
+	log.log("load jco");
 
-	//Eigen::SparseMatrix<double> prod = parcov_t.get_matrix() * jacobian.transpose().get_matrix() * parcov.get_matrix();
-	//Mat result(parcov.get_row_names(), parcov.get_row_names(), prod, Mat::MatType::DENSE);
-	vector<string> empty{}; 
-	Mat pvec_t = jacobian.extract(vector<string>{"H02_08"},vector<string>() );
-	Mat pvec = pvec_t.T();
- 	Mat posterior = ((jacobian.T() * obscov.inv() * jacobian) + parcov.inv()).inv();
-	Mat inv = posterior.inv();
+	log.log("inv obscov");
+	Mat obscov_inv = obscov.inv();
+	log.log("inv obscov");
+
+	log.log("jco_t");
+	Mat jacobian_t = jacobian.T();
+	log.log("jco_t");
+
+
+	log.log("calc post1");
+	Mat post1 = obscov_inv * jacobian;
+	log.log("calc post1");
+	log.log("calc post2");
+	post1 = jacobian_t * post1;
+	log.log("calc post2");
+	log.log("calc schur");
+	Mat posterior = (post1 + (parcov.inv())).inv();
+	log.log("calc schur");
+	log.log("write posterior");
 	posterior.to_ascii("emu_test_result.mat");
-	Mat prior_prd = pvec_t * parcov * pvec;
-	cout << "prior" << prior_prd << endl;
-	Mat post_prd = pvec_t * posterior * pvec;
-	cout << "posterior" << post_prd << endl;
+	log.log("write posterior");
+
+
+	log.log("get U");
+	Mat U = jacobian.get_U();
+	log.log("get U");
+	log.log("get V");
+	Mat V = jacobian.get_V();
+	log.log("get V");
+	log.log("get s");
+	Mat s = jacobian.get_s();
+	log.log("get s");
+	fout.close();
+	//cout << U;
+	//cout << V;
+	//cout << s;
+
+
 
 
 
