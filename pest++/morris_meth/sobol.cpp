@@ -1,3 +1,4 @@
+#include <fstream>
 #include <iostream>
 #include <vector>
 #include <Eigen/Dense>
@@ -11,6 +12,7 @@
 #include "ParamTransformSeq.h"
 #include "ModelRunPP.h"
 #include "Stats.h"
+#include "FileManager.h"
 
 using namespace std;
 using namespace Eigen;
@@ -26,8 +28,8 @@ Sobol::Sobol(const vector<string> &_adj_par_name_vec, const Parameters &_fixed__
 	}
 VectorXd Sobol::gen_rand_vec(long nsample, double min, double max)
 {
-	//std::uniform_real_distribution<double> distribution(min, max);
-	std::normal_distribution<> distribution((max+min)/ 2.0 , (max-min)/4.0);
+	std::uniform_real_distribution<double> distribution(min, max);
+	//std::normal_distribution<> distribution((max+min)/ 2.0 , (max-min)/4.0);
 	VectorXd v(nsample);
 	long v_len = v.size();
 	for (long i = 0; i<v_len; ++i)
@@ -111,6 +113,35 @@ void Sobol::assemble_runs(RunManagerAbstract &run_manager)
 	}
 }
 
+
+vector<double> Sobol::get_obs_vec(RunManagerAbstract &run_manager, int run_set, ModelRun &model_run, const string &obs_name)
+{
+	ModelRun run0 = model_run;
+
+	int run_b = run_set * n_sample;
+	int run_e = run_b + n_sample;
+
+	Parameters pars0;
+	Observations obs0;
+	int nrun = 0;
+	vector<double> obs_vec = vector<double>(n_sample, MISSING_DATA);
+	for (int run_id = run_b; run_id<run_e; ++run_id)
+	{
+		double obs = MISSING_DATA;
+		bool success = run_manager.get_run(run_id, pars0, obs0);
+		if (success)
+		{
+			run0.update_ctl(pars0, obs0);
+			obs = obs0.get_rec(obs_name);
+			if (obs == Observations::no_data) obs = MISSING_DATA;
+		}
+		obs_vec[nrun] = obs;
+		nrun++;
+	}
+	return obs_vec;
+}
+
+
 vector<double> Sobol::get_phi_vec(RunManagerAbstract &run_manager, int run_set, ModelRun &model_run)
 {
 	ModelRun run0 = model_run;
@@ -139,60 +170,87 @@ vector<double> Sobol::get_phi_vec(RunManagerAbstract &run_manager, int run_set, 
 
 void Sobol::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run)
 {
-	vector<double> ya = get_phi_vec(run_manager, 0, model_run);
-	vector<double> yb = get_phi_vec(run_manager, 1, model_run);
+	ofstream &fout_sbl = file_manager_ptr->open_ofile_ext("sbl");
+	fout_sbl << "Sobol Sensitivity for PHI" << endl;
+	calc_sen_single(run_manager, model_run, fout_sbl, string());
+
+	vector<string> obs_names = run_manager.get_obs_name_vec();
+	for (const string &iobs : obs_names)
+	{
+		fout_sbl << endl;
+		fout_sbl << "Sobol Sensitivity for observation \"" << iobs <<"\"" << endl;
+		calc_sen_single(run_manager, model_run, fout_sbl, iobs);
+	}
+
+	file_manager_ptr->close_file("sbl");
+}
+
+
+void Sobol::calc_sen_single(RunManagerAbstract &run_manager, ModelRun model_run, ofstream &fout_sbl, const string &obs_name)
+{
+	vector<double> ya;
+	vector<double> yb;
+	if (obs_name.empty())
+	{
+		ya = get_phi_vec(run_manager, 0, model_run);
+		yb = get_phi_vec(run_manager, 1, model_run);
+	}
+	else
+	{
+		ya = get_obs_vec(run_manager, 0, model_run, obs_name);
+		yb = get_obs_vec(run_manager, 1, model_run, obs_name);
+	}
+
+	vector<double> ya_yb_prod = vec_array_prod(ya, yb, MISSING_DATA);
+	vector<double> y_ab;
+	y_ab.reserve(ya.size() + yb.size()); // preallocate memory
+	y_ab.insert(y_ab.end(), ya.begin(), ya.end());
+	y_ab.insert(y_ab.end(), yb.begin(), yb.end());
 	
-	//cout <<"######### A " << endl;
-	//cout << "------YA--------" << endl;
-	//cout << "pars" << endl;
-	//cout << run_manager_ptr->get_model_parameters(0) << endl;
-	//cout << "phi" << endl;
-	//cout << ya << endl;
-	//cout << "------YA_end--------" << endl;
-	//cout <<"######### B " << endl;
-	//cout << "------YB--------" << endl;
-	//cout << yb << endl;
-	//cout << "------YB_end--------" << endl;
-	auto ya_stats = vec_calc_stats_missing_data(ya, MISSING_DATA);
-	double mean_ya = ya_stats["mean"];
-	double var_ya = sobol_u_missing_data(ya, ya, MISSING_DATA) - pow(mean_ya, 2.0);
-	 
+	//Compute Mean for the S_i's
+	double mean_sq_si = vec_mean_missing_data(ya_yb_prod, MISSING_DATA);
+	// Compute Var for S_i's
+	pair<double, size_t> data = sum_of_prod_missing_data(y_ab, y_ab, MISSING_DATA);
+	double var_si = data.first / (data.second - 2.0) - mean_sq_si;
+
+	//Compute Mean for the S_ti's
+	double mean_sq_sti = pow(vec_mean_missing_data(y_ab, MISSING_DATA), 2.0);
+	// Compute Var for S_ti's
+	double sti_u = sobol_u_missing_data(yb, yb, MISSING_DATA);
+	double var_sti = sti_u - mean_sq_sti;
+
 	cout << endl;
-	cout << "mean_ya=" << mean_ya << endl;
-	cout << "var_ya=" << var_ya << endl;
+	cout << "mean_sq_si=" << mean_sq_si << endl;
+	cout << "var_si=" << var_si << endl;
+	cout << "mean_sq_sti=" << mean_sq_si << endl;
+	cout << "var_sti=" << var_si << endl;
 	int npar = adj_par_name_vec.size();
+
+	fout_sbl << "parameter_name, s_i, st_i" << endl;
 	for (int i=0; i<npar; ++i)
 	{
 		cout << "nruns = " << run_manager.get_nruns() << endl;
 		cout <<"######### PAR = " << adj_par_name_vec[i] << endl;
-		vector<double> yci = get_phi_vec(run_manager, i + 2, model_run);
-
-		//{
-		//	auto covar_stats  =  vec_covar_missing_data(ya, yci, MISSING_DATA);
-		//	double mean_ya = covar_stats["mean_1"];
-		//	double var_ya = covar_stats["var_1"];
-		//	double mean_yci = covar_stats["mean_2"];
-		//	double var_yci = covar_stats["var_2"];
-		//	double covar = covar_stats["covar"];
-		//	cout << " - mean_ya=" << mean_ya << endl;
-	 //       cout << " - var_ya=" << var_ya << endl;
-		//	cout << " - mean_yci=" << mean_yci << endl;
-	 //       cout << " - var_yci=" << var_yci << endl;
-		//	cout << " - covar=" << covar << endl;
-		//	double si = covar / var_ya;
-		//	double st =  1 - covar / var_ya;
-		//	cout << "pararmeter " << adj_par_name_vec[i]  << "   si=" << si << ",   st=" << st << endl;
-		//    cout <<"######### END" << endl;
-		//}
+		vector<double> yci;
+		if (obs_name.empty())
+		{
+			yci = get_phi_vec(run_manager, i + 2, model_run);
+		}
+		else
+		{
+			yci = get_obs_vec(run_manager, i + 2, model_run, obs_name);
+		}
 
 		double sobol_uj = sobol_u_missing_data(ya, yci, MISSING_DATA);
-		cout << " U=" << (sobol_uj - pow(mean_ya, 2.0)) << "  yar_ya= " << var_ya  <<  endl;
-		double si = (sobol_uj -  pow(mean_ya, 2.0)) / var_ya;
+		cout << " U=" << (sobol_uj - mean_sq_si) << "  var_si= " << var_si << endl;
+		double si = (sobol_uj - mean_sq_si) / var_si;
 
 		double sobol_umj = sobol_u_missing_data(yb, yci, MISSING_DATA);
-		double st =  1 - (sobol_umj - pow(mean_ya, 2.0)) / var_ya;
+		double sti = 1 - (sobol_umj - mean_sq_sti) / var_sti;
 
-		cout << "pararmeter " << adj_par_name_vec[i]  << "   si=" << si << ",   st=" << st << endl;
+		cout << "pararmeter " << adj_par_name_vec[i] << "   si=" << si << ",   sti=" << sti << endl;
 		cout <<"######### END" << endl;
+
+		fout_sbl << adj_par_name_vec[i] << ", " << si << ", " << sti << endl;
 	}
 }

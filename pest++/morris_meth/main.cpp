@@ -318,6 +318,8 @@ int main(int argc, char* argv[])
 	{
 		//Allocates Space for Run Manager.  This initializes the model parameter names and observations names.
 		//Neither of these will change over the course of the simulation
+		cout << endl;
+		cout << "Building model run parameter sets..." << endl;
 		run_manager_ptr->initialize(base_partran_seq.ctl2model_cp(ctl_par), pest_scenario.get_ctl_observations());
 
 		Parameters model_pars = base_partran_seq.ctl2model_cp(ctl_par);

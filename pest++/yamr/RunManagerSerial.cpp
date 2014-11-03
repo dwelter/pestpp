@@ -215,7 +215,7 @@ void RunManagerSerial::run()
 				obs.clear();
 				obs.insert(obs_name_vec, obs_vec);								
 				file_stor.update_run(i_run, pars, obs);
-				
+
 			}
 			catch (const std::exception& ex)
 			{
