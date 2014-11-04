@@ -17,14 +17,14 @@ class Mat
 	
 public:
 	enum class MatType{ DENSE, DIAGONAL, BLOCK };
-	Mat(){};
+	Mat(){ autoalign = true; };
 	Mat(string filename);
 	Mat(vector<string> _row_names, vector<string> _col_names)
 		{ row_names = _row_names,col_names = _col_names; }
 	Mat(vector<string> _row_names, vector<string> _col_names, 
-		Eigen::SparseMatrix<double> _matrix,bool _auto_align=true);
+		Eigen::SparseMatrix<double> _matrix,bool _autoalign=true);
 	Mat(vector<string> _row_names, vector<string> _col_names, 
-		Eigen::SparseMatrix<double> _matrix, MatType _mattype,bool _auto_align=true);
+		Eigen::SparseMatrix<double> _matrix, MatType _mattype,bool _autoalign=true);
 	
 	vector<string> get_row_names(){ return row_names; }
 	vector<string> get_col_names(){ return col_names; }
