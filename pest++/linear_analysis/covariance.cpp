@@ -230,6 +230,11 @@ ostream& operator<< (ostream &os, Mat mat)
 	return os;
 }
 
+Mat Mat::operator-(Mat &other_mat)
+{
+	return Mat(row_names, col_names, matrix + *(other_mat * -1.0).get_matrix_ptr(), autoalign);
+}
+
 Mat Mat::operator+(Mat &other_mat)
 {
 	vector<string> common_rows, common_cols;

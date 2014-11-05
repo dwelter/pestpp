@@ -60,17 +60,12 @@ map<string, double> get_obj_comps(string &filename)
 
 }
 
-
-int main(int argc, char* argv[])
+void normalize_weights_by_residual(Pest &pest_scenario, string &resid_filename)
 {
-	//todos: schur: normalize weights by residuals; 
-	ifstream ipst(string("pest.pst"));
-	if (!ipst.good()) throw runtime_error("no good");
-	Pest pest_scenario;
-	pest_scenario.process_ctl_file(ipst,string("pest.pst"));
+	
 	ObservationInfo obs_info = pest_scenario.get_ctl_observation_info();
-	map<string, double> obj_comps = get_obj_comps(string("pest.rei"));
-	map<string,string> pst_grps = pest_scenario.get_observation_groups();
+	map<string, double> obj_comps = get_obj_comps(resid_filename);
+	map<string, string> pst_grps = pest_scenario.get_observation_groups();
 	vector<string> ogrp_names = pest_scenario.get_ctl_ordered_obs_group_names();
 	const ObservationRec* obs_rec;
 	double weight;
@@ -90,12 +85,24 @@ int main(int argc, char* argv[])
 		if (obs_rec->weight > 0.0)
 		{
 			weight = obs_info.get_observation_rec_ptr(ogrp.first)->weight * sqrt(((double)grp_nnz[ogrp.second]) / obj_comps[ogrp.second]);
-			obs_info.set_weight(ogrp.first,weight);
+			obs_info.set_weight(ogrp.first, weight);
 		}
 	}
 
 
 
+}
+
+
+int main(int argc, char* argv[])
+{
+	//todos: schur: normalize weights by residuals; 
+	/*ifstream ipst(string("pest.pst"));
+	if (!ipst.good()) throw runtime_error("no good");
+	Pest pest_scenario;
+	pest_scenario.process_ctl_file(ipst, string("pest.pst"));
+	normalize_weights_by_residual(pest_scenario, string("pest.rei"));
+*/
 
 	//errvar: KL scaling, qhalf calc, R, I-R, G
 	ofstream fout("emu.log");
@@ -122,6 +129,7 @@ int main(int argc, char* argv[])
 	//jacobian.to_ascii("pest_jco.mat");
 	log.log("load jco");
 
+	
 	log.log("inv obscov");
 	Mat obscov_inv = obscov.inv();
 	log.log("inv obscov");
@@ -130,22 +138,32 @@ int main(int argc, char* argv[])
 	Mat jacobian_t = jacobian.T();
 	log.log("jco_t");
 
+	log.log("calc schur2");
+	Eigen::SparseMatrix<double> obscov_inv_mat = obscov.inv().get_matrix();
+	Eigen::SparseMatrix<double> jacobian_mat = jacobian.get_matrix();
+	Eigen::SparseMatrix<double> parcov_inv_mat = parcov.inv().get_matrix();
+	Eigen::SparseMatrix<double> post1(parcov.nrow(), parcov.ncol());
+	post1 = jacobian_mat.transpose() * obscov_inv_mat * jacobian_mat;
+	Eigen::SparseMatrix<double> post_mat(parcov.nrow(), parcov.ncol());
+	post_mat = parcov.get_matrix() - (post1 + parcov_inv_mat);
+	log.log("calc schur2");
 
-	log.log("calc post1");
-	Mat post1 = obscov_inv * jacobian;
-	log.log("calc post1");
-	log.log("calc post2");
-	post1 = jacobian_t * post1;
-	log.log("calc post2");
-	log.log("calc schur");
-	Mat posterior = (post1 + (parcov.inv())).inv();
-	log.log("calc schur");
-	log.log("write posterior");
+	/*log.log("calc schur");
+	log.log("post1");
+	Mat post1 = jacobian.T() * obscov_inv * jacobian;
+	log.log("post1");
+	Mat posterior = parcov - (post1 + (parcov.inv()));
+	log.log("calc schur");*/
+
+	
+
+
+	/*log.log("write posterior");
 	posterior.to_ascii("emu_test_result.mat");
-	log.log("write posterior");
+	log.log("write posterior");*/
 
 
-	log.log("get U");
+	/*log.log("get U");
 	Mat U = jacobian.get_U();
 	log.log("get U");
 	log.log("get V");
@@ -153,7 +171,7 @@ int main(int argc, char* argv[])
 	log.log("get V");
 	log.log("get s");
 	Mat s = jacobian.get_s();
-	log.log("get s");
+	log.log("get s");*/
 	fout.close();
 	//cout << U;
 	//cout << V;
