@@ -35,38 +35,34 @@ Mat::Mat(string filename)
 
 }
 
-
 Mat::Mat(vector<string> _row_names, vector<string> _col_names, 
-	Eigen::SparseMatrix<double> _matrix,bool _autoalign)
+	Eigen::SparseMatrix<double> _matrix, bool _autoalign)
 {
 	row_names = _row_names;
 	col_names = _col_names;
 	assert(row_names.size() == _matrix.rows());
 	assert(col_names.size() == _matrix.cols());
 	matrix = _matrix;
-	autoalign = _autoalign;
-}
-
-Mat::Mat(vector<string> _row_names, vector<string> _col_names, 
-	Eigen::SparseMatrix<double> _matrix, MatType _mattype, bool _autoalign)
-{
-	row_names = _row_names;
-	col_names = _col_names;
-	assert(row_names.size() == _matrix.rows());
-	assert(col_names.size() == _matrix.cols());
-	matrix = _matrix;
-	mattype = _mattype;
+	mattype = MatType::SPARSE;
 	autoalign = _autoalign;
 }
 
 //--------------------------------------
 //Mat convience functions
 //--------------------------------------
-const Eigen::SparseMatrix<double>* Mat::get_matrix_ptr()
+//const Eigen::SparseMatrix<double>* Mat::get_matrix_ptr()
+//{
+//	const Eigen::SparseMatrix<double>* ptr = &matrix;
+//	return ptr;
+//}
+
+const Eigen::SparseMatrix<double>* Mat::get_ptr_sparse()
 {
 	const Eigen::SparseMatrix<double>* ptr = &matrix;
 	return ptr;
 }
+
+
 
 const Eigen::SparseMatrix<double>* Mat::get_U_ptr()
 {
@@ -105,13 +101,13 @@ Mat Mat::get_U()
 	stringstream ss;
 	for (int i = 0; i < nrow(); i++)
 	{
-	ss.clear();
-	ss.str(string());
-	ss << "left_sing_vec_";
-	ss << i + 1;
-	u_col_names.push_back(ss.str());
+		ss.clear();
+		ss.str(string());
+		ss << "left_sing_vec_";
+		ss << i + 1;
+		u_col_names.push_back(ss.str());
 	}
-	return Mat(row_names, u_col_names, U, MatType::DENSE,false);
+	return Mat(row_names, u_col_names, U,false);
 }
 
 Mat Mat::get_V()
@@ -127,7 +123,7 @@ Mat Mat::get_V()
 		ss << i + 1;
 		v_col_names.push_back(ss.str());
 	}
-	return Mat(col_names, v_col_names, V, MatType::DENSE,false);
+	return Mat(col_names, v_col_names, V,false);
 }
 
 
@@ -149,7 +145,7 @@ Mat Mat::get_s()
 	Eigen::SparseMatrix<double> s_mat(s.size(),s.size());
 	s_mat.setZero();
 	s_mat.setFromTriplets(triplet_list.begin(), triplet_list.end());
-	return Mat(s_names, s_names, s_mat , MatType::DIAGONAL,false);
+	return Mat(s_names, s_names, s_mat ,false);
 }
 
 Mat Mat::transpose()
@@ -178,7 +174,6 @@ Mat Mat::inv()
 	if (nrow() != ncol()) throw runtime_error("Mat::inv() error: only symmetric positive definite matrices can be inverted with Mat::inv()");
 	if (mattype == MatType::DIAGONAL)
 	{
-		cout << "diagonal" << endl;
 		Eigen::VectorXd diag = matrix.diagonal();
 		diag = 1.0 / diag.array();
 		vector<Eigen::Triplet<double>> triplet_list;
@@ -191,7 +186,7 @@ Mat Mat::inv()
 		inv_mat.setZero();
 		inv_mat.setFromTriplets(triplet_list.begin(), triplet_list.end());
 
-		return Mat(row_names, col_names, inv_mat,MatType::DIAGONAL);
+		return Mat(row_names, col_names, inv_mat);
 	}
 	
 	//Eigen::ConjugateGradient<Eigen::SparseMatrix<double>> solver;
@@ -200,7 +195,7 @@ Mat Mat::inv()
 	Eigen::SparseMatrix<double> I(nrow(), nrow());
 	I.setIdentity();
 	Eigen::SparseMatrix<double> matrix_inv = solver.solve(I);
-	return Mat(row_names, col_names, matrix_inv, MatType::DENSE,autoalign);
+	return Mat(row_names, col_names, matrix_inv,autoalign);
 }
 
 void Mat::SVD()
@@ -226,145 +221,10 @@ ostream& operator<< (ostream &os, Mat mat)
 	for (auto &name : mat.get_col_names())
 		cout << name << ',';
 	cout << endl;
-	cout << *mat.get_matrix_ptr();
+	cout << *mat.get_ptr_sparse();
 	return os;
 }
 
-Mat Mat::operator-(Mat &other_mat)
-{
-	return Mat(row_names, col_names, matrix + *(other_mat * -1.0).get_matrix_ptr(), autoalign);
-}
-
-Mat Mat::operator+(Mat &other_mat)
-{
-	vector<string> common_rows, common_cols;
-	MatType new_mattype = MatType::DENSE;
-	if ((mattype == MatType::DIAGONAL) && (other_mat.get_mattype() == MatType::DIAGONAL))
-		new_mattype = MatType::DIAGONAL;
-	//if someone isn't wanting to autoalign, then just check the dimensions
-	if ((!autoalign) || (!other_mat.get_autoalign()))
-	{
-		if ((nrow() != other_mat.nrow()) || (ncol() != other_mat.ncol()))
-		{
-			stringstream ss;
-			ss << "Mat objects not aligned for '+': (" << nrow() << ',' << ncol();
-			ss << ") | (" << other_mat.nrow() << ',' << other_mat.ncol() << ')';
-			throw runtime_error("Mat::operator+ss() error:" +ss.str());
-		}
-		return Mat(row_names, col_names, matrix + *other_mat.get_matrix_ptr(), MatType::DENSE, false);
-	}
-
-	//auto align for element-wise addition
-	for (auto &name : other_mat.get_col_names())
-		if (find(col_names.begin(), col_names.end(), name) != col_names.end())
-			common_cols.push_back(name);
-	for (auto &name : other_mat.get_row_names())
-		if (find(row_names.begin(), row_names.end(), name) != row_names.end())
-			common_rows.push_back(name);
-	if (common_cols.size() == 0) throw runtime_error("Mat::operator+() error: no common cols found");
-	if (common_rows.size() == 0) throw runtime_error("Mat::operator+() error: no common rows found");
-	//no realignment needed
-	if ((common_cols == col_names) && (common_cols == other_mat.get_col_names())
-		&& (common_rows == row_names) && (common_rows == other_mat.get_row_names()))
-		return Mat(row_names, col_names, matrix + *other_mat.get_matrix_ptr(), new_mattype);
-
-	//only other_mat needs realignment
-	else if ((common_rows == row_names) && (common_cols == col_names))
-	{
-		Mat new_other_mat = other_mat.get(common_rows, common_cols);
-		return Mat(common_rows, common_cols, matrix + *new_other_mat.get_matrix_ptr(), new_mattype);
-	}
-	//only this needs realignment
-	else if ((common_rows == other_mat.get_row_names()) && (common_cols == other_mat.get_col_names()))
-	{
-		Mat new_this = get(common_rows, common_cols);
-		return Mat(common_rows, common_cols, *new_this.get_matrix_ptr() + *other_mat.get_matrix_ptr(), new_mattype);
-	}
-	else
-	{
-		Mat new_other_mat = other_mat.get(common_rows, common_cols);
-		Mat new_this = get(common_rows, common_cols);
-		return Mat(common_rows, common_cols, *new_this.get_matrix_ptr() + *new_other_mat.get_matrix_ptr(), new_mattype);
-	}
-}
-
-Mat Mat::operator*(double val)
-{
-	return Mat(row_names, col_names, matrix*val);
-}
-
-Mat Mat::operator*(Mat &other_mat)
-{
-	
-	MatType new_mattype = MatType::DENSE;
-	if ((mattype == MatType::DIAGONAL) && (other_mat.get_mattype() == MatType::DIAGONAL))
-		new_mattype = MatType::DIAGONAL;
-	
-	if ((!autoalign) || (!other_mat.get_autoalign()))
-	{
-		if (nrow() != other_mat.ncol())
-		{
-			stringstream ss;
-			ss << "Mat objects not aligned for '*': (" << nrow() << ',' << ncol();
-			ss << ") | (" << other_mat.nrow() << ',' << other_mat.ncol() << ')';
-			throw runtime_error("Mat::operator*() error: "+ss.str());
-		}
-		return Mat(row_names, other_mat.get_col_names(), matrix * *other_mat.get_matrix_ptr(), MatType::DENSE, false);
-	}
-
-	vector<string> common;
-	for (auto &row_name : other_mat.get_row_names())
-	{
-		if (find(col_names.begin(), col_names.end(), row_name) != col_names.end())
-			common.push_back(row_name);
-	}
-	if (common.size() == 0)
-	{
-		cout << "no common this.col_names/other_mat.row_names:" << endl << "this.col_names:" << endl;
-		for (auto &name : col_names) cout << name << ',';
-		cout << endl << "other_mat.row_names:" << endl;
-		for (auto &name : other_mat.get_row_names()) cout << name << ',';
-		cout << endl;
-		throw runtime_error("Mat::operator+() error: no common elements found in Mat::operator*");
-	}
-	//no realignment needed...
-	if ((common == col_names) && (common == other_mat.get_row_names()))
-	{
-		Eigen::SparseMatrix<double> new_matrix = matrix * *other_mat.get_matrix_ptr();
-		Mat new_mat(row_names, other_mat.col_names, new_matrix, new_mattype);
-		return new_mat;
-	}
-
-	//only other_mat needs realignment
-	else if (common == col_names)
-	{
-		Mat new_other_mat = other_mat.get(common, other_mat.get_col_names());
-		Eigen::SparseMatrix<double> new_matrix = matrix * *new_other_mat.get_matrix_ptr();
-		Mat new_mat(row_names, new_other_mat.get_col_names(), new_matrix, new_mattype);
-		return new_mat;
-	}
-	
-	//only this needs realignment
-	else if (common == other_mat.get_row_names())
-	{
-		Mat new_this = get(row_names, common);
-		Eigen::SparseMatrix<double> new_matrix = *new_this.get_matrix_ptr() * *other_mat.get_matrix_ptr();
-		Mat new_mat(new_this.get_row_names(), other_mat.col_names, new_matrix, new_mattype);
-		return new_mat;
-
-	}
-	//both need realignment
-	else
-	{
-		Mat new_other_mat = other_mat.get(common, other_mat.get_col_names());
-		Mat new_this = get(row_names, common);
-		Eigen::SparseMatrix<double> new_matrix = *new_this.get_matrix_ptr() * *new_other_mat.get_matrix_ptr();
-		Mat new_mat(new_this.get_col_names(),new_other_mat.get_row_names(),new_matrix, new_mattype);
-		return new_mat;
-	}
-
-
-}
 
 
 
@@ -380,7 +240,7 @@ void Mat::to_ascii(const string &filename)
 													 to write ASCII matrix");
 	}
 	out << setw(6) << nrow() << setw(6) << ncol() << setw(6) << icode << endl;
-	out << setprecision(9) << matrix;
+	out << matrix;
 	if (icode == 1)
 	{
 		out<< "* row and column names" << endl;
@@ -495,7 +355,6 @@ void Mat::from_ascii(const string &filename)
 
 		if(ncol != col_names.size())
 			throw runtime_error("Mat::from_ascii() error: ncol != col_names.size() in ASCII matrix file: " + filename);
-
 	}
 	in.close();
 
@@ -695,7 +554,7 @@ Mat Mat::get(vector<string> &new_row_names, vector<string> &new_col_names)
 	Eigen::SparseMatrix<double> new_matrix(nrow, ncol);
 	new_matrix.setZero();
 	new_matrix.setFromTriplets(triplet_list.begin(), triplet_list.end());
-	return Mat(new_row_names,new_col_names,new_matrix,mattype);
+	return Mat(new_row_names,new_col_names,new_matrix);
 }
 
 Mat Mat::extract(vector<string> &extract_row_names, vector<string> &extract_col_names)
@@ -951,7 +810,7 @@ void Covariance::from_uncertainty_file(const string &filename)
 					jcol++;
 					irow = start_irow;
 				}
-				mattype = MatType::BLOCK;
+				mattype = MatType::SPARSE;
 				irow = jcol;
 			}
 			else

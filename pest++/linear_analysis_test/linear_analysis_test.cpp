@@ -129,25 +129,43 @@ int main(int argc, char* argv[])
 	//jacobian.to_ascii("pest_jco.mat");
 	log.log("load jco");
 
-	
-	log.log("inv obscov");
-	Mat obscov_inv = obscov.inv();
-	log.log("inv obscov");
+	Eigen::SparseMatrix<double> omat = *obscov.get_ptr_sparse();
+	Eigen::SparseMatrix<double> jmat = *jacobian.get_ptr_sparse();
+	Eigen::MatrixXd jdense = jmat.toDense();
+	Eigen::DiagonalMatrix<double, Eigen::Dynamic> odiag = omat.diagonal().asDiagonal();
 
-	log.log("jco_t");
-	Mat jacobian_t = jacobian.T();
-	log.log("jco_t");
 
-	log.log("calc schur2");
-	Eigen::SparseMatrix<double> obscov_inv_mat = obscov.inv().get_matrix();
-	Eigen::SparseMatrix<double> jacobian_mat = jacobian.get_matrix();
-	Eigen::SparseMatrix<double> parcov_inv_mat = parcov.inv().get_matrix();
-	Eigen::SparseMatrix<double> post1(parcov.nrow(), parcov.ncol());
-	post1 = jacobian_mat.transpose() * obscov_inv_mat * jacobian_mat;
-	Eigen::SparseMatrix<double> post_mat(parcov.nrow(), parcov.ncol());
-	post_mat = parcov.get_matrix() - (post1 + parcov_inv_mat);
-	log.log("calc schur2");
+	log.log("calc sparse-dense prod");
+	//Eigen::MatrixXd prod = jdense.transpose() * omat * jdense;
+	Eigen::SparseMatrix<double> prod = (jdense.transpose() * omat * jdense).sparseView();
+	log.log("calc sparse-dense prod");
+	prod.resize(0, 0);
 
+	return 0;
+
+	log.log("calc sparse-sparse prod");
+	Eigen::SparseMatrix<double> prod1 = jmat.transpose() * omat * jmat;
+	log.log("calc sparse-sparse prod");
+	prod1.resize(0, 0);
+
+	log.log("calc diag-sparse prod");
+	Eigen::SparseMatrix<double> prod2 = jmat.transpose() * odiag * jmat;
+	log.log("calc diag-sparse prod");
+	prod2.resize(0, 0);
+
+	log.log("calc diag-dense prod");
+	Eigen::MatrixXd prod3 = jdense.transpose() * odiag * jdense;
+	log.log("calc diag-dense prod");
+	prod3.resize(0, 0);
+
+	/*log.log("calc sparse-sparse add");
+	Eigen::SparseMatrix<double> add1 = omat + omat;
+	log.log("calc sparse-sparse add");
+
+	log.log("calc sparse-diag add");
+	Eigen::SparseMatrix<double> add2 = omat + odiag.toDenseMatrix().sparseView();
+	log.log("calc sparse-diag add");
+*/
 	/*log.log("calc schur");
 	log.log("post1");
 	Mat post1 = jacobian.T() * obscov_inv * jacobian;
