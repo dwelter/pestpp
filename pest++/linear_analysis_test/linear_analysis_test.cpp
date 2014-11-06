@@ -133,20 +133,34 @@ int main(int argc, char* argv[])
 	Eigen::SparseMatrix<double> jmat = *jacobian.get_ptr_sparse();
 	Eigen::MatrixXd jdense = jmat.toDense();
 	Eigen::DiagonalMatrix<double, Eigen::Dynamic> odiag = omat.diagonal().asDiagonal();
-
+	
+	Eigen::MatrixXd dense_i(jdense.rows(),jdense.cols());
+	dense_i.setIdentity();
+	
 
 	log.log("calc sparse-dense prod");
 	//Eigen::MatrixXd prod = jdense.transpose() * omat * jdense;
-	Eigen::SparseMatrix<double> prod = (jdense.transpose() * omat * jdense).sparseView();
+	Eigen::MatrixXd prod = (jdense.transpose() * omat * jdense).sparseView();
+	Eigen::LLT<Eigen::MatrixXd> solver;
+	solver.compute(prod);
+	prod = solver.solve(dense_i);
 	log.log("calc sparse-dense prod");
 	prod.resize(0, 0);
+	dense_i.resize(0, 0);
 
-	return 0;
 
+	Eigen::SparseMatrix<double> sparse_i(jmat.rows(), jmat.cols());
+	sparse_i.setIdentity();
 	log.log("calc sparse-sparse prod");
 	Eigen::SparseMatrix<double> prod1 = jmat.transpose() * omat * jmat;
+	Eigen::SimplicialLLT<Eigen::SparseMatrix<double>> solver1;
+	solver1.compute(prod1);
+	prod1 = solver1.solve(sparse_i);
 	log.log("calc sparse-sparse prod");
 	prod1.resize(0, 0);
+	sparse_i.resize(0, 0);
+
+	return 0;
 
 	log.log("calc diag-sparse prod");
 	Eigen::SparseMatrix<double> prod2 = jmat.transpose() * odiag * jmat;
