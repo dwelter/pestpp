@@ -126,36 +126,35 @@ int main(int argc, char* argv[])
 	log.log("load jco");
 	Mat jacobian;
 	jacobian.from_binary("pest.jco");
+	//jacobian.drop_rows(jacobian.get_col_names());
+	Mat new_jac = jacobian.get(obscov.get_row_names(), parcov.get_row_names());
 	//jacobian.to_ascii("pest_jco.mat");
 	log.log("load jco");
 
 	Eigen::SparseMatrix<double> omat = *obscov.get_ptr_sparse();
-	Eigen::SparseMatrix<double> jmat = *jacobian.get_ptr_sparse();
+	Eigen::SparseMatrix<double> jmat = *new_jac.get_ptr_sparse();
 	Eigen::MatrixXd jdense = jmat.toDense();
 	Eigen::DiagonalMatrix<double, Eigen::Dynamic> odiag = omat.diagonal().asDiagonal();
-	
-	Eigen::MatrixXd dense_i(jdense.rows(),jdense.cols());
+	cout << "density: "<< ((double)jmat.nonZeros()) / ((double)(jmat.rows() * jmat.cols())) << endl;
+	Eigen::MatrixXd dense_i(jdense.cols(),jdense.cols());
 	dense_i.setIdentity();
 	
-
 	log.log("calc sparse-dense prod");
 	//Eigen::MatrixXd prod = jdense.transpose() * omat * jdense;
-	Eigen::MatrixXd prod = (jdense.transpose() * omat * jdense).sparseView();
 	Eigen::LLT<Eigen::MatrixXd> solver;
-	solver.compute(prod);
-	prod = solver.solve(dense_i);
+	solver.compute(jdense.transpose() * omat * jdense);
+	Eigen::MatrixXd prod = solver.solve(dense_i);
 	log.log("calc sparse-dense prod");
 	prod.resize(0, 0);
 	dense_i.resize(0, 0);
 
-
-	Eigen::SparseMatrix<double> sparse_i(jmat.rows(), jmat.cols());
+	Eigen::SparseMatrix<double> sparse_i(jmat.cols(), jmat.cols());
 	sparse_i.setIdentity();
 	log.log("calc sparse-sparse prod");
-	Eigen::SparseMatrix<double> prod1 = jmat.transpose() * omat * jmat;
+	//Eigen::SparseMatrix<double> prod1 = jmat.transpose() * omat * jmat;
 	Eigen::SimplicialLLT<Eigen::SparseMatrix<double>> solver1;
-	solver1.compute(prod1);
-	prod1 = solver1.solve(sparse_i);
+	solver1.compute(jmat.transpose() * omat * jmat);
+	Eigen::SparseMatrix<double> prod1 = solver1.solve(sparse_i);
 	log.log("calc sparse-sparse prod");
 	prod1.resize(0, 0);
 	sparse_i.resize(0, 0);

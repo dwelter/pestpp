@@ -150,10 +150,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="covariance.h" />
+    <ClInclude Include="linear_analysis.h" />
     <ClInclude Include="logger.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="covariance.cpp" />
+    <ClCompile Include="linear_analysis.cpp" />
     <ClCompile Include="logger.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
