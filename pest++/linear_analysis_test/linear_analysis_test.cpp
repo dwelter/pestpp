@@ -8,6 +8,7 @@
 #include "covariance.h"
 #include "logger.h"
 #include "utilities.h"
+#include "linear_analysis.h"
 
 map<string, double> get_obj_comps(string &filename)
 {
@@ -96,156 +97,12 @@ void normalize_weights_by_residual(Pest &pest_scenario, string &resid_filename)
 
 int main(int argc, char* argv[])
 {
-	//todos: schur: normalize weights by residuals; 
-	/*ifstream ipst(string("pest.pst"));
-	if (!ipst.good()) throw runtime_error("no good");
-	Pest pest_scenario;
-	pest_scenario.process_ctl_file(ipst, string("pest.pst"));
-	normalize_weights_by_residual(pest_scenario, string("pest.rei"));
-*/
-
-	//errvar: KL scaling, qhalf calc, R, I-R, G
-	ofstream fout("emu.log");
-	Logger log(fout,true);
-	string pst_filename = "pest.pst";
-
-	log.log("load parcov");
-	Covariance parcov;
-	parcov.from_parameter_bounds(pst_filename);
-	log.log("load parcov");
-
-	log.log("load obscov");
-	Covariance obscov;
-	obscov.from_observation_weights(pst_filename);
-	log.log("load obscov");
-	
-	//vector<string> obs_names = obscov.get_row_names();
-	//obs_names.erase(find(obs_names.begin(),obs_names.end(),string("O319_286")));
-	//Covariance test = obscov.get(obs_names);
-
-	log.log("load jco");
-	Mat jacobian;
-	jacobian.from_binary("pest.jco");
-	//jacobian.drop_rows(jacobian.get_col_names());
-	Mat new_jac = jacobian.get(obscov.get_row_names(), parcov.get_row_names());
-	//jacobian.to_ascii("pest_jco.mat");
-	log.log("load jco");
-
-	Eigen::SparseMatrix<double> omat = *obscov.get_ptr_sparse();
-	Eigen::SparseMatrix<double> jmat = *new_jac.get_ptr_sparse();
-	Eigen::MatrixXd jdense = jmat.toDense();
-	Eigen::DiagonalMatrix<double, Eigen::Dynamic> odiag = omat.diagonal().asDiagonal();
-	cout << "density: "<< ((double)jmat.nonZeros()) / ((double)(jmat.rows() * jmat.cols())) << endl;
-	Eigen::MatrixXd dense_i(jdense.cols(),jdense.cols());
-	dense_i.setIdentity();
-	
-	log.log("calc sparse-dense prod");
-	//Eigen::MatrixXd prod = jdense.transpose() * omat * jdense;
-	Eigen::LLT<Eigen::MatrixXd> solver;
-	solver.compute(jdense.transpose() * omat * jdense);
-	Eigen::MatrixXd prod = solver.solve(dense_i);
-	log.log("calc sparse-dense prod");
-	prod.resize(0, 0);
-	dense_i.resize(0, 0);
-
-	Eigen::SparseMatrix<double> sparse_i(jmat.cols(), jmat.cols());
-	sparse_i.setIdentity();
-	log.log("calc sparse-sparse prod");
-	//Eigen::SparseMatrix<double> prod1 = jmat.transpose() * omat * jmat;
-	Eigen::SimplicialLLT<Eigen::SparseMatrix<double>> solver1;
-	solver1.compute(jmat.transpose() * omat * jmat);
-	Eigen::SparseMatrix<double> prod1 = solver1.solve(sparse_i);
-	log.log("calc sparse-sparse prod");
-	prod1.resize(0, 0);
-	sparse_i.resize(0, 0);
-
-	return 0;
-
-	log.log("calc diag-sparse prod");
-	Eigen::SparseMatrix<double> prod2 = jmat.transpose() * odiag * jmat;
-	log.log("calc diag-sparse prod");
-	prod2.resize(0, 0);
-
-	log.log("calc diag-dense prod");
-	Eigen::MatrixXd prod3 = jdense.transpose() * odiag * jdense;
-	log.log("calc diag-dense prod");
-	prod3.resize(0, 0);
-
-	/*log.log("calc sparse-sparse add");
-	Eigen::SparseMatrix<double> add1 = omat + omat;
-	log.log("calc sparse-sparse add");
-
-	log.log("calc sparse-diag add");
-	Eigen::SparseMatrix<double> add2 = omat + odiag.toDenseMatrix().sparseView();
-	log.log("calc sparse-diag add");
-*/
-	/*log.log("calc schur");
-	log.log("post1");
-	Mat post1 = jacobian.T() * obscov_inv * jacobian;
-	log.log("post1");
-	Mat posterior = parcov - (post1 + (parcov.inv()));
-	log.log("calc schur");*/
-
-	
-
-
-	/*log.log("write posterior");
-	posterior.to_ascii("emu_test_result.mat");
-	log.log("write posterior");*/
-
-
-	/*log.log("get U");
-	Mat U = jacobian.get_U();
-	log.log("get U");
-	log.log("get V");
-	Mat V = jacobian.get_V();
-	log.log("get V");
-	log.log("get s");
-	Mat s = jacobian.get_s();
-	log.log("get s");*/
-	fout.close();
-	//cout << U;
-	//cout << V;
-	//cout << s;
-
-
-
-
-
-	/*
-	Mat m;
-	m.from_ascii("c_obs10_2");
-	m.to_ascii("test.vec");*/
-	//Covariance cov;
-	//cov.from_parameter_bounds(pest_scenario);
-	//vector<string> new_obs;
-	//new_obs.push_back("H_OBS01_2");
-	//new_obs.push_back("H_OBS01_1");
-	//vector<string> new_par;
-	//new_par.push_back("MULT1");
-	//Covariance new_cov = cov.get(new_par);
-	//cov.from_observation_weights(pest_scenario);
-	//cov.to_ascii("test.cov");
-	
-	//Covariance cov;
-	//cov.from_uncertainty_file("fake.unc");
-	////cov.to_uncertainty_file("test.unc");
-
-	//Mat mat1;
-	//mat1.from_ascii("emu_mult_test1.mat");
-	//
-	//Mat mat2;
-	//mat2.from_ascii("emu_mult_test2.mat");
-
-	//Mat vec2 = mat2.get(vector<string>{"O1"}, mat2.get_col_names());
-	//vec2.transpose();
-	//Mat mat3 = mat1 * cov * mat2;
-	//mat3.to_ascii("emu_mult_result.mat");
-
-
-
-
-
+	string jco("pest.jco");
+	string pst("pest.pst");
+	linear_analysis la(jco,pst,pst);
+	la.get_parcov().to_ascii("emu_prior.cov");
+	Covariance schur = la.posterior_covariance_matrix();
+	schur.to_ascii("emu_post.cov");
 	return 0;
 }
 

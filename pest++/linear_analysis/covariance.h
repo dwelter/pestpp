@@ -1,4 +1,5 @@
-
+#ifndef QSQRT_MATRIX_H_
+#define QSQRT_MATRIX_H_
 #include <string>
 #include <sstream>
 #include <vector>
@@ -14,7 +15,6 @@ using namespace std;
 
 class Mat
 {
-	
 public:
 	enum class MatType{ DIAGONAL, SPARSE, DENSE };
 	Mat(){ autoalign = true; };
@@ -52,6 +52,7 @@ public:
 	Mat transpose();
 	Mat T();
 	Mat inv();
+	void inv_ip();
 	void SVD();
 
 	Mat get(vector<string> &other_row_names, vector<string> &other_col_names);
@@ -111,3 +112,4 @@ private:
 };
 
 ostream& operator<< (std::ostream &os, Mat mat);
+#endif

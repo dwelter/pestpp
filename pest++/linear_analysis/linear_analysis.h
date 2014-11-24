@@ -1,3 +1,5 @@
+#ifndef LINEAR_ANALYSIS_H_
+#define LINEAR_ANALYSIS_H_
 
 //#include <vector>
 //#include <string>
@@ -39,7 +41,7 @@ public:
 	//a map of <par_name,variance> from the diagonal of schur's complement
 	map<string, double> posterior_parameter_variance();
 	//schur's complement
-	Mat prior_posterior_covariance_matrix();
+	Mat posterior_covariance_matrix();
 
 	//prior predictive variance from parcov
 	double prior_prediction_variance(string &pred_name);
@@ -113,7 +115,7 @@ public:
 	vector<Mat> get_omitted_predictions(){ return omitted_predictions; }
 	
 	//returns a list of warnings and errors, aligns the different linear components, sets isaligned to true
-	vector<string> check_and_align();
+	void align();
 	bool get_isaligned(){ return isaligned; }
 
 private:
@@ -142,3 +144,4 @@ private:
 
 
 };
+#endif

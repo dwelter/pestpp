@@ -25,7 +25,7 @@ Mat::Mat(string filename)
 {
 	//todo: load from filename -> .jco/.jcb or .mat or...throw on .pst
 	pest_utils::upper_ip(filename);
-	if ((filename.find(".JCO") != string::npos) || (filename.find(".JCB")))
+	if ((filename.find(".JCO") != string::npos) || (filename.find(".JCB") != string::npos))
 		from_binary(filename);
 	else if (filename.find(".MAT") != string::npos)
 		from_ascii(filename);
@@ -185,7 +185,6 @@ Mat Mat::inv()
 		Eigen::SparseMatrix<double> inv_mat(triplet_list.size(),triplet_list.size());
 		inv_mat.setZero();
 		inv_mat.setFromTriplets(triplet_list.begin(), triplet_list.end());
-
 		return Mat(row_names, col_names, inv_mat);
 	}
 	
@@ -194,9 +193,44 @@ Mat Mat::inv()
 	solver.compute(matrix);
 	Eigen::SparseMatrix<double> I(nrow(), nrow());
 	I.setIdentity();
-	Eigen::SparseMatrix<double> matrix_inv = solver.solve(I);
-	return Mat(row_names, col_names, matrix_inv,autoalign);
+	Eigen::SparseMatrix<double> inv_mat = solver.solve(I);
+	return Mat(row_names, col_names, inv_mat,autoalign);
 }
+
+void Mat::inv_ip()
+{
+	if (nrow() != ncol()) throw runtime_error("Mat::inv() error: only symmetric positive definite matrices can be inverted with Mat::inv()");
+	if (mattype == MatType::DIAGONAL)
+	{
+		Eigen::VectorXd diag = matrix.diagonal();
+		diag = 1.0 / diag.array();
+		vector<Eigen::Triplet<double>> triplet_list;
+		for (int i = 0; i != diag.size(); ++i)
+		{
+			triplet_list.push_back(Eigen::Triplet<double>(i, i, diag[i]));
+		}
+		//Eigen::SparseMatrix<double> inv_mat(triplet_list.size(), triplet_list.size());
+		//inv_mat.setZero();
+		//inv_mat.setFromTriplets(triplet_list.begin(), triplet_list.end());
+		//matrix = inv_mat;
+		matrix.resize(triplet_list.size(), triplet_list.size());
+		matrix.setZero();
+		matrix.setFromTriplets(triplet_list.begin(),triplet_list.end());
+		return;
+	}
+
+	//Eigen::ConjugateGradient<Eigen::SparseMatrix<double>> solver;
+	Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver;
+	solver.compute(matrix);
+	Eigen::SparseMatrix<double> I(nrow(), nrow());
+	I.setIdentity();
+	matrix.setZero();
+	matrix = solver.solve(I);
+	//Eigen::SparseMatrix<double> inv_mat = solver.solve(I);
+	//matrix = inv_mat;
+	
+}
+
 
 void Mat::SVD()
 {
@@ -887,22 +921,34 @@ void Covariance::from_observation_weights(Pest &pest_scenario)
 	vector<Eigen::Triplet<double>> triplet_list;
 	const ObservationRec* obs_rec;
 	int i = 0;	
+	double weight = 0;
 	for (auto obs_name : pest_scenario.get_ctl_ordered_obs_names())
 	{
 		pest_utils::upper_ip(obs_name);
 		obs_rec = pest_scenario.get_ctl_observation_info().get_observation_rec_ptr(obs_name);		
-		
-		if (obs_rec->weight <= 0.0)
+		weight = obs_rec->weight;
+		if (weight <= 0.0) weight = 1.0e-30;
+		triplet_list.push_back(Eigen::Triplet<double>(i, i, pow(1.0 / obs_rec->weight, 2.0)));
+		row_names.push_back(obs_name);
+		col_names.push_back(obs_name);
+		i++;
+	}
+	
+	const PriorInformation *pi = pest_scenario.get_prior_info_ptr();
+	PriorInformation::const_iterator pi_iter;
+	PriorInformation::const_iterator not_pi_iter = pi->end();
+	
+	for (auto pi_name : pest_scenario.get_ctl_ordered_pi_names())
+	{
+		pi_iter = pi->find(pi_name);
+		if (pi_iter != not_pi_iter)
 		{
-			//cout << "warnging->assigning an artificial weight of 1.0e-30 to observation " << obs_name << endl;
-			//triplet_list.push_back(Eigen::Triplet<double>(i, i, 1.0e-30));
-		}
-		else
-		{
-			triplet_list.push_back(Eigen::Triplet<double>(i, i, pow(1.0 / obs_rec->weight, 2.0)));
-			row_names.push_back(obs_name);
-			col_names.push_back(obs_name);
-			i++;
+			weight = pi_iter->second.get_weight();
+			if (weight <= 0.0) weight = 1.0e-30;
+			triplet_list.push_back(Eigen::Triplet<double>(i, i, pow(1.0 / weight, 2.0)));
+			row_names.push_back(pi_name);
+			col_names.push_back(pi_name);
+			i++;			
 		}
 	}
 	if (row_names.size() > 0)
@@ -915,8 +961,6 @@ void Covariance::from_observation_weights(Pest &pest_scenario)
 		throw runtime_error("Cov::from_observation_weights() error:Error loading covariance from obs weights: no non-zero weighted obs found");
 	}
 	mattype = Mat::MatType::DIAGONAL;
-
-
 }
 
 void Covariance::to_uncertainty_file(const string &filename)
