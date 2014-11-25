@@ -26,6 +26,9 @@ public:
 		jacobian = _jacobian; parcov = _parcov; obscov = _obscov;
 	}
 
+	void set_predictions(vector<string> preds);
+	void set_predictions(vector<Mat> preds);
+
 	//get a new linear analysis object consisting of a subset of par and obs names
 	linear_analysis get(vector<string> &new_par_names, vector<string> &new_obs_names);
 
@@ -41,7 +44,10 @@ public:
 	//a map of <par_name,variance> from the diagonal of schur's complement
 	map<string, double> posterior_parameter_variance();
 	//schur's complement
-	Mat posterior_covariance_matrix();
+	Mat get_posterior_parameter(){ return posterior; }
+
+
+	void calc_posterior_covariance_matrix();
 
 	//prior predictive variance from parcov
 	double prior_prediction_variance(string &pred_name);
@@ -124,6 +130,8 @@ private:
 	Covariance obscov;
 	vector<Mat> predictions;
 	bool isaligned;
+
+	Covariance posterior;
 
 	//svd stuff
 	Mat U,S,V;

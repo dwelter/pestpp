@@ -89,20 +89,25 @@ void normalize_weights_by_residual(Pest &pest_scenario, string &resid_filename)
 			obs_info.set_weight(ogrp.first, weight);
 		}
 	}
-
-
-
 }
+
+
 
 
 int main(int argc, char* argv[])
 {
+		
 	string jco("pest.jco");
 	string pst("pest.pst");
 	linear_analysis la(jco,pst,pst);
-	la.get_parcov().to_ascii("emu_prior.cov");
-	Covariance schur = la.posterior_covariance_matrix();
-	schur.to_ascii("emu_post.cov");
+	//vector<string> preds;
+	//preds.push_back("C_OBS01_1");
+	//preds.push_back("C_obs02_1");
+	//la.set_predictions(preds);
+	la.calc_posterior_covariance_matrix();
+
+	Mat schur = la.get_posterior_parameter();
+	//schur.to_ascii("emu_post.cov");
 	return 0;
 }
 

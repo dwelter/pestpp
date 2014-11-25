@@ -209,13 +209,14 @@ void Mat::inv_ip()
 		{
 			triplet_list.push_back(Eigen::Triplet<double>(i, i, diag[i]));
 		}
-		//Eigen::SparseMatrix<double> inv_mat(triplet_list.size(), triplet_list.size());
-		//inv_mat.setZero();
-		//inv_mat.setFromTriplets(triplet_list.begin(), triplet_list.end());
-		//matrix = inv_mat;
-		matrix.resize(triplet_list.size(), triplet_list.size());
+		Eigen::SparseMatrix<double> inv_mat(triplet_list.size(), triplet_list.size());
+		inv_mat.setZero();
+		inv_mat.setFromTriplets(triplet_list.begin(), triplet_list.end());
+		matrix = inv_mat;
+		cout << "diagonal inv_ip()" << endl;
+		/*matrix.resize(triplet_list.size(), triplet_list.size());
 		matrix.setZero();
-		matrix.setFromTriplets(triplet_list.begin(),triplet_list.end());
+		matrix.setFromTriplets(triplet_list.begin(),triplet_list.end());*/
 		return;
 	}
 
@@ -224,10 +225,11 @@ void Mat::inv_ip()
 	solver.compute(matrix);
 	Eigen::SparseMatrix<double> I(nrow(), nrow());
 	I.setIdentity();
-	matrix.setZero();
-	matrix = solver.solve(I);
-	//Eigen::SparseMatrix<double> inv_mat = solver.solve(I);
-	//matrix = inv_mat;
+	Eigen::SparseMatrix<double> inv_mat = solver.solve(I);
+	matrix = inv_mat;
+	cout << "full inv_ip()" << endl;
+	/*matrix.setZero();
+	matrix = solver.solve(I);*/
 	
 }
 
@@ -615,6 +617,20 @@ Mat Mat::extract(vector<string> &extract_row_names, vector<string> &extract_col_
 	return new_mat;
 }
 
+Mat Mat::extract(string &extract_row_name, vector<string> &extract_col_names)
+{
+	vector<string> extract_row_names;
+	extract_row_names.push_back(extract_row_name);
+	return extract(extract_row_names, extract_col_names);
+}
+Mat Mat::extract(vector<string> &extract_row_names, string &extract_col_name)
+{
+	vector<string> extract_col_names;
+	extract_row_names.push_back(extract_col_name);
+	return extract(extract_row_names, extract_col_names);
+}
+
+
 void Mat::drop_cols(vector<string> &drop_col_names)
 {
 	vector<string> missing_col_names;
@@ -684,6 +700,7 @@ void Mat::drop_rows(vector<string> &drop_row_names)
 //-----------------------------------------
 Covariance::Covariance(string filename)
 {
+	mattype = MatType::SPARSE;
 	pest_utils::upper_ip(filename);
 	if (filename.find(".PST"))
 		throw runtime_error("Cov::Cov() error: cannot instantiate a cov with PST");
@@ -701,11 +718,13 @@ Covariance::Covariance(vector<string> &names)
 	row_names = names;
 	col_names = names;
 	icode = 1;
+	mattype = MatType::SPARSE;
 }
 
 Covariance::Covariance()
 {
 	icode = 1;
+	mattype = MatType::SPARSE;
 }
 
 Covariance::Covariance(vector<string> _names, Eigen::SparseMatrix<double> _matrix)
@@ -716,6 +735,7 @@ Covariance::Covariance(vector<string> _names, Eigen::SparseMatrix<double> _matri
 	row_names = _names;
 	col_names = _names;
 	icode = 1;
+	mattype = MatType::SPARSE;
 }
 
 Covariance::Covariance(Mat _mat)

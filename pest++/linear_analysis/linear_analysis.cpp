@@ -110,12 +110,19 @@ void linear_analysis::align()
 		//common = get_common(jacobian.get_row_names(), obscov.get_row_names());
 		//obscov = obscov.get(common);
 		//jacobian = jacobian.get(jacobian.get_row_names(), common);
-		obscov.get(jacobian.get_row_names());
+		obscov = obscov.get(jacobian.get_row_names());
+	}
+	for (int i = 0; i < predictions.size(); i++)
+	{
+		if (jacobian.get_col_names() != predictions[i].get_row_names())
+		{
+			predictions[i] = predictions[i].get(jacobian.get_col_names(), predictions[i].get_row_names());
+		}
 	}
 }
 
 
-Mat linear_analysis::posterior_covariance_matrix()
+void linear_analysis::calc_posterior_covariance_matrix()
 {
 	align();
 	//invert obscov
@@ -128,8 +135,70 @@ Mat linear_analysis::posterior_covariance_matrix()
 	const Eigen::SparseMatrix<double> *jco_ptr = jacobian.get_ptr_sparse();
 	Mat jco_t = jacobian.transpose();
 	const Eigen::SparseMatrix<double> *jco_t_ptr = jco_t.get_ptr_sparse();	
-	Covariance schur(parcov.get_row_names(), (*jco_t_ptr * *obscov_inv_ptr * *jco_ptr) + *parcov_inv_ptr);
-	const Eigen::SparseMatrix<double> *test = schur.get_ptr_sparse();
-	schur.inv_ip();
-	return schur;
+	posterior = Covariance(parcov.get_row_names(), ((*jacobian.transpose().get_ptr_sparse() * *obscov_inv_ptr * *jco_ptr) + *parcov_inv_ptr)).inv();
 }
+
+
+void linear_analysis::set_predictions(vector<string> preds)
+{
+	vector<string> obs_names = jacobian.get_row_names();
+	for (auto pred : preds)
+	{
+		pest_utils::upper_ip(pred);
+		if (find(obs_names.begin(), obs_names.end(), pred) != obs_names.end())
+		{
+			Mat mpred = jacobian.extract(pred, vector<string>());
+			mpred.transpose_ip();
+			predictions.push_back(mpred);
+		}
+		else
+		{
+			if (!pest_utils::check_exist_in(pred))
+			{
+				throw runtime_error("linear_analysis::set_predictions() error: pred: " + pred + " not found in jco rows and is not an accessible file");
+			}
+			Mat mpred;
+			mpred.from_ascii(pred);
+			if (mpred.ncol() != 1)
+			{
+				if (mpred.nrow() == 1)
+				{
+					mpred.transpose_ip();
+				}
+				else
+				{
+					throw runtime_error("linear_analysis::set_predictions() error: pred: " + pred + "must be shape (1,npar)");
+				}
+			}
+			//if the pred vector is not completely aligned with the JCO
+			if (mpred.get_row_names() != jacobian.get_col_names())
+			{
+				vector<string> missing;
+				vector<string> mpred_par_names = mpred.get_row_names();
+				for (auto jco_par : jacobian.get_col_names())
+				{
+					if (find(mpred_par_names.begin(), mpred_par_names.end(), jco_par) == mpred_par_names.end())
+					{
+						missing.push_back(jco_par);
+					}
+				}
+				if (missing.size() > 0)
+				{
+					stringstream ss;
+					for (auto m : missing) ss << m << ",";
+					throw runtime_error("linear_analysis::set_predictions() error: parameters missing from pred: " + pred + " : " + ss.str());
+				}
+				mpred = mpred.get(jacobian.get_col_names(), mpred.get_col_names());
+			}
+			predictions.push_back(mpred);
+
+		}
+	}
+
+}
+
+void linear_analysis::set_predictions(vector<Mat> preds)
+{
+
+}
+

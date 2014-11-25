@@ -57,6 +57,8 @@ public:
 
 	Mat get(vector<string> &other_row_names, vector<string> &other_col_names);
 	Mat extract(vector<string> &extract_row_names, vector<string> &extract_col_names);
+	Mat extract(string &extract_row_name, vector<string> &extract_col_names);
+	Mat extract(vector<string> &extract_row_names, string &extract_col_name);
 	void drop_rows(vector<string> &drop_row_names);
 	void drop_cols(vector<string> &drop_col_names);
 
