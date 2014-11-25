@@ -56,13 +56,25 @@ Mat::Mat(vector<string> _row_names, vector<string> _col_names,
 //	return ptr;
 //}
 
-const Eigen::SparseMatrix<double>* Mat::get_ptr_sparse()
+const Eigen::SparseMatrix<double>* Mat::eptr()
 {
 	const Eigen::SparseMatrix<double>* ptr = &matrix;
 	return ptr;
 }
 
 
+const vector<string>* Mat::rn_ptr()
+{
+	const vector<string>* ptr = &row_names;
+	return ptr;
+}
+
+
+const vector<string>* Mat::cn_ptr()
+{
+	const vector<string>* ptr = &col_names;
+	return ptr;
+}
 
 const Eigen::SparseMatrix<double>* Mat::get_U_ptr()
 {
@@ -257,7 +269,7 @@ ostream& operator<< (ostream &os, Mat mat)
 	for (auto &name : mat.get_col_names())
 		cout << name << ',';
 	cout << endl;
-	cout << *mat.get_ptr_sparse();
+	cout << *mat.eptr();
 	return os;
 }
 
@@ -502,7 +514,7 @@ void Mat::from_binary(const string &filename)
 //-----------------------------------------
 //Maninpulate the shape and ordering of Mats
 //-----------------------------------------
-Mat Mat::get(vector<string> &new_row_names, vector<string> &new_col_names)
+Mat Mat::get(const vector<string> &new_row_names, const vector<string> &new_col_names)
 {
 	//check that every row and col name is listed
 	vector<string> row_not_found;
@@ -593,7 +605,7 @@ Mat Mat::get(vector<string> &new_row_names, vector<string> &new_col_names)
 	return Mat(new_row_names,new_col_names,new_matrix);
 }
 
-Mat Mat::extract(vector<string> &extract_row_names, vector<string> &extract_col_names)
+Mat Mat::extract(const vector<string> &extract_row_names, const vector<string> &extract_col_names)
 {
 	Mat new_mat;
 	if ((extract_row_names.size() == 0) && (extract_col_names.size() == 0))
@@ -617,21 +629,21 @@ Mat Mat::extract(vector<string> &extract_row_names, vector<string> &extract_col_
 	return new_mat;
 }
 
-Mat Mat::extract(string &extract_row_name, vector<string> &extract_col_names)
+Mat Mat::extract(const string &extract_row_name, const vector<string> &extract_col_names)
 {
 	vector<string> extract_row_names;
 	extract_row_names.push_back(extract_row_name);
 	return extract(extract_row_names, extract_col_names);
 }
-Mat Mat::extract(vector<string> &extract_row_names, string &extract_col_name)
+Mat Mat::extract(const vector<string> &extract_row_names, const string &extract_col_name)
 {
 	vector<string> extract_col_names;
-	extract_row_names.push_back(extract_col_name);
+	extract_col_names.push_back(extract_col_name);
 	return extract(extract_row_names, extract_col_names);
 }
 
 
-void Mat::drop_cols(vector<string> &drop_col_names)
+void Mat::drop_cols(const vector<string> &drop_col_names)
 {
 	vector<string> missing_col_names;
 	for (auto &name : drop_col_names)
@@ -661,7 +673,7 @@ void Mat::drop_cols(vector<string> &drop_col_names)
 	mattype = new_mat.get_mattype();
 }
 
-void Mat::drop_rows(vector<string> &drop_row_names)
+void Mat::drop_rows(const vector<string> &drop_row_names)
 {
 	
 	vector<string> missing_row_names;	

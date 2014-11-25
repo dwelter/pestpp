@@ -104,9 +104,7 @@ int main(int argc, char* argv[])
 	//preds.push_back("C_OBS01_1");
 	//preds.push_back("C_obs02_1");
 	//la.set_predictions(preds);
-	la.calc_posterior_covariance_matrix();
-
-	Mat schur = la.get_posterior_parameter();
+	Mat schur = la.posterior_parameter_matrix();
 	//schur.to_ascii("emu_post.cov");
 	return 0;
 }

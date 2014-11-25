@@ -37,17 +37,17 @@ public:
 	double prior_parameter_variance(string &par_name);
 	//a map of <par_name,variance> from diagonal of parcov
 	map<string, double> prior_parameter_variance();
-	Mat prior_parameter_covariance_matrix() { return parcov; }
+	Mat prior_parameter_matrix() { return parcov; }
 
 	//from the diagonal of schur's complement
 	double posterior_parameter_variance(string &par_name);
 	//a map of <par_name,variance> from the diagonal of schur's complement
 	map<string, double> posterior_parameter_variance();
-	//schur's complement
-	Mat get_posterior_parameter(){ return posterior; }
+	//the full matrix
+	Mat posterior_parameter_matrix();
 
+	void calc_posterior();
 
-	void calc_posterior_covariance_matrix();
 
 	//prior predictive variance from parcov
 	double prior_prediction_variance(string &pred_name);

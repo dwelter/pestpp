@@ -121,31 +121,44 @@ void linear_analysis::align()
 	}
 }
 
+double linear_analysis::prior_parameter_variance(string &par_name)
+{
+	int ipar = find(parcov.rn_ptr()->begin(), parcov.rn_ptr()->end(), par_name) - parcov.rn_ptr()->begin();
+	if (ipar == parcov.nrow())
+		throw runtime_error("lienar_analysis::prior_parameter_variance() error: parameter: " + par_name + " not found");
+	return parcov.get_matrix().diagonal()[ipar];	
+}
 
-void linear_analysis::calc_posterior_covariance_matrix()
+double linear_analysis::posterior_parameter_variance(string &par_name)
+{
+	if (posterior.nrow() == 0) calc_posterior();
+	int ipar = find(posterior.rn_ptr()->begin(), posterior.rn_ptr()->end(), par_name) - posterior.rn_ptr()->begin();
+	if (ipar == posterior.nrow())
+		throw runtime_error("lienar_analysis::posterior_parameter_variance() error: parameter: " + par_name + " not found");
+	return posterior.get_matrix().diagonal()[ipar];
+}
+
+Mat linear_analysis::posterior_parameter_matrix()
+{
+	if (posterior.nrow() == 0) calc_posterior();
+	return posterior;
+}
+
+void linear_analysis::calc_posterior()
 {
 	align();
-	//invert obscov
-	Mat obscov_inv = obscov.inv();
-	//invert parcov
-	Mat parcov_inv = parcov.inv();
-
-	const Eigen::SparseMatrix<double> *parcov_inv_ptr = parcov_inv.get_ptr_sparse();
-	const Eigen::SparseMatrix<double> *obscov_inv_ptr = obscov_inv.get_ptr_sparse();
-	const Eigen::SparseMatrix<double> *jco_ptr = jacobian.get_ptr_sparse();
-	Mat jco_t = jacobian.transpose();
-	const Eigen::SparseMatrix<double> *jco_t_ptr = jco_t.get_ptr_sparse();	
-	posterior = Covariance(parcov.get_row_names(), ((*jacobian.transpose().get_ptr_sparse() * *obscov_inv_ptr * *jco_ptr) + *parcov_inv_ptr)).inv();
+	posterior = Covariance(*parcov.rn_ptr(), ((*jacobian.transpose().eptr() * *obscov.inv().eptr() * *jacobian.eptr()) + *parcov.inv().eptr())).inv();
 }
+
 
 
 void linear_analysis::set_predictions(vector<string> preds)
 {
-	vector<string> obs_names = jacobian.get_row_names();
+	const vector<string>* obs_names = jacobian.rn_ptr();
 	for (auto pred : preds)
 	{
 		pest_utils::upper_ip(pred);
-		if (find(obs_names.begin(), obs_names.end(), pred) != obs_names.end())
+		if (find(obs_names->begin(), obs_names->end(), pred) != obs_names->end())
 		{
 			Mat mpred = jacobian.extract(pred, vector<string>());
 			mpred.transpose_ip();
@@ -171,13 +184,13 @@ void linear_analysis::set_predictions(vector<string> preds)
 				}
 			}
 			//if the pred vector is not completely aligned with the JCO
-			if (mpred.get_row_names() != jacobian.get_col_names())
+			if (*mpred.rn_ptr() != *jacobian.cn_ptr())
 			{
 				vector<string> missing;
-				vector<string> mpred_par_names = mpred.get_row_names();
-				for (auto jco_par : jacobian.get_col_names())
+				const vector<string> *mpred_par_names = mpred.rn_ptr();
+				for (auto jco_par : *jacobian.cn_ptr())
 				{
-					if (find(mpred_par_names.begin(), mpred_par_names.end(), jco_par) == mpred_par_names.end())
+					if (find(mpred_par_names->begin(), mpred_par_names->end(), jco_par) == mpred_par_names->end())
 					{
 						missing.push_back(jco_par);
 					}
@@ -188,7 +201,7 @@ void linear_analysis::set_predictions(vector<string> preds)
 					for (auto m : missing) ss << m << ",";
 					throw runtime_error("linear_analysis::set_predictions() error: parameters missing from pred: " + pred + " : " + ss.str());
 				}
-				mpred = mpred.get(jacobian.get_col_names(), mpred.get_col_names());
+				mpred = mpred.get(*jacobian.cn_ptr(), *mpred.cn_ptr());
 			}
 			predictions.push_back(mpred);
 
