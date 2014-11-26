@@ -100,11 +100,23 @@ int main(int argc, char* argv[])
 	string jco("pest.jco");
 	string pst("pest.pst");
 	linear_analysis la(jco,pst,pst);
-	//vector<string> preds;
-	//preds.push_back("C_OBS01_1");
-	//preds.push_back("C_obs02_1");
-	//la.set_predictions(preds);
-	Mat schur = la.posterior_parameter_matrix();
+	vector<string> preds;
+	preds.push_back("C_OBS01_1");
+	preds.push_back("C_obs02_1");
+	la.set_predictions(preds);
+	//double pvar = la.prior_prediction_variance(string("c_obs01_1"));
+	map<string, double> pvar = la.prior_prediction_variance();
+	for (auto pred : pvar)
+		cout << pred.first << ":" << pred.second << endl;
+	//pvar = la.posterior_prediction_variance(string("c_obs01_1"));
+	pvar = la.posterior_prediction_variance();
+	for (auto pred : pvar)
+		cout << pred.first << ":" << pred.second << endl;
+	vector<string> cond_pars;
+	cond_pars.push_back("kr01c03");
+	cond_pars.push_back("kr01c28");
+	map<string, pair<double, double>> result = la.predictive_contribution(cond_pars);
+	//Mat schur = la.posterior_parameter_matrix();
 	//schur.to_ascii("emu_post.cov");
 	return 0;
 }

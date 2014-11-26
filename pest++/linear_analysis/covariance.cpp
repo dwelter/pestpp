@@ -517,6 +517,8 @@ void Mat::from_binary(const string &filename)
 Mat Mat::get(const vector<string> &new_row_names, const vector<string> &new_col_names)
 {
 	//check that every row and col name is listed
+	if (new_row_names.size() == 0) throw runtime_error("Mat::get() error: new_row_names is empty");
+	if (new_col_names.size() == 0) throw runtime_error("Mat::get() error: new_col_names is empty");
 	vector<string> row_not_found;
 	for (auto &n_row_name : new_row_names)
 	{

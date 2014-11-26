@@ -93,6 +93,7 @@ public:
 	Covariance(vector<string> _row_names, Eigen::SparseMatrix<double> _matrix);
 	
 	Covariance get(vector<string> &other_names);
+	Mat get(vector<string> &other_row_names, vector<string> &other_col_names){ return Mat::get(other_row_names, other_col_names); }
 	void drop(vector<string> &drop_names);
 	Covariance extract(vector<string> &extract_names);
 

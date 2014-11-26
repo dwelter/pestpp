@@ -21,9 +21,9 @@ public:
 	linear_analysis(Mat _jacobian, Pest pest_scenario);
 
 	//directly from Mat objects
-	linear_analysis(Mat _jacobian, Mat _parcov, Mat _obscov)
+	linear_analysis(Mat _jacobian, Mat _parcov, Mat _obscov, map<string,Mat> _predictions)
 	{
-		jacobian = _jacobian; parcov = _parcov; obscov = _obscov;
+		jacobian = _jacobian; parcov = _parcov; obscov = _obscov,predictions=_predictions;
 	}
 
 	void set_predictions(vector<string> preds);
@@ -45,9 +45,8 @@ public:
 	map<string, double> posterior_parameter_variance();
 	//the full matrix
 	Mat posterior_parameter_matrix();
-
-	void calc_posterior();
-
+	Mat* posterior_parameter_ptr();
+	
 
 	//prior predictive variance from parcov
 	double prior_prediction_variance(string &pred_name);
@@ -64,10 +63,13 @@ public:
 	//<pred_name,variance_reduction> from some obs
 	map<string, double> posterior_predictive_worth(vector<string> &obs_names);
 
-	//reduction in predictive variance from perfect knowledge of some pars
-	double prior_predictive_contribution(string &pred_name, vector<string> &par_names);
-	//<pred_name,variance_reduction> from perfect knowledge of some pars
-	map<string, double> prior_predictive_contribution(vector<string> &par_names);
+	//reduction in prior and posterior predictive variance from perfect knowledge of some pars
+	//pair<double, double> predictive_contribution(string &pred_name, vector<string> &par_names);
+	//<pred_name,prior and posterior variance_reduction> from perfect knowledge of some pars
+	map<string, pair<double, double>> predictive_contribution(vector<string> &par_names);
+
+
+
 
 	//exposed error variance functionality
 
@@ -117,7 +119,7 @@ public:
 	Mat* get_S_ptr(){ return &S; }
 	Mat* get_V_ptr(){ return &V; }
 
-	vector<Mat> get_predictions(){ return predictions; }
+	map<string,Mat> get_predictions(){ return predictions; }
 	vector<Mat> get_omitted_predictions(){ return omitted_predictions; }
 	
 	//returns a list of warnings and errors, aligns the different linear components, sets isaligned to true
@@ -128,10 +130,13 @@ private:
 	Mat jacobian;
 	Covariance parcov;
 	Covariance obscov;
-	vector<Mat> predictions;
+	//vector<Mat> predictions;
+	map<string, Mat> predictions;
 	bool isaligned;
 
 	Covariance posterior;
+	void calc_posterior();
+	Covariance condition_on(vector<string> &keep_par_names,vector<string> &cond_par_names);
 
 	//svd stuff
 	Mat U,S,V;

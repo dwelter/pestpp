@@ -1,5 +1,6 @@
 #include <vector>
 #include <string>
+#include <sstream>
 #include "Pest.h"
 #include "utilities.h"
 #include "eigen_tools.h"
@@ -100,25 +101,105 @@ void linear_analysis::align()
 	vector<string> common;
 	if (jacobian.get_col_names() != parcov.get_col_names())
 	{
-		//common = get_common(jacobian.get_col_names(), parcov.get_row_names());
-		//parcov = parcov.get(common);
-		//jacobian = jacobian.get(jacobian.get_row_names(), common);
 		parcov = parcov.get(jacobian.get_col_names());
 	}
 	if (jacobian.get_row_names() != obscov.get_col_names())
 	{
-		//common = get_common(jacobian.get_row_names(), obscov.get_row_names());
-		//obscov = obscov.get(common);
-		//jacobian = jacobian.get(jacobian.get_row_names(), common);
 		obscov = obscov.get(jacobian.get_row_names());
 	}
-	for (int i = 0; i < predictions.size(); i++)
+	for (auto &p : predictions)
 	{
-		if (jacobian.get_col_names() != predictions[i].get_row_names())
+		if (*jacobian.cn_ptr() != *p.second.rn_ptr())
 		{
-			predictions[i] = predictions[i].get(jacobian.get_col_names(), predictions[i].get_row_names());
+			Mat new_pred = p.second.get(*jacobian.cn_ptr(),*p.second.rn_ptr());
+			predictions[p.first] = new_pred;
 		}
 	}
+}
+
+
+map<string,pair<double, double>> linear_analysis::predictive_contribution(vector<string> &cond_par_names)
+{
+	align();
+
+	//for (vector<string>::iterator p_iter = cond_par_names.begin(); p_iter != cond_par_names.end(); ++p_iter)
+	for (int i = 0; i != cond_par_names.size(); i++)
+		pest_utils::upper_ip(cond_par_names[i]);
+
+	//check the inputs
+	vector<string> errors;
+	const vector<string>* jpar_names = jacobian.cn_ptr();
+	for (auto par_name : cond_par_names)
+	{
+		if (find(jpar_names->begin(), jpar_names->end(), par_name) == jpar_names->end())
+			errors.push_back("par not found in jacobian: " + par_name);
+	}
+	/*for (auto pred_name : pred_names)
+	{
+		if (predictions.find(pred_name) == predictions.end())
+			errors.push_back("pred not found: " + pred_name);
+	}*/
+	if (errors.size() > 0)
+	{
+		stringstream ss;
+		for (auto e : errors)
+			ss << e << ',';
+		throw runtime_error("linear_analysis::predictive_contribution() errors: " + ss.str());
+	}
+	//the parameters that will remain
+	vector<string> keep_par_names;
+	for (auto pname : *parcov.rn_ptr())
+	{
+		if (find(cond_par_names.begin(), cond_par_names.end(), pname) == cond_par_names.end())
+			keep_par_names.push_back(pname);
+	}
+
+	map<string,Mat> cond_preds;
+	for (auto &pred : predictions)
+		cond_preds[pred.first] = pred.second.get(keep_par_names, *pred.second.cn_ptr());
+
+	//get a new linear analysis object - we can use the same obscov b/c it doesn't change
+	Covariance* obscov_ptr = &obscov;
+	linear_analysis cond_la(jacobian.get(*jacobian.rn_ptr(), keep_par_names), condition_on(keep_par_names, cond_par_names), *obscov_ptr,cond_preds);
+
+	//calculate the prior and posterior with all parameters
+	map<string, double> org_prior = prior_prediction_variance();
+	map<string, double> org_post = posterior_prediction_variance();
+
+	//calculate the prior and posterior with some conditioned parameters
+	map<string, double> cond_prior = cond_la.prior_prediction_variance();
+	map<string, double> cond_post = cond_la.posterior_prediction_variance();
+
+	//calculate the reduction in prior and posterior uncertainty for each prediction
+	map<string, pair<double, double>> contributions;
+	for (auto pred : predictions)
+	{
+		pair<double, double> reduction(org_prior[pred.first] - cond_prior[pred.first], org_post[pred.first] - cond_post[pred.first]);
+		contributions[pred.first] = reduction;
+	}
+	return contributions;
+}
+
+
+Covariance linear_analysis::condition_on(vector<string> &keep_par_names, vector<string> &cond_par_names)
+{
+	//C11
+	Covariance new_parcov = parcov.get(keep_par_names);
+	//if parcov is diagonal, then there is no conditioning
+	if (parcov.get_mattype() == Mat::MatType::DIAGONAL)
+	{
+		return new_parcov;
+	}		
+	//the portion of parcov that is becoming "known": C22
+	Covariance cond_parcov = parcov.get(cond_par_names);
+	//C22^-1
+	cond_parcov.inv_ip();
+	//C12
+	Mat upper_off_diag = parcov.get(keep_par_names, cond_par_names);
+	//C11 - (C12*C22^-1*C21)
+	Eigen::SparseMatrix<double> mcond = *new_parcov.eptr() - (*upper_off_diag.eptr() * *cond_parcov.eptr() * *upper_off_diag.transpose().eptr());
+	Covariance new_cond_parcov(keep_par_names, mcond);
+	return new_cond_parcov;
 }
 
 double linear_analysis::prior_parameter_variance(string &par_name)
@@ -126,7 +207,8 @@ double linear_analysis::prior_parameter_variance(string &par_name)
 	int ipar = find(parcov.rn_ptr()->begin(), parcov.rn_ptr()->end(), par_name) - parcov.rn_ptr()->begin();
 	if (ipar == parcov.nrow())
 		throw runtime_error("lienar_analysis::prior_parameter_variance() error: parameter: " + par_name + " not found");
-	return parcov.get_matrix().diagonal()[ipar];	
+	const Eigen::SparseMatrix<double>* ptr = parcov.eptr();
+	return ptr->diagonal()[ipar];	
 }
 
 double linear_analysis::posterior_parameter_variance(string &par_name)
@@ -135,14 +217,70 @@ double linear_analysis::posterior_parameter_variance(string &par_name)
 	int ipar = find(posterior.rn_ptr()->begin(), posterior.rn_ptr()->end(), par_name) - posterior.rn_ptr()->begin();
 	if (ipar == posterior.nrow())
 		throw runtime_error("lienar_analysis::posterior_parameter_variance() error: parameter: " + par_name + " not found");
-	return posterior.get_matrix().diagonal()[ipar];
+	const Eigen::SparseMatrix<double>* ptr = posterior.eptr();
+	return ptr->diagonal()[ipar];
 }
+
 
 Mat linear_analysis::posterior_parameter_matrix()
 {
 	if (posterior.nrow() == 0) calc_posterior();
 	return posterior;
 }
+
+Mat* linear_analysis::posterior_parameter_ptr()
+{
+	if (posterior.nrow() == 0) calc_posterior();
+	Mat* ptr = &posterior;
+	return ptr;
+}
+
+double linear_analysis::prior_prediction_variance(string &pred_name)
+{
+	pest_utils::upper_ip(pred_name);
+	map<string, Mat>::iterator p_iter = predictions.find(pred_name);
+	if (p_iter == predictions.end())
+		throw runtime_error("linear_analysis::prior_pred_variance() error: pred:" + pred_name + " not found in predicitons");
+	Eigen::SparseMatrix<double> result = (*p_iter->second.transpose().eptr() * *parcov.eptr() * *p_iter->second.eptr());
+	return result.valuePtr()[0];
+
+}
+
+map<string, double> linear_analysis::prior_prediction_variance()
+{
+	map<string, double> result;
+	for (auto &pred : predictions)
+	{
+		string pname(pred.first);
+		result[pname] = prior_prediction_variance(pname);
+	}
+	return result;
+}
+
+double linear_analysis::posterior_prediction_variance(string &pred_name)
+{
+	pest_utils::upper_ip(pred_name);
+	map<string, Mat>::iterator p_iter = predictions.find(pred_name);
+	if (p_iter == predictions.end())
+		throw runtime_error("linear_analysis::prior_pred_variance() error: pred:" + pred_name + " not found in predicitons");
+	if (posterior.nrow() == 0) calc_posterior();
+	Eigen::SparseMatrix<double> result = (*p_iter->second.transpose().eptr() * *posterior.eptr() * *p_iter->second.eptr());
+	return result.valuePtr()[0];
+
+}
+
+map<string, double> linear_analysis::posterior_prediction_variance()
+{
+	map<string, double> result;
+	for (auto &pred : predictions)
+	{
+		string pname(pred.first);
+		result[pname] = posterior_prediction_variance(pname);
+	}
+	return result;
+}
+
+
 
 void linear_analysis::calc_posterior()
 {
@@ -158,11 +296,14 @@ void linear_analysis::set_predictions(vector<string> preds)
 	for (auto pred : preds)
 	{
 		pest_utils::upper_ip(pred);
+	
 		if (find(obs_names->begin(), obs_names->end(), pred) != obs_names->end())
 		{
+			if (predictions.find(pred) != predictions.end())
+				throw runtime_error("linear_analysis::set_predictions() error: pred:" + pred + " already in predictions");
 			Mat mpred = jacobian.extract(pred, vector<string>());
 			mpred.transpose_ip();
-			predictions.push_back(mpred);
+			predictions[pred] = mpred;
 		}
 		else
 		{
@@ -203,7 +344,10 @@ void linear_analysis::set_predictions(vector<string> preds)
 				}
 				mpred = mpred.get(*jacobian.cn_ptr(), *mpred.cn_ptr());
 			}
-			predictions.push_back(mpred);
+			string pname = mpred.get_col_names()[0];
+			if (predictions.find(pname) != predictions.end())
+				throw runtime_error("linear_analysis::set_predictions() error: pred:" + pred + " already in predictions");
+			predictions[pname] = mpred;
 
 		}
 	}
