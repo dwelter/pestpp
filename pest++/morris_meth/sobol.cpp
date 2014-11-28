@@ -21,20 +21,51 @@ using namespace Eigen;
 Sobol::Sobol(const vector<string> &_adj_par_name_vec, const Parameters &_fixed__ctl_pars,
 	const Parameters &_lower_bnd, const Parameters &_upper_bnd, int _n_sample,
 	ParamTransformSeq *base_partran_seq_ptr,
-	const std::vector<std::string> &_obs_name_vec, FileManager *_file_manager_ptr)
+	const std::vector<std::string> &_obs_name_vec, FileManager *_file_manager_ptr, PARAM_DIST _par_dist)
 	: GsaAbstractBase(base_partran_seq_ptr, _adj_par_name_vec, 
-	       _fixed__ctl_pars, _lower_bnd, _upper_bnd, _obs_name_vec, _file_manager_ptr), n_sample(_n_sample)
+	_fixed__ctl_pars, _lower_bnd, _upper_bnd, _obs_name_vec, _file_manager_ptr, _par_dist), n_sample(_n_sample)
 	{
 	}
-VectorXd Sobol::gen_rand_vec(long nsample, double min, double max)
+
+VectorXd Sobol::gen_rand_vec(long nsample, double min, double max, bool log_transform)
 {
-	std::uniform_real_distribution<double> distribution(min, max);
-	//std::normal_distribution<> distribution((max+min)/ 2.0 , (max-min)/4.0);
 	VectorXd v(nsample);
 	long v_len = v.size();
-	for (long i = 0; i<v_len; ++i)
+
+	if (par_dist == PARAM_DIST::uniform && log_transform)
 	{
-		v[i] = distribution(rand_engine);
+
+		std::uniform_real_distribution<double> distribution(log10(min), log10(max));
+		for (long i = 0; i < v_len; ++i)
+		{
+			v[i] = pow(10.0, distribution(rand_engine));
+		}
+	}
+	else if (par_dist == PARAM_DIST::normal)
+	{
+		std::normal_distribution<> distribution((max + min) / 2.0, (max - min) / 4.0);
+		for (long i = 0; i < v_len; ++i)
+		{
+			v[i] = distribution(rand_engine);
+			while (v[i] < min || v[i] > max) v[i] = distribution(rand_engine);
+		}
+	}
+	else if (par_dist == PARAM_DIST::normal && log_transform)
+	{
+		std::normal_distribution<> distribution((log(max) + log(min)) / 2.0, (log(max) - log(min)) / 4.0);
+		for (long i = 0; i < v_len; ++i)
+		{
+			v[i] = pow(10.0, distribution(rand_engine));
+			while (v[i] < min || v[i] > max) v[i] = pow(10.0, distribution(rand_engine));
+		}
+	}
+	else
+	{
+		std::uniform_real_distribution<double> distribution(min, max);
+		for (long i = 0; i < v_len; ++i)
+		{
+			v[i] = distribution(rand_engine);
+		}
 	}
   return v;
 }
@@ -46,21 +77,19 @@ void Sobol::gen_m1_m2()
 	double par_min;
 	double par_max;
 	VectorXd v1;
+	VectorXd v2;
 	m1 = MatrixXd::Zero(n_sample, npar);
 	m2 = MatrixXd::Zero(n_sample, npar);
 	for (int i=0; i<npar; ++i)
 	{
-		par_min = lower_bnd[adj_par_name_vec[i]];
-		par_max = upper_bnd[adj_par_name_vec[i]];
-		v1 = gen_rand_vec(n_sample, par_min, par_max);
+		string &p_name = adj_par_name_vec[i];
+		par_min = lower_bnd[p_name];
+		par_max = upper_bnd[p_name];
+		bool log_trans = is_log_trans_par(p_name);
+		v1 = gen_rand_vec(n_sample, par_min, par_max, log_trans);
+		v2 = gen_rand_vec(n_sample, par_min, par_max, log_trans);
 		m1.col(i) = v1;
-	}
-	for (int i=0; i<npar; ++i)
-	{
-		par_min = lower_bnd[adj_par_name_vec[i]];
-		par_max = upper_bnd[adj_par_name_vec[i]];
-		v1 = gen_rand_vec(n_sample, par_min, par_max);
-		m2.col(i) = v1;
+		m2.col(i) = v2;
 	}
 }
 
@@ -177,7 +206,7 @@ void Sobol::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run)
 	vector<string> obs_names = run_manager.get_obs_name_vec();
 	for (const string &iobs : obs_names)
 	{
-		fout_sbl << endl;
+		fout_sbl << endl << endl;
 		fout_sbl << "Sobol Sensitivity for observation \"" << iobs <<"\"" << endl;
 		calc_sen_single(run_manager, model_run, fout_sbl, iobs);
 	}
@@ -218,19 +247,13 @@ void Sobol::calc_sen_single(RunManagerAbstract &run_manager, ModelRun model_run,
 	// Compute Var for S_ti's
 	double sti_u = sobol_u_missing_data(yb, yb, MISSING_DATA);
 	double var_sti = sti_u - mean_sq_sti;
+	fout_sbl << "E(Y) = " << sqrt(mean_sq_si) << ";  Var(Y) = " << var_si << " (for S_i calculations)" << endl;
+	fout_sbl << "E(Y) = " << sqrt(mean_sq_sti) << ";  Var(Y) = " << var_sti << " (for S_ti calculations)" << endl;
+	size_t npar = adj_par_name_vec.size();
 
-	cout << endl;
-	cout << "mean_sq_si=" << mean_sq_si << endl;
-	cout << "var_si=" << var_si << endl;
-	cout << "mean_sq_sti=" << mean_sq_si << endl;
-	cout << "var_sti=" << var_si << endl;
-	int npar = adj_par_name_vec.size();
-
-	fout_sbl << "parameter_name, s_i, st_i" << endl;
-	for (int i=0; i<npar; ++i)
+	fout_sbl << "parameter_name, s_i, st_i, n_runs" << endl;
+	for (size_t i=0; i<npar; ++i)
 	{
-		cout << "nruns = " << run_manager.get_nruns() << endl;
-		cout <<"######### PAR = " << adj_par_name_vec[i] << endl;
 		vector<double> yci;
 		if (obs_name.empty())
 		{
@@ -241,16 +264,14 @@ void Sobol::calc_sen_single(RunManagerAbstract &run_manager, ModelRun model_run,
 			yci = get_obs_vec(run_manager, i + 2, model_run, obs_name);
 		}
 
-		double sobol_uj = sobol_u_missing_data(ya, yci, MISSING_DATA);
-		cout << " U=" << (sobol_uj - mean_sq_si) << "  var_si= " << var_si << endl;
+		pair<double, int> sumprod_num = sum_of_prod_missing_data(ya, yci, MISSING_DATA);
+		long int n_runs = sumprod_num.second;
+		double sobol_uj = sumprod_num.first / (sumprod_num.second - 1.0);
 		double si = (sobol_uj - mean_sq_si) / var_si;
 
 		double sobol_umj = sobol_u_missing_data(yb, yci, MISSING_DATA);
 		double sti = 1 - (sobol_umj - mean_sq_sti) / var_sti;
 
-		cout << "pararmeter " << adj_par_name_vec[i] << "   si=" << si << ",   sti=" << sti << endl;
-		cout <<"######### END" << endl;
-
-		fout_sbl << adj_par_name_vec[i] << ", " << si << ", " << sti << endl;
+		fout_sbl << adj_par_name_vec[i] << ", " << si << ", " << sti << ", " << n_runs << endl;
 	}
 }

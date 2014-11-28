@@ -136,16 +136,47 @@ void RunManagerSerial::run()
 	{
 		for (int i_run : run_id_vec)
 		{			
-			//first delete any existing input and output files			
-			for (auto &out_file : outfile_vec)
+			//first delete any existing input and output files	
+			// This outer loop is a work around for a bug in windows.  Window can fail to release a file
+			// handle quick enough when the external run executes very quickly
+			bool failed_file_op = true;
+			int n_tries = 0;
+			while (failed_file_op)
 			{
-				if((check_exist_out(out_file)) && (remove(out_file.c_str()) != 0))
-					throw PestError("model interface error: Cannot delete existing model output file "+out_file);				
-			}
-			for (auto &in_file : inpfile_vec)
-			{
-				if ((check_exist_out(in_file)) && (remove(in_file.c_str()) != 0))
-					throw PestError("model interface error: Cannot delete existing model input file " + in_file);
+				vector<string> failed_file_vec;
+				failed_file_op = false;
+				for (auto &out_file : outfile_vec)
+				{
+					if ((check_exist_out(out_file)) && (remove(out_file.c_str()) != 0))
+					{
+						failed_file_vec.push_back(out_file);
+						failed_file_op = true;
+					}
+				}
+				for (auto &in_file : inpfile_vec)
+				{
+					if ((check_exist_out(in_file)) && (remove(in_file.c_str()) != 0))
+					{
+						failed_file_vec.push_back(in_file);
+						failed_file_op = true;
+					}
+				}
+				if (failed_file_op)
+				{
+					++n_tries;
+					w_sleep(1000);
+					if (n_tries > 5)
+					{
+						ostringstream str;
+						str << "model interface error: Cannot delete existing following model files:";
+						for (const string &ifile : failed_file_vec)
+						{
+							str << " " << ifile;
+						}
+						throw PestError(str.str());
+					}
+				}
+
 			}
 			Observations obs;
 			vector<double> par_values;

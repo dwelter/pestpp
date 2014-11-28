@@ -19,12 +19,12 @@ public:
 	Sobol(const std::vector<std::string> &_adj_par_name_vec, const Parameters &_fixed__ctl_pars,
 		const Parameters &_lower_bnd, const Parameters &_upper_bnd, int n_sample,
 		ParamTransformSeq *base_partran_seq,
-		const std::vector<std::string> &_obs_name_vec, FileManager *_file_manager_ptr);
+		const std::vector<std::string> &_obs_name_vec, FileManager *_file_manager_ptr, PARAM_DIST dist);
 	void assemble_runs(RunManagerAbstract &run_manager);
 	void calc_sen(RunManagerAbstract &run_manager, ModelRun model_run);
 	void Sobol::calc_sen_single(RunManagerAbstract &run_manager, ModelRun model_run, std::ofstream &fout_sbl, const std::string &obs_name);
 private:
-	VectorXd gen_rand_vec(long nsample, double min, double max);
+	VectorXd gen_rand_vec(long nsample, double min, double max, bool log_transform=false);
 	void gen_m1_m2();
 	MatrixXd gen_N_matrix(const MatrixXd &m1, const MatrixXd &m2, const vector<int> &idx_vec);
 	void add_model_runs(RunManagerAbstract &run_manager, const MatrixXd &n);

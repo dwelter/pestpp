@@ -8,7 +8,7 @@ using namespace std;
 using namespace pest_utils;
 
 const double GsaAbstractBase::MISSING_DATA = -9999e50;
-mt19937_64 GsaAbstractBase::rand_engine = mt19937_64();
+mt19937_64 GsaAbstractBase::rand_engine = mt19937_64(1);
 
 GsaAbstractBase::GsaAbstractBase(ParamTransformSeq *_base_partran_seq_ptr,
 		const vector<string> &_adj_par_name_vec, const Parameters &_fixed_ctl_pars,
@@ -18,7 +18,7 @@ GsaAbstractBase::GsaAbstractBase(ParamTransformSeq *_base_partran_seq_ptr,
 		: base_partran_seq_ptr(_base_partran_seq_ptr), 
 		  adj_par_name_vec(_adj_par_name_vec), fixed_ctl_pars(_fixed_ctl_pars),
 		  lower_bnd(_lower_bnd), upper_bnd(_upper_bnd), obs_name_vec(_obs_name_vec),
-		  file_manager_ptr(_file_manager_ptr), par_dist(_par_dist), seed(1)
+		  file_manager_ptr(_file_manager_ptr), par_dist(_par_dist)
 {
 }
 
@@ -65,7 +65,7 @@ map<string, double> GsaAbstractBase::calc_parameter_norm_std_dev()
 	{
 		double lower = lower_bnd.get_rec(ipar);
 		double upper = upper_bnd.get_rec(ipar);
-		if (log_trans_pars.find(ipar) == log_trans_pars.end())
+		if (!is_log_trans_par(ipar))
 		{
 			std_dev_map[ipar] = (upper - lower) / 4.0;
 		}
@@ -84,7 +84,7 @@ map<string, double> GsaAbstractBase::calc_parameter_unif_std_dev()
 	{
 		double lower = lower_bnd.get_rec(ipar);
 		double upper = upper_bnd.get_rec(ipar);
-		if (log_trans_pars.find(ipar) == log_trans_pars.end())
+		if (!is_log_trans_par(ipar))
 		{
 			std_dev_map[ipar] = (upper - lower) / sqrt(12.0);
 		}
@@ -142,7 +142,7 @@ void GsaAbstractBase::parce_line(const string &line, map<string, string> &arg_ma
 string GsaAbstractBase::log_name(const string &name) const
 {
 	string log_name(name);
-	if (log_trans_pars.find(name) != log_trans_pars.end())
+	if (is_log_trans_par(name))
 	{
 		log_name = "log(" + name + ")";
 	}

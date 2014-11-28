@@ -35,7 +35,6 @@ void MorrisObsSenFile::initialize(const vector<string> &_par_names_vec, const ve
 void MorrisObsSenFile::add_sen_run_pair(const std::string &par_name, double p1, Observations &obs1, double p2, Observations &obs2)
 {
 	assert (obs1.size() == obs2.size());
-	int nobs = obs1.size();
 
 	// compute sensitivities of individual observations
 	double isen;
@@ -208,15 +207,8 @@ MatrixXd MorrisMethod::create_P_mat(int k)
 		rand_idx.push_back(i);
 	}
 	// Shuffle random index vector
-	random_shuffle(rand_idx.begin(), rand_idx.end());
-	//for (int i=0; i<k; ++i) {
-		//ird = rand();
-		//ird = ird % k;
-		//itmp = rand_idx[i];
-		//rand_idx[i] = rand_idx[ird];
-		//rand_idx[ird] = itmp;
-	//}
-
+	shuffle(rand_idx.begin(), rand_idx.end(), rand_engine);
+	
 	for(int irow=0; irow<k; ++irow)
 	{
 	  p_mat(irow, rand_idx[irow]) = 1;
@@ -239,7 +231,7 @@ VectorXd MorrisMethod::create_x_vec(int k)
 	int max_num = 1+(p-2)/2;
 	for (int i=0; i<k; ++i)
 	{
-		rnum = rand() % max_num;
+		rnum = rand_engine() % max_num;
 		x(i) = rnum / (p - 1);
 	}
 	return x;
@@ -248,7 +240,7 @@ VectorXd MorrisMethod::create_x_vec(int k)
 
 int MorrisMethod::rand_plus_minus_1(void)
 {
-	return (rand() % 2 * 2) - 1 ;
+	return (rand_engine() % 2 * 2) - 1;
 }
 
 
@@ -256,7 +248,7 @@ Parameters MorrisMethod::get_ctl_parameters(int row)
 {
 	Parameters ctl_pars;
 	auto e=adj_par_name_vec.end();
-	int n_cols = b_star_mat.cols();
+	size_t n_cols = b_star_mat.cols();
 	for (int j=0; j<n_cols; ++j)
 	{
 		const string &p = adj_par_name_vec[j];
@@ -264,7 +256,7 @@ Parameters MorrisMethod::get_ctl_parameters(int row)
 		assert(it_lbnd != lower_bnd.end());
 		auto it_ubnd = upper_bnd.find(p);
 		assert(it_ubnd != upper_bnd.end());
-		if (log_trans_pars.find(p) != log_trans_pars.end())
+		if (is_log_trans_par(p))
 		{
 			double temp = b_star_mat(row, j);
 			double update = log10(it_lbnd->second) + (log10(it_ubnd->second) - log10(it_lbnd->second)) * b_star_mat(row, j);
@@ -283,7 +275,7 @@ void MorrisMethod::assemble_runs(RunManagerAbstract &run_manager)
 	for (int tmp_r=0; tmp_r<r; ++tmp_r)
 	{
 		b_star_mat = create_P_star_mat(adj_par_name_vec.size());
-		int n_rows = b_star_mat.rows();
+		auto n_rows = b_star_mat.rows();
 		int run_id;
 		string par_name = "";
 		for (int i=0; i<n_rows; ++i)
@@ -314,7 +306,7 @@ void  MorrisMethod::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run
 	Observations obs0;
 	Parameters pars1;
 	Observations obs1;
-	unsigned int n_adj_par = adj_par_name_vec.size();
+	
 	map<string, RunningStats > sen_map;
 	map<string, RunningStats> obs_stats_map;
 
@@ -372,7 +364,7 @@ void  MorrisMethod::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run
 			double phi1 = run1.get_phi(DynamicRegularization::get_zero_reg_instance(), norm);
 			double p0 = pars0[par_name_1];
 			double p1 = pars1[par_name_1];
-			if (log_trans_pars.find(par_name_1) != log_trans_pars.end())
+			if (is_log_trans_par(par_name_1))
 			{
 				p0 = log10(p0);
 				p1 = log10(p1);
@@ -445,10 +437,10 @@ void  MorrisMethod::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run
 			{
 				const string &pool_group = i_pgrp.first;
 				double var_sum = 0;
-				int weight_sum = 0;
+				long int weight_sum = 0;
 				for (const auto &istat : i_pgrp.second)
 				{
-					double weight = istat.comp_nsamples() - 1;
+					long int weight = istat.comp_nsamples() - 1;
 					var_sum += weight * istat.comp_var();
 					weight_sum += weight;
 				}
@@ -475,14 +467,7 @@ void  MorrisMethod::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run
 
 		//compute parameter standard deviations
 		map<string, double> par_std_dev;
-		if (par_dist == PARAM_DIST::uniform)
-		{
-			par_std_dev = calc_parameter_norm_std_dev();
-		}
-		else
-		{
-			par_std_dev = calc_parameter_unif_std_dev();
-		}
+		par_std_dev = calc_parameter_unif_std_dev();
 		obs_sen_file.calc_pooled_obs_sen(fout_mos, obs_2_sen_weight, par_std_dev);
 		file_manager_ptr->close_file("mos");
 	}

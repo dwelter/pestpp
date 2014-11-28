@@ -290,29 +290,44 @@ int main(int argc, char* argv[])
 	}
 	else if (method != gsa_opt_map.end() && method->second == "SOBOL")
 	{
+		GsaAbstractBase::PARAM_DIST par_dist = GsaAbstractBase::PARAM_DIST::uniform;
+
 		int n_sample = 100;
-		auto morris_r_it = gsa_opt_map.find("SOBOL_SAMPLES");
-		if (morris_r_it != gsa_opt_map.end())
+		auto sob_n_sam_it = gsa_opt_map.find("SOBOL_SAMPLES");
+		if (sob_n_sam_it != gsa_opt_map.end())
 		{
-			convert_ip(morris_r_it->second, n_sample);
+			convert_ip(sob_n_sam_it->second, n_sample);
+		}
+		auto sob_p_dist_it = gsa_opt_map.find("SOBOL_PAR_DIST");
+		if (sob_p_dist_it != gsa_opt_map.end())
+		{
+			string par_dist_str = sob_p_dist_it->second;
+			upper_ip(par_dist_str);
+			if (par_dist_str == "NORM") par_dist = GsaAbstractBase::PARAM_DIST::normal;
+			else if (par_dist_str == "UNIF") par_dist = GsaAbstractBase::PARAM_DIST::uniform;
+			else
+			{
+				ostringstream str;
+				str << "SOBOL_PAR_DIST(" << par_dist_str << "):  \"" << par_dist_str << "\" is an invalid distribuation type";
+				throw PestError(str.str());
+			}
 		}
 
 		gsa_method = new Sobol(adj_par_name_vec, fixed_pars, lower_bnd, upper_bnd, n_sample, 
-			&base_partran_seq, pest_scenario.get_ctl_ordered_obs_names(), &file_manager);
+			&base_partran_seq, pest_scenario.get_ctl_ordered_obs_names(), &file_manager, par_dist);
 	}
 	else
 	{
 		throw PestError("A valid method for computing the sensitivity must be specified in the *.gsa file");
 	}
 
-	unsigned int seed = gsa_method->get_seed();
 	auto morris_r_it = gsa_opt_map.find("RAND_SEED");
 	if (morris_r_it != gsa_opt_map.end())
 	{
-		seed = convert_cp<unsigned int>(morris_r_it->second);
+		unsigned int seed = convert_cp<unsigned int>(morris_r_it->second);
 		gsa_method->set_seed(seed);
 	}
-	srand(seed);
+
 	// make model runs
 	if (gsa_restart == GSA_RESTART::NONE)
 	{
@@ -330,8 +345,11 @@ int main(int argc, char* argv[])
 	{
 		run_manager_ptr->initialize_restart(file_manager.build_filename("rns"));
 	}
+	cout << endl;
+	cout << "Performing model runs..." << endl;
 	run_manager_ptr->run();
 
+	cout << "Calculating sensitivities..." << endl;
 	gsa_method->calc_sen(*run_manager_ptr, model_run);
 	file_manager.close_file("srw");
 	file_manager.close_file("msn");

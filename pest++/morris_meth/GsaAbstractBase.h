@@ -31,12 +31,11 @@ public:
 	virtual void assemble_runs(RunManagerAbstract &run_manager) = 0;
 	virtual void calc_sen(RunManagerAbstract &run_manager, ModelRun model_run) = 0;
 	static std::map<std::string, std::string>  process_gsa_file(std::ifstream &fin, FileManager &file_manager);
-	std::string log_name(const string &name) const;
-	bool is_log_trans_par(const string &name) const;
+	virtual std::string log_name(const string &name) const;
+	virtual bool is_log_trans_par(const string &name) const;
 	std::vector<double> calc_interval_midpoints(int n_interval, double min, double max);
 	double ltqnorm(double p);
-	void set_seed(unsigned int _seed) { seed = _seed;}
-	unsigned int get_seed() { return seed; }
+	static void set_seed(unsigned int _seed) { rand_engine.seed(_seed); }
 	virtual ~GsaAbstractBase(void);
 
 protected:
@@ -52,7 +51,6 @@ protected:
 	static void parce_line(const std::string &line, std::map<std::string, std::string> &arg_map);
 	map<string, double> calc_parameter_norm_std_dev();
 	map<string, double> calc_parameter_unif_std_dev();
-	unsigned int seed;
 };
 
 std::ostream& operator<< (std::ostream& out, const std::vector<double> &rhs);

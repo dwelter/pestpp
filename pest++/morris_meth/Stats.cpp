@@ -9,12 +9,7 @@
 
 #include "Stats.h"
 
-
 using namespace std;
-
-
-
-
 
 double vec_mean(const vector<double> &data_vec)
 {
