@@ -115,9 +115,29 @@ int main(int argc, char* argv[])
 	vector<string> cond_pars;
 	cond_pars.push_back("kr01c03");
 	cond_pars.push_back("kr01c28");
-	map<string, pair<double, double>> result = la.predictive_contribution(cond_pars);
-	//Mat schur = la.posterior_parameter_matrix();
-	//schur.to_ascii("emu_post.cov");
+	map<string, pair<double, double>> contr_result = la.contribution(cond_pars);
+	for (auto r : contr_result)
+	{
+		cout << r.first << "prior reduction:" << r.second.first << " post reduction:" << r.second.second << endl;
+	}
+	pvar = la.prior_prediction_variance();
+	for (auto pred : pvar)
+		cout << pred.first << ":" << pred.second << endl;
+	//pvar = la.posterior_prediction_variance(string("c_obs01_1"));
+	pvar = la.posterior_prediction_variance();
+	for (auto pred : pvar)
+		cout << pred.first << ":" << pred.second << endl;
+
+	vector<string> obs;
+	obs.push_back("h_obs18_1");
+	obs.push_back("h_obs20_1");
+	map<string,double> worth_result = la.worth(obs);
+	for (auto r : worth_result)
+	{
+		cout << r.first << ' ' << r.second << endl;
+	}
+
+
 	return 0;
 }
 

@@ -47,7 +47,6 @@ public:
 	Mat posterior_parameter_matrix();
 	Mat* posterior_parameter_ptr();
 	
-
 	//prior predictive variance from parcov
 	double prior_prediction_variance(string &pred_name);
 	//map <pred_name,variance> from parcov
@@ -61,16 +60,14 @@ public:
 	//the reduction in predictive variance from some obs
 	double posterior_predictive_worth(string &pred_name, vector<string> &obs_names);
 	//<pred_name,variance_reduction> from some obs
-	map<string, double> posterior_predictive_worth(vector<string> &obs_names);
+	map<string, double> worth(vector<string> &obs_names);
 
 	//reduction in prior and posterior predictive variance from perfect knowledge of some pars
-	//pair<double, double> predictive_contribution(string &pred_name, vector<string> &par_names);
 	//<pred_name,prior and posterior variance_reduction> from perfect knowledge of some pars
-	map<string, pair<double, double>> predictive_contribution(vector<string> &par_names);
+	map<string, pair<double, double>> contribution(vector<string> &par_names);
 
-
-
-
+	
+	
 	//exposed error variance functionality
 
 	//<err_var_component("null","solution","omitted"),error_variance> for a set of singular values and a parameter

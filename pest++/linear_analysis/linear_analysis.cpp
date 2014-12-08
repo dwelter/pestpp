@@ -117,15 +117,68 @@ void linear_analysis::align()
 	}
 }
 
-
-map<string,pair<double, double>> linear_analysis::predictive_contribution(vector<string> &cond_par_names)
+map<string, double> linear_analysis::worth(vector<string> &obs_names)
 {
-	align();
+	if (predictions.size() == 0)
+		throw runtime_error("linear_analysis::posterior_predictive_worth() error: no predictions are set");
 
-	//for (vector<string>::iterator p_iter = cond_par_names.begin(); p_iter != cond_par_names.end(); ++p_iter)
+	align();
+	for (int i = 0; i != obs_names.size(); i++)
+		pest_utils::upper_ip(obs_names[i]);
+
+	//check the inputs
+	vector<string> errors;
+	const vector<string>* jobs_names = jacobian.rn_ptr();
+	for (auto &oname : obs_names)
+	{
+		if (find(jobs_names->begin(), jobs_names->end(), oname) == jobs_names->end())
+			errors.push_back("obs not found in jacobian: "+oname);
+	}
+	if (errors.size() > 0)
+	{
+		stringstream ss;
+		for (auto &e : errors)
+			ss << e << ',';
+		throw runtime_error("linear_analysis::posterior_predictive_worth() errors: " + ss.str());
+	}
+
+
+	
+
+	//get a list of remaining obs
+	vector<string> keep_obs_names;
+	for (auto &oname : *jobs_names)
+	{
+		if (find(obs_names.begin(), obs_names.end(), oname) == obs_names.end())
+		{
+			keep_obs_names.push_back(oname);
+		}
+	}
+	//get a new linear analysis object with only the keep names
+	Covariance* parcov_ptr = &parcov;
+	map<string,Mat>* pred_ptr = &predictions;
+	linear_analysis keep(jacobian.get(keep_obs_names, *jacobian.cn_ptr()), *parcov_ptr, obscov.get(keep_obs_names),*pred_ptr);
+	
+	//calculate posterior with all obs and with only keep obs
+	map<string, double> org_post = posterior_prediction_variance();
+	map<string, double> keep_post = keep.posterior_prediction_variance();
+	
+	map<string, double> results;
+	for (auto &pred : predictions)
+		results[pred.first] = keep_post[pred.first] - org_post[pred.first];
+
+	return results;
+}
+
+
+map<string,pair<double, double>> linear_analysis::contribution(vector<string> &cond_par_names)
+{
+	if (predictions.size() == 0)
+		throw runtime_error("linear_analysis::predictive_contribution() error: no predictions are set");
+
+	align();
 	for (int i = 0; i != cond_par_names.size(); i++)
 		pest_utils::upper_ip(cond_par_names[i]);
-
 	//check the inputs
 	vector<string> errors;
 	const vector<string>* jpar_names = jacobian.cn_ptr();
@@ -134,11 +187,6 @@ map<string,pair<double, double>> linear_analysis::predictive_contribution(vector
 		if (find(jpar_names->begin(), jpar_names->end(), par_name) == jpar_names->end())
 			errors.push_back("par not found in jacobian: " + par_name);
 	}
-	/*for (auto pred_name : pred_names)
-	{
-		if (predictions.find(pred_name) == predictions.end())
-			errors.push_back("pred not found: " + pred_name);
-	}*/
 	if (errors.size() > 0)
 	{
 		stringstream ss;
@@ -146,7 +194,8 @@ map<string,pair<double, double>> linear_analysis::predictive_contribution(vector
 			ss << e << ',';
 		throw runtime_error("linear_analysis::predictive_contribution() errors: " + ss.str());
 	}
-	//the parameters that will remain
+
+	//the parameters that will remain uncertain
 	vector<string> keep_par_names;
 	for (auto pname : *parcov.rn_ptr())
 	{
@@ -171,13 +220,13 @@ map<string,pair<double, double>> linear_analysis::predictive_contribution(vector
 	map<string, double> cond_post = cond_la.posterior_prediction_variance();
 
 	//calculate the reduction in prior and posterior uncertainty for each prediction
-	map<string, pair<double, double>> contributions;
+	map<string, pair<double, double>> results;
 	for (auto pred : predictions)
 	{
 		pair<double, double> reduction(org_prior[pred.first] - cond_prior[pred.first], org_post[pred.first] - cond_post[pred.first]);
-		contributions[pred.first] = reduction;
+		results[pred.first] = reduction;
 	}
-	return contributions;
+	return results;
 }
 
 
@@ -356,6 +405,6 @@ void linear_analysis::set_predictions(vector<string> preds)
 
 void linear_analysis::set_predictions(vector<Mat> preds)
 {
-
+	throw runtime_error("not implemented");
 }
 
