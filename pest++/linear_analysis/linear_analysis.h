@@ -81,10 +81,6 @@ public:
 
 
 	//other stuff
-
-	//perform the svd and set the components
-	void SVD();
-
 	//<par_names,ident>
 	map<string, double> parameter_ident(int sing_val);
 
@@ -102,7 +98,6 @@ public:
 	Covariance get_omitted_parcov(){ return omitted_parcov; }
 	Covariance get_obscov(){ return obscov; }
 
-	Mat get_U(){ return U; }
 	Mat get_S(){ return S; }
 	Mat get_V(){ return V; }
 
@@ -112,37 +107,48 @@ public:
 	Mat* get_omitted_jacobian_ptr(){ return &omitted_jacobian; }
 	Covariance* get_omitted_parcov_ptr(){ return &omitted_parcov; }
 
-	Mat* get_U_ptr(){ return &U; }
-	Mat* get_S_ptr(){ return &S; }
-	Mat* get_V_ptr(){ return &V; }
+	Mat* get_normal_ptr();
+	Mat* get_S_ptr(int sv);
+	Mat* get_V_ptr(int sv);
+
+	Mat* get_R_ptr(int sv);
+	Mat* get_G_ptr(int sv);
+	Mat* get_ImR_ptr(int sv);
 
 	map<string,Mat> get_predictions(){ return predictions; }
 	vector<Mat> get_omitted_predictions(){ return omitted_predictions; }
 	
-	//returns a list of warnings and errors, aligns the different linear components, sets isaligned to true
+	//aligns the different linear components
 	void align();
-	bool get_isaligned(){ return isaligned; }
 
 private:
 	Mat jacobian;
+	Mat S, V;
+	Mat normal;
+	Mat R, G, ImR;
+	int R_sv, G_sv, ImR_sv;
+
+	Mat omitted_jacobian;
 	Covariance parcov;
 	Covariance obscov;
-	//vector<Mat> predictions;
-	map<string, Mat> predictions;
-	bool isaligned;
-
 	Covariance posterior;
+	map<string, Mat> predictions;
+	vector<Mat> omitted_predictions;
+	Covariance omitted_parcov;
+
+
 	void calc_posterior();
+	void build_normal();
+	void svd();
+	void build_R(int sv);
+	void build_G(int sv);
+	void build_ImR(int sv);
+
+
 	Covariance condition_on(vector<string> &keep_par_names,vector<string> &cond_par_names);
 
-	//svd stuff
-	Mat U,S,V;
 	
-	//error variance stuff
-	Mat R, G, I_minus_R;
-	vector<Mat> omitted_predictions;
-	Mat omitted_jacobian;
-	Covariance omitted_parcov;
+
 	//scale the jacobian by parcov
 	void kl_scale();
 

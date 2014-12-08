@@ -49,6 +49,7 @@ linear_analysis::linear_analysis(string &jco_filename)
 		else
 			jacobian.from_ascii(jco_filename);
 	}
+	R_sv = -999, G_sv = -999, ImR_sv = -999;
 }
 
 linear_analysis::linear_analysis(string &jco_filename, string &parcov_filename, string &obscov_filename)
@@ -81,6 +82,7 @@ linear_analysis::linear_analysis(string &jco_filename, string &parcov_filename, 
 		obscov.from_observation_weights(obscov_filename);
 	else
 		obscov.from_ascii(obscov_filename);
+	R_sv = -999, G_sv = -999, ImR_sv = -999;
 }
 
 linear_analysis::linear_analysis(Mat _jacobian, Pest pest_scenario)
@@ -88,6 +90,7 @@ linear_analysis::linear_analysis(Mat _jacobian, Pest pest_scenario)
 	jacobian = _jacobian;
 	parcov.from_parameter_bounds(pest_scenario);
 	obscov.from_observation_weights(pest_scenario);
+	R_sv = -999, G_sv = -999, ImR_sv = -999;
 
 }
 
@@ -406,5 +409,114 @@ void linear_analysis::set_predictions(vector<string> preds)
 void linear_analysis::set_predictions(vector<Mat> preds)
 {
 	throw runtime_error("not implemented");
+}
+
+
+void linear_analysis::build_normal()
+{
+	Eigen::SparseMatrix<double> xtqx = jacobian.eptr()->transpose() * *obscov.eptr() * *jacobian.eptr();
+	normal = Mat(jacobian.get_col_names(), jacobian.get_col_names(), xtqx);
+}
+
+void linear_analysis::svd()
+{
+	//Eigen::JacobiSVD<Eigen::MatrixXd> svd_fac(*get_normal_ptr()->eptr(), Eigen::DecompositionOptions::ComputeFullU | Eigen::DecompositionOptions::ComputeFullV);
+	Eigen::JacobiSVD<Eigen::MatrixXd> svd_fac(*get_normal_ptr()->eptr(), Eigen::DecompositionOptions::ComputeFullV);
+	vector<string> sv_names,rs_names;
+	stringstream ss;
+	for (int i = 0; i != jacobian.cn_ptr()->size(); i++)
+	{
+		ss.str(string());
+		ss.clear();
+		ss << "singular_value_" << i;
+		sv_names.push_back(ss.str());
+		ss.str(string());
+		ss.clear();
+		ss << "right_singular_vector_" << i;
+		rs_names.push_back(ss.str());
+	}
+	V = Mat(jacobian.get_col_names(),rs_names,svd_fac.matrixV().sparseView());
+	S = Covariance(sv_names, svd_fac.singularValues().sparseView());
+}
+
+
+Mat* linear_analysis::get_R_ptr(int sv)
+{
+	if (R_sv != sv)
+		build_R(sv);
+	Mat* ptr = &R;
+	return ptr;
+
+}
+
+void linear_analysis::build_R(int sv)
+{
+	R_sv = sv;
+	if (sv == 0)
+	{
+		Eigen::SparseMatrix<double> I(V.nrow(), V.ncol());
+		I.setIdentity();
+		R = Mat(V.get_row_names(), V.get_col_names(), I);
+	}
+	else
+	{
+		vector<string> col_names;
+		for (int i = 0; i < sv; i++)
+			col_names.push_back(V.cn_ptr()->at(i));
+		R = Mat(V.get_row_names(), col_names, V.eptr()->leftCols(sv).transpose() * V.eptr()->leftCols(sv));
+	}
+}
+
+Mat* linear_analysis::get_G_ptr(int sv)
+{
+	if (G_sv != sv)
+		build_G(sv);
+	Mat* ptr = &G;
+	return ptr;
+}
+
+void linear_analysis::build_G(int sv)
+{
+	G_sv = sv;
+}
+
+Mat* linear_analysis::get_ImR_ptr(int sv)
+{
+	if (ImR_sv != sv)
+		build_ImR(sv);
+	Mat* ptr = &ImR;
+	return ptr;
+}
+
+void linear_analysis::build_ImR(int sv)
+{
+	ImR_sv = sv;
+}
+
+
+Mat * linear_analysis::get_normal_ptr()
+{
+	if (normal.nrow() == 0)
+		build_normal();
+	Mat* ptr = &normal;
+	return ptr;
+}
+
+
+
+
+map<string, vector<double>> linear_analysis::parameter_error_variance_components(vector<int> sing_vals, string &par_name)
+{
+	pest_utils::upper_ip(par_name);
+	const vector<string>* jpar_names = jacobian.cn_ptr();
+	if (find(jpar_names->begin(), jpar_names->end(), par_name) == jpar_names->end())
+		throw runtime_error("linear_analysis::parameter_error_variance() error: parameter not in jacobian: " + par_name);
+
+	map<string, vector<double>> result;
+	for (auto sv : sing_vals)
+	{
+
+		
+	}
 }
 
