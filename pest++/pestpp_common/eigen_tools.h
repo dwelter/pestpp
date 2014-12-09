@@ -46,4 +46,6 @@ bool load_triplets_bin(Eigen::SparseMatrix<double> &a, std::istream &fin);
 bool save_vector_bin(const Eigen::VectorXd &vec, std::ostream &fout);
 bool load_vector_bin(Eigen::VectorXd &vec, std::istream &fin);
 
+Eigen::SparseMatrix<double> eigenvec_2_diagsparse(Eigen::VectorXd vec);
+
 #endif /* EIGEN_TOOLS_H_ */

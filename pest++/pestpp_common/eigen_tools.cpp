@@ -258,3 +258,17 @@ bool load_triplets_bin(SparseMatrix<double> &a, istream &fin)
 	a.setFromTriplets(trips.begin(), trips.end());
 	return true;
 }
+
+Eigen::SparseMatrix<double> eigenvec_2_diagsparse(Eigen::VectorXd vec)
+{
+	vector<Eigen::Triplet<double>> triplet_list;
+	for (int i = 0; i != vec.size(); i++)
+		triplet_list.push_back(Eigen::Triplet<double>(i, i, vec[i]));
+	Eigen::SparseMatrix<double> mat(vec.size(), vec.size());
+	mat.setZero();
+	mat.setFromTriplets(triplet_list.begin(), triplet_list.end());
+	return mat;
+
+
+
+}

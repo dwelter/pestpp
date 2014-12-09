@@ -47,21 +47,11 @@ Mat::Mat(vector<string> _row_names, vector<string> _col_names,
 	autoalign = _autoalign;
 }
 
-//--------------------------------------
-//Mat convience functions
-//--------------------------------------
-//const Eigen::SparseMatrix<double>* Mat::get_matrix_ptr()
-//{
-//	const Eigen::SparseMatrix<double>* ptr = &matrix;
-//	return ptr;
-//}
-
 const Eigen::SparseMatrix<double>* Mat::eptr()
 {
 	const Eigen::SparseMatrix<double>* ptr = &matrix;
 	return ptr;
 }
-
 
 const vector<string>* Mat::rn_ptr()
 {
@@ -69,11 +59,17 @@ const vector<string>* Mat::rn_ptr()
 	return ptr;
 }
 
-
 const vector<string>* Mat::cn_ptr()
 {
 	const vector<string>* ptr = &col_names;
 	return ptr;
+}
+
+Mat Mat::identity()
+{
+	Eigen::SparseMatrix<double> i(nrow(), ncol());
+	i.setIdentity();
+	return Mat(*rn_ptr(),*cn_ptr(),i);
 }
 
 const Eigen::SparseMatrix<double>* Mat::get_U_ptr()
@@ -514,6 +510,25 @@ void Mat::from_binary(const string &filename)
 //-----------------------------------------
 //Maninpulate the shape and ordering of Mats
 //-----------------------------------------
+
+Mat Mat::leftCols(const int idx)
+{
+	vector<string> cnames;
+	vector<string> base_cnames = *cn_ptr();
+	for (int i = 0; i < idx; i++)
+		cnames.push_back(base_cnames[i]);
+	return Mat(row_names,cnames,matrix.leftCols(idx));
+}
+
+Mat Mat::rightCols(const int idx)
+{
+	vector<string> cnames;
+	vector<string> base_cnames = *cn_ptr();
+	for (int i = ncol() - idx; i < ncol(); i++)
+		cnames.push_back(base_cnames[i]);	
+	return Mat(row_names,cnames,matrix.rightCols(idx));
+}
+
 Mat Mat::get(const vector<string> &new_row_names, const vector<string> &new_col_names)
 {
 	//check that every row and col name is listed
@@ -961,8 +976,11 @@ void Covariance::from_observation_weights(Pest &pest_scenario)
 		pest_utils::upper_ip(obs_name);
 		obs_rec = pest_scenario.get_ctl_observation_info().get_observation_rec_ptr(obs_name);		
 		weight = obs_rec->weight;
-		if (weight <= 0.0) weight = 1.0e-30;
-		triplet_list.push_back(Eigen::Triplet<double>(i, i, pow(1.0 / obs_rec->weight, 2.0)));
+		if (weight <= 0.0)
+			weight = 1.0e+32;
+		else
+			weight = pow(1.0 / obs_rec->weight, 2.0);
+		triplet_list.push_back(Eigen::Triplet<double>(i, i, weight));
 		row_names.push_back(obs_name);
 		col_names.push_back(obs_name);
 		i++;

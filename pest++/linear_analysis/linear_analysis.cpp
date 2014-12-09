@@ -49,7 +49,7 @@ linear_analysis::linear_analysis(string &jco_filename)
 		else
 			jacobian.from_ascii(jco_filename);
 	}
-	R_sv = -999, G_sv = -999, ImR_sv = -999;
+	R_sv = -999, G_sv = -999, ImR_sv = -999, V1_sv = -999;
 }
 
 linear_analysis::linear_analysis(string &jco_filename, string &parcov_filename, string &obscov_filename)
@@ -82,7 +82,7 @@ linear_analysis::linear_analysis(string &jco_filename, string &parcov_filename, 
 		obscov.from_observation_weights(obscov_filename);
 	else
 		obscov.from_ascii(obscov_filename);
-	R_sv = -999, G_sv = -999, ImR_sv = -999;
+	R_sv = -999, G_sv = -999, ImR_sv = -999, V1_sv = -999;
 }
 
 linear_analysis::linear_analysis(Mat _jacobian, Pest pest_scenario)
@@ -90,7 +90,7 @@ linear_analysis::linear_analysis(Mat _jacobian, Pest pest_scenario)
 	jacobian = _jacobian;
 	parcov.from_parameter_bounds(pest_scenario);
 	obscov.from_observation_weights(pest_scenario);
-	R_sv = -999, G_sv = -999, ImR_sv = -999;
+	R_sv = -999, G_sv = -999, ImR_sv = -999,V1_sv=-999;
 
 }
 
@@ -414,8 +414,8 @@ void linear_analysis::set_predictions(vector<Mat> preds)
 
 void linear_analysis::build_normal()
 {
-	Eigen::SparseMatrix<double> xtqx = jacobian.eptr()->transpose() * *obscov.eptr() * *jacobian.eptr();
-	normal = Mat(jacobian.get_col_names(), jacobian.get_col_names(), xtqx);
+	align();
+	normal = Mat(jacobian.get_col_names(), jacobian.get_col_names(), jacobian.eptr()->transpose() * *obscov.eptr() * *jacobian.eptr());
 }
 
 void linear_analysis::svd()
@@ -436,7 +436,9 @@ void linear_analysis::svd()
 		rs_names.push_back(ss.str());
 	}
 	V = Mat(jacobian.get_col_names(),rs_names,svd_fac.matrixV().sparseView());
-	S = Covariance(sv_names, svd_fac.singularValues().sparseView());
+	V.to_ascii("v.mat");
+	get_normal_ptr()->to_ascii("normal.mat");
+	S = Covariance(sv_names, eigenvec_2_diagsparse(svd_fac.singularValues()));
 }
 
 
@@ -451,20 +453,45 @@ Mat* linear_analysis::get_R_ptr(int sv)
 
 void linear_analysis::build_R(int sv)
 {
-	R_sv = sv;
+	if (V.nrow() == 0) svd();	
 	if (sv == 0)
 	{
-		Eigen::SparseMatrix<double> I(V.nrow(), V.ncol());
-		I.setIdentity();
-		R = Mat(V.get_row_names(), V.get_col_names(), I);
+		Eigen::SparseMatrix<double> Z(V.nrow(), V.ncol());
+		Z.setZero();
+		R = Mat(V.get_row_names(), V.get_col_names(), Z);
+	}
+	else if (sv > jacobian.ncol())
+	{
+		R = V.identity();
 	}
 	else
 	{
-		vector<string> col_names;
+		vector<string> cnames;
+		vector<string> base_cnames = *V.cn_ptr();
 		for (int i = 0; i < sv; i++)
-			col_names.push_back(V.cn_ptr()->at(i));
-		R = Mat(V.get_row_names(), col_names, V.eptr()->leftCols(sv).transpose() * V.eptr()->leftCols(sv));
+			cnames.push_back(base_cnames[i]);
+		R = Mat(V.get_row_names(), V.get_row_names(), *get_V1_ptr(sv)->eptr() * get_V1_ptr(sv)->eptr()->transpose());
 	}
+	R_sv = sv;
+}
+
+Mat* linear_analysis::get_V1_ptr(int sv)
+{	
+	if (sv != V1_sv)
+		build_V1(sv);
+	Mat* ptr = &V1;
+	return ptr;
+}
+
+void linear_analysis::build_V1(int sv)
+{
+	if (V.nrow() == 0) svd();
+	vector<string> cnames;
+	vector<string> base_cnames = *V.cn_ptr();
+	for (int i = 0; i < sv; i++)
+		cnames.push_back(base_cnames[i]);
+	V1 = Mat(V.get_row_names(), cnames, V.eptr()->leftCols(sv));
+	V1_sv = sv;
 }
 
 Mat* linear_analysis::get_G_ptr(int sv)
@@ -477,9 +504,13 @@ Mat* linear_analysis::get_G_ptr(int sv)
 
 void linear_analysis::build_G(int sv)
 {
+	if (V.nrow() == 0) svd();
+	Eigen::SparseMatrix<double> s_inv = S.inv().eptr()->topLeftCorner(sv,sv);
+	Eigen::SparseMatrix<double> g = *get_V1_ptr(sv)->eptr() * s_inv * get_V1_ptr(sv)->eptr()->transpose() * jacobian.eptr()->transpose() * *obscov.eptr();
+	G = Mat(jacobian.get_col_names(),jacobian.get_row_names(),g);
 	G_sv = sv;
 }
-
+ 
 Mat* linear_analysis::get_ImR_ptr(int sv)
 {
 	if (ImR_sv != sv)
@@ -490,6 +521,14 @@ Mat* linear_analysis::get_ImR_ptr(int sv)
 
 void linear_analysis::build_ImR(int sv)
 {
+	if (sv == 0)
+		ImR = parcov.identity();
+	else
+	{
+		if (V.nrow() == 0) svd();
+		Mat V2 = V.rightCols(V.ncol() - sv);
+		ImR = Mat(V2.get_row_names(), V2.get_row_names(), *V2.eptr() * V2.eptr()->transpose());
+	} 
 	ImR_sv = sv;
 }
 
@@ -503,7 +542,18 @@ Mat * linear_analysis::get_normal_ptr()
 }
 
 
+Mat linear_analysis::first_parameter(int sv)
+{
+	Eigen::SparseMatrix<double> first = *get_ImR_ptr(sv)->eptr() * *parcov.eptr() * get_ImR_ptr(sv)->eptr()->transpose();
+	return Mat(parcov.get_col_names(), parcov.get_col_names(), first);
+}
 
+Mat linear_analysis::second_parameter(int sv)
+{
+	
+	Eigen::SparseMatrix<double> second = *get_G_ptr(sv)->eptr() * *obscov.eptr() * get_G_ptr(sv)->eptr()->transpose();
+	return Mat(parcov.get_col_names(),parcov.get_col_names(),second);
+}
 
 map<string, vector<double>> linear_analysis::parameter_error_variance_components(vector<int> sing_vals, string &par_name)
 {

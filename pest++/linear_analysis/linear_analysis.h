@@ -79,10 +79,17 @@ public:
 	void extract_omitted(vector<string> &omitted_par_names);
 	void extract_omitted(string &omitted_par_name){ extract_omitted(vector<string>{omitted_par_name}); }
 
+	Mat first_parameter(int sv);
+	Mat second_parameter(int sv);
+	Mat third_parameter(int sv);
+
+	map<string, double> first_prediction(int sv);
+	map<string, double> second_prediction(int sv);
+	map<string, double> third_prediction(int sv);
 
 	//other stuff
 	//<par_names,ident>
-	map<string, double> parameter_ident(int sing_val);
+	map<string, double> parameter_ident(int sv);
 
 	//<singular_value,vector<sup_obs>>
 	map<int, vector<double>> super_obs(vector<int> sing_vals);
@@ -114,9 +121,10 @@ public:
 	Mat* get_R_ptr(int sv);
 	Mat* get_G_ptr(int sv);
 	Mat* get_ImR_ptr(int sv);
+	Mat* get_V1_ptr(int sv);
 
 	map<string,Mat> get_predictions(){ return predictions; }
-	vector<Mat> get_omitted_predictions(){ return omitted_predictions; }
+	map<string,Mat> get_omitted_predictions(){ return omitted_predictions; }
 	
 	//aligns the different linear components
 	void align();
@@ -125,15 +133,15 @@ private:
 	Mat jacobian;
 	Mat S, V;
 	Mat normal;
-	Mat R, G, ImR;
-	int R_sv, G_sv, ImR_sv;
+	Mat R, G, ImR, V1;
+	int R_sv, G_sv, ImR_sv,V1_sv;
 
 	Mat omitted_jacobian;
 	Covariance parcov;
 	Covariance obscov;
 	Covariance posterior;
 	map<string, Mat> predictions;
-	vector<Mat> omitted_predictions;
+	map<string,Mat> omitted_predictions;
 	Covariance omitted_parcov;
 
 
@@ -143,6 +151,7 @@ private:
 	void build_R(int sv);
 	void build_G(int sv);
 	void build_ImR(int sv);
+	void build_V1(int sv);
 
 
 	Covariance condition_on(vector<string> &keep_par_names,vector<string> &cond_par_names);

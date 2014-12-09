@@ -55,7 +55,11 @@ public:
 	void inv_ip();
 	void SVD();
 
+	Mat identity();
+
 	Mat get(const vector<string> &other_row_names, const vector<string> &other_col_names);
+	Mat leftCols(const int idx);
+	Mat rightCols(const int idx);
 	Mat extract(const vector<string> &extract_row_names, const vector<string> &extract_col_names);
 	Mat extract(const string &extract_row_name, const vector<string> &extract_col_names);
 	Mat extract(const vector<string> &extract_row_names, const string &extract_col_name);
