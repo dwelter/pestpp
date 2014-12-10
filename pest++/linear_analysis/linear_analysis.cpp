@@ -411,17 +411,11 @@ void linear_analysis::set_predictions(vector<Mat> preds)
 	throw runtime_error("not implemented");
 }
 
-
-void linear_analysis::build_normal()
-{
-	align();
-	normal = Mat(jacobian.get_col_names(), jacobian.get_col_names(), jacobian.eptr()->transpose() * *obscov.eptr() * *jacobian.eptr());
-}
-
 void linear_analysis::svd()
 {
 	//Eigen::JacobiSVD<Eigen::MatrixXd> svd_fac(*get_normal_ptr()->eptr(), Eigen::DecompositionOptions::ComputeFullU | Eigen::DecompositionOptions::ComputeFullV);
-	Eigen::JacobiSVD<Eigen::MatrixXd> svd_fac(*get_normal_ptr()->eptr(), Eigen::DecompositionOptions::ComputeFullV);
+	//Eigen::JacobiSVD<Eigen::MatrixXd> svd_fac(*get_normal_ptr()->eptr(), Eigen::DecompositionOptions::ComputeFullV);
+	Eigen::JacobiSVD<Eigen::MatrixXd> svd_fac(*get_normal_ptr()->eptr(), Eigen::DecompositionOptions::ComputeThinV);
 	vector<string> sv_names,rs_names;
 	stringstream ss;
 	for (int i = 0; i != jacobian.cn_ptr()->size(); i++)
@@ -541,32 +535,140 @@ Mat * linear_analysis::get_normal_ptr()
 	return ptr;
 }
 
-
-Mat linear_analysis::first_parameter(int sv)
+void linear_analysis::build_normal()
 {
-	Eigen::SparseMatrix<double> first = *get_ImR_ptr(sv)->eptr() * *parcov.eptr() * get_ImR_ptr(sv)->eptr()->transpose();
-	return Mat(parcov.get_col_names(), parcov.get_col_names(), first);
+	align();
+	normal = Mat(jacobian.get_col_names(), jacobian.get_col_names(), jacobian.eptr()->transpose() * *obscov.eptr() * *jacobian.eptr());
 }
 
-Mat linear_analysis::second_parameter(int sv)
+Covariance linear_analysis::first_parameter(int sv)
 {
-	
-	Eigen::SparseMatrix<double> second = *get_G_ptr(sv)->eptr() * *obscov.eptr() * get_G_ptr(sv)->eptr()->transpose();
-	return Mat(parcov.get_col_names(),parcov.get_col_names(),second);
-}
-
-map<string, vector<double>> linear_analysis::parameter_error_variance_components(vector<int> sing_vals, string &par_name)
-{
-	pest_utils::upper_ip(par_name);
-	const vector<string>* jpar_names = jacobian.cn_ptr();
-	if (find(jpar_names->begin(), jpar_names->end(), par_name) == jpar_names->end())
-		throw runtime_error("linear_analysis::parameter_error_variance() error: parameter not in jacobian: " + par_name);
-
-	map<string, vector<double>> result;
-	for (auto sv : sing_vals)
+	if (sv >= jacobian.ncol())
+		return parcov.zero();
+	else
 	{
-
-		
+		Eigen::SparseMatrix<double> first = *get_ImR_ptr(sv)->eptr() * *parcov.eptr() * *get_ImR_ptr(sv)->eptr();
+		return Covariance(parcov.get_col_names(), first);
 	}
+}
+
+Covariance linear_analysis::second_parameter(int sv)
+{	
+	if (sv == 0)
+		return parcov.zero();
+	else if (sv >= jacobian.ncol())
+		return parcov.diagonal(1.0E+20);
+	else
+	{
+		Eigen::SparseMatrix<double> second = *get_G_ptr(sv)->eptr() * *obscov.eptr() * get_G_ptr(sv)->eptr()->transpose();
+		return Covariance(parcov.get_col_names(), second);
+	}
+}
+
+Covariance linear_analysis::third_parameter(int sv)
+{
+	if (sv == 0)
+		return parcov.zero();
+	else if (sv >= jacobian.ncol())
+		return parcov.diagonal(1.0E+20);
+	else
+	{
+		Eigen::SparseMatrix<double> GZo = *get_G_ptr(sv)->eptr() * *omitted_jacobian.eptr();
+		Eigen::SparseMatrix<double> third = GZo * *omitted_parcov.eptr() * GZo.transpose();
+		return Covariance(parcov.get_col_names(), third);
+	}
+}
+
+map<string, double> linear_analysis::first_prediction(int sv)
+{
+	map<string, double> result;
+	if (sv >= jacobian.ncol())
+		return like_preds(0.0);
+	else
+	{
+		Covariance first = first_parameter(sv);
+		for (auto &p : predictions)
+			result[p.first] = (p.second.eptr()->transpose() * *first.eptr() * *p.second.eptr()).eval().valuePtr()[0];
+		return result;
+	}
+}
+
+map<string, double> linear_analysis::second_prediction(int sv)
+{
+	map<string, double> result;
+	if (sv == 0)
+		return like_preds(0.0);
+	else if (sv >= jacobian.ncol())
+		return like_preds(1.0E+20);
+	else
+	{
+		Covariance second = second_parameter(sv);
+		for (auto &p : predictions)
+			result[p.first] = (p.second.eptr()->transpose() * *second.eptr() * *p.second.eptr()).eval().valuePtr()[0];
+		return result;
+	}
+}
+
+map<string, double> linear_analysis::third_prediction(int sv)
+{
+	map<string, double> result;
+	if (sv >= jacobian.ncol())
+		return like_preds(1.0E+20);
+	else if (sv == 0)
+	{
+		for (auto &opred : omitted_predictions)
+		{
+			result[opred.first] = (opred.second.eptr()->transpose() * *omitted_parcov.eptr() * *opred.second.eptr()).eval().valuePtr()[0];
+		}
+		return result;
+	}
+	else
+	{
+		for (auto &pred : predictions)
+		{
+			Eigen::SparseMatrix<double, Eigen::RowMajor> p = (pred.second.eptr()->transpose() * *get_G_ptr(sv)->eptr() * *omitted_jacobian.eptr()).eval();
+			p = (p - omitted_predictions[pred.first].eptr()->transpose()).eval().transpose();
+			result[pred.first] = (p.transpose() * *omitted_parcov.eptr() * p).eval().valuePtr()[0];
+		}
+		return result;
+	}
+}
+
+void linear_analysis::extract_omitted(vector<string> &omitted_par_names)
+{
+	align();
+	if (omitted_par_names.size() == 0)
+		throw runtime_error("linear_analysis::extract_omitted() error: omitted par name vector empty");
+	const vector<string>* jpar_names = jacobian.cn_ptr();
+	vector<string> missing;
+	for (auto &o : omitted_par_names)
+	{
+		pest_utils::upper_ip(o);
+		if (find(jpar_names->begin(), jpar_names->end(), o) == jpar_names->end())
+			missing.push_back(o); 
+	}
+
+	if (missing.size() > 0)
+	{
+		stringstream ss;
+		for (auto m : missing)
+			ss << m << ",";
+		throw runtime_error("the following omitted par names were not found: " + ss.str());
+	}
+
+	omitted_jacobian = jacobian.extract(vector<string>(), omitted_par_names);
+	omitted_parcov = parcov.extract(omitted_par_names);
+	for (auto &p : predictions)
+	{
+		omitted_predictions[p.first] = p.second.extract(omitted_par_names, vector<string>());
+	}
+}
+
+map<string, double> linear_analysis::like_preds(double val)
+{
+	map<string, double> result;
+	for (auto &pred : predictions)
+		result[pred.first] = val;
+	return result;
 }
 

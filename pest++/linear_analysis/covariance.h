@@ -56,6 +56,8 @@ public:
 	void SVD();
 
 	Mat identity();
+	Mat zero();
+	
 
 	Mat get(const vector<string> &other_row_names, const vector<string> &other_col_names);
 	Mat leftCols(const int idx);
@@ -73,7 +75,6 @@ public:
 protected:
 	bool autoalign;
 	Eigen::SparseMatrix<double> matrix;
-	Eigen::DiagonalMatrix<double, Eigen::Dynamic> diagonal;
 	Eigen::SparseMatrix<double> U;
 	Eigen::SparseMatrix<double> V;
 	Eigen::VectorXd s;
@@ -100,6 +101,8 @@ public:
 	Mat get(vector<string> &other_row_names, vector<string> &other_col_names){ return Mat::get(other_row_names, other_col_names); }
 	void drop(vector<string> &drop_names);
 	Covariance extract(vector<string> &extract_names);
+
+	Covariance diagonal(double val);
 
 	void from_uncertainty_file(const string &filename);
 	void from_parameter_bounds(Pest &pest_scenario);

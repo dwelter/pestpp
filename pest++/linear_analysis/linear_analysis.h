@@ -79,9 +79,9 @@ public:
 	void extract_omitted(vector<string> &omitted_par_names);
 	void extract_omitted(string &omitted_par_name){ extract_omitted(vector<string>{omitted_par_name}); }
 
-	Mat first_parameter(int sv);
-	Mat second_parameter(int sv);
-	Mat third_parameter(int sv);
+	Covariance first_parameter(int sv);
+	Covariance second_parameter(int sv);
+	Covariance third_parameter(int sv);
 
 	map<string, double> first_prediction(int sv);
 	map<string, double> second_prediction(int sv);
@@ -129,6 +129,8 @@ public:
 	//aligns the different linear components
 	void align();
 
+	map<string, double> like_preds(double val);
+
 private:
 	Mat jacobian;
 	Mat S, V;
@@ -146,8 +148,8 @@ private:
 
 
 	void calc_posterior();
-	void build_normal();
 	void svd();
+	void build_normal();
 	void build_R(int sv);
 	void build_G(int sv);
 	void build_ImR(int sv);

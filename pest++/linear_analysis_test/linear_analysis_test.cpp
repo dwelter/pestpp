@@ -102,46 +102,29 @@ int main(int argc, char* argv[])
 	linear_analysis la(jco,pst,pst);
 	vector<string> preds;
 	preds.push_back("h02_08");
-	preds.push_back("h01_08");
 	la.set_predictions(preds);
-	la.get_jacobian_ptr()->to_ascii("jco.mat");
-	la.get_obscov_ptr()->to_ascii("obscov.mat");
+
+	vector<string> omitted;
+	omitted.push_back("stage");
+	la.extract_omitted(omitted);
+	//la.get_jacobian_ptr()->to_ascii("jco.mat");
+	//la.get_obscov_ptr()->to_ascii("obscov.mat");
 	//Mat* normal = la.get_normal_ptr();
 	//Mat* R = la.get_R_ptr(1);
 	//Mat* G = la.get_G_ptr(1);
+
+	/*Mat* n = la.get_normal_ptr();
+	n->to_ascii("normal_c.mat");
+	Mat ImR = *la.get_ImR_ptr(1);
+	Mat V = la.get_V();
+	Mat S = la.get_S();
+	cout << S << endl;
+	cout << V << endl;
 	Mat first = la.first_parameter(1);
-	Mat second = la.second_parameter(1);
-
-	//map<string, double> pvar = la.prior_prediction_variance();
-	//for (auto pred : pvar)
-	//	cout << pred.first << ":" << pred.second << endl;
-	////pvar = la.posterior_prediction_variance(string("c_obs01_1"));
-	//pvar = la.posterior_prediction_variance();
-	//for (auto pred : pvar)
-	//	cout << pred.first << ":" << pred.second << endl;
-	//vector<string> cond_pars;
-	//cond_pars.push_back("kr01c03");
-	//cond_pars.push_back("kr01c28");
-	//map<string, pair<double, double>> contr_result = la.contribution(cond_pars);
-	//for (auto r : contr_result)
-	//	cout << r.first << "prior reduction:" << r.second.first << " post reduction:" << r.second.second << endl;
-	//pvar = la.prior_prediction_variance();
-	//for (auto pred : pvar)
-	//	cout << pred.first << ":" << pred.second << endl;
-	////pvar = la.posterior_prediction_variance(string("c_obs01_1"));
-	//pvar = la.posterior_prediction_variance();
-	//for (auto pred : pvar)
-	//	cout << pred.first << ":" << pred.second << endl;
-	//vector<string> obs;
-	//obs.push_back("h_obs18_1");
-	//obs.push_back("h_obs20_1");
-	//map<string,double> worth_result = la.worth(obs);
-	//for (auto r : worth_result)
-	//{
-	//	cout << r.first << ' ' << r.second << endl;
-	//}
-
-
+	cout << first << endl;*/
+	map<string, double> first = la.first_prediction(0);
+	map<string, double> second = la.second_prediction(0);
+	map<string, double> third = la.third_prediction(0);
 	return 0;
 }
 

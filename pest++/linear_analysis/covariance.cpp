@@ -68,9 +68,18 @@ const vector<string>* Mat::cn_ptr()
 Mat Mat::identity()
 {
 	Eigen::SparseMatrix<double> i(nrow(), ncol());
+	i.setZero();
 	i.setIdentity();
 	return Mat(*rn_ptr(),*cn_ptr(),i);
 }
+
+Mat Mat::zero()
+{
+	Eigen::SparseMatrix<double> i(nrow(), ncol());
+	i.setZero();
+	return Mat(*rn_ptr(), *cn_ptr(), i);
+}
+
 
 const Eigen::SparseMatrix<double>* Mat::get_U_ptr()
 {
@@ -669,17 +678,17 @@ void Mat::drop_cols(const vector<string> &drop_col_names)
 
 	if (missing_col_names.size() != 0)
 	{
-		cout << "Mat::drop() error: the following drop_col_names were not found:" << endl;
+		cout << "Mat::drop_cols() error: the following drop_col_names were not found:" << endl;
 		for (auto &name : drop_col_names)
 			cout << name << ',';
 		cout << endl;
-		throw runtime_error("Mat::drop() error: atleast one drop col name not found");
+		throw runtime_error("Mat::drop_cols() error: atleast one drop col name not found");
 	}
 	vector<string> new_col_names;
-	if (drop_col_names.size() == 0) new_col_names = col_names;
+	if (drop_col_names.size() == 0) 
+		new_col_names = col_names;
 	else
 	{
-		vector<string> new_col_names;
 		for (auto &name : col_names)
 			if (find(drop_col_names.begin(), drop_col_names.end(), name) == drop_col_names.end())
 				new_col_names.push_back(name);
@@ -700,15 +709,16 @@ void Mat::drop_rows(const vector<string> &drop_row_names)
 		
 	if (missing_row_names.size() != 0)
 	{
-		cout << "Mat::drop() error: the following drop_row_names were not found:" << endl;
+		cout << "Mat::drop_rows() error: the following drop_row_names were not found:" << endl;
 		for (auto &name : drop_row_names)
 			cout << name << ',';
 		cout << endl;
-		throw runtime_error("Mat::drop() error: atleast one drop row name not found");
+		throw runtime_error("Mat::drop_rows() error: atleast one drop row name not found");
 	}
 	 
 	vector<string> new_row_names;
-	if (drop_row_names.size() == 0) new_row_names = row_names;
+	if (drop_row_names.size() == 0) 
+		new_row_names = row_names;
 	else
 	{
 		for (auto &name : row_names)
@@ -777,6 +787,18 @@ Covariance::Covariance(Mat _mat)
 	icode = 1;
 	mattype = _mat.get_mattype();
 }
+
+Covariance Covariance::diagonal(double val)
+{
+	vector<Eigen::Triplet<double>> triplet_list;
+	for (int i = 0; i != nrow(); i++)
+		triplet_list.push_back(Eigen::Triplet<double>(i, i, val));
+	Eigen::SparseMatrix<double> i(nrow(), ncol());
+	i.setZero();
+	i.setFromTriplets(triplet_list.begin(), triplet_list.end());
+	return Covariance(*rn_ptr(), i);
+}
+
 
 Covariance Covariance::get(vector<string> &other_names)
 {
@@ -977,7 +999,7 @@ void Covariance::from_observation_weights(Pest &pest_scenario)
 		obs_rec = pest_scenario.get_ctl_observation_info().get_observation_rec_ptr(obs_name);		
 		weight = obs_rec->weight;
 		if (weight <= 0.0)
-			weight = 1.0e+32;
+			weight = 1.0e+60;
 		else
 			weight = pow(1.0 / obs_rec->weight, 2.0);
 		triplet_list.push_back(Eigen::Triplet<double>(i, i, weight));
