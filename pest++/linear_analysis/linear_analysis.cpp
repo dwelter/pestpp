@@ -17,9 +17,16 @@ vector<string> get_common(vector<string> v1, vector<string> v2)
 }
 
 
-
-linear_analysis::linear_analysis(string &jco_filename)
+linear_analysis::linear_analysis(Mat _jacobian, Mat _parcov, Mat _obscov, map<string, Mat> _predictions, Logger* _log)
 {
+	jacobian = _jacobian; parcov = _parcov; obscov = _obscov, predictions = _predictions;
+	log = _log;
+}
+
+
+linear_analysis::linear_analysis(string &jco_filename,Logger* _log)
+{
+	log = _log;
 	if (!pest_utils::check_exist_in(jco_filename))
 		throw runtime_error("linear_analysis::linear_analysis() error: jco_filename does not exists");
 	
@@ -52,8 +59,9 @@ linear_analysis::linear_analysis(string &jco_filename)
 	R_sv = -999, G_sv = -999, ImR_sv = -999, V1_sv = -999;
 }
 
-linear_analysis::linear_analysis(string &jco_filename, string &parcov_filename, string &obscov_filename)
+linear_analysis::linear_analysis(string &jco_filename, string &parcov_filename, string &obscov_filename,Logger* _log)
 {
+	log = _log;
 	if (!pest_utils::check_exist_in(jco_filename))
 		throw runtime_error("linear_analysis::linear_analysis() error: jco_filename does not exists");
 	if (!pest_utils::check_exist_in(parcov_filename))
@@ -85,22 +93,19 @@ linear_analysis::linear_analysis(string &jco_filename, string &parcov_filename, 
 	R_sv = -999, G_sv = -999, ImR_sv = -999, V1_sv = -999;
 }
 
-linear_analysis::linear_analysis(Mat _jacobian, Pest pest_scenario)
+
+linear_analysis::linear_analysis(Mat _jacobian, Pest pest_scenario,Logger* _log)
 {
+	log = _log;
 	jacobian = _jacobian;
 	parcov.from_parameter_bounds(pest_scenario);
 	obscov.from_observation_weights(pest_scenario);
 	R_sv = -999, G_sv = -999, ImR_sv = -999,V1_sv=-999;
-
 }
-
-//linear_analysis linear_analysis::get(vector<string> &new_par_names, vector<string> &new_obs_names)
-//{
-//
-//}
 
 void linear_analysis::align()
 {
+	log->log("align");
 	vector<string> common;
 	if (jacobian.get_col_names() != parcov.get_col_names())
 	{
@@ -118,6 +123,7 @@ void linear_analysis::align()
 			predictions[p.first] = new_pred;
 		}
 	}
+	log->log("align");
 }
 
 map<string, double> linear_analysis::worth(vector<string> &obs_names)
@@ -125,6 +131,7 @@ map<string, double> linear_analysis::worth(vector<string> &obs_names)
 	if (predictions.size() == 0)
 		throw runtime_error("linear_analysis::posterior_predictive_worth() error: no predictions are set");
 
+	log->log("worth");
 	align();
 	for (int i = 0; i != obs_names.size(); i++)
 		pest_utils::upper_ip(obs_names[i]);
@@ -169,7 +176,7 @@ map<string, double> linear_analysis::worth(vector<string> &obs_names)
 	map<string, double> results;
 	for (auto &pred : predictions)
 		results[pred.first] = keep_post[pred.first] - org_post[pred.first];
-
+	log->log("worth");
 	return results;
 }
 
@@ -178,7 +185,7 @@ map<string,pair<double, double>> linear_analysis::contribution(vector<string> &c
 {
 	if (predictions.size() == 0)
 		throw runtime_error("linear_analysis::predictive_contribution() error: no predictions are set");
-
+	log->log("contribution");
 	align();
 	for (int i = 0; i != cond_par_names.size(); i++)
 		pest_utils::upper_ip(cond_par_names[i]);
@@ -230,11 +237,13 @@ map<string,pair<double, double>> linear_analysis::contribution(vector<string> &c
 		results[pred.first] = reduction;
 	}
 	return results;
+	log->log("contribution");
 }
 
 
 Covariance linear_analysis::condition_on(vector<string> &keep_par_names, vector<string> &cond_par_names)
 {
+	log->log("condition_on");
 	//C11
 	Covariance new_parcov = parcov.get(keep_par_names);
 	//if parcov is diagonal, then there is no conditioning
@@ -251,25 +260,30 @@ Covariance linear_analysis::condition_on(vector<string> &keep_par_names, vector<
 	//C11 - (C12*C22^-1*C21)
 	Eigen::SparseMatrix<double> mcond = *new_parcov.eptr() - (*upper_off_diag.eptr() * *cond_parcov.eptr() * *upper_off_diag.transpose().eptr());
 	Covariance new_cond_parcov(keep_par_names, mcond);
+	log->log("condition_on");
 	return new_cond_parcov;
 }
 
 double linear_analysis::prior_parameter_variance(string &par_name)
 {
+	log->log("prior_parameter_variance");
 	int ipar = find(parcov.rn_ptr()->begin(), parcov.rn_ptr()->end(), par_name) - parcov.rn_ptr()->begin();
 	if (ipar == parcov.nrow())
 		throw runtime_error("lienar_analysis::prior_parameter_variance() error: parameter: " + par_name + " not found");
 	const Eigen::SparseMatrix<double>* ptr = parcov.eptr();
+	log->log("prior_parameter_variance");
 	return ptr->diagonal()[ipar];	
 }
 
 double linear_analysis::posterior_parameter_variance(string &par_name)
 {
+	log->log("posterior_parameter_variance");
 	if (posterior.nrow() == 0) calc_posterior();
 	int ipar = find(posterior.rn_ptr()->begin(), posterior.rn_ptr()->end(), par_name) - posterior.rn_ptr()->begin();
 	if (ipar == posterior.nrow())
 		throw runtime_error("lienar_analysis::posterior_parameter_variance() error: parameter: " + par_name + " not found");
 	const Eigen::SparseMatrix<double>* ptr = posterior.eptr();
+	log->log("posterior_parameter_variance");
 	return ptr->diagonal()[ipar];
 }
 
@@ -295,17 +309,18 @@ double linear_analysis::prior_prediction_variance(string &pred_name)
 		throw runtime_error("linear_analysis::prior_pred_variance() error: pred:" + pred_name + " not found in predicitons");
 	Eigen::SparseMatrix<double> result = (*p_iter->second.transpose().eptr() * *parcov.eptr() * *p_iter->second.eptr());
 	return result.valuePtr()[0];
-
 }
 
 map<string, double> linear_analysis::prior_prediction_variance()
 {
+	log->log("prior_prediction_variance");
 	map<string, double> result;
 	for (auto &pred : predictions)
 	{
 		string pname(pred.first);
 		result[pname] = prior_prediction_variance(pname);
 	}
+	log->log("prior_prediction_variance");
 	return result;
 }
 
@@ -323,12 +338,14 @@ double linear_analysis::posterior_prediction_variance(string &pred_name)
 
 map<string, double> linear_analysis::posterior_prediction_variance()
 {
+	log->log("posterior_prediction_variance");
 	map<string, double> result;
 	for (auto &pred : predictions)
 	{
 		string pname(pred.first);
 		result[pname] = posterior_prediction_variance(pname);
 	}
+	log->log("posterior_prediction_variance");
 	return result;
 }
 
@@ -336,14 +353,17 @@ map<string, double> linear_analysis::posterior_prediction_variance()
 
 void linear_analysis::calc_posterior()
 {
+	log->log("calc_posterior");
 	align();
 	posterior = Covariance(*parcov.rn_ptr(), ((*jacobian.transpose().eptr() * *obscov.inv().eptr() * *jacobian.eptr()) + *parcov.inv().eptr())).inv();
+	log->log("calc_posterior");
 }
 
 
 
 void linear_analysis::set_predictions(vector<string> preds)
 {
+	log->log("set_predictions");
 	const vector<string>* obs_names = jacobian.rn_ptr();
 	for (auto pred : preds)
 	{
@@ -403,7 +423,7 @@ void linear_analysis::set_predictions(vector<string> preds)
 
 		}
 	}
-
+	log->log("set_predictions");
 }
 
 void linear_analysis::set_predictions(vector<Mat> preds)
@@ -413,9 +433,12 @@ void linear_analysis::set_predictions(vector<Mat> preds)
 
 void linear_analysis::svd()
 {
+	log->log("svd");
 	//Eigen::JacobiSVD<Eigen::MatrixXd> svd_fac(*get_normal_ptr()->eptr(), Eigen::DecompositionOptions::ComputeFullU | Eigen::DecompositionOptions::ComputeFullV);
 	//Eigen::JacobiSVD<Eigen::MatrixXd> svd_fac(*get_normal_ptr()->eptr(), Eigen::DecompositionOptions::ComputeFullV);
+	log->log("svd - factorization");
 	Eigen::JacobiSVD<Eigen::MatrixXd> svd_fac(*get_normal_ptr()->eptr(), Eigen::DecompositionOptions::ComputeThinV);
+	log->log("svd - factorization");
 	vector<string> sv_names,rs_names;
 	stringstream ss;
 	for (int i = 0; i != jacobian.cn_ptr()->size(); i++)
@@ -430,9 +453,8 @@ void linear_analysis::svd()
 		rs_names.push_back(ss.str());
 	}
 	V = Mat(jacobian.get_col_names(),rs_names,svd_fac.matrixV().sparseView());
-	V.to_ascii("v.mat");
-	get_normal_ptr()->to_ascii("normal.mat");
 	S = Covariance(sv_names, eigenvec_2_diagsparse(svd_fac.singularValues()));
+	log->log("svd");
 }
 
 
@@ -447,6 +469,7 @@ Mat* linear_analysis::get_R_ptr(int sv)
 
 void linear_analysis::build_R(int sv)
 {
+	log->log("build_R");
 	if (V.nrow() == 0) svd();	
 	if (sv == 0)
 	{
@@ -464,9 +487,12 @@ void linear_analysis::build_R(int sv)
 		vector<string> base_cnames = *V.cn_ptr();
 		for (int i = 0; i < sv; i++)
 			cnames.push_back(base_cnames[i]);
+		log->log("build_R - MM");
 		R = Mat(V.get_row_names(), V.get_row_names(), *get_V1_ptr(sv)->eptr() * get_V1_ptr(sv)->eptr()->transpose());
+		log->log("build_R - MM");
 	}
 	R_sv = sv;
+	log->log("build_R");
 }
 
 Mat* linear_analysis::get_V1_ptr(int sv)
@@ -479,6 +505,7 @@ Mat* linear_analysis::get_V1_ptr(int sv)
 
 void linear_analysis::build_V1(int sv)
 {
+	log->log("build_V1");
 	if (V.nrow() == 0) svd();
 	vector<string> cnames;
 	vector<string> base_cnames = *V.cn_ptr();
@@ -486,6 +513,7 @@ void linear_analysis::build_V1(int sv)
 		cnames.push_back(base_cnames[i]);
 	V1 = Mat(V.get_row_names(), cnames, V.eptr()->leftCols(sv));
 	V1_sv = sv;
+	log->log("build_V1");
 }
 
 Mat* linear_analysis::get_G_ptr(int sv)
@@ -498,11 +526,15 @@ Mat* linear_analysis::get_G_ptr(int sv)
 
 void linear_analysis::build_G(int sv)
 {
+	log->log("build_G");
 	if (V.nrow() == 0) svd();
 	Eigen::SparseMatrix<double> s_inv = S.inv().eptr()->topLeftCorner(sv,sv);
+	log->log("build_G - MMM");
 	Eigen::SparseMatrix<double> g = *get_V1_ptr(sv)->eptr() * s_inv * get_V1_ptr(sv)->eptr()->transpose() * jacobian.eptr()->transpose() * *obscov.eptr();
+	log->log("build_G - MMM");
 	G = Mat(jacobian.get_col_names(),jacobian.get_row_names(),g);
 	G_sv = sv;
+	log->log("build_G");
 }
  
 Mat* linear_analysis::get_ImR_ptr(int sv)
@@ -515,15 +547,19 @@ Mat* linear_analysis::get_ImR_ptr(int sv)
 
 void linear_analysis::build_ImR(int sv)
 {
+	log->log("build_ImR");
 	if (sv == 0)
 		ImR = parcov.identity();
 	else
 	{
 		if (V.nrow() == 0) svd();
 		Mat V2 = V.rightCols(V.ncol() - sv);
+		log->log("build_ImR - MM");
 		ImR = Mat(V2.get_row_names(), V2.get_row_names(), *V2.eptr() * V2.eptr()->transpose());
+		log->log("build_ImR - MM");
 	} 
 	ImR_sv = sv;
+	log->log("build_ImR");
 }
 
 
@@ -537,12 +573,17 @@ Mat * linear_analysis::get_normal_ptr()
 
 void linear_analysis::build_normal()
 {
+	log->log("build_normal");
 	align();
+	log->log("build_normal - MMM");
 	normal = Mat(jacobian.get_col_names(), jacobian.get_col_names(), jacobian.eptr()->transpose() * *obscov.eptr() * *jacobian.eptr());
+	log->log("build_normal - MMM");
+	log->log("build_normal");
 }
 
 Covariance linear_analysis::first_parameter(int sv)
 {
+	log->log("first_parameter");
 	if (sv >= jacobian.ncol())
 		return parcov.zero();
 	else
@@ -550,10 +591,12 @@ Covariance linear_analysis::first_parameter(int sv)
 		Eigen::SparseMatrix<double> first = *get_ImR_ptr(sv)->eptr() * *parcov.eptr() * *get_ImR_ptr(sv)->eptr();
 		return Covariance(parcov.get_col_names(), first);
 	}
+	log->log("first_parameter");
 }
 
 Covariance linear_analysis::second_parameter(int sv)
 {	
+	log->log("second_parameter");
 	if (sv == 0)
 		return parcov.zero();
 	else if (sv >= jacobian.ncol())
@@ -563,10 +606,12 @@ Covariance linear_analysis::second_parameter(int sv)
 		Eigen::SparseMatrix<double> second = *get_G_ptr(sv)->eptr() * *obscov.eptr() * get_G_ptr(sv)->eptr()->transpose();
 		return Covariance(parcov.get_col_names(), second);
 	}
+	log->log("second_parameter");
 }
 
 Covariance linear_analysis::third_parameter(int sv)
 {
+	log->log("third_parameter");
 	if (sv == 0)
 		return parcov.zero();
 	else if (sv >= jacobian.ncol())
@@ -577,6 +622,7 @@ Covariance linear_analysis::third_parameter(int sv)
 		Eigen::SparseMatrix<double> third = GZo * *omitted_parcov.eptr() * GZo.transpose();
 		return Covariance(parcov.get_col_names(), third);
 	}
+	log->log("third_parameter");
 }
 
 map<string, double> linear_analysis::first_prediction(int sv)
@@ -672,3 +718,6 @@ map<string, double> linear_analysis::like_preds(double val)
 	return result;
 }
 
+linear_analysis::~linear_analysis()
+{
+}

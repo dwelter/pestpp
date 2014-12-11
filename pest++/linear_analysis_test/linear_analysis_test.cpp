@@ -96,16 +96,20 @@ void normalize_weights_by_residual(Pest &pest_scenario, string &resid_filename)
 
 int main(int argc, char* argv[])
 {
-		
+	ofstream fout("linear_analysis.log");
+	Logger log(fout);
+	log.log("start analysis");
 	string jco("pest.jco");
 	string pst("pest.pst");
-	linear_analysis la(jco,pst,pst);
+	linear_analysis la(jco,pst,pst,&log);
 	vector<string> preds;
-	preds.push_back("h02_08");
+	//preds.push_back("h02_08");
+	preds.push_back("c_obs01_1");
 	la.set_predictions(preds);
 
 	vector<string> omitted;
-	omitted.push_back("stage");
+	//omitted.push_back("stage");
+	omitted.push_back("mult1");
 	la.extract_omitted(omitted);
 	//la.get_jacobian_ptr()->to_ascii("jco.mat");
 	//la.get_obscov_ptr()->to_ascii("obscov.mat");
@@ -115,16 +119,26 @@ int main(int argc, char* argv[])
 
 	/*Mat* n = la.get_normal_ptr();
 	n->to_ascii("normal_c.mat");
-	Mat ImR = *la.get_ImR_ptr(1);
+	Mat ImR = *la.get_ImR_ptr(1);5
 	Mat V = la.get_V();
 	Mat S = la.get_S();
 	cout << S << endl;
 	cout << V << endl;
 	Mat first = la.first_parameter(1);
 	cout << first << endl;*/
-	map<string, double> first = la.first_prediction(0);
-	map<string, double> second = la.second_prediction(0);
-	map<string, double> third = la.third_prediction(0);
+	map<string, double> first = la.first_prediction(200);
+	map<string, double> second = la.second_prediction(200);
+	map<string, double> third = la.third_prediction(200);
+	first = la.first_prediction(200);
+	second = la.second_prediction(200);
+	third = la.third_prediction(200);
+	first = la.first_prediction(300);
+	second = la.second_prediction(300);
+	third = la.third_prediction(300);
+	first = la.first_prediction(599);
+	second = la.second_prediction(599);
+	third = la.third_prediction(599);
+	log.log("start analysis");
 	return 0;
 }
 

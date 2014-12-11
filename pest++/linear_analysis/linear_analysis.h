@@ -12,19 +12,16 @@ class linear_analysis
 {
 public:
 	//the easiest constructor, builds parcov and obscov from the pst associated with jco_filename
-	linear_analysis(string &jco_filename);
+	linear_analysis(string &jco_filename,Logger* _log = new Logger());
 
 	//loads parcov and obscov from files, can .pst, .mat or .unc files
-	linear_analysis(string &jco_filename, string &parcov_filename, string &obscov_filename);
+	linear_analysis(string &jco_filename, string &parcov_filename, string &obscov_filename, Logger* _log = new Logger());
 
 	//load parcov and obscov from parameter bounds and observation weights
-	linear_analysis(Mat _jacobian, Pest pest_scenario);
+	linear_analysis(Mat _jacobian, Pest pest_scenario, Logger* _log = new Logger());
 
 	//directly from Mat objects
-	linear_analysis(Mat _jacobian, Mat _parcov, Mat _obscov, map<string,Mat> _predictions)
-	{
-		jacobian = _jacobian; parcov = _parcov; obscov = _obscov,predictions=_predictions;
-	}
+	linear_analysis(Mat _jacobian, Mat _parcov, Mat _obscov, map<string, Mat> _predictions,Logger* _log = new Logger());
 
 	void set_predictions(vector<string> preds);
 	void set_predictions(vector<Mat> preds);
@@ -131,7 +128,11 @@ public:
 
 	map<string, double> like_preds(double val);
 
+	~linear_analysis();
+
 private:
+
+	Logger* log;
 	Mat jacobian;
 	Mat S, V;
 	Mat normal;

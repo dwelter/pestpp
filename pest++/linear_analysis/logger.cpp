@@ -20,7 +20,11 @@ void Logger::writetime(stringstream &os, time_t tc) {
 }
 
 Logger::Logger(ofstream &_fout,bool _echo)
-: fout(_fout),echo(_echo){}
+{
+	fout = &_fout;
+	echo = _echo;
+	tagged_events.clear();
+}
 
 void Logger::log(const string &message)
 {	
@@ -30,16 +34,18 @@ void Logger::log(const string &message)
 	if (message_iter == tagged_events.end())
 	{
 		tagged_events[message] = time_now;
-		fout << time_to_string(time_now) << "-> starting " << message << endl;
-		if (echo)
+		if (fout->good())
+			*fout << time_to_string(time_now) << "-> starting " << message << endl;
+		if ((echo) || (!fout->good()))
 			cout << time_to_string(time_now) << "-> starting " << message << endl;
 	}
 	else
 	{
 		high_resolution_clock::time_point time_start = message_iter->second;
-		fout << time_to_string(time_now) << "-> finished " << message << ", elapsed time = " <<
-			elapsed_time_to_string(time_now, time_start) << " )" << endl;
-		if (echo)
+		if (fout->good())
+			*fout << time_to_string(time_now) << "-> finished " << message << ", elapsed time = " <<
+				elapsed_time_to_string(time_now, time_start) << " )" << endl;
+		if ((echo) || (!fout->good()))
 			cout << time_to_string(time_now) << "-> finished " << message << ", elapsed time = " <<
 				elapsed_time_to_string(time_now, time_start) << " )" << endl;
 		tagged_events.erase(message_iter);

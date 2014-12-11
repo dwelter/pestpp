@@ -9,12 +9,13 @@
 class Logger
 {
 public:
+	Logger(bool _echo = false){ echo = _echo; }
 	Logger(std::ofstream &_fout,bool _echo=false);
 	void log(const std::string &message);
 	~Logger();
 private:
 	bool echo;
-	std::ofstream &fout;
+	std::ofstream* fout;
 	std::chrono::high_resolution_clock::time_point prev_time;	
 	std::map<std::string, std::chrono::high_resolution_clock::time_point> tagged_events;
 	std::string time_to_string(const std::chrono::high_resolution_clock::time_point &tmp_time);
