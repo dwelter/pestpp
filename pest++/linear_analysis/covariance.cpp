@@ -615,8 +615,7 @@ Mat Mat::get(const vector<string> &new_row_names, const vector<string> &new_col_
 			col_name = &col_names[it.col()];
 			row_name = &row_names[it.row()];
 			found_col = col_name2new_index_map.find(*col_name);
-			found_row = row_name2newindex_map.find(*row_name);
-
+			found_row = row_name2newindex_map.find(*row_name);			
 			if (found_col != not_found_col_map && found_row != not_found_row_map)
 			{
 				triplet_list.push_back(Eigen::Triplet<double>(found_row->second, found_col->second, it.value()));

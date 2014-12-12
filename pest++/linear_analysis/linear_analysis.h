@@ -11,6 +11,9 @@ using namespace std;
 class linear_analysis
 {
 public:
+	//empty constructor
+	linear_analysis(){;}
+
 	//the easiest constructor, builds parcov and obscov from the pst associated with jco_filename
 	linear_analysis(string &jco_filename,Logger* _log = new Logger());
 
@@ -130,6 +133,9 @@ public:
 
 	~linear_analysis();
 
+	
+
+
 private:
 
 	Logger* log;
@@ -147,7 +153,6 @@ private:
 	map<string,Mat> omitted_predictions;
 	Covariance omitted_parcov;
 
-
 	void calc_posterior();
 	void svd();
 	void build_normal();
@@ -159,7 +164,11 @@ private:
 
 	Covariance condition_on(vector<string> &keep_par_names,vector<string> &cond_par_names);
 
-	
+	void throw_error(const string &message);
+	void load_jco(Mat &jco, const string &jco_filename);
+	void load_pst(Pest &pest_scenario, const string &pst_filename);
+	void load_parcov(const string &parcov_filename);
+	void load_obscov(const string &obscov_filename);
 
 	//scale the jacobian by parcov
 	void kl_scale();

@@ -12,6 +12,9 @@ public:
 	Logger(bool _echo = false){ echo = _echo; }
 	Logger(std::ofstream &_fout,bool _echo=false);
 	void log(const std::string &message);
+	void write(const std::string &message);
+	void error(const std::string &message);
+	void warning(const std::string &message);
 	~Logger();
 private:
 	bool echo;

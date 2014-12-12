@@ -16,6 +16,147 @@ vector<string> get_common(vector<string> v1, vector<string> v2)
 	return common;
 }
 
+void linear_analysis::throw_error(const string &message)
+{
+	log->error(message);
+	throw runtime_error(message);
+}
+
+
+void linear_analysis::load_pst(Pest &pest_scenario, const string &pst_filename)
+{
+	ifstream ipst(pst_filename);
+	if (!ipst.good())
+		throw_error("linear_analysis::load_pst() error opening pest control file: " + pst_filename);
+	try
+	{
+		pest_scenario.process_ctl_file(ipst, pst_filename);
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::load_pst() error processing pest control file : " + pst_filename + " : " +string(e.what()));
+	}
+	ipst.close();
+}
+
+
+void linear_analysis::load_jco(Mat &jco, const string &org_jco_filename)
+{
+	log->log("load_jco");
+	if (!pest_utils::check_exist_in(org_jco_filename))
+		throw_error("linear_analysis::load_jco() error: jco_filename does not exists");
+	string jco_filename = pest_utils::upper_cp(org_jco_filename);
+	if ((jco_filename.find(".JCO") != string::npos) || (jco_filename.find("JCB") != string::npos))
+	{
+		try
+		{
+			jco.from_binary(jco_filename);
+		}
+		catch (exception &e)
+		{
+			throw_error("linear_analysis::load_jco() error loading jco from binary: " + string(e.what()));
+		}
+	}
+	else
+	{
+		try
+		{
+			jco.from_ascii(jco_filename);
+		}
+		catch (exception &e)
+		{
+			throw_error("linear_analysis::load_jco() error loading jco from ascii: " + string(e.what()));
+		}
+	}
+	log->log("load_jco");
+}
+
+
+void linear_analysis::load_parcov(const string &org_parcov_filename)
+{
+	log->log("load_parcov from "+org_parcov_filename);
+	if (!pest_utils::check_exist_in(org_parcov_filename))
+		throw_error("linear_analysis::linear_analysis() error: parcov_filename does not exists");
+	string parcov_filename = pest_utils::upper_cp(org_parcov_filename);
+	if (parcov_filename.find(".UNC") != string::npos)
+	{
+		try
+		{
+			parcov.from_uncertainty_file(parcov_filename);
+		}
+		catch (exception &e)
+		{
+			throw_error("linear_analysis::load_parcov() error loading parcov from UNC file:" + parcov_filename + " : " + string(e.what()));
+		}
+	}
+	else if (parcov_filename.find(".PST") != string::npos)
+	{
+		try
+		{
+			parcov.from_parameter_bounds(parcov_filename);
+		}
+		catch (exception &e)
+		{
+			throw_error("linear_analysis::load_parcov() error loading parcov from PST file:" + parcov_filename + " : " + string(e.what()));
+		}
+	}
+	else
+	{
+		try
+		{
+			parcov.from_ascii(parcov_filename);
+		}
+		catch (exception &e)
+		{
+			throw_error("linear_analysis::load_parcov() error loading parcov from ASCII file:" + parcov_filename + " : " + string(e.what()));
+		}
+	}
+	log->log("load_parcov from " + org_parcov_filename);
+}
+
+
+void linear_analysis::load_obscov(const string &org_obscov_filename)
+{
+	log->log("load_obscov from "+org_obscov_filename);
+	if (!pest_utils::check_exist_in(org_obscov_filename))
+		throw_error("linear_analysis::load_obscov() error: obscov_filename does not exists");
+	string obscov_filename = pest_utils::upper_cp(org_obscov_filename);
+	if (obscov_filename.find(".UNC") != string::npos)
+	{
+		try
+		{
+			obscov.from_uncertainty_file(obscov_filename);
+		}
+		catch (exception &e)
+		{
+			throw_error("linear_analysis::load_obscov() error loading obscov from UNC file:" + obscov_filename + " : " + string(e.what()));
+		}
+	}
+	else if (obscov_filename.find(".PST") != string::npos)
+	{
+		try
+		{
+			obscov.from_observation_weights(obscov_filename);
+		}
+		catch (exception &e)
+		{
+			throw_error("linear_analysis::load_obscov() error loading obscov from PST file:" + obscov_filename + " : " + string(e.what()));
+		}
+	}
+	else
+	{
+		try
+		{
+			obscov.from_ascii(obscov_filename);
+		}
+		catch (exception &e)
+		{
+			throw_error("linear_analysis::load_obscov() error loading obscov from ASCII file:" + obscov_filename + " : " + string(e.what()));
+		}
+	}
+	log->log("load_obscov from " + org_obscov_filename);
+}
+
 
 linear_analysis::linear_analysis(Mat _jacobian, Mat _parcov, Mat _obscov, map<string, Mat> _predictions, Logger* _log)
 {
@@ -27,69 +168,73 @@ linear_analysis::linear_analysis(Mat _jacobian, Mat _parcov, Mat _obscov, map<st
 linear_analysis::linear_analysis(string &jco_filename,Logger* _log)
 {
 	log = _log;
-	if (!pest_utils::check_exist_in(jco_filename))
-		throw runtime_error("linear_analysis::linear_analysis() error: jco_filename does not exists");
-	
 	string pst_filename = jco_filename;
 	pst_filename.replace(jco_filename.size() - 4, jco_filename.size() - 1, ".pst");
 	if (pest_utils::check_exist_in(pst_filename))
 	{
-		ifstream ipst(pst_filename);
-		Pest pest_scenario;
-		pest_scenario.process_ctl_file(ipst,pst_filename);
-		ipst.close();
-
-		Mat jco;
 		pest_utils::upper_ip(jco_filename);
-		if ((jco_filename.find(".JCO") != string::npos) || (jco_filename.find("JCB") != string::npos))
-			jco.from_binary(jco_filename);
-		else
-			jco.from_ascii(jco_filename);
-
+		Mat jco;
+		Pest pest_scenario;
+		try
+		{
+			load_jco(jco, jco_filename);
+		}
+		catch (exception &e)
+		{
+			throw_error("linear_analysis::linear_analysis() error loading jco: " + string(e.what()));
+		}
+		try
+		{
+			load_pst(pest_scenario, pst_filename);
+		}
+		catch (exception &e)
+		{
+			throw_error("linear_analysis::linear_analysis() error loading pst: " + string(e.what()));
+		}
 		linear_analysis(jco, pest_scenario);
 	}
 	else
 	{
-		pest_utils::upper_ip(jco_filename);
-		if ((jco_filename.find(".JCO") != string::npos) || (jco_filename.find("JCB") != string::npos))
-			jacobian.from_binary(jco_filename);
-		else
-			jacobian.from_ascii(jco_filename);
+		try
+		{
+			load_jco(jacobian, jco_filename);
+		}
+		catch (exception &e)
+		{
+			throw_error("linear_analysis::linear_analysis() error loading jco: " + string(e.what()));
+		}
 	}
 	R_sv = -999, G_sv = -999, ImR_sv = -999, V1_sv = -999;
 }
 
+
 linear_analysis::linear_analysis(string &jco_filename, string &parcov_filename, string &obscov_filename,Logger* _log)
 {
 	log = _log;
-	if (!pest_utils::check_exist_in(jco_filename))
-		throw runtime_error("linear_analysis::linear_analysis() error: jco_filename does not exists");
-	if (!pest_utils::check_exist_in(parcov_filename))
-		throw runtime_error("linear_analysis::linear_analysis() error: parcov_filename does not exists");
-	if (!pest_utils::check_exist_in(obscov_filename))
-		throw runtime_error("linear_analysis::linear_analysis() error: obscov_filename does not exists");
-
-	pest_utils::upper_ip(jco_filename);
-	if ((jco_filename.find(".JCO") != string::npos) || (jco_filename.find("JCB") != string::npos))
-		jacobian.from_binary(jco_filename);
-	else
-		jacobian.from_ascii(jco_filename);
-
-	pest_utils::upper_ip(parcov_filename);
-	if (parcov_filename.find(".UNC") != string::npos)
-		parcov.from_uncertainty_file(parcov_filename);
-	else if (parcov_filename.find(".PST") != string::npos)
-		parcov.from_parameter_bounds(parcov_filename);
-	else
-		parcov.from_ascii(parcov_filename);
-
-	pest_utils::upper_ip(obscov_filename);
-	if (obscov_filename.find(".UNC") != string::npos)
-		obscov.from_uncertainty_file(obscov_filename);
-	else if (obscov_filename.find(".PST") != string::npos)
-		obscov.from_observation_weights(obscov_filename);
-	else
-		obscov.from_ascii(obscov_filename);
+	try
+	{
+		load_jco(jacobian, jco_filename);
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::linear_analysis() error loading jco: " + string(e.what()));
+	}
+	try
+	{
+		load_parcov(parcov_filename);
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::linear_analysis() error loading parcov: " + string(e.what()));
+	}
+	try
+	{
+		load_obscov(obscov_filename);
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::linear_analysis() error loading obscov: " + string(e.what()));
+	}
 	R_sv = -999, G_sv = -999, ImR_sv = -999, V1_sv = -999;
 }
 
@@ -98,8 +243,22 @@ linear_analysis::linear_analysis(Mat _jacobian, Pest pest_scenario,Logger* _log)
 {
 	log = _log;
 	jacobian = _jacobian;
-	parcov.from_parameter_bounds(pest_scenario);
-	obscov.from_observation_weights(pest_scenario);
+	try
+	{
+		parcov.from_parameter_bounds(pest_scenario);
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::linear_analysis() error setting parcov from parameter bounds:" + string(e.what()));
+	}
+	try
+	{
+		obscov.from_observation_weights(pest_scenario);
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::linear_analysis() error setting obscov from observation weights:" + string(e.what()));
+	}
 	R_sv = -999, G_sv = -999, ImR_sv = -999,V1_sv=-999;
 }
 
@@ -109,17 +268,39 @@ void linear_analysis::align()
 	vector<string> common;
 	if (jacobian.get_col_names() != parcov.get_col_names())
 	{
-		parcov = parcov.get(jacobian.get_col_names());
+		try
+		{
+			parcov = parcov.get(jacobian.get_col_names());
+		}
+		catch (exception &e)
+		{
+			throw_error("linear_analysis::align() error getting aligned parcov: " + string(e.what()));
+		}
 	}
 	if (jacobian.get_row_names() != obscov.get_col_names())
 	{
-		obscov = obscov.get(jacobian.get_row_names());
+		try
+		{
+			obscov = obscov.get(jacobian.get_row_names());
+		}
+		catch (exception &e)
+		{
+			throw_error("linear_analysis::align() error getting aligned obscov: " + string(e.what()));
+		}
 	}
 	for (auto &p : predictions)
 	{
 		if (*jacobian.cn_ptr() != *p.second.rn_ptr())
 		{
-			Mat new_pred = p.second.get(*jacobian.cn_ptr(),*p.second.rn_ptr());
+			Mat new_pred;
+			try
+			{
+				new_pred = p.second.get(*jacobian.cn_ptr(), *p.second.rn_ptr());
+			}
+			catch (exception &e)
+			{
+				throw_error("linear_analysis::align() error getting aligned prediction " + p.first + " : " + string(e.what()));
+			}
 			predictions[p.first] = new_pred;
 		}
 	}
@@ -129,10 +310,17 @@ void linear_analysis::align()
 map<string, double> linear_analysis::worth(vector<string> &obs_names)
 {
 	if (predictions.size() == 0)
-		throw runtime_error("linear_analysis::posterior_predictive_worth() error: no predictions are set");
+		throw_error("linear_analysis::worth() error: no predictions are set");
 
 	log->log("worth");
-	align();
+	try
+	{
+		align();
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::worth() error in align() : " + string(e.what()));
+	}
 	for (int i = 0; i != obs_names.size(); i++)
 		pest_utils::upper_ip(obs_names[i]);
 
@@ -149,11 +337,8 @@ map<string, double> linear_analysis::worth(vector<string> &obs_names)
 		stringstream ss;
 		for (auto &e : errors)
 			ss << e << ',';
-		throw runtime_error("linear_analysis::posterior_predictive_worth() errors: " + ss.str());
+		throw_error("linear_analysis::worth() errors: " + ss.str());
 	}
-
-
-	
 
 	//get a list of remaining obs
 	vector<string> keep_obs_names;
@@ -164,14 +349,39 @@ map<string, double> linear_analysis::worth(vector<string> &obs_names)
 			keep_obs_names.push_back(oname);
 		}
 	}
+	if (keep_obs_names.size() == 0)
+		throw_error("linear_analysis::worth() error at least one observation must not be in the worth group");
 	//get a new linear analysis object with only the keep names
 	Covariance* parcov_ptr = &parcov;
 	map<string,Mat>* pred_ptr = &predictions;
-	linear_analysis keep(jacobian.get(keep_obs_names, *jacobian.cn_ptr()), *parcov_ptr, obscov.get(keep_obs_names),*pred_ptr);
-	
+	linear_analysis keep;
+	try
+	{
+		keep = linear_analysis(jacobian.get(keep_obs_names, *jacobian.cn_ptr()), *parcov_ptr, obscov.get(keep_obs_names), *pred_ptr);
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::worth() error getting 'keep' linear analysis object : "+string(e.what()));
+	}
+
 	//calculate posterior with all obs and with only keep obs
-	map<string, double> org_post = posterior_prediction_variance();
-	map<string, double> keep_post = keep.posterior_prediction_variance();
+	map<string, double> org_post, keep_post;
+	try
+	{
+		org_post = posterior_prediction_variance();
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::worth() error calculating posterior variance for original problem : "+string(e.what()));
+	}
+	try
+	{
+		keep_post = keep.posterior_prediction_variance();
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::worth() error calculating posterior variance for 'keep' problem : "+string(e.what()));
+	}
 	
 	map<string, double> results;
 	for (auto &pred : predictions)
@@ -181,12 +391,20 @@ map<string, double> linear_analysis::worth(vector<string> &obs_names)
 }
 
 
-map<string,pair<double, double>> linear_analysis::contribution(vector<string> &cond_par_names)
+map<string, pair<double, double>> linear_analysis::contribution(vector<string> &cond_par_names)
 {
 	if (predictions.size() == 0)
-		throw runtime_error("linear_analysis::predictive_contribution() error: no predictions are set");
+		throw_error("linear_analysis::contribution() error: no predictions are set");
 	log->log("contribution");
-	align();
+	try
+	{
+		align();
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::contribution() error in align(): " + string(e.what()));
+	}
+
 	for (int i = 0; i != cond_par_names.size(); i++)
 		pest_utils::upper_ip(cond_par_names[i]);
 	//check the inputs
@@ -202,7 +420,7 @@ map<string,pair<double, double>> linear_analysis::contribution(vector<string> &c
 		stringstream ss;
 		for (auto e : errors)
 			ss << e << ',';
-		throw runtime_error("linear_analysis::predictive_contribution() errors: " + ss.str());
+		throw_error("linear_analysis::contribution() errors: " + ss.str());
 	}
 
 	//the parameters that will remain uncertain
@@ -212,22 +430,74 @@ map<string,pair<double, double>> linear_analysis::contribution(vector<string> &c
 		if (find(cond_par_names.begin(), cond_par_names.end(), pname) == cond_par_names.end())
 			keep_par_names.push_back(pname);
 	}
+	if (keep_par_names.size() == 0)
+		throw_error("linear_analysis::contribution() error atleast one parameter must not be in the contribution group");
+
 
 	map<string,Mat> cond_preds;
 	for (auto &pred : predictions)
-		cond_preds[pred.first] = pred.second.get(keep_par_names, *pred.second.cn_ptr());
+	{
+		try
+		{
+			cond_preds[pred.first] = pred.second.get(keep_par_names, *pred.second.cn_ptr());
+		}
+		catch (exception &e)
+		{
+			throw_error("linear_analysis::contribution() error getting conditional prediction: " + pred.first + " : " + string(e.what()));
+		}
+	}
 
 	//get a new linear analysis object - we can use the same obscov b/c it doesn't change
 	Covariance* obscov_ptr = &obscov;
-	linear_analysis cond_la(jacobian.get(*jacobian.rn_ptr(), keep_par_names), condition_on(keep_par_names, cond_par_names), *obscov_ptr,cond_preds);
+
+	linear_analysis cond_la;
+	try
+	{
+		cond_la = linear_analysis(jacobian.get(*jacobian.rn_ptr(), keep_par_names), condition_on(keep_par_names, cond_par_names), *obscov_ptr, cond_preds);
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::contribution() error getting 'conditional' linear analysis object : " + string(e.what()));
+	}
 
 	//calculate the prior and posterior with all parameters
-	map<string, double> org_prior = prior_prediction_variance();
-	map<string, double> org_post = posterior_prediction_variance();
+	map<string, double> org_prior, org_post;
+	try
+	{
+		org_prior = prior_prediction_variance();
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::contribution() error calculating org prior variance :" + string(e.what()));
+	}
+	try
+	{
+		org_post = posterior_prediction_variance();
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::contribution() error calculating org posterior variance :" + string(e.what()));
+	}
+
 
 	//calculate the prior and posterior with some conditioned parameters
-	map<string, double> cond_prior = cond_la.prior_prediction_variance();
-	map<string, double> cond_post = cond_la.posterior_prediction_variance();
+	map<string, double> cond_prior, cond_post;
+	try
+	{
+		cond_prior = cond_la.prior_prediction_variance();
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::contribution() error calculating cond prior variance :" + string(e.what()));
+	}
+	try
+	{
+		cond_post = cond_la.posterior_prediction_variance();
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::contribution() error calculating cond posterior variance :" + string(e.what()));
+	}
 
 	//calculate the reduction in prior and posterior uncertainty for each prediction
 	map<string, pair<double, double>> results;
@@ -245,21 +515,60 @@ Covariance linear_analysis::condition_on(vector<string> &keep_par_names, vector<
 {
 	log->log("condition_on");
 	//C11
-	Covariance new_parcov = parcov.get(keep_par_names);
+	Covariance new_parcov;
+	try
+	{
+		new_parcov = parcov.get(keep_par_names);
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::condition_on() error getting C11 matrix :" + string(e.what()));
+	}
 	//if parcov is diagonal, then there is no conditioning
 	if (parcov.get_mattype() == Mat::MatType::DIAGONAL)
 	{
 		return new_parcov;
 	}		
 	//the portion of parcov that is becoming "known": C22
-	Covariance cond_parcov = parcov.get(cond_par_names);
+	Covariance cond_parcov;
+	try
+	{
+		cond_parcov = parcov.get(cond_par_names);
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::condition_on() error getting C22 matrix :" + string(e.what()));
+	}
 	//C22^-1
-	cond_parcov.inv_ip();
+	try
+	{
+		cond_parcov.inv_ip();
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::condition_on() error inverting C22 matrix :" + string(e.what()));
+	}
 	//C12
-	Mat upper_off_diag = parcov.get(keep_par_names, cond_par_names);
+	Mat upper_off_diag;
+	try
+	{
+		upper_off_diag = parcov.get(keep_par_names, cond_par_names);
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::condition_on() error getting C12 matrix :" + string(e.what()));
+	}
 	//C11 - (C12*C22^-1*C21)
-	Eigen::SparseMatrix<double> mcond = *new_parcov.eptr() - (*upper_off_diag.eptr() * *cond_parcov.eptr() * *upper_off_diag.transpose().eptr());
-	Covariance new_cond_parcov(keep_par_names, mcond);
+	Covariance new_cond_parcov;
+	try
+	{
+		Eigen::SparseMatrix<double> mcond = *new_parcov.eptr() - (*upper_off_diag.eptr() * *cond_parcov.eptr() * *upper_off_diag.transpose().eptr());
+		new_cond_parcov = Covariance(keep_par_names, mcond);
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::condition_on() error calculating conditional parcov :" + string(e.what()));
+	}
 	log->log("condition_on");
 	return new_cond_parcov;
 }
@@ -269,10 +578,21 @@ double linear_analysis::prior_parameter_variance(string &par_name)
 	log->log("prior_parameter_variance");
 	int ipar = find(parcov.rn_ptr()->begin(), parcov.rn_ptr()->end(), par_name) - parcov.rn_ptr()->begin();
 	if (ipar == parcov.nrow())
-		throw runtime_error("lienar_analysis::prior_parameter_variance() error: parameter: " + par_name + " not found");
+		throw_error("linear_analysis::prior_parameter_variance() error: parameter: " + par_name + " not found");
 	const Eigen::SparseMatrix<double>* ptr = parcov.eptr();
+	double val;
+	try
+	{
+		val = ptr->diagonal()[ipar];
+	}
+	catch (exception &e)
+	{
+		stringstream ss;
+		ss << ipar;
+		throw_error("linear_analysis::prior_parameter_variance() error accessing parameter variance at index " + ss.str() + " : " + string(e.what()));
+	}
 	log->log("prior_parameter_variance");
-	return ptr->diagonal()[ipar];	
+	return val;
 }
 
 double linear_analysis::posterior_parameter_variance(string &par_name)
@@ -281,10 +601,21 @@ double linear_analysis::posterior_parameter_variance(string &par_name)
 	if (posterior.nrow() == 0) calc_posterior();
 	int ipar = find(posterior.rn_ptr()->begin(), posterior.rn_ptr()->end(), par_name) - posterior.rn_ptr()->begin();
 	if (ipar == posterior.nrow())
-		throw runtime_error("lienar_analysis::posterior_parameter_variance() error: parameter: " + par_name + " not found");
+		throw_error("linear_analysis::posterior_parameter_variance() error: parameter: " + par_name + " not found");
 	const Eigen::SparseMatrix<double>* ptr = posterior.eptr();
+	double val;
+	try
+	{
+		val = ptr->diagonal()[ipar];
+	}
+	catch (exception &e)
+	{
+		stringstream ss;
+		ss << ipar;
+		throw_error("linear_analysis::posterior_parameter_variance() error accessing parameter variance at index " + ss.str() + " : " + string(e.what()));
+	}
 	log->log("posterior_parameter_variance");
-	return ptr->diagonal()[ipar];
+	return val;
 }
 
 
@@ -306,9 +637,18 @@ double linear_analysis::prior_prediction_variance(string &pred_name)
 	pest_utils::upper_ip(pred_name);
 	map<string, Mat>::iterator p_iter = predictions.find(pred_name);
 	if (p_iter == predictions.end())
-		throw runtime_error("linear_analysis::prior_pred_variance() error: pred:" + pred_name + " not found in predicitons");
-	Eigen::SparseMatrix<double> result = (*p_iter->second.transpose().eptr() * *parcov.eptr() * *p_iter->second.eptr());
-	return result.valuePtr()[0];
+		throw_error("linear_analysis::prior_pred_variance() error: pred:" + pred_name + " not found in predicitons");
+	double val;
+	try
+	{
+		Eigen::SparseMatrix<double> result = (*p_iter->second.transpose().eptr() * *parcov.eptr() * *p_iter->second.eptr());
+		val = result.valuePtr()[0];
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::prior_prediction_variance() error calculating variance :" + string(e.what()));
+	}
+	return val;
 }
 
 map<string, double> linear_analysis::prior_prediction_variance()
@@ -329,10 +669,20 @@ double linear_analysis::posterior_prediction_variance(string &pred_name)
 	pest_utils::upper_ip(pred_name);
 	map<string, Mat>::iterator p_iter = predictions.find(pred_name);
 	if (p_iter == predictions.end())
-		throw runtime_error("linear_analysis::prior_pred_variance() error: pred:" + pred_name + " not found in predicitons");
+		throw_error("linear_analysis::prior_pred_variance() error: pred:" + pred_name + " not found in predicitons");
 	if (posterior.nrow() == 0) calc_posterior();
-	Eigen::SparseMatrix<double> result = (*p_iter->second.transpose().eptr() * *posterior.eptr() * *p_iter->second.eptr());
-	return result.valuePtr()[0];
+	double val;
+	try
+	{
+
+		Eigen::SparseMatrix<double> result = (*p_iter->second.transpose().eptr() * *posterior.eptr() * *p_iter->second.eptr());
+		val = result.valuePtr()[0];
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::posterior_prediction_variance() error calculating variance : " + string(e.what()));
+	}
+	return val;
 
 }
 
@@ -354,8 +704,22 @@ map<string, double> linear_analysis::posterior_prediction_variance()
 void linear_analysis::calc_posterior()
 {
 	log->log("calc_posterior");
-	align();
-	posterior = Covariance(*parcov.rn_ptr(), ((*jacobian.transpose().eptr() * *obscov.inv().eptr() * *jacobian.eptr()) + *parcov.inv().eptr())).inv();
+	try
+	{
+		align();
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::calc_posterior() error in align() : " + string(e.what()));
+	}
+	try
+	{
+		posterior = Covariance(*parcov.rn_ptr(), ((*jacobian.transpose().eptr() * *obscov.inv().eptr() * *jacobian.eptr()) + *parcov.inv().eptr())).inv();
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::calc_posterior() error calculating posterior : " + string(e.what()));
+	}
 	log->log("calc_posterior");
 }
 
@@ -372,19 +736,36 @@ void linear_analysis::set_predictions(vector<string> preds)
 		if (find(obs_names->begin(), obs_names->end(), pred) != obs_names->end())
 		{
 			if (predictions.find(pred) != predictions.end())
-				throw runtime_error("linear_analysis::set_predictions() error: pred:" + pred + " already in predictions");
-			Mat mpred = jacobian.extract(pred, vector<string>());
+				throw_error("linear_analysis::set_predictions() error: pred:" + pred + " already in predictions");
+			Mat mpred;
+			log->log("extracting prediction " + pred + " from jacobian");
+			try
+			{
+				mpred = jacobian.extract(pred, vector<string>());
+			}
+			catch (exception &e)
+			{
+				throw_error("linear_analysis::set_predictions() error extracting prediction " + pred + " : " + string(e.what()));
+			}
+			log->log("extracting prediction " + pred + " from jacobian");
 			mpred.transpose_ip();
 			predictions[pred] = mpred;
 		}
 		else
 		{
 			if (!pest_utils::check_exist_in(pred))
-			{
-				throw runtime_error("linear_analysis::set_predictions() error: pred: " + pred + " not found in jco rows and is not an accessible file");
-			}
+				throw_error("linear_analysis::set_predictions() error: pred: " + pred + " not found in jco rows and is not an accessible file");
 			Mat mpred;
-			mpred.from_ascii(pred);
+			log->log("loading prediction " + pred + " from ASCII file");
+			try
+			{
+				mpred.from_ascii(pred);
+			}
+			catch (exception &e)
+			{
+				throw_error("linear_analysis::set_predictions() error loading prediction " + pred + " from ASCII file :" + string(e.what()));
+			}
+			log->log("loading prediction " + pred + " from ASCII file");
 			if (mpred.ncol() != 1)
 			{
 				if (mpred.nrow() == 1)
@@ -393,7 +774,7 @@ void linear_analysis::set_predictions(vector<string> preds)
 				}
 				else
 				{
-					throw runtime_error("linear_analysis::set_predictions() error: pred: " + pred + "must be shape (1,npar)");
+					throw_error("linear_analysis::set_predictions() error: pred: " + pred + "must be shape (1,npar)");
 				}
 			}
 			//if the pred vector is not completely aligned with the JCO
@@ -412,15 +793,21 @@ void linear_analysis::set_predictions(vector<string> preds)
 				{
 					stringstream ss;
 					for (auto m : missing) ss << m << ",";
-					throw runtime_error("linear_analysis::set_predictions() error: parameters missing from pred: " + pred + " : " + ss.str());
+					throw_error("linear_analysis::set_predictions() error: parameters missing from pred: " + pred + " : " + ss.str());
 				}
-				mpred = mpred.get(*jacobian.cn_ptr(), *mpred.cn_ptr());
+				try
+				{
+					mpred = mpred.get(*jacobian.cn_ptr(), *mpred.cn_ptr());
+				}
+				catch (exception &e)
+				{
+					throw_error("linear_analysis::set_predictions() error getting/realigning prediction " + pred + " : " + string(e.what()));
+				}
 			}
 			string pname = mpred.get_col_names()[0];
 			if (predictions.find(pname) != predictions.end())
-				throw runtime_error("linear_analysis::set_predictions() error: pred:" + pred + " already in predictions");
+				throw_error("linear_analysis::set_predictions() error: pred:" + pred + " already in predictions");
 			predictions[pname] = mpred;
-
 		}
 	}
 	log->log("set_predictions");
@@ -428,7 +815,7 @@ void linear_analysis::set_predictions(vector<string> preds)
 
 void linear_analysis::set_predictions(vector<Mat> preds)
 {
-	throw runtime_error("not implemented");
+	throw_error("linear_analysis::set_predictions() not implemented vector<Mat> args");
 }
 
 void linear_analysis::svd()
@@ -437,7 +824,15 @@ void linear_analysis::svd()
 	//Eigen::JacobiSVD<Eigen::MatrixXd> svd_fac(*get_normal_ptr()->eptr(), Eigen::DecompositionOptions::ComputeFullU | Eigen::DecompositionOptions::ComputeFullV);
 	//Eigen::JacobiSVD<Eigen::MatrixXd> svd_fac(*get_normal_ptr()->eptr(), Eigen::DecompositionOptions::ComputeFullV);
 	log->log("svd - factorization");
-	Eigen::JacobiSVD<Eigen::MatrixXd> svd_fac(*get_normal_ptr()->eptr(), Eigen::DecompositionOptions::ComputeThinV);
+	Eigen::JacobiSVD<Eigen::MatrixXd> svd_fac;
+	try
+	{
+		svd_fac = Eigen::JacobiSVD<Eigen::MatrixXd>(*get_normal_ptr()->eptr(), Eigen::DecompositionOptions::ComputeThinV);
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::svd() error calculating svd: " + string(e.what()));
+	}
 	log->log("svd - factorization");
 	vector<string> sv_names,rs_names;
 	stringstream ss;
@@ -452,8 +847,23 @@ void linear_analysis::svd()
 		ss << "right_singular_vector_" << i;
 		rs_names.push_back(ss.str());
 	}
-	V = Mat(jacobian.get_col_names(),rs_names,svd_fac.matrixV().sparseView());
-	S = Covariance(sv_names, eigenvec_2_diagsparse(svd_fac.singularValues()));
+	try
+	{
+		V = Mat(jacobian.get_col_names(), rs_names, svd_fac.matrixV().sparseView());
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::svd() error setting V :" + string(e.what()));
+	}
+	try
+	{
+		S = Covariance(sv_names, eigenvec_2_diagsparse(svd_fac.singularValues()));
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::svd() error setting S :" + string(e.what()));
+	}
+
 	log->log("svd");
 }
 
@@ -470,12 +880,30 @@ Mat* linear_analysis::get_R_ptr(int sv)
 void linear_analysis::build_R(int sv)
 {
 	log->log("build_R");
-	if (V.nrow() == 0) svd();	
+	if (V.nrow() == 0)
+	{
+		try
+		{
+			svd();
+		}
+		catch (exception &e)
+		{
+			throw_error("linear_analysis::build_R() error in svd() :" + string(e.what()));
+		}
+	}
 	if (sv == 0)
 	{
-		Eigen::SparseMatrix<double> Z(V.nrow(), V.ncol());
-		Z.setZero();
-		R = Mat(V.get_row_names(), V.get_col_names(), Z);
+		try
+		{
+
+			Eigen::SparseMatrix<double> Z(V.nrow(), V.ncol());
+			Z.setZero();
+			R = Mat(V.get_row_names(), V.get_col_names(), Z);
+		}
+		catch (exception &e)
+		{
+			throw_error("linear_analysis::build_R() error setting R to zero :" + string(e.what()));
+		}
 	}
 	else if (sv > jacobian.ncol())
 	{
@@ -488,7 +916,14 @@ void linear_analysis::build_R(int sv)
 		for (int i = 0; i < sv; i++)
 			cnames.push_back(base_cnames[i]);
 		log->log("build_R - MM");
-		R = Mat(V.get_row_names(), V.get_row_names(), *get_V1_ptr(sv)->eptr() * get_V1_ptr(sv)->eptr()->transpose());
+		try
+		{
+			R = Mat(V.get_row_names(), V.get_row_names(), *get_V1_ptr(sv)->eptr() * get_V1_ptr(sv)->eptr()->transpose());
+		}
+		catch (exception &e)
+		{
+			throw_error("linear_analysis::build_R() error calculating R : " + string(e.what()));
+		}
 		log->log("build_R - MM");
 	}
 	R_sv = sv;
@@ -506,12 +941,30 @@ Mat* linear_analysis::get_V1_ptr(int sv)
 void linear_analysis::build_V1(int sv)
 {
 	log->log("build_V1");
-	if (V.nrow() == 0) svd();
+	if (V.nrow() == 0)
+	{
+		try
+		{
+			svd();
+		}
+		catch (exception &e)
+		{
+			throw_error("linear_analysis::build_V1() error in svd() :" + string(e.what()));
+		}
+	}
 	vector<string> cnames;
 	vector<string> base_cnames = *V.cn_ptr();
 	for (int i = 0; i < sv; i++)
 		cnames.push_back(base_cnames[i]);
-	V1 = Mat(V.get_row_names(), cnames, V.eptr()->leftCols(sv));
+	try
+	{
+		//V1 = Mat(V.get_row_names(), cnames, V.eptr()->leftCols(sv));
+		V1 = V.leftCols(sv);
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::build_V1() error forming V1 matrix:" + string(e.what()));
+	}
 	V1_sv = sv;
 	log->log("build_V1");
 }
@@ -527,12 +980,37 @@ Mat* linear_analysis::get_G_ptr(int sv)
 void linear_analysis::build_G(int sv)
 {
 	log->log("build_G");
-	if (V.nrow() == 0) svd();
-	Eigen::SparseMatrix<double> s_inv = S.inv().eptr()->topLeftCorner(sv,sv);
+	if (V.nrow() == 0)
+	{
+		try
+		{
+			svd();
+		}
+		catch (exception &e)
+		{
+			throw_error("linear_analysis::build_G() error in svd() :" + string(e.what()));
+		}
+	}
+	Eigen::SparseMatrix<double> s_inv;
+	try
+	{
+		s_inv = S.inv().eptr()->topLeftCorner(sv, sv);
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::build_G() error building s_inv matrix : " + string(e.what()));
+	}
 	log->log("build_G - MMM");
-	Eigen::SparseMatrix<double> g = *get_V1_ptr(sv)->eptr() * s_inv * get_V1_ptr(sv)->eptr()->transpose() * jacobian.eptr()->transpose() * *obscov.eptr();
-	log->log("build_G - MMM");
-	G = Mat(jacobian.get_col_names(),jacobian.get_row_names(),g);
+	try
+	{
+		Eigen::SparseMatrix<double> g = *get_V1_ptr(sv)->eptr() * s_inv * get_V1_ptr(sv)->eptr()->transpose() * jacobian.eptr()->transpose() * *obscov.eptr();
+		log->log("build_G - MMM");
+		G = Mat(jacobian.get_col_names(), jacobian.get_row_names(), g);
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::build_G() error calculating G : " + string(e.what()));
+	}
 	G_sv = sv;
 	log->log("build_G");
 }
@@ -552,10 +1030,35 @@ void linear_analysis::build_ImR(int sv)
 		ImR = parcov.identity();
 	else
 	{
-		if (V.nrow() == 0) svd();
-		Mat V2 = V.rightCols(V.ncol() - sv);
+		if (V.nrow() == 0)
+		{
+			try
+			{
+				svd();
+			}
+			catch (exception &e)
+			{
+				throw_error("linear_analysis::build_G() error in svd() :" + string(e.what()));
+			}
+		}
+		Mat V2;
+		try
+		{
+			V2 = V.rightCols(V.ncol() - sv);
+		}
+		catch (exception &e)
+		{
+			throw_error("linear_analysis::build_ImR() error forming V2 matrix " + string(e.what()));
+		}
 		log->log("build_ImR - MM");
-		ImR = Mat(V2.get_row_names(), V2.get_row_names(), *V2.eptr() * V2.eptr()->transpose());
+		try
+		{
+			ImR = Mat(V2.get_row_names(), V2.get_row_names(), *V2.eptr() * V2.eptr()->transpose());
+		}
+		catch (exception &e)
+		{
+			throw_error("linear_analysis::build_ImR() error calculating ImR :" + string(e.what()));
+		}
 		log->log("build_ImR - MM");
 	} 
 	ImR_sv = sv;
@@ -574,73 +1077,160 @@ Mat * linear_analysis::get_normal_ptr()
 void linear_analysis::build_normal()
 {
 	log->log("build_normal");
-	align();
+	try
+	{
+		align();
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::build_normal() error in align() : " + string(e.what()));
+	}
 	log->log("build_normal - MMM");
-	normal = Mat(jacobian.get_col_names(), jacobian.get_col_names(), jacobian.eptr()->transpose() * *obscov.eptr() * *jacobian.eptr());
+	try
+	{
+		normal = Mat(jacobian.get_col_names(), jacobian.get_col_names(), jacobian.eptr()->transpose() * *obscov.eptr() * *jacobian.eptr());
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::build_normal() error calculating normal matrix :" + string(e.what()));
+	}
 	log->log("build_normal - MMM");
 	log->log("build_normal");
 }
 
 Covariance linear_analysis::first_parameter(int sv)
 {
-	log->log("first_parameter");
+	stringstream ss;
+	ss << sv;
+	string sv_str = ss.str();
+	
 	if (sv >= jacobian.ncol())
 		return parcov.zero();
 	else
 	{
-		Eigen::SparseMatrix<double> first = *get_ImR_ptr(sv)->eptr() * *parcov.eptr() * *get_ImR_ptr(sv)->eptr();
-		return Covariance(parcov.get_col_names(), first);
+		try
+		{
+			log->log("first_parameter @" + sv_str);
+			Eigen::SparseMatrix<double> first = *get_ImR_ptr(sv)->eptr() * *parcov.eptr() * *get_ImR_ptr(sv)->eptr();
+			Covariance f(parcov.get_col_names(), first);
+			log->log("first_parameter @" + sv_str);
+			return f;
+		}
+		catch (exception &e)
+		{			
+			throw_error("linear_analysis::first_parameter() error @" +sv_str + " : " + string(e.what()));
+		}
 	}
-	log->log("first_parameter");
+	
 }
 
 Covariance linear_analysis::second_parameter(int sv)
 {	
-	log->log("second_parameter");
+	stringstream ss;
+	ss << sv;
+	string sv_str = ss.str();
+	
 	if (sv == 0)
 		return parcov.zero();
 	else if (sv >= jacobian.ncol())
 		return parcov.diagonal(1.0E+20);
 	else
 	{
-		Eigen::SparseMatrix<double> second = *get_G_ptr(sv)->eptr() * *obscov.eptr() * get_G_ptr(sv)->eptr()->transpose();
-		return Covariance(parcov.get_col_names(), second);
+		try
+		{
+			log->log("second_parameter @" + sv_str);
+			Eigen::SparseMatrix<double> second = *get_G_ptr(sv)->eptr() * *obscov.eptr() * get_G_ptr(sv)->eptr()->transpose();
+			Covariance s(parcov.get_col_names(), second);
+			log->log("second_parameter @" + sv_str);
+			return s;
+		}
+		catch (exception &e)
+		{
+			throw_error("linear_analysis::second_parameter() error @"+sv_str+ " : " + string(e.what()));
+		}
+
 	}
-	log->log("second_parameter");
+	
 }
 
 Covariance linear_analysis::third_parameter(int sv)
 {
-	log->log("third_parameter");
+	stringstream ss;
+	ss << sv;
+	string sv_str = ss.str();
+	log->log("third_parameter @"+sv_str);
 	if (sv == 0)
 		return parcov.zero();
 	else if (sv >= jacobian.ncol())
 		return parcov.diagonal(1.0E+20);
 	else
 	{
-		Eigen::SparseMatrix<double> GZo = *get_G_ptr(sv)->eptr() * *omitted_jacobian.eptr();
-		Eigen::SparseMatrix<double> third = GZo * *omitted_parcov.eptr() * GZo.transpose();
+		Eigen::SparseMatrix<double> GZo, third;
+		try
+		{
+			GZo = *get_G_ptr(sv)->eptr() * *omitted_jacobian.eptr();
+		}
+		catch (exception &e)
+		{
+			throw_error("linear_analysis::third_parameter() error calculating GZo matrix @"+sv_str+ " : " + string(e.what()));
+		}
+		try
+		{
+			third = GZo * *omitted_parcov.eptr() * GZo.transpose();
+		}
+		catch (exception &e)
+		{
+			throw_error("linear_analysis::third_parameter() error calculating thrid matrix@"+sv_str+" : " + string(e.what()));
+		}
 		return Covariance(parcov.get_col_names(), third);
 	}
-	log->log("third_parameter");
+	log->log("third_parameter @" + sv_str);
 }
 
 map<string, double> linear_analysis::first_prediction(int sv)
 {
+	stringstream ss;
+	ss << sv;
+	string sv_str = ss.str();
 	map<string, double> result;
 	if (sv >= jacobian.ncol())
 		return like_preds(0.0);
 	else
 	{
-		Covariance first = first_parameter(sv);
+		log->log("first_prediction @" + sv_str);
+		Covariance first;
+		try
+		{
+			first = first_parameter(sv);
+		}
+		catch (exception &e)
+		{
+			throw_error("linear_analysis::first_prediction() error calculation first matrix : " + string(e.what()));
+		}
+
 		for (auto &p : predictions)
-			result[p.first] = (p.second.eptr()->transpose() * *first.eptr() * *p.second.eptr()).eval().valuePtr()[0];
+		{			
+			try
+			{
+				result[p.first] = (p.second.eptr()->transpose() * *first.eptr() * *p.second.eptr()).eval().valuePtr()[0];
+			}
+			catch (exception &e)
+			{
+				stringstream ss;
+				ss << sv;
+				throw_error("linear_analysis::first_prediction() error calculating result for prediction " + p.first + " for sv " + ss.str()+ " : " + string(e.what()));
+			}
+		}
+		log->log("first_prediction @" + sv_str);
 		return result;
 	}
 }
 
 map<string, double> linear_analysis::second_prediction(int sv)
 {
+	stringstream ss;
+	ss << sv;
+	string sv_str = ss.str();
 	map<string, double> result;
 	if (sv == 0)
 		return like_preds(0.0);
@@ -648,43 +1238,107 @@ map<string, double> linear_analysis::second_prediction(int sv)
 		return like_preds(1.0E+20);
 	else
 	{
-		Covariance second = second_parameter(sv);
+		log->log("second_prediction @" + sv_str);
+		Covariance second;
+		try
+		{
+			second = second_parameter(sv);
+		}
+		catch (exception &e)
+		{
+			throw_error("linear_analysis::second_prediction() error calculation second matrix : " + string(e.what()));
+		}
 		for (auto &p : predictions)
-			result[p.first] = (p.second.eptr()->transpose() * *second.eptr() * *p.second.eptr()).eval().valuePtr()[0];
+		{
+			try
+			{
+				result[p.first] = (p.second.eptr()->transpose() * *second.eptr() * *p.second.eptr()).eval().valuePtr()[0];
+			}
+			catch (exception &e)
+			{
+				throw_error("linear_analysis::second_prediction() error calculating result for prediction " + p.first + " : " + string(e.what()));
+			}
+		}
+		log->log("second_prediction @" + sv_str);
 		return result;
 	}
 }
 
 map<string, double> linear_analysis::third_prediction(int sv)
 {
+	stringstream ss;
+	ss << sv;
+	string sv_str = ss.str();
 	map<string, double> result;
 	if (sv >= jacobian.ncol())
 		return like_preds(1.0E+20);
 	else if (sv == 0)
 	{
+		log->log("third_prediction @" + sv_str);
 		for (auto &opred : omitted_predictions)
 		{
-			result[opred.first] = (opred.second.eptr()->transpose() * *omitted_parcov.eptr() * *opred.second.eptr()).eval().valuePtr()[0];
+			try
+			{
+				result[opred.first] = (opred.second.eptr()->transpose() * *omitted_parcov.eptr() * *opred.second.eptr()).eval().valuePtr()[0];
+			}
+			catch (exception &e)
+			{
+				throw_error("linear_analysis::third_prediction() error calculating result for prediction " + opred.first + " : " + string(e.what()));
+			}
 		}
+		log->log("third_prediction @" + sv_str);
 		return result;
 	}
 	else
 	{
+		log->log("third_prediction with 'p' @" + sv_str);
 		for (auto &pred : predictions)
 		{
-			Eigen::SparseMatrix<double, Eigen::RowMajor> p = (pred.second.eptr()->transpose() * *get_G_ptr(sv)->eptr() * *omitted_jacobian.eptr()).eval();
-			p = (p - omitted_predictions[pred.first].eptr()->transpose()).eval().transpose();
-			result[pred.first] = (p.transpose() * *omitted_parcov.eptr() * p).eval().valuePtr()[0];
+		
+			Eigen::SparseMatrix<double, Eigen::RowMajor> p;
+			try
+			{
+				p = (pred.second.eptr()->transpose() * *get_G_ptr(sv)->eptr() * *omitted_jacobian.eptr()).eval();
+			}
+			catch (exception &e)
+			{
+				throw_error("linear_analysis::third_prediction() error calculating p vector for prediction " + pred.first + " : " + string(e.what()));
+			}
+			try
+			{
+				p = (p - omitted_predictions[pred.first].eptr()->transpose()).eval().transpose();
+			}
+			catch (exception &e)
+			{
+				throw_error("linear_analysis::third_prediction() error differencing p vector for prediction " + pred.first + " : " + string(e.what()));
+			}
+			try
+			{
+				result[pred.first] = (p.transpose() * *omitted_parcov.eptr() * p).eval().valuePtr()[0];
+			}
+			catch (exception &e)
+			{
+				throw_error("linear_analysis::third_prediction() error calculating result for prediction " + pred.first + " : " + string(e.what()));
+			}
 		}
+		log->log("third_prediction with 'p' @" + sv_str);
 		return result;
 	}
 }
 
 void linear_analysis::extract_omitted(vector<string> &omitted_par_names)
 {
-	align();
+	log->log("extract_omitted");
+	try
+	{
+		align();
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::extract_omitted() error in align() : " + string(e.what()));
+	}
 	if (omitted_par_names.size() == 0)
-		throw runtime_error("linear_analysis::extract_omitted() error: omitted par name vector empty");
+		throw_error("linear_analysis::extract_omitted() error: omitted par name vector empty");
 	const vector<string>* jpar_names = jacobian.cn_ptr();
 	vector<string> missing;
 	for (auto &o : omitted_par_names)
@@ -699,15 +1353,36 @@ void linear_analysis::extract_omitted(vector<string> &omitted_par_names)
 		stringstream ss;
 		for (auto m : missing)
 			ss << m << ",";
-		throw runtime_error("the following omitted par names were not found: " + ss.str());
+		throw_error("linear_analysis::extract_omitted() error some omitted par names were not found: " + ss.str());
 	}
-
-	omitted_jacobian = jacobian.extract(vector<string>(), omitted_par_names);
-	omitted_parcov = parcov.extract(omitted_par_names);
+	try
+	{
+		omitted_jacobian = jacobian.extract(vector<string>(), omitted_par_names);
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::extract_omitted() error extracting omitted jco from jco : " + string(e.what()));
+	}
+	try
+	{
+		omitted_parcov = parcov.extract(omitted_par_names);
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::extract_omitted() error extracting omitted parcov from parcov : " + string(e.what()));
+	}
 	for (auto &p : predictions)
 	{
-		omitted_predictions[p.first] = p.second.extract(omitted_par_names, vector<string>());
+		try
+		{
+			omitted_predictions[p.first] = p.second.extract(omitted_par_names, vector<string>());
+		}
+		catch (exception &e)
+		{
+			throw_error("linear_analysis::extract_omitted() error extracting omitted prediction from prediction "+p.first+ " : " + string(e.what()));
+		}
 	}
+	log->log("extract_omitted");
 }
 
 map<string, double> linear_analysis::like_preds(double val)

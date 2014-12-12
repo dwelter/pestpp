@@ -26,6 +26,31 @@ Logger::Logger(ofstream &_fout,bool _echo)
 	tagged_events.clear();
 }
 
+void Logger::write(const std::string &message)
+{
+	high_resolution_clock::time_point time_now = high_resolution_clock::now();
+	if (fout->good())
+	{
+		*fout << time_to_string(time_now) << " : " << message << endl;
+		fout->flush();
+	}
+		
+	if ((echo) || (!fout->good()))
+		cout << time_to_string(time_now) << " : " << message << endl;
+}
+
+
+void Logger::error(const std::string &message)
+{
+	write("EXECUTION ERROR: " + message);
+}
+
+void Logger::warning(const std::string &message)
+{
+	write("WARNING: " + message);
+}
+
+
 void Logger::log(const string &message)
 {	
 	high_resolution_clock::time_point time_now = high_resolution_clock::now();
@@ -35,7 +60,14 @@ void Logger::log(const string &message)
 	{
 		tagged_events[message] = time_now;
 		if (fout->good())
-			*fout << time_to_string(time_now) << "-> starting " << message << endl;
+		{
+			//*fout << time_to_string(time_now) << "-> starting " << message << endl;
+			*fout << time_to_string(time_now);
+			for (int i=0;i<tagged_events.size();i++)
+				*fout << "->";
+			*fout <<  " starting " << message << endl;
+			fout->flush();
+		}
 		if ((echo) || (!fout->good()))
 			cout << time_to_string(time_now) << "-> starting " << message << endl;
 	}
@@ -43,11 +75,19 @@ void Logger::log(const string &message)
 	{
 		high_resolution_clock::time_point time_start = message_iter->second;
 		if (fout->good())
-			*fout << time_to_string(time_now) << "-> finished " << message << ", elapsed time = " <<
-				elapsed_time_to_string(time_now, time_start) << " )" << endl;
+		{
+			/**fout << time_to_string(time_now) << "-> finished " << message << ", elapsed time = " <<
+				elapsed_time_to_string(time_now, time_start) << endl;*/
+			*fout << time_to_string(time_now);
+			for (int i = 0; i != tagged_events.size(); i++)
+				*fout << "->";
+			*fout << " finished " << message << ", elapsed time = " <<
+				elapsed_time_to_string(time_now, time_start) << endl; 
+			fout->flush();
+		}
 		if ((echo) || (!fout->good()))
 			cout << time_to_string(time_now) << "-> finished " << message << ", elapsed time = " <<
-				elapsed_time_to_string(time_now, time_start) << " )" << endl;
+				elapsed_time_to_string(time_now, time_start) << endl;
 		tagged_events.erase(message_iter);
 	}
 }

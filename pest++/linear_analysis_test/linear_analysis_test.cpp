@@ -98,47 +98,53 @@ int main(int argc, char* argv[])
 {
 	ofstream fout("linear_analysis.log");
 	Logger log(fout);
-	log.log("start analysis");
-	string jco("pest.jco");
-	string pst("pest.pst");
-	linear_analysis la(jco,pst,pst,&log);
-	vector<string> preds;
-	//preds.push_back("h02_08");
-	preds.push_back("c_obs01_1");
-	la.set_predictions(preds);
+	log.log("analysis");
+	try
+	{
 
-	vector<string> omitted;
-	//omitted.push_back("stage");
-	omitted.push_back("mult1");
-	la.extract_omitted(omitted);
-	//la.get_jacobian_ptr()->to_ascii("jco.mat");
-	//la.get_obscov_ptr()->to_ascii("obscov.mat");
-	//Mat* normal = la.get_normal_ptr();
-	//Mat* R = la.get_R_ptr(1);
-	//Mat* G = la.get_G_ptr(1);
+		string jco("pest.jco");
+		string pst("pest.pst");
+		linear_analysis la(jco, pst, pst, &log);
+		vector<string> preds;
+		//preds.push_back("h02_08");
+		//preds.push_back("c_obs01_1");
+		preds.push_back("O10_1");
+		la.set_predictions(preds);
+		for (auto &pred : la.get_predictions())
+		{
+			pred.second.to_ascii(pred.first + ".vec");
+		}
+		vector<string> omitted;
+		//omitted.push_back("mult1");
+		omitted.push_back("k01_01_01");
+		/*omitted.push_back("k01_01_02");
+		omitted.push_back("k01_01_03");
+		omitted.push_back("k01_01_04");*/
+		la.extract_omitted(omitted);
 
-	/*Mat* n = la.get_normal_ptr();
-	n->to_ascii("normal_c.mat");
-	Mat ImR = *la.get_ImR_ptr(1);5
-	Mat V = la.get_V();
-	Mat S = la.get_S();
-	cout << S << endl;
-	cout << V << endl;
-	Mat first = la.first_parameter(1);
-	cout << first << endl;*/
-	map<string, double> first = la.first_prediction(200);
-	map<string, double> second = la.second_prediction(200);
-	map<string, double> third = la.third_prediction(200);
-	first = la.first_prediction(200);
-	second = la.second_prediction(200);
-	third = la.third_prediction(200);
-	first = la.first_prediction(300);
-	second = la.second_prediction(300);
-	third = la.third_prediction(300);
-	first = la.first_prediction(599);
-	second = la.second_prediction(599);
-	third = la.third_prediction(599);
-	log.log("start analysis");
+		Covariance post = la.posterior_parameter_matrix();
+		map<string, double> prpost = la.prior_prediction_variance();
+		map<string, double> ptpost = la.posterior_prediction_variance();
+
+		map<string, double> first = la.first_prediction(200);
+		map<string, double> second = la.second_prediction(200);
+		map<string, double> third = la.third_prediction(200);
+		first = la.first_prediction(200);
+		second = la.second_prediction(200);
+		third = la.third_prediction(200);
+		first = la.first_prediction(300);
+		second = la.second_prediction(300);
+		third = la.third_prediction(300);
+		first = la.first_prediction(599);
+		second = la.second_prediction(599);
+		third = la.third_prediction(599);
+	}
+	catch (exception &e)
+	{
+		cout << e.what() << endl;
+		log.error(e.what());
+	}
+	log.log("analysis");
 	return 0;
 }
 
