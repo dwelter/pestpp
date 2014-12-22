@@ -667,67 +667,74 @@ void RunManagerYAMR::schedule_runs()
 	}
 
 	//check for overdue runs
-	double duration, avg_runtime;
-	double global_avg_runtime = slave_info.get_global_runtime_minute();
-	bool should_schedule = false;
-	for (auto it_active = active_runs.begin(); !slave_fd.empty() && it_active != active_runs.end();++it_active)
-	{		
-		should_schedule = false;
-		int act_sock_id = it_active->second.get_socket();
-		int run_id = it_active->second.get_id();
-		unordered_map<int, int>::iterator it_concur;
-		duration = slave_info.get_duration_minute(act_sock_id);
-		avg_runtime = slave_info.get_runtime_minute(act_sock_id);
-		if (avg_runtime <= 0) avg_runtime = global_avg_runtime;
-		if (avg_runtime <= 0) avg_runtime = 1.0E+10;
-		if (duration > avg_runtime*PERCENT_OVERDUE_GIVEUP)
+	try
+	{
+		double duration, avg_runtime;
+		double global_avg_runtime = slave_info.get_global_runtime_minute();
+		bool should_schedule = false;
+		for (auto it_active = active_runs.begin(); !slave_fd.empty() && it_active != active_runs.end(); ++it_active)
 		{
-			vector<string> sock_name = w_getnameinfo_vec(act_sock_id);
-			stringstream ss;
-			ss << "killing overdue run " << run_id << " (" << duration << "|" << avg_runtime <<
-				" minutes) on: " << sock_name[0] << "$" << slave_info.get_work_dir(act_sock_id);
- 			report(ss.str(), false);
-			NetPackage net_pack(NetPackage::PackType::REQ_KILL, 0, 0, "");
-			char data = '\0';
-			int err = net_pack.send(act_sock_id, &data, sizeof(data));
-			if (err <= 0)
-			{
-				report("error sending kill request to slave:" + sock_name[0] + "$" +
-					slave_info.get_work_dir(act_sock_id), true);
-				close_slave(act_sock_id);
-			}			
-		}
-		if (duration > avg_runtime*PERCENT_OVERDUE_RESCHED)
-		{
-			//check how many concurrent runs are going			
-			it_concur = concurrent_map.find(it_active->first);
-			if (it_concur == concurrent_map.end()) throw PestError("active run id not found in concurrent map");
-			if (it_concur->second < MAX_CONCURRENT_RUNS) should_schedule = true;			
-		}
-
-		if (should_schedule)
-		{
-			vector<string> sock_name = w_getnameinfo_vec(act_sock_id);
-			stringstream ss;
+			should_schedule = false;
+			int act_sock_id = it_active->second.get_socket();
 			int run_id = it_active->second.get_id();
-			ss << "rescheduling overdue run " << run_id << " (" << duration << "|" <<
-				avg_runtime << " minutes) on: " << sock_name[0] << "$" << 
-				slave_info.get_work_dir(act_sock_id);
-			report(ss.str(), false);
-			bool success = schedule_run(run_id);
-			if (success)
+			unordered_map<int, int>::iterator it_concur;
+			duration = slave_info.get_duration_minute(act_sock_id);
+			avg_runtime = slave_info.get_runtime_minute(act_sock_id);
+			if (avg_runtime <= 0) avg_runtime = global_avg_runtime;
+			if (avg_runtime <= 0) avg_runtime = 1.0E+10;
+			if (duration > avg_runtime*PERCENT_OVERDUE_GIVEUP)
 			{
+				vector<string> sock_name = w_getnameinfo_vec(act_sock_id);
 				stringstream ss;
-				ss << concurrent_map[it_concur->first] << " concurrent runs for run id = " << run_id;
+				ss << "killing overdue run " << run_id << " (" << duration << "|" << avg_runtime <<
+					" minutes) on: " << sock_name[0] << "$" << slave_info.get_work_dir(act_sock_id);
 				report(ss.str(), false);
+				NetPackage net_pack(NetPackage::PackType::REQ_KILL, 0, 0, "");
+				char data = '\0';
+				int err = net_pack.send(act_sock_id, &data, sizeof(data));
+				if (err <= 0)
+				{
+					report("error sending kill request to slave:" + sock_name[0] + "$" +
+						slave_info.get_work_dir(act_sock_id), true);
+					close_slave(act_sock_id);
+				}
 			}
-			else
+			if (duration > avg_runtime*PERCENT_OVERDUE_RESCHED)
 			{
+				//check how many concurrent runs are going			
+				it_concur = concurrent_map.find(it_active->first);
+				if (it_concur == concurrent_map.end()) throw PestError("active run id not found in concurrent map");
+				if (it_concur->second < MAX_CONCURRENT_RUNS) should_schedule = true;
+			}
+
+			if (should_schedule)
+			{
+				vector<string> sock_name = w_getnameinfo_vec(act_sock_id);
 				stringstream ss;
-				ss << "failed to schedule concurrent run for run id = " << run_id;
+				int run_id = it_active->second.get_id();
+				ss << "rescheduling overdue run " << run_id << " (" << duration << "|" <<
+					avg_runtime << " minutes) on: " << sock_name[0] << "$" <<
+					slave_info.get_work_dir(act_sock_id);
 				report(ss.str(), false);
+				bool success = schedule_run(run_id);
+				if (success)
+				{
+					stringstream ss;
+					ss << concurrent_map[it_concur->first] << " concurrent runs for run id = " << run_id;
+					report(ss.str(), false);
+				}
+				else
+				{
+					stringstream ss;
+					ss << "failed to schedule concurrent run for run id = " << run_id;
+					report(ss.str(), false);
+				}
 			}
 		}
+	}
+	catch (exception &e)
+	{
+		cout << "exeption trying to find overdue runs: " << endl << e.what() << endl;
 	}
 }
 
