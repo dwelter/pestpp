@@ -206,6 +206,8 @@ double SlaveInfo::get_global_runtime_minute()
 			global_runtime += temp;
 		}
 	}
+	if (count == 0)
+		return 0.0;
 	return global_runtime / (double)count;
 }
 
