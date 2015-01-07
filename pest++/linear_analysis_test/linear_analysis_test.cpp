@@ -110,10 +110,10 @@ int main(int argc, char* argv[])
 		//preds.push_back("c_obs01_1");
 		preds.push_back("O10_1");
 		la.set_predictions(preds);
-		for (auto &pred : la.get_predictions())
+		/*for (auto &pred : la.get_predictions())
 		{
 			pred.second.to_ascii(pred.first + ".vec");
-		}
+		}*/
 		vector<string> omitted;
 		//omitted.push_back("mult1");
 		omitted.push_back("k01_01_01");
@@ -126,18 +126,18 @@ int main(int argc, char* argv[])
 		map<string, double> prpost = la.prior_prediction_variance();
 		map<string, double> ptpost = la.posterior_prediction_variance();
 
-		map<string, double> first = la.first_prediction(200);
+		/*map<string, double> first = la.first_prediction(200);
 		map<string, double> second = la.second_prediction(200);
 		map<string, double> third = la.third_prediction(200);
-		first = la.first_prediction(200);
-		second = la.second_prediction(200);
-		third = la.third_prediction(200);
+		first = la.first_prediction(1);
+		second = la.second_prediction(1);
+		third = la.third_prediction(1);
 		first = la.first_prediction(300);
 		second = la.second_prediction(300);
 		third = la.third_prediction(300);
 		first = la.first_prediction(599);
 		second = la.second_prediction(599);
-		third = la.third_prediction(599);
+		third = la.third_prediction(599);*/
 	}
 	catch (exception &e)
 	{

@@ -638,10 +638,14 @@ double linear_analysis::prior_prediction_variance(string &pred_name)
 	map<string, Mat>::iterator p_iter = predictions.find(pred_name);
 	if (p_iter == predictions.end())
 		throw_error("linear_analysis::prior_pred_variance() error: pred:" + pred_name + " not found in predicitons");
+	
+	if (p_iter->second.eptr()->nonZeros() == 0)
+		return 0.0;
 	double val;
 	try
 	{
 		Eigen::SparseMatrix<double> result = (*p_iter->second.transpose().eptr() * *parcov.eptr() * *p_iter->second.eptr());
+		cout << result << endl;
 		val = result.valuePtr()[0];
 	}
 	catch (exception &e)
@@ -670,6 +674,8 @@ double linear_analysis::posterior_prediction_variance(string &pred_name)
 	map<string, Mat>::iterator p_iter = predictions.find(pred_name);
 	if (p_iter == predictions.end())
 		throw_error("linear_analysis::prior_pred_variance() error: pred:" + pred_name + " not found in predicitons");
+	if (p_iter->second.eptr()->nonZeros() == 0)
+		return 0.0;
 	if (posterior.nrow() == 0) calc_posterior();
 	double val;
 	try

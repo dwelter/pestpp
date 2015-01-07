@@ -607,6 +607,8 @@ Mat Mat::get(const vector<string> &new_row_names, const vector<string> &new_col_
 
 	const string *row_name;
 	const string *col_name;
+	col_names;
+	row_names;
 	std::vector<Eigen::Triplet<double> > triplet_list;
 	for (int icol = 0; icol<matrix.outerSize(); ++icol)
 	{
@@ -615,18 +617,20 @@ Mat Mat::get(const vector<string> &new_row_names, const vector<string> &new_col_
 			col_name = &col_names[it.col()];
 			row_name = &row_names[it.row()];
 			found_col = col_name2new_index_map.find(*col_name);
-			found_row = row_name2newindex_map.find(*row_name);			
+			found_row = row_name2newindex_map.find(*row_name);
 			if (found_col != not_found_col_map && found_row != not_found_row_map)
 			{
 				triplet_list.push_back(Eigen::Triplet<double>(found_row->second, found_col->second, it.value()));
 			}
 		}
 	}
-	if (triplet_list.size() == 0)
-		throw runtime_error("Mat::get() error: triplet list is empty");
+	//if (triplet_list.size() == 0)
+		//throw runtime_error("Mat::get() error: triplet list is empty");
+
 	Eigen::SparseMatrix<double> new_matrix(nrow, ncol);
 	new_matrix.setZero();
-	new_matrix.setFromTriplets(triplet_list.begin(), triplet_list.end());
+	if (triplet_list.size() > 0)
+		new_matrix.setFromTriplets(triplet_list.begin(), triplet_list.end());
 	return Mat(new_row_names,new_col_names,new_matrix);
 }
 
