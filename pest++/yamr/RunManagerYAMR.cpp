@@ -420,6 +420,7 @@ void RunManagerYAMR::run()
 	NetPackage net_pack;
 	model_runs_done = 0;
 	model_runs_failed = 0;
+	failure_map.clear();
 	cout << "    running model " << waiting_runs.size() << " times" << endl;
 	f_rmr << "running model " << waiting_runs.size() << " times" << endl;
 	if(slave_info.size() == 0) // first entry is the listener, slave apper after this
@@ -431,6 +432,7 @@ void RunManagerYAMR::run()
 	f_rmr << endl;
 	while (!active_runs.empty() || !waiting_runs.empty() || !zombie_runs.empty())
 	{
+		echo();
 		init_slaves();
 		//schedule runs on available nodes
 		schedule_runs();
@@ -587,7 +589,11 @@ bool RunManagerYAMR::schedule_run(int run_id)
 	{
 		// run already completed on different node.  Do nothing
 	}
-	else if (failure_map.count(run_id) == 0 || failure_map.count(run_id) >= slave_fd.size())
+	else if (failure_map.count(run_id) >= max_n_failure)
+	{
+		//if this run has already failed the max number of times, do nothing
+	}
+	else if (failure_map.count(run_id) == 0)// || failure_map.count(run_id) >= slave_fd.size())
 	{
 		// schedule a run on a slave
 		NetPackage net_pack(NetPackage::PackType::START_RUN, cur_group_id, run_id, "");
@@ -612,7 +618,7 @@ bool RunManagerYAMR::schedule_run(int run_id)
 			}
 		}
 	}
-	if (it_sock != slave_fd.end())
+   if (it_sock != slave_fd.end())
 	{
 		YamrModelRun tmp_run(run_id, *it_sock);
 		vector<char> data = file_stor.get_serial_pars(run_id);
@@ -637,8 +643,10 @@ bool RunManagerYAMR::schedule_run(int run_id)
 			}
 
 			stringstream ss;
-			ss << "Sending run " << run_id << " to: " << sock_name[0] << "$" << slave_info.get_work_dir(*it_sock) << "  (group id = " << cur_group_id << ", run id = " << run_id << ", concurrent runs = " << concur << ")";
+			ss << "Sending run " << run_id << " to: " << sock_name[0] << "$" << slave_info.get_work_dir(*it_sock) << 
+				"  (group id = " << cur_group_id << ", run id = " << run_id << ", concurrent runs = " << concur << ")";
 			report(ss.str(), false);
+
 			active_runs.insert(pair<int, YamrModelRun>(run_id, tmp_run));
 			//reset the last ping time so we don't ping immediately after run is started
 			slave_info.reset_last_ping_time(*it_sock);
@@ -674,7 +682,9 @@ void RunManagerYAMR::schedule_runs()
 		double duration, avg_runtime;
 		double global_avg_runtime = slave_info.get_global_runtime_minute();
 		bool should_schedule = false;
-		for (auto it_active = active_runs.begin(); !slave_fd.empty() && it_active != active_runs.end(); ++it_active)
+		
+		//for (auto it_active = active_runs.begin(); !slave_fd.empty() && it_active != active_runs.end(); ++it_active)
+		for (auto it_active = active_runs.begin(); it_active != active_runs.end(); ++it_active)
 		{
 			should_schedule = false;
 			int act_sock_id = it_active->second.get_socket();
@@ -701,7 +711,8 @@ void RunManagerYAMR::schedule_runs()
 					close_slave(act_sock_id);
 				}
 			}
-			if (duration > avg_runtime*PERCENT_OVERDUE_RESCHED)
+			if ((failure_map.count(run_id) < max_n_failure) && 
+				(duration > avg_runtime*PERCENT_OVERDUE_RESCHED))
 			{
 				//check how many concurrent runs are going			
 				it_concur = concurrent_map.find(it_active->first);
@@ -709,7 +720,7 @@ void RunManagerYAMR::schedule_runs()
 				if (it_concur->second < MAX_CONCURRENT_RUNS) should_schedule = true;
 			}
 
-			if (should_schedule)
+			if ((!slave_fd.empty()) && (should_schedule))
 			{
 				vector<string> sock_name = w_getnameinfo_vec(act_sock_id);
 				stringstream ss;
@@ -736,7 +747,7 @@ void RunManagerYAMR::schedule_runs()
 	}
 	catch (exception &e)
 	{
-		cout << "exeption trying to find overdue runs: " << endl << e.what() << endl;
+		cout << "exception trying to find overdue runs: " << endl << e.what() << endl;
 	}
 }
 
@@ -880,7 +891,7 @@ void RunManagerYAMR::process_message(int i_sock)
 			auto it = get_active_run_id(i_sock);
 			active_runs.erase(it);
 			// TO DO add check for number of active nodes
-			if (failure_map.count(run_id) < max_n_failure)
+			if ((concur == 0) && (failure_map.count(run_id) < max_n_failure))
 			{
 				//put model run back into the waiting queue
 				waiting_runs.push_front(YamrModelRun(run_id, i_sock));
