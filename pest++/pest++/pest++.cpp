@@ -590,7 +590,8 @@ int main(int argc, char* argv[])
 			if (pred_names.size() > 0)
 				la.set_predictions(pred_names);
 			la.posterior_parameter_ptr()->to_ascii(file_manager.get_base_filename() + ".par.post");
-			la.write_par_credible_range(fout_rec, pest_scenario.get_ctl_parameter_info(), pest_scenario.get_ctl_parameters(), optimum_run.get_ctl_pars());
+			la.write_par_credible_range(fout_rec, pest_scenario.get_ctl_parameter_info(), 
+				pest_scenario.get_ctl_parameters(), optimum_run.get_ctl_pars(),pest_scenario.get_ctl_ordered_par_names());
 			if (pred_names.size() > 0)
 			{
 				map<string, pair<double, double>> init_final_pred_values;

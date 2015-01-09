@@ -1447,7 +1447,8 @@ map<string, double> linear_analysis::like_preds(double val)
 }
 
 
-void linear_analysis::write_par_credible_range(ofstream &fout, ParameterInfo parinfo, Parameters init_pars, Parameters opt_pars)
+void linear_analysis::write_par_credible_range(ofstream &fout, ParameterInfo parinfo, 
+	Parameters init_pars, Parameters opt_pars, vector<string> ordered_names)
 {	
 	fout << endl<< endl << endl << "---------------------------------------" << endl;
 	fout << "---- parameter uncertainty summary ----" << endl;
@@ -1462,7 +1463,7 @@ void linear_analysis::write_par_credible_range(ofstream &fout, ParameterInfo par
 
 	double value;
 	pair<double, double> range;
-	for (auto &pname : jacobian.get_col_names())
+	for (auto &pname : ordered_names)
 	{
 		//prior
 		value = init_pars.get_rec(pname);
