@@ -71,7 +71,7 @@ void Pest::check_inputs()
 			ss << "Pest::check_inputs() the following predictions were not found in the observation names: ";
 			for (auto &m : missing)
 				ss << m;
-			PestError(ss.str());
+			throw PestError(ss.str());
 		}
 	}
 }
