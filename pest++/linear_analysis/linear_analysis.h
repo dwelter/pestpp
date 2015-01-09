@@ -6,6 +6,7 @@
 
 #include "Pest.h"
 #include "covariance.h"
+#include "logger.h"
 
 using namespace std;
 class linear_analysis
@@ -22,6 +23,8 @@ public:
 
 	//load parcov and obscov from parameter bounds and observation weights
 	linear_analysis(Mat _jacobian, Pest pest_scenario, Logger* _log = new Logger());
+
+	linear_analysis(Mat* _jacobian, Pest* pest_scenario, Logger* _log = new Logger());
 
 	//directly from Mat objects
 	linear_analysis(Mat _jacobian, Mat _parcov, Mat _obscov, map<string, Mat> _predictions,Logger* _log = new Logger());
@@ -133,6 +136,9 @@ public:
 
 	~linear_analysis();
 
+	//some convience methods for PEST++ integration
+	void write_par_credible_range(ofstream &fout, ParameterInfo parinfo, Parameters init_pars, Parameters opt_pars);
+	void write_pred_credible_range(ofstream &fout, map<string,pair<double,double>> init_final_pred_values);
 	
 
 
@@ -172,6 +178,9 @@ private:
 
 	//scale the jacobian by parcov
 	void kl_scale();
+
+	pair<double, double> linear_analysis::get_range(double value, double variance, const ParameterRec::TRAN_TYPE &tt);
+
 
 
 

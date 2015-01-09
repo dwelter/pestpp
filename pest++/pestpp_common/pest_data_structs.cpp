@@ -354,6 +354,22 @@ void PestppOptions::parce_line(const string &line)
 			istringstream is(value);
 			is >> boolalpha >> der_forgive;
 		}
+		else if (key == "NO_PARAMETER_UNCERTAINTY")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> parameter_uncert;
+		}
+		else if (key == "PREDICTIONS")
+		{
+			prediction_names.clear();
+			vector<string> prediction_tok;
+			tokenize(value, prediction_tok, ",");
+			for (const auto &pname : prediction_tok)
+			{
+				prediction_names.push_back(pname);
+			}
+		}
 		else {
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");
 		}

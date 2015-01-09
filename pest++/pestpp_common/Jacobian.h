@@ -68,6 +68,7 @@ public:
 	virtual const vector<string>& obs_and_reg_list() const;
 	virtual const Parameters &get_base_numeric_parameters() const{return base_numeric_parameters;};
 	Eigen::SparseMatrix<double> get_matrix(const vector<string> &obs_names, const vector<string> & par_name_vec) const;
+	
 	virtual bool build_runs(ModelRun &model_run, vector<string> numeric_par_names, ParamTransformSeq &par_transform,
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
 		RunManagerAbstract &run_manager, set<string> &out_of_bound_par, bool phiredswh_flag=false, bool calc_init_obs=true);
@@ -89,6 +90,13 @@ public:
 	Jacobian& operator=(const Jacobian &rhs);
 	virtual const std::set<std::string>&  failed_runs_par_names(){ return  failed_parameter_names; }
 	virtual ~Jacobian();
+
+
+	Eigen::SparseMatrix<double> get_matrix() const{ return matrix; }
+	Eigen::SparseMatrix<double>* get_matrix_ptr();
+	vector<string> get_base_numeric_par_names() const{ return base_numeric_par_names;  }
+	vector<string> get_sim_obs_names() const{ return base_sim_obs_names;  }
+
 protected:
 	vector<string> base_numeric_par_names;  //ordered names of base parameters used to calculate the jacobian
 	Parameters base_numeric_parameters;  //values of base parameters used to calculate the jacobian

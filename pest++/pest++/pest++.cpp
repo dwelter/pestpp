@@ -46,6 +46,10 @@
 #include "PerformanceLog.h"
 #include "debug.h"
 
+#include "linear_analysis.h"
+#include "logger.h"
+#include "covariance.h"
+
 using namespace std;
 using namespace pest_utils;
 
@@ -570,8 +574,40 @@ int main(int argc, char* argv[])
 		output_file_writer.phi_report(cout, termination_ctl.get_iteration_number() + 1, run_manager_ptr->get_total_runs(), phi_report, 0.0, true);
 		fout_rec << endl << endl;
 		fout_rec << "Number of forward model runs performed during optimiztion: " << run_manager_ptr->get_total_runs() << endl;
-		fout_rec.close();
+			
+		//linear analysis stuff
+		if ((pest_scenario.get_control_info().noptmax != 0) && 
+			(pest_scenario.get_pestpp_options().get_parameter_uncert_flag()))
+		{
+			cout << endl << endl << endl;
+			cout << "  ---  starting uncertainty analysis calculations  ---  " << endl << endl << endl;
+			ofstream &ulog = file_manager.open_ofile_ext("ulog");
+			Logger unc_log(ulog);
+			Mat j(base_jacobian_ptr->get_sim_obs_names(), base_jacobian_ptr->get_base_numeric_par_names(),
+				base_jacobian_ptr->get_matrix_ptr());
+			linear_analysis la(j, pest_scenario, &unc_log);
+			const vector<string> pred_names = pest_scenario.get_pestpp_options().get_prediction_names();
+			if (pred_names.size() > 0)
+				la.set_predictions(pred_names);
+			la.posterior_parameter_ptr()->to_ascii(file_manager.get_base_filename() + ".par.post");
+			la.write_par_credible_range(fout_rec, pest_scenario.get_ctl_parameter_info(), pest_scenario.get_ctl_parameters(), optimum_run.get_ctl_pars());
+			if (pred_names.size() > 0)
+			{
+				map<string, pair<double, double>> init_final_pred_values;
+				double ival, fval;
+				for (auto &pred_name : pred_names)
+				{
+					ival = pest_scenario.get_ctl_observations().get_rec(pred_name);
+					fval = optimum_run.get_obs().get_rec(pred_name);
+					init_final_pred_values[pred_name] = pair<double, double>(ival, fval);
+				}
+				la.write_pred_credible_range(fout_rec, init_final_pred_values);
+			}
+			cout << "  ---  finished uncertainty analysis calculations  ---  " << endl << endl << endl;
+		}
+
 		// clean up
+		fout_rec.close();
 		delete base_jacobian_ptr;
 		delete super_jacobian_ptr;
 		delete run_manager_ptr;

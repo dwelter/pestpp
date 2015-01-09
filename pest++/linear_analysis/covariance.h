@@ -1,5 +1,5 @@
-#ifndef QSQRT_MATRIX_H_
-#define QSQRT_MATRIX_H_
+#ifndef COVARIANCE_H_
+#define COVARIANCE_H_
 #include <string>
 #include <sstream>
 #include <vector>
@@ -19,23 +19,23 @@ public:
 	enum class MatType{ DIAGONAL, SPARSE, DENSE };
 	Mat(){ autoalign = true; };
 	Mat(string filename);
-	
-	Mat(vector<string> _row_names, vector<string> _col_names,
-		Eigen::DiagonalMatrix<double,Eigen::Dynamic> _matrix, bool _autoalign = true);
 
 	Mat(vector<string> _row_names, vector<string> _col_names, 
-		Eigen::SparseMatrix<double> _matrix,bool _autoalign=true);
+		Eigen::SparseMatrix<double> _matrix);
 	
+	Mat(vector<string> _row_names, vector<string> _col_names,
+		Eigen::SparseMatrix<double>* _matrix);
+
 	vector<string> get_row_names(){ return row_names; }
 	vector<string> get_col_names(){ return col_names; }
 	const vector<string>* rn_ptr();
 	const vector<string>* cn_ptr();
 	Eigen::SparseMatrix<double> get_matrix(){ return matrix; }
 	
-	const Eigen::SparseMatrix<double>* eptr();
-	const Eigen::SparseMatrix<double>* get_U_ptr();
-	const Eigen::SparseMatrix<double>* get_V_ptr();
-	const Eigen::VectorXd* get_s_ptr();
+	const Eigen::SparseMatrix<double>* e_ptr();
+	const Eigen::SparseMatrix<double>* U_ptr();
+	const Eigen::SparseMatrix<double>* V_ptr();
+	const Eigen::VectorXd* s_ptr();
 
 	Mat get_U();
 	Mat get_V();

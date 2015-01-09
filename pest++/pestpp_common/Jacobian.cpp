@@ -821,3 +821,9 @@ void Jacobian::report_errors(std::ostream &fout)
 	}
 
 }
+
+Eigen::SparseMatrix<double>* Jacobian::get_matrix_ptr()
+{
+	Eigen::SparseMatrix<double>* ptr = &matrix;
+	return ptr;
+}

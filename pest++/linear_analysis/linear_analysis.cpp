@@ -6,6 +6,7 @@
 #include "eigen_tools.h"
 #include "covariance.h"
 #include "linear_analysis.h"
+#include <iomanip>
 
 
 vector<string> get_common(vector<string> v1, vector<string> v2)
@@ -260,6 +261,29 @@ linear_analysis::linear_analysis(Mat _jacobian, Pest pest_scenario,Logger* _log)
 		throw_error("linear_analysis::linear_analysis() error setting obscov from observation weights:" + string(e.what()));
 	}
 	R_sv = -999, G_sv = -999, ImR_sv = -999,V1_sv=-999;
+}
+
+linear_analysis::linear_analysis(Mat* _jacobian, Pest* pest_scenario, Logger* _log)
+{
+	log = _log;
+	jacobian = *_jacobian;
+	try
+	{
+		parcov.from_parameter_bounds(*pest_scenario);
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::linear_analysis() error setting parcov from parameter bounds:" + string(e.what()));
+	}
+	try
+	{
+		obscov.from_observation_weights(*pest_scenario);
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::linear_analysis() error setting obscov from observation weights:" + string(e.what()));
+	}
+	R_sv = -999, G_sv = -999, ImR_sv = -999, V1_sv = -999;
 }
 
 void linear_analysis::align()
@@ -562,7 +586,8 @@ Covariance linear_analysis::condition_on(vector<string> &keep_par_names, vector<
 	Covariance new_cond_parcov;
 	try
 	{
-		Eigen::SparseMatrix<double> mcond = *new_parcov.eptr() - (*upper_off_diag.eptr() * *cond_parcov.eptr() * *upper_off_diag.transpose().eptr());
+		Eigen::SparseMatrix<double> mcond = *new_parcov.e_ptr() - (*upper_off_diag.e_ptr() * *cond_parcov.e_ptr() * 
+			*upper_off_diag.transpose().e_ptr());
 		new_cond_parcov = Covariance(keep_par_names, mcond);
 	}
 	catch (exception &e)
@@ -573,13 +598,23 @@ Covariance linear_analysis::condition_on(vector<string> &keep_par_names, vector<
 	return new_cond_parcov;
 }
 
+
+map<string, double> linear_analysis::prior_parameter_variance()
+{
+	map<string, double> results;
+	for (auto &pname : parcov.get_col_names())
+		results[pname] = prior_parameter_variance(pname);
+	return results;
+}
+
+
 double linear_analysis::prior_parameter_variance(string &par_name)
 {
 	log->log("prior_parameter_variance");
 	int ipar = find(parcov.rn_ptr()->begin(), parcov.rn_ptr()->end(), par_name) - parcov.rn_ptr()->begin();
 	if (ipar == parcov.nrow())
 		throw_error("linear_analysis::prior_parameter_variance() error: parameter: " + par_name + " not found");
-	const Eigen::SparseMatrix<double>* ptr = parcov.eptr();
+	const Eigen::SparseMatrix<double>* ptr = parcov.e_ptr();
 	double val;
 	try
 	{
@@ -595,6 +630,16 @@ double linear_analysis::prior_parameter_variance(string &par_name)
 	return val;
 }
 
+
+map<string, double> linear_analysis::posterior_parameter_variance()
+{
+	map<string, double> results;
+	for (auto &pname : parcov.get_col_names())
+		results[pname] = posterior_parameter_variance(pname);
+	return results;
+}
+
+
 double linear_analysis::posterior_parameter_variance(string &par_name)
 {
 	log->log("posterior_parameter_variance");
@@ -602,7 +647,7 @@ double linear_analysis::posterior_parameter_variance(string &par_name)
 	int ipar = find(posterior.rn_ptr()->begin(), posterior.rn_ptr()->end(), par_name) - posterior.rn_ptr()->begin();
 	if (ipar == posterior.nrow())
 		throw_error("linear_analysis::posterior_parameter_variance() error: parameter: " + par_name + " not found");
-	const Eigen::SparseMatrix<double>* ptr = posterior.eptr();
+	const Eigen::SparseMatrix<double>* ptr = posterior.e_ptr();
 	double val;
 	try
 	{
@@ -639,13 +684,12 @@ double linear_analysis::prior_prediction_variance(string &pred_name)
 	if (p_iter == predictions.end())
 		throw_error("linear_analysis::prior_pred_variance() error: pred:" + pred_name + " not found in predicitons");
 	
-	if (p_iter->second.eptr()->nonZeros() == 0)
+	if (p_iter->second.e_ptr()->nonZeros() == 0)
 		return 0.0;
 	double val;
 	try
 	{
-		Eigen::SparseMatrix<double> result = (*p_iter->second.transpose().eptr() * *parcov.eptr() * *p_iter->second.eptr());
-		cout << result << endl;
+		Eigen::SparseMatrix<double> result = (*p_iter->second.transpose().e_ptr() * *parcov.e_ptr() * *p_iter->second.e_ptr());
 		val = result.valuePtr()[0];
 	}
 	catch (exception &e)
@@ -674,14 +718,14 @@ double linear_analysis::posterior_prediction_variance(string &pred_name)
 	map<string, Mat>::iterator p_iter = predictions.find(pred_name);
 	if (p_iter == predictions.end())
 		throw_error("linear_analysis::prior_pred_variance() error: pred:" + pred_name + " not found in predicitons");
-	if (p_iter->second.eptr()->nonZeros() == 0)
+	if (p_iter->second.e_ptr()->nonZeros() == 0)
 		return 0.0;
 	if (posterior.nrow() == 0) calc_posterior();
 	double val;
 	try
 	{
 
-		Eigen::SparseMatrix<double> result = (*p_iter->second.transpose().eptr() * *posterior.eptr() * *p_iter->second.eptr());
+		Eigen::SparseMatrix<double> result = (*p_iter->second.transpose().e_ptr() * *posterior.e_ptr() * *p_iter->second.e_ptr());
 		val = result.valuePtr()[0];
 	}
 	catch (exception &e)
@@ -720,7 +764,8 @@ void linear_analysis::calc_posterior()
 	}
 	try
 	{
-		posterior = Covariance(*parcov.rn_ptr(), ((*jacobian.transpose().eptr() * *obscov.inv().eptr() * *jacobian.eptr()) + *parcov.inv().eptr())).inv();
+		posterior = Covariance(*parcov.rn_ptr(), ((*jacobian.transpose().e_ptr() * *obscov.inv().e_ptr() * 
+			*jacobian.e_ptr()) + *parcov.inv().e_ptr())).inv();
 	}
 	catch (exception &e)
 	{
@@ -833,7 +878,7 @@ void linear_analysis::svd()
 	Eigen::JacobiSVD<Eigen::MatrixXd> svd_fac;
 	try
 	{
-		svd_fac = Eigen::JacobiSVD<Eigen::MatrixXd>(*get_normal_ptr()->eptr(), Eigen::DecompositionOptions::ComputeThinV);
+		svd_fac = Eigen::JacobiSVD<Eigen::MatrixXd>(*get_normal_ptr()->e_ptr(), Eigen::DecompositionOptions::ComputeThinV);
 	}
 	catch (exception &e)
 	{
@@ -924,7 +969,7 @@ void linear_analysis::build_R(int sv)
 		log->log("build_R - MM");
 		try
 		{
-			R = Mat(V.get_row_names(), V.get_row_names(), *get_V1_ptr(sv)->eptr() * get_V1_ptr(sv)->eptr()->transpose());
+			R = Mat(V.get_row_names(), V.get_row_names(), *get_V1_ptr(sv)->e_ptr() * get_V1_ptr(sv)->e_ptr()->transpose());
 		}
 		catch (exception &e)
 		{
@@ -1000,7 +1045,7 @@ void linear_analysis::build_G(int sv)
 	Eigen::SparseMatrix<double> s_inv;
 	try
 	{
-		s_inv = S.inv().eptr()->topLeftCorner(sv, sv);
+		s_inv = S.inv().e_ptr()->topLeftCorner(sv, sv);
 	}
 	catch (exception &e)
 	{
@@ -1009,7 +1054,8 @@ void linear_analysis::build_G(int sv)
 	log->log("build_G - MMM");
 	try
 	{
-		Eigen::SparseMatrix<double> g = *get_V1_ptr(sv)->eptr() * s_inv * get_V1_ptr(sv)->eptr()->transpose() * jacobian.eptr()->transpose() * *obscov.eptr();
+		Eigen::SparseMatrix<double> g = *get_V1_ptr(sv)->e_ptr() * s_inv * get_V1_ptr(sv)->e_ptr()->transpose() *
+			jacobian.e_ptr()->transpose() * *obscov.e_ptr();
 		log->log("build_G - MMM");
 		G = Mat(jacobian.get_col_names(), jacobian.get_row_names(), g);
 	}
@@ -1059,7 +1105,7 @@ void linear_analysis::build_ImR(int sv)
 		log->log("build_ImR - MM");
 		try
 		{
-			ImR = Mat(V2.get_row_names(), V2.get_row_names(), *V2.eptr() * V2.eptr()->transpose());
+			ImR = Mat(V2.get_row_names(), V2.get_row_names(), *V2.e_ptr() * V2.e_ptr()->transpose());
 		}
 		catch (exception &e)
 		{
@@ -1094,7 +1140,8 @@ void linear_analysis::build_normal()
 	log->log("build_normal - MMM");
 	try
 	{
-		normal = Mat(jacobian.get_col_names(), jacobian.get_col_names(), jacobian.eptr()->transpose() * *obscov.eptr() * *jacobian.eptr());
+		normal = Mat(jacobian.get_col_names(), jacobian.get_col_names(), jacobian.e_ptr()->transpose() * *obscov.e_ptr() *
+			*jacobian.e_ptr());
 	}
 	catch (exception &e)
 	{
@@ -1117,7 +1164,7 @@ Covariance linear_analysis::first_parameter(int sv)
 		try
 		{
 			log->log("first_parameter @" + sv_str);
-			Eigen::SparseMatrix<double> first = *get_ImR_ptr(sv)->eptr() * *parcov.eptr() * *get_ImR_ptr(sv)->eptr();
+			Eigen::SparseMatrix<double> first = *get_ImR_ptr(sv)->e_ptr() * *parcov.e_ptr() * *get_ImR_ptr(sv)->e_ptr();
 			Covariance f(parcov.get_col_names(), first);
 			log->log("first_parameter @" + sv_str);
 			return f;
@@ -1145,7 +1192,7 @@ Covariance linear_analysis::second_parameter(int sv)
 		try
 		{
 			log->log("second_parameter @" + sv_str);
-			Eigen::SparseMatrix<double> second = *get_G_ptr(sv)->eptr() * *obscov.eptr() * get_G_ptr(sv)->eptr()->transpose();
+			Eigen::SparseMatrix<double> second = *get_G_ptr(sv)->e_ptr() * *obscov.e_ptr() * get_G_ptr(sv)->e_ptr()->transpose();
 			Covariance s(parcov.get_col_names(), second);
 			log->log("second_parameter @" + sv_str);
 			return s;
@@ -1174,7 +1221,7 @@ Covariance linear_analysis::third_parameter(int sv)
 		Eigen::SparseMatrix<double> GZo, third;
 		try
 		{
-			GZo = *get_G_ptr(sv)->eptr() * *omitted_jacobian.eptr();
+			GZo = *get_G_ptr(sv)->e_ptr() * *omitted_jacobian.e_ptr();
 		}
 		catch (exception &e)
 		{
@@ -1182,7 +1229,7 @@ Covariance linear_analysis::third_parameter(int sv)
 		}
 		try
 		{
-			third = GZo * *omitted_parcov.eptr() * GZo.transpose();
+			third = GZo * *omitted_parcov.e_ptr() * GZo.transpose();
 		}
 		catch (exception &e)
 		{
@@ -1218,7 +1265,7 @@ map<string, double> linear_analysis::first_prediction(int sv)
 		{			
 			try
 			{
-				result[p.first] = (p.second.eptr()->transpose() * *first.eptr() * *p.second.eptr()).eval().valuePtr()[0];
+				result[p.first] = (p.second.e_ptr()->transpose() * *first.e_ptr() * *p.second.e_ptr()).eval().valuePtr()[0];
 			}
 			catch (exception &e)
 			{
@@ -1258,7 +1305,7 @@ map<string, double> linear_analysis::second_prediction(int sv)
 		{
 			try
 			{
-				result[p.first] = (p.second.eptr()->transpose() * *second.eptr() * *p.second.eptr()).eval().valuePtr()[0];
+				result[p.first] = (p.second.e_ptr()->transpose() * *second.e_ptr() * *p.second.e_ptr()).eval().valuePtr()[0];
 			}
 			catch (exception &e)
 			{
@@ -1285,7 +1332,7 @@ map<string, double> linear_analysis::third_prediction(int sv)
 		{
 			try
 			{
-				result[opred.first] = (opred.second.eptr()->transpose() * *omitted_parcov.eptr() * *opred.second.eptr()).eval().valuePtr()[0];
+				result[opred.first] = (opred.second.e_ptr()->transpose() * *omitted_parcov.e_ptr() * *opred.second.e_ptr()).eval().valuePtr()[0];
 			}
 			catch (exception &e)
 			{
@@ -1304,7 +1351,7 @@ map<string, double> linear_analysis::third_prediction(int sv)
 			Eigen::SparseMatrix<double, Eigen::RowMajor> p;
 			try
 			{
-				p = (pred.second.eptr()->transpose() * *get_G_ptr(sv)->eptr() * *omitted_jacobian.eptr()).eval();
+				p = (pred.second.e_ptr()->transpose() * *get_G_ptr(sv)->e_ptr() * *omitted_jacobian.e_ptr()).eval();
 			}
 			catch (exception &e)
 			{
@@ -1312,7 +1359,7 @@ map<string, double> linear_analysis::third_prediction(int sv)
 			}
 			try
 			{
-				p = (p - omitted_predictions[pred.first].eptr()->transpose()).eval().transpose();
+				p = (p - omitted_predictions[pred.first].e_ptr()->transpose()).eval().transpose();
 			}
 			catch (exception &e)
 			{
@@ -1320,7 +1367,7 @@ map<string, double> linear_analysis::third_prediction(int sv)
 			}
 			try
 			{
-				result[pred.first] = (p.transpose() * *omitted_parcov.eptr() * p).eval().valuePtr()[0];
+				result[pred.first] = (p.transpose() * *omitted_parcov.e_ptr() * p).eval().valuePtr()[0];
 			}
 			catch (exception &e)
 			{
@@ -1397,6 +1444,98 @@ map<string, double> linear_analysis::like_preds(double val)
 	for (auto &pred : predictions)
 		result[pred.first] = val;
 	return result;
+}
+
+
+void linear_analysis::write_par_credible_range(ofstream &fout, ParameterInfo parinfo, Parameters init_pars, Parameters opt_pars)
+{	
+	fout << endl<< endl << endl << "---------------------------------------" << endl;
+	fout << "---- parameter uncertainty summary ----" << endl;
+	fout << "---------------------------------------" << endl << endl << endl;
+	fout << setw(20) << "name" << setw(20) << "initial_value" << setw(20) << "prior_variance" ;
+	fout << setw(20) << "prior_lower_bound" << setw(20) << "prior_upper_bound";
+	fout << setw(20) << "final_value" << setw(20) << "post_variance";
+	fout << setw(20) << "post_lower_bound" << setw(20) << "post_upper_bound" << endl;
+	
+	map<string, double> prior_vars = prior_parameter_variance();
+	map<string, double> post_vars = posterior_parameter_variance();
+
+	double value;
+	pair<double, double> range;
+	for (auto &pname : jacobian.get_col_names())
+	{
+		//prior
+		value = init_pars.get_rec(pname);
+		range = get_range(value, prior_vars[pname], parinfo.get_parameter_rec_ptr(pname)->tranform_type);
+		fout << setw(20) << pname << setw(20) << value << setw(20) << prior_vars[pname] << setw(20) << 
+			range.first << setw(20) << range.second;
+		//posterior
+		value = opt_pars.get_rec(pname);
+		range = get_range(value, post_vars[pname], parinfo.get_parameter_rec_ptr(pname)->tranform_type);
+		fout << setw(20) << value << setw(20) << post_vars[pname] << setw(20) <<
+			range.first << setw(20) << range.second << endl;
+	}
+
+}
+
+pair<double, double> linear_analysis::get_range(double value, double variance, const ParameterRec::TRAN_TYPE &tt)
+{
+	
+	double stdev, lower, upper,lvalue;
+	stdev = sqrt(variance);
+	if (tt == ParameterRec::TRAN_TYPE::LOG)
+	{
+		lvalue = log10(value);
+		lower = pow(10, (lvalue - (2.0*stdev)));
+		upper = pow(10, (lvalue + (2.0*stdev)));
+	}
+	else if (tt == ParameterRec::TRAN_TYPE::NONE)
+	{
+		lower = value - (2.0 * stdev);
+		upper = value + (2.0 * stdev);
+	}
+	else
+	{
+
+		stringstream ss;
+		ss << "linear_analysis::get_range() unsupported trans type " << static_cast<int>(tt);
+		throw PestError(ss.str());
+	}
+	return pair<double, double>(lower, upper);
+
+
+}
+
+void linear_analysis::write_pred_credible_range(ofstream &fout, map<string,pair<double,double>> init_final_pred_values)
+{
+	fout << endl << endl << endl << "----------------------------------------" << endl;
+	fout << "---- prediction uncertainty summary ----" << endl;
+	fout << "----------------------------------------" << endl << endl << endl;
+	fout << setw(20) << "prediction_name" << setw(20) << "initial_value";
+	fout << setw(20) << "prior_variance" << setw(20) << "prior_lower_bound";
+	fout << setw(20) << "prior_upper_bound" << setw(20) << "final_value";
+	fout << setw(20) << "post_variance" << setw(20) << "post_lower_bound";
+	fout << setw(20) << "post_upper_bound" << endl;
+
+	map<string, double> prior_vars = prior_prediction_variance();
+	map<string, double> post_vars = posterior_prediction_variance();
+	double val, stdev, lower, upper;
+	for (auto &pred : predictions)
+	{
+		val = init_final_pred_values[pred.first].first;
+		stdev = sqrt(prior_vars[pred.first]);
+		lower = val - (2.0 * stdev);
+		upper = val + (2.0 * stdev);
+		fout << setw(20) << pred.first << setw(20) << val << setw(20) << prior_vars[pred.first];
+		fout << setw(20) << lower << setw(20) << upper;
+
+		val = init_final_pred_values[pred.first].second;
+		stdev = sqrt(post_vars[pred.first]);
+		lower = val - (2.0 * stdev);
+		upper = val + (2.0 * stdev);
+		fout << setw(20) << val << setw(20) << post_vars[pred.first];
+		fout << setw(20) << lower << setw(20) << upper << endl;
+	}
 }
 
 linear_analysis::~linear_analysis()

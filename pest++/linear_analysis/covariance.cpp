@@ -36,7 +36,7 @@ Mat::Mat(string filename)
 }
 
 Mat::Mat(vector<string> _row_names, vector<string> _col_names, 
-	Eigen::SparseMatrix<double> _matrix, bool _autoalign)
+	Eigen::SparseMatrix<double> _matrix)
 {
 	row_names = _row_names;
 	col_names = _col_names;
@@ -44,10 +44,21 @@ Mat::Mat(vector<string> _row_names, vector<string> _col_names,
 	assert(col_names.size() == _matrix.cols());
 	matrix = _matrix;
 	mattype = MatType::SPARSE;
-	autoalign = _autoalign;
 }
 
-const Eigen::SparseMatrix<double>* Mat::eptr()
+Mat::Mat(vector<string> _row_names, vector<string> _col_names,
+	Eigen::SparseMatrix<double>* _matrix)
+{
+	row_names = _row_names;
+	col_names = _col_names;
+	assert(row_names.size() == _matrix->rows());
+	assert(col_names.size() == _matrix->cols());
+	matrix = *_matrix;
+	mattype = MatType::SPARSE;
+}
+
+
+const Eigen::SparseMatrix<double>* Mat::e_ptr()
 {
 	const Eigen::SparseMatrix<double>* ptr = &matrix;
 	return ptr;
@@ -81,7 +92,7 @@ Mat Mat::zero()
 }
 
 
-const Eigen::SparseMatrix<double>* Mat::get_U_ptr()
+const Eigen::SparseMatrix<double>* Mat::U_ptr()
 {
 	if (U.rows() == 0)
 	{
@@ -91,7 +102,7 @@ const Eigen::SparseMatrix<double>* Mat::get_U_ptr()
 	return ptr;
 }
 
-const Eigen::SparseMatrix<double>* Mat::get_V_ptr()
+const Eigen::SparseMatrix<double>* Mat::V_ptr()
 {
 	if (V.rows() == 0)
 	{
@@ -101,7 +112,7 @@ const Eigen::SparseMatrix<double>* Mat::get_V_ptr()
 	return ptr;
 }
 
-const Eigen::VectorXd* Mat::get_s_ptr()
+const Eigen::VectorXd* Mat::s_ptr()
 {
 	if (s.size() == 0)
 	{
@@ -124,7 +135,7 @@ Mat Mat::get_U()
 		ss << i + 1;
 		u_col_names.push_back(ss.str());
 	}
-	return Mat(row_names, u_col_names, U,false);
+	return Mat(row_names, u_col_names, U);
 }
 
 Mat Mat::get_V()
@@ -140,7 +151,7 @@ Mat Mat::get_V()
 		ss << i + 1;
 		v_col_names.push_back(ss.str());
 	}
-	return Mat(col_names, v_col_names, V,false);
+	return Mat(col_names, v_col_names, V);
 }
 
 
@@ -162,7 +173,7 @@ Mat Mat::get_s()
 	Eigen::SparseMatrix<double> s_mat(s.size(),s.size());
 	s_mat.setZero();
 	s_mat.setFromTriplets(triplet_list.begin(), triplet_list.end());
-	return Mat(s_names, s_names, s_mat ,false);
+	return Mat(s_names, s_names, s_mat);
 }
 
 Mat Mat::transpose()
@@ -211,7 +222,7 @@ Mat Mat::inv()
 	Eigen::SparseMatrix<double> I(nrow(), nrow());
 	I.setIdentity();
 	Eigen::SparseMatrix<double> inv_mat = solver.solve(I);
-	return Mat(row_names, col_names, inv_mat,autoalign);
+	return Mat(row_names, col_names, inv_mat);
 }
 
 void Mat::inv_ip()
@@ -253,7 +264,8 @@ void Mat::inv_ip()
 
 void Mat::SVD()
 {
-	Eigen::JacobiSVD<Eigen::MatrixXd> svd_fac(matrix, Eigen::DecompositionOptions::ComputeFullU | Eigen::DecompositionOptions::ComputeFullV);
+	Eigen::JacobiSVD<Eigen::MatrixXd> svd_fac(matrix, Eigen::DecompositionOptions::ComputeFullU | 
+		Eigen::DecompositionOptions::ComputeFullV);
 	s = svd_fac.singularValues();
 	U = svd_fac.matrixU().sparseView();
 	V = svd_fac.matrixV().sparseView();
@@ -274,7 +286,7 @@ ostream& operator<< (ostream &os, Mat mat)
 	for (auto &name : mat.get_col_names())
 		cout << name << ',';
 	cout << endl;
-	cout << *mat.eptr();
+	cout << *mat.e_ptr();
 	return os;
 }
 

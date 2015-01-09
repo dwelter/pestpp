@@ -53,6 +53,27 @@ void Pest::check_inputs()
 	if (svd_info.maxsing == 0) {
 		svd_info.maxsing = min(numeric_pars.size(), observation_values.size());
 	}
+	//check that prediction names are list in obs
+	if (pestpp_options.get_prediction_names().size() > 0)
+	{
+		vector<string> missing;
+		for (auto &pred_name : pestpp_options.get_prediction_names())
+		{
+			auto it_obs = find(ctl_ordered_obs_names.begin(), ctl_ordered_obs_names.end(), pred_name);
+			if (it_obs == ctl_ordered_obs_names.end())
+			{
+				missing.push_back(pred_name);
+			}
+		}
+		if (missing.size() > 0)
+		{
+			stringstream ss;
+			ss << "Pest::check_inputs() the following predictions were not found in the observation names: ";
+			for (auto &m : missing)
+				ss << m;
+			PestError(ss.str());
+		}
+	}
 }
 void Pest::check_io()
 {
@@ -79,6 +100,7 @@ void Pest::check_io()
 
 void Pest::check_par_obs()
 {
+	throw PestError("Pest::check_par_obs() should not be called!!!");
 	TemplateFiles templatefiles(false, false, get_tplfile_vec(), get_inpfile_vec(), get_ctl_ordered_par_names());
 	templatefiles.check_parameter_names();
 
@@ -476,6 +498,8 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_max_n_super(ctl_parameters.size());
 	pestpp_options.set_max_super_frz_iter(5);
 	pestpp_options.set_max_reg_iter(20);
+	pestpp_options.set_parameter_uncert_flag(true);
+	pestpp_options.set_prediction_names(vector<string>());
 	for(vector<string>::const_iterator b=pestpp_input.begin(),e=pestpp_input.end();
 		b!=e; ++b) {
 			pestpp_options.parce_line(*b);
