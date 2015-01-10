@@ -24,8 +24,10 @@ public:
 	//load parcov and obscov from parameter bounds and observation weights
 	linear_analysis(Mat _jacobian, Pest pest_scenario, Logger* _log = new Logger());
 
+	//pointer constructor for pest++ integration
 	linear_analysis(Mat* _jacobian, Pest* pest_scenario, Logger* _log = new Logger());
 
+	
 	//directly from Mat objects
 	linear_analysis(Mat _jacobian, Mat _parcov, Mat _obscov, map<string, Mat> _predictions,Logger* _log = new Logger());
 

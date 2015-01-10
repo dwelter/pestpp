@@ -230,6 +230,8 @@ public:
 	bool get_parameter_uncert_flag()const { return parameter_uncert; }
 	void set_prediction_names(vector<string> _names){ prediction_names = _names; }
 	vector<string> get_prediction_names()const { return prediction_names; }
+	void set_parcov_filename(string _filename){ parcov_filename = _filename; }
+	string get_parcov_filename()const { return parcov_filename; }
 private:
 	int n_iter_base;
 	int n_iter_super;
@@ -247,6 +249,7 @@ private:
 	bool der_forgive;
 	bool parameter_uncert;
 	vector<string> prediction_names;
+	string parcov_filename;
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);
 ostream& operator<< (ostream &os, const ObservationInfo& val);

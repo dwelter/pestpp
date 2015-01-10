@@ -585,6 +585,7 @@ int main(int argc, char* argv[])
 			Logger unc_log(ulog);
 			Mat j(base_jacobian_ptr->get_sim_obs_names(), base_jacobian_ptr->get_base_numeric_par_names(),
 				base_jacobian_ptr->get_matrix_ptr());
+
 			linear_analysis la(j, pest_scenario, &unc_log);
 			const vector<string> pred_names = pest_scenario.get_pestpp_options().get_prediction_names();
 			if (pred_names.size() > 0)

@@ -262,6 +262,11 @@ ostream& operator<< (ostream &os, const PestppOptions& val)
 	{
 		os << right << setw(15) << lam << endl;
 	}
+	os << "    parameter uncertainty flag = " << left << setw(20) << val.get_parameter_uncert_flag() << endl;
+	os << "    parameter covariance file = " << left << setw(20) << val.get_parcov_filename() << endl;
+	os << "    prediction names = " << endl;
+	for (auto &pname : val.get_prediction_names())
+		os << right << setw(15) << pname << endl;
 	os << endl;
 	return os;
 }
@@ -369,6 +374,10 @@ void PestppOptions::parce_line(const string &line)
 			{
 				prediction_names.push_back(pname);
 			}
+		}
+		else if ((key == "PAR_COVARIANCE") || (key == "PARAMETER_COVARIANCE"))
+		{
+			convert_ip(value, parcov_filename);
 		}
 		else {
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");
