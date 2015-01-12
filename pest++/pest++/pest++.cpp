@@ -581,6 +581,28 @@ int main(int argc, char* argv[])
 		{
 			cout << endl << endl << endl;
 			cout << "  ---  starting uncertainty analysis calculations  ---  " << endl << endl << endl;
+			cout << "  uncertainty estimates calculated using Schur's " << endl;
+			cout << "  complement for linear-based conditional uncertainty " << endl;
+			cout << "  propogation.  For a derviation from Bayes equation, see " << endl;
+			cout << "  M. N. Fienen, J. E. Doherty, R. J. Hunt, and H. W. Reeves. " << endl;
+			cout << "  1010. 'Using Prediction Uncertainty Analysis to Design " << endl;
+			cout << "  Hydrologic Monitoring Networks : Example Applications " << endl;
+			cout << "  from the Great Lakes Water Availability Pilot Project'. " << endl;
+			cout << "  See PEST++ V3 documentation for implementation details." << endl;
+			cout << endl << endl << endl;
+
+			fout_rec << endl << endl << endl << endl;
+			fout_rec << "-----------------------------------------------------------------------" << endl;
+			fout_rec << "Note: The following uncertainty estimates were calculated using " << endl;
+			fout_rec << "      Schur's complement for linear-based conditional uncertainty " << endl;
+			fout_rec << "      propogation.  For a derviation from Bayes equation, see " << endl;
+			fout_rec << "      M. N. Fienen, J. E. Doherty, R. J. Hunt, and H. W. Reeves. " << endl;
+			fout_rec << "      1010. 'Using Prediction Uncertainty Analysis to Design " << endl;
+			fout_rec << "      Hydrologic Monitoring Networks : Example Applications " << endl;
+			fout_rec << "      from the Great Lakes Water Availability Pilot Project'. " << endl;
+			fout_rec << "      See PEST++ V3 documentation for implementation details." << endl;
+			fout_rec << "-----------------------------------------------------------------------" << endl;
+
 			ofstream &ulog = file_manager.open_ofile_ext("ulog");
 			Logger unc_log(ulog);
 			Mat j(base_jacobian_ptr->get_sim_obs_names(), base_jacobian_ptr->get_base_numeric_par_names(),
@@ -605,6 +627,7 @@ int main(int argc, char* argv[])
 				}
 				la.write_pred_credible_range(fout_rec, init_final_pred_values);
 			}
+			
 			cout << "  ---  finished uncertainty analysis calculations  ---  " << endl << endl << endl;
 		}
 

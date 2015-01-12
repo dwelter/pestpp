@@ -1467,7 +1467,7 @@ map<string, double> linear_analysis::like_preds(double val)
 void linear_analysis::write_par_credible_range(ofstream &fout, ParameterInfo parinfo, 
 	Parameters init_pars, Parameters opt_pars, vector<string> ordered_names)
 {	
-	fout << endl<< endl << endl << "---------------------------------------" << endl;
+	fout << endl << "---------------------------------------" << endl;
 	fout << "---- parameter uncertainty summary ----" << endl;
 	fout << "---------------------------------------" << endl << endl << endl;
 	fout << setw(20) << "name" << setw(20) << "initial_value" << setw(20) << "prior_variance" ;
@@ -1477,22 +1477,55 @@ void linear_analysis::write_par_credible_range(ofstream &fout, ParameterInfo par
 	
 	map<string, double> prior_vars = prior_parameter_variance();
 	map<string, double> post_vars = posterior_parameter_variance();
-
+	vector<string> missing;
 	double value;
 	pair<double, double> range;
 	for (auto &pname : ordered_names)
 	{
-		//prior
-		value = init_pars.get_rec(pname);
-		range = get_range(value, prior_vars[pname], parinfo.get_parameter_rec_ptr(pname)->tranform_type);
-		fout << setw(20) << pname << setw(20) << value << setw(20) << prior_vars[pname] << setw(20) << 
-			range.first << setw(20) << range.second;
-		//posterior
-		value = opt_pars.get_rec(pname);
-		range = get_range(value, post_vars[pname], parinfo.get_parameter_rec_ptr(pname)->tranform_type);
-		fout << setw(20) << value << setw(20) << post_vars[pname] << setw(20) <<
-			range.first << setw(20) << range.second << endl;
+		if (find(jacobian.cn_ptr()->begin(), jacobian.cn_ptr()->end(), pname) == jacobian.cn_ptr()->end())
+			missing.push_back(pname);
+		else
+		{
+			//prior
+			value = init_pars.get_rec(pname);
+			range = get_range(value, prior_vars[pname], parinfo.get_parameter_rec_ptr(pname)->tranform_type);
+			fout << setw(20) << pname << setw(20) << value << setw(20) << prior_vars[pname] << setw(20) <<
+				range.first << setw(20) << range.second;
+			//posterior
+			value = opt_pars.get_rec(pname);
+			range = get_range(value, post_vars[pname], parinfo.get_parameter_rec_ptr(pname)->tranform_type);
+			fout << setw(20) << value << setw(20) << post_vars[pname] << setw(20) <<
+				range.first << setw(20) << range.second << endl;
+		}
 	}
+	if (missing.size() > 0)
+	{
+		fout << endl;
+		fout << "WARNING: the following parameters were not found in the final " << endl;
+		fout << "      base parameter jacobian and were subsequently not included " << endl;
+		fout << "      in the uncertainty analysis calculations.  This may lead to " << endl;
+		fout << "      NON-CONSERVATIVE predictive uncertainty estimates if the " << endl;
+		fout << "      predictions are sensitive to these parameters:" << endl;
+		int i = 0;
+		for (auto &m : missing)
+		{
+			fout << "          " << m;
+			i++;
+			if (i == 5)
+			{
+				fout << endl;
+				i = 0;
+			}
+		}
+		fout << endl;
+	}
+	fout << endl;
+	fout << "Note: Upper and lower bound of non-transformed parameters calculated " << endl;
+	fout << "      as parameter_value +/- (2.0 * sqrt(variance)).  Also very important - , " << endl;
+	fout << "      for log-transformed parameters, the 'variance' reported above is " << endl;
+	fout << "      the variance of the log of the parameter value. For these paramters, the " << endl;
+	fout << "      upper and lower bound of log-transformed parameters is calculated " << endl;
+	fout << "      as 10^(log(parameter_value) +/- (2.0*sqrt(variance)))." << endl << endl;
 
 }
 
@@ -1526,7 +1559,7 @@ pair<double, double> linear_analysis::get_range(double value, double variance, c
 
 void linear_analysis::write_pred_credible_range(ofstream &fout, map<string,pair<double,double>> init_final_pred_values)
 {
-	fout << endl << endl << endl << "----------------------------------------" << endl;
+	fout << endl << "----------------------------------------" << endl;
 	fout << "---- prediction uncertainty summary ----" << endl;
 	fout << "----------------------------------------" << endl << endl << endl;
 	fout << setw(20) << "prediction_name" << setw(20) << "initial_value";
@@ -1554,6 +1587,12 @@ void linear_analysis::write_pred_credible_range(ofstream &fout, map<string,pair<
 		fout << setw(20) << val << setw(20) << post_vars[pred.first];
 		fout << setw(20) << lower << setw(20) << upper << endl;
 	}
+
+	fout << endl << endl;
+	fout << "Note: predictive sensitivity vectors for both prior and " << endl;
+	fout << "      posterior uncertainty calculations are the same " << endl;
+	fout << "      and were extracted from final base parameter jacobian." << endl;
+
 }
 
 linear_analysis::~linear_analysis()
