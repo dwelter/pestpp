@@ -24,8 +24,9 @@ public:
 	//load parcov and obscov from parameter bounds and observation weights
 	linear_analysis(Mat _jacobian, Pest pest_scenario, Logger* _log = new Logger());
 
-	//pointer constructor for pest++ integration
+	//pointer constructors for pest++ integration
 	linear_analysis(Mat* _jacobian, Pest* pest_scenario, Logger* _log = new Logger());
+	linear_analysis(Mat* _jacobian, Pest* pest_scenario, Mat* _obscov, Logger* _log = new Logger());
 
 	
 	//directly from Mat objects
@@ -143,7 +144,7 @@ public:
 		Parameters init_pars, Parameters opt_pars,vector<string> ordered_names);
 	void write_pred_credible_range(ofstream &fout, map<string,pair<double,double>> init_final_pred_values);
 	
-
+	void drop_prior_information();
 
 private:
 
@@ -193,4 +194,9 @@ private:
 
 
 };
+
+map<string, double> get_obj_comps(string &filename);
+ObservationInfo normalize_weights_by_residual(Pest &pest_scenario, string &resid_filename);
+ObservationInfo normalize_weights_by_residual(Pest &pest_scenario, map<string, double> obj);
+
 #endif

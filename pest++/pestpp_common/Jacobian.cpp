@@ -738,7 +738,7 @@ void Jacobian::save(const string &ext) const
 void Jacobian::read(const string &filename)
 {
 	ifstream fin;
-	fin.open(filename.c_str(), ifstream::binary);
+	fin.open(filename.c_str(), ifstream::binary|ios::in);
 
 	int n_par;
 	int n_nonzero;

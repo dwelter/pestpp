@@ -35,6 +35,7 @@ TerminationController::TerminationController(int _noptmax, double _phiredstp,
 	nopt_count(0), nphinored_count(0), nrelpar(_nrelpar), nrelpar_count(0),
 	terminate_code(false), use_dynaimc_regul(_use_dynaimc_regul), phi_accept_achieved(false)
 {
+	termimate_reason = "unknown";
 }
 
 void TerminationController::reset() {
@@ -155,9 +156,9 @@ void TerminationController::termination_summary(std::ostream &fout)
 	fout << "     ---   OPTIMIZATION COMPLETE   ---   " << endl;
 	fout << "  Reason for terminating PEST++ simulation: " << termimate_reason << endl;
 	fout << "  Summary of termination criteria:" << endl;
-	fout << "  NOPTMAX = " << noptmax << " :  NOPT at termination = " << nopt_count << endl;
-	fout << "  NPHINORED = " << nphinored << " :  NPHINORED at termination = " << nphinored_count << endl;
-	fout << "  NRELPAR = " << nrelpar << ": RELPARSTP = " << relparstp << " :  NRELPAR at termination = " << nrelpar_count << endl;
+	fout << "  NOPTMAX = " << noptmax << " ;  NOPT at termination = " << nopt_count << endl;
+	fout << "  NPHINORED = " << nphinored << " ;  NPHINORED at termination = " << nphinored_count << endl;
+	fout << "  NRELPAR = " << nrelpar << "; RELPARSTP = " << relparstp << " ;  NRELPAR at termination = " << nrelpar_count << endl;
 	fout << "  PHIREDSTP = " << phiredstp << "; NPHISTP = " << nphistp << endl;
 	if (!use_dynaimc_regul || !phi_accept_achieved)
 	{

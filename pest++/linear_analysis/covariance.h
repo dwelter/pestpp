@@ -107,7 +107,8 @@ public:
 	void from_uncertainty_file(const string &filename);
 	void from_parameter_bounds(Pest &pest_scenario);
 	void from_observation_weights(Pest &pest_scenario);
-
+	void from_observation_weights(vector<string> obs_names, ObservationInfo obs_info,
+		vector<string> pi_names, const PriorInformation* pi);
 	void from_parameter_bounds(const string &pst_filename);
 	void from_observation_weights(const string &pst_filename);
 

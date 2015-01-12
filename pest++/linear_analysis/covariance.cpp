@@ -1002,16 +1002,17 @@ void Covariance::from_observation_weights(const string &pst_filename)
 
 }
 
-void Covariance::from_observation_weights(Pest &pest_scenario)
+
+void Covariance::from_observation_weights(vector<string> obs_names, ObservationInfo obs_info, vector<string> pi_names, const PriorInformation* pi)
 {
 	vector<Eigen::Triplet<double>> triplet_list;
 	const ObservationRec* obs_rec;
-	int i = 0;	
+	int i = 0;
 	double weight = 0;
-	for (auto obs_name : pest_scenario.get_ctl_ordered_obs_names())
+	for (auto obs_name : obs_names)
 	{
 		pest_utils::upper_ip(obs_name);
-		obs_rec = pest_scenario.get_ctl_observation_info().get_observation_rec_ptr(obs_name);		
+		obs_rec = obs_info.get_observation_rec_ptr(obs_name);
 		weight = obs_rec->weight;
 		if (weight <= 0.0)
 			weight = 1.0e+60;
@@ -1022,12 +1023,11 @@ void Covariance::from_observation_weights(Pest &pest_scenario)
 		col_names.push_back(obs_name);
 		i++;
 	}
-	
-	const PriorInformation *pi = pest_scenario.get_prior_info_ptr();
+
 	PriorInformation::const_iterator pi_iter;
 	PriorInformation::const_iterator not_pi_iter = pi->end();
-	
-	for (auto pi_name : pest_scenario.get_ctl_ordered_pi_names())
+
+	for (auto pi_name : pi_names)
 	{
 		pi_iter = pi->find(pi_name);
 		if (pi_iter != not_pi_iter)
@@ -1037,7 +1037,7 @@ void Covariance::from_observation_weights(Pest &pest_scenario)
 			triplet_list.push_back(Eigen::Triplet<double>(i, i, pow(1.0 / weight, 2.0)));
 			row_names.push_back(pi_name);
 			col_names.push_back(pi_name);
-			i++;			
+			i++;
 		}
 	}
 	if (row_names.size() > 0)
@@ -1050,6 +1050,14 @@ void Covariance::from_observation_weights(Pest &pest_scenario)
 		throw runtime_error("Cov::from_observation_weights() error:Error loading covariance from obs weights: no non-zero weighted obs found");
 	}
 	mattype = Mat::MatType::DIAGONAL;
+}
+
+
+void Covariance::from_observation_weights(Pest &pest_scenario)
+{
+	from_observation_weights(pest_scenario.get_ctl_ordered_obs_names(), pest_scenario.get_ctl_observation_info(),
+		pest_scenario.get_ctl_ordered_pi_names(), pest_scenario.get_prior_info_ptr());
+	
 }
 
 void Covariance::to_uncertainty_file(const string &filename)

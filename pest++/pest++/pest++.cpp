@@ -458,14 +458,25 @@ int main(int argc, char* argv[])
 				{
 					bool restart_runs = (restart_ctl.get_restart_option() == RestartController::RestartOption::REUSE_JACOBIAN);
 					cur_run = base_svd.compute_jacobian(*run_manager_ptr, termination_ctl, cur_run, restart_runs);
+					if (pest_scenario.get_control_info().noptmax < 0)
+					{
+						optimum_run = cur_run;
+						output_file_writer.write_rei(file_manager.open_ofile_ext("rei"), -1, pest_scenario.get_ctl_observations(),
+							cur_run.get_obs(), *cur_run.get_obj_func_ptr(), pest_scenario.get_ctl_parameters());
+						termination_ctl.set_terminate(true);
+						termination_ctl.set_reason("NOPTMAX == -1");
+					}
 				}
 				else if (pest_scenario.get_control_info().noptmax < 0)
 				{
 					bool restart_runs = (restart_ctl.get_restart_option() == RestartController::RestartOption::RESUME_JACOBIAN_RUNS);
 					cur_run = base_svd.compute_jacobian(*run_manager_ptr, termination_ctl, cur_run, restart_runs);
 					if (restart_runs) restart_ctl.get_restart_option() = RestartController::RestartOption::NONE;
-					optimum_run = cur_run;
+					optimum_run = cur_run;					
+					output_file_writer.write_rei(file_manager.open_ofile_ext("rei"), -1, pest_scenario.get_ctl_observations(),
+						cur_run.get_obs(), *cur_run.get_obj_func_ptr(), pest_scenario.get_ctl_parameters());
 					termination_ctl.set_terminate(true);
+					termination_ctl.set_reason("NOPTMAX == -1");
 				}
 				else if (restart_ctl.get_restart_option() == RestartController::RestartOption::REUSE_JACOBIAN)
 				{
@@ -601,17 +612,40 @@ int main(int argc, char* argv[])
 			fout_rec << "      Hydrologic Monitoring Networks : Example Applications " << endl;
 			fout_rec << "      from the Great Lakes Water Availability Pilot Project'. " << endl;
 			fout_rec << "      See PEST++ V3 documentation for implementation details." << endl;
+			fout_rec << endl;
+			fout_rec << "Note: The observation covariance matrix has been constructed from " << endl;
+			fout_rec << "      weights listed in the pest control file that have been scaled by " << endl;
+			fout_rec << "      by the final objective function components to account for " << endl;
+			fout_rec << "      the level of measurement noise implied by the original weights so" << endl;
+			fout_rec << "      the total objective function is equal to the number of  "<< endl;
+			fout_rec << "      non-zero weighted observations." << endl;
 			fout_rec << "-----------------------------------------------------------------------" << endl;
 
-			ofstream &ulog = file_manager.open_ofile_ext("ulog");
-			Logger unc_log(ulog);
+			if (pest_scenario.get_pestpp_options().get_auto_norm() > 0.0)
+			{
+				fout_rec << "WARNING: pest++ autonorm value != 0.0. This can greatly effect the outcome " << endl;
+				fout_rec << "         of the following analyses which depend heavily on the Jacobian" << endl;
+
+			ofstream &pfm = file_manager.get_ofstream("pfm");
+			pfm << endl << endl << "-----------------------------------" << endl;
+			pfm << "starting linear uncertainty analyses" << endl;
+			pfm << "-----------------------------------" << endl << endl;
+			Logger unc_log(pfm);
 			Mat j(base_jacobian_ptr->get_sim_obs_names(), base_jacobian_ptr->get_base_numeric_par_names(),
 				base_jacobian_ptr->get_matrix_ptr());
-
-			linear_analysis la(j, pest_scenario, &unc_log);
+			ObservationInfo reweight = normalize_weights_by_residual(pest_scenario, phi_report);
+			Covariance obscov;
+			obscov.from_observation_weights(pest_scenario.get_ctl_ordered_obs_names(), reweight, 
+				pest_scenario.get_ctl_ordered_pi_names(), pest_scenario.get_prior_info_ptr());
+			linear_analysis la(&j, &pest_scenario, &obscov, &unc_log);
 			const vector<string> pred_names = pest_scenario.get_pestpp_options().get_prediction_names();
 			if (pred_names.size() > 0)
 				la.set_predictions(pred_names);
+			if (true)
+			{
+				for (auto &pred : la.get_predictions())
+					pred.second.to_ascii(pred.first + ".vec");
+			}
 			la.posterior_parameter_ptr()->to_ascii(file_manager.get_base_filename() + ".par.post");
 			la.write_par_credible_range(fout_rec, pest_scenario.get_ctl_parameter_info(), 
 				pest_scenario.get_ctl_parameters(), optimum_run.get_ctl_pars(),pest_scenario.get_ctl_ordered_par_names());
@@ -627,7 +661,6 @@ int main(int argc, char* argv[])
 				}
 				la.write_pred_credible_range(fout_rec, init_final_pred_values);
 			}
-			
 			cout << "  ---  finished uncertainty analysis calculations  ---  " << endl << endl << endl;
 		}
 

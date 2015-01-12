@@ -17,6 +17,100 @@ vector<string> get_common(vector<string> v1, vector<string> v2)
 	return common;
 }
 
+map<string, double> get_obj_comps(string &filename)
+{
+	pest_utils::upper_ip(filename);
+	ifstream ifile(filename);
+	string line;
+
+	vector<string> tokens;
+	map<string, double> obj_comps;
+	if (!ifile.good()) throw runtime_error("linear_analysis::get_obj_comps() error opening file: " + filename);
+	if ((filename.find(".REI") != string::npos) || (filename.find(".RES") != string::npos))
+	{
+		double resid, weight;
+		for (;;)
+		{
+			if (!getline(ifile, line)) throw runtime_error("lienar_analysis::get_obj_comps() error: EOF while looking for 'NAME'");
+			pest_utils::upper_ip(line);
+			if (line.find("NAME") != string::npos)
+			{
+				for (;;)
+				{
+					if (!getline(ifile, line)) break;
+					pest_utils::upper_ip(line);
+					tokens.clear();
+					pest_utils::tokenize(line, tokens);
+					pest_utils::convert_ip(tokens[4], resid);
+					pest_utils::convert_ip(tokens[5], weight);
+					if (obj_comps.find(tokens[1]) != obj_comps.end())obj_comps[tokens[1]] += pow(resid * weight, 2);
+					else obj_comps[tokens[1]] = pow(resid * weight, 2);
+				}
+				break;
+			}
+		}
+	}
+
+	else if (filename.find(".REC") != string::npos)
+	{
+		throw runtime_error("linear_analysis::get_obj_comps() .rec not implemented");
+	}
+	else if (filename.find(".IOBJ") != string::npos)
+	{
+		throw runtime_error("linear_analysis::get_obj_comps() .iobj not implemented");
+	}
+
+	else throw runtime_error("linear_analysis::get_obj_comps() error: unrecognized file type: " + filename + " must be .rei, or .res");
+	ifile.close();
+	return obj_comps;
+
+}
+
+ObservationInfo normalize_weights_by_residual(Pest &pest_scenario, string &resid_filename)
+{
+	map<string, double> obj_comps = get_obj_comps(resid_filename);
+	return normalize_weights_by_residual(pest_scenario, obj_comps);
+}
+
+ObservationInfo normalize_weights_by_residual(Pest &pest_scenario, map<string, double> obj_comps)
+{
+	ObservationInfo obs_info = pest_scenario.get_ctl_observation_info();
+	map<string, string> pst_grps = pest_scenario.get_observation_groups();
+	vector<string> ogrp_names = pest_scenario.get_ctl_ordered_obs_group_names();
+	const ObservationRec* obs_rec;
+	double weight;
+	map<string, int> grp_nnz;
+	for (auto &ogrp : ogrp_names) grp_nnz[ogrp] = 0;
+
+	for (auto &ogrp : pst_grps)
+	{
+		obs_rec = obs_info.get_observation_rec_ptr(ogrp.first);
+		if (obs_rec->weight > 0.0) grp_nnz[ogrp.second]++;
+	}
+	for (auto &ogrp : pst_grps)
+	{
+		if (obj_comps[ogrp.second] < numeric_limits<double>::min())
+			continue;
+		obs_rec = obs_info.get_observation_rec_ptr(ogrp.first);
+		if (obs_rec->weight > 0.0)
+		{
+			weight = obs_info.get_observation_rec_ptr(ogrp.first)->weight * sqrt(((double)grp_nnz[ogrp.second]) / obj_comps[ogrp.second]);
+			if (weight < numeric_limits<double>::min())
+				weight = 1.0e-30;
+			else if (weight > numeric_limits<double>::max())
+				weight = 1.0e+30;
+			obs_info.set_weight(ogrp.first, weight);
+		}
+	}
+	return obs_info;
+}
+
+
+
+
+
+
+
 void linear_analysis::throw_error(const string &message)
 {
 	log->error(message);
@@ -265,18 +359,18 @@ linear_analysis::linear_analysis(Mat _jacobian, Pest pest_scenario,Logger* _log)
 
 linear_analysis::linear_analysis(Mat* _jacobian, Pest* pest_scenario, Logger* _log)
 {
-	bool parcov_success = true;
+	bool parcov_success = false;
 	const string parcov_filename = pest_scenario->get_pestpp_options().get_parcov_filename();
 	if (parcov_filename.size() > 0)
 	{
 		try
 		{
 			load_parcov(parcov_filename);
+			parcov_success = true;
 		}
 		catch (exception &e)
 		{
 			log->warning("unable to load parcov from file: " + parcov_filename + ", reverting to parameter bounds "+e.what());
-			parcov_success = false;
 		}
 	}
 	if (!parcov_success)
@@ -301,6 +395,40 @@ linear_analysis::linear_analysis(Mat* _jacobian, Pest* pest_scenario, Logger* _l
 	R_sv = -999, G_sv = -999, ImR_sv = -999, V1_sv = -999;
 	log = _log;
 	jacobian = *_jacobian;
+}
+
+
+linear_analysis::linear_analysis(Mat* _jacobian, Pest* pest_scenario, Mat* _obscov, Logger* _log)
+{
+	bool parcov_success = false;
+	const string parcov_filename = pest_scenario->get_pestpp_options().get_parcov_filename();
+	if (parcov_filename.size() > 0)
+	{
+		try
+		{
+			load_parcov(parcov_filename);
+			parcov_success = true;
+		}
+		catch (exception &e)
+		{
+			log->warning("unable to load parcov from file: " + parcov_filename + ", reverting to parameter bounds " + e.what());
+		}
+	}
+	if (!parcov_success)
+	{
+		try
+		{
+			parcov.from_parameter_bounds(*pest_scenario);
+		}
+		catch (exception &e)
+		{
+			throw_error("linear_analysis::linear_analysis() error setting parcov from parameter bounds:" + string(e.what()));
+		}
+	}
+	R_sv = -999, G_sv = -999, ImR_sv = -999, V1_sv = -999;
+	log = _log;
+	jacobian = *_jacobian;
+	obscov = *_obscov;
 }
 
 void linear_analysis::align()
@@ -816,6 +944,14 @@ void linear_analysis::set_predictions(vector<string> preds)
 				throw_error("linear_analysis::set_predictions() error extracting prediction " + pred + " : " + string(e.what()));
 			}
 			log->log("extracting prediction " + pred + " from jacobian");
+			if (mpred.e_ptr()->nonZeros() == 0)
+			{
+				log->warning("Prediction " + pred + " has no non-zero entries in jacobian row/");
+				cerr << endl << "WARNING: Prediction " + pred + " has no non-zero entries in jacobian. " << endl;
+				cerr << "         This mean that the adjustable parameters have no effect on " << endl;
+				cerr << "         prediction " + pred + ".  The uncertainty for this prediction " << endl;
+				cerr << "         is essential infinite." << endl << endl;
+			}
 			mpred.transpose_ip();
 			predictions[pred] = mpred;
 		}
@@ -875,6 +1011,14 @@ void linear_analysis::set_predictions(vector<string> preds)
 			string pname = mpred.get_col_names()[0];
 			if (predictions.find(pname) != predictions.end())
 				throw_error("linear_analysis::set_predictions() error: pred:" + pred + " already in predictions");
+			if (mpred.e_ptr()->nonZeros() == 0)
+			{
+				log->warning("Prediction " + pred + " has no non-zero entries in jacobian row/");
+				cerr << endl << "WARNING: Prediction " + pred + " has no non-zero entries in jacobian. " << endl;
+				cerr << "         This mean that the adjustable parameters have no effect on " << endl;
+				cerr << "         prediction " + pred + ".  The uncertainty for this prediction " << endl;
+				cerr << "         is essential infinite." << endl << endl;
+			}
 			predictions[pname] = mpred;
 		}
 	}
@@ -1433,6 +1577,13 @@ void linear_analysis::extract_omitted(vector<string> &omitted_par_names)
 	{
 		throw_error("linear_analysis::extract_omitted() error extracting omitted jco from jco : " + string(e.what()));
 	}
+	if (omitted_jacobian.e_ptr()->nonZeros() == 0)
+	{
+		log->warning("omitted Jacobian has no non-zero entries.");
+		cerr << endl << "WARNING: omitted parameter Jacobian has no non-zero entries in jacobian. " << endl;
+		cerr << "         This mean that the observations are not sensitive to the " << endl;
+		cerr << "         omitted parameters." << endl;	
+	}
 	try
 	{
 		omitted_parcov = parcov.extract(omitted_par_names);
@@ -1445,12 +1596,21 @@ void linear_analysis::extract_omitted(vector<string> &omitted_par_names)
 	{
 		try
 		{
-			omitted_predictions[p.first] = p.second.extract(omitted_par_names, vector<string>());
+			Mat opred = p.second.extract(omitted_par_names, vector<string>());
+			if (opred.e_ptr()->nonZeros() == 0)
+			{
+				log->warning("omitted prediction "+p.first +" has no non-zero entries.");
+				cerr << endl << "WARNING: omitted prediction "+p.first+" has no non-zero entries." << endl;
+				cerr << "         This mean that this prediction is not sensitive to the " << endl;
+				cerr << "         omitted parameters." << endl;
+			}
+			omitted_predictions[p.first] = opred;
 		}
 		catch (exception &e)
 		{
 			throw_error("linear_analysis::extract_omitted() error extracting omitted prediction from prediction "+p.first+ " : " + string(e.what()));
 		}
+		
 	}
 	log->log("extract_omitted");
 }
@@ -1470,9 +1630,9 @@ void linear_analysis::write_par_credible_range(ofstream &fout, ParameterInfo par
 	fout << endl << "---------------------------------------" << endl;
 	fout << "---- parameter uncertainty summary ----" << endl;
 	fout << "---------------------------------------" << endl << endl << endl;
-	fout << setw(20) << "name" << setw(20) << "initial_value" << setw(20) << "prior_variance" ;
+	fout << setw(20) << "name" << setw(20) << "prior_mean" << setw(20) << "prior_variance" ;
 	fout << setw(20) << "prior_lower_bound" << setw(20) << "prior_upper_bound";
-	fout << setw(20) << "final_value" << setw(20) << "post_variance";
+	fout << setw(20) << "post_mean" << setw(20) << "post_variance";
 	fout << setw(20) << "post_lower_bound" << setw(20) << "post_upper_bound" << endl;
 	
 	map<string, double> prior_vars = prior_parameter_variance();
@@ -1504,12 +1664,12 @@ void linear_analysis::write_par_credible_range(ofstream &fout, ParameterInfo par
 		fout << "WARNING: the following parameters were not found in the final " << endl;
 		fout << "      base parameter jacobian and were subsequently not included " << endl;
 		fout << "      in the uncertainty analysis calculations.  This may lead to " << endl;
-		fout << "      NON-CONSERVATIVE predictive uncertainty estimates if the " << endl;
-		fout << "      predictions are sensitive to these parameters:" << endl;
+		fout << "      NON-CONSERVATIVE uncertainty estimates. Please " << endl;
+		fout << "      consider including all parameters:" << endl;
 		int i = 0;
 		for (auto &m : missing)
 		{
-			fout << "          " << m;
+			fout << setw(20) << m;
 			i++;
 			if (i == 5)
 			{
@@ -1520,20 +1680,22 @@ void linear_analysis::write_par_credible_range(ofstream &fout, ParameterInfo par
 		fout << endl;
 	}
 	fout << endl;
-	fout << "Note: Upper and lower bound of non-transformed parameters calculated " << endl;
-	fout << "      as parameter_value +/- (2.0 * sqrt(variance)).  Also very important - , " << endl;
-	fout << "      for log-transformed parameters, the 'variance' reported above is " << endl;
-	fout << "      the variance of the log of the parameter value. For these paramters, the " << endl;
-	fout << "      upper and lower bound of log-transformed parameters is calculated " << endl;
-	fout << "      as 10^(log(parameter_value) +/- (2.0*sqrt(variance)))." << endl << endl;
+	fout << "Note: Upper and lower uncertainty bounds of non-transformed parameters " << endl;
+	fout << "      are calculated as: <prior,post>_mean +/- (2.0 * sqrt(<prior,post>_variance)). " << endl;
+	fout << "      For log-transformed parameters, the 'variance' reported above is the variance " << endl;
+	fout << "       of the log of the parameter value. For these paramters, the upper and lower " << endl;
+	fout << "      uncertainty bounds are calculated as: " << endl;
+	fout << "      10^(log(<prior,post>_mean) +/- (2.0*sqrt(<prior,post>_variance)))." << endl << endl;
 
 }
 
 pair<double, double> linear_analysis::get_range(double value, double variance, const ParameterRec::TRAN_TYPE &tt)
 {
 	
-	double stdev, lower, upper,lvalue;
-	stdev = sqrt(variance);
+	double stdev = 0.0, lower = 0.0 , upper = 0.0 ,lvalue = 0.0 ;
+	if (variance > numeric_limits<double>::min())
+		stdev = sqrt(variance);
+	//stdev = sqrt(variance);
 	if (tt == ParameterRec::TRAN_TYPE::LOG)
 	{
 		lvalue = log10(value);
@@ -1562,9 +1724,9 @@ void linear_analysis::write_pred_credible_range(ofstream &fout, map<string,pair<
 	fout << endl << "----------------------------------------" << endl;
 	fout << "---- prediction uncertainty summary ----" << endl;
 	fout << "----------------------------------------" << endl << endl << endl;
-	fout << setw(20) << "prediction_name" << setw(20) << "initial_value";
+	fout << setw(20) << "prediction_name" << setw(20) << "prior_mean";
 	fout << setw(20) << "prior_variance" << setw(20) << "prior_lower_bound";
-	fout << setw(20) << "prior_upper_bound" << setw(20) << "final_value";
+	fout << setw(20) << "prior_upper_bound" << setw(20) << "post_mean";
 	fout << setw(20) << "post_variance" << setw(20) << "post_lower_bound";
 	fout << setw(20) << "post_upper_bound" << endl;
 
@@ -1592,8 +1754,17 @@ void linear_analysis::write_pred_credible_range(ofstream &fout, map<string,pair<
 	fout << "Note: predictive sensitivity vectors for both prior and " << endl;
 	fout << "      posterior uncertainty calculations are the same " << endl;
 	fout << "      and were extracted from final base parameter jacobian." << endl;
+	fout << "      The upper and lower uncertainty bounds were calculated " << endl;
+	fout << "      as: <prior,post>_mean +/- (2.0*sqrt(<prior,post>_variance)" << endl;
 
 }
+
+
+void linear_analysis::drop_prior_information()
+{
+	//find obsgroups that start with "regul"
+}
+
 
 linear_analysis::~linear_analysis()
 {
