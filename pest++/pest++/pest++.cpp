@@ -445,7 +445,6 @@ int main(int argc, char* argv[])
 			//base parameter iterations
 			try
 			{
-
 				if (restart_ctl.get_restart_option() != RestartController::RestartOption::NONE  && restart_ctl.get_iteration_type() == RestartController::IterationType::SUPER)
 				{
 					base_svd.iteration_reuse_jac(*run_manager_ptr, termination_ctl, cur_run, false, file_manager.build_filename("jcb"));
@@ -464,7 +463,7 @@ int main(int argc, char* argv[])
 						output_file_writer.write_rei(file_manager.open_ofile_ext("rei"), -1, pest_scenario.get_ctl_observations(),
 							cur_run.get_obs(), *cur_run.get_obj_func_ptr(), pest_scenario.get_ctl_parameters());
 						termination_ctl.set_terminate(true);
-						termination_ctl.set_reason("NOPTMAX == -1");
+						termination_ctl.set_reason("NOPTMAX criterion met");
 					}
 				}
 				else if (pest_scenario.get_control_info().noptmax < 0)
@@ -476,7 +475,7 @@ int main(int argc, char* argv[])
 					output_file_writer.write_rei(file_manager.open_ofile_ext("rei"), -1, pest_scenario.get_ctl_observations(),
 						cur_run.get_obs(), *cur_run.get_obj_func_ptr(), pest_scenario.get_ctl_parameters());
 					termination_ctl.set_terminate(true);
-					termination_ctl.set_reason("NOPTMAX == -1");
+					termination_ctl.set_reason("NOPTMAX criterion met");
 				}
 				else if (restart_ctl.get_restart_option() == RestartController::RestartOption::REUSE_JACOBIAN)
 				{
@@ -623,13 +622,17 @@ int main(int argc, char* argv[])
 			fout_rec << endl;
 			fout_rec << "Note: Any observations or prior information equations with a group name" << endl;
 			fout_rec << "      starting with 'regul' are dropped from the jacobian and observation" << endl;
-			fout_rec << "      covariance matrices before uncertainty calculations." << endl << endl;
+			fout_rec << "      covariance matrices before uncertainty calculations.  Please" << endl;
+			fout_rec << "      make sure that all expert knowledge is expressed in the prior " << endl;
+			fout_rec << "      parameter bounds or through a covariance matix, which can be " << endl;
+			fout_rec << "      supplied as a pest++ option as 'parameter_covariance(<matrix_file_name>)," << endl;
+			fout_rec << "      where <matrix_file_name> can be an ASCII PEST-compatible matrix file (.mat) or" << endl;
+			fout_rec << "      a PEST-compatible uncertainty file (.unc)." << endl << endl;
 
-			
 			if (pest_scenario.get_pestpp_options().get_auto_norm() > 0.0)
 			{
 				fout_rec << "WARNING: PEST++ 'autonorm' option != 0.0. This can greatly effect the outcome " << endl;
-				fout_rec << "         of the following analyses which depend heavily on the Jacobian" << endl;
+				fout_rec << "         of the following analyses, which depend heavily on the Jacobian" << endl;
 			}
 			ofstream &pfm = file_manager.get_ofstream("pfm");
 			pfm << endl << endl << "-----------------------------------" << endl;
@@ -644,10 +647,12 @@ int main(int argc, char* argv[])
 			//get a new obs info instance that accounts for residual phi
 			// and report new weights to the rec file
 			ObservationInfo reweight = normalize_weights_by_residual(pest_scenario, phi_report);
-			fout_rec << endl << setw(20) << "observation" << setw(20) << "scaled_weight" << endl;
+			fout_rec << endl << endl;
+			fout_rec << "Scaled observation weights used to form observation noise covariance matrix:" << endl;
+			fout_rec << endl << setw(20) << "observation" << setw(20) << "group" << setw(20) << "scaled_weight" << endl;
 			for (auto &oi : reweight.observations)
 				if (oi.second.weight > 0.0)
-					fout_rec << setw(20) << oi.first << setw(20) << oi.second.weight << endl;
+					fout_rec << setw(20) << oi.first << setw(20) << oi.second.group << setw(20) << oi.second.weight << endl;
 			fout_rec << endl << endl;
 
 			//covariance instance for the observation noise

@@ -53,6 +53,26 @@ void Pest::check_inputs()
 	if (svd_info.maxsing == 0) {
 		svd_info.maxsing = min(numeric_pars.size(), observation_values.size());
 	}
+
+	int n_base = get_pestpp_options().get_n_iter_base();
+	if (n_base == -1 || n_base > 0)
+	{
+	}
+	else
+	{
+		stringstream ss;
+		ss << "pest++ option 'n_iter_base' must either be -1 or greater than 0, not " << n_base;
+		throw PestError(ss.str());
+	}
+
+	int n_super = get_pestpp_options().get_n_iter_super();
+	if (n_super < 0)
+	{
+		stringstream ss;
+		ss << "pest++ option 'n_iter_super' must >= 0, not " << n_super;
+		throw PestError(ss.str());
+	}
+
 	//check that prediction names are list in obs
 	if (pestpp_options.get_prediction_names().size() > 0)
 	{
