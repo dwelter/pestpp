@@ -226,8 +226,8 @@ public:
 	void set_max_super_frz_iter(int n) { max_super_frz_iter = n; }
 	void set_max_reg_iter(int n) { max_reg_iter = n; }	
 	void set_iter_summary_flag(bool _iter_summary_flag){iter_summary_flag = _iter_summary_flag;}
-	void set_parameter_uncert_flag(bool _flag){ parameter_uncert = _flag; }
-	bool get_parameter_uncert_flag()const { return parameter_uncert; }
+	void set_uncert_flag(bool _flag){uncert = _flag; }
+	bool get_uncert_flag()const { return uncert; }
 	void set_prediction_names(vector<string> _names){ prediction_names = _names; }
 	vector<string> get_prediction_names()const { return prediction_names; }
 	void set_parcov_filename(string _filename){ parcov_filename = _filename; }
@@ -247,7 +247,7 @@ private:
 	vector<double> base_lambda_vec;	
 	bool iter_summary_flag;
 	bool der_forgive;
-	bool parameter_uncert;
+	bool uncert;
 	vector<string> prediction_names;
 	string parcov_filename;
 };

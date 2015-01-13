@@ -587,7 +587,7 @@ int main(int argc, char* argv[])
 			
 		//linear analysis stuff
 		if ((pest_scenario.get_control_info().noptmax != 0) && 
-			(pest_scenario.get_pestpp_options().get_parameter_uncert_flag()))
+			(pest_scenario.get_pestpp_options().get_uncert_flag()))
 		{
 			cout << endl << endl << endl;
 			cout << "  ---  starting uncertainty analysis calculations  ---  " << endl << endl << endl;

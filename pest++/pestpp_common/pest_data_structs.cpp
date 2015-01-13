@@ -262,7 +262,7 @@ ostream& operator<< (ostream &os, const PestppOptions& val)
 	{
 		os << right << setw(15) << lam << endl;
 	}
-	os << "    parameter uncertainty flag = " << left << setw(20) << val.get_parameter_uncert_flag() << endl;
+	os << "    parameter uncertainty flag = " << left << setw(20) << val.get_uncert_flag() << endl;
 	os << "    parameter covariance file = " << left << setw(20) << val.get_parcov_filename() << endl;
 	os << "    prediction names = " << endl;
 	for (auto &pname : val.get_prediction_names())
@@ -359,11 +359,9 @@ void PestppOptions::parce_line(const string &line)
 			istringstream is(value);
 			is >> boolalpha >> der_forgive;
 		}
-		else if (key == "NO_PARAMETER_UNCERTAINTY")
+		else if (key == "NO_UNCERTAINTY")
 		{
-			transform(value.begin(), value.end(), value.begin(), ::tolower);
-			istringstream is(value);
-			is >> boolalpha >> parameter_uncert;
+			uncert = false;
 		}
 		else if (key == "PREDICTIONS")
 		{
