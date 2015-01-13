@@ -1690,8 +1690,7 @@ void linear_analysis::write_par_credible_range(ofstream &fout, ParameterInfo par
 }
 
 pair<double, double> linear_analysis::get_range(double value, double variance, const ParameterRec::TRAN_TYPE &tt)
-{
-	
+{	
 	double stdev = 0.0, lower = 0.0 , upper = 0.0 ,lvalue = 0.0 ;
 	if (variance > numeric_limits<double>::min())
 		stdev = sqrt(variance);
@@ -1709,14 +1708,11 @@ pair<double, double> linear_analysis::get_range(double value, double variance, c
 	}
 	else
 	{
-
 		stringstream ss;
 		ss << "linear_analysis::get_range() unsupported trans type " << static_cast<int>(tt);
 		throw PestError(ss.str());
 	}
 	return pair<double, double>(lower, upper);
-
-
 }
 
 void linear_analysis::write_pred_credible_range(ofstream &fout, map<string,pair<double,double>> init_final_pred_values)
@@ -1760,9 +1756,19 @@ void linear_analysis::write_pred_credible_range(ofstream &fout, map<string,pair<
 }
 
 
-void linear_analysis::drop_prior_information()
+void linear_analysis::drop_prior_information(const Pest &pest_scenario)
 {
-	//find obsgroups that start with "regul"
+	vector<string> pi_names;
+	const vector<string> nonregul = pest_scenario.get_nonregul_obs();
+	if (nonregul.size() < pest_scenario.get_ctl_ordered_obs_names().size())
+		for (auto &oname : pest_scenario.get_ctl_ordered_obs_names())
+			if (find(nonregul.begin(), nonregul.end(), oname) == nonregul.end())
+				pi_names.push_back(oname);
+
+	pi_names.insert(pi_names.end(),pest_scenario.get_ctl_ordered_pi_names().begin(),
+		pest_scenario.get_ctl_ordered_pi_names().end());
+	jacobian.drop_rows(pi_names);
+	obscov.drop_rows(pi_names);
 }
 
 

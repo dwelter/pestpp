@@ -612,6 +612,7 @@ int main(int argc, char* argv[])
 			fout_rec << "      Hydrologic Monitoring Networks : Example Applications " << endl;
 			fout_rec << "      from the Great Lakes Water Availability Pilot Project'. " << endl;
 			fout_rec << "      See PEST++ V3 documentation for implementation details." << endl;
+			fout_rec << "-----------------------------------------------------------------------" << endl;
 			fout_rec << endl;
 			fout_rec << "Note: The observation covariance matrix has been constructed from " << endl;
 			fout_rec << "      weights listed in the pest control file that have been scaled by " << endl;
@@ -619,36 +620,63 @@ int main(int argc, char* argv[])
 			fout_rec << "      the level of measurement noise implied by the original weights so" << endl;
 			fout_rec << "      the total objective function is equal to the number of  "<< endl;
 			fout_rec << "      non-zero weighted observations." << endl;
-			fout_rec << "-----------------------------------------------------------------------" << endl;
+			fout_rec << endl;
+			fout_rec << "Note: Any observations or prior information equations with a group name" << endl;
+			fout_rec << "      starting with 'regul' are dropped from the jacobian and observation" << endl;
+			fout_rec << "      covariance matrices before uncertainty calculations." << endl << endl;
 
+			
 			if (pest_scenario.get_pestpp_options().get_auto_norm() > 0.0)
 			{
-				fout_rec << "WARNING: pest++ autonorm value != 0.0. This can greatly effect the outcome " << endl;
+				fout_rec << "WARNING: PEST++ 'autonorm' option != 0.0. This can greatly effect the outcome " << endl;
 				fout_rec << "         of the following analyses which depend heavily on the Jacobian" << endl;
-
+			}
 			ofstream &pfm = file_manager.get_ofstream("pfm");
 			pfm << endl << endl << "-----------------------------------" << endl;
 			pfm << "starting linear uncertainty analyses" << endl;
 			pfm << "-----------------------------------" << endl << endl;
 			Logger unc_log(pfm);
+			
+			//instance of a Mat for the jco
 			Mat j(base_jacobian_ptr->get_sim_obs_names(), base_jacobian_ptr->get_base_numeric_par_names(),
 				base_jacobian_ptr->get_matrix_ptr());
+			
+			//get a new obs info instance that accounts for residual phi
+			// and report new weights to the rec file
 			ObservationInfo reweight = normalize_weights_by_residual(pest_scenario, phi_report);
+			fout_rec << endl << setw(20) << "observation" << setw(20) << "scaled_weight" << endl;
+			for (auto &oi : reweight.observations)
+				if (oi.second.weight > 0.0)
+					fout_rec << setw(20) << oi.first << setw(20) << oi.second.weight << endl;
+			fout_rec << endl << endl;
+
+			//covariance instance for the observation noise
 			Covariance obscov;
 			obscov.from_observation_weights(pest_scenario.get_ctl_ordered_obs_names(), reweight, 
 				pest_scenario.get_ctl_ordered_pi_names(), pest_scenario.get_prior_info_ptr());
+			
+			//instance of linear analysis
 			linear_analysis la(&j, &pest_scenario, &obscov, &unc_log);
+			
+			//if needed, set the predictive sensitivity vectors
 			const vector<string> pred_names = pest_scenario.get_pestpp_options().get_prediction_names();
 			if (pred_names.size() > 0)
 				la.set_predictions(pred_names);
-			if (true)
-			{
-				for (auto &pred : la.get_predictions())
-					pred.second.to_ascii(pred.first + ".vec");
-			}
-			la.posterior_parameter_ptr()->to_ascii(file_manager.get_base_filename() + ".par.post");
+			
+			//drop all 'regul' obs and equations
+			la.drop_prior_information(pest_scenario);
+			
+			//write the posterior covariance matrix
+			string postcov_filename = file_manager.get_base_filename() + ".post.cov";
+			la.posterior_parameter_ptr()->to_ascii(postcov_filename);
+			fout_rec << "Note : posterior parameter covariance matrix written to file '" + postcov_filename + 
+				"'" << endl << endl;
+				 
+			//write a parameter prior and posterior summary to the rec file
 			la.write_par_credible_range(fout_rec, pest_scenario.get_ctl_parameter_info(), 
 				pest_scenario.get_ctl_parameters(), optimum_run.get_ctl_pars(),pest_scenario.get_ctl_ordered_par_names());
+			
+			//if predictions were defined, write a prior and posterior summary to the rec file
 			if (pred_names.size() > 0)
 			{
 				map<string, pair<double, double>> init_final_pred_values;

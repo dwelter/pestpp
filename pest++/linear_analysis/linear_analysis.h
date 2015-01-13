@@ -142,10 +142,9 @@ public:
 	//some convience methods for PEST++ integration
 	void write_par_credible_range(ofstream &fout, ParameterInfo parinfo, 
 		Parameters init_pars, Parameters opt_pars,vector<string> ordered_names);
-	void write_pred_credible_range(ofstream &fout, map<string,pair<double,double>> init_final_pred_values);
+	void write_pred_credible_range(ofstream &fout, map<string,pair<double,double>> init_final_pred_values);	
+	void drop_prior_information(const Pest &pest_scenario);
 	
-	void drop_prior_information();
-
 private:
 
 	Logger* log;
