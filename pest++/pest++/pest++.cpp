@@ -377,6 +377,8 @@ int main(int argc, char* argv[])
 
 
 		ModelRun optimum_run(&obj_func, pest_scenario.get_ctl_observations());
+		//for tracking the initial model simulated equivalents
+		vector<double> init_sim;
 		// if noptmax=0 make one run with the intital parameters
 		if (pest_scenario.get_control_info().noptmax == 0) {
 			Parameters init_model_pars = base_trans_seq.ctl2model_cp(cur_ctl_parameters);
@@ -426,6 +428,7 @@ int main(int argc, char* argv[])
 		}
 		//Define model Run for Base Parameters (uses base parameter tranformations)
 		ModelRun cur_run(&obj_func, pest_scenario.get_ctl_observations());
+		
 		cur_run.set_ctl_parameters(cur_ctl_parameters);
 		//If this is a restart we need to get the latest ctl parameters
 		if (restart_ctl.get_restart_option() != RestartController::RestartOption::NONE)
@@ -464,6 +467,7 @@ int main(int argc, char* argv[])
 							cur_run.get_obs(), *cur_run.get_obj_func_ptr(), pest_scenario.get_ctl_parameters());
 						termination_ctl.set_terminate(true);
 						termination_ctl.set_reason("NOPTMAX criterion met");
+						bool success = run_manager_ptr->get_observations_vec(0, init_sim);
 					}
 				}
 				else if (pest_scenario.get_control_info().noptmax < 0)
@@ -476,6 +480,7 @@ int main(int argc, char* argv[])
 						cur_run.get_obs(), *cur_run.get_obj_func_ptr(), pest_scenario.get_ctl_parameters());
 					termination_ctl.set_terminate(true);
 					termination_ctl.set_reason("NOPTMAX criterion met");
+					bool success = run_manager_ptr->get_observations_vec(0, init_sim);
 				}
 				else if (restart_ctl.get_restart_option() == RestartController::RestartOption::REUSE_JACOBIAN)
 				{
@@ -494,6 +499,8 @@ int main(int argc, char* argv[])
 					cur_run = base_svd.solve(*run_manager_ptr, termination_ctl, n_base_iter, cur_run, optimum_run, restart_ctl, calc_first_jacobian);
 					termination_ctl.check_last_iteration();
 				}
+				if (termination_ctl.get_iteration_number() == 1)
+					bool success = run_manager_ptr->get_observations_vec(0, init_sim);
 				cur_ctl_parameters = cur_run.get_ctl_pars();
 				if (termination_ctl.terminate())  break;
 			}
@@ -543,6 +550,7 @@ int main(int argc, char* argv[])
 					//rerun base run to account for round off error in super parameters
 					cur_run = super_svd.update_run(*run_manager_ptr, cur_run);
 					calc_first_jacobian = false;
+					bool success = run_manager_ptr->get_observations_vec(0, init_sim);
 				}
 				cur_run = super_svd.solve(*run_manager_ptr, termination_ctl, n_super_iter, cur_run, optimum_run, restart_ctl, calc_first_jacobian);
 				cur_ctl_parameters = cur_run.get_ctl_pars();
@@ -688,7 +696,10 @@ int main(int argc, char* argv[])
 				double ival, fval;
 				for (auto &pred_name : pred_names)
 				{
-					ival = pest_scenario.get_ctl_observations().get_rec(pred_name);
+					int idx = distance(run_manager_ptr->get_obs_name_vec().begin(),find(run_manager_ptr->get_obs_name_vec().begin(), 
+						run_manager_ptr->get_obs_name_vec().end(), pred_name));
+					ival = init_sim[idx];
+					//ival = pest_scenario.get_ctl_observations().get_rec(pred_name);
 					fval = optimum_run.get_obs().get_rec(pred_name);
 					init_final_pred_values[pred_name] = pair<double, double>(ival, fval);
 				}
