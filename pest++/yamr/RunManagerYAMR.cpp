@@ -443,6 +443,13 @@ void RunManagerYAMR::run()
 	cout << endl << "---------------------" << endl << message.str() << endl << endl;
 	f_rmr << endl << "---------------------" << endl << message.str() << endl << endl;
 	concurrent_map.clear();
+	//if (init_run_obs.size() == 0)
+	//	int status = file_stor.get_observations(0, init_run_obs);
+	if (init_sim.size() == 0)
+	{
+		vector<double> pars;
+		int status = file_stor.get_run(0, pars, init_sim);
+	}
 	//if (success_runs < i_run)
 	//{
 	//	cout << endl << endl;

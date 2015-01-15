@@ -2792,9 +2792,9 @@ Note: Upper and lower uncertainty bounds of non-transformed parameters
 
 
      prediction_name          prior_mean      prior_variance   prior_lower_bound   prior_upper_bound           post_mean       post_variance    post_lower_bound    post_upper_bound
-             PD_HALF             7.89322           0.0800481             7.32736             8.45908             9.39664           0.0600698             8.90646             9.88683
-              PD_ONE             7.01931           0.0449995             6.59505             7.44357             8.77066           0.0315953             8.41516             9.12616
-              PD_TEN             7.31190           0.0838722             6.73269             7.89111             9.00757           0.0604078             8.51601             9.49913
+             PD_HALF             9.39664           0.0800481             8.83079             9.96250             9.39664           0.0600698             8.90646             9.88683
+              PD_ONE             8.77066           0.0449995             8.34640             9.19492             8.77066           0.0315953             8.41516             9.12616
+              PD_TEN             9.00757           0.0838722             8.42835             9.58678             9.00757           0.0604078             8.51601             9.49913
 
 
 Note: predictive sensitivity vectors for both prior and 
