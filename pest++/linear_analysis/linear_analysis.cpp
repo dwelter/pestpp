@@ -360,6 +360,8 @@ linear_analysis::linear_analysis(Mat _jacobian, Pest pest_scenario,Logger* _log)
 linear_analysis::linear_analysis(Mat* _jacobian, Pest* pest_scenario, Logger* _log)
 {
 	bool parcov_success = false;
+	log = _log;
+	jacobian = *_jacobian;
 	const string parcov_filename = pest_scenario->get_pestpp_options().get_parcov_filename();
 	if (parcov_filename.size() > 0)
 	{
@@ -393,14 +395,16 @@ linear_analysis::linear_analysis(Mat* _jacobian, Pest* pest_scenario, Logger* _l
 		throw_error("linear_analysis::linear_analysis() error setting obscov from observation weights:" + string(e.what()));
 	}
 	R_sv = -999, G_sv = -999, ImR_sv = -999, V1_sv = -999;
-	log = _log;
-	jacobian = *_jacobian;
+	
 }
 
 
 linear_analysis::linear_analysis(Mat* _jacobian, Pest* pest_scenario, Mat* _obscov, Logger* _log)
 {
 	bool parcov_success = false;
+	log = _log;
+	jacobian = *_jacobian;
+	obscov = *_obscov;
 	const string parcov_filename = pest_scenario->get_pestpp_options().get_parcov_filename();
 	if (parcov_filename.size() > 0)
 	{
@@ -426,10 +430,8 @@ linear_analysis::linear_analysis(Mat* _jacobian, Pest* pest_scenario, Mat* _obsc
 		}
 	}
 	R_sv = -999, G_sv = -999, ImR_sv = -999, V1_sv = -999;
-	log = _log;
-	jacobian = *_jacobian;
-	obscov = *_obscov;
-}
+	
+	}
 
 void linear_analysis::align()
 {
