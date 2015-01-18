@@ -1,0 +1,6 @@
+ PARAMETER STATISTICAL MATRICES: CASE pest_reg
+
+ OPTIMISATION ITERATION NUMBER 20
+
+ Parameter statistical matrices are not calculated as some form of 
+ regularisation is being implemented on this run.
