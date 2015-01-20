@@ -52,7 +52,7 @@ PEST++ Options
     max_n_super = 10                  
     super eigthres = 1e-008              
     svd pack = 0                   
-    auto norm = 4                   
+    auto norm = -999                
     super relparmax = 0.1                 
     max super frz iter = 5                   
     mat inv = 1                   
@@ -240,13 +240,13 @@ OPTIMISATION ITERATION NUMBER: 1
 
 
     Summary of upgrade runs:
-      Lambda =     0.10; Type: upgrade_run; length = 2.19e+000;  phi = 8.22579 (16.45% of starting phi)
-      Lambda =     1.00; Type: upgrade_run; length = 2.16e+000;  phi = 7.52229 (15.04% of starting phi)
-      Lambda =    10.00; Type: upgrade_run; length = 1.86e+000;  phi = 6.17175 (12.34% of starting phi)
-      Lambda =    20.00; Type: upgrade_run; length = 1.61e+000;  phi = 8.90801 (17.82% of starting phi)
-      Lambda =    40.00; Type: upgrade_run; length = 1.27e+000;  phi = 15.6012 (31.20% of starting phi)
-      Lambda =   100.00; Type: upgrade_run; length = 7.71e-001;  phi = 28.2384 (56.48% of starting phi)
-      Lambda =  1000.00; Type: upgrade_run; length = 1.12e-001;  phi = 46.766 (93.53% of starting phi)
+      Lambda =     0.10; Type: upgrade_run; length = 2.19e+000;  phi = 8.28044 (16.56% of starting phi)
+      Lambda =     1.00; Type: upgrade_run; length = 2.18e+000;  phi = 8.0921 (16.18% of starting phi)
+      Lambda =    10.00; Type: upgrade_run; length = 2.10e+000;  phi = 6.69214 (13.38% of starting phi)
+      Lambda =    20.00; Type: upgrade_run; length = 2.01e+000;  phi = 6.01169 (12.02% of starting phi)
+      Lambda =    40.00; Type: upgrade_run; length = 1.86e+000;  phi = 6.17175 (12.34% of starting phi)
+      Lambda =   100.00; Type: upgrade_run; length = 1.51e+000;  phi = 10.5864 (21.17% of starting phi)
+      Lambda =  1000.00; Type: upgrade_run; length = 3.89e-001;  phi = 38.9575 (77.91% of starting phi)
 
   Model calls in iteration 1: 18
   Total model calls at end of iteration 1: 18
@@ -275,19 +275,19 @@ OPTIMISATION ITERATION NUMBER: 1
       Parameter     Current       Previous       Factor       Relative
         Name         Value         Value         Change        Change
       ----------  ------------  ------------  ------------  ------------
-            k_01     -0.237457  -1.11022e-016  2.13882e+015  -2.13882e+015
-            k_02     -0.474915  -1.11022e-016  4.27765e+015  -4.27765e+015
-            k_03     -0.474915  -1.11022e-016  4.27765e+015  -4.27765e+015
-            k_04     -0.325415  -1.11022e-016  2.93108e+015  -2.93108e+015
-            k_05     -0.175915  -1.11022e-016   1.5845e+015  -1.5845e+015
-            k_06    -0.0879575  -1.11022e-016   7.9225e+014  -7.9225e+014
-            k_07  -1.11022e-016  -1.11022e-016             1            -0
-            k_08  -1.11022e-016  -1.11022e-016             1            -0
-            k_09  -1.11022e-016  -1.11022e-016             1            -0
-            k_10  -1.11022e-016  -1.11022e-016             1            -0
+            k_01      0.279211       0.39794       1.42523      0.298358
+            k_02      0.160483       0.39794       2.47964      0.596716
+            k_03      0.160483       0.39794       2.47964      0.596716
+            k_04      0.235233       0.39794       1.69169      0.408874
+            k_05      0.309983       0.39794       1.28375      0.221032
+            k_06      0.353961       0.39794       1.12425      0.110516
+            k_07       0.39794       0.39794             1             0
+            k_08       0.39794       0.39794             1             0
+            k_09       0.39794       0.39794             1             0
+            k_10       0.39794       0.39794             1             0
        Maximum changes in "Transformed Numeric" parameters:
-         Maximum relative change = -4.27765e+015   [k_03]
-         Maximum factor change = 4.27765e+015   [k_03]
+         Maximum relative change = 0.596716   [k_03]
+         Maximum factor change = 2.47964   [k_03]
 
 OPTIMISATION ITERATION NUMBER: 2
 
@@ -314,43 +314,43 @@ OPTIMISATION ITERATION NUMBER: 2
     Target measurement objective function      : 2
 
       updated regularization  weight factor            : 179.696
-      FRACPHIM adjusted measurement objective function : 1.40238
-      discrepancy                                      : 29.9%
+      FRACPHIM adjusted measurement objective function : 1.31059
+      discrepancy                                      : 34.5%
 
       updated regularization  weight factor            : 233.605
-      FRACPHIM adjusted measurement objective function : 2.03603
-      discrepancy                                      : 1.8%
+      FRACPHIM adjusted measurement objective function : 1.92462
+      discrepancy                                      : 3.77%
+
+      updated regularization  weight factor            : 303.687
+      FRACPHIM adjusted measurement objective function : 2.81815
+      discrepancy                                      : 40.9%
 
       updated regularization  weight factor            : 233.605
-      FRACPHIM adjusted measurement objective function : 2.03603
-      discrepancy                                      : 1.8%
+      FRACPHIM adjusted measurement objective function : 1.92462
+      discrepancy                                      : 3.77%
 
-      updated regularization  weight factor            : 233.605
-      FRACPHIM adjusted measurement objective function : 2.03603
-      discrepancy                                      : 1.8%
+      updated regularization  weight factor            : 243.83
+      FRACPHIM adjusted measurement objective function : 2.04884
+      discrepancy                                      : 2.44%
 
-      updated regularization  weight factor            : 228.744
-      FRACPHIM adjusted measurement objective function : 1.97606
-      discrepancy                                      : 1.2%
-
-      updated regularization  weight factor            : 230.601
-      FRACPHIM adjusted measurement objective function : 1.99891
-      discrepancy                                      : 0.0547%
+      updated regularization  weight factor            : 239.924
+      FRACPHIM adjusted measurement objective function : 2.00112
+      discrepancy                                      : 0.0562%
 
     ---  optimal regularization weight factor found  ---   
-      updated regularization  weight factor            : 230.601
-      FRACPHIM adjusted measurement objective function : 1.99891
-      discrepancy                                      : 0.0547%
+      updated regularization  weight factor            : 239.924
+      FRACPHIM adjusted measurement objective function : 2.00112
+      discrepancy                                      : 0.0562%
 
 
     Summary of upgrade runs:
-      Lambda =     0.10; Type: upgrade_run; length = 1.10e-001;   phi = 11.0986 (98.78% of starting phi)
-      Lambda =     1.00; Type: upgrade_run; length = 1.05e-001;   phi = 11.0957 (98.75% of starting phi)
-      Lambda =    10.00; Type: upgrade_run; length = 7.52e-002;   phi = 11.1212 (98.98% of starting phi)
-      Lambda =    20.00; Type: upgrade_run; length = 5.79e-002;   phi = 11.1455 (99.19% of starting phi)
-      Lambda =    40.00; Type: upgrade_run; length = 4.07e-002;   phi = 11.1778 (99.48% of starting phi)
-      Lambda =   100.00; Type: upgrade_run; length = 2.26e-002;   phi = 11.182 (99.52% of starting phi)
-      Lambda =  1000.00; Type: upgrade_run; length = 3.29e-003;   phi = 11.2411 (100.04% of starting phi)
+      Lambda =     0.10; Type: upgrade_run; length = 2.20e-001;   phi = 11.4092 (98.22% of starting phi)
+      Lambda =     1.00; Type: upgrade_run; length = 2.18e-001;   phi = 11.4074 (98.20% of starting phi)
+      Lambda =    10.00; Type: upgrade_run; length = 1.97e-001;   phi = 11.3971 (98.11% of starting phi)
+      Lambda =    20.00; Type: upgrade_run; length = 1.78e-001;   phi = 11.4036 (98.17% of starting phi)
+      Lambda =    40.00; Type: upgrade_run; length = 1.50e-001;   phi = 11.4297 (98.39% of starting phi)
+      Lambda =   100.00; Type: upgrade_run; length = 1.03e-001;   phi = 11.4617 (98.67% of starting phi)
+      Lambda =  1000.00; Type: upgrade_run; length = 2.06e-002;   phi = 11.5618 (99.53% of starting phi)
 
       Switching to central derivatives:
 
@@ -363,28 +363,28 @@ OPTIMISATION ITERATION NUMBER: 2
         Name         Value         Value         Change        Change
       ----------  ------------  ------------  ------------  ------------
            stage             1             1             1             0
-            k_01       1.90069         1.902       1.00069   0.000689536
-            k_02       1.44505       1.44705       1.00138     0.0013786
-            k_03       1.44505       1.44705       1.00138     0.0013786
-            k_04        1.7436       1.71883       1.01441    -0.0144121
-            k_05       2.10383       2.04166       1.03045    -0.0304525
-            k_06       2.29338       2.25923       1.01511    -0.0151121
+            k_01       1.89806         1.902       1.00208    0.00207129
+            k_02       1.44106       1.44705       1.00416    0.00413836
+            k_03       1.44106       1.44705       1.00416    0.00413836
+            k_04       1.76672       1.71883       1.02786    -0.0278639
+            k_05       2.16598       2.04166       1.06089    -0.0608944
+            k_06       2.32701       2.25923          1.03    -0.0299973
             k_07           2.5           2.5             1             0
             k_08           2.5           2.5             1             0
             k_09           2.5           2.5             1             0
             k_10           2.5           2.5             1             0
        Maximum changes in "Control File" parameters:
-         Maximum relative change = -0.0304525   [k_05]
-         Maximum factor change = 1.03045   [k_05]
+         Maximum relative change = -0.0608944   [k_05]
+         Maximum factor change = 1.06089   [k_05]
 
     Iteration 2 Parameter Upgrades (Transformed Numeric Parameters) 
       Parameter     Current       Previous       Factor       Relative
         Name         Value         Value         Change        Change
       ----------  ------------  ------------  ------------  ------------
-           sup_1       10.0145            10       1.00145   -0.00144644
-           sup_2       10.0282            10       1.00282   -0.00282334
+           sup_1       10.0133            10       1.00133   -0.00133492
+           sup_2       10.0282            10       1.00282   -0.00282025
        Maximum changes in "Transformed Numeric" parameters:
-         Maximum relative change = -0.00282334   [sup_2]
+         Maximum relative change = -0.00282025   [sup_2]
          Maximum factor change = 1.00282   [sup_2]
 
 OPTIMISATION ITERATION NUMBER: 3
@@ -394,51 +394,68 @@ OPTIMISATION ITERATION NUMBER: 3
     Matrix Inversion: "Jt Q J"
     Model calls so far : 28
 
-    Current regularization weight factor                      : 230.601
-    Starting phi for this iteration                     Total : 11.1212
-    Starting measurement phi for this iteration         Total : 1.9538
-    Starting regularization phi for this iteration      Total : 9.16739
-    Contribution to phi from observation group         "head" : 1.9538
-    Contribution to phi from observation group        "regul" : 9.16739
+    Current regularization weight factor                      : 239.924
+    Starting phi for this iteration                     Total : 11.4297
+    Starting measurement phi for this iteration         Total : 2.0498
+    Starting regularization phi for this iteration      Total : 9.37994
+    Contribution to phi from observation group         "head" : 2.0498
+    Contribution to phi from observation group        "regul" : 9.37994
     Number of terms in the jacobian equal to zero: 12 / 60 (20%)
 
 
 
     ---  Solving for regularization weight factor   ---   
-    Starting regularization weight factor      : 230.601
-    Starting measurement objective function    : 1.9538
-    Starting regularization objective function : 9.16739
+    Starting regularization weight factor      : 239.924
+    Starting measurement objective function    : 2.0498
+    Starting regularization objective function : 9.37994
 
     Target measurement objective function      : 2
 
-      updated regularization  weight factor            : 246.932
-      FRACPHIM adjusted measurement objective function : 2.08877
-      discrepancy                                      : 4.44%
+      updated regularization  weight factor            : 239.924
+      FRACPHIM adjusted measurement objective function : 2.02837
+      discrepancy                                      : 1.42%
 
-      updated regularization  weight factor            : 240.694
-      FRACPHIM adjusted measurement objective function : 2.01229
-      discrepancy                                      : 0.614%
+      updated regularization  weight factor            : 184.557
+      FRACPHIM adjusted measurement objective function : 1.37797
+      discrepancy                                      : 31.1%
+
+      updated regularization  weight factor            : 239.924
+      FRACPHIM adjusted measurement objective function : 2.02837
+      discrepancy                                      : 1.42%
+
+      updated regularization  weight factor            : 239.924
+      FRACPHIM adjusted measurement objective function : 2.02837
+      discrepancy                                      : 1.42%
+
+      updated regularization  weight factor            : 239.924
+      FRACPHIM adjusted measurement objective function : 2.02837
+      discrepancy                                      : 1.42%
+
+      updated regularization  weight factor            : 236.839
+      FRACPHIM adjusted measurement objective function : 1.99016
+      discrepancy                                      : 0.492%
 
     ---  optimal regularization weight factor found  ---   
-      updated regularization  weight factor            : 240.694
-      FRACPHIM adjusted measurement objective function : 2.01229
-      discrepancy                                      : 0.614%
+      updated regularization  weight factor            : 236.839
+      FRACPHIM adjusted measurement objective function : 1.99016
+      discrepancy                                      : 0.492%
 
 
     Summary of upgrade runs:
-      Lambda =     0.10; Type: upgrade_run; length = 1.46e-001;   phi = 11.4273 (99.17% of starting phi)
-      Lambda =     1.00; Type: upgrade_run; length = 1.39e-001;   phi = 11.4224 (99.13% of starting phi)
-      Lambda =     5.00; Type: upgrade_run; length = 1.18e-001;   phi = 11.4481 (99.35% of starting phi)
-      Lambda =    10.00; Type: upgrade_run; length = 9.90e-002;   phi = 11.4435 (99.32% of starting phi)
-      Lambda =    20.00; Type: upgrade_run; length = 7.54e-002;   phi = 11.4567 (99.43% of starting phi)
-      Lambda =   100.00; Type: upgrade_run; length = 2.73e-002;   phi = 11.5006 (99.81% of starting phi)
-      Lambda =  1000.00; Type: upgrade_run; length = 3.62e-003;   phi = 11.5078 (99.87% of starting phi)
+      Lambda =     0.10; Type: upgrade_run; length = 8.89e-002;   phi = 11.2792 (99.74% of starting phi)
+      Lambda =     1.00; Type: upgrade_run; length = 8.79e-002;   phi = 11.2782 (99.73% of starting phi)
+      Lambda =    10.00; Type: upgrade_run; length = 7.89e-002;   phi = 11.2953 (99.88% of starting phi)
+      Lambda =    20.00; Type: upgrade_run; length = 7.09e-002;   phi = 11.2763 (99.71% of starting phi)
+      Lambda =    40.00; Type: upgrade_run; length = 5.89e-002;   phi = 11.2924 (99.85% of starting phi)
+      Lambda =    80.00; Type: upgrade_run; length = 4.41e-002;   phi = 11.2968 (99.89% of starting phi)
+      Lambda =   100.00; Type: upgrade_run; length = 3.92e-002;   phi = 11.2827 (99.77% of starting phi)
+      Lambda =  1000.00; Type: upgrade_run; length = 6.62e-003;   phi = 11.3113 (100.02% of starting phi)
 
     Switching to split threshold derivatives
 
 
-  Model calls in iteration 3: 12
-  Total model calls at end of iteration 3: 40
+  Model calls in iteration 3: 13
+  Total model calls at end of iteration 3: 41
 
 
     Iteration 3 Parameter Upgrades (Control File Parameters) 
@@ -446,95 +463,83 @@ OPTIMISATION ITERATION NUMBER: 3
         Name         Value         Value         Change        Change
       ----------  ------------  ------------  ------------  ------------
            stage             1             1             1             0
-            k_01       1.89841       1.90069        1.0012    0.00120235
-            k_02       1.44158       1.44505       1.00241     0.0024033
-            k_03       1.44158       1.44505       1.00241     0.0024033
-            k_04       1.76729        1.7436       1.01359    -0.0135867
-            k_05       2.16659       2.10383       1.02983    -0.0298329
-            k_06       2.32733       2.29338       1.01481    -0.0148068
+            k_01       1.89772       1.89806       1.00018   0.000182449
+            k_02       1.44053       1.44106       1.00036   0.000364801
+            k_03       1.44053       1.44106       1.00036   0.000364801
+            k_04       1.76865       1.76672       1.00109   -0.00109298
+            k_05       2.17151       2.16598       1.00255   -0.00255298
+            k_06       2.32997       2.32701       1.00128   -0.00127567
             k_07           2.5           2.5             1             0
             k_08           2.5           2.5             1             0
             k_09           2.5           2.5             1             0
             k_10           2.5           2.5             1             0
        Maximum changes in "Control File" parameters:
-         Maximum relative change = -0.0298329   [k_05]
-         Maximum factor change = 1.02983   [k_05]
+         Maximum relative change = -0.00255298   [k_05]
+         Maximum factor change = 1.00255   [k_05]
 
     Iteration 3 Parameter Upgrades (Transformed Numeric Parameters) 
       Parameter     Current       Previous       Factor       Relative
         Name         Value         Value         Change        Change
       ----------  ------------  ------------  ------------  ------------
-           sup_1       10.0273       10.0145       1.00128   -0.00128241
-           sup_2       10.0565       10.0282       1.00282    -0.0028156
+           sup_1       10.0138       10.0133       1.00005  -4.57699e-005
+           sup_2       10.0295       10.0282       1.00013  -0.000126303
        Maximum changes in "Transformed Numeric" parameters:
-         Maximum relative change = -0.0028156   [sup_2]
-         Maximum factor change = 1.00282   [sup_2]
+         Maximum relative change = -0.000126303   [sup_2]
+         Maximum factor change = 1.00013   [sup_2]
 
 OPTIMISATION ITERATION NUMBER: 4
 
   Iteration type: super parameter solution
     SVD Package: Eigen JacobiSVD
     Matrix Inversion: "Jt Q J"
-    Model calls so far : 40
+    Model calls so far : 41
 
-    Current regularization weight factor                      : 240.694
-    Starting phi for this iteration                     Total : 11.4567
+    Current regularization weight factor                      : 236.839
+    Starting phi for this iteration                     Total : 11.3113
     Starting measurement phi for this iteration         Total : 2.0605
-    Starting regularization phi for this iteration      Total : 9.39619
+    Starting regularization phi for this iteration      Total : 9.25084
     Contribution to phi from observation group         "head" : 2.0605
-    Contribution to phi from observation group        "regul" : 9.39619
+    Contribution to phi from observation group        "regul" : 9.25084
     Number of terms in the jacobian equal to zero: 12 / 60 (20%)
 
 
 
     ---  Solving for regularization weight factor   ---   
-    Starting regularization weight factor      : 240.694
+    Starting regularization weight factor      : 236.839
     Starting measurement objective function    : 2.0605
-    Starting regularization objective function : 9.39619
+    Starting regularization objective function : 9.25084
 
     Target measurement objective function      : 2
 
-      updated regularization  weight factor            : 240.694
-      FRACPHIM adjusted measurement objective function : 2.02175
-      discrepancy                                      : 1.09%
+      updated regularization  weight factor            : 236.839
+      FRACPHIM adjusted measurement objective function : 1.94222
+      discrepancy                                      : 2.89%
 
-      updated regularization  weight factor            : 185.149
-      FRACPHIM adjusted measurement objective function : 1.37286
-      discrepancy                                      : 31.4%
+      updated regularization  weight factor            : 236.839
+      FRACPHIM adjusted measurement objective function : 1.94222
+      discrepancy                                      : 2.89%
 
-      updated regularization  weight factor            : 240.694
-      FRACPHIM adjusted measurement objective function : 2.02175
-      discrepancy                                      : 1.09%
-
-      updated regularization  weight factor            : 240.694
-      FRACPHIM adjusted measurement objective function : 2.02175
-      discrepancy                                      : 1.09%
-
-      updated regularization  weight factor            : 240.694
-      FRACPHIM adjusted measurement objective function : 2.02175
-      discrepancy                                      : 1.09%
-
-      updated regularization  weight factor            : 237.599
-      FRACPHIM adjusted measurement objective function : 1.98359
-      discrepancy                                      : 0.82%
+      updated regularization  weight factor            : 243.246
+      FRACPHIM adjusted measurement objective function : 2.01992
+      discrepancy                                      : 0.996%
 
     ---  optimal regularization weight factor found  ---   
-      updated regularization  weight factor            : 237.599
-      FRACPHIM adjusted measurement objective function : 1.98359
-      discrepancy                                      : 0.82%
+      updated regularization  weight factor            : 243.246
+      FRACPHIM adjusted measurement objective function : 2.01992
+      discrepancy                                      : 0.996%
 
 
     Summary of upgrade runs:
-      Lambda =     0.10; Type: upgrade_run; length = 9.61e-002;   phi = 11.3201 (99.86% of starting phi)
-      Lambda =     1.00; Type: upgrade_run; length = 9.18e-002;   phi = 11.316 (99.82% of starting phi)
-      Lambda =    10.00; Type: upgrade_run; length = 6.35e-002;   phi = 11.3197 (99.86% of starting phi)
-      Lambda =    20.00; Type: upgrade_run; length = 4.73e-002;   phi = 11.323 (99.89% of starting phi)
-      Lambda =    40.00; Type: upgrade_run; length = 3.14e-002;   phi = 11.3295 (99.94% of starting phi)
-      Lambda =   100.00; Type: upgrade_run; length = 1.57e-002;   phi = 11.3407 (100.04% of starting phi)
-      Lambda =  1000.00; Type: upgrade_run; length = 1.85e-003;   phi = 11.3341 (99.98% of starting phi)
+      Lambda =     0.10; Type: upgrade_run; length = 7.39e-002;   phi = 11.5353 (99.77% of starting phi)
+      Lambda =     1.00; Type: upgrade_run; length = 7.30e-002;   phi = 11.5345 (99.77% of starting phi)
+      Lambda =    10.00; Type: upgrade_run; length = 6.57e-002;   phi = 11.5275 (99.71% of starting phi)
+      Lambda =   100.00; Type: upgrade_run; length = 3.30e-002;   phi = 11.5318 (99.74% of starting phi)
+      Lambda =   500.00; Type: upgrade_run; length = 1.04e-002;   phi = 11.5594 (99.98% of starting phi)
+      Lambda =  1000.00; Type: upgrade_run; length = 5.67e-003;   phi = 11.5631 (100.01% of starting phi)
+      Lambda =  2000.00; Type: upgrade_run; length = 2.97e-003;   phi = 11.5558 (99.95% of starting phi)
 
   Model calls in iteration 4: 12
-  Total model calls at end of iteration 4: 52
+  Total model calls at end of iteration 4: 53
 
 
     Iteration 4 Parameter Upgrades (Control File Parameters) 
@@ -542,91 +547,87 @@ OPTIMISATION ITERATION NUMBER: 4
         Name         Value         Value         Change        Change
       ----------  ------------  ------------  ------------  ------------
            stage             1             1             1             0
-            k_01       1.89718       1.89841       1.00064   0.000644014
-            k_02       1.43972       1.44158       1.00129    0.00128755
-            k_03       1.43972       1.44158       1.00129    0.00128755
-            k_04       1.77147       1.76729       1.00236   -0.00236237
-            k_05       2.17965       2.16659       1.00603   -0.00602559
-            k_06       2.33433       2.32733       1.00301   -0.00300829
+            k_01       1.89717       1.89772       1.00029   0.000288873
+            k_02        1.4397       1.44053       1.00058   0.000577703
+            k_03        1.4397       1.44053       1.00058   0.000577703
+            k_04       1.77169       1.76865       1.00172   -0.00171854
+            k_05       2.18024       2.17151       1.00402   -0.00401997
+            k_06       2.33465       2.32997       1.00201   -0.00200796
             k_07           2.5           2.5             1             0
             k_08           2.5           2.5             1             0
             k_09           2.5           2.5             1             0
             k_10           2.5           2.5             1             0
        Maximum changes in "Control File" parameters:
-         Maximum relative change = -0.00602559   [k_05]
-         Maximum factor change = 1.00603   [k_05]
+         Maximum relative change = -0.00401997   [k_05]
+         Maximum factor change = 1.00402   [k_05]
 
     Iteration 4 Parameter Upgrades (Transformed Numeric Parameters) 
       Parameter     Current       Previous       Factor       Relative
         Name         Value         Value         Change        Change
       ----------  ------------  ------------  ------------  ------------
-           sup_1       10.0289       10.0273       1.00016  -0.000161381
-           sup_2       10.0627       10.0565       1.00062  -0.000616477
+           sup_1       10.0145       10.0138       1.00007  -7.17797e-005
+           sup_2       10.0315       10.0295        1.0002   -0.00019881
        Maximum changes in "Transformed Numeric" parameters:
-         Maximum relative change = -0.000616477   [sup_2]
-         Maximum factor change = 1.00062   [sup_2]
+         Maximum relative change = -0.00019881   [sup_2]
+         Maximum factor change = 1.0002   [sup_2]
 
 OPTIMISATION ITERATION NUMBER: 5
 
   Iteration type: super parameter solution
     SVD Package: Eigen JacobiSVD
     Matrix Inversion: "Jt Q J"
-    Model calls so far : 52
+    Model calls so far : 53
 
-    Current regularization weight factor                      : 237.599
-    Starting phi for this iteration                     Total : 11.3407
+    Current regularization weight factor                      : 243.246
+    Starting phi for this iteration                     Total : 11.5594
     Starting measurement phi for this iteration         Total : 2.0714
-    Starting regularization phi for this iteration      Total : 9.2693
+    Starting regularization phi for this iteration      Total : 9.48796
     Contribution to phi from observation group         "head" : 2.0714
-    Contribution to phi from observation group        "regul" : 9.2693
+    Contribution to phi from observation group        "regul" : 9.48796
     Number of terms in the jacobian equal to zero: 12 / 60 (20%)
 
 
 
     ---  Solving for regularization weight factor   ---   
-    Starting regularization weight factor      : 237.599
+    Starting regularization weight factor      : 243.246
     Starting measurement objective function    : 2.0714
-    Starting regularization objective function : 9.2693
+    Starting regularization objective function : 9.48796
 
     Target measurement objective function      : 2
 
-      updated regularization  weight factor            : 237.599
-      FRACPHIM adjusted measurement objective function : 2.07472
-      discrepancy                                      : 3.74%
+      updated regularization  weight factor            : 243.246
+      FRACPHIM adjusted measurement objective function : 2.1035
+      discrepancy                                      : 5.17%
 
-      updated regularization  weight factor            : 182.768
-      FRACPHIM adjusted measurement objective function : 1.42805
-      discrepancy                                      : 28.6%
+      updated regularization  weight factor            : 187.112
+      FRACPHIM adjusted measurement objective function : 1.43879
+      discrepancy                                      : 28.1%
 
-      updated regularization  weight factor            : 237.599
-      FRACPHIM adjusted measurement objective function : 2.07472
-      discrepancy                                      : 3.74%
+      updated regularization  weight factor            : 229.994
+      FRACPHIM adjusted measurement objective function : 1.93975
+      discrepancy                                      : 3.01%
 
-      updated regularization  weight factor            : 229.599
-      FRACPHIM adjusted measurement objective function : 1.97591
-      discrepancy                                      : 1.2%
-
-      updated regularization  weight factor            : 232.655
-      FRACPHIM adjusted measurement objective function : 2.01349
-      discrepancy                                      : 0.674%
+      updated regularization  weight factor            : 235.056
+      FRACPHIM adjusted measurement objective function : 2.00183
+      discrepancy                                      : 0.0914%
 
     ---  optimal regularization weight factor found  ---   
-      updated regularization  weight factor            : 232.655
-      FRACPHIM adjusted measurement objective function : 2.01349
-      discrepancy                                      : 0.674%
+      updated regularization  weight factor            : 235.056
+      FRACPHIM adjusted measurement objective function : 2.00183
+      discrepancy                                      : 0.0914%
 
 
     Summary of upgrade runs:
-      Lambda =     0.10; Type: upgrade_run; length = 2.62e-002;   phi = 11.1242 (99.79% of starting phi)
-      Lambda =     1.00; Type: upgrade_run; length = 2.50e-002;   phi = 11.1226 (99.77% of starting phi)
-      Lambda =    10.00; Type: upgrade_run; length = 1.71e-002;   phi = 11.1375 (99.91% of starting phi)
-      Lambda =    50.00; Type: upgrade_run; length = 7.14e-003;   phi = 11.1464 (99.99% of starting phi)
-      Lambda =   100.00; Type: upgrade_run; length = 4.14e-003;   phi = 11.1387 (99.92% of starting phi)
-      Lambda =   200.00; Type: upgrade_run; length = 2.25e-003;   phi = 11.1323 (99.86% of starting phi)
-      Lambda =  1000.00; Type: upgrade_run; length = 4.90e-004;   phi = 11.1242 (99.79% of starting phi)
+      Lambda =     0.10; Type: upgrade_run; length = 5.40e-002;   phi = 11.2033 (99.67% of starting phi)
+      Lambda =     1.00; Type: upgrade_run; length = 5.33e-002;   phi = 11.2283 (99.90% of starting phi)
+      Lambda =    10.00; Type: upgrade_run; length = 4.77e-002;   phi = 11.2106 (99.74% of starting phi)
+      Lambda =   100.00; Type: upgrade_run; length = 2.33e-002;   phi = 11.2251 (99.87% of starting phi)
+      Lambda =   250.00; Type: upgrade_run; length = 1.25e-002;   phi = 11.24 (100.00% of starting phi)
+      Lambda =   500.00; Type: upgrade_run; length = 7.08e-003;   phi = 11.2228 (99.85% of starting phi)
+      Lambda =  1000.00; Type: upgrade_run; length = 3.79e-003;   phi = 11.2187 (99.81% of starting phi)
 
   Model calls in iteration 5: 12
-  Total model calls at end of iteration 5: 64
+  Total model calls at end of iteration 5: 65
 
 
     Iteration 5 Parameter Upgrades (Control File Parameters) 
@@ -634,402 +635,43 @@ OPTIMISATION ITERATION NUMBER: 5
         Name         Value         Value         Change        Change
       ----------  ------------  ------------  ------------  ------------
            stage             1             1             1             0
-            k_01       1.89706       1.89718       1.00007  6.52546e-005
-            k_02       1.43954       1.43972       1.00013   0.000130511
-            k_03       1.43954       1.43972       1.00013   0.000130511
-            k_04       1.77149       1.77147       1.00001  -1.38868e-005
-            k_05       2.17999       2.17965       1.00016  -0.000158282
-            k_06       2.33452       2.33433       1.00008  -7.91232e-005
+            k_01       1.89668       1.89717       1.00026   0.000256804
+            k_02       1.43896        1.4397       1.00051   0.000513509
+            k_03       1.43896        1.4397       1.00051   0.000513509
+            k_04        1.7725       1.77169       1.00045  -0.000453578
+            k_05       2.18334       2.18024       1.00142   -0.00142168
+            k_06       2.33631       2.33465       1.00071  -0.000710598
             k_07           2.5           2.5             1             0
             k_08           2.5           2.5             1             0
             k_09           2.5           2.5             1             0
             k_10           2.5           2.5             1             0
        Maximum changes in "Control File" parameters:
-         Maximum relative change = -0.000158282   [k_05]
-         Maximum factor change = 1.00016   [k_05]
+         Maximum relative change = -0.00142168   [k_05]
+         Maximum factor change = 1.00142   [k_05]
 
     Iteration 5 Parameter Upgrades (Transformed Numeric Parameters) 
       Parameter     Current       Previous       Factor       Relative
         Name         Value         Value         Change        Change
       ----------  ------------  ------------  ------------  ------------
-           sup_1       10.0288       10.0289       1.00001  7.91322e-006
-           sup_2       10.0629       10.0627       1.00002  -2.14033e-005
+           sup_1       10.0146       10.0145       1.00001  -5.92625e-006
+           sup_2       10.0323       10.0315       1.00008  -7.86875e-005
        Maximum changes in "Transformed Numeric" parameters:
-         Maximum relative change = -2.14033e-005   [sup_2]
-         Maximum factor change = 1.00002   [sup_2]
-
-OPTIMISATION ITERATION NUMBER: 6
-
-  Iteration type: base parameter solution
-    SVD Package: Eigen JacobiSVD
-    Matrix Inversion: "Jt Q J"
-    Model calls so far : 64
-
-    Current regularization weight factor                      : 232.655
-    Starting phi for this iteration                     Total : 11.1242
-    Starting measurement phi for this iteration         Total : 2.0449
-    Starting regularization phi for this iteration      Total : 9.07928
-    Contribution to phi from observation group         "head" : 2.0449
-    Contribution to phi from observation group        "regul" : 9.07928
-    Number of terms in the jacobian equal to zero: 135 / 300 (45%)
-
-
-    ---  Solving for regularization weight factor   ---   
-    Starting regularization weight factor      : 232.655
-    Starting measurement objective function    : 2.0449
-    Starting regularization objective function : 9.07928
-
-    Target measurement objective function      : 2
-
-      updated regularization  weight factor            : 249.131
-      FRACPHIM adjusted measurement objective function : 2.09068
-      discrepancy                                      : 4.53%
-
-      updated regularization  weight factor            : 242.838
-      FRACPHIM adjusted measurement objective function : 2.01276
-      discrepancy                                      : 0.638%
-
-    ---  optimal regularization weight factor found  ---   
-      updated regularization  weight factor            : 242.838
-      FRACPHIM adjusted measurement objective function : 2.01276
-      discrepancy                                      : 0.638%
-
-
-    Summary of upgrade runs:
-      Lambda =     0.10; Type: upgrade_run; length = 1.81e-001;  phi = 11.4246 (99.16% of starting phi)
-      Lambda =     1.00; Type: upgrade_run; length = 1.71e-001;  phi = 11.447 (99.35% of starting phi)
-      Lambda =     5.00; Type: upgrade_run; length = 1.38e-001;  phi = 11.4537 (99.41% of starting phi)
-      Lambda =    10.00; Type: upgrade_run; length = 1.12e-001;  phi = 11.4413 (99.30% of starting phi)
-      Lambda =    20.00; Type: upgrade_run; length = 8.09e-002;  phi = 11.462 (99.48% of starting phi)
-      Lambda =   100.00; Type: upgrade_run; length = 2.56e-002;  phi = 11.4934 (99.76% of starting phi)
-      Lambda =  1000.00; Type: upgrade_run; length = 3.00e-003;  phi = 11.513 (99.93% of starting phi)
-
-  Model calls in iteration 6: 27
-  Total model calls at end of iteration 6: 91
-
-
-    Iteration 6 Parameter Upgrades (Control File Parameters) 
-      Parameter     Current       Previous       Factor       Relative
-        Name         Value         Value         Change        Change
-      ----------  ------------  ------------  ------------  ------------
-           stage             1             1             1             0
-            k_01       1.97672       1.89706       1.04199    -0.0419889
-            k_02       1.41467       1.43954       1.01757     0.0172713
-            k_03       1.41467       1.43954       1.01757     0.0172713
-            k_04       1.83358       1.77149       1.03505    -0.0350517
-            k_05       2.20362       2.17999       1.01084    -0.0108403
-            k_06       2.35635       2.33452       1.00935   -0.00935139
-            k_07           2.5           2.5             1             0
-            k_08           2.5           2.5             1             0
-            k_09           2.5           2.5             1             0
-            k_10           2.5           2.5             1             0
-       Maximum changes in "Control File" parameters:
-         Maximum relative change = -0.0419889   [k_01]
-         Maximum factor change = 1.04199   [k_01]
-
-    Iteration 6 Parameter Upgrades (Transformed Numeric Parameters) 
-      Parameter     Current       Previous       Factor       Relative
-        Name         Value         Value         Change        Change
-      ----------  ------------  ------------  ------------  ------------
-            k_01     -0.203991     -0.239718       1.17514      0.149034
-            k_02     -0.494568     -0.479435       1.03156    -0.0315637
-            k_03     -0.494568     -0.479435       1.03156    -0.0315637
-            k_04     -0.269278     -0.299203       1.11113      0.100013
-            k_05     -0.109605      -0.11897       1.08544     0.0787179
-            k_06    -0.0514002     -0.059485       1.15729      0.135913
-            k_07  -1.11022e-016  -1.11022e-016             1            -0
-            k_08  -1.11022e-016  -1.11022e-016             1            -0
-            k_09  -1.11022e-016  -1.11022e-016             1            -0
-            k_10  -1.11022e-016  -1.11022e-016             1            -0
-       Maximum changes in "Transformed Numeric" parameters:
-         Maximum relative change = 0.149034   [k_01]
-         Maximum factor change = 1.17514   [k_01]
-
-OPTIMISATION ITERATION NUMBER: 7
-
-  Iteration type: super parameter solution
-    SVD Package: Eigen JacobiSVD
-    Matrix Inversion: "Jt Q J"
-    Model calls so far : 91
-
-    Current regularization weight factor                      : 242.838
-    Starting phi for this iteration                     Total : 11.4413
-    Starting measurement phi for this iteration         Total : 2.0621
-    Starting regularization phi for this iteration      Total : 9.37921
-    Contribution to phi from observation group         "head" : 2.0621
-    Contribution to phi from observation group        "regul" : 9.37921
-    Number of terms in the jacobian equal to zero: 12 / 60 (20%)
-
-
-
-    ---  Solving for regularization weight factor   ---   
-    Starting regularization weight factor      : 242.838
-    Starting measurement objective function    : 2.0621
-    Starting regularization objective function : 9.37921
-
-    Target measurement objective function      : 2
-
-      updated regularization  weight factor            : 242.838
-      FRACPHIM adjusted measurement objective function : 1.97772
-      discrepancy                                      : 1.11%
-
-      updated regularization  weight factor            : 242.838
-      FRACPHIM adjusted measurement objective function : 1.97772
-      discrepancy                                      : 1.11%
-
-      updated regularization  weight factor            : 242.838
-      FRACPHIM adjusted measurement objective function : 1.97772
-      discrepancy                                      : 1.11%
-
-      updated regularization  weight factor            : 242.838
-      FRACPHIM adjusted measurement objective function : 1.97772
-      discrepancy                                      : 1.11%
-
-      updated regularization  weight factor            : 245.347
-      FRACPHIM adjusted measurement objective function : 2.00869
-      discrepancy                                      : 0.434%
-
-    ---  optimal regularization weight factor found  ---   
-      updated regularization  weight factor            : 245.347
-      FRACPHIM adjusted measurement objective function : 2.00869
-      discrepancy                                      : 0.434%
-
-
-    Summary of upgrade runs:
-      Lambda =     0.10; Type: upgrade_run; length = 3.20e-002;   phi = 11.5483 (100.09% of starting phi)
-      Lambda =     1.00; Type: upgrade_run; length = 3.07e-002;   phi = 11.5467 (100.07% of starting phi)
-      Lambda =    10.00; Type: upgrade_run; length = 2.16e-002;   phi = 11.5358 (99.98% of starting phi)
-      Lambda =    20.00; Type: upgrade_run; length = 1.62e-002;   phi = 11.5425 (100.04% of starting phi)
-      Lambda =    40.00; Type: upgrade_run; length = 1.08e-002;   phi = 11.5351 (99.97% of starting phi)
-      Lambda =   100.00; Type: upgrade_run; length = 5.42e-003;   phi = 11.552 (100.12% of starting phi)
-      Lambda =  1000.00; Type: upgrade_run; length = 6.37e-004;   phi = 11.5404 (100.02% of starting phi)
-
-  Model calls in iteration 7: 12
-  Total model calls at end of iteration 7: 103
-
-
-    Iteration 7 Parameter Upgrades (Control File Parameters) 
-      Parameter     Current       Previous       Factor       Relative
-        Name         Value         Value         Change        Change
-      ----------  ------------  ------------  ------------  ------------
-           stage             1             1             1             0
-            k_01       1.97662       1.97672       1.00005  4.77054e-005
-            k_02       1.41449       1.41467       1.00013   0.000130207
-            k_03       1.41449       1.41467       1.00013   0.000130207
-            k_04       1.83377       1.83358        1.0001  -0.000100895
-            k_05       2.20411       2.20362       1.00022  -0.000222406
-            k_06       2.35658       2.35635        1.0001  -9.90515e-005
-            k_07           2.5           2.5             1             0
-            k_08           2.5           2.5             1             0
-            k_09           2.5           2.5             1             0
-            k_10           2.5           2.5             1             0
-       Maximum changes in "Control File" parameters:
-         Maximum relative change = -0.000222406   [k_05]
-         Maximum factor change = 1.00022   [k_05]
-
-    Iteration 7 Parameter Upgrades (Transformed Numeric Parameters) 
-      Parameter     Current       Previous       Factor       Relative
-        Name         Value         Value         Change        Change
-      ----------  ------------  ------------  ------------  ------------
-           sup_1       9.99993            10       1.00001  6.62224e-006
-           sup_2       10.0003            10       1.00003  -2.74422e-005
-       Maximum changes in "Transformed Numeric" parameters:
-         Maximum relative change = -2.74422e-005   [sup_2]
-         Maximum factor change = 1.00003   [sup_2]
-
-OPTIMISATION ITERATION NUMBER: 8
-
-  Iteration type: super parameter solution
-    SVD Package: Eigen JacobiSVD
-    Matrix Inversion: "Jt Q J"
-    Model calls so far : 103
-
-    Current regularization weight factor                      : 245.347
-    Starting phi for this iteration                     Total : 11.5404
-    Starting measurement phi for this iteration         Total : 2.0621
-    Starting regularization phi for this iteration      Total : 9.4783
-    Contribution to phi from observation group         "head" : 2.0621
-    Contribution to phi from observation group        "regul" : 9.4783
-    Number of terms in the jacobian equal to zero: 12 / 60 (20%)
-
-
-
-    ---  Solving for regularization weight factor   ---   
-    Starting regularization weight factor      : 245.347
-    Starting measurement objective function    : 2.0621
-    Starting regularization objective function : 9.4783
-
-    Target measurement objective function      : 2
-
-      updated regularization  weight factor            : 245.347
-      FRACPHIM adjusted measurement objective function : 2.05077
-      discrepancy                                      : 2.54%
-
-      updated regularization  weight factor            : 188.728
-      FRACPHIM adjusted measurement objective function : 1.3909
-      discrepancy                                      : 30.5%
-
-      updated regularization  weight factor            : 245.347
-      FRACPHIM adjusted measurement objective function : 2.05077
-      discrepancy                                      : 2.54%
-
-      updated regularization  weight factor            : 237.086
-      FRACPHIM adjusted measurement objective function : 1.94964
-      discrepancy                                      : 2.52%
-
-      updated regularization  weight factor            : 240.242
-      FRACPHIM adjusted measurement objective function : 1.98809
-      discrepancy                                      : 0.596%
-
-    ---  optimal regularization weight factor found  ---   
-      updated regularization  weight factor            : 240.242
-      FRACPHIM adjusted measurement objective function : 1.98809
-      discrepancy                                      : 0.596%
-
-
-    Summary of upgrade runs:
-      Lambda =     0.10; Type: upgrade_run; length = 6.85e-003;   phi = 11.3662 (100.20% of starting phi)
-      Lambda =     1.00; Type: upgrade_run; length = 6.74e-003;   phi = 11.3656 (100.20% of starting phi)
-      Lambda =    10.00; Type: upgrade_run; length = 5.91e-003;   phi = 11.3602 (100.15% of starting phi)
-      Lambda =   100.00; Type: upgrade_run; length = 3.04e-003;   phi = 11.3425 (99.99% of starting phi)
-      Lambda =   500.00; Type: upgrade_run; length = 9.98e-004;   phi = 11.3557 (100.11% of starting phi)
-      Lambda =  1000.00; Type: upgrade_run; length = 5.43e-004;   phi = 11.35 (100.06% of starting phi)
-      Lambda =  2000.00; Type: upgrade_run; length = 2.84e-004;   phi = 11.3467 (100.03% of starting phi)
-
-  Model calls in iteration 8: 12
-  Total model calls at end of iteration 8: 115
-
-
-    Iteration 8 Parameter Upgrades (Control File Parameters) 
-      Parameter     Current       Previous       Factor       Relative
-        Name         Value         Value         Change        Change
-      ----------  ------------  ------------  ------------  ------------
-           stage             1             1             1             0
-            k_01       1.97655       1.97662       1.00004  3.73364e-005
-            k_02       1.41434       1.41449        1.0001   0.000104773
-            k_03       1.41434       1.41449        1.0001   0.000104773
-            k_04       1.83364       1.83377       1.00007  7.05651e-005
-            k_05         2.204       2.20411       1.00005  4.97252e-005
-            k_06       2.35653       2.35658       1.00002  2.21507e-005
-            k_07           2.5           2.5             1             0
-            k_08           2.5           2.5             1             0
-            k_09           2.5           2.5             1             0
-            k_10           2.5           2.5             1             0
-       Maximum changes in "Control File" parameters:
-         Maximum relative change = 0.000104773   [k_03]
-         Maximum factor change = 1.0001   [k_03]
-
-    Iteration 8 Parameter Upgrades (Transformed Numeric Parameters) 
-      Parameter     Current       Previous       Factor       Relative
-        Name         Value         Value         Change        Change
-      ----------  ------------  ------------  ------------  ------------
-           sup_1       9.99978       9.99993       1.00002  1.53102e-005
-           sup_2       10.0003       10.0003             1  1.30356e-006
-       Maximum changes in "Transformed Numeric" parameters:
-         Maximum relative change = 1.53102e-005   [sup_1]
-         Maximum factor change = 1.00002   [sup_1]
-
-OPTIMISATION ITERATION NUMBER: 9
-
-  Iteration type: super parameter solution
-    SVD Package: Eigen JacobiSVD
-    Matrix Inversion: "Jt Q J"
-    Model calls so far : 115
-
-    Current regularization weight factor                      : 240.242
-    Starting phi for this iteration                     Total : 11.3467
-    Starting measurement phi for this iteration         Total : 2.0621
-    Starting regularization phi for this iteration      Total : 9.28465
-    Contribution to phi from observation group         "head" : 2.0621
-    Contribution to phi from observation group        "regul" : 9.28465
-    Number of terms in the jacobian equal to zero: 12 / 60 (20%)
-
-
-
-    ---  Solving for regularization weight factor   ---   
-    Starting regularization weight factor      : 240.242
-    Starting measurement objective function    : 2.0621
-    Starting regularization objective function : 9.28465
-
-    Target measurement objective function      : 2
-
-      updated regularization  weight factor            : 240.242
-      FRACPHIM adjusted measurement objective function : 1.95491
-      discrepancy                                      : 2.25%
-
-      updated regularization  weight factor            : 240.242
-      FRACPHIM adjusted measurement objective function : 1.95491
-      discrepancy                                      : 2.25%
-
-      updated regularization  weight factor            : 246.74
-      FRACPHIM adjusted measurement objective function : 2.03276
-      discrepancy                                      : 1.64%
-
-      updated regularization  weight factor            : 244.258
-      FRACPHIM adjusted measurement objective function : 2.00291
-      discrepancy                                      : 0.146%
-
-    ---  optimal regularization weight factor found  ---   
-      updated regularization  weight factor            : 244.258
-      FRACPHIM adjusted measurement objective function : 2.00291
-      discrepancy                                      : 0.146%
-
-
-    Summary of upgrade runs:
-      Lambda =     0.10; Type: upgrade_run; length = 7.37e-003;   phi = 11.5104 (100.07% of starting phi)
-      Lambda =     1.00; Type: upgrade_run; length = 7.19e-003;   phi = 11.5101 (100.07% of starting phi)
-      Lambda =    10.00; Type: upgrade_run; length = 5.91e-003;   phi = 11.5066 (100.04% of starting phi)
-      Lambda =   100.00; Type: upgrade_run; length = 2.74e-003;   phi = 11.4954 (99.94% of starting phi)
-      Lambda =  1000.00; Type: upgrade_run; length = 4.82e-004;   phi = 11.5078 (100.05% of starting phi)
-      Lambda =  2000.00; Type: upgrade_run; length = 2.52e-004;   phi = 11.505 (100.03% of starting phi)
-      Lambda =  4000.00; Type: upgrade_run; length = 1.29e-004;   phi = 11.5035 (100.01% of starting phi)
-
-  Model calls in iteration 9: 12
-  Total model calls at end of iteration 9: 127
-
-
-    Iteration 9 Parameter Upgrades (Control File Parameters) 
-      Parameter     Current       Previous       Factor       Relative
-        Name         Value         Value         Change        Change
-      ----------  ------------  ------------  ------------  ------------
-           stage             1             1             1             0
-            k_01       1.97652       1.97655       1.00002  1.57851e-005
-            k_02       1.41428       1.41434       1.00004  4.43316e-005
-            k_03       1.41428       1.41434       1.00004  4.43316e-005
-            k_04       1.83358       1.83364       1.00003  3.33762e-005
-            k_05       2.20395         2.204       1.00003  2.63157e-005
-            k_06        2.3565       2.35653       1.00001  1.17121e-005
-            k_07           2.5           2.5             1             0
-            k_08           2.5           2.5             1             0
-            k_09           2.5           2.5             1             0
-            k_10           2.5           2.5             1             0
-       Maximum changes in "Control File" parameters:
-         Maximum relative change = 4.43316e-005   [k_03]
-         Maximum factor change = 1.00004   [k_03]
-
-    Iteration 9 Parameter Upgrades (Transformed Numeric Parameters) 
-      Parameter     Current       Previous       Factor       Relative
-        Name         Value         Value         Change        Change
-      ----------  ------------  ------------  ------------  ------------
-           sup_1       9.99971       9.99978       1.00001  6.70899e-006
-           sup_2       10.0003       10.0003             1  1.09136e-006
-       Maximum changes in "Transformed Numeric" parameters:
-         Maximum relative change = 6.70899e-006   [sup_1]
-         Maximum factor change = 1.00001   [sup_1]
+         Maximum relative change = -7.86875e-005   [sup_2]
+         Maximum factor change = 1.00008   [sup_2]
 
 -----------------------------------------
      ---   OPTIMIZATION COMPLETE   ---   
   Reason for terminating PEST++ simulation: PHIREDSTP / NPHISTP criterion met
   Summary of termination criteria:
-  NOPTMAX = 20 ;  NOPT at termination = 9
-  NPHINORED = 4 ;  NPHINORED at termination = 3
+  NOPTMAX = 20 ;  NOPT at termination = 5
+  NPHINORED = 4 ;  NPHINORED at termination = 1
   NRELPAR = 4; RELPARSTP = 0.005 ;  NRELPAR at termination = 3
   PHIREDSTP = 0.005; NPHISTP = 4
   NPHISTP lowest regularization PHI componets:
-        0.0386233
-        0.0386322
-        0.0386471
-        0.0386536
+        0.0390057
+        0.0390283
+        0.0390596
+        0.0390954
 
 FINAL OPTIMISATION RESULTS
 
@@ -1039,12 +681,12 @@ FINAL OPTIMISATION RESULTS
         Name         Value
     ------------  ------------
     stage                    1
-    k_01               1.97672
-    k_02               1.41467
-    k_03               1.41467
-    k_04               1.83358
-    k_05               2.20362
-    k_06               2.35635
+    k_01               1.89717
+    k_02                1.4397
+    k_03                1.4397
+    k_04               1.77169
+    k_05               2.18024
+    k_06               2.33465
     k_07                   2.5
     k_08                   2.5
     k_09                   2.5
@@ -1054,33 +696,33 @@ FINAL OPTIMISATION RESULTS
   Observations with optimal model-simulated equivalents and residuals
                  Name        Group             Measured             Modelled             Residual               Weight
                h01_01         head              1.50000              1.00000             0.500000             0.000000
-               h01_02         head              1.70000              1.30300             0.397000             0.000000
-               h01_03         head              1.90000              1.65700             0.243000             0.000000
-               h01_04         head              2.10000              1.97000             0.130000              10.0000
-               h01_05         head              2.30000              2.21900            0.0810000             0.000000
-               h01_06         head              2.50000              2.43900            0.0610000              10.0000
-               h01_07         head              2.70000              2.64500            0.0550000             0.000000
-               h01_08         head              2.90000              2.84500            0.0550000             0.000000
-               h01_09         head              3.10000              3.04500            0.0550000             0.000000
-               h01_10         head              3.30000              3.24500            0.0550000             0.000000
+               h01_02         head              1.70000              1.30500             0.395000             0.000000
+               h01_03         head              1.90000              1.65300             0.247000             0.000000
+               h01_04         head              2.10000              1.96700             0.133000              10.0000
+               h01_05         head              2.30000              2.22300            0.0770000             0.000000
+               h01_06         head              2.50000              2.44500            0.0550000              10.0000
+               h01_07         head              2.70000              2.65200            0.0480000             0.000000
+               h01_08         head              2.90000              2.85200            0.0480000             0.000000
+               h01_09         head              3.10000              3.05200            0.0480000             0.000000
+               h01_10         head              3.30000              3.25200            0.0480000             0.000000
                h02_01         head              1.50000              1.00000             0.500000             0.000000
-               h02_02         head              1.90000              1.60600             0.294000             0.000000
-               h02_03         head              2.30000              2.31300           -0.0130000             0.000000
-               h02_04         head              2.70000              2.93900            -0.239000             0.000000
-               h02_05         head              3.10000              3.43900            -0.339000             0.000000
-               h02_06         head              3.50000              3.87800            -0.378000             0.000000
-               h02_07         head              3.90000              4.29000            -0.390000             0.000000
-               h02_08         head              4.30000              4.69000            -0.390000             0.000000
-               h02_09         head              4.70000              5.09000            -0.390000             0.000000
-               h02_10         head              5.10000              5.49000            -0.390000             0.000000
+               h02_02         head              1.90000              1.61100             0.289000             0.000000
+               h02_03         head              2.30000              2.30500          -0.00500000             0.000000
+               h02_04         head              2.70000              2.93500            -0.235000             0.000000
+               h02_05         head              3.10000              3.44600            -0.346000             0.000000
+               h02_06         head              3.50000              3.89000            -0.390000             0.000000
+               h02_07         head              3.90000              4.30400            -0.404000             0.000000
+               h02_08         head              4.30000              4.70400            -0.404000             0.000000
+               h02_09         head              4.70000              5.10400            -0.404000             0.000000
+               h02_10         head              5.10000              5.50400            -0.404000             0.000000
 
 Final composite objective function 
-    Final phi                                           Total : 2.10072
-    Contribution to phi from observation group         "head" : 2.06210
-    Contribution to phi from observation group        "regul" : 0.0386233
+    Final phi                                           Total : 2.11041
+    Contribution to phi from observation group         "head" : 2.07140
+    Contribution to phi from observation group        "regul" : 0.0390057
 
 
-Number of forward model runs performed during optimiztion: 127
+Number of forward model runs performed during optimiztion: 65
 
 
 
@@ -1112,15 +754,13 @@ Note: Any observations or prior information equations with a group name
       where <matrix_file_name> can be an ASCII PEST-compatible matrix file (.mat) or
       a PEST-compatible uncertainty file (.unc).
 
-WARNING: PEST++ 'autonorm' option != 0.0. This can greatly effect the outcome 
-         of the following analyses, which depend heavily on the Jacobian
 
 
 Scaled observation weights used to form observation noise covariance matrix:
 
          observation               group       scaled_weight
-              H01_04                HEAD             9.84827
-              H01_06                HEAD             9.84827
+              H01_04                HEAD             9.82614
+              H01_06                HEAD             9.82614
 
 
 Note : posterior parameter covariance matrix written to file 'pest_reg.post.cov'
@@ -1132,12 +772,12 @@ Note : posterior parameter covariance matrix written to file 'pest_reg.post.cov'
 
 
                 name          prior_mean      prior_variance   prior_lower_bound   prior_upper_bound           post_mean       post_variance    post_lower_bound    post_upper_bound
-                K_01             2.50000            0.250000            0.250000             25.0000             1.97672            0.237170            0.209866             18.6186
-                K_02             2.50000            0.250000            0.250000             25.0000             1.41467            0.150090            0.237589             8.42336
-                K_03             2.50000            0.250000            0.250000             25.0000             1.41467            0.150090            0.237589             8.42336
-                K_04             2.50000            0.250000            0.250000             25.0000             1.83358            0.196054            0.238639             14.0884
-                K_05             2.50000            0.250000            0.250000             25.0000             2.20362            0.162689            0.343908             14.1199
-                K_06             2.50000            0.250000            0.250000             25.0000             2.35635            0.232677            0.255569             21.7256
+                K_01             2.50000            0.250000            0.250000             25.0000             1.89717            0.226781            0.211678             17.0034
+                K_02             2.50000            0.250000            0.250000             25.0000             1.43970            0.157122            0.232006             8.93399
+                K_03             2.50000            0.250000            0.250000             25.0000             1.43970            0.157122            0.232006             8.93399
+                K_04             2.50000            0.250000            0.250000             25.0000             1.77169            0.195028            0.231819             13.5403
+                K_05             2.50000            0.250000            0.250000             25.0000             2.18024            0.117418            0.449964             10.5641
+                K_06             2.50000            0.250000            0.250000             25.0000             2.33465            0.216855            0.273445             19.9331
                 K_07             2.50000            0.250000            0.250000             25.0000             2.50000            0.250000            0.250000             25.0000
                 K_08             2.50000            0.250000            0.250000             25.0000             2.50000            0.250000            0.250000             25.0000
                 K_09             2.50000            0.250000            0.250000             25.0000             2.50000            0.250000            0.250000             25.0000

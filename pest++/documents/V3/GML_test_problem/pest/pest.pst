@@ -61,4 +61,4 @@ misc\head.ins model\10par_xsec.hds
 ++ N_ITER_SUPER(4)
 ++ SUPER_EIGTHRES(1.0e-8)
 ++ MAX_N_SUPER(10)
-++ AUTO_NORM(4)
+++ #AUTO_NORM(4)
