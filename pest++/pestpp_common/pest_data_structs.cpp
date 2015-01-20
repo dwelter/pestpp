@@ -359,9 +359,11 @@ void PestppOptions::parce_line(const string &line)
 			istringstream is(value);
 			is >> boolalpha >> der_forgive;
 		}
-		else if (key == "NO_UNCERTAINTY")
+		else if (key == "UNCERTAINTY")
 		{
-			uncert = false;
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> uncert;
 		}
 		else if (key == "PREDICTIONS")
 		{
