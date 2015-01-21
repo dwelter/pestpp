@@ -64,9 +64,11 @@ PEST++ Options
              10
             100
            1000
-    parameter uncertainty flag = 0                   
+    parameter uncertainty flag = 1                   
     parameter covariance file =                     
     prediction names = 
+         H02_08
+         H01_08
 
 
 Parameter group information
@@ -723,3 +725,97 @@ Final composite objective function
 
 
 Number of forward model runs performed during optimiztion: 65
+
+
+
+
+-----------------------------------------------------------------------
+Note: The following uncertainty estimates were calculated using 
+      Schur's complement for linear-based conditional uncertainty 
+      propogation.  For a derviation from Bayes equation, see 
+      M. N. Fienen, J. E. Doherty, R. J. Hunt, and H. W. Reeves. 
+      1010. 'Using Prediction Uncertainty Analysis to Design 
+      Hydrologic Monitoring Networks : Example Applications 
+      from the Great Lakes Water Availability Pilot Project'. 
+      See PEST++ V3 documentation for implementation details.
+-----------------------------------------------------------------------
+
+Note: The observation covariance matrix has been constructed from 
+      weights listed in the pest control file that have been scaled by 
+      by the final objective function components to account for 
+      the level of measurement noise implied by the original weights so
+      the total objective function is equal to the number of  
+      non-zero weighted observations.
+
+Note: Any observations or prior information equations with a group name
+      starting with 'regul' are dropped from the jacobian and observation
+      covariance matrices before uncertainty calculations.  Please
+      make sure that all expert knowledge is expressed in the prior 
+      parameter bounds or through a covariance matix, which can be 
+      supplied as a pest++ option as 'parameter_covariance(<matrix_file_name>),
+      where <matrix_file_name> can be an ASCII PEST-compatible matrix file (.mat) or
+      a PEST-compatible uncertainty file (.unc).
+
+
+
+Scaled observation weights used to form observation noise covariance matrix:
+
+         observation               group       scaled_weight
+              H01_04                HEAD             9.82614
+              H01_06                HEAD             9.82614
+
+
+Note : posterior parameter covariance matrix written to file 'pest_reg.post.cov'
+
+
+---------------------------------------
+---- parameter uncertainty summary ----
+---------------------------------------
+
+
+                name          prior_mean      prior_variance   prior_lower_bound   prior_upper_bound           post_mean       post_variance    post_lower_bound    post_upper_bound
+                K_01             2.50000            0.250000            0.250000             25.0000             1.89717            0.226781            0.211678             17.0034
+                K_02             2.50000            0.250000            0.250000             25.0000             1.43970            0.157122            0.232006             8.93399
+                K_03             2.50000            0.250000            0.250000             25.0000             1.43970            0.157122            0.232006             8.93399
+                K_04             2.50000            0.250000            0.250000             25.0000             1.77169            0.195028            0.231819             13.5403
+                K_05             2.50000            0.250000            0.250000             25.0000             2.18024            0.117418            0.449964             10.5641
+                K_06             2.50000            0.250000            0.250000             25.0000             2.33465            0.216855            0.273445             19.9331
+                K_07             2.50000            0.250000            0.250000             25.0000             2.50000            0.250000            0.250000             25.0000
+                K_08             2.50000            0.250000            0.250000             25.0000             2.50000            0.250000            0.250000             25.0000
+                K_09             2.50000            0.250000            0.250000             25.0000             2.50000            0.250000            0.250000             25.0000
+                K_10             2.50000            0.250000            0.250000             25.0000             2.50000            0.250000            0.250000             25.0000
+
+WARNING: the following parameters were not found in the final 
+      base parameter jacobian and were subsequently not included 
+      in the uncertainty analysis calculations.  This may lead to 
+      NON-CONSERVATIVE uncertainty estimates. Please 
+      consider including all parameters:
+               STAGE
+
+Note: Upper and lower uncertainty bounds of non-transformed parameters 
+      are calculated as: <prior,post>_mean +/- (2.0 * sqrt(<prior,post>_variance)). 
+      For log-transformed parameters, the 'variance' reported above is the variance 
+       of the log of the parameter value. For these paramters, the upper and lower 
+      uncertainty bounds are calculated as: 
+      10^(log(<prior,post>_mean) +/- (2.0*sqrt(<prior,post>_variance))).
+
+Note : the above parameter uncertainty summary was written to file 'pest_reg.par.usum.csv'
+
+
+----------------------------------------
+---- prediction uncertainty summary ----
+----------------------------------------
+
+
+     prediction_name          prior_mean      prior_variance   prior_lower_bound   prior_upper_bound           post_mean       post_variance    post_lower_bound    post_upper_bound
+              H01_08             2.40000            0.348072             1.22005             3.57995             2.85200           0.0905905             2.25003             3.45397
+              H02_08             3.80000             1.39229             1.44009             6.15991             4.70400            0.362362             3.50007             5.90793
+
+
+Note: predictive sensitivity vectors for both prior and 
+      posterior uncertainty calculations are the same 
+      and were extracted from final base parameter jacobian.
+      The upper and lower uncertainty bounds were calculated 
+      as: <prior,post>_mean +/- (2.0*sqrt(<prior,post>_variance)
+Note : the above prediction uncertainty summary was written to file 'pest_reg.pred.usum.csv'
+

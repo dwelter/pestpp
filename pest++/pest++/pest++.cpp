@@ -686,9 +686,11 @@ int main(int argc, char* argv[])
 				"'" << endl << endl;
 				 
 			//write a parameter prior and posterior summary to the rec file
-			la.write_par_credible_range(fout_rec, pest_scenario.get_ctl_parameter_info(), 
+			string parsum_filename = file_manager.get_base_filename() + ".par.usum.csv";
+			la.write_par_credible_range(fout_rec, parsum_filename, pest_scenario.get_ctl_parameter_info(), 
 				pest_scenario.get_ctl_parameters(), optimum_run.get_ctl_pars(),pest_scenario.get_ctl_ordered_par_names());
-			
+			fout_rec << "Note : the above parameter uncertainty summary was written to file '" + parsum_filename +
+				"'" << endl << endl;
 			//if predictions were defined, write a prior and posterior summary to the rec file
 			if (pred_names.size() > 0)
 			{
@@ -703,7 +705,10 @@ int main(int argc, char* argv[])
 					fval = optimum_run.get_obs().get_rec(pred_name);
 					init_final_pred_values[pred_name] = pair<double, double>(ival, fval);
 				}
-				la.write_pred_credible_range(fout_rec, init_final_pred_values);
+				string predsum_filename = file_manager.get_base_filename() + ".pred.usum.csv";
+				la.write_pred_credible_range(fout_rec, predsum_filename, init_final_pred_values);
+				fout_rec << "Note : the above prediction uncertainty summary was written to file '" + predsum_filename +
+					"'" << endl << endl;
 			}
 			cout << "  ---  finished uncertainty analysis calculations  ---  " << endl << endl << endl;
 		}
