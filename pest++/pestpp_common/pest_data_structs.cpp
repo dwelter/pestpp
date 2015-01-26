@@ -365,7 +365,7 @@ void PestppOptions::parce_line(const string &line)
 			istringstream is(value);
 			is >> boolalpha >> uncert;
 		}
-		else if (key == "PREDICTIONS")
+		else if (key == "PREDICTIONS" || key == "FORECASTS")
 		{
 			prediction_names.clear();
 			vector<string> prediction_tok;
@@ -375,7 +375,7 @@ void PestppOptions::parce_line(const string &line)
 				prediction_names.push_back(pname);
 			}
 		}
-		else if ((key == "PAR_COVARIANCE") || (key == "PARAMETER_COVARIANCE"))
+		else if ((key == "PARCOV") || (key == "PARAMETER_COVARIANCE"))
 		{
 			convert_ip(value, parcov_filename);
 		}
