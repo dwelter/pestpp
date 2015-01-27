@@ -621,13 +621,7 @@ int main(int argc, char* argv[])
 			fout_rec << "      See PEST++ V3 documentation for implementation details." << endl;
 			fout_rec << "-----------------------------------------------------------------------" << endl;
 			fout_rec << endl;
-			fout_rec << "Note: The observation covariance matrix has been constructed from " << endl;
-			fout_rec << "      weights listed in the pest control file that have been scaled by " << endl;
-			fout_rec << "      by the final objective function components to account for " << endl;
-			fout_rec << "      the level of measurement noise implied by the original weights so" << endl;
-			fout_rec << "      the total objective function is equal to the number of  "<< endl;
-			fout_rec << "      non-zero weighted observations." << endl;
-			fout_rec << endl;
+			
 			fout_rec << "Note: Any observations or prior information equations with a group name" << endl;
 			fout_rec << "      starting with 'regul' are dropped from the jacobian and observation" << endl;
 			fout_rec << "      covariance matrices before uncertainty calculations.  Please" << endl;
@@ -654,8 +648,28 @@ int main(int argc, char* argv[])
 			
 			//get a new obs info instance that accounts for residual phi
 			// and report new weights to the rec file
-			ObservationInfo reweight = normalize_weights_by_residual(pest_scenario, phi_report);
 			fout_rec << endl << endl;
+			ObservationInfo reweight;
+			if (pest_scenario.get_pestpp_options().get_scale_weights_flag())
+			{
+				reweight = normalize_weights_by_residual(pest_scenario, phi_report);
+				fout_rec << "Note: The observation covariance matrix has been constructed from " << endl;
+				fout_rec << "      weights listed in the pest control file that have been scaled by " << endl;
+				fout_rec << "      by the final objective function components to account for " << endl;
+				fout_rec << "      the level of measurement noise implied by the original weights so" << endl;
+				fout_rec << "      the total objective function is equal to the number of  " << endl;
+				fout_rec << "      non-zero weighted observations." << endl;
+				fout_rec << endl;
+				
+			}
+			else
+			{
+				reweight = normalize_weights_by_residual(pest_scenario);
+				fout_rec << "Note: The observation covariance matrix has been constructed from " << endl;
+				fout_rec << "      weights listed in the pest control file that have been scaled by " << endl;
+				fout_rec << "      by the expected objective function of " << setw(20) << pest_scenario.get_pestpp_options.get_expected_obj() << '.' <<endl;
+				fout_rec << "      to account for the anticipated level of measurement noise " << endl;
+			}
 			fout_rec << "Scaled observation weights used to form observation noise covariance matrix:" << endl;
 			fout_rec << endl << setw(20) << "observation" << setw(20) << "group" << setw(20) << "scaled_weight" << endl;
 			for (auto &oi : reweight.observations)
