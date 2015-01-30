@@ -1,0 +1,41 @@
+                    PARAMETER SENSITIVITIES: CASE pest_reg
+
+
+NUMERIC PARAMETER SENSITIVITIES FOR OPTIMISATION ITERATION NO. 1   ----->
+ Parameter name   Group        Current Value           CSS w/reg           CSS w/o reg
+   k_01            k            0.397940008672       0.0439137062942      0.00146379020981    
+   k_02            k            0.397940008672       0.0870729054293      0.00290243018098    
+   k_03            k            0.397940008672       0.0870729054293      0.00290243018098    
+   k_04            k            0.397940008672       0.0689568867496      0.00229856289165    
+   k_05            k            0.397940008672       0.0617481931203      0.00205827310401    
+   k_06            k            0.397940008672       0.0314038329496      0.00104679443165    
+   k_07            k            0.397940008672       0.00663233347787     0.000221077782596   
+   k_08            k            0.397940008672       0.00663233347787     0.000221077782596   
+   k_09            k            0.397940008672       0.00663233347787     0.000221077782596   
+   k_10            k            0.397940008672       0.00663233347787     0.000221077782596   
+
+
+NUMERIC PARAMETER SENSITIVITIES FOR OPTIMISATION ITERATION NO. 2   ----->
+ Parameter name   Group        Current Value           CSS w/reg           CSS w/o reg
+   sup_1           g_sup_1      10.0000000000        6.43413073038        0.206753267560      
+   sup_2           g_sup_2      10.0000000000        2.41712142269        0.0569275042212     
+
+
+NUMERIC PARAMETER SENSITIVITIES FOR OPTIMISATION ITERATION NO. 3   ----->
+ Parameter name   Group        Current Value           CSS w/reg           CSS w/o reg
+   sup_1           g_sup_1      10.0133491697        6.60198844748        0.202571627468      
+   sup_2           g_sup_2      10.0282025125        3.09168744362        0.0566103213969     
+
+
+NUMERIC PARAMETER SENSITIVITIES FOR OPTIMISATION ITERATION NO. 4   ----->
+ Parameter name   Group        Current Value           CSS w/reg           CSS w/o reg
+   sup_1           g_sup_1      10.0138074794        6.70364143644        0.206477406351      
+   sup_2           g_sup_2      10.0294691024        3.07810507417        0.0566174714095     
+
+
+NUMERIC PARAMETER SENSITIVITIES FOR OPTIMISATION ITERATION NO. 5   ----->
+ Parameter name   Group        Current Value           CSS w/reg           CSS w/o reg
+   sup_1           g_sup_1      10.0145262675        6.60976764079        0.202595440392      
+   sup_2           g_sup_2      10.0314630592        3.06350205354        0.0538886840353     
+
+

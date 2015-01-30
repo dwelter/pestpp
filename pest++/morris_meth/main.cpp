@@ -135,7 +135,7 @@ int main(int argc, char* argv[])
 	Pest pest_scenario;
 	pest_scenario.set_defaults();
 	try {
-		pest_scenario.process_ctl_file(file_manager.open_ifile_ext("pst"), file_manager);
+		pest_scenario.process_ctl_file(file_manager.open_ifile_ext("pst"), file_manager.build_filename("pst"));
 		file_manager.close_file("pst");
 	}
 	catch(PestError e)

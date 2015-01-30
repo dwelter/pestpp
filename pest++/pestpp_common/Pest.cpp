@@ -53,6 +53,47 @@ void Pest::check_inputs()
 	if (svd_info.maxsing == 0) {
 		svd_info.maxsing = min(numeric_pars.size(), observation_values.size());
 	}
+
+	int n_base = get_pestpp_options().get_n_iter_base();
+	if (n_base == -1 || n_base > 0)
+	{
+	}
+	else
+	{
+		stringstream ss;
+		ss << "pest++ option 'n_iter_base' must either be -1 or greater than 0, not " << n_base;
+		throw PestError(ss.str());
+	}
+
+	int n_super = get_pestpp_options().get_n_iter_super();
+	if (n_super < 0)
+	{
+		stringstream ss;
+		ss << "pest++ option 'n_iter_super' must >= 0, not " << n_super;
+		throw PestError(ss.str());
+	}
+
+	//check that prediction names are list in obs
+	if (pestpp_options.get_prediction_names().size() > 0)
+	{
+		vector<string> missing;
+		for (auto &pred_name : pestpp_options.get_prediction_names())
+		{
+			auto it_obs = find(ctl_ordered_obs_names.begin(), ctl_ordered_obs_names.end(), pred_name);
+			if (it_obs == ctl_ordered_obs_names.end())
+			{
+				missing.push_back(pred_name);
+			}
+		}
+		if (missing.size() > 0)
+		{
+			stringstream ss;
+			ss << "Pest::check_inputs() the following predictions were not found in the observation names: ";
+			for (auto &m : missing)
+				ss << m;
+			throw PestError(ss.str());
+		}
+	}
 }
 void Pest::check_io()
 {
@@ -79,6 +120,7 @@ void Pest::check_io()
 
 void Pest::check_par_obs()
 {
+	throw PestError("Pest::check_par_obs() should not be called!!!");
 	TemplateFiles templatefiles(false, false, get_tplfile_vec(), get_inpfile_vec(), get_ctl_ordered_par_names());
 	templatefiles.check_parameter_names();
 
@@ -109,7 +151,7 @@ vector<string> Pest::get_nonregul_obs() const
 	return ret_val;
 }
 
-int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
+int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 {
 	string line;
 	string line_upper;
@@ -463,7 +505,7 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 	}
 	catch (PestConversionError &e) {
 		std::stringstream out;
-		out << "Error parsing \"" << file_manager.build_filename("pst") << "\" on line number " << lnum << endl;
+		out << "Error parsing \"" << pst_filename << "\" on line number " << lnum << endl;
 		out << e.what() << endl;
 		e.add_front(out.str());
 		e.raise();
@@ -476,6 +518,9 @@ int Pest::process_ctl_file(ifstream &fin, FileManager &file_manager)
 	pestpp_options.set_max_n_super(ctl_parameters.size());
 	pestpp_options.set_max_super_frz_iter(5);
 	pestpp_options.set_max_reg_iter(20);
+	pestpp_options.set_uncert_flag(true);
+	pestpp_options.set_prediction_names(vector<string>());
+	pestpp_options.set_parcov_filename(string());
 	for(vector<string>::const_iterator b=pestpp_input.begin(),e=pestpp_input.end();
 		b!=e; ++b) {
 			pestpp_options.parce_line(*b);
@@ -541,7 +586,7 @@ const vector<string> &Pest::get_outfile_vec()
 }
 
 Pest::~Pest() {
-	if (regul_scheme_ptr !=0) delete regul_scheme_ptr;
+	//if (regul_scheme_ptr !=0) delete regul_scheme_ptr;
 }
 
 ostream& operator<< (ostream &os, const Pest& val)

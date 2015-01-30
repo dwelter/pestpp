@@ -172,6 +172,7 @@ public:
 	unordered_map<string, ObservationGroupRec> groups;
 	unordered_map<string, ObservationRec> observations;
 	double get_weight(const string &obs_name) const;
+	void set_weight(const string &obs_name, double &value);
 	string get_group(const string &obs_name) const;
 	const ObservationRec* get_observation_rec_ptr(const string &name) const;
 	const ObservationGroupRec* get_group_rec_ptr(const string &name) const;
@@ -225,6 +226,14 @@ public:
 	void set_max_super_frz_iter(int n) { max_super_frz_iter = n; }
 	void set_max_reg_iter(int n) { max_reg_iter = n; }	
 	void set_iter_summary_flag(bool _iter_summary_flag){iter_summary_flag = _iter_summary_flag;}
+	void set_uncert_flag(bool _flag){uncert = _flag; }
+	bool get_uncert_flag()const { return uncert; }
+	void set_prediction_names(vector<string> _names){ prediction_names = _names; }
+	vector<string> get_prediction_names()const { return prediction_names; }
+	void set_parcov_filename(string _filename){ parcov_filename = _filename; }
+	string get_parcov_filename()const { return parcov_filename; }
+	bool get_scale_weights_flag() const { return scale_weights; }
+	double get_expected_obj()const { return expected_obj; }
 private:
 	int n_iter_base;
 	int n_iter_super;
@@ -240,6 +249,11 @@ private:
 	vector<double> base_lambda_vec;	
 	bool iter_summary_flag;
 	bool der_forgive;
+	bool uncert;
+	bool scale_weights;
+	vector<string> prediction_names;
+	string parcov_filename;
+	double expected_obj;
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);
 ostream& operator<< (ostream &os, const ObservationInfo& val);

@@ -70,6 +70,8 @@ public:
 	virtual ~RunManagerAbstract(void) {}
 	virtual std::string get_run_filename() { return file_stor.get_filename(); }
 	virtual void print_run_summary(std::ostream &fout) { file_stor.print_run_summary(fout); }
+	//virtual Observations get_init_run_obs() { return init_run_obs; }
+	virtual std::vector<double> get_init_sim() { return init_sim;  }
 protected:
 	int total_runs;
 	int max_n_failure; // maximium number of times to retry a failed model run
@@ -81,6 +83,8 @@ protected:
 	std::vector<std::string> insfile_vec;
 	std::vector<std::string> outfile_vec;
 	bool run_requried(int run_id);
+	//Observations init_run_obs;
+	std::vector<double> init_sim;
 };
 
 #endif /*  RUNMANAGERABSTRACT_H */

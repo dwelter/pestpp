@@ -262,6 +262,13 @@ ostream& operator<< (ostream &os, const PestppOptions& val)
 	{
 		os << right << setw(15) << lam << endl;
 	}
+	os << "    uncertainty flag = " << left << setw(20) << val.get_uncert_flag() << endl;
+	os << "    parameter covariance file = " << left << setw(20) << val.get_parcov_filename() << endl;
+	os << "    scale observations by final phi = " << left << setw(20) << val.get_scale_weights_flag() << endl;
+	os << "    expected objective function value = " << left << setw(20) << val.get_expected_obj() << endl;
+	os << "    prediction names = " << endl;
+	for (auto &pname : val.get_prediction_names())
+		os << right << setw(15) << pname << endl;
 	os << endl;
 	return os;
 }
@@ -354,6 +361,31 @@ void PestppOptions::parce_line(const string &line)
 			istringstream is(value);
 			is >> boolalpha >> der_forgive;
 		}
+		else if (key == "UNCERTAINTY")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> uncert;
+		}
+		else if (key == "PREDICTIONS" || key == "FORECASTS")
+		{
+			prediction_names.clear();
+			vector<string> prediction_tok;
+			tokenize(value, prediction_tok, ",");
+			for (const auto &pname : prediction_tok)
+			{
+				prediction_names.push_back(pname);
+			}
+		}
+		else if ((key == "PARCOV") || (key == "PARAMETER_COVARIANCE"))
+		{
+			convert_ip(value, parcov_filename);
+		}
+		else if (key == "EXPECTED_OBJ")
+		{
+			scale_weights = false;
+			convert_ip(value, expected_obj);
+		}
 		else {
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");
 		}
@@ -432,6 +464,14 @@ bool ObservationRec::is_regularization() const
 double ObservationInfo::get_weight(const string &obs_name) const
 {
 	return observations.find(obs_name)->second.weight;
+}
+
+void ObservationInfo::set_weight(const string &obs_name, double &value)
+{
+	if (observations.find(obs_name) == observations.end())
+		throw PestError("ObservationInfo::set_weight() error: observation\
+			    " + obs_name + " not found");
+	observations[obs_name].weight = value;
 }
 
 string ObservationInfo::get_group(const string &obs_name) const

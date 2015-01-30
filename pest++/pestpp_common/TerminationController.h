@@ -36,6 +36,7 @@ public:
 	TerminationController(const TerminationController &rhs) {*this = rhs;}
 	bool process_iteration(const PhiComponets &phi, double relpar);
 	void set_terminate(bool _terminate_code) { terminate_code = _terminate_code; }
+	void set_reason(std::string _reason){ termimate_reason = _reason; }
 	bool check_last_iteration();
 	void reset();
 	const TerminationController& operator=(const TerminationController &rhs);

@@ -145,6 +145,13 @@ void RunManagerGenie::run()
 			file_stor.set_run_nfailed(i, max_n_failure);
 		}
 	}
+	/*if (init_run_obs.size() == 0)
+		int status = file_stor.get_observations(0, init_run_obs);*/
+	if (init_sim.size() == 0)
+	{
+		vector<double> pars;
+		int status = file_stor.get_run(0, pars, init_sim);
+	}
 }
 
 RunManagerGenie::~RunManagerGenie(void)
