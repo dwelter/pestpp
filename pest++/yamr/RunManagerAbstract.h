@@ -50,6 +50,7 @@ public:
 	virtual const std::vector<std::string> &get_par_name_vec() const;
 	virtual const std::vector<std::string> &get_obs_name_vec() const;
 	virtual void get_info(int run_id, int &run_status, std::string &info_txt, double &info_value);
+	virtual bool run_finished(int run_id);
 	virtual bool get_run(int run_id, Parameters &pars, Observations &obs, bool clear_old=true);
 	virtual bool get_run(int run_id, Parameters &pars, Observations &obs, std::string &info_txt, double &info_value, bool clear_old=true);
 	virtual bool get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs, std::string &info_txt, double &info_value);
@@ -68,6 +69,7 @@ public:
 	virtual std::vector<int> get_outstanding_run_ids();
 	virtual ~RunManagerAbstract(void) {}
 	virtual std::string get_run_filename() { return file_stor.get_filename(); }
+	virtual void print_run_summary(std::ostream &fout) { file_stor.print_run_summary(fout); }
 protected:
 	int total_runs;
 	int max_n_failure; // maximium number of times to retry a failed model run

@@ -220,10 +220,11 @@ string YAMRSlave::ins_err_msg(int i)
 	return err_msg;
 }
 
-int YAMRSlave::run_model(Parameters &pars, Observations &obs,NetPackage &net_pack)
+NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, NetPackage &net_pack)
 {
+	NetPackage::PackType final_run_status = NetPackage::PackType::RUN_FAILED;
 	bool done = false;
-	int success = 1,err = 0;
+	int err = 0;
 	int recv_fails = 0;	
 	int send_fails = 0;
 	std::vector<double> obs_vec;
@@ -329,7 +330,7 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs,NetPackage &net_pac
 				cout << "sending terminate signal to run thread" << endl;
 				f_terminate.set(true);
 				run_thread.join();
-				success = 0;
+				final_run_status = NetPackage::PackType::RUN_KILLED;
 				break;
 			}
 			else if (net_pack.get_type() == NetPackage::PackType::TERMINATE)
@@ -338,8 +339,8 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs,NetPackage &net_pac
 				cout << "sending terminate signal to run thread" << endl;
 				f_terminate.set(true);
 				run_thread.join();
-				success = 0;
 				terminate = true;
+				final_run_status = NetPackage::PackType::RUN_KILLED;
 				break;
 			}
 			else
@@ -386,231 +387,22 @@ int YAMRSlave::run_model(Parameters &pars, Observations &obs,NetPackage &net_pac
 		{
 			obs[obs_name_vec[i]] = obs_vec[i];
 		}
-		//IOPP method
-		//tpl_files.write(pars);		
-		//thread run_thread(w_run_commands, &f_terminate, &f_finished, comline_vec);
-		//while (true)
-		//{							
-		//	//check if the runner thread has finished
-		//	if (f_finished.get())
-		//	{
-		//		cout << "received finished signal from runner " << std::endl;
-		//		run_thread.join();
-		//		//don't break here, need to check one last time for incoming messages
-		//		done = true;
-		//	}
-		//	//this call includes a "sleep" for the timeout
-		//	err = recv_message(net_pack, OperSys::thread_sleep_milli_secs*1000);
-		//	if (err == -1)
-		//	{
-		//		recv_fails++;
-		//		if (recv_fails >= max_recv_fails)
-		//		{
-		//			cerr << "recv from master failed " << max_recv_fails << " times, exiting..." << endl;
-		//			f_terminate.set(true);
-		//			run_thread.join();
-		//			exit(-1);
-		//		}
-		//	}
-		//	//timeout on recv
-		//	else if (err == 0){}
-		//	else if (net_pack.get_type() == NetPackage::PackType::PING)
-		//	{
-		//		cout << "ping request recieved...";
-		//		net_pack.reset(NetPackage::PackType::PING, 0, 0, "");
-		//		const char* data = "\0";
-		//		err = send_message(net_pack, &data, 0);
-		//		if (err == -1)
-		//		{
-		//			send_fails++;
-		//			if (send_fails >= max_send_fails)
-		//			{
-		//				cerr << "send to master failed " << max_send_fails << " times, exiting..." << endl;
-		//				f_terminate.set(true);
-		//				run_thread.join();
-		//				exit(-1);
-		//			}
-		//		}
-		//		cout << "ping response sent" << endl;
-		//	}
-		//	else if (net_pack.get_type() == NetPackage::PackType::REQ_KILL)
-		//	{
-		//	    cout << "received kill request signal from master" << endl;
-		//		cout << "sending terminate signal to run thread" << endl;
-		//		f_terminate.set(true);
-		//		run_thread.join();
-		//		success = 0;				
-		//		break;
-		//	}
-		//	else if (net_pack.get_type() == NetPackage::PackType::TERMINATE)
-		//	{
-		//		cout << "received terminate signal from master" << endl;
-		//		cout << "sending terminate signal to run thread" << endl;
-		//		f_terminate.set(true);
-		//		run_thread.join();
-		//		success = 0;
-		//		terminate = true;
-		//		break;
-		//	}
-		//	else
-		//	{
-		//		cerr << "Received unsupported message from master, only PING REQ_KILL or TERMINATE can be sent during model run" << endl;
-		//		cerr << "something is wrong...exiting" << endl;
-		//		f_terminate.set(true);
-		//		run_thread.join();
-		//		exit(-1);
-		//	}	
-		//	if (done) break;
-		//}		
-		////if this run was terminated, throw an error to signal a failed run
-		//if (f_terminate.get())
-		//{
-		//	throw PestError("model run terminated");
-		//}
-		//// process instruction files		
-		//obs.clear();
-		//ins_files.read(obs_name_vec, obs);		
+		final_run_status = NetPackage::PackType::RUN_FINISHED;
 	}
 	catch(const std::exception& ex)
 	{
 		cerr << endl;
 		cerr << "   " << ex.what() << endl;
 		cerr << "   Aborting model run" << endl << endl;
-		success = 0;
+		NetPackage::PackType::RUN_FAILED;
 	}
 	catch(...)
 	{
 		cerr << "   Error running model" << endl;
 		cerr << "   Aborting model run" << endl;
-		success = 0;
+		NetPackage::PackType::RUN_FAILED;
 	}
-	return success;
-}
-
-int YAMRSlave::run_model(Parameters &pars, Observations &obs)
-{
-	int success = 1;
-	std::vector<double> obs_vec;
-	bool isDouble = true;
-	bool forceRadix = true;
-	//TemplateFiles tpl_files(isDouble, forceRadix, tplfile_vec, inpfile_vec, par_name_vec);
-	//InstructionFiles ins_files(insfile_vec, outfile_vec);
-	thread_flag terminate(false);
-	thread_flag finished(false);
-	try
-	{
-		//	message.str("");
-		//first delete any existing input and output files			
-		for (auto &out_file : outfile_vec)
-		{
-			if ((check_exist_out(out_file)) && (remove(out_file.c_str()) != 0))
-				throw PestError("model interface error: Cannot delete existing model output file " + out_file);
-		}
-		for (auto &in_file : inpfile_vec)
-		{
-			if ((check_exist_out(in_file)) && (remove(in_file.c_str()) != 0))
-				throw PestError("model interface error: Cannot delete existing model input file " + in_file);
-		}
-		int ifail;
-		int ntpl = tplfile_vec.size();
-		int npar = pars.size();
-		vector<string> par_name_vec;
-		vector<double> par_values;
-		for(auto &i : pars)
-		{
-		par_name_vec.push_back(i.first);
-		par_values.push_back(i.second);
-		}
-		if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))
-		{
-			throw PestError("Error running model: invalid parameter value returned");
-		}
-		wrttpl_(&ntpl, StringvecFortranCharArray(tplfile_vec, 50).get_prt(),
-		StringvecFortranCharArray(inpfile_vec, 50).get_prt(),
-		&npar, StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
-		par_values.data(), &ifail);
-		if(ifail != 0)
-		{
-		throw PestError("Error processing template file:" + tpl_err_msg(ifail));
-		}
-
-		// update parameter values		
-		pars.clear();
-		for (int i=0; i<npar; ++i)
-		{
-		pars[par_name_vec[i]] = par_values[i];
-		}
-
-		// run model - single thread
-		for (auto &i : comline_vec)
-		{
-			ifail = system(i.c_str());
-			if(ifail != 0)
-			{
-				cerr << "Error executing command line: " << i << endl;
-				throw PestError("Error executing command line: " + i);
-			}
-		}
-		// process instructio files
-		int nins = insfile_vec.size();
-		int nobs = obs_name_vec.size();
-		std::vector<double> obs_vec;
-		obs_vec.resize(nobs, -9999.00);
-		readins_(&nins, StringvecFortranCharArray(insfile_vec, 50).get_prt(),
-			StringvecFortranCharArray(outfile_vec, 50).get_prt(),
-			&nobs, StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
-			obs_vec.data(), &ifail);
-		if(ifail != 0)
-		{
-			throw PestError("Error processing instruction file");
-		}
-
-		// check parameters and observations for inf and nan
-		if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))
-		{
-			throw PestError("Error running model: invalid parameter value returned");
-		}
-		if (std::any_of(obs_vec.begin(), obs_vec.end(), OperSys::double_is_invalid))
-		{
-			throw PestError("Error running model: invalid observation value returned");
-		}
-		// update observation values		
-		obs.clear();
-		for (int i=0; i<nobs; ++i)
-		{
-			obs[obs_name_vec[i]] = obs_vec[i];
-		}
-		/*
-		//IOPP
-		tpl_files.write(pars);
-		// run model - single thread
-		for (auto &i : comline_vec)
-		{
-			ifail = system(i.c_str());
-			if (ifail != 0)
-			{
-				cerr << "Error executing command line: " << i << endl;
-				throw PestError("Error executing command line: " + i);
-			}
-		}
-		obs.clear();
-		ins_files.read(obs_name_vec, obs);
-		*/
-	}
-	catch (const std::exception& ex)
-	{
-		cerr << endl;
-		cerr << "   " << ex.what() << endl;
-		cerr << "   Aborting model run" << endl << endl;
-		success = 0;
-	}
-	catch (...)
-	{
-		cerr << "   Error running model" << endl;
-		cerr << "   Aborting model run" << endl;
-		success = 0;
-	}
-	return success;
+	return final_run_status;
 }
 
 void YAMRSlave::check_io()
@@ -736,14 +528,16 @@ void YAMRSlave::start(const string &host, const string &port)
 			int run_id = net_pack.get_run_id();
 			cout << "received parameters (group id = " << group_id << ", run id = " << run_id << ")" << endl;
 			cout << "starting model run..." << endl;
-			if (run_model(pars, obs, net_pack))
+
+			NetPackage::PackType final_run_status = run_model(pars, obs, net_pack);
+			if (final_run_status == NetPackage::PackType::RUN_FINISHED)
 			{
 				//send model results back
 				cout << "run complete" << endl;
 				cout << "sending results to master (group id = " << group_id << ", run id = " << run_id << ")..." <<endl;
 				cout << "results sent" << endl << endl;
 				serialized_data = Serialization::serialize(pars, par_name_vec, obs, obs_name_vec);
-				net_pack.reset(NetPackage::PackType::RUN_FINISH, group_id, run_id, "");
+				net_pack.reset(NetPackage::PackType::RUN_FINISHED, group_id, run_id, "");
 				err = send_message(net_pack, serialized_data.data(), serialized_data.size());
 				if (err == -1)
 				{
@@ -772,7 +566,7 @@ void YAMRSlave::start(const string &host, const string &port)
 			{
 				serialized_data.clear();
 				serialized_data.push_back('\0');
-				net_pack.reset(NetPackage::PackType::RUN_FAILED, group_id, run_id, "");
+				net_pack.reset(final_run_status, group_id, run_id, "");
 				err = send_message(net_pack, serialized_data.data(), serialized_data.size());
 				// Send READY Message to master
 				net_pack.reset(NetPackage::PackType::READY, 0, 0,"");

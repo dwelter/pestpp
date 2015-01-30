@@ -101,6 +101,16 @@ void RunManagerAbstract::update_run(int run_id, const Parameters &pars, const Ob
 	return file_stor.get_obs_name_vec();
 }
 
+ bool RunManagerAbstract::run_finished(int run_id)
+ {
+	 int run_status;
+	 string info_txt;
+	 double info_value;
+	 get_info(run_id, run_status, info_txt, info_value);
+	 bool run_finished = (run_status < 0) ? true : false;
+	 return run_finished;
+ }
+
  void RunManagerAbstract::get_info(int run_id, int &run_status, std::string &info_txt, double &info_value)
  {
 	  file_stor.get_info(run_id, run_status, info_txt, info_value);

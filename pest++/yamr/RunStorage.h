@@ -82,6 +82,7 @@ public:
 	static void export_diff_to_text_file(const std::string &in1_filename, const std::string &in2_filename, const std::string &out_filename);
 	void free_memory();
 	std::string get_filename() { return filename; }
+	void print_run_summary(std::ostream &fout);
 	~RunStorage();
 private:
 	static const int info_txt_length = 41;

@@ -616,6 +616,22 @@ void RunStorage::check_rec_id(int run_id)
 	}
 }
 
+
+void RunStorage::print_run_summary(std::ostream &fout)
+{
+	int nruns = get_nruns();
+	fout << "nruns = " << nruns << endl;
+	int status;
+	string info_text;
+	double info_value;
+	for (int irun = 0; irun < nruns; ++irun)
+	{
+		get_info(irun, status, info_text, info_value);
+		fout << "run_id=" << irun << "  :status=" << status << "  :info_text=" << info_text << "  :info_value=" << info_value << endl;
+	}
+
+}
+
 void RunStorage::export_diff_to_text_file(const std::string &in1_filename, const std::string &in2_filename, const std::string &out_filename)
 {
 	RunStorage rs1("");

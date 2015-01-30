@@ -803,7 +803,6 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 
 		//Build model runs
 		run_manager.reinitialize(file_manager.build_filename("rnu"));
-		
 		// Save base run as first model run so it is eassily accessible
 		Parameters base_model_pars = par_transform.ctl2model_cp(base_run.get_ctl_pars());
 		int run_id = run_manager.add_run(base_model_pars, "base_run");

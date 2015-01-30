@@ -32,14 +32,18 @@
 class YamrModelRun
 {
 public:
-	YamrModelRun(int _run_id, int _sockfd=0);
+	enum class RUN_STATUS { ACTIVE, KILLED, WAITING, COMPLETE };
+	YamrModelRun(int _run_id, RUN_STATUS _run_status = RUN_STATUS::WAITING, int _sockfd = 0);
 	int get_id(){return run_id;}
 	void set_socket(int _sockfd) {sockfd = _sockfd;}
 	int get_socket() const  {return sockfd;}
+	void set_run_status(RUN_STATUS _run_status) { run_status = _run_status; }
+	RUN_STATUS get_run_status() { return run_status; }
 	~YamrModelRun() {}
 private:
 	int sockfd;
 	int run_id;
+	RUN_STATUS run_status;
 };
 
 
@@ -119,16 +123,18 @@ public:
 	virtual int add_run(const Parameters &model_pars, const std::string &info_txt="", double info_value=RunStorage::no_data);
 	virtual int add_run(const std::vector<double> &model_pars, const std::string &info_txt="", double info_valuee=RunStorage::no_data);
 	virtual int add_run(const Eigen::VectorXd &model_pars, const std::string &info_txt="", double info_valuee=RunStorage::no_data);
+	virtual void update_run(int run_id, const Parameters &pars, const Observations &obs);
 	virtual void run();
 	~RunManagerYAMR(void);
 private:
 	std::string port;
 	static const int BACKLOG = 10;
-	static const int MAX_FAILED_PINGS = 3;
-	static const int PING_INTERVAL_SECS = 5;
-	static const int MAX_CONCURRENT_RUNS = 3;
+	static const int MAX_FAILED_PINGS = 5;
+	static const int PING_INTERVAL_SECS = 60;
+	static const int MAX_CONCURRENT_RUNS_LOWER_LIMIT = 3;
 	const double PERCENT_OVERDUE_RESCHED = 1.15; //15% past average runtime
-	const double PERCENT_OVERDUE_GIVEUP = 10.0; //1000% past average runtime	
+	const double PERCENT_OVERDUE_GIVEUP = 3.0; //1000% past average runtime	
+	int max_concurrent_runs;
 	int listener;
 	int fdmax;
 	int model_runs_done;
@@ -138,8 +144,6 @@ private:
 	std::deque<YamrModelRun> waiting_runs;
 	std::ofstream &f_rmr;
 	std::unordered_multimap<int, YamrModelRun> active_runs;
-	std::unordered_multimap<int, YamrModelRun> zombie_runs;
-	std::unordered_map<int, YamrModelRun> completed_runs;
 	SlaveInfo slave_info;
 	std::unordered_multimap<int, int> failure_map;
 	std::unordered_map<int, int> concurrent_map;
@@ -154,8 +158,10 @@ private:
 	void report(std::string message,bool to_cout);	
 	string get_time_string();
 	void echo();
-	std::unordered_multimap<int, YamrModelRun>::iterator get_active_run_id(int socket);
-	std::unordered_multimap<int, YamrModelRun>::iterator get_zombie_run_id(int socket);
+	void kill_runs(int run_id);
+	vector<int> get_overdue_runs_over_kill_threshold(int run_id);
+	bool all_runs_complete();
+	std::unordered_multimap<int, YamrModelRun>::iterator get_active_run_iter(int socket);
 };
 
 #endif /* RUNMANAGERYAMR_H */
