@@ -232,8 +232,8 @@ public:
 	vector<string> get_prediction_names()const { return prediction_names; }
 	void set_parcov_filename(string _filename){ parcov_filename = _filename; }
 	string get_parcov_filename()const { return parcov_filename; }
-	bool get_scale_weights_flag() const { return scale_weights; }
 	double get_expected_obj()const { return expected_obj; }
+	void set_expected_obj(double _val){ expected_obj = _val; }
 private:
 	int n_iter_base;
 	int n_iter_super;
@@ -250,7 +250,6 @@ private:
 	bool iter_summary_flag;
 	bool der_forgive;
 	bool uncert;
-	bool scale_weights;
 	vector<string> prediction_names;
 	string parcov_filename;
 	double expected_obj;

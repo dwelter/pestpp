@@ -264,7 +264,6 @@ ostream& operator<< (ostream &os, const PestppOptions& val)
 	}
 	os << "    uncertainty flag = " << left << setw(20) << val.get_uncert_flag() << endl;
 	os << "    parameter covariance file = " << left << setw(20) << val.get_parcov_filename() << endl;
-	os << "    scale observations by final phi = " << left << setw(20) << val.get_scale_weights_flag() << endl;
 	os << "    expected objective function value = " << left << setw(20) << val.get_expected_obj() << endl;
 	os << "    prediction names = " << endl;
 	for (auto &pname : val.get_prediction_names())
@@ -383,7 +382,6 @@ void PestppOptions::parce_line(const string &line)
 		}
 		else if (key == "EXPECTED_OBJ")
 		{
-			scale_weights = false;
 			convert_ip(value, expected_obj);
 		}
 		else {

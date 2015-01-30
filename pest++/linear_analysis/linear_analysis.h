@@ -195,6 +195,7 @@ private:
 };
 
 map<string, double> get_obj_comps(string &filename);
+map<string, int> get_nnz_group(Pest &pest_scenario);
 ObservationInfo normalize_weights_by_residual(Pest &pest_scenario, string &resid_filename);
 ObservationInfo normalize_weights_by_residual(Pest &pest_scenario, map<string, double> obj);
 

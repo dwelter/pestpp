@@ -66,19 +66,13 @@ map<string, double> get_obj_comps(string &filename)
 
 }
 
-ObservationInfo normalize_weights_by_residual(Pest &pest_scenario, string &resid_filename)
-{
-	map<string, double> obj_comps = get_obj_comps(resid_filename);
-	return normalize_weights_by_residual(pest_scenario, obj_comps);
-}
 
-ObservationInfo normalize_weights_by_residual(Pest &pest_scenario, map<string, double> obj_comps)
+map<string, int> get_nnz_group(Pest &pest_scenario)
 {
-	ObservationInfo obs_info = pest_scenario.get_ctl_observation_info();
-	map<string, string> pst_grps = pest_scenario.get_observation_groups();
 	vector<string> ogrp_names = pest_scenario.get_ctl_ordered_obs_group_names();
+	map<string, string> pst_grps = pest_scenario.get_observation_groups();
+	ObservationInfo obs_info = pest_scenario.get_ctl_observation_info();
 	const ObservationRec* obs_rec;
-	double weight;
 	map<string, int> grp_nnz;
 	for (auto &ogrp : ogrp_names) grp_nnz[ogrp] = 0;
 
@@ -87,6 +81,34 @@ ObservationInfo normalize_weights_by_residual(Pest &pest_scenario, map<string, d
 		obs_rec = obs_info.get_observation_rec_ptr(ogrp.first);
 		if (obs_rec->weight > 0.0) grp_nnz[ogrp.second]++;
 	}
+	return grp_nnz;
+}
+
+ObservationInfo normalize_weights_by_residual(Pest &pest_scenario, map<string, double> obj_comps)
+{
+	ObservationInfo obs_info = pest_scenario.get_ctl_observation_info();
+	map<string, string> pst_grps = pest_scenario.get_observation_groups();
+	vector<string> ogrp_names = pest_scenario.get_ctl_ordered_obs_group_names();
+	map<string, int> grp_nnz = get_nnz_group(pest_scenario);
+
+	const ObservationRec* obs_rec;
+	double weight;
+	double exp_obj = pest_scenario.get_pestpp_options().get_expected_obj();
+	if (exp_obj > 0.0)
+	{
+		double tot_obj = 0.0;
+		for (auto &oc : obj_comps) tot_obj = tot_obj + oc.second;
+		
+		if (tot_obj > 0.0)
+		{
+			double mult = exp_obj / tot_obj;
+			for (auto &oc : obj_comps)
+			{
+				obj_comps[oc.first] = mult * oc.second;
+			}
+		}
+	}
+	
 	for (auto &ogrp : pst_grps)
 	{
 		if (obj_comps[ogrp.second] < numeric_limits<double>::min())
