@@ -128,6 +128,7 @@
       <AdditionalIncludeDirectories>$(IFORT_COMPILER14)\mkl\include;$(SolutionDir);$(SolutionDir)\iopp;$(SolutionDir)\common</AdditionalIncludeDirectories>
       <OpenMPSupport>false</OpenMPSupport>
       <PreprocessorDefinitions>;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <FloatingPointExceptions>true</FloatingPointExceptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

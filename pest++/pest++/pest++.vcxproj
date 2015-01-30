@@ -124,6 +124,9 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <OpenMPSupport>false</OpenMPSupport>
+      <FloatingPointExceptions>true</FloatingPointExceptions>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <BasicRuntimeChecks>StackFrameRuntimeCheck</BasicRuntimeChecks>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
