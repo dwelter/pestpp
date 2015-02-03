@@ -128,7 +128,7 @@ void GsaAbstractBase::parce_line(const string &line, map<string, string> &arg_ma
 		}
 		else if (key == "MORRIS_POOLED_OBS"){
 		}
-		else if (key == "PHI_NORM"){
+		else if (key == "PHI_FORM"){
 		}
 		else if (key == "MORRIS_DELTA"){
 		}

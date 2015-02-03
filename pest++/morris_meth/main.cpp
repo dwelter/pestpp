@@ -22,6 +22,7 @@
 #include <fstream>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+#include "config_os.h""
 #include "MorrisMethod.h"
 #include "sobol.h"
 #include "Pest.h"
@@ -49,7 +50,7 @@ using Eigen::VectorXd;
 
 int main(int argc, char* argv[])
 {
-	string version = "2.3.7";
+	string version = PESTPP_VERSION;
 	cout << endl << endl;
 	cout << "             GSA++ Version " << version << endl << endl;
 	cout << "                 by Dave Welter" << endl;
@@ -267,10 +268,13 @@ int main(int argc, char* argv[])
 			convert_ip(morris_d_it->second, morris_delta);
 			default_delta = false;
 		}
-		auto morris_norm_it = gsa_opt_map.find("PHI_NORM");
+		auto morris_norm_it = gsa_opt_map.find("PHI_FORM");
 		if (morris_norm_it != gsa_opt_map.end())
 		{
-			convert_ip(morris_norm_it->second, norm);
+			if (morris_norm_it->second == "AVG")
+			{
+				norm = 1;
+			}
 		}
 		auto morris_pool_it = gsa_opt_map.find("MORRIS_POOLED_OBS");
 		if (morris_pool_it != gsa_opt_map.end())

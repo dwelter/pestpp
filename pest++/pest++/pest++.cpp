@@ -21,6 +21,7 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
+#include "config_os.h"
 #include "Pest.h"
 #include "Jacobian_1to1.h"
 #include "Transformable.h"
@@ -61,7 +62,7 @@ int main(int argc, char* argv[])
 	try
 	{
 #endif
-		string version = "3.0.0";
+		string version = PESTPP_VERSION;
 		cout << endl << endl;
 		cout << "             PEST++ Version " << version << endl << endl;
 		cout << "                 by Dave Welter" << endl;
