@@ -1365,7 +1365,12 @@ void SVDSolver::dynamic_weight_adj(const ModelRun &base_run, const Jacobian &jac
 		double mu;
 		PhiComponets phi_comp;
 		double target_phi_meas;
-		void set(double _mu, const PhiComponets &_phi_comp) { mu = _mu; phi_comp = _phi_comp; }
+		void set(double _mu, const PhiComponets &_phi_comp)
+		{
+			mu = max(numeric_limits<double>::min(),_mu);
+			mu = min(numeric_limits<double>::max(), mu);
+			phi_comp = _phi_comp;
+		}
 		double f() const { return phi_comp.meas - target_phi_meas; }
 		double error_frac() { return abs((phi_comp.meas - target_phi_meas) / target_phi_meas); }
 		double error_percent() { return (phi_comp.meas - target_phi_meas) / target_phi_meas; }

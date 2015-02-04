@@ -33,3 +33,9 @@ NUMERIC PARAMETER SENSITIVITIES FOR OPTIMISATION ITERATION NO. 4   ----->
    sup_2           g_sup_2      10.0294691024        3.07810507417        0.0566174714095     
 
 
+NUMERIC PARAMETER SENSITIVITIES FOR OPTIMISATION ITERATION NO. 5   ----->
+ Parameter name   Group        Current Value           CSS w/reg           CSS w/o reg
+   sup_1           g_sup_1      10.0145262675        6.60976764079        0.202595440392      
+   sup_2           g_sup_2      10.0314630592        3.06350205354        0.0538886840353     
+
+

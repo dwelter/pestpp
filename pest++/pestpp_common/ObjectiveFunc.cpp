@@ -50,7 +50,6 @@ PhiComponets ObjectiveFunc::get_phi_comp(const Observations &sim_obs, const Para
 	Observations::const_iterator obs_iter;
 	Observations::const_iterator obs_end = observations_ptr->end();
 
-
 	PhiComponets phi;
 	double tmp_phi = 0;
 	double tmp_weight = 1;
@@ -105,6 +104,11 @@ PhiComponets ObjectiveFunc::get_phi_comp(const Observations &sim_obs, const Para
 			phi.meas += tmp_phi;
 		}
 	}
+	//normalize the results
+	phi.meas = max(numeric_limits<double>::min(), phi.meas);
+	phi.regul = max(numeric_limits<double>::min(), phi.regul);
+	phi.meas = min(numeric_limits<double>::max(), phi.meas);
+	phi.regul = min(numeric_limits<double>::max(), phi.regul);
 	return phi;
 }
 
@@ -187,6 +191,13 @@ map<string, double> ObjectiveFunc::get_group_phi(const Observations &sim_obs, co
 			group_phi[*group] += tmp_phi;
 		}
 	}
+	//normalize the results
+	for (auto &gp : group_phi)
+	{
+		gp.second = min(numeric_limits<double>::max(), gp.second);		
+		gp.second = max(numeric_limits<double>::min(), gp.second);
+	}
+	
 	return group_phi;
 }
 
