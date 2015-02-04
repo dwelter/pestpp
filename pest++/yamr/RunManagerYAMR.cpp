@@ -352,6 +352,7 @@ void RunManagerYAMR::initialize_restart(const std::string &_filename)
 	waiting_runs.clear();
 	model_runs_done = 0;
 	failure_map.clear();
+	active_runs.clear();
 	vector<int> waiting_run_id_vec = get_outstanding_run_ids();
 	for (int &id : waiting_run_id_vec)
 	{
@@ -366,6 +367,7 @@ void RunManagerYAMR::reinitialize(const std::string &_filename)
 	model_runs_done = 0;
 	failure_map.clear();
 	concurrent_map.clear();
+	active_runs.clear();
 	RunManagerAbstract::reinitialize(_filename);
 	cur_group_id = NetPackage::get_new_group_id();
 }
@@ -375,6 +377,7 @@ void  RunManagerYAMR::free_memory()
 	waiting_runs.clear();
 	model_runs_done = 0;
 	failure_map.clear();
+	active_runs.clear();
 }
 
 int RunManagerYAMR::add_run(const Parameters &model_pars, const string &info_txt, double info_value)
@@ -696,7 +699,6 @@ void RunManagerYAMR::schedule_runs()
 		double global_avg_runtime = slave_info.get_global_runtime_minute();
 		bool should_schedule = false;
 		
-		set<int> killed_run_ids;
 		for (auto it_active = active_runs.begin(); it_active != active_runs.end(); ++it_active)
 		{
 			should_schedule = false;
@@ -709,14 +711,13 @@ void RunManagerYAMR::schedule_runs()
 			if (avg_runtime <= 0) avg_runtime = global_avg_runtime;
 			if (avg_runtime <= 0) avg_runtime = 1.0E+10;
 			vector<int> overdue_kill_runs_vec = get_overdue_runs_over_kill_threshold(run_id);
-			if (it_active->second.get_run_status() != YamrModelRun::RUN_STATUS::KILLED)
+			if (it_active->second.get_run_status() == YamrModelRun::RUN_STATUS::KILLED)
 			{
 				//this run has already been killed.  No need to rekill it
 				should_schedule = false;
 			}
 			else if (failure_map.count(run_id) + overdue_kill_runs_vec.size() >= max_n_failure)
 			{
-				killed_run_ids.insert(run_id);
 				// kill the overdue runs
 				kill_runs(run_id);
 				should_schedule = false;
@@ -724,7 +725,6 @@ void RunManagerYAMR::schedule_runs()
 			else if (overdue_kill_runs_vec.size() >= max_concurrent_runs)
 			{
 				// kill the overdue runs
-				killed_run_ids.insert(run_id);
 				kill_runs(run_id);
 				// reschedule runs as we still haven't reach the max failure threshold
 				// and there are not concurrent runs for this id becuse we just killed all of them
@@ -834,16 +834,18 @@ void RunManagerYAMR::process_message(int i_sock)
 		
 	}
 
-	else if (net_pack.get_type() == NetPackage::PackType::RUN_FINISHED && net_pack.get_groud_id() != cur_group_id)
+	else if ( (net_pack.get_type() == NetPackage::PackType::RUN_FINISHED 
+		|| net_pack.get_type() == NetPackage::PackType::RUN_FAILED
+		|| net_pack.get_type() == NetPackage::PackType::RUN_KILLED)
+			&& net_pack.get_groud_id() != cur_group_id)
 	{		
 		// this is an old run that did not finish on time
 		// just ignore it
-		//should never have this situation with the threaded slave
 		int run_id = net_pack.get_run_id();
 		int group_id = net_pack.get_groud_id();
-		stringstream ss;
-		ss << "run " << run_id << " received from unexpected group id: " << group_id << ", should be group: " << cur_group_id;
-		throw PestError(ss.str());
+		//stringstream ss;
+		//ss << "run " << run_id << " received from unexpected group id: " << group_id << ", should be group: " << cur_group_id;
+		//throw PestError(ss.str());
 	}
 	else if (net_pack.get_type() == NetPackage::PackType::RUN_FINISHED)
 	{		
