@@ -43,9 +43,6 @@
 using namespace std;
 using namespace pest_utils;
 
-YamrModelRun::YamrModelRun(int _run_id, RUN_STATUS _run_status, int _sockfd) : sockfd(_sockfd), run_id(_run_id), run_status(_run_status)
-{
-}
 
 SlaveInfo::SlaveRec::SlaveRec()
 {
@@ -101,14 +98,14 @@ size_t SlaveInfo::size() const
 	return slave_info_map.size();
 }
 
-SlaveInfo::State SlaveInfo::get_state(int sock_id)
+SlaveInfo::State SlaveInfo::get_state(int sock_id) const
 {
 	auto it = slave_info_map.find(sock_id);
 	assert(it != slave_info_map.end());
 	return it->second.state;
 }
 
- void SlaveInfo::set_state(int sock_id, const State _state)
+ void SlaveInfo::set_state(int sock_id, const State &_state)
  {
 	auto it = slave_info_map.find(sock_id);
 	assert(it != slave_info_map.end());
@@ -329,12 +326,12 @@ RunManagerYAMR::RunManagerYAMR(const vector<string> _comline_vec,
 	return;
 }
 
-unordered_multimap<int, YamrModelRun>::iterator RunManagerYAMR::get_active_run_iter(int socket)
+unordered_multimap<int, int>::iterator RunManagerYAMR::get_active_run_iter(int socket)
 {
-	auto i = active_runs.begin();
-	auto end = active_runs.end();
+	auto i = active_runs_map.begin();
+	auto end = active_runs_map.end();
 
-	for(; i!=end && i->second.get_socket() != socket; ++i)
+	for(; i!=end && i->second != socket; ++i)
 	{}
 	return i;
 }
@@ -352,12 +349,11 @@ void RunManagerYAMR::initialize_restart(const std::string &_filename)
 	waiting_runs.clear();
 	model_runs_done = 0;
 	failure_map.clear();
-	active_runs.clear();
+	active_runs_map.clear();
 	vector<int> waiting_run_id_vec = get_outstanding_run_ids();
 	for (int &id : waiting_run_id_vec)
 	{
-		YamrModelRun new_run(id);
-		waiting_runs.push_back(new_run);
+		waiting_runs.push_back(id);
 	}
 }
 
@@ -367,7 +363,7 @@ void RunManagerYAMR::reinitialize(const std::string &_filename)
 	model_runs_done = 0;
 	failure_map.clear();
 	concurrent_map.clear();
-	active_runs.clear();
+	active_runs_map.clear();
 	RunManagerAbstract::reinitialize(_filename);
 	cur_group_id = NetPackage::get_new_group_id();
 }
@@ -377,30 +373,27 @@ void  RunManagerYAMR::free_memory()
 	waiting_runs.clear();
 	model_runs_done = 0;
 	failure_map.clear();
-	active_runs.clear();
+	active_runs_map.clear();
 }
 
 int RunManagerYAMR::add_run(const Parameters &model_pars, const string &info_txt, double info_value)
 {
 	int run_id = file_stor.add_run(model_pars, info_txt, info_value);
-	YamrModelRun new_run(run_id);
-	waiting_runs.push_back(new_run);
+	waiting_runs.push_back(run_id);
 	return run_id;
 }
 
 int RunManagerYAMR::add_run(const std::vector<double> &model_pars, const string &info_txt, double info_value)
 {
 	int run_id = file_stor.add_run(model_pars, info_txt, info_value);
-	YamrModelRun new_run(run_id);
-	waiting_runs.push_back(new_run);
+	waiting_runs.push_back(run_id);
 	return run_id;
 }
 
 int RunManagerYAMR::add_run(const Eigen::VectorXd &model_pars, const string &info_txt, double info_value)
 {
 	int run_id = file_stor.add_run(model_pars, info_txt, info_value);
-	YamrModelRun new_run(run_id);
-	waiting_runs.push_back(new_run);
+	waiting_runs.push_back(run_id);
 	return run_id;
 }
 
@@ -411,7 +404,7 @@ void RunManagerYAMR::update_run(int run_id, const Parameters &pars, const Observ
 	// erase any wating runs with this id
 	for (auto it_run = waiting_runs.begin(); it_run != waiting_runs.end();)
 	{
-		if (it_run->get_id() == run_id)
+		if (*it_run == run_id)
 		{
 			it_run = waiting_runs.erase(it_run);
 		}
@@ -451,6 +444,7 @@ void RunManagerYAMR::run()
 	}
 	total_runs += model_runs_done;
 	//kill any remaining active runs
+	kill_all_active_runs();
 	message.str("");
 	message << "    " << model_runs_done << " runs complete";
 	cout << endl << "---------------------" << endl << message.str() << endl << endl;
@@ -514,7 +508,13 @@ void RunManagerYAMR::listen()
 		{						
 			for (auto it_slv = slave_info.begin(); it_slv != slave_info.end(); ++it_slv)
 			{
-				if ((i == it_slv->first) && (slave_info.get_state(i) == SlaveInfo::State::ACTIVE))
+				if ((i == it_slv->first) && 
+					(slave_info.get_state(i) == SlaveInfo::State::WAITING
+					|| slave_info.get_state(i) == SlaveInfo::State::ACTIVE
+					|| slave_info.get_state(i) == SlaveInfo::State::COMPLETE
+					|| slave_info.get_state(i) == SlaveInfo::State::KILLED
+					|| slave_info.get_state(i) == SlaveInfo::State::KILLED_FAILED)
+					)
 				{					
 					ping(i);
 					break;
@@ -580,14 +580,14 @@ void RunManagerYAMR::close_slave(int i_sock)
 	}
 	// remove run from active queue and return it to the waiting queue
 	auto it_active = get_active_run_iter(i_sock);
-	if (it_active != active_runs.end())
+	if (it_active != active_runs_map.end())
 	{
-		YamrModelRun &cur_run = it_active->second;
-		if (run_finished(cur_run.get_id())) //check if run has already finish on another node
+		int run_id = it_active->first;
+		if (!run_finished(run_id)) //check if run has already finish on another node
 		{
-			waiting_runs.push_front(it_active->second);
+			waiting_runs.push_front(run_id);
 		}
-		active_runs.erase(it_active);
+		active_runs_map.erase(it_active);
 	}
 	stringstream ss;
 	
@@ -612,12 +612,11 @@ bool RunManagerYAMR::schedule_run(int run_id)
 	else if (failure_map.count(run_id) == 0)// || failure_map.count(run_id) >= slave_fd.size())
 	{
 		// schedule a run on a slave
-		NetPackage net_pack(NetPackage::PackType::START_RUN, cur_group_id, run_id, "");
 		it_sock = slave_fd.begin();
 	}
 	else if (failure_map.count(run_id) > 0)
 	{
-		for (it_sock = slave_fd.begin(); it_sock != slave_fd.end(); ++it_sock)
+		for (auto it_sock_tmp = slave_fd.begin(); it_sock != slave_fd.end(); ++it_sock)
 		{
 			auto fail_iter_pair = failure_map.equal_range(run_id);
 
@@ -630,13 +629,13 @@ bool RunManagerYAMR::schedule_run(int run_id)
 			{
 				// This run has not previously failed on this slave
 				// Schedule run on it_sock
+				it_sock = it_sock_tmp;
 				break;
 			}
 		}
 	}
    if (it_sock != slave_fd.end())
 	{
-	   YamrModelRun tmp_run(run_id, YamrModelRun::RUN_STATUS::ACTIVE, *it_sock);
 		vector<char> data = file_stor.get_serial_pars(run_id);
 		vector<string> sock_name = w_getnameinfo_vec(*it_sock);
 		NetPackage net_pack(NetPackage::PackType::START_RUN, cur_group_id, run_id, "");
@@ -663,7 +662,8 @@ bool RunManagerYAMR::schedule_run(int run_id)
 				"  (group id = " << cur_group_id << ", run id = " << run_id << ", concurrent runs = " << concur << ")";
 			report(ss.str(), false);
 
-			active_runs.insert(pair<int, YamrModelRun>(run_id, tmp_run));
+			active_runs_map.insert(pair<int, int>(run_id, *it_sock));
+			slave_info.set_state(*it_sock, SlaveInfo::State::ACTIVE);
 			//reset the last ping time so we don't ping immediately after run is started
 			slave_info.reset_last_ping_time(*it_sock);
 			slave_fd.erase(it_sock);
@@ -681,7 +681,7 @@ void RunManagerYAMR::schedule_runs()
 	//first try to schedule waiting runs
 	for (auto it_run = waiting_runs.begin(); !slave_fd.empty() && it_run != waiting_runs.end();)
 	{
-		bool success = schedule_run(it_run->get_id());
+		bool success = schedule_run(*it_run);
 		if (success)
 		{
 			it_run = waiting_runs.erase(it_run);
@@ -699,19 +699,19 @@ void RunManagerYAMR::schedule_runs()
 		double global_avg_runtime = slave_info.get_global_runtime_minute();
 		bool should_schedule = false;
 		
-		for (auto it_active = active_runs.begin(); it_active != active_runs.end(); ++it_active)
+		for (auto it_active = active_runs_map.begin(); it_active != active_runs_map.end(); ++it_active)
 		{
 			should_schedule = false;
-			int act_sock_id = it_active->second.get_socket();
+			int act_sock_id = it_active->second;
 
-			int run_id = it_active->second.get_id();
+			int run_id = it_active->first;
 			unordered_map<int, int>::iterator it_concur;
 			duration = slave_info.get_duration_minute(act_sock_id);
 			avg_runtime = slave_info.get_runtime_minute(act_sock_id);
 			if (avg_runtime <= 0) avg_runtime = global_avg_runtime;
 			if (avg_runtime <= 0) avg_runtime = 1.0E+10;
 			vector<int> overdue_kill_runs_vec = get_overdue_runs_over_kill_threshold(run_id);
-			if (it_active->second.get_run_status() == YamrModelRun::RUN_STATUS::KILLED)
+			if (slave_info.get_state(act_sock_id) == SlaveInfo::State::KILLED)
 			{
 				//this run has already been killed.  No need to rekill it
 				should_schedule = false;
@@ -743,7 +743,7 @@ void RunManagerYAMR::schedule_runs()
 			{
 				vector<string> sock_name = w_getnameinfo_vec(act_sock_id);
 				stringstream ss;
-				int run_id = it_active->second.get_id();
+				int run_id = it_active->first;
 				ss << "rescheduling overdue run " << run_id << " (" << duration << "|" <<
 					avg_runtime << " minutes) on: " << sock_name[0] << "$" <<
 					slave_info.get_work_dir(act_sock_id);
@@ -837,12 +837,12 @@ void RunManagerYAMR::process_message(int i_sock)
 	else if ( (net_pack.get_type() == NetPackage::PackType::RUN_FINISHED 
 		|| net_pack.get_type() == NetPackage::PackType::RUN_FAILED
 		|| net_pack.get_type() == NetPackage::PackType::RUN_KILLED)
-			&& net_pack.get_groud_id() != cur_group_id)
+			&& net_pack.get_group_id() != cur_group_id)
 	{		
 		// this is an old run that did not finish on time
 		// just ignore it
 		int run_id = net_pack.get_run_id();
-		int group_id = net_pack.get_groud_id();
+		int group_id = net_pack.get_group_id();
 		//stringstream ss;
 		//ss << "run " << run_id << " received from unexpected group id: " << group_id << ", should be group: " << cur_group_id;
 		//throw PestError(ss.str());
@@ -850,7 +850,7 @@ void RunManagerYAMR::process_message(int i_sock)
 	else if (net_pack.get_type() == NetPackage::PackType::RUN_FINISHED)
 	{		
 		int run_id = net_pack.get_run_id();
-		int group_id = net_pack.get_groud_id();
+		int group_id = net_pack.get_group_id();
 		//decrement concurrent run counter
 		auto it_concur = concurrent_map.find(run_id);
 		
@@ -888,7 +888,7 @@ void RunManagerYAMR::process_message(int i_sock)
 	else if (net_pack.get_type() == NetPackage::PackType::RUN_FAILED)
 	{
 		int run_id = net_pack.get_run_id();
-		int group_id = net_pack.get_groud_id();
+		int group_id = net_pack.get_group_id();
 		//check if this was a concurrent run - decrement
 		auto it_concur = concurrent_map.find(run_id);		
 		if (it_concur == concurrent_map.end()) throw PestError("active run id not in concurrent map");
@@ -901,25 +901,25 @@ void RunManagerYAMR::process_message(int i_sock)
 		file_stor.update_run_failed(run_id);
 		failure_map.insert(make_pair(run_id, i_sock));
 		auto it = get_active_run_iter(i_sock);
-		active_runs.erase(it);
+		active_runs_map.erase(it);
 		// TO DO add check for number of active nodes
 		if ((concur == 0) && (failure_map.count(run_id) < max_n_failure))
 		{
 			//put model run back into the waiting queue
-			waiting_runs.push_front(YamrModelRun(run_id));
+			waiting_runs.push_front(run_id);
 		}
 	}
 	else if (net_pack.get_type() == NetPackage::PackType::RUN_KILLED)
 	{
 		int run_id = net_pack.get_run_id();
-		int group_id = net_pack.get_groud_id();
+		int group_id = net_pack.get_group_id();
 		//check if this was a concurrent run - decrement
 		auto it_concur = concurrent_map.find(run_id);
 		if (it_concur == concurrent_map.end()) throw PestError("active run id not in concurrent map");
 		concurrent_map[it_concur->first]--;
 		int concur = concurrent_map[it_concur->first];
 		auto it = get_active_run_iter(i_sock);
-		active_runs.erase(it);
+		active_runs_map.erase(it);
 		stringstream ss;
 		ss << "Run " << run_id << " killed on slave: " << sock_name[0] << "$" << slave_info.get_work_dir(i_sock) << ", run id = " << run_id << " concurrent = " << concur;
 		report(ss.str(), false);
@@ -927,6 +927,7 @@ void RunManagerYAMR::process_message(int i_sock)
 		if (!run_finished(run_id))
 		{
 			failure_map.insert(make_pair(run_id, i_sock));
+			model_runs_failed++;
 		}
 	}
 	else if (net_pack.get_type() == NetPackage::PackType::PING)
@@ -953,36 +954,36 @@ bool RunManagerYAMR::process_model_run(int sock_id, NetPackage &net_pack)
 {
 	bool use_run = false;
 	int run_id = net_pack.get_run_id();
-	YamrModelRun model_run(run_id, YamrModelRun::RUN_STATUS::ACTIVE, sock_id);
+
 	//check if another instance of this model run has already completed 
 	if (!run_finished(run_id))
 	{
-		model_run.set_run_status(YamrModelRun::RUN_STATUS::COMPLETE);
 		Parameters pars;
 		Observations obs;
 		Serialization::unserialize(net_pack.get_data(), pars, get_par_name_vec(), obs, get_obs_name_vec());
 		file_stor.update_run(run_id, pars, obs);
+		slave_info.set_state(sock_id, SlaveInfo::State::COMPLETE);
 		use_run = true;
 		model_runs_done++;
 		
 	}
 	// remove currently completed run from the active list
 	auto it = get_active_run_iter(sock_id);
-	active_runs.erase(it);
+	active_runs_map.erase(it);
 	kill_runs(run_id);
 	return use_run;
 }
 
 void RunManagerYAMR::kill_runs(int run_id)
 {
-	auto range_pair = active_runs.equal_range(run_id);
+	auto range_pair = active_runs_map.equal_range(run_id);
 	//runs with this id are not needed so mark them as zombies
 	for (auto b = range_pair.first; b != range_pair.second; ++b)
 	{
-		int socket_id = (*b).second.get_socket();
-		if (socket_id && (*b).second.get_run_status() != YamrModelRun::RUN_STATUS::KILLED)
+		int socket_id = (*b).second;
+		if (socket_id && slave_info.get_state(socket_id) != SlaveInfo::State::KILLED)
 		{
-			(*b).second.set_run_status(YamrModelRun::RUN_STATUS::KILLED);
+			slave_info.set_state(socket_id, SlaveInfo::State::KILLED);
 			//schedule run to be killed
 			vector<string> sock_name = w_getnameinfo_vec(socket_id);
 			stringstream ss;
@@ -991,16 +992,55 @@ void RunManagerYAMR::kill_runs(int run_id)
 			NetPackage net_pack(NetPackage::PackType::REQ_KILL, 0, 0, "");
 			char data = '\0';
 			int err = net_pack.send(socket_id, &data, sizeof(data));
-			if (err <= 0)
+			if (err == 0)
+			{
+				slave_info.set_state(socket_id, SlaveInfo::State::KILLED);
+			}
+			else
 			{
 				report("error sending kill request to slave:" + sock_name[0] + "$" +
 					slave_info.get_work_dir(socket_id), true);
-				close_slave(socket_id);
+				slave_info.set_state(socket_id, SlaveInfo::State::KILLED_FAILED);
 			}
 		}
 	}
 }
 
+
+void RunManagerYAMR::kill_all_active_runs()
+{
+	for (int n_tries = 0; !active_runs_map.empty() ||  n_tries >= 100; ++n_tries)
+	{
+		init_slaves();
+		for (auto it_active = active_runs_map.begin(); it_active != active_runs_map.end(); ++it_active)
+		{
+			int socket_id = (*it_active).second;
+			int run_id = (*it_active).first;
+			if (socket_id && (slave_info.get_state(socket_id) == SlaveInfo::State::ACTIVE || slave_info.get_state(socket_id) == SlaveInfo::State::KILLED_FAILED))
+			{
+				//schedule run to be killed
+				vector<string> sock_name = w_getnameinfo_vec(socket_id);
+				stringstream ss;
+				ss << "sending kill request for run " << run_id << " to slave : " << sock_name[0] << "$" << slave_info.get_work_dir(socket_id);
+				report(ss.str(), false);
+				NetPackage net_pack(NetPackage::PackType::REQ_KILL, 0, 0, "");
+				char data = '\0';
+				int err = net_pack.send(socket_id, &data, sizeof(data));
+				if (err == 0)
+				{
+					slave_info.set_state(socket_id, SlaveInfo::State::KILLED);
+				}
+				else
+				{
+					report("error sending kill request to slave:" + sock_name[0] + "$" +
+						slave_info.get_work_dir(socket_id), true);
+					slave_info.set_state(socket_id, SlaveInfo::State::KILLED_FAILED);
+				}
+			}
+		}
+	}
+	listen();
+}
 
  void RunManagerYAMR::init_slaves()
  {
@@ -1052,7 +1092,7 @@ void RunManagerYAMR::kill_runs(int run_id)
 		}
 		else if(cur_state == SlaveInfo::State::LINPACK_RCV)
 		{
-			slave_info.set_state(i_sock, SlaveInfo::State::ACTIVE);
+			slave_info.set_state(i_sock, SlaveInfo::State::WAITING);
 			slave_fd.push_back(i_sock);			
 		}
 	}
@@ -1061,13 +1101,13 @@ void RunManagerYAMR::kill_runs(int run_id)
  vector<int> RunManagerYAMR::get_overdue_runs_over_kill_threshold(int run_id)
  {
 	 vector<int> sock_id_vec;
-	 auto range_pair = active_runs.equal_range(run_id);
+	 auto range_pair = active_runs_map.equal_range(run_id);
 	 int sock_id;
 	 double duration;
 	 for (auto &i = range_pair.first; i != range_pair.second; ++i)
 	 {
-		 sock_id = (*i).second.get_socket();
-		 if ((*i).second.get_run_status() == YamrModelRun::RUN_STATUS::ACTIVE)
+		 sock_id = (*i).second;
+		 if (slave_info.get_state(sock_id) == SlaveInfo::State::ACTIVE)
 		 {
 			 double avg_runtime = slave_info.get_runtime_minute(sock_id);
 			 if (avg_runtime <= 0) avg_runtime = slave_info.get_global_runtime_minute();;
@@ -1090,9 +1130,11 @@ void RunManagerYAMR::kill_runs(int run_id)
 		 return false;
 	 }
 	 // check for active runs
-	 for (auto it_active = active_runs.begin(); it_active != active_runs.end(); ++it_active)
+	 int socket_fd;
+	 for (auto it_active = active_runs_map.begin(); it_active != active_runs_map.end(); ++it_active)
 	 {
-		 if (it_active->second.get_run_status() == YamrModelRun::RUN_STATUS::ACTIVE)
+		 socket_fd = it_active->second;
+		 if (slave_info.get_state(socket_fd) == SlaveInfo::State::ACTIVE)
 		 {
 			 return false;
 		 }
