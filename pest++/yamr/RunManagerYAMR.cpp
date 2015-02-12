@@ -992,7 +992,7 @@ void RunManagerYAMR::kill_runs(int run_id)
 			NetPackage net_pack(NetPackage::PackType::REQ_KILL, 0, 0, "");
 			char data = '\0';
 			int err = net_pack.send(socket_id, &data, sizeof(data));
-			if (err == 0)
+			if (err == 1)
 			{
 				slave_info.set_state(socket_id, SlaveInfo::State::KILLED);
 			}
@@ -1009,7 +1009,7 @@ void RunManagerYAMR::kill_runs(int run_id)
 
 void RunManagerYAMR::kill_all_active_runs()
 {
-	for (int n_tries = 0; !active_runs_map.empty() ||  n_tries >= 100; ++n_tries)
+	for (int n_tries = 0; !active_runs_map.empty() &&  n_tries >= 100; ++n_tries)
 	{
 		init_slaves();
 		for (auto it_active = active_runs_map.begin(); it_active != active_runs_map.end(); ++it_active)
@@ -1026,7 +1026,7 @@ void RunManagerYAMR::kill_all_active_runs()
 				NetPackage net_pack(NetPackage::PackType::REQ_KILL, 0, 0, "");
 				char data = '\0';
 				int err = net_pack.send(socket_id, &data, sizeof(data));
-				if (err == 0)
+				if (err == 1)
 				{
 					slave_info.set_state(socket_id, SlaveInfo::State::KILLED);
 				}
@@ -1038,8 +1038,8 @@ void RunManagerYAMR::kill_all_active_runs()
 				}
 			}
 		}
+		listen();
 	}
-	listen();
 }
 
  void RunManagerYAMR::init_slaves()

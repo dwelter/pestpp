@@ -2,9 +2,9 @@ CXX = 'g++'
 CCC = 'g++'
 FC = gfortran
 GCCLIBDIR :='/opt/hesm/apps/gcc-4.9.0/lib64'
-INCLUDES := '-I ../ -I ../common -I ../iopp -I ../yamr -I ../pestpp_common'
-LIBLDIR := '-L $(GCCLIBDIR) -L /opt/hesm/lib64 -L /usr/lib64 -L/opt/local/lib64 -L ../common -L ../iopp -L ../yamr -L ../pestpp_common -L ../pest_routines  -L ../propack'
-LIBS :=  '-lpestpp_com -lrunmanager  -liopp  -lcommon -lpest_routines -l propack -llapack -lblas  -lgfortran $(GCCLIBDIR)/libquadmath.a'
+INCLUDES := '-I ../ -I ../common -I ../iopp -I ../yamr -I ../pestpp_common -I ../linear_analysis'
+LIBLDIR := '-L $(GCCLIBDIR) -L /opt/hesm/lib64 -L /usr/lib64 -L/opt/local/lib64 -L ../common -L ../iopp -L ../yamr -L ../pestpp_common -L ../pest_routines  -L ../propack -L ../linear_analysis'
+LIBS :=  '-lpestpp_com -lrunmanager  -liopp  -lcommon -lpest_routines -l propack -llapack -lblas -lliblinear_analysis -lgfortran $(GCCLIBDIR)/libquadmath.a'
 
 #CFLAGS := '-pthread -std=c++11 -Wl,--no-as-needed -g -gdwarf-2' 
 #FFLAGS := '-g -gdwarf-2 c -cpp'
@@ -22,7 +22,7 @@ all:
 	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=${INCLUDES} -C pestpp_common -f makefile_linux libpestpp_com.a
 	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=$(INCLUDES) LFLAGS=$(LFLAGS) LIBS=$(LIBS) GCCLIBDIR=$(GCCLIBDIR) LIBLDIR=$(LIBLDIR) LIBS=$(LIBS) -C pest++ -f makefile_linux pestpp
 	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=$(INCLUDES) LIBS=$(LIBS) GCCLIBDIR=$(GCCLIBDIR) LIBLDIR=$(LIBLDIR) LIBS=$(LIBS) -C morris_meth -f makefile_linux gsa.exe
-		make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=$(INCLUDES) LIBS=$(LIBS) GCCLIBDIR=$(GCCLIBDIR) LIBLDIR=$(LIBLDIR) LIBS=$(LIBS) -C run_manager_fortran_test -f makefile_linux fortran_test
+	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=$(INCLUDES) LIBS=$(LIBS) GCCLIBDIR=$(GCCLIBDIR) LIBLDIR=$(LIBLDIR) LIBS=$(LIBS) -C run_manager_fortran_test -f makefile_linux fortran_test
 clean:
 	make -C common -f makefile_linux clean
 	make -C iopp -f makefile_linux clean
