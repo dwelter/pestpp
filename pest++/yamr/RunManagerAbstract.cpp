@@ -107,7 +107,7 @@ void RunManagerAbstract::update_run(int run_id, const Parameters &pars, const Ob
 	 string info_txt;
 	 double info_value;
 	 get_info(run_id, run_status, info_txt, info_value);
-	 bool run_finished = (run_status < 0) ? true : false;
+	 bool run_finished = (run_status > 0) ? true : false;
 	 return run_finished;
  }
 

@@ -182,7 +182,7 @@ private:
 	//scale the jacobian by parcov
 	void kl_scale();
 
-	pair<double, double> linear_analysis::get_range(double value, double variance, const ParameterRec::TRAN_TYPE &tt);
+	pair<double, double> get_range(double value, double variance, const ParameterRec::TRAN_TYPE &tt);
 
 
 

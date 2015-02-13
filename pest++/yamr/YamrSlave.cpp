@@ -524,7 +524,7 @@ void YAMRSlave::start(const string &host, const string &port)
 		{
 			Serialization::unserialize(net_pack.get_data(), pars, par_name_vec);
 			// run model
-			int group_id = net_pack.get_groud_id();
+			int group_id = net_pack.get_group_id();
 			int run_id = net_pack.get_run_id();
 			cout << "received parameters (group id = " << group_id << ", run id = " << run_id << ")" << endl;
 			cout << "starting model run..." << endl;

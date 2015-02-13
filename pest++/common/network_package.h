@@ -18,7 +18,7 @@ public:
 	void reset(PackType _type, int _group, int _run_id, const std::string &_desc);
 	PackType get_type() const {return type;}
 	int get_run_id() const {return run_id;}
-	int get_groud_id() const {return group;}
+	int get_group_id() const {return group;}
 	const std::vector<char> &get_data(){return data;}
 	void print_header(std::ostream &fout);
 	

@@ -29,28 +29,10 @@
 #include "RunManagerAbstract.h"
 #include "RunStorage.h"
 
-class YamrModelRun
-{
-public:
-	enum class RUN_STATUS { ACTIVE, KILLED, WAITING, COMPLETE };
-	YamrModelRun(int _run_id, RUN_STATUS _run_status = RUN_STATUS::WAITING, int _sockfd = 0);
-	int get_id(){return run_id;}
-	void set_socket(int _sockfd) {sockfd = _sockfd;}
-	int get_socket() const  {return sockfd;}
-	void set_run_status(RUN_STATUS _run_status) { run_status = _run_status; }
-	RUN_STATUS get_run_status() { return run_status; }
-	~YamrModelRun() {}
-private:
-	int sockfd;
-	int run_id;
-	RUN_STATUS run_status;
-};
-
-
 class SlaveInfo
 {
 public:
-	enum class State {NEW, CWD_REQ, CWD_RCV, CMD_SENT, LINPACK_REQ, LINPACK_RCV, ACTIVE};
+	enum class State { NEW, CWD_REQ, CWD_RCV, CMD_SENT, LINPACK_REQ, LINPACK_RCV, WAITING, ACTIVE, KILLED, KILLED_FAILED, COMPLETE };
 	class SlaveRec {
 		public:
 			friend SlaveInfo;
@@ -76,8 +58,8 @@ public:
 	size_t size() const;
 	void add(int sock_id);
 	void erase(int sock_id);
-	State get_state(int sock_id);
-	void set_state(int sock_id, const State);
+	State get_state(int sock_id) const;
+	void set_state(int sock_id, const State &_state);
 	void set_work_dir(int sock_id, const std::string & wkd);
 	std::string get_work_dir(int sock_id) const;
 	void start_timer(int sock_id);
@@ -141,9 +123,9 @@ private:
 	int model_runs_failed;
 	std::deque<int> slave_fd; // list of slaves ready to accept a model run
 	fd_set master; // master file descriptor list
-	std::deque<YamrModelRun> waiting_runs;
+	std::deque<int> waiting_runs;
 	std::ofstream &f_rmr;
-	std::unordered_multimap<int, YamrModelRun> active_runs;
+	std::unordered_multimap<int, int> active_runs_map; // maps run_id to socket file descriptor
 	SlaveInfo slave_info;
 	std::unordered_multimap<int, int> failure_map;
 	std::unordered_map<int, int> concurrent_map;
@@ -159,9 +141,10 @@ private:
 	string get_time_string();
 	void echo();
 	void kill_runs(int run_id);
+	void kill_all_active_runs();
 	vector<int> get_overdue_runs_over_kill_threshold(int run_id);
 	bool all_runs_complete();
-	std::unordered_multimap<int, YamrModelRun>::iterator get_active_run_iter(int socket);
+	std::unordered_multimap<int, int>::iterator get_active_run_iter(int socket);
 };
 
 #endif /* RUNMANAGERYAMR_H */
