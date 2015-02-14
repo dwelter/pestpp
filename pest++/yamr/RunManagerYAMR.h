@@ -24,6 +24,7 @@
 #include <deque>
 #include <unordered_map>
 #include <chrono>
+#include <list>
 #include "network_wrapper.h"
 #include "network_package.h"
 #include "RunManagerAbstract.h"
@@ -74,7 +75,7 @@ private:
 	std::chrono::system_clock::time_point last_ping_time;
 	std::string work_dir;
 public:
-	static class CompareTimes
+	class CompareTimes
 	{
 	public:
 		CompareTimes() {}
