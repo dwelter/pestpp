@@ -70,7 +70,7 @@ int NetPackage::send(int sockfd, const void *data, unsigned long data_len_l)
 	}
 	assert (i_start==buf_sz);
 	n = w_sendall(sockfd, buf.data(), &buf_sz);
-	return n;  // return 0 on sucess or -1 on failure
+	return n;  // return -1 on failure, 0 closed connection or 1 on success
 }
 
 int  NetPackage::recv(int sockfd)
