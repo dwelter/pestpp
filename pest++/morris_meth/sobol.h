@@ -22,7 +22,7 @@ public:
 		const std::vector<std::string> &_obs_name_vec, FileManager *_file_manager_ptr, PARAM_DIST dist);
 	void assemble_runs(RunManagerAbstract &run_manager);
 	void calc_sen(RunManagerAbstract &run_manager, ModelRun model_run);
-	void Sobol::calc_sen_single(RunManagerAbstract &run_manager, ModelRun model_run, std::ofstream &fout_sbl, const std::string &obs_name);
+	void calc_sen_single(RunManagerAbstract &run_manager, ModelRun model_run, std::ofstream &fout_sbl, const std::string &obs_name);
 private:
 	VectorXd gen_rand_vec(long nsample, double min, double max, bool log_transform=false);
 	void gen_m1_m2();

@@ -463,7 +463,8 @@ void linear_analysis::align()
 	{
 		try
 		{
-			parcov = parcov.get(jacobian.get_col_names());
+       		  vector<string> tmp_vec = jacobian.get_col_names();
+			parcov = parcov.get(tmp_vec);
 		}
 		catch (exception &e)
 		{
@@ -474,7 +475,8 @@ void linear_analysis::align()
 	{
 		try
 		{
-			obscov = obscov.get(jacobian.get_row_names());
+		  vector<string> tmp_vec = jacobian.get_row_names();
+		  obscov = obscov.get(tmp_vec);
 		}
 		catch (exception &e)
 		{
@@ -1637,6 +1639,13 @@ void linear_analysis::extract_omitted(vector<string> &omitted_par_names)
 		
 	}
 	log->log("extract_omitted");
+}
+
+void linear_analysis::extract_omitted(string &omitted_par_name)
+{
+  vector<string> tmp_vec;
+  tmp_vec.push_back(omitted_par_name);
+  extract_omitted(tmp_vec); 
 }
 
 
