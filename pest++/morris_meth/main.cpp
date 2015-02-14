@@ -22,7 +22,7 @@
 #include <fstream>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
-#include "config_os.h""
+#include "config_os.h"
 #include "MorrisMethod.h"
 #include "sobol.h"
 #include "Pest.h"

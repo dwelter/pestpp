@@ -1,0 +1,16 @@
+OUT = liblinear_analysis.a
+OBJECTS	:= covariance.o \
+	   linear_analysis.o \
+	   logger.o
+
+$(OUT): $(OBJECTS)
+	ar rcs $(OUT) $(OBJECTS)
+
+%.o: %.cpp
+	$(CXX) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@
+
+%.o: %.c
+	$(CC) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@
+
+clean:
+	-rm $(OBJECTS) $(OUT)

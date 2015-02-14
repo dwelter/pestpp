@@ -994,8 +994,8 @@ void RunManagerYAMR::kill_all_active_runs()
 				}
 			}
 		}
+		listen();
 	}
-	listen();
 }
 
  void RunManagerYAMR::init_slaves()

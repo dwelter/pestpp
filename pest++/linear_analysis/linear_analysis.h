@@ -83,7 +83,7 @@ public:
 
 	//extract elements from the jacobian, parcov, and predictions and set them as omitted
 	void extract_omitted(vector<string> &omitted_par_names);
-	void extract_omitted(string &omitted_par_name){ extract_omitted(vector<string>{omitted_par_name}); }
+	void extract_omitted(string &omitted_par_name);
 
 	Covariance first_parameter(int sv);
 	Covariance second_parameter(int sv);
@@ -182,7 +182,7 @@ private:
 	//scale the jacobian by parcov
 	void kl_scale();
 
-	pair<double, double> linear_analysis::get_range(double value, double variance, const ParameterRec::TRAN_TYPE &tt);
+	pair<double, double> get_range(double value, double variance, const ParameterRec::TRAN_TYPE &tt);
 
 
 
