@@ -47,6 +47,11 @@ void w_print_servinfo(struct addrinfo *res, std::ostream &fout);
 std::string w_get_addrinfo_string(struct addrinfo *p);
 std::string w_get_error_msg();
 void w_sleep(int millisec);
-void w_run_commands(pest_utils::thread_flag* terminate, pest_utils::thread_flag* finished, vector<string> commands);
+void w_run_commands(pest_utils::thread_flag* terminate, pest_utils::thread_flag* finished, vector<string> &commands);
+void w_write_run_read(pest_utils::thread_flag* terminate, pest_utils::thread_flag* finished,
+	vector<string> &tplfile_vec, vector<string> &outfile_vec, vector<string> &insfile_vec,
+	vector<string> &inpfile_vec, vector<string>* par_name_vec, vector<double>* par_values,
+	vector<string>* obs_name_vec, vector<double>* obs_vec,
+	vector<string> &commands);
 #endif /* NETWORK_H_ */
 

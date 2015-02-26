@@ -13,25 +13,25 @@ using namespace pest_utils;
 
 int  linpack_wrap(void);
 
-extern "C"
-{
-
-	void wrttpl_(int *,
-		char *,
-		char *,
-		int *,
-		char *,
-		double *,
-		int *);
-
-	void readins_(int *,
-		char *,
-		char *,
-		int *,
-		char *,
-		double *,
-		int *);
-}
+//extern "C"
+//{
+//
+//	void wrttpl_(int *,
+//		char *,
+//		char *,
+//		int *,
+//		char *,
+//		double *,
+//		int *);
+//
+//	void readins_(int *,
+//		char *,
+//		char *,
+//		int *,
+//		char *,
+//		double *,
+//		int *);
+//}
 
 
 
@@ -176,49 +176,49 @@ int YAMRSlave::send_message(NetPackage &net_pack, const void *data, unsigned lon
 	return err;
 }
 
-string YAMRSlave::tpl_err_msg(int i)
-{
-	string err_msg;
-	switch (i)
-	{
-	case 0:
-	  err_msg = string("Routine completed successfully");
-		break;
-	case 1:
-	  err_msg = string("TPL file does not exist");
-		break;
-	case 2:
-	  err_msg = string("Not all parameters listed in TPL file");
-		break;
-	case 3:
-	  err_msg = string("Illegal header specified in TPL file");
-		break;
-	case 4:
-	  err_msg = string("Error getting parameter name from template");
-		break;
-	case 5:
-	  err_msg = string("Error getting parameter name from template");
-		break;
-	case 10:
-	  err_msg = string("Error writing to model input file");
-	}
-	return err_msg;
-}
+//string YAMRSlave::tpl_err_msg(int i)
+//{
+//	string err_msg;
+//	switch (i)
+//	{
+//	case 0:
+//	  err_msg = string("Routine completed successfully");
+//		break;
+//	case 1:
+//	  err_msg = string("TPL file does not exist");
+//		break;
+//	case 2:
+//	  err_msg = string("Not all parameters listed in TPL file");
+//		break;
+//	case 3:
+//	  err_msg = string("Illegal header specified in TPL file");
+//		break;
+//	case 4:
+//	  err_msg = string("Error getting parameter name from template");
+//		break;
+//	case 5:
+//	  err_msg = string("Error getting parameter name from template");
+//		break;
+//	case 10:
+//	  err_msg = string("Error writing to model input file");
+//	}
+//	return err_msg;
+//}
 
 
-string YAMRSlave::ins_err_msg(int i)
-{
-	string err_msg;
-	switch (i)
-	{
-	case 0:
-		err_msg = "Routine completed successfully";
-		break;
-	default:
-		err_msg = "";
-	}
-	return err_msg;
-}
+//string YAMRSlave::ins_err_msg(int i)
+//{
+//	string err_msg;
+//	switch (i)
+//	{
+//	case 0:
+//		err_msg = "Routine completed successfully";
+//		break;
+//	default:
+//		err_msg = "";
+//	}
+//	return err_msg;
+//}
 
 NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, NetPackage &net_pack)
 {
@@ -227,32 +227,11 @@ NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, N
 	int err = 0;
 	int recv_fails = 0;	
 	int send_fails = 0;
-	std::vector<double> obs_vec;
-	bool isDouble = true;
-	bool forceRadix = true;
-	//TemplateFiles tpl_files(isDouble, forceRadix, tplfile_vec, inpfile_vec, par_name_vec);
-	//InstructionFiles ins_files(insfile_vec, outfile_vec);	
+	
 	thread_flag f_terminate(false);
 	thread_flag f_finished(false);
 	try 
 	{
-	//	message.str("");
-		//first delete any existing input and output files			
-		for (auto &out_file : outfile_vec)
-		{
-			if ((check_exist_out(out_file)) && (remove(out_file.c_str()) != 0))
-				throw PestError("model interface error: Cannot delete existing model output file " + out_file);
-		}
-		for (auto &in_file : inpfile_vec)
-		{
-			if ((check_exist_out(in_file)) && (remove(in_file.c_str()) != 0))
-				throw PestError("model interface error: Cannot delete existing model input file " + in_file);
-		}
-
-
-		int ifail;
-		int ntpl = tplfile_vec.size();
-		int npar = pars.size();
 		vector<string> par_name_vec;
 		vector<double> par_values;
 		for (auto &i : pars)
@@ -260,26 +239,13 @@ NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, N
 			par_name_vec.push_back(i.first);
 			par_values.push_back(i.second);
 		}
-		if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))
-		{
-			throw PestError("Error running model: invalid parameter value returned");
-		}
-		wrttpl_(&ntpl, StringvecFortranCharArray(tplfile_vec, 50).get_prt(),
-			StringvecFortranCharArray(inpfile_vec, 50).get_prt(),
-			&npar, StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
-			par_values.data(), &ifail);
-		if (ifail != 0)
-		{
-			throw PestError("Error processing template file:" + tpl_err_msg(ifail));
-		}
-
-		// update parameter values		
-		pars.clear();
-		for (int i = 0; i<npar; ++i)
-		{
-			pars[par_name_vec[i]] = par_values[i];
-		}
-		thread run_thread(w_run_commands, &f_terminate, &f_finished, comline_vec);
+		
+		std::vector<double> obs_vec;	
+		//thread run_thread(w_run_commands, &f_terminate, &f_finished, comline_vec);
+		thread run_thread(w_write_run_read, &f_terminate, &f_finished,
+			tplfile_vec, outfile_vec, insfile_vec,
+			inpfile_vec, &par_name_vec, &par_values,
+			&obs_name_vec, &obs_vec, comline_vec);
 		while (true)
 		{
 			//check if the runner thread has finished
@@ -353,37 +319,23 @@ NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, N
 			}
 			if (done) break;
 		}
+
+
+
 		//if this run was terminated, throw an error to signal a failed run
 		if (f_terminate.get())
 		{
 			throw PestError("model run terminated");
 		}
-		// process instruction files		
-		int nins = insfile_vec.size();
-		int nobs = obs_name_vec.size();
-		std::vector<double> obs_vec;
-		obs_vec.resize(nobs, -9999.00);
-		readins_(&nins, StringvecFortranCharArray(insfile_vec, 50).get_prt(),
-			StringvecFortranCharArray(outfile_vec, 50).get_prt(),
-			&nobs, StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
-			obs_vec.data(), &ifail);
-		if (ifail != 0)
+		//update the parameter values
+		pars.clear();
+		for (int i = 0; i<par_name_vec.size(); ++i)
 		{
-			throw PestError("Error processing instruction file");
-		}
-
-		// check parameters and observations for inf and nan
-		if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))
-		{
-			throw PestError("Error running model: invalid parameter value returned");
-		}
-		if (std::any_of(obs_vec.begin(), obs_vec.end(), OperSys::double_is_invalid))
-		{
-			throw PestError("Error running model: invalid observation value returned");
+			pars[par_name_vec[i]] = par_values[i];
 		}
 		// update observation values		
 		obs.clear();
-		for (int i = 0; i<nobs; ++i)
+		for (int i = 0; i<obs_name_vec.size(); ++i)
 		{
 			obs[obs_name_vec[i]] = obs_vec[i];
 		}
@@ -398,12 +350,199 @@ NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, N
 	}
 	catch(...)
 	{
-		cerr << "   Error running model" << endl;
+ 		cerr << "   Error running model" << endl;
 		cerr << "   Aborting model run" << endl;
 		NetPackage::PackType::RUN_FAILED;
 	}
 	return final_run_status;
 }
+
+//NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, NetPackage &net_pack)
+//{
+//	NetPackage::PackType final_run_status = NetPackage::PackType::RUN_FAILED;
+//	bool done = false;
+//	int err = 0;
+//	int recv_fails = 0;
+//	int send_fails = 0;
+//	std::vector<double> obs_vec;
+//	bool isDouble = true;
+//	bool forceRadix = true;
+//	//TemplateFiles tpl_files(isDouble, forceRadix, tplfile_vec, inpfile_vec, par_name_vec);
+//	//InstructionFiles ins_files(insfile_vec, outfile_vec);	
+//	thread_flag f_terminate(false);
+//	thread_flag f_finished(false);
+//	try
+//	{
+//		//	message.str("");
+//		//first delete any existing input and output files			
+//		for (auto &out_file : outfile_vec)
+//		{
+//			if ((check_exist_out(out_file)) && (remove(out_file.c_str()) != 0))
+//				throw PestError("model interface error: Cannot delete existing model output file " + out_file);
+//		}
+//		for (auto &in_file : inpfile_vec)
+//		{
+//			if ((check_exist_out(in_file)) && (remove(in_file.c_str()) != 0))
+//				throw PestError("model interface error: Cannot delete existing model input file " + in_file);
+//		}
+//
+//
+//		int ifail;
+//		int ntpl = tplfile_vec.size();
+//		int npar = pars.size();
+//		vector<string> par_name_vec;
+//		vector<double> par_values;
+//		for (auto &i : pars)
+//		{
+//			par_name_vec.push_back(i.first);
+//			par_values.push_back(i.second);
+//		}
+//		if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))
+//		{
+//			throw PestError("Error running model: invalid parameter value returned");
+//		}
+//		wrttpl_(&ntpl, StringvecFortranCharArray(tplfile_vec, 50).get_prt(),
+//			StringvecFortranCharArray(inpfile_vec, 50).get_prt(),
+//			&npar, StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
+//			par_values.data(), &ifail);
+//		if (ifail != 0)
+//		{
+//			throw PestError("Error processing template file:" + tpl_err_msg(ifail));
+//		}
+//
+//		// update parameter values		
+//		pars.clear();
+//		for (int i = 0; i<npar; ++i)
+//		{
+//			pars[par_name_vec[i]] = par_values[i];
+//		}
+//		thread run_thread(w_run_commands, &f_terminate, &f_finished, comline_vec);
+//		while (true)
+//		{
+//			//check if the runner thread has finished
+//			if (f_finished.get())
+//			{
+//				cout << "received finished signal from runner " << std::endl;
+//				run_thread.join();
+//				//don't break here, need to check one last time for incoming messages
+//				done = true;
+//			}
+//			//this call includes a "sleep" for the timeout
+//			err = recv_message(net_pack, OperSys::thread_sleep_milli_secs * 1000);
+//			if (err == -1)
+//			{
+//				recv_fails++;
+//				if (recv_fails >= max_recv_fails)
+//				{
+//					cerr << "recv from master failed " << max_recv_fails << " times, exiting..." << endl;
+//					f_terminate.set(true);
+//					run_thread.join();
+//					exit(-1);
+//				}
+//			}
+//			//timeout on recv
+//			else if (err == 0){}
+//			else if (net_pack.get_type() == NetPackage::PackType::PING)
+//			{
+//				cout << "ping request recieved...";
+//				net_pack.reset(NetPackage::PackType::PING, 0, 0, "");
+//				const char* data = "\0";
+//				err = send_message(net_pack, &data, 0);
+//				if (err == -1)
+//				{
+//					send_fails++;
+//					if (send_fails >= max_send_fails)
+//					{
+//						cerr << "send to master failed " << max_send_fails << " times, exiting..." << endl;
+//						f_terminate.set(true);
+//						run_thread.join();
+//						exit(-1);
+//					}
+//				}
+//				cout << "ping response sent" << endl;
+//			}
+//			else if (net_pack.get_type() == NetPackage::PackType::REQ_KILL)
+//			{
+//				cout << "received kill request signal from master" << endl;
+//				cout << "sending terminate signal to run thread" << endl;
+//				f_terminate.set(true);
+//				run_thread.join();
+//				final_run_status = NetPackage::PackType::RUN_KILLED;
+//				break;
+//			}
+//			else if (net_pack.get_type() == NetPackage::PackType::TERMINATE)
+//			{
+//				cout << "received terminate signal from master" << endl;
+//				cout << "sending terminate signal to run thread" << endl;
+//				f_terminate.set(true);
+//				run_thread.join();
+//				terminate = true;
+//				final_run_status = NetPackage::PackType::RUN_KILLED;
+//				break;
+//			}
+//			else
+//			{
+//				cerr << "Received unsupported message from master, only PING REQ_KILL or TERMINATE can be sent during model run" << endl;
+//				cerr << "something is wrong...exiting" << endl;
+//				f_terminate.set(true);
+//				run_thread.join();
+//				exit(-1);
+//			}
+//			if (done) break;
+//		}
+//		//if this run was terminated, throw an error to signal a failed run
+//		if (f_terminate.get())
+//		{
+//			throw PestError("model run terminated");
+//		}
+//		// process instruction files		
+//		int nins = insfile_vec.size();
+//		int nobs = obs_name_vec.size();
+//		std::vector<double> obs_vec;
+//		obs_vec.resize(nobs, -9999.00);
+//		readins_(&nins, StringvecFortranCharArray(insfile_vec, 50).get_prt(),
+//			StringvecFortranCharArray(outfile_vec, 50).get_prt(),
+//			&nobs, StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
+//			obs_vec.data(), &ifail);
+//		if (ifail != 0)
+//		{
+//			throw PestError("Error processing instruction file");
+//		}
+//
+//		// check parameters and observations for inf and nan
+//		if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))
+//		{
+//			throw PestError("Error running model: invalid parameter value returned");
+//		}
+//		if (std::any_of(obs_vec.begin(), obs_vec.end(), OperSys::double_is_invalid))
+//		{
+//			throw PestError("Error running model: invalid observation value returned");
+//		}
+//		// update observation values		
+//		obs.clear();
+//		for (int i = 0; i<nobs; ++i)
+//		{
+//			obs[obs_name_vec[i]] = obs_vec[i];
+//		}
+//		final_run_status = NetPackage::PackType::RUN_FINISHED;
+//	}
+//	catch (const std::exception& ex)
+//	{
+//		cerr << endl;
+//		cerr << "   " << ex.what() << endl;
+//		cerr << "   Aborting model run" << endl << endl;
+//		NetPackage::PackType::RUN_FAILED;
+//	}
+//	catch (...)
+//	{
+//		cerr << "   Error running model" << endl;
+//		cerr << "   Aborting model run" << endl;
+//		NetPackage::PackType::RUN_FAILED;
+//	}
+//	return final_run_status;
+//}
+
+
 
 void YAMRSlave::check_io()
 {

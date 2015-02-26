@@ -103,9 +103,9 @@ protected:
 	set<string> failed_parameter_names;
 	vector< string>  base_sim_obs_names;  //names of base observations used to calculate the jacobian
 	Observations  base_sim_observations;  //values of base observations used to calculate the jacobian
-	const vector<string> &ctl_file_ordered_par_names;
-	const vector<string> &ctl_file_ordered_obs_names;
-	const vector<string> &ctl_file_ordered_pi_names;
+	//const vector<string> &ctl_file_ordered_par_names;
+	//const vector<string> &ctl_file_ordered_obs_names;
+	//const vector<string> &ctl_file_ordered_pi_names;
 	Eigen::SparseMatrix<double> matrix;
 	FileManager &file_manager;  // filemanger used to get name of jaobian file
 
