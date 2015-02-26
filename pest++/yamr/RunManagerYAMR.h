@@ -147,6 +147,7 @@ private:
 	std::list<std::list<SlaveInfoRec>::iterator> get_free_slave_list();
 	double get_global_runtime_minute() const;
 	int get_n_concurrent(int run_id);
+	int get_n_unique_failures();
 };
 
 #endif /* RUNMANAGERYAMR_H */
