@@ -13,28 +13,6 @@ using namespace pest_utils;
 
 int  linpack_wrap(void);
 
-extern "C"
-{
-
-	void wrttpl_(int *,
-		char *,
-		char *,
-		int *,
-		char *,
-		double *,
-		int *);
-
-	void readins_(int *,
-		char *,
-		char *,
-		int *,
-		char *,
-		double *,
-		int *);
-}
-
-
-
 void YAMRSlave::init_network(const string &host, const string &port)
 {
 	w_init();
@@ -81,34 +59,36 @@ YAMRSlave::~YAMRSlave()
 	w_cleanup();
 }
 
-int YAMRSlave::recv_message(NetPackage &net_pack)
+int YAMRSlave::recv_message(NetPackage &net_pack, struct timeval *tv)
 {
 	fd_set read_fds;
 	int err = -1;
 	int recv_fails = 0;
-	while (recv_fails < max_recv_fails && err!=1)
+	while (recv_fails < max_recv_fails && err != 1)
 	{
 		read_fds = master; // copy master
-		int result = w_select(fdmax + 1, &read_fds, NULL, NULL, NULL);
+		int result = w_select(fdmax + 1, &read_fds, NULL, NULL, tv);
 		if (result == -1) exit(4);
 		if (result == 0) return 0;
-		for(int i = 0; i <= fdmax; i++) {
+		for (int i = 0; i <= fdmax; i++) {
 			if (FD_ISSET(i, &read_fds)) { // got message to read
-				if(( err=net_pack.recv(i)) <=0) // error or lost connection
+				if ((err = net_pack.recv(i)) <= 0) // error or lost connection
 				{
 					vector<string> sock_name = w_getnameinfo_vec(i);
 					if (err < 0) {
 						recv_fails++;
-						cerr << "receive from master failed: " << sock_name[0] <<":" <<sock_name[1] << endl;
+						cerr << "receive from master failed: " << sock_name[0] << ":" << sock_name[1] << endl;
 					}
 					else {
-						cerr << "lost connection to master: " << sock_name[0] <<":" <<sock_name[1] << endl;
+						cerr << "lost connection to master: " << sock_name[0] << ":" << sock_name[1] << endl;
 						w_close(i); // bye!
 						FD_CLR(i, &master); // remove from master set
+						err = 0;
+						return err;
 					}
 					err = -1;
 				}
-				else  
+				else
 				{
 					// received data sored in net_pack return to calling routine to process it
 					err = 1;
@@ -117,10 +97,11 @@ int YAMRSlave::recv_message(NetPackage &net_pack)
 			}
 		}
 	}
+	cerr << "send to master failed " << max_send_fails << " times, exiting..." << endl;
 	return err;
 }
 
-int YAMRSlave::recv_message(NetPackage &net_pack,int timeout_microsecs)
+int YAMRSlave::recv_message(NetPackage &net_pack, int timeout_microsecs)
 {
 	fd_set read_fds;
 	int err = -1;
@@ -128,43 +109,9 @@ int YAMRSlave::recv_message(NetPackage &net_pack,int timeout_microsecs)
 	struct timeval tv;
 	tv.tv_sec = 0;
 	tv.tv_usec = timeout_microsecs;
-	int recv_fails = 0;
-	while (recv_fails < max_recv_fails && err != 1)
-	{
-		read_fds = master; // copy master
-		result = w_select(fdmax + 1, &read_fds, NULL, NULL, &tv);
-		if (result == -1) exit(4);
-		if (result == 0) return 0;
-		else
-		{		
-			for (int i = 0; i <= fdmax; i++) {
-				if (FD_ISSET(i, &read_fds)) { // got message to read
-					if ((err = net_pack.recv(i)) <= 0) // error or lost connection
-					{
-						vector<string> sock_name = w_getnameinfo_vec(i);
-						if (err < 0) {
-							cerr << "receive from master failed: " << sock_name[0] << ":" << sock_name[1] << endl;
-						}
-						else {
-							cerr << "lost connection to master: " << sock_name[0] << ":" << sock_name[1] << endl;
-							w_close(i); // bye!
-							FD_CLR(i, &master); // remove from master set
-						}
-						err = -1;
-					}
-					else
-					{
-						// received data sored in net_pack return to calling routine to process it
-						err = 1;
-						return err;
-					}
-				}
-			}
-		}
-	}
+	err = recv_message(net_pack, &tv);
 	return err;
 }
-
 
 
 int YAMRSlave::send_message(NetPackage &net_pack, const void *data, unsigned long data_len)
@@ -178,86 +125,22 @@ int YAMRSlave::send_message(NetPackage &net_pack, const void *data, unsigned lon
 	}
 	if (n >= max_send_fails)
 	{
-			cerr << "send to master failed " << max_send_fails << " times, giving..." << endl;
+		cerr << "send to master failed " << max_send_fails << " times, giving..." << endl;
 	}
 	return err;
 }
 
-string YAMRSlave::tpl_err_msg(int i)
-{
-	string err_msg;
-	switch (i)
-	{
-	case 0:
-	  err_msg = string("Routine completed successfully");
-		break;
-	case 1:
-	  err_msg = string("TPL file does not exist");
-		break;
-	case 2:
-	  err_msg = string("Not all parameters listed in TPL file");
-		break;
-	case 3:
-	  err_msg = string("Illegal header specified in TPL file");
-		break;
-	case 4:
-	  err_msg = string("Error getting parameter name from template");
-		break;
-	case 5:
-	  err_msg = string("Error getting parameter name from template");
-		break;
-	case 10:
-	  err_msg = string("Error writing to model input file");
-	}
-	return err_msg;
-}
-
-
-string YAMRSlave::ins_err_msg(int i)
-{
-	string err_msg;
-	switch (i)
-	{
-	case 0:
-		err_msg = "Routine completed successfully";
-		break;
-	default:
-		err_msg = "";
-	}
-	return err_msg;
-}
 
 NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, NetPackage &net_pack)
 {
 	NetPackage::PackType final_run_status = NetPackage::PackType::RUN_FAILED;
 	bool done = false;
 	int err = 0;
-	std::vector<double> obs_vec;
-	bool isDouble = true;
-	bool forceRadix = true;
-	//TemplateFiles tpl_files(isDouble, forceRadix, tplfile_vec, inpfile_vec, par_name_vec);
-	//InstructionFiles ins_files(insfile_vec, outfile_vec);	
+	
 	thread_flag f_terminate(false);
 	thread_flag f_finished(false);
 	try 
 	{
-	//	message.str("");
-		//first delete any existing input and output files			
-		for (auto &out_file : outfile_vec)
-		{
-			if ((check_exist_out(out_file)) && (remove(out_file.c_str()) != 0))
-				throw PestError("model interface error: Cannot delete existing model output file " + out_file);
-		}
-		for (auto &in_file : inpfile_vec)
-		{
-			if ((check_exist_out(in_file)) && (remove(in_file.c_str()) != 0))
-				throw PestError("model interface error: Cannot delete existing model input file " + in_file);
-		}
-
-
-		int ifail;
-		int ntpl = tplfile_vec.size();
-		int npar = pars.size();
 		vector<string> par_name_vec;
 		vector<double> par_values;
 		for (auto &i : pars)
@@ -265,26 +148,13 @@ NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, N
 			par_name_vec.push_back(i.first);
 			par_values.push_back(i.second);
 		}
-		if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))
-		{
-			throw PestError("Error running model: invalid parameter value returned");
-		}
-		wrttpl_(&ntpl, StringvecFortranCharArray(tplfile_vec, 50).get_prt(),
-			StringvecFortranCharArray(inpfile_vec, 50).get_prt(),
-			&npar, StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
-			par_values.data(), &ifail);
-		if (ifail != 0)
-		{
-			throw PestError("Error processing template file:" + tpl_err_msg(ifail));
-		}
-
-		// update parameter values		
-		pars.clear();
-		for (int i = 0; i<npar; ++i)
-		{
-			pars[par_name_vec[i]] = par_values[i];
-		}
-		thread run_thread(w_run_commands, &f_terminate, &f_finished, comline_vec);
+		
+		std::vector<double> obs_vec;	
+		//thread run_thread(w_run_commands, &f_terminate, &f_finished, comline_vec);
+		thread run_thread(w_write_run_read, &f_terminate, &f_finished,
+			tplfile_vec, outfile_vec, insfile_vec,
+			inpfile_vec, &par_name_vec, &par_values,
+			&obs_name_vec, &obs_vec, comline_vec);
 		while (true)
 		{
 			//check if the runner thread has finished
@@ -297,14 +167,13 @@ NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, N
 			}
 			//this call includes a "sleep" for the timeout
 			err = recv_message(net_pack, OperSys::thread_sleep_milli_secs * 1000);
-			if (err == -1)
+			if (err != 1)
 			{
-					cerr << "recv from master failed " << max_recv_fails << " times, exiting..." << endl;
-					f_terminate.set(true);
-					run_thread.join();
-					exit(-1);
+				f_terminate.set(true);
+				run_thread.join();
+				exit(-1);
 			}
-			//no messages
+			//timeout on recv
 			else if (err == 0){}
 			else if (net_pack.get_type() == NetPackage::PackType::PING)
 			{
@@ -349,37 +218,23 @@ NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, N
 			}
 			if (done) break;
 		}
+
+
+
 		//if this run was terminated, throw an error to signal a failed run
 		if (f_terminate.get())
 		{
 			throw PestError("model run terminated");
 		}
-		// process instruction files		
-		int nins = insfile_vec.size();
-		int nobs = obs_name_vec.size();
-		std::vector<double> obs_vec;
-		obs_vec.resize(nobs, -9999.00);
-		readins_(&nins, StringvecFortranCharArray(insfile_vec, 50).get_prt(),
-			StringvecFortranCharArray(outfile_vec, 50).get_prt(),
-			&nobs, StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
-			obs_vec.data(), &ifail);
-		if (ifail != 0)
+		//update the parameter values
+		pars.clear();
+		for (int i = 0; i<par_name_vec.size(); ++i)
 		{
-			throw PestError("Error processing instruction file");
-		}
-
-		// check parameters and observations for inf and nan
-		if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))
-		{
-			throw PestError("Error running model: invalid parameter value returned");
-		}
-		if (std::any_of(obs_vec.begin(), obs_vec.end(), OperSys::double_is_invalid))
-		{
-			throw PestError("Error running model: invalid observation value returned");
+			pars[par_name_vec[i]] = par_values[i];
 		}
 		// update observation values		
 		obs.clear();
-		for (int i = 0; i<nobs; ++i)
+		for (int i = 0; i<obs_name_vec.size(); ++i)
 		{
 			obs[obs_name_vec[i]] = obs_vec[i];
 		}
@@ -394,12 +249,15 @@ NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, N
 	}
 	catch(...)
 	{
-		cerr << "   Error running model" << endl;
+ 		cerr << "   Error running model" << endl;
 		cerr << "   Aborting model run" << endl;
 		NetPackage::PackType::RUN_FAILED;
 	}
 	return final_run_status;
 }
+
+
+
 
 void YAMRSlave::check_io()
 {
@@ -444,10 +302,9 @@ void YAMRSlave::start(const string &host, const string &port)
 	{
 		//get message from master
 		err = recv_message(net_pack);
-		if (err == -1)
+		if (err != 1)
 		{
-				cerr << "recv from master failed " << max_recv_fails << " times: terminating" << endl;
-				terminate = true;
+			terminate = true;
 		}
 		else if(net_pack.get_type() == NetPackage::PackType::REQ_RUNDIR)
 		{
@@ -457,7 +314,7 @@ void YAMRSlave::start(const string &host, const string &port)
 			string cwd =  OperSys::getcwd();
 			err = send_message(net_pack, cwd.c_str(), cwd.size());
 			if (err != 1)
-			{			
+			{
 				exit(-1);
 			}
 		}
@@ -500,9 +357,6 @@ void YAMRSlave::start(const string &host, const string &port)
 			{
 				exit(-1);
 			}
-			else {
-				cout << "Linpack results sent" << endl;
-			}
 		}
 		else if(net_pack.get_type() == NetPackage::PackType::START_RUN)
 		{
@@ -533,7 +387,7 @@ void YAMRSlave::start(const string &host, const string &port)
 				err = send_message(net_pack, &data, 0);
 				if (err != 1)
 				{
-						exit(-1);
+					exit(-1);
 				}
 			}
 			else
@@ -550,7 +404,6 @@ void YAMRSlave::start(const string &host, const string &port)
 				{
 						exit(-1);
 				}
-				//w_sleep(500);
 			}
 		}
 		else if (net_pack.get_type() == NetPackage::PackType::TERMINATE)
@@ -569,7 +422,7 @@ void YAMRSlave::start(const string &host, const string &port)
 			err = send_message(net_pack, &data, 0);
 			if (err != 1)
 			{
-				exit(-1);
+					exit(-1);
 			}
 			cout << "ping response sent" << endl;
 		}
