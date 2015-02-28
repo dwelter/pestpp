@@ -52,8 +52,8 @@ private:
 	int sockfd;
 	int fdmax;
 #ifdef _DEBUG
-	static const int max_recv_fails = 10;
-	static const int max_send_fails = 10;
+	static const int max_recv_fails = 100;
+	static const int max_send_fails = 100;
 #else
 	static const int max_recv_fails = 1000;
 	static const int max_send_fails = 1000;

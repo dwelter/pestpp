@@ -283,7 +283,10 @@ int RunManagerYAMR::get_n_concurrent(int run_id)
 	int n = 0;
 	for (auto &i = range_pair.first; i != range_pair.second; ++i)
 	{
-		++n;
+		if (i->second->get_state() == SlaveInfoRec::State::ACTIVE)
+		{
+			++n;
+		}
 	}
 	return n;
 }
@@ -533,31 +536,25 @@ void RunManagerYAMR::close_slave(int i_sock)
 void RunManagerYAMR::close_slave(list<SlaveInfoRec>::iterator slave_info_iter)
 {
 	int i_sock = slave_info_iter->get_socket_fd();
+	int run_id = slave_info_iter->get_run_id();
+	SlaveInfoRec::State state = slave_info_iter->get_state();
+
 	vector<string> sock_name = w_getnameinfo_vec(i_sock);
 	w_close(i_sock); // bye!
 	FD_CLR(i_sock, &master); // remove from master set
-	//remove slave from socket_to_iter_map 
-	socket_to_iter_map.erase(i_sock);
 	// remove run from active_runid_to_iterset_map
-	for (auto iter = active_runid_to_iterset_map.begin(), ite = active_runid_to_iterset_map.end(); iter != ite;)
-	{
-		if (iter->second == slave_info_iter)
-		{
-			int run_id = iter->second->get_run_id();
-			if (!run_finished(run_id)) //check if run has already finish on another node
-			{
-				waiting_runs.push_front(run_id);
-			}
-			iter = active_runid_to_iterset_map.erase(iter);
-			break;
-		}
-		else
-			++iter;
-	}
+	unschedule_run(slave_info_iter);
+
 	slave_info_set.erase(slave_info_iter);
 	socket_to_iter_map.erase(i_sock);
+
+	// check if this run needs to be returned to the waiting queue
+	int n_concurr = get_n_concurrent(run_id);
+	if (run_id != SlaveInfoRec::UNKNOWN_ID &&  slave_info_iter->get_state() == SlaveInfoRec::State::ACTIVE && n_concurr == 0)
+	{
+		waiting_runs.push_front(run_id);
+	}
 	stringstream ss;
-	
 	ss << "closed connection to slave: " << sock_name[0] << ":" << sock_name[1] << "; number of slaves: " << socket_to_iter_map.size();
 	report(ss.str(), false);
 }
@@ -589,66 +586,81 @@ void RunManagerYAMR::schedule_runs()
 		double global_avg_runtime = get_global_runtime_minute();
 		bool should_schedule = false;
 
-		for (auto it_active = active_runid_to_iterset_map.begin(); it_active != active_runid_to_iterset_map.end(); ++it_active)
+		list<SlaveInfoRec>::iterator it_slave, iter_e;
+		for (it_slave = slave_info_set.begin(), iter_e = slave_info_set.end();
+			it_slave != iter_e; ++it_slave)
 		{
-			should_schedule = false;
-			auto it_slave = it_active->second;
-			int run_id = it_slave->get_run_id();
-			int act_sock_id = it_slave->get_socket_fd();
-			int n_concur = get_n_concurrent(run_id);
-
-			duration = it_slave->get_duration_minute();
-			avg_runtime = it_slave->get_runtime_minute();
-			if (avg_runtime <= 0) avg_runtime = global_avg_runtime;
-			if (avg_runtime <= 0) avg_runtime = 1.0E+10;
-			vector<int> overdue_kill_runs_vec = get_overdue_runs_over_kill_threshold(run_id);
-			if (it_slave->get_state() == SlaveInfoRec::State::KILLED)
+			SlaveInfoRec::State state = it_slave->get_state();
+			if (state == SlaveInfoRec::State::ACTIVE)
 			{
-				//this run has already been killed.  No need to rekill it
 				should_schedule = false;
-			}
-			else if (failure_map.count(run_id) + overdue_kill_runs_vec.size() >= max_n_failure)
-			{
-				// kill the overdue runs
-				kill_runs(run_id);
-				should_schedule = false;
-			}
-			else if (overdue_kill_runs_vec.size() >= max_concurrent_runs)
-			{
-				// kill the overdue runs
-				kill_runs(run_id);
-				// reschedule runs as we still haven't reach the max failure threshold
-				// and there are not concurrent runs for this id becuse we just killed all of them
-				should_schedule = true;
-			}
-			else if (duration > avg_runtime*PERCENT_OVERDUE_RESCHED)
-			{
-				//check how many concurrent runs are going	
-				if (n_concur < max_concurrent_runs) should_schedule = true;
-				else should_schedule = false;
-			}
+				int run_id = it_slave->get_run_id();
+				int act_sock_id = it_slave->get_socket_fd();
+				int n_concur = get_n_concurrent(run_id);
 
-			if ((!free_slave_list.empty()) && (should_schedule))
-			{
-				vector<string> sock_name = w_getnameinfo_vec(act_sock_id);
-				stringstream ss;
-				ss << "rescheduling overdue run " << run_id << " (" << duration << "|" <<
-					avg_runtime << " minutes) on: " << sock_name[0] << "$" <<
-					it_slave->get_work_dir();
-				report(ss.str(), false);
-				int success = schedule_run(run_id, free_slave_list);
-				n_concur = get_n_concurrent(run_id);
-				if (success >=0)
+				duration = it_slave->get_duration_minute();
+				avg_runtime = it_slave->get_runtime_minute();
+				if (avg_runtime <= 0) avg_runtime = global_avg_runtime;
+				if (avg_runtime <= 0) avg_runtime = 1.0E+10;
+				vector<int> overdue_kill_runs_vec = get_overdue_runs_over_kill_threshold(run_id);
+				if (failure_map.count(run_id) + overdue_kill_runs_vec.size() >= max_n_failure)
 				{
-					stringstream ss;
-					ss << n_concur << " concurrent runs for run id = " << run_id;
-					report(ss.str(), false);
+					// kill the overdue runs
+					kill_runs(run_id);
+					should_schedule = false;
 				}
-				else
+				else if (overdue_kill_runs_vec.size() >= max_concurrent_runs)
 				{
+					// kill the overdue runs
+					kill_runs(run_id);
+					// reschedule runs as we still haven't reach the max failure threshold
+					// and there are not concurrent runs for this id becuse we just killed all of them
+					should_schedule = true;
+				}
+				else if (duration > avg_runtime*PERCENT_OVERDUE_RESCHED  && free_slave_list.empty())
+				{
+					// If there are no free slaves kill the overdue ones
+					// This is necessary to keep runs with smae numbers of slaves behaving
+					kill_run(it_slave);
+					if (failure_map.count(run_id) + overdue_kill_runs_vec.size() < max_n_failure)
+					{
+						should_schedule = true;
+					}
+				}
+				else if (duration > avg_runtime*PERCENT_OVERDUE_RESCHED)
+				{
+					//check how many concurrent runs are going	
+					if (n_concur < max_concurrent_runs) should_schedule = true;
+					else should_schedule = false;
+				}
+
+				if ((!free_slave_list.empty()) && should_schedule)
+				{
+					vector<string> sock_name = w_getnameinfo_vec(act_sock_id);
 					stringstream ss;
-					ss << "failed to schedule concurrent run for run id = " << run_id;
+					ss << "rescheduling overdue run " << run_id << " (" << duration << "|" <<
+						avg_runtime << " minutes) on: " << sock_name[0] << "$" <<
+						it_slave->get_work_dir();
 					report(ss.str(), false);
+					int success = schedule_run(run_id, free_slave_list);
+					n_concur = get_n_concurrent(run_id);
+					if (success >= 0)
+					{
+						stringstream ss;
+						ss << n_concur << " concurrent runs for run id = " << run_id;
+						report(ss.str(), false);
+					}
+					else
+					{
+						stringstream ss;
+						ss << "failed to schedule concurrent run for run id = " << run_id;
+						report(ss.str(), false);
+					}
+				}
+				n_concur = get_n_concurrent(run_id);
+				if (n_concur == 0 && should_schedule)
+				{
+					waiting_runs.push_front(run_id);
 				}
 			}
 		}
@@ -856,7 +868,7 @@ void RunManagerYAMR::process_message(int i_sock)
 			file_stor.update_run_failed(run_id);
 			failure_map.insert(make_pair(run_id, i_sock));
 			auto it = get_active_run_iter(i_sock);
-			remove_from_active_runid_to_iterset_map(it);
+			unschedule_run(it);
 			n_concur = get_n_concurrent(run_id);
 			if (n_concur == 0 && (failure_map.count(run_id) < max_n_failure))
 			{
@@ -871,7 +883,7 @@ void RunManagerYAMR::process_message(int i_sock)
 		int group_id = net_pack.get_group_id();
 		int n_concur = get_n_concurrent(run_id);
 		auto it = get_active_run_iter(i_sock);
-		remove_from_active_runid_to_iterset_map(it);
+		unschedule_run(it);
 		stringstream ss;
 		ss << "Run " << run_id << " killed on slave: " << sock_name[0] << "$" << slave_info_iter->get_work_dir() << ", run id = " << run_id << " concurrent = " << n_concur;
 		report(ss.str(), false);
@@ -922,77 +934,78 @@ bool RunManagerYAMR::process_model_run(int sock_id, NetPackage &net_pack)
 	}
 	// remove currently completed run from the active list
 	auto it = get_active_run_iter(sock_id);
-	remove_from_active_runid_to_iterset_map(it);
+	unschedule_run(it);
 	kill_runs(run_id);
 	return use_run;
 }
 
+void RunManagerYAMR::kill_run(list<SlaveInfoRec>::iterator slave_info_iter)
+{
+	int socket_id = slave_info_iter->get_socket_fd();
+	SlaveInfoRec::State state = slave_info_iter->get_state();
+	unschedule_run(slave_info_iter);
+	if (socket_id && (state == SlaveInfoRec::State::ACTIVE || state == SlaveInfoRec::State::KILLED_FAILED))
+	{
+		int run_id = slave_info_iter->get_run_id();
+		slave_info_iter->set_state(SlaveInfoRec::State::KILLED);
+		//schedule run to be killed
+		vector<string> sock_name = w_getnameinfo_vec(socket_id);
+		stringstream ss;
+		ss << "sending kill request for run " << run_id << " to slave : " << sock_name[0] << "$" << slave_info_iter->get_work_dir();
+		report(ss.str(), false);
+		NetPackage net_pack(NetPackage::PackType::REQ_KILL, 0, 0, "");
+		char data = '\0';
+		int err = net_pack.send(socket_id, &data, sizeof(data));
+		if (err == 1)
+		{
+			slave_info_iter->set_state(SlaveInfoRec::State::KILLED);
+		}
+		else
+		{
+			report("error sending kill request to slave:" + sock_name[0] + "$" +
+				slave_info_iter->get_work_dir(), true);
+			slave_info_iter->set_state(SlaveInfoRec::State::KILLED_FAILED);
+		}
+	}
+}
+
+
 void RunManagerYAMR::kill_runs(int run_id)
 {
 	auto range_pair = active_runid_to_iterset_map.equal_range(run_id);
-	//runs with this id are not needed so mark them as zombies
+	//runs with this id are not needed so kill them
+	list<list<SlaveInfoRec>::iterator> kill_list;
+
 	for (auto b = range_pair.first; b != range_pair.second; ++b)
 	{
 		list<SlaveInfoRec>::iterator slave_info_iter = (*b).second;
-		int socket_id = slave_info_iter->get_socket_fd();
-		if (socket_id && slave_info_iter->get_state() != SlaveInfoRec::State::KILLED)
-		{
-			slave_info_iter->set_state(SlaveInfoRec::State::KILLED);
-			//schedule run to be killed
-			vector<string> sock_name = w_getnameinfo_vec(socket_id);
-			stringstream ss;
-			ss << "sending kill request for run " << run_id << " to slave : " << sock_name[0] << "$" << slave_info_iter->get_work_dir();
-			report(ss.str(), false);
-			NetPackage net_pack(NetPackage::PackType::REQ_KILL, 0, 0, "");
-			char data = '\0';
-			int err = net_pack.send(socket_id, &data, sizeof(data));
-			if (err == 1)
-			{
-				slave_info_iter->set_state(SlaveInfoRec::State::KILLED);
-			}
-			else
-			{
-				report("error sending kill request to slave:" + sock_name[0] + "$" +
-					slave_info_iter->get_work_dir(), true);
-				slave_info_iter->set_state(SlaveInfoRec::State::KILLED_FAILED);
-			}
-		}
+		kill_list.push_back(slave_info_iter);
+	}
+	for (auto &iter : kill_list)
+	{
+		kill_run(iter);
 	}
 }
 
 
 void RunManagerYAMR::kill_all_active_runs()
 {
-	for (int n_tries = 0; !active_runid_to_iterset_map.empty() && n_tries >= 100; ++n_tries)
+	list<list<SlaveInfoRec>::iterator> iter_list;
+	list<SlaveInfoRec>::iterator iter_b, iter_e;
+	bool active_runs = true;
+	for (int n_tries = 0; active_runs && n_tries >= 100; ++n_tries)
 	{
 		init_slaves();
-		for (auto it_active = active_runid_to_iterset_map.begin(); it_active != active_runid_to_iterset_map.end(); ++it_active)
+		active_runs = false;
+		for (iter_b = slave_info_set.begin(), iter_e = slave_info_set.end();
+			iter_b != iter_e; ++iter_b)
 		{
-			auto slave_iter = (*it_active).second;
-			int run_id = slave_iter->get_run_id();
-			int socket_id = slave_iter->get_socket_fd();
-			SlaveInfoRec::State state = slave_iter->get_state();
-			string work_dir = slave_iter->get_work_dir();
+			int socket_id = iter_b->get_socket_fd();
+			SlaveInfoRec::State state = iter_b->get_state();
 			if (socket_id && (state == SlaveInfoRec::State::ACTIVE || state == SlaveInfoRec::State::KILLED_FAILED))
 			{
-				//schedule run to be killed
-				vector<string> sock_name = w_getnameinfo_vec(socket_id);
-				stringstream ss;
-				ss << "sending kill request for run " << run_id << " to slave : " << sock_name[0] << "$" << work_dir;
-				report(ss.str(), false);
-				NetPackage net_pack(NetPackage::PackType::REQ_KILL, 0, 0, "");
-				char data = '\0';
-				int err = net_pack.send(socket_id, &data, sizeof(data));
-				if (err == 1)
-				{
-					slave_iter->set_state(SlaveInfoRec::State::KILLED);
-				}
-				else
-				{
-					report("error sending kill request to slave:" + sock_name[0] + "$" +
-						work_dir, true);
-					slave_iter->set_state(SlaveInfoRec::State::KILLED_FAILED);
-				}
+				active_runs = true;
+				kill_run(iter_b);
 			}
 		}
 		listen();
@@ -1126,15 +1139,10 @@ void RunManagerYAMR::kill_all_active_runs()
 	 return global_runtime / (double)count;
  }
 
- void RunManagerYAMR::remove_from_active_runid_to_iterset_map(list<SlaveInfoRec>::iterator slave_info_iter)
+ void RunManagerYAMR::unschedule_run(list<SlaveInfoRec>::iterator slave_info_iter)
  {
 	 int run_id = slave_info_iter->get_run_id();
-	 // for (auto &i : active_runid_to_iterset_map)
-	 //{
-	//	 cerr << i.first << "   " << i.second->get_socket_fd() << endl;
-	 //}
 	 auto range_pair = active_runid_to_iterset_map.equal_range(run_id);
-
 
 	 for (auto iter = range_pair.first; iter != range_pair.second;)
 	 { 
@@ -1147,20 +1155,6 @@ void RunManagerYAMR::kill_all_active_runs()
 		 {
 			 ++iter;
 		 }
-	 }
-
-
-	 // This code should never be called.  The previous loop should catch everything
-	 assert(false);
-	 for (auto iter = active_runid_to_iterset_map.begin(), ite = active_runid_to_iterset_map.end(); iter != ite;)
-	 {
-		 if (iter->second == slave_info_iter)
-		 {
-			 iter = active_runid_to_iterset_map.erase(iter);
-			 break;
-		 }
-		 else
-			 ++iter;
 	 }
  }
  

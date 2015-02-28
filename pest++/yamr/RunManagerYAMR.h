@@ -121,8 +121,8 @@ private:
 	std::unordered_multimap<int, int> failure_map;
 
 	int schedule_run(int run_id, std::list<list<SlaveInfoRec>::iterator> &free_slave_list);
-	bool unschedule_run(deque<SlaveInfoRec>::iterator);
-	bool unschedule_run(int socket_fd);
+	void unschedule_run(list<SlaveInfoRec>::iterator slave_info_iter);
+	void kill_run(list<SlaveInfoRec>::iterator slave_info_iter);
 	void kill_runs(int run_id);
 	void kill_all_active_runs();
 	void close_slave(int i_sock);
@@ -143,7 +143,6 @@ private:
 	vector<int> get_overdue_runs_over_kill_threshold(int run_id);
 	bool all_runs_complete();
 	list<SlaveInfoRec>::iterator get_active_run_iter(int socket);
-	void remove_from_active_runid_to_iterset_map(list<SlaveInfoRec>::iterator slave_info_iter);
 	std::list<std::list<SlaveInfoRec>::iterator> get_free_slave_list();
 	double get_global_runtime_minute() const;
 	int get_n_concurrent(int run_id);

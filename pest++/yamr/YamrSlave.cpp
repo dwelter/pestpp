@@ -85,30 +85,35 @@ int YAMRSlave::recv_message(NetPackage &net_pack)
 {
 	fd_set read_fds;
 	int err = -1;
-	for(;;) {
-	read_fds = master; // copy master
-		if (w_select(fdmax+1, &read_fds, NULL, NULL, NULL) == -1) {
-			exit(4);
-		}
+	int recv_fails = 0;
+	while (recv_fails < max_recv_fails && err!=1)
+	{
+		read_fds = master; // copy master
+		int result = w_select(fdmax + 1, &read_fds, NULL, NULL, NULL);
+		if (result == -1) exit(4);
+		if (result == 0) return 0;
 		for(int i = 0; i <= fdmax; i++) {
 			if (FD_ISSET(i, &read_fds)) { // got message to read
 				if(( err=net_pack.recv(i)) <=0) // error or lost connection
 				{
 					vector<string> sock_name = w_getnameinfo_vec(i);
 					if (err < 0) {
-							cerr << "receive from master failed: " << sock_name[0] <<":" <<sock_name[1] << endl;
+						recv_fails++;
+						cerr << "receive from master failed: " << sock_name[0] <<":" <<sock_name[1] << endl;
 					}
 					else {
 						cerr << "lost connection to master: " << sock_name[0] <<":" <<sock_name[1] << endl;
 						w_close(i); // bye!
 						FD_CLR(i, &master); // remove from master set
 					}
+					err = -1;
 				}
 				else  
 				{
 					// received data sored in net_pack return to calling routine to process it
+					err = 1;
+					return err;
 				}
-			return err;
 			}
 		}
 	}
@@ -123,7 +128,9 @@ int YAMRSlave::recv_message(NetPackage &net_pack,int timeout_microsecs)
 	struct timeval tv;
 	tv.tv_sec = 0;
 	tv.tv_usec = timeout_microsecs;
-	for (;;) {
+	int recv_fails = 0;
+	while (recv_fails < max_recv_fails && err != 1)
+	{
 		read_fds = master; // copy master
 		result = w_select(fdmax + 1, &read_fds, NULL, NULL, &tv);
 		if (result == -1) exit(4);
@@ -143,13 +150,14 @@ int YAMRSlave::recv_message(NetPackage &net_pack,int timeout_microsecs)
 							w_close(i); // bye!
 							FD_CLR(i, &master); // remove from master set
 						}
+						err = -1;
 					}
 					else
 					{
 						// received data sored in net_pack return to calling routine to process it
+						err = 1;
+						return err;
 					}
-					return err;
-
 				}
 			}
 		}
@@ -164,14 +172,13 @@ int YAMRSlave::send_message(NetPackage &net_pack, const void *data, unsigned lon
 	int err;
 	int n;
 
-	for (err = -1, n=0; err==-1; ++n)
+	for (err = -1, n = 0; err != 1 && n < max_send_fails; ++n)
 	{
 		err = net_pack.send(sockfd, data, data_len);
-		if (n >= max_send_fails)
-		{
-			cout << "YAMRSlave::send_message send failed max times, giving up..." << endl;
-			break;
-		}
+	}
+	if (n >= max_send_fails)
+	{
+			cerr << "send to master failed " << max_send_fails << " times, giving..." << endl;
 	}
 	return err;
 }
@@ -225,8 +232,6 @@ NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, N
 	NetPackage::PackType final_run_status = NetPackage::PackType::RUN_FAILED;
 	bool done = false;
 	int err = 0;
-	int recv_fails = 0;	
-	int send_fails = 0;
 	std::vector<double> obs_vec;
 	bool isDouble = true;
 	bool forceRadix = true;
@@ -294,16 +299,12 @@ NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, N
 			err = recv_message(net_pack, OperSys::thread_sleep_milli_secs * 1000);
 			if (err == -1)
 			{
-				recv_fails++;
-				if (recv_fails >= max_recv_fails)
-				{
 					cerr << "recv from master failed " << max_recv_fails << " times, exiting..." << endl;
 					f_terminate.set(true);
 					run_thread.join();
 					exit(-1);
-				}
 			}
-			//timeout on recv
+			//no messages
 			else if (err == 0){}
 			else if (net_pack.get_type() == NetPackage::PackType::PING)
 			{
@@ -311,16 +312,11 @@ NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, N
 				net_pack.reset(NetPackage::PackType::PING, 0, 0, "");
 				const char* data = "\0";
 				err = send_message(net_pack, &data, 0);
-				if (err == -1)
+				if (err != 1)
 				{
-					send_fails++;
-					if (send_fails >= max_send_fails)
-					{
-						cerr << "send to master failed " << max_send_fails << " times, exiting..." << endl;
-						f_terminate.set(true);
-						run_thread.join();
-						exit(-1);
-					}
+					f_terminate.set(true);
+					run_thread.join();
+					exit(-1);
 				}
 				cout << "ping response sent" << endl;
 			}
@@ -443,7 +439,6 @@ void YAMRSlave::start(const string &host, const string &port)
 	int err;
 	//class attribute - can be modified in run_model()
 	terminate = false;	
-	int recv_fails = 0,send_fails = 0;
 	init_network(host, port);
 	while (!terminate)
 	{
@@ -451,12 +446,8 @@ void YAMRSlave::start(const string &host, const string &port)
 		err = recv_message(net_pack);
 		if (err == -1)
 		{
-			recv_fails++;
-			if (recv_fails >= max_recv_fails)
-			{
 				cerr << "recv from master failed " << max_recv_fails << " times: terminating" << endl;
 				terminate = true;
-			}
 		}
 		else if(net_pack.get_type() == NetPackage::PackType::REQ_RUNDIR)
 		{
@@ -465,14 +456,9 @@ void YAMRSlave::start(const string &host, const string &port)
 			net_pack.reset(NetPackage::PackType::RUNDIR, 0, 0,"");
 			string cwd =  OperSys::getcwd();
 			err = send_message(net_pack, cwd.c_str(), cwd.size());
-			if (err == -1)
-			{
-				send_fails++;
-				if (send_fails >= max_send_fails)
-				{
-					cerr << "send to master failed " << max_send_fails << " times, exiting..." << endl;					
-					exit(-1);
-				}
+			if (err != 1)
+			{			
+				exit(-1);
 			}
 		}
 		else if(net_pack.get_type() == NetPackage::PackType::CMD)
@@ -510,14 +496,12 @@ void YAMRSlave::start(const string &host, const string &port)
 			net_pack.reset(NetPackage::PackType::LINPACK, 0, 0,"");
 			char data;
 			err = send_message(net_pack, &data, 0);
-			if (err == -1)
+			if (err != 1)
 			{
-				send_fails++;
-				if (send_fails >= max_send_fails)
-				{
-					cerr << "send to master failed " << max_send_fails << " times, exiting..." << endl;
-					exit(-1);
-				}
+				exit(-1);
+			}
+			else {
+				cout << "Linpack results sent" << endl;
 			}
 		}
 		else if(net_pack.get_type() == NetPackage::PackType::START_RUN)
@@ -539,27 +523,17 @@ void YAMRSlave::start(const string &host, const string &port)
 				serialized_data = Serialization::serialize(pars, par_name_vec, obs, obs_name_vec);
 				net_pack.reset(NetPackage::PackType::RUN_FINISHED, group_id, run_id, "");
 				err = send_message(net_pack, serialized_data.data(), serialized_data.size());
-				if (err == -1)
+				if (err != 1)
 				{
-					send_fails++;
-					if (send_fails >= max_send_fails)
-					{
-						cerr << "send to master failed " << max_send_fails << " times, exiting..." << endl;
-						exit(-1);
-					}
+					exit(-1);
 				}
 				// Send READY Message to master
 				net_pack.reset(NetPackage::PackType::READY, 0, 0,"");
 				char data;
 				err = send_message(net_pack, &data, 0);
-				if (err == -1)
+				if (err != 1)
 				{
-					send_fails++;
-					if (send_fails >= max_send_fails)
-					{
-						cerr << "send to master failed " << max_send_fails << " times, exiting..." << endl;
 						exit(-1);
-					}
 				}
 			}
 			else
@@ -572,14 +546,9 @@ void YAMRSlave::start(const string &host, const string &port)
 				net_pack.reset(NetPackage::PackType::READY, 0, 0,"");
 				char data;
 				err = send_message(net_pack, &data, 0);
-				if (err == -1)
+				if (err != 1)
 				{
-					send_fails++;
-					if (send_fails >= max_send_fails)
-					{
-						cerr << "send to master failed " << max_send_fails << " times, exiting..." << endl;
 						exit(-1);
-					}
 				}
 				//w_sleep(500);
 			}
@@ -598,14 +567,9 @@ void YAMRSlave::start(const string &host, const string &port)
 			net_pack.reset(NetPackage::PackType::PING, 0, 0, "");
 			const char* data = "\0";
 			err = send_message(net_pack, &data, 0);
-			if (err == -1)
+			if (err != 1)
 			{
-				send_fails++;
-				if (send_fails >= max_send_fails)
-				{
-					cerr << "send to master failed " << max_send_fails << " times, exiting..." << endl;
-					exit(-1);
-				}
+				exit(-1);
 			}
 			cout << "ping response sent" << endl;
 		}
