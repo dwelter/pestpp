@@ -37,7 +37,7 @@ public:
 	void start(const std::string &host, const std::string &port);
 	~YAMRSlave();
 	void run();
-	int recv_message(NetPackage &net_pack);
+	int recv_message(NetPackage &net_pack, struct timeval *tv=NULL);
 	int recv_message(NetPackage &net_pack,int timeout_microsec);
 	int send_message(NetPackage &net_pack, const void *data=NULL, unsigned long data_len=0);
 	NetPackage::PackType run_model(Parameters &pars, Observations &obs, NetPackage &net_pack);

@@ -53,6 +53,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "iopp", "iopp\iopp.vcxproj",
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "common", "common\common.vcxproj", "{0193689C-8ED2-4DCA-9389-5D233739B1F0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EB9A0791-5341-4772-84AA-F7089AE7C57D} = {EB9A0791-5341-4772-84AA-F7089AE7C57D}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pbin2ascii", "pbin2ascii\pbin2ascii.vcxproj", "{1EF8EFC2-A4E1-45B1-9D33-B6305F273715}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -86,6 +89,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "linear_analysis_test", "lin
 	ProjectSection(ProjectDependencies) = postProject
 		{D25CC810-E9E9-4920-82A4-6F585214480E} = {D25CC810-E9E9-4920-82A4-6F585214480E}
 		{8A99FE6C-DE11-45C7-B668-F3EAAD9C863E} = {8A99FE6C-DE11-45C7-B668-F3EAAD9C863E}
+		{AA6E1EC6-2E3D-42EE-B997-2F40814DD2C9} = {AA6E1EC6-2E3D-42EE-B997-2F40814DD2C9}
 	EndProjectSection
 EndProject
 Global
