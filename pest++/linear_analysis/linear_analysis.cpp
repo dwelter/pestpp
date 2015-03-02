@@ -96,9 +96,12 @@ ObservationInfo normalize_weights_by_residual(Pest &pest_scenario, map<string, d
 	double exp_obj = pest_scenario.get_pestpp_options().get_expected_obj();
 	if (exp_obj > 0.0)
 	{
-		double tot_obj = 0.0;
-		for (auto &oc : obj_comps) tot_obj = tot_obj + oc.second;
-		
+		if (pest_scenario.get_regul_scheme_ptr())
+		{
+			cout << " WARNING:  can't use EXPECTED_OBJ option with dynamic" << endl;
+			cout << "           regularization - using PHIMACCEPT instead." << endl;
+		}
+		double tot_obj = obj_comps["MEAS"];
 		if (tot_obj > 0.0)
 		{
 			double mult = exp_obj / tot_obj;
@@ -108,18 +111,37 @@ ObservationInfo normalize_weights_by_residual(Pest &pest_scenario, map<string, d
 			}
 		}
 	}
-	
+	//if using regularization, we need to check if scaling is needed -> is phimaccept been satisfied
+	if (pest_scenario.get_regul_scheme_ptr())
+	{
+		double phimlim = pest_scenario.get_regul_scheme_ptr()->get_phimlim();
+		double phimaccept = pest_scenario.get_regul_scheme_ptr()->get_phimaccept();
+		double tot_obj = obj_comps["MEAS"];
+		if (tot_obj > phimaccept)
+		{
+			double mult = phimaccept / tot_obj;
+			for (auto &oc : obj_comps)
+				obj_comps[oc.first] = mult * oc.second;				
+		}
+		else
+		{
+			for (auto &oc : obj_comps)
+				obj_comps[oc.first] = 0.0;
+		}
+	}
+
 	for (auto &ogrp : pst_grps)
 	{
-		if (obj_comps[ogrp.second] < numeric_limits<double>::min())
+		if (obj_comps[ogrp.second] <= numeric_limits<double>::min())
 			continue;
 		obs_rec = obs_info.get_observation_rec_ptr(ogrp.first);
 		if (obs_rec->weight > 0.0)
 		{
-			weight = obs_info.get_observation_rec_ptr(ogrp.first)->weight * sqrt(((double)grp_nnz[ogrp.second]) / obj_comps[ogrp.second]);
-			if (weight < numeric_limits<double>::min())
-				weight = 1.0e-30;
-			else if (weight > numeric_limits<double>::max())
+			weight = obs_info.get_observation_rec_ptr(ogrp.first)->weight * 
+				sqrt(((double)grp_nnz[ogrp.second]) / obj_comps[ogrp.second]);
+			if (weight <= numeric_limits<double>::min())
+				weight = 0.0;
+			else if (weight >= numeric_limits<double>::max())
 				weight = 1.0e+30;
 			obs_info.set_weight(ogrp.first, weight);
 		}
@@ -1664,19 +1686,19 @@ void linear_analysis::write_par_credible_range(ofstream &fout, string sum_filena
 	fout << endl << "---------------------------------------" << endl;
 	fout << "---- parameter uncertainty summary ----" << endl;
 	fout << "---------------------------------------" << endl << endl << endl;
-	fout << setw(20) << "name" << setw(20) << "prior_mean" << setw(20) << "prior_variance" ;
+	fout << setw(20) << "name" << setw(20) << "prior_mean" << setw(20) << "prior_stdev" ;
 	fout << setw(20) << "prior_lower_bound" << setw(20) << "prior_upper_bound";
-	fout << setw(20) << "post_mean" << setw(20) << "post_variance";
+	fout << setw(20) << "post_mean" << setw(20) << "post_stdev";
 	fout << setw(20) << "post_lower_bound" << setw(20) << "post_upper_bound" << endl;
 	
 	ofstream sout(sum_filename);
-	sout << "name,prior_mean,prior_variance,prior_lower_bound,prior_upper_bound,";
-	sout << "post_mean,post_variance,post_lower_bound,post_upper_bound" << endl;
+	sout << "name,prior_mean,prior_stdev,prior_lower_bound,prior_upper_bound,";
+	sout << "post_mean,post_stdev,post_lower_bound,post_upper_bound" << endl;
 
 	map<string, double> prior_vars = prior_parameter_variance();
 	map<string, double> post_vars = posterior_parameter_variance();
 	vector<string> missing;
-	double value;
+	double value,stdev;
 	pair<double, double> range;
 	for (auto &pname : ordered_names)
 	{
@@ -1686,19 +1708,25 @@ void linear_analysis::write_par_credible_range(ofstream &fout, string sum_filena
 		{
 			//prior
 			value = init_pars.get_rec(pname);
-			range = get_range(value, prior_vars[pname], parinfo.get_parameter_rec_ptr(pname)->tranform_type);
-			fout << setw(20) << pname << setw(20) << value << setw(20) << prior_vars[pname] << setw(20) <<
-				range.first << setw(20) << range.second;
-			sout << pname << "," << value << "," << prior_vars[pname] << "," <<
-				range.first << "," << range.second;
+			//if (parinfo.get_parameter_rec_ptr(pname)->tranform_type == ParameterRec::TRAN_TYPE::LOG)
+			//	value = log10(value);
+			//range = get_range(value, prior_vars[pname], parinfo.get_parameter_rec_ptr(pname)->tranform_type);
+			stdev = sqrt(prior_vars[pname]);
+
+			fout << setw(20) << pname << setw(20) << value << setw(20) << stdev << setw(20) <<
+				value - (2.0*stdev) << setw(20) << value + (2.0*stdev);
+			sout << pname << "," << value << "," << stdev << "," <<
+				value - (2.0*stdev) << "," << value + (2.0*stdev);
 
 			//posterior
 			value = opt_pars.get_rec(pname);
-			range = get_range(value, post_vars[pname], parinfo.get_parameter_rec_ptr(pname)->tranform_type);
-			fout << setw(20) << value << setw(20) << post_vars[pname] << setw(20) <<
-				range.first << setw(20) << range.second << endl;
-			sout << "," << value << "," << post_vars[pname] << "," <<
-				range.first << "," << range.second << endl;
+			stdev = sqrt(post_vars[pname]);
+			//range = get_range(value, post_vars[pname], parinfo.get_parameter_rec_ptr(pname)->tranform_type);
+			
+			fout << setw(20) << value << setw(20) << stdev << setw(20) <<
+				value - (2.0*stdev) << setw(20) << value + (2.0*stdev) << endl;
+			sout << "," << value << "," << stdev << "," <<
+				value - (2.0*stdev) << "," << value + (2.0*stdev) << endl;
 		}
 	}
 	if (missing.size() > 0)
@@ -1723,13 +1751,10 @@ void linear_analysis::write_par_credible_range(ofstream &fout, string sum_filena
 		fout << endl;
 	}
 	fout << endl;
-	fout << "Note: Upper and lower uncertainty bounds of non-transformed parameters " << endl;
-	fout << "      are calculated as: <prior,post>_mean +/- (2.0 * sqrt(<prior,post>_variance)). " << endl;
-	fout << "      For log-transformed parameters, the 'variance' reported above is the variance " << endl;
-	fout << "       of the log of the parameter value. For these paramters, the upper and lower " << endl;
-	fout << "      uncertainty bounds are calculated as: " << endl;
-	fout << "      10^(log(<prior,post>_mean) +/- (2.0*sqrt(<prior,post>_variance)))." << endl << endl;
-	sout.close();
+	fout << "Note: Upper and lower uncertainty bounds reported above are " << endl;
+	fout << "      calculated as: <prior,post>_mean +/- (2.0 * <prior,post>_stdev). " << endl;
+	fout << "      For log-transformed parameters, the mean, stdev and range are reported " << endl;
+	fout << "      with respect to the log of the parameter value. " << endl << endl;
 }
 
 pair<double, double> linear_analysis::get_range(double value, double variance, const ParameterRec::TRAN_TYPE &tt)
@@ -1765,14 +1790,14 @@ void linear_analysis::write_pred_credible_range(ofstream &fout, string sum_filen
 	fout << "---- prediction uncertainty summary ----" << endl;
 	fout << "----------------------------------------" << endl << endl << endl;
 	fout << setw(20) << "prediction_name" << setw(20) << "prior_mean";
-	fout << setw(20) << "prior_variance" << setw(20) << "prior_lower_bound";
+	fout << setw(20) << "prior_stdev" << setw(20) << "prior_lower_bound";
 	fout << setw(20) << "prior_upper_bound" << setw(20) << "post_mean";
-	fout << setw(20) << "post_variance" << setw(20) << "post_lower_bound";
+	fout << setw(20) << "post_stdev" << setw(20) << "post_lower_bound";
 	fout << setw(20) << "post_upper_bound" << endl;
 
 	ofstream sout(sum_filename);
-	sout << "name,prior_mean,prior_variance,prior_lower_bound,prior_upper_bound,";
-	sout << "post_mean,post_variance,post_lower_bound,post_upper_bound" << endl;
+	sout << "name,prior_mean,prior_stdev,prior_lower_bound,prior_upper_bound,";
+	sout << "post_mean,post_stdev,post_lower_bound,post_upper_bound" << endl;
 
 	map<string, double> prior_vars = prior_prediction_variance();
 	map<string, double> post_vars = posterior_prediction_variance();
@@ -1783,18 +1808,18 @@ void linear_analysis::write_pred_credible_range(ofstream &fout, string sum_filen
 		stdev = sqrt(prior_vars[pred.first]);
 		lower = val - (2.0 * stdev);
 		upper = val + (2.0 * stdev);
-		fout << setw(20) << pred.first << setw(20) << val << setw(20) << prior_vars[pred.first];
+		fout << setw(20) << pred.first << setw(20) << val << setw(20) << stdev;
 		fout << setw(20) << lower << setw(20) << upper;
-		sout << pred.first << "," << val << "," << prior_vars[pred.first];
+		sout << pred.first << "," << val << "," << stdev;
 		sout << "," << lower << "," << upper;
 
 		val = init_final_pred_values[pred.first].second;
 		stdev = sqrt(post_vars[pred.first]);
 		lower = val - (2.0 * stdev);
 		upper = val + (2.0 * stdev);
-		fout << setw(20) << val << setw(20) << post_vars[pred.first];
+		fout << setw(20) << val << setw(20) << stdev;
 		fout << setw(20) << lower << setw(20) << upper << endl;
-		sout << "," << val << "," << post_vars[pred.first];
+		sout << "," << val << "," << stdev;
 		sout << "," << lower << "," << upper << endl;
 	}
 
@@ -1803,7 +1828,7 @@ void linear_analysis::write_pred_credible_range(ofstream &fout, string sum_filen
 	fout << "      posterior uncertainty calculations are the same " << endl;
 	fout << "      and were extracted from final base parameter jacobian." << endl;
 	fout << "      The upper and lower uncertainty bounds were calculated " << endl;
-	fout << "      as: <prior,post>_mean +/- (2.0*sqrt(<prior,post>_variance)" << endl;
+	fout << "      as: <prior,post>_mean +/- (2.0*<prior,post>_stdev" << endl;
 	sout.close();
 }
 

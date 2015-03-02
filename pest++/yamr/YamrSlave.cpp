@@ -160,14 +160,14 @@ NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, N
 			//check if the runner thread has finished
 			if (f_finished.get())
 			{
-				cout << "received finished signal from runner " << std::endl;
+				cout << "received finished signal from run thread " << std::endl;
 				run_thread.join();
 				//don't break here, need to check one last time for incoming messages
 				done = true;
 			}
 			//this call includes a "sleep" for the timeout
 			err = recv_message(net_pack, OperSys::thread_sleep_milli_secs * 1000);
-			if (err != 1)
+			if ((err != 1) && (err != 0))
 			{
 				f_terminate.set(true);
 				run_thread.join();
