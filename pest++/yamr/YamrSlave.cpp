@@ -211,6 +211,7 @@ NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, N
 			else
 			{
 				cerr << "Received unsupported message from master, only PING REQ_KILL or TERMINATE can be sent during model run" << endl;
+				cerr << static_cast<int>(net_pack.get_type()) << endl;
 				cerr << "something is wrong...exiting" << endl;
 				f_terminate.set(true);
 				run_thread.join();
