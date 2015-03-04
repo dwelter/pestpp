@@ -403,9 +403,13 @@ void RunManagerYAMR::run()
 		//schedule runs on available nodes
 		schedule_runs();
 		// get and process incomming messages
-		listen();		
+		listen();	
+		//
+		ping();
 	}
 	echo();
+	if (model_runs_done == 0)
+		throw PestError("no runs completed successfully");
 	total_runs += model_runs_done;
 	//kill any remaining active runs
 	kill_all_active_runs();
@@ -419,6 +423,69 @@ void RunManagerYAMR::run()
 	{
 		vector<double> pars;
 		int status = file_stor.get_run(0, pars, init_sim);
+	}
+}
+
+
+void RunManagerYAMR::ping()
+{
+	for (auto &i : socket_to_iter_map)
+	{
+		
+		ping(i.first);
+	}
+}
+void RunManagerYAMR::ping(int i_sock)
+{
+	list<SlaveInfoRec>::iterator slave_info_iter = socket_to_iter_map.at(i_sock);
+	SlaveInfoRec::State state = slave_info_iter->get_state();
+	if (state != SlaveInfoRec::State::WAITING
+		&& state != SlaveInfoRec::State::ACTIVE
+		&& state != SlaveInfoRec::State::COMPLETE
+		&& state != SlaveInfoRec::State::KILLED
+		&& state != SlaveInfoRec::State::KILLED_FAILED)
+	{
+		return;
+	}
+
+
+	vector<string> sock_name = w_getnameinfo_vec(i_sock);
+	fd_set read_fds = master;
+	//if the slave hasn't communicated since the last ping request
+	if ((!FD_ISSET(i_sock, &read_fds)) && slave_info_iter->get_ping())
+	{
+		int fails = slave_info_iter->add_failed_ping();
+		report("failed to receive ping response from slave: " + sock_name[0] + "$" + slave_info_iter->get_work_dir(), false);
+		if (fails >= MAX_FAILED_PINGS)
+		{
+			report("max failed ping communications since last successful run for slave:" + sock_name[0] + "$" + slave_info_iter->get_work_dir() + "  -> terminating", false);
+			close_slave(i_sock);
+			return;
+		}
+	}
+	//check if it is time to ping again...
+	double duration = (double)slave_info_iter->seconds_since_last_ping_time();
+	double ping_time = max(double(PING_INTERVAL_SECS), slave_info_iter->get_runtime_sec());
+	if (duration >= ping_time)
+	{
+		const char* data = "\0";
+		NetPackage net_pack(NetPackage::PackType::PING, 0, 0, "");
+		int err = net_pack.send(i_sock, data, 0);
+		if (err <= 0)
+		{
+			int fails = slave_info_iter->add_failed_ping();
+			report("failed to send ping request to slave:" + sock_name[0] + "$" + slave_info_iter->get_work_dir(), false);
+			if (fails >= MAX_FAILED_PINGS)
+			{
+				report("max failed ping communications since last successful run for slave:" + sock_name[0] + "$" + slave_info_iter->get_work_dir() + "  -> terminating", true);
+				close_slave(i_sock);
+				return;
+			}
+		}
+		else slave_info_iter->set_ping(true);
+#ifdef _DEBUG
+		report("ping sent to slave:" + sock_name[0] + "$" + slave_info_iter->get_work_dir(), false);
+#endif
 	}
 }
 
@@ -465,7 +532,8 @@ void RunManagerYAMR::listen()
 		} // END got new incoming connection
 		else
 		{		
-			map<int, list<SlaveInfoRec>::iterator>::iterator iter = socket_to_iter_map.find(i);
+			continue;
+			/*map<int, list<SlaveInfoRec>::iterator>::iterator iter = socket_to_iter_map.find(i);
 			if (iter != socket_to_iter_map.end())
 			{
 				SlaveInfoRec::State state = iter->second->get_state();
@@ -478,52 +546,9 @@ void RunManagerYAMR::listen()
 					iter->second->set_ping(false);
 					break;
 				}
-			}
+			}*/
 		}			
 	} // END looping through file descriptors
-}
-
-void RunManagerYAMR::ping(int i_sock)
-{				
-	list<SlaveInfoRec>::iterator slave_info_iter = socket_to_iter_map.at(i_sock);
-	vector<string> sock_name = w_getnameinfo_vec(i_sock);
-	fd_set read_fds = master;
-	//if the slave hasn't communicated since the last ping request
-	if ((!FD_ISSET(i_sock, &read_fds)) && slave_info_iter->get_ping())
-	{
-		int fails = slave_info_iter->add_failed_ping();
-		report("failed to receive ping response from slave: " + sock_name[0] + "$" + slave_info_iter->get_work_dir(), false);
-		if (fails >= MAX_FAILED_PINGS)
-		{
-			report("max failed ping communications since last successful run for slave:" + sock_name[0] + "$" + slave_info_iter->get_work_dir() + "  -> terminating", false);
-			close_slave(i_sock);
-			return;
-		}		
-	}
-	//check if it is time to ping again...
-	double duration = (double)slave_info_iter->seconds_since_last_ping_time();
-	double ping_time = max(double(PING_INTERVAL_SECS), slave_info_iter->get_runtime_sec());
-	if (duration >= ping_time)
-	{		
-		const char* data = "\0";
-		NetPackage net_pack(NetPackage::PackType::PING, 0, 0, "");
-		int err = net_pack.send(i_sock, data, 0);
-		if (err <= 0)
-		{
-			int fails = slave_info_iter->add_failed_ping();
-			report("failed to send ping request to slave:" + sock_name[0] + "$" + slave_info_iter->get_work_dir(), false);
-			if (fails >= MAX_FAILED_PINGS)
-			{
-				report("max failed ping communications since last successful run for slave:" + sock_name[0] + "$" + slave_info_iter->get_work_dir() + "  -> terminating", true);
-				close_slave(i_sock);
-				return;
-			}
-		}
-		else slave_info_iter->set_ping(true);
-#ifdef _DEBUG
-		//report("ping sent to slave:" + sock_name[0] + "$" + slave_info.get_work_dir(i_sock), false);
-#endif
-	}
 }
 
 
@@ -603,7 +628,12 @@ void RunManagerYAMR::schedule_runs()
 				if (avg_runtime <= 0) avg_runtime = global_avg_runtime;
 				if (avg_runtime <= 0) avg_runtime = 1.0E+10;
 				vector<int> overdue_kill_runs_vec = get_overdue_runs_over_kill_threshold(run_id);
-				if (failure_map.count(run_id) + overdue_kill_runs_vec.size() >= max_n_failure)
+				
+				if (duration > avg_runtime*PERCENT_OVERDUE_GIVEUP)
+				{
+					kill_run(it_slave);
+				}
+				else if (failure_map.count(run_id) + overdue_kill_runs_vec.size() >= max_n_failure)
 				{
 					// kill the overdue runs
 					kill_runs(run_id);
@@ -860,10 +890,11 @@ void RunManagerYAMR::process_message(int i_sock)
 		int group_id = net_pack.get_group_id();
 		int n_concur = get_n_concurrent(run_id);
 		stringstream ss;
-		ss << "Run " << run_id << " failed on slave:" << sock_name[0] << "$" << slave_info_iter->get_work_dir() << "  (group id = " << group_id << ", run id = " << run_id << ", concurrent = " << n_concur << ") ";
-		report(ss.str(), false);
+		
 		if (!run_finished(run_id))
 		{
+			ss << "Run " << run_id << " failed on slave:" << sock_name[0] << "$" << slave_info_iter->get_work_dir() << "  (group id = " << group_id << ", run id = " << run_id << ", concurrent = " << n_concur << ") ";
+			report(ss.str(), false);
 			model_runs_failed++;
 			file_stor.update_run_failed(run_id);
 			failure_map.insert(make_pair(run_id, i_sock));
@@ -897,7 +928,7 @@ void RunManagerYAMR::process_message(int i_sock)
 	else if (net_pack.get_type() == NetPackage::PackType::PING)
 	{
 #ifdef _DEBUG
-		//report("ping received from slave" + sock_name[0] + "$" + slave_info.get_work_dir(i_sock),false);
+		report("ping received from slave" + sock_name[0] + "$" + slave_info_iter->get_work_dir(), false);
 #endif
 	}
 	else if (net_pack.get_type() == NetPackage::PackType::IO_ERROR)
@@ -928,6 +959,7 @@ bool RunManagerYAMR::process_model_run(int sock_id, NetPackage &net_pack)
 		Serialization::unserialize(net_pack.get_data(), pars, get_par_name_vec(), obs, get_obs_name_vec());
 		file_stor.update_run(run_id, pars, obs);
 		slave_info_iter->set_state(SlaveInfoRec::State::COMPLETE);
+		//slave_info_iter->set_state(SlaveInfoRec::State::WAITING);
 		use_run = true;
 		model_runs_done++;
 		

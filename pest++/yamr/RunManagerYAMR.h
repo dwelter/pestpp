@@ -104,7 +104,7 @@ private:
 	std::string port;
 	static const int BACKLOG = 10;
 	static const int MAX_FAILED_PINGS = 5;
-	static const int PING_INTERVAL_SECS = 60;
+	static const int PING_INTERVAL_SECS = 5;
 	static const int MAX_CONCURRENT_RUNS_LOWER_LIMIT = 3;
 	const double PERCENT_OVERDUE_RESCHED = 1.15; //15% past average runtime
 	const double PERCENT_OVERDUE_GIVEUP = 3.0; //1000% past average runtime	
@@ -137,6 +137,7 @@ private:
 	list<SlaveInfoRec>::iterator add_slave(int sock_id);
 	void erase_slave(int sock_id);
 	void ping(int i_sock);
+	void ping();
 	void report(std::string message,bool to_cout);	
 	string get_time_string();
 	void echo();

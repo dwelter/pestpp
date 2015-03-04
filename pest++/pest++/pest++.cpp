@@ -650,7 +650,7 @@ int main(int argc, char* argv[])
 			
 			//get a new obs info instance that accounts for residual phi (and expected objection value if passed)
 			// and report new weights to the rec file
-			fout_rec << endl << endl;
+			fout_rec << endl;
 			ObservationInfo reweight;
 			reweight = normalize_weights_by_residual(pest_scenario, phi_report);
 			fout_rec << "Note: The observation covariance matrix has been constructed from " << endl;
@@ -664,17 +664,17 @@ int main(int argc, char* argv[])
 			if (pest_scenario.get_pestpp_options().get_expected_obj() > 0.0)
 			{
 				fout_rec << "Note: The observation covariance matrix has also been scaled by " << endl;
-				fout_rec << "      by the expected objective function of " << setw(20) << pest_scenario.get_pestpp_options().get_expected_obj() << '.' <<endl;
+				fout_rec << "      by the expected objective function of " << setw(20) << pest_scenario.get_pestpp_options().get_expected_obj() << '.' << endl;
 				fout_rec << "      to account for the anticipated level of measurement noise " << endl;
 			}
+
 			fout_rec << endl;
 			fout_rec << "Scaled observation weights used to form observation noise covariance matrix:" << endl;
 			fout_rec << endl << setw(20) << "observation" << setw(20) << "group" << setw(20) << "scaled_weight" << endl;
 			for (auto &oi : reweight.observations)
-				if (oi.second.weight > 0.0)
-					fout_rec << setw(20) << oi.first << setw(20) << oi.second.group << setw(20) << oi.second.weight << endl;
+			if (oi.second.weight > 0.0)
+				fout_rec << setw(20) << oi.first << setw(20) << oi.second.group << setw(20) << oi.second.weight << endl;
 			fout_rec << endl << endl;
-
 			//covariance instance for observation noise
 			Covariance obscov;
 			obscov.from_observation_weights(pest_scenario.get_ctl_ordered_obs_names(), reweight, 
@@ -698,9 +698,12 @@ int main(int argc, char* argv[])
 				"'" << endl << endl;
 				 
 			//write a parameter prior and posterior summary to the rec file
+			const ParamTransformSeq trans = pest_scenario.get_base_par_tran_seq();
 			string parsum_filename = file_manager.get_base_filename() + ".par.usum.csv";
 			la.write_par_credible_range(fout_rec, parsum_filename, pest_scenario.get_ctl_parameter_info(), 
-				pest_scenario.get_ctl_parameters(), optimum_run.get_ctl_pars(),pest_scenario.get_ctl_ordered_par_names());
+				trans.active_ctl2numeric_cp(pest_scenario.get_ctl_parameters()), 
+				trans.active_ctl2numeric_cp(optimum_run.get_ctl_pars()),
+				pest_scenario.get_ctl_ordered_par_names());
 			fout_rec << "Note : the above parameter uncertainty summary was written to file '" + parsum_filename +
 				"'" << endl << endl;
 			//if predictions were defined, write a prior and posterior summary to the rec file
