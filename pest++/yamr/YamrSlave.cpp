@@ -68,25 +68,40 @@ int YAMRSlave::recv_message(NetPackage &net_pack, struct timeval *tv)
 	{
 		read_fds = master; // copy master
 		int result = w_select(fdmax + 1, &read_fds, NULL, NULL, tv);
-		if (result == -1) exit(4);
-		if (result == 0) return 0;
+		if (result == -1)
+		{
+			cerr << "fatal network error while receiving messages. ERROR: select() failure";
+			return -990;
+		}
+		if (result == 0)
+		{
+			// no messages available for reading
+			if (tv == NULL)
+			{
+				cerr << "fatal network error while receiving messages. ERROR: blocking select() call failure";
+				return -990;
+			}
+			else
+			{
+				return 2;
+			}
+		}
 		for (int i = 0; i <= fdmax; i++) {
 			if (FD_ISSET(i, &read_fds)) { // got message to read
-				if ((err = net_pack.recv(i)) <= 0) // error or lost connection
-				{
+				err = net_pack.recv(i); // error or lost connection
+				if (err < 0) {
+					recv_fails++;
 					vector<string> sock_name = w_getnameinfo_vec(i);
-					if (err < 0) {
-						recv_fails++;
-						cerr << "receive from master failed: " << sock_name[0] << ":" << sock_name[1] << endl;
-					}
-					else {
-						cerr << "lost connection to master: " << sock_name[0] << ":" << sock_name[1] << endl;
+					cerr << "receive from master failed: " << sock_name[0] << ":" << sock_name[1] << endl;
+					err = -1;
+				}
+				else if(err == 0) {
+					vector<string> sock_name = w_getnameinfo_vec(i);
+					cerr << "lost connection to master: " << sock_name[0] << ":" << sock_name[1] << endl;
 						w_close(i); // bye!
 						FD_CLR(i, &master); // remove from master set
-						err = 0;
+						err = -999;
 						return err;
-					}
-					err = -1;
 				}
 				else
 				{
@@ -99,15 +114,20 @@ int YAMRSlave::recv_message(NetPackage &net_pack, struct timeval *tv)
 	}
 	cerr << "send to master failed " << max_send_fails << " times, exiting..." << endl;
 	return err;
+	// returns -1  receive error
+	//         -990  error in call to select()
+	//         -991  connection closed
+	//          1  message recieved
+	//          2  no message recieved
 }
 
-int YAMRSlave::recv_message(NetPackage &net_pack, int timeout_microsecs)
+int YAMRSlave::recv_message(NetPackage &net_pack, long  timeout_seconds, long  timeout_microsecs)
 {
 	fd_set read_fds;
 	int err = -1;
 	int result = 0;
 	struct timeval tv;
-	tv.tv_sec = 0;
+	tv.tv_sec = timeout_seconds;
 	tv.tv_usec = timeout_microsecs;
 	err = recv_message(net_pack, &tv);
 	return err;
@@ -166,15 +186,15 @@ NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, N
 				done = true;
 			}
 			//this call includes a "sleep" for the timeout
-			err = recv_message(net_pack, OperSys::thread_sleep_milli_secs * 1000);
-			if ((err != 1) && (err != 0))
+			err = recv_message(net_pack, 0, 100000);
+			if (err < 0)
 			{
 				f_terminate.set(true);
 				run_thread.join();
 				exit(-1);
 			}
 			//timeout on recv
-			else if (err == 0){}
+			else if (err == 2){}
 			else if (net_pack.get_type() == NetPackage::PackType::PING)
 			{
 				cout << "ping request recieved...";
@@ -303,7 +323,7 @@ void YAMRSlave::start(const string &host, const string &port)
 	{
 		//get message from master
 		err = recv_message(net_pack);
-		if (err != 1)
+		if (err < 0)
 		{
 			terminate = true;
 		}

@@ -58,6 +58,7 @@ public:
 	int add_failed_ping();
 	void set_ping(bool val);
 	bool get_ping() const;
+	int get_failed_pings() const;
 	void reset_failed_pings();
 	void reset_last_ping_time();
 	int seconds_since_last_ping_time() const;
@@ -103,7 +104,8 @@ public:
 private:
 	std::string port;
 	static const int BACKLOG = 10;
-	static const int MAX_FAILED_PINGS = 5;
+	static const int MAX_FAILED_PINGS = 60;
+	static const int N_PINGS_UNRESPONSIVE = 3;
 	static const int PING_INTERVAL_SECS = 5;
 	static const int MAX_CONCURRENT_RUNS_LOWER_LIMIT = 3;
 	const double PERCENT_OVERDUE_RESCHED = 1.15; //15% past average runtime
@@ -120,7 +122,7 @@ private:
 	std::deque<int> waiting_runs;
 	std::unordered_multimap<int, int> failure_map;
 
-	int schedule_run(int run_id, std::list<list<SlaveInfoRec>::iterator> &free_slave_list);
+	int schedule_run(int run_id, std::list<list<SlaveInfoRec>::iterator> &free_slave_list, int n_responsive_slaves);
 	void unschedule_run(list<SlaveInfoRec>::iterator slave_info_iter);
 	void kill_run(list<SlaveInfoRec>::iterator slave_info_iter);
 	void kill_runs(int run_id);
@@ -148,6 +150,8 @@ private:
 	double get_global_runtime_minute() const;
 	int get_n_concurrent(int run_id);
 	int get_n_unique_failures();
+	int get_n_responsive_slaves();
+
 };
 
 #endif /* RUNMANAGERYAMR_H */
