@@ -218,6 +218,11 @@ bool SlaveInfoRec::get_ping() const
 	return ping;
 }
 
+int SlaveInfoRec::get_failed_pings() const
+{
+	return failed_pings;
+}
+
 void SlaveInfoRec::reset_last_ping_time()
 {
 	last_ping_time = chrono::system_clock::now();
@@ -529,25 +534,7 @@ void RunManagerYAMR::listen()
 				iter->set_ping(false);
 				process_message(i);				
 			} // END handle data from client
-		} // END got new incoming connection
-		else
-		{		
-			continue;
-			/*map<int, list<SlaveInfoRec>::iterator>::iterator iter = socket_to_iter_map.find(i);
-			if (iter != socket_to_iter_map.end())
-			{
-				SlaveInfoRec::State state = iter->second->get_state();
-				if (state == SlaveInfoRec::State::WAITING
-					|| state == SlaveInfoRec::State::ACTIVE
-					|| state == SlaveInfoRec::State::COMPLETE
-					|| state == SlaveInfoRec::State::KILLED
-					|| state == SlaveInfoRec::State::KILLED_FAILED)
-				{
-					iter->second->set_ping(false);
-					break;
-				}
-			}*/
-		}			
+		} // END got new incoming connection	
 	} // END looping through file descriptors
 }
 
@@ -590,10 +577,11 @@ void RunManagerYAMR::schedule_runs()
 	NetPackage net_pack;
 
 	std::list<list<SlaveInfoRec>::iterator> free_slave_list = get_free_slave_list();
+	int n_responsive_slaves = get_n_responsive_slaves();
 	//first try to schedule waiting runs
 	for (auto it_run = waiting_runs.begin(); !free_slave_list.empty() && it_run != waiting_runs.end();)
 	{
-		int success = schedule_run(*it_run, free_slave_list);
+		int success = schedule_run(*it_run, free_slave_list, n_responsive_slaves);
 		if (success >= 0)
 		{
 			it_run = waiting_runs.erase(it_run);
@@ -629,11 +617,7 @@ void RunManagerYAMR::schedule_runs()
 				if (avg_runtime <= 0) avg_runtime = 1.0E+10;
 				vector<int> overdue_kill_runs_vec = get_overdue_runs_over_kill_threshold(run_id);
 				
-				if (duration > avg_runtime*PERCENT_OVERDUE_GIVEUP)
-				{
-					kill_run(it_slave);
-				}
-				else if (failure_map.count(run_id) + overdue_kill_runs_vec.size() >= max_n_failure)
+				if (failure_map.count(run_id) + overdue_kill_runs_vec.size() >= max_n_failure)
 				{
 					// kill the overdue runs
 					kill_runs(run_id);
@@ -672,7 +656,7 @@ void RunManagerYAMR::schedule_runs()
 						avg_runtime << " minutes) on: " << sock_name[0] << "$" <<
 						it_slave->get_work_dir();
 					report(ss.str(), false);
-					int success = schedule_run(run_id, free_slave_list);
+					int success = schedule_run(run_id, free_slave_list, n_responsive_slaves);
 					n_concur = get_n_concurrent(run_id);
 					if (success >= 0)
 					{
@@ -701,10 +685,11 @@ void RunManagerYAMR::schedule_runs()
 	}
 }
 
-int RunManagerYAMR::schedule_run(int run_id, std::list<list<SlaveInfoRec>::iterator> &free_slave_list)
+int RunManagerYAMR::schedule_run(int run_id, std::list<list<SlaveInfoRec>::iterator> &free_slave_list, int n_responsive_slaves)
 {
 	int scheduled = -1;
 	auto it_slave = free_slave_list.end(); // iterator to current socket
+	int n_concurrent = get_n_concurrent(run_id);
 
 	if (run_finished(run_id))
 	{
@@ -722,7 +707,7 @@ int RunManagerYAMR::schedule_run(int run_id, std::list<list<SlaveInfoRec>::itera
 		it_slave = free_slave_list.begin();
 		scheduled = -1;
 	}
-	else if (failure_map.count(run_id) >= slave_info_set.size())
+	else if (failure_map.count(run_id) + n_concurrent >= n_responsive_slaves)
 	{
 		// enough enough slaves to make all failed runs on different slaves
 		// schedule a run on a slave
@@ -1214,6 +1199,16 @@ void RunManagerYAMR::kill_all_active_runs()
 		 run_id_set.insert(i_fail.first);
 	 }
 	 return run_id_set.size();
+ }
+
+ int RunManagerYAMR::get_n_responsive_slaves()
+ {
+	 int n = 0;
+	 for (const auto &i : slave_info_set)
+	 {
+		 if (i.get_failed_pings() < N_PINGS_UNRESPONSIVE) ++n;
+	 }
+	 return n;
  }
 
 RunManagerYAMR::~RunManagerYAMR(void)
