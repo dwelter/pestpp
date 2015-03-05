@@ -112,7 +112,7 @@ ObservationInfo normalize_weights_by_residual(Pest &pest_scenario, map<string, d
 		}
 	}
 	//if using regularization, we need to check if scaling is needed -> is phimaccept been satisfied
-	if (pest_scenario.get_regul_scheme_ptr())
+	if ((pest_scenario.get_regul_scheme_ptr()->get_use_dynamic_reg()))
 	{
 		double phimlim = pest_scenario.get_regul_scheme_ptr()->get_phimlim();
 		double phimaccept = pest_scenario.get_regul_scheme_ptr()->get_phimaccept();
