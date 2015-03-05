@@ -381,7 +381,7 @@ void RunManagerYAMR::update_run(int run_id, const Parameters &pars, const Observ
 		}
 	}
 	// kill any active runs with this id
-	kill_runs(run_id);
+	kill_runs(run_id, false, "run not required");
 }
 
 void RunManagerYAMR::run()
@@ -390,10 +390,12 @@ void RunManagerYAMR::run()
 	NetPackage net_pack;
 	model_runs_done = 0;
 	model_runs_failed = 0;
+	model_runs_timed_out = 0;
 	failure_map.clear();
 	active_runid_to_iterset_map.clear();
-	cout << "    running model " << waiting_runs.size() << " times" << endl;
-	f_rmr << "running model " << waiting_runs.size() << " times" << endl;
+	int num_runs = waiting_runs.size();
+	cout << "    running model " << num_runs << " times" << endl;
+	f_rmr << "running model " << num_runs << " times" << endl;
 	if (slave_info_set.size() == 0) // first entry is the listener, slave apears after this
 	{
 		cout << endl << "      waiting for slaves to appear..." << endl << endl;
@@ -401,6 +403,7 @@ void RunManagerYAMR::run()
 	}
 	cout << endl;
 	f_rmr << endl;
+
 	while (!all_runs_complete())
 	{
 		echo();
@@ -420,7 +423,7 @@ void RunManagerYAMR::run()
 	kill_all_active_runs();
 	echo();
 	message.str("");
-	message << "    " << model_runs_done << " runs complete :  " << get_n_unique_failures() << " runs failed";
+	message << "    " << model_runs_done << " runs complete :  " << get_num_failed_runs() << " runs failed";
 	cout << endl << "---------------------" << endl << message.str() << endl << endl;
 	f_rmr << endl << "---------------------" << endl << message.str() << endl << endl;
 	
@@ -620,26 +623,31 @@ void RunManagerYAMR::schedule_runs()
 				if (failure_map.count(run_id) + overdue_kill_runs_vec.size() >= max_n_failure)
 				{
 					// kill the overdue runs
-					kill_runs(run_id);
+					kill_runs(run_id, false, "overdue");
 					should_schedule = false;
+					model_runs_timed_out += overdue_kill_runs_vec.size();
 				}
 				else if (overdue_kill_runs_vec.size() >= max_concurrent_runs)
 				{
 					// kill the overdue runs
-					kill_runs(run_id);
+					kill_runs(run_id, true, "overdue");
 					// reschedule runs as we still haven't reach the max failure threshold
 					// and there are not concurrent runs for this id becuse we just killed all of them
 					should_schedule = true;
+					model_runs_timed_out += overdue_kill_runs_vec.size();
 				}
 				else if (duration > avg_runtime*PERCENT_OVERDUE_RESCHED  && free_slave_list.empty())
 				{
 					// If there are no free slaves kill the overdue ones
 					// This is necessary to keep runs with smae numbers of slaves behaving
-					kill_run(it_slave);
+					kill_run(it_slave, "overdue");
+					update_run_failed(run_id, it_slave->get_socket_fd());
+					
 					if (failure_map.count(run_id) + overdue_kill_runs_vec.size() < max_n_failure)
 					{
 						should_schedule = true;
 					}
+					model_runs_timed_out += 1;
 				}
 				else if (duration > avg_runtime*PERCENT_OVERDUE_RESCHED)
 				{
@@ -764,18 +772,24 @@ int RunManagerYAMR::schedule_run(int run_id, std::list<list<SlaveInfoRec>::itera
 
 void RunManagerYAMR::echo()
 {
-	cout << get_time_string() << "->" << setw(6) << model_runs_done << " runs complete " <<
-		setw(6) << model_runs_failed << " runs failed " <<
+	cout << get_time_string() << "->" << setw(6) << model_runs_done << " complete " <<
+		setw(6) << model_runs_failed << " failed " <<
+		setw(6) << model_runs_timed_out << " timed out " <<
 		setw(4) << slave_info_set.size() << " slaves\r" << flush;
 
 }
 
 string RunManagerYAMR::get_time_string()
 {
-	std::time_t tt = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-	string t_str = ctime(&tt);
-	return t_str.substr(0, t_str.length() - 1);
+	time_t rawtime;
+	struct tm * timeinfo;
+	char buffer[80];
 
+	time(&rawtime);
+	timeinfo = localtime(&rawtime);
+	strftime(buffer, 80, "%m/%d/%y %H:%M:%S", timeinfo);
+	string t_str(buffer);
+	return t_str;
 }
 
 void RunManagerYAMR::report(std::string message,bool to_cout)
@@ -881,8 +895,7 @@ void RunManagerYAMR::process_message(int i_sock)
 			ss << "Run " << run_id << " failed on slave:" << sock_name[0] << "$" << slave_info_iter->get_work_dir() << "  (group id = " << group_id << ", run id = " << run_id << ", concurrent = " << n_concur << ") ";
 			report(ss.str(), false);
 			model_runs_failed++;
-			file_stor.update_run_failed(run_id);
-			failure_map.insert(make_pair(run_id, i_sock));
+			update_run_failed(run_id, i_sock);
 			auto it = get_active_run_iter(i_sock);
 			unschedule_run(it);
 			n_concur = get_n_concurrent(run_id);
@@ -903,12 +916,6 @@ void RunManagerYAMR::process_message(int i_sock)
 		stringstream ss;
 		ss << "Run " << run_id << " killed on slave: " << sock_name[0] << "$" << slave_info_iter->get_work_dir() << ", run id = " << run_id << " concurrent = " << n_concur;
 		report(ss.str(), false);
-		// If the run has not been completed on another node, count this as a failure
-		if (!run_finished(run_id))
-		{
-			failure_map.insert(make_pair(run_id, i_sock));
-			model_runs_failed++;
-		}
 	}
 	else if (net_pack.get_type() == NetPackage::PackType::PING)
 	{
@@ -952,11 +959,11 @@ bool RunManagerYAMR::process_model_run(int sock_id, NetPackage &net_pack)
 	// remove currently completed run from the active list
 	auto it = get_active_run_iter(sock_id);
 	unschedule_run(it);
-	kill_runs(run_id);
+	kill_runs(run_id, "completed on alternative node");
 	return use_run;
 }
 
-void RunManagerYAMR::kill_run(list<SlaveInfoRec>::iterator slave_info_iter)
+void RunManagerYAMR::kill_run(list<SlaveInfoRec>::iterator slave_info_iter, const string &reason)
 {
 	int socket_id = slave_info_iter->get_socket_fd();
 	SlaveInfoRec::State state = slave_info_iter->get_state();
@@ -968,7 +975,7 @@ void RunManagerYAMR::kill_run(list<SlaveInfoRec>::iterator slave_info_iter)
 		//schedule run to be killed
 		vector<string> sock_name = w_getnameinfo_vec(socket_id);
 		stringstream ss;
-		ss << "sending kill request for run " << run_id << " to slave : " << sock_name[0] << "$" << slave_info_iter->get_work_dir();
+		ss << "sending kill request; reason: " << reason << "; run id:" << run_id << "; slave: " << sock_name[0] << "$" << slave_info_iter->get_work_dir();
 		report(ss.str(), false);
 		NetPackage net_pack(NetPackage::PackType::REQ_KILL, 0, 0, "");
 		char data = '\0';
@@ -987,7 +994,7 @@ void RunManagerYAMR::kill_run(list<SlaveInfoRec>::iterator slave_info_iter)
 }
 
 
-void RunManagerYAMR::kill_runs(int run_id)
+void RunManagerYAMR::kill_runs(int run_id, bool update_failure_map, const string &reason)
 {
 	auto range_pair = active_runid_to_iterset_map.equal_range(run_id);
 	//runs with this id are not needed so kill them
@@ -1000,7 +1007,8 @@ void RunManagerYAMR::kill_runs(int run_id)
 	}
 	for (auto &iter : kill_list)
 	{
-		kill_run(iter);
+		kill_run(iter, reason);
+		if (update_failure_map) update_run_failed(run_id, iter->get_socket_fd());
 	}
 }
 
@@ -1022,7 +1030,7 @@ void RunManagerYAMR::kill_all_active_runs()
 			if (socket_id && (state == SlaveInfoRec::State::ACTIVE || state == SlaveInfoRec::State::KILLED_FAILED))
 			{
 				active_runs = true;
-				kill_run(iter_b);
+				kill_run(iter_b, "completed run group");
 			}
 		}
 		listen();
@@ -1209,6 +1217,19 @@ void RunManagerYAMR::kill_all_active_runs()
 		 if (i.get_failed_pings() < N_PINGS_UNRESPONSIVE) ++n;
 	 }
 	 return n;
+ }
+
+
+ void RunManagerYAMR::update_run_failed(int run_id, int socket_fd)
+ {
+	 file_stor.update_run_failed(run_id);
+	 failure_map.insert(make_pair(run_id, socket_fd));
+ }
+
+ void RunManagerYAMR::update_run_failed(int run_id)
+ {
+	 // must call void RunManagerYAMR::update_run_failed(int run_id, int socket_fd) instead
+	 throw(PestError("Error: Unsuppoerted function call  RunManagerYAMR::update_run_failed(int run_id)"  ));
  }
 
 RunManagerYAMR::~RunManagerYAMR(void)

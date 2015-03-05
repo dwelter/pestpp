@@ -374,6 +374,20 @@ bool thread_flag::get()
 	else return false;
 }
 
+void thread_exceptions::add(std::exception_ptr ex_ptr)
+{
+	std::lock_guard<std::mutex> lock(m);
+	shared_exception_vec.push_back(ex_ptr);
+}
+
+void  thread_exceptions::rethrow()
+{
+	std::lock_guard<std::mutex> lock(m);
+	for (auto &iex : shared_exception_vec)
+	{
+		std::rethrow_exception(iex);
+	}
+}
 
 } // end of namespace pest_utils
 

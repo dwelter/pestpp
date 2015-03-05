@@ -85,6 +85,7 @@ protected:
 	bool run_requried(int run_id);
 	//Observations init_run_obs;
 	std::vector<double> init_sim;
+	virtual void update_run_failed(int run_id);
 };
 
 #endif /*  RUNMANAGERABSTRACT_H */

@@ -250,14 +250,14 @@ void RunManagerSerial::run()
 			}
 			catch (const std::exception& ex)
 			{
-				file_stor.update_run_failed(i_run);
+				update_run_failed(i_run);
 				cerr << endl;
 				cerr << "  " << ex.what() << endl;
 				cerr << "  Aborting model run" << endl << endl;
 			}
 			catch (...)
 			{
-				file_stor.update_run_failed(i_run);
+				update_run_failed(i_run);
 				cerr << endl;
 				cerr << "  Error running model" << endl;
 				cerr << "  Aborting model run" << endl << endl;

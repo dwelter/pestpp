@@ -109,12 +109,13 @@ private:
 	static const int PING_INTERVAL_SECS = 5;
 	static const int MAX_CONCURRENT_RUNS_LOWER_LIMIT = 3;
 	const double PERCENT_OVERDUE_RESCHED = 1.15; //15% past average runtime
-	const double PERCENT_OVERDUE_GIVEUP = 3.0; //1000% past average runtime	
+	const double PERCENT_OVERDUE_GIVEUP = 10.0; //1000% past average runtime	
 	int max_concurrent_runs;
 	int listener;
 	int fdmax;
 	int model_runs_done;
 	int model_runs_failed;
+	int model_runs_timed_out;
 	fd_set master; // master file descriptor list
 	list<SlaveInfoRec> slave_info_set;
 	map<int, list<SlaveInfoRec>::iterator> socket_to_iter_map;
@@ -124,8 +125,8 @@ private:
 
 	int schedule_run(int run_id, std::list<list<SlaveInfoRec>::iterator> &free_slave_list, int n_responsive_slaves);
 	void unschedule_run(list<SlaveInfoRec>::iterator slave_info_iter);
-	void kill_run(list<SlaveInfoRec>::iterator slave_info_iter);
-	void kill_runs(int run_id);
+	void kill_run(list<SlaveInfoRec>::iterator slave_info_iter, const std::string &reason="UNKNOWN");
+	void kill_runs(int run_id, bool update_failure_map, const std::string &reason = "UNKNOWN");
 	void kill_all_active_runs();
 	void close_slave(int i_sock);
 	void close_slave(list<SlaveInfoRec>::iterator slave_info_iter);
@@ -151,7 +152,8 @@ private:
 	int get_n_concurrent(int run_id);
 	int get_n_unique_failures();
 	int get_n_responsive_slaves();
-
+	virtual void update_run_failed(int run_id, int socket_fd);
+	virtual void update_run_failed(int run_id);
 };
 
 #endif /* RUNMANAGERYAMR_H */

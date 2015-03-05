@@ -470,7 +470,7 @@ void w_run_commands(pest_utils::thread_flag* terminate, pest_utils::thread_flag*
 			//check for termination flag
 			if (terminate->get())
 			{
-				std::cout << "recieved terminate signal" << std::endl;
+				std::cout << "received terminate signal" << std::endl;
 				//try to kill the process
 				bool success = CloseHandle(job);
 				//bool success = TerminateProcess(pi.hProcess, 0);
@@ -519,7 +519,7 @@ void w_run_commands(pest_utils::thread_flag* terminate, pest_utils::thread_flag*
 			//check for termination flag
 			if (terminate->get())
 			{
-				std::cout << "recieved terminate signal" << std::endl;
+				std::cout << "received terminate signal" << std::endl;
 				//try to kill the process
 				errno = 0;
 				int success = kill(-command_pid, SIGKILL);
@@ -591,203 +591,201 @@ string tpl_err_msg(int i)
 	return err_msg;
 }
 
-void w_write_run_read(pest_utils::thread_flag* terminate, pest_utils::thread_flag* finished,
-	vector<string> &tplfile_vec, vector<string> &outfile_vec, vector<string> &insfile_vec,
-	vector<string> &inpfile_vec, vector<string>* par_name_vec, vector<double>* par_values,
+void w_write_run_read(pest_utils::thread_flag* terminate, pest_utils::thread_flag* finished, pest_utils::thread_exceptions *shared_execptions,
+	vector<string> *tplfile_vec, vector<string> *outfile_vec, vector<string> *insfile_vec,
+	vector<string> *inpfile_vec, vector<string>* par_name_vec, vector<double>* par_values,
 	vector<string>* obs_name_vec, vector<double>* obs_vec,
-	vector<string> &commands)
+	vector<string> *commands)
 {
+	try
+	{
+		//first delete any existing input and output files			
+		for (auto &out_file : *outfile_vec)
+		{
+			if ((pest_utils::check_exist_out(out_file)) && (remove(out_file.c_str()) != 0))
+				throw PestError("model interface error: Cannot delete existing model output file " + out_file);
+		}
+		for (auto &in_file : *inpfile_vec)
+		{
+			if ((pest_utils::check_exist_out(in_file)) && (remove(in_file.c_str()) != 0))
+				throw PestError("model interface error: Cannot delete existing model input file " + in_file);
+		}
+		int ifail;
+		int ntpl = tplfile_vec->size();
+		int npar = par_values->size();
 
-	//first delete any existing input and output files			
-	for (auto &out_file : outfile_vec)
-	{
-		if ((pest_utils::check_exist_out(out_file)) && (remove(out_file.c_str()) != 0))
-			throw PestError("model interface error: Cannot delete existing model output file " + out_file);
-	}
-	for (auto &in_file : inpfile_vec)
-	{
-		if ((pest_utils::check_exist_out(in_file)) && (remove(in_file.c_str()) != 0))
-			throw PestError("model interface error: Cannot delete existing model input file " + in_file);
-	}
-	int ifail;
-	int ntpl = tplfile_vec.size();
-	int npar = par_values->size();
-
-	if (std::any_of(par_values->begin(), par_values->end(), OperSys::double_is_invalid))
-	{
-		throw PestError("Error running model: invalid parameter value returned");
-	}
-	wrttpl_(&ntpl, pest_utils::StringvecFortranCharArray(tplfile_vec, 50).get_prt(),
-		pest_utils::StringvecFortranCharArray(inpfile_vec, 50).get_prt(),
-		&npar, pest_utils::StringvecFortranCharArray(*par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
-		par_values->data(), &ifail);
-	if (ifail != 0)
-	{
-		throw PestError("Error processing template file:" + tpl_err_msg(ifail));
-	}
+		if (std::any_of(par_values->begin(), par_values->end(), OperSys::double_is_invalid))
+		{
+			throw PestError("Error running model: invalid parameter value returned");
+		}
+		wrttpl_(&ntpl, pest_utils::StringvecFortranCharArray(*tplfile_vec, 50).get_prt(),
+			pest_utils::StringvecFortranCharArray(*inpfile_vec, 50).get_prt(),
+			&npar, pest_utils::StringvecFortranCharArray(*par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
+			par_values->data(), &ifail);
+		if (ifail != 0)
+		{
+			throw PestError("Error processing template file:" + tpl_err_msg(ifail));
+		}
 
 #ifdef OS_WIN
-	//a flag to track if the run was terminated
-	bool term_break = false;
-	//create a job object to track child and grandchild process
-	HANDLE job = CreateJobObject(NULL, NULL);
-	if (job == NULL) throw PestError("could not create job object handle");
-	JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli = { 0 };
-	jeli.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
-	if (0 == SetInformationJobObject(job, JobObjectExtendedLimitInformation, &jeli, sizeof(jeli)))
-	{
-		throw PestError("could not assign job limit flag to job object");
-	}
-	for (auto &cmd_string : commands)
-	{
-		//start the command
-		PROCESS_INFORMATION pi;
-		try
+		//a flag to track if the run was terminated
+		bool term_break = false;
+		//create a job object to track child and grandchild process
+		HANDLE job = CreateJobObject(NULL, NULL);
+		if (job == NULL) throw PestError("could not create job object handle");
+		JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli = { 0 };
+		jeli.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+		if (0 == SetInformationJobObject(job, JobObjectExtendedLimitInformation, &jeli, sizeof(jeli)))
 		{
-			pi = start_command(cmd_string);
+			throw PestError("could not assign job limit flag to job object");
 		}
-		catch (...)
+		for (auto &cmd_string : *commands)
 		{
-			finished->set(true);
-			throw std::runtime_error("start_command() failed for command: " + cmd_string);
-		}
-		if (0 == AssignProcessToJobObject(job, pi.hProcess))
-		{
-			throw PestError("could not add process to job object: " + cmd_string);
-		}
-		DWORD exitcode;
-		while (true)
-		{
-			//sleep			
-			std::this_thread::sleep_for(std::chrono::milliseconds(OperSys::thread_sleep_milli_secs));
-			//check if process is still active
-			GetExitCodeProcess(pi.hProcess, &exitcode);
-			//if the process ended, break
-			if (exitcode != STILL_ACTIVE)
+			//start the command
+			PROCESS_INFORMATION pi;
+			try
 			{
-				break;
+				pi = start_command(cmd_string);
 			}
-			//check for termination flag
-			if (terminate->get())
+			catch (...)
 			{
-				std::cout << "recieved terminate signal" << std::endl;
-				//try to kill the process
-				bool success = CloseHandle(job);
-				//bool success = TerminateProcess(pi.hProcess, 0);
-				if (!success)
+				finished->set(true);
+				throw std::runtime_error("start_command() failed for command: " + cmd_string);
+			}
+			if (0 == AssignProcessToJobObject(job, pi.hProcess))
+			{
+				throw PestError("could not add process to job object: " + cmd_string);
+			}
+			DWORD exitcode;
+			while (true)
+			{
+				//sleep		
+				std::this_thread::sleep_for(std::chrono::milliseconds(OperSys::thread_sleep_milli_secs));
+				//check if process is still active
+				GetExitCodeProcess(pi.hProcess, &exitcode);
+				//if the process ended, break
+				if (exitcode != STILL_ACTIVE)
 				{
-					finished->set(true);
-					throw std::runtime_error("unable to terminate process for command: " + cmd_string);
+					break;
 				}
-				term_break = true;
-				break;
+				//check for termination flag
+				if (terminate->get())
+				{
+					std::cout << "received terminate signal" << std::endl;
+					//try to kill the process
+					bool success = CloseHandle(job);
+					//bool success = TerminateProcess(pi.hProcess, 0);
+					if (!success)
+					{
+						finished->set(true);
+						throw std::runtime_error("unable to terminate process for command: " + cmd_string);
+					}
+					term_break = true;
+					break;
+				}
 			}
+			//jump out of the for loop if terminated
+			if (term_break) break;
 		}
-		//jump out of the for loop if terminated
-		if (term_break) break;
-	}
-		
+
 
 #endif
 
 #ifdef OS_LINUX
-	//a flag to track if the run was terminated
-	bool term_break = false;
-	for (auto &cmd_string : commands)
-	{
-		//start the command
-		int command_pid = start_command(cmd_string);
-		while (true)
+		//a flag to track if the run was terminated
+		bool term_break = false;
+		for (auto &cmd_string : commands)
 		{
-			//sleep
-			std::this_thread::sleep_for(std::chrono::milliseconds(OperSys::thread_sleep_milli_secs));
-			//check if process is still active
-			int status;
-			pid_t exit_code = waitpid(command_pid, &status, WNOHANG);
-			//if the process ended, break
-			if (exit_code == -1)
+			//start the command
+			int command_pid = start_command(cmd_string);
+			while (true)
 			{
-				finished->set(true);
-				throw std::runtime_error("waitpid() returned error status for command: " + cmd_string);
-			}
-			else if (exit_code != 0)
-			{
-				break;
-			}
-			//check for termination flag
-			if (terminate->get())
-			{
-				std::cout << "recieved terminate signal" << std::endl;
-				//try to kill the process
-				errno = 0;
-				int success = kill(-command_pid, SIGKILL);
-				if (success == -1)
+				//sleep
+				std::this_thread::sleep_for(std::chrono::milliseconds(OperSys::thread_sleep_milli_secs));
+				//check if process is still active
+				int status;
+				pid_t exit_code = waitpid(command_pid, &status, WNOHANG);
+				//if the process ended, break
+				if (exit_code == -1)
 				{
 					finished->set(true);
-					throw std::runtime_error("unable to terminate process for command: " + cmd_string);
+					throw std::runtime_error("waitpid() returned error status for command: " + cmd_string);
 				}
-				term_break = true;
-				break;
+				else if (exit_code != 0)
+				{
+					break;
+				}
+				//check for termination flag
+				if (terminate->get())
+				{
+					std::cout << "received terminate signal" << std::endl;
+					//try to kill the process
+					errno = 0;
+					int success = kill(-command_pid, SIGKILL);
+					if (success == -1)
+					{
+						finished->set(true);
+						throw std::runtime_error("unable to terminate process for command: " + cmd_string);
+					}
+					term_break = true;
+					break;
+				}
 			}
+			//jump out of the for loop if terminated
+			if (term_break) break;
 		}
-		//jump out of the for loop if terminated
-		if (term_break) break;
-	}
 #endif
 
-	if (term_break) return;
+		if (term_break) return;
 
-	// process instruction files		
-	int nins = insfile_vec.size();
-	int nobs = obs_name_vec->size();
-	obs_vec->resize(nobs, -9999.00);
-	readins_(&nins, pest_utils::StringvecFortranCharArray(insfile_vec, 50).get_prt(),
-		pest_utils::StringvecFortranCharArray(outfile_vec, 50).get_prt(),
-		&nobs, pest_utils::StringvecFortranCharArray(*obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
-		obs_vec->data(), &ifail);
-	if (ifail != 0)
-	{
-		throw PestError("Error processing instruction file");
-	}
+		// process instruction files		
+		int nins = insfile_vec->size();
+		int nobs = obs_name_vec->size();
+		obs_vec->resize(nobs, -9999.00);
+		readins_(&nins, pest_utils::StringvecFortranCharArray(*insfile_vec, 50).get_prt(),
+			pest_utils::StringvecFortranCharArray(*outfile_vec, 50).get_prt(),
+			&nobs, pest_utils::StringvecFortranCharArray(*obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
+			obs_vec->data(), &ifail);
+		if (ifail != 0)
+		{
+			throw PestError("Error processing instruction file");
+		}
 
-	// check parameters and observations for inf and nan
-	//if (std::any_of(par_values->begin(), par_values->end(), OperSys::double_is_invalid))
-	//{
-	//	throw PestError("Error running model: invalid parameter value returned");
-	//}
-	vector<string> invalid;
-	for (int i = 0; i != par_name_vec->size(); i++)
-	{
-		if (OperSys::double_is_invalid(par_values->at(i))) 
-			invalid.push_back(par_name_vec->at(i));
+		vector<string> invalid;
+		for (int i = 0; i != par_name_vec->size(); i++)
+		{
+			if (OperSys::double_is_invalid(par_values->at(i)))
+				invalid.push_back(par_name_vec->at(i));
+		}
+		if (invalid.size() > 0)
+		{
+			stringstream ss;
+			ss << "invalid parameter values read for the following parameters: ";
+			for (auto &i : invalid)
+				ss << i << '\n';
+			throw PestError(ss.str());
+		}
+
+		for (int i = 0; i != obs_name_vec->size(); i++)
+		{
+			if (OperSys::double_is_invalid(obs_vec->at(i)))
+				invalid.push_back(obs_name_vec->at(i));
+		}
+		if (invalid.size() > 0)
+		{
+			stringstream ss;
+			ss << "invalid observation values read for the following observations: ";
+			for (auto &i : invalid)
+				ss << i << '\n';
+			throw PestError(ss.str());
+		}
+		//set the finished flag for the listener thread
+		finished->set(true);
 	}
-	if (invalid.size() > 0)
+	catch (...)
 	{
-		stringstream ss;
-		ss << "invalid parameter values read for the following parameters: ";
-		for (auto &i : invalid)
-			ss << i << '\n';
-		throw PestError(ss.str());
+		shared_execptions->add(current_exception());
 	}
-	//if (std::any_of(obs_vec->begin(), obs_vec->end(), OperSys::double_is_invalid))
-	//{
-	//	throw PestError("Error running model: invalid observation value returned");
-	//}
-	for (int i = 0; i != obs_name_vec->size(); i++)
-	{
-		if (OperSys::double_is_invalid(obs_vec->at(i)))
-			invalid.push_back(obs_name_vec->at(i));
-	}
-	if (invalid.size() > 0)
-	{
-		stringstream ss;
-		ss << "invalid observation values read for the following observations: ";
-		for (auto &i : invalid)
-			ss << i << '\n';
-		throw PestError(ss.str());
-	}
-	//set the finished flag for the listener thread
-	finished->set(true);
 	return;
 	
 }

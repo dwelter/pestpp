@@ -8,6 +8,7 @@
 #include <thread>
 #include "system_variables.h"
 #include "iopp.h"
+#include "utilities.h"
 
 using namespace pest_utils;
 
@@ -123,7 +124,6 @@ int YAMRSlave::recv_message(NetPackage &net_pack, struct timeval *tv)
 
 int YAMRSlave::recv_message(NetPackage &net_pack, long  timeout_seconds, long  timeout_microsecs)
 {
-	fd_set read_fds;
 	int err = -1;
 	int result = 0;
 	struct timeval tv;
@@ -159,6 +159,7 @@ NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, N
 	
 	thread_flag f_terminate(false);
 	thread_flag f_finished(false);
+	thread_exceptions shared_execptions;
 	try 
 	{
 		vector<string> par_name_vec;
@@ -169,19 +170,18 @@ NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, N
 			par_values.push_back(i.second);
 		}
 		
-		std::vector<double> obs_vec;	
-		//thread run_thread(w_run_commands, &f_terminate, &f_finished, comline_vec);
-		thread run_thread(w_write_run_read, &f_terminate, &f_finished,
-			tplfile_vec, outfile_vec, insfile_vec,
-			inpfile_vec, &par_name_vec, &par_values,
-			&obs_name_vec, &obs_vec, comline_vec);
+		vector<double> obs_vec;	
+		thread run_thread(w_write_run_read, &f_terminate, &f_finished, &shared_execptions,
+			&tplfile_vec, &outfile_vec, &insfile_vec,
+			&inpfile_vec, &par_name_vec, &par_values,
+			&obs_name_vec, &obs_vec, &comline_vec);
+		pest_utils::thread_RAII raii(run_thread);
 		while (true)
 		{
 			//check if the runner thread has finished
 			if (f_finished.get())
 			{
 				cout << "received finished signal from run thread " << std::endl;
-				run_thread.join();
 				//don't break here, need to check one last time for incoming messages
 				done = true;
 			}
@@ -190,11 +190,12 @@ NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, N
 			if (err < 0)
 			{
 				f_terminate.set(true);
-				run_thread.join();
 				exit(-1);
 			}
 			//timeout on recv
-			else if (err == 2){}
+			else if (err == 2)
+			{
+			}
 			else if (net_pack.get_type() == NetPackage::PackType::PING)
 			{
 				cout << "ping request recieved...";
@@ -204,7 +205,6 @@ NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, N
 				if (err != 1)
 				{
 					f_terminate.set(true);
-					run_thread.join();
 					exit(-1);
 				}
 				cout << "ping response sent" << endl;
@@ -214,7 +214,6 @@ NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, N
 				cout << "received kill request signal from master" << endl;
 				cout << "sending terminate signal to run thread" << endl;
 				f_terminate.set(true);
-				run_thread.join();
 				final_run_status = NetPackage::PackType::RUN_KILLED;
 				break;
 			}
@@ -223,9 +222,8 @@ NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, N
 				cout << "received terminate signal from master" << endl;
 				cout << "sending terminate signal to run thread" << endl;
 				f_terminate.set(true);
-				run_thread.join();
 				terminate = true;
-				final_run_status = NetPackage::PackType::RUN_KILLED;
+				final_run_status = NetPackage::PackType::TERMINATE;
 				break;
 			}
 			else
@@ -234,32 +232,28 @@ NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, N
 				cerr << static_cast<int>(net_pack.get_type()) << endl;
 				cerr << "something is wrong...exiting" << endl;
 				f_terminate.set(true);
-				run_thread.join();
+				final_run_status = NetPackage::PackType::TERMINATE;
 				exit(-1);
 			}
 			if (done) break;
 		}
-
-
-
-		//if this run was terminated, throw an error to signal a failed run
-		if (f_terminate.get())
+		shared_execptions.rethrow();
+		if (!f_terminate.get())
 		{
-			throw PestError("model run terminated");
+			//update the parameter values
+			pars.clear();
+			for (int i = 0; i < par_name_vec.size(); ++i)
+			{
+				pars[par_name_vec[i]] = par_values[i];
+			}
+			// update observation values		
+			obs.clear();
+			for (int i = 0; i < obs_name_vec.size(); ++i)
+			{
+				obs[obs_name_vec[i]] = obs_vec[i];
+			}
+			final_run_status = NetPackage::PackType::RUN_FINISHED;
 		}
-		//update the parameter values
-		pars.clear();
-		for (int i = 0; i<par_name_vec.size(); ++i)
-		{
-			pars[par_name_vec[i]] = par_values[i];
-		}
-		// update observation values		
-		obs.clear();
-		for (int i = 0; i<obs_name_vec.size(); ++i)
-		{
-			obs[obs_name_vec[i]] = obs_vec[i];
-		}
-		final_run_status = NetPackage::PackType::RUN_FINISHED;
 	}
 	catch(const std::exception& ex)
 	{
@@ -393,7 +387,7 @@ void YAMRSlave::start(const string &host, const string &port)
 			{
 				//send model results back
 				cout << "run complete" << endl;
-				cout << "sending results to master (group id = " << group_id << ", run id = " << run_id << ")..." <<endl;
+				cout << "sending results to master (group id = " << group_id << ", run id = " << run_id << ")..." << endl;
 				cout << "results sent" << endl << endl;
 				serialized_data = Serialization::serialize(pars, par_name_vec, obs, obs_name_vec);
 				net_pack.reset(NetPackage::PackType::RUN_FINISHED, group_id, run_id, "");
@@ -402,8 +396,11 @@ void YAMRSlave::start(const string &host, const string &port)
 				{
 					exit(-1);
 				}
-				// Send READY Message to master
-				net_pack.reset(NetPackage::PackType::READY, 0, 0,"");
+			}
+			else if (final_run_status == NetPackage::PackType::RUN_FAILED)
+			{
+				cout << "run failed" << endl;
+				net_pack.reset(NetPackage::PackType::RUN_FAILED, group_id, run_id, "");
 				char data;
 				err = send_message(net_pack, &data, 0);
 				if (err != 1)
@@ -411,24 +408,39 @@ void YAMRSlave::start(const string &host, const string &port)
 					exit(-1);
 				}
 			}
-			else
+			else if (final_run_status == NetPackage::PackType::RUN_KILLED)
 			{
-				serialized_data.clear();
-				serialized_data.push_back('\0');
-				net_pack.reset(final_run_status, group_id, run_id, "");
-				err = send_message(net_pack, serialized_data.data(), serialized_data.size());
-				// Send READY Message to master
-				net_pack.reset(NetPackage::PackType::READY, 0, 0,"");
+				cout << "run killed" << endl;
+				net_pack.reset(NetPackage::PackType::RUN_KILLED, group_id, run_id, "");
 				char data;
 				err = send_message(net_pack, &data, 0);
 				if (err != 1)
 				{
-						exit(-1);
+					exit(-1);
+				}
+			}
+			else if (final_run_status == NetPackage::PackType::TERMINATE)
+			{
+				cout << "run preempted by termination requested" << endl;
+				terminate = true;
+			}
+
+			if (!terminate)
+			{
+				// Send READY Message to master
+				cout << "sending ready signal to master" << endl;
+				net_pack.reset(NetPackage::PackType::READY, 0, 0, "");
+				char data;
+				err = send_message(net_pack, &data, 0);
+				if (err != 1)
+				{
+					exit(-1);
 				}
 			}
 		}
 		else if (net_pack.get_type() == NetPackage::PackType::TERMINATE)
 		{
+			cout << "terminated requested" << endl;
 			terminate = true;
 		}
 		else if (net_pack.get_type() == NetPackage::PackType::REQ_KILL)

@@ -272,3 +272,8 @@ bool RunManagerAbstract::get_observations_vec(int run_id, vector<double> &data_v
 	 }
 	 return run_ids;
  }
+
+ void  RunManagerAbstract::update_run_failed(int run_id)
+ {
+	 file_stor.update_run_failed(run_id);
+ }

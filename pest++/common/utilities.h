@@ -14,9 +14,11 @@
 #include <map>
 #include <set>
 #include <mutex>
+#include <exception>
 #include "pest_error.h"
 #include "Transformable.h"
 #include "network_package.h"
+#include <thread>
 
 
 
@@ -227,6 +229,45 @@ private:
 	std::mutex m;
 
 };
+
+class thread_exceptions
+{
+public:
+
+	thread_exceptions() {}
+	void add(std::exception_ptr ex_ptr);
+	void rethrow();
+
+private:
+	std::vector<std::exception_ptr> shared_exception_vec;
+	std::mutex m;
+
+};
+
+class thread_RAII
+{
+	thread& t;
+public:
+	thread_RAII(thread& th) :t(th)
+	{
+	}
+
+	~thread_RAII()
+	{
+		if (t.joinable())
+		{
+			t.join();
+		}
+	}
+
+private:
+	// copy constructor
+	thread_RAII(const thread_RAII& thr);
+
+	// copy-assignment operator
+	thread_RAII& operator=(const thread_RAII& thr);
+};
+
 
 }  // end namespace pest_utils
 #endif /* UTILITIES_H_ */
