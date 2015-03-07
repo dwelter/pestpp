@@ -106,7 +106,7 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 		debug_msg("========================================================================");
 		debug_msg("Iteration Number");
 		debug_print(global_iter_num);
-
+		cout << endl;
 		output_file_writer.iteration_report(cout, global_iter_num, run_manager.get_total_runs(), get_description(), svd_package->description, matrix_inv);
 
 		if (restart_controller.get_restart_option() == RestartController::RestartOption::NONE)

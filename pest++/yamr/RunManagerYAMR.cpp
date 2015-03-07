@@ -406,12 +406,17 @@ void RunManagerYAMR::run()
 	cout << endl;
 	f_rmr << endl;
 
+	cout << "YAMR progress" << endl;
+	cout << "   runs(C = completed | F = failed | T = timed out)" << endl;
+	cout << "   slaves(R = running | W = waiting | U = unavailable)" << endl;
+	cout << "------------------------------------------------------------------------------" << endl;
 	while (!all_runs_complete())
 	{
 		echo();
 		init_slaves();
 		//schedule runs on available nodes
 		schedule_runs();
+		echo();
 		// get and process incomming messages
 		listen();	
 		//
@@ -424,9 +429,10 @@ void RunManagerYAMR::run()
 	//kill any remaining active runs
 	kill_all_active_runs();
 	echo();
+	cout << endl << endl;
 	message.str("");
-	message << "    " << model_runs_done << " runs complete :  " << get_num_failed_runs() << " runs failed";
-	cout << endl << "---------------------" << endl << message.str() << endl << endl;
+	message << "   " << model_runs_done << " runs complete :  " << get_num_failed_runs() << " runs failed";
+	cout << message.str() << endl << endl;
 	f_rmr << endl << "---------------------" << endl << message.str() << endl << endl;
 	
 	if (init_sim.size() == 0)
@@ -774,11 +780,14 @@ int RunManagerYAMR::schedule_run(int run_id, std::list<list<SlaveInfoRec>::itera
 
 void RunManagerYAMR::echo()
 {
-	cout << get_time_string() << "->" << setw(6) << model_runs_done << " complete " <<
-		setw(6) << model_runs_failed << " failed " <<
-		setw(6) << model_runs_timed_out << " timed out " <<
-		setw(4) << slave_info_set.size() << " slaves\r" << flush;
-
+	map<string, int> stats_map = get_slave_stats();
+	cout << get_time_string_short() << " runs("
+		<< "C=" << setw(5) << left << model_runs_done
+		<< "| F=" << setw(5) << left << model_runs_failed
+		<< "| T=" << setw(5) << left << model_runs_timed_out << "): slaves("
+		<< "R=" << setw(4) << left << stats_map["run"]
+		<< "| W=" << setw(4) << left << stats_map["wait"]
+		<< "| U=" << setw(4) << left << stats_map["unavailable"] << ")\r" << flush;
 }
 
 string RunManagerYAMR::get_time_string()
@@ -794,6 +803,20 @@ string RunManagerYAMR::get_time_string()
 	return t_str;
 }
 
+string RunManagerYAMR::get_time_string_short()
+{
+	time_t rawtime;
+	struct tm * timeinfo;
+	char buffer[80];
+
+	time(&rawtime);
+	timeinfo = localtime(&rawtime);
+	strftime(buffer, 80, "%m/%d %H:%M:%S", timeinfo);
+	string t_str(buffer);
+	return t_str;
+}
+
+
 void RunManagerYAMR::report(std::string message,bool to_cout)
 {
 	string t_str = get_time_string();
@@ -803,7 +826,6 @@ void RunManagerYAMR::report(std::string message,bool to_cout)
 
 void RunManagerYAMR::process_message(int i_sock)
 {	
-	echo();
 	NetPackage net_pack;
 	int err;
 	list<SlaveInfoRec>::iterator slave_info_iter = socket_to_iter_map.at(i_sock);
@@ -1199,6 +1221,37 @@ void RunManagerYAMR::kill_all_active_runs()
 		 }
 	 }
 	 return iter_list;
+ }
+
+ map<string, int> RunManagerYAMR::get_slave_stats()
+ {
+	 map<string, int> stats_map;
+	 list<SlaveInfoRec>::iterator iter_b, iter_e;
+	 int n_active = 0;
+	 int n_waiting = 0;
+	 int n_unavailable = 0;
+	 for (iter_b = slave_info_set.begin(), iter_e = slave_info_set.end();
+		 iter_b != iter_e; ++iter_b)
+	 {
+		 SlaveInfoRec::State cur_state = iter_b->get_state();
+		 if (cur_state == SlaveInfoRec::State::WAITING)
+		 {
+			 ++n_waiting;
+		 }
+		 else if (cur_state == SlaveInfoRec::State::ACTIVE)
+		 {
+			 ++n_active;
+		 }
+		 else
+		 {
+			 ++n_active;
+		 }
+	 }
+	 stats_map["wait"] = n_waiting;
+	 stats_map["run"] = n_active;
+	 stats_map["unavailable"] = n_unavailable;
+	 stats_map["total"] = slave_info_set.size();
+	 return stats_map;
  }
 
  int RunManagerYAMR::get_n_unique_failures()
