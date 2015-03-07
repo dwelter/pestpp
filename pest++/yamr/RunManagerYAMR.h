@@ -90,7 +90,8 @@ public:
 	RunManagerYAMR(const std::vector<std::string> _comline_vec,
 		const std::vector<std::string> _tplfile_vec, const std::vector<std::string> _inpfile_vec,
 		const std::vector<std::string> _insfile_vec, const std::vector<std::string> _outfile_vec,
-		const std::string &stor_filename, const std::string &port, std::ofstream &_f_rmr, int _max_n_failure=3);
+		const std::string &stor_filename, const std::string &port, std::ofstream &_f_rmr, int _max_n_failure,
+		double overdue_reched_fac, double overdue_giveup_fac);
 	virtual void initialize(const Parameters &model_pars, const Observations &obs, const std::string &_filename = std::string(""));
 	virtual void initialize_restart(const std::string &_filename);
 	virtual void reinitialize(const std::string &_filename = std::string(""));
@@ -108,8 +109,9 @@ private:
 	static const int N_PINGS_UNRESPONSIVE = 3;
 	static const int PING_INTERVAL_SECS = 5;
 	static const int MAX_CONCURRENT_RUNS_LOWER_LIMIT = 3;
-	const double PERCENT_OVERDUE_RESCHED = 1.15; //15% past average runtime
-	const double PERCENT_OVERDUE_GIVEUP = 10.0; //1000% past average runtime	
+	
+	double overdue_reched_fac;
+	double overdue_giveup_fac;
 	int max_concurrent_runs;
 	int listener;
 	int fdmax;

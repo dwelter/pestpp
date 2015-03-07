@@ -198,7 +198,8 @@ public:
 		double _super_eigthres = 1.0E-6, SVD_PACK _svd_pack = PestppOptions::EIGEN,
 		MAT_INV _mat_inv = PestppOptions::JTQJ, double _auto_norm = -999,
 		double _super_relparmax = 0.1, int max_run_fail=3,
-		bool iter_summary_flag = true, bool der_forgive = true);
+		bool iter_summary_flag = true, bool der_forgive = true,
+		double overdue_reched_fac = 1.15, double overdue_giveup_fac=100);
 	void parce_line(const string &line);
 	int get_max_n_super() const{return max_n_super;}
 	double get_super_eigthres() const{return super_eigthres;}
@@ -234,6 +235,11 @@ public:
 	string get_parcov_filename()const { return parcov_filename; }
 	double get_expected_obj()const { return expected_obj; }
 	void set_expected_obj(double _val){ expected_obj = _val; }
+	double get_overdue_reched_fac()const { return overdue_reched_fac; }
+	void set_overdue_reched_fac(double _val){ overdue_reched_fac = _val; }
+	double get_overdue_giveup_fac()const { return overdue_giveup_fac; }
+	void set_overdue_giveup_fac(double _val){ overdue_giveup_fac = _val; }
+
 private:
 	int n_iter_base;
 	int n_iter_super;
@@ -253,6 +259,9 @@ private:
 	vector<string> prediction_names;
 	string parcov_filename;
 	double expected_obj;
+	double overdue_reched_fac;
+	double overdue_giveup_fac;
+
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);
 ostream& operator<< (ostream &os, const ObservationInfo& val);

@@ -238,9 +238,11 @@ int SlaveInfoRec::seconds_since_last_ping_time() const
 RunManagerYAMR::RunManagerYAMR(const vector<string> _comline_vec,
 	const vector<string> _tplfile_vec, const vector<string> _inpfile_vec,
 	const vector<string> _insfile_vec, const vector<string> _outfile_vec,
-	const string &stor_filename, const string &_port, ofstream &_f_rmr, int _max_n_failure)
+	const string &stor_filename, const string &_port, ofstream &_f_rmr, int _max_n_failure,
+	double _overdue_reched_fac, double _overdue_giveup_fac)
 	: RunManagerAbstract(_comline_vec, _tplfile_vec, _inpfile_vec,
 	_insfile_vec, _outfile_vec, stor_filename, _max_n_failure),
+	overdue_reched_fac(_overdue_reched_fac), overdue_giveup_fac(_overdue_giveup_fac),
 	port(_port), f_rmr(_f_rmr)
 {
 	max_concurrent_runs = max(MAX_CONCURRENT_RUNS_LOWER_LIMIT, _max_n_failure);
@@ -623,7 +625,7 @@ void RunManagerYAMR::schedule_runs()
 				if (failure_map.count(run_id) + overdue_kill_runs_vec.size() >= max_n_failure)
 				{
 					// kill the overdue runs
-					kill_runs(run_id, false, "overdue");
+					kill_runs(run_id, true, "overdue");
 					should_schedule = false;
 					model_runs_timed_out += overdue_kill_runs_vec.size();
 				}
@@ -636,7 +638,7 @@ void RunManagerYAMR::schedule_runs()
 					should_schedule = true;
 					model_runs_timed_out += overdue_kill_runs_vec.size();
 				}
-				else if (duration > avg_runtime*PERCENT_OVERDUE_RESCHED  && free_slave_list.empty())
+				else if (duration > avg_runtime*overdue_giveup_fac  && free_slave_list.empty())
 				{
 					// If there are no free slaves kill the overdue ones
 					// This is necessary to keep runs with smae numbers of slaves behaving
@@ -649,7 +651,7 @@ void RunManagerYAMR::schedule_runs()
 					}
 					model_runs_timed_out += 1;
 				}
-				else if (duration > avg_runtime*PERCENT_OVERDUE_RESCHED)
+				else if (duration > avg_runtime*overdue_reched_fac)
 				{
 					//check how many concurrent runs are going	
 					if (n_concur < max_concurrent_runs) should_schedule = true;
@@ -959,7 +961,7 @@ bool RunManagerYAMR::process_model_run(int sock_id, NetPackage &net_pack)
 	// remove currently completed run from the active list
 	auto it = get_active_run_iter(sock_id);
 	unschedule_run(it);
-	kill_runs(run_id, "completed on alternative node");
+	kill_runs(run_id, false, "completed on alternative node");
 	return use_run;
 }
 
@@ -1106,7 +1108,7 @@ void RunManagerYAMR::kill_all_active_runs()
 			 if (avg_runtime <= 0) avg_runtime = get_global_runtime_minute();;
 			 if (avg_runtime <= 0) avg_runtime = 1.0E+10;
 			 duration = i->second->get_duration_minute();
-			 if (duration >= avg_runtime*PERCENT_OVERDUE_GIVEUP)
+			 if (duration >= avg_runtime*overdue_giveup_fac)
 			 {
 				 sock_id_vec.push_back(i->second->get_socket_fd());
 			 }

@@ -50,9 +50,9 @@ int rmif_create_yamr_(char *f_comline, int  *comline_str_len, int *comline_array
 	char *f_ins, int  *ins_str_len, int *ins_array_len,
 	char *f_out, int  *out_str_len, int *out_array_len,
 	char *f_storfile, int *storfile_len,
-	char *f_port, int *f_port_len, 
-	char *f_info_filename, int *info_filename_len, int *n_max_fail)
-
+	char *f_port, int *f_port_len,
+	char *f_info_filename, int *info_filename_len, int *n_max_fail,
+	double *overdue_reched_fac, double *overdue_giveup_fac)
 {
 	int err = 0;
 	try {
@@ -66,7 +66,7 @@ int rmif_create_yamr_(char *f_comline, int  *comline_str_len, int *comline_array
 		string info_filename =  fortran_str_2_string(f_info_filename, *info_filename_len);
 		fout_run_manager_log_file.open(info_filename);
 		_run_manager_ptr_ = new RunManagerYAMR(comline_vec, tpl_vec, inp_vec, ins_vec, out_vec, storfile, 
-			port, fout_run_manager_log_file, *n_max_fail);
+			port, fout_run_manager_log_file, *n_max_fail, *overdue_reched_fac, *overdue_giveup_fac);
 	}
 	catch(...)
 	{

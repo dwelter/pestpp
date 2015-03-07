@@ -1319,3 +1319,5 @@ kr10c60       1.0 * log(kr10c60) =   2.301030      1.0 regul_p
 ++ SUPER_EIGTHRES(1.0e-8)
 ++ MAX_N_SUPER(77)
 ++ AUTO_NORM(4)
+++ OVERDUE_RESCHED_FAC(1.15)
+++ OVERDUE_GIVEUP_FAC(1.5)

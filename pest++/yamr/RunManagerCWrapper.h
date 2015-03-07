@@ -29,7 +29,8 @@ RunManager* rmic_create_yamr(char **comline, int comline_array_len,
 	char *storfile,
 	char *port,
 	char *info_filename,
-	int n_max_fail);
+	int n_max_fail,
+	double overdue_reched_fac, double overdue_giveup_fac);
 
 #ifdef OS_WIN
 extern __declspec(dllexport)
