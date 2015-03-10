@@ -157,7 +157,7 @@ private:
 	int get_n_responsive_slaves();
 	virtual void update_run_failed(int run_id, int socket_fd);
 	virtual void update_run_failed(int run_id);
-	map<string, int> RunManagerYAMR::get_slave_stats();
+	map<string, int> get_slave_stats();
 };
 
 #endif /* RUNMANAGERYAMR_H */

@@ -694,7 +694,7 @@ void w_write_run_read(pest_utils::thread_flag* terminate, pest_utils::thread_fla
 #ifdef OS_LINUX
 		//a flag to track if the run was terminated
 		bool term_break = false;
-		for (auto &cmd_string : commands)
+		for (auto &cmd_string : *commands)
 		{
 			//start the command
 			int command_pid = start_command(cmd_string);

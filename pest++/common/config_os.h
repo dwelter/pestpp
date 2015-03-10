@@ -4,7 +4,7 @@
 
 #define PESTPP_VERSION "3.0.1";
 
-//#define OS_LINUX
-#define OS_WIN
+#define OS_LINUX
+//#define OS_WIN
 
 #endif /* CONFIG_OS_H_ */
