@@ -63,10 +63,10 @@ void RunStorage::reset(const vector<string> &_par_names, const vector<string> &_
 		throw PestFileError(filename);
 	}
 	// calculate the number of bytes required to store parameter names
-	vector<char> serial_pnames(Serialization::serialize(par_names));
+	vector<int8_t> serial_pnames(Serialization::serialize(par_names));
 	std::int64_t p_name_size_64 = serial_pnames.size() * sizeof(char);
 	// calculate the number of bytes required to store observation names
-	vector<char> serial_onames(Serialization::serialize(obs_names));
+	vector<int8_t> serial_onames(Serialization::serialize(obs_names));
 	std::int64_t o_name_size_64 = serial_onames.size() * sizeof(char);
 	// calculate the number of bytes required to store a model run
 	run_par_byte_size = par_names.size() * sizeof(double);
@@ -83,8 +83,8 @@ void RunStorage::reset(const vector<string> &_par_names, const vector<string> &_
 	buf_stream.write((char*) &run_size_64, sizeof(run_size_64));
 	buf_stream.write((char*) &p_name_size_64, sizeof(p_name_size_64));
 	buf_stream.write((char*) &o_name_size_64, sizeof(o_name_size_64));
-	buf_stream.write(serial_pnames.data(), serial_pnames.size());
-	buf_stream.write(serial_onames.data(), serial_onames.size());
+	buf_stream.write((char*)serial_pnames.data(), serial_pnames.size());
+	buf_stream.write((char*)serial_onames.data(), serial_onames.size());
 	//add flag for double buffering
 	std::int8_t buf_status = 0;
 	int end_of_runs = get_nruns();
@@ -127,14 +127,14 @@ void RunStorage::init_restart(const std::string &_filename)
 	std::int64_t o_name_size_64;
 	buf_stream.read((char*) &o_name_size_64, sizeof(o_name_size_64));
 
-	vector<char> serial_pnames;
+	vector<int8_t> serial_pnames;
 	serial_pnames.resize(p_name_size_64);
-	buf_stream.read(serial_pnames.data(), serial_pnames.size());
+	buf_stream.read((char *)serial_pnames.data(), serial_pnames.size());
 	Serialization::unserialize(serial_pnames, par_names);
 
-	vector<char> serial_onames;
+	vector<int8_t> serial_onames;
 	serial_onames.resize(o_name_size_64);
-	buf_stream.read(serial_onames.data(), serial_onames.size());
+	buf_stream.read((char *)serial_onames.data(), serial_onames.size());
 	Serialization::unserialize(serial_onames, obs_names);
 
 	beg_run0 = 4 * sizeof(std::int64_t) + serial_pnames.size() + serial_onames.size();

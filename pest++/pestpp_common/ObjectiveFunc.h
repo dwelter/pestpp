@@ -49,8 +49,8 @@ public:
 			      const Pest *_ctl_file_ptr)
 		: observations_ptr(_observations_ptr), obs_info_ptr(_obs_info_ptr), prior_info_ptr(_prior_info_ptr),ctl_file_ptr(_ctl_file_ptr) {}
 
-	double get_phi(const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg, int norm = 2) const;
-	PhiComponets get_phi_comp(const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg, int norm = 2) const;
+	double get_phi(const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg, double norm = 2.0) const;
+	PhiComponets get_phi_comp(const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg, double norm = 2.0) const;
 	map<string, double> get_group_phi(const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg,
 		PhiComponets::OBS_TYPE obs_type = PhiComponets::OBS_TYPE::ALL) const;	
 	map<string,double> phi_report(const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg) const;

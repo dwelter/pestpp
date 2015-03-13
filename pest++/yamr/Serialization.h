@@ -31,22 +31,22 @@ class Observations;
 class Serialization
 {
 public:
-	static std::vector<char> serialize(unsigned long data);
-	static std::vector<char> serialize(const Transformable &tr_data);
-	static std::vector<char> serialize(const std::vector<const Transformable*> tr_vec);
-	static std::vector<char> serialize(const std::vector<Transformable*> &tr_vec);
-	static std::vector<char> serialize(const Parameters &pars, const Observations &obs);
-	static std::vector<char> serialize(const Parameters &pars, const std::vector<std::string> &par_names_vec, const Observations &obs, const std::vector<std::string> &obs_names_vec);
-	static std::vector<char> serialize(const std::vector<std::string> &string_vec);
-	static std::vector<char> serialize(const std::vector<std::vector<std::string> const*> &string_vec_vec);
-	static unsigned long unserialize(const std::vector<char> &ser_data, unsigned long &data, unsigned long start_loc=0);
-	static unsigned long unserialize(const std::vector<char> &ser_data, Transformable &tr_data, unsigned long start_loc=0);
-	static unsigned long unserialize(const std::vector<char> &ser_data, std::vector<Transformable*> &tr_vec, unsigned long start_loc=0);
-	static unsigned long unserialize(const std::vector<char> &ser_data, Parameters &pars, Observations &obs, unsigned long start_loc=0);
-	static unsigned long unserialize(const std::vector<char> &ser_data, std::vector<std::string> &string_vec, unsigned long start_loc=0, unsigned long max_read_bytes=ULONG_MAX);
-	static unsigned long unserialize(const std::vector<char> &ser_data, std::vector<std::vector<std::string>> &string_vec_vec);
-	static unsigned long unserialize(const std::vector<char> &ser_data, Transformable &items, const std::vector<std::string> &names_vec, unsigned long start_loc = 0);
-	static unsigned long unserialize(const std::vector<char> &ser_data, Parameters &pars, const std::vector<std::string> &par_names, Observations &obs, const std::vector<std::string> &obs_names);
+	static std::vector<int8_t> serialize(int64_t data);
+	static std::vector<int8_t> serialize(const Transformable &tr_data);
+	static std::vector<int8_t> serialize(const std::vector<const Transformable*> tr_vec);
+	static std::vector<int8_t> serialize(const std::vector<Transformable*> &tr_vec);
+	static std::vector<int8_t> serialize(const Parameters &pars, const Observations &obs);
+	static std::vector<int8_t> serialize(const Parameters &pars, const std::vector<std::string> &par_names_vec, const Observations &obs, const std::vector<std::string> &obs_names_vec);
+	static std::vector<int8_t> serialize(const std::vector<std::string> &string_vec);
+	static std::vector<int8_t> serialize(const std::vector<std::vector<std::string> const*> &string_vec_vec);
+	static unsigned long unserialize(const std::vector<int8_t> &ser_data, int64_t &data, unsigned long start_loc = 0);
+	static unsigned long unserialize(const std::vector<int8_t> &ser_data, Transformable &tr_data, unsigned long start_loc = 0);
+	static unsigned long unserialize(const std::vector<int8_t> &ser_data, std::vector<Transformable*> &tr_vec, unsigned long start_loc = 0);
+	static unsigned long unserialize(const std::vector<int8_t> &ser_data, Parameters &pars, Observations &obs, unsigned long start_loc = 0);
+	static unsigned long unserialize(const std::vector<int8_t> &ser_data, std::vector<std::string> &string_vec, unsigned long start_loc = 0, unsigned long max_read_bytes = ULONG_MAX);
+	static unsigned long unserialize(const std::vector<int8_t> &ser_data, std::vector<std::vector<std::string>> &string_vec_vec);
+	static unsigned long unserialize(const std::vector<int8_t> &ser_data, Transformable &items, const std::vector<std::string> &names_vec, unsigned long start_loc = 0);
+	static unsigned long unserialize(const std::vector<int8_t> &ser_data, Parameters &pars, const std::vector<std::string> &par_names, Observations &obs, const std::vector<std::string> &obs_names);
 private:
 };
 

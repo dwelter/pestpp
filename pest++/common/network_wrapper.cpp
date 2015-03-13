@@ -139,32 +139,32 @@ int w_listen(int sockfd, int backlog)
 	return n;
 }
 
-int w_recv(int sockfd, char *buf, size_t len, int flags)
+int w_recv(int sockfd, int8_t *buf, int64_t len, int flags)
 {
 	int n;
-	n = recv(sockfd, buf, len, flags);
+	n = recv(sockfd, (char*)buf, len, flags);
 	if (n < 0){
 		cerr << "recv error: "  << w_get_error_msg() << endl;
 	}
 	return n;
 }
-int w_send(int sockfd, char *buf, size_t len, int flags)
+int w_send(int sockfd, int8_t *buf, int64_t len, int flags)
 {
 	int n;
-	n = send(sockfd, buf, len, flags);
+	n = send(sockfd, (char*)buf, len, flags);
 	if (n < 0){
 		cerr << "send error: "  << w_get_error_msg() << endl;
 	}
 	return n;
 }
 
-int w_sendall(int sockfd, char *buf, unsigned long *len)
+int w_sendall(int sockfd, int8_t *buf, int64_t *len)
 {
 	unsigned long total = 0; // how many bytes we've sent
 	unsigned long bytesleft = *len; // how many we have left to send
 	int n;
 	while(total < *len) {
-		n = send(sockfd, buf+total, bytesleft, 0);
+		n = send(sockfd, (char*)buf + total, bytesleft, 0);
 		if (n == -1) { break; }  //error
 		if (n == 0) { break; } //connection closed
 		total += n;
@@ -179,13 +179,13 @@ int w_sendall(int sockfd, char *buf, unsigned long *len)
 }
 
 
-int w_recvall(int sockfd, char *buf, unsigned long *len)
+int w_recvall(int sockfd, int8_t *buf, int64_t *len)
 {
 	unsigned long total = 0; // how many bytes we've received
 	unsigned long bytesleft = *len; // how many we have left to receive
 	int n;
 	while(total < *len) {
-		n = recv(sockfd, buf+total, bytesleft, 0);
+		n = recv(sockfd, (char*)buf + total, bytesleft, 0);
 		if (n == -1) { break; }  //error
 		if (n == 0) { break; } //connection closed
 		total += n;
@@ -472,7 +472,7 @@ void w_run_commands(pest_utils::thread_flag* terminate, pest_utils::thread_flag*
 			{
 				std::cout << "received terminate signal" << std::endl;
 				//try to kill the process
-				bool success = CloseHandle(job);
+				bool success = (CloseHandle(job) != 0);
 				//bool success = TerminateProcess(pi.hProcess, 0);
 				if (!success)
 				{
@@ -673,7 +673,7 @@ void w_write_run_read(pest_utils::thread_flag* terminate, pest_utils::thread_fla
 				{
 					std::cout << "received terminate signal" << std::endl;
 					//try to kill the process
-					bool success = CloseHandle(job);
+					bool success = (CloseHandle(job) != 0);
 					//bool success = TerminateProcess(pi.hProcess, 0);
 					if (!success)
 					{

@@ -308,7 +308,7 @@ void YAMRSlave::start(const string &host, const string &port)
 	NetPackage net_pack;
 	Observations obs;
 	Parameters pars;
-	vector<char> serialized_data;
+	vector<int8_t> serialized_data;
 	int err;
 	//class attribute - can be modified in run_model()
 	terminate = false;	

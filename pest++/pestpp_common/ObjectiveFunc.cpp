@@ -34,7 +34,7 @@ const PhiComponets& PhiComponets::operator=(const PhiComponets &rhs)
 	return * this;
 }
 
-double ObjectiveFunc::get_phi(const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg, int norm) const
+double ObjectiveFunc::get_phi(const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg, double norm) const
 {
 	double phi;
 	PhiComponets phi_comp;
@@ -43,7 +43,7 @@ double ObjectiveFunc::get_phi(const Observations &sim_obs, const Parameters &par
 	return phi;
 }
 
-PhiComponets ObjectiveFunc::get_phi_comp(const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg, int norm) const
+PhiComponets ObjectiveFunc::get_phi_comp(const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg, double norm) const
 {
 	unordered_map<string, ObservationRec>::const_iterator info_iter;
 	unordered_map<string, ObservationRec>::const_iterator info_end = obs_info_ptr->observations.end();

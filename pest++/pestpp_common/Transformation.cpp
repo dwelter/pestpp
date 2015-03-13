@@ -765,7 +765,7 @@ void TranSVD::d2_to_d1(Transformable &del_data, Transformable &data)
 void TranSVD::save(ostream &fout) const
 {
 	size_t size;
-	vector<char> serial_data;
+	vector<int8_t> serial_data;
 	serial_data = Serialization::serialize(base_parameter_names);
 	size = serial_data.size();
 	fout.write((char*)&size, sizeof(size));
@@ -800,7 +800,7 @@ void TranSVD::save(ostream &fout) const
 void TranSVD::read(istream &fin)
 {
 	size_t size;
-	vector<char> serial_data;
+	vector<int8_t> serial_data;
 
 	base_parameter_names.clear();
 	fin.read((char*)&size, sizeof(size));

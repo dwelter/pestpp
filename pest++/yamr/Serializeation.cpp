@@ -30,10 +30,10 @@ using namespace std;
 using namespace pest_utils;
 
 
-vector<char> Serialization::serialize(unsigned long data)
+vector<int8_t> Serialization::serialize(int64_t data)
 {
-	vector<char> buf;
-	unsigned buf_sz = sizeof(data);
+	vector<int8_t> buf;
+	int64_t buf_sz = sizeof(data);
     buf.resize(buf_sz);
 	size_t i_start = 0;
 	w_memcpy_s(&buf[i_start], buf_sz, &data, buf_sz);
@@ -41,7 +41,7 @@ vector<char> Serialization::serialize(unsigned long data)
 }
 
 
-unsigned long Serialization::unserialize(const vector<char> &buf, unsigned long &data, unsigned long start_loc)
+unsigned long Serialization::unserialize(const vector<int8_t> &buf, int64_t &data, unsigned long start_loc)
 {
 	assert(buf.size()-start_loc >= sizeof(data));
 	w_memcpy_s(&data, sizeof(data), &buf[start_loc], sizeof(data));
@@ -50,32 +50,34 @@ unsigned long Serialization::unserialize(const vector<char> &buf, unsigned long 
 }
 
 
-vector<char> Serialization::serialize(const Transformable &tr_data)
+vector<int8_t> Serialization::serialize(const Transformable &tr_data)
 {
-	vector<char> buf;
-	unsigned long buf_sz = 0;
-	unsigned long names_buf_sz = 0;;
-	unsigned long data_buf_sz = 0;
+	vector<int8_t> buf;
+	int64_t buf_sz = 0;
+	int64_t names_buf_sz = 0;;
+	int64_t data_buf_sz = 0;
 	// calculate buffer size
 	for (auto &b : tr_data)
 	{
 		names_buf_sz += b.first.size() + 1;
 	}
 	data_buf_sz = sizeof(double)*tr_data.size();
-	buf_sz = sizeof(unsigned long) + names_buf_sz + sizeof(unsigned long) + data_buf_sz;
+	buf_sz = sizeof(names_buf_sz)+names_buf_sz + sizeof(data_buf_sz)+data_buf_sz;
 	// allocate space
 	buf.resize(buf_sz, '\0');
 	// build string with space deliminated names and array of numbers
-	vector<char> names;
+	vector<int8_t> names;
 	names.reserve(names_buf_sz);
 	vector<double> values;
 	for (auto &b : tr_data)
 	{
-		names.insert(names.end(), b.first.begin(), b.first.end());
+		vector<int8_t> tmp_str = NetPackage::pack_string(b.first.begin(), b.first.end());
+		names.insert(names.end(), tmp_str.begin(), tmp_str.end());
 		names.push_back(' ');
 		values.push_back(b.second);
 	}
-	unsigned long n_rec = values.size();
+
+	int64_t n_rec = values.size();
 	//write information to buffer
 	size_t i_start = 0;
 	w_memcpy_s(&buf[i_start], buf_sz - i_start, &names_buf_sz, sizeof(names_buf_sz));
@@ -91,18 +93,18 @@ vector<char> Serialization::serialize(const Transformable &tr_data)
 	return buf;
 }
 
-vector<char> Serialization::serialize(const vector< const Transformable*> tr_vec)
+vector<int8_t> Serialization::serialize(const vector< const Transformable*> tr_vec)
 {
-	vector<char> buf;
+	vector<int8_t> buf;
 	for (auto &i : tr_vec)
 	{
-		vector<char> serial_data = serialize(*i);
+		vector<int8_t> serial_data = serialize(*i);
 		buf.insert(buf.end(), serial_data.begin(), serial_data.end());
 	}
 	return buf;
 }
 
-vector<char> Serialization::serialize(const std::vector<Transformable*> &tr_vec)
+vector<int8_t> Serialization::serialize(const std::vector<Transformable*> &tr_vec)
 {
 	vector<const Transformable*> const_data_vec;
 	for (auto &i : tr_vec)
@@ -112,7 +114,7 @@ vector<char> Serialization::serialize(const std::vector<Transformable*> &tr_vec)
 	return serialize(const_data_vec);
 }
 
-vector<char> Serialization::serialize(const Parameters &pars, const Observations &obs)
+vector<int8_t> Serialization::serialize(const Parameters &pars, const Observations &obs)
 {
 	 vector<const Transformable*> tr_vec;
 	 tr_vec.push_back(&pars);
@@ -120,19 +122,19 @@ vector<char> Serialization::serialize(const Parameters &pars, const Observations
 	 return serialize(tr_vec);
 }
 
-vector<char> Serialization::serialize(const Parameters &pars, const vector<string> &par_names_vec, const Observations &obs, const vector<string> &obs_names_vec)
+vector<int8_t> Serialization::serialize(const Parameters &pars, const vector<string> &par_names_vec, const Observations &obs, const vector<string> &obs_names_vec)
 {
 
 	assert(pars.size() == par_names_vec.size());
 	assert(obs.size() == obs_names_vec.size());
-	vector<char> serial_data;
+	vector<int8_t> serial_data;
 	size_t npar = par_names_vec.size();
 	size_t nobs = obs_names_vec.size();
 	size_t par_buf_sz = npar * sizeof(double);
 	size_t obs_buf_sz = nobs * sizeof(double);
 	serial_data.resize(par_buf_sz + obs_buf_sz, Parameters::no_data);
 
-	char *buf = &serial_data[0];
+	int8_t *buf = &serial_data[0];
 	vector<double> par_data = pars.get_data_vec(par_names_vec);
 	w_memcpy_s(buf, par_buf_sz, &par_data[0], par_data.size() * sizeof(double));
 
@@ -141,26 +143,27 @@ vector<char> Serialization::serialize(const Parameters &pars, const vector<strin
 	return serial_data;
 }
 
-vector<char> Serialization::serialize(const vector<string> &string_vec)
+vector<int8_t> Serialization::serialize(const vector<string> &string_vec)
 {
-	vector<char> serial_data;
+	vector<int8_t> serial_data;
 	for (auto &i : string_vec)
 	{
-		serial_data.insert(serial_data.end(), i.begin(), i.end());
+		vector<int8_t> tmp_str = NetPackage::pack_string(i.begin(),i.end());
+		serial_data.insert(serial_data.end(), tmp_str.begin(), tmp_str.end());
 		serial_data.push_back('\0');
 	}
 	return serial_data;
 }
 
-vector<char> Serialization::serialize(const vector<vector<string>const*> &string_vec_vec)
+vector<int8_t> Serialization::serialize(const vector<vector<string>const*> &string_vec_vec)
 {
-	vector<char> serial_data;
+	vector<int8_t> serial_data;
 	unsigned long buf_sz = 0;
 	for (auto &i : string_vec_vec)
 	{
-		vector<char> buf_ser = serialize(*i);
+		vector<int8_t> buf_ser = serialize(*i);
 		buf_sz = buf_ser.size();
-		vector<char> buf_size = serialize(buf_sz);
+		vector<int8_t> buf_size = serialize(buf_sz);
 		serial_data.insert(serial_data.end(), buf_size.begin(), buf_size.end());
 		serial_data.insert(serial_data.end(), buf_ser.begin(), buf_ser.end());
 	}
@@ -168,29 +171,30 @@ vector<char> Serialization::serialize(const vector<vector<string>const*> &string
 }
 
 
-unsigned long Serialization::unserialize(const std::vector<char> &buf, Transformable &tr_data, unsigned long start_loc)
+unsigned long Serialization::unserialize(const std::vector<int8_t> &buf, Transformable &tr_data, unsigned long start_loc)
 {
 	// delete all existing items
 	tr_data.clear();
-	unsigned long names_arg_sz;
-	unsigned long n_rec;
-	unsigned long bytes_read;
+	int64_t names_arg_sz;
+	int64_t n_rec;
+	int64_t bytes_read;
 	size_t i_start = 0;
 	// get size of names record
 	i_start = start_loc;
 	w_memcpy_s(&names_arg_sz, sizeof(names_arg_sz), buf.data()+i_start, sizeof(names_arg_sz));
 	i_start += sizeof(names_arg_sz);
-	unique_ptr<char[]> names_buf(new char[names_arg_sz]);
-	w_memcpy_s(names_buf.get(), sizeof(char)*names_arg_sz,  buf.data()+i_start, sizeof(char)*names_arg_sz);
-	i_start += sizeof(char)*names_arg_sz;
+	unique_ptr<int8_t[]> names_buf(new int8_t[names_arg_sz]);
+	w_memcpy_s(names_buf.get(), sizeof(int8_t)*names_arg_sz, buf.data() + i_start, sizeof(int8_t)*names_arg_sz);
+	i_start += sizeof(int8_t)*names_arg_sz;
 	w_memcpy_s(&n_rec, sizeof(n_rec),  buf.data()+i_start, sizeof(n_rec));
 	i_start += sizeof(n_rec);
 	// build transformable data set
 	double *value_ptr = (double *) ( buf.data()+i_start);
 	vector<string> names_vec;
-	tokenize(strip_cp(string(names_buf.get(), names_arg_sz)), names_vec);
+	tokenize(strip_cp(NetPackage::extract_string(names_buf.get(), names_arg_sz)), names_vec);
+	//tokenize(strip_cp(string(names_buf.get(), names_arg_sz)), names_vec);
 	assert(names_vec.size() == n_rec);
-	for (unsigned long i=0; i< n_rec; ++i)
+	for (int64_t i = 0; i< n_rec; ++i)
 	{
 		tr_data.insert(names_vec[i], *(value_ptr+i));
 	}
@@ -198,7 +202,7 @@ unsigned long Serialization::unserialize(const std::vector<char> &buf, Transform
 	return bytes_read;
 }
 
-unsigned long Serialization::unserialize(const std::vector<char> &ser_data, std::vector<Transformable*> &tr_vec, unsigned long start_loc)
+unsigned long Serialization::unserialize(const std::vector<int8_t> &ser_data, std::vector<Transformable*> &tr_vec, unsigned long start_loc)
 {
 	unsigned i_tr=start_loc;
 	unsigned i_char=0;
@@ -216,7 +220,7 @@ unsigned long Serialization::unserialize(const std::vector<char> &ser_data, std:
 	return total_bytes_read;
 }
 
-unsigned long Serialization::unserialize(const std::vector<char> &data, Parameters &pars, Observations &obs, unsigned long start_loc)
+unsigned long Serialization::unserialize(const std::vector<int8_t> &data, Parameters &pars, Observations &obs, unsigned long start_loc)
 {
 	 unsigned total_bytes_read = 0;
 	 vector<Transformable*> tr_vec;
@@ -226,12 +230,13 @@ unsigned long Serialization::unserialize(const std::vector<char> &data, Paramete
 	 return total_bytes_read;
 }
 
-unsigned long Serialization::unserialize(const vector<char> &ser_data, vector<string> &string_vec, unsigned long start_loc, unsigned long max_read_bytes)
+unsigned long Serialization::unserialize(const vector<int8_t> &ser_data, vector<string> &string_vec, unsigned long start_loc, unsigned long max_read_bytes)
 {
 	unsigned total_bytes_read = 0;
 	assert(start_loc < ser_data.size());
 	total_bytes_read = min(ser_data.size()-start_loc, max_read_bytes);
-	string tmp_str(ser_data.begin()+start_loc, ser_data.begin()+start_loc+total_bytes_read);
+	string tmp_str = NetPackage::extract_string(ser_data, start_loc, total_bytes_read);
+	//string tmp_str(ser_data.begin()+start_loc, ser_data.begin()+start_loc+total_bytes_read);
 	string delm;
 	delm.push_back('\0');
 	strip_ip(tmp_str, "both", delm);
@@ -239,11 +244,11 @@ unsigned long Serialization::unserialize(const vector<char> &ser_data, vector<st
 	return total_bytes_read;
 }
 
-unsigned long Serialization::unserialize(const vector<char> &ser_data, vector<vector<string>> &string_vec_vec)
+unsigned long Serialization::unserialize(const vector<int8_t> &ser_data, vector<vector<string>> &string_vec_vec)
 {
-	unsigned long bytes_read = 0;
-	unsigned long total_bytes_read = 0;
-	unsigned long vec_size = 0;
+	int64_t bytes_read = 0;
+	int64_t total_bytes_read = 0;
+	int64_t vec_size = 0;
 
 	// can recode to increase performance by eliminating repeated copying
 	// but at this point it is not worth the effort
@@ -255,10 +260,11 @@ unsigned long Serialization::unserialize(const vector<char> &ser_data, vector<ve
 		bytes_read =  unserialize(ser_data, string_vec_vec.back(), total_bytes_read, vec_size);
 		total_bytes_read += bytes_read;
 	}
-	return total_bytes_read;
+	unsigned long tmp_val = total_bytes_read;
+	return tmp_val;
 }
 
-unsigned long Serialization::unserialize(const vector<char> &ser_data, Transformable &items, const vector<string> &names_vec, unsigned long start_loc)
+unsigned long Serialization::unserialize(const vector<int8_t> &ser_data, Transformable &items, const vector<string> &names_vec, unsigned long start_loc)
 {
 	unsigned long total_bytes_read = 0;
 	size_t vec_size = (ser_data.size() - start_loc) / sizeof(double);
@@ -279,7 +285,7 @@ unsigned long Serialization::unserialize(const vector<char> &ser_data, Transform
 	return total_bytes_read;
 }
 
-unsigned long Serialization::unserialize(const vector<char> &ser_data, Parameters &pars, const vector<string> &par_names, Observations &obs, const vector<string> &obs_names)
+unsigned long Serialization::unserialize(const vector<int8_t> &ser_data, Parameters &pars, const vector<string> &par_names, Observations &obs, const vector<string> &obs_names)
 {
 	unsigned long bytes_read = 0;
 

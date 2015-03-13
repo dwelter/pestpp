@@ -8,7 +8,7 @@
 using namespace std;
 
 //Static Memeber Initialization
-int NetPackage::last_group_id = 0;
+int64_t NetPackage::last_group_id = 0;
 
 //Static Methods
 int NetPackage::get_new_group_id()
@@ -16,12 +16,71 @@ int NetPackage::get_new_group_id()
 	return ++last_group_id;
 }
 
+string NetPackage::extract_string(int8_t *data_src, size_t _size)
+{
+	vector<char> buf;
+	// This is done to remove possible system dependicies on whether char/uchar
+	// is use to represent a standard char
+	for (size_t i = 0; i < _size; ++i)
+	{
+		buf.push_back(data_src[i]);
+	}
+	string ret_val(buf.begin(), buf.end());
+	return ret_val;
+}
+
+string NetPackage::extract_string(const vector<int8_t> &data_src, size_t index1, size_t _size)
+{
+	size_t index2 = index1 + _size;
+	vector<char> buf;
+	// This is done to remove possible system dependicies on whether char/uchar
+	// is use to represent a standard char
+	for (int i = index1; i < index2; ++i)
+	{
+		buf.push_back(data_src[i]);
+	}
+	string ret_val(buf.begin(), buf.end());
+	return ret_val;
+}
+
+template<class InputIterator>
+string NetPackage::extract_string(InputIterator first, InputIterator last)
+{
+	vector<char> buf;
+	while (first != last) {
+		buf.push_back(*first);
+		++first;
+	}
+	string ret_val(buf.begin(), buf.end());
+	return ret_val;
+
+}
+
+template<class InputIterator>
+vector<int8_t> NetPackage::pack_string(InputIterator first, InputIterator last)
+{
+	vector<int8_t> buf;
+	while (first != last) {
+		buf.push_back(*first);
+		++first;
+	}
+	return buf;
+}
+
 //Non static methods
 NetPackage::NetPackage(PackType _type, int _group, int _run_id, const string &desc_str)
 	: type(_type), group(_group), run_id(_run_id)
 {
 	memset(desc, '\0', DESC_LEN);
-	strncpy(desc, desc_str.c_str(), DESC_LEN-1);
+	int i = 0;
+	int max_len = min(size_t(DESC_LEN - 1), desc_str.size());
+	// This is done to remove possible system dependicies on whether char/uchar
+	// is use to represent a standard char
+		for (int i = 0; i < max_len; ++i)
+	{
+		desc[i] = desc_str[i];
+	}
+	//strncpy(desc, desc_str.c_str(), DESC_LEN-1);
 	data_len = 1;
 }
 void NetPackage::reset(PackType _type, int _group, int _run_id, const string &_desc)
@@ -30,14 +89,21 @@ void NetPackage::reset(PackType _type, int _group, int _run_id, const string &_d
 	group = _group;
 	run_id = _run_id;
 	memset(desc, '\0', DESC_LEN);
-	strncpy(desc, _desc.c_str(), DESC_LEN-1);
+	int max_len = min(size_t(DESC_LEN - 1), _desc.size());
+	// This is done to remove possible system dependicies on whether char/uchar
+	// is use to represent a standard char
+	for (int i = 0; i < max_len; ++i)
+	{
+		desc[i] = _desc[i];
+	}
+	//strncpy(desc, _desc.c_str(), DESC_LEN-1);
 	data.clear();
 }
 
-int NetPackage::send(int sockfd, const void *data, unsigned long data_len_l)
+int NetPackage::send(int sockfd, const void *data, int64_t data_len_l)
 {
 	int n;
-	unsigned long buf_sz = 0;
+	int64_t buf_sz = 0;
 	//calculate the size of buffer
 	buf_sz = sizeof(buf_sz);
 	buf_sz += sizeof(type);
@@ -47,7 +113,7 @@ int NetPackage::send(int sockfd, const void *data, unsigned long data_len_l)
 	buf_sz += data_len_l;
 	//pack information into buffer
 	//unique_ptr<char[]> buf(new char[buf_sz]);
-	vector<char> buf;
+	vector<int8_t> buf;
 	buf.resize(buf_sz, '\0');
 	size_t i_start = 0;
 	w_memcpy_s(&buf[i_start], buf_sz-i_start, &buf_sz, sizeof(buf_sz));
@@ -76,12 +142,12 @@ int NetPackage::send(int sockfd, const void *data, unsigned long data_len_l)
 int  NetPackage::recv(int sockfd)
 {
 	int n;
-	unsigned long header_sz = 0;
-	unsigned long buf_sz = 0;
+	int64_t header_sz = 0;
+	int64_t buf_sz = 0;
 	size_t i_start = 0;
 	//get header (ie size, seq_id, id and name)
 	header_sz = sizeof(buf_sz) + sizeof(type) + sizeof(group) + sizeof(run_id) + sizeof(desc);
-	vector<char> header_buf;
+	vector<int8_t> header_buf;
 	header_buf.resize(header_sz, '\0');
 	n = w_recvall(sockfd, &header_buf[0], &header_sz);
 	if(n>0) {
@@ -95,7 +161,13 @@ int  NetPackage::recv(int sockfd)
 		i_start += sizeof(group);
 		w_memcpy_s(&run_id, sizeof(run_id), &header_buf[i_start], sizeof(run_id));
 		i_start += sizeof(run_id);
-		w_memcpy_s(&desc, sizeof(desc), &header_buf[i_start], sizeof(desc));
+		//w_memcpy_s(&desc, sizeof(desc), &header_buf[i_start], sizeof(desc));
+		// This is done to remove possible system dependicies on whether char/uchar
+		// is use to represent a standard char
+		for (int i = 0; i < DESC_LEN; ++i)
+		{
+			desc[i] = header_buf[i_start+1];
+		}
 		i_start += sizeof(desc);
 		desc[DESC_LEN-1] = '\0';
 		//get data
@@ -115,3 +187,7 @@ void NetPackage::print_header(std::ostream &fout)
 	fout << "NetPackage: type = " << int(type) <<", group = " << group << ", run_id = " << run_id << ", description = " << desc << 
 		", data package size = " << data.size() << endl; 
 }
+
+template std::string NetPackage::extract_string< std::vector<int8_t>::iterator>(std::vector<int8_t>::iterator first, std::vector<int8_t>::iterator last);
+template std::vector<int8_t> NetPackage::pack_string< std::string::iterator>(std::string::iterator first, std::string::iterator last);
+template std::vector<int8_t> NetPackage::pack_string< std::string::const_iterator>(std::string::const_iterator first, std::string::const_iterator last);

@@ -15,7 +15,7 @@ start /D"%CD%\master" .\pest++ %pestpp_file% /H :%port%
 
 REM start YAMR slaves
 FOR /L %%i IN (1,1,%nslaves%) DO (
- echo %%i
- start /D"%CD%\slave%%i" .\pest++ /H %host%:%port%
+  echo %%i
+  start /D"%CD%\slave%%i" .\pest++ /H %host%:%port%
 )
 

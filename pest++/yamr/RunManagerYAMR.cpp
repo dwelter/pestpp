@@ -48,6 +48,7 @@ using namespace pest_utils;
 SlaveInfoRec::SlaveInfoRec(int _socket_fd)
 {
 	socket_fd = _socket_fd;
+	name_info_vec = w_getnameinfo_vec(_socket_fd);
 	run_id = UNKNOWN_ID;
 	group_id = UNKNOWN_ID;
 	state = SlaveInfoRec::State::NEW;
@@ -83,6 +84,21 @@ int SlaveInfoRec::get_socket_fd() const
 void SlaveInfoRec::set_socket_fd(int _socket_fd)
 {
 	socket_fd = _socket_fd;
+}
+
+string SlaveInfoRec::get_hostname()const
+{
+	return name_info_vec[0];
+}
+
+string SlaveInfoRec::get_port()const
+{
+	return name_info_vec[1];
+}
+
+string SlaveInfoRec::get_socket_name()const
+{
+	return name_info_vec[0] + ":" + name_info_vec[1];
 }
 
 int SlaveInfoRec::get_run_id() const
@@ -423,8 +439,6 @@ void RunManagerYAMR::run()
 		ping();
 	}
 	echo();
-	if (model_runs_done == 0)
-		throw PestError("no runs completed successfully");
 	total_runs += model_runs_done;
 	//kill any remaining active runs
 	kill_all_active_runs();
@@ -434,6 +448,9 @@ void RunManagerYAMR::run()
 	message << "   " << model_runs_done << " runs complete :  " << get_num_failed_runs() << " runs failed";
 	cout << message.str() << endl << endl;
 	f_rmr << endl << "---------------------" << endl << message.str() << endl << endl;
+
+	if (model_runs_done == 0)
+		throw PestError("no runs completed successfully");
 	
 	if (init_sim.size() == 0)
 	{
@@ -465,16 +482,16 @@ void RunManagerYAMR::ping(int i_sock)
 	}
 
 
-	vector<string> sock_name = w_getnameinfo_vec(i_sock);
+	string sock_hostname = slave_info_iter->get_hostname();
 	fd_set read_fds = master;
 	//if the slave hasn't communicated since the last ping request
 	if ((!FD_ISSET(i_sock, &read_fds)) && slave_info_iter->get_ping())
 	{
 		int fails = slave_info_iter->add_failed_ping();
-		report("failed to receive ping response from slave: " + sock_name[0] + "$" + slave_info_iter->get_work_dir(), false);
+		report("failed to receive ping response from slave: " + sock_hostname + "$" + slave_info_iter->get_work_dir(), false);
 		if (fails >= MAX_FAILED_PINGS)
 		{
-			report("max failed ping communications since last successful run for slave:" + sock_name[0] + "$" + slave_info_iter->get_work_dir() + "  -> terminating", false);
+			report("max failed ping communications since last successful run for slave:" + sock_hostname + "$" + slave_info_iter->get_work_dir() + "  -> terminating", false);
 			close_slave(i_sock);
 			return;
 		}
@@ -490,17 +507,17 @@ void RunManagerYAMR::ping(int i_sock)
 		if (err <= 0)
 		{
 			int fails = slave_info_iter->add_failed_ping();
-			report("failed to send ping request to slave:" + sock_name[0] + "$" + slave_info_iter->get_work_dir(), false);
+			report("failed to send ping request to slave:" + sock_hostname + "$" + slave_info_iter->get_work_dir(), false);
 			if (fails >= MAX_FAILED_PINGS)
 			{
-				report("max failed ping communications since last successful run for slave:" + sock_name[0] + "$" + slave_info_iter->get_work_dir() + "  -> terminating", true);
+				report("max failed ping communications since last successful run for slave:" + sock_hostname + "$" + slave_info_iter->get_work_dir() + "  -> terminating", true);
 				close_slave(i_sock);
 				return;
 			}
 		}
 		else slave_info_iter->set_ping(true);
 #ifdef _DEBUG
-		report("ping sent to slave:" + sock_name[0] + "$" + slave_info_iter->get_work_dir(), false);
+		report("ping sent to slave:" + sock_hostname + "$" + slave_info_iter->get_work_dir(), false);
 #endif
 	}
 }
@@ -534,7 +551,6 @@ void RunManagerYAMR::listen()
 					if (newfd > fdmax) { // keep track of the max
 						fdmax = newfd;
 					}
-					vector<string> sock_name = w_getnameinfo_vec(newfd);
 					add_slave(newfd);
 				}
 			}
@@ -562,7 +578,7 @@ void RunManagerYAMR::close_slave(list<SlaveInfoRec>::iterator slave_info_iter)
 	int run_id = slave_info_iter->get_run_id();
 	SlaveInfoRec::State state = slave_info_iter->get_state();
 
-	vector<string> sock_name = w_getnameinfo_vec(i_sock);
+	string socket_name = slave_info_iter->get_socket_name();
 	w_close(i_sock); // bye!
 	FD_CLR(i_sock, &master); // remove from master set
 	// remove run from active_runid_to_iterset_map
@@ -578,7 +594,7 @@ void RunManagerYAMR::close_slave(list<SlaveInfoRec>::iterator slave_info_iter)
 		waiting_runs.push_front(run_id);
 	}
 	stringstream ss;
-	ss << "closed connection to slave: " << sock_name[0] << ":" << sock_name[1] << "; number of slaves: " << socket_to_iter_map.size();
+	ss << "closed connection to slave: " << socket_name << "; number of slaves: " << socket_to_iter_map.size();
 	report(ss.str(), false);
 }
 
@@ -666,10 +682,10 @@ void RunManagerYAMR::schedule_runs()
 
 				if ((!free_slave_list.empty()) && should_schedule)
 				{
-					vector<string> sock_name = w_getnameinfo_vec(act_sock_id);
+					string host_name = it_slave->get_hostname();
 					stringstream ss;
 					ss << "rescheduling overdue run " << run_id << " (" << duration << "|" <<
-						avg_runtime << " minutes) on: " << sock_name[0] << "$" <<
+						avg_runtime << " minutes) on: " << host_name << "$" <<
 						it_slave->get_work_dir();
 					report(ss.str(), false);
 					int success = schedule_run(run_id, free_slave_list, n_responsive_slaves);
@@ -754,7 +770,7 @@ int RunManagerYAMR::schedule_run(int run_id, std::list<list<SlaveInfoRec>::itera
 	{
 		int socket_fd = (*it_slave)->get_socket_fd();
 		vector<char> data = file_stor.get_serial_pars(run_id);
-		vector<string> sock_name = w_getnameinfo_vec(socket_fd);
+		string host_name = (*it_slave)->get_hostname();
 		NetPackage net_pack(NetPackage::PackType::START_RUN, cur_group_id, run_id, "");
 		int err = net_pack.send(socket_fd, &data[0], data.size());
 		if (err != -1)
@@ -766,7 +782,7 @@ int RunManagerYAMR::schedule_run(int run_id, std::list<list<SlaveInfoRec>::itera
 			(*it_slave)->reset_last_ping_time();
 			active_runid_to_iterset_map.insert(make_pair(run_id, *it_slave));
 			stringstream ss;
-			ss << "Sending run " << run_id << " to: " << sock_name[0] << "$" << (*it_slave)->get_work_dir() <<
+			ss << "Sending run " << run_id << " to: " << host_name << "$" << (*it_slave)->get_work_dir() <<
 				"  (group id = " << cur_group_id << ", run id = " << run_id << ", concurrent runs = " << get_n_concurrent(run_id) << ")";
 			report(ss.str(), false);
 			free_slave_list.erase(it_slave);
@@ -830,23 +846,26 @@ void RunManagerYAMR::process_message(int i_sock)
 	int err;
 	list<SlaveInfoRec>::iterator slave_info_iter = socket_to_iter_map.at(i_sock);
 
-	vector<string> sock_name = w_getnameinfo_vec(i_sock);
+	string host_name = slave_info_iter->get_hostname();
+	string port_name = slave_info_iter->get_port();
+	string socket_name = slave_info_iter->get_socket_name();
 
 	if(( err=net_pack.recv(i_sock)) <=0) // error or lost connection
 	{
 		if (err < 0) {
-			report("receive failed from slave: " + sock_name[0] + "$" + slave_info_iter->get_work_dir() + " - terminating slave", false);
+			report("receive failed from slave: " + host_name + "$" + slave_info_iter->get_work_dir() + " - terminating slave", false);
 		}
 		else {
-			report("lost connection to slave: " + sock_name[0] + "$" + slave_info_iter->get_work_dir(), false);
+			report("lost connection to slave: " + host_name + "$" + slave_info_iter->get_work_dir(), false);
 		}
 		close_slave(i_sock);
 	}
 	else if (net_pack.get_type() == NetPackage::PackType::RUNDIR)
 	{
-		string work_dir(net_pack.get_data().data(), net_pack.get_data().size());
+		//string work_dir(net_pack.get_data().data(), net_pack.get_data().size());
+		string work_dir = NetPackage::extract_string(net_pack.get_data(), 0, net_pack.get_data().size() - 1);
 		stringstream ss;
-		ss << "initializing new slave connection from: " << sock_name[0] << ":" << sock_name[1] << "; number of slaves: " << socket_to_iter_map.size() << "; working dir: " << work_dir;
+		ss << "initializing new slave connection from: " << socket_name << "; number of slaves: " << socket_to_iter_map.size() << "; working dir: " << work_dir;
 		report(ss.str(),false);		
 		slave_info_iter->set_work_dir(work_dir);
 		slave_info_iter->set_state(SlaveInfoRec::State::CWD_RCV);
@@ -856,7 +875,7 @@ void RunManagerYAMR::process_message(int i_sock)
 		slave_info_iter->end_linpack();
 		slave_info_iter->set_state(SlaveInfoRec::State::LINPACK_RCV);
 		stringstream ss;
-		ss << "new slave ready: " << sock_name[0] << ":" << sock_name[1];
+		ss << "new slave ready: " << socket_name;
 		report(ss.str(), false);
 	}
 	else if (net_pack.get_type() == NetPackage::PackType::READY)
@@ -887,7 +906,7 @@ void RunManagerYAMR::process_message(int i_sock)
 		if (run_finished(run_id))
 		{
 			stringstream ss;
-			ss << "Prevoiusly completed run: " << run_id << " finished on: " << sock_name[0] << "$" << slave_info_iter->get_work_dir() <<
+			ss << "Prevoiusly completed run: " << run_id << " finished on: " << host_name << "$" << slave_info_iter->get_work_dir() <<
 				"  (run time = " << slave_info_iter->get_runtime_minute() << " min, group id = " << group_id <<
 				", run id = " << run_id << " concurrent = " << get_n_concurrent(run_id) << ")";
 			report(ss.str(), false);
@@ -897,7 +916,7 @@ void RunManagerYAMR::process_message(int i_sock)
 			// keep track of model run time
 			slave_info_iter->end_run();
 			stringstream ss;
-			ss << "run " << run_id << " received from: " << sock_name[0] << "$" << slave_info_iter->get_work_dir() <<
+			ss << "run " << run_id << " received from: " << host_name << "$" << slave_info_iter->get_work_dir() <<
 				"  (run time = " << slave_info_iter->get_runtime_minute() << " min, group id = " << group_id <<
 				", run id = " << run_id << " concurrent = " << get_n_concurrent(run_id) << ")";
 			report(ss.str(), false);
@@ -916,7 +935,7 @@ void RunManagerYAMR::process_message(int i_sock)
 		
 		if (!run_finished(run_id))
 		{
-			ss << "Run " << run_id << " failed on slave:" << sock_name[0] << "$" << slave_info_iter->get_work_dir() << "  (group id = " << group_id << ", run id = " << run_id << ", concurrent = " << n_concur << ") ";
+			ss << "Run " << run_id << " failed on slave:" << host_name << "$" << slave_info_iter->get_work_dir() << "  (group id = " << group_id << ", run id = " << run_id << ", concurrent = " << n_concur << ") ";
 			report(ss.str(), false);
 			model_runs_failed++;
 			update_run_failed(run_id, i_sock);
@@ -938,19 +957,19 @@ void RunManagerYAMR::process_message(int i_sock)
 		auto it = get_active_run_iter(i_sock);
 		unschedule_run(it);
 		stringstream ss;
-		ss << "Run " << run_id << " killed on slave: " << sock_name[0] << "$" << slave_info_iter->get_work_dir() << ", run id = " << run_id << " concurrent = " << n_concur;
+		ss << "Run " << run_id << " killed on slave: " << host_name << "$" << slave_info_iter->get_work_dir() << ", run id = " << run_id << " concurrent = " << n_concur;
 		report(ss.str(), false);
 	}
 	else if (net_pack.get_type() == NetPackage::PackType::PING)
 	{
 #ifdef _DEBUG
-		report("ping received from slave" + sock_name[0] + "$" + slave_info_iter->get_work_dir(), false);
+		report("ping received from slave" + host_name + "$" + slave_info_iter->get_work_dir(), false);
 #endif
 	}
 	else if (net_pack.get_type() == NetPackage::PackType::IO_ERROR)
 	{
 		//string err(net_pack.get_data().begin(),net_pack.get_data().end());		
-		report("error in model IO files on slave: " + sock_name[0] + "$" + slave_info_iter->get_work_dir() + "-terminating slave. ", true);
+		report("error in model IO files on slave: " + host_name + "$" + slave_info_iter->get_work_dir() + "-terminating slave. ", true);
 		close_slave(i_sock);
 	}
 	else
@@ -997,9 +1016,9 @@ void RunManagerYAMR::kill_run(list<SlaveInfoRec>::iterator slave_info_iter, cons
 		int run_id = slave_info_iter->get_run_id();
 		slave_info_iter->set_state(SlaveInfoRec::State::KILLED);
 		//schedule run to be killed
-		vector<string> sock_name = w_getnameinfo_vec(socket_id);
+		string host_name = slave_info_iter->get_hostname();
 		stringstream ss;
-		ss << "sending kill request; reason: " << reason << "; run id:" << run_id << "; slave: " << sock_name[0] << "$" << slave_info_iter->get_work_dir();
+		ss << "sending kill request; reason: " << reason << "; run id:" << run_id << "; slave: " << host_name << "$" << slave_info_iter->get_work_dir();
 		report(ss.str(), false);
 		NetPackage net_pack(NetPackage::PackType::REQ_KILL, 0, 0, "");
 		char data = '\0';
@@ -1010,7 +1029,7 @@ void RunManagerYAMR::kill_run(list<SlaveInfoRec>::iterator slave_info_iter, cons
 		}
 		else
 		{
-			report("error sending kill request to slave:" + sock_name[0] + "$" +
+			report("error sending kill request to slave:" + host_name + "$" +
 				slave_info_iter->get_work_dir(), true);
 			slave_info_iter->set_state(SlaveInfoRec::State::KILLED_FAILED);
 		}
@@ -1081,7 +1100,7 @@ void RunManagerYAMR::kill_all_active_runs()
 		{
 			// send Command line, tpl and ins information
 			NetPackage net_pack(NetPackage::PackType::CMD, 0, 0, "");
-			vector<char> data;
+			vector<int8_t> data;
 			vector<vector<string> const*> tmp_vec;
 			tmp_vec.push_back(&comline_vec);
 			tmp_vec.push_back(&tplfile_vec);

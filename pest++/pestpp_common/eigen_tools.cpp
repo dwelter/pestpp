@@ -106,7 +106,7 @@ void matrix_del_cols(Eigen::SparseMatrix<double> &mat, const vector<size_t> &col
 		{
 			if (del_col_set.find(icol_old) == del_col_set.end())
 			{
-				triplet_list.push_back(Eigen::Triplet<int>(icol_old, icol_new, 1.0));
+				triplet_list.push_back(Eigen::Triplet<int>(icol_old, icol_new, 1));
 				++icol_new;
 				++n_col_save;
 			}
@@ -114,7 +114,7 @@ void matrix_del_cols(Eigen::SparseMatrix<double> &mat, const vector<size_t> &col
 		// add rows to be deleted to end to permuatation matrix
 		for (int icol_old :  col_id_vec)
 		{
-			triplet_list.push_back(Eigen::Triplet<int>(icol_old, icol_new, 1.0));
+			triplet_list.push_back(Eigen::Triplet<int>(icol_old, icol_new, 1));
 			++icol_new;
 		}
 		Eigen::SparseMatrix<double> perm_sparse_matrix(ncols, ncols);

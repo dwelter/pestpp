@@ -34,10 +34,10 @@ int w_connect(int sockfd, struct sockaddr *serv_addr, socklen_t addr_len);
 int w_bind(int sockfd, struct sockaddr *my_addr, socklen_t addr_len);
 int w_listen(int sockfd, int backlog);
 int w_accept(int sockfd, struct sockaddr *addr, socklen_t *addr_len);
-int w_send(int sockfd, char *buf, size_t len, int flags);
-int w_sendall(int sockfd, char *buf, unsigned long *len);
-int w_recv(int sockfd, char *buf, size_t len, int flags);
-int w_recvall(int sockfd, char *buf, unsigned long *len);
+int w_send(int sockfd, int8_t *buf, int64_t len, int flags);
+int w_sendall(int sockfd, int8_t *buf, int64_t *len);
+int w_recv(int sockfd, int8_t *buf, int64_t len, int flags);
+int w_recvall(int sockfd, int8_t *buf, int64_t *len);
 int w_select(int numfds, fd_set *readfds, fd_set *writefds,
 		   fd_set *exceptfds, struct timeval *timeout);
 int w_memcpy_s(void *dest, size_t number_of_elements, const void *src, size_t count);

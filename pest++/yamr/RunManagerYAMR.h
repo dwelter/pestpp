@@ -36,6 +36,9 @@ public:
 	enum class State { NEW, CWD_REQ, CWD_RCV, CMD_SENT, LINPACK_REQ, LINPACK_RCV, WAITING, ACTIVE, KILLED, KILLED_FAILED, COMPLETE };
 	SlaveInfoRec(int _socket_fd);
 	int get_socket_fd() const;
+	string get_hostname()const;
+	string get_port()const;
+	string get_socket_name()const;
 	void set_socket_fd(int _socket_fd);
 	int get_run_id() const;
 	void set_run_id(int _run_id);
@@ -75,6 +78,7 @@ private:
 	std::chrono::system_clock::time_point start_time;
 	std::chrono::system_clock::time_point last_ping_time;
 	std::string work_dir;
+	std::vector<string> name_info_vec;
 public:
 	class CompareTimes
 	{
