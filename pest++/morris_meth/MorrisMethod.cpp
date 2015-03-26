@@ -145,13 +145,13 @@ MatrixXd MorrisMethod::create_P_star_mat(int k)
 }
 
 MorrisMethod::MorrisMethod(const vector<string> &_adj_par_name_vec,  const Parameters &_fixed_pars,
-						   const Parameters &_lower_bnd, const Parameters &_upper_bnd, const set<string> &_log_trans_pars, 
-			   int _p, int _r, ParamTransformSeq *_base_partran_seq_ptr, 
+				const Parameters &_lower_bnd, const Parameters &_upper_bnd, const set<string> &_log_trans_pars, 
+			   int _p, int _r, ParamTransformSeq *_base_partran_seq_ptr,
 			   const std::vector<std::string> &_obs_name_vec, FileManager *file_manager_ptr, const ObservationInfo *_obs_info_ptr,
-			   double _norm, bool _calc_pooled_obs, double _delta)
+			   bool _calc_pooled_obs, double _delta, bool _calc_morris_obs_sen)
 						   : GsaAbstractBase(_base_partran_seq_ptr, _adj_par_name_vec, _fixed_pars, _lower_bnd, _upper_bnd, 
 						   _obs_name_vec, file_manager_ptr, PARAM_DIST::uniform), obs_info_ptr(_obs_info_ptr),
-						   norm(_norm), calc_obs_sen(_calc_pooled_obs)
+						   calc_obs_sen(_calc_pooled_obs), calc_morris_obs_sen(_calc_morris_obs_sen)
 {
 	initialize(_log_trans_pars, _p, _r, _delta);
 }
@@ -359,9 +359,9 @@ void  MorrisMethod::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run
 		if (run0_ok && run1_ok && !par_name_1.empty())
 		{
 			run0.update_ctl(pars0, obs0);
-			double phi0 = run0.get_phi(DynamicRegularization::get_zero_reg_instance(), norm);
+			double phi0 = run0.get_phi(DynamicRegularization::get_zero_reg_instance());
 			run1.update_ctl(pars1, obs1);
-			double phi1 = run1.get_phi(DynamicRegularization::get_zero_reg_instance(), norm);
+			double phi1 = run1.get_phi(DynamicRegularization::get_zero_reg_instance());
 			double p0 = pars0[par_name_1];
 			double p1 = pars1[par_name_1];
 			if (is_log_trans_par(par_name_1))
@@ -397,7 +397,7 @@ void  MorrisMethod::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run
 	}
 
 	cout << "writing output files" << endl;
-	// write standard Morris Sensitivity on the global objective function
+	// write standard Morris Sensitivity for the global objective function
 	fout_morris << "parameter_name, sen_mean, sen_mean_abs, sen_std_dev" << endl;
 	for (const auto &it_par : adj_par_name_vec)
 	{
@@ -406,6 +406,13 @@ void  MorrisMethod::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run
 		{
 			fout_morris << log_name(it_par) << ", " << it_senmap->second.comp_mean() << ", " << it_senmap->second.comp_abs_mean() << ", " << sqrt(it_senmap->second.comp_var()) << endl;
 		}
+	}
+	if (calc_morris_obs_sen)
+	{
+		// write standard Morris Sensitivity for individual observations
+		ofstream &fout_mis = file_manager_ptr->open_ofile_ext("mio");
+		calc_morris_obs(fout_mis, obs_sen_file);
+		file_manager_ptr->close_file("mio");
 	}
 
 	if (calc_obs_sen)
@@ -474,6 +481,27 @@ void  MorrisMethod::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run
 	file_manager_ptr->close_file("msn");
 	file_manager_ptr->close_file("raw");
 }
+
+void MorrisMethod::calc_morris_obs(ostream &fout, MorrisObsSenFile &morris_sen_file)
+{
+	cout << "writing output files" << endl;
+	// write standard Morris Sensitivity
+	for (const auto &i_obs : morris_sen_file.obs_names_vec)
+	{
+		fout << "Method of Morris for observation: " << i_obs << endl;
+		fout << "parameter_name, sen_mean, sen_mean_abs, sen_std_dev" << endl;
+		for (const auto &i_par : morris_sen_file.par_names_vec)
+		{
+			const auto &it_senmap = morris_sen_file.map_obs_stats.find(make_pair(i_par, i_obs));
+			if (it_senmap != morris_sen_file.map_obs_stats.end())
+			{
+				fout << log_name(i_par) << ", " << it_senmap->second.comp_mean() << ", " << it_senmap->second.comp_abs_mean() << ", " << sqrt(it_senmap->second.comp_var()) << endl;
+			}
+		}
+		fout << endl;
+	}
+}
+
 
 MorrisMethod::~MorrisMethod(void)
 {

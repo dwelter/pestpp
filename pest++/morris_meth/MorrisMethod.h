@@ -24,6 +24,7 @@ class RunningStats;
 
 class MorrisObsSenFile
 {
+	friend class MorrisMethod;
 public:
 	void initialize(const std::vector<std::string> &par_names_vec, const std::vector<std::string> &obs_names_vec, double _no_data, const GsaAbstractBase *_gsa_abstract_base);
 	void add_sen_run_pair(const std::string &par_name, double p1, Observations &obs1, double p2, Observations &obs2);
@@ -44,19 +45,20 @@ public:
 		const Parameters &upper_bnd, const set<string> &_log_trans_pars, int _p, int _r, 
 		ParamTransformSeq *base_partran_seq,
 		const std::vector<std::string> &_obs_name_vec, FileManager *_file_manager_ptr,
-		const ObservationInfo *_obs_info_ptr, double norm, bool _calc_pooled_obs, double _delta);
+		const ObservationInfo *_obs_info_ptr, bool _calc_pooled_obs, double _delta, bool _calc_morris_obs_sen);
 	void process_pooled_var_file();
 	void initialize(const set<string> &_log_trans_pars, int _p, int _r, double _delta);
 	void assemble_runs(RunManagerAbstract &run_manager);
 	void calc_sen(RunManagerAbstract &run_manager, ModelRun model_run);
+	void calc_morris_obs(std::ostream &, MorrisObsSenFile &morris_sen_file);
 	~MorrisMethod(void);
 private:
 	int k; // number of parameters
 	int p; // number of levels for each parameters
 	int r;
+	bool calc_morris_obs_sen;
 	bool calc_obs_sen;
 	double delta;
-	double norm;
 	MatrixXd b_star_mat;
 	static MatrixXd create_B_mat(int k);
 	static MatrixXd create_J_mat(int k);

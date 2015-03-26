@@ -47,7 +47,7 @@ public:
 	virtual void set_max_reg_iter(int _max_reg_iter) { max_reg_iter = _max_reg_iter; }
 	virtual void set_regul_grp_weights(const std::unordered_map<std::string, double> &_regul_grp_weights) { regul_grp_weights = _regul_grp_weights; }
 	static DynamicRegularization get_unit_reg_instance() { return DynamicRegularization(); }
-	static DynamicRegularization get_zero_reg_instance() { return DynamicRegularization(true, false, 0,0,0,0,0,0); }
+	static DynamicRegularization get_zero_reg_instance() { return DynamicRegularization(true, false, 0,0,0,0,0,0,0,0); }
 	virtual ~DynamicRegularization(void){}
 protected:
 	bool use_dynamic_reg;

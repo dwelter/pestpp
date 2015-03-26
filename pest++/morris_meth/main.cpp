@@ -251,10 +251,11 @@ int main(int argc, char* argv[])
 	{
 		int morris_r = 4;
 		int morris_p = 5;
-		double norm = 2.0;
+	
 		double morris_delta = .666;
 		double default_delta = true;
 		bool calc_pooled_obs = false;
+		bool calc_morris_obs_sen = true;
 		auto morris_r_it = gsa_opt_map.find("MORRIS_R");
 		if (morris_r_it != gsa_opt_map.end())
 		{
@@ -271,14 +272,6 @@ int main(int argc, char* argv[])
 			convert_ip(morris_d_it->second, morris_delta);
 			default_delta = false;
 		}
-		auto morris_norm_it = gsa_opt_map.find("PHI_FORM");
-		if (morris_norm_it != gsa_opt_map.end())
-		{
-			if (morris_norm_it->second == "AVG")
-			{
-				norm = 1;
-			}
-		}
 		auto morris_pool_it = gsa_opt_map.find("MORRIS_POOLED_OBS");
 		if (morris_pool_it != gsa_opt_map.end())
 		{
@@ -287,11 +280,19 @@ int main(int argc, char* argv[])
 			if (pooled_obs_flag == "TRUE") calc_pooled_obs = true;
 		}
 
+		auto morris_obs_sen_it = gsa_opt_map.find("MORRIS_OBS_SEN");
+		if (morris_obs_sen_it != gsa_opt_map.end())
+		{
+			string obs_sen_flag = morris_obs_sen_it->second;
+			upper_ip(obs_sen_flag);
+			if (obs_sen_flag == "FALSE") calc_morris_obs_sen = false;
+		}
+
 		if (default_delta) morris_delta = morris_p / (2.0 * (morris_p - 1));
 
 		MorrisMethod *m_ptr = new MorrisMethod(adj_par_name_vec, fixed_pars, lower_bnd, upper_bnd, log_trans_pars,
 			morris_p, morris_r, &base_partran_seq, pest_scenario.get_ctl_ordered_obs_names(), &file_manager, 
-			&(pest_scenario.get_ctl_observation_info()), norm, calc_pooled_obs, morris_delta);
+			&(pest_scenario.get_ctl_observation_info()), calc_pooled_obs, morris_delta, calc_morris_obs_sen);
 		gsa_method = m_ptr;
 		m_ptr->process_pooled_var_file();
 	}
