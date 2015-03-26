@@ -687,6 +687,15 @@ int main(int argc, char* argv[])
 			
 			//if needed, set the predictive sensitivity vectors
 			const vector<string> pred_names = pest_scenario.get_pestpp_options().get_prediction_names();
+			//make sure prediction weights are zero
+			for (auto &pname : pred_names)
+			{
+				if (pest_scenario.get_ctl_observation_info().get_weight(pname) != 0.0)
+				{
+					cout << endl << "WARNING: prediction: " << pname << " has a non-zero weight" << endl << endl;
+					fout_rec << endl << "WARNING: prediction: " << pname << " has a non-zero weight" << endl << endl;
+				}
+			}
 			if (pred_names.size() > 0)
 				la.set_predictions(pred_names);
 			
