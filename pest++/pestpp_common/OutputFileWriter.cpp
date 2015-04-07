@@ -551,8 +551,8 @@ void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobia
 		Eigen::SparseMatrix<double> q_sqrt_no_reg = Q_sqrt.get_sparse_matrix(obs_list, DynamicRegularization::get_zero_reg_instance());
 		Eigen::SparseMatrix<double> dss_mat_no_reg = q_sqrt_no_reg * jac.get_matrix(obs_list, par_list) * par_mat;
 
-		cout << q_sqrt_reg << endl << endl;
-		cout << q_sqrt_no_reg << endl << endl;
+		//cout << q_sqrt_reg << endl << endl;
+		//cout << q_sqrt_no_reg << endl << endl;
 
 		int n_par = par_list.size();
 		int n_nonzero_weights_reg = q_sqrt_reg.nonZeros();

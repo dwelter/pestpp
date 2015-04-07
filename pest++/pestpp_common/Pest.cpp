@@ -74,7 +74,7 @@ void Pest::check_inputs()
 	}
 
 	//check that prediction names are list in obs
-	if (pestpp_options.get_prediction_names().size() > 0)
+	if ((pestpp_options.get_uncert_flag()) && (pestpp_options.get_prediction_names().size() > 0))
 	{
 		vector<string> missing;
 		for (auto &pred_name : pestpp_options.get_prediction_names())

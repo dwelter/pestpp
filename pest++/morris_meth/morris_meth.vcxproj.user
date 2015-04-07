@@ -6,13 +6,13 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerCommandArguments>pest</LocalDebuggerCommandArguments>
-    <LocalDebuggerWorkingDirectory>$(SolutionDir)\benchmarks\morris_1991\test</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerCommandArguments>vs2drt /h :4004</LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory>$(SolutionDir)\benchmarks\for_eric\phrq_explore</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LocalDebuggerCommandArguments>ecfm_draft8 /r</LocalDebuggerCommandArguments>
-    <LocalDebuggerWorkingDirectory>C:\Users\Dave\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\ECFM\master\template</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerCommandArguments>vs2drt /h :4004</LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory>$(SolutionDir)\benchmarks\for_eric\phrq_explore</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>
