@@ -90,7 +90,7 @@ void Pest::check_inputs()
 			stringstream ss;
 			ss << "Pest::check_inputs() the following predictions were not found in the observation names: ";
 			for (auto &m : missing)
-				ss << m;
+				ss << m << ',';
 			throw PestError(ss.str());
 		}
 	}
