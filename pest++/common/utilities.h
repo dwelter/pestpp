@@ -237,6 +237,7 @@ public:
 	thread_exceptions() {}
 	void add(std::exception_ptr ex_ptr);
 	void rethrow();
+	int size(){ return shared_exception_vec.size(); }
 
 private:
 	std::vector<std::exception_ptr> shared_exception_vec;

@@ -668,6 +668,7 @@ void w_write_run_read(pest_utils::thread_flag* terminate, pest_utils::thread_fla
 				{
 					break;
 				}
+				//else cout << exitcode << "...still waiting for command " << cmd_string << endl;
 				//check for termination flag
 				if (terminate->get())
 				{
@@ -746,7 +747,7 @@ void w_write_run_read(pest_utils::thread_flag* terminate, pest_utils::thread_fla
 			pest_utils::StringvecFortranCharArray(*outfile_vec, 50).get_prt(),
 			&nobs, pest_utils::StringvecFortranCharArray(*obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
 			obs_vec->data(), &ifail);
-		if (ifail != 0)
+ 		if (ifail != 0)
 		{
 			throw PestError("Error processing instruction file");
 		}

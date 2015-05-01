@@ -178,6 +178,12 @@ NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, N
 		pest_utils::thread_RAII raii(run_thread);
 		while (true)
 		{
+			if (shared_execptions.size() > 0)
+			{
+				cout << "exception raised by run thread " << std::endl;
+				//don't break here, need to check one last time for incoming messages
+				done = true;
+			}
 			//check if the runner thread has finished
 			if (f_finished.get())
 			{
