@@ -744,37 +744,37 @@ class SparseMatrix
 
     friend std::ostream & operator << (std::ostream & s, const SparseMatrix& m)
     {
-      // EIGEN_DBG_SPARSE(
-      //   s << "Nonzero entries:\n";
-      //   if(m.isCompressed())
-      //     for (Index i=0; i<m.nonZeros(); ++i)
-      //       s << "(" << m.m_data.value(i) << "," << m.m_data.index(i) << ") ";
-      //   else
-      //     for (Index i=0; i<m.outerSize(); ++i)
-      //     {
-      //       Index p = m.m_outerIndex[i];
-      //       Index pe = m.m_outerIndex[i]+m.m_innerNonZeros[i];
-      //       Index k=p;
-      //       for (; k<pe; ++k)
-      //         s << "(" << m.m_data.value(k) << "," << m.m_data.index(k) << ") ";
-      //       for (; k<m.m_outerIndex[i+1]; ++k)
-      //         s << "(_,_) ";
-      //     }
-      //   s << std::endl;
-      //   s << std::endl;
-      //   s << "Outer pointers:\n";
-      //   for (Index i=0; i<m.outerSize(); ++i)
-      //     s << m.m_outerIndex[i] << " ";
-      //   s << " $" << std::endl;
-      //   if(!m.isCompressed())
-      //   {
-      //     s << "Inner non zeros:\n";
-      //     for (Index i=0; i<m.outerSize(); ++i)
-      //       s << m.m_innerNonZeros[i] << " ";
-      //     s << " $" << std::endl;
-      //   }
-      //   s << std::endl;
-      // );
+      EIGEN_DBG_SPARSE(
+        s << "Nonzero entries:\n";
+        if(m.isCompressed())
+          for (Index i=0; i<m.nonZeros(); ++i)
+            s << "(" << m.m_data.value(i) << "," << m.m_data.index(i) << ") ";
+        else
+          for (Index i=0; i<m.outerSize(); ++i)
+          {
+            Index p = m.m_outerIndex[i];
+            Index pe = m.m_outerIndex[i]+m.m_innerNonZeros[i];
+            Index k=p;
+            for (; k<pe; ++k)
+              s << "(" << m.m_data.value(k) << "," << m.m_data.index(k) << ") ";
+            for (; k<m.m_outerIndex[i+1]; ++k)
+              s << "(_,_) ";
+          }
+        s << std::endl;
+        s << std::endl;
+        s << "Outer pointers:\n";
+        for (Index i=0; i<m.outerSize(); ++i)
+          s << m.m_outerIndex[i] << " ";
+        s << " $" << std::endl;
+        if(!m.isCompressed())
+        {
+          s << "Inner non zeros:\n";
+          for (Index i=0; i<m.outerSize(); ++i)
+            s << m.m_innerNonZeros[i] << " ";
+          s << " $" << std::endl;
+        }
+        s << std::endl;
+      );
       s << static_cast<const SparseMatrixBase<SparseMatrix>&>(m);
       return s;
     }
@@ -940,7 +940,7 @@ void set_from_triplets(const InputIterator& begin, const InputIterator& end, Spa
   enum { IsRowMajor = SparseMatrixType::IsRowMajor };
   typedef typename SparseMatrixType::Scalar Scalar;
   typedef typename SparseMatrixType::Index Index;
-  SparseMatrix<Scalar,IsRowMajor?ColMajor:RowMajor> trMat(mat.rows(),mat.cols());
+  SparseMatrix<Scalar,IsRowMajor?ColMajor:RowMajor,Index> trMat(mat.rows(),mat.cols());
 
   if(begin!=end)
   {
@@ -1178,7 +1178,7 @@ EIGEN_DONT_INLINE typename SparseMatrix<_Scalar,_Options,_Index>::Scalar& Sparse
   size_t p = m_outerIndex[outer+1];
   ++m_outerIndex[outer+1];
 
-  float reallocRatio = 1;
+  double reallocRatio = 1;
   if (m_data.allocatedSize()<=m_data.size())
   {
     // if there is no preallocated memory, let's reserve a minimum of 32 elements
@@ -1190,13 +1190,13 @@ EIGEN_DONT_INLINE typename SparseMatrix<_Scalar,_Options,_Index>::Scalar& Sparse
     {
       // we need to reallocate the data, to reduce multiple reallocations
       // we use a smart resize algorithm based on the current filling ratio
-      // in addition, we use float to avoid integers overflows
-      float nnzEstimate = float(m_outerIndex[outer])*float(m_outerSize)/float(outer+1);
-      reallocRatio = (nnzEstimate-float(m_data.size()))/float(m_data.size());
+      // in addition, we use double to avoid integers overflows
+      double nnzEstimate = double(m_outerIndex[outer])*double(m_outerSize)/double(outer+1);
+      reallocRatio = (nnzEstimate-double(m_data.size()))/double(m_data.size());
       // furthermore we bound the realloc ratio to:
       //   1) reduce multiple minor realloc when the matrix is almost filled
       //   2) avoid to allocate too much memory when the matrix is almost empty
-      reallocRatio = (std::min)((std::max)(reallocRatio,1.5f),8.f);
+      reallocRatio = (std::min)((std::max)(reallocRatio,1.5),8.);
     }
   }
   m_data.resize(m_data.size()+1,reallocRatio);

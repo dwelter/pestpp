@@ -8,7 +8,7 @@
 #include "config_os.h"
 
 using namespace std;
-using std::chrono::high_resolution_clock;
+using std::chrono::system_clock;
 
 void Logger::writetime(stringstream &os, time_t tc) {
 	// alternative to put_time iomanip
@@ -28,7 +28,7 @@ Logger::Logger(ofstream &_fout,bool _echo)
 
 void Logger::write(const std::string &message)
 {
-	high_resolution_clock::time_point time_now = high_resolution_clock::now();
+	system_clock::time_point time_now = system_clock::now();
 	if (fout->good())
 	{
 		*fout << time_to_string(time_now) << " : " << message << endl;
@@ -53,8 +53,8 @@ void Logger::warning(const std::string &message)
 
 void Logger::log(const string &message)
 {	
-	high_resolution_clock::time_point time_now = high_resolution_clock::now();
-	map<string, chrono::high_resolution_clock::time_point>::iterator message_iter = tagged_events.find(message);
+	system_clock::time_point time_now = system_clock::now();
+	map<string, chrono::system_clock::time_point>::iterator message_iter = tagged_events.find(message);
 	//if this is a new message
 	if (message_iter == tagged_events.end())
 	{
@@ -73,7 +73,7 @@ void Logger::log(const string &message)
 	}
 	else
 	{
-		high_resolution_clock::time_point time_start = message_iter->second;
+		system_clock::time_point time_start = message_iter->second;
 		if (fout->good())
 		{
 			/**fout << time_to_string(time_now) << "-> finished " << message << ", elapsed time = " <<
@@ -92,10 +92,10 @@ void Logger::log(const string &message)
 	}
 }
 
-string Logger::time_to_string(const std::chrono::high_resolution_clock::time_point &tmp_time)
+string Logger::time_to_string(const std::chrono::system_clock::time_point &tmp_time)
 {
 	stringstream time_str;
-	auto tmp_time_c = high_resolution_clock::to_time_t(tmp_time);
+	auto tmp_time_c = system_clock::to_time_t(tmp_time);
 #ifdef OS_LINUX
 	writetime(time_str, tmp_time_c);
 #endif
@@ -105,7 +105,7 @@ string Logger::time_to_string(const std::chrono::high_resolution_clock::time_poi
 	return time_str.str();
 }
 
-string Logger::elapsed_time_to_string(std::chrono::high_resolution_clock::time_point &current_time, std::chrono::high_resolution_clock::time_point &prev_time)
+string Logger::elapsed_time_to_string(std::chrono::system_clock::time_point &current_time, std::chrono::system_clock::time_point &prev_time)
 {
 	ostringstream str;
 	auto delta_t = current_time - prev_time;

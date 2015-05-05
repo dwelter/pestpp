@@ -8,7 +8,7 @@
 #include "config_os.h"
 
 using namespace std;
-using std::chrono::high_resolution_clock;
+using std::chrono::system_clock;
 
 void PerformanceLog::writetime(stringstream &os, time_t tc) {
 	// alternative to put_time iomanip
@@ -23,7 +23,7 @@ void PerformanceLog::writetime(stringstream &os, time_t tc) {
 PerformanceLog::PerformanceLog(ofstream &_fout)
 : fout(_fout), indent_size(2), indent_level(0)
 {
-	prev_time = high_resolution_clock::now();
+	prev_time = system_clock::now();
 	fout << "PEST++ performance logger started at:  " << time_to_string(prev_time) << endl;
 }
 
@@ -38,7 +38,7 @@ void PerformanceLog::add_indent(int n)
 }
 void PerformanceLog::log_event(const string &message, int delta_indent, const std::string &tag)
 {
-	high_resolution_clock::time_point time_now = high_resolution_clock::now();
+	system_clock::time_point time_now = system_clock::now();
 	if (!tag.empty())
 	{
 		tagged_events[tag] = time_now;
@@ -58,10 +58,10 @@ void PerformanceLog::log_summary(const string &message, const std::string &end_t
 	fout << string(indent()+8, ' ') << "( elapsed time = " << elapsed_time_to_string(tagged_events[end_tag], tagged_events[begin_tag]) << " )" << endl;
 }
 
-string PerformanceLog::time_to_string(const std::chrono::high_resolution_clock::time_point &tmp_time)
+string PerformanceLog::time_to_string(const std::chrono::system_clock::time_point &tmp_time)
 {
 	stringstream time_str;
-	auto tmp_time_c = high_resolution_clock::to_time_t(tmp_time);
+	auto tmp_time_c = system_clock::to_time_t(tmp_time);
 	#ifdef OS_LINUX
 	writetime(time_str, tmp_time_c);
 	#endif
@@ -71,7 +71,7 @@ string PerformanceLog::time_to_string(const std::chrono::high_resolution_clock::
 	return time_str.str();
 }
 
-string PerformanceLog::elapsed_time_to_string(std::chrono::high_resolution_clock::time_point &current_time, std::chrono::high_resolution_clock::time_point &prev_time)
+string PerformanceLog::elapsed_time_to_string(std::chrono::system_clock::time_point &current_time, std::chrono::system_clock::time_point &prev_time)
 {
 	ostringstream str;
 	auto delta_t = current_time - prev_time;
