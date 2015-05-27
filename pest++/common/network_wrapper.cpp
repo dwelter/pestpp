@@ -88,6 +88,14 @@ vector<string> w_getnameinfo_vec(int sockfd, int flags)
 	return name_info;
 }
 
+string w_getnameinfo_string(int sockfd, int flags)
+{
+	vector<string> name_info_vec = w_getnameinfo_vec(sockfd, flags);
+	stringstream ss;
+	ss << name_info_vec[0] << ":" << name_info_vec[1];
+	return ss.str();
+}
+
 int w_socket(int domain, int type, int protocol)
 {
 	int sockfd = socket(domain, type, protocol);
@@ -192,10 +200,8 @@ int w_recvall(int sockfd, int8_t *buf, int64_t *len)
 		bytesleft -= n;
 	}
 	*len = total; // return number actually received here
-	if (n < 0){
-		//cerr << "w_recvall error: " << n << endl;
-	}
-	if (n > 0) {n = 1;}
+	if (n < 0){n = -1;}
+	else if (n > 0) {n = 1;}
 	return n; // return -1 on failure, 0 closed connection or 1 on success
 }
 
@@ -262,7 +268,7 @@ void w_print_servinfo(addrinfo *res, ostream &fout)
 	for(p = res;p != NULL; p = p->ai_next) 
 	{
 		string socket_string = w_get_addrinfo_string(p);
-	fout << "  " << socket_string << endl;
+	   fout << "  " << socket_string << endl;
 	}
 }
 

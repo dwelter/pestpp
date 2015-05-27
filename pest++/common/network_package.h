@@ -37,6 +37,7 @@ private:
 	int64_t group;
 	int64_t run_id;
 	int8_t desc[DESC_LEN];
+	static int8_t security_code[5];
 	std::vector<int8_t> data;
 };
 

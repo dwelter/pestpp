@@ -547,10 +547,6 @@ void RunManagerYAMR::listen()
 				if (newfd == -1) {}
 				else 
 				{
-					FD_SET(newfd, &master); // add to master set
-					if (newfd > fdmax) { // keep track of the max
-						fdmax = newfd;
-					}
 					add_slave(newfd);
 				}
 			}
@@ -773,7 +769,7 @@ int RunManagerYAMR::schedule_run(int run_id, std::list<list<SlaveInfoRec>::itera
 		string host_name = (*it_slave)->get_hostname();
 		NetPackage net_pack(NetPackage::PackType::START_RUN, cur_group_id, run_id, "");
 		int err = net_pack.send(socket_fd, &data[0], data.size());
-		if (err != -1)
+		if (err > 0)
 		{
 			(*it_slave)->set_state(SlaveInfoRec::State::ACTIVE, run_id, cur_group_id);
 			//start run timer
@@ -852,7 +848,10 @@ void RunManagerYAMR::process_message(int i_sock)
 
 	if(( err=net_pack.recv(i_sock)) <=0) // error or lost connection
 	{
-		if (err < 0) {
+		if (err  == -2) {
+			report("received corrupt message from slave: " + host_name + "$" + slave_info_iter->get_work_dir() + " - terminating slave", false);
+		}
+		else if (err < 0) {
 			report("receive failed from slave: " + host_name + "$" + slave_info_iter->get_work_dir() + " - terminating slave", false);
 		}
 		else {
@@ -1091,7 +1090,7 @@ void RunManagerYAMR::kill_all_active_runs()
 			NetPackage net_pack(NetPackage::PackType::REQ_RUNDIR, 0, 0, "");
 			char data = '\0';
 			int err = net_pack.send(i_sock, &data, sizeof(data));
-			if (err != -1)
+			if (err > 0)
 			{
 				i_slv.set_state(SlaveInfoRec::State::CWD_REQ);
 			}
@@ -1112,7 +1111,7 @@ void RunManagerYAMR::kill_all_active_runs()
 
 			data = Serialization::serialize(tmp_vec);
 			int err = net_pack.send(i_sock, &data[0], data.size());
-			if (err != -1)
+			if (err > 0)
 			{
 				i_slv.set_state(SlaveInfoRec::State::CMD_SENT);
 			}
@@ -1122,7 +1121,7 @@ void RunManagerYAMR::kill_all_active_runs()
 			NetPackage net_pack(NetPackage::PackType::REQ_LINPACK, 0, 0, "");
 			char data = '\0';
 			int err = net_pack.send(i_sock, &data, sizeof(data));
-			if (err != -1)
+			if (err  > 0)
 			{
 				i_slv.set_state(SlaveInfoRec::State::LINPACK_REQ);
 				i_slv.start_timer();
@@ -1179,7 +1178,13 @@ void RunManagerYAMR::kill_all_active_runs()
 
  list<SlaveInfoRec>::iterator RunManagerYAMR::add_slave(int sock_id)
  {
+	 stringstream ss;
+	 ss << "new connection from: " << w_getnameinfo_string(sock_id);
+	 report(ss.str(), false);
 	 FD_SET(sock_id, &master); // add to master set
+	 if (sock_id > fdmax) { // keep track of the max
+		 fdmax = sock_id;
+	 }
 
 	 //list<SlaveInfoRec>::iterator
 	slave_info_set.push_back(SlaveInfoRec(sock_id));

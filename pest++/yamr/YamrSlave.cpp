@@ -90,7 +90,15 @@ int YAMRSlave::recv_message(NetPackage &net_pack, struct timeval *tv)
 		for (int i = 0; i <= fdmax; i++) {
 			if (FD_ISSET(i, &read_fds)) { // got message to read
 				err = net_pack.recv(i); // error or lost connection
-				if (err < 0) {
+				if (err == -2) {
+					vector<string> sock_name = w_getnameinfo_vec(i);
+					cerr << "recieved corrupt message from to master: " << sock_name[0] << ":" << sock_name[1] << endl;
+					w_close(i); // bye!
+					FD_CLR(i, &master); // remove from master set
+					err = -999;
+					return err;
+				}
+				else if (err < 0) {
 					recv_fails++;
 					vector<string> sock_name = w_getnameinfo_vec(i);
 					cerr << "receive from master failed: " << sock_name[0] << ":" << sock_name[1] << endl;

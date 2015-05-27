@@ -27,6 +27,7 @@ void w_init();
 int w_close(int sockfd);
 void w_cleanup();
 std::vector<std::string> w_getnameinfo_vec(int sockfd, int flags=0);
+std::string w_getnameinfo_string(int sockfd, int flags = 0);
 int w_getaddrinfo(const char *node, const char *service,
 			  const struct addrinfo *hints, struct addrinfo **res);
 int w_socket(int domain, int type, int protocol);
