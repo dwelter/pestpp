@@ -62,9 +62,16 @@ int main(int argc, char* argv[])
 		commandline.append(" ");
 		commandline.append(argv[i]);
 	}
+
+	vector<string> cmd_arg_vec(argc);
+	copy(argv, argv + argc, cmd_arg_vec.begin());
+	for (vector<string>::iterator it = cmd_arg_vec.begin(); it != cmd_arg_vec.end(); ++it)
+	{
+		transform(it->begin(), it->end(), it->begin(), ::tolower);
+	}
+
 	string complete_path;
 	enum class RunManagerType {SERIAL, YAMR, GENIE};
-	string socket_str;
 
 	if (argc >=2) {
 		complete_path = argv[1];
@@ -84,12 +91,33 @@ int main(int argc, char* argv[])
 		exit(0);
 	}
 
-	// This is a YAMR Slave, start PEST++ as a YAMR Slave
-	if (argc >=3 && upper(argv[1]) == "/H") {
-		string socket_str = argv[2];
-		strip_ip(socket_str);
+	FileManager file_manager;
+	string filename = complete_path;
+	filename = remove_file_ext(filename); // remove .pst extension
+	string pathname = ".";
+	file_manager.initialize_path(filename, pathname);
+
+	//by default use the serial run manager.  This will be changed later if another
+	//run manger is specified on the command line.
+	RunManagerType run_manager_type = RunManagerType::SERIAL;
+	//Check for YAMR Slave
+	vector<string>::const_iterator it_find, it_find_next;
+	string next_item;
+	string socket_str = "";
+	it_find = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/h");
+	next_item.clear();
+	if (it_find != cmd_arg_vec.end() && it_find + 1 != cmd_arg_vec.end())
+	{
+		next_item = *(it_find + 1);
+		strip_ip(next_item);
+	}
+	if (it_find != cmd_arg_vec.end() && !next_item.empty() && next_item[0] != ':')
+	{
+		// This is a YAMR Slave, start PEST++ as a YAMR Slave
 		vector<string> sock_parts;
-		tokenize(socket_str, sock_parts, ":");
+		vector<string>::const_iterator it_find_yamr_ctl;
+		it_find_yamr_ctl = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/y");
+		tokenize(next_item, sock_parts, ":");
 		try
 		{
 			if (sock_parts.size() != 2)
@@ -98,34 +126,61 @@ int main(int argc, char* argv[])
 				throw(PestCommandlineError(commandline));
 			}
 			YAMRSlave yam_slave;
+			string ctl_file = "";
+			try {
+				string ctl_file;
+				if (it_find != cmd_arg_vec.end())
+				{
+					// process traditional PEST control file
+					ctl_file = file_manager.build_filename("pst");
+					yam_slave.process_ctl_file(ctl_file);
+				}
+				else
+				{
+					ctl_file = file_manager.build_filename("ymr");
+					yam_slave.process_yamr_ctl_file(ctl_file);
+				}
+			}
+			catch (PestError e)
+			{
+				cerr << "Error prococessing control file: " << ctl_file << endl << endl;
+				cerr << e.what() << endl << endl;
+				throw(e);
+			}
+
 			yam_slave.start(sock_parts[0], sock_parts[1]);
 		}
 		catch (PestError &perr)
 		{
 			cerr << perr.what();
+			throw(perr);
 		}
-		/*cout << endl << "Simulation Complete - Press RETURN to close window" << endl;
-		char buf[256];
-		OperSys::gets_s(buf, sizeof(buf));*/
+		cout << endl << "Simulation Complete..." << endl;
 		exit(0);
 	}
-
-	RunManagerType run_manager_type = RunManagerType::SERIAL;
-	// Start PEST++ using YAMR run manager
-	if (argc >=4 &&  upper(argv[2]) == "/H") {
+	//Check for YAMR Master
+	else if (it_find != cmd_arg_vec.end())
+	{
+		// using YAMR run manager
 		run_manager_type = RunManagerType::YAMR;
+		socket_str = next_item;
 	}
-	else if (argc >=4 &&  upper(argv[2]) == "/G") {
+
+	it_find = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/g");
+	next_item.clear();
+	if (it_find != cmd_arg_vec.end() && it_find + 1 != cmd_arg_vec.end())
+	{
+		next_item = *(it_find + 1);
+		strip_ip(next_item);
+
+	}
+	//Check for GENIE Master
+	if (it_find != cmd_arg_vec.end())
+	{
+		//Using GENIE run manager
 		run_manager_type = RunManagerType::GENIE;
+		socket_str = next_item;
 	}
-
-
-
-	string filename = get_filename(complete_path);
-	filename = remove_file_ext(filename); // remove .pst extension
-	string pathname = get_pathname(complete_path);
-	if (pathname.empty()) pathname = ".";
-	FileManager file_manager(filename, pathname);
 
 	ofstream &fout_rec = file_manager.open_ofile_ext("rec");
 	fout_rec << "             GSA++ Version " << version << endl << endl;
@@ -190,8 +245,6 @@ int main(int argc, char* argv[])
 
 	enum class GSA_RESTART { NONE, RESTART };
 	GSA_RESTART gsa_restart = GSA_RESTART::NONE;
-	vector<string> cmd_arg_vec(argc);
-	copy(argv, argv + argc, cmd_arg_vec.begin());
 	//process restart and  reuse jacibian directives
 	vector<string>::const_iterator it_find_r = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/r");
 	if (it_find_r != cmd_arg_vec.end())

@@ -60,6 +60,164 @@ YAMRSlave::~YAMRSlave()
 	w_cleanup();
 }
 
+
+void YAMRSlave::process_ctl_file(const string &ctl_filename)
+{
+	ifstream fin;
+	long lnum;
+	long sec_begin_lnum;
+	long sec_lnum;
+	string section("");
+	string line;
+	string line_upper;
+	vector<string> tokens;
+
+	int num_par;
+	int num_tpl_file;
+
+	comline_vec.clear();
+	tplfile_vec.clear();
+	inpfile_vec.clear();
+	insfile_vec.clear();
+	outfile_vec.clear();
+	fin.open(ctl_filename);
+	try {
+		for (lnum = 1, sec_begin_lnum = 1; getline(fin, line); ++lnum)
+		{
+			strip_ip(line);
+			line_upper = upper_cp(line);
+			tokens.clear();
+			tokenize(line_upper, tokens);
+			sec_lnum = lnum - sec_begin_lnum;
+			if (tokens.empty())
+			{
+				//skip blank line
+			}
+			else if (line_upper.substr(0, 2) == "++")
+			{
+			}
+
+			else if (line_upper[0] == '*')
+			{
+				section = upper_cp(strip_cp(line_upper, "both", " *\t\n"));
+				sec_begin_lnum = lnum;
+			}
+			else if (section == "CONTROL DATA")
+			{
+				if (sec_lnum == 2)
+				{
+					convert_ip(tokens[0], num_par);
+				}
+				if (sec_lnum == 3)
+				{
+					convert_ip(tokens[0], num_tpl_file);
+				}
+			}
+			else if (section == "MODEL COMMAND LINE")
+			{
+				comline_vec.push_back(line);
+			}
+			else if (section == "MODEL INPUT/OUTPUT")
+			{
+				vector<string> tokens_case_sen;
+				tokenize(line, tokens_case_sen);
+				if (sec_lnum <= num_tpl_file)
+				{
+					tplfile_vec.push_back(tokens_case_sen[0]);
+					inpfile_vec.push_back(tokens_case_sen[1]);
+				}
+				else
+				{
+					insfile_vec.push_back(tokens_case_sen[0]);
+					outfile_vec.push_back(tokens_case_sen[1]);
+				}
+			}
+		}
+	}
+	catch (PestConversionError &e) {
+		std::stringstream out;
+		out << "Error parsing \"" << ctl_filename << "\" on line number " << lnum << endl;
+		out << e.what() << endl;
+		e.add_front(out.str());
+		e.raise();
+	}
+	fin.close();
+}
+
+
+
+void YAMRSlave::process_yamr_ctl_file(const string &ctl_filename)
+{
+	ifstream fin;
+	long lnum;
+	long sec_begin_lnum;
+	long sec_lnum;
+	string section("");
+	string line;
+	string line_upper;
+	vector<string> tokens;
+
+	int num_par;
+	int num_tpl_file;
+
+	comline_vec.clear();
+	tplfile_vec.clear();
+	inpfile_vec.clear();
+	insfile_vec.clear();
+	outfile_vec.clear();
+	fin.open(ctl_filename);
+	try {
+		for (lnum = 1, sec_begin_lnum = 1; getline(fin, line); ++lnum)
+		{
+			strip_ip(line);
+			line_upper = upper_cp(line);
+			tokens.clear();
+			tokenize(line_upper, tokens);
+			sec_lnum = lnum - sec_begin_lnum;
+			if (tokens.empty())
+			{
+				//skip blank line
+			}
+			else if (line_upper.substr(0, 2) == "++")
+			{
+			}
+
+			else if (line_upper[0] == '*')
+			{
+				section = upper_cp(strip_cp(line_upper, "both", " *\t\n"));
+				sec_begin_lnum = lnum;
+			}
+			else if (section == "MODEL COMMAND LINE")
+			{
+				comline_vec.push_back(line);
+			}
+			else if (section == "MODEL INPUT")
+			{
+				vector<string> tokens_case_sen;
+				tokenize(line, tokens_case_sen);
+				tplfile_vec.push_back(tokens_case_sen[0]);
+				inpfile_vec.push_back(tokens_case_sen[1]);
+			}
+			else if (section == "MODEL OUTPUT")
+			{
+				vector<string> tokens_case_sen;
+				tokenize(line, tokens_case_sen);
+				insfile_vec.push_back(tokens_case_sen[0]);
+				outfile_vec.push_back(tokens_case_sen[1]);
+			}
+		}
+	}
+	catch (PestConversionError &e) {
+		std::stringstream out;
+		out << "Error parsing \"" << ctl_filename << "\" on line number " << lnum << endl;
+		out << e.what() << endl;
+		e.add_front(out.str());
+		e.raise();
+	}
+	fin.close();
+}
+
+
 int YAMRSlave::recv_message(NetPackage &net_pack, struct timeval *tv)
 {
 	fd_set read_fds;
@@ -324,6 +482,7 @@ void YAMRSlave::start(const string &host, const string &port)
 	Parameters pars;
 	vector<int8_t> serialized_data;
 	int err;
+
 	//class attribute - can be modified in run_model()
 	terminate = false;	
 	init_network(host, port);
@@ -349,15 +508,19 @@ void YAMRSlave::start(const string &host, const string &port)
 		}
 		else if(net_pack.get_type() == NetPackage::PackType::CMD)
 		{
+			//Don't check first8 bytes as these contain an interger which stores the size of the data.
+			bool safe_data = NetPackage::check_string(net_pack.get_data(), 8, net_pack.get_data().size() - 1);
+			if (!safe_data)
+			{
+				net_pack.reset(NetPackage::PackType::CORRUPT_MESG, 0, 0, "");
+				char data;
+				int np_err = send_message(net_pack, &data, 0);
+				exit(-1);
+			}
 			vector<vector<string>> tmp_vec_vec;
 			Serialization::unserialize(net_pack.get_data(), tmp_vec_vec);
-			comline_vec = tmp_vec_vec[0];
-			tplfile_vec = tmp_vec_vec[1];
-			inpfile_vec = tmp_vec_vec[2];
-			insfile_vec = tmp_vec_vec[3];
-			outfile_vec = tmp_vec_vec[4];
-			par_name_vec= tmp_vec_vec[5];
-			obs_name_vec= tmp_vec_vec[6];
+			par_name_vec= tmp_vec_vec[0];
+			obs_name_vec= tmp_vec_vec[1];
 			cout << "checking model IO files...";
 			try
 			{
@@ -366,12 +529,12 @@ void YAMRSlave::start(const string &host, const string &port)
 			}
 			catch (exception &e)
 			{
-				cout << e.what() << endl;
+				cerr << e.what() << endl;
 				net_pack.reset(NetPackage::PackType::IO_ERROR, 0, 0,"");
 				string err(e.what());
 				vector<char> data(err.begin(), err.end());
 				data.push_back('\0');
-				err = send_message(net_pack, &data, data.size());
+				int np_err = send_message(net_pack, &data, data.size());
 				exit(-1);
 			}
 			cout << "done" << endl;

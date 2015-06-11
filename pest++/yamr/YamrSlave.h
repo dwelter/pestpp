@@ -48,6 +48,8 @@ public:
 	void check_par_obs();
 	//void listener(pest_utils::thread_flag* terminate, pest_utils::thread_flag* finished);
 	void listener();
+	void process_ctl_file(const string &ctl_filename);
+	void process_yamr_ctl_file(const string &ctl_filename);
 private:
 	int sockfd;
 	int fdmax;

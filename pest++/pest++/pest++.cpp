@@ -105,6 +105,13 @@ int main(int argc, char* argv[])
 			exit(0);
 		}
 
+
+		FileManager file_manager;
+		string filename = complete_path;
+		filename = remove_file_ext(filename); // remove .pst extension
+		string pathname = ".";
+		file_manager.initialize_path(filename, pathname);
+
 		//by default use the serial run manager.  This will be changed later if another
 		//run manger is specified on the command line.
 		RunManagerType run_manager_type = RunManagerType::SERIAL;
@@ -130,6 +137,8 @@ int main(int argc, char* argv[])
 		{
 			// This is a YAMR Slave, start PEST++ as a YAMR Slave
 			vector<string> sock_parts;
+			vector<string>::const_iterator it_find_yamr_ctl;
+			it_find_yamr_ctl = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/y");
 			tokenize(next_item, sock_parts, ":");
 			try
 			{
@@ -139,6 +148,28 @@ int main(int argc, char* argv[])
 					throw(PestCommandlineError(commandline));
 				}
 				YAMRSlave yam_slave;
+				string ctl_file = "";
+				try {
+					string ctl_file;
+					if (it_find_yamr_ctl == cmd_arg_vec.end())
+					{
+						// process traditional PEST control file
+						ctl_file = file_manager.build_filename("pst");
+						yam_slave.process_ctl_file(ctl_file);
+					}
+					else
+					{
+						ctl_file = file_manager.build_filename("ymr");
+						yam_slave.process_yamr_ctl_file(ctl_file);
+					}
+				}
+				catch (PestError e)
+				{
+					cerr << "Error prococessing control file: " << ctl_file << endl << endl;
+					cerr << e.what() << endl << endl;
+					throw(e);
+				}
+
 				yam_slave.start(sock_parts[0], sock_parts[1]);
 			}
 			catch (PestError &perr)
@@ -173,22 +204,14 @@ int main(int argc, char* argv[])
 			socket_str = next_item;
 		}
 
-		//string filename = get_filename(complete_path);
-		string filename = complete_path;
-		filename = remove_file_ext(filename); // remove .pst extension
-		//string pathname = get_pathname(complete_path);
-		//if (pathname.empty()) pathname = ".";
-		string pathname = ".";
-
 		RestartController restart_ctl;
-		FileManager file_manager;
+
 		//process restart and reuse jacobian directives
 		vector<string>::const_iterator it_find_j = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/j");
 		vector<string>::const_iterator it_find_r = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/r");
 		bool restart_flag = false;
 		bool save_restart_rec_header = true;
 
-		file_manager.initialize_path(filename, pathname);
 		debug_initialize(file_manager.build_filename("dbg"));
 		if (it_find_j != cmd_arg_vec.end())
 		{

@@ -8,16 +8,19 @@
 class NetPackage
 {
 public:
-	static std::string extract_string(int8_t *data_src, size_t _size);
+	static bool allowable_ascii_char(int8_t value);
+	static bool check_string(const int8_t *data_src, size_t _size);
+	static bool check_string(const std::vector<int8_t> &data_src, size_t index1, size_t _size);
+	static std::string extract_string(const int8_t *data_src, size_t _size);
 	static std::string extract_string(const std::vector<int8_t> &data_src, size_t index1, size_t _size);
-	template<class InputIterator>
-	static std::string extract_string(InputIterator first, InputIterator last);
+	//template<class InputIterator>
+	//static std::string extract_string(InputIterator first, InputIterator last);
 	template<class InputIterator>
 	static std::vector<int8_t> pack_string(InputIterator first, InputIterator last);
 	enum class PackType:uint32_t {UNKN, OK, CONFIRM_OK, READY, REQ_RUNDIR, RUNDIR, REQ_LINPACK, LINPACK, CMD, 
-		START_RUN, RUN_FINISHED, RUN_FAILED, RUN_KILLED, TERMINATE,PING,REQ_KILL,IO_ERROR};
+		START_RUN, RUN_FINISHED, RUN_FAILED, RUN_KILLED, TERMINATE,PING,REQ_KILL,IO_ERROR,CORRUPT_MESG};
 	static int get_new_group_id();
-	NetPackage(PackType _type=PackType::UNKN, int _group=-1, int _run_id=-1, const std::string &desc="");
+	NetPackage(PackType _type=PackType::UNKN, int _group=-1, int _run_id=-1, const std::string &desc_str="");
 	~NetPackage(){}
 	const static int DESC_LEN = 41;
 	int send(int sockfd, const void *data, int64_t data_len_l);

@@ -859,15 +859,28 @@ void RunManagerYAMR::process_message(int i_sock)
 		}
 		close_slave(i_sock);
 	}
+	else if (net_pack.get_type() == NetPackage::PackType::CORRUPT_MESG)
+	{
+		report("Slave reporting corrupt message: " + host_name + "$" + slave_info_iter->get_work_dir() + " - terminating slave", false);
+		close_slave(i_sock);
+	}
 	else if (net_pack.get_type() == NetPackage::PackType::RUNDIR)
 	{
-		//string work_dir(net_pack.get_data().data(), net_pack.get_data().size());
-		string work_dir = NetPackage::extract_string(net_pack.get_data(), 0, net_pack.get_data().size() - 1);
-		stringstream ss;
-		ss << "initializing new slave connection from: " << socket_name << "; number of slaves: " << socket_to_iter_map.size() << "; working dir: " << work_dir;
-		report(ss.str(),false);		
-		slave_info_iter->set_work_dir(work_dir);
-		slave_info_iter->set_state(SlaveInfoRec::State::CWD_RCV);
+		bool good_work_dir = NetPackage::check_string(net_pack.get_data(), 0, net_pack.get_data().size() - 1);
+		if (good_work_dir)
+		{
+			string work_dir = NetPackage::extract_string(net_pack.get_data(), 0, net_pack.get_data().size() - 1);
+			stringstream ss;
+			ss << "initializing new slave connection from: " << socket_name << "; number of slaves: " << socket_to_iter_map.size() << "; working dir: " << work_dir;
+			report(ss.str(), false);
+			slave_info_iter->set_work_dir(work_dir);
+			slave_info_iter->set_state(SlaveInfoRec::State::CWD_RCV);
+		}
+		else
+		{
+			report("received corrupt run directory from slave: " + host_name + " - terminating slave", false);
+			close_slave(i_sock);
+		}
 	}
 	else if (net_pack.get_type() == NetPackage::PackType::LINPACK)
 	{
@@ -1101,11 +1114,6 @@ void RunManagerYAMR::kill_all_active_runs()
 			NetPackage net_pack(NetPackage::PackType::CMD, 0, 0, "");
 			vector<int8_t> data;
 			vector<vector<string> const*> tmp_vec;
-			tmp_vec.push_back(&comline_vec);
-			tmp_vec.push_back(&tplfile_vec);
-			tmp_vec.push_back(&inpfile_vec);
-			tmp_vec.push_back(&insfile_vec);
-			tmp_vec.push_back(&outfile_vec);
 			tmp_vec.push_back(&file_stor.get_par_name_vec());
 			tmp_vec.push_back(&file_stor.get_obs_name_vec());
 

@@ -17,7 +17,38 @@ int NetPackage::get_new_group_id()
 	return ++last_group_id;
 }
 
-string NetPackage::extract_string(int8_t *data_src, size_t _size)
+bool NetPackage::allowable_ascii_char(int8_t value)
+{
+	// This is for security resasons.  Only \0 
+	//  and printable characters are allowed
+	bool ret_val = false;
+	if (value == 0 || (value >= 32 && value <= 176))
+		ret_val = true;
+	return ret_val;
+}
+
+bool NetPackage::check_string(const int8_t *data_src, size_t _size)
+{
+	bool safe_data = true;
+	for (size_t i = 0; i < _size; ++i)
+	{
+		if (!allowable_ascii_char(data_src[i]))
+		{
+			safe_data = false;
+			return safe_data;
+		}
+	}
+	return safe_data;
+}
+
+bool NetPackage::check_string(const vector<int8_t> &data_src, size_t index1, size_t _size)
+{
+	size_t index2 = min(index1 + _size, data_src.size());
+	bool safe_data = check_string(&(data_src[index1]), index2 - index1);
+	return safe_data;
+}
+
+string NetPackage::extract_string(const int8_t *data_src, size_t _size)
 {
 	vector<char> buf;
 	// This is done to remove possible system dependicies on whether char/uchar
@@ -32,30 +63,22 @@ string NetPackage::extract_string(int8_t *data_src, size_t _size)
 
 string NetPackage::extract_string(const vector<int8_t> &data_src, size_t index1, size_t _size)
 {
-	size_t index2 = index1 + _size;
-	vector<char> buf;
-	// This is done to remove possible system dependicies on whether char/uchar
-	// is use to represent a standard char
-	for (int i = index1; i < index2; ++i)
-	{
-		buf.push_back(data_src[i]);
-	}
-	string ret_val(buf.begin(), buf.end());
+	size_t index2 = min(index1 + _size, data_src.size());
+	string  ret_val = extract_string(&(data_src[index1]), index2 - index1);
 	return ret_val;
 }
 
-template<class InputIterator>
-string NetPackage::extract_string(InputIterator first, InputIterator last)
-{
-	vector<char> buf;
-	while (first != last) {
-		buf.push_back(*first);
-		++first;
-	}
-	string ret_val(buf.begin(), buf.end());
-	return ret_val;
-
-}
+//template<class InputIterator>
+//string NetPackage::extract_string(InputIterator first, InputIterator last)
+//{
+//	vector<char> buf;
+//	while (first != last) {
+//		buf.push_back(*first);
+//		++first;
+//	}
+//	string ret_val(buf.begin(), buf.end());
+//	return ret_val;
+//}
 
 template<class InputIterator>
 vector<int8_t> NetPackage::pack_string(InputIterator first, InputIterator last)
@@ -77,9 +100,16 @@ NetPackage::NetPackage(PackType _type, int _group, int _run_id, const string &de
 	int max_len = min(size_t(DESC_LEN - 1), desc_str.size());
 	// This is done to remove possible system dependicies on whether char/uchar
 	// is use to represent a standard char
-		for (int i = 0; i < max_len; ++i)
+	int i_desc = 0;
+	for (int i = 0; i < max_len; ++i)
 	{
-		desc[i] = desc_str[i];
+		if (!allowable_ascii_char(desc_str[i]))
+		{
+		}
+		else
+		{
+			desc[i_desc++] = desc_str[i];
+		}
 	}
 	//strncpy(desc, desc_str.c_str(), DESC_LEN-1);
 	data_len = 1;
@@ -93,9 +123,16 @@ void NetPackage::reset(PackType _type, int _group, int _run_id, const string &_d
 	int max_len = min(size_t(DESC_LEN - 1), _desc.size());
 	// This is done to remove possible system dependicies on whether char/uchar
 	// is use to represent a standard char
+	int i_desc = 0;
 	for (int i = 0; i < max_len; ++i)
 	{
-		desc[i] = _desc[i];
+		if (!allowable_ascii_char(_desc[i]))
+		{ 
+		}
+		else
+		{
+			desc[i_desc++] = _desc[i];
+		}
 	}
 	//strncpy(desc, _desc.c_str(), DESC_LEN-1);
 	data.clear();
@@ -156,60 +193,83 @@ int  NetPackage::recv(int sockfd)
 	size_t i_start = 0;
 	int8_t rcv_security_code[5] = { 0, 0, 0, 0, 0 };
 	int64_t rcv_security_code_size = sizeof(rcv_security_code);
-	//get header (ie size, seq_id, id and name)
-	header_sz = sizeof(buf_sz) + sizeof(type)+sizeof(group)+sizeof(run_id)+sizeof(desc);
-	vector<int8_t> header_buf;
-	header_buf.resize(header_sz, '\0');
-	n = w_recvall(sockfd, &rcv_security_code[0], &rcv_security_code_size);
-	int security_cmp = memcmp(security_code, rcv_security_code, sizeof(security_code));
-	if (security_cmp != 0)
-	{
-		// corrupt message; message did not originate from a PEST++ application
-		 n = -2;
-		 cerr << "NetPackage::recv error - message did not originate from a PEST++ application" << endl;
-		 return n;
-	}
+	bool corrupt_desc = false;
 
-	n = w_recvall(sockfd, &header_buf[0], &header_sz);
-	if (n > 0 && header_sz != header_buf.size()) {
-		// corrupt message; message not the correct length
-		n = -2;
-		cerr << "NetPackage::recv error reading header: expected" << header_buf.size()
-			<< " bytes, but received " << header_sz << "bytes" << endl;
-	}
-	else if (n>0 ) {
-		i_start = 0;
-		w_memcpy_s(&buf_sz, sizeof(buf_sz), &header_buf[i_start], sizeof(buf_sz));
-		i_start += sizeof(buf_sz);
-		w_memcpy_s(&type, sizeof(type), &header_buf[i_start], sizeof(type));
-		i_start += sizeof(type);
-		w_memcpy_s(&group, sizeof(group), &header_buf[i_start], sizeof(group));
-		i_start += sizeof(group);
-		w_memcpy_s(&run_id, sizeof(run_id), &header_buf[i_start], sizeof(run_id));
-		i_start += sizeof(run_id);
-		//w_memcpy_s(&desc, sizeof(desc), &header_buf[i_start], sizeof(desc));
-		// This is done to remove possible system dependicies on whether char/uchar
-		// is use to represent a standard char
-		for (int i = 0; i < DESC_LEN; ++i)
+	try{
+		//get header (ie size, seq_id, id and name)
+		header_sz = sizeof(buf_sz) + sizeof(type) + sizeof(group) + sizeof(run_id) + sizeof(desc);
+		vector<int8_t> header_buf;
+		header_buf.resize(header_sz, '\0');
+		n = w_recvall(sockfd, &rcv_security_code[0], &rcv_security_code_size);
+		int security_cmp = memcmp(security_code, rcv_security_code, sizeof(security_code));
+		if (security_cmp != 0)
 		{
-			desc[i] = header_buf[i_start+1];
+			// corrupt message; message did not originate from a PEST++ application
+			n = -2;
+			cerr << "NetPackage::recv error - message did not originate from a PEST++ application" << endl;
+			return n;
 		}
-		i_start += sizeof(desc);
-		desc[DESC_LEN-1] = '\0';
-		//get data
-		data_len = buf_sz - i_start;
-		data.resize(data_len, '\0');
-		if (data_len > 0) {
-			n = w_recvall(sockfd, &data[0], &data_len);
-			if (data_len != buf_sz - header_sz)
+
+		n = w_recvall(sockfd, &header_buf[0], &header_sz);
+		if (n > 0 && header_sz != header_buf.size()) {
+			// corrupt message; message not the correct length
+			n = -2;
+			cerr << "NetPackage::recv error reading header: expected" << header_buf.size()
+				<< " bytes, but received " << header_sz << "bytes" << endl;
+		}
+		else if (n > 0) {
+			i_start = 0;
+			w_memcpy_s(&buf_sz, sizeof(buf_sz), &header_buf[i_start], sizeof(buf_sz));
+			i_start += sizeof(buf_sz);
+			w_memcpy_s(&type, sizeof(type), &header_buf[i_start], sizeof(type));
+			i_start += sizeof(type);
+			w_memcpy_s(&group, sizeof(group), &header_buf[i_start], sizeof(group));
+			i_start += sizeof(group);
+			w_memcpy_s(&run_id, sizeof(run_id), &header_buf[i_start], sizeof(run_id));
+			i_start += sizeof(run_id);
+			//w_memcpy_s(&desc, sizeof(desc), &header_buf[i_start], sizeof(desc));
+			// This is done to remove possible system dependicies on whether char/uchar
+			// is use to represent a standard char
+			for (int i = 0; i < DESC_LEN; ++i)
 			{
-				n = -2;
-				cerr << "NetPackage::recv error reading data: expected" << buf_sz - header_sz
-					<< " bytes, but received " << data_len << "bytes" << endl;
+				if (!allowable_ascii_char(header_buf[i_start + 1]))
+				{
+					corrupt_desc = true;
+					n = -2;
+					return n;
+				}
+				else
+				{
+					desc[i] = header_buf[i_start + 1];
+				}
+			}
+			i_start += sizeof(desc);
+			desc[DESC_LEN - 1] = '\0';
+			//get data
+			data_len = buf_sz - i_start;
+			data.resize(data_len, '\0');
+			if (data_len > 0) {
+				n = w_recvall(sockfd, &data[0], &data_len);
+				if (data_len != buf_sz - header_sz)
+				{
+					n = -2;
+					cerr << "NetPackage::recv error reading data: expected" << buf_sz - header_sz
+						<< " bytes, but received " << data_len << "bytes" << endl;
+				}
 			}
 		}
+		if (n > 1) { n = 1; }
 	}
-	if (n> 1) {n=1;}
+	catch (exception& e)
+	{
+		cerr << "NetPackage::recv error" << endl;
+		cerr << e.what() << endl;;
+		n = -1;
+	}
+	catch (...)
+	{
+		n = -1;
+	}
 	return n;  // -2 on corrupt read, -1 on failure, 0 on a close connection or 1 on success
 }
 
@@ -219,6 +279,6 @@ void NetPackage::print_header(std::ostream &fout)
 		", data package size = " << data.size() << endl; 
 }
 
-template std::string NetPackage::extract_string< std::vector<int8_t>::iterator>(std::vector<int8_t>::iterator first, std::vector<int8_t>::iterator last);
+//template std::string NetPackage::extract_string< std::vector<int8_t>::iterator>(std::vector<int8_t>::iterator first, std::vector<int8_t>::iterator last);
 template std::vector<int8_t> NetPackage::pack_string< std::string::iterator>(std::string::iterator first, std::string::iterator last);
 template std::vector<int8_t> NetPackage::pack_string< std::string::const_iterator>(std::string::const_iterator first, std::string::const_iterator last);
