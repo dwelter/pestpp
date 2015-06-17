@@ -17,7 +17,8 @@ public:
 	//static std::string extract_string(InputIterator first, InputIterator last);
 	template<class InputIterator>
 	static std::vector<int8_t> pack_string(InputIterator first, InputIterator last);
-	enum class PackType:uint32_t {UNKN, OK, CONFIRM_OK, READY, REQ_RUNDIR, RUNDIR, REQ_LINPACK, LINPACK, CMD, 
+	enum class PackType :uint32_t {
+		UNKN, OK, CONFIRM_OK, READY, REQ_RUNDIR, RUNDIR, REQ_LINPACK, LINPACK, PAR_NAMES, OBS_NAMES,
 		START_RUN, RUN_FINISHED, RUN_FAILED, RUN_KILLED, TERMINATE,PING,REQ_KILL,IO_ERROR,CORRUPT_MESG};
 	static int get_new_group_id();
 	NetPackage(PackType _type=PackType::UNKN, int _group=-1, int _run_id=-1, const std::string &desc_str="");

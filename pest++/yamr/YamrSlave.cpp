@@ -506,21 +506,35 @@ void YAMRSlave::start(const string &host, const string &port)
 				exit(-1);
 			}
 		}
-		else if(net_pack.get_type() == NetPackage::PackType::CMD)
+		else if (net_pack.get_type() == NetPackage::PackType::PAR_NAMES)
 		{
 			//Don't check first8 bytes as these contain an interger which stores the size of the data.
-			bool safe_data = NetPackage::check_string(net_pack.get_data(), 8, net_pack.get_data().size() - 1);
+			bool safe_data = NetPackage::check_string(net_pack.get_data(), 0, net_pack.get_data().size());
 			if (!safe_data)
 			{
+				cerr << "recieved corrupt parameter name packet from master" << endl;
+				cerr << "terminating execution ..." << endl << endl;
 				net_pack.reset(NetPackage::PackType::CORRUPT_MESG, 0, 0, "");
 				char data;
 				int np_err = send_message(net_pack, &data, 0);
 				exit(-1);
 			}
-			vector<vector<string>> tmp_vec_vec;
-			Serialization::unserialize(net_pack.get_data(), tmp_vec_vec);
-			par_name_vec= tmp_vec_vec[0];
-			obs_name_vec= tmp_vec_vec[1];
+			Serialization::unserialize(net_pack.get_data(), par_name_vec);
+		}
+		else if (net_pack.get_type() == NetPackage::PackType::OBS_NAMES)
+		{
+			//Don't check first8 bytes as these contain an interger which stores the size of the data.
+			bool safe_data = NetPackage::check_string(net_pack.get_data(), 0, net_pack.get_data().size());
+			if (!safe_data)
+			{
+				cerr << "recieved corrupt observation name packet from master" << endl;
+				cerr << "terminating execution ..." << endl << endl;
+				net_pack.reset(NetPackage::PackType::CORRUPT_MESG, 0, 0, "");
+				char data;
+				int np_err = send_message(net_pack, &data, 0);
+				exit(-1);
+			}
+			Serialization::unserialize(net_pack.get_data(), obs_name_vec);
 			cout << "checking model IO files...";
 			try
 			{

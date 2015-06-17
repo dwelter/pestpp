@@ -44,7 +44,6 @@ public:
 	static unsigned long unserialize(const std::vector<int8_t> &ser_data, std::vector<Transformable*> &tr_vec, unsigned long start_loc = 0);
 	static unsigned long unserialize(const std::vector<int8_t> &ser_data, Parameters &pars, Observations &obs, unsigned long start_loc = 0);
 	static unsigned long unserialize(const std::vector<int8_t> &ser_data, std::vector<std::string> &string_vec, unsigned long start_loc = 0, unsigned long max_read_bytes = ULONG_MAX);
-	static unsigned long unserialize(const std::vector<int8_t> &ser_data, std::vector<std::vector<std::string>> &string_vec_vec);
 	static unsigned long unserialize(const std::vector<int8_t> &ser_data, Transformable &items, const std::vector<std::string> &names_vec, unsigned long start_loc = 0);
 	static unsigned long unserialize(const std::vector<int8_t> &ser_data, Parameters &pars, const std::vector<std::string> &par_names, Observations &obs, const std::vector<std::string> &obs_names);
 private:

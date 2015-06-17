@@ -580,15 +580,16 @@ void RunManagerYAMR::close_slave(list<SlaveInfoRec>::iterator slave_info_iter)
 	// remove run from active_runid_to_iterset_map
 	unschedule_run(slave_info_iter);
 
-	slave_info_set.erase(slave_info_iter);
-	socket_to_iter_map.erase(i_sock);
-
 	// check if this run needs to be returned to the waiting queue
 	int n_concurr = get_n_concurrent(run_id);
 	if (run_id != SlaveInfoRec::UNKNOWN_ID &&  slave_info_iter->get_state() == SlaveInfoRec::State::ACTIVE && n_concurr == 0)
 	{
 		waiting_runs.push_front(run_id);
 	}
+
+	slave_info_set.erase(slave_info_iter);
+	socket_to_iter_map.erase(i_sock);
+
 	stringstream ss;
 	ss << "closed connection to slave: " << socket_name << "; number of slaves: " << socket_to_iter_map.size();
 	report(ss.str(), false);
@@ -866,10 +867,10 @@ void RunManagerYAMR::process_message(int i_sock)
 	}
 	else if (net_pack.get_type() == NetPackage::PackType::RUNDIR)
 	{
-		bool good_work_dir = NetPackage::check_string(net_pack.get_data(), 0, net_pack.get_data().size() - 1);
+		bool good_work_dir = NetPackage::check_string(net_pack.get_data(), 0, net_pack.get_data().size());
 		if (good_work_dir)
 		{
-			string work_dir = NetPackage::extract_string(net_pack.get_data(), 0, net_pack.get_data().size() - 1);
+			string work_dir = NetPackage::extract_string(net_pack.get_data(), 0, net_pack.get_data().size());
 			stringstream ss;
 			ss << "initializing new slave connection from: " << socket_name << "; number of slaves: " << socket_to_iter_map.size() << "; working dir: " << work_dir;
 			report(ss.str(), false);
@@ -1110,21 +1111,26 @@ void RunManagerYAMR::kill_all_active_runs()
 		}
 		else if (cur_state == SlaveInfoRec::State::CWD_RCV)
 		{
-			// send Command line, tpl and ins information
-			NetPackage net_pack(NetPackage::PackType::CMD, 0, 0, "");
+			// send parameter and observation names
+			NetPackage net_pack(NetPackage::PackType::PAR_NAMES, 0, 0, "");
 			vector<int8_t> data;
-			vector<vector<string> const*> tmp_vec;
-			tmp_vec.push_back(&file_stor.get_par_name_vec());
-			tmp_vec.push_back(&file_stor.get_obs_name_vec());
-
+			vector<string> tmp_vec;
+			// send parameter names
+			tmp_vec = file_stor.get_par_name_vec();
 			data = Serialization::serialize(tmp_vec);
-			int err = net_pack.send(i_sock, &data[0], data.size());
-			if (err > 0)
+			int err_par = net_pack.send(i_sock, &data[0], data.size());
+			//send observation names
+			net_pack = NetPackage(NetPackage::PackType::OBS_NAMES, 0, 0, "");
+			tmp_vec = file_stor.get_obs_name_vec();
+			data = Serialization::serialize(tmp_vec);
+			int err_obs = net_pack.send(i_sock, &data[0], data.size());
+
+			if (err_par > 0 && err_obs > 0)
 			{
-				i_slv.set_state(SlaveInfoRec::State::CMD_SENT);
+				i_slv.set_state(SlaveInfoRec::State::NAMES_SENT);
 			}
 		}
-		else if (cur_state == SlaveInfoRec::State::CMD_SENT)
+		else if (cur_state == SlaveInfoRec::State::NAMES_SENT)
 		{
 			NetPackage net_pack(NetPackage::PackType::REQ_LINPACK, 0, 0, "");
 			char data = '\0';
@@ -1276,7 +1282,7 @@ void RunManagerYAMR::kill_all_active_runs()
 		 }
 		 else
 		 {
-			 ++n_active;
+			 ++n_unavailable;
 		 }
 	 }
 	 stats_map["wait"] = n_waiting;

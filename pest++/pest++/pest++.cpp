@@ -108,9 +108,8 @@ int main(int argc, char* argv[])
 
 		FileManager file_manager;
 		string filename = complete_path;
-		filename = remove_file_ext(filename); // remove .pst extension
 		string pathname = ".";
-		file_manager.initialize_path(filename, pathname);
+		file_manager.initialize_path(get_filename_without_ext(filename), pathname);
 
 		//by default use the serial run manager.  This will be changed later if another
 		//run manger is specified on the command line.
@@ -138,7 +137,7 @@ int main(int argc, char* argv[])
 			// This is a YAMR Slave, start PEST++ as a YAMR Slave
 			vector<string> sock_parts;
 			vector<string>::const_iterator it_find_yamr_ctl;
-			it_find_yamr_ctl = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/y");
+			string file_ext = get_filename_ext(filename);
 			tokenize(next_item, sock_parts, ":");
 			try
 			{
@@ -151,16 +150,16 @@ int main(int argc, char* argv[])
 				string ctl_file = "";
 				try {
 					string ctl_file;
-					if (it_find_yamr_ctl == cmd_arg_vec.end())
+					if (upper_cp(file_ext) == "YMR")
+					{
+						ctl_file = file_manager.build_filename("ymr");
+						yam_slave.process_yamr_ctl_file(ctl_file);
+					}
+					else
 					{
 						// process traditional PEST control file
 						ctl_file = file_manager.build_filename("pst");
 						yam_slave.process_ctl_file(ctl_file);
-					}
-					else
-					{
-						ctl_file = file_manager.build_filename("ymr");
-						yam_slave.process_yamr_ctl_file(ctl_file);
 					}
 				}
 				catch (PestError e)

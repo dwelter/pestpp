@@ -211,14 +211,26 @@ StringvecFortranCharArray::~StringvecFortranCharArray()
 }
 
 
-string remove_file_ext(const string &filename)
+string get_filename_without_ext(const string &filename)
 {
 	// remove .pst or .PST from the end of the filename
 	string new_str = filename;
 	size_t found = filename.find_last_of(".");
 	if (found != string::npos)
 	{
-		new_str.erase(found, string::npos);
+		new_str = new_str.substr(0, found);
+	}
+	return new_str;
+}
+
+string get_filename_ext(const string &filename)
+{
+	// remove .pst or .PST from the end of the filename
+	string new_str = "";
+	size_t found = filename.find_last_of(".");
+	if (found != string::npos)
+	{
+		new_str = filename.substr(found + 1);
 	}
 	return new_str;
 }

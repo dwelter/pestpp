@@ -398,13 +398,13 @@ void  MorrisMethod::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run
 
 	cout << "writing output files" << endl;
 	// write standard Morris Sensitivity for the global objective function
-	fout_morris << "parameter_name, sen_mean, sen_mean_abs, sen_std_dev" << endl;
+	fout_morris << "parameter_name, n_samples, sen_mean, sen_mean_abs, sen_std_dev" << endl;
 	for (const auto &it_par : adj_par_name_vec)
 	{
 		const auto &it_senmap = sen_map.find(it_par);
 		if (it_senmap != sen_map.end())
 		{
-			fout_morris << log_name(it_par) << ", " << it_senmap->second.comp_mean() << ", " << it_senmap->second.comp_abs_mean() << ", " << sqrt(it_senmap->second.comp_var()) << endl;
+			fout_morris << log_name(it_par) << ", " << it_senmap->second.comp_nsamples() << ", " << it_senmap->second.comp_mean() << ", " << it_senmap->second.comp_abs_mean() << ", " << sqrt(it_senmap->second.comp_var()) << endl;
 		}
 	}
 	if (calc_morris_obs_sen)
@@ -489,13 +489,14 @@ void MorrisMethod::calc_morris_obs(ostream &fout, MorrisObsSenFile &morris_sen_f
 	for (const auto &i_obs : morris_sen_file.obs_names_vec)
 	{
 		fout << "Method of Morris for observation: " << i_obs << endl;
-		fout << "parameter_name, sen_mean, sen_mean_abs, sen_std_dev" << endl;
+		fout << "parameter_name, n_samples, sen_mean, sen_mean_abs, sen_std_dev" << endl;
 		for (const auto &i_par : morris_sen_file.par_names_vec)
 		{
-			const auto &it_senmap = morris_sen_file.map_obs_stats.find(make_pair(i_par, i_obs));
+			string i_log_name = log_name(i_par);
+			const auto &it_senmap = morris_sen_file.map_obs_stats.find(make_pair(i_log_name, i_obs));
 			if (it_senmap != morris_sen_file.map_obs_stats.end())
 			{
-				fout << log_name(i_par) << ", " << it_senmap->second.comp_mean() << ", " << it_senmap->second.comp_abs_mean() << ", " << sqrt(it_senmap->second.comp_var()) << endl;
+				fout << log_name(i_log_name) << ", " << it_senmap->second.comp_nsamples() << ", " << it_senmap->second.comp_mean() << ", " << it_senmap->second.comp_abs_mean() << ", " << sqrt(it_senmap->second.comp_var()) << endl;
 			}
 		}
 		fout << endl;

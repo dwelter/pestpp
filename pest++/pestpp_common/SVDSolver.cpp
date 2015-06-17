@@ -1355,6 +1355,408 @@ PhiComponets SVDSolver::phi_estimate(const ModelRun &base_run, const Jacobian &j
 	return proj_phi_comp;
 }
 
+//void SVDSolver::dynamic_weight_adj(const ModelRun &base_run, const Jacobian &jacobian, QSqrtMatrix &Q_sqrt,
+//	const Eigen::VectorXd &residuals_vec, const vector<string> &obs_names_vec,
+//	const Parameters &base_run_active_ctl_par, const Parameters &freeze_active_ctl_pars)
+//{
+//	class MuPoint
+//	{
+//	public:
+//		double mu;
+//		PhiComponets phi_comp;
+//		double target_phi_meas;
+//		MuPoint(double _mu, const PhiComponets &_phi_comp, double _target_phi_meas)
+//		{
+//			target_phi_meas = _target_phi_meas;
+//			mu = max(numeric_limits<double>::min(), _mu);
+//			mu = min(numeric_limits<double>::max(), mu);
+//			phi_comp = _phi_comp;
+//		}
+//		//void set(double _mu, const PhiComponets &_phi_comp)
+//		//{
+//		//	mu = max(numeric_limits<double>::min(),_mu);
+//		//	mu = min(numeric_limits<double>::max(), mu);
+//		//	phi_comp = _phi_comp;
+//		//}
+//		double f() const { return phi_comp.meas - target_phi_meas; }
+//		double error_frac() { return abs((phi_comp.meas - target_phi_meas) / target_phi_meas); }
+//		double error_percent() { return (phi_comp.meas - target_phi_meas) / target_phi_meas; }
+//		void print(ostream &os)
+//		{
+//			//streamsize n = os.precision(numeric_limits<double>::digits10 + 1);
+//			streamsize n = os.precision(6);
+//			os << "      updated regularization  weight factor              : " << mu << endl;
+//			os << "      FRACPHIM adjusted measurement objective function   : " << phi_comp.meas << endl;
+//			os << "      FRACPHIM adjusted regularization objective function : " << phi_comp.regul << endl;
+//			os.precision(3);
+//			os << "      discrepancy                                      : " << abs(error_percent() * 100) << "%" << endl;
+//			os.precision(n);
+//
+//		}
+//		bool operator< (const MuPoint &rhs){ return abs(f()) < abs(rhs.f()); }
+//		static bool compare_mu(const MuPoint &lhs, const MuPoint &rhs){ return abs(lhs.mu) < abs(rhs.mu); }
+//		static bool compare_f(const MuPoint &lhs, const MuPoint &rhs){ return abs(lhs.f()) < abs(rhs.f()); }
+//		static vector<double> get_mu_vec(const vector<MuPoint> &mu_point_vec)
+//		{
+//			vector<double> tmp_vec;
+//			for (const auto i : mu_point_vec)
+//			{
+//				tmp_vec.push_back(i.mu);
+//			}
+//			return tmp_vec;
+//		}
+//		static vector<double> get_f_vec(const vector<MuPoint> &mu_point_vec)
+//		{
+//			vector<double> tmp_vec;
+//			for (const auto i : mu_point_vec)
+//			{
+//				tmp_vec.push_back(i.f());
+//			}
+//			return tmp_vec;
+//		}
+//		static vector<double> get_best(const vector<MuPoint> &mu_point_vec, int n)
+//		{
+//			const auto iter = std::min_element(mu_point_vec.begin(), mu_point_vec.end(), &MuPoint::compare_f);
+//			size_t index = std::distance(mu_point_vec.begin(), iter);
+//
+//
+//			vector<double> tmp_vec;
+//			for (const auto i : mu_point_vec)
+//			{
+//				tmp_vec.push_back(i.f());
+//			}
+//			return tmp_vec;
+//		}
+//		static void trim_mu_point_vec(vector<MuPoint> &mu_point_vec, int n)
+//		{
+//			list<MuPoint> mu_list(mu_point_vec.begin(), mu_point_vec.end());
+//			//sort and remove duplicates
+//
+//			n = max(n, 2);
+//			int n_erase = mu_point_vec.size() - 1;
+//			if (n_erase >= 0)
+//			{
+//				return;
+//			}
+//			else if (mu_point_vec.front().f() >= 0)
+//			{
+//				while (mu_list.size() > n)	 mu_list.pop_back();
+//				return;
+//			}
+//			else if (mu_point_vec.back().f() <= 0)
+//			{
+//				while (mu_list.size() > n)	 mu_list.pop_front();
+//				return;
+//			}
+//			else
+//			{
+//				while (mu_list.size() > n)
+//				{
+//					//	 list<MuPoint>::reverse_iterator iter_back = mu_list.end();
+//					// if (mu_list[1].f() > 0)
+//					//{
+//					//	 mu_list.pop_back();
+//					///}
+//					//else if ((mu_list.end()-1).f() > 0)
+//					// {
+//					//	 mu_point_vec.erase(mu_point_vec.begin());
+//					//}
+//					//else if (mu_point_vec[1].f() > mu_point_vec[mu_point_vec.size() - 2].f())
+//					// {
+//					//		 mu_point_vec.erase(mu_point_vec.begin());
+//					//	 }
+//					// else
+//					//{
+//					//		 mu_point_vec.pop_back();
+//				}
+//			}
+//		}
+//	};
+//
+//	ostream &os = file_manager.rec_ofstream();
+//
+//	double phimlim = regul_scheme_ptr->get_phimlim();
+//	double fracphim = regul_scheme_ptr->get_fracphim();
+//	double wfmin = regul_scheme_ptr->get_wfmin();
+//	double wfmax = regul_scheme_ptr->get_wfmax();
+//	double wffac = regul_scheme_ptr->get_wffac();
+//	double mu_cur = regul_scheme_ptr->get_weight();
+//	double wftol = regul_scheme_ptr->get_wftol();
+//	int max_iter = regul_scheme_ptr->get_max_reg_iter();
+//	Parameters new_pars;
+//	vector<MuPoint> mu_vec;
+//	//mu_vec.resize(4);
+//
+//	// Equalize Reqularization Groups if IREGADJ = 1
+//	std::unordered_map<std::string, double> regul_grp_weights;
+//	auto reg_grp_phi = base_run.get_obj_func_ptr()->get_group_phi(base_run.get_obs(), base_run.get_ctl_pars(),
+//		DynamicRegularization::get_unit_reg_instance(), PhiComponets::OBS_TYPE::REGUL);
+//	double avg_reg_grp_phi = 0;
+//	for (const auto &igrp : reg_grp_phi)
+//	{
+//		avg_reg_grp_phi += igrp.second;
+//	}
+//	if (reg_grp_phi.size() > 0)
+//	{
+//		avg_reg_grp_phi /= reg_grp_phi.size();
+//	}
+//	if (avg_reg_grp_phi>0)
+//	{
+//		for (const auto &igrp : reg_grp_phi)
+//		{
+//			if (igrp.second > 0)
+//			{
+//				regul_grp_weights[igrp.first] = sqrt(avg_reg_grp_phi / igrp.second);
+//			}
+//		}
+//	}
+//	regul_scheme_ptr->set_regul_grp_weights(regul_grp_weights);
+//
+//	DynamicRegularization tmp_regul_scheme = *regul_scheme_ptr;
+//	PhiComponets phi_comp_cur = base_run.get_obj_func_ptr()->get_phi_comp(base_run.get_obs(), base_run.get_ctl_pars(), *regul_scheme_ptr);
+//	double target_phi_meas_frac = phi_comp_cur.meas * fracphim;
+//	double target_phi_meas = max(phimlim, target_phi_meas_frac);
+//
+//	os << endl << "    --- Solving for regularization weight factor   ---   " << endl;
+//	os << "      Starting regularization weight factor      : " << mu_cur << endl;
+//	os << "      Starting measurement objective function    : " << phi_comp_cur.meas << endl;
+//	os << "      Starting regularization objective function : " << phi_comp_cur.regul << endl;
+//	os << endl <<  "      Target measurement objective function      : " << target_phi_meas << endl << endl;
+//	cout << "    --- Solving for regularization weight factor   ---   " << endl;
+//	cout << "      Starting regularization weight factor      : " << mu_cur << endl;
+//	cout << "      Starting measurement objective function    : " << phi_comp_cur.meas << endl;
+//	cout << "      Starting regularization objective function : " << phi_comp_cur.regul << endl;
+//	cout << "      Target measurement objective function      : " << target_phi_meas << endl << endl;
+//
+//	PhiComponets proj_phi_cur = phi_estimate(base_run, jacobian, Q_sqrt, *regul_scheme_ptr, residuals_vec, obs_names_vec,
+//	base_run_active_ctl_par, freeze_active_ctl_pars, *regul_scheme_ptr);
+//	double f_cur = proj_phi_cur.meas - target_phi_meas;
+//	mu_vec.push_back(MuPoint(mu_cur, proj_phi_cur, target_phi_meas));
+//	if (f_cur < 0)
+//	{
+//		double mu_new = mu_vec.front().mu * wffac;
+//		mu_new = max(wfmin, mu_new);
+//		mu_new = min(mu_new, wfmax);
+//		tmp_regul_scheme.set_weight(mu_new);
+//		PhiComponets phi_proj_new = phi_estimate(base_run, jacobian, Q_sqrt, tmp_regul_scheme, residuals_vec, obs_names_vec,
+//			base_run_active_ctl_par, freeze_active_ctl_pars, tmp_regul_scheme);
+//		mu_vec.push_back(MuPoint(mu_new, phi_proj_new, target_phi_meas));
+//		std::sort(mu_vec.begin(), mu_vec.end(), &MuPoint::compare_mu);
+//	}
+//	else
+//	{
+//		double mu_new = mu_vec.back().mu * wffac;
+//		mu_new = max(wfmin, mu_new);
+//		mu_new = min(mu_new, wfmax);
+//		tmp_regul_scheme.set_weight(mu_new);
+//		PhiComponets phi_proj_new = phi_estimate(base_run, jacobian, Q_sqrt, tmp_regul_scheme, residuals_vec, obs_names_vec,
+//			base_run_active_ctl_par, freeze_active_ctl_pars, tmp_regul_scheme);
+//		mu_vec.push_back(MuPoint(mu_new, phi_proj_new, target_phi_meas));
+//		std::sort(mu_vec.begin(), mu_vec.end(), &MuPoint::compare_mu);
+//	}
+//
+//	// make sure f[0] and f[last] bracket the solution
+//
+//	int i;
+//	for (i = 0; i < max_iter; ++i)
+//	{
+//		if (mu_vec.front().mu <= wfmin && mu_vec.front().f() >= 0)
+//		{
+//			os << "    --- Optimal regularization weight factor limited by wfmin ---" << endl;
+//			mu_vec.front().print(os);
+//			os << endl;
+//			cout << "    --- Optimal regularization weight factor limited by wfmin ---" << endl;
+//			mu_vec.front().print(cout);
+//			cout << endl;
+//			regul_scheme_ptr->set_weight(mu_vec.front().mu);
+//			return;
+//		}
+//		else if (mu_vec.front().f() <= 0)
+//		{
+//			break;
+//		}
+//		else
+//		{
+//			double mu_new_1 = max(mu_vec.front().mu / wffac, wfmin);
+//			tmp_regul_scheme.set_weight(mu_new_1);
+//			PhiComponets phi_comp_new_1 = phi_estimate(base_run, jacobian, Q_sqrt, tmp_regul_scheme, residuals_vec, obs_names_vec,
+//				base_run_active_ctl_par, freeze_active_ctl_pars, tmp_regul_scheme);
+//			mu_vec.push_back(MuPoint(mu_new_1, phi_comp_new_1, target_phi_meas));
+//			double mu_new_2 = sidi_method(MuPoint::get_mu_vec(mu_vec), MuPoint::get_f_vec(mu_vec));
+//			mu_new_2 = max(mu_new_2, wfmin);
+//			mu_new_2 = min(mu_new_2, wfmax);
+//			tmp_regul_scheme.set_weight(mu_new_2);
+//			PhiComponets phi_comp_new_2 = phi_estimate(base_run, jacobian, Q_sqrt, tmp_regul_scheme, residuals_vec, obs_names_vec,
+//				base_run_active_ctl_par, freeze_active_ctl_pars, tmp_regul_scheme);
+//			mu_vec.push_back(MuPoint(mu_new_2, phi_comp_new_2, target_phi_meas));
+//			mu_vec.back().print(os);
+//			os << endl;
+//			cout << "    ...solving for optimal weight factor : " << setw(6) << mu_vec.back().mu << "\r" << flush;
+//			std::sort(mu_vec.begin(), mu_vec.end(), &MuPoint::compare_mu);
+//		}
+//	}
+//
+//	for (; i < max_iter; ++i)
+//	{
+//		if (mu_vec.back().mu >= wfmax && mu_vec.back().f() <= 0)
+//		{
+//			os << "    --- Optimal regularization weight factor search limited by wfmax ---" << endl;
+//			mu_vec.back().print(os);
+//			os << endl;
+//			cout << "    --- Optimal regularization weight factor search limited by wfmax ---" << endl;
+//			mu_vec.back().print(cout);
+//			cout << endl;
+//			regul_scheme_ptr->set_weight(mu_vec.back().mu);
+//			return;
+//		}
+//		else if (mu_vec.back().f() >= 0)
+//		{
+//			break;
+//		}
+//		else
+//		{
+//			double mu_new_1 = min(mu_vec.back().mu * wffac, wfmax);
+//			tmp_regul_scheme.set_weight(mu_new_1);
+//			PhiComponets phi_comp_new_1 = phi_estimate(base_run, jacobian, Q_sqrt, tmp_regul_scheme, residuals_vec, obs_names_vec,
+//				base_run_active_ctl_par, freeze_active_ctl_pars, tmp_regul_scheme);
+//			mu_vec.push_back(MuPoint(mu_new_1, phi_comp_new_1, target_phi_meas));
+//			MuPoint::get_best(mu_vec, 2);
+//			double mu_new_2 = sidi_method(MuPoint::get_mu_vec(mu_vec), MuPoint::get_f_vec(mu_vec));
+//			mu_new_2 = max(mu_new_2, wfmin);
+//			mu_new_2 = min(mu_new_2, wfmax);
+//			tmp_regul_scheme.set_weight(mu_new_2);
+//			PhiComponets phi_comp_new_2 = phi_estimate(base_run, jacobian, Q_sqrt, tmp_regul_scheme, residuals_vec, obs_names_vec,
+//				base_run_active_ctl_par, freeze_active_ctl_pars, tmp_regul_scheme);
+//			mu_vec.push_back(MuPoint(mu_new_2, phi_comp_new_2, target_phi_meas));
+//			mu_vec.back().print(os);
+//			os << endl;
+//			cout << "    ...solving for optimal weight factor : " << setw(6) << mu_vec.back().mu << "\r" << flush;
+//			std::sort(mu_vec.begin(), mu_vec.end(), &MuPoint::compare_mu);
+//		}
+//	}
+//
+//	double tau = (sqrt(5.0) - 1.0) / 2.0;
+//	double lw = mu_vec[3].mu - mu_vec[0].mu;
+//	mu_vec[1].mu = mu_vec[0].mu + (1.0 - tau) * lw;
+//	tmp_regul_scheme.set_weight(mu_vec[1].mu);
+//	mu_vec[1].phi_comp = phi_estimate(base_run, jacobian, Q_sqrt, tmp_regul_scheme, residuals_vec, obs_names_vec,
+//		base_run_active_ctl_par, freeze_active_ctl_pars, tmp_regul_scheme);
+//
+//	mu_vec[2].mu = mu_vec[3].mu - (1.0 - tau) * lw;
+//	tmp_regul_scheme.set_weight(mu_vec[2].mu);
+//	mu_vec[2].phi_comp = phi_estimate(base_run, jacobian, Q_sqrt, tmp_regul_scheme, residuals_vec, obs_names_vec,
+//		base_run_active_ctl_par, freeze_active_ctl_pars, tmp_regul_scheme);
+//
+//	for (; i < max_iter; ++i)
+//	{
+//		double mu_new;
+//		PhiComponets phi_comp_new;
+//
+//		if (abs(mu_vec.front().f()) > abs(mu_vec.back().f()) && mu_vec.front().f() < 0)
+//		{
+//			mu_vec.erase(mu_vec.begin() + 0);
+//			lw = mu_vec.back().mu - mu_vec.front().mu;
+//			double mu_new = mu_vec.back().mu - (1.0 - tau) * lw;
+//		}
+//		else
+//		{
+//			mu_vec.erase(mu_vec.begin() + 3);
+//			lw = mu_vec.back().mu - mu_vec.front().mu;
+//			double mu_new = mu_vec.front().mu + (1.0 - tau) * lw;
+//		}
+//		tmp_regul_scheme.set_weight(mu_new);
+//		phi_comp_new = phi_estimate(base_run, jacobian, Q_sqrt, tmp_regul_scheme, residuals_vec, obs_names_vec,
+//			base_run_active_ctl_par, freeze_active_ctl_pars, tmp_regul_scheme);
+//		mu_vec.push_back(MuPoint(mu_new, phi_comp_new, target_phi_meas));
+//		std::sort(mu_vec.begin(), mu_vec.end(), &MuPoint::compare_mu);
+//
+//		auto min_mu = std::min_element(mu_vec.begin(), mu_vec.end());
+//		min_mu->print(os);
+//		os << endl;
+//		cout << "    ...solving for optimal weight factor : " << setw(6) << min_mu->mu << "\r" << flush;
+//		if (min_mu->error_frac() <= wftol)
+//		{
+//			os << "    --- Optimal regularization weight factor found ---" << endl;
+//			min_mu->print(os);
+//			os << endl;
+//			cout << "    --- Optimal regularization weight factor found ---" << endl;
+//			min_mu->print(cout);
+//			cout << endl;
+//			regul_scheme_ptr->set_weight(min_mu->mu);
+//			os << endl;
+//			return;
+//		}
+//	}
+//	auto min_mu = std::min_element(mu_vec.begin(), mu_vec.end());
+//
+//	os << "    --- Optimal regularization weight factor search limited by max iterations ---" << endl;
+//	min_mu->print(os);
+//	os << endl;
+//	cout << "--- Optimal regularization weight factor search limited by max iterations ---" << endl;
+//	min_mu->print(cout);
+//	cout << endl;
+//	regul_scheme_ptr->set_weight(min_mu->mu);
+//	os << endl;
+// }
+//
+// double SVDSolver::secant_method(double x0, double y0, double x1, double y1)
+// {
+//	 double x = 0;
+//	 if (y1 != y0)
+//	 {
+//		 x = x1 - y1 * (x1 - x0) / (y1 - y0);
+//	 }
+//	 else
+//	 {
+//		 x = (x0 + x1) / 2.0;
+//	 }
+//	 return x;
+//}
+//
+// double SVDSolver::sidi_method(const vector<double> &x, const vector<double> &y)
+// {
+//	 double x_n = x.back();
+//	 try
+//	 {
+//		 // Solve Ac = y for c to get the equation for a polynomial:
+//		 //        | 1  x0  x0^2 ... x0^n |                    | c0 |             | y0 |
+//		 //   A =  | 1  x1  x1^2 ... x1^n |               c =  | c1 |         y = | y1 |
+//		 //        | 1  x2  x2^2 ... x2^n |                    | c2 |             | y2 |
+//		 //             .     .     .                             .                  .
+//		 //        | 1  x0  x0 ^ 2 ... x0^n |                  | cn |             | yn |
+//		 size_t n = x.size();
+//		 MatrixXd a_mat(n, n);
+//		 VectorXd x_vec = stlvec_2_egienvec(x);
+//		 VectorXd y_vec = stlvec_2_egienvec(y);
+//		 VectorXd c_vec(n);
+//
+//		 // assemble A matrix
+//		 for (int i = 0; i < n; ++i)
+//		 {
+//			 for (int j = 0; j < n; ++j)
+//			 {
+//				 a_mat(i, j) = pow(x_vec[i], j);
+//			 }
+//		 }
+//		 c_vec = a_mat.colPivHouseholderQr().solve(y_vec);
+//		 double poly_prime = 0;
+//
+//		 for (int i = 0; i < n; ++i)
+//		 {
+//			 poly_prime += c_vec(i) * pow(x_n, i);
+//		 }
+//		 if (poly_prime != 0)
+//		 {
+//			 x_n = x_n - y.back() / poly_prime;
+//		 }
+//	 }
+//	 catch (...)
+//	 {
+//		 cerr << "Sidi's Method interpolation failed" << endl;
+//	 }
+//	 return x_n;
+// }
+//
 void SVDSolver::dynamic_weight_adj(const ModelRun &base_run, const Jacobian &jacobian, QSqrtMatrix &Q_sqrt,
 	const Eigen::VectorXd &residuals_vec, const vector<string> &obs_names_vec,
 	const Parameters &base_run_active_ctl_par, const Parameters &freeze_active_ctl_pars)
@@ -1367,7 +1769,7 @@ void SVDSolver::dynamic_weight_adj(const ModelRun &base_run, const Jacobian &jac
 		double target_phi_meas;
 		void set(double _mu, const PhiComponets &_phi_comp)
 		{
-			mu = max(numeric_limits<double>::min(),_mu);
+			mu = max(numeric_limits<double>::min(), _mu);
 			mu = min(numeric_limits<double>::max(), mu);
 			phi_comp = _phi_comp;
 		}
@@ -1382,9 +1784,9 @@ void SVDSolver::dynamic_weight_adj(const ModelRun &base_run, const Jacobian &jac
 			os << "      updated regularization  weight factor            : " << mu << endl;
 			os << "      FRACPHIM adjusted measurement objective function : " << phi_comp.meas << endl;
 			os.precision(3);
-			os << "      discrepancy                                      : " << abs(error_percent()*100) <<"%"<< endl;
+			os << "      discrepancy                                      : " << abs(error_percent() * 100) << "%" << endl;
 			os.precision(n);
-			
+
 		}
 		bool operator< (const MuPoint &rhs){ return abs(f()) < abs(rhs.f()); }
 	};
@@ -1438,7 +1840,7 @@ void SVDSolver::dynamic_weight_adj(const ModelRun &base_run, const Jacobian &jac
 	os << "    Starting regularization weight factor      : " << mu_cur << endl;
 	os << "    Starting measurement objective function    : " << phi_comp_cur.meas << endl;
 	os << "    Starting regularization objective function : " << phi_comp_cur.regul << endl;
-	os << endl <<  "    Target measurement objective function      : " << target_phi_meas << endl << endl;
+	os << endl << "    Target measurement objective function      : " << target_phi_meas << endl << endl;
 	cout << "    ---  Solving for regularization weight factor   ---   " << endl;
 	cout << "    Starting regularization weight factor      : " << mu_cur << endl;
 	cout << "    Starting measurement objective function    : " << phi_comp_cur.meas << endl;
@@ -1450,7 +1852,7 @@ void SVDSolver::dynamic_weight_adj(const ModelRun &base_run, const Jacobian &jac
 		i_mu.target_phi_meas = target_phi_meas;
 	}
 	PhiComponets proj_phi_cur = phi_estimate(base_run, jacobian, Q_sqrt, *regul_scheme_ptr, residuals_vec, obs_names_vec,
-	base_run_active_ctl_par, freeze_active_ctl_pars, *regul_scheme_ptr);
+		base_run_active_ctl_par, freeze_active_ctl_pars, *regul_scheme_ptr);
 	double f_cur = proj_phi_cur.meas - target_phi_meas;
 
 	if (f_cur < 0)
@@ -1595,17 +1997,17 @@ void SVDSolver::dynamic_weight_adj(const ModelRun &base_run, const Jacobian &jac
 		}
 		auto min_mu = std::min_element(mu_vec.begin(), mu_vec.end());
 
-	    os << "    ---  optimal regularization weight factor found  ---   " << endl;
+		os << "    ---  optimal regularization weight factor found  ---   " << endl;
 		min_mu->print(os);
 		os << endl;
-	    cout << "    ---  optimal regularization weight factor found  ---   " << endl;
+		cout << "    ---  optimal regularization weight factor found  ---   " << endl;
 		min_mu->print(cout);
 		cout << endl;
 		double new_mu = std::min_element(mu_vec.begin(), mu_vec.end())->mu;
 		regul_scheme_ptr->set_weight(new_mu);
 	}
 	os << endl;
- }
+}
 
  void SVDSolver::save_frozen_pars(std::ostream &fout, const Parameters &frozen_pars, int id)
  {

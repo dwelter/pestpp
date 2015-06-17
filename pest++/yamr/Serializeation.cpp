@@ -244,26 +244,6 @@ unsigned long Serialization::unserialize(const vector<int8_t> &ser_data, vector<
 	return total_bytes_read;
 }
 
-unsigned long Serialization::unserialize(const vector<int8_t> &ser_data, vector<vector<string>> &string_vec_vec)
-{
-	int64_t bytes_read = 0;
-	int64_t total_bytes_read = 0;
-	int64_t vec_size = 0;
-
-	// can recode to increase performance by eliminating repeated copying
-	// but at this point it is not worth the effort
-	while(total_bytes_read < ser_data.size())
-	{
-		bytes_read = unserialize(ser_data, vec_size, total_bytes_read);
-		total_bytes_read += bytes_read;
-		string_vec_vec.push_back(vector<string>());
-		bytes_read =  unserialize(ser_data, string_vec_vec.back(), total_bytes_read, vec_size);
-		total_bytes_read += bytes_read;
-	}
-	unsigned long tmp_val = total_bytes_read;
-	return tmp_val;
-}
-
 unsigned long Serialization::unserialize(const vector<int8_t> &ser_data, Transformable &items, const vector<string> &names_vec, unsigned long start_loc)
 {
 	unsigned long total_bytes_read = 0;
