@@ -21,12 +21,7 @@ RunManager* rmic_create_serial(char **comline, int comline_array_len,
 #ifdef OS_WIN
 extern __declspec(dllexport)
 #endif
-RunManager* rmic_create_yamr(char **comline, int comline_array_len,
-	char **tpl, int tpl_array_len,
-	char **inp, int inp_array_len,
-	char **ins, int ins_array_len,
-	char **out, int out_array_len,
-	char *storfile,
+RunManager* rmic_create_yamr(char *storfile,
 	char *port,
 	char *info_filename,
 	int n_max_fail,

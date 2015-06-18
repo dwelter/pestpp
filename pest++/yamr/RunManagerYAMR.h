@@ -91,10 +91,7 @@ public:
 class RunManagerYAMR : public RunManagerAbstract
 {
 public:
-	RunManagerYAMR(const std::vector<std::string> _comline_vec,
-		const std::vector<std::string> _tplfile_vec, const std::vector<std::string> _inpfile_vec,
-		const std::vector<std::string> _insfile_vec, const std::vector<std::string> _outfile_vec,
-		const std::string &stor_filename, const std::string &port, std::ofstream &_f_rmr, int _max_n_failure,
+	RunManagerYAMR(const std::string &stor_filename, const std::string &port, std::ofstream &_f_rmr, int _max_n_failure,
 		double overdue_reched_fac, double overdue_giveup_fac);
 	virtual void initialize(const Parameters &model_pars, const Observations &obs, const std::string &_filename = std::string(""));
 	virtual void initialize_restart(const std::string &_filename);

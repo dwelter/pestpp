@@ -36,11 +36,7 @@ RunManager* rmic_create_serial(char **comline, int comline_array_len,
 }
 
 
-RunManager* rmic_create_yamr(char **comline, int comline_array_len,
-	char **tpl, int tpl_array_len,
-	char **inp, int inp_array_len,
-	char **ins, int ins_array_len,
-	char **out, int out_array_len,
+RunManager* rmic_create_yamr(
 	char *storfile,
 	char *port,
 	char *info_filename,
@@ -49,13 +45,8 @@ RunManager* rmic_create_yamr(char **comline, int comline_array_len,
 	double overdue_giveup_fac)
 {
 	RunManager *run_manager_ptr = nullptr;
-	vector<string> comline_vec(comline, comline+comline_array_len);
-	vector<string> tpl_vec(tpl, tpl+tpl_array_len);
-	vector<string> inp_vec(inp, inp+inp_array_len);
-	vector<string> ins_vec(ins, ins+ins_array_len);
-	vector<string> out_vec(out, out+out_array_len);
 	fout_run_manager_log_file.open(info_filename);
-	run_manager_ptr = new RunManagerYAMR(comline_vec, tpl_vec, inp_vec, ins_vec, out_vec, storfile, port, 
+	run_manager_ptr = new RunManagerYAMR(storfile, port, 
 		fout_run_manager_log_file, n_max_fail, overdue_reched_fac, overdue_giveup_fac);
 	return run_manager_ptr;
 }
