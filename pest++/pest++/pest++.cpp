@@ -773,9 +773,9 @@ int main(int argc, char* argv[])
 	catch (exception &e)
 	{
 		cout << "Error condition prevents further execution: " << endl << e.what() << endl;
-		cout << "press enter to continue" << endl;
-		char buf[256];
-		OperSys::gets_s(buf, sizeof(buf));
+		//cout << "press enter to continue" << endl;
+		//char buf[256];
+		//OperSys::gets_s(buf, sizeof(buf));
 	}
 #endif
 }
