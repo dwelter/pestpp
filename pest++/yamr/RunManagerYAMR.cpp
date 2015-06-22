@@ -251,13 +251,10 @@ int SlaveInfoRec::seconds_since_last_ping_time() const
 }
 
 
-RunManagerYAMR::RunManagerYAMR(const vector<string> _comline_vec,
-	const vector<string> _tplfile_vec, const vector<string> _inpfile_vec,
-	const vector<string> _insfile_vec, const vector<string> _outfile_vec,
-	const string &stor_filename, const string &_port, ofstream &_f_rmr, int _max_n_failure,
+RunManagerYAMR::RunManagerYAMR(const string &stor_filename, const string &_port, ofstream &_f_rmr, int _max_n_failure,
 	double _overdue_reched_fac, double _overdue_giveup_fac)
-	: RunManagerAbstract(_comline_vec, _tplfile_vec, _inpfile_vec,
-	_insfile_vec, _outfile_vec, stor_filename, _max_n_failure),
+	: RunManagerAbstract(vector<string>(), vector<string>(), vector<string>(),
+	vector<string>(), vector<string>(), stor_filename, _max_n_failure),
 	overdue_reched_fac(_overdue_reched_fac), overdue_giveup_fac(_overdue_giveup_fac),
 	port(_port), f_rmr(_f_rmr)
 {

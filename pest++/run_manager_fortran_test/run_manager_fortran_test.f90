@@ -71,7 +71,7 @@
     
     
     ! Body of run_manager_fortran_test
-    data comline   /'./storage1_linux    '/
+    data comline   /'storage1_win.exe  '/
     data tpl       /'input.tpl           '/
     data inp       /'input.dat           '/
     data ins       /'output.ins          '/
@@ -131,14 +131,9 @@
         else if (itype == 2) then
             write(*,*) 'please enter port:'
             read(*,*) port
-            err = rmif_create_yamr(comline, 20, 1,&
-                        tpl, 20, 1,&
-                        inp, 20, 1,&
-                        ins, 20, 1,&
-                        out, 20, 1,&
-                        storfile, 20,&
+            err = rmif_create_yamr(storfile, 20,&
                         port, 20,&
-                        rmi_info_file, 20, 2)
+                        rmi_info_file, 20, 2, 1.15, 100.0)
         else if (itype == 3) then
             write(*,*) 'please enter GMAN socket:'
             read(*,*) genie_host

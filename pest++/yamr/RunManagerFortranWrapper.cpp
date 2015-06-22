@@ -44,11 +44,7 @@ int rmif_create_serial_(char *f_comline, int  *comline_str_len, int *comline_arr
 }
 
 
-int rmif_create_yamr_(char *f_comline, int  *comline_str_len, int *comline_array_len,
-	char *f_tpl, int  *tpl_str_len, int *tpl_array_len,
-	char *f_inp, int  *inp_str_len, int *inp_array_len,
-	char *f_ins, int  *ins_str_len, int *ins_array_len,
-	char *f_out, int  *out_str_len, int *out_array_len,
+int rmif_create_yamr_(
 	char *f_storfile, int *storfile_len,
 	char *f_port, int *f_port_len,
 	char *f_info_filename, int *info_filename_len, int *n_max_fail,
@@ -56,16 +52,11 @@ int rmif_create_yamr_(char *f_comline, int  *comline_str_len, int *comline_array
 {
 	int err = 0;
 	try {
-		vector<string> comline_vec =  fortran_str_array_2_vec(f_comline, *comline_str_len, *comline_array_len);
-		vector<string> tpl_vec =  fortran_str_array_2_vec(f_tpl, *tpl_str_len, *tpl_array_len);
-		vector<string> inp_vec =  fortran_str_array_2_vec(f_inp, *inp_str_len, *inp_array_len);
-		vector<string> ins_vec =  fortran_str_array_2_vec(f_ins, *ins_str_len, *ins_array_len);
-		vector<string> out_vec =  fortran_str_array_2_vec(f_out, *out_str_len, *out_array_len);
 		string storfile =  fortran_str_2_string(f_storfile, *storfile_len);
 		string port =  fortran_str_2_string(f_port, *f_port_len);
 		string info_filename =  fortran_str_2_string(f_info_filename, *info_filename_len);
 		fout_run_manager_log_file.open(info_filename);
-		_run_manager_ptr_ = new RunManagerYAMR(comline_vec, tpl_vec, inp_vec, ins_vec, out_vec, storfile, 
+		_run_manager_ptr_ = new RunManagerYAMR(storfile, 
 			port, fout_run_manager_log_file, *n_max_fail, *overdue_reched_fac, *overdue_giveup_fac);
 	}
 	catch(...)

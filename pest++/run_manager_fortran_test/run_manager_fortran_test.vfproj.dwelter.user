@@ -3,7 +3,7 @@
 	<Configurations>
 		<Configuration Name="Debug|Win32" WorkingDirectory="$(SolutionDir)\benchmarks\stor"/>
 		<Configuration Name="Release|Win32"/>
-		<Configuration Name="Debug|x64" WorkingDirectory="$(SolutionDir)\benchmarks\stor"/>
+		<Configuration Name="Debug|x64" WorkingDirectory="$(SolutionDir)\run_manager_fortran_test\test_dir"/>
 		<Configuration Name="Release|x64"/>
 		<Configuration Name="debug_dll|Win32"/>
 		<Configuration Name="debug_dll|x64"/></Configurations></VisualStudioUserFile>

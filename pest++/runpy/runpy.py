@@ -36,20 +36,11 @@ class runpy:
               out_c, len(out), 
               ctypes.c_char_p(stor_file), ctypes.c_char_p(rundir), n_fail_max)
 
-    def create_yamr(self, comline, tpl, inp, ins, out, stor_file,
+    def create_yamr(self, stor_file,
                     port, info_filename, n_fail_max):
         func = self.runlib.rmic_create_yamr
         func.restype = ctypes.c_void_p
-        comline_c = self.call_c(comline)
-        tpl_c = self.call_c(tpl)
-        inp_c = self.call_c(inp)
-        ins_c = self.call_c(ins)
-        out_c = self.call_c(out)
-        self.obj = func(comline_c, len(comline),
-              tpl_c, len(tpl), 
-              inp_c, len(inp),
-              ins_c, len(ins),
-              out_c, len(out), 
+        self.obj = func(
               ctypes.c_char_p(stor_file), 
               ctypes.c_char_p(port), ctypes.c_char_p(info_filename), n_fail_max)
 
