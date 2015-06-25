@@ -63,6 +63,8 @@ public:
 	void write_obj_iter(int iter, int nruns, map<string, double> const &phi_report);
 	void write_sen_iter(int iter, map<string, double> &ctl_par_sens);
 
+	void write_jco(bool isBaseIter, string ext, const Jacobian &jco);
+
 private:
 	FileManager &file_manager;
 	Pest &pest_scenario;

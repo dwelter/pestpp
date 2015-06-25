@@ -29,6 +29,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "yamr", "yamr\yamr.vcxproj", "{AA6E1EC6-2E3D-42EE-B997-2F40814DD2C9}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0193689C-8ED2-4DCA-9389-5D233739B1F0} = {0193689C-8ED2-4DCA-9389-5D233739B1F0}
+		{F366C3D3-DA91-4303-B438-5211C72A3BB0} = {F366C3D3-DA91-4303-B438-5211C72A3BB0}
 		{ED02A2E0-4505-485D-8007-1DF45497AADA} = {ED02A2E0-4505-485D-8007-1DF45497AADA}
 	EndProjectSection
 EndProject
@@ -91,6 +92,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "linear_analysis_test", "lin
 		{8A99FE6C-DE11-45C7-B668-F3EAAD9C863E} = {8A99FE6C-DE11-45C7-B668-F3EAAD9C863E}
 		{AA6E1EC6-2E3D-42EE-B997-2F40814DD2C9} = {AA6E1EC6-2E3D-42EE-B997-2F40814DD2C9}
 	EndProjectSection
+EndProject
+Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "mio", "mio\mio.vfproj", "{F366C3D3-DA91-4303-B438-5211C72A3BB0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -488,6 +491,27 @@ Global
 		{697F2579-3B6B-4B45-9614-F239CC6A9B9A}.Release|Win32.Build.0 = Release|Win32
 		{697F2579-3B6B-4B45-9614-F239CC6A9B9A}.Release|x64.ActiveCfg = Release|x64
 		{697F2579-3B6B-4B45-9614-F239CC6A9B9A}.Release|x64.Build.0 = Release|x64
+		{F366C3D3-DA91-4303-B438-5211C72A3BB0}.debug_dll|Any CPU.ActiveCfg = Debug|Win32
+		{F366C3D3-DA91-4303-B438-5211C72A3BB0}.debug_dll|ARM.ActiveCfg = Debug|Win32
+		{F366C3D3-DA91-4303-B438-5211C72A3BB0}.debug_dll|Mixed Platforms.ActiveCfg = Debug|Win32
+		{F366C3D3-DA91-4303-B438-5211C72A3BB0}.debug_dll|Mixed Platforms.Build.0 = Debug|Win32
+		{F366C3D3-DA91-4303-B438-5211C72A3BB0}.debug_dll|Win32.ActiveCfg = Debug|Win32
+		{F366C3D3-DA91-4303-B438-5211C72A3BB0}.debug_dll|Win32.Build.0 = Debug|Win32
+		{F366C3D3-DA91-4303-B438-5211C72A3BB0}.debug_dll|x64.ActiveCfg = Debug|Win32
+		{F366C3D3-DA91-4303-B438-5211C72A3BB0}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{F366C3D3-DA91-4303-B438-5211C72A3BB0}.Debug|ARM.ActiveCfg = Debug|Win32
+		{F366C3D3-DA91-4303-B438-5211C72A3BB0}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{F366C3D3-DA91-4303-B438-5211C72A3BB0}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{F366C3D3-DA91-4303-B438-5211C72A3BB0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F366C3D3-DA91-4303-B438-5211C72A3BB0}.Debug|Win32.Build.0 = Debug|Win32
+		{F366C3D3-DA91-4303-B438-5211C72A3BB0}.Debug|x64.ActiveCfg = Debug|x64
+		{F366C3D3-DA91-4303-B438-5211C72A3BB0}.Release|Any CPU.ActiveCfg = Release|Win32
+		{F366C3D3-DA91-4303-B438-5211C72A3BB0}.Release|ARM.ActiveCfg = Release|Win32
+		{F366C3D3-DA91-4303-B438-5211C72A3BB0}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{F366C3D3-DA91-4303-B438-5211C72A3BB0}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{F366C3D3-DA91-4303-B438-5211C72A3BB0}.Release|Win32.ActiveCfg = Release|Win32
+		{F366C3D3-DA91-4303-B438-5211C72A3BB0}.Release|Win32.Build.0 = Release|Win32
+		{F366C3D3-DA91-4303-B438-5211C72A3BB0}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
