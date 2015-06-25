@@ -695,7 +695,11 @@ void OutputFileWriter::write_jco(bool isBaseIter, string ext, const Jacobian &jc
 	map<string, double>::const_iterator not_found_pi_par;
 
 	//Eigen::SparseMatrix<double> matrix_T(matrix);
-	Eigen::SparseMatrix<double> matrix_T = jco.get_matrix(obs_names,par_names);
+	Eigen::SparseMatrix<double> matrix_T;
+	if (isBaseIter)
+		matrix_T = jco.get_matrix(obs_names,par_names);
+	else
+		matrix_T = jco.get_matrix();
 	matrix_T.transpose();
 	for (int icol = 0; icol<jco.get_outersize(); ++icol)
 	{
