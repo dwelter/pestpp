@@ -159,7 +159,6 @@ Eigen::SparseMatrix<double> Jacobian::get_matrix(const vector<string> &obs_names
 		obs_name2newindex_map[(*b)] = irow_new;
 	}
 
-
 	//build jacobian
 	unordered_map<string, int>::const_iterator found_par;
 	unordered_map<string, int>::const_iterator found_obs;

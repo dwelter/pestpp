@@ -658,11 +658,24 @@ void OutputFileWriter::write_jco(bool isBaseIter, string ext, const Jacobian &jc
 	
 	if (isBaseIter)
 	{
-
 		obs_names = pest_scenario.get_ctl_ordered_obs_names();
 		par_names = pest_scenario.get_ctl_ordered_par_names();
 		vector<string> pi_names = pest_scenario.get_ctl_ordered_pi_names();
 		obs_names.insert(obs_names.end(), pi_names.begin(), pi_names.end());
+		vector<string> jco_par_names = jco.get_base_numeric_par_names();
+		if (par_names.size() != jco_par_names.size())
+		{
+			/*cout << "warning: base parameters missing from binary jco..." << endl;
+			cout << "         no need to write control file order." << endl;
+			isBaseIter = false;
+			par_names = jco.get_base_numeric_par_names();
+			obs_names = jco.get_sim_obs_names();*/
+			auto new_end = std::remove_if(par_names.begin(), par_names.end(), [&](string &pname)
+			{
+				return find(jco_par_names.begin(), jco_par_names.end(), pname) == jco_par_names.end();
+			});
+			par_names.erase(new_end,par_names.end());
+		}
 	}
 	else
 	{
