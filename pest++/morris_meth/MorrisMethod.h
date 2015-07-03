@@ -53,7 +53,6 @@ public:
 	void calc_morris_obs(std::ostream &, MorrisObsSenFile &morris_sen_file);
 	~MorrisMethod(void);
 private:
-	int k; // number of parameters
 	int p; // number of levels for each parameters
 	int r;
 	bool calc_morris_obs_sen;

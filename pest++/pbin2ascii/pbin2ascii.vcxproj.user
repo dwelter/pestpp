@@ -5,4 +5,9 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommandArguments>pest.ext  junk.runs  junk_par</LocalDebuggerCommandArguments>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug2_dll|x64'">
+    <LocalDebuggerWorkingDirectory>$(SolutionDir)benchmarks\stor\test</LocalDebuggerWorkingDirectory>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommandArguments>pest.ext  junk.runs  junk_par</LocalDebuggerCommandArguments>
+  </PropertyGroup>
 </Project>

@@ -332,6 +332,7 @@ void  MorrisMethod::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run
 	stringstream message;
 	cout << endl;
 	run1_ok = run_manager.get_run(0, pars1, obs1);
+	base_partran_seq_ptr->model2ctl_ip(pars1);
 	for (int i_run=1; i_run<n_runs; ++i_run)
 	{
 		std::cout << string(message.str().size(), '\b');
@@ -343,6 +344,7 @@ void  MorrisMethod::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run
 		pars0 = pars1;
 		obs0 = obs1;
 		run1_ok = run_manager.get_run(i_run, pars1, obs1, par_name_1, null_value);
+		base_partran_seq_ptr->model2ctl_ip(pars1);
 		// Add run0 to obs_stats
 		if (run0_ok)
 		{

@@ -36,13 +36,13 @@ class runpy:
               out_c, len(out), 
               ctypes.c_char_p(stor_file), ctypes.c_char_p(rundir), n_fail_max)
 
-    def create_yamr(self, stor_file,
-                    port, info_filename, n_fail_max):
+    def create_yamr(self, stor_file, port, info_filename, 
+                    n_fail_max, overdue_resched_fac, overdue_giveup_fac):
         func = self.runlib.rmic_create_yamr
         func.restype = ctypes.c_void_p
-        self.obj = func(
-              ctypes.c_char_p(stor_file), 
-              ctypes.c_char_p(port), ctypes.c_char_p(info_filename), n_fail_max)
+        self.obj = func( ctypes.c_char_p(stor_file), 
+              ctypes.c_char_p(port), ctypes.c_char_p(info_filename), 
+              n_fail_max, ctypes.c_double(overdue_resched_fac), ctypes.c_double(overdue_giveup_fac))
 
 
     def initialize(self, par_names, obs_names):
@@ -175,11 +175,6 @@ def test_serial():
     pass
 
 def test_yamr():
-    comline = ['storage1.exe']
-    tpl = ['input.tpl']
-    inp = ['input.dat']
-    ins = ['output.ins']
-    out = ['output.dat']
     stor_file = 'tmp_run_data.bin'
     port = '4005'
     out_file = 'yamr_test.out'
@@ -190,7 +185,7 @@ def test_yamr():
                  'head13', 'head14', 'head15', 'head16']
 
     run_mngr = runpy()
-    run_mngr.create_yamr(comline, tpl, inp, ins, out, stor_file, port, out_file, 3)
+    run_mngr.create_yamr(stor_file, port, out_file, 3, 1.15, 100.0)
     run_mngr.initialize(par_names, obs_names)
     #add 3 runs
     nruns = 3
@@ -209,5 +204,5 @@ def test_yamr():
     pass
 
 if __name__=="__main__":
-    test_serial() 
-    #test_yamr()
+    #test_serial() 
+    test_yamr()

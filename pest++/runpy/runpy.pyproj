@@ -8,7 +8,7 @@
     <StartupFile>runpy.py</StartupFile>
     <SearchPath>
     </SearchPath>
-    <WorkingDirectory>C:\Users\Dave\Documents\Visual Studio 2013\Projects\pestpp\pest++\runpy</WorkingDirectory>
+    <WorkingDirectory>C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\runpy</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>runpy</Name>
     <RootNamespace>runpy</RootNamespace>

@@ -3,7 +3,8 @@ OBJECTS	:= main.o \
            GsaAbstractBase.o \
            MorrisMethod.o \
 	   sobol.o \
-	   Stats.o
+	   Stats.o \
+	   TornadoPlot.o 
  
 
 $(OUT): $(OBJECTS)

@@ -232,8 +232,8 @@ Parameters ParameterInfo::get_init_value(const vector<string> &keys) const
 	for (vector<string>::const_iterator i=keys.begin(); i!=iend; ++i)
 	{
 		v_ptr = get_parameter_rec_ptr(*i);
-		if (!v_ptr) {
-			init_value.insert(*i, v_ptr->ubnd);
+		if (v_ptr) {
+			init_value.insert(*i, v_ptr->init_value);
 		}
 		else {
 			init_value.insert(*i, Parameters::no_data);
