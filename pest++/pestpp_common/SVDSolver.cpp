@@ -250,7 +250,12 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 			*(par_transform.get_scale_ptr()));
 		file_manager.close_file(filename.str());
 		if (save_nextjac) {
-			jacobian.save();
+			if (description.find("base") != string::npos)
+				output_file_writer.write_jco(true, "jco",jacobian);
+			else
+				output_file_writer.write_jco(false, "jco",jacobian);
+
+			//jacobian.save();
 		}
 		if (!optimum_run.obs_valid() || ModelRun::cmp_lt(best_upgrade_run, optimum_run, *regul_scheme_ptr))
 		{
@@ -266,7 +271,11 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 				optimum_run.get_obs(), *(optimum_run.get_obj_func_ptr()),
 				optimum_run.get_ctl_pars());
 			file_manager.close_file("rei");
-			jacobian.save();
+			if (description.find("base") != string::npos)
+				output_file_writer.write_jco(true, "jco", jacobian);
+			else
+				output_file_writer.write_jco(false, "jco", jacobian);
+			//jacobian.save();
 			// jacobian calculated next iteration will be at the current parameters and
 			// will be more accurate than the one caluculated at the begining of this iteration
 			save_nextjac = true;
@@ -687,7 +696,8 @@ ModelRun SVDSolver::iteration_reuse_jac(RunManagerAbstract &run_manager, Termina
 		par_transform.model2ctl_ip(tmp_pars);
 		new_base_run.update_ctl(tmp_pars, tmp_obs);
 	}
-	jacobian.save("jcb");
+	//jacobian.save("jcb");
+	output_file_writer.write_jco(true, "jcb", jacobian);
 	// sen file for this iteration
 	output_file_writer.append_sen(file_manager.sen_ofstream(), termination_ctl.get_iteration_number() + 1,
 		jacobian, *(new_base_run.get_obj_func_ptr()), get_parameter_group_info(), *regul_scheme_ptr, false);
@@ -729,7 +739,8 @@ void SVDSolver::iteration_jac(RunManagerAbstract &run_manager, TerminationContro
 
 	performance_log->log_event("saving jacobian and sen files");
 	// save jacobian
-	jacobian.save("jcb");
+	//jacobian.save("jcb");
+	output_file_writer.write_jco(true,"jcb", jacobian);
 
 	//Update parameters and observations for base run
 	{

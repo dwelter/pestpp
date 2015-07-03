@@ -55,6 +55,31 @@ extern "C"
 		char *,
 		double *,
 		int *);
+//mio_initialise(ifail, numin, numout, npar, nobs, precision, decpoint)
+	//void mio_initialise_(int *, int *, int *, int *, int *);// , char *, char *);
+//mio_put_file(ifail,itype,inum,filename)
+	//void mio_put_file_(int *, int *, int *, char *);
+//mio_get_file(ifail,itype,inum,filename)
+	//void mio_get_file_(int *, int *, int *, char *);
+//mio_store_instruction_set(ifail)
+	//void mio_store_instruction_set_(int *);
+//mio_process_template_files(ifail,npar,apar)
+	//void mio_process_template_files_(int *, int *, char *);
+//mio_delete_output_files(ifail,asldir)
+	//void mio_delete_output_files_(int *, char *);
+//mio_write_model_input_files(ifail,npar,apar,pval,asldir)
+	//void mio_write_model_input_files_(int *, int *, char *, double *, char *);
+//mio_read_model_output_files(ifail,nobs,aobs,obs,instruction,asldir)
+	//void mio_read_model_output_files_(int *, int *, char *, double *, char *, char *);
+//mio_finalise(ifail)
+	//void mio_finalise_(int *);
+//mio_get_status(template_status_out,instruction_status_out)
+	//void mio_get_status_(int *, int *);
+//mio_get_dimensions(numinfile_out,numoutfile_out)
+	//void mio_get_dimensions_(int *, int *);
+//mio_get_message_string(ifail,amessage_out)
+	//void mio_get_message_string_(int *, char *);
+
 }
 
 string RunManagerSerial::tpl_err_msg(int i)
@@ -123,6 +148,7 @@ void RunManagerSerial::run()
 	int nobs = obs_name_vec.size();
 	int ntpl = tplfile_vec.size();
 	int nins = insfile_vec.size();
+	//mio_initialise_(&ifail,&ntpl, &nins, &npar, &nobs);
 	stringstream message;		
 	bool isDouble = true;
 	bool forceRadix = true;

@@ -647,3 +647,96 @@ void OutputFileWriter::write_svd_iteration(int iteration_no)
 		fout_svd << "------------------------------------------------------------------------------" << endl;
 		fout_svd << "OPTIMISATION ITERATION NO.        : " << iteration_no << endl << endl;
 }
+
+void OutputFileWriter::write_jco(bool isBaseIter, string ext, const Jacobian &jco)
+{
+
+	ofstream &jout = file_manager.open_ofile_ext(ext, ios::out | ios::binary);
+	
+	vector<string> obs_names;
+	vector<string> par_names;
+	
+	if (isBaseIter)
+	{
+		obs_names = pest_scenario.get_ctl_ordered_obs_names();
+		par_names = pest_scenario.get_ctl_ordered_par_names();
+		vector<string> pi_names = pest_scenario.get_ctl_ordered_pi_names();
+		obs_names.insert(obs_names.end(), pi_names.begin(), pi_names.end());
+		vector<string> jco_par_names = jco.get_base_numeric_par_names();
+		if (par_names.size() != jco_par_names.size())
+		{
+			/*cout << "warning: base parameters missing from binary jco..." << endl;
+			cout << "         no need to write control file order." << endl;
+			isBaseIter = false;
+			par_names = jco.get_base_numeric_par_names();
+			obs_names = jco.get_sim_obs_names();*/
+			auto new_end = std::remove_if(par_names.begin(), par_names.end(), [&](string &pname)
+			{
+				return find(jco_par_names.begin(), jco_par_names.end(), pname) == jco_par_names.end();
+			});
+			par_names.erase(new_end,par_names.end());
+		}
+	}
+	else
+	{
+		par_names = jco.get_base_numeric_par_names();
+		obs_names = jco.get_sim_obs_names();
+	}
+
+	int n_par = par_names.size();
+	int n_obs_and_pi = obs_names.size();
+	int n;
+	int tmp;
+	double data;
+	char par_name[12];
+	char obs_name[20];
+
+	// write header
+	tmp = -n_par;
+	jout.write((char*)&tmp, sizeof(tmp));
+	tmp = -n_obs_and_pi;
+	jout.write((char*)&tmp, sizeof(tmp));
+
+	//write number nonzero elements in jacobian (includes prior information)
+	//n = matrix.nonZeros();
+	n = jco.get_nonzero();
+	jout.write((char*)&n, sizeof(n));
+
+	//write matrix
+	n = 0;
+	map<string, double>::const_iterator found_pi_par;
+	map<string, double>::const_iterator not_found_pi_par;
+
+	//Eigen::SparseMatrix<double> matrix_T(matrix);
+	Eigen::SparseMatrix<double> matrix_T;
+	if (isBaseIter)
+		matrix_T = jco.get_matrix(obs_names,par_names);
+	else
+		matrix_T = jco.get_matrix();
+	matrix_T.transpose();
+	for (int icol = 0; icol<jco.get_outersize(); ++icol)
+	{
+		for (SparseMatrix<double>::InnerIterator it(matrix_T, icol); it; ++it)
+		{
+			data = it.value();
+			n = it.row() + 1 + it.col() * matrix_T.rows();
+			jout.write((char*)&(n), sizeof(n));
+			jout.write((char*)&(data), sizeof(data));
+		}
+	}
+	//save parameter names
+	for (vector<string>::const_iterator b = par_names.begin(), e = par_names.end();
+		b != e; ++b) {
+		string_to_fortran_char(*b, par_name, 12);
+		jout.write(par_name, 12);
+	}
+
+	//save observation and Prior information names
+	for (vector<string>::const_iterator b = obs_names.begin(), e = obs_names.end();
+		b != e; ++b) {
+		string_to_fortran_char(*b, obs_name, 20);
+		jout.write(obs_name, 20);
+	}
+	//save observation names (part 2 prior information)
+	file_manager.close_file(ext);
+}

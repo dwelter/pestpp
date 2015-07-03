@@ -225,8 +225,8 @@ ModelRun SVDASolver::iteration_reuse_jac(RunManagerAbstract &run_manager, Termin
 		new_base_run = update_run(run_manager, base_run);
 	}
 
-	jacobian.save("jcs");
-
+	//jacobian.save("jcs");
+	output_file_writer.write_jco(false, "jcs", jacobian);
 	// sen file for this iteration
 	output_file_writer.append_sen(file_manager.sen_ofstream(), termination_ctl.get_iteration_number() + 1,
 		jacobian, *(new_base_run.get_obj_func_ptr()), get_parameter_group_info(), *regul_scheme_ptr, true);
@@ -352,7 +352,8 @@ void SVDASolver::iteration_jac(RunManagerAbstract &run_manager, TerminationContr
 	}
 	performance_log->log_event("saving jacobian and sen files");
 	// save jacobian
-	jacobian.save("jcs");
+	//jacobian.save("jcs");
+	output_file_writer.write_jco(false,"jcs", jacobian);
 
 	//Update parameters and observations for base run
 	{
