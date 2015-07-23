@@ -1,0 +1,36 @@
+CXX = 'g++-mp-4.9'
+CCC = 'g++-mp-4.9'
+FC = gfortran-mp-4.9
+#GCCLIBDIR :='/opt/hesm/apps/gcc-4.9.0/lib64'
+#GCCLIBDIR :='/opt/local/gcc-4.9.0/lib64'
+GCCLIBDIR :='/opt/local/lib/gcc49'
+INCLUDES := '-I ../ -I ../common -I ../iopp -I ../yamr -I ../pestpp_common -I ../linear_analysis'
+LIBLDIR := '-L $(GCCLIBDIR) -L /opt/local/lib/gcc49 -L ../common -L ../iopp -L ../yamr -L ../pestpp_common -L ../pest_routines  -L ../propack -L ../linear_analysis'
+LIBS :=  '-lpestpp_com -lrunmanager  -liopp  -lcommon -lpest_routines -l propack -llapack -lblas -llinear_analysis -lgfortran $(GCCLIBDIR)/libquadmath.a'
+
+CFLAGS := '-pthread -std=c++11 -O2' 
+FFLAGS := '-O2 -c -cpp'
+LFLAGS := ''
+
+all:
+	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=${INCLUDES} -C common -f makefile_linux libcommon.a
+	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=${INCLUDES} -C iopp -f makefile_linux libiopp.a
+	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=${INCLUDES} -C yamr -f makefile_linux librunmanager.a
+	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=${INCLUDES} -C propack -f makefile_linux libpropack.a
+	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=${INCLUDES} -C pest_routines -f makefile_linux libpest_routines.a
+	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=${INCLUDES} -C pestpp_common -f makefile_linux libpestpp_com.a
+	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=${INCLUDES} -C linear_analysis -f makefile_linux liblinear_analysis.a
+	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=$(INCLUDES) LFLAGS=$(LFLAGS) LIBS=$(LIBS) GCCLIBDIR=$(GCCLIBDIR) LIBLDIR=$(LIBLDIR) LIBS=$(LIBS) -C pest++ -f makefile_linux pestpp
+	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=$(INCLUDES) LFLAGS=$(LFLAGS) LIBS=$(LIBS) GCCLIBDIR=$(GCCLIBDIR) LIBLDIR=$(LIBLDIR) LIBS=$(LIBS) -C morris_meth -f makefile_linux gsa.exe
+	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=$(INCLUDES) LIBS=$(LIBS) GCCLIBDIR=$(GCCLIBDIR) LIBLDIR=$(LIBLDIR) LIBS=$(LIBS) -C run_manager_fortran_test -f makefile_linux fortran_test
+clean:
+	make -C common -f makefile_linux clean
+	make -C iopp -f makefile_linux clean
+	make -C yamr -f makefile_linux clean
+	make -C propack -f makefile_linux clean
+	make -C pest_routines -f makefile_linux clean
+	make -C pestpp_common -f makefile_linux clean
+	make -C linear_analysis -f makefile_linux clean
+	make -C pest++ -f makefile_linux clean
+	make -C morris_meth -f makefile_linux clean
+	make -C run_manager_fortran_test -f makefile_linux clean
