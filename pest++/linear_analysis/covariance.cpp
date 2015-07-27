@@ -445,6 +445,7 @@ vector<string> Mat::read_namelist(ifstream &in, int &nitems)
 			string i_str = to_string(i);
 			throw runtime_error("Mat::read_namelist() error: '*' found in item name: " + name+", item number: "+i_str);
 		}
+		pest_utils::strip_ip(name);
 		pest_utils::upper_ip(name);
 		if (find(names.begin(), names.end(), name) != names.end())
 			throw runtime_error("Mat::read_namelist() error: duplicate name: " + name + " found in name list");
