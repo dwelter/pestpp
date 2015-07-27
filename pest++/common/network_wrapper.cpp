@@ -22,6 +22,7 @@
 #include <sys/select.h>
 #include<sys/wait.h>
 #include <errno.h>
+#include <signal.h>
 #endif
 
 using namespace std;
