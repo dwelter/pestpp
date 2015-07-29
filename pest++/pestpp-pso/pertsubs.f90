@@ -14,7 +14,7 @@ subroutine pertpart(iiter,gindex)
   integer,intent(in)::gindex,iiter
   integer::ipart,iparm,spin
   
-  double precision::local,global
+  double precision::local,global,r1
 !----------------------------------------------------------------------------------------    
 
 ! calculate current value for inertia
@@ -40,11 +40,15 @@ subroutine pertpart(iiter,gindex)
           trim(partrans(iparm)) == 'eqlog') then
         !
         if (neibr == 1) then
-          local  = c1*rand()*(pbest(ipart,iparm) - partval(ipart,iparm))
-          global = c2*rand()*(pbest(gneibr(ipart),iparm) - partval(ipart,iparm))
+          call random_number(r1)
+          local  = c1*r1*(pbest(ipart,iparm) - partval(ipart,iparm))
+          call random_number(r1)
+          global = c2*r1*(pbest(gneibr(ipart),iparm) - partval(ipart,iparm))
         else
-          local  = c1*rand()*(pbest(ipart,iparm) - partval(ipart,iparm))
-          global = c2*rand()*(pbest(gindex,iparm) - partval(ipart,iparm))
+          call random_number(r1)
+          local  = c1*r1*(pbest(ipart,iparm) - partval(ipart,iparm))
+          call random_number(r1)
+          global = c2*r1*(pbest(gindex,iparm) - partval(ipart,iparm))
         end if
         !
 !       handle precision issues for when particle stops moving
@@ -78,11 +82,15 @@ subroutine pertpart(iiter,gindex)
             spin = spin + 1
             !
             if (neibr == 1) then
-              local  = c1*rand()*(pbest(ipart,iparm) - partval(ipart,iparm))
-              global = c2*rand()*(pbest(gneibr(ipart),iparm) - partval(ipart,iparm))
+              call random_number(r1)
+              local  = c1*r1*(pbest(ipart,iparm) - partval(ipart,iparm))
+              call random_number(r1)
+              global = c2*r1*(pbest(gneibr(ipart),iparm) - partval(ipart,iparm))
             else
-              local  = c1*rand()*(pbest(ipart,iparm) - partval(ipart,iparm))
-              global = c2*rand()*(pbest(gindex,iparm) - partval(ipart,iparm))
+              call random_number(r1)
+              local  = c1*r1*(pbest(ipart,iparm) - partval(ipart,iparm))
+              call random_number(r1)
+              global = c2*r1*(pbest(gindex,iparm) - partval(ipart,iparm))
             end if
             !
             partvel(ipart,iparm) = inertia*partvel(ipart,iparm) + local + global
@@ -157,7 +165,7 @@ subroutine pertpareto(iiter)
   integer,intent(in)::iiter
   integer::i,ipart,iparm,irep,repcnt,spin,k1,k2,gindex
   
-  double precision::local,global,r1,r2,viomin
+  double precision::local,global,r1,r2,r3, viomin
 !----------------------------------------------------------------------------------------    
 
 ! calculate current value for inertia
@@ -226,7 +234,7 @@ subroutine pertpareto(iiter)
         repcnt = 0
         !
 !       select random repository position
-        r1 = rand()
+        call random_number(r1)
         k1 = int(r1*dble(nrepact)) + 1
         !
         do irep=1,nrep+npop
@@ -241,7 +249,7 @@ subroutine pertpareto(iiter)
         end do
         !
 !       accept or reject repository position based on random number and fitness
-        r2 = rand()
+        call random_number(r2)
         !
         if (r2 < fitness(k2)) then
           !
@@ -261,13 +269,17 @@ subroutine pertpareto(iiter)
         !
         if (nrepact == 1) then
           !
-          local  = c1*rand()*(pbest(ipart,iparm) - partval(ipart,iparm))
-          global = c2*rand()*(pbest(gindex,iparm) - partval(ipart,iparm))
+          call random_number(r3)
+          local  = c1*r3*(pbest(ipart,iparm) - partval(ipart,iparm))
+          call random_number(r3)
+          global = c2*r3*(pbest(gindex,iparm) - partval(ipart,iparm))
           !
         else
           !
-          local  = c1*rand()*(pbest(ipart,iparm) - partval(ipart,iparm))
-          global = c2*rand()*(reposit(gindex,iparm) - partval(ipart,iparm))
+          call random_number(r3)  
+          local  = c1*r3*(pbest(ipart,iparm) - partval(ipart,iparm))
+          call random_number(r3)
+          global = c2*r3*(reposit(gindex,iparm) - partval(ipart,iparm))
           !
         end if
         !
@@ -292,13 +304,17 @@ subroutine pertpareto(iiter)
             !
             if (nrepact == 0) then
               !
-              local  = c1*rand()*(pbest(ipart,iparm) - partval(ipart,iparm))
-              global = c2*rand()*(pbest(gindex,iparm) - partval(ipart,iparm))
+              call random_number(r3)
+              local  = c1*r3*(pbest(ipart,iparm) - partval(ipart,iparm))
+              call random_number(r3)
+              global = c2*r3*(pbest(gindex,iparm) - partval(ipart,iparm))
               !
             else
               !
-              local  = c1*rand()*(pbest(ipart,iparm) - partval(ipart,iparm))
-              global = c2*rand()*(reposit(gindex,iparm) - partval(ipart,iparm))
+              call random_number(r3)
+              local  = c1*r3*(pbest(ipart,iparm) - partval(ipart,iparm))
+              call random_number(r3)
+              global = c2*r3*(reposit(gindex,iparm) - partval(ipart,iparm))
               !
             end if
             !

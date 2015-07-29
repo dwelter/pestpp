@@ -7,9 +7,21 @@ subroutine psoest(basnam)
   use psodat
 
   implicit none
-
+  
 ! specifications:
+!---------------------------------------------------------------------------------------- 
+!---------------------------------------------------------------------------------------- 
+! interfaces
 !----------------------------------------------------------------------------------------
+  interface 
+  subroutine readrst(basnam)
+  integer::ipart,iparm,irep,iobs,igp,ipto
+  integer,dimension(:),allocatable::measgp
+  
+  character(len=100), optional, intent(in)::basnam
+  character(len=100)::scrc,fnam
+  end subroutine readrst
+  end interface
 !---------------------------------------------------------------------------------------- 
 ! external routines for run management via YAMR
 !----------------------------------------------------------------------------------------
@@ -32,6 +44,8 @@ subroutine psoest(basnam)
   double precision::gbest,gmbest,gpbest,objmin
   
   character(len=100),intent(in)::basnam
+  integer :: n_seed
+  integer, dimension(:), allocatable :: a_seed
 !----------------------------------------------------------------------------------------
 !----------------------------------------------------------------------------------------
 
@@ -62,7 +76,12 @@ subroutine psoest(basnam)
     call listini(basnam,gindex)
     !
 !-- generate random parameter sets and velocities, set pbest, and add corresponding runs to the queue  
-    call srand(iseed)
+    call random_seed (size = n_seed)
+    allocate(a_seed(1:n_seed))
+    a_seed = iseed
+    call random_seed(put = a_seed)
+    deallocate(a_seed)
+    
     !
     inpar = 0
     !
@@ -129,7 +148,8 @@ subroutine psoest(basnam)
       modfail(ipart) = 0
       !
 !     get model run results
-      call modelrm(0,ipart-1,fail)
+      irun = ipart-1
+      call modelrm(0,irun,fail)
       !
       modfail(ipart) = fail
       !
@@ -224,7 +244,8 @@ subroutine psoest(basnam)
       modfail(ipart) = 0
       !
 !---- get model run results
-      call modelrm(0,ipart-1,fail)
+      irun = ipart-1
+      call modelrm(0,irun,fail)
       !
       modfail(ipart) = fail
       !
@@ -311,7 +332,8 @@ subroutine psoest(basnam)
   err = rmif_run()
   !
 ! get model run results
-  call modelrm(0,0,fail)
+  irun = 0
+  call modelrm(0,irun,fail)
   !
 ! write pbest and gbest to file
   call writebest(gindex,basnam)

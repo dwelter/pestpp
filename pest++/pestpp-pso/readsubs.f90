@@ -530,7 +530,7 @@ subroutine readrst(basnam)
   integer::ipart,iparm,irep,iobs,igp,ipto
   integer,dimension(:),allocatable::measgp
   
-  character(len=100),intent(in)::basnam
+  character(len=100), optional, intent(in)::basnam
   character(len=100)::scrc,fnam
 !----------------------------------------------------------------------------------------
 

@@ -575,7 +575,7 @@ subroutine repgrid(repred)
         !
 !       there are too many particles in the repository still, so let's remove one      
 !       select a particle susceptible to removal randomly
-        r1 = rand()
+        call random_number(r1)
         k1 = int(r1*dble(rmcnt)) + 1
         !
 !       count our way up until we arrive at the randomly selected particle

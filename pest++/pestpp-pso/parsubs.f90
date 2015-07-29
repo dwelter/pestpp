@@ -15,7 +15,7 @@ subroutine unisamp(ipart,velonly)
   integer,intent(in)::ipart,velonly
   integer::iparm
   
-  double precision::tpar,tlbnd,tubnd
+  double precision::tpar,tlbnd,tubnd, r1
 !----------------------------------------------------------------------------------------
 
    do iparm=1,npar
@@ -31,7 +31,8 @@ subroutine unisamp(ipart,velonly)
          !
          if (trim(partrans(iparm)) == 'log') then
            !
-           tpar = (log10(parubnd(iparm)) - log10(parlbnd(iparm)))*rand() + &
+           call random_number(r1)
+           tpar = (log10(parubnd(iparm)) - log10(parlbnd(iparm)))*r1 + &
                   log10(parlbnd(iparm))
            !
            partval(ipart,iparm) = 1.0d+01**(tpar)
@@ -41,13 +42,15 @@ subroutine unisamp(ipart,velonly)
            tlbnd = (log10(parlbnd(iparm)))/(log10(base(iparm)))
            tubnd = (log10(parubnd(iparm)))/(log10(base(iparm)))
            !
-           tpar = (tubnd - tlbnd)*rand() + tlbnd
+           call random_number(r1)
+           tpar = (tubnd - tlbnd)*r1 + tlbnd
            !
            partval(ipart,iparm) = base(iparm)**(tpar)
            !
          else if (trim(partrans(iparm)) == 'none') then
            !
-           partval(ipart,iparm) = (parubnd(iparm) - parlbnd(iparm))*rand() + &
+           call random_number(r1)
+           partval(ipart,iparm) = (parubnd(iparm) - parlbnd(iparm))*r1 + &
                                    parlbnd(iparm)
            !
          end if
@@ -67,7 +70,8 @@ subroutine unisamp(ipart,velonly)
 !        if eqlog is used, vmax is specified as a fraction of maxrange (which was calc'd 
 !                             previously in the readpst subroutine)
          !
-         partvel(ipart,iparm) = 2.0d+00*vmax(iparm)*rand() - vmax(iparm)
+         call random_number(r1)
+         partvel(ipart,iparm) = 2.0d+00*vmax(iparm)*r1 - vmax(iparm)
          !
        end if
        !

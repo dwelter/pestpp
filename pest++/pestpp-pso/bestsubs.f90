@@ -326,7 +326,7 @@ subroutine pdominance(ipart,iiter)
         !
 !       either both positions are within ptogp upper bounds, or current position
 !       is nearly as good as the pbest position - choose one randomly 
-        r1 = rand()
+        call random_number(r1)
         !
         if (r1 < 5.0d-01) then
           !

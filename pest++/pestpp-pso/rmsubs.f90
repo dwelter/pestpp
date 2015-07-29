@@ -24,12 +24,7 @@ subroutine instantrm(port)
   storfile      = 'tmp_run_data.bin    '
   rmi_info_file = 'run_manager_info.txt'
   !
-  err = rmif_create_yamr(comline,  20, 1,      &
-                         tempfle,  50, ntplfle,&
-                         infle,    50, ntplfle,&
-                         insfle,   50, ninsfle,&
-                         outfle,   50, ninsfle,&
-                         storfile, 20,         &
+  err = rmif_create_yamr(storfile, 20,         &
                          port,     20,         &
                          rmi_info_file, 20,  1,&
                          1.00d+02, 1.00d+02)
