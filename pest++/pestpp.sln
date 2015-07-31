@@ -138,6 +138,7 @@ Global
 		{38231990-B7FE-469D-9DCD-C588D81163E3}.Debug|Win32.ActiveCfg = Debug|Win32
 		{38231990-B7FE-469D-9DCD-C588D81163E3}.Debug|Win32.Build.0 = Debug|Win32
 		{38231990-B7FE-469D-9DCD-C588D81163E3}.Debug|x64.ActiveCfg = Debug|x64
+		{38231990-B7FE-469D-9DCD-C588D81163E3}.Debug|x64.Build.0 = Debug|x64
 		{38231990-B7FE-469D-9DCD-C588D81163E3}.debug2_dll|Any CPU.ActiveCfg = debug2_dll|Win32
 		{38231990-B7FE-469D-9DCD-C588D81163E3}.debug2_dll|ARM.ActiveCfg = debug2_dll|Win32
 		{38231990-B7FE-469D-9DCD-C588D81163E3}.debug2_dll|Mixed Platforms.ActiveCfg = debug2_dll|Win32
