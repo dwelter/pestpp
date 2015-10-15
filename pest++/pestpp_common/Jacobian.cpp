@@ -417,7 +417,7 @@ std::vector<Eigen::Triplet<double> >  Jacobian::calc_derivative(const string &nu
 		{
 			//Apply Split threshold on derivative if applicable
 			bool success = false;
-			if (run_list.size() == 3 && splitswh_flag == true && splitthresh > 0)
+			if (run_list.size() == 3 && splitswh_flag == true && splitswh_flag)
 			{
 				sen_vec.clear();
 				list<JacobianRun>::const_iterator iter_run = run_list.begin();

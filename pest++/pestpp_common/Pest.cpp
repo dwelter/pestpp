@@ -308,7 +308,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 			convert_ip(tokens[5], pgi.derincmul);
 			convert_ip(tokens[6], pgi.dermthd);
 			if (n_tokens >= 8) convert_ip(tokens[7], pgi.splitthresh);
-			if (n_tokens >= 9) convert_ip(tokens[8], pgi.splitthresh);
+			if (n_tokens >= 9) convert_ip(tokens[8], pgi.splitreldiff);
 			base_group_info.insert_group(name, pgi);
 		}
 		else if (section == "PARAMETER DATA")

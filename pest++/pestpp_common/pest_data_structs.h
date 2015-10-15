@@ -103,6 +103,7 @@ public:
 	const ParameterGroupRec* get_group_by_groupname(const string &group_name) const { return groups.at(group_name); }
 	string get_group_name(const string &par_name) const;
 	const ParameterGroupInfo& operator=(const ParameterGroupInfo &rhs);
+	bool have_switch_derivative() const;
 	~ParameterGroupInfo();
 private:
 	unordered_map<string, ParameterGroupRec*> groups;

@@ -139,6 +139,21 @@ const ParameterGroupInfo& ParameterGroupInfo::operator=(const ParameterGroupInfo
 	return *this;
 }
 
+
+bool ParameterGroupInfo::have_switch_derivative() const
+{
+	bool switch_der = false;
+	for (const auto irec : groups)
+	{
+		if (lower_cp(irec.second->forcen) == "switch")
+		{
+			switch_der = true;
+			break;
+		}
+	}
+	return switch_der;
+}
+
 ParameterGroupInfo::~ParameterGroupInfo()
 {
 	unordered_map<string, ParameterGroupRec*>::iterator it(groups.begin());
