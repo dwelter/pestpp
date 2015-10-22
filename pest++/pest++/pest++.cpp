@@ -627,7 +627,7 @@ int main(int argc, char* argv[])
 			cout << "  complement for linear-based conditional uncertainty " << endl;
 			cout << "  propogation.  For a derviation from Bayes equation, see " << endl;
 			cout << "  M. N. Fienen, J. E. Doherty, R. J. Hunt, and H. W. Reeves. " << endl;
-			cout << "  1010. 'Using Prediction Uncertainty Analysis to Design " << endl;
+			cout << "  2010. 'Using Prediction Uncertainty Analysis to Design " << endl;
 			cout << "  Hydrologic Monitoring Networks : Example Applications " << endl;
 			cout << "  from the Great Lakes Water Availability Pilot Project'. " << endl;
 			cout << "  See PEST++ V3 documentation for implementation details." << endl;
@@ -639,7 +639,7 @@ int main(int argc, char* argv[])
 			fout_rec << "      Schur's complement for linear-based conditional uncertainty " << endl;
 			fout_rec << "      propogation.  For a derviation from Bayes equation, see " << endl;
 			fout_rec << "      M. N. Fienen, J. E. Doherty, R. J. Hunt, and H. W. Reeves. " << endl;
-			fout_rec << "      1010. 'Using Prediction Uncertainty Analysis to Design " << endl;
+			fout_rec << "      2010. 'Using Prediction Uncertainty Analysis to Design " << endl;
 			fout_rec << "      Hydrologic Monitoring Networks : Example Applications " << endl;
 			fout_rec << "      from the Great Lakes Water Availability Pilot Project'. " << endl;
 			fout_rec << "      See PEST++ V3 documentation for implementation details." << endl;

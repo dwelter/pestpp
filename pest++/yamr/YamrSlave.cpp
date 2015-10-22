@@ -250,7 +250,7 @@ int YAMRSlave::recv_message(NetPackage &net_pack, struct timeval *tv)
 				err = net_pack.recv(i); // error or lost connection
 				if (err == -2) {
 					vector<string> sock_name = w_getnameinfo_vec(i);
-					cerr << "recieved corrupt message from to master: " << sock_name[0] << ":" << sock_name[1] << endl;
+					cerr << "received corrupt message from to master: " << sock_name[0] << ":" << sock_name[1] << endl;
 					w_close(i); // bye!
 					FD_CLR(i, &master); // remove from master set
 					err = -999;
@@ -370,16 +370,17 @@ NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, N
 			}
 			else if (net_pack.get_type() == NetPackage::PackType::PING)
 			{
-				cout << "ping request recieved...";
+				//cout << "ping request received...";
 				net_pack.reset(NetPackage::PackType::PING, 0, 0, "");
 				const char* data = "\0";
 				err = send_message(net_pack, &data, 0);
 				if (err != 1)
 				{
+					cerr << "Error sending ping response to master...quit" << endl;
 					f_terminate.set(true);
 					exit(-1);
 				}
-				cout << "ping response sent" << endl;
+				//cout << "ping response sent" << endl;
 			}
 			else if (net_pack.get_type() == NetPackage::PackType::REQ_KILL)
 			{
@@ -512,7 +513,7 @@ void YAMRSlave::start(const string &host, const string &port)
 			bool safe_data = NetPackage::check_string(net_pack.get_data(), 0, net_pack.get_data().size());
 			if (!safe_data)
 			{
-				cerr << "recieved corrupt parameter name packet from master" << endl;
+				cerr << "received corrupt parameter name packet from master" << endl;
 				cerr << "terminating execution ..." << endl << endl;
 				net_pack.reset(NetPackage::PackType::CORRUPT_MESG, 0, 0, "");
 				char data;
@@ -527,7 +528,7 @@ void YAMRSlave::start(const string &host, const string &port)
 			bool safe_data = NetPackage::check_string(net_pack.get_data(), 0, net_pack.get_data().size());
 			if (!safe_data)
 			{
-				cerr << "recieved corrupt observation name packet from master" << endl;
+				cerr << "received corrupt observation name packet from master" << endl;
 				cerr << "terminating execution ..." << endl << endl;
 				net_pack.reset(NetPackage::PackType::CORRUPT_MESG, 0, 0, "");
 				char data;
@@ -640,7 +641,7 @@ void YAMRSlave::start(const string &host, const string &port)
 		}
 		else if (net_pack.get_type() == NetPackage::PackType::PING)
 		{
-			cout << "ping request recieved...";
+			cout << "ping request received...";
 			net_pack.reset(NetPackage::PackType::PING, 0, 0, "");
 			const char* data = "\0";
 			err = send_message(net_pack, &data, 0);
