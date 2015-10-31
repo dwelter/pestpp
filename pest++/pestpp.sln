@@ -2,6 +2,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "utilities", "utilities", "{348A41E4-80F6-4B7C-AC48-DBD6BF7FB25D}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pest++", "pest++\pest++.vcxproj", "{38231990-B7FE-469D-9DCD-C588D81163E3}"
 	ProjectSection(ProjectDependencies) = postProject
 		{D25CC810-E9E9-4920-82A4-6F585214480E} = {D25CC810-E9E9-4920-82A4-6F585214480E}
@@ -63,8 +65,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ascii2pbin", "ascii2pbin\as
 		{0193689C-8ED2-4DCA-9389-5D233739B1F0} = {0193689C-8ED2-4DCA-9389-5D233739B1F0}
 		{AA6E1EC6-2E3D-42EE-B997-2F40814DD2C9} = {AA6E1EC6-2E3D-42EE-B997-2F40814DD2C9}
 	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "utilities", "utilities", "{348A41E4-80F6-4B7C-AC48-DBD6BF7FB25D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pbin_dump", "pbin_dump\pbin_dump.vcxproj", "{A1A1CA1A-11F7-4279-BE16-C7B1EB15C14E}"
 	ProjectSection(ProjectDependencies) = postProject
