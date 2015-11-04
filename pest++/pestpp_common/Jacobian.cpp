@@ -739,6 +739,11 @@ void Jacobian::read(const string &filename)
 	ifstream fin;
 	fin.open(filename.c_str(), ifstream::binary|ios::in);
 
+	if (!fin)
+	{	
+		throw runtime_error("unable to open binary jacobian file: " + filename + " for reading");
+	}
+
 	int n_par;
 	int n_nonzero;
 	int n_obs_and_pi;

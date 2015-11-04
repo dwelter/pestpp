@@ -674,10 +674,12 @@ ModelRun SVDSolver::iteration_reuse_jac(RunManagerAbstract &run_manager, Termina
 
 	vector<string> numeric_parname_vec = par_transform.ctl2numeric_cp(new_base_run.get_ctl_pars()).get_keys();
 
-	cout << "  reading previously computed jacobian... " << endl;
-	string jac_filenane = filename;
-	if (filename.empty()) jac_filenane = file_manager.build_filename("jcb");
-	jacobian.read(jac_filenane);
+	
+	string jac_filename = filename;
+	if (filename.empty()) jac_filename = file_manager.build_filename("jcb");
+	cout << "  reading previously computed jacobian:  " << jac_filename << endl;
+	file_manager.get_ofstream("rec") << "  reading previously computed jacobian:  " << jac_filename << endl;
+	jacobian.read(jac_filename);
 
 	if (rerun_base)
 	{

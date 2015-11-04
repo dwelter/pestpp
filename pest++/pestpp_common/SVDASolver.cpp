@@ -214,11 +214,13 @@ ModelRun SVDASolver::iteration_reuse_jac(RunManagerAbstract &run_manager, Termin
 	ostream &os = file_manager.rec_ofstream();
 	vector<string> numeric_par_names_vec;
 
-	cout << "  reading previously computed jacobian... " << endl;
+	
 
-	string jac_filenane = filename;
-	if (filename.empty()) jac_filenane = file_manager.build_filename("jcs");
-	jacobian.read(jac_filenane);
+	string jac_filename = filename;
+	if (filename.empty()) jac_filename = file_manager.build_filename("jcs");
+	cout << "  reading previously computed jacobian: " << jac_filename << endl;
+	file_manager.get_ofstream("rec") << "  reading previously computed jacobian: " << jac_filename << endl;
+	jacobian.read(jac_filename);
 
 	if (rerun_base)
 	{
