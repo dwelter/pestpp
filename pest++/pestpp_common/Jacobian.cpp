@@ -719,14 +719,16 @@ void Jacobian::save(const string &ext) const
 	//save parameter names
 	for(vector<string>::const_iterator b=base_numeric_par_names.begin(), e=base_numeric_par_names.end();
 		b!=e; ++b) {
-		string_to_fortran_char(*b, par_name, 12);
+		string l = lower_cp(*b);
+		string_to_fortran_char(l, par_name, 12);
 		jout.write(par_name, 12);
 	}
 
 	//save observation and Prior information names
 	for(vector<string>::const_iterator b=base_sim_obs_names.begin(), e=base_sim_obs_names.end();
 		b!=e; ++b) {
-		string_to_fortran_char(*b, obs_name, 20);
+		string l = lower_cp(*b);
+		string_to_fortran_char(l, obs_name, 20);
 		jout.write(obs_name, 20);
 	}
 	//save observation names (part 2 prior information)
