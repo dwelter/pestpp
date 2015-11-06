@@ -81,6 +81,10 @@ void YAMRSlave::process_ctl_file(const string &ctl_filename)
 	insfile_vec.clear();
 	outfile_vec.clear();
 	fin.open(ctl_filename);
+	if (!fin)
+	{
+		throw runtime_error("YAMR Slave unable to open pest control file: " + ctl_filename);
+	}
 	try {
 		for (lnum = 1, sec_begin_lnum = 1; getline(fin, line); ++lnum)
 		{
