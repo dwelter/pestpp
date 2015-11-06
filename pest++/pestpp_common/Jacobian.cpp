@@ -762,7 +762,16 @@ void Jacobian::read(const string &filename)
 	////read number nonzero elements in jacobian (observations + prior information)
 	fin.read((char*)&n_nonzero, sizeof(n_nonzero));
 
+	file_manager.get_ofstream("rec") << "  -->reading " << n_nonzero <<
+		" jacobian elements for " << n_par << " parameters and" << endl << 
+		"  --> " << n_obs_and_pi << " observations and prior info" << endl;
+
+	cout << "  -->reading " << n_nonzero <<
+		" jacobian elements for " << n_par << " parameters and" << endl <<
+		"  --> " << n_obs_and_pi << " observations and prior info" << endl;
+
 	// record current position in file
+
 	streampos begin_sen_pos = fin.tellg();
 
 	//advance to parameter names section
@@ -808,6 +817,10 @@ void Jacobian::read(const string &filename)
 	matrix.setZero();
 	matrix.setFromTriplets(triplet_list.begin(), triplet_list.end());
 	fin.close();
+
+	cout << "   ....done" << endl;
+	file_manager.get_ofstream("rec") << "   ....done" << endl;
+
 }
 
 void Jacobian::report_errors(std::ostream &fout)
