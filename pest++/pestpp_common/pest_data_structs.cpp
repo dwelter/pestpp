@@ -279,7 +279,6 @@ ostream& operator<< (ostream &os, const PestppOptions& val)
 	}
 	os << "    uncertainty flag = " << left << setw(20) << val.get_uncert_flag() << endl;
 	os << "    parameter covariance file = " << left << setw(20) << val.get_parcov_filename() << endl;
-	os << "    expected objective function value = " << left << setw(20) << val.get_expected_obj() << endl;
 	os << "    prediction names = " << endl;
 	for (auto &pname : val.get_prediction_names())
 		os << right << setw(15) << pname << endl;
@@ -395,10 +394,12 @@ void PestppOptions::parce_line(const string &line)
 		{
 			convert_ip(value, parcov_filename);
 		}
-		else if (key == "EXPECTED_OBJ")
+
+		else if ((key == "BASE_JACOBIAN") || (key == "BASE_JACOBIAN_FILENAME"))
 		{
-			convert_ip(value, expected_obj);
+			convert_ip(value, basejac_filename);
 		}
+
 		else if (key == "OVERDUE_RESCHED_FAC"){
 			convert_ip(value, overdue_reched_fac);
 		}

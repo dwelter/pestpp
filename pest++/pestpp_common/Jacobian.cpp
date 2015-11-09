@@ -43,6 +43,17 @@ Jacobian::Jacobian(FileManager &_file_manager) : file_manager(_file_manager)
 {
 }
 
+
+void Jacobian::set_base_numeric_pars(Parameters _base_numeric_pars)
+{
+	base_numeric_parameters = _base_numeric_pars;
+}
+
+void Jacobian::set_base_sim_obs(Observations _base_sim_obs) 
+{
+	base_sim_observations = _base_sim_obs;
+}
+
 Jacobian::~Jacobian() {
 }
 

@@ -473,11 +473,15 @@ int main(int argc, char* argv[])
 			{
 				if (restart_ctl.get_restart_option() != RestartController::RestartOption::NONE  && restart_ctl.get_iteration_type() == RestartController::IterationType::SUPER)
 				{
-					base_svd.iteration_reuse_jac(*run_manager_ptr, termination_ctl, cur_run, false, file_manager.build_filename("jcb"));
+					string filename = pest_scenario.get_pestpp_options().get_basejac_filename();
+					filename = ((filename.empty()) ? file_manager.build_filename("jcb") : filename);
+					base_svd.iteration_reuse_jac(*run_manager_ptr, termination_ctl, cur_run, false, filename);
 				}
 				else if (restart_ctl.get_restart_option() == RestartController::RestartOption::REUSE_JACOBIAN && n_base_iter < 0)
 				{
-					base_svd.iteration_reuse_jac(*run_manager_ptr, termination_ctl, cur_run, false, file_manager.build_filename("jco"));
+					string filename = pest_scenario.get_pestpp_options().get_basejac_filename();
+					filename = ((filename.empty()) ? file_manager.build_filename("jco") : filename);
+					base_svd.iteration_reuse_jac(*run_manager_ptr, termination_ctl, cur_run, true, filename);
 				}
 				else if (n_base_iter < 0)
 				{
@@ -508,7 +512,9 @@ int main(int argc, char* argv[])
 				else if (restart_ctl.get_restart_option() == RestartController::RestartOption::REUSE_JACOBIAN)
 				{
 					bool calc_first_jacobian = false;
-					cur_run = base_svd.iteration_reuse_jac(*run_manager_ptr, termination_ctl, cur_run, true, file_manager.build_filename("jco"));
+					string filename = pest_scenario.get_pestpp_options().get_basejac_filename();
+					filename = ((filename.empty()) ? file_manager.build_filename("jco") : filename);
+					cur_run = base_svd.iteration_reuse_jac(*run_manager_ptr, termination_ctl, cur_run, true, filename);
 					// Run the model once with the current parameters to compute the observations
 					cur_run = base_svd.solve(*run_manager_ptr, termination_ctl, n_base_iter, cur_run, optimum_run, restart_ctl, calc_first_jacobian);
 					termination_ctl.check_last_iteration();
@@ -683,13 +689,6 @@ int main(int argc, char* argv[])
 			fout_rec << "      non-zero weighted observations." << endl;
 				
 							
-			if (pest_scenario.get_pestpp_options().get_expected_obj() > 0.0)
-			{
-				fout_rec << "Note: The observation covariance matrix has also been scaled by " << endl;
-				fout_rec << "      by the expected objective function of " << setw(20) << pest_scenario.get_pestpp_options().get_expected_obj() << '.' << endl;
-				fout_rec << "      to account for the anticipated level of measurement noise " << endl;
-			}
-
 			fout_rec << endl;
 			fout_rec << "Scaled observation weights used to form observation noise covariance matrix:" << endl;
 			fout_rec << endl << setw(20) << "observation" << setw(20) << "group" << setw(20) << "scaled_weight" << endl;

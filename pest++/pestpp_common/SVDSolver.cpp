@@ -699,7 +699,29 @@ ModelRun SVDSolver::iteration_reuse_jac(RunManagerAbstract &run_manager, Termina
 		//Update parameters and observations for base run
 		par_transform.model2ctl_ip(tmp_pars);
 		new_base_run.update_ctl(tmp_pars, tmp_obs);
+
+		//if at least one parameter in jacobian par names is in the base run, then update the jacobian pars and obs
+		bool found = false;
+		for (auto &par : tmp_pars)
+		{
+			auto i = find(jacobian.parameter_list().begin(), jacobian.parameter_list().end(), par.first);
+
+			if (i != jacobian.parameter_list().end())
+			{
+				found = true;
+				break;
+			}
+		}
+		
+		if (found)
+		{
+			jacobian.set_base_numeric_pars(par_transform.ctl2numeric_cp(new_base_run.get_ctl_pars()));
+			jacobian.set_base_sim_obs(new_base_run.get_obs());
+		}
+		
+
 	}
+
 	//jacobian.save("jcb");
 	output_file_writer.write_jco(true, "jcb", jacobian);
 	// sen file for this iteration

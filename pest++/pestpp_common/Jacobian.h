@@ -98,6 +98,9 @@ public:
 	vector<string> get_base_numeric_par_names() const{ return base_numeric_par_names;  }
 	vector<string> get_sim_obs_names() const{ return base_sim_obs_names;  }
 
+	void set_base_numeric_pars(Parameters _base_numeric_pars);
+	void set_base_sim_obs(Observations _base_sim_obs);
+
 protected:
 	vector<string> base_numeric_par_names;  //ordered names of base parameters used to calculate the jacobian
 	Parameters base_numeric_parameters;  //values of base parameters used to calculate the jacobian

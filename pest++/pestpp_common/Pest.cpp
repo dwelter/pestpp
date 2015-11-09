@@ -521,7 +521,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_uncert_flag(true);
 	pestpp_options.set_prediction_names(vector<string>());
 	pestpp_options.set_parcov_filename(string());
-	pestpp_options.set_expected_obj(0.0);
+	pestpp_options.set_basejac_filename(string());
 	for(vector<string>::const_iterator b=pestpp_input.begin(),e=pestpp_input.end();
 		b!=e; ++b) {
 			pestpp_options.parce_line(*b);

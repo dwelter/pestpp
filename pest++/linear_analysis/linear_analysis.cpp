@@ -93,7 +93,7 @@ ObservationInfo normalize_weights_by_residual(Pest &pest_scenario, map<string, d
 
 	const ObservationRec* obs_rec;
 	double weight;
-	double exp_obj = pest_scenario.get_pestpp_options().get_expected_obj();
+	double exp_obj = 0.0;
 	if (exp_obj > 0.0)
 	{
 		if (pest_scenario.get_regul_scheme_ptr())
