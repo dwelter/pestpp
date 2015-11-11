@@ -56,29 +56,41 @@ extern "C"
 		double *,
 		int *);
 //mio_initialise(ifail, numin, numout, npar, nobs, precision, decpoint)
-	//void mio_initialise_(int *, int *, int *, int *, int *);// , char *, char *);
+	//void mio_initialise_(int *, int *, int *, int *, int * , char *, char *);
+	void MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_INITIALISE(int *, int *, int *, int *, int *);
 //mio_put_file(ifail,itype,inum,filename)
 	//void mio_put_file_(int *, int *, int *, char *);
+	void MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PUT_FILE(int *, int *, int *, char *);
 //mio_get_file(ifail,itype,inum,filename)
 	//void mio_get_file_(int *, int *, int *, char *);
+	void MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_FILE(int *, int *, int *, char *);
 //mio_store_instruction_set(ifail)
 	//void mio_store_instruction_set_(int *);
+	void MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_STORE_INSTRUCTION_SET(int *);
 //mio_process_template_files(ifail,npar,apar)
 	//void mio_process_template_files_(int *, int *, char *);
+	void MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PROCESS_TEMPLATE_FILES(int *, int *, char *);
 //mio_delete_output_files(ifail,asldir)
 	//void mio_delete_output_files_(int *, char *);
+	void MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_DELETE_OUTPUT_FILES(int *, char *);
 //mio_write_model_input_files(ifail,npar,apar,pval,asldir)
-	//void mio_write_model_input_files_(int *, int *, char *, double *, char *);
+	//void mio_write_model_input_files_(int *, int *, char *, double *);//, char *); - last arg is optional
+	void MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_WRITE_MODEL_INPUT_FILES(int *, int *, char *, double *);
 //mio_read_model_output_files(ifail,nobs,aobs,obs,instruction,asldir)
-	//void mio_read_model_output_files_(int *, int *, char *, double *, char *, char *);
+	//void mio_read_model_output_files_(int *, int *, char *, double *, char *);//, char *); - last arg is optional
+	void MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_READ_MODEL_OUTPUT_FILES(int *, int *, char *, double *, char *);
 //mio_finalise(ifail)
 	//void mio_finalise_(int *);
+	void MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_FINALISE(int *);
 //mio_get_status(template_status_out,instruction_status_out)
 	//void mio_get_status_(int *, int *);
+	void MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_STATUS(int *, int *);
 //mio_get_dimensions(numinfile_out,numoutfile_out)
 	//void mio_get_dimensions_(int *, int *);
+	void MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_DIMENSIONS(int *, int *);
 //mio_get_message_string(ifail,amessage_out)
 	//void mio_get_message_string_(int *, char *);
+	void MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_MESSAGE_STRING(int *, char *);
 
 }
 
@@ -137,6 +149,15 @@ RunManagerSerial::RunManagerSerial(const vector<string> _comline_vec,
 	cout << "              starting serial run manager ..." << endl << endl;
 }
 
+void RunManagerSerial::throw_mio_error(string base_message)
+{
+	int ifail;
+	char message[500];
+	MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_MESSAGE_STRING(&ifail, message);
+	string smess = fortran_str_2_string(message, 500);
+	throw runtime_error("model input/output error:" + base_message + "\n" + smess);
+}
+
 void RunManagerSerial::run()
 {
 	int ifail;
@@ -148,13 +169,65 @@ void RunManagerSerial::run()
 	int nobs = obs_name_vec.size();
 	int ntpl = tplfile_vec.size();
 	int nins = insfile_vec.size();
-	//mio_initialise_(&ifail,&ntpl, &nins, &npar, &nobs);
+
+	MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_INITIALISE(&ifail, &ntpl, &nins, &npar, &nobs);
+	if (ifail != 0) throw_mio_error("initializing mio module");
+
+	//put template files
+	int inum = 1;
+	int itype = 1;
+	for (auto &file : tplfile_vec)
+	{
+		MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PUT_FILE(&ifail, &itype, &inum, String2CharPtr(file).get_char_ptr());
+		if (ifail != 0) throw_mio_error("putting template file" + file);
+		inum++;
+	}
+
+	//put model in files
+	inum = 1;
+	itype = 2;
+	for (auto &file : inpfile_vec)
+	{
+		MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PUT_FILE(&ifail, &itype, &inum, String2CharPtr(file).get_char_ptr());
+		if (ifail != 0) throw_mio_error("putting model input file" + file);
+		inum++;
+	}
+
+	//put instructions files
+	inum = 1;
+	itype = 3;
+	for (auto &file : insfile_vec)
+	{
+		MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PUT_FILE(&ifail, &itype, &inum, String2CharPtr(file).get_char_ptr());
+		if (ifail != 0) throw_mio_error("putting instruction file" + file);
+		inum++;
+	}
+
+	//put model out files
+	inum = 1;
+	itype = 4;
+	for (auto &file : outfile_vec)
+	{
+		MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PUT_FILE(&ifail, &itype, &inum, String2CharPtr(file).get_char_ptr());
+		if (ifail != 0) throw_mio_error("putting model output file" + file);
+		inum++;
+	}
+
+	//check template files
+	char *par_name_arr = StringvecFortranCharArray(par_name_vec, 12, pest_utils::TO_LOWER).get_prt();
+	MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PROCESS_TEMPLATE_FILES(&ifail, &npar, par_name_arr);
+	if (ifail != 0)throw_mio_error("error in template files");
+
+	//build instruction set
+	MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_STORE_INSTRUCTION_SET(&ifail);
+	if (ifail != 0) throw_mio_error("error building instruction set");
+
+
 	stringstream message;		
 	bool isDouble = true;
 	bool forceRadix = true;
-	//TemplateFiles tpl_files(isDouble, forceRadix, tplfile_vec, inpfile_vec, par_name_vec);
-	//InstructionFiles ins_files(insfile_vec, outfile_vec);
 	std::vector<double> obs_vec;
+	char *err_instruct;
 	// This is necessary to support restart as some run many already be complete
 	vector<int> run_id_vec;
 	int nruns = get_outstanding_run_ids().size();
@@ -222,19 +295,24 @@ void RunManagerSerial::run()
 				{
 					throw PestError("Error running model: invalid parameter value returned");
 				}
-				wrttpl_(&ntpl, StringvecFortranCharArray(tplfile_vec, 50).get_prt(),
+				/*wrttpl_(&ntpl, StringvecFortranCharArray(tplfile_vec, 50).get_prt(),
 					StringvecFortranCharArray(inpfile_vec, 50).get_prt(),
 					&npar, StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
 					&par_values[0], &ifail);
 				if (ifail != 0)
 				{
 					throw PestError("Error processing template file");
-				}								
+				}			*/
+
+				MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_WRITE_MODEL_INPUT_FILES(&ifail, &npar, StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
+											 &par_values[0]);
+				if (ifail != 0) throw_mio_error("error writing model input files from template files");
+
 				for (int i = 0, n_exec = comline_vec.size(); i < n_exec; ++i)
 				{
 					system(comline_vec[i].c_str());
 				}
-				obs_vec.resize(nobs, RunStorage::no_data);
+				/*obs_vec.resize(nobs, RunStorage::no_data);
 				readins_(&nins, StringvecFortranCharArray(insfile_vec, 50).get_prt(),
 					StringvecFortranCharArray(outfile_vec, 50).get_prt(),
 					&nobs, StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
@@ -242,7 +320,12 @@ void RunManagerSerial::run()
 				if (ifail != 0)
 				{
 					throw PestError("Error processing instruction file");
-				}				
+				}	*/
+
+				MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_READ_MODEL_OUTPUT_FILES(&ifail, &nobs, StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
+					&obs_vec[0], err_instruct);
+				if (ifail != 0) throw_mio_error("error processing model output files: offending instruction:" + string(err_instruct));
+
 				// check parameters and observations for inf and nan
 				if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))
 				{

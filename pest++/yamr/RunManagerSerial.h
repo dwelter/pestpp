@@ -30,6 +30,7 @@ public:
 		const std::vector<std::string> _insfile_vec, const std::vector<std::string> _outfile_vec,
 		const std::string &stor_filename, const std::string &run_dir, int _max_run_fail=1);
 	virtual void run();
+	void throw_mio_error(std::string base_message);
 	~RunManagerSerial(void);
 private:
 	std::string run_dir;
