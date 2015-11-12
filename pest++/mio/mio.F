@@ -47,7 +47,7 @@ module model_input_output_interface
       character (len=200)                :: afile        ! Temporary character storage
       character (len=80)                 :: errsub       ! Character string for error header
       character (len=500)                :: amessage=' ' ! Error message string
-      character (len=2000)               :: dline        ! Character string for text storage
+      character (len=20000)               :: dline        ! Character string for text storage
 
 ! -- SUBROUTINES
 
@@ -74,7 +74,7 @@ subroutine mio_get_message_string(ifail,amessage_out)
       implicit none
 
       integer, intent(out)       :: ifail
-      character*(*), intent(out) :: amessage_out
+      character*500 :: amessage_out
 
       ifail=0
       amessage_out=amessage
@@ -198,8 +198,8 @@ subroutine mio_put_file(ifail,itype,inum,filename)
        integer, intent(out)            :: ifail      ! indicates error condition
        integer, intent(in)             :: itype      ! type of file
        integer, intent(in)             :: inum       ! file number
-       character (len=*), intent(in)   :: filename   ! name of file
-
+       !character (len=*), intent(in)   :: filename   ! name of file
+       character*50  :: filename
        integer                         :: icount,i,j,k
        
        errsub = 'Error in subroutine MIO_PUT_FILE:'
@@ -451,7 +451,8 @@ subroutine mio_process_template_files(ifail,npar,apar)
         
         integer, intent(out)                :: ifail ! indicates error condition
         integer, intent(in)                 :: npar  ! number of parameters
-        character (len=12), dimension(npar)  :: apar  ! parameter names
+        !character (len=*), dimension(npar)  :: apar  ! parameter names
+        character*50  :: apar(npar)
 !! Note that parameter names must be supplied in lower case.
         
         integer                             :: ipar,i,ierr,iline,nblc,j2,j1,jfail,nnw,iunit
@@ -656,7 +657,8 @@ subroutine mio_write_model_input_files(ifail,npar,apar,pval)
         
         integer, intent(out)                             :: ifail  ! error condition indicator
         integer, intent(in)                              :: npar   ! number of parameters
-        character (len=*), intent(in), dimension(npar)   :: apar   ! parameter names
+        !character (len=*), intent(in), dimension(npar)   :: apar   ! parameter names
+        character*50  :: apar(npar)
         double precision, intent(inout), dimension(npar) :: pval   ! parameter values
         !character (len=*), intent(in), optional          :: asldir ! slave directory - jwhite
         character (len=1)                                :: asldir ! slave directory - jwhite
@@ -808,9 +810,11 @@ subroutine mio_read_model_output_files(ifail,nobs,aobs,obs,instruction)
         
         integer, intent(out)                            :: ifail   ! error indicator
         integer, intent(in)                             :: nobs    ! number of observations
-        character (len=*), intent(in), dimension(nobs)  :: aobs    ! observation names
+        !character (len=*), intent(in), dimension(nobs)  :: aobs    ! observation names
+        character*50 :: aobs(nobs)
         double precision, intent(out), dimension(nobs)  :: obs     ! observation values
-        character (len=*), intent(out)                  :: instruction ! instruction of error
+        !character (len=*), intent(out)                  :: instruction ! instruction of error
+        character*500  :: instruction
         !character (len=*), optional                     :: asldir   ! slave working directory
         character (len=1)                               :: asldir   ! slave working directory - jwhite
         

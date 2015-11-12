@@ -178,7 +178,7 @@ void RunManagerSerial::run()
 	int itype = 1;
 	for (auto &file : tplfile_vec)
 	{
-		MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PUT_FILE(&ifail, &itype, &inum, String2CharPtr(file).get_char_ptr());
+		MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PUT_FILE(&ifail, &itype, &inum, string_as_fortran_char_ptr(file,50));
 		if (ifail != 0) throw_mio_error("putting template file" + file);
 		inum++;
 	}
@@ -188,7 +188,7 @@ void RunManagerSerial::run()
 	itype = 2;
 	for (auto &file : inpfile_vec)
 	{
-		MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PUT_FILE(&ifail, &itype, &inum, String2CharPtr(file).get_char_ptr());
+		MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PUT_FILE(&ifail, &itype, &inum, string_as_fortran_char_ptr(file, 50));
 		if (ifail != 0) throw_mio_error("putting model input file" + file);
 		inum++;
 	}
@@ -198,7 +198,7 @@ void RunManagerSerial::run()
 	itype = 3;
 	for (auto &file : insfile_vec)
 	{
-		MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PUT_FILE(&ifail, &itype, &inum, String2CharPtr(file).get_char_ptr());
+		MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PUT_FILE(&ifail, &itype, &inum, string_as_fortran_char_ptr(file, 50));
 		if (ifail != 0) throw_mio_error("putting instruction file" + file);
 		inum++;
 	}
@@ -208,17 +208,16 @@ void RunManagerSerial::run()
 	itype = 4;
 	for (auto &file : outfile_vec)
 	{
-		MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PUT_FILE(&ifail, &itype, &inum, String2CharPtr(file).get_char_ptr());
+		MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PUT_FILE(&ifail, &itype, &inum, string_as_fortran_char_ptr(file, 50));
 		if (ifail != 0) throw_mio_error("putting model output file" + file);
 		inum++;
 	}
 
 	//check template files
-	char *par_name_arr = StringvecFortranCharArray(par_name_vec, 12, pest_utils::TO_LOWER).get_prt();
-	MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PROCESS_TEMPLATE_FILES(&ifail, &npar, par_name_arr);
+	MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PROCESS_TEMPLATE_FILES(&ifail, &npar, StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt());
 	if (ifail != 0)throw_mio_error("error in template files");
 
-	//build instruction set
+	////build instruction set
 	MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_STORE_INSTRUCTION_SET(&ifail);
 	if (ifail != 0) throw_mio_error("error building instruction set");
 
@@ -227,7 +226,7 @@ void RunManagerSerial::run()
 	bool isDouble = true;
 	bool forceRadix = true;
 	std::vector<double> obs_vec;
-	char *err_instruct;
+	char *err_instruct = new char[500];
 	// This is necessary to support restart as some run many already be complete
 	vector<int> run_id_vec;
 	int nruns = get_outstanding_run_ids().size();
@@ -302,26 +301,25 @@ void RunManagerSerial::run()
 				if (ifail != 0)
 				{
 					throw PestError("Error processing template file");
-				}			*/
-
+				}			
+*/
 				MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_WRITE_MODEL_INPUT_FILES(&ifail, &npar, StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
 											 &par_values[0]);
 				if (ifail != 0) throw_mio_error("error writing model input files from template files");
-
 				for (int i = 0, n_exec = comline_vec.size(); i < n_exec; ++i)
 				{
 					system(comline_vec[i].c_str());
 				}
-				/*obs_vec.resize(nobs, RunStorage::no_data);
-				readins_(&nins, StringvecFortranCharArray(insfile_vec, 50).get_prt(),
+				obs_vec.resize(nobs, RunStorage::no_data);
+				/*readins_(&nins, StringvecFortranCharArray(insfile_vec, 50).get_prt(),
 					StringvecFortranCharArray(outfile_vec, 50).get_prt(),
 					&nobs, StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
 					&obs_vec[0], &ifail);
 				if (ifail != 0)
 				{
 					throw PestError("Error processing instruction file");
-				}	*/
-
+				}	
+*/
 				MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_READ_MODEL_OUTPUT_FILES(&ifail, &nobs, StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
 					&obs_vec[0], err_instruct);
 				if (ifail != 0) throw_mio_error("error processing model output files: offending instruction:" + string(err_instruct));
@@ -373,7 +371,8 @@ void RunManagerSerial::run()
 			}
 		}
 	}
-
+	MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_FINALISE(&ifail);
+	if (ifail != 0) throw_mio_error("error finalizing model interface module");
 	total_runs += success_runs;
 	std::cout << string(message.str().size(), '\b');
 	message.str("");

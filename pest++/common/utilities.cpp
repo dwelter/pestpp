@@ -191,6 +191,13 @@ void string_to_fortran_char(string in, char out[], int length, CASE_CONV conv_ty
 	memcpy(out, in.data(), str_len);
 }
 
+char *string_as_fortran_char_ptr(string in, int size)
+{
+	char* out = new char[size];
+	string_to_fortran_char(in, out, size);
+	return out;
+}
+
 StringvecFortranCharArray::StringvecFortranCharArray(const vector<string> in, int length, CASE_CONV conv_type)
 {
 	fort_array = new char[in.size() * length];
