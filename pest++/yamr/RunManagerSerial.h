@@ -21,6 +21,7 @@
 
 #include "RunManagerAbstract.h"
 #include <string>
+#include "model_interface.h"
 
 class RunManagerSerial : public RunManagerAbstract
 {
@@ -33,6 +34,8 @@ public:
 	void throw_mio_error(std::string base_message);
 	~RunManagerSerial(void);
 private:
+	ModelInterface mi;
+
 	std::string run_dir;
 	static std::string tpl_err_msg(int i);
 	static std::string ins_err_msg(int i);

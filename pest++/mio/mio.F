@@ -46,7 +46,7 @@ module model_input_output_interface
 
       character (len=200)                :: afile        ! Temporary character storage
       character (len=80)                 :: errsub       ! Character string for error header
-      character (len=500)                :: amessage=' ' ! Error message string
+      character*500               :: amessage=' ' ! Error message string
       character (len=20000)               :: dline        ! Character string for text storage
 
 ! -- SUBROUTINES
@@ -74,11 +74,16 @@ subroutine mio_get_message_string(ifail,amessage_out)
       implicit none
 
       integer, intent(out)       :: ifail
-      character*500 :: amessage_out
+      integer :: i
+      character(len=500),intent(out) :: amessage_out
 
       ifail=0
-      amessage_out=amessage
-
+      !amessage_out=amessage
+      !do i=1,len(amessage)
+      !    amessage_out(i:i) = amessage(i:i)
+      !end do
+      !write(*,*)amessage_out
+      write(*,*)amessage
       return
 
 end subroutine mio_get_message_string

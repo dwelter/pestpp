@@ -223,6 +223,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="model_interface.cpp" />
     <ClCompile Include="network_package.cpp" />
     <ClCompile Include="network_wrapper.cpp" />
     <ClCompile Include="pest_error.cpp" />
@@ -232,6 +233,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config_os.h" />
+    <ClInclude Include="model_interface.h" />
     <ClInclude Include="network_package.h" />
     <ClInclude Include="network_wrapper.h" />
     <ClInclude Include="pest_error.h" />

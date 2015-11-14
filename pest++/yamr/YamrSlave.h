@@ -30,9 +30,11 @@
 #include "pest_error.h"
 #include "network_package.h"
 #include "Transformable.h"
+#include "model_interface.h"
 
 class YAMRSlave{
 public:
+	YAMRSlave();
 	void init_network(const std::string &host, const std::string &port);
 	void start(const std::string &host, const std::string &port);
 	~YAMRSlave();
@@ -71,6 +73,12 @@ private:
 	std::vector<std::string> obs_name_vec;
 	std::vector<std::string> par_name_vec;
 	
+	ModelInterface mi;
+	void run_async(pest_utils::thread_flag* terminate, pest_utils::thread_flag* finished,
+		pest_utils::thread_exceptions *shared_execptions,
+		vector<string>* par_name_vec, vector<double>* par_values,
+		vector<string>* obs_name_vec, vector<double>* obs_vec);
+
 };
 
 #endif /* YAMRSLAVE_H_ */

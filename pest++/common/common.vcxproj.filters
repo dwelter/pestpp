@@ -36,6 +36,9 @@
     <ClCompile Include="system_variables.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="model_interface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Transformable.h">
@@ -57,6 +60,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="system_variables.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="model_interface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -14,6 +14,11 @@ using namespace pest_utils;
 
 int  linpack_wrap(void);
 
+YAMRSlave::YAMRSlave() :mi()
+{
+
+}
+
 void YAMRSlave::init_network(const string &host, const string &port)
 {
 	w_init();
@@ -327,6 +332,13 @@ NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, N
 	bool done = false;
 	int err = 0;
 	
+	if (!mi.get_initialized())
+	{
+		//initialize the model interface
+		mi.initialize(tplfile_vec, inpfile_vec, insfile_vec,
+			outfile_vec, comline_vec, par_name_vec, obs_name_vec);
+	}
+
 	thread_flag f_terminate(false);
 	thread_flag f_finished(false);
 	thread_exceptions shared_execptions;
@@ -340,12 +352,11 @@ NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, N
 			par_values.push_back(i.second);
 		}
 		
-		vector<double> obs_vec;	
-		thread run_thread(w_write_run_read, &f_terminate, &f_finished, &shared_execptions,
-			&tplfile_vec, &outfile_vec, &insfile_vec,
-			&inpfile_vec, &par_name_vec, &par_values,
-			&obs_name_vec, &obs_vec, &comline_vec);
+		vector<double> obs_vec;		
+		thread run_thread(&YAMRSlave::run_async, this, &f_terminate, &f_finished, &shared_execptions,
+		   &par_name_vec, &par_values, &obs_name_vec, &obs_vec);
 		pest_utils::thread_RAII raii(run_thread);
+		
 		while (true)
 		{
 			if (shared_execptions.size() > 0)
@@ -449,6 +460,13 @@ NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, N
 }
 
 
+void YAMRSlave::run_async(pest_utils::thread_flag* terminate, pest_utils::thread_flag* finished, pest_utils::thread_exceptions *shared_execptions,
+	vector<string>* par_name_vec, vector<double>* par_values,
+	vector<string>* obs_name_vec, vector<double>* obs_vec)
+{
+	mi.run(terminate,finished,shared_execptions, *par_name_vec,*par_values,*obs_name_vec,*obs_vec);
+	cout << "done" << endl;
+}
 
 
 void YAMRSlave::check_io()
@@ -540,23 +558,23 @@ void YAMRSlave::start(const string &host, const string &port)
 				exit(-1);
 			}
 			Serialization::unserialize(net_pack.get_data(), obs_name_vec);
-			cout << "checking model IO files...";
-			try
-			{
-				check_io();
-				//check_par_obs();
-			}
-			catch (exception &e)
-			{
-				cerr << e.what() << endl;
-				net_pack.reset(NetPackage::PackType::IO_ERROR, 0, 0,"");
-				string err(e.what());
-				vector<char> data(err.begin(), err.end());
-				data.push_back('\0');
-				int np_err = send_message(net_pack, &data, data.size());
-				exit(-1);
-			}
-			cout << "done" << endl;
+			//cout << "checking model IO files...";
+			//try
+			//{
+			//	check_io();
+			//	//check_par_obs();
+			//}
+			//catch (exception &e)
+			//{
+			//	cerr << e.what() << endl;
+			//	net_pack.reset(NetPackage::PackType::IO_ERROR, 0, 0,"");
+			//	string err(e.what());
+			//	vector<char> data(err.begin(), err.end());
+			//	data.push_back('\0');
+			//	int np_err = send_message(net_pack, &data, data.size());
+			//	exit(-1);
+			//}
+			//cout << "done" << endl;
 		}
 		else if(net_pack.get_type() == NetPackage::PackType::REQ_LINPACK)
 		{
