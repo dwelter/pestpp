@@ -8,9 +8,9 @@ INCLUDES := '-I ../ -I ../common -I ../iopp -I ../yamr -I ../pestpp_common -I ..
 LIBLDIR := '-L $(GCCLIBDIR) -L /opt/local/lib/gcc49 -L ../common -L ../iopp -L ../yamr -L ../pestpp_common -L ../pest_routines  -L ../propack -L ../linear_analysis -L ../mio'
 LIBS :=  '-lpestpp_com -lrunmanager  -liopp  -lcommon -lpest_routines -l propack -llapack -lblas -llinear_analysis -lmio -lgfortran $(GCCLIBDIR)/libquadmath.a'
 
-CFLAGS := '-pthread -std=c++11 -O2 -fno-underscoring' 
-FFLAGS := '-O2 -c -cpp -fno-underscoring'
-LFLAGS := ''
+#CFLAGS := '-pthread -std=c++11 -O2 ' 
+CFLAGS := '-pthread -std=c++11 -O2'
+FFLAGS := '-O2 -c -cpp'
 
 all:
 	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=${INCLUDES} -C mio -f makefile_linux libmio.a

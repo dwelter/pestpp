@@ -7,7 +7,7 @@ INCLUDES := '-I ../ -I ../common -I ../iopp -I ../yamr -I ../pestpp_common -I ..
 LIBLDIR := '-L $(GCCLIBDIR) -L /opt/hesm/lib64 -L /usr/lib64 -L/opt/local/lib64 -L ../common -L ../iopp -L ../yamr -L ../pestpp_common -L ../pest_routines -L ../mio -L ../propack -L ../linear_analysis'
 LIBS :=  '-lpestpp_com -lrunmanager  -liopp  -lcommon -lpest_routines -lmio -l propack -llapack -lblas -llinear_analysis -lgfortran $(GCCLIBDIR)/libquadmath.a'
 
-#CFLAGS := '-pthread -std=c++11 -Wl,--no-as-needed -g -gdwarf-2' 
+#CFLAGS := '-pthread -std=c++11 -Wl --no-as-needed -g -gdwarf-2' 
 #FFLAGS := '-g -gdwarf-2 c -cpp'
 
 CFLAGS := '-pthread -std=c++11 -Wl,--no-as-needed -O2' 
