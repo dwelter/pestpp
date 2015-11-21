@@ -149,7 +149,7 @@ void ModelInterface::throw_mio_error(string base_message)
 	int ifail;
 	char message[500];
 	cout << endl << endl << " MODEL INTERFACE ERROR:" << endl;
-	MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_MESSAGE_STRING(&ifail, message);
+	DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_MESSAGE_STRING(&ifail, message);
 	throw runtime_error("model input/output error:" + base_message);
 }
 
@@ -161,7 +161,7 @@ void ModelInterface::set_files()
 	int itype = 1;
 	for (auto &file : tplfile_vec)
 	{
-		MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PUT_FILE(&ifail, &itype, &inum, pest_utils::string_as_fortran_char_ptr(file, 50));
+		DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PUT_FILE(&ifail, &itype, &inum, pest_utils::string_as_fortran_char_ptr(file, 50));
 		if (ifail != 0) throw_mio_error("putting template file" + file);
 		inum++;
 	}
@@ -171,7 +171,7 @@ void ModelInterface::set_files()
 	itype = 2;
 	for (auto &file : inpfile_vec)
 	{
-		MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PUT_FILE(&ifail, &itype, &inum, pest_utils::string_as_fortran_char_ptr(file, 50));
+		DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PUT_FILE(&ifail, &itype, &inum, pest_utils::string_as_fortran_char_ptr(file, 50));
 		if (ifail != 0) throw_mio_error("putting model input file" + file);
 		inum++;
 	}
@@ -181,7 +181,7 @@ void ModelInterface::set_files()
 	itype = 3;
 	for (auto &file : insfile_vec)
 	{
-		MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PUT_FILE(&ifail, &itype, &inum, pest_utils::string_as_fortran_char_ptr(file, 50));
+		DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PUT_FILE(&ifail, &itype, &inum, pest_utils::string_as_fortran_char_ptr(file, 50));
 		if (ifail != 0) throw_mio_error("putting instruction file" + file);
 		inum++;
 	}
@@ -191,7 +191,7 @@ void ModelInterface::set_files()
 	itype = 4;
 	for (auto &file : outfile_vec)
 	{
-		MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PUT_FILE(&ifail, &itype, &inum, pest_utils::string_as_fortran_char_ptr(file, 50));
+		DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PUT_FILE(&ifail, &itype, &inum, pest_utils::string_as_fortran_char_ptr(file, 50));
 		if (ifail != 0) throw_mio_error("putting model output file" + file);
 		inum++;
 	}
@@ -237,17 +237,17 @@ void ModelInterface::initialize(vector<string> &_par_name_vec, vector<string> &_
 	int ntpl = tplfile_vec.size();
 	int nins = insfile_vec.size();
 
-	MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_INITIALISE(&ifail, &ntpl, &nins, &npar, &nobs);
+	DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_INITIALISE(&ifail, &ntpl, &nins, &npar, &nobs);
 	if (ifail != 0) throw_mio_error("initializing mio module");
 
 	set_files();
 
 	//check template files
-	MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PROCESS_TEMPLATE_FILES(&ifail, &npar, pest_utils::StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt());
+	DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PROCESS_TEMPLATE_FILES(&ifail, &npar, pest_utils::StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt());
 	if (ifail != 0)throw_mio_error("error in template files");
 
 	////build instruction set
-	MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_STORE_INSTRUCTION_SET(&ifail);
+	DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_STORE_INSTRUCTION_SET(&ifail);
 	if (ifail != 0) throw_mio_error("error building instruction set");
 
 	initialized = true;
@@ -256,7 +256,7 @@ void ModelInterface::initialize(vector<string> &_par_name_vec, vector<string> &_
 
 void ModelInterface::finalize()
 {
-	MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_FINALISE(&ifail);
+	DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_FINALISE(&ifail);
 	if (ifail != 0) ModelInterface::throw_mio_error("error finalizing model interface");
 	initialized = false;
 }
@@ -361,7 +361,7 @@ void ModelInterface::run(pest_utils::thread_flag* terminate, pest_utils::thread_
 			throw PestError("Error running model: invalid parameter value returned");
 		}
 		
-		MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_WRITE_MODEL_INPUT_FILES(&ifail, &npar, pest_utils::StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
+		DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_WRITE_MODEL_INPUT_FILES(&ifail, &npar, pest_utils::StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
 			&par_values[0]);
 		if (ifail != 0) throw_mio_error("error writing model input files from template files");
 
@@ -444,7 +444,7 @@ void ModelInterface::run(pest_utils::thread_flag* terminate, pest_utils::thread_
 #ifdef OS_LINUX
 		//a flag to track if the run was terminated
 		bool term_break = false;
-		for (auto &cmd_string : *commands)
+		for (auto &cmd_string : comline_vec)
 		{
 			//start the command
 			int command_pid = start(cmd_string);
@@ -493,7 +493,7 @@ void ModelInterface::run(pest_utils::thread_flag* terminate, pest_utils::thread_
 		int nobs = obs_name_vec.size();
 		obs_vec.resize(nobs, -9999.00);
 		
-		MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_READ_MODEL_OUTPUT_FILES(&ifail, &nobs, pest_utils::StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
+		DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_READ_MODEL_OUTPUT_FILES(&ifail, &nobs, pest_utils::StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
 			&obs_vec[0], err_instruct);
 		
 		if (ifail != 0)
