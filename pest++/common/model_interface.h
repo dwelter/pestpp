@@ -22,6 +22,7 @@ public:
 	void initialize(vector<string> _tplfile_vec, vector<string> _inpfile_vec,
 		vector<string> _insfile_vec, vector<string> _outfile_vec, vector<string> _comline_vec,
 		vector<string> &_par_name_vec, vector<string> &_obs_name_vec);
+	void finalize();
 	~ModelInterface();
 	bool get_initialized(){ return initialized; }
 private:
@@ -31,7 +32,7 @@ private:
 
 	bool initialized;
 	int ifail;
-	char err_instruct[500];
+	char err_instruct[20000];
 	vector<string> par_name_vec;
 	vector<string> obs_name_vec;
 	vector<string> tplfile_vec;

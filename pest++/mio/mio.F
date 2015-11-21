@@ -1,5 +1,5 @@
 module model_input_output_interface
-      use, intrinsic::ISO_C_BINDING
+      !use, intrinsic::ISO_C_BINDING
       private
       
       
@@ -47,7 +47,7 @@ module model_input_output_interface
       character (len=200)                :: afile        ! Temporary character storage
       character (len=80)                 :: errsub       ! Character string for error header
       character*500               :: amessage=' ' ! Error message string
-      character (len=20000)               :: dline        ! Character string for text storage
+      character (len=2000)               :: dline        ! Character string for text storage
 
 ! -- SUBROUTINES
 
@@ -83,7 +83,7 @@ subroutine mio_get_message_string(ifail,amessage_out)
       !    amessage_out(i:i) = amessage(i:i)
       !end do
       !write(*,*)amessage_out
-      write(*,*)amessage
+      write(*,*)trim(amessage)
       return
 
 end subroutine mio_get_message_string
@@ -819,7 +819,7 @@ subroutine mio_read_model_output_files(ifail,nobs,aobs,obs,instruction)
         character*50 :: aobs(nobs)
         double precision, intent(out), dimension(nobs)  :: obs     ! observation values
         !character (len=*), intent(out)                  :: instruction ! instruction of error
-        character*500  :: instruction
+        character*20000  :: instruction
         !character (len=*), optional                     :: asldir   ! slave working directory
         character (len=1)                               :: asldir   ! slave working directory - jwhite
         
@@ -1241,6 +1241,7 @@ subroutine mio_read_model_output_files(ifail,nobs,aobs,obs,instruction)
 9995    ifail=1
         mcall=mcall-1
         if(mcall.lt.0) mcall=0
+        close(unit=iunit)
         return
 
 end subroutine mio_read_model_output_files
