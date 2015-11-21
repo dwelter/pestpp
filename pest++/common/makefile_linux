@@ -4,7 +4,8 @@ OBJECTS	:= network_package.o \
            Transformable.o \
            network_wrapper.o \
            system_variables.o \
-           utilities.o
+           utilities.o \
+           model_interface.o
 
 $(OUT): $(OBJECTS)
 	ar rcs $(OUT) $(OBJECTS)
