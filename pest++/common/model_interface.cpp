@@ -30,18 +30,18 @@ using namespace std;
 
 
  #ifdef OS_LINUX
- #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_INITIALISE ___model_input_output_interface_MOD_mio_initialise
- #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PUT_FILE ___model_input_output_interface_MOD_mio_put_file
- #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_FILE ___model_input_output_interface_MOD_mio_get_file
- #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_STORE_INSTRUCTION_SET ___model_input_output_interface_MOD_mio_store_instruction_set
- #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PROCESS_TEMPLATE_FILES ___model_input_output_interface_MOD_mio_process_template_files
- #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_DELETE_OUTPUT_FILES ___model_input_output_interface_MOD_mio_delete_output_files
- #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_WRITE_MODEL_INPUT_FILES ___model_input_output_interface_MOD_mio_write_model_input_files
- #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_READ_MODEL_OUTPUT_FILES ___model_input_output_interface_MOD_mio_read_model_output_files
- #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_FINALISE ___model_input_output_interface_MOD_mio_finalise
- #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_STATUS ___model_input_output_interface_MOD_mio_get_status
- #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_DIMENSIONS ___model_input_output_interface_MOD_mio_get_dimensions
- #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_MESSAGE_STRING ___model_input_output_interface_MOD_mio_get_message_string
+ #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_INITIALISE __model_input_output_interface_MOD_mio_initialise
+ #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PUT_FILE __model_input_output_interface_MOD_mio_put_file
+ #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_FILE __model_input_output_interface_MOD_mio_get_file
+ #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_STORE_INSTRUCTION_SET __model_input_output_interface_MOD_mio_store_instruction_set
+ #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PROCESS_TEMPLATE_FILES __model_input_output_interface_MOD_mio_process_template_files
+ #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_DELETE_OUTPUT_FILES __model_input_output_interface_MOD_mio_delete_output_files
+ #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_WRITE_MODEL_INPUT_FILES __model_input_output_interface_MOD_mio_write_model_input_files
+ #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_READ_MODEL_OUTPUT_FILES __model_input_output_interface_MOD_mio_read_model_output_files
+ #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_FINALISE __model_input_output_interface_MOD_mio_finalise
+ #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_STATUS __model_input_output_interface_MOD_mio_get_status
+ #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_DIMENSIONS __model_input_output_interface_MOD_mio_get_dimensions
+ #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_MESSAGE_STRING __model_input_output_interface_MOD_mio_get_message_string
  #endif
 
 #ifdef OS_WIN
@@ -114,6 +114,7 @@ int start(string &cmd_string)
 	vector<char const*> arg_v;
 	for (size_t icmd = 0; icmd<cmds.size(); ++icmd)
 	{
+		cout << cmds[icmd] << endl;
 		arg_v.push_back(cmds[icmd].data());
 	}
 	//char * const*argv = new char* [cmds.size()+1];
@@ -123,7 +124,6 @@ int start(string &cmd_string)
 	//}
 	//argv[cmds.size() + 1] = NULL; //last arg must be NULL
 	arg_v.push_back(NULL);
-
 	pid_t pid = fork();
 	if (pid == 0)
 	{
