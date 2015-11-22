@@ -106,15 +106,15 @@ int start(string &cmd_string)
 	stringstream cmd_ss(cmd_string);
 	string cmd;
 	vector<string> cmds;
-	while (getline(cmd_ss, cmd))
+	while (getline(cmd_ss, cmd,' '))
 	{
 		cmds.push_back(cmd);
 	}
+
 	//create the strurture for execv
 	vector<char const*> arg_v;
 	for (size_t icmd = 0; icmd<cmds.size(); ++icmd)
 	{
-		cout << cmds[icmd] << endl;
 		arg_v.push_back(cmds[icmd].data());
 	}
 	//char * const*argv = new char* [cmds.size()+1];
@@ -123,12 +123,13 @@ int start(string &cmd_string)
 	//  argv[icmd] = cmds[icmd].data();
 	//}
 	//argv[cmds.size() + 1] = NULL; //last arg must be NULL
+	
 	arg_v.push_back(NULL);
 	pid_t pid = fork();
 	if (pid == 0)
 	{
 		setpgid(0, 0);
-		int success = execv(arg_v[0], const_cast<char* const*>(&(arg_v[0])));
+		int success = execvp(arg_v[0], const_cast<char* const*>(&(arg_v[0])));
 		if (success == -1)
 		{
 			throw std::runtime_error("execv() failed for command: " + cmd_string);
