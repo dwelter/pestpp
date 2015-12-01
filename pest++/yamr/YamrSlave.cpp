@@ -428,18 +428,6 @@ NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, N
 		shared_execptions.rethrow();
 		if (!f_terminate.get())
 		{
-			//update the parameter values
-			pars.clear();
-			for (int i = 0; i < par_name_vec.size(); ++i)
-			{
-				pars[par_name_vec[i]] = par_values[i];
-			}
-			// update observation values		
-			obs.clear();
-			for (int i = 0; i < obs_name_vec.size(); ++i)
-			{
-				obs[obs_name_vec[i]] = obs_vec[i];
-			}
 			final_run_status = NetPackage::PackType::RUN_FINISHED;
 		}
 	}
