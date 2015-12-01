@@ -76,8 +76,7 @@ private:
 	ModelInterface mi;
 	void run_async(pest_utils::thread_flag* terminate, pest_utils::thread_flag* finished,
 		pest_utils::thread_exceptions *shared_execptions,
-		vector<string>* par_name_vec, vector<double>* par_values,
-		vector<string>* obs_name_vec, vector<double>* obs_vec);
+		Parameters* pars, Observations* obs);
 
 };
 

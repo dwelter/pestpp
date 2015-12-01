@@ -354,7 +354,7 @@ NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, N
 		
 		vector<double> obs_vec;		
 		thread run_thread(&YAMRSlave::run_async, this, &f_terminate, &f_finished, &shared_execptions,
-		   &par_name_vec, &par_values, &obs_name_vec, &obs_vec);
+		   &pars, &obs);
 		pest_utils::thread_RAII raii(run_thread);
 		
 		while (true)
@@ -461,11 +461,9 @@ NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, N
 
 
 void YAMRSlave::run_async(pest_utils::thread_flag* terminate, pest_utils::thread_flag* finished, pest_utils::thread_exceptions *shared_execptions,
-	vector<string>* par_name_vec, vector<double>* par_values,
-	vector<string>* obs_name_vec, vector<double>* obs_vec)
+	Parameters* pars, Observations* obs)
 {
-	mi.run(terminate,finished,shared_execptions, *par_name_vec,*par_values,*obs_name_vec,*obs_vec);
-	cout << "done" << endl;
+	mi.run(terminate,finished,shared_execptions, pars, obs);
 }
 
 

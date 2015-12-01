@@ -50,6 +50,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "iopp", "iopp\iopp.vcxproj",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "common", "common\common.vcxproj", "{0193689C-8ED2-4DCA-9389-5D233739B1F0}"
 	ProjectSection(ProjectDependencies) = postProject
+		{14A6DF17-84E7-47DA-88B4-4BC684768222} = {14A6DF17-84E7-47DA-88B4-4BC684768222}
 		{EB9A0791-5341-4772-84AA-F7089AE7C57D} = {EB9A0791-5341-4772-84AA-F7089AE7C57D}
 	EndProjectSection
 EndProject

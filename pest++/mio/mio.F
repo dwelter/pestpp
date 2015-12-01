@@ -69,21 +69,21 @@ module model_input_output_interface
 contains
 
 
-subroutine mio_get_message_string(ifail,amessage_out)
+subroutine mio_get_message_string(ifail,mess_len,amessage_out)
 
       implicit none
-
+      integer    :: mess_len
       integer, intent(out)       :: ifail
       integer :: i
-      character(len=500),intent(out) :: amessage_out
+      character(len=mess_len) :: amessage_out
 
       ifail=0
-      !amessage_out=amessage
+      amessage_out=amessage
       !do i=1,len(amessage)
       !    amessage_out(i:i) = amessage(i:i)
       !end do
       !write(*,*)amessage_out
-      write(*,*)trim(amessage)
+      !write(*,*)trim(amessage)
       return
 
 end subroutine mio_get_message_string
@@ -556,13 +556,13 @@ subroutine mio_process_template_files(ifail,npar,apar)
           go to 550
 680       close(unit=iunit)
 500     continue
-!!!        do 800 i=1,npar
-!!!          if(nw(i).eq.1000)then
-!!!            write(amessage,690) trim(apar(i))
-!!!690         format('Parameter "',a,'" is not cited on any template file.')
-!!!            ifail=1
-!!!            return
-!!!          end if
+        do 800 i=1,npar
+          if(nw(i).eq.1000)then
+            write(amessage,690) trim(apar(i))
+690         format('Parameter "',a,'" is not cited on any template file.')
+            ifail=1
+            return
+          end if
 800     continue
 
         template_status=1
@@ -700,7 +700,7 @@ subroutine mio_write_model_input_files(ifail,npar,apar,pval)
 ! -- Each of the parameter words is filled.
 
         ipar=1
-        do 100 ipp=1,npar
+        do 100 ipp=1,npar 
           call mio_wrtsig(jfail,pval(ipp),pword(ipp),nw(ipp),precis,tval,nopnt)
           if(jfail.lt.0)then
             write(amessage,10) trim(apar(ipp))
@@ -728,7 +728,6 @@ subroutine mio_write_model_input_files(ifail,npar,apar,pval)
 100     continue
 
 ! -- Next the substitutions in the template files are made.
-
         do 500 ifile=1,numinfile
           call mio_addquote(tempfile(ifile),afile)
           iunit=mio_nextunit()

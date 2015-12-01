@@ -75,7 +75,7 @@ extern "C"
 	void DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_FINALISE(int *);
 	void DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_STATUS(int *, int *);
 	void DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_DIMENSIONS(int *, int *);
-	void DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_MESSAGE_STRING(int *, char *);
+	void DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_MESSAGE_STRING(int *, int *, char *);
 
 }
 
@@ -147,11 +147,14 @@ int start(string &cmd_string)
 
 void ModelInterface::throw_mio_error(string base_message)
 {
-	int ifail;
+	int mess_len = 500;
 	char message[500];
 	cout << endl << endl << " MODEL INTERFACE ERROR:" << endl;
-	DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_MESSAGE_STRING(&ifail, message);
-	throw runtime_error("model input/output error:" + base_message);
+	DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_MESSAGE_STRING(&ifail, &mess_len, message);
+	string err = string(message);
+	auto s_end = err.find_last_not_of(" \t", 400);
+	err = err.substr(0, s_end);
+	throw runtime_error("model input/output error:" + base_message + "\n" + err);
 }
 
 
@@ -275,38 +278,31 @@ void ModelInterface::run(Parameters* pars, Observations* obs)
 	pest_utils::thread_flag finished(false);
 	pest_utils::thread_exceptions shared_exceptions;
 	
-	vector<string> par_names = pars->get_keys();
-	vector<string> obs_names = obs->get_keys();
-	vector<double> par_vals = pars->get_data_vec(par_names);
-	vector<double> obs_vals = obs->get_data_vec(obs_names);
+	
 
-	if (!initialized)
-	{
-		initialize(par_names,obs_names);
-	}
-
-
-	run(&terminate, &finished, &shared_exceptions, par_names, par_vals, obs_names, obs_vals);
+	run(&terminate, &finished, &shared_exceptions, pars, obs);
 	if (shared_exceptions.size() > 0)
 	{
 		finalize();
 		shared_exceptions.rethrow();
 	}
-	pars->update(par_names, par_vals);
-	obs->update(obs_names, obs_vals);
+	
 }
 
 
 void ModelInterface::run(pest_utils::thread_flag* terminate, pest_utils::thread_flag* finished, pest_utils::thread_exceptions *shared_execptions,
-						vector<string> &par_name_vec, vector<double> &par_values,
-						vector<string> &obs_name_vec, vector<double> &obs_vec)
+						Parameters* pars, Observations* obs)
 {
 	
+	
+
 	if (!initialized)
 	{
-		initialize(par_name_vec,obs_name_vec);
+		initialize(pars->get_keys(), obs->get_keys());
 	}
-
+	//get par vals that are aligned with this::par_name_vec since the mio module was initialized with this::par_name_vec order
+	par_vals = pars->get_data_vec(par_name_vec);
+	
 	try
 	{
 		//first delete any existing input and output files	
@@ -352,30 +348,12 @@ void ModelInterface::run(pest_utils::thread_flag* terminate, pest_utils::thread_
 
 		}
 
-		
-		int ifail;
-		int ntpl = tplfile_vec.size();
-		int npar = par_values.size();
-
-		if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))
-		{
-			throw PestError("Error running model: invalid parameter value returned");
-		}
-		
-		DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_WRITE_MODEL_INPUT_FILES(&ifail, &npar, pest_utils::StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
-			&par_values[0]);
+		int npar = par_vals.size();
+		DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_WRITE_MODEL_INPUT_FILES(&ifail, &npar, 
+			pest_utils::StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
+			&par_vals[0]);
 		if (ifail != 0) throw_mio_error("error writing model input files from template files");
-
-		if (std::any_of(par_values.begin(), par_values.end(), OperSys::double_is_invalid))
-		{
-			throw PestError("Error running model: invalid parameter value returned");
-		}
-		if (std::any_of(obs_vec.begin(), obs_vec.end(), OperSys::double_is_invalid))
-		{
-			throw PestError("Error running model: invalid observation value returned");
-		}
-
-
+		
 
 #ifdef OS_WIN
 		//a flag to track if the run was terminated
@@ -492,16 +470,18 @@ void ModelInterface::run(pest_utils::thread_flag* terminate, pest_utils::thread_
 		// process instruction files		
 		int nins = insfile_vec.size();
 		int nobs = obs_name_vec.size();
-		obs_vec.resize(nobs, -9999.00);
+		obs_vals.resize(nobs, -9999.00);
 		
-		DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_READ_MODEL_OUTPUT_FILES(&ifail, &nobs, pest_utils::StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
-			&obs_vec[0], err_instruct);
+		DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_READ_MODEL_OUTPUT_FILES(&ifail, &nobs, 
+			pest_utils::StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
+			&obs_vals[0], err_instruct);
 		
 		if (ifail != 0)
 		{
 			string err = string(err_instruct);
-			auto s_end = err.find_last_not_of(" \t");
+			auto s_end = err.find_last_not_of(" \t",1000);
 			err = err.substr(0, s_end);
+			
 			throw_mio_error("error processing model output files: offending instruction line: \n" + err);
 
 		}
@@ -509,7 +489,7 @@ void ModelInterface::run(pest_utils::thread_flag* terminate, pest_utils::thread_
 		vector<string> invalid;
 		for (int i = 0; i != par_name_vec.size(); i++)
 		{
-			if (OperSys::double_is_invalid(par_values.at(i)))
+			if (OperSys::double_is_invalid(par_vals.at(i)))
 				invalid.push_back(par_name_vec.at(i));
 		}
 		if (invalid.size() > 0)
@@ -523,7 +503,7 @@ void ModelInterface::run(pest_utils::thread_flag* terminate, pest_utils::thread_
 
 		for (int i = 0; i != obs_name_vec.size(); i++)
 		{
-			if (OperSys::double_is_invalid(obs_vec.at(i)))
+			if (OperSys::double_is_invalid(obs_vals.at(i)))
 				invalid.push_back(obs_name_vec.at(i));
 		}
 		if (invalid.size() > 0)
@@ -534,11 +514,14 @@ void ModelInterface::run(pest_utils::thread_flag* terminate, pest_utils::thread_
 				ss << i << '\n';
 			throw PestError(ss.str());
 		}
+
+		pars->update(par_name_vec, par_vals);
+		obs->update(obs_name_vec, obs_vals);
+
+
 		//set the finished flag for the listener thread
 		finished->set(true);
-		//MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_FINALISE(&ifail);
-		//if (ifail != 0) ModelInterface::throw_mio_error("error finalizing model interface");
-
+		
 	}
 	catch (...)
 	{
