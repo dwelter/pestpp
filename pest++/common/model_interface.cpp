@@ -298,7 +298,9 @@ void ModelInterface::run(pest_utils::thread_flag* terminate, pest_utils::thread_
 
 	if (!initialized)
 	{
-		initialize(pars->get_keys(), obs->get_keys());
+		vector<string> pnames = pars->get_keys();
+		vector<string> onames = obs->get_keys();
+		initialize(pnames, onames);
 	}
 	//get par vals that are aligned with this::par_name_vec since the mio module was initialized with this::par_name_vec order
 	par_vals = pars->get_data_vec(par_name_vec);
