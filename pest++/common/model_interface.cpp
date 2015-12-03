@@ -10,72 +10,22 @@
 #include <thread>
 #include "model_interface.h"
 
-#ifdef OS_WIN
-#include <Windows.h>
-#include <conio.h>
-#endif
-
-
-#ifdef OS_LINUX
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/select.h>
-#include<sys/wait.h>
-#include <errno.h>
-#include <signal.h>
-#endif
-
 using namespace std;
-
-
- #ifdef OS_LINUX
- #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_INITIALISE __model_input_output_interface_MOD_mio_initialise
- #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PUT_FILE __model_input_output_interface_MOD_mio_put_file
- #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_FILE __model_input_output_interface_MOD_mio_get_file
- #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_STORE_INSTRUCTION_SET __model_input_output_interface_MOD_mio_store_instruction_set
- #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PROCESS_TEMPLATE_FILES __model_input_output_interface_MOD_mio_process_template_files
- #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_DELETE_OUTPUT_FILES __model_input_output_interface_MOD_mio_delete_output_files
- #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_WRITE_MODEL_INPUT_FILES __model_input_output_interface_MOD_mio_write_model_input_files
- #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_READ_MODEL_OUTPUT_FILES __model_input_output_interface_MOD_mio_read_model_output_files
- #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_FINALISE __model_input_output_interface_MOD_mio_finalise
- #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_STATUS __model_input_output_interface_MOD_mio_get_status
- #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_DIMENSIONS __model_input_output_interface_MOD_mio_get_dimensions
- #define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_MESSAGE_STRING __model_input_output_interface_MOD_mio_get_message_string
- #endif
-
-#ifdef OS_WIN
-#define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_INITIALISE MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_INITIALISE
-#define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PUT_FILE MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PUT_FILE
-#define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_FILE MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_FILE
-#define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_STORE_INSTRUCTION_SET MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_STORE_INSTRUCTION_SET
-#define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PROCESS_TEMPLATE_FILES MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PROCESS_TEMPLATE_FILES
-#define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_DELETE_OUTPUT_FILES MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_DELETE_OUTPUT_FILES
-#define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_WRITE_MODEL_INPUT_FILES MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_WRITE_MODEL_INPUT_FILES
-#define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_READ_MODEL_OUTPUT_FILES MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_READ_MODEL_OUTPUT_FILES
-#define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_FINALISE MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_FINALISE
-#define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_STATUS MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_STATUS
-#define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_DIMENSIONS MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_DIMENSIONS
-#define DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_MESSAGE_STRING MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_MESSAGE_STRING
-#endif
-
-
-
 
 extern "C"
 {
-	void DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_INITIALISE(int *, int *, int *, int *, int *);
-	void DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PUT_FILE(int *, int *, int *, char *);
-	void DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_FILE(int *, int *, int *, char *);
-	void DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_STORE_INSTRUCTION_SET(int *);
-	void DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PROCESS_TEMPLATE_FILES(int *, int *, char *);
-	void DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_DELETE_OUTPUT_FILES(int *, char *);
-	void DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_WRITE_MODEL_INPUT_FILES(int *, int *, char *, double *);
-	void DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_READ_MODEL_OUTPUT_FILES(int *, int *, char *, double *, char *);
-	void DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_FINALISE(int *);
-	void DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_STATUS(int *, int *);
-	void DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_DIMENSIONS(int *, int *);
-	void DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_MESSAGE_STRING(int *, int *, char *);
+	void mio_initialise_w_(int *, int *, int *, int *, int *);
+	void mio_put_file_w_(int *, int *, int *, char *);
+	void mio_get_file_w_(int *, int *, int *, char *);
+	void mio_store_instruction_set_w_(int *);
+	void mio_process_template_files_w_(int *, int *, char *);
+	void mio_delete_output_files_w_(int *, char *);
+	void mio_write_model_input_files_w_(int *, int *, char *, double *);
+	void mio_read_model_output_files_w_(int *, int *, char *, double *, char *);
+	void mio_finalise_w_(int *);
+	void mio_get_status_w_(int *, int *);
+	void mio_get_dimensions_w_(int *, int *);
+	void mio_get_message_string_w_(int *, int *, char *);
 
 }
 
@@ -150,7 +100,7 @@ void ModelInterface::throw_mio_error(string base_message)
 	int mess_len = 500;
 	char message[500];
 	cout << endl << endl << " MODEL INTERFACE ERROR:" << endl;
-	DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_GET_MESSAGE_STRING(&ifail, &mess_len, message);
+	mio_get_message_string_w_(&ifail, &mess_len, message);
 	string err = string(message);
 	auto s_end = err.find_last_not_of(" \t", 400);
 	err = err.substr(0, s_end);
@@ -165,7 +115,7 @@ void ModelInterface::set_files()
 	int itype = 1;
 	for (auto &file : tplfile_vec)
 	{
-		DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PUT_FILE(&ifail, &itype, &inum, pest_utils::string_as_fortran_char_ptr(file, 50));
+		mio_put_file_w_(&ifail, &itype, &inum, pest_utils::string_as_fortran_char_ptr(file, 50));
 		if (ifail != 0) throw_mio_error("putting template file" + file);
 		inum++;
 	}
@@ -175,7 +125,7 @@ void ModelInterface::set_files()
 	itype = 2;
 	for (auto &file : inpfile_vec)
 	{
-		DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PUT_FILE(&ifail, &itype, &inum, pest_utils::string_as_fortran_char_ptr(file, 50));
+		mio_put_file_w_(&ifail, &itype, &inum, pest_utils::string_as_fortran_char_ptr(file, 50));
 		if (ifail != 0) throw_mio_error("putting model input file" + file);
 		inum++;
 	}
@@ -185,7 +135,7 @@ void ModelInterface::set_files()
 	itype = 3;
 	for (auto &file : insfile_vec)
 	{
-		DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PUT_FILE(&ifail, &itype, &inum, pest_utils::string_as_fortran_char_ptr(file, 50));
+		mio_put_file_w_(&ifail, &itype, &inum, pest_utils::string_as_fortran_char_ptr(file, 50));
 		if (ifail != 0) throw_mio_error("putting instruction file" + file);
 		inum++;
 	}
@@ -195,7 +145,7 @@ void ModelInterface::set_files()
 	itype = 4;
 	for (auto &file : outfile_vec)
 	{
-		DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PUT_FILE(&ifail, &itype, &inum, pest_utils::string_as_fortran_char_ptr(file, 50));
+		mio_put_file_w_(&ifail, &itype, &inum, pest_utils::string_as_fortran_char_ptr(file, 50));
 		if (ifail != 0) throw_mio_error("putting model output file" + file);
 		inum++;
 	}
@@ -241,17 +191,17 @@ void ModelInterface::initialize(vector<string> &_par_name_vec, vector<string> &_
 	int ntpl = tplfile_vec.size();
 	int nins = insfile_vec.size();
 
-	DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_INITIALISE(&ifail, &ntpl, &nins, &npar, &nobs);
+	mio_initialise_w_(&ifail, &ntpl, &nins, &npar, &nobs);
 	if (ifail != 0) throw_mio_error("initializing mio module");
 
 	set_files();
 
 	//check template files
-	DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_PROCESS_TEMPLATE_FILES(&ifail, &npar, pest_utils::StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt());
+	mio_process_template_files_w_(&ifail, &npar, pest_utils::StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt());
 	if (ifail != 0)throw_mio_error("error in template files");
 
 	////build instruction set
-	DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_STORE_INSTRUCTION_SET(&ifail);
+	mio_store_instruction_set_w_(&ifail);
 	if (ifail != 0) throw_mio_error("error building instruction set");
 
 	initialized = true;
@@ -260,7 +210,7 @@ void ModelInterface::initialize(vector<string> &_par_name_vec, vector<string> &_
 
 void ModelInterface::finalize()
 {
-	DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_FINALISE(&ifail);
+	mio_finalise_w_(&ifail);
 	if (ifail != 0) ModelInterface::throw_mio_error("error finalizing model interface");
 	initialized = false;
 }
@@ -351,7 +301,7 @@ void ModelInterface::run(pest_utils::thread_flag* terminate, pest_utils::thread_
 		}
 
 		int npar = par_vals.size();
-		DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_WRITE_MODEL_INPUT_FILES(&ifail, &npar, 
+		mio_write_model_input_files_w_(&ifail, &npar,
 			pest_utils::StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
 			&par_vals[0]);
 		if (ifail != 0) throw_mio_error("error writing model input files from template files");
@@ -474,7 +424,7 @@ void ModelInterface::run(pest_utils::thread_flag* terminate, pest_utils::thread_
 		int nobs = obs_name_vec.size();
 		obs_vals.resize(nobs, -9999.00);
 		
-		DEF_MODEL_INPUT_OUTPUT_INTERFACE_mp_MIO_READ_MODEL_OUTPUT_FILES(&ifail, &nobs, 
+		mio_read_model_output_files_w_(&ifail, &nobs,
 			pest_utils::StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
 			&obs_vals[0], err_instruct);
 		

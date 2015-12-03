@@ -24,17 +24,6 @@
 
 using namespace std;
 using namespace Eigen;
-#ifdef OS_WIN
-#define DEF_DLAMCH DLAMCH
-#define DEF_DLANBPRO_SPARCE DLANBPRO_SPARCE
-#endif
-#ifdef OS_LINUX 
-#define DEF_DLAMCH dlamch_
-#define DEF_DLANBPRO_SPARCE dlanbpro_sparce_
-//extern "C" {
-//	double DEF_DLAMCH(char*);
-//}
-#endif
 
 extern "C" {
 	double DEF_DLAMCH(char*);

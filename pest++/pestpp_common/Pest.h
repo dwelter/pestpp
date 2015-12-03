@@ -40,7 +40,6 @@ public:
 	void set_defaults();
 	void check_inputs();
 	void check_io();
-	void check_par_obs();
 	int process_ctl_file(ifstream &fin, string pst_filename);
 	int get_n_adj_par(){ return n_adj_par; }
 	const Parameters& get_ctl_parameters() const {return ctl_parameters;}

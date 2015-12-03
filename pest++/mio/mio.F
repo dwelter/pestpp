@@ -2067,7 +2067,131 @@ subroutine mio_wrtsig(ifail,val,word,nw,precis,tval,nopnt)
 end subroutine mio_wrtsig
 
 
-end module model_input_output_interface
+    end module model_input_output_interface
+    
+! define wrapper functions to call model_input_output_interface from C and C++
+    subroutine mio_initialise_w(ifail,numin,numout,npar,nobs)
+        use model_input_output_interface
+        implicit none        
+        integer, intent(out)                     :: ifail   ! indicates failure condition
+        integer, intent(in)                      :: numin   ! number of model input files
+        integer, intent(in)                      :: numout  ! number of model output files
+        integer, intent(in)                      :: npar    ! number of parameters
+        integer, intent(in)                      :: nobs    ! number of observations
+        call mio_initialise(ifail,numin,numout,npar,nobs)
+        return
+    end subroutine mio_initialise_w
+    
+    subroutine mio_put_file_w(ifail,itype,inum,filename)
+        use model_input_output_interface
+        implicit none
+        integer, intent(out)            :: ifail      ! indicates error condition
+        integer, intent(in)             :: itype      ! type of file
+        integer, intent(in)             :: inum       ! file number
+        character*50  :: filename
+        call mio_put_file(ifail,itype,inum,filename)
+        return
+    end subroutine mio_put_file_w
+    
+    subroutine mio_get_file_w(ifail,itype,inum,filename)
+       use model_input_output_interface
+       implicit none
+       integer, intent(out)            :: ifail      ! indicates error condition
+       integer, intent(in)             :: itype      ! type of file
+       integer, intent(in)             :: inum       ! file number
+       character (len=*), intent(out)   :: filename   ! name of file
+       call mio_get_file(ifail,itype,inum,filename)
+       return
+    end subroutine mio_get_file_w
+       
+    subroutine mio_store_instruction_set_w(ifail)
+        use model_input_output_interface
+        implicit none
+        integer, intent(out)          :: ifail
+        call mio_store_instruction_set(ifail)
+        return 
+    end subroutine mio_store_instruction_set_w
+        
+    subroutine mio_process_template_files_w(ifail,npar,apar)
+        use model_input_output_interface
+        implicit none
+        integer, intent(out)                :: ifail ! indicates error condition
+        integer, intent(in)                 :: npar  ! number of parameters
+        !character (len=*), dimension(npar)  :: apar  ! parameter names
+        character*50  :: apar(npar)
+        call mio_process_template_files(ifail,npar,apar)
+        return
+    end subroutine mio_process_template_files_w
+        
+    subroutine mio_delete_output_files_w(ifail,asldir)
+        use model_input_output_interface
+        implicit none
+        integer, intent(out)                :: ifail     ! indicates error condition
+        character(*), intent(in), optional  :: asldir    ! slave directory
+        call mio_delete_output_files(ifail,asldir)
+        return
+    end subroutine mio_delete_output_files_w
+        
+    subroutine mio_write_model_input_files_w(ifail,npar,apar,pval)
+        use model_input_output_interface
+        implicit none
+        integer, intent(out)                             :: ifail  ! error condition indicator
+        integer, intent(in)                              :: npar   ! number of parameters
+        !character (len=*), intent(in), dimension(npar)   :: apar   ! parameter names
+        character*50  :: apar(npar)
+        double precision, intent(inout), dimension(npar) :: pval   ! parameter values
+        call mio_write_model_input_files(ifail,npar,apar,pval)
+        return 
+    end subroutine mio_write_model_input_files_w
+    
+    subroutine mio_read_model_output_files_w(ifail,nobs,aobs,obs,instruction)
+        use model_input_output_interface
+        implicit none
+        integer, intent(out)                            :: ifail   ! error indicator
+        integer, intent(in)                             :: nobs    ! number of observations
+        !character (len=*), intent(in), dimension(nobs)  :: aobs    ! observation names
+        character*50 :: aobs(nobs)
+        double precision, intent(out), dimension(nobs)  :: obs     ! observation values
+        !character (len=*), intent(out)                  :: instruction ! instruction of error
+        character*20000  :: instruction
+        call mio_read_model_output_files(ifail,nobs,aobs,obs,instruction)
+        return
+    end subroutine mio_read_model_output_files_w
+            
+    subroutine mio_get_message_string_w(ifail,mess_len,amessage_out)
+        use model_input_output_interface
+        implicit none
+        integer    :: mess_len
+        integer, intent(out)       :: ifail
+        integer :: i
+        character(len=mess_len) :: amessage_out
+        call mio_get_message_string(ifail,mess_len,amessage_out)
+        return
+    end subroutine mio_get_message_string_w
+      
+    subroutine mio_get_status_w(template_status_out,instruction_status_out)
+        use model_input_output_interface
+        implicit none
+        integer, intent(out)  :: template_status_out,instruction_status_out
+        call mio_get_status(template_status_out,instruction_status_out)
+        return
+    end subroutine mio_get_status_w
+             
+    subroutine mio_get_dimensions_w(numinfile_out,numoutfile_out)
+        use model_input_output_interface
+        implicit none
+        integer, intent(out)  :: numinfile_out,numoutfile_out
+        call mio_get_dimensions(numinfile_out,numoutfile_out)
+        return
+    end subroutine mio_get_dimensions_w
+    
+    subroutine mio_finalise_w(ifail)
+        use model_input_output_interface
+        implicit none
+        integer, intent(out)                :: ifail
+        call mio_finalise(ifail)
+        return 
+      end subroutine mio_finalise_w
 
 ! Notes:-
 

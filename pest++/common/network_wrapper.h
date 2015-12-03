@@ -12,8 +12,13 @@
 #endif
 //for linux
 #ifdef OS_LINUX 
-  #include <sys/select.h>
+  #include <arpa/inet.h>
+  #include <unistd.h>
   #include <sys/types.h>
+  #include <sys/select.h>
+  #include<sys/wait.h>
+  #include <errno.h>
+  #include <signal.h>
   #include <netdb.h>
   #include <sys/socket.h>
 #endif

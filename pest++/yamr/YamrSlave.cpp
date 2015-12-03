@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <thread>
 #include "system_variables.h"
-#include "iopp.h"
 #include "utilities.h"
 
 using namespace pest_utils;
@@ -476,14 +475,6 @@ void YAMRSlave::check_io()
 	}
 }
 
-void YAMRSlave::check_par_obs()
-{
-	TemplateFiles templatefiles(false, false, tplfile_vec, inpfile_vec,par_name_vec);
-	templatefiles.check_parameter_names();
-	InstructionFiles instructionfiles(insfile_vec, outfile_vec);
-	instructionfiles.check_obs_names(obs_name_vec);
-}
-
 void YAMRSlave::start(const string &host, const string &port)
 {
 	NetPackage net_pack;
@@ -544,23 +535,6 @@ void YAMRSlave::start(const string &host, const string &port)
 				exit(-1);
 			}
 			Serialization::unserialize(net_pack.get_data(), obs_name_vec);
-			//cout << "checking model IO files...";
-			//try
-			//{
-			//	check_io();
-			//	//check_par_obs();
-			//}
-			//catch (exception &e)
-			//{
-			//	cerr << e.what() << endl;
-			//	net_pack.reset(NetPackage::PackType::IO_ERROR, 0, 0,"");
-			//	string err(e.what());
-			//	vector<char> data(err.begin(), err.end());
-			//	data.push_back('\0');
-			//	int np_err = send_message(net_pack, &data, data.size());
-			//	exit(-1);
-			//}
-			//cout << "done" << endl;
 		}
 		else if(net_pack.get_type() == NetPackage::PackType::REQ_LINPACK)
 		{
