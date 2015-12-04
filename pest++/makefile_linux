@@ -1,11 +1,11 @@
 CXX = 'g++'
 CCC = 'g++'
 FC = gfortran
-#GCCLIBDIR :='/opt/hesm/apps/gcc-4.9.0/lib64'
-GCCLIBDIR :='/opt/local/gcc-4.9.0/lib64'
-INCLUDES := '-I ../ -I ../common -I ../iopp -I ../yamr -I ../pestpp_common -I ../linear_analysis'
-LIBLDIR := '-L $(GCCLIBDIR) -L /opt/hesm/lib64 -L /usr/lib64 -L/opt/local/lib64 -L ../common -L ../iopp -L ../yamr -L ../pestpp_common -L ../pest_routines -L ../mio -L ../propack -L ../linear_analysis'
-LIBS :=  '-lpestpp_com -lrunmanager  -liopp  -lcommon -lpest_routines -lmio -l propack -llapack -lblas -llinear_analysis -lgfortran $(GCCLIBDIR)/libquadmath.a'
+GCCLIBDIR :='/opt/hesm/apps/gcc-5.2.0/lib64'
+#GCCLIBDIR :='/opt/local/gcc-4.9.0/lib64'
+INCLUDES := '-I ../ -I ../common  -I ../yamr -I ../pestpp_common -I ../linear_analysis'
+LIBLDIR := '-L $(GCCLIBDIR) -L /opt/hesm/lib64 -L /usr/lib64 -L/opt/local/lib64 -L ../common  -L ../yamr -L ../pestpp_common -L ../pest_routines -L ../mio -L ../propack -L ../linear_analysis'
+LIBS :=  '-lpestpp_com -lrunmanager  -lcommon -lpest_routines -lmio -l propack -llapack -lblas -llinear_analysis -lgfortran $(GCCLIBDIR)/libquadmath.a'
 
 #CFLAGS := '-pthread -std=c++11 -Wl --no-as-needed -g -gdwarf-2' 
 #FFLAGS := '-g -gdwarf-2 c -cpp'
@@ -17,7 +17,6 @@ LFLAGS := '-static -static-libgcc -static-libgfortran'
 all:
 	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=${INCLUDES} -C mio -f makefile_linux libmio.a
 	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=${INCLUDES} -C common -f makefile_linux libcommon.a
-	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=${INCLUDES} -C iopp -f makefile_linux libiopp.a
 	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=${INCLUDES} -C yamr -f makefile_linux librunmanager.a
 	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=${INCLUDES} -C propack -f makefile_linux libpropack.a
 	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=${INCLUDES} -C pest_routines -f makefile_linux libpest_routines.a
@@ -31,12 +30,11 @@ all:
 clean:
 	make -C mio -f makefile_linux clean
 	make -C common -f makefile_linux clean
-	make -C iopp -f makefile_linux clean
 	make -C yamr -f makefile_linux clean
 	make -C propack -f makefile_linux clean
 	make -C pest_routines -f makefile_linux clean
 	make -C pestpp_common -f makefile_linux clean
 	make -C linear_analysis -f makefile_linux clean
 	make -C pest++ -f makefile_linux clean
-	make -C morris_meth -f makefile_linux clean
+	make -C gsa -f makefile_linux clean
 	make -C run_manager_fortran_test -f makefile_linux clean

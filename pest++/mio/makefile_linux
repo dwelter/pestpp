@@ -7,8 +7,8 @@ $(OUT): $(OBJECTS)
 %.o: %.cpp
 	$(CXX) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@
 
-%.o: %.f90
-	$(FC) $(FFLAGS) $(INCLUDES) $< -c $(input) -o $@
+%.o: %.F
+	$(FC) $(FFLAGS) -std=f95 -ffree-form $(INCLUDES) $< -c $(input) -o $@
 
 clean:
 	rm $(OBJECTS) $(OUT)

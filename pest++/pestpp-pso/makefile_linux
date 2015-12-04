@@ -13,7 +13,7 @@ OBJECTS	:= readsubs.o \
 	psomain.o
 	
 $(EXE): $(OBJECTS)
-	$(CXX) $(CFLAGS) $(LFLAGS) $(OBJECTS) $(LIBLDIR) $(LIBS) -o $(EXE)
+	$(CXX) $(CFLAGS) $(LFLAGS) $(OBJECTS) $(LIBLDIR) -lgfortran $(LIBS) -o $(EXE)
 
 #$(EXE): $(OBJECTS)
 #	$(CXX) $(OBJECTS) $(LIBS) -o $(EXE)

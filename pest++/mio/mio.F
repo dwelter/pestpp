@@ -1,8 +1,7 @@
 module model_input_output_interface
-      !use, intrinsic::ISO_C_BINDING
+!use, intrinsic::ISO_C_BINDING
       private
-      
-      
+       
 ! -- Variables
 
 ! -- Size
@@ -381,15 +380,15 @@ subroutine mio_store_instruction_set(ifail)
         
 ! -- Memory is allocated for storage of instructions.
 
-	allocate(a(asize),ll(numl),lcins(ninstr),stat=ierr)
-	if(ierr.ne.0)then
-	  write(amessage,310)
-310	  format('Cannot allocate sufficient memory to store instruction set.')
+    allocate(a(asize),ll(numl),lcins(ninstr),stat=ierr)
+    if(ierr.ne.0)then
+      write(amessage,310)
+ 310      format('Cannot allocate sufficient memory to store instruction set.')
           ifail=1
           return
         end if
-        a=' '              ! a is an array
-        
+        a=' ' ! a is an array
+
 ! -- The instruction set is now re-read and stored.
 
         ins=0
@@ -1623,26 +1622,26 @@ subroutine mio_casetrans(string,hi_or_lo)
 
         implicit none
 
-	character (len=*), intent(inout)        :: string
-	character (len=*), intent(in)           :: hi_or_lo
-	character                               :: alo, ahi
-	integer                                 :: inc,i
+    character (len=*), intent(inout)        :: string
+    character (len=*), intent(in)           :: hi_or_lo
+    character                               :: alo, ahi
+    integer                                 :: inc,i
 
-	if(hi_or_lo.eq.'lo') then
-	  alo='A'; ahi='Z'; inc=iachar('a')-iachar('A')
-	else if(hi_or_lo.eq.'hi') then
-	  alo='a'; ahi='z'; inc=iachar('A')-iachar('a')
-	else
+    if(hi_or_lo.eq.'lo') then
+      alo='A'; ahi='Z'; inc=iachar('a')-iachar('A')
+    else if(hi_or_lo.eq.'hi') then
+      alo='a'; ahi='z'; inc=iachar('A')-iachar('a')
+    else
           write(6,*) ' *** Illegal call to subroutine CASETRANS ***'
           stop
-	endif
+    endif
 
-	do i=1,len_trim(string)
-	  if((string(i:i).ge.alo).and.(string(i:i).le.ahi)) &
-	  string(i:i)=achar(iachar(string(i:i))+inc)
-	end do
+    do i=1,len_trim(string)
+      if((string(i:i).ge.alo).and.(string(i:i).le.ahi)) &
+      string(i:i)=achar(iachar(string(i:i))+inc)
+    end do
 
-	return
+    return
 
 end subroutine mio_casetrans
 
@@ -1671,7 +1670,7 @@ subroutine mio_wait(nsec)
 
 !       Subroutine MIO_WRITINT writes an integer to a character variable.
 
-        integer*4 ival
+        integer ival
         character*6 afmt
         character*(*) atemp
 
@@ -2066,8 +2065,7 @@ subroutine mio_wrtsig(ifail,val,word,nw,precis,tval,nopnt)
 
 end subroutine mio_wrtsig
 
-
-    end module model_input_output_interface
+end module model_input_output_interface
     
 ! define wrapper functions to call model_input_output_interface from C and C++
     subroutine mio_initialise_w(ifail,numin,numout,npar,nobs)
@@ -2191,7 +2189,7 @@ end subroutine mio_wrtsig
         integer, intent(out)                :: ifail
         call mio_finalise(ifail)
         return 
-      end subroutine mio_finalise_w
+    end subroutine mio_finalise_w
 
 ! Notes:-
 

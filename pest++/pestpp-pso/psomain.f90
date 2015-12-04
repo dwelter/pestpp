@@ -31,8 +31,8 @@ program particleswarmopt
   err = 0
   
 ! read arguments from the command line
-  call getarg(1,pstnam)
-  call getarg(2,port)
+  call get_command_argument(1,pstnam)
+  call get_command_argument(2,port)
   if (pstnam(1:1) == ' ' .or. port(1:1) == ' ') then
     write(*,*)'Usage is: psopp case.pst port'
     stop
