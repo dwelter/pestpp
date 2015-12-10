@@ -1,12 +1,12 @@
-CXX = 'g++-mp-4.9'
-CCC = 'g++-mp-4.9'
-FC = gfortran-mp-4.9
+CXX = 'g++-mp-5'
+CCC = 'g++-mp-5'
+FC = gfortran-mp-5
 #GCCLIBDIR :='/opt/hesm/apps/gcc-4.9.0/lib64'
 #GCCLIBDIR :='/opt/local/gcc-4.9.0/lib64'
-GCCLIBDIR :='/opt/local/lib/gcc49'
-INCLUDES := '-I ../ -I ../common -I ../iopp -I ../yamr -I ../pestpp_common -I ../linear_analysis'
-LIBLDIR := '-L $(GCCLIBDIR) -L /opt/local/lib/gcc49 -L ../common -L ../iopp -L ../yamr -L ../pestpp_common -L ../pest_routines  -L ../propack -L ../linear_analysis -L ../mio'
-LIBS :=  '-lpestpp_com -lrunmanager  -liopp  -lcommon -lpest_routines -l propack -llapack -lblas -llinear_analysis -lmio -lgfortran $(GCCLIBDIR)/libquadmath.a'
+GCCLIBDIR :='/opt/local/lib/gcc5'
+INCLUDES := '-I ../ -I ../common -I ../yamr -I ../pestpp_common -I ../linear_analysis'
+LIBLDIR := '-L $(GCCLIBDIR) -L /opt/local/lib/gcc49 -L ../common -L ../yamr -L ../pestpp_common -L ../pest_routines  -L ../propack -L ../linear_analysis -L ../mio'
+LIBS :=  '-lpestpp_com -lrunmanager -lcommon -lpest_routines -l propack -llapack -lblas -llinear_analysis -lmio -lgfortran $(GCCLIBDIR)/libquadmath.a'
 
 CFLAGS := '-pthread -std=c++11 -O2'
 FFLAGS := '-O2 -c -cpp'
@@ -16,7 +16,6 @@ FFLAGS := '-O2 -c -cpp'
 all:
 	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=${INCLUDES} -C mio -f makefile_linux libmio.a
 	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=${INCLUDES} -C common -f makefile_linux libcommon.a
-	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=${INCLUDES} -C iopp -f makefile_linux libiopp.a
 	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=${INCLUDES} -C yamr -f makefile_linux librunmanager.a
 	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=${INCLUDES} -C propack -f makefile_linux libpropack.a
 	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=${INCLUDES} -C pest_routines -f makefile_linux libpest_routines.a
@@ -28,7 +27,6 @@ all:
 clean:
 	make -C mio -f makefile_linux clean
 	make -C common -f makefile_linux clean
-	make -C iopp -f makefile_linux clean
 	make -C yamr -f makefile_linux clean
 	make -C propack -f makefile_linux clean
 	make -C pest_routines -f makefile_linux clean
