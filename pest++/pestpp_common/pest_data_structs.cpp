@@ -406,12 +406,30 @@ void PestppOptions::parce_line(const string &line)
 		else if (key == "OVERDUE_GIVEUP_FAC"){
 			convert_ip(value, overdue_giveup_fac);
 		}
+		else if (key == "SWEEP_PARAMETER_CSV_FILE")
+			convert_ip(value, sweep_parameter_csv_file);
+		
+		else if (key == "SWEEP_OUTPUT_CSV_FILE")
+			convert_ip(value, sweep_output_csv_file);
+		else if (key == "SWEEP_CHUNK")
+			convert_ip(value, sweep_chunk);
+		else if (key == "SWEEP_FORGIVE")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> sweep_forgive;
+		}
+		else if (key == "SWEEP_BASE_RUN")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> sweep_base_run;
+		}
 		else {
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");
 		}
 	}
 }
-
 
 ostream& operator<< (ostream &os, const ParameterInfo& val)
 {

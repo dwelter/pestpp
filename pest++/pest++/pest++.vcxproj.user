@@ -33,7 +33,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LocalDebuggerCommandArguments>pest.pst</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerWorkingDirectory>$(SolutionDir)benchmarks/10par_xsec/template_err</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerWorkingDirectory>$(SolutionDir)benchmarks/10par_xsec/template</LocalDebuggerWorkingDirectory>
     <LocalDebuggerDebuggerType>Auto</LocalDebuggerDebuggerType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
