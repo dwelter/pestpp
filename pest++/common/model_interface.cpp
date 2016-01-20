@@ -21,7 +21,7 @@ extern "C"
 	void mio_process_template_files_w_(int *, int *, char *);
 	void mio_delete_output_files_w_(int *, char *);
 	void mio_write_model_input_files_w_(int *, int *, char *, double *);
-	void mio_read_model_output_files_w_(int *, int *, char *, double *, char *);
+	void mio_read_model_output_files_w_(int *, int *, char *, double *);
 	void mio_finalise_w_(int *);
 	void mio_get_status_w_(int *, int *);
 	void mio_get_dimensions_w_(int *, int *);
@@ -99,7 +99,7 @@ void ModelInterface::throw_mio_error(string base_message)
 {
 	int mess_len = 500;
 	char message[500];
-	cout << endl << endl << " MODEL INTERFACE ERROR:" << endl;
+	//cout << endl << endl << " MODEL INTERFACE ERROR:" << endl;
 	mio_get_message_string_w_(&ifail, &mess_len, message);
 	string err = string(message);
 	auto s_end = err.find_last_not_of(" \t", 400);
@@ -423,10 +423,11 @@ void ModelInterface::run(pest_utils::thread_flag* terminate, pest_utils::thread_
 		int nins = insfile_vec.size();
 		int nobs = obs_name_vec.size();
 		obs_vals.resize(nobs, -9999.00);
-		
+		int nerr_len = 500;
+		char err_instruct[500];
 		mio_read_model_output_files_w_(&ifail, &nobs,
 			pest_utils::StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
-			&obs_vals[0], err_instruct);
+			&obs_vals[0]);
 		
 		if (ifail != 0)
 		{

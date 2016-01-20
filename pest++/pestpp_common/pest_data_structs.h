@@ -240,6 +240,16 @@ public:
 	void set_overdue_reched_fac(double _val){ overdue_reched_fac = _val; }
 	double get_overdue_giveup_fac()const { return overdue_giveup_fac; }
 	void set_overdue_giveup_fac(double _val){ overdue_giveup_fac = _val; }
+	string get_sweep_parameter_csv_file()const { return sweep_parameter_csv_file; }
+	void set_sweep_parameter_csv_file(string _file){ sweep_parameter_csv_file = _file; }
+	string get_sweep_output_csv_file()const { return sweep_output_csv_file; }
+	void set_sweep_output_csv_file(string _file){ sweep_output_csv_file = _file; }
+	int get_sweep_chunk()const { return sweep_chunk; }
+	void set_sweep_chunk(int _chunk){ sweep_chunk = _chunk; }
+	bool get_sweep_forgive()const { return sweep_forgive; }
+	void set_sweep_forgive(bool _forgive){ sweep_forgive = _forgive; }
+	bool get_sweep_base_run()const { return sweep_base_run; }
+	void set_sweep_base_run(bool _base){ sweep_base_run = _base; }
 
 private:
 	int n_iter_base;
@@ -262,6 +272,12 @@ private:
 	string basejac_filename;
 	double overdue_reched_fac;
 	double overdue_giveup_fac;
+
+	string sweep_parameter_csv_file;
+	string sweep_output_csv_file;
+	bool sweep_forgive;
+	int sweep_chunk;
+	bool sweep_base_run;
 
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);

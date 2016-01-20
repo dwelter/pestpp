@@ -37,7 +37,6 @@ private:
 
 	bool initialized;
 	int ifail;
-	char err_instruct[20000];
 	vector<string> par_name_vec;
 	vector<string> obs_name_vec;
 	vector<string> tplfile_vec;
