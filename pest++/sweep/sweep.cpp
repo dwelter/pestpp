@@ -46,12 +46,11 @@ using namespace std;
 using namespace pest_utils;
 
 
-vector<Parameters> load_parameters_from_csv(Parameters pars, string csv_filename, bool forgive, bool base_run)
+vector<string> prepare_parameter_csv(Parameters pars, ifstream &csv, bool forgive)
 {
-	ifstream csv(csv_filename);
 	if (!csv.good())
 	{
-		throw runtime_error("could not open csv file " + csv_filename);
+		throw runtime_error("ifstream not good");
 	}
 
 	//process the header
@@ -82,14 +81,20 @@ vector<Parameters> load_parameters_from_csv(Parameters pars, string csv_filename
 			cout << ss.str() << endl << "continuing anyway..." << endl;
 	}
 
+	return header_tokens;
+}
+
+vector<Parameters> load_parameters_from_csv(vector<string> header_tokens, vector<string> ctl_pnames, ifstream &csv, int chunk)
+{
+	
 
 	//process each parameter value line in the csv file
 	int lcount = 1;
-	vector<string> ctl_pnames = pars.get_keys();
-	vector<Parameters> pars_vec;
-	if (base_run)
-		pars_vec.push_back(pars);
+	vector<Parameters> sweep_pars;
 	double val;
+	string line;
+	vector<string> tokens;
+	Parameters pars;
 	while (getline(csv, line))
 	{
 		tokens.clear();
@@ -122,11 +127,13 @@ vector<Parameters> load_parameters_from_csv(Parameters pars, string csv_filename
 			}
 		}
 		//make a cope of pars and store it
-		pars_vec.push_back(pars);
+		sweep_pars.push_back(pars);
 		lcount++;
+		if (lcount > chunk)
+			break;
 	}
-	csv.close();
-	return pars_vec;
+	//csv.close();
+	return sweep_pars;
 }
 
 
@@ -426,25 +433,17 @@ int main(int argc, char* argv[])
 		{
 			throw runtime_error("control file pest++ type argument 'SWEEP_PARAMETER_CSV_FILE' is required for sweep");
 		}
-		vector<Parameters> sweep_pars;
-		try{
-			performance_log.log_event("starting to process parameter csv file", 1);
-			sweep_pars = load_parameters_from_csv(pest_scenario.get_ctl_parameters(),
-				pest_scenario.get_pestpp_options().get_sweep_parameter_csv_file(),
-				pest_scenario.get_pestpp_options().get_sweep_forgive(),
-				pest_scenario.get_pestpp_options().get_sweep_base_run());
-			performance_log.log_event("finished processing parameter csv file");
-		}
-		catch (exception &e)
-		{
-			stringstream ss;
-			ss << "error processing parameter csv file: " << e.what();
-			performance_log.log_event(ss.str());
-			fout_rec << endl << ss.str() << endl;
-			fout_rec.close();
 
-			throw runtime_error(ss.str());
+		string par_csv_file = pest_scenario.get_pestpp_options().get_sweep_parameter_csv_file();
+		ifstream par_stream(par_csv_file);
+		if (!par_stream.good())
+		{
+			throw runtime_error("could not open parameter csv file " + par_csv_file);
 		}
+
+		vector<string> header_tokens = prepare_parameter_csv(pest_scenario.get_ctl_parameters(),
+			par_stream, pest_scenario.get_pestpp_options().get_sweep_forgive());
+		
 
 
 		//Initialize OutputFileWriter to handle IO of suplementary files (.par, .par, .svd)
@@ -504,38 +503,63 @@ int main(int argc, char* argv[])
 			run_manager_ptr->initialize(base_trans_seq.ctl2model_cp(cur_ctl_parameters), pest_scenario.get_ctl_observations());
 		}
 
+		
 		// prepare the output file
-		ofstream csv = prep_sweep_output_file(pest_scenario);
+		ofstream obs_stream = prep_sweep_output_file(pest_scenario);
 
-		int irun = 0;
 		int chunk = pest_scenario.get_pestpp_options().get_sweep_chunk();
-		if (chunk == -1) chunk = sweep_pars.size();
 		vector<int> run_ids;
-		while (irun < sweep_pars.size())
+		vector<Parameters> sweep_pars;
+		
+		//if desired, add the base run to the list of runs
+		if (pest_scenario.get_pestpp_options().get_sweep_base_run())
 		{
+			sweep_pars.push_back(pest_scenario.get_ctl_parameters());
+		}
+
+		while (true)
+		{
+			//read some realizations
+			sweep_pars.clear();
+			try{
+				performance_log.log_event("starting to read parameter csv file", 1);
+				sweep_pars = load_parameters_from_csv(header_tokens, pest_scenario.get_ctl_parameters().get_keys(), 
+					par_stream, chunk);
+				performance_log.log_event("finished reading parameter csv file");
+			}
+			catch (exception &e)
+			{
+				stringstream ss;
+				ss << "error processing parameter csv file: " << e.what();
+				performance_log.log_event(ss.str());
+				fout_rec << endl << ss.str() << endl;
+				fout_rec.close();
+
+				throw runtime_error(ss.str());
+			}
+
+			// if there are no parameters to run, we are done
+			if (sweep_pars.size() == 0)
+				break;
+
 			// queue up some runs
 			run_ids.clear();
-			while (true)
+			for (auto &par : sweep_pars)
 			{
-				run_ids.push_back(run_manager_ptr->add_run(base_trans_seq.ctl2model_cp(sweep_pars[irun])));
-				irun++;
-				if ((irun%chunk == 0) || (irun == sweep_pars.size()))
-					break;
+				run_ids.push_back(run_manager_ptr->add_run(base_trans_seq.ctl2model_cp(par)));
 			}
 
 			//make some runs
 			run_manager_ptr->run();
 
 			//process the runs
-			process_sweep_runs(csv, pest_scenario, run_manager_ptr, run_ids, obj_func);
-
-
+			process_sweep_runs(obs_stream, pest_scenario, run_manager_ptr, run_ids, obj_func);
 
 		}
 
 		// clean up
 		fout_rec.close();
-		csv.close();
+		obs_stream.close();
 		delete run_manager_ptr;
 		cout << endl << endl << "Sweep Complete..." << endl;
 		cout << flush;

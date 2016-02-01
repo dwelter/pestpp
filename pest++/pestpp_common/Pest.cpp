@@ -515,7 +515,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_sweep_output_csv_file("sweep_out.csv");
 	pestpp_options.set_sweep_base_run(false);
 	pestpp_options.set_sweep_forgive(false);
-	pestpp_options.set_sweep_chunk(-999);
+	pestpp_options.set_sweep_chunk(500);
 	for(vector<string>::const_iterator b=pestpp_input.begin(),e=pestpp_input.end();
 		b!=e; ++b) {
 			pestpp_options.parce_line(*b);
