@@ -397,7 +397,7 @@ void  MorrisMethod::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run
 			}
 		}
 	}
-
+	cout << endl;
 	cout << "writing output files" << endl;
 	// write standard Morris Sensitivity for the global objective function
 	fout_morris << "parameter_name, n_samples, sen_mean, sen_mean_abs, sen_std_dev" << endl;
@@ -486,7 +486,6 @@ void  MorrisMethod::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run
 
 void MorrisMethod::calc_morris_obs(ostream &fout, MorrisObsSenFile &morris_sen_file)
 {
-	cout << "writing output files" << endl;
 	// write standard Morris Sensitivity
 	for (const auto &i_obs : morris_sen_file.obs_names_vec)
 	{

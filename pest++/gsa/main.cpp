@@ -349,7 +349,7 @@ int main(int argc, char* argv[])
 		gsa_method = m_ptr;
 		m_ptr->process_pooled_var_file();
 	}
-	if (method != gsa_opt_map.end() && method->second == "TORNADO")
+	else if (method != gsa_opt_map.end() && method->second == "TORNADO")
 	{
 		bool calc_obs_sen = true;
 	

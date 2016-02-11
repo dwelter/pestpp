@@ -553,6 +553,12 @@ void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobia
 
 		//cout << q_sqrt_reg << endl << endl;
 		//cout << q_sqrt_no_reg << endl << endl;
+		cout << q_sqrt_reg << endl << endl;
+		cout << dss_mat_reg << endl << endl;
+		cout << q_sqrt_no_reg << endl << endl;
+		cout << dss_mat_no_reg << endl << endl;
+		cout << jac.get_matrix(obs_list, par_list) << endl;
+
 
 		int n_par = par_list.size();
 		int n_nonzero_weights_reg = q_sqrt_reg.nonZeros();
