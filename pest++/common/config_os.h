@@ -13,7 +13,7 @@
 #define DEF_DLAMCH DLAMCH
 #define DEF_DLANBPRO_SPARCE DLANBPRO_SPARCE
 #endif
-#ifdef OS_LINUX 
+#ifdef OS_LINUX
 #define DEF_DLAMCH dlamch_
 #define DEF_DLANBPRO_SPARCE dlanbpro_sparce_
 #endif
