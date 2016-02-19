@@ -1,0 +1,3663 @@
+*RZWQM2 OUTPUTS Version 2.4               Sep 09, 2014; 13:54:42
+
+
+
+
+ ---  1/ 5/1986 --- 121 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108972.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         304.851    
+   FROM DEAD ROOTS                                   0.00000    
+   TOTAL ADDITIONS                                             304.851    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         106.227    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1695.15    
+   RESIDUE POOL                                      1351.91    
+       RESIDUE POOL 1                      860.242    
+       RESIDUE POOL 2                      491.670    
+   SOIL HUMUS POOL                                   103717.    
+       SOIL HUMUS POOL 1                   10.5487    
+       SOIL HUMUS POOL 2                  0.541057    
+       SOIL HUMUS POOL 3                   103706.    
+   MICRO ORGANISM POOL                               4102.25    
+       MICRO ORGANISM POOL 1               4083.04    
+       MICRO ORGANISM POOL 2               2.29087    
+       MICRO ORGANISM POOL 3               16.9241    
+ TOTAL (CARBON) AT END                                         109171.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.331796E-04
+
+
+ ---  2/ 5/1986 --- 122 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109171.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         3.02857    
+   FROM DEAD ROOTS                                   0.00000    
+   TOTAL ADDITIONS                                             3.02857    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         49.3457    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1692.12    
+   RESIDUE POOL                                      1295.82    
+       RESIDUE POOL 1                      859.761    
+       RESIDUE POOL 2                      436.058    
+   SOIL HUMUS POOL                                   103721.    
+       SOIL HUMUS POOL 1                   14.2944    
+       SOIL HUMUS POOL 2                  0.911533    
+       SOIL HUMUS POOL 3                   103705.    
+   MICRO ORGANISM POOL                               4108.38    
+       MICRO ORGANISM POOL 1               4089.16    
+       MICRO ORGANISM POOL 2               2.28917    
+       MICRO ORGANISM POOL 3               16.9311    
+ TOTAL (CARBON) AT END                                         109125.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.144598E-04
+
+
+ ---  3/ 5/1986 --- 123 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109125.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         4.19999    
+   FROM DEAD ROOTS                                   0.00000    
+   TOTAL ADDITIONS                                             4.19999    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         40.9778    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1687.92    
+   RESIDUE POOL                                      1250.98    
+       RESIDUE POOL 1                      859.244    
+       RESIDUE POOL 2                      391.738    
+   SOIL HUMUS POOL                                   103724.    
+       SOIL HUMUS POOL 1                   17.3482    
+       SOIL HUMUS POOL 2                   1.38503    
+       SOIL HUMUS POOL 3                   103705.    
+   MICRO ORGANISM POOL                               4113.47    
+       MICRO ORGANISM POOL 1               4094.25    
+       MICRO ORGANISM POOL 2               2.28770    
+       MICRO ORGANISM POOL 3               16.9374    
+ TOTAL (CARBON) AT END                                         109088.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.436557E-10
+
+
+ ---  4/ 5/1986 --- 124 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109088.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         7.63172    
+   FROM DEAD ROOTS                                   0.00000    
+   TOTAL ADDITIONS                                             7.63172    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         42.8018    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1680.29    
+   RESIDUE POOL                                      1207.58    
+       RESIDUE POOL 1                      858.389    
+       RESIDUE POOL 2                      349.189    
+   SOIL HUMUS POOL                                   103726.    
+       SOIL HUMUS POOL 1                   20.1338    
+       SOIL HUMUS POOL 2                   2.28277    
+       SOIL HUMUS POOL 3                   103704.    
+   MICRO ORGANISM POOL                               4119.06    
+       MICRO ORGANISM POOL 1               4099.83    
+       MICRO ORGANISM POOL 2               2.28715    
+       MICRO ORGANISM POOL 3               16.9453    
+ TOTAL (CARBON) AT END                                         109053.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.295404E-08
+
+
+ ---  5/ 5/1986 --- 125 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109053.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         7.97706    
+   FROM DEAD ROOTS                                   0.00000    
+   TOTAL ADDITIONS                                             7.97706    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         26.2468    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1672.31    
+   RESIDUE POOL                                      1184.43    
+       RESIDUE POOL 1                      857.387    
+       RESIDUE POOL 2                      327.043    
+   SOIL HUMUS POOL                                   103728.    
+       SOIL HUMUS POOL 1                   21.6358    
+       SOIL HUMUS POOL 2                   3.31635    
+       SOIL HUMUS POOL 3                   103703.    
+   MICRO ORGANISM POOL                               4122.56    
+       MICRO ORGANISM POOL 1               4103.32    
+       MICRO ORGANISM POOL 2               2.28707    
+       MICRO ORGANISM POOL 3               16.9519    
+ TOTAL (CARBON) AT END                                         109035.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.222906E-06
+
+
+ ---  6/ 5/1986 --- 126 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109035.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         18.8171    
+   FROM DEAD ROOTS                                   0.00000    
+   TOTAL ADDITIONS                                             18.8171    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         6.48451    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1653.49    
+   RESIDUE POOL                                      1195.53    
+       RESIDUE POOL 1                      858.431    
+       RESIDUE POOL 2                      337.094    
+   SOIL HUMUS POOL                                   103729.    
+       SOIL HUMUS POOL 1                   23.4193    
+       SOIL HUMUS POOL 2                   3.52709    
+       SOIL HUMUS POOL 3                   103702.    
+   MICRO ORGANISM POOL                               4122.03    
+       MICRO ORGANISM POOL 1               4102.79    
+       MICRO ORGANISM POOL 2               2.28182    
+       MICRO ORGANISM POOL 3               16.9524    
+ TOTAL (CARBON) AT END                                         109047.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.134455E-03
+
+
+ ---  7/ 5/1986 --- 127 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109047.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         6.01613    
+   FROM DEAD ROOTS                                   0.00000    
+   TOTAL ADDITIONS                                             6.01613    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         21.0676    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1647.48    
+   RESIDUE POOL                                      1176.49    
+       RESIDUE POOL 1                      857.615    
+       RESIDUE POOL 2                      318.873    
+   SOIL HUMUS POOL                                   103731.    
+       SOIL HUMUS POOL 1                   24.8337    
+       SOIL HUMUS POOL 2                   4.33732    
+       SOIL HUMUS POOL 3                   103702.    
+   MICRO ORGANISM POOL                               4124.62    
+       MICRO ORGANISM POOL 1               4105.39    
+       MICRO ORGANISM POOL 2               2.28103    
+       MICRO ORGANISM POOL 3               16.9580    
+ TOTAL (CARBON) AT END                                         109032.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.691682E-06
+
+
+ ---  8/ 5/1986 --- 128 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109032.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         6.68797    
+   FROM DEAD ROOTS                                   0.00000    
+   TOTAL ADDITIONS                                             6.68797    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         16.6660    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1640.79    
+   RESIDUE POOL                                      1163.46    
+       RESIDUE POOL 1                      856.677    
+       RESIDUE POOL 2                      306.787    
+   SOIL HUMUS POOL                                   103732.    
+       SOIL HUMUS POOL 1                   25.8248    
+       SOIL HUMUS POOL 2                   5.28238    
+       SOIL HUMUS POOL 3                   103701.    
+   MICRO ORGANISM POOL                               4126.70    
+       MICRO ORGANISM POOL 1               4107.46    
+       MICRO ORGANISM POOL 2               2.28059    
+       MICRO ORGANISM POOL 3               16.9634    
+ TOTAL (CARBON) AT END                                         109022.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.611253E-06
+
+
+ ---  9/ 5/1986 --- 129 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109022.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         17.9029    
+   FROM DEAD ROOTS                                  0.305080E-03
+   TOTAL ADDITIONS                                             17.9032    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         4.41623    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1622.89    
+   RESIDUE POOL                                      1176.11    
+       RESIDUE POOL 1                      857.689    
+       RESIDUE POOL 2                      318.425    
+   SOIL HUMUS POOL                                   103734.    
+       SOIL HUMUS POOL 1                   28.0233    
+       SOIL HUMUS POOL 2                   5.47368    
+       SOIL HUMUS POOL 3                   103700.    
+   MICRO ORGANISM POOL                               4125.34    
+       MICRO ORGANISM POOL 1               4106.10    
+       MICRO ORGANISM POOL 2               2.27463    
+       MICRO ORGANISM POOL 3               16.9635    
+ TOTAL (CARBON) AT END                                         109035.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.893667E-04
+
+
+ --- 10/ 5/1986 --- 130 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109035.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         16.2346    
+   FROM DEAD ROOTS                                  0.531202E-03
+   TOTAL ADDITIONS                                             16.2351    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         3.35950    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1606.65    
+   RESIDUE POOL                                      1188.32    
+       RESIDUE POOL 1                      858.684    
+       RESIDUE POOL 2                      329.639    
+   SOIL HUMUS POOL                                   103738.    
+       SOIL HUMUS POOL 1                   31.7488    
+       SOIL HUMUS POOL 2                   5.58581    
+       SOIL HUMUS POOL 3                   103700.    
+   MICRO ORGANISM POOL                               4122.27    
+       MICRO ORGANISM POOL 1               4103.04    
+       MICRO ORGANISM POOL 2               2.26433    
+       MICRO ORGANISM POOL 3               16.9630    
+ TOTAL (CARBON) AT END                                         109048.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.214099E-04
+
+
+ --- 11/ 5/1986 --- 131 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109048.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         18.3580    
+   FROM DEAD ROOTS                                  0.185609E-03
+   TOTAL ADDITIONS                                             18.3581    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         4.72219    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1588.29    
+   RESIDUE POOL                                      1201.02    
+       RESIDUE POOL 1                      859.815    
+       RESIDUE POOL 2                      341.209    
+   SOIL HUMUS POOL                                   103741.    
+       SOIL HUMUS POOL 1                   35.0588    
+       SOIL HUMUS POOL 2                   5.71656    
+       SOIL HUMUS POOL 3                   103700.    
+   MICRO ORGANISM POOL                               4119.88    
+       MICRO ORGANISM POOL 1               4100.66    
+       MICRO ORGANISM POOL 2               2.25503    
+       MICRO ORGANISM POOL 3               16.9628    
+ TOTAL (CARBON) AT END                                         109062.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.999862E-07
+
+
+ --- 12/ 5/1986 --- 132 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109062.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         11.0312    
+   FROM DEAD ROOTS                                  0.751666E-05
+   TOTAL ADDITIONS                                             11.0312    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         23.0536    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1577.26    
+   RESIDUE POOL                                      1184.53    
+       RESIDUE POOL 1                      859.712    
+       RESIDUE POOL 2                      324.814    
+   SOIL HUMUS POOL                                   103743.    
+       SOIL HUMUS POOL 1                   36.9147    
+       SOIL HUMUS POOL 2                   6.36271    
+       SOIL HUMUS POOL 3                   103700.    
+   MICRO ORGANISM POOL                               4122.40    
+       MICRO ORGANISM POOL 1               4103.18    
+       MICRO ORGANISM POOL 2               2.25331    
+       MICRO ORGANISM POOL 3               16.9673    
+ TOTAL (CARBON) AT END                                         109050.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.481959E-07
+
+
+ --- 13/ 5/1986 --- 133 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109050.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         17.4627    
+   FROM DEAD ROOTS                                  0.146333E-03
+   TOTAL ADDITIONS                                             17.4629    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         4.61571    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1559.80    
+   RESIDUE POOL                                      1196.46    
+       RESIDUE POOL 1                      860.769    
+       RESIDUE POOL 2                      335.687    
+   SOIL HUMUS POOL                                   103746.    
+       SOIL HUMUS POOL 1                   40.3149    
+       SOIL HUMUS POOL 2                   6.50267    
+       SOIL HUMUS POOL 3                   103700.    
+   MICRO ORGANISM POOL                               4119.89    
+       MICRO ORGANISM POOL 1               4100.68    
+       MICRO ORGANISM POOL 2               2.24433    
+       MICRO ORGANISM POOL 3               16.9671    
+ TOTAL (CARBON) AT END                                         109063.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.149789E-04
+
+
+ --- 14/ 5/1986 --- 134 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109063.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         16.1573    
+   FROM DEAD ROOTS                                   0.00000    
+   TOTAL ADDITIONS                                             16.1573    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         5.00177    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1543.64    
+   RESIDUE POOL                                      1206.62    
+       RESIDUE POOL 1                      861.739    
+       RESIDUE POOL 2                      344.878    
+   SOIL HUMUS POOL                                   103750.    
+       SOIL HUMUS POOL 1                   43.8577    
+       SOIL HUMUS POOL 2                   6.64008    
+       SOIL HUMUS POOL 3                   103699.    
+   MICRO ORGANISM POOL                               4117.31    
+       MICRO ORGANISM POOL 1               4098.11    
+       MICRO ORGANISM POOL 2               2.23491    
+       MICRO ORGANISM POOL 3               16.9668    
+ TOTAL (CARBON) AT END                                         109074.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.125729E-07
+
+
+ --- 15/ 5/1986 --- 135 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109074.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         9.71194    
+   FROM DEAD ROOTS                                   0.00000    
+   TOTAL ADDITIONS                                             9.71194    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         23.3724    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1533.93    
+   RESIDUE POOL                                      1188.37    
+       RESIDUE POOL 1                      861.580    
+       RESIDUE POOL 2                      326.792    
+   SOIL HUMUS POOL                                   103752.    
+       SOIL HUMUS POOL 1                   45.7569    
+       SOIL HUMUS POOL 2                   7.29882    
+       SOIL HUMUS POOL 3                   103699.    
+   MICRO ORGANISM POOL                               4119.84    
+       MICRO ORGANISM POOL 1               4100.61    
+       MICRO ORGANISM POOL 2               2.25138    
+       MICRO ORGANISM POOL 3               16.9713    
+ TOTAL (CARBON) AT END                                         109060.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.724660E-03
+
+
+ --- 16/ 5/1986 --- 136 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109060.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         14.7999    
+   FROM DEAD ROOTS                                  0.140357E-03
+   TOTAL ADDITIONS                                             14.8000    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         4.37396    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1519.13    
+   RESIDUE POOL                                      1197.92    
+       RESIDUE POOL 1                      862.459    
+       RESIDUE POOL 2                      335.464    
+   SOIL HUMUS POOL                                   103756.    
+       SOIL HUMUS POOL 1                   49.5497    
+       SOIL HUMUS POOL 2                   7.43533    
+       SOIL HUMUS POOL 3                   103699.    
+   MICRO ORGANISM POOL                               4116.88    
+       MICRO ORGANISM POOL 1               4097.66    
+       MICRO ORGANISM POOL 2               2.25169    
+       MICRO ORGANISM POOL 3               16.9707    
+ TOTAL (CARBON) AT END                                         109071.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.306805E-05
+
+
+ --- 17/ 5/1986 --- 137 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109071.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         14.3848    
+   FROM DEAD ROOTS                                  0.202907E-03
+   TOTAL ADDITIONS                                             14.3850    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         4.80449    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1504.75    
+   RESIDUE POOL                                      1206.54    
+       RESIDUE POOL 1                      863.312    
+       RESIDUE POOL 2                      343.232    
+   SOIL HUMUS POOL                                   103760.    
+       SOIL HUMUS POOL 1                   53.3776    
+       SOIL HUMUS POOL 2                   7.57390    
+       SOIL HUMUS POOL 3                   103699.    
+   MICRO ORGANISM POOL                               4113.97    
+       MICRO ORGANISM POOL 1               4094.75    
+       MICRO ORGANISM POOL 2               2.25199    
+       MICRO ORGANISM POOL 3               16.9701    
+ TOTAL (CARBON) AT END                                         109080.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.149816E-05
+
+
+ --- 18/ 5/1986 --- 138 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109080.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         5.62059    
+   FROM DEAD ROOTS                                  0.232798E-03
+   TOTAL ADDITIONS                                             5.62082    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         18.9031    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1499.13    
+   RESIDUE POOL                                      1189.54    
+       RESIDUE POOL 1                      863.031    
+       RESIDUE POOL 2                      326.504    
+   SOIL HUMUS POOL                                   103762.    
+       SOIL HUMUS POOL 1                   55.2519    
+       SOIL HUMUS POOL 2                   8.12090    
+       SOIL HUMUS POOL 3                   103698.    
+   MICRO ORGANISM POOL                               4115.64    
+       MICRO ORGANISM POOL 1               4096.41    
+       MICRO ORGANISM POOL 2               2.26227    
+       MICRO ORGANISM POOL 3               16.9734    
+ TOTAL (CARBON) AT END                                         109067.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.207988E-04
+
+
+ --- 19/ 5/1986 --- 139 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109067.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         5.27595    
+   FROM DEAD ROOTS                                  0.101268E-02
+   TOTAL ADDITIONS                                             5.27696    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         17.6772    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1493.85    
+   RESIDUE POOL                                      1173.67    
+       RESIDUE POOL 1                      862.661    
+       RESIDUE POOL 2                      311.013    
+   SOIL HUMUS POOL                                   103764.    
+       SOIL HUMUS POOL 1                   56.9180    
+       SOIL HUMUS POOL 2                   8.74075    
+       SOIL HUMUS POOL 3                   103698.    
+   MICRO ORGANISM POOL                               4117.22    
+       MICRO ORGANISM POOL 1               4097.97    
+       MICRO ORGANISM POOL 2               2.27371    
+       MICRO ORGANISM POOL 3               16.9766    
+ TOTAL (CARBON) AT END                                         109055.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.896424E-04
+
+
+ --- 20/ 5/1986 --- 140 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109055.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         4.61760    
+   FROM DEAD ROOTS                                  0.397992E-02
+   TOTAL ADDITIONS                                             4.62158    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         15.0470    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1489.23    
+   RESIDUE POOL                                      1160.32    
+       RESIDUE POOL 1                      862.213    
+       RESIDUE POOL 2                      298.109    
+   SOIL HUMUS POOL                                   103765.    
+       SOIL HUMUS POOL 1                   58.3630    
+       SOIL HUMUS POOL 2                   9.39757    
+       SOIL HUMUS POOL 3                   103698.    
+   MICRO ORGANISM POOL                               4118.47    
+       MICRO ORGANISM POOL 1               4099.21    
+       MICRO ORGANISM POOL 2               2.28504    
+       MICRO ORGANISM POOL 3               16.9795    
+ TOTAL (CARBON) AT END                                         109044.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.177674E-03
+
+
+ --- 21/ 5/1986 --- 141 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109044.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         4.85243    
+   FROM DEAD ROOTS                                  0.572269E-02
+   TOTAL ADDITIONS                                             4.85816    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         13.5771    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1484.38    
+   RESIDUE POOL                                      1148.99    
+       RESIDUE POOL 1                      861.703    
+       RESIDUE POOL 2                      287.290    
+   SOIL HUMUS POOL                                   103767.    
+       SOIL HUMUS POOL 1                   59.5618    
+       SOIL HUMUS POOL 2                   10.1419    
+       SOIL HUMUS POOL 3                   103697.    
+   MICRO ORGANISM POOL                               4119.62    
+       MICRO ORGANISM POOL 1               4100.34    
+       MICRO ORGANISM POOL 2               2.29813    
+       MICRO ORGANISM POOL 3               16.9824    
+ TOTAL (CARBON) AT END                                         109035.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.153731E-03
+
+
+ --- 22/ 5/1986 --- 142 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109035.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         5.09247    
+   FROM DEAD ROOTS                                  0.659598E-02
+   TOTAL ADDITIONS                                             5.09907    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         11.9282    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1479.29    
+   RESIDUE POOL                                      1139.90    
+       RESIDUE POOL 1                      861.144    
+       RESIDUE POOL 2                      278.752    
+   SOIL HUMUS POOL                                   103768.    
+       SOIL HUMUS POOL 1                   60.5406    
+       SOIL HUMUS POOL 2                   10.9534    
+       SOIL HUMUS POOL 3                   103697.    
+   MICRO ORGANISM POOL                               4120.61    
+       MICRO ORGANISM POOL 1               4101.31    
+       MICRO ORGANISM POOL 2               2.31288    
+       MICRO ORGANISM POOL 3               16.9852    
+ TOTAL (CARBON) AT END                                         109029.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.108536E-03
+
+
+ --- 23/ 5/1986 --- 143 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109029.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         5.51457    
+   FROM DEAD ROOTS                                  0.293419E-02
+   TOTAL ADDITIONS                                             5.51750    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         10.7092    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1473.77    
+   RESIDUE POOL                                      1132.69    
+       RESIDUE POOL 1                      860.563    
+       RESIDUE POOL 2                      272.129    
+   SOIL HUMUS POOL                                   103769.    
+       SOIL HUMUS POOL 1                   61.3534    
+       SOIL HUMUS POOL 2                   11.8154    
+       SOIL HUMUS POOL 3                   103696.    
+   MICRO ORGANISM POOL                               4121.49    
+       MICRO ORGANISM POOL 1               4102.17    
+       MICRO ORGANISM POOL 2               2.32943    
+       MICRO ORGANISM POOL 3               16.9881    
+ TOTAL (CARBON) AT END                                         109023.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.633996E-04
+
+
+ --- 24/ 5/1986 --- 144 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109023.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         11.8082    
+   FROM DEAD ROOTS                                  0.270054E-02
+   TOTAL ADDITIONS                                             11.8109    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         3.95014    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1461.96    
+   RESIDUE POOL                                      1139.80    
+       RESIDUE POOL 1                      861.136    
+       RESIDUE POOL 2                      278.661    
+   SOIL HUMUS POOL                                   103772.    
+       SOIL HUMUS POOL 1                   64.1242    
+       SOIL HUMUS POOL 2                   12.0710    
+       SOIL HUMUS POOL 3                   103696.    
+   MICRO ORGANISM POOL                               4119.38    
+       MICRO ORGANISM POOL 1               4100.06    
+       MICRO ORGANISM POOL 2               2.33311    
+       MICRO ORGANISM POOL 3               16.9872    
+ TOTAL (CARBON) AT END                                         109031.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.247490E-04
+
+
+ --- 25/ 5/1986 --- 145 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109031.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         14.3628    
+   FROM DEAD ROOTS                                  0.188910E-02
+   TOTAL ADDITIONS                                             14.3647    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         2.85767    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1447.60    
+   RESIDUE POOL                                      1150.74    
+       RESIDUE POOL 1                      861.984    
+       RESIDUE POOL 2                      288.755    
+   SOIL HUMUS POOL                                   103776.    
+       SOIL HUMUS POOL 1                   67.9782    
+       SOIL HUMUS POOL 2                   12.2303    
+       SOIL HUMUS POOL 3                   103696.    
+   MICRO ORGANISM POOL                               4116.02    
+       MICRO ORGANISM POOL 1               4096.70    
+       MICRO ORGANISM POOL 2               2.33407    
+       MICRO ORGANISM POOL 3               16.9863    
+ TOTAL (CARBON) AT END                                         109043.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.178727E-04
+
+
+ --- 26/ 5/1986 --- 146 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109043.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         14.4811    
+   FROM DEAD ROOTS                                  0.249660E-02
+   TOTAL ADDITIONS                                             14.4836    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         3.49907    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1433.12    
+   RESIDUE POOL                                      1161.03    
+       RESIDUE POOL 1                      862.845    
+       RESIDUE POOL 2                      298.185    
+   SOIL HUMUS POOL                                   103780.    
+       SOIL HUMUS POOL 1                   71.8852    
+       SOIL HUMUS POOL 2                   12.3905    
+       SOIL HUMUS POOL 3                   103696.    
+   MICRO ORGANISM POOL                               4112.75    
+       MICRO ORGANISM POOL 1               4093.43    
+       MICRO ORGANISM POOL 2               2.33547    
+       MICRO ORGANISM POOL 3               16.9851    
+ TOTAL (CARBON) AT END                                         109054.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.582077E-10
+
+
+ --- 27/ 5/1986 --- 147 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109054.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         15.3538    
+   FROM DEAD ROOTS                                  0.199105E-02
+   TOTAL ADDITIONS                                             15.3558    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         4.45768    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1417.77    
+   RESIDUE POOL                                      1171.04    
+       RESIDUE POOL 1                      863.754    
+       RESIDUE POOL 2                      307.289    
+   SOIL HUMUS POOL                                   103784.    
+       SOIL HUMUS POOL 1                   75.4925    
+       SOIL HUMUS POOL 2                   12.5686    
+       SOIL HUMUS POOL 3                   103696.    
+   MICRO ORGANISM POOL                               4109.95    
+       MICRO ORGANISM POOL 1               4090.63    
+       MICRO ORGANISM POOL 2               2.33762    
+       MICRO ORGANISM POOL 3               16.9841    
+ TOTAL (CARBON) AT END                                         109065.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                   0.00000    
+
+
+ --- 28/ 5/1986 --- 148 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109065.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         17.2004    
+   FROM DEAD ROOTS                                  0.106378E-02
+   TOTAL ADDITIONS                                             17.2014    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         5.98804    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1400.57    
+   RESIDUE POOL                                      1181.07    
+       RESIDUE POOL 1                      864.768    
+       RESIDUE POOL 2                      316.302    
+   SOIL HUMUS POOL                                   103787.    
+       SOIL HUMUS POOL 1                   78.7065    
+       SOIL HUMUS POOL 2                   12.7792    
+       SOIL HUMUS POOL 3                   103695.    
+   MICRO ORGANISM POOL                               4107.83    
+       MICRO ORGANISM POOL 1               4088.50    
+       MICRO ORGANISM POOL 2               2.34095    
+       MICRO ORGANISM POOL 3               16.9838    
+ TOTAL (CARBON) AT END                                         109076.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                 -0.145519E-10
+
+
+ --- 29/ 5/1986 --- 149 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109076.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         9.65753    
+   FROM DEAD ROOTS                                  0.808861E-03
+   TOTAL ADDITIONS                                             9.65834    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         24.1468    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1390.91    
+   RESIDUE POOL                                      1161.87    
+       RESIDUE POOL 1                      864.554    
+       RESIDUE POOL 2                      297.311    
+   SOIL HUMUS POOL                                   103789.    
+       SOIL HUMUS POOL 1                   80.3632    
+       SOIL HUMUS POOL 2                   13.6850    
+       SOIL HUMUS POOL 3                   103695.    
+   MICRO ORGANISM POOL                               4110.46    
+       MICRO ORGANISM POOL 1               4091.11    
+       MICRO ORGANISM POOL 2               2.36344    
+       MICRO ORGANISM POOL 3               16.9881    
+ TOTAL (CARBON) AT END                                         109061.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.394526E-03
+
+
+ --- 30/ 5/1986 --- 150 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109061.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         17.4253    
+   FROM DEAD ROOTS                                  0.613445E-03
+   TOTAL ADDITIONS                                             17.4260    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         7.10689    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1373.48    
+   RESIDUE POOL                                      1170.78    
+       RESIDUE POOL 1                      865.535    
+       RESIDUE POOL 2                      305.244    
+   SOIL HUMUS POOL                                   103792.    
+       SOIL HUMUS POOL 1                   83.2812    
+       SOIL HUMUS POOL 2                   13.9482    
+       SOIL HUMUS POOL 3                   103695.    
+   MICRO ORGANISM POOL                               4108.83    
+       MICRO ORGANISM POOL 1               4089.47    
+       MICRO ORGANISM POOL 2               2.36810    
+       MICRO ORGANISM POOL 3               16.9886    
+ TOTAL (CARBON) AT END                                         109072.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.100416E-03
+
+
+ --- 31/ 5/1986 --- 151 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109072.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         9.26467    
+   FROM DEAD ROOTS                                  0.548432E-03
+   TOTAL ADDITIONS                                             9.26522    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         35.9578    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1364.22    
+   RESIDUE POOL                                      1137.15    
+       RESIDUE POOL 1                      864.555    
+       RESIDUE POOL 2                      272.592    
+   SOIL HUMUS POOL                                   103794.    
+       SOIL HUMUS POOL 1                   84.6808    
+       SOIL HUMUS POOL 2                   15.6986    
+       SOIL HUMUS POOL 3                   103694.    
+   MICRO ORGANISM POOL                               4113.50    
+       MICRO ORGANISM POOL 1               4094.09    
+       MICRO ORGANISM POOL 2               2.41133    
+       MICRO ORGANISM POOL 3               16.9954    
+ TOTAL (CARBON) AT END                                         109045.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                 -0.436557E-10
+
+
+ ---  1/ 6/1986 --- 152 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109045.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         8.64171    
+   FROM DEAD ROOTS                                  0.531094E-03
+   TOTAL ADDITIONS                                             8.64224    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         21.4364    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1355.58    
+   RESIDUE POOL                                      1120.33    
+       RESIDUE POOL 1                      863.443    
+       RESIDUE POOL 2                      256.889    
+   SOIL HUMUS POOL                                   103795.    
+       SOIL HUMUS POOL 1                   84.9423    
+       SOIL HUMUS POOL 2                   17.5320    
+       SOIL HUMUS POOL 3                   103693.    
+   MICRO ORGANISM POOL                               4116.34    
+       MICRO ORGANISM POOL 1               4096.88    
+       MICRO ORGANISM POOL 2               2.45676    
+       MICRO ORGANISM POOL 3               17.0008    
+ TOTAL (CARBON) AT END                                         109032.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                 -0.291038E-10
+
+
+ ---  2/ 6/1986 --- 153 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109032.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         5.56918    
+   FROM DEAD ROOTS                                  0.936190E-02
+   TOTAL ADDITIONS                                             5.57854    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         10.9305    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1350.01    
+   RESIDUE POOL                                      1112.93    
+       RESIDUE POOL 1                      862.664    
+       RESIDUE POOL 2                      250.266    
+   SOIL HUMUS POOL                                   103796.    
+       SOIL HUMUS POOL 1                   85.3663    
+       SOIL HUMUS POOL 2                   18.6906    
+       SOIL HUMUS POOL 3                   103692.    
+   MICRO ORGANISM POOL                               4117.39    
+       MICRO ORGANISM POOL 1               4097.91    
+       MICRO ORGANISM POOL 2               2.47864    
+       MICRO ORGANISM POOL 3               17.0043    
+ TOTAL (CARBON) AT END                                         109027.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.206152E-04
+
+
+ ---  3/ 6/1986 --- 154 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109027.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         6.23707    
+   FROM DEAD ROOTS                                  0.733885E-02
+   TOTAL ADDITIONS                                             6.24441    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         11.0422    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1343.77    
+   RESIDUE POOL                                      1106.11    
+       RESIDUE POOL 1                      861.784    
+       RESIDUE POOL 2                      244.323    
+   SOIL HUMUS POOL                                   103797.    
+       SOIL HUMUS POOL 1                   85.5407    
+       SOIL HUMUS POOL 2                   20.0294    
+       SOIL HUMUS POOL 3                   103692.    
+   MICRO ORGANISM POOL                               4118.57    
+       MICRO ORGANISM POOL 1               4099.07    
+       MICRO ORGANISM POOL 2               2.50147    
+       MICRO ORGANISM POOL 3               17.0078    
+ TOTAL (CARBON) AT END                                         109022.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                 -0.291038E-10
+
+
+ ---  4/ 6/1986 --- 155 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109022.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         7.58869    
+   FROM DEAD ROOTS                                  0.578956E-03
+   TOTAL ADDITIONS                                             7.58927    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         12.4077    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1336.18    
+   RESIDUE POOL                                      1099.08    
+       RESIDUE POOL 1                      860.616    
+       RESIDUE POOL 2                      238.468    
+   SOIL HUMUS POOL                                   103798.    
+       SOIL HUMUS POOL 1                   85.2344    
+       SOIL HUMUS POOL 2                   21.8005    
+       SOIL HUMUS POOL 3                   103691.    
+   MICRO ORGANISM POOL                               4120.20    
+       MICRO ORGANISM POOL 1               4100.66    
+       MICRO ORGANISM POOL 2               2.53369    
+       MICRO ORGANISM POOL 3               17.0121    
+ TOTAL (CARBON) AT END                                         109017.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                 -0.291038E-10
+
+
+ ---  5/ 6/1986 --- 156 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109017.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         6.43879    
+   FROM DEAD ROOTS                                  0.377535E-02
+   TOTAL ADDITIONS                                             6.44256    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         9.60013    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1329.74    
+   RESIDUE POOL                                      1094.19    
+       RESIDUE POOL 1                      859.708    
+       RESIDUE POOL 2                      234.482    
+   SOIL HUMUS POOL                                   103799.    
+       SOIL HUMUS POOL 1                   85.2870    
+       SOIL HUMUS POOL 2                   23.1464    
+       SOIL HUMUS POOL 3                   103690.    
+   MICRO ORGANISM POOL                               4121.22    
+       MICRO ORGANISM POOL 1               4101.65    
+       MICRO ORGANISM POOL 2               2.55618    
+       MICRO ORGANISM POOL 3               17.0158    
+ TOTAL (CARBON) AT END                                         109014.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                   0.00000    
+
+
+ ---  6/ 6/1986 --- 157 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109014.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         16.1325    
+   FROM DEAD ROOTS                                  0.389695E-02
+   TOTAL ADDITIONS                                             16.1364    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         3.20103    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1313.61    
+   RESIDUE POOL                                      1106.52    
+       RESIDUE POOL 1                      860.580    
+       RESIDUE POOL 2                      245.938    
+   SOIL HUMUS POOL                                   103801.    
+       SOIL HUMUS POOL 1                   87.8428    
+       SOIL HUMUS POOL 2                   23.4370    
+       SOIL HUMUS POOL 3                   103690.    
+   MICRO ORGANISM POOL                               4119.13    
+       MICRO ORGANISM POOL 1               4099.56    
+       MICRO ORGANISM POOL 2               2.55788    
+       MICRO ORGANISM POOL 3               17.0161    
+ TOTAL (CARBON) AT END                                         109027.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.508176E-04
+
+
+ ---  7/ 6/1986 --- 158 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109027.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         7.78667    
+   FROM DEAD ROOTS                                  0.171039E-02
+   TOTAL ADDITIONS                                             7.78838    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         18.4296    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1305.82    
+   RESIDUE POOL                                      1092.48    
+       RESIDUE POOL 1                      859.297    
+       RESIDUE POOL 2                      233.181    
+   SOIL HUMUS POOL                                   103802.    
+       SOIL HUMUS POOL 1                   87.7976    
+       SOIL HUMUS POOL 2                   25.3244    
+       SOIL HUMUS POOL 3                   103689.    
+   MICRO ORGANISM POOL                               4121.62    
+       MICRO ORGANISM POOL 1               4102.01    
+       MICRO ORGANISM POOL 2               2.59386    
+       MICRO ORGANISM POOL 3               17.0214    
+ TOTAL (CARBON) AT END                                         109016.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.727596E-10
+
+
+ ---  8/ 6/1986 --- 159 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109016.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         6.49895    
+   FROM DEAD ROOTS                                  0.593307E-02
+   TOTAL ADDITIONS                                             6.50488    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         13.2575    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1299.33    
+   RESIDUE POOL                                      1083.34    
+       RESIDUE POOL 1                      858.011    
+       RESIDUE POOL 2                      225.328    
+   SOIL HUMUS POOL                                   103803.    
+       SOIL HUMUS POOL 1                   87.5499    
+       SOIL HUMUS POOL 2                   27.0833    
+       SOIL HUMUS POOL 3                   103688.    
+   MICRO ORGANISM POOL                               4123.37    
+       MICRO ORGANISM POOL 1               4103.72    
+       MICRO ORGANISM POOL 2               2.62529    
+       MICRO ORGANISM POOL 3               17.0260    
+ TOTAL (CARBON) AT END                                         109010.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                 -0.582077E-10
+
+
+ ---  9/ 6/1986 --- 160 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109010.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         6.58438    
+   FROM DEAD ROOTS                                  0.573989E-02
+   TOTAL ADDITIONS                                             6.59012    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         11.9714    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1292.74    
+   RESIDUE POOL                                      1075.89    
+       RESIDUE POOL 1                      856.524    
+       RESIDUE POOL 2                      219.364    
+   SOIL HUMUS POOL                                   103803.    
+       SOIL HUMUS POOL 1                   86.9230    
+       SOIL HUMUS POOL 2                   29.0628    
+       SOIL HUMUS POOL 3                   103687.    
+   MICRO ORGANISM POOL                               4125.08    
+       MICRO ORGANISM POOL 1               4105.38    
+       MICRO ORGANISM POOL 2               2.66305    
+       MICRO ORGANISM POOL 3               17.0305    
+ TOTAL (CARBON) AT END                                         109004.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.436557E-10
+
+
+ --- 10/ 6/1986 --- 161 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109004.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         20.7304    
+   FROM DEAD ROOTS                                  0.726447E-02
+   TOTAL ADDITIONS                                             20.7376    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         5.03396    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1272.01    
+   RESIDUE POOL                                      1090.67    
+       RESIDUE POOL 1                      857.586    
+       RESIDUE POOL 2                      233.081    
+   SOIL HUMUS POOL                                   103805.    
+       SOIL HUMUS POOL 1                   88.4965    
+       SOIL HUMUS POOL 2                   29.5339    
+       SOIL HUMUS POOL 3                   103687.    
+   MICRO ORGANISM POOL                               4124.20    
+       MICRO ORGANISM POOL 1               4104.49    
+       MICRO ORGANISM POOL 2               2.67315    
+       MICRO ORGANISM POOL 3               17.0327    
+ TOTAL (CARBON) AT END                                         109020.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.988268E-04
+
+
+ --- 11/ 6/1986 --- 162 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109020.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         17.6919    
+   FROM DEAD ROOTS                                  0.161304E-02
+   TOTAL ADDITIONS                                             17.6936    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         4.51997    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1254.32    
+   RESIDUE POOL                                      1102.95    
+       RESIDUE POOL 1                      858.555    
+       RESIDUE POOL 2                      244.393    
+   SOIL HUMUS POOL                                   103808.    
+       SOIL HUMUS POOL 1                   91.3109    
+       SOIL HUMUS POOL 2                   29.8098    
+       SOIL HUMUS POOL 3                   103687.    
+   MICRO ORGANISM POOL                               4122.14    
+       MICRO ORGANISM POOL 1               4102.43    
+       MICRO ORGANISM POOL 2               2.67542    
+       MICRO ORGANISM POOL 3               17.0343    
+ TOTAL (CARBON) AT END                                         109033.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.202377E-04
+
+
+ --- 12/ 6/1986 --- 163 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109033.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         6.71836    
+   FROM DEAD ROOTS                                  0.260513E-01
+   TOTAL ADDITIONS                                             6.74441    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         18.3632    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1247.60    
+   RESIDUE POOL                                      1087.78    
+       RESIDUE POOL 1                      857.770    
+       RESIDUE POOL 2                      230.007    
+   SOIL HUMUS POOL                                   103809.    
+       SOIL HUMUS POOL 1                   92.1881    
+       SOIL HUMUS POOL 2                   30.9916    
+       SOIL HUMUS POOL 3                   103686.    
+   MICRO ORGANISM POOL                               4124.21    
+       MICRO ORGANISM POOL 1               4104.48    
+       MICRO ORGANISM POOL 2               2.69408    
+       MICRO ORGANISM POOL 3               17.0391    
+ TOTAL (CARBON) AT END                                         109021.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                 -0.291038E-10
+
+
+ --- 13/ 6/1986 --- 164 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109021.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         6.84112    
+   FROM DEAD ROOTS                                  0.103488E-01
+   TOTAL ADDITIONS                                             6.85147    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         18.1809    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1240.76    
+   RESIDUE POOL                                      1073.04    
+       RESIDUE POOL 1                      856.624    
+       RESIDUE POOL 2                      216.421    
+   SOIL HUMUS POOL                                   103811.    
+       SOIL HUMUS POOL 1                   92.4372    
+       SOIL HUMUS POOL 2                   32.6105    
+       SOIL HUMUS POOL 3                   103686.    
+   MICRO ORGANISM POOL                               4126.53    
+       MICRO ORGANISM POOL 1               4106.77    
+       MICRO ORGANISM POOL 2               2.71662    
+       MICRO ORGANISM POOL 3               17.0441    
+ TOTAL (CARBON) AT END                                         109010.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                 -0.582077E-10
+
+
+ --- 14/ 6/1986 --- 165 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109010.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         5.99535    
+   FROM DEAD ROOTS                                  0.258133E-01
+   TOTAL ADDITIONS                                             6.02116    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         13.8339    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1234.76    
+   RESIDUE POOL                                      1062.73    
+       RESIDUE POOL 1                      855.292    
+       RESIDUE POOL 2                      207.436    
+   SOIL HUMUS POOL                                   103811.    
+       SOIL HUMUS POOL 1                   92.2298    
+       SOIL HUMUS POOL 2                   34.3505    
+       SOIL HUMUS POOL 3                   103685.    
+   MICRO ORGANISM POOL                               4128.34    
+       MICRO ORGANISM POOL 1               4108.55    
+       MICRO ORGANISM POOL 2               2.73912    
+       MICRO ORGANISM POOL 3               17.0486    
+ TOTAL (CARBON) AT END                                         109002.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.436557E-10
+
+
+ --- 15/ 6/1986 --- 166 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109002.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         5.47676    
+   FROM DEAD ROOTS                                  0.757595E-01
+   TOTAL ADDITIONS                                             5.55252    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         11.4096    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1229.29    
+   RESIDUE POOL                                      1054.88    
+       RESIDUE POOL 1                      853.814    
+       RESIDUE POOL 2                      201.070    
+   SOIL HUMUS POOL                                   103812.    
+       SOIL HUMUS POOL 1                   91.7117    
+       SOIL HUMUS POOL 2                   36.1979    
+       SOIL HUMUS POOL 3                   103684.    
+   MICRO ORGANISM POOL                               4129.89    
+       MICRO ORGANISM POOL 1               4110.07    
+       MICRO ORGANISM POOL 2               2.76218    
+       MICRO ORGANISM POOL 3               17.0529    
+ TOTAL (CARBON) AT END                                         108996.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.577711E-08
+
+
+ --- 16/ 6/1986 --- 167 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108996.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         5.38249    
+   FROM DEAD ROOTS                                  0.276729    
+   TOTAL ADDITIONS                                             5.65922    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         10.4315    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1223.90    
+   RESIDUE POOL                                      1048.38    
+       RESIDUE POOL 1                      852.205    
+       RESIDUE POOL 2                      196.175    
+   SOIL HUMUS POOL                                   103812.    
+       SOIL HUMUS POOL 1                   90.8950    
+       SOIL HUMUS POOL 2                   38.2030    
+       SOIL HUMUS POOL 3                   103683.    
+   MICRO ORGANISM POOL                               4131.41    
+       MICRO ORGANISM POOL 1               4111.57    
+       MICRO ORGANISM POOL 2               2.78770    
+       MICRO ORGANISM POOL 3               17.0570    
+ TOTAL (CARBON) AT END                                         108992.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.577711E-08
+
+
+ --- 17/ 6/1986 --- 168 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108992.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         4.93672    
+   FROM DEAD ROOTS                                  0.378998    
+   TOTAL ADDITIONS                                             5.31571    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         10.0050    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1218.97    
+   RESIDUE POOL                                      1042.09    
+       RESIDUE POOL 1                      850.433    
+       RESIDUE POOL 2                      191.660    
+   SOIL HUMUS POOL                                   103812.    
+       SOIL HUMUS POOL 1                   89.8789    
+       SOIL HUMUS POOL 2                   40.3244    
+       SOIL HUMUS POOL 3                   103682.    
+   MICRO ORGANISM POOL                               4132.97    
+       MICRO ORGANISM POOL 1               4113.10    
+       MICRO ORGANISM POOL 2               2.81060    
+       MICRO ORGANISM POOL 3               17.0613    
+ TOTAL (CARBON) AT END                                         108987.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.116706E-07
+
+
+ --- 18/ 6/1986 --- 169 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108987.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         17.4357    
+   FROM DEAD ROOTS                                  0.114298    
+   TOTAL ADDITIONS                                             17.5500    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         3.65494    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1201.53    
+   RESIDUE POOL                                      1055.34    
+       RESIDUE POOL 1                      851.262    
+       RESIDUE POOL 2                      204.074    
+   SOIL HUMUS POOL                                   103814.    
+       SOIL HUMUS POOL 1                   91.3620    
+       SOIL HUMUS POOL 2                   40.7689    
+       SOIL HUMUS POOL 3                   103682.    
+   MICRO ORGANISM POOL                               4131.93    
+       MICRO ORGANISM POOL 1               4112.05    
+       MICRO ORGANISM POOL 2               2.81365    
+       MICRO ORGANISM POOL 3               17.0623    
+ TOTAL (CARBON) AT END                                         109001.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.465150E-04
+
+
+ --- 19/ 6/1986 --- 170 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109001.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         20.7444    
+   FROM DEAD ROOTS                                  0.534846E-01
+   TOTAL ADDITIONS                                             20.7979    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         6.02452    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1180.79    
+   RESIDUE POOL                                      1068.93    
+       RESIDUE POOL 1                      852.351    
+       RESIDUE POOL 2                      216.575    
+   SOIL HUMUS POOL                                   103816.    
+       SOIL HUMUS POOL 1                   93.7512    
+       SOIL HUMUS POOL 2                   41.1271    
+       SOIL HUMUS POOL 3                   103681.    
+   MICRO ORGANISM POOL                               4130.54    
+       MICRO ORGANISM POOL 1               4110.67    
+       MICRO ORGANISM POOL 2               2.81003    
+       MICRO ORGANISM POOL 3               17.0644    
+ TOTAL (CARBON) AT END                                         109016.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.582077E-10
+
+
+ --- 20/ 6/1986 --- 171 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109016.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         7.52331    
+   FROM DEAD ROOTS                                  0.203504    
+   TOTAL ADDITIONS                                             7.72682    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         26.6988    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1173.26    
+   RESIDUE POOL                                      1045.23    
+       RESIDUE POOL 1                      849.803    
+       RESIDUE POOL 2                      195.428    
+   SOIL HUMUS POOL                                   103817.    
+       SOIL HUMUS POOL 1                   92.7208    
+       SOIL HUMUS POOL 2                   44.2328    
+       SOIL HUMUS POOL 3                   103680.    
+   MICRO ORGANISM POOL                               4134.69    
+       MICRO ORGANISM POOL 1               4114.78    
+       MICRO ORGANISM POOL 2               2.83357    
+       MICRO ORGANISM POOL 3               17.0721    
+ TOTAL (CARBON) AT END                                         108997.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.291038E-10
+
+
+ --- 21/ 6/1986 --- 172 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108997.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         18.7177    
+   FROM DEAD ROOTS                                  0.513449E-01
+   TOTAL ADDITIONS                                             18.7691    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         6.28072    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1154.55    
+   RESIDUE POOL                                      1056.57    
+       RESIDUE POOL 1                      850.582    
+       RESIDUE POOL 2                      205.984    
+   SOIL HUMUS POOL                                   103818.    
+       SOIL HUMUS POOL 1                   93.8614    
+       SOIL HUMUS POOL 2                   44.8039    
+       SOIL HUMUS POOL 3                   103680.    
+   MICRO ORGANISM POOL                               4134.42    
+       MICRO ORGANISM POOL 1               4114.51    
+       MICRO ORGANISM POOL 2               2.83567    
+       MICRO ORGANISM POOL 3               17.0738    
+ TOTAL (CARBON) AT END                                         109009.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.166898E-03
+
+
+ --- 22/ 6/1986 --- 173 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109009.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         15.8224    
+   FROM DEAD ROOTS                                  0.868766E-01
+   TOTAL ADDITIONS                                             15.9093    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         6.13860    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1138.72    
+   RESIDUE POOL                                      1065.17    
+       RESIDUE POOL 1                      851.243    
+       RESIDUE POOL 2                      213.925    
+   SOIL HUMUS POOL                                   103820.    
+       SOIL HUMUS POOL 1                   95.4091    
+       SOIL HUMUS POOL 2                   45.2550    
+       SOIL HUMUS POOL 3                   103679.    
+   MICRO ORGANISM POOL                               4133.82    
+       MICRO ORGANISM POOL 1               4113.91    
+       MICRO ORGANISM POOL 2               2.83384    
+       MICRO ORGANISM POOL 3               17.0751    
+ TOTAL (CARBON) AT END                                         109019.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                 -0.291038E-10
+
+
+ --- 23/ 6/1986 --- 174 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109019.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         5.42837    
+   FROM DEAD ROOTS                                  0.357577    
+   TOTAL ADDITIONS                                             5.78594    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         27.9614    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1133.30    
+   RESIDUE POOL                                      1037.85    
+       RESIDUE POOL 1                      848.880    
+       RESIDUE POOL 2                      188.971    
+   SOIL HUMUS POOL                                   103821.    
+       SOIL HUMUS POOL 1                   95.0317    
+       SOIL HUMUS POOL 2                   47.8996    
+       SOIL HUMUS POOL 3                   103678.    
+   MICRO ORGANISM POOL                               4137.97    
+       MICRO ORGANISM POOL 1               4118.03    
+       MICRO ORGANISM POOL 2               2.85361    
+       MICRO ORGANISM POOL 3               17.0826    
+ TOTAL (CARBON) AT END                                         108997.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.603904E-08
+
+
+ --- 24/ 6/1986 --- 175 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108997.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         4.49690    
+   FROM DEAD ROOTS                                  0.765877    
+   TOTAL ADDITIONS                                             5.26277    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         16.7107    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1128.80    
+   RESIDUE POOL                                      1023.45    
+       RESIDUE POOL 1                      846.666    
+       RESIDUE POOL 2                      176.785    
+   SOIL HUMUS POOL                                   103821.    
+       SOIL HUMUS POOL 1                   94.1727    
+       SOIL HUMUS POOL 2                   50.2887    
+       SOIL HUMUS POOL 3                   103677.    
+   MICRO ORGANISM POOL                               4140.57    
+       MICRO ORGANISM POOL 1               4120.61    
+       MICRO ORGANISM POOL 2               2.87472    
+       MICRO ORGANISM POOL 3               17.0883    
+ TOTAL (CARBON) AT END                                         108985.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.485597E-07
+
+
+ --- 25/ 6/1986 --- 176 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108985.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         4.49435    
+   FROM DEAD ROOTS                                  0.893468    
+   TOTAL ADDITIONS                                             5.38781    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         12.6589    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1124.31    
+   RESIDUE POOL                                      1014.05    
+       RESIDUE POOL 1                      844.348    
+       RESIDUE POOL 2                      169.700    
+   SOIL HUMUS POOL                                   103821.    
+       SOIL HUMUS POOL 1                   92.9849    
+       SOIL HUMUS POOL 2                   52.7232    
+       SOIL HUMUS POOL 3                   103676.    
+   MICRO ORGANISM POOL                               4142.69    
+       MICRO ORGANISM POOL 1               4122.70    
+       MICRO ORGANISM POOL 2               2.89980    
+       MICRO ORGANISM POOL 3               17.0933    
+ TOTAL (CARBON) AT END                                         108978.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.488653E-07
+
+
+ --- 26/ 6/1986 --- 177 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108978.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         5.27706    
+   FROM DEAD ROOTS                                  0.295224    
+   TOTAL ADDITIONS                                             5.57228    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         12.6735    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1119.03    
+   RESIDUE POOL                                      1004.98    
+       RESIDUE POOL 1                      841.201    
+       RESIDUE POOL 2                      163.784    
+   SOIL HUMUS POOL                                   103821.    
+       SOIL HUMUS POOL 1                   90.9650    
+       SOIL HUMUS POOL 2                   55.8628    
+       SOIL HUMUS POOL 3                   103674.    
+   MICRO ORGANISM POOL                               4145.16    
+       MICRO ORGANISM POOL 1               4125.12    
+       MICRO ORGANISM POOL 2               2.94253    
+       MICRO ORGANISM POOL 3               17.0994    
+ TOTAL (CARBON) AT END                                         108971.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.491855E-07
+
+
+ --- 27/ 6/1986 --- 178 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108971.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         12.4009    
+   FROM DEAD ROOTS                                  0.293597    
+   TOTAL ADDITIONS                                             12.6945    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         9.92736    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1106.63    
+   RESIDUE POOL                                      1006.14    
+       RESIDUE POOL 1                      840.619    
+       RESIDUE POOL 2                      165.525    
+   SOIL HUMUS POOL                                   103821.    
+       SOIL HUMUS POOL 1                   90.6885    
+       SOIL HUMUS POOL 2                   57.3279    
+       SOIL HUMUS POOL 3                   103673.    
+   MICRO ORGANISM POOL                               4146.34    
+       MICRO ORGANISM POOL 1               4126.29    
+       MICRO ORGANISM POOL 2               2.95664    
+       MICRO ORGANISM POOL 3               17.1023    
+ TOTAL (CARBON) AT END                                         108974.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.237678E-04
+
+
+ --- 28/ 6/1986 --- 179 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108974.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         4.98509    
+   FROM DEAD ROOTS                                  0.155291    
+   TOTAL ADDITIONS                                             5.14038    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         13.9652    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1101.64    
+   RESIDUE POOL                                      994.979    
+       RESIDUE POOL 1                      837.441    
+       RESIDUE POOL 2                      157.538    
+   SOIL HUMUS POOL                                   103821.    
+       SOIL HUMUS POOL 1                   89.1379    
+       SOIL HUMUS POOL 2                   60.2058    
+       SOIL HUMUS POOL 3                   103672.    
+   MICRO ORGANISM POOL                               4148.92    
+       MICRO ORGANISM POOL 1               4128.82    
+       MICRO ORGANISM POOL 2               2.99258    
+       MICRO ORGANISM POOL 3               17.1089    
+ TOTAL (CARBON) AT END                                         108965.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.494911E-07
+
+
+ --- 29/ 6/1986 --- 180 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108965.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         10.6213    
+   FROM DEAD ROOTS                                  0.213378    
+   TOTAL ADDITIONS                                             10.8347    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         6.81368    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1091.02    
+   RESIDUE POOL                                      997.847    
+       RESIDUE POOL 1                      837.112    
+       RESIDUE POOL 2                      160.735    
+   SOIL HUMUS POOL                                   103822.    
+       SOIL HUMUS POOL 1                   89.4179    
+       SOIL HUMUS POOL 2                   61.1809    
+       SOIL HUMUS POOL 3                   103671.    
+   MICRO ORGANISM POOL                               4149.35    
+       MICRO ORGANISM POOL 1               4129.24    
+       MICRO ORGANISM POOL 2               2.99915    
+       MICRO ORGANISM POOL 3               17.1110    
+ TOTAL (CARBON) AT END                                         108969.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.236373E-04
+
+
+ --- 30/ 6/1986 --- 181 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108969.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         12.7853    
+   FROM DEAD ROOTS                                  0.228290    
+   TOTAL ADDITIONS                                             13.0136    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         4.10862    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1078.24    
+   RESIDUE POOL                                      1005.95    
+       RESIDUE POOL 1                      837.324    
+       RESIDUE POOL 2                      168.623    
+   SOIL HUMUS POOL                                   103823.    
+       SOIL HUMUS POOL 1                   90.7431    
+       SOIL HUMUS POOL 2                   61.7080    
+       SOIL HUMUS POOL 3                   103671.    
+   MICRO ORGANISM POOL                               4148.59    
+       MICRO ORGANISM POOL 1               4128.48    
+       MICRO ORGANISM POOL 2               2.99955    
+       MICRO ORGANISM POOL 3               17.1125    
+ TOTAL (CARBON) AT END                                         108978.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.181725E-04
+
+
+ ---  1/ 7/1986 --- 182 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108978.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         4.03865    
+   FROM DEAD ROOTS                                  0.787303    
+   TOTAL ADDITIONS                                             4.82596    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         15.0682    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1074.20    
+   RESIDUE POOL                                      992.952    
+       RESIDUE POOL 1                      835.111    
+       RESIDUE POOL 2                      157.841    
+   SOIL HUMUS POOL                                   103824.    
+       SOIL HUMUS POOL 1                   90.2831    
+       SOIL HUMUS POOL 2                   63.7103    
+       SOIL HUMUS POOL 3                   103670.    
+   MICRO ORGANISM POOL                               4150.89    
+       MICRO ORGANISM POOL 1               4130.76    
+       MICRO ORGANISM POOL 2               3.01487    
+       MICRO ORGANISM POOL 3               17.1169    
+ TOTAL (CARBON) AT END                                         108968.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.291038E-10
+
+
+ ---  2/ 7/1986 --- 183 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108968.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         4.10795    
+   FROM DEAD ROOTS                                  0.793622    
+   TOTAL ADDITIONS                                             4.90157    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         12.4932    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1070.09    
+   RESIDUE POOL                                      983.198    
+       RESIDUE POOL 1                      832.696    
+       RESIDUE POOL 2                      150.502    
+   SOIL HUMUS POOL                                   103824.    
+       SOIL HUMUS POOL 1                   89.3974    
+       SOIL HUMUS POOL 2                   65.8932    
+       SOIL HUMUS POOL 3                   103669.    
+   MICRO ORGANISM POOL                               4152.95    
+       MICRO ORGANISM POOL 1               4132.79    
+       MICRO ORGANISM POOL 2               3.03672    
+       MICRO ORGANISM POOL 3               17.1205    
+ TOTAL (CARBON) AT END                                         108960.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.177242E-07
+
+
+ ---  3/ 7/1986 --- 184 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108960.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         3.92282    
+   FROM DEAD ROOTS                                  0.559411    
+   TOTAL ADDITIONS                                             4.48223    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         10.6682    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1066.17    
+   RESIDUE POOL                                      975.205    
+       RESIDUE POOL 1                      830.235    
+       RESIDUE POOL 2                      144.970    
+   SOIL HUMUS POOL                                   103824.    
+       SOIL HUMUS POOL 1                   88.4490    
+       SOIL HUMUS POOL 2                   68.0322    
+       SOIL HUMUS POOL 3                   103667.    
+   MICRO ORGANISM POOL                               4154.76    
+       MICRO ORGANISM POOL 1               4134.58    
+       MICRO ORGANISM POOL 2               3.06157    
+       MICRO ORGANISM POOL 3               17.1236    
+ TOTAL (CARBON) AT END                                         108954.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.176660E-07
+
+
+ ---  4/ 7/1986 --- 185 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108954.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         5.18739    
+   FROM DEAD ROOTS                                  0.935760E-01
+   TOTAL ADDITIONS                                             5.28096    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         12.2469    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1060.98    
+   RESIDUE POOL                                      966.431    
+       RESIDUE POOL 1                      826.683    
+       RESIDUE POOL 2                      139.748    
+   SOIL HUMUS POOL                                   103823.    
+       SOIL HUMUS POOL 1                   86.3818    
+       SOIL HUMUS POOL 2                   71.1328    
+       SOIL HUMUS POOL 3                   103666.    
+   MICRO ORGANISM POOL                               4157.31    
+       MICRO ORGANISM POOL 1               4137.07    
+       MICRO ORGANISM POOL 2               3.11369    
+       MICRO ORGANISM POOL 3               17.1285    
+ TOTAL (CARBON) AT END                                         108947.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.440486E-07
+
+
+ ---  5/ 7/1986 --- 186 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108947.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         5.18893    
+   FROM DEAD ROOTS                                  0.920622E-02
+   TOTAL ADDITIONS                                             5.19813    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         12.4410    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1055.79    
+   RESIDUE POOL                                      957.343    
+       RESIDUE POOL 1                      822.898    
+       RESIDUE POOL 2                      134.445    
+   SOIL HUMUS POOL                                   103822.    
+       SOIL HUMUS POOL 1                   84.3020    
+       SOIL HUMUS POOL 2                   74.2742    
+       SOIL HUMUS POOL 3                   103664.    
+   MICRO ORGANISM POOL                               4159.95    
+       MICRO ORGANISM POOL 1               4139.64    
+       MICRO ORGANISM POOL 2               3.17859    
+       MICRO ORGANISM POOL 3               17.1340    
+ TOTAL (CARBON) AT END                                         108940.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.483997E-07
+
+
+ ---  6/ 7/1986 --- 187 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108940.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         16.3655    
+   FROM DEAD ROOTS                                  0.303566E-01
+   TOTAL ADDITIONS                                             16.3959    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         4.20691    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1039.42    
+   RESIDUE POOL                                      968.622    
+       RESIDUE POOL 1                      823.424    
+       RESIDUE POOL 2                      145.198    
+   SOIL HUMUS POOL                                   103825.    
+       SOIL HUMUS POOL 1                   87.2656    
+       SOIL HUMUS POOL 2                   74.6578    
+       SOIL HUMUS POOL 3                   103664.    
+   MICRO ORGANISM POOL                               4157.72    
+       MICRO ORGANISM POOL 1               4137.41    
+       MICRO ORGANISM POOL 2               3.17357    
+       MICRO ORGANISM POOL 3               17.1361    
+ TOTAL (CARBON) AT END                                         108952.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.431301E-04
+
+
+ ---  7/ 7/1986 --- 188 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108952.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         6.73411    
+   FROM DEAD ROOTS                                  0.577036E-01
+   TOTAL ADDITIONS                                             6.79182    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         9.72819    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1032.69    
+   RESIDUE POOL                                      963.869    
+       RESIDUE POOL 1                      822.230    
+       RESIDUE POOL 2                      141.639    
+   SOIL HUMUS POOL                                   103826.    
+       SOIL HUMUS POOL 1                   87.4894    
+       SOIL HUMUS POOL 2                   75.8527    
+       SOIL HUMUS POOL 3                   103663.    
+   MICRO ORGANISM POOL                               4158.77    
+       MICRO ORGANISM POOL 1               4138.45    
+       MICRO ORGANISM POOL 2               3.18699    
+       MICRO ORGANISM POOL 3               17.1395    
+ TOTAL (CARBON) AT END                                         108949.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                   0.00000    
+
+
+ ---  8/ 7/1986 --- 189 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108949.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         6.82062    
+   FROM DEAD ROOTS                                  0.439585E-01
+   TOTAL ADDITIONS                                             6.86458    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         11.2800    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1025.87    
+   RESIDUE POOL                                      957.505    
+       RESIDUE POOL 1                      820.575    
+       RESIDUE POOL 2                      136.930    
+   SOIL HUMUS POOL                                   103827.    
+       SOIL HUMUS POOL 1                   87.1005    
+       SOIL HUMUS POOL 2                   77.4789    
+       SOIL HUMUS POOL 3                   103662.    
+   MICRO ORGANISM POOL                               4160.39    
+       MICRO ORGANISM POOL 1               4140.03    
+       MICRO ORGANISM POOL 2               3.20849    
+       MICRO ORGANISM POOL 3               17.1433    
+ TOTAL (CARBON) AT END                                         108944.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                   0.00000    
+
+
+ ---  9/ 7/1986 --- 190 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108944.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         14.6280    
+   FROM DEAD ROOTS                                  0.449917E-01
+   TOTAL ADDITIONS                                             14.6730    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         3.09047    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            1011.24    
+   RESIDUE POOL                                      968.457    
+       RESIDUE POOL 1                      821.223    
+       RESIDUE POOL 2                      147.234    
+   SOIL HUMUS POOL                                   103830.    
+       SOIL HUMUS POOL 1                   90.5228    
+       SOIL HUMUS POOL 2                   77.7495    
+       SOIL HUMUS POOL 3                   103662.    
+   MICRO ORGANISM POOL                               4157.47    
+       MICRO ORGANISM POOL 1               4137.12    
+       MICRO ORGANISM POOL 2               3.20043    
+       MICRO ORGANISM POOL 3               17.1434    
+ TOTAL (CARBON) AT END                                         108956.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.198202E-04
+
+
+ --- 10/ 7/1986 --- 191 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108956.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         12.6299    
+   FROM DEAD ROOTS                                  0.337890E-01
+   TOTAL ADDITIONS                                             12.6637    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         1.92665    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            998.612    
+   RESIDUE POOL                                      978.825    
+       RESIDUE POOL 1                      821.865    
+       RESIDUE POOL 2                      156.961    
+   SOIL HUMUS POOL                                   103834.    
+       SOIL HUMUS POOL 1                   94.3191    
+       SOIL HUMUS POOL 2                   77.9532    
+       SOIL HUMUS POOL 3                   103662.    
+   MICRO ORGANISM POOL                               4153.94    
+       MICRO ORGANISM POOL 1               4133.61    
+       MICRO ORGANISM POOL 2               3.18975    
+       MICRO ORGANISM POOL 3               17.1421    
+ TOTAL (CARBON) AT END                                         108967.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.664660E-05
+
+
+ --- 11/ 7/1986 --- 192 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108967.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         14.4175    
+   FROM DEAD ROOTS                                  0.534816E-01
+   TOTAL ADDITIONS                                             14.4709    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         1.45724    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            984.194    
+   RESIDUE POOL                                      991.584    
+       RESIDUE POOL 1                      822.627    
+       RESIDUE POOL 2                      168.957    
+   SOIL HUMUS POOL                                   103837.    
+       SOIL HUMUS POOL 1                   97.4607    
+       SOIL HUMUS POOL 2                   78.1861    
+       SOIL HUMUS POOL 3                   103662.    
+   MICRO ORGANISM POOL                               4150.95    
+       MICRO ORGANISM POOL 1               4130.63    
+       MICRO ORGANISM POOL 2               3.18168    
+       MICRO ORGANISM POOL 3               17.1409    
+ TOTAL (CARBON) AT END                                         108980.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.395131E-05
+
+
+ --- 12/ 7/1986 --- 193 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108980.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         7.78722    
+   FROM DEAD ROOTS                                  0.539501E-01
+   TOTAL ADDITIONS                                             7.84117    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         4.74804    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            976.407    
+   RESIDUE POOL                                      993.943    
+       RESIDUE POOL 1                      822.103    
+       RESIDUE POOL 2                      171.840    
+   SOIL HUMUS POOL                                   103838.    
+       SOIL HUMUS POOL 1                   97.5840    
+       SOIL HUMUS POOL 2                   79.1245    
+       SOIL HUMUS POOL 3                   103661.    
+   MICRO ORGANISM POOL                               4151.10    
+       MICRO ORGANISM POOL 1               4130.76    
+       MICRO ORGANISM POOL 2               3.19381    
+       MICRO ORGANISM POOL 3               17.1418    
+ TOTAL (CARBON) AT END                                         108983.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                   0.00000    
+
+
+ --- 13/ 7/1986 --- 194 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108983.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         13.7516    
+   FROM DEAD ROOTS                                  0.447088E-01
+   TOTAL ADDITIONS                                             13.7963    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         1.89927    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            962.655    
+   RESIDUE POOL                                      1005.49    
+       RESIDUE POOL 1                      822.824    
+       RESIDUE POOL 2                      182.670    
+   SOIL HUMUS POOL                                   103841.    
+       SOIL HUMUS POOL 1                   100.795    
+       SOIL HUMUS POOL 2                   79.3542    
+       SOIL HUMUS POOL 3                   103661.    
+   MICRO ORGANISM POOL                               4148.12    
+       MICRO ORGANISM POOL 1               4127.80    
+       MICRO ORGANISM POOL 2               3.18551    
+       MICRO ORGANISM POOL 3               17.1403    
+ TOTAL (CARBON) AT END                                         108995.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.240988E-05
+
+
+ --- 14/ 7/1986 --- 195 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108995.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         7.65655    
+   FROM DEAD ROOTS                                  0.175075E-01
+   TOTAL ADDITIONS                                             7.67406    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         4.96581    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            954.999    
+   RESIDUE POOL                                      1007.44    
+       RESIDUE POOL 1                      822.244    
+       RESIDUE POOL 2                      185.191    
+   SOIL HUMUS POOL                                   103842.    
+       SOIL HUMUS POOL 1                   100.827    
+       SOIL HUMUS POOL 2                   80.3480    
+       SOIL HUMUS POOL 3                   103661.    
+   MICRO ORGANISM POOL                               4148.36    
+       MICRO ORGANISM POOL 1               4128.02    
+       MICRO ORGANISM POOL 2               3.19876    
+       MICRO ORGANISM POOL 3               17.1412    
+ TOTAL (CARBON) AT END                                         108997.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.582077E-10
+
+
+ --- 15/ 7/1986 --- 196 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108997.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         8.32334    
+   FROM DEAD ROOTS                                  0.143798E-01
+   TOTAL ADDITIONS                                             8.33772    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         6.40335    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            946.675    
+   RESIDUE POOL                                      1008.38    
+       RESIDUE POOL 1                      821.500    
+       RESIDUE POOL 2                      186.876    
+   SOIL HUMUS POOL                                   103842.    
+       SOIL HUMUS POOL 1                   100.605    
+       SOIL HUMUS POOL 2                   81.5393    
+       SOIL HUMUS POOL 3                   103660.    
+   MICRO ORGANISM POOL                               4148.97    
+       MICRO ORGANISM POOL 1               4128.61    
+       MICRO ORGANISM POOL 2               3.21755    
+       MICRO ORGANISM POOL 3               17.1427    
+ TOTAL (CARBON) AT END                                         108999.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                   0.00000    
+
+
+ --- 16/ 7/1986 --- 197 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108999.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         16.0105    
+   FROM DEAD ROOTS                                  0.265566E-01
+   TOTAL ADDITIONS                                             16.0371    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         2.97185    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            930.665    
+   RESIDUE POOL                                      1020.91    
+       RESIDUE POOL 1                      822.302    
+       RESIDUE POOL 2                      198.608    
+   SOIL HUMUS POOL                                   103845.    
+       SOIL HUMUS POOL 1                   102.947    
+       SOIL HUMUS POOL 2                   81.8542    
+       SOIL HUMUS POOL 3                   103660.    
+   MICRO ORGANISM POOL                               4147.00    
+       MICRO ORGANISM POOL 1               4126.65    
+       MICRO ORGANISM POOL 2               3.21537    
+       MICRO ORGANISM POOL 3               17.1421    
+ TOTAL (CARBON) AT END                                         109012.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.294921E-05
+
+
+ --- 17/ 7/1986 --- 198 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109012.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         8.51087    
+   FROM DEAD ROOTS                                  0.301604E-01
+   TOTAL ADDITIONS                                             8.54103    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         8.16536    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            922.154    
+   RESIDUE POOL                                      1020.05    
+       RESIDUE POOL 1                      821.157    
+       RESIDUE POOL 2                      198.895    
+   SOIL HUMUS POOL                                   103845.    
+       SOIL HUMUS POOL 1                   102.224    
+       SOIL HUMUS POOL 2                   83.4414    
+       SOIL HUMUS POOL 3                   103659.    
+   MICRO ORGANISM POOL                               4148.14    
+       MICRO ORGANISM POOL 1               4127.75    
+       MICRO ORGANISM POOL 2               3.24263    
+       MICRO ORGANISM POOL 3               17.1443    
+ TOTAL (CARBON) AT END                                         109013.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.145519E-10
+
+
+ --- 18/ 7/1986 --- 199 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109013.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         8.40711    
+   FROM DEAD ROOTS                                  0.202664E-01
+   TOTAL ADDITIONS                                             8.42737    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         10.5431    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            913.747    
+   RESIDUE POOL                                      1016.30    
+       RESIDUE POOL 1                      819.709    
+       RESIDUE POOL 2                      196.595    
+   SOIL HUMUS POOL                                   103845.    
+       SOIL HUMUS POOL 1                   101.301    
+       SOIL HUMUS POOL 2                   85.2732    
+       SOIL HUMUS POOL 3                   103658.    
+   MICRO ORGANISM POOL                               4149.75    
+       MICRO ORGANISM POOL 1               4129.33    
+       MICRO ORGANISM POOL 2               3.27676    
+       MICRO ORGANISM POOL 3               17.1472    
+ TOTAL (CARBON) AT END                                         109011.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                 -0.436557E-10
+
+
+ --- 19/ 7/1986 --- 200 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109011.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         7.80654    
+   FROM DEAD ROOTS                                  0.116385E-01
+   TOTAL ADDITIONS                                             7.81818    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         11.1788    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            905.940    
+   RESIDUE POOL                                      1011.19    
+       RESIDUE POOL 1                      818.102    
+       RESIDUE POOL 2                      193.086    
+   SOIL HUMUS POOL                                   103845.    
+       SOIL HUMUS POOL 1                   100.354    
+       SOIL HUMUS POOL 2                   87.1523    
+       SOIL HUMUS POOL 3                   103657.    
+   MICRO ORGANISM POOL                               4151.51    
+       MICRO ORGANISM POOL 1               4131.05    
+       MICRO ORGANISM POOL 2               3.31340    
+       MICRO ORGANISM POOL 3               17.1504    
+ TOTAL (CARBON) AT END                                         109007.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                 -0.145519E-10
+
+
+ --- 20/ 7/1986 --- 201 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109007.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         6.03670    
+   FROM DEAD ROOTS                                  0.295262E-01
+   TOTAL ADDITIONS                                             6.06623    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         9.50900    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            899.904    
+   RESIDUE POOL                                      1006.17    
+       RESIDUE POOL 1                      816.744    
+       RESIDUE POOL 2                      189.430    
+   SOIL HUMUS POOL                                   103845.    
+       SOIL HUMUS POOL 1                   99.8978    
+       SOIL HUMUS POOL 2                   88.6247    
+       SOIL HUMUS POOL 3                   103656.    
+   MICRO ORGANISM POOL                               4152.80    
+       MICRO ORGANISM POOL 1               4132.31    
+       MICRO ORGANISM POOL 2               3.33803    
+       MICRO ORGANISM POOL 3               17.1529    
+ TOTAL (CARBON) AT END                                         109004.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.727596E-10
+
+
+ --- 21/ 7/1986 --- 202 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109004.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         5.49148    
+   FROM DEAD ROOTS                                  0.421293E-01
+   TOTAL ADDITIONS                                             5.53361    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         8.89941    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            894.412    
+   RESIDUE POOL                                      1001.36    
+       RESIDUE POOL 1                      815.344    
+       RESIDUE POOL 2                      186.018    
+   SOIL HUMUS POOL                                   103845.    
+       SOIL HUMUS POOL 1                   99.4196    
+       SOIL HUMUS POOL 2                   90.0786    
+       SOIL HUMUS POOL 3                   103656.    
+   MICRO ORGANISM POOL                               4154.01    
+       MICRO ORGANISM POOL 1               4133.50    
+       MICRO ORGANISM POOL 2               3.35685    
+       MICRO ORGANISM POOL 3               17.1551    
+ TOTAL (CARBON) AT END                                         109001.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                 -0.291038E-10
+
+
+ --- 22/ 7/1986 --- 203 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109001.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         5.67546    
+   FROM DEAD ROOTS                                  0.605384E-01
+   TOTAL ADDITIONS                                             5.73599    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         10.3403    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            888.737    
+   RESIDUE POOL                                      995.148    
+       RESIDUE POOL 1                      813.656    
+       RESIDUE POOL 2                      181.492    
+   SOIL HUMUS POOL                                   103845.    
+       SOIL HUMUS POOL 1                   98.6254    
+       SOIL HUMUS POOL 2                   91.7949    
+       SOIL HUMUS POOL 3                   103655.    
+   MICRO ORGANISM POOL                               4155.58    
+       MICRO ORGANISM POOL 1               4135.05    
+       MICRO ORGANISM POOL 2               3.36741    
+       MICRO ORGANISM POOL 3               17.1577    
+ TOTAL (CARBON) AT END                                         108996.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                 -0.582077E-10
+
+
+ --- 23/ 7/1986 --- 204 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108996.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         5.37586    
+   FROM DEAD ROOTS                                  0.532996E-01
+   TOTAL ADDITIONS                                             5.42916    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         12.0311    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            883.361    
+   RESIDUE POOL                                      986.700    
+       RESIDUE POOL 1                      811.660    
+       RESIDUE POOL 2                      175.041    
+   SOIL HUMUS POOL                                   103845.    
+       SOIL HUMUS POOL 1                   97.6197    
+       SOIL HUMUS POOL 2                   93.7273    
+       SOIL HUMUS POOL 3                   103654.    
+   MICRO ORGANISM POOL                               4157.49    
+       MICRO ORGANISM POOL 1               4136.96    
+       MICRO ORGANISM POOL 2               3.37081    
+       MICRO ORGANISM POOL 3               17.1607    
+ TOTAL (CARBON) AT END                                         108989.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.145519E-10
+
+
+ --- 24/ 7/1986 --- 205 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108989.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         5.65616    
+   FROM DEAD ROOTS                                  0.450993E-01
+   TOTAL ADDITIONS                                             5.70126    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         16.3759    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            877.705    
+   RESIDUE POOL                                      973.626    
+       RESIDUE POOL 1                      808.883    
+       RESIDUE POOL 2                      164.743    
+   SOIL HUMUS POOL                                   103845.    
+       SOIL HUMUS POOL 1                   95.9394    
+       SOIL HUMUS POOL 2                   96.3192    
+       SOIL HUMUS POOL 3                   103652.    
+   MICRO ORGANISM POOL                               4160.35    
+       MICRO ORGANISM POOL 1               4139.81    
+       MICRO ORGANISM POOL 2               3.37236    
+       MICRO ORGANISM POOL 3               17.1647    
+ TOTAL (CARBON) AT END                                         108979.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.145519E-10
+
+
+ --- 25/ 7/1986 --- 206 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108979.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         14.0685    
+   FROM DEAD ROOTS                                  0.232379E-01
+   TOTAL ADDITIONS                                             14.0917    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         4.14979    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            863.636    
+   RESIDUE POOL                                      982.774    
+       RESIDUE POOL 1                      809.537    
+       RESIDUE POOL 2                      173.237    
+   SOIL HUMUS POOL                                   103848.    
+       SOIL HUMUS POOL 1                   99.0127    
+       SOIL HUMUS POOL 2                   96.5810    
+       SOIL HUMUS POOL 3                   103652.    
+   MICRO ORGANISM POOL                               4157.94    
+       MICRO ORGANISM POOL 1               4137.42    
+       MICRO ORGANISM POOL 2               3.35623    
+       MICRO ORGANISM POOL 3               17.1640    
+ TOTAL (CARBON) AT END                                         108989.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.580358E-04
+
+
+ --- 26/ 7/1986 --- 207 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108989.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         6.71299    
+   FROM DEAD ROOTS                                  0.221393E-01
+   TOTAL ADDITIONS                                             6.73513    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         6.84786    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            856.923    
+   RESIDUE POOL                                      981.560    
+       RESIDUE POOL 1                      808.677    
+       RESIDUE POOL 2                      172.883    
+   SOIL HUMUS POOL                                   103848.    
+       SOIL HUMUS POOL 1                   99.0494    
+       SOIL HUMUS POOL 2                   97.6188    
+       SOIL HUMUS POOL 3                   103652.    
+   MICRO ORGANISM POOL                               4158.51    
+       MICRO ORGANISM POOL 1               4137.99    
+       MICRO ORGANISM POOL 2               3.35276    
+       MICRO ORGANISM POOL 3               17.1655    
+ TOTAL (CARBON) AT END                                         108989.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.582077E-10
+
+
+ --- 27/ 7/1986 --- 208 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108989.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         6.58075    
+   FROM DEAD ROOTS                                  0.500510E-02
+   TOTAL ADDITIONS                                             6.58576    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         7.87460    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            850.342    
+   RESIDUE POOL                                      979.082    
+       RESIDUE POOL 1                      807.502    
+       RESIDUE POOL 2                      171.580    
+   SOIL HUMUS POOL                                   103849.    
+       SOIL HUMUS POOL 1                   98.6624    
+       SOIL HUMUS POOL 2                   98.9174    
+       SOIL HUMUS POOL 3                   103651.    
+   MICRO ORGANISM POOL                               4159.47    
+       MICRO ORGANISM POOL 1               4138.95    
+       MICRO ORGANISM POOL 2               3.35027    
+       MICRO ORGANISM POOL 3               17.1673    
+ TOTAL (CARBON) AT END                                         108987.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                 -0.582077E-10
+
+
+ --- 28/ 7/1986 --- 209 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108987.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         13.1809    
+   FROM DEAD ROOTS                                  0.145293E-01
+   TOTAL ADDITIONS                                             13.1955    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         4.09993    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            837.161    
+   RESIDUE POOL                                      987.402    
+       RESIDUE POOL 1                      808.125    
+       RESIDUE POOL 2                      179.278    
+   SOIL HUMUS POOL                                   103852.    
+       SOIL HUMUS POOL 1                   101.804    
+       SOIL HUMUS POOL 2                   99.1637    
+       SOIL HUMUS POOL 3                   103651.    
+   MICRO ORGANISM POOL                               4156.98    
+       MICRO ORGANISM POOL 1               4136.49    
+       MICRO ORGANISM POOL 2               3.33338    
+       MICRO ORGANISM POOL 3               17.1664    
+ TOTAL (CARBON) AT END                                         108996.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.517055E-04
+
+
+ --- 29/ 7/1986 --- 210 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108996.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         12.5317    
+   FROM DEAD ROOTS                                  0.137192E-01
+   TOTAL ADDITIONS                                             12.5454    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         2.14933    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            824.630    
+   RESIDUE POOL                                      997.420    
+       RESIDUE POOL 1                      808.712    
+       RESIDUE POOL 2                      188.707    
+   SOIL HUMUS POOL                                   103855.    
+       SOIL HUMUS POOL 1                   104.656    
+       SOIL HUMUS POOL 2                   99.4129    
+       SOIL HUMUS POOL 3                   103651.    
+   MICRO ORGANISM POOL                               4154.39    
+       MICRO ORGANISM POOL 1               4133.91    
+       MICRO ORGANISM POOL 2               3.31638    
+       MICRO ORGANISM POOL 3               17.1650    
+ TOTAL (CARBON) AT END                                         109007.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.100196E-05
+
+
+ --- 30/ 7/1986 --- 211 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109007.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         6.82226    
+   FROM DEAD ROOTS                                  0.517977E-02
+   TOTAL ADDITIONS                                             6.82744    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         7.78552    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            817.807    
+   RESIDUE POOL                                      995.346    
+       RESIDUE POOL 1                      807.414    
+       RESIDUE POOL 2                      187.932    
+   SOIL HUMUS POOL                                   103855.    
+       SOIL HUMUS POOL 1                   103.972    
+       SOIL HUMUS POOL 2                   100.887    
+       SOIL HUMUS POOL 3                   103650.    
+   MICRO ORGANISM POOL                               4155.45    
+       MICRO ORGANISM POOL 1               4134.97    
+       MICRO ORGANISM POOL 2               3.31394    
+       MICRO ORGANISM POOL 3               17.1670    
+ TOTAL (CARBON) AT END                                         109006.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.190936E-06
+
+
+ --- 31/ 7/1986 --- 212 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109006.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         6.13524    
+   FROM DEAD ROOTS                                  0.110058E-01
+   TOTAL ADDITIONS                                             6.14624    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         10.8733    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            811.672    
+   RESIDUE POOL                                      988.878    
+       RESIDUE POOL 1                      806.050    
+       RESIDUE POOL 2                      182.828    
+   SOIL HUMUS POOL                                   103855.    
+       SOIL HUMUS POOL 1                   103.528    
+       SOIL HUMUS POOL 2                   102.349    
+       SOIL HUMUS POOL 3                   103649.    
+   MICRO ORGANISM POOL                               4156.90    
+       MICRO ORGANISM POOL 1               4136.42    
+       MICRO ORGANISM POOL 2               3.31201    
+       MICRO ORGANISM POOL 3               17.1693    
+ TOTAL (CARBON) AT END                                         109001.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                 -0.145519E-10
+
+
+ ---  1/ 8/1986 --- 213 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            109001.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         4.90032    
+   FROM DEAD ROOTS                                  0.240967E-01
+   TOTAL ADDITIONS                                             4.92442    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         10.0705    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            806.772    
+   RESIDUE POOL                                      982.056    
+       RESIDUE POOL 1                      804.787    
+       RESIDUE POOL 2                      177.270    
+   SOIL HUMUS POOL                                   103856.    
+       SOIL HUMUS POOL 1                   103.372    
+       SOIL HUMUS POOL 2                   103.610    
+       SOIL HUMUS POOL 3                   103649.    
+   MICRO ORGANISM POOL                               4158.11    
+       MICRO ORGANISM POOL 1               4137.63    
+       MICRO ORGANISM POOL 2               3.30981    
+       MICRO ORGANISM POOL 3               17.1709    
+ TOTAL (CARBON) AT END                                         108996.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                   0.00000    
+
+
+ ---  2/ 8/1986 --- 214 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108996.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         4.35294    
+   FROM DEAD ROOTS                                  0.510769E-01
+   TOTAL ADDITIONS                                             4.40402    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         8.38883    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            802.419    
+   RESIDUE POOL                                      976.722    
+       RESIDUE POOL 1                      803.505    
+       RESIDUE POOL 2                      173.217    
+   SOIL HUMUS POOL                                   103856.    
+       SOIL HUMUS POOL 1                   103.146    
+       SOIL HUMUS POOL 2                   104.841    
+       SOIL HUMUS POOL 3                   103648.    
+   MICRO ORGANISM POOL                               4159.08    
+       MICRO ORGANISM POOL 1               4138.60    
+       MICRO ORGANISM POOL 2               3.30753    
+       MICRO ORGANISM POOL 3               17.1721    
+ TOTAL (CARBON) AT END                                         108992.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                   0.00000    
+
+
+ ---  3/ 8/1986 --- 215 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108992.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         3.96211    
+   FROM DEAD ROOTS                                  0.101173    
+   TOTAL ADDITIONS                                             4.06328    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         7.83809    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            798.457    
+   RESIDUE POOL                                      971.717    
+       RESIDUE POOL 1                      802.174    
+       RESIDUE POOL 2                      169.543    
+   SOIL HUMUS POOL                                   103856.    
+       SOIL HUMUS POOL 1                   102.858    
+       SOIL HUMUS POOL 2                   106.084    
+       SOIL HUMUS POOL 3                   103647.    
+   MICRO ORGANISM POOL                               4159.99    
+       MICRO ORGANISM POOL 1               4139.51    
+       MICRO ORGANISM POOL 2               3.30533    
+       MICRO ORGANISM POOL 3               17.1729    
+ TOTAL (CARBON) AT END                                         108988.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                 -0.582077E-10
+
+
+ ---  4/ 8/1986 --- 216 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108988.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         4.12423    
+   FROM DEAD ROOTS                                  0.786659E-01
+   TOTAL ADDITIONS                                             4.20289    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         8.58169    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            794.638    
+   RESIDUE POOL                                      966.055    
+       RESIDUE POOL 1                      800.612    
+       RESIDUE POOL 2                      165.442    
+   SOIL HUMUS POOL                                   103857.    
+       SOIL HUMUS POOL 1                   102.273    
+       SOIL HUMUS POOL 2                   107.523    
+       SOIL HUMUS POOL 3                   103647.    
+   MICRO ORGANISM POOL                               4161.15    
+       MICRO ORGANISM POOL 1               4140.67    
+       MICRO ORGANISM POOL 2               3.30365    
+       MICRO ORGANISM POOL 3               17.1739    
+ TOTAL (CARBON) AT END                                         108984.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.101863E-09
+
+
+ ---  5/ 8/1986 --- 217 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108984.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         4.05928    
+   FROM DEAD ROOTS                                  0.378227E-01
+   TOTAL ADDITIONS                                             4.09710    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         9.01253    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            790.885    
+   RESIDUE POOL                                      959.811    
+       RESIDUE POOL 1                      798.892    
+       RESIDUE POOL 2                      160.918    
+   SOIL HUMUS POOL                                   103857.    
+       SOIL HUMUS POOL 1                   101.562    
+       SOIL HUMUS POOL 2                   109.059    
+       SOIL HUMUS POOL 3                   103646.    
+   MICRO ORGANISM POOL                               4162.45    
+       MICRO ORGANISM POOL 1               4141.98    
+       MICRO ORGANISM POOL 2               3.30228    
+       MICRO ORGANISM POOL 3               17.1751    
+ TOTAL (CARBON) AT END                                         108979.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                   0.00000    
+
+
+ ---  6/ 8/1986 --- 218 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108979.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         3.74384    
+   FROM DEAD ROOTS                                  0.994844E-01
+   TOTAL ADDITIONS                                             3.84332    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         9.40081    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            787.447    
+   RESIDUE POOL                                      952.839    
+       RESIDUE POOL 1                      797.148    
+       RESIDUE POOL 2                      155.691    
+   SOIL HUMUS POOL                                   103857.    
+       SOIL HUMUS POOL 1                   100.923    
+       SOIL HUMUS POOL 2                   110.572    
+       SOIL HUMUS POOL 3                   103645.    
+   MICRO ORGANISM POOL                               4163.79    
+       MICRO ORGANISM POOL 1               4143.31    
+       MICRO ORGANISM POOL 2               3.30115    
+       MICRO ORGANISM POOL 3               17.1760    
+ TOTAL (CARBON) AT END                                         108973.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.145519E-10
+
+
+ ---  7/ 8/1986 --- 219 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108973.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         3.93785    
+   FROM DEAD ROOTS                                  0.719559E-01
+   TOTAL ADDITIONS                                             4.00980    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         9.59550    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            783.815    
+   RESIDUE POOL                                      945.961    
+       RESIDUE POOL 1                      795.064    
+       RESIDUE POOL 2                      150.898    
+   SOIL HUMUS POOL                                   103856.    
+       SOIL HUMUS POOL 1                   99.8144    
+       SOIL HUMUS POOL 2                   112.358    
+       SOIL HUMUS POOL 3                   103644.    
+   MICRO ORGANISM POOL                               4165.36    
+       MICRO ORGANISM POOL 1               4144.88    
+       MICRO ORGANISM POOL 2               3.30055    
+       MICRO ORGANISM POOL 3               17.1764    
+ TOTAL (CARBON) AT END                                         108968.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                 -0.727596E-10
+
+
+ ---  8/ 8/1986 --- 220 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108968.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         3.64403    
+   FROM DEAD ROOTS                                  0.110491    
+   TOTAL ADDITIONS                                             3.75452    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         10.4563    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            780.477    
+   RESIDUE POOL                                      937.872    
+       RESIDUE POOL 1                      792.874    
+       RESIDUE POOL 2                      144.998    
+   SOIL HUMUS POOL                                   103856.    
+       SOIL HUMUS POOL 1                   98.6232    
+       SOIL HUMUS POOL 2                   114.203    
+       SOIL HUMUS POOL 3                   103643.    
+   MICRO ORGANISM POOL                               4167.10    
+       MICRO ORGANISM POOL 1               4146.63    
+       MICRO ORGANISM POOL 2               3.30038    
+       MICRO ORGANISM POOL 3               17.1751    
+ TOTAL (CARBON) AT END                                         108961.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.141881E-07
+
+
+ ---  9/ 8/1986 --- 221 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108961.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         3.45415    
+   FROM DEAD ROOTS                                  0.500032    
+   TOTAL ADDITIONS                                             3.95418    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         9.40452    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            777.328    
+   RESIDUE POOL                                      931.264    
+       RESIDUE POOL 1                      790.729    
+       RESIDUE POOL 2                      140.534    
+   SOIL HUMUS POOL                                   103856.    
+       SOIL HUMUS POOL 1                   97.3732    
+       SOIL HUMUS POOL 2                   116.020    
+       SOIL HUMUS POOL 3                   103642.    
+   MICRO ORGANISM POOL                               4168.72    
+       MICRO ORGANISM POOL 1               4148.25    
+       MICRO ORGANISM POOL 2               3.30033    
+       MICRO ORGANISM POOL 3               17.1693    
+ TOTAL (CARBON) AT END                                         108956.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.421569E-07
+
+
+ --- 10/ 8/1986 --- 222 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108956.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         8.94411    
+   FROM DEAD ROOTS                                   1.04208    
+   TOTAL ADDITIONS                                             9.98619    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         5.79097    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            768.690    
+   RESIDUE POOL                                      934.449    
+       RESIDUE POOL 1                      790.897    
+       RESIDUE POOL 2                      143.552    
+   SOIL HUMUS POOL                                   103857.    
+       SOIL HUMUS POOL 1                   98.7892    
+       SOIL HUMUS POOL 2                   116.461    
+       SOIL HUMUS POOL 3                   103642.    
+   MICRO ORGANISM POOL                               4168.12    
+       MICRO ORGANISM POOL 1               4147.66    
+       MICRO ORGANISM POOL 2               3.29342    
+       MICRO ORGANISM POOL 3               17.1689    
+ TOTAL (CARBON) AT END                                         108960.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.699616E-04
+
+
+ --- 11/ 8/1986 --- 223 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108960.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         2.60013    
+   FROM DEAD ROOTS                                   2.03259    
+   TOTAL ADDITIONS                                             4.63272    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         7.74259    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            766.395    
+   RESIDUE POOL                                      930.224    
+       RESIDUE POOL 1                      789.388    
+       RESIDUE POOL 2                      140.837    
+   SOIL HUMUS POOL                                   103857.    
+       SOIL HUMUS POOL 1                   98.2602    
+       SOIL HUMUS POOL 2                   117.797    
+       SOIL HUMUS POOL 3                   103641.    
+   MICRO ORGANISM POOL                               4169.19    
+       MICRO ORGANISM POOL 1               4148.73    
+       MICRO ORGANISM POOL 2               3.29226    
+       MICRO ORGANISM POOL 3               17.1613    
+ TOTAL (CARBON) AT END                                         108957.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                 -0.291038E-10
+
+
+ --- 12/ 8/1986 --- 224 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108957.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         2.90595    
+   FROM DEAD ROOTS                                   2.72960    
+   TOTAL ADDITIONS                                             5.63555    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         9.91048    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            763.795    
+   RESIDUE POOL                                      924.533    
+       RESIDUE POOL 1                      787.724    
+       RESIDUE POOL 2                      136.809    
+   SOIL HUMUS POOL                                   103857.    
+       SOIL HUMUS POOL 1                   97.5243    
+       SOIL HUMUS POOL 2                   119.322    
+       SOIL HUMUS POOL 3                   103640.    
+   MICRO ORGANISM POOL                               4170.70    
+       MICRO ORGANISM POOL 1               4150.25    
+       MICRO ORGANISM POOL 2               3.29186    
+       MICRO ORGANISM POOL 3               17.1574    
+ TOTAL (CARBON) AT END                                         108952.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.138243E-07
+
+
+ --- 13/ 8/1986 --- 225 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108952.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         6.99460    
+   FROM DEAD ROOTS                                   3.08986    
+   TOTAL ADDITIONS                                             10.0845    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         4.26027    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            757.106    
+   RESIDUE POOL                                      929.715    
+       RESIDUE POOL 1                      787.818    
+       RESIDUE POOL 2                      141.897    
+   SOIL HUMUS POOL                                   103858.    
+       SOIL HUMUS POOL 1                   98.3408    
+       SOIL HUMUS POOL 2                   119.873    
+       SOIL HUMUS POOL 3                   103640.    
+   MICRO ORGANISM POOL                               4170.29    
+       MICRO ORGANISM POOL 1               4149.84    
+       MICRO ORGANISM POOL 2               3.28639    
+       MICRO ORGANISM POOL 3               17.1571    
+ TOTAL (CARBON) AT END                                         108958.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.508153E-07
+
+
+ --- 14/ 8/1986 --- 226 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108958.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         10.6691    
+   FROM DEAD ROOTS                                  0.861791    
+   TOTAL ADDITIONS                                             11.5309    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         1.99750    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            746.743    
+   RESIDUE POOL                                      938.839    
+       RESIDUE POOL 1                      788.239    
+       RESIDUE POOL 2                      150.601    
+   SOIL HUMUS POOL                                   103862.    
+       SOIL HUMUS POOL 1                   101.818    
+       SOIL HUMUS POOL 2                   120.132    
+       SOIL HUMUS POOL 3                   103640.    
+   MICRO ORGANISM POOL                               4167.09    
+       MICRO ORGANISM POOL 1               4146.67    
+       MICRO ORGANISM POOL 2               3.26837    
+       MICRO ORGANISM POOL 3               17.1556    
+ TOTAL (CARBON) AT END                                         108968.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.211905E-06
+
+
+ --- 15/ 8/1986 --- 227 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108968.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         5.41918    
+   FROM DEAD ROOTS                                  0.952233    
+   TOTAL ADDITIONS                                             6.37141    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         8.07932    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            741.630    
+   RESIDUE POOL                                      935.868    
+       RESIDUE POOL 1                      787.098    
+       RESIDUE POOL 2                      148.769    
+   SOIL HUMUS POOL                                   103862.    
+       SOIL HUMUS POOL 1                   101.623    
+       SOIL HUMUS POOL 2                   121.276    
+       SOIL HUMUS POOL 3                   103639.    
+   MICRO ORGANISM POOL                               4168.02    
+       MICRO ORGANISM POOL 1               4147.60    
+       MICRO ORGANISM POOL 2               3.26574    
+       MICRO ORGANISM POOL 3               17.1558    
+ TOTAL (CARBON) AT END                                         108966.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                   0.00000    
+
+
+ --- 16/ 8/1986 --- 228 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108966.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         4.92032    
+   FROM DEAD ROOTS                                   1.84737    
+   TOTAL ADDITIONS                                             6.76769    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         10.2452    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            737.015    
+   RESIDUE POOL                                      930.915    
+       RESIDUE POOL 1                      785.566    
+       RESIDUE POOL 2                      145.350    
+   SOIL HUMUS POOL                                   103862.    
+       SOIL HUMUS POOL 1                   100.887    
+       SOIL HUMUS POOL 2                   122.783    
+       SOIL HUMUS POOL 3                   103638.    
+   MICRO ORGANISM POOL                               4169.54    
+       MICRO ORGANISM POOL 1               4149.12    
+       MICRO ORGANISM POOL 2               3.26449    
+       MICRO ORGANISM POOL 3               17.1566    
+ TOTAL (CARBON) AT END                                         108963.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.145519E-10
+
+
+ --- 17/ 8/1986 --- 229 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108963.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         4.44692    
+   FROM DEAD ROOTS                                   2.85512    
+   TOTAL ADDITIONS                                             7.30204    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         11.8820    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            732.874    
+   RESIDUE POOL                                      924.716    
+       RESIDUE POOL 1                      783.745    
+       RESIDUE POOL 2                      140.971    
+   SOIL HUMUS POOL                                   103862.    
+       SOIL HUMUS POOL 1                   99.7725    
+       SOIL HUMUS POOL 2                   124.555    
+       SOIL HUMUS POOL 3                   103637.    
+   MICRO ORGANISM POOL                               4171.49    
+       MICRO ORGANISM POOL 1               4151.07    
+       MICRO ORGANISM POOL 2               3.26413    
+       MICRO ORGANISM POOL 3               17.1577    
+ TOTAL (CARBON) AT END                                         108958.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                 -0.291038E-10
+
+
+ --- 18/ 8/1986 --- 230 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108958.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         3.47405    
+   FROM DEAD ROOTS                                   3.88686    
+   TOTAL ADDITIONS                                             7.36091    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         12.4250    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            729.706    
+   RESIDUE POOL                                      917.840    
+       RESIDUE POOL 1                      782.112    
+       RESIDUE POOL 2                      135.728    
+   SOIL HUMUS POOL                                   103862.    
+       SOIL HUMUS POOL 1                   98.9567    
+       SOIL HUMUS POOL 2                   126.172    
+       SOIL HUMUS POOL 3                   103636.    
+   MICRO ORGANISM POOL                               4173.43    
+       MICRO ORGANISM POOL 1               4153.00    
+       MICRO ORGANISM POOL 2               3.26397    
+       MICRO ORGANISM POOL 3               17.1582    
+ TOTAL (CARBON) AT END                                         108953.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.291038E-10
+
+
+ --- 19/ 8/1986 --- 231 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108953.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         3.22698    
+   FROM DEAD ROOTS                                   5.03019    
+   TOTAL ADDITIONS                                             8.25717    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         13.2765    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            726.785    
+   RESIDUE POOL                                      910.911    
+       RESIDUE POOL 1                      780.547    
+       RESIDUE POOL 2                      130.364    
+   SOIL HUMUS POOL                                   103861.    
+       SOIL HUMUS POOL 1                   98.0885    
+       SOIL HUMUS POOL 2                   127.822    
+       SOIL HUMUS POOL 3                   103636.    
+   MICRO ORGANISM POOL                               4175.52    
+       MICRO ORGANISM POOL 1               4155.10    
+       MICRO ORGANISM POOL 2               3.26410    
+       MICRO ORGANISM POOL 3               17.1553    
+ TOTAL (CARBON) AT END                                         108948.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.404252E-07
+
+
+ --- 20/ 8/1986 --- 232 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108948.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         2.90248    
+   FROM DEAD ROOTS                                   5.91872    
+   TOTAL ADDITIONS                                             8.82120    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         13.2955    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            724.188    
+   RESIDUE POOL                                      904.404    
+       RESIDUE POOL 1                      779.176    
+       RESIDUE POOL 2                      125.228    
+   SOIL HUMUS POOL                                   103861.    
+       SOIL HUMUS POOL 1                   97.5225    
+       SOIL HUMUS POOL 2                   129.317    
+       SOIL HUMUS POOL 3                   103635.    
+   MICRO ORGANISM POOL                               4177.52    
+       MICRO ORGANISM POOL 1               4157.10    
+       MICRO ORGANISM POOL 2               3.26417    
+       MICRO ORGANISM POOL 3               17.1535    
+ TOTAL (CARBON) AT END                                         108943.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.134314E-07
+
+
+ --- 21/ 8/1986 --- 233 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108943.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         6.05040    
+   FROM DEAD ROOTS                                   7.05147    
+   TOTAL ADDITIONS                                             13.1019    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         5.96823    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            718.443    
+   RESIDUE POOL                                      910.537    
+       RESIDUE POOL 1                      779.688    
+       RESIDUE POOL 2                      130.849    
+   SOIL HUMUS POOL                                   103863.    
+       SOIL HUMUS POOL 1                   98.6071    
+       SOIL HUMUS POOL 2                   129.799    
+       SOIL HUMUS POOL 3                   103634.    
+   MICRO ORGANISM POOL                               4177.23    
+       MICRO ORGANISM POOL 1               4156.82    
+       MICRO ORGANISM POOL 2               3.25845    
+       MICRO ORGANISM POOL 3               17.1536    
+ TOTAL (CARBON) AT END                                         108951.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.651748E-05
+
+
+ --- 22/ 8/1986 --- 234 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108951.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         2.91961    
+   FROM DEAD ROOTS                                   8.42608    
+   TOTAL ADDITIONS                                             11.3457    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         11.9741    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            715.829    
+   RESIDUE POOL                                      908.166    
+       RESIDUE POOL 1                      778.518    
+       RESIDUE POOL 2                      129.648    
+   SOIL HUMUS POOL                                   103863.    
+       SOIL HUMUS POOL 1                   97.8459    
+       SOIL HUMUS POOL 2                   131.336    
+       SOIL HUMUS POOL 3                   103633.    
+   MICRO ORGANISM POOL                               4179.13    
+       MICRO ORGANISM POOL 1               4158.72    
+       MICRO ORGANISM POOL 2               3.25803    
+       MICRO ORGANISM POOL 3               17.1532    
+ TOTAL (CARBON) AT END                                         108950.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.270957E-07
+
+
+ --- 23/ 8/1986 --- 235 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108950.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         7.97928    
+   FROM DEAD ROOTS                                   8.73332    
+   TOTAL ADDITIONS                                             16.7126    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         7.16436    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            708.156    
+   RESIDUE POOL                                      916.470    
+       RESIDUE POOL 1                      779.320    
+       RESIDUE POOL 2                      137.149    
+   SOIL HUMUS POOL                                   103864.    
+       SOIL HUMUS POOL 1                   98.8546    
+       SOIL HUMUS POOL 2                   131.833    
+       SOIL HUMUS POOL 3                   103633.    
+   MICRO ORGANISM POOL                               4179.16    
+       MICRO ORGANISM POOL 1               4158.76    
+       MICRO ORGANISM POOL 2               3.25280    
+       MICRO ORGANISM POOL 3               17.1541    
+ TOTAL (CARBON) AT END                                         108959.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.522424E-04
+
+
+ --- 24/ 8/1986 --- 236 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108959.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         2.34802    
+   FROM DEAD ROOTS                                   10.1546    
+   TOTAL ADDITIONS                                             12.5027    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         10.3476    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            706.114    
+   RESIDUE POOL                                      916.988    
+       RESIDUE POOL 1                      778.641    
+       RESIDUE POOL 2                      138.347    
+   SOIL HUMUS POOL                                   103864.    
+       SOIL HUMUS POOL 1                   98.5267    
+       SOIL HUMUS POOL 2                   133.084    
+       SOIL HUMUS POOL 3                   103632.    
+   MICRO ORGANISM POOL                               4180.63    
+       MICRO ORGANISM POOL 1               4160.23    
+       MICRO ORGANISM POOL 2               3.25175    
+       MICRO ORGANISM POOL 3               17.1520    
+ TOTAL (CARBON) AT END                                         108962.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                 -0.145519E-10
+
+
+ --- 25/ 8/1986 --- 237 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108962.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         7.32905    
+   FROM DEAD ROOTS                                   10.9609    
+   TOTAL ADDITIONS                                             18.2899    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         7.33752    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            699.090    
+   RESIDUE POOL                                      926.787    
+       RESIDUE POOL 1                      779.422    
+       RESIDUE POOL 2                      147.365    
+   SOIL HUMUS POOL                                   103865.    
+       SOIL HUMUS POOL 1                   98.9554    
+       SOIL HUMUS POOL 2                   133.752    
+       SOIL HUMUS POOL 3                   103632.    
+   MICRO ORGANISM POOL                               4181.08    
+       MICRO ORGANISM POOL 1               4160.68    
+       MICRO ORGANISM POOL 2               3.24774    
+       MICRO ORGANISM POOL 3               17.1536    
+ TOTAL (CARBON) AT END                                         108973.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.471337E-07
+
+
+ --- 26/ 8/1986 --- 238 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108973.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         10.2216    
+   FROM DEAD ROOTS                                   4.55904    
+   TOTAL ADDITIONS                                             14.7806    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         4.23008    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            689.175    
+   RESIDUE POOL                                      936.462    
+       RESIDUE POOL 1                      780.050    
+       RESIDUE POOL 2                      156.412    
+   SOIL HUMUS POOL                                   103867.    
+       SOIL HUMUS POOL 1                   101.596    
+       SOIL HUMUS POOL 2                   134.078    
+       SOIL HUMUS POOL 3                   103632.    
+   MICRO ORGANISM POOL                               4179.17    
+       MICRO ORGANISM POOL 1               4158.78    
+       MICRO ORGANISM POOL 2               3.23307    
+       MICRO ORGANISM POOL 3               17.1545    
+ TOTAL (CARBON) AT END                                         108983.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.191545E-04
+
+
+ --- 27/ 8/1986 --- 239 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108983.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         6.65313    
+   FROM DEAD ROOTS                                   3.69805    
+   TOTAL ADDITIONS                                             10.3512    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         2.96191    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            682.827    
+   RESIDUE POOL                                      943.207    
+       RESIDUE POOL 1                      780.437    
+       RESIDUE POOL 2                      162.770    
+   SOIL HUMUS POOL                                   103871.    
+       SOIL HUMUS POOL 1                   105.243    
+       SOIL HUMUS POOL 2                   134.340    
+       SOIL HUMUS POOL 3                   103632.    
+   MICRO ORGANISM POOL                               4176.03    
+       MICRO ORGANISM POOL 1               4155.67    
+       MICRO ORGANISM POOL 2               3.21264    
+       MICRO ORGANISM POOL 3               17.1543    
+ TOTAL (CARBON) AT END                                         108990.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.975224E-05
+
+
+ --- 28/ 8/1986 --- 240 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108990.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         2.44757    
+   FROM DEAD ROOTS                                   5.35675    
+   TOTAL ADDITIONS                                             7.80432    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         8.78302    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            680.685    
+   RESIDUE POOL                                      940.646    
+       RESIDUE POOL 1                      779.889    
+       RESIDUE POOL 2                      160.757    
+   SOIL HUMUS POOL                                   103872.    
+       SOIL HUMUS POOL 1                   105.637    
+       SOIL HUMUS POOL 2                   135.180    
+       SOIL HUMUS POOL 3                   103631.    
+   MICRO ORGANISM POOL                               4176.83    
+       MICRO ORGANISM POOL 1               4156.47    
+       MICRO ORGANISM POOL 2               3.20934    
+       MICRO ORGANISM POOL 3               17.1546    
+ TOTAL (CARBON) AT END                                         108989.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                 -0.291038E-10
+
+
+ --- 29/ 8/1986 --- 241 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108989.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         2.14658    
+   FROM DEAD ROOTS                                   7.52443    
+   TOTAL ADDITIONS                                             9.67101    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         10.4857    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            678.845    
+   RESIDUE POOL                                      938.065    
+       RESIDUE POOL 1                      779.400    
+       RESIDUE POOL 2                      158.665    
+   SOIL HUMUS POOL                                   103873.    
+       SOIL HUMUS POOL 1                   105.702    
+       SOIL HUMUS POOL 2                   136.187    
+       SOIL HUMUS POOL 3                   103631.    
+   MICRO ORGANISM POOL                               4178.06    
+       MICRO ORGANISM POOL 1               4157.70    
+       MICRO ORGANISM POOL 2               3.20726    
+       MICRO ORGANISM POOL 3               17.1545    
+ TOTAL (CARBON) AT END                                         108989.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.582077E-10
+
+
+ --- 30/ 8/1986 --- 242 --- TOTAL CARBON MASS BALANCE (KG/HA) 
+ TOTAL (C) AT START                                            108989.    
+ ADDITIONS:
+   CARBON FROM UREA APPLICATION                      0.00000    
+   MANURE APPLICATION                                0.00000    
+   FROM INCORPORATED RESIDUE                         2.61632    
+   FROM DEAD ROOTS                                   10.2924    
+   TOTAL ADDITIONS                                             12.9087    
+
+ MINERALIZATION LOSSES:
+   TOTAL LOSSES AS CO2                                         13.8830    
+
+ STORAGE:
+   SURFACE RESIDUE CARBON                            676.534    
+   RESIDUE POOL                                      934.957    
+       RESIDUE POOL 1                      778.760    
+       RESIDUE POOL 2                      156.197    
+   SOIL HUMUS POOL                                   103873.    
+       SOIL HUMUS POOL 1                   105.136    
+       SOIL HUMUS POOL 2                   137.623    
+       SOIL HUMUS POOL 3                   103630.    
+   MICRO ORGANISM POOL                               4180.11    
+       MICRO ORGANISM POOL 1               4159.75    
+       MICRO ORGANISM POOL 2               3.20650    
+       MICRO ORGANISM POOL 3               17.1518    
+ TOTAL (CARBON) AT END                                         108988.    
+                                                           ---------------
+ MASS BALANCE AT END OF DAY:                                  0.135333E-07

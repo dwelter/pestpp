@@ -1,0 +1,25 @@
+*RZWQM2 OUTPUTS Version 2.4               Sep 09, 2014; 13:54:42
+
+
+**********************************************************************
+ 
+
+----  1/ 5/1986 -----   121  ----
+
+EVENT ==> FERTILIZER NH3 INJECTOR APPLICATION                         
+          AMOUNT OF NH4 [KG/HA]          202.00    
+          AMOUNT OF NO3 [KG/HA]          0.0000    
+          AMOUNT OF UREA [KG/HA]         0.0000    
+ 
+EVENT ==> SPECIFIC DATE TILLAGE EVENT                                 
+          WITH IMPLIMENT: NH3 APPLICATOR                
+ 
+**********************************************************************
+ 
+
+----  7/ 5/1986 -----   127  ----
+
+EVENT ==> PLANTING OPERATION                                          
+            CROP PLANTED:  CORN (GH2343)                
+            PLANTING DENSITY:      71114.0
+ 

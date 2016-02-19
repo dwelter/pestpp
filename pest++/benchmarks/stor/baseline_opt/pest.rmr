@@ -1,0 +1,285 @@
+
+YAMR Master listening on socket:0.0.0.0:4005 (IPv4)
+running model 5 times
+
+    waiting for slaves to appear...
+
+
+02/11/16 10:54:33->new connection from: DGTC8WM1.ad.sfwmd.gov:56711
+02/11/16 10:54:33->new connection from: DGTC8WM1.ad.sfwmd.gov:56712
+02/11/16 10:54:33->initializing new slave connection from: DGTC8WM1.ad.sfwmd.gov:56711; number of slaves: 2; working dir: C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3
+02/11/16 10:54:33->initializing new slave connection from: DGTC8WM1.ad.sfwmd.gov:56712; number of slaves: 2; working dir: C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1
+02/11/16 10:54:34->new connection from: DGTC8WM1.ad.sfwmd.gov:56710
+02/11/16 10:54:34->new connection from: DGTC8WM1.ad.sfwmd.gov:56709
+02/11/16 10:54:34->initializing new slave connection from: DGTC8WM1.ad.sfwmd.gov:56710; number of slaves: 4; working dir: C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4
+02/11/16 10:54:34->initializing new slave connection from: DGTC8WM1.ad.sfwmd.gov:56709; number of slaves: 4; working dir: C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2
+02/11/16 10:54:35->new slave ready: DGTC8WM1.ad.sfwmd.gov:56711
+02/11/16 10:54:35->Sending run 0 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (group id = 2, run id = 0, concurrent runs = 1)
+02/11/16 10:54:35->new slave ready: DGTC8WM1.ad.sfwmd.gov:56712
+02/11/16 10:54:35->Sending run 1 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (group id = 2, run id = 1, concurrent runs = 1)
+02/11/16 10:54:35->run 0 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (run time = 0.00726667 min, group id = 2, run id = 0 concurrent = 1)
+02/11/16 10:54:35->Sending run 2 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (group id = 2, run id = 2, concurrent runs = 1)
+02/11/16 10:54:35->new slave ready: DGTC8WM1.ad.sfwmd.gov:56710
+02/11/16 10:54:35->Sending run 3 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (group id = 2, run id = 3, concurrent runs = 1)
+02/11/16 10:54:35->run 1 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (run time = 0.00701667 min, group id = 2, run id = 1 concurrent = 1)
+02/11/16 10:54:35->Sending run 4 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (group id = 2, run id = 4, concurrent runs = 1)
+02/11/16 10:54:36->run 2 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (run time = 0.00726667 min, group id = 2, run id = 2 concurrent = 1)
+02/11/16 10:54:36->run 3 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (run time = 0.00726667 min, group id = 2, run id = 3 concurrent = 1)
+02/11/16 10:54:36->run 4 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (run time = 0.00715 min, group id = 2, run id = 4 concurrent = 1)
+
+---------------------
+   5 runs complete :  0 runs failed
+
+running model 7 times
+
+02/11/16 10:54:36->Sending run 1 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (group id = 3, run id = 1, concurrent runs = 1)
+02/11/16 10:54:36->Sending run 2 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (group id = 3, run id = 2, concurrent runs = 1)
+02/11/16 10:54:36->new slave ready: DGTC8WM1.ad.sfwmd.gov:56709
+02/11/16 10:54:36->Sending run 3 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (group id = 3, run id = 3, concurrent runs = 1)
+02/11/16 10:54:36->Sending run 4 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (group id = 3, run id = 4, concurrent runs = 1)
+02/11/16 10:54:36->run 1 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (run time = 0.00636667 min, group id = 3, run id = 1 concurrent = 1)
+02/11/16 10:54:36->Sending run 5 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (group id = 3, run id = 5, concurrent runs = 1)
+02/11/16 10:54:36->run 2 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (run time = 0.00675 min, group id = 3, run id = 2 concurrent = 1)
+02/11/16 10:54:36->Sending run 6 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (group id = 3, run id = 6, concurrent runs = 1)
+02/11/16 10:54:36->run 3 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (run time = 0.00695 min, group id = 3, run id = 3 concurrent = 1)
+02/11/16 10:54:36->Sending run 7 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (group id = 3, run id = 7, concurrent runs = 1)
+02/11/16 10:54:36->run 4 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (run time = 0.00701667 min, group id = 3, run id = 4 concurrent = 1)
+02/11/16 10:54:37->run 5 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (run time = 0.00681667 min, group id = 3, run id = 5 concurrent = 1)
+02/11/16 10:54:37->run 6 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (run time = 0.00701667 min, group id = 3, run id = 6 concurrent = 1)
+02/11/16 10:54:37->run 7 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (run time = 0.00711667 min, group id = 3, run id = 7 concurrent = 1)
+
+---------------------
+   7 runs complete :  0 runs failed
+
+running model 4 times
+
+02/11/16 10:54:37->Sending run 1 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (group id = 4, run id = 1, concurrent runs = 1)
+02/11/16 10:54:37->Sending run 2 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (group id = 4, run id = 2, concurrent runs = 1)
+02/11/16 10:54:37->Sending run 3 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (group id = 4, run id = 3, concurrent runs = 1)
+02/11/16 10:54:37->Sending run 4 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (group id = 4, run id = 4, concurrent runs = 1)
+02/11/16 10:54:37->run 3 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (run time = 0.00623333 min, group id = 4, run id = 3 concurrent = 1)
+02/11/16 10:54:37->run 1 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (run time = 0.00626667 min, group id = 4, run id = 1 concurrent = 1)
+02/11/16 10:54:37->run 2 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (run time = 0.0065 min, group id = 4, run id = 2 concurrent = 1)
+02/11/16 10:54:37->run 4 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (run time = 0.0068 min, group id = 4, run id = 4 concurrent = 1)
+
+---------------------
+   4 runs complete :  0 runs failed
+
+running model 7 times
+
+02/11/16 10:54:37->Sending run 1 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (group id = 5, run id = 1, concurrent runs = 1)
+02/11/16 10:54:37->Sending run 2 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (group id = 5, run id = 2, concurrent runs = 1)
+02/11/16 10:54:37->Sending run 3 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (group id = 5, run id = 3, concurrent runs = 1)
+02/11/16 10:54:37->Sending run 4 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (group id = 5, run id = 4, concurrent runs = 1)
+02/11/16 10:54:37->run 3 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (run time = 0.00585 min, group id = 5, run id = 3 concurrent = 1)
+02/11/16 10:54:37->Sending run 5 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (group id = 5, run id = 5, concurrent runs = 1)
+02/11/16 10:54:37->run 1 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (run time = 0.00598333 min, group id = 5, run id = 1 concurrent = 1)
+02/11/16 10:54:37->Sending run 6 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (group id = 5, run id = 6, concurrent runs = 1)
+02/11/16 10:54:37->run 2 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (run time = 0.00623333 min, group id = 5, run id = 2 concurrent = 1)
+02/11/16 10:54:37->Sending run 7 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (group id = 5, run id = 7, concurrent runs = 1)
+02/11/16 10:54:38->run 4 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (run time = 0.00665 min, group id = 5, run id = 4 concurrent = 1)
+02/11/16 10:54:38->run 5 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (run time = 0.00655 min, group id = 5, run id = 5 concurrent = 1)
+02/11/16 10:54:38->rescheduling overdue run 6 (0.00701667|0.00598333 minutes) on: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3
+02/11/16 10:54:38->Sending run 6 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (group id = 5, run id = 6, concurrent runs = 2)
+02/11/16 10:54:38->2 concurrent runs for run id = 6
+02/11/16 10:54:38->rescheduling overdue run 6 (0.00701667|0.00598333 minutes) on: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3
+02/11/16 10:54:38->Sending run 6 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (group id = 5, run id = 6, concurrent runs = 3)
+02/11/16 10:54:38->3 concurrent runs for run id = 6
+02/11/16 10:54:38->run 6 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (run time = 0.00663333 min, group id = 5, run id = 6 concurrent = 3)
+02/11/16 10:54:38->sending kill request; reason: completed on alternative node; run id:6; slave: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1
+02/11/16 10:54:38->sending kill request; reason: completed on alternative node; run id:6; slave: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2
+02/11/16 10:54:38->run 7 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (run time = 0.00675 min, group id = 5, run id = 7 concurrent = 1)
+
+---------------------
+   7 runs complete :  0 runs failed
+
+running model 4 times
+
+02/11/16 10:54:38->Sending run 1 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (group id = 6, run id = 1, concurrent runs = 1)
+02/11/16 10:54:38->Sending run 2 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (group id = 6, run id = 2, concurrent runs = 1)
+02/11/16 10:54:38->Sending run 3 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (group id = 6, run id = 3, concurrent runs = 1)
+02/11/16 10:54:38->Sending run 4 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (group id = 6, run id = 4, concurrent runs = 1)
+02/11/16 10:54:38->run 1 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (run time = 0.00643333 min, group id = 6, run id = 1 concurrent = 1)
+02/11/16 10:54:38->run 2 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (run time = 0.00661667 min, group id = 6, run id = 2 concurrent = 1)
+02/11/16 10:54:38->run 3 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (run time = 0.00696667 min, group id = 6, run id = 3 concurrent = 1)
+02/11/16 10:54:39->run 4 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (run time = 0.00691667 min, group id = 6, run id = 4 concurrent = 1)
+
+---------------------
+   4 runs complete :  0 runs failed
+
+running model 7 times
+
+02/11/16 10:54:39->Sending run 1 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (group id = 7, run id = 1, concurrent runs = 1)
+02/11/16 10:54:39->Sending run 2 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (group id = 7, run id = 2, concurrent runs = 1)
+02/11/16 10:54:39->Sending run 3 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (group id = 7, run id = 3, concurrent runs = 1)
+02/11/16 10:54:39->Sending run 4 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (group id = 7, run id = 4, concurrent runs = 1)
+02/11/16 10:54:39->run 1 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (run time = 0.00593333 min, group id = 7, run id = 1 concurrent = 1)
+02/11/16 10:54:39->run 2 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (run time = 0.0062 min, group id = 7, run id = 2 concurrent = 1)
+02/11/16 10:54:39->run 3 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (run time = 0.00603333 min, group id = 7, run id = 3 concurrent = 1)
+02/11/16 10:54:39->run 4 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (run time = 0.00618333 min, group id = 7, run id = 4 concurrent = 1)
+02/11/16 10:54:39->Sending run 5 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (group id = 7, run id = 5, concurrent runs = 1)
+02/11/16 10:54:39->Sending run 6 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (group id = 7, run id = 6, concurrent runs = 1)
+02/11/16 10:54:39->Sending run 7 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (group id = 7, run id = 7, concurrent runs = 1)
+02/11/16 10:54:39->run 7 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (run time = 0.00665 min, group id = 7, run id = 7 concurrent = 1)
+02/11/16 10:54:39->rescheduling overdue run 5 (0.00726667|0.00593333 minutes) on: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3
+02/11/16 10:54:39->Sending run 5 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (group id = 7, run id = 5, concurrent runs = 2)
+02/11/16 10:54:39->2 concurrent runs for run id = 5
+02/11/16 10:54:39->run 5 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (run time = 0.0066 min, group id = 7, run id = 5 concurrent = 2)
+02/11/16 10:54:39->sending kill request; reason: completed on alternative node; run id:5; slave: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2
+02/11/16 10:54:39->run 6 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (run time = 0.00673333 min, group id = 7, run id = 6 concurrent = 1)
+
+---------------------
+   7 runs complete :  0 runs failed
+
+running model 4 times
+
+02/11/16 10:54:39->Sending run 1 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (group id = 8, run id = 1, concurrent runs = 1)
+02/11/16 10:54:39->Sending run 2 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (group id = 8, run id = 2, concurrent runs = 1)
+02/11/16 10:54:39->Sending run 3 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (group id = 8, run id = 3, concurrent runs = 1)
+02/11/16 10:54:40->Sending run 4 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (group id = 8, run id = 4, concurrent runs = 1)
+02/11/16 10:54:40->run 1 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (run time = 0.0067 min, group id = 8, run id = 1 concurrent = 1)
+02/11/16 10:54:40->run 2 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (run time = 0.00668333 min, group id = 8, run id = 2 concurrent = 1)
+02/11/16 10:54:40->run 3 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (run time = 0.00675 min, group id = 8, run id = 3 concurrent = 1)
+02/11/16 10:54:40->run 4 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (run time = 0.00673333 min, group id = 8, run id = 4 concurrent = 1)
+
+---------------------
+   4 runs complete :  0 runs failed
+
+running model 7 times
+
+02/11/16 10:54:40->Sending run 1 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (group id = 9, run id = 1, concurrent runs = 1)
+02/11/16 10:54:40->Sending run 2 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (group id = 9, run id = 2, concurrent runs = 1)
+02/11/16 10:54:40->Sending run 3 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (group id = 9, run id = 3, concurrent runs = 1)
+02/11/16 10:54:40->Sending run 4 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (group id = 9, run id = 4, concurrent runs = 1)
+02/11/16 10:54:40->run 3 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (run time = 0.00608333 min, group id = 9, run id = 3 concurrent = 1)
+02/11/16 10:54:40->run 1 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (run time = 0.00606667 min, group id = 9, run id = 1 concurrent = 1)
+02/11/16 10:54:40->run 2 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (run time = 0.0061 min, group id = 9, run id = 2 concurrent = 1)
+02/11/16 10:54:40->Sending run 5 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (group id = 9, run id = 5, concurrent runs = 1)
+02/11/16 10:54:40->Sending run 6 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (group id = 9, run id = 6, concurrent runs = 1)
+02/11/16 10:54:40->Sending run 7 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (group id = 9, run id = 7, concurrent runs = 1)
+02/11/16 10:54:40->run 4 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (run time = 0.00621667 min, group id = 9, run id = 4 concurrent = 1)
+02/11/16 10:54:41->run 6 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (run time = 0.00666667 min, group id = 9, run id = 6 concurrent = 1)
+02/11/16 10:54:41->rescheduling overdue run 7 (0.00726667|0.0061 minutes) on: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1
+02/11/16 10:54:41->Sending run 7 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (group id = 9, run id = 7, concurrent runs = 2)
+02/11/16 10:54:41->2 concurrent runs for run id = 7
+02/11/16 10:54:41->run 7 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (run time = 0.00668333 min, group id = 9, run id = 7 concurrent = 2)
+02/11/16 10:54:41->sending kill request; reason: completed on alternative node; run id:7; slave: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2
+02/11/16 10:54:41->run 5 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (run time = 0.00666667 min, group id = 9, run id = 5 concurrent = 1)
+
+---------------------
+   7 runs complete :  0 runs failed
+
+running model 4 times
+
+02/11/16 10:54:41->Sending run 1 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (group id = 10, run id = 1, concurrent runs = 1)
+02/11/16 10:54:41->Sending run 2 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (group id = 10, run id = 2, concurrent runs = 1)
+02/11/16 10:54:41->Sending run 3 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (group id = 10, run id = 3, concurrent runs = 1)
+02/11/16 10:54:41->Sending run 4 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (group id = 10, run id = 4, concurrent runs = 1)
+02/11/16 10:54:41->run 2 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (run time = 0.00658333 min, group id = 10, run id = 2 concurrent = 1)
+02/11/16 10:54:41->run 1 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (run time = 0.00658333 min, group id = 10, run id = 1 concurrent = 1)
+02/11/16 10:54:41->run 3 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (run time = 0.00658333 min, group id = 10, run id = 3 concurrent = 1)
+02/11/16 10:54:41->run 4 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (run time = 0.00675 min, group id = 10, run id = 4 concurrent = 1)
+
+---------------------
+   4 runs complete :  0 runs failed
+
+running model 7 times
+
+02/11/16 10:54:41->Sending run 1 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (group id = 11, run id = 1, concurrent runs = 1)
+02/11/16 10:54:41->Sending run 2 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (group id = 11, run id = 2, concurrent runs = 1)
+02/11/16 10:54:41->Sending run 3 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (group id = 11, run id = 3, concurrent runs = 1)
+02/11/16 10:54:41->Sending run 4 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (group id = 11, run id = 4, concurrent runs = 1)
+02/11/16 10:54:42->run 2 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (run time = 0.00601667 min, group id = 11, run id = 2 concurrent = 1)
+02/11/16 10:54:42->run 1 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (run time = 0.00601667 min, group id = 11, run id = 1 concurrent = 1)
+02/11/16 10:54:42->run 3 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (run time = 0.00601667 min, group id = 11, run id = 3 concurrent = 1)
+02/11/16 10:54:42->Sending run 5 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (group id = 11, run id = 5, concurrent runs = 1)
+02/11/16 10:54:42->Sending run 6 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (group id = 11, run id = 6, concurrent runs = 1)
+02/11/16 10:54:42->Sending run 7 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (group id = 11, run id = 7, concurrent runs = 1)
+02/11/16 10:54:42->run 4 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (run time = 0.00675 min, group id = 11, run id = 4 concurrent = 1)
+02/11/16 10:54:42->run 7 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (run time = 0.00665 min, group id = 11, run id = 7 concurrent = 1)
+02/11/16 10:54:42->rescheduling overdue run 6 (0.00726667|0.00601667 minutes) on: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3
+02/11/16 10:54:42->Sending run 6 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (group id = 11, run id = 6, concurrent runs = 2)
+02/11/16 10:54:42->2 concurrent runs for run id = 6
+02/11/16 10:54:42->run 6 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (run time = 0.00665 min, group id = 11, run id = 6 concurrent = 2)
+02/11/16 10:54:42->sending kill request; reason: completed on alternative node; run id:6; slave: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2
+02/11/16 10:54:42->run 5 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (run time = 0.00665 min, group id = 11, run id = 5 concurrent = 1)
+
+---------------------
+   7 runs complete :  0 runs failed
+
+running model 4 times
+
+02/11/16 10:54:42->Sending run 1 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (group id = 12, run id = 1, concurrent runs = 1)
+02/11/16 10:54:42->Sending run 2 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (group id = 12, run id = 2, concurrent runs = 1)
+02/11/16 10:54:42->Sending run 3 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (group id = 12, run id = 3, concurrent runs = 1)
+02/11/16 10:54:42->Sending run 4 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (group id = 12, run id = 4, concurrent runs = 1)
+02/11/16 10:54:43->run 3 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (run time = 0.0067 min, group id = 12, run id = 3 concurrent = 1)
+02/11/16 10:54:43->run 2 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (run time = 0.0067 min, group id = 12, run id = 2 concurrent = 1)
+02/11/16 10:54:43->run 1 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (run time = 0.0067 min, group id = 12, run id = 1 concurrent = 1)
+02/11/16 10:54:43->run 4 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (run time = 0.00701667 min, group id = 12, run id = 4 concurrent = 1)
+
+---------------------
+   4 runs complete :  0 runs failed
+
+running model 7 times
+
+02/11/16 10:54:43->Sending run 1 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (group id = 13, run id = 1, concurrent runs = 1)
+02/11/16 10:54:43->Sending run 2 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (group id = 13, run id = 2, concurrent runs = 1)
+02/11/16 10:54:43->Sending run 3 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (group id = 13, run id = 3, concurrent runs = 1)
+02/11/16 10:54:43->Sending run 4 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (group id = 13, run id = 4, concurrent runs = 1)
+02/11/16 10:54:43->run 3 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (run time = 0.00608333 min, group id = 13, run id = 3 concurrent = 1)
+02/11/16 10:54:43->run 1 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (run time = 0.00608333 min, group id = 13, run id = 1 concurrent = 1)
+02/11/16 10:54:43->run 2 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (run time = 0.00608333 min, group id = 13, run id = 2 concurrent = 1)
+02/11/16 10:54:43->Sending run 5 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (group id = 13, run id = 5, concurrent runs = 1)
+02/11/16 10:54:43->Sending run 6 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (group id = 13, run id = 6, concurrent runs = 1)
+02/11/16 10:54:43->Sending run 7 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (group id = 13, run id = 7, concurrent runs = 1)
+02/11/16 10:54:43->run 4 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (run time = 0.00675 min, group id = 13, run id = 4 concurrent = 1)
+02/11/16 10:54:44->run 5 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (run time = 0.00666667 min, group id = 13, run id = 5 concurrent = 1)
+02/11/16 10:54:44->rescheduling overdue run 6 (0.00726667|0.00608333 minutes) on: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3
+02/11/16 10:54:44->Sending run 6 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (group id = 13, run id = 6, concurrent runs = 2)
+02/11/16 10:54:44->2 concurrent runs for run id = 6
+02/11/16 10:54:44->run 6 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (run time = 0.00666667 min, group id = 13, run id = 6 concurrent = 2)
+02/11/16 10:54:44->sending kill request; reason: completed on alternative node; run id:6; slave: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2
+02/11/16 10:54:44->run 7 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (run time = 0.00666667 min, group id = 13, run id = 7 concurrent = 1)
+
+---------------------
+   7 runs complete :  0 runs failed
+
+running model 4 times
+
+02/11/16 10:54:44->Sending run 1 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (group id = 14, run id = 1, concurrent runs = 1)
+02/11/16 10:54:44->Sending run 2 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (group id = 14, run id = 2, concurrent runs = 1)
+02/11/16 10:54:44->Sending run 3 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (group id = 14, run id = 3, concurrent runs = 1)
+02/11/16 10:54:44->Sending run 4 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (group id = 14, run id = 4, concurrent runs = 1)
+02/11/16 10:54:44->run 3 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (run time = 0.00685 min, group id = 14, run id = 3 concurrent = 1)
+02/11/16 10:54:44->run 2 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (run time = 0.00685 min, group id = 14, run id = 2 concurrent = 1)
+02/11/16 10:54:44->run 1 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (run time = 0.00685 min, group id = 14, run id = 1 concurrent = 1)
+02/11/16 10:54:44->run 4 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (run time = 0.00701667 min, group id = 14, run id = 4 concurrent = 1)
+
+---------------------
+   4 runs complete :  0 runs failed
+
+running model 7 times
+
+02/11/16 10:54:44->Sending run 1 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (group id = 15, run id = 1, concurrent runs = 1)
+02/11/16 10:54:44->Sending run 2 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (group id = 15, run id = 2, concurrent runs = 1)
+02/11/16 10:54:44->Sending run 3 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (group id = 15, run id = 3, concurrent runs = 1)
+02/11/16 10:54:44->Sending run 4 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (group id = 15, run id = 4, concurrent runs = 1)
+02/11/16 10:54:44->run 1 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (run time = 0.00615 min, group id = 15, run id = 1 concurrent = 1)
+02/11/16 10:54:44->run 2 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (run time = 0.00615 min, group id = 15, run id = 2 concurrent = 1)
+02/11/16 10:54:44->run 3 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (run time = 0.00615 min, group id = 15, run id = 3 concurrent = 1)
+02/11/16 10:54:44->Sending run 5 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (group id = 15, run id = 5, concurrent runs = 1)
+02/11/16 10:54:44->Sending run 6 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (group id = 15, run id = 6, concurrent runs = 1)
+02/11/16 10:54:44->Sending run 7 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (group id = 15, run id = 7, concurrent runs = 1)
+02/11/16 10:54:45->run 4 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (run time = 0.00688333 min, group id = 15, run id = 4 concurrent = 1)
+02/11/16 10:54:45->run 7 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_4  (run time = 0.00671667 min, group id = 15, run id = 7 concurrent = 1)
+02/11/16 10:54:45->rescheduling overdue run 5 (0.00726667|0.00615 minutes) on: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3
+02/11/16 10:54:45->Sending run 5 to: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2  (group id = 15, run id = 5, concurrent runs = 2)
+02/11/16 10:54:45->2 concurrent runs for run id = 5
+02/11/16 10:54:45->run 5 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_3  (run time = 0.00671667 min, group id = 15, run id = 5 concurrent = 2)
+02/11/16 10:54:45->sending kill request; reason: completed on alternative node; run id:5; slave: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_2
+02/11/16 10:54:45->run 6 received from: DGTC8WM1.ad.sfwmd.gov$C:\Users\dwelter\Documents\Visual Studio 2013\Projects\pestpp\pest++\benchmarks\stor\slave_1  (run time = 0.00671667 min, group id = 15, run id = 6 concurrent = 1)
+
+---------------------
+   7 runs complete :  0 runs failed
+

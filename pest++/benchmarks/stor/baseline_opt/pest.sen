@@ -1,0 +1,45 @@
+                    PARAMETER SENSITIVITIES: CASE pest
+
+
+NUMERIC PARAMETER SENSITIVITIES FOR OPTIMISATION ITERATION NO. 1   ----->
+ Parameter name   Group        Current Value           CSS w/reg           CSS w/o reg
+   cond            cond         -0.457731426094      0.780571240486       0.780570261661      
+   scoeff          scoeff       1.13264666956        0.314741830920       0.314713873557      
+
+
+NUMERIC PARAMETER SENSITIVITIES FOR OPTIMISATION ITERATION NO. 2   ----->
+ Parameter name   Group        Current Value           CSS w/reg           CSS w/o reg
+   cond            cond         -0.698489770096      2.57693742423        2.57693741951       
+   scoeff          scoeff       1.45072750604        1.10233519293        1.10233510335       
+
+
+NUMERIC PARAMETER SENSITIVITIES FOR OPTIMISATION ITERATION NO. 3   ----->
+ Parameter name   Group        Current Value           CSS w/reg           CSS w/o reg
+   cond            cond         -0.902078077114      6.03547832101        6.03547749009       
+   scoeff          scoeff       1.61719998257        2.92934693071        2.92933658199       
+
+
+NUMERIC PARAMETER SENSITIVITIES FOR OPTIMISATION ITERATION NO. 4   ----->
+ Parameter name   Group        Current Value           CSS w/reg           CSS w/o reg
+   cond            cond         -0.859697953167      5.19430277895        5.19408612492       
+   scoeff          scoeff       1.55691132294        2.21780556791        2.21467335951       
+
+
+NUMERIC PARAMETER SENSITIVITIES FOR OPTIMISATION ITERATION NO. 5   ----->
+ Parameter name   Group        Current Value           CSS w/reg           CSS w/o reg
+   cond            cond         -0.854900641727      5.17781846287        5.17495456638       
+   scoeff          scoeff       1.53108655451        2.13742087206        2.09516148653       
+
+
+NUMERIC PARAMETER SENSITIVITIES FOR OPTIMISATION ITERATION NO. 6   ----->
+ Parameter name   Group        Current Value           CSS w/reg           CSS w/o reg
+   cond            cond         -0.856273311657      5.20224897518        5.20108938463       
+   scoeff          scoeff       1.53258874175        2.12964667437        2.11251249693       
+
+
+NUMERIC PARAMETER SENSITIVITIES FOR OPTIMISATION ITERATION NO. 7   ----->
+ Parameter name   Group        Current Value           CSS w/reg           CSS w/o reg
+   cond            cond         -0.856274795463      5.20232832609        5.20116874922       
+   scoeff          scoeff       1.53257467254        2.12963009884        2.11249610281       
+
+

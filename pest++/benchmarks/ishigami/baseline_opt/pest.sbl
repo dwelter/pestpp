@@ -1,0 +1,16 @@
+Sobol Sensitivity for PHI
+E(Y) = 26.9131;  Var(Y) = 1203.25 (for S_i calculations)
+E(Y) = 26.498;  Var(Y) = 1191.36 (for S_ti calculations)
+parameter_name, s_i, st_i, n_runs
+X1, 0.219006, 0.637219, 2000
+X2, 0.267092, 0.436743, 2000
+X3, 0.149793, 0.406682, 2000
+
+
+Sobol Sensitivity for observation "F"
+E(Y) = 3.56468;  Var(Y) = 13.8043 (for S_i calculations)
+E(Y) = 3.52677;  Var(Y) = 13.9154 (for S_ti calculations)
+parameter_name, s_i, st_i, n_runs
+X1, 0.290889, 0.614657, 2000
+X2, 0.434978, 0.420706, 2000
+X3, 0.00943742, 0.235589, 2000

@@ -1,0 +1,63 @@
+pcf
+* control data
+restart  regularization
+    3    16     3     2     4
+    1     1 single point 1 0 0
+  0.0   2.0   0.3  0.03    1
+  3.0   3.0 0.001
+  0.1
+   20 0.01     3     3  0.01     3
+    1     1     1
+* singular value decomposition
+1
+2 1.0E-7 
+1
+* parameter groups
+recharge relative 0.01  0.0  ALWAYS_3  2.0 parabolic
+cond     relative 0.01  0.0  ALWAYS_3  2.0 parabolic
+scoeff   relative 0.01  0.0  ALWAYS_3  2.0 parabolic
+* parameter data
+recharge fixed factor    0.1     1.0e-10   1.0e10 recharge  1.0   0.0  1
+cond     log   factor    5.0E-3  1.0e-5   1.0e2 cond      1.0   0.0  1
+scoeff   log   factor    5.0E-2  1.0e-6   1.0    scoeff    1.0   0.0  1
+* observation groups
+obsgroup1
+obs2
+obsgroup3
+regul
+* observation data
+head1     4.998750E-02  1.1  obsgroup1
+head2     9.995002E-02  2.2  obs2
+head3     0.249688      3.3  obsgroup3
+head4     0.498752      1.1  obsgroup1
+head5     0.955017      2.2  obs2
+head6      2.66901      3.3  obsgroup3
+head7      4.67706      1.1  obsgroup1
+head8      9.81626      2.2  obs2
+head9      21.8199      3.3  obsgroup3
+head10     40.8469      1.1  obsgroup1
+head11     63.2121      2.2  obs2
+head12     91.7915      3.3  obsgroup3
+head13     99.3262      1.1  obsgroup1
+head14     99.9955      1.1  obs2
+head15     100.000      2.2  obsgroup3
+head16     100.000      3.3  obsgroup1
+* model command line
+exe\storage1.exe
+* model input/output
+misc\input.tpl   input.dat
+misc\output.ins  output.dat
+* prior information
+pri_1 1.0 * log(cond) =  0.0 0.5 regul
+pri_2 1.0 * log(scoeff) = -0.7 0.8 regul
+* regularisation
+7.2  8.0 0.2
+1.0 1.0e-10 1.0e10
+1.3 1.0e-2
+++# PEST++ optional input
+++# max_n_super(3) super_eigthres(1.0e-7)
+++# n_iter_base(1) n_iter_super(3)
+++# SVD_PACK(PROPACK)
+++# MAT_INV(Q1/2J)
+++ AUTO_NORM(4)
+++# LAMBDAS(.05, 1, 5, 50, 500, 5000)

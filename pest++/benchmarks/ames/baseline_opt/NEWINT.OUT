@@ -1,0 +1,56 @@
+========================================================================
+=
+=       SOIL HORIZON PHYSICAL PROPERTIES CONDITIONS
+=
+= RECORD #   DESCRIPTION
+= --------   -----------
+=     1         FORM HYDRAULIC STATE IS PRESENTED
+=                0 - TENSIOMETRIC POTENTIAL                [CM OF WATER]
+=                1 - SOIL WATER CONTENT                      [CM^3/CM^3]
+=     2         HYDRAULIC STATE, TEMPERATURE STATE                   [C]
+=
+=            ... REPEAT RECORD 2 FOR ALL HORIZONS
+========================================================================
+ 0
+  -221.805    19.885
+  -254.344    17.772
+  -431.924    16.056
+ -1672.914    15.243
+ -3346.157    14.492
+ -1054.571    14.127
+  -166.721    13.954
+   -37.964    13.900
+    11.645    13.997
+    60.134    14.161
+========================================================================
+=       ... INITIAL CONC FOR EACH NUTRIENT POOLLISTED BELOW
+=
+= ITEM  #    DESCRIPTION
+= --------   -----------
+=      1         CR-1 - SLOW RESIDUE POOL              [UG-CARBON/G-SOIL]
+=      2         CR-2 - FAST RESIDUE POOL              [UG-CARBON/G-SOIL]
+=      3         OM-1 - FAST SOIL HUMUS POOL           [UG-CARBON/G-SOIL]
+=      4         OM-2 - MEDIUM SOIL HUMUS POOL         [UG-CARBON/G-SOIL]
+=      5         OM-3 - SLOW SOIL HUMUS POOL           [UG-CARBON/G-SOIL]
+=      6         CO2  - CARBON SINK POOL               [UG-CARBON/G-SOIL]
+=      7         HET1 - AEROBIC HETEROTROPHS POPULATI[# ORGANISMS/G-SOIL]
+=      8         AUTO - AUTOTROPHS POPULATION        [# ORGANISMS/G-SOIL]
+=      9         HET2 - ANEROBIC HETEROTROPHS POPULAT[# ORGANISMS/G-SOIL]
+=      10        UREA-N - UREA CONCENTRATION                [UG-N/G-SOIL]
+=      11        NO3-N - NITROGEN CONCENTRATION             [UG-N/G-SOIL]
+=      12        NH4-N - AMMONIUM CONCENTRATION             [UG-N/G-SOIL]
+=      13        PO4-P - PHOSPHATE CONCENTRATION            [UG-N/G-SOIL]
+=      14        N2  - NITROGEN SINK POOL                   [UG-N/G-SOIL]
+=
+=       ...REPEAT FOR EACH HORIZON
+========================================================================
+    40.5    70.0    92.4   519.5 18406.5  0.0  3168074.9    18170.5    54353.0    0.000    1.264    0.225   -0.006    0.000
+    79.2    80.5    63.4   149.4  7172.5  0.0   257768.6     1172.3    13553.2    0.000    2.916    0.011   -0.003    0.000
+    53.5    44.6    58.7   103.4  5346.7  0.0   178159.1      592.0    10444.7    0.000    5.665    0.007   -0.002    0.000
+    37.8    24.1    37.5    61.1  3518.1  0.0   127197.1      562.4     4438.9    0.000   10.545    0.006   -0.001    0.000
+    43.8    14.3    28.3    27.5  2585.9  0.0    78535.5      232.9     2961.2    0.000   11.536    0.002   -0.001    0.000
+    17.3    25.3     2.2     0.2  1694.6  0.0     8489.8       44.5      850.1    0.000    7.902    0.000    0.000    0.000
+     3.1     3.7     1.3     0.0  1693.7  0.0     4537.4       39.5      423.8    0.000    5.557    0.000    0.000    0.000
+     1.0     0.3     1.3     0.0   846.0  0.0     1430.5       20.6      141.7    0.000    1.815    0.000    0.000    0.000
+     1.0     0.6     0.7     0.0   592.1  0.0     1194.0       15.0      118.0    0.000    3.332    0.000    0.000    0.000
+     1.0     0.7     0.4     0.0   422.9  0.0      953.6       11.2       94.1    0.000    1.009    0.000    0.000    0.000

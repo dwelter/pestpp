@@ -1,0 +1,2252 @@
+             PEST++ Version 3.2.0
+
+                 by Dave Welter
+     Computational Water Resource Engineering
+
+
+
+using control file: "pest"
+
+
+PEST++ run mode:- 
+   estimation
+
+Case dimensions:- 
+    Number of parameters = 34
+    Number of adjustable parameters = 26
+    Number of observations = 374
+    Number of prior estimates = 0
+
+Model command line(s):- 
+    rzwqmb.bat
+
+Model interface files:-
+    template files:
+      par2par_rzdat.tpl
+    model input files:
+      par2par_rzdat.in
+
+    instruction files:
+      conc1.ins
+    model output files:
+      comp2exp.OUT
+
+
+PEST Control Information
+    relparmax = 3
+    facparmax = 3
+    facorig = 0.001
+    phiredswh = 0.1
+    noptmax = 30
+    phiredstp = 0.005
+    nphistp = 4
+    nphinored = 4
+    relparstp = 0.005
+    nrelpar = 4
+
+PEST++ Options
+    n_iter_base = 1                   
+    n_iter_super = 5                   
+    max_n_super = 10                  
+    super eigthres = 5e-007              
+    svd pack = 0                   
+    auto norm = 4                   
+    super relparmax = 0.1                 
+    max super frz iter = 3                   
+    mat inv = 1                   
+    max run fail = 3                   
+    max reg iter = 20                  
+    lambdas = 
+            0.1
+              1
+             10
+            100
+           1000
+    uncertainty flag = 1                   
+    parameter covariance file =                     
+    prediction names = 
+
+
+Parameter group information
+NAME            INCREMENT TYPE     DERIVATIVE INCREMENT    INCREMENT LOWER BOUND  FORCE CENTRAL     INCREMENT MULTIPLIER
+lg                    RELATIVE                     0.01                        0         SWITCH                        2
+llg                   RELATIVE                     0.01                        0         SWITCH                        2
+lllg                  RELATIVE                     0.01                        0         SWITCH                        2
+ssm                   RELATIVE                     0.01                        0         SWITCH                        2
+sssm                  RELATIVE                     0.01                        0         SWITCH                        2
+
+Parameter information
+NAME           TRANSFORMATION        CHANGE LIMIT  INITIAL VALUE    LOWER BOUND    UPPER BOUND          GROUP          SCALE         OFFSET  DERIVATIVE COMMAND
+s21            log                     FACTOR              4              1              5            llg              1              0                   0
+s22            log                     FACTOR              5              3              6            llg              1              0                   0
+s24            log                     FACTOR              5              2              6            llg              1              0                   0
+s26            log                     FACTOR              2              2              6            llg              1              0                   0
+a21            log                     FACTOR           0.09           0.07            0.1             lg              1              0                   0
+a22            log                     FACTOR           0.07           0.06           0.08             lg              1              0                   0
+a24            log                     FACTOR           0.11           0.08           0.12             lg              1              0                   0
+a26            log                     FACTOR      0.0660576           0.05            0.1             lg              1              0                   0
+c11            log                     FACTOR              4              1              5            llg              1              0                   0
+c12            log                     FACTOR              8              4             10            llg              1              0                   0
+c14            log                     FACTOR             12              5             13            llg              1              0                   0
+c16            log                     FACTOR              1           0.99              5            llg              1              0                   0
+p1             log                     FACTOR              1            0.8            1.2            llg              1              0                   0
+p2             log                     FACTOR              1            0.8            1.2            llg              1              0                   0
+p3             log                     FACTOR              1            0.9            1.1            llg              1              0                   0
+p4             log                     FACTOR              1            0.9            1.1            llg              1              0                   0
+p5             log                     FACTOR            1.3            1.2            1.6            llg              1              0                   0
+p6             log                     FACTOR            1.3            1.1            1.5            llg              1              0                   0
+lhg            log                     FACTOR   3.02551e-005         1e-006         4e-005            ssm              1              0                   0
+chc            log                     FACTOR           0.08           0.01            0.1             lg              1              0                   0
+nmac           log                     FACTOR      0.0132921          0.005           0.06             lg              1              0                   0
+mac_r          log                     FACTOR            0.1           0.03           0.15             lg              1              0                   0
+lks            log                     FACTOR             15              5             20            llg              1              0                   0
+koc            log                     FACTOR            240            170            250            llg              1              0                   0
+half           log                     FACTOR        58.9894             30             80            llg              1              0                   0
+h2             fixed                   FACTOR              1           0.99              3            llg              1              0                   0
+expr           log                     FACTOR           0.02           0.01           0.03             lg              1              0                   0
+est            fixed                   FACTOR            0.6            0.5              1             lg              1              0                   0
+rsw            fixed                   FACTOR        0.33541           0.25           0.35             lg              1              0                   0
+rst            fixed                   FACTOR        20.0778             15             25            llg              1              0                   0
+ea             fixed                   FACTOR        50367.6          50000          60000             lg              1              0                   0
+wsm            fixed                   FACTOR       0.735486            0.6           0.99             lg              1              0                   0
+mrad           fixed                   FACTOR              1           0.99             20            llg              1              0                   0
+h_3            fixed                   FACTOR             15              1             30            llg              1              0                   0
+
+Observation information
+NAME                                    VALUE               GROUP              WEIGHT
+c1                                          0          water_conc                  80
+c2                                      0.001          water_conc                  80
+c3                                      0.001          water_conc                  80
+c4                                      0.001          water_conc                  80
+c5                                      0.001          water_conc                  80
+c6                                      0.001          water_conc                  80
+c7                                      0.001          water_conc                  80
+c8                                      0.001          water_conc                  80
+c9                                      0.002          water_conc                  80
+c10                                     0.003          water_conc                  40
+c11                                     0.002          water_conc                  80
+c12                                     0.003          water_conc                  80
+c13                                     0.003          water_conc                  80
+c14                                     0.002          water_conc                  80
+c15                                         0          water_conc                  80
+c16                                     0.001          water_conc                  80
+c17                                     0.001          water_conc                  80
+c18                                     0.001          water_conc                  80
+c19                                         0          water_conc                  80
+c20                                         0          water_conc                  80
+c21                                         0          water_conc                  80
+c22                                         0          water_conc                  80
+c23                                         0          water_conc                  80
+c24                                         0          water_conc                  80
+c25                                         0          water_conc                  80
+c26                                         0          water_conc                  80
+c27                                         0          water_conc                  80
+c28                                         0          water_conc                  80
+c29                                    0.0005          water_conc                  80
+c30                                    0.0009          water_conc                 260
+c31                                    0.0008          water_conc                 260
+c32                                    0.0053          water_conc                  80
+c33                                    0.0013          water_conc                  80
+c34                                    0.0026          water_conc                  80
+c35                                     0.004          water_conc                  80
+c36                                       -99          water_conc                   0
+c37                                    0.0014          water_conc                  80
+c38                                       -99          water_conc                   0
+c39                                       -99          water_conc                   0
+c40                                         0          water_conc                  80
+c41                                    0.0005          water_conc                  80
+c42                                    0.0005          water_conc                  80
+c43                                    0.0003          water_conc                  80
+c44                                    0.0006          water_conc                  80
+c45                                    0.0006          water_conc                  80
+c46                                         0          water_conc                  80
+c47                                    0.0009          water_conc                  80
+c48                                    0.0005          water_conc                  80
+c49                                    0.0006          water_conc                  80
+c50                                       -99          water_conc                   0
+c51                                    0.0007          water_conc                  80
+c52                                    0.0005          water_conc                  80
+c53                                         0          water_conc                  80
+c54                                    0.0004          water_conc                  80
+c55                                    0.0006          water_conc                  80
+c56                                    0.0006          water_conc                  80
+c57                                       -99          water_conc                   0
+c58                                       -99          water_conc                   0
+c59                                    0.0003          water_conc                  80
+c60                                         0          water_conc                  80
+c61                                    0.0004          water_conc                  80
+c62                                         0          water_conc                  80
+c63                                    0.0007          water_conc                  80
+c64                                    0.0009          water_conc                  80
+c65                                    0.0006          water_conc                  80
+c66                                    0.0005          water_conc                  80
+c67                                    0.0006          water_conc                  80
+c68                                    0.0018          water_conc                  80
+c69                                     0.001          water_conc                  80
+c70                                    0.0012          water_conc                  80
+c71                                         0          water_conc                  80
+c72                                    0.0009          water_conc                  80
+c73                                    0.0005          water_conc                  80
+c74                                       -99          water_conc                   0
+c75                                    0.0005          water_conc                  80
+c76                                    0.0013          water_conc                  80
+c77                                    0.0005          water_conc                  80
+c78                                    0.0006          water_conc                  80
+c79                                    0.0005          water_conc                  80
+c80                                    0.0007          water_conc                  80
+c81                                    0.0006          water_conc                  80
+c82                                    0.0004          water_conc                  80
+c83                                    0.0004          water_conc                  80
+c84                                    0.0004          water_conc                  80
+c85                                         0          water_conc                  80
+c86                                       -99          water_conc                   0
+c87                                    0.0004          water_conc                  80
+c88                                    0.0003          water_conc                  80
+c89                                         0          water_conc                  80
+c90                                         0          water_conc                  80
+c91                                         0          water_conc                  80
+c92                                    0.0003          water_conc                  80
+c93                                    0.0003          water_conc                  80
+c94                                    0.0003          water_conc                  80
+c95                                    0.0006          water_conc                  80
+c96                                    0.0006          water_conc                  80
+c97                                    0.0003          water_conc                  80
+c98                                    0.0004          water_conc                  80
+c99                                    0.0006          water_conc                  80
+c100                                   0.0011          water_conc                  80
+c101                                        0          water_conc                  80
+c102                                      -99          water_conc                   0
+c103                                        0          water_conc                  80
+t1                                          0           tile_flow                 0.8
+t2                                      0.039           tile_flow                 0.8
+t3                                       0.03           tile_flow                 0.8
+t4                                      0.013           tile_flow                 0.8
+t5                                      0.063           tile_flow                 0.8
+t6                                      0.096           tile_flow                 0.8
+t7                                      0.031           tile_flow                 0.8
+t8                                      0.014           tile_flow                 0.8
+t9                                      0.033           tile_flow                 0.8
+t10                                     0.226           tile_flow                 0.8
+t11                                     0.424           tile_flow                 0.8
+t12                                      0.06           tile_flow                 0.8
+t13                                      0.01           tile_flow                 0.8
+t14                                     0.069           tile_flow                 0.8
+t15                                     0.256           tile_flow                 0.8
+t16                                     0.094           tile_flow                 0.8
+t17                                     0.029           tile_flow                 0.8
+t18                                     0.009           tile_flow                 0.8
+t19                                     0.011           tile_flow                 0.8
+t20                                     0.038           tile_flow                 0.8
+t21                                     0.033           tile_flow                 0.8
+t22                                      0.02           tile_flow                 0.8
+t23                                     0.016           tile_flow                 0.8
+t24                                     0.006           tile_flow                 0.8
+t25                                     0.004           tile_flow                 0.8
+t26                                     0.001           tile_flow                 0.8
+t27                                         0           tile_flow                 0.8
+t28                                         0           tile_flow                 0.8
+t29                                     0.009           tile_flow                 0.8
+t30                                     0.246           tile_flow                 0.8
+t31                                     0.236           tile_flow                 0.8
+t32                                     0.218           tile_flow                 0.8
+t33                                     0.194           tile_flow                 0.8
+t34                                     0.164           tile_flow                 0.8
+t35                                     0.247           tile_flow                 0.8
+t36                                      0.09           tile_flow                 0.8
+t37                                     0.029           tile_flow                 0.8
+t38                                     0.003           tile_flow                 0.8
+t39                                     0.016           tile_flow                 0.8
+t40                                     0.128           tile_flow                 0.8
+t41                                       0.1           tile_flow                 0.8
+t42                                     0.063           tile_flow                 0.8
+t43                                     0.043           tile_flow                 0.8
+t44                                     0.047           tile_flow                 0.8
+t45                                     0.031           tile_flow                 0.8
+t46                                     0.017           tile_flow                 0.8
+t47                                      0.02           tile_flow                 0.8
+t48                                     0.021           tile_flow                 0.8
+t49                                     0.004           tile_flow                 0.8
+t50                                         0           tile_flow                 0.8
+t51                                     0.051           tile_flow                 0.8
+t52                                     0.041           tile_flow                 0.8
+t53                                     0.049           tile_flow                 0.8
+t54                                     0.037           tile_flow                 0.8
+t55                                     0.046           tile_flow                 0.8
+t56                                     0.006           tile_flow                 0.8
+t57                                         0           tile_flow                 0.8
+t58                                     0.035           tile_flow                 0.8
+t59                                     0.352           tile_flow                 0.8
+t60                                     0.224           tile_flow                 0.8
+t61                                     0.104           tile_flow                 0.8
+t62                                     0.059           tile_flow                 0.8
+t63                                     0.077           tile_flow                 0.8
+t64                                     0.339           tile_flow                 0.8
+t65                                     0.177           tile_flow                 0.8
+t66                                      0.23           tile_flow                 0.8
+t67                                     0.191           tile_flow                 0.8
+t68                                     0.261           tile_flow                 0.8
+t69                                     0.627           tile_flow                 0.8
+t70                                     0.737           tile_flow                 0.8
+t71                                     0.246           tile_flow                 0.8
+t72                                     0.082           tile_flow                 0.8
+t73                                     0.009           tile_flow                 0.8
+t74                                         0           tile_flow                 0.8
+t75                                     0.002           tile_flow                 0.8
+t76                                     0.003           tile_flow                 0.8
+t77                                     0.023           tile_flow                 0.8
+t78                                     0.227           tile_flow                 0.8
+t79                                      0.18           tile_flow                 0.8
+t80                                     0.046           tile_flow                 0.8
+t81                                     0.087           tile_flow                 0.8
+t82                                     0.216           tile_flow                 0.8
+t83                                     0.101           tile_flow                 0.8
+t84                                     0.009           tile_flow                 0.8
+t85                                     0.014           tile_flow                 0.8
+t86                                     0.006           tile_flow                 0.8
+t87                                     0.061           tile_flow                 0.8
+t88                                     0.108           tile_flow                 0.8
+t89                                     0.029           tile_flow                 0.8
+t90                                     0.017           tile_flow                 0.8
+t91                                     0.044           tile_flow                 0.8
+t92                                     0.133           tile_flow                 0.8
+t93                                      0.09           tile_flow                 0.8
+t94                                     0.039           tile_flow                 0.8
+t95                                     0.414           tile_flow                 0.8
+t96                                      0.33           tile_flow                 0.8
+t97                                     0.157           tile_flow                 0.8
+t98                                     0.025           tile_flow                 0.8
+t99                                     0.003           tile_flow                 0.8
+t100                                    0.001           tile_flow                 0.8
+t101                                        0           tile_flow                 0.8
+t102                                        0           tile_flow                 0.8
+t103                                    0.011           tile_flow                 0.8
+sc1                                     1.568           soil_conc                   1
+sc2                                     0.179           soil_conc                   1
+sc3                                     0.189           soil_conc                   1
+sc4                                     0.025           soil_conc                   1
+sc5                                     0.007           soil_conc                   1
+sc6                                         0           soil_conc                   1
+sc7                                     0.012           soil_conc                   1
+sc8                                     0.009           soil_conc                   1
+sc9                                         0           soil_conc                   1
+sc12                                        0           soil_conc                   1
+sc13                                     0.14           soil_conc                   1
+sc14                                    0.021           soil_conc                   1
+sc15                                    0.022           soil_conc                   1
+sc16                                     0.03           soil_conc                   1
+sc17                                        0           soil_conc                   1
+sc18                                        0           soil_conc                   1
+sc19                                        0           soil_conc                   1
+sc20                                        0           soil_conc                   1
+sc23                                     0.39           soil_conc                   1
+sc24                                    0.139           soil_conc                   1
+sc25                                     0.08           soil_conc                   1
+sc26                                    0.028           soil_conc                   1
+sc27                                    0.011           soil_conc                   1
+sc28                                    0.003           soil_conc                   1
+sc29                                    0.001           soil_conc                   1
+sc30                                    0.001           soil_conc                   1
+sc31                                    0.001           soil_conc                   1
+sc34                                     0.18           soil_conc                   1
+sc35                                    0.061           soil_conc                   1
+sc36                                    0.046           soil_conc                   1
+sc37                                    0.011           soil_conc                   1
+sc38                                    0.012           soil_conc                   1
+sc39                                        0           soil_conc                   1
+sc42                                    0.098           soil_conc                   1
+sc43                                    0.079           soil_conc                   1
+sc44                                    0.044           soil_conc                   1
+sc45                                    0.024           soil_conc                   1
+sc46                                    0.008           soil_conc                   1
+sc47                                        0           soil_conc                   1
+sc50                                    0.056           soil_conc                   1
+sc51                                    0.075           soil_conc                   1
+sc52                                    0.037           soil_conc                   1
+sc53                                    0.008           soil_conc                   1
+sc54                                        0           soil_conc                   1
+sc55                                        0           soil_conc                   1
+sc56                                        0           soil_conc                   1
+sc59                                    0.976           soil_conc                   1
+sc60                                    0.056           soil_conc                   1
+sc61                                    0.013           soil_conc                   1
+sc62                                    0.008           soil_conc                   1
+sc63                                        0           soil_conc                   1
+sc64                                        0           soil_conc                   1
+sc65                                        0           soil_conc                   1
+sc68                                    0.121           soil_conc                   1
+sc69                                    0.052           soil_conc                   1
+sc70                                     0.02           soil_conc                   1
+sc71                                    0.006           soil_conc                   1
+sc72                                        0           soil_conc                   1
+sc73                                        0           soil_conc                   1
+sc74                                        0           soil_conc                   1
+sc77                                    0.104           soil_conc                   1
+sc78                                    0.056           soil_conc                   1
+sc79                                    0.013           soil_conc                   1
+sc80                                        0           soil_conc                   1
+sc81                                        0           soil_conc                   1
+sc82                                        0           soil_conc                   1
+sc83                                        0           soil_conc                   1
+sc86                                    0.156           soil_conc                   1
+sc87                                    0.115           soil_conc                   1
+sc88                                    0.078           soil_conc                   1
+sc89                                    0.062           soil_conc                   1
+sc90                                    0.014           soil_conc                   1
+sc91                                        0           soil_conc                   1
+sc92                                        0           soil_conc                   1
+sc95                                    0.427           soil_conc                   1
+sc96                                    0.062           soil_conc                   1
+sc97                                     0.03           soil_conc                   1
+sc100                                    0.19           soil_conc                   1
+sc101                                    0.04           soil_conc                   1
+sc102                                   0.013           soil_conc                   1
+sc103                                       0           soil_conc                   1
+sc104                                    0.01           soil_conc                   1
+sc105                                       0           soil_conc                   1
+sc106                                       0           soil_conc                   1
+sc109                                   0.108           soil_conc                   1
+sc110                                   0.071           soil_conc                   1
+sc111                                       0           soil_conc                   1
+sc112                                       0           soil_conc                   1
+sc113                                       0           soil_conc                   1
+sc114                                       0           soil_conc                   1
+sc115                                       0           soil_conc                   1
+sc118                                   0.056           soil_conc                   1
+sc119                                   0.032           soil_conc                   1
+sc120                                   0.019           soil_conc                   1
+sc121                                       0           soil_conc                   1
+sc122                                       0           soil_conc                   1
+sc123                                       0           soil_conc                   1
+sc124                                       0           soil_conc                   1
+sc127                                     -99           soil_conc                   0
+sc128                                     -99           soil_conc                   0
+sc129                                     -99           soil_conc                   0
+sc130                                     -99           soil_conc                   0
+sc131                                     -99           soil_conc                   0
+sc132                                     -99           soil_conc                   0
+sc133                                     -99           soil_conc                   0
+sc136                                   0.048           soil_conc                   1
+sc139                                   0.192           soil_conc                   1
+sc140                                   0.039           soil_conc                   1
+sc141                                   0.019           soil_conc                   1
+sc142                                     -99           soil_conc                   0
+sc143                                     -99           soil_conc                   0
+sc144                                     -99           soil_conc                   0
+sc147                                   0.143           soil_conc                   1
+sc148                                   0.052           soil_conc                   1
+sc149                                   0.021           soil_conc                   1
+sc150                                     -99           soil_conc                   0
+sc151                                     -99           soil_conc                   0
+sc152                                     -99           soil_conc                   0
+sc155                                   0.058           soil_conc                   1
+sc156                                   0.037           soil_conc                   1
+sc157                                   0.021           soil_conc                   1
+sc158                                     -99           soil_conc                   0
+sc159                                     -99           soil_conc                   0
+sc160                                     -99           soil_conc                   0
+sc163                                     -99           soil_conc                   0
+sc164                                     -99           soil_conc                   0
+sc165                                     -99           soil_conc                   0
+sc166                                     -99           soil_conc                   0
+sc167                                     -99           soil_conc                   0
+sc168                                     -99           soil_conc                   0
+sc171                                   0.168           soil_conc                   1
+sc172                                   0.022           soil_conc                   1
+sc173                                   0.006           soil_conc                   1
+sc176                                   0.157           soil_conc                   1
+sc177                                    0.05           soil_conc                   1
+sc178                                   0.013           soil_conc                   1
+sc179                                   0.005           soil_conc                   1
+sc180                                     -99           soil_conc                   0
+sc181                                     -99           soil_conc                   0
+sc184                                   0.056           soil_conc                   1
+sc185                                   0.042           soil_conc                   1
+sc186                                   0.021           soil_conc                   1
+sc187                                     -99           soil_conc                   0
+sc188                                     -99           soil_conc                   0
+sc189                                     -99           soil_conc                   0
+spc1                                   3.0036           prof_conc                 0.5
+spc2                                  0.35519           prof_conc                 0.5
+spc3                                  1.00768           prof_conc                 0.5
+spc4                                  0.47208           prof_conc                 0.5
+spc5                                  0.39629           prof_conc                 0.5
+spc6                                  0.26394           prof_conc                 0.5
+spc7                                  1.53415           prof_conc                 0.5
+spc8                                  0.29464           prof_conc                 0.5
+spc9                                  0.25163           prof_conc                 0.5
+spc10                                 0.68413           prof_conc                 0.5
+spc11                                 0.75435           prof_conc                 0.5
+spc12                                 0.37668           prof_conc                 0.5
+spc13                                 0.25955           prof_conc                 0.5
+spc14                                 0.15629           prof_conc                 0.5
+spc15                                       0           prof_conc                 0.5
+spc16                                  0.1044           prof_conc                 0.5
+spc17                                 0.36364           prof_conc                 0.5
+spc18                                 0.31446           prof_conc                 0.5
+spc19                                 0.16946           prof_conc                 0.5
+spc20                                       0           prof_conc                 0.5
+spc21                                 0.28456           prof_conc                 0.5
+spc22                                 0.34288           prof_conc                 0.5
+spc23                                 0.17381           prof_conc                 0.5
+
+Prior information
+
+   no prior information provided
+
+PEST SVD Information
+    maxsing = 26
+    eigthresh = 5e-007
+
+
+   -----    Starting PEST++ Iterations    ----    
+
+
+OPTIMISATION ITERATION NUMBER: 1
+
+  Iteration type: base parameter solution
+    SVD Package: Eigen JacobiSVD
+    Matrix Inversion: "Jt Q J"
+    Model calls so far : 0
+
+    Starting phi for this iteration                     Total : 13.9262
+    Contribution to phi from observation group   "water_conc" : 12.187
+    Contribution to phi from observation group    "soil_conc" : 0.551054
+    Contribution to phi from observation group    "prof_conc" : 0.524248
+    Contribution to phi from observation group    "tile_flow" : 0.663914
+    Number of terms in the jacobian equal to zero: 7467 / 9724 (77%)
+
+    Summary of upgrade runs:
+      Lambda =     0.10; Type: upgrade_run; length = 1.11e+001;  phi = 6.42921 (46.17% of starting phi)
+      Lambda =     1.00; Type: upgrade_run; length = 7.98e+000;  phi = 6.58332 (47.27% of starting phi)
+      Lambda =    10.00; Type: upgrade_run; length = 1.90e+000;  phi = 8.35767 (60.01% of starting phi)
+      Lambda =    20.00; Type: upgrade_run; length = 1.20e+000;  phi = 9.02913 (64.84% of starting phi)
+      Lambda =    40.00; Type: upgrade_run; length = 7.70e-001;  phi = 10.007 (71.86% of starting phi)
+      Lambda =   100.00; Type: upgrade_run; length = 4.09e-001;  phi = 11.06 (79.42% of starting phi)
+      Lambda =  1000.00; Type: upgrade_run; length = 5.56e-002;  phi = 13.3447 (95.82% of starting phi)
+
+    Parameters frozen during best upgrade:
+      KOC frozen at 250
+      S21 frozen at 5
+      S26 frozen at 2
+
+  Model calls in iteration 1: 34
+  Total model calls at end of iteration 1: 34
+
+
+    Iteration 1 Parameter Upgrades (Control File Parameters) 
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+             s21             5             4          1.25         -0.25
+             s22       4.72963             5       1.05717     0.0540749
+             s24       4.15958             5       1.20205      0.168085
+             s26             2             2             1             0
+             a21      0.090713          0.09       1.00792   -0.00792201
+             a22     0.0726265          0.07       1.03752     -0.037522
+             a24      0.106049          0.11       1.03726     0.0359218
+             a26     0.0598241     0.0660576        1.1042      0.094365
+             c11       4.27122             4       1.06781    -0.0678059
+             c12       7.37303             8       1.08504     0.0783711
+             c14       11.6229            12       1.03244      0.031423
+             c16       1.14291             1       1.14291     -0.142907
+              p1       1.00386             1       1.00386   -0.00386172
+              p2       1.11253             1       1.11253     -0.112527
+              p3       1.00471             1       1.00471   -0.00470834
+              p4      0.987579             1       1.01258     0.0124208
+              p5        1.3129           1.3       1.00992   -0.00992319
+              p6       1.30893           1.3       1.00687   -0.00686657
+             lhg  3.87165e-005  3.02551e-005       1.27967     -0.279669
+             chc       0.07159          0.08       1.11747      0.105125
+            nmac     0.0137325     0.0132921       1.03314    -0.0331361
+           mac_r      0.110072           0.1       1.10072      -0.10072
+             lks       14.9804            15       1.00131    0.00130587
+             koc           250           240       1.04167    -0.0416667
+            half        54.328        58.989       1.08579     0.0790147
+              h2             1             1             1             0
+            expr      0.021279          0.02       1.06395      -0.06395
+             est           0.6           0.6             1             0
+             rsw       0.33541       0.33541             1             0
+             rst       20.0778       20.0778             1             0
+              ea       50367.6       50367.6             1             0
+             wsm      0.735486      0.735486             1             0
+            mrad             1             1             1             0
+             h_3            15            15             1             0
+       Maximum changes in "Control File" parameters:
+         Maximum relative change = -0.279669   [lhg]
+         Maximum factor change = 1.27967   [lhg]
+
+    Iteration 1 Parameter Upgrades (Transformed Numeric Parameters) 
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+             a21      0.906907      0.818414       1.10813     -0.108127
+             a22      0.655512      0.143348       4.57288      -3.57288
+             a24      0.780717       1.14161       1.46226      0.316129
+             a26     -0.964805     -0.392812       2.45615      -1.45615
+             c11       1.60847       1.44541       1.11281     -0.112807
+             c12      0.669609       1.02588       1.53206      0.347285
+             c14       1.53127       1.66492       1.08728     0.0802772
+             c16      -1.64526      -1.97518       1.20053      0.167033
+             chc       1.41941       1.61236       1.13594       0.11967
+            expr      0.749416      0.523719       1.43095     -0.430951
+            half      0.421797      0.757477       1.79583      0.443155
+             koc             2        1.5766       1.26855     -0.268549
+             lhg       1.96464       1.69724       1.15755      -0.15755
+             lks       1.16615       1.16993       1.00323    0.00322278
+           mac_r       1.23079      0.992281       1.24036     -0.240361
+            nmac     -0.373657     -0.426132       1.14044      0.123143
+              p1      0.239382      0.201359       1.18883     -0.188834
+              p2       1.25333      0.201359       6.22435      -5.22435
+              p3      0.193799      0.100167       1.93475     -0.934753
+              p4     -0.148968      0.100167       1.48719       2.48719
+              p5     -0.749773     -0.887067       1.18311      0.154773
+              p6      0.242714       0.15446       1.57137     -0.571372
+             s21             2       1.44541       1.38369     -0.383688
+             s22      0.627054      0.947862       1.51161      0.338455
+             s24      0.666149       1.33618       2.00582      0.501451
+             s26            -2            -2             1            -0
+       Maximum changes in "Transformed Numeric" parameters:
+         Maximum relative change = -5.22435   [p2]
+         Maximum factor change = 6.22435   [p2]
+
+OPTIMISATION ITERATION NUMBER: 2
+
+  Iteration type: super parameter solution
+    SVD Package: Eigen JacobiSVD
+    Matrix Inversion: "Jt Q J"
+    Model calls so far : 34
+
+    Starting phi for this iteration                     Total : 6.42921
+    Contribution to phi from observation group   "water_conc" : 4.63941
+    Contribution to phi from observation group    "soil_conc" : 0.54617
+    Contribution to phi from observation group    "prof_conc" : 0.539344
+    Contribution to phi from observation group    "tile_flow" : 0.704282
+    Number of terms in the jacobian equal to zero: 3041 / 3740 (81%)
+
+    Summary of upgrade runs:
+      Lambda =     0.10; Type: upgrade_run; length = 7.69e-001;   phi = 3.78701 (58.90% of starting phi)
+      Lambda =     1.00; Type: upgrade_run; length = 9.40e-001;   phi = 4.22527 (65.72% of starting phi)
+      Lambda =    10.00; Type: upgrade_run; length = 5.52e-001;   phi = 5.23226 (81.38% of starting phi)
+      Lambda =    20.00; Type: upgrade_run; length = 3.88e-001;   phi = 5.76426 (89.66% of starting phi)
+      Lambda =    40.00; Type: upgrade_run; length = 2.45e-001;   phi = 6.07376 (94.47% of starting phi)
+      Lambda =   100.00; Type: upgrade_run; length = 1.17e-001;   phi = 6.24466 (97.13% of starting phi)
+      Lambda =  1000.00; Type: upgrade_run; length = 1.32e-002;   phi = 6.4162 (99.80% of starting phi)
+
+    Parameters previously frozen in SVD transformation:
+      KOC frozen at 250
+      S21 frozen at 5
+      S26 frozen at 2
+
+  Model calls in iteration 2: 18
+  Total model calls at end of iteration 2: 52
+
+
+    Iteration 2 Parameter Upgrades (Control File Parameters) 
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+             s21             5             5             1             0
+             s22       4.59817       4.72963       1.02859     0.0277931
+             s24       4.20701       4.15958        1.0114    -0.0114046
+             s26             2             2             1             0
+             a21     0.0909164      0.090713       1.00224     -0.002243
+             a22     0.0722738     0.0726265       1.00488    0.00485723
+             a24      0.106508      0.106049       1.00433    -0.0043298
+             a26     0.0613163     0.0598241       1.02494    -0.0249433
+             c11       4.51663       4.27122       1.05746     -0.057456
+             c12       7.21251       7.37303       1.02226     0.0217713
+             c14       11.9722       11.6229       1.03005    -0.0300488
+             c16       1.18946       1.14291       1.04073    -0.0407304
+              p1       1.00276       1.00386       1.00109    0.00109284
+              p2       1.09927       1.11253       1.01206     0.0119191
+              p3       1.00307       1.00471       1.00163    0.00162697
+              p4      0.989631      0.987579       1.00208   -0.00207788
+              p5        1.3085        1.3129       1.00336    0.00335173
+              p6       1.30973       1.30893       1.00061  -0.000611012
+             lhg  3.95514e-005  3.87165e-005       1.02156    -0.0215631
+             chc       0.08779       0.07159       1.22629     -0.226289
+            nmac     0.0138205     0.0137325       1.00641   -0.00640975
+           mac_r     0.0959611      0.110072       1.14705      0.128198
+             lks       15.2216       14.9804        1.0161    -0.0160985
+             koc           250           250             1             0
+            half        53.778        54.328       1.01023     0.0101237
+              h2             1             1             1             0
+            expr      0.021642      0.021279       1.01706    -0.0170591
+             est           0.6           0.6             1             0
+             rsw       0.33541       0.33541             1             0
+             rst       20.0778       20.0778             1             0
+              ea       50367.6       50367.6             1             0
+             wsm      0.735486      0.735486             1             0
+            mrad             1             1             1             0
+             h_3            15            15             1             0
+       Maximum changes in "Control File" parameters:
+         Maximum relative change = -0.226289   [chc]
+         Maximum factor change = 1.22629   [chc]
+
+    Iteration 2 Parameter Upgrades (Transformed Numeric Parameters) 
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+           sup_1       10.2256            10       1.02256    -0.0225578
+          sup_10       9.90251            10       1.00984    0.00974868
+           sup_2       10.0662            10       1.00662   -0.00662253
+           sup_3       9.63929            10       1.03742     0.0360715
+           sup_4       9.78113            10       1.02238     0.0218865
+           sup_5       10.3067            10       1.03067    -0.0306686
+           sup_6       10.1236            10       1.01236    -0.0123629
+           sup_7       10.1262            10       1.01262     -0.012617
+           sup_8       10.0832            10       1.00832   -0.00832413
+           sup_9       10.0571            10       1.00571   -0.00570788
+       Maximum changes in "Transformed Numeric" parameters:
+         Maximum relative change = 0.0360715   [sup_3]
+         Maximum factor change = 1.03742   [sup_3]
+
+OPTIMISATION ITERATION NUMBER: 3
+
+  Iteration type: super parameter solution
+    SVD Package: Eigen JacobiSVD
+    Matrix Inversion: "Jt Q J"
+    Model calls so far : 52
+
+    Starting phi for this iteration                     Total : 3.78701
+    Contribution to phi from observation group   "water_conc" : 1.97845
+    Contribution to phi from observation group    "soil_conc" : 0.54493
+    Contribution to phi from observation group    "prof_conc" : 0.545162
+    Contribution to phi from observation group    "tile_flow" : 0.718474
+    Number of terms in the jacobian equal to zero: 3107 / 3740 (83%)
+
+    Summary of upgrade runs:
+      Lambda =     0.05; Type: upgrade_run; length = 1.11e+000;   phi = 3.23719 (85.48% of starting phi)
+      Lambda =     0.10; Type: upgrade_run; length = 1.08e+000;   phi = 3.20717 (84.69% of starting phi)
+      Lambda =     0.20; Type: upgrade_run; length = 1.05e+000;   phi = 3.20601 (84.66% of starting phi)
+      Lambda =     1.00; Type: upgrade_run; length = 1.17e+000;   phi = 3.22449 (85.15% of starting phi)
+      Lambda =    10.00; Type: upgrade_run; length = 1.21e+000;   phi = 3.4201 (90.31% of starting phi)
+      Lambda =   100.00; Type: upgrade_run; length = 4.00e-001;   phi = 3.74272 (98.83% of starting phi)
+      Lambda =  1000.00; Type: upgrade_run; length = 5.23e-002;   phi = 3.84641 (101.57% of starting phi)
+
+    Parameters previously frozen in SVD transformation:
+      KOC frozen at 250
+      S21 frozen at 5
+      S26 frozen at 2
+
+    Parameters frozen during upgrades:
+      CHC frozen at 0.1
+
+  Model calls in iteration 3: 18
+  Total model calls at end of iteration 3: 70
+
+
+    Iteration 3 Parameter Upgrades (Control File Parameters) 
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+             s21             5             5             1             0
+             s22       4.66715       4.59817         1.015    -0.0149997
+             s24       4.26505       4.20701        1.0138    -0.0137956
+             s26             2             2             1             0
+             a21     0.0907378     0.0909164       1.00197    0.00196533
+             a22     0.0720373     0.0722738       1.00328    0.00327181
+             a24      0.106233      0.106508       1.00259     0.0025813
+             a26     0.0605042     0.0613163       1.01342     0.0132446
+             c11       4.36946       4.51663       1.03368     0.0325852
+             c12       7.13494       7.21251       1.01087      0.010755
+             c14       11.6773       11.9722       1.02526     0.0246333
+             c16       1.18863       1.18946        1.0007   0.000694602
+              p1      0.998483       1.00276       1.00429    0.00426986
+              p2       1.10385       1.09927       1.00417   -0.00417026
+              p3       1.00309       1.00307       1.00002  -2.00583e-005
+              p4      0.988389      0.989631       1.00126    0.00125546
+              p5       1.30858        1.3085       1.00006  -6.47001e-005
+              p6       1.31139       1.30973       1.00127   -0.00126908
+             lhg  3.80052e-005  3.95514e-005       1.04068     0.0390919
+             chc           0.1       0.08779       1.13908     -0.139082
+            nmac     0.0131895     0.0138205       1.04784     0.0456586
+           mac_r     0.0959493     0.0959611       1.00012   0.000122571
+             lks       15.0272       15.2216       1.01294     0.0127708
+             koc           250           250             1             0
+            half        52.805        53.778       1.01843     0.0180929
+              h2             1             1             1             0
+            expr      0.021628      0.021642       1.00065    0.00064689
+             est           0.6           0.6             1             0
+             rsw       0.33541       0.33541             1             0
+             rst       20.0778       20.0778             1             0
+              ea       50367.6       50367.6             1             0
+             wsm      0.735486      0.735486             1             0
+            mrad             1             1             1             0
+             h_3            15            15             1             0
+       Maximum changes in "Control File" parameters:
+         Maximum relative change = -0.139082   [chc]
+         Maximum factor change = 1.13908   [chc]
+
+    Iteration 3 Parameter Upgrades (Transformed Numeric Parameters) 
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+           sup_1       10.2825       10.2256       1.00557   -0.00556616
+          sup_10       10.0541       9.90251        1.0153    -0.0153045
+           sup_2        10.032       10.0662       1.00341    0.00339892
+           sup_3        9.3958       9.63929       1.02591       0.02526
+           sup_4       9.88648       9.78113       1.01077    -0.0107701
+           sup_5       10.2323       10.3067       1.00727     0.0072141
+           sup_6       10.1053       10.1236       1.00181    0.00181155
+           sup_7       10.1555       10.1262        1.0029   -0.00290013
+           sup_8       10.0457       10.0832       1.00374    0.00372306
+           sup_9       10.0022       10.0571       1.00548    0.00545463
+       Maximum changes in "Transformed Numeric" parameters:
+         Maximum relative change = 0.02526   [sup_3]
+         Maximum factor change = 1.02591   [sup_3]
+
+OPTIMISATION ITERATION NUMBER: 4
+
+  Iteration type: super parameter solution
+    SVD Package: Eigen JacobiSVD
+    Matrix Inversion: "Jt Q J"
+    Model calls so far : 70
+
+    Starting phi for this iteration                     Total : 3.20601
+    Contribution to phi from observation group   "water_conc" : 1.40176
+    Contribution to phi from observation group    "soil_conc" : 0.546299
+    Contribution to phi from observation group    "prof_conc" : 0.55044
+    Contribution to phi from observation group    "tile_flow" : 0.707509
+    Number of terms in the jacobian equal to zero: 3042 / 3740 (81%)
+
+    Summary of upgrade runs:
+      Lambda =     0.10; Type: upgrade_run; length = 4.46e+000;   phi = 3.364 (104.93% of starting phi)
+      Lambda =     0.20; Type: upgrade_run; length = 2.61e+000;   phi = 3.31071 (103.27% of starting phi)
+      Lambda =     0.40; Type: upgrade_run; length = 1.40e+000;   phi = 3.28138 (102.35% of starting phi)
+      Lambda =     1.00; Type: upgrade_run; length = 5.62e-001;   phi = 3.28384 (102.43% of starting phi)
+      Lambda =    10.00; Type: upgrade_run; length = 4.98e-002;   phi = 3.21235 (100.20% of starting phi)
+      Lambda =   100.00; Type: upgrade_run; length = 1.09e-002;   phi = 3.20522 (99.98% of starting phi)
+      Lambda =  1000.00; Type: upgrade_run; length = 1.23e-002;   phi = 3.20589 (100.00% of starting phi)
+
+    Parameters previously frozen in SVD transformation:
+      CHC frozen at 0.1
+      KOC frozen at 250
+      S21 frozen at 5
+      S26 frozen at 2
+
+      Switching to central derivatives:
+
+  Model calls in iteration 4: 18
+  Total model calls at end of iteration 4: 88
+
+
+    Iteration 4 Parameter Upgrades (Control File Parameters) 
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+             s21             5             5             1             0
+             s22       4.66442       4.66715       1.00058   0.000583195
+             s24       4.27017       4.26505        1.0012   -0.00119958
+             s26             2             2             1             0
+             a21     0.0907264     0.0907378       1.00013    0.00012568
+             a22     0.0720629     0.0720373       1.00036  -0.000355774
+             a24      0.106312      0.106233       1.00074  -0.000744645
+             a26     0.0603905     0.0605042       1.00188    0.00187942
+             c11       4.37243       4.36946       1.00068  -0.000681405
+             c12       7.14105       7.13494       1.00086   -0.00085682
+             c14       11.6832       11.6773       1.00051  -0.000510839
+             c16       1.18739       1.18863       1.00104    0.00104263
+              p1      0.999147      0.998483       1.00066  -0.000664594
+              p2         1.104       1.10385       1.00014  -0.000136422
+              p3       1.00312       1.00309       1.00002  -2.16231e-005
+              p4      0.988184      0.988389       1.00021    0.00020773
+              p5       1.30865       1.30858       1.00005  -4.81054e-005
+              p6       1.31097       1.31139       1.00032     0.0003214
+             lhg  3.79777e-005  3.80052e-005       1.00073   0.000725821
+             chc           0.1           0.1             1             0
+            nmac      0.013173     0.0131895       1.00125    0.00124806
+           mac_r     0.0957642     0.0959493       1.00193    0.00192957
+             lks       15.0276       15.0272       1.00003  -2.6496e-005
+             koc           250           250             1             0
+            half        52.806        52.805       1.00002  -1.89376e-005
+              h2             1             1             1             0
+            expr      0.021621      0.021628       1.00032   0.000323655
+             est           0.6           0.6             1             0
+             rsw       0.33541       0.33541             1             0
+             rst       20.0778       20.0778             1             0
+              ea       50367.6       50367.6             1             0
+             wsm      0.735486      0.735486             1             0
+            mrad             1             1             1             0
+             h_3            15            15             1             0
+       Maximum changes in "Control File" parameters:
+         Maximum relative change = 0.00192957   [mac_r]
+         Maximum factor change = 1.00193   [mac_r]
+
+    Iteration 4 Parameter Upgrades (Transformed Numeric Parameters) 
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+           sup_1       9.85927       9.86011       1.00008  8.49414e-005
+          sup_10       10.0539       10.0538       1.00001  -1.14299e-005
+           sup_2       10.0939       10.0943       1.00003  3.33915e-005
+           sup_3       9.67385       9.67421       1.00004  3.72361e-005
+           sup_4       10.2091       10.2087       1.00004  -3.64479e-005
+           sup_5       10.0141       10.0146       1.00005  5.21898e-005
+           sup_6       10.0095       10.0095       1.00001  9.10615e-006
+           sup_7        10.184        10.184             1  1.50067e-006
+           sup_8        10.008       10.0083       1.00003  3.33395e-005
+           sup_9       9.98277       9.98251       1.00003  -2.55147e-005
+       Maximum changes in "Transformed Numeric" parameters:
+         Maximum relative change = 8.49414e-005   [sup_1]
+         Maximum factor change = 1.00008   [sup_1]
+
+OPTIMISATION ITERATION NUMBER: 5
+
+  Iteration type: super parameter solution
+    SVD Package: Eigen JacobiSVD
+    Matrix Inversion: "Jt Q J"
+    Model calls so far : 88
+
+    Starting phi for this iteration                     Total : 3.20522
+    Contribution to phi from observation group   "water_conc" : 1.40247
+    Contribution to phi from observation group    "soil_conc" : 0.546109
+    Contribution to phi from observation group    "prof_conc" : 0.550435
+    Contribution to phi from observation group    "tile_flow" : 0.706209
+    Number of terms in the jacobian equal to zero: 1280 / 3740 (34%)
+
+    Summary of upgrade runs:
+      Lambda =     0.10; Type: upgrade_run; length = 6.43e+000;   phi = 2.24734 (70.11% of starting phi)
+      Lambda =     1.00; Type: upgrade_run; length = 1.35e+000;   phi = 2.40165 (74.93% of starting phi)
+      Lambda =    10.00; Type: upgrade_run; length = 1.04e-001;   phi = 2.98677 (93.18% of starting phi)
+      Lambda =    50.00; Type: upgrade_run; length = 2.06e-002;   phi = 3.16377 (98.71% of starting phi)
+      Lambda =   100.00; Type: upgrade_run; length = 1.03e-002;   phi = 3.20803 (100.09% of starting phi)
+      Lambda =   200.00; Type: upgrade_run; length = 5.19e-003;   phi = 3.20701 (100.06% of starting phi)
+      Lambda =  1000.00; Type: upgrade_run; length = 1.04e-003;   phi = 3.20713 (100.06% of starting phi)
+
+    Parameters previously frozen in SVD transformation:
+      CHC frozen at 0.1
+      KOC frozen at 250
+      S21 frozen at 5
+      S26 frozen at 2
+
+    Parameters frozen during upgrades:
+      C11 frozen at 5
+
+  Model calls in iteration 5: 28
+  Total model calls at end of iteration 5: 116
+
+
+    Iteration 5 Parameter Upgrades (Control File Parameters) 
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+             s21             5             5             1             0
+             s22       4.97205       4.66442       1.06595    -0.0659525
+             s24       4.22474       4.27017       1.01075     0.0106386
+             s26             2             2             1             0
+             a21     0.0898973     0.0907264       1.00922    0.00913856
+             a22     0.0726591     0.0720629       1.00827    -0.0082724
+             a24      0.106756      0.106312       1.00418   -0.00418106
+             a26     0.0604721     0.0603905       1.00135   -0.00135215
+             c11             5       4.37243       1.14353     -0.143528
+             c12       7.51462       7.14105       1.05231    -0.0523121
+             c14       11.3696       11.6832       1.02759     0.0268474
+             c16       1.28047       1.18739       1.07839    -0.0783865
+              p1       1.01015      0.999147       1.01101    -0.0110107
+              p2       1.12128         1.104       1.01565    -0.0156485
+              p3       1.00585       1.00312       1.00272   -0.00272297
+              p4      0.987896      0.988184       1.00029   0.000290703
+              p5       1.31615       1.30865       1.00573   -0.00573465
+              p6       1.31729       1.31097       1.00482   -0.00481952
+             lhg  3.80255e-005  3.79777e-005       1.00126   -0.00125903
+             chc           0.1           0.1             1             0
+            nmac     0.0180075      0.013173       1.36699     -0.366994
+           mac_r     0.0983616     0.0957642       1.02712    -0.0271237
+             lks       13.0829       15.0276       1.14864      0.129405
+             koc           250           250             1             0
+            half         58.87        52.806       1.11484     -0.114835
+              h2             1             1             1             0
+            expr      0.022351      0.021621       1.03376    -0.0337635
+             est           0.6           0.6             1             0
+             rsw       0.33541       0.33541             1             0
+             rst       20.0778       20.0778             1             0
+              ea       50367.6       50367.6             1             0
+             wsm      0.735486      0.735486             1             0
+            mrad             1             1             1             0
+             h_3            15            15             1             0
+       Maximum changes in "Control File" parameters:
+         Maximum relative change = -0.366994   [nmac]
+         Maximum factor change = 1.36699   [nmac]
+
+    Iteration 5 Parameter Upgrades (Transformed Numeric Parameters) 
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+           sup_1        10.518       9.85927       1.06682    -0.0668154
+          sup_10       10.3401       10.0539       1.02846    -0.0284619
+           sup_2       9.90876       10.0939       1.01869     0.0183455
+           sup_3        9.9139       9.67385       1.02481    -0.0248149
+           sup_4       10.3356       10.2091        1.0124     -0.012396
+           sup_5       9.62609       10.0141        1.0403     0.0387424
+           sup_6       9.75522       10.0095       1.02606     0.0253994
+           sup_7       10.1453        10.184       1.00382    0.00380132
+           sup_8       9.58182        10.008       1.04448     0.0425817
+           sup_9       10.0731       9.98277       1.00905   -0.00905246
+       Maximum changes in "Transformed Numeric" parameters:
+         Maximum relative change = -0.0668154   [sup_1]
+         Maximum factor change = 1.06682   [sup_1]
+
+OPTIMISATION ITERATION NUMBER: 6
+
+  Iteration type: super parameter solution
+    SVD Package: Eigen JacobiSVD
+    Matrix Inversion: "Jt Q J"
+    Model calls so far : 116
+
+    Starting phi for this iteration                     Total : 2.24734
+    Contribution to phi from observation group   "water_conc" : 0.551112
+    Contribution to phi from observation group    "soil_conc" : 0.513475
+    Contribution to phi from observation group    "prof_conc" : 0.517582
+    Contribution to phi from observation group    "tile_flow" : 0.665169
+    Number of terms in the jacobian equal to zero: 1290 / 3740 (34%)
+
+    Summary of upgrade runs:
+      Lambda =     0.05; Type: upgrade_run; length = 3.39e+000;   phi = 2.23326 (99.37% of starting phi)
+      Lambda =     0.10; Type: upgrade_run; length = 2.37e+000;   phi = 2.23698 (99.54% of starting phi)
+      Lambda =     0.20; Type: upgrade_run; length = 1.53e+000;   phi = 2.24149 (99.74% of starting phi)
+      Lambda =     1.00; Type: upgrade_run; length = 4.31e-001;   phi = 2.24837 (100.05% of starting phi)
+      Lambda =    10.00; Type: upgrade_run; length = 4.82e-002;   phi = 2.24446 (99.87% of starting phi)
+      Lambda =   100.00; Type: upgrade_run; length = 5.91e-003;   phi = 2.24602 (99.94% of starting phi)
+      Lambda =  1000.00; Type: upgrade_run; length = 3.56e-003;   phi = 2.24732 (100.00% of starting phi)
+
+    Parameters previously frozen in SVD transformation:
+      C11 frozen at 5
+      CHC frozen at 0.1
+      KOC frozen at 250
+      S21 frozen at 5
+      S26 frozen at 2
+
+  Model calls in iteration 6: 28
+  Total model calls at end of iteration 6: 144
+
+
+    Iteration 6 Parameter Upgrades (Control File Parameters) 
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+             s21             5             5             1             0
+             s22       5.13667       4.97205       1.03311    -0.0331082
+             s24       4.20717       4.22474       1.00418    0.00415995
+             s26             2             2             1             0
+             a21     0.0893232     0.0898973       1.00643    0.00638625
+             a22     0.0721608     0.0726591       1.00691      0.006858
+             a24       0.10653      0.106756       1.00212     0.0021192
+             a26     0.0587107     0.0604721          1.03     0.0291277
+             c11             5             5             1             0
+             c12       7.50237       7.51462       1.00163    0.00162915
+             c14       10.8387       11.3696       1.04898     0.0466917
+             c16       1.09865       1.28047        1.1655      0.141997
+              p1       1.00292       1.01015       1.00721    0.00715854
+              p2       1.11945       1.12128       1.00163    0.00162776
+              p3       1.00606       1.00585       1.00021  -0.000212975
+              p4      0.985553      0.987896       1.00238    0.00237247
+              p5       1.31676       1.31615       1.00046  -0.000464088
+              p6       1.31194       1.31729       1.00408    0.00405983
+             lhg  3.50977e-005  3.80255e-005       1.08342     0.0769954
+             chc           0.1           0.1             1             0
+            nmac     0.0188657     0.0180075       1.04766    -0.0476582
+           mac_r      0.100681     0.0983616       1.02358    -0.0235801
+             lks       12.6011       13.0829       1.03824     0.0368325
+             koc           250           250             1             0
+            half        62.175         58.87       1.05614    -0.0561406
+              h2             1             1             1             0
+            expr      0.020934      0.022351       1.06769     0.0633976
+             est           0.6           0.6             1             0
+             rsw       0.33541       0.33541             1             0
+             rst       20.0778       20.0778             1             0
+              ea       50367.6       50367.6             1             0
+             wsm      0.735486      0.735486             1             0
+            mrad             1             1             1             0
+             h_3            15            15             1             0
+       Maximum changes in "Control File" parameters:
+         Maximum relative change = 0.141997   [c16]
+         Maximum factor change = 1.1655   [c16]
+
+    Iteration 6 Parameter Upgrades (Transformed Numeric Parameters) 
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+           sup_1       10.3897        10.372        1.0017   -0.00170261
+          sup_10        10.597       10.3343       1.02542    -0.0254185
+           sup_2       9.83791       9.91524       1.00786    0.00779897
+           sup_3       10.0139        9.9505       1.00638   -0.00637663
+           sup_4       10.2425        10.323       1.00786    0.00780125
+           sup_5       9.43792       9.68458       1.02614     0.0254702
+           sup_6       9.74284       9.86195       1.01223     0.0120777
+           sup_7       9.87886       10.3597       1.04867     0.0464153
+           sup_8       9.47506       9.59261       1.01241     0.0122542
+           sup_9       10.0352       9.99277       1.00425   -0.00424573
+       Maximum changes in "Transformed Numeric" parameters:
+         Maximum relative change = 0.0464153   [sup_7]
+         Maximum factor change = 1.04867   [sup_7]
+
+OPTIMISATION ITERATION NUMBER: 7
+
+  Iteration type: base parameter solution
+    SVD Package: Eigen JacobiSVD
+    Matrix Inversion: "Jt Q J"
+    Model calls so far : 144
+
+    Starting phi for this iteration                     Total : 2.23326
+    Contribution to phi from observation group   "water_conc" : 0.570468
+    Contribution to phi from observation group    "soil_conc" : 0.507494
+    Contribution to phi from observation group    "prof_conc" : 0.507291
+    Contribution to phi from observation group    "tile_flow" : 0.648012
+    Number of terms in the jacobian equal to zero: 4486 / 9724 (46%)
+
+    Summary of upgrade runs:
+      Lambda =     0.05; Type: upgrade_run; length = 5.95e+000;  phi = 2.24972 (100.74% of starting phi)
+      Lambda =     0.10; Type: upgrade_run; length = 4.46e+000;  phi = 2.27301 (101.78% of starting phi)
+      Lambda =     0.20; Type: upgrade_run; length = 3.13e+000;  phi = 2.24261 (100.42% of starting phi)
+      Lambda =     1.00; Type: upgrade_run; length = 9.91e-001;  phi = 2.24269 (100.42% of starting phi)
+      Lambda =    10.00; Type: upgrade_run; length = 1.30e-001;  phi = 2.24469 (100.51% of starting phi)
+      Lambda =   100.00; Type: upgrade_run; length = 1.50e-002;  phi = 2.23692 (100.16% of starting phi)
+      Lambda =  1000.00; Type: upgrade_run; length = 2.00e-003;  phi = 2.23348 (100.01% of starting phi)
+
+    Parameters frozen during best upgrade:
+      C11 frozen at 5
+      CHC frozen at 0.1
+      KOC frozen at 250
+      S21 frozen at 5
+      S26 frozen at 2
+
+  Model calls in iteration 7: 59
+  Total model calls at end of iteration 7: 203
+
+
+    Iteration 7 Parameter Upgrades (Control File Parameters) 
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+             s21             5             5             1             0
+             s22        5.1367       5.13667       1.00001  -5.27599e-006
+             s24       4.20714       4.20717       1.00001  5.95294e-006
+             s26             2             2             1             0
+             a21     0.0893231     0.0893232             1  7.01946e-007
+             a22     0.0721608     0.0721608             1  -2.21727e-007
+             a24       0.10653       0.10653             1  -8.26057e-008
+             a26     0.0587105     0.0587107             1  3.55642e-006
+             c11             5             5             1             0
+             c12       7.50232       7.50237       1.00001  7.02711e-006
+             c14       10.8387       10.8387             1  -2.21429e-007
+             c16       1.09864       1.09865       1.00001  6.80839e-006
+              p1       1.00292       1.00292             1  1.17657e-006
+              p2       1.11945       1.11945             1  1.73299e-006
+              p3       1.00606       1.00606             1  -2.98193e-007
+              p4      0.985553      0.985553             1  -1.1973e-007
+              p5       1.31676       1.31676             1  5.31607e-008
+              p6       1.31194       1.31194             1  -9.14678e-008
+             lhg  3.50993e-005  3.50977e-005       1.00005  -4.5815e-005
+             chc           0.1           0.1             1             0
+            nmac     0.0188654     0.0188657       1.00001  1.15872e-005
+           mac_r      0.100681      0.100681             1  -2.48309e-006
+             lks       12.6011       12.6011       1.00001  -5.80904e-006
+             koc           250           250             1             0
+            half        62.173        62.175       1.00003  3.21673e-005
+              h2             1             1             1             0
+            expr      0.020934      0.020934             1             0
+             est           0.6           0.6             1             0
+             rsw       0.33541       0.33541             1             0
+             rst       20.0778       20.0778             1             0
+              ea       50367.6       50367.6             1             0
+             wsm      0.735486      0.735486             1             0
+            mrad             1             1             1             0
+             h_3            15            15             1             0
+       Maximum changes in "Control File" parameters:
+         Maximum relative change = -4.5815e-005   [lhg]
+         Maximum factor change = 1.00005   [lhg]
+
+    Iteration 7 Parameter Upgrades (Transformed Numeric Parameters) 
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+             a21      0.733747      0.733755       1.00001  1.07285e-005
+             a22      0.566059      0.566055       1.00001  -5.44637e-006
+             a24      0.825418      0.825417             1  -9.87286e-007
+             a26      -1.07324      -1.07322       1.00002  -1.91232e-005
+             c11             2             2             1             0
+             c12      0.745496      0.745527       1.00004  4.11473e-005
+             c14       1.23883       1.23883             1  -7.48248e-007
+             c16      -1.74283      -1.74281       1.00001  -9.64889e-006
+             chc             2             2             1             0
+            expr      0.689901      0.689901             1             0
+            half      0.971867      0.971998       1.00013   0.000134965
+             koc             2             2             1             0
+             lhg       1.85828       1.85823       1.00003  -2.6734e-005
+             lks      0.667106      0.667089       1.00003  -2.5126e-005
+           mac_r       1.00916       1.00915       1.00001  -6.11536e-006
+            nmac      0.137536      0.137554       1.00014   0.000135599
+              p1       0.23008      0.230091       1.00005  5.04457e-005
+              p2       1.31453       1.31455       1.00001  1.30055e-005
+              p3      0.220627      0.220621       1.00003  -2.69417e-005
+              p4     -0.189915     -0.189917       1.00001  1.25665e-005
+              p5     -0.708927     -0.708926             1  -1.04265e-006
+              p6      0.272345      0.272344             1  -4.33143e-006
+             s21             2             2             1             0
+             s22       1.10351       1.10348       1.00003  -2.75912e-005
+             s24      0.707547      0.707569       1.00003  3.06323e-005
+             s26            -2            -2             1            -0
+       Maximum changes in "Transformed Numeric" parameters:
+         Maximum relative change = 0.000135599   [nmac]
+         Maximum factor change = 1.00014   [nmac]
+
+OPTIMISATION ITERATION NUMBER: 8
+
+  Iteration type: super parameter solution
+    SVD Package: Eigen JacobiSVD
+    Matrix Inversion: "Jt Q J"
+    Model calls so far : 203
+
+    Starting phi for this iteration                     Total : 2.23348
+    Contribution to phi from observation group   "water_conc" : 0.570468
+    Contribution to phi from observation group    "soil_conc" : 0.507523
+    Contribution to phi from observation group    "prof_conc" : 0.507346
+    Contribution to phi from observation group    "tile_flow" : 0.648143
+    Number of terms in the jacobian equal to zero: 1277 / 3740 (34%)
+
+    Summary of upgrade runs:
+      Lambda =     0.10; Type: upgrade_run; length = 3.42e+000;   phi = 2.23919 (100.26% of starting phi)
+      Lambda =     1.00; Type: upgrade_run; length = 1.23e+000;   phi = 2.23623 (100.12% of starting phi)
+      Lambda =    10.00; Type: upgrade_run; length = 1.92e-001;   phi = 2.23554 (100.09% of starting phi)
+      Lambda =    20.00; Type: upgrade_run; length = 9.93e-002;   phi = 2.23693 (100.15% of starting phi)
+      Lambda =    40.00; Type: upgrade_run; length = 5.02e-002;   phi = 2.23685 (100.15% of starting phi)
+      Lambda =   100.00; Type: upgrade_run; length = 2.01e-002;   phi = 2.2344 (100.04% of starting phi)
+      Lambda =  1000.00; Type: upgrade_run; length = 2.01e-003;   phi = 2.23852 (100.23% of starting phi)
+
+    Parameters previously frozen in SVD transformation:
+      C11 frozen at 5
+      CHC frozen at 0.1
+      KOC frozen at 250
+      S21 frozen at 5
+      S26 frozen at 2
+
+  Model calls in iteration 8: 28
+  Total model calls at end of iteration 8: 231
+
+
+    Iteration 8 Parameter Upgrades (Control File Parameters) 
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+             s21             5             5             1             0
+             s22       5.13651        5.1367       1.00004  3.68607e-005
+             s24       4.20691       4.20714       1.00005  5.46694e-005
+             s26             2             2             1             0
+             a21     0.0893253     0.0893231       1.00003  -2.51212e-005
+             a22     0.0721605     0.0721608             1  3.45894e-006
+             a24      0.106524       0.10653       1.00006  5.69547e-005
+             a26     0.0587047     0.0587105        1.0001  9.82805e-005
+             c11             5             5             1             0
+             c12       7.50332       7.50232       1.00013  -0.000133571
+             c14       10.8386       10.8387       1.00001  6.68899e-006
+             c16       1.09861       1.09864       1.00003   2.6187e-005
+              p1       1.00292       1.00292             1  -2.49273e-007
+              p2       1.11948       1.11945       1.00003  -2.76564e-005
+              p3       1.00605       1.00606       1.00001  7.50451e-006
+              p4      0.985547      0.985553       1.00001  5.38784e-006
+              p5       1.31676       1.31676       1.00001  5.05026e-006
+              p6       1.31193       1.31194             1    3.552e-006
+             lhg  3.51107e-005  3.50993e-005       1.00032  -0.000323938
+             chc           0.1           0.1             1             0
+            nmac     0.0188729     0.0188654        1.0004  -0.000395999
+           mac_r      0.100641      0.100681        1.0004   0.000404087
+             lks       12.6027       12.6011       1.00012  -0.000123414
+             koc           250           250             1             0
+            half        62.153        62.173       1.00032   0.000321683
+              h2             1             1             1             0
+            expr      0.020936      0.020934        1.0001  -9.55384e-005
+             est           0.6           0.6             1             0
+             rsw       0.33541       0.33541             1             0
+             rst       20.0778       20.0778             1             0
+              ea       50367.6       50367.6             1             0
+             wsm      0.735486      0.735486             1             0
+            mrad             1             1             1             0
+             h_3            15            15             1             0
+       Maximum changes in "Control File" parameters:
+         Maximum relative change = 0.000404087   [mac_r]
+         Maximum factor change = 1.0004   [mac_r]
+
+    Iteration 8 Parameter Upgrades (Transformed Numeric Parameters) 
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+           sup_1       10.0007            10       1.00007  -6.64934e-005
+          sup_10       10.0005            10       1.00005  -4.60324e-005
+           sup_2       10.0003            10       1.00003  -2.51309e-005
+           sup_3       9.99945            10       1.00005  5.47718e-005
+           sup_4       9.99884            10       1.00012    0.00011628
+           sup_5       9.99861            10       1.00014   0.000138853
+           sup_6       9.99991            10       1.00001  8.85534e-006
+           sup_7       9.99937            10       1.00006  6.32372e-005
+           sup_8        9.9998            10       1.00002  2.03888e-005
+           sup_9       10.0001            10       1.00001  -1.42022e-005
+       Maximum changes in "Transformed Numeric" parameters:
+         Maximum relative change = 0.000138853   [sup_5]
+         Maximum factor change = 1.00014   [sup_5]
+
+OPTIMISATION ITERATION NUMBER: 9
+
+  Iteration type: super parameter solution
+    SVD Package: Eigen JacobiSVD
+    Matrix Inversion: "Jt Q J"
+    Model calls so far : 231
+
+    Starting phi for this iteration                     Total : 2.2344
+    Contribution to phi from observation group   "water_conc" : 0.571556
+    Contribution to phi from observation group    "soil_conc" : 0.507439
+    Contribution to phi from observation group    "prof_conc" : 0.507349
+    Contribution to phi from observation group    "tile_flow" : 0.648058
+    Number of terms in the jacobian equal to zero: 1276 / 3740 (34%)
+
+    Summary of upgrade runs:
+      Lambda =     0.10; Type: upgrade_run; length = 1.33e+000;   phi = 2.22581 (99.62% of starting phi)
+      Lambda =     1.00; Type: upgrade_run; length = 4.43e-001;   phi = 2.23818 (100.17% of starting phi)
+      Lambda =    10.00; Type: upgrade_run; length = 6.17e-002;   phi = 2.23833 (100.18% of starting phi)
+      Lambda =    50.00; Type: upgrade_run; length = 1.32e-002;   phi = 2.23671 (100.10% of starting phi)
+      Lambda =   100.00; Type: upgrade_run; length = 6.14e-003;   phi = 2.23349 (99.96% of starting phi)
+      Lambda =   200.00; Type: upgrade_run; length = 3.07e-003;   phi = 2.23806 (100.16% of starting phi)
+      Lambda =  1000.00; Type: upgrade_run; length = 1.01e-003;   phi = 2.23826 (100.17% of starting phi)
+
+    Parameters previously frozen in SVD transformation:
+      C11 frozen at 5
+      CHC frozen at 0.1
+      KOC frozen at 250
+      S21 frozen at 5
+      S26 frozen at 2
+
+  Model calls in iteration 9: 28
+  Total model calls at end of iteration 9: 259
+
+
+    Iteration 9 Parameter Upgrades (Control File Parameters) 
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+             s21             5             5             1             0
+             s22       5.08067       5.13651       1.01099     0.0108698
+             s24       4.26985       4.20691       1.01496    -0.0149612
+             s26             2             2             1             0
+             a21     0.0888349     0.0893253       1.00552    0.00549085
+             a22     0.0724181     0.0721605       1.00357   -0.00356918
+             a24      0.107428      0.106524       1.00849   -0.00848952
+             a26     0.0597549     0.0587047       1.01789     -0.017888
+             c11             5             5             1             0
+             c12       7.49993       7.50332       1.00045   0.000451884
+             c14       10.8406       10.8386       1.00018  -0.000177319
+             c16       1.07593       1.09861       1.02107     0.0206394
+              p1       1.00526       1.00292       1.00234   -0.00234048
+              p2       1.11709       1.11948       1.00214    0.00213814
+              p3       1.00623       1.00605       1.00017  -0.000174384
+              p4      0.985625      0.985547       1.00008  -7.89592e-005
+              p5       1.31771       1.31676       1.00072  -0.000721531
+              p6       1.31368       1.31193       1.00134   -0.00133526
+             lhg  3.70076e-005  3.51107e-005       1.05403    -0.0540275
+             chc           0.1           0.1             1             0
+            nmac     0.0189331     0.0188729       1.00319   -0.00318946
+           mac_r     0.0965376      0.100641        1.0425     0.0407691
+             lks       12.2747       12.6027       1.02672     0.0260275
+             koc           250           250             1             0
+            half        60.866        62.153       1.02114      0.020707
+              h2             1             1             1             0
+            expr      0.020683      0.020936       1.01223     0.0120844
+             est           0.6           0.6             1             0
+             rsw       0.33541       0.33541             1             0
+             rst       20.0778       20.0778             1             0
+              ea       50367.6       50367.6             1             0
+             wsm      0.735486      0.735486             1             0
+            mrad             1             1             1             0
+             h_3            15            15             1             0
+       Maximum changes in "Control File" parameters:
+         Maximum relative change = -0.0540275   [lhg]
+         Maximum factor change = 1.05403   [lhg]
+
+    Iteration 9 Parameter Upgrades (Transformed Numeric Parameters) 
+      Parameter     Current       Previous       Factor       Relative
+        Name         Value         Value         Change        Change
+      ----------  ------------  ------------  ------------  ------------
+           sup_1       9.99139       10.0007       1.00093   0.000927421
+          sup_10        9.8696       10.0005       1.01326     0.0130859
+           sup_2       9.98605       10.0003       1.00142     0.0014201
+           sup_3       9.92509       9.99945       1.00749    0.00743707
+           sup_4       9.83838       9.99884       1.01631     0.0160472
+           sup_5        10.092       9.99861       1.00934   -0.00934168
+           sup_6       9.94193       9.99991       1.00583    0.00579792
+           sup_7       9.95108       9.99937       1.00485    0.00482951
+           sup_8       9.98433        9.9998       1.00155    0.00154639
+           sup_9       10.0177       10.0001       1.00175    -0.0017534
+       Maximum changes in "Transformed Numeric" parameters:
+         Maximum relative change = 0.0160472   [sup_4]
+         Maximum factor change = 1.01631   [sup_4]
+
+-----------------------------------------
+     ---   OPTIMIZATION COMPLETE   ---   
+  Reason for terminating PEST++ simulation: PHIREDSTP / NPHISTP criterion met
+  Summary of termination criteria:
+  NOPTMAX = 30 ;  NOPT at termination = 9
+  NPHINORED = 4 ;  NPHINORED at termination = 0
+  NRELPAR = 4; RELPARSTP = 0.005 ;  NRELPAR at termination = 0
+  PHIREDSTP = 0.005; NPHISTP = 4
+  NPHISTP lowest PHI's:
+        2.22581
+        2.23326
+        2.23348
+        2.2344
+
+FINAL OPTIMISATION RESULTS
+
+  Optimal parameter values  
+
+     Parameter            
+        Name         Value
+    ------------  ------------
+    s21                      5
+    s22                5.08067
+    s24                4.26985
+    s26                      2
+    a21              0.0888349
+    a22              0.0724181
+    a24               0.107428
+    a26              0.0597549
+    c11                      5
+    c12                7.49993
+    c14                10.8406
+    c16                1.07593
+    p1                 1.00526
+    p2                 1.11709
+    p3                 1.00623
+    p4                0.985625
+    p5                 1.31771
+    p6                 1.31368
+    lhg           3.70076e-005
+    chc                    0.1
+    nmac             0.0189331
+    mac_r            0.0965376
+    lks                12.2747
+    koc                    250
+    half                60.866
+    h2                       1
+    expr              0.020683
+    est                    0.6
+    rsw                0.33541
+    rst                20.0778
+    ea                 50367.6
+    wsm               0.735486
+    mrad                     1
+    h_3                     15
+
+
+  Observations with optimal model-simulated equivalents and residuals
+                 Name        Group             Measured             Modelled             Residual               Weight
+                   c1   water_conc             0.000000             0.000000             0.000000              80.0000
+                   c2   water_conc           0.00100000          0.000100000          0.000900000              80.0000
+                   c3   water_conc           0.00100000             0.000000           0.00100000              80.0000
+                   c4   water_conc           0.00100000             0.000000           0.00100000              80.0000
+                   c5   water_conc           0.00100000             0.000000           0.00100000              80.0000
+                   c6   water_conc           0.00100000             0.000000           0.00100000              80.0000
+                   c7   water_conc           0.00100000             0.000000           0.00100000              80.0000
+                   c8   water_conc           0.00100000             0.000000           0.00100000              80.0000
+                   c9   water_conc           0.00200000             0.000000           0.00200000              80.0000
+                  c10   water_conc           0.00300000           0.00190000           0.00110000              40.0000
+                  c11   water_conc           0.00200000           0.00110000          0.000900000              80.0000
+                  c12   water_conc           0.00300000             0.000000           0.00300000              80.0000
+                  c13   water_conc           0.00300000             0.000000           0.00300000              80.0000
+                  c14   water_conc           0.00200000          0.000300000           0.00170000              80.0000
+                  c15   water_conc             0.000000          0.000600000         -0.000600000              80.0000
+                  c16   water_conc           0.00100000          0.000100000          0.000900000              80.0000
+                  c17   water_conc           0.00100000             0.000000           0.00100000              80.0000
+                  c18   water_conc           0.00100000             0.000000           0.00100000              80.0000
+                  c19   water_conc             0.000000             0.000000             0.000000              80.0000
+                  c20   water_conc             0.000000             0.000000             0.000000              80.0000
+                  c21   water_conc             0.000000             0.000000             0.000000              80.0000
+                  c22   water_conc             0.000000             0.000000             0.000000              80.0000
+                  c23   water_conc             0.000000             0.000000             0.000000              80.0000
+                  c24   water_conc             0.000000             0.000000             0.000000              80.0000
+                  c25   water_conc             0.000000             0.000000             0.000000              80.0000
+                  c26   water_conc             0.000000             0.000000             0.000000              80.0000
+                  c27   water_conc             0.000000             0.000000             0.000000              80.0000
+                  c28   water_conc             0.000000             0.000000             0.000000              80.0000
+                  c29   water_conc          0.000500000          0.000100000          0.000400000              80.0000
+                  c30   water_conc          0.000900000          0.000900000             0.000000              260.000
+                  c31   water_conc          0.000800000           0.00160000         -0.000800000              260.000
+                  c32   water_conc           0.00530000           0.00130000           0.00400000              80.0000
+                  c33   water_conc           0.00130000           0.00150000         -0.000200000              80.0000
+                  c34   water_conc           0.00260000           0.00230000          0.000300000              80.0000
+                  c35   water_conc           0.00400000           0.00350000          0.000500000              80.0000
+                  c36   water_conc             -99.0000           0.00140000             -99.0014             0.000000
+                  c37   water_conc           0.00140000             0.000000           0.00140000              80.0000
+                  c38   water_conc             -99.0000             0.000000             -99.0000             0.000000
+                  c39   water_conc             -99.0000           0.00140000             -99.0014             0.000000
+                  c40   water_conc             0.000000           0.00150000          -0.00150000              80.0000
+                  c41   water_conc          0.000500000          0.000700000         -0.000200000              80.0000
+                  c42   water_conc          0.000500000             0.000000          0.000500000              80.0000
+                  c43   water_conc          0.000300000             0.000000          0.000300000              80.0000
+                  c44   water_conc          0.000600000             0.000000          0.000600000              80.0000
+                  c45   water_conc          0.000600000             0.000000          0.000600000              80.0000
+                  c46   water_conc             0.000000             0.000000             0.000000              80.0000
+                  c47   water_conc          0.000900000             0.000000          0.000900000              80.0000
+                  c48   water_conc          0.000500000             0.000000          0.000500000              80.0000
+                  c49   water_conc          0.000600000             0.000000          0.000600000              80.0000
+                  c50   water_conc             -99.0000             0.000000             -99.0000             0.000000
+                  c51   water_conc          0.000700000             0.000000          0.000700000              80.0000
+                  c52   water_conc          0.000500000             0.000000          0.000500000              80.0000
+                  c53   water_conc             0.000000             0.000000             0.000000              80.0000
+                  c54   water_conc          0.000400000             0.000000          0.000400000              80.0000
+                  c55   water_conc          0.000600000             0.000000          0.000600000              80.0000
+                  c56   water_conc          0.000600000             0.000000          0.000600000              80.0000
+                  c57   water_conc             -99.0000             0.000000             -99.0000             0.000000
+                  c58   water_conc             -99.0000           0.00120000             -99.0012             0.000000
+                  c59   water_conc          0.000300000           0.00120000         -0.000900000              80.0000
+                  c60   water_conc             0.000000           0.00120000          -0.00120000              80.0000
+                  c61   water_conc          0.000400000           0.00120000         -0.000800000              80.0000
+                  c62   water_conc             0.000000           0.00110000          -0.00110000              80.0000
+                  c63   water_conc          0.000700000           0.00110000         -0.000400000              80.0000
+                  c64   water_conc          0.000900000           0.00110000         -0.000200000              80.0000
+                  c65   water_conc          0.000600000           0.00110000         -0.000500000              80.0000
+                  c66   water_conc          0.000500000           0.00110000         -0.000600000              80.0000
+                  c67   water_conc          0.000600000             0.000000          0.000600000              80.0000
+                  c68   water_conc           0.00180000           0.00130000          0.000500000              80.0000
+                  c69   water_conc           0.00100000           0.00160000         -0.000600000              80.0000
+                  c70   water_conc           0.00120000           0.00120000             0.000000              80.0000
+                  c71   water_conc             0.000000           0.00140000          -0.00140000              80.0000
+                  c72   water_conc          0.000900000           0.00130000         -0.000400000              80.0000
+                  c73   water_conc          0.000500000             0.000000          0.000500000              80.0000
+                  c74   water_conc             -99.0000           0.00110000             -99.0011             0.000000
+                  c75   water_conc          0.000500000             0.000000          0.000500000              80.0000
+                  c76   water_conc           0.00130000             0.000000           0.00130000              80.0000
+                  c77   water_conc          0.000500000             0.000000          0.000500000              80.0000
+                  c78   water_conc          0.000600000           0.00120000         -0.000600000              80.0000
+                  c79   water_conc          0.000500000           0.00120000         -0.000700000              80.0000
+                  c80   water_conc          0.000700000             0.000000          0.000700000              80.0000
+                  c81   water_conc          0.000600000           0.00120000         -0.000600000              80.0000
+                  c82   water_conc          0.000400000           0.00120000         -0.000800000              80.0000
+                  c83   water_conc          0.000400000           0.00120000         -0.000800000              80.0000
+                  c84   water_conc          0.000400000             0.000000          0.000400000              80.0000
+                  c85   water_conc             0.000000             0.000000             0.000000              80.0000
+                  c86   water_conc             -99.0000           0.00100000             -99.0010             0.000000
+                  c87   water_conc          0.000400000           0.00100000         -0.000600000              80.0000
+                  c88   water_conc          0.000300000           0.00100000         -0.000700000              80.0000
+                  c89   water_conc             0.000000             0.000000             0.000000              80.0000
+                  c90   water_conc             0.000000             0.000000             0.000000              80.0000
+                  c91   water_conc             0.000000           0.00110000          -0.00110000              80.0000
+                  c92   water_conc          0.000300000           0.00110000         -0.000800000              80.0000
+                  c93   water_conc          0.000300000           0.00110000         -0.000800000              80.0000
+                  c94   water_conc          0.000300000             0.000000          0.000300000              80.0000
+                  c95   water_conc          0.000600000           0.00120000         -0.000600000              80.0000
+                  c96   water_conc          0.000600000           0.00120000         -0.000600000              80.0000
+                  c97   water_conc          0.000300000           0.00110000         -0.000800000              80.0000
+                  c98   water_conc          0.000400000             0.000000          0.000400000              80.0000
+                  c99   water_conc          0.000600000             0.000000          0.000600000              80.0000
+                 c100   water_conc           0.00110000             0.000000           0.00110000              80.0000
+                 c101   water_conc             0.000000             0.000000             0.000000              80.0000
+                 c102   water_conc             -99.0000             0.000000             -99.0000             0.000000
+                 c103   water_conc             0.000000             0.000000             0.000000              80.0000
+                   t1    tile_flow             0.000000            0.0310000           -0.0310000             0.800000
+                   t2    tile_flow            0.0390000             0.192000            -0.153000             0.800000
+                   t3    tile_flow            0.0300000            0.0500000           -0.0200000             0.800000
+                   t4    tile_flow            0.0130000            0.0210000          -0.00800000             0.800000
+                   t5    tile_flow            0.0630000             0.107000           -0.0440000             0.800000
+                   t6    tile_flow            0.0960000            0.0600000            0.0360000             0.800000
+                   t7    tile_flow            0.0310000             0.000000            0.0310000             0.800000
+                   t8    tile_flow            0.0140000             0.000000            0.0140000             0.800000
+                   t9    tile_flow            0.0330000             0.000000            0.0330000             0.800000
+                  t10    tile_flow             0.226000             0.211000            0.0150000             0.800000
+                  t11    tile_flow             0.424000             0.561000            -0.137000             0.800000
+                  t12    tile_flow            0.0600000           0.00400000            0.0560000             0.800000
+                  t13    tile_flow            0.0100000             0.000000            0.0100000             0.800000
+                  t14    tile_flow            0.0690000            0.0870000           -0.0180000             0.800000
+                  t15    tile_flow             0.256000             0.348000           -0.0920000             0.800000
+                  t16    tile_flow            0.0940000            0.0250000            0.0690000             0.800000
+                  t17    tile_flow            0.0290000             0.000000            0.0290000             0.800000
+                  t18    tile_flow           0.00900000             0.000000           0.00900000             0.800000
+                  t19    tile_flow            0.0110000             0.000000            0.0110000             0.800000
+                  t20    tile_flow            0.0380000             0.000000            0.0380000             0.800000
+                  t21    tile_flow            0.0330000             0.000000            0.0330000             0.800000
+                  t22    tile_flow            0.0200000             0.000000            0.0200000             0.800000
+                  t23    tile_flow            0.0160000             0.000000            0.0160000             0.800000
+                  t24    tile_flow           0.00600000             0.000000           0.00600000             0.800000
+                  t25    tile_flow           0.00400000             0.000000           0.00400000             0.800000
+                  t26    tile_flow           0.00100000             0.000000           0.00100000             0.800000
+                  t27    tile_flow             0.000000             0.000000             0.000000             0.800000
+                  t28    tile_flow             0.000000             0.000000             0.000000             0.800000
+                  t29    tile_flow           0.00900000             0.000000           0.00900000             0.800000
+                  t30    tile_flow             0.246000             0.203000            0.0430000             0.800000
+                  t31    tile_flow             0.236000             0.283000           -0.0470000             0.800000
+                  t32    tile_flow             0.218000            0.0830000             0.135000             0.800000
+                  t33    tile_flow             0.194000             0.177000            0.0170000             0.800000
+                  t34    tile_flow             0.164000             0.160000           0.00400000             0.800000
+                  t35    tile_flow             0.247000             0.543000            -0.296000             0.800000
+                  t36    tile_flow            0.0900000           0.00500000            0.0850000             0.800000
+                  t37    tile_flow            0.0290000             0.000000            0.0290000             0.800000
+                  t38    tile_flow           0.00300000             0.000000           0.00300000             0.800000
+                  t39    tile_flow            0.0160000           0.00800000           0.00800000             0.800000
+                  t40    tile_flow             0.128000             0.109000            0.0190000             0.800000
+                  t41    tile_flow             0.100000             0.000000             0.100000             0.800000
+                  t42    tile_flow            0.0630000             0.000000            0.0630000             0.800000
+                  t43    tile_flow            0.0430000             0.000000            0.0430000             0.800000
+                  t44    tile_flow            0.0470000             0.000000            0.0470000             0.800000
+                  t45    tile_flow            0.0310000             0.000000            0.0310000             0.800000
+                  t46    tile_flow            0.0170000             0.000000            0.0170000             0.800000
+                  t47    tile_flow            0.0200000             0.000000            0.0200000             0.800000
+                  t48    tile_flow            0.0210000             0.000000            0.0210000             0.800000
+                  t49    tile_flow           0.00400000             0.000000           0.00400000             0.800000
+                  t50    tile_flow             0.000000             0.000000             0.000000             0.800000
+                  t51    tile_flow            0.0510000             0.000000            0.0510000             0.800000
+                  t52    tile_flow            0.0410000             0.000000            0.0410000             0.800000
+                  t53    tile_flow            0.0490000             0.000000            0.0490000             0.800000
+                  t54    tile_flow            0.0370000             0.000000            0.0370000             0.800000
+                  t55    tile_flow            0.0460000             0.000000            0.0460000             0.800000
+                  t56    tile_flow           0.00600000             0.000000           0.00600000             0.800000
+                  t57    tile_flow             0.000000             0.000000             0.000000             0.800000
+                  t58    tile_flow            0.0350000            0.0120000            0.0230000             0.800000
+                  t59    tile_flow             0.352000            0.0840000             0.268000             0.800000
+                  t60    tile_flow             0.224000            0.0140000             0.210000             0.800000
+                  t61    tile_flow             0.104000            0.0760000            0.0280000             0.800000
+                  t62    tile_flow            0.0590000             0.308000            -0.249000             0.800000
+                  t63    tile_flow            0.0770000             0.109000           -0.0320000             0.800000
+                  t64    tile_flow             0.339000             0.181000             0.158000             0.800000
+                  t65    tile_flow             0.177000            0.0380000             0.139000             0.800000
+                  t66    tile_flow             0.230000            0.0520000             0.178000             0.800000
+                  t67    tile_flow             0.191000             0.000000             0.191000             0.800000
+                  t68    tile_flow             0.261000             0.163000            0.0980000             0.800000
+                  t69    tile_flow             0.627000             0.990000            -0.363000             0.800000
+                  t70    tile_flow             0.737000             0.434000             0.303000             0.800000
+                  t71    tile_flow             0.246000             0.250000          -0.00400000             0.800000
+                  t72    tile_flow            0.0820000            0.0410000            0.0410000             0.800000
+                  t73    tile_flow           0.00900000             0.000000           0.00900000             0.800000
+                  t74    tile_flow             0.000000             0.000000             0.000000             0.800000
+                  t75    tile_flow           0.00200000             0.000000           0.00200000             0.800000
+                  t76    tile_flow           0.00300000             0.000000           0.00300000             0.800000
+                  t77    tile_flow            0.0230000             0.000000            0.0230000             0.800000
+                  t78    tile_flow             0.227000            0.0380000             0.189000             0.800000
+                  t79    tile_flow             0.180000            0.0250000             0.155000             0.800000
+                  t80    tile_flow            0.0460000             0.000000            0.0460000             0.800000
+                  t81    tile_flow            0.0870000            0.0270000            0.0600000             0.800000
+                  t82    tile_flow             0.216000             0.140000            0.0760000             0.800000
+                  t83    tile_flow             0.101000            0.0280000            0.0730000             0.800000
+                  t84    tile_flow           0.00900000             0.000000           0.00900000             0.800000
+                  t85    tile_flow            0.0140000             0.000000            0.0140000             0.800000
+                  t86    tile_flow           0.00600000             0.000000           0.00600000             0.800000
+                  t87    tile_flow            0.0610000             0.110000           -0.0490000             0.800000
+                  t88    tile_flow             0.108000            0.0410000            0.0670000             0.800000
+                  t89    tile_flow            0.0290000             0.000000            0.0290000             0.800000
+                  t90    tile_flow            0.0170000             0.000000            0.0170000             0.800000
+                  t91    tile_flow            0.0440000             0.105000           -0.0610000             0.800000
+                  t92    tile_flow             0.133000             0.212000           -0.0790000             0.800000
+                  t93    tile_flow            0.0900000            0.0340000            0.0560000             0.800000
+                  t94    tile_flow            0.0390000             0.000000            0.0390000             0.800000
+                  t95    tile_flow             0.414000             0.134000             0.280000             0.800000
+                  t96    tile_flow             0.330000            0.0780000             0.252000             0.800000
+                  t97    tile_flow             0.157000            0.0120000             0.145000             0.800000
+                  t98    tile_flow            0.0250000             0.000000            0.0250000             0.800000
+                  t99    tile_flow           0.00300000             0.000000           0.00300000             0.800000
+                 t100    tile_flow           0.00100000             0.000000           0.00100000             0.800000
+                 t101    tile_flow             0.000000             0.000000             0.000000             0.800000
+                 t102    tile_flow             0.000000             0.000000             0.000000             0.800000
+                 t103    tile_flow            0.0110000             0.000000            0.0110000             0.800000
+                  sc1    soil_conc              1.56800              1.22300             0.345000              1.00000
+                  sc2    soil_conc             0.179000            0.0271000             0.151900              1.00000
+                  sc3    soil_conc             0.189000            0.0197000             0.169300              1.00000
+                  sc4    soil_conc            0.0250000            0.0145000            0.0105000              1.00000
+                  sc5    soil_conc           0.00700000           0.00530000           0.00170000              1.00000
+                  sc6    soil_conc             0.000000           0.00180000          -0.00180000              1.00000
+                  sc7    soil_conc            0.0120000             0.000000            0.0120000              1.00000
+                  sc8    soil_conc           0.00900000             0.000000           0.00900000              1.00000
+                  sc9    soil_conc             0.000000             0.000000             0.000000              1.00000
+                 sc12    soil_conc             0.000000             0.130800            -0.130800              1.00000
+                 sc13    soil_conc             0.140000            0.0933000            0.0467000              1.00000
+                 sc14    soil_conc            0.0210000            0.0364000           -0.0154000              1.00000
+                 sc15    soil_conc            0.0220000            0.0124000           0.00960000              1.00000
+                 sc16    soil_conc            0.0300000           0.00530000            0.0247000              1.00000
+                 sc17    soil_conc             0.000000           0.00240000          -0.00240000              1.00000
+                 sc18    soil_conc             0.000000          0.000300000         -0.000300000              1.00000
+                 sc19    soil_conc             0.000000             0.000000             0.000000              1.00000
+                 sc20    soil_conc             0.000000             0.000000             0.000000              1.00000
+                 sc23    soil_conc             0.390000             0.103600             0.286400              1.00000
+                 sc24    soil_conc             0.139000            0.0835000            0.0555000              1.00000
+                 sc25    soil_conc            0.0800000            0.0361000            0.0439000              1.00000
+                 sc26    soil_conc            0.0280000            0.0119000            0.0161000              1.00000
+                 sc27    soil_conc            0.0110000           0.00480000           0.00620000              1.00000
+                 sc28    soil_conc           0.00300000           0.00220000          0.000800000              1.00000
+                 sc29    soil_conc           0.00100000          0.000300000          0.000700000              1.00000
+                 sc30    soil_conc           0.00100000             0.000000           0.00100000              1.00000
+                 sc31    soil_conc           0.00100000             0.000000           0.00100000              1.00000
+                 sc34    soil_conc             0.180000             0.273800           -0.0938000              1.00000
+                 sc35    soil_conc            0.0610000            0.0339000            0.0271000              1.00000
+                 sc36    soil_conc            0.0460000            0.0171000            0.0289000              1.00000
+                 sc37    soil_conc            0.0110000            0.0130000          -0.00200000              1.00000
+                 sc38    soil_conc            0.0120000           0.00450000           0.00750000              1.00000
+                 sc39    soil_conc             0.000000           0.00160000          -0.00160000              1.00000
+                 sc42    soil_conc            0.0980000             0.194400           -0.0964000              1.00000
+                 sc43    soil_conc            0.0790000            0.0366000            0.0424000              1.00000
+                 sc44    soil_conc            0.0440000            0.0150000            0.0290000              1.00000
+                 sc45    soil_conc            0.0240000            0.0112000            0.0128000              1.00000
+                 sc46    soil_conc           0.00800000           0.00400000           0.00400000              1.00000
+                 sc47    soil_conc             0.000000           0.00140000          -0.00140000              1.00000
+                 sc50    soil_conc            0.0560000            0.0900000           -0.0340000              1.00000
+                 sc51    soil_conc            0.0750000            0.0624000            0.0126000              1.00000
+                 sc52    soil_conc            0.0370000            0.0276000           0.00940000              1.00000
+                 sc53    soil_conc           0.00800000            0.0121000          -0.00410000              1.00000
+                 sc54    soil_conc             0.000000           0.00490000          -0.00490000              1.00000
+                 sc55    soil_conc             0.000000           0.00210000          -0.00210000              1.00000
+                 sc56    soil_conc             0.000000          0.000900000         -0.000900000              1.00000
+                 sc59    soil_conc             0.976000             0.787300             0.188700              1.00000
+                 sc60    soil_conc            0.0560000            0.0372000            0.0188000              1.00000
+                 sc61    soil_conc            0.0130000            0.0189000          -0.00590000              1.00000
+                 sc62    soil_conc           0.00800000           0.00870000         -0.000700000              1.00000
+                 sc63    soil_conc             0.000000           0.00380000          -0.00380000              1.00000
+                 sc64    soil_conc             0.000000           0.00170000          -0.00170000              1.00000
+                 sc65    soil_conc             0.000000          0.000800000         -0.000800000              1.00000
+                 sc68    soil_conc             0.121000             0.303300            -0.182300              1.00000
+                 sc69    soil_conc            0.0520000            0.0407000            0.0113000              1.00000
+                 sc70    soil_conc            0.0200000            0.0187000           0.00130000              1.00000
+                 sc71    soil_conc           0.00600000           0.00800000          -0.00200000              1.00000
+                 sc72    soil_conc             0.000000           0.00320000          -0.00320000              1.00000
+                 sc73    soil_conc             0.000000           0.00150000          -0.00150000              1.00000
+                 sc74    soil_conc             0.000000          0.000800000         -0.000800000              1.00000
+                 sc77    soil_conc             0.104000             0.151200           -0.0472000              1.00000
+                 sc78    soil_conc            0.0560000            0.0397000            0.0163000              1.00000
+                 sc79    soil_conc            0.0130000            0.0158000          -0.00280000              1.00000
+                 sc80    soil_conc             0.000000           0.00650000          -0.00650000              1.00000
+                 sc81    soil_conc             0.000000           0.00240000          -0.00240000              1.00000
+                 sc82    soil_conc             0.000000           0.00110000          -0.00110000              1.00000
+                 sc83    soil_conc             0.000000          0.000700000         -0.000700000              1.00000
+                 sc86    soil_conc             0.156000             0.380900            -0.224900              1.00000
+                 sc87    soil_conc             0.115000            0.0438000            0.0712000              1.00000
+                 sc88    soil_conc            0.0780000            0.0288000            0.0492000              1.00000
+                 sc89    soil_conc            0.0620000            0.0119000            0.0501000              1.00000
+                 sc90    soil_conc            0.0140000           0.00310000            0.0109000              1.00000
+                 sc91    soil_conc             0.000000           0.00140000          -0.00140000              1.00000
+                 sc92    soil_conc             0.000000          0.000700000         -0.000700000              1.00000
+                 sc95    soil_conc             0.427000             0.381500            0.0455000              1.00000
+                 sc96    soil_conc            0.0620000            0.0436000            0.0184000              1.00000
+                 sc97    soil_conc            0.0300000            0.0287000           0.00130000              1.00000
+                sc100    soil_conc             0.190000             0.351200            -0.161200              1.00000
+                sc101    soil_conc            0.0400000            0.0428000          -0.00280000              1.00000
+                sc102    soil_conc            0.0130000            0.0303000           -0.0173000              1.00000
+                sc103    soil_conc             0.000000            0.0136000           -0.0136000              1.00000
+                sc104    soil_conc            0.0100000           0.00350000           0.00650000              1.00000
+                sc105    soil_conc             0.000000           0.00140000          -0.00140000              1.00000
+                sc106    soil_conc             0.000000          0.000600000         -0.000600000              1.00000
+                sc109    soil_conc             0.108000            0.0820000            0.0260000              1.00000
+                sc110    soil_conc            0.0710000            0.0660000           0.00500000              1.00000
+                sc111    soil_conc             0.000000            0.0420000           -0.0420000              1.00000
+                sc112    soil_conc             0.000000            0.0208000           -0.0208000              1.00000
+                sc113    soil_conc             0.000000           0.00640000          -0.00640000              1.00000
+                sc114    soil_conc             0.000000           0.00230000          -0.00230000              1.00000
+                sc115    soil_conc             0.000000          0.000800000         -0.000800000              1.00000
+                sc118    soil_conc            0.0560000            0.0443000            0.0117000              1.00000
+                sc119    soil_conc            0.0320000            0.0527000           -0.0207000              1.00000
+                sc120    soil_conc            0.0190000            0.0410000           -0.0220000              1.00000
+                sc121    soil_conc             0.000000            0.0209000           -0.0209000              1.00000
+                sc122    soil_conc             0.000000           0.00650000          -0.00650000              1.00000
+                sc123    soil_conc             0.000000           0.00220000          -0.00220000              1.00000
+                sc124    soil_conc             0.000000          0.000800000         -0.000800000              1.00000
+                sc127    soil_conc             -99.0000            0.0340000             -99.0340             0.000000
+                sc128    soil_conc             -99.0000            0.0372000             -99.0372             0.000000
+                sc129    soil_conc             -99.0000            0.0331000             -99.0331             0.000000
+                sc130    soil_conc             -99.0000            0.0183000             -99.0183             0.000000
+                sc131    soil_conc             -99.0000           0.00570000             -99.0057             0.000000
+                sc132    soil_conc             -99.0000           0.00200000             -99.0020             0.000000
+                sc133    soil_conc             -99.0000          0.000700000             -99.0007             0.000000
+                sc136    soil_conc            0.0480000             0.186000            -0.138000              1.00000
+                sc139    soil_conc             0.192000             0.246900           -0.0549000              1.00000
+                sc140    soil_conc            0.0390000            0.0306000           0.00840000              1.00000
+                sc141    soil_conc            0.0190000            0.0283000          -0.00930000              1.00000
+                sc142    soil_conc             -99.0000            0.0123000             -99.0123             0.000000
+                sc143    soil_conc             -99.0000           0.00210000             -99.0021             0.000000
+                sc144    soil_conc             -99.0000          0.000700000             -99.0007             0.000000
+                sc147    soil_conc             0.143000             0.142700          0.000300000              1.00000
+                sc148    soil_conc            0.0520000            0.0212000            0.0308000              1.00000
+                sc149    soil_conc            0.0210000            0.0217000         -0.000700000              1.00000
+                sc150    soil_conc             -99.0000            0.0100000             -99.0100             0.000000
+                sc151    soil_conc             -99.0000           0.00200000             -99.0020             0.000000
+                sc152    soil_conc             -99.0000          0.000700000             -99.0007             0.000000
+                sc155    soil_conc            0.0580000            0.0282000            0.0298000              1.00000
+                sc156    soil_conc            0.0370000            0.0107000            0.0263000              1.00000
+                sc157    soil_conc            0.0210000            0.0103000            0.0107000              1.00000
+                sc158    soil_conc             -99.0000           0.00630000             -99.0063             0.000000
+                sc159    soil_conc             -99.0000           0.00150000             -99.0015             0.000000
+                sc160    soil_conc             -99.0000          0.000600000             -99.0006             0.000000
+                sc163    soil_conc             -99.0000            0.0156000             -99.0156             0.000000
+                sc164    soil_conc             -99.0000           0.00860000             -99.0086             0.000000
+                sc165    soil_conc             -99.0000           0.00810000             -99.0081             0.000000
+                sc166    soil_conc             -99.0000           0.00560000             -99.0056             0.000000
+                sc167    soil_conc             -99.0000           0.00180000             -99.0018             0.000000
+                sc168    soil_conc             -99.0000          0.000600000             -99.0006             0.000000
+                sc171    soil_conc             0.168000            0.0822000            0.0858000              1.00000
+                sc172    soil_conc            0.0220000           0.00830000            0.0137000              1.00000
+                sc173    soil_conc           0.00600000           0.00790000          -0.00190000              1.00000
+                sc176    soil_conc             0.157000             0.158000          -0.00100000              1.00000
+                sc177    soil_conc            0.0500000           0.00860000            0.0414000              1.00000
+                sc178    soil_conc            0.0130000           0.00570000           0.00730000              1.00000
+                sc179    soil_conc           0.00500000           0.00410000          0.000900000              1.00000
+                sc180    soil_conc             -99.0000           0.00170000             -99.0017             0.000000
+                sc181    soil_conc             -99.0000          0.000700000             -99.0007             0.000000
+                sc184    soil_conc            0.0560000             0.000000            0.0560000              1.00000
+                sc185    soil_conc            0.0420000             0.000000            0.0420000              1.00000
+                sc186    soil_conc            0.0210000             0.000000            0.0210000              1.00000
+                sc187    soil_conc             -99.0000             0.000000             -99.0000             0.000000
+                sc188    soil_conc             -99.0000             0.000000             -99.0000             0.000000
+                sc189    soil_conc             -99.0000             0.000000             -99.0000             0.000000
+                 spc1    prof_conc              3.00360              1.91180              1.09180             0.500000
+                 spc2    prof_conc             0.355190             0.440800           -0.0856100             0.500000
+                 spc3    prof_conc              1.00768             0.382500             0.625180             0.500000
+                 spc4    prof_conc             0.472080             0.527700           -0.0556200             0.500000
+                 spc5    prof_conc             0.396290             0.406300           -0.0100100             0.500000
+                 spc6    prof_conc             0.263940             0.320900           -0.0569600             0.500000
+                 spc7    prof_conc              1.53415              1.27390             0.260250             0.500000
+                 spc8    prof_conc             0.294640             0.570000            -0.275360             0.500000
+                 spc9    prof_conc             0.251630             0.334100           -0.0824700             0.500000
+                spc10    prof_conc             0.684130             0.710700           -0.0265700             0.500000
+                spc11    prof_conc             0.754350             0.666800            0.0875500             0.500000
+                spc12    prof_conc             0.376680             0.673000            -0.296320             0.500000
+                spc13    prof_conc             0.259550             0.360100            -0.100550             0.500000
+                spc14    prof_conc             0.156290             0.283600            -0.127310             0.500000
+                spc15    prof_conc             0.000000             0.000000             0.000000             0.500000
+                spc16    prof_conc             0.104400             0.410400            -0.306000             0.500000
+                spc17    prof_conc             0.363640             0.449400           -0.0857600             0.500000
+                spc18    prof_conc             0.314460             0.273400            0.0410600             0.500000
+                spc19    prof_conc             0.169460            0.0730000            0.0964600             0.500000
+                spc20    prof_conc             0.000000             0.000000             0.000000             0.500000
+                spc21    prof_conc             0.284560             0.144600             0.139960             0.500000
+                spc22    prof_conc             0.342880             0.271500            0.0713800             0.500000
+                spc23    prof_conc             0.173810             0.000000             0.173810             0.500000
+
+Final composite objective function 
+    Final phi                                           Total : 2.22581
+    Contribution to phi from observation group   "water_conc" : 0.561488
+    Contribution to phi from observation group    "soil_conc" : 0.508243
+    Contribution to phi from observation group    "prof_conc" : 0.509092
+    Contribution to phi from observation group    "tile_flow" : 0.646987
+
+
+Number of forward model runs performed during optimiztion: 259
+
+
+
+
+-----------------------------------------------------------------------
+Note: The following uncertainty estimates were calculated using 
+      Schur's complement for linear-based conditional uncertainty 
+      propogation.  For a derviation from Bayes equation, see 
+      M. N. Fienen, J. E. Doherty, R. J. Hunt, and H. W. Reeves. 
+      2010. 'Using Prediction Uncertainty Analysis to Design 
+      Hydrologic Monitoring Networks : Example Applications 
+      from the Great Lakes Water Availability Pilot Project'. 
+      See PEST++ V3 documentation for implementation details.
+-----------------------------------------------------------------------
+
+Note: Any observations or prior information equations with a group name
+      starting with 'regul' are dropped from the jacobian and observation
+      covariance matrices before uncertainty calculations.  Please
+      make sure that all expert knowledge is expressed in the prior 
+      parameter bounds or through a covariance matix, which can be 
+      supplied as a pest++ option as 'parameter_covariance(<matrix_file_name>),
+      where <matrix_file_name> can be an ASCII PEST-compatible matrix file (.mat) or
+      a PEST-compatible uncertainty file (.unc).
+
+WARNING: PEST++ 'autonorm' option != 0.0. This can greatly effect the outcome 
+         of the following analyses, which depend heavily on the Jacobian
+
+Note: The observation covariance matrix has been constructed from 
+      weights listed in the pest control file that have been scaled by 
+      by the final objective function components to account for 
+      the level of measurement noise implied by the original weights so
+      the total objective function is equal to the number of  
+      non-zero weighted observations.
+
+Scaled observation weights used to form observation noise covariance matrix:
+
+         observation               group       scaled_weight
+                SC54           SOIL_CONC             15.2372
+                 T26           TILE_FLOW             10.0939
+                  C9          WATER_CONC             1035.10
+                 T93           TILE_FLOW             10.0939
+                  C1          WATER_CONC             1035.10
+                 C13          WATER_CONC             1035.10
+               SC102           SOIL_CONC             15.2372
+                SC31           SOIL_CONC             15.2372
+                 SC9           SOIL_CONC             15.2372
+                  C2          WATER_CONC             1035.10
+                  C3          WATER_CONC             1035.10
+                  C4          WATER_CONC             1035.10
+               SC105           SOIL_CONC             15.2372
+                SC50           SOIL_CONC             15.2372
+                  C5          WATER_CONC             1035.10
+               SC177           SOIL_CONC             15.2372
+                SC35           SOIL_CONC             15.2372
+                 T43           TILE_FLOW             10.0939
+                  C6          WATER_CONC             1035.10
+                  C7          WATER_CONC             1035.10
+                  C8          WATER_CONC             1035.10
+                 C19          WATER_CONC             1035.10
+                 C10          WATER_CONC             517.552
+                SC55           SOIL_CONC             15.2372
+                 C11          WATER_CONC             1035.10
+                SC56           SOIL_CONC             15.2372
+                 C12          WATER_CONC             1035.10
+                 C14          WATER_CONC             1035.10
+               SC148           SOIL_CONC             15.2372
+                SC20           SOIL_CONC             15.2372
+                 C15          WATER_CONC             1035.10
+                SC23           SOIL_CONC             15.2372
+                 C16          WATER_CONC             1035.10
+                 C17          WATER_CONC             1035.10
+                 C18          WATER_CONC             1035.10
+                SC73           SOIL_CONC             15.2372
+                 C20          WATER_CONC             1035.10
+                 C21          WATER_CONC             1035.10
+                 C22          WATER_CONC             1035.10
+                 C23          WATER_CONC             1035.10
+                 C24          WATER_CONC             1035.10
+                 C25          WATER_CONC             1035.10
+                 C26          WATER_CONC             1035.10
+                SC74           SOIL_CONC             15.2372
+                 C27          WATER_CONC             1035.10
+                SC37           SOIL_CONC             15.2372
+                 C64          WATER_CONC             1035.10
+               SPC20           PROF_CONC             3.36075
+                 C28          WATER_CONC             1035.10
+                 C65          WATER_CONC             1035.10
+                 C29          WATER_CONC             1035.10
+                 C41          WATER_CONC             1035.10
+                 C30          WATER_CONC             3364.09
+                 C40          WATER_CONC             1035.10
+                 C31          WATER_CONC             3364.09
+                 C43          WATER_CONC             1035.10
+                 C32          WATER_CONC             1035.10
+                 C42          WATER_CONC             1035.10
+                 C33          WATER_CONC             1035.10
+                 C45          WATER_CONC             1035.10
+                C100          WATER_CONC             1035.10
+                 C34          WATER_CONC             1035.10
+                 C44          WATER_CONC             1035.10
+                 C35          WATER_CONC             1035.10
+                 C47          WATER_CONC             1035.10
+               SC104           SOIL_CONC             15.2372
+                 C46          WATER_CONC             1035.10
+                 C37          WATER_CONC             1035.10
+                 C49          WATER_CONC             1035.10
+                 C48          WATER_CONC             1035.10
+               SC113           SOIL_CONC             15.2372
+                 C51          WATER_CONC             1035.10
+                 C52          WATER_CONC             1035.10
+                 C53          WATER_CONC             1035.10
+                SC65           SOIL_CONC             15.2372
+                 C54          WATER_CONC             1035.10
+                  T9           TILE_FLOW             10.0939
+                 C55          WATER_CONC             1035.10
+                 C56          WATER_CONC             1035.10
+                 C59          WATER_CONC             1035.10
+               SC157           SOIL_CONC             15.2372
+                 C60          WATER_CONC             1035.10
+                 C61          WATER_CONC             1035.10
+                 C62          WATER_CONC             1035.10
+               SC172           SOIL_CONC             15.2372
+                 C63          WATER_CONC             1035.10
+                 C66          WATER_CONC             1035.10
+                SC34           SOIL_CONC             15.2372
+                 C67          WATER_CONC             1035.10
+                 C68          WATER_CONC             1035.10
+               SC178           SOIL_CONC             15.2372
+                 C69          WATER_CONC             1035.10
+               SC147           SOIL_CONC             15.2372
+                 C70          WATER_CONC             1035.10
+               SPC17           PROF_CONC             3.36075
+                 C71          WATER_CONC             1035.10
+               SPC14           PROF_CONC             3.36075
+                 C72          WATER_CONC             1035.10
+                 C73          WATER_CONC             1035.10
+                 C75          WATER_CONC             1035.10
+                SC14           SOIL_CONC             15.2372
+                 C76          WATER_CONC             1035.10
+                 C77          WATER_CONC             1035.10
+                 C78          WATER_CONC             1035.10
+                SC13           SOIL_CONC             15.2372
+                 C79          WATER_CONC             1035.10
+                 C80          WATER_CONC             1035.10
+               SC114           SOIL_CONC             15.2372
+                 C81          WATER_CONC             1035.10
+               SC122           SOIL_CONC             15.2372
+                 C82          WATER_CONC             1035.10
+                SC61           SOIL_CONC             15.2372
+                 C83          WATER_CONC             1035.10
+                SC17           SOIL_CONC             15.2372
+                 C84          WATER_CONC             1035.10
+                  T6           TILE_FLOW             10.0939
+                 C85          WATER_CONC             1035.10
+                SC47           SOIL_CONC             15.2372
+                 C87          WATER_CONC             1035.10
+                 C88          WATER_CONC             1035.10
+                 C89          WATER_CONC             1035.10
+                 C90          WATER_CONC             1035.10
+               SC179           SOIL_CONC             15.2372
+                 C91          WATER_CONC             1035.10
+               SC118           SOIL_CONC             15.2372
+                 C92          WATER_CONC             1035.10
+                 C93          WATER_CONC             1035.10
+                 C94          WATER_CONC             1035.10
+                C103          WATER_CONC             1035.10
+                 C95          WATER_CONC             1035.10
+                 C96          WATER_CONC             1035.10
+                 C97          WATER_CONC             1035.10
+                 C98          WATER_CONC             1035.10
+                 C99          WATER_CONC             1035.10
+                C101          WATER_CONC             1035.10
+                  T1           TILE_FLOW             10.0939
+                  T2           TILE_FLOW             10.0939
+                  T3           TILE_FLOW             10.0939
+                 T75           TILE_FLOW             10.0939
+                  T4           TILE_FLOW             10.0939
+                  T5           TILE_FLOW             10.0939
+                 T98           TILE_FLOW             10.0939
+                  T7           TILE_FLOW             10.0939
+                SPC9           PROF_CONC             3.36075
+                 T35           TILE_FLOW             10.0939
+                  T8           TILE_FLOW             10.0939
+                 T10           TILE_FLOW             10.0939
+               SPC12           PROF_CONC             3.36075
+                 T11           TILE_FLOW             10.0939
+               SPC11           PROF_CONC             3.36075
+                SC64           SOIL_CONC             15.2372
+                 T12           TILE_FLOW             10.0939
+                SC36           SOIL_CONC             15.2372
+                 T13           TILE_FLOW             10.0939
+                SC39           SOIL_CONC             15.2372
+                 T14           TILE_FLOW             10.0939
+               SPC16           PROF_CONC             3.36075
+                SC92           SOIL_CONC             15.2372
+                 T15           TILE_FLOW             10.0939
+               SPC15           PROF_CONC             3.36075
+                SC91           SOIL_CONC             15.2372
+                 T16           TILE_FLOW             10.0939
+                 T17           TILE_FLOW             10.0939
+               SC119           SOIL_CONC             15.2372
+                 T18           TILE_FLOW             10.0939
+                 T19           TILE_FLOW             10.0939
+                 T20           TILE_FLOW             10.0939
+                 T21           TILE_FLOW             10.0939
+               SC156           SOIL_CONC             15.2372
+                 T22           TILE_FLOW             10.0939
+                 T23           TILE_FLOW             10.0939
+                 T24           TILE_FLOW             10.0939
+                SC26           SOIL_CONC             15.2372
+                 T25           TILE_FLOW             10.0939
+                 T27           TILE_FLOW             10.0939
+                 T28           TILE_FLOW             10.0939
+                 T29           TILE_FLOW             10.0939
+                 T30           TILE_FLOW             10.0939
+               SC149           SOIL_CONC             15.2372
+                 T31           TILE_FLOW             10.0939
+                SPC6           PROF_CONC             3.36075
+                 T32           TILE_FLOW             10.0939
+                 T33           TILE_FLOW             10.0939
+                 T34           TILE_FLOW             10.0939
+                 T36           TILE_FLOW             10.0939
+                T100           TILE_FLOW             10.0939
+                 T37           TILE_FLOW             10.0939
+                 T38           TILE_FLOW             10.0939
+                 T39           TILE_FLOW             10.0939
+                 T40           TILE_FLOW             10.0939
+                SC95           SOIL_CONC             15.2372
+                 T41           TILE_FLOW             10.0939
+                SC96           SOIL_CONC             15.2372
+                 T42           TILE_FLOW             10.0939
+               SC123           SOIL_CONC             15.2372
+                 T44           TILE_FLOW             10.0939
+                 T45           TILE_FLOW             10.0939
+                 T46           TILE_FLOW             10.0939
+                 T47           TILE_FLOW             10.0939
+                 T48           TILE_FLOW             10.0939
+                 T49           TILE_FLOW             10.0939
+                 T50           TILE_FLOW             10.0939
+                 T51           TILE_FLOW             10.0939
+                 T52           TILE_FLOW             10.0939
+                 T53           TILE_FLOW             10.0939
+                 T54           TILE_FLOW             10.0939
+                 T55           TILE_FLOW             10.0939
+                 T56           TILE_FLOW             10.0939
+                SC87           SOIL_CONC             15.2372
+                 T57           TILE_FLOW             10.0939
+                 T58           TILE_FLOW             10.0939
+                 T59           TILE_FLOW             10.0939
+                SC45           SOIL_CONC             15.2372
+                 T60           TILE_FLOW             10.0939
+                 T61           TILE_FLOW             10.0939
+                 T62           TILE_FLOW             10.0939
+                SC15           SOIL_CONC             15.2372
+                 T63           TILE_FLOW             10.0939
+                 T64           TILE_FLOW             10.0939
+                 T65           TILE_FLOW             10.0939
+                 T66           TILE_FLOW             10.0939
+                SC42           SOIL_CONC             15.2372
+                 T67           TILE_FLOW             10.0939
+                 T68           TILE_FLOW             10.0939
+                 T69           TILE_FLOW             10.0939
+                 T70           TILE_FLOW             10.0939
+                 T71           TILE_FLOW             10.0939
+                 T72           TILE_FLOW             10.0939
+                 T73           TILE_FLOW             10.0939
+                 T74           TILE_FLOW             10.0939
+                 T76           TILE_FLOW             10.0939
+                 T77           TILE_FLOW             10.0939
+                 T78           TILE_FLOW             10.0939
+                 T79           TILE_FLOW             10.0939
+                SC29           SOIL_CONC             15.2372
+                 T80           TILE_FLOW             10.0939
+                 T81           TILE_FLOW             10.0939
+                 T82           TILE_FLOW             10.0939
+                SC88           SOIL_CONC             15.2372
+                 T83           TILE_FLOW             10.0939
+                 T84           TILE_FLOW             10.0939
+                 T85           TILE_FLOW             10.0939
+               SC136           SOIL_CONC             15.2372
+                 T86           TILE_FLOW             10.0939
+                 T87           TILE_FLOW             10.0939
+                SC83           SOIL_CONC             15.2372
+                 T88           TILE_FLOW             10.0939
+                 T89           TILE_FLOW             10.0939
+                 T90           TILE_FLOW             10.0939
+                 T91           TILE_FLOW             10.0939
+                SC46           SOIL_CONC             15.2372
+                 T92           TILE_FLOW             10.0939
+                 T94           TILE_FLOW             10.0939
+                 T95           TILE_FLOW             10.0939
+                 T96           TILE_FLOW             10.0939
+               SPC18           PROF_CONC             3.36075
+                 T97           TILE_FLOW             10.0939
+                SPC7           PROF_CONC             3.36075
+                 T99           TILE_FLOW             10.0939
+                T101           TILE_FLOW             10.0939
+                T102           TILE_FLOW             10.0939
+                T103           TILE_FLOW             10.0939
+                 SC1           SOIL_CONC             15.2372
+                 SC2           SOIL_CONC             15.2372
+                 SC3           SOIL_CONC             15.2372
+                 SC4           SOIL_CONC             15.2372
+               SC106           SOIL_CONC             15.2372
+                 SC5           SOIL_CONC             15.2372
+                 SC6           SOIL_CONC             15.2372
+                 SC7           SOIL_CONC             15.2372
+                 SC8           SOIL_CONC             15.2372
+                SC12           SOIL_CONC             15.2372
+                SC16           SOIL_CONC             15.2372
+                SC18           SOIL_CONC             15.2372
+                SC19           SOIL_CONC             15.2372
+                SC24           SOIL_CONC             15.2372
+                SC25           SOIL_CONC             15.2372
+                SC27           SOIL_CONC             15.2372
+                SC28           SOIL_CONC             15.2372
+               SC103           SOIL_CONC             15.2372
+                SC30           SOIL_CONC             15.2372
+                SC38           SOIL_CONC             15.2372
+                SC43           SOIL_CONC             15.2372
+                SC44           SOIL_CONC             15.2372
+                SC51           SOIL_CONC             15.2372
+                SC52           SOIL_CONC             15.2372
+                SC53           SOIL_CONC             15.2372
+                SC59           SOIL_CONC             15.2372
+                SC60           SOIL_CONC             15.2372
+                SC62           SOIL_CONC             15.2372
+                SC63           SOIL_CONC             15.2372
+                SC68           SOIL_CONC             15.2372
+                SC69           SOIL_CONC             15.2372
+                SC70           SOIL_CONC             15.2372
+                SC71           SOIL_CONC             15.2372
+                SC72           SOIL_CONC             15.2372
+                SC77           SOIL_CONC             15.2372
+                SC78           SOIL_CONC             15.2372
+               SPC22           PROF_CONC             3.36075
+                SC79           SOIL_CONC             15.2372
+                SC80           SOIL_CONC             15.2372
+                SC81           SOIL_CONC             15.2372
+                SC82           SOIL_CONC             15.2372
+               SC171           SOIL_CONC             15.2372
+                SC86           SOIL_CONC             15.2372
+                SC89           SOIL_CONC             15.2372
+                SC90           SOIL_CONC             15.2372
+               SPC13           PROF_CONC             3.36075
+                SC97           SOIL_CONC             15.2372
+               SC100           SOIL_CONC             15.2372
+               SC101           SOIL_CONC             15.2372
+               SC109           SOIL_CONC             15.2372
+               SC110           SOIL_CONC             15.2372
+               SC111           SOIL_CONC             15.2372
+               SC112           SOIL_CONC             15.2372
+               SC115           SOIL_CONC             15.2372
+               SC120           SOIL_CONC             15.2372
+               SC121           SOIL_CONC             15.2372
+               SC124           SOIL_CONC             15.2372
+               SC139           SOIL_CONC             15.2372
+                SPC4           PROF_CONC             3.36075
+               SC140           SOIL_CONC             15.2372
+               SC141           SOIL_CONC             15.2372
+                SPC2           PROF_CONC             3.36075
+               SC155           SOIL_CONC             15.2372
+               SC173           SOIL_CONC             15.2372
+               SC176           SOIL_CONC             15.2372
+               SC184           SOIL_CONC             15.2372
+               SC185           SOIL_CONC             15.2372
+               SC186           SOIL_CONC             15.2372
+                SPC1           PROF_CONC             3.36075
+                SPC3           PROF_CONC             3.36075
+                SPC5           PROF_CONC             3.36075
+                SPC8           PROF_CONC             3.36075
+               SPC10           PROF_CONC             3.36075
+               SPC19           PROF_CONC             3.36075
+               SPC21           PROF_CONC             3.36075
+               SPC23           PROF_CONC             3.36075
+
+
+Note : posterior parameter covariance matrix written to file 'pest.post.cov'
+
+
+---------------------------------------
+---- parameter uncertainty summary ----
+---------------------------------------
+
+
+                name          prior_mean         prior_stdev   prior_lower_bound   prior_upper_bound           post_mean          post_stdev    post_lower_bound    post_upper_bound
+                 S21             1.44541            0.174743             1.09593             1.79490             2.00000           0.0890947             1.82181             2.17819
+                 S22            0.947862           0.0752575            0.797347             1.09838             1.04023           0.0749207            0.890389             1.19007
+                 S24             1.33618            0.119280             1.09761             1.57474            0.761417            0.117502            0.526413            0.996422
+                 S26            -2.00000            0.119280            -2.23856            -1.76144            -2.00000            0.102939            -2.20588            -1.79412
+                 A21            0.818414           0.0387255            0.740963            0.895865            0.672281           0.0386910            0.594899            0.749663
+                 A22            0.143348           0.0312347           0.0808784            0.205817            0.615549           0.0312240            0.553101            0.677997
+                 A24             1.14161           0.0440228             1.05357             1.22966            0.908253           0.0439460            0.820361            0.996145
+                 A26           -0.392812           0.0752575           -0.543327           -0.242297           -0.971488           0.0743990            -1.12029           -0.822690
+                 C11             1.44541            0.174743             1.09593             1.79490             2.00000            0.116782             1.76644             2.23356
+                 C12             1.02588           0.0994850            0.826913             1.22485            0.744106           0.0984465            0.547213            0.940999
+                 C14             1.66492            0.103743             1.45744             1.87241             1.23955            0.103726             1.03210             1.44700
+                 C16            -1.97518            0.175834            -2.32684            -1.62351            -1.79440            0.168897            -2.13220            -1.45661
+                  P1            0.201359           0.0440228            0.113313            0.289404            0.253144           0.0440154            0.165114            0.341175
+                  P2            0.201359           0.0440228            0.113313            0.289404             1.29369           0.0440124             1.20566             1.38171
+                  P3            0.100167           0.0217875           0.0565924            0.143743            0.223953           0.0217872            0.180379            0.267528
+                  P4            0.100167           0.0217875           0.0565924            0.143743           -0.188448           0.0217866           -0.232021           -0.144875
+                  P5           -0.887067           0.0312347           -0.949537           -0.824598           -0.698969           0.0312342           -0.761437           -0.636500
+                  P6            0.154460           0.0336746           0.0871106            0.221809            0.289509           0.0336735            0.222162            0.356856
+                 LHG             1.69724            0.400515            0.896207             2.49827             1.91569           0.0763709             1.76294             2.06843
+                 CHC             1.61236            0.250000             1.11236             2.11236             2.00000           0.0740989             1.85180             2.14820
+                NMAC           -0.426132            0.269795           -0.965723            0.113459            0.143299            0.123518           -0.103736            0.390334
+               MAC_R            0.992281            0.174743            0.642796             1.34177            0.904703            0.160926            0.582850             1.22656
+                 LKS             1.16993            0.150515            0.868895             1.47095            0.591368            0.139386            0.312595            0.870141
+                 KOC             1.57660           0.0418728             1.49286             1.66035             2.00000           0.0415217             1.91696             2.08304
+                HALF            0.757508            0.106492            0.544524            0.970493            0.885221           0.0953872            0.694447             1.07600
+                EXPR            0.523719            0.119280            0.285158            0.762280            0.645982            0.118901            0.408179            0.883785
+
+WARNING: the following parameters were not found in the final 
+      base parameter jacobian and were subsequently not included 
+      in the uncertainty analysis calculations.  This may lead to 
+      NON-CONSERVATIVE uncertainty estimates. Please 
+      consider including all parameters:
+                  H2                 EST                 RSW                 RST                  EA
+                 WSM                MRAD                 H_3
+
+Note: Upper and lower uncertainty bounds reported above are 
+      calculated as: <prior,post>_mean +/- (2.0 * <prior,post>_stdev). 
+      For log-transformed parameters, the mean, stdev and range are reported 
+      with respect to the log of the parameter value. 
+
+Note : the above parameter uncertainty summary was written to file 'pest.par.usum.csv'
+

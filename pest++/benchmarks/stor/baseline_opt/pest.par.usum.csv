@@ -1,0 +1,3 @@
+name,prior_mean,prior_stdev,prior_lower_bound,prior_upper_bound,post_mean,post_stdev,post_lower_bound,post_upper_bound
+COND,-0.457731,1.75,-3.95773,3.04227,-0.856273,0.000541215,-0.857356,-0.855191
+SCOEFF,1.13265,1.5,-1.86735,4.13265,1.53259,0.00238497,1.52782,1.53736
