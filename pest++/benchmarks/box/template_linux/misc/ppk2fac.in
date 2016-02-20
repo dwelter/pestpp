@@ -1,0 +1,15 @@
+misc/grid.spc
+misc/pp_locs.dat
+0.0
+ref/zone.ref
+f
+misc/struct.dat
+struct1
+o
+1.0e+10
+1
+10
+misc/pp_fac.dat
+f
+misc/pp_stdev.ref
+misc/pp_reg.dat

@@ -174,11 +174,11 @@ if __name__ == "__main__":
        # run PEST++ and GSA benchmarks
        bm_list = [
         [r'./stor', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
-        [r'./3pg', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
+        #[r'./3pg', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
         [r'./10par_xsec', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
         [r'./morris_1991', 'template_linux', exe_cmd_gsa, 'pest', exe_cmd_gsa, 4, 'mio'],
         [r'./box', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
-        [r'./kirishima', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
+        #[r'./kirishima', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
         [r'./ishigami', 'template_linux', exe_cmd_gsa, 'pest', exe_cmd_gsa, 4, 'sbl']
         #[r'./ames', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
         #[r'./tidal', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
@@ -229,13 +229,10 @@ if __name__ == "__main__":
         else:
             print('    benchmark passed', flush=True)
             f_log.write('    benchmark passed\n')
+            shutil.rmtree(os.path.join(run_dir, 'master'), True)
         print(flush=True)
         f_log.write('\n')
         f_log.flush()
-        #clean up
-        #delete the master if the benchmarch passed
-        if not err_txt:
-            shutil.rmtree(r'%s\master' % run_dir , True)
     f_log.close()
 
         

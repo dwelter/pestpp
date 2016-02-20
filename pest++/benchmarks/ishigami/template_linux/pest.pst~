@@ -1,0 +1,25 @@
+pcf
+* control data
+restart  estimation
+    3    1     1     0     1
+    1     1 single point 1 0 0
+  0.0   2.0   0.3  0.03    1
+  3.0   3.0 0.001
+  0.1
+    0 0.01     3     3  0.01     3
+    1     1     1
+* parameter groups
+sen relative 0.01  0.0  ALWAYS_3  2.0 parabolic
+* parameter data
+x1 none factor   .5     -3.14159265359   3.14159265359    sen  1.0   0.0  1
+x2 none factor   .5     -3.14159265359   3.14159265359    sen  1.0   0.0  1
+x3 none factor   .5     -3.14159265359   3.14159265359    sen  1.0   0.0  1
+* observation groups
+obsgroup
+* observation data
+f     0  1  obsgroup1
+* model command line
+exe\ishigami.exe
+* model input/output
+misc\input.tpl   input.dat
+misc\output.ins  output.dat
