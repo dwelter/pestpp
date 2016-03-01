@@ -12,7 +12,7 @@
 #define OS_LINUX
 #define DEF_DLAMCH dlamch_
 #define DEF_DLANBPRO_SPARCE dlanbpro_sparce_
-#elif defined __APPLE__)
+#elif defined (__APPLE__)
 #define OS_LINUX
 #define DEF_DLAMCH dlamch_
 #define DEF_DLANBPRO_SPARCE dlanbpro_sparce_
