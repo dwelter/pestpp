@@ -516,7 +516,7 @@ int main(int argc, char* argv[])
 		{
 			sweep_pars.push_back(pest_scenario.get_ctl_parameters());
 		}
-
+		int total_runs_done = 0;
 		while (true)
 		{
 			//read some realizations
@@ -542,6 +542,8 @@ int main(int argc, char* argv[])
 			if (sweep_pars.size() == 0)
 				break;
 
+			cout << "starting runs " << total_runs_done << " --> " << total_runs_done + sweep_pars.size() << endl;
+
 			// queue up some runs
 			run_ids.clear();
 			for (auto &par : sweep_pars)
@@ -554,6 +556,8 @@ int main(int argc, char* argv[])
 
 			//process the runs
 			process_sweep_runs(obs_stream, pest_scenario, run_manager_ptr, run_ids, obj_func);
+
+			total_runs_done += sweep_pars.size();
 
 		}
 
