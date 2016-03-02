@@ -1,4 +1,4 @@
-OUT = gsa.exe
+OUT = gsa
 OBJECTS	:= main.o \
            GsaAbstractBase.o \
            MorrisMethod.o \
