@@ -193,12 +193,15 @@ int main(int argc, char* argv[])
 	try {
 		pest_scenario.process_ctl_file(file_manager.open_ifile_ext("pst"), file_manager.build_filename("pst"));
 		file_manager.close_file("pst");
-		pest_scenario.check_inputs();
+		pest_scenario.check_inputs(fout_rec);
 	}
 	catch(PestError e)
 	{
 		cerr << "Error prococessing control file: " << filename << endl << endl;
 		cerr << e.what() << endl << endl;
+		fout_rec << "Error prococessing control file: " << filename << endl << endl;
+		fout_rec << e.what() << endl;
+		fout_rec.close();
 		//throw(e);
 		return 1;
 	}

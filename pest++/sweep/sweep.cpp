@@ -423,9 +423,12 @@ int main(int argc, char* argv[])
 		{
 			cerr << "Error prococessing control file: " << filename << endl << endl;
 			cerr << e.what() << endl << endl;
+			fout_rec << "Error prococessing control file: " << filename << endl << endl;
+			fout_rec << e.what() << endl << endl;
+			fout_rec.close();
 			throw(e);
 		}
-		pest_scenario.check_inputs();
+		pest_scenario.check_inputs(fout_rec);
 
 
 		// process the parameter csv file

@@ -47,8 +47,16 @@ void Pest::set_defaults()
 	svd_info.eigthresh = 1.0e-6;
 }
 
-void Pest::check_inputs()
+void Pest::check_inputs(ostream &f_rec)
 {
+	if ((control_info.noptmax == 0) && (pestpp_options.get_max_run_fail() > 1))
+	{
+		cout << "noptmax = 0, resetting max_run_fail = 1" << endl;
+		f_rec << "noptmax = 0, resetting max_run_fail = 1" << endl;
+		pestpp_options.set_max_run_fail(1);
+
+	}
+
 	Parameters numeric_pars = base_par_transform.ctl2model_cp(ctl_parameters);
 	if (svd_info.maxsing == 0) {
 		svd_info.maxsing = min(numeric_pars.size(), observation_values.size());
@@ -62,6 +70,7 @@ void Pest::check_inputs()
 	{
 		stringstream ss;
 		ss << "pest++ option 'n_iter_base' must either be -1 or greater than 0, not " << n_base;
+		f_rec << "pest++ option 'n_iter_base' must either be -1 or greater than 0, not " << n_base;
 		throw PestError(ss.str());
 	}
 
@@ -70,6 +79,7 @@ void Pest::check_inputs()
 	{
 		stringstream ss;
 		ss << "pest++ option 'n_iter_super' must >= 0, not " << n_super;
+		f_rec << "pest++ option 'n_iter_super' must >= 0, not " << n_super;
 		throw PestError(ss.str());
 	}
 
@@ -91,6 +101,7 @@ void Pest::check_inputs()
 			ss << "Pest::check_inputs() the following predictions were not found in the observation names: ";
 			for (auto &m : missing)
 				ss << m << ',';
+			f_rec << ss.str() << endl;
 			throw PestError(ss.str());
 		}
 	}
