@@ -5,7 +5,7 @@ FC = gfortran-mp-5
 #GCCLIBDIR :='/opt/local/gcc-4.9.0/lib64'
 GCCLIBDIR :='/opt/local/lib/gcc5'
 INCLUDES := '-I ../ -I ../common -I ../yamr -I ../pestpp_common -I ../linear_analysis'
-LIBLDIR := '-L $(GCCLIBDIR) -L /opt/local/lib/gcc49 -L ../common -L ../yamr -L ../pestpp_common -L ../pest_routines  -L ../propack -L ../linear_analysis -L ../mio'
+LIBLDIR := '-L $(GCCLIBDIR) -L /opt/local/lib/gcc5 -L ../common -L ../yamr -L ../pestpp_common -L ../pest_routines  -L ../propack -L ../linear_analysis -L ../mio'
 LIBS :=  '-lpestpp_com -lrunmanager  -lcommon -lpest_routines -l propack -llapack -lblas -llinear_analysis -lmio -lgfortran $(GCCLIBDIR)/libquadmath.a'
 
 CFLAGS := '-pthread -std=c++11 -O2'
@@ -22,7 +22,7 @@ all:
 	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=${INCLUDES} -C pestpp_common -f makefile_linux libpestpp_com.a
 	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=${INCLUDES} -C linear_analysis -f makefile_linux liblinear_analysis.a
 	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=$(INCLUDES) LFLAGS=$(LFLAGS) LIBS=$(LIBS) GCCLIBDIR=$(GCCLIBDIR) LIBLDIR=$(LIBLDIR) LIBS=$(LIBS) -C pest++ -f makefile_linux pestpp
-	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=$(INCLUDES) LFLAGS=$(LFLAGS) LIBS=$(LIBS) GCCLIBDIR=$(GCCLIBDIR) LIBLDIR=$(LIBLDIR) LIBS=$(LIBS) -C gsa -f makefile_linux gsa.exe
+	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=$(INCLUDES) LFLAGS=$(LFLAGS) LIBS=$(LIBS) GCCLIBDIR=$(GCCLIBDIR) LIBLDIR=$(LIBLDIR) LIBS=$(LIBS) -C gsa -f makefile_linux gsa
 	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=$(INCLUDES) LIBS=$(LIBS) GCCLIBDIR=$(GCCLIBDIR) LIBLDIR=$(LIBLDIR) LIBS=$(LIBS) -C run_manager_fortran_test -f makefile_linux fortran_test
 	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=$(INCLUDES) LFLAGS=$(LFLAGS) LIBS=$(LIBS) GCCLIBDIR=$(GCCLIBDIR) LIBLDIR=$(LIBLDIR) LIBS=$(LIBS) -C sweep -f makefile_linux sweep
 clean:
@@ -34,5 +34,6 @@ clean:
 	make -C pestpp_common -f makefile_linux clean
 	make -C linear_analysis -f makefile_linux clean
 	make -C pest++ -f makefile_linux clean
-	make -C morris_meth -f makefile_linux clean
+	make -C gsa -f makefile_linux clean
 	make -C run_manager_fortran_test -f makefile_linux clean
+	make -C sweep -f makefile_linux clean
