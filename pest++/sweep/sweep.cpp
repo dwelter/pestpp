@@ -545,6 +545,8 @@ int main(int argc, char* argv[])
 			if (sweep_pars.size() == 0)
 				break;
 
+			run_manager_ptr->reinitialize();
+
 			cout << "starting runs " << total_runs_done << " --> " << total_runs_done + sweep_pars.size() << endl;
 
 			// queue up some runs
@@ -555,6 +557,7 @@ int main(int argc, char* argv[])
 			}
 
 			//make some runs
+			
 			run_manager_ptr->run();
 
 			//process the runs
