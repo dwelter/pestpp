@@ -185,7 +185,6 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 		//observations when performing a restart
 		ModelRun prev_run(best_upgrade_run);
 		best_upgrade_run = iteration_upgrd(run_manager, termination_ctl, prev_run, upgrade_start);
-
 		// reload best parameters and set flag to switch to central derivatives next iteration
 		double prev_phi = prev_run.get_phi(*regul_scheme_ptr);
 		double best_new_phi = best_upgrade_run.get_phi(*regul_scheme_ptr);

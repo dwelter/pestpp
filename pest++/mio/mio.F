@@ -1,5 +1,8 @@
 module model_input_output_interface
-!use, intrinsic::ISO_C_BINDING
+      use iso_c_binding
+      external hash_add_table
+      external hash_which1_lower
+      external hash_free
       private
        
 ! -- Variables
@@ -460,17 +463,21 @@ subroutine mio_process_template_files(ifail,npar,apar)
 !! Note that parameter names must be supplied in lower case.
         
         integer                             :: ipar,i,ierr,iline,nblc,j2,j1,jfail,nnw,iunit
+        integer tpar_len
         character (len=10)                  :: aline
-        character (len=12)                  :: tpar
-        
+        character (len=50)                  :: tpar
+        type(c_ptr) cptr
+        tpar_len = 50
         errsub='Error in subroutine MIO_PROCESS_TEMPLATE_FILES:'
 
+         call hash_add_table(apar, tpar_len, npar, cptr)
         ifail=0
 
         if(npar.le.0)then
           write(amessage,10) trim(errsub)
 10        format(a,' value supplied for NPAR is zero or negative.')
           ifail=1
+          call hash_free(cptr)
           return
         end if
 
@@ -484,6 +491,7 @@ subroutine mio_process_template_files(ifail,npar,apar)
 401         format('Error in subroutine MIO_PROCESS_TEMPLATE_FILES: names have not ',  &
             'been provided for all template files.')
             ifail=1
+            call hash_free(cptr)
             return
           end if
           if(modinfile(i).eq.' ')then
@@ -491,6 +499,7 @@ subroutine mio_process_template_files(ifail,npar,apar)
 402         format('Error in subroutine MIO_PROCESS_TEMPLATE_FILES: names have not ',  &
             'been provided for all model input files.')
             ifail=1
+            call hash_free(cptr)
             return
           end if
           call mio_addquote(tempfile(i),afile)
@@ -500,6 +509,7 @@ subroutine mio_process_template_files(ifail,npar,apar)
             write(amessage,410) trim(afile)
 410         format('Cannot open template file ',a,'.')
             ifail=1
+            call hash_free(cptr)
             return
           end if
           read(iunit,'(a)',err=9000,end=9200) dline
@@ -523,6 +533,7 @@ subroutine mio_process_template_files(ifail,npar,apar)
             write(amessage,555) trim(aline),trim(afile)
 555         format('Unbalanced parameter delimiters at line ',a,' of template file ',a,'.')
             ifail=1
+            call hash_free(cptr)
             return
           end if
           j2=j2+j1
@@ -533,21 +544,25 @@ subroutine mio_process_template_files(ifail,npar,apar)
 556         format('Parameter space less than three characters wide at line ',a,  &
             ' of file ',a,'.')
             ifail=1
+            call hash_free(cptr)
             return
           else if (jfail.eq.2)then
             call mio_writint(aline,iline)
             write(amessage,557) trim(aline),trim(afile)
 557         format('Blank parameter space at line ',a,' of file ',a,'.')
             ifail=1
+            call hash_free(cptr)
             return
           end if 
-          call mio_which1(jfail,npar,ipar,apar,tpar)
+          call hash_which1_lower(cptr, tpar, tpar_len, ipar, jfail)
+!          call mio_which1(jfail,npar,ipar,apar,tpar)
           if(jfail.ne.0)then
             call mio_writint(aline,iline)
             write(amessage,558) trim(tpar),trim(aline),trim(afile)
 558         format('Parameter "',a,'" cited on line ',a,' of template file ',a,   &
             ' has not been supplied with a value.')
             ifail=1
+            call hash_free(cptr)
             return
           end if
           nnw=j2-j1+1
@@ -560,22 +575,25 @@ subroutine mio_process_template_files(ifail,npar,apar)
             write(amessage,690) trim(apar(i))
 690         format('Parameter "',a,'" is not cited on any template file.')
             ifail=1
+            call hash_free(cptr)
             return
           end if
 800     continue
 
         template_status=1
-
+        call hash_free(cptr)
         return
 
 9000    write(amessage,9010) trim(afile)
 9010    format('Unable to read template file ',a,'.')
         ifail=1
+        call hash_free(cptr)
         return
 9200    write(amessage,9210) trim(afile)
 9210    format('"ptf" or "jtf" header, followed by space, followed by parameter delimiter ',  &
         'expected on first line of template file ',a,'.')
         ifail=1
+        call hash_free(cptr)
         return
 
 end subroutine mio_process_template_files
@@ -670,11 +688,13 @@ subroutine mio_write_model_input_files(ifail,npar,apar,pval)
 
         integer                          :: ipar,ipp,jfail,ifile,iunit,iunit1,iline, &
                                             lc,j1,j2,j,ierr,idir,n
+        integer tpar_len
         double precision                 :: tval
         character (len=1)                :: aa
-        character (len=12)               :: tpar
+        character (len=50)               :: tpar
         character (len=200)              :: mifile
-
+        type(c_ptr) cptr
+        tpar_len = 50
         errsub='Error writing parameters to model input file(s):'
         ifail=0
         idir=0
@@ -696,6 +716,8 @@ subroutine mio_write_model_input_files(ifail,npar,apar,pval)
 !          end if
 !        end if
 
+
+        call hash_add_table(apar, tpar_len, npar, cptr)
 ! -- Each of the parameter words is filled.
 
         ipar=1
@@ -764,7 +786,8 @@ subroutine mio_write_model_input_files(ifail,npar,apar,pval)
           j2=index(dline(j1+1:lc),pardel(ifile))
           j2=j2+j1
           call mio_parnam(jfail,j1,j2,tpar)
-          call mio_which1(jfail,npar,ipar,apar,tpar)
+          call hash_which1_lower(cptr, tpar, tpar_len, ipar, jfail)
+!          call mio_which1(jfail,npar,ipar,apar,tpar)
 !       The following works when space bigger than pword(:nblnk(pword))
 !       dline(j1:j2)=pword(ipar)(:nblnk(pword(ipar)))
           do 160 j=j1,j2
@@ -787,12 +810,14 @@ subroutine mio_write_model_input_files(ifail,npar,apar,pval)
             go to 9900
           end if
 500     continue
+        call hash_free(cptr)
         return
 
 9000    write(amessage,9010) trim(afile)
 9010    format('Unable to read template file ',a,'.')
         go to 9900
 9900    ifail=1
+        call hash_free(cptr)
         return        
         
 end subroutine mio_write_model_input_files
@@ -826,16 +851,17 @@ subroutine mio_read_model_output_files(ifail,nobs,aobs,obs,instruction)
                                n1,n2,insnum,nblc,dumflg,marktyp,almark,iunit, &
                                nol,jfail,insfle,mrktyp,ierr,j2,j1,n3,num1,num2,j,idir, &
                                ilstart
+        integer obsnam_len
         double precision    :: rtemp
         character (len=1)   :: aa,mkrdel
-        character (len=20)  :: obsnam
+        character (len=50)  :: obsnam
         character (len=15)  :: fmt
         character (len=10)  :: anum
         character (len=200) :: flenme
-
+        type(c_ptr) cptr
         instruction=' '
         obs=-1.1d270    ! an array
-
+        obsnam_len = 50
         errsub='Error reading model output file(s):'
         ifail=0
         idir=0
@@ -857,6 +883,7 @@ subroutine mio_read_model_output_files(ifail,nobs,aobs,obs,instruction)
 !          end if
 !        end if
 
+        call hash_add_table(aobs, obsnam_len, nobs, cptr)
         mcall=mcall+1
         ifile=0
         il=0
@@ -1046,7 +1073,8 @@ subroutine mio_read_model_output_files(ifail,nobs,aobs,obs,instruction)
             end if
             n3=n3+n1-1
             obsnam=instruction(n1+1:n3-1)
-            call mio_which1(jfail,nobs,iobs,aobs,obsnam)
+            call hash_which1_lower(cptr, obsnam, obsnam_len, iobs, jfail)
+!            call mio_which1(jfail,nobs,iobs,aobs,obsnam)
             if(jfail.ne.0) go to 9700
             call mio_getnum(jfail,instruction,n3,n2,num1,num2,fmt)
             IF(jfail.ne.0) then
@@ -1105,7 +1133,8 @@ subroutine mio_read_model_output_files(ifail,nobs,aobs,obs,instruction)
             jobs=jobs+1
             if(mcall.eq.1) then
               obsnam=instruction(n1+1:n2-1)
-              call mio_which1(jfail,nobs,iobs,aobs,obsnam)
+              call hash_which1_lower(cptr, obsnam, obsnam_len, iobs, jfail)
+!              call mio_which1(jfail,nobs,iobs,aobs,obsnam)
               if(jfail.ne.0) go to 9700
               iiobs(jobs)=iobs
             else
@@ -1192,7 +1221,7 @@ subroutine mio_read_model_output_files(ifail,nobs,aobs,obs,instruction)
 
         close(unit=iunit)
         instruction=' '
-
+        call hash_free(cptr)
         return
 
 9000    write(amessage,9010) trim(errsub)
@@ -1240,6 +1269,7 @@ subroutine mio_read_model_output_files(ifail,nobs,aobs,obs,instruction)
         mcall=mcall-1
         if(mcall.lt.0) mcall=0
         close(unit=iunit)
+        call hash_free(cptr)
         return
 
 end subroutine mio_read_model_output_files

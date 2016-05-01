@@ -306,3 +306,23 @@ c         print *,'computing vectors: neig = ',neig,' jold = ',jold
 c      call second(t1)
       tlansvd = t1-t0
       end
+
+      subroutine dlansvd_sparce(jobu,jobv,m,n,k,kmax,U,ldu,
+     c     Sigma,bnd, V,ldv,tolin,work,lwork,iwork,liwork,doption,
+     c     ioption,info,dparm,iparm)
+c     %-----------%
+c     | Arguments |
+c     %-----------%
+      implicit none
+      include 'stat.h'
+      character*1 jobu,jobv
+      integer info,liwork
+      integer m,n,k,kmax,lanmax,ldu,ldv,iwork(liwork),lwork
+      double precision U(ldu,*),V(ldv,*),Sigma(*),bnd(*),work(lwork)
+      double precision dparm(*),tolin,doption(*)
+      integer iparm(*),ioption(*)
+      external APROD
+      call dlansvd(jobu,jobv,m,n,k,kmax,aprod,U,ldu,Sigma,bnd,
+     c     V,ldv,tolin,work,lwork,iwork,liwork,doption,ioption,info,
+     c     dparm,iparm)
+      end subroutine

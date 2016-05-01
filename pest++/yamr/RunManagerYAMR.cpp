@@ -44,6 +44,11 @@
 using namespace std;
 using namespace pest_utils;
 
+const int RunManagerYAMR::BACKLOG = 10;
+const int RunManagerYAMR::MAX_FAILED_PINGS = 60;
+const int RunManagerYAMR::N_PINGS_UNRESPONSIVE = 3;
+const int RunManagerYAMR::PING_INTERVAL_SECS = 5;
+const int RunManagerYAMR::MAX_CONCURRENT_RUNS_LOWER_LIMIT = 3;
 
 SlaveInfoRec::SlaveInfoRec(int _socket_fd)
 {

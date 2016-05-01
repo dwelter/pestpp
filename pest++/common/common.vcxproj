@@ -223,6 +223,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="fortran_wrappers.cpp" />
     <ClCompile Include="model_interface.cpp" />
     <ClCompile Include="network_package.cpp" />
     <ClCompile Include="network_wrapper.cpp" />

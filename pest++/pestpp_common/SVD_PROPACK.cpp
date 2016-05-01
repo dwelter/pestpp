@@ -26,11 +26,14 @@ using namespace std;
 using namespace Eigen;
 
 extern "C" {
-	double DEF_DLAMCH(char*);
-	void DEF_DLANBPRO_SPARCE(int *m, int *n, int *k0, int *k, double *U, 
-		int *ldu, double *V, int *ldv, double *B, int *ldb, 
-		double *rnorm, double *doption, int *ioption, double *work,
-		int *iwork, double *dparm, int *iparm, int *ierr);
+  double DEF_DLAMCH(char*);
+  void DEF_DLANBPRO_SPARCE(int *m, int *n, int *k0, int *k, double *U, 
+			   int *ldu, double *V, int *ldv, double *B, int *ldb, 
+			   double *rnorm, double *doption, int *ioption, double *work,
+			   int *iwork, double *dparm, int *iparm, int *ierr);
+  void DEF_DLANSVD(char *jobu, char *jobv,int *m,int *n,int *k, int *kmax, double *U, int *ldu, double *Sigma, double *bnd,
+		   double *V, int *ldv, double *tolin, double *work, int *lwork, int *iwork,int *liwork, double *doption, int *ioption, int *info,
+		   double *dparm, int *iparm);
 }
 
 SVD_PROPACK::SVD_PROPACK(int _n_max_sing, double _eign_thres) : SVDPackage("PROPACK", _n_max_sing, _eign_thres)
@@ -54,17 +57,16 @@ void SVD_PROPACK::solve_ip(Eigen::SparseMatrix<double>& A, VectorXd &Sigma, Eige
 			}
 		}
 	};
-
 	int m_rows = A.rows();
 	int n_cols = A.cols();
 	int n_nonzero;
-	int kmax = min(m_rows, n_cols);
-	kmax = min(n_max_sing, kmax);
+	int k = min(m_rows, n_cols);
+	k = min(n_max_sing, k);
+        int kmax = k * 10;
 	int ioption[] = {0, 1};
 	char eps_char = 'e';
 	double eps = DEF_DLAMCH(&eps_char);
-	double d_option[] = {0.0, sqrt(eps), pow(eps, 3.0/4.0), 0.0};
-	double rnorm = 0.0;
+	double doption[] = {0.0, sqrt(eps), pow(eps, 3.0/4.0), 0.0};
 	int ierr = 0;
 
 	//count number of nonzero entries
@@ -74,11 +76,14 @@ void SVD_PROPACK::solve_ip(Eigen::SparseMatrix<double>& A, VectorXd &Sigma, Eige
 	double *dparm = new double[n_nonzero];
 	int *iparm = new int[2*n_nonzero+1];
 	double *tmp_u = new double[m_rows*(kmax+1)];
+	double *tmp_sigma = new double[k];
+	double *tmp_bnd = new double[k];
 	double *tmp_v = new double[n_cols*kmax];
-	double *tmp_b = new double[kmax*2];
-	double *tmp_work = new double[2*(m_rows+n_cols+kmax+1)];
-	int *tmp_iwork = new int[2*kmax+1];
-
+	int nb = 1;
+	int lwork =  m_rows + n_cols + 9*kmax + 5*kmax*kmax + 4 + max(3*kmax*kmax+4*kmax+4, nb*max(m_rows,n_cols));
+	double *tmp_work = new double[lwork];
+	int liwork = 8*kmax;
+	int *tmp_iwork = new int[liwork];
 	iparm[0] = n_nonzero;
 	int n=0;
 	double data;
@@ -93,38 +98,33 @@ void SVD_PROPACK::solve_ip(Eigen::SparseMatrix<double>& A, VectorXd &Sigma, Eige
 			iparm[n_nonzero+n] = it.col()+1;
 		}
 	}
-
 	local_utils::init_array(tmp_u, m_rows*(kmax+1), 0.0);
+	local_utils::init_array(tmp_sigma, k, 0.0);
+	local_utils::init_array(tmp_bnd, k, 0.0);;
 	local_utils::init_array(tmp_v, n_cols*kmax, 0.0);
-	local_utils::init_array(tmp_b, kmax*2, 0.0);
-	local_utils::init_array(tmp_work,2*(m_rows+n_cols+kmax+1), 0.0);
-
+	local_utils::init_array(tmp_work,lwork, 0.0);
+	char jobu = 'Y';
+        char jobv = 'Y';
 	int ld_tmpu = m_rows;
 	int ld_tmpv = n_cols;
 	int ld_tmpb = kmax;
 
 	// Compute singluar values and vectors
-	int k0 = 0;
-	int k2 = 0;
-	double eig_ratio = 1.0;
-	int step_size = 50;
-	while (k0<kmax && eig_ratio > _eigen_thres)
-	{
-		k2 = min(step_size+k0, kmax); // index of eignvlaue and eigenvector to be computed this time
-		DEF_DLANBPRO_SPARCE(&m_rows, &n_cols, &k0, &k2, tmp_u, 
-			&ld_tmpu, tmp_v, &ld_tmpv, tmp_b, &ld_tmpb, 
-			&rnorm, d_option, ioption, tmp_work,
-			tmp_iwork, dparm, iparm, &ierr);
-		if (k2 == k0) break; // no more singular values
-		eig_ratio = tmp_b[k2-1] / tmp_b[0];
-		k0 = k2;
-	}
+	int info=0;
+	double tolin = 1.0E-4 ;
+
+	DEF_DLANSVD(&jobu, &jobv, &m_rows, &n_cols, &k, &kmax, tmp_u, &ld_tmpu, tmp_sigma, tmp_bnd,
+		   tmp_v, &ld_tmpv, &tolin, tmp_work, &lwork, tmp_iwork, &liwork, doption, ioption, &info,
+		   dparm,iparm);
 
 	//Compute number of singular values to be used in the solution
 	int n_sing_used = 0;
-	for (int i_sing = 0; i_sing < kmax; ++i_sing)
+	int actual_sing = kmax;
+	if (info > 0)
+	  actual_sing = info;
+	for (int i_sing = 0; i_sing < actual_sing; ++i_sing)
 	{
-		eig_ratio = tmp_b[i_sing] / tmp_b[0];
+		double eig_ratio = tmp_sigma[i_sing] / tmp_sigma[0];
 		if (eig_ratio > _eigen_thres)
 		{
 			++n_sing_used;
@@ -134,20 +134,19 @@ void SVD_PROPACK::solve_ip(Eigen::SparseMatrix<double>& A, VectorXd &Sigma, Eige
 			break;
 		}
 	}
-
 	// Update Sigma
 	Sigma.resize(n_sing_used);
 	Sigma.setConstant(0.0);
 	for (int i_sing = 0; i_sing<n_sing_used; ++i_sing)
 	{
-		Sigma(i_sing) = tmp_b[i_sing];
+		Sigma(i_sing) = tmp_sigma[i_sing];
 	}
 
 	Sigma_trunc.resize(kmax - n_sing_used);
 	Sigma_trunc.setConstant(0.0);
 	for (int i_sing = n_sing_used; i_sing<kmax; ++i_sing)
 	{
-		Sigma_trunc(i_sing - n_sing_used) = tmp_b[i_sing];
+		Sigma_trunc(i_sing - n_sing_used) = tmp_sigma[i_sing];
 	}
 
 	std::vector<Eigen::Triplet<double> > triplet_list;
@@ -186,10 +185,12 @@ void SVD_PROPACK::solve_ip(Eigen::SparseMatrix<double>& A, VectorXd &Sigma, Eige
 	delete [] dparm;
 	delete [] iparm;
 	delete [] tmp_u;
+	delete [] tmp_sigma;
+	delete [] tmp_bnd;
 	delete [] tmp_v;
-	delete [] tmp_b;
 	delete [] tmp_work;
 	delete [] tmp_iwork;
+
 }
 
 

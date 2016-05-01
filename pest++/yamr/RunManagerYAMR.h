@@ -105,11 +105,11 @@ public:
 	~RunManagerYAMR(void);
 private:
 	std::string port;
-	static const int BACKLOG = 10;
-	static const int MAX_FAILED_PINGS = 60;
-	static const int N_PINGS_UNRESPONSIVE = 3;
-	static const int PING_INTERVAL_SECS = 5;
-	static const int MAX_CONCURRENT_RUNS_LOWER_LIMIT = 3;
+	static const int BACKLOG;
+	static const int MAX_FAILED_PINGS;
+	static const int N_PINGS_UNRESPONSIVE;
+	static const int PING_INTERVAL_SECS;
+	static const int MAX_CONCURRENT_RUNS_LOWER_LIMIT;
 	
 	double overdue_reched_fac;
 	double overdue_giveup_fac;

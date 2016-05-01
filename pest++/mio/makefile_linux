@@ -1,5 +1,5 @@
 OUT = libmio.a
-OBJECTS	:= mio.o 
+OBJECTS	:= mio.o
  
 $(OUT): $(OBJECTS)
 	ar rcs $(OUT) $(OBJECTS)
@@ -8,7 +8,7 @@ $(OUT): $(OBJECTS)
 	$(CXX) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@
 
 %.o: %.F
-	$(FC) $(FFLAGS) -std=f95 -ffree-form $(INCLUDES) $< -c $(input) -o $@
+	$(FC) $(FFLAGS) -ffree-form $(INCLUDES) $< -c $(input) -o $@
 
 clean:
 	rm $(OBJECTS) $(OUT)
