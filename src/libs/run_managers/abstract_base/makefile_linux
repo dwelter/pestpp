@@ -1,0 +1,18 @@
+OUT = librm_abstract.a
+OBJECTS	:= model_interface.o \
+           Serialization.o \
+           RunStorage.o \
+           linpackc.o \
+           RunManagerAbstract.o
+ 
+$(OUT): $(OBJECTS)
+	ar rcs $(OUT) $(OBJECTS)
+
+%.o: %.cpp
+	$(CXX) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@
+
+%.o: %.c
+	$(CC) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@
+
+clean:
+	-rm $(OBJECTS) $(OUT)

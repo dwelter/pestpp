@@ -1,3 +1,0 @@
-name,prior_mean,prior_stdev,prior_lower_bound,prior_upper_bound,post_mean,post_stdev,post_lower_bound,post_upper_bound
-H01_08,2.4,0.589977,1.22005,3.57995,2.899,0.258722,2.38156,3.41644
-H02_08,3.8,1.17995,1.44009,6.15991,4.798,0.517444,3.76311,5.83289

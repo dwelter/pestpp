@@ -1,0 +1,20 @@
+OUT = libcommon.a
+OBJECTS	:= network_package.o \
+           pest_error.o \
+           Transformable.o \
+           network_wrapper.o \
+           system_variables.o \
+           utilities.o \
+           fortran_wrappers.o
+
+$(OUT): $(OBJECTS)
+	ar rcs $(OUT) $(OBJECTS)
+
+%.o: %.cpp
+	$(CXX) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@
+
+%.o: %.c
+	$(CC) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@
+
+clean:
+	-rm $(OBJECTS) $(OUT)

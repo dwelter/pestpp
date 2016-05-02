@@ -1,0 +1,14 @@
+OUT = librm_genie_wrapper.a
+OBJECTS	:= RunManagerGenie.o
+ 
+$(OUT): $(OBJECTS)
+	ar rcs $(OUT) $(OBJECTS)
+
+%.o: %.cpp
+	$(CXX) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@
+
+%.o: %.c
+	$(CC) $(CFLAGS) $(INCLUDES) $< -c $(input) -o $@
+
+clean:
+	-rm $(OBJECTS) $(OUT)
