@@ -153,8 +153,8 @@ if __name__ == "__main__":
     bm_list_gsa = []
     f_log = open('benchmark_log.txt', 'wt')
     if sys.platform == 'win32':
-       exe_cmd_pp = r'..\..\..\x64\Release\pest++.exe'
-       exe_cmd_gsa = r'..\..\..\x64\Release\gsa.exe'
+       exe_cmd_pp = r'..\..\..\exe\windows\x64\Release\pest++.exe'
+       exe_cmd_gsa = r'..\..\..\exe\windows\x64\Release\gsa.exe'
        # run PEST++ benchmarks
        bm_list = [
         [r'.\stor', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],

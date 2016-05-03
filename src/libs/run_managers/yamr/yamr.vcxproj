@@ -27,30 +27,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="debug.h" />
-    <ClInclude Include="RunManagerAbstract.h" />
-    <ClInclude Include="RunManagerCWrapper.h" />
-    <ClInclude Include="RunManagerExternal.h" />
-    <ClInclude Include="RunManagerFortranWrapper.h" />
-    <ClInclude Include="RunManagerGenie.h" />
-    <ClInclude Include="RunManagerSerial.h" />
     <ClInclude Include="RunManagerYAMR.h" />
-    <ClInclude Include="RunStorage.h" />
-    <ClInclude Include="Serialization.h" />
     <ClInclude Include="YamrSlave.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="debug.cpp" />
-    <ClCompile Include="linpackc.cpp" />
-    <ClCompile Include="RunManagerAbstract.cpp" />
-    <ClCompile Include="RunManagerCWrapper.cpp" />
-    <ClCompile Include="RunManagerExternal.cpp" />
-    <ClCompile Include="RunManagerFortranWrapper.cpp" />
-    <ClCompile Include="RunManagerGenie.cpp" />
-    <ClCompile Include="RunManagerSerial.cpp" />
     <ClCompile Include="RunManagerYAMR.cpp" />
-    <ClCompile Include="RunStorage.cpp" />
-    <ClCompile Include="Serializeation.cpp" />
     <ClCompile Include="YamrSlave.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -173,7 +154,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(IFORT_COMPILER14)\mkl\include;$(SolutionDir);$(SolutionDir)\common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)\libs\common;$(SolutionDir)\libs\run_managers\abstract_base</AdditionalIncludeDirectories>
       <OpenMPSupport>false</OpenMPSupport>
       <PreprocessorDefinitions>;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FloatingPointExceptions>true</FloatingPointExceptions>
@@ -230,7 +211,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)\common;$(IFORT_COMPILER14)\mkl\include;$(SolutionDir);$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)\libs\common;$(SolutionDir)\libs\run_managers\abstract_base</AdditionalIncludeDirectories>
       <OpenMPSupport>true</OpenMPSupport>
       <PreprocessorDefinitions>WIN32;WIN64;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <EnableParallelCodeGeneration>

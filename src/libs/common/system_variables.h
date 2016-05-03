@@ -34,10 +34,10 @@ public:
 	static void chdir(const char *str);
 	static char *gets_s(char *str, size_t len);
 	static bool double_is_invalid(double x);
-	
 };
 
 #ifdef OS_WIN
+#include <Windows.h>
 PROCESS_INFORMATION start(std::string &cmd_string);
 #endif
 #ifdef OS_LINUX

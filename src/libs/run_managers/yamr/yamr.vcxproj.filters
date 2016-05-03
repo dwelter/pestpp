@@ -1,75 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="RunManagerAbstract.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RunManagerGenie.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RunManagerSerial.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="RunManagerYAMR.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RunStorage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Serializeation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="YamrSlave.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RunManagerCWrapper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RunManagerFortranWrapper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="linpackc.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RunManagerExternal.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="RunManagerAbstract.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RunManagerGenie.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RunManagerSerial.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="RunManagerYAMR.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RunStorage.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Serialization.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="YamrSlave.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RunManagerFortranWrapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RunManagerCWrapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RunManagerExternal.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="debug.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
