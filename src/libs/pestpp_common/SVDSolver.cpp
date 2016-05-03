@@ -845,9 +845,12 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 		run_manager.update_run(run_id, base_model_pars, base_run.get_obs());
 		//Marquardt Lambda Update Vector
 		vector<double> lambda_vec = base_lambda_vec;
-		lambda_vec.push_back(best_lambda);
-		lambda_vec.push_back(best_lambda / 2.0);
-		lambda_vec.push_back(best_lambda * 2.0);
+		if (lambda_vec.size() > 1)
+		{
+			lambda_vec.push_back(best_lambda);
+			lambda_vec.push_back(best_lambda / 2.0);
+			lambda_vec.push_back(best_lambda * 2.0);
+		}
 		std::sort(lambda_vec.begin(), lambda_vec.end());
 		auto iter = std::unique(lambda_vec.begin(), lambda_vec.end());
 		lambda_vec.resize(std::distance(lambda_vec.begin(), iter));

@@ -423,9 +423,12 @@ int main(int argc, char* argv[])
 		{
 			cerr << "Error prococessing control file: " << filename << endl << endl;
 			cerr << e.what() << endl << endl;
+			fout_rec << "Error prococessing control file: " << filename << endl << endl;
+			fout_rec << e.what() << endl << endl;
+			fout_rec.close();
 			throw(e);
 		}
-		pest_scenario.check_inputs();
+		pest_scenario.check_inputs(fout_rec);
 
 
 		// process the parameter csv file
@@ -516,7 +519,7 @@ int main(int argc, char* argv[])
 		{
 			sweep_pars.push_back(pest_scenario.get_ctl_parameters());
 		}
-
+		int total_runs_done = 0;
 		while (true)
 		{
 			//read some realizations
@@ -542,6 +545,10 @@ int main(int argc, char* argv[])
 			if (sweep_pars.size() == 0)
 				break;
 
+			run_manager_ptr->reinitialize();
+
+			cout << "starting runs " << total_runs_done << " --> " << total_runs_done + sweep_pars.size() << endl;
+
 			// queue up some runs
 			run_ids.clear();
 			for (auto &par : sweep_pars)
@@ -550,10 +557,13 @@ int main(int argc, char* argv[])
 			}
 
 			//make some runs
+			
 			run_manager_ptr->run();
 
 			//process the runs
 			process_sweep_runs(obs_stream, pest_scenario, run_manager_ptr, run_ids, obj_func);
+
+			total_runs_done += sweep_pars.size();
 
 		}
 

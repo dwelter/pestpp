@@ -273,7 +273,14 @@ int main(int argc, char* argv[])
 			cerr << e.what() << endl << endl;
 			throw(e);
 		}
-		pest_scenario.check_inputs();
+		pest_scenario.check_inputs(fout_rec);
+
+		//if base jco arg read from control file, reset restart controller
+		if (!pest_scenario.get_pestpp_options().get_basejac_filename().empty())
+		{
+			restart_ctl.get_restart_option() = RestartController::RestartOption::REUSE_JACOBIAN;
+		}
+
 		//Initialize OutputFileWriter to hadle IO of suplementary files (.par, .par, .svd)
 		//bool save_eign = pest_scenario.get_svd_info().eigwrite > 0;	
 		OutputFileWriter output_file_writer(file_manager, pest_scenario, restart_flag);
