@@ -1,6 +1,6 @@
 OUT = librm_abstract.a
 OBJECTS	:= model_interface.o \
-           Serialization.o \
+           Serializeation.o \
            RunStorage.o \
            linpackc.o \
            RunManagerAbstract.o

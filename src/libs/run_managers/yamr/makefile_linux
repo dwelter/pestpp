@@ -1,15 +1,6 @@
-OUT = librunmanager.a
-OBJECTS	:= RunManagerSerial.o \
-           RunManagerYAMR.o \
-           RunManagerGenie.o \
-           RunManagerExternal.o \
-           RunStorage.o \
-           RunManagerAbstract.o \
-           Serializeation.o \
-           YamrSlave.o \
-           linpackc.o \
-           RunManagerCWrapper.o \
-           RunManagerFortranWrapper.o 
+OUT = librm_yamr.a
+OBJECTS	:= RunManagerYAMR.o \
+           YamrSlave.o
  
 $(OUT): $(OBJECTS)
 	ar rcs $(OUT) $(OBJECTS)

@@ -169,8 +169,8 @@ if __name__ == "__main__":
         #[r'.\hendry', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj']
         ]
     elif sys.platform == 'linux' or  sys.platform == 'linux2':
-       exe_cmd_pp = r'../../../pest++/pestpp'
-       exe_cmd_gsa = r'../../../gsa/gsa.exe'
+       exe_cmd_pp = r'../../../exe/linux/pestpp'
+       exe_cmd_gsa = r'../../../exe/linux/gsa'
        # run PEST++ and GSA benchmarks
        bm_list = [
         [r'./stor', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
