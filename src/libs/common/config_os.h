@@ -18,6 +18,7 @@
 #define OS_LINUX
 #define DEF_DLAMCH dlamch_
 #define DEF_DLANBPRO_SPARCE dlanbpro_sparce_
+#define DEF_DLANSVD dlansvd_sparce_
 #endif
 
 
