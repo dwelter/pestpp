@@ -59,8 +59,10 @@ vector<string> prepare_parameter_csv(Parameters pars, ifstream &csv, bool forgiv
 	vector<string> tokens;
 	if (!getline(csv, line))
 		throw runtime_error("error reading header (first) line from csv file :");
+	strip_ip(line);
 	upper_ip(line);
 	tokenize(line, tokens, ",", false);
+	cout << tokens << endl;
 	vector<string> header_tokens = tokens;
 
 	// check for parameter names that in the pest control file but that are missing from the csv file
@@ -97,6 +99,7 @@ vector<Parameters> load_parameters_from_csv(vector<string> header_tokens, vector
 	Parameters pars;
 	while (getline(csv, line))
 	{
+		strip_ip(line);
 		tokens.clear();
 		tokenize(line, tokens, ",", false);
 		if (tokens.size() != header_tokens.size())
