@@ -102,6 +102,8 @@ bool Jacobian_1to1::build_runs(ModelRun &init_model_run, vector<string> numeric_
 		}
 		else 
 		{
+			cout << endl << " warning: failed to compute parameter deriviative for " << i_name << endl;
+			file_manager.rec_ofstream() << " warning: failed to compute parameter deriviative for " << i_name << endl;
 			failed_parameter_names.insert(i_name);
 			failed_to_increment_parmaeters.insert(i_name, derivative_par_value);
 		}
@@ -109,6 +111,8 @@ bool Jacobian_1to1::build_runs(ModelRun &init_model_run, vector<string> numeric_
 	ofstream &fout_restart = file_manager.get_ofstream("rst");
 	debug_print(failed_parameter_names);
 	debug_msg("Jacobian_1to1::build_runs end");
+	if (failed_parameter_names.size() > 0)
+		return false;
 	return true;
 }
 
@@ -262,6 +266,7 @@ bool Jacobian_1to1::forward_diff(const string &par_name, double base_derivative_
 
 	// perturb derivative parameters
 	double incr = derivative_inc(par_name, group_info, base_derivative_val, false);
+	if (incr == 0.0) return false;
 	new_par_val = new_par[par_name] = base_derivative_val + incr;
 	// try forward derivative
 	out_of_bound_forward = out_of_bounds(new_par, par_info_ptr);
@@ -290,6 +295,7 @@ bool Jacobian_1to1::central_diff(const string &par_name, double base_derivative_
 
 	const ParameterRec *par_info_ptr = ctl_par_info.get_parameter_rec_ptr(par_name);
 	double incr = derivative_inc(par_name, group_info, base_derivative_val, true);
+	if (incr == 0.0) return false;
 	// try backward difference
 	new_par = perturb_derivative_pars[par_name] = base_derivative_val - incr;
 	out_of_bnds_back = out_of_bounds(perturb_derivative_pars, par_info_ptr);

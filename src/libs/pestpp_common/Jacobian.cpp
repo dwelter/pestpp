@@ -250,6 +250,8 @@ bool Jacobian::build_runs(ModelRun &init_model_run, vector<string> numeric_par_n
 		else
 		{
 			debug_msg("fail");
+			cout << endl << " warning: failed to compute parameter deriviative for " << ipar_name << endl;
+			file_manager.rec_ofstream() << " warning: failed to compute parameter deriviative for " << ipar_name << endl;
 			failed_parameter_names.insert(ipar_name);
 		}
 	}
@@ -651,7 +653,7 @@ double Jacobian::derivative_inc(const string &name, const ParameterGroupInfo &gr
 		incr *= g_rec->derincmul;
 	}
 	// apply lower bound
-	if (incr < g_rec->derinclb) {
+	if ((g_rec->inctyp != "ABSOLUTE") && (incr < g_rec->derinclb)) {
 		incr = g_rec->derinclb;
 	}
 	return incr;
