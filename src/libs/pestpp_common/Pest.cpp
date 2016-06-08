@@ -62,6 +62,51 @@ void Pest::check_inputs(ostream &f_rec)
 		svd_info.maxsing = min(numeric_pars.size(), observation_values.size());
 	}
 
+
+	vector<string> par_warnings;
+	vector<string> par_problems;
+	bool unfixed_par = false;
+	for (auto &pname : ctl_ordered_par_names)
+	{
+		//double pval = ctl_parameters[pname];
+		//double lb = ctl_parameter_info.get_low_bnd(pname);
+		const ParameterRec *prec = ctl_parameter_info.get_parameter_rec_ptr(pname);
+		if (prec->tranform_type != ParameterRec::TRAN_TYPE::FIXED)
+			unfixed_par = true;
+		if (prec->init_value < prec->lbnd)
+			par_problems.push_back(pname + " is less than lower bound");
+		else if (prec->init_value == prec->lbnd)
+			par_warnings.push_back(pname + " is at lower bound");
+		if (prec->init_value > prec->ubnd)
+			par_problems.push_back(pname + " is greater than upper bound");
+		else if (prec->init_value == prec->ubnd)
+			par_warnings.push_back(pname + " is at upper bound");
+	}
+	bool err = false;
+
+	for (auto &str : par_warnings)
+		cout << "parameter warning: " << str << endl;
+	for (auto &str : par_problems)
+	{
+		cout << "parameter error: " << str << endl;
+		err = true;
+	}
+
+	if (!unfixed_par)
+	{
+		cout << "parameter error: no adjustable parameters" << endl;
+		err = true;
+	}
+
+	if (err)
+		throw runtime_error("error in parameter data");
+
+
+
+
+
+
+
 	int n_base = get_pestpp_options().get_n_iter_base();
 	if (n_base == -1 || n_base > 0)
 	{
