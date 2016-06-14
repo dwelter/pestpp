@@ -17,6 +17,9 @@
     along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
 
+#include <cstdlib>
+#include <cstdio>
+#include <stdexcept>
 #include <string>
 #include <sstream>
 #include <cmath>

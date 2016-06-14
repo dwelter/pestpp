@@ -1,22 +1,22 @@
 CXX = 'g++'
 CCC = 'g++'
 FC = gfortran
-GCCLIBDIR :='/opt/hesm/apps/gcc-5.2.0/lib64'
+GCCLIBDIR :='/opt/local/gcc-6.1.0/lib64'
 #GCCLIBDIR :='/opt/local/gcc-4.9.0/lib64'
 CUR_DIR = $(CURDIR)
 LIBS_DIR = $(CURDIR)/libs
 RUN_MNG_DIR = $(CURDIR)/libs/run_managers
 EXE_DIR = ../exe/linux
 INCLUDES := '-I $(LIBS_DIR)/Eigen -I $(LIBS_DIR)/common -I $(LIBS_DIR)/run_managers/abstract_base -I $(RUN_MNG_DIR)/yamr -I $(RUN_MNG_DIR)/serial -I $(RUN_MNG_DIR)/genie_wrapper -I $(RUN_MNG_DIR)/external  -I $(RUN_MNG_DIR)/wrappers  -I $(LIBS_DIR)/pestpp_common -I $(LIBS_DIR)/linear_analysis'
-LIBLDIR := '-L $(GCCLIBDIR) -L /opt/hesm/lib64 -L /usr/lib64 -L/opt/local/lib64 -L $(LIBS_DIR)/common  -L$(RUN_MNG_DIR)/wrappers -L$(RUN_MNG_DIR)/serial -L$(RUN_MNG_DIR)/external -L$(RUN_MNG_DIR)/yamr -L$(RUN_MNG_DIR)/genie_wrapper -L$(RUN_MNG_DIR)/abstract_base -L $(LIBS_DIR)/pestpp_common -L $(LIBS_DIR)/mio -L $(LIBS_DIR)/propack -L $(LIBS_DIR)/linear_analysis'
+LIBLDIR := '-L $(GCCLIBDIR) -L /usr/lib64 -L/opt/local/lib64 -L $(LIBS_DIR)/common  -L$(RUN_MNG_DIR)/wrappers -L$(RUN_MNG_DIR)/serial -L$(RUN_MNG_DIR)/external -L$(RUN_MNG_DIR)/yamr -L$(RUN_MNG_DIR)/genie_wrapper -L$(RUN_MNG_DIR)/abstract_base -L $(LIBS_DIR)/pestpp_common -L $(LIBS_DIR)/mio -L $(LIBS_DIR)/propack -L $(LIBS_DIR)/linear_analysis'
 LIBS :=  '-lpestpp_com -lrm_wrappers -lrm_yamr -lrm_serial -lrm_external -lrm_genie_wrapper -lrm_abstract -lmio -lcommon -l propack -llapack -lblas -llinear_analysis -lgfortran $(GCCLIBDIR)/libquadmath.a'
 
 #CFLAGS := '-pthread -std=c++11 -Wl,--no-as-needed -g -gdwarf-2' 
 #FFLAGS := '-g -gdwarf-2 -c -cpp'
 
-CFLAGS := '-pthread -std=c++11 -Wl,--no-as-needed -O2' 
+CFLAGS := '-pthread  -Wl,--no-as-needed -O2' 
 FFLAGS := '-O2 -c -cpp'
-LFLAGS := '-static -static-libgcc -static-libgfortran'
+#LFLAGS := '-static -static-libgcc -static-libgfortran'
 
 all:
 	rm -rf $(EXE_DIR)/*
