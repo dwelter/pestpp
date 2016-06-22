@@ -1,0 +1,15 @@
+﻿  OsiUnitTestUtils.cpp
+  OsiSolverInterfaceTest.cpp
+..\..\..\src\OsiCommonTest\OsiSolverInterfaceTest.cpp(3476): warning C4101: 'err': unreferenced local variable
+  OsiSimplexAPITest.cpp
+  OsiRowCutTest.cpp
+..\..\..\src\OsiCommonTest\OsiRowCutTest.cpp(344): warning C4800: 'double': forcing value to bool 'true' or 'false' (performance warning)
+..\..\..\src\OsiCommonTest\OsiRowCutTest.cpp(351): warning C4800: 'double': forcing value to bool 'true' or 'false' (performance warning)
+  OsiRowCutDebuggerTest.cpp
+  OsiNetlibTest.cpp
+  OsiCutsTest.cpp
+  OsiColCutTest.cpp
+..\..\..\src\OsiCommonTest\OsiColCutTest.cpp(279): warning C4800: 'double': forcing value to bool 'true' or 'false' (performance warning)
+..\..\..\src\OsiCommonTest\OsiColCutTest.cpp(284): warning C4800: 'double': forcing value to bool 'true' or 'false' (performance warning)
+  Generating Code...
+  libOsiCommonTest.vcxproj -> E:\svn\Cbc-2.9.8\Cbc\MSVisualStudio\v10\x64-v140-Debug\libOsiCommonTest.lib
