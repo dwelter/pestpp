@@ -155,6 +155,8 @@ if __name__ == "__main__":
     if sys.platform == 'win32':
        exe_cmd_pp = r'..\..\..\exe\windows\x64\Release\pest++.exe'
        exe_cmd_gsa = r'..\..\..\exe\windows\x64\Release\gsa.exe'
+       #exe_cmd_pp = r'..\..\..\exe\windows\Win32\Release\pest++_32.exe'
+       #exe_cmd_gsa = r'..\..\..\exe\windows\Win32\Release\gsa_32.exe'
        # run PEST++ benchmarks
        bm_list = [
         [r'.\stor', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],

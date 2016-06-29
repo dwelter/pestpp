@@ -54,6 +54,7 @@
     <ProjectGuid>{0C79A285-E41B-43D6-A799-CAF3D6E71821}</ProjectGuid>
     <RootNamespace>morris_meth</RootNamespace>
     <ProjectName>gsa</ProjectName>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -173,12 +174,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
-    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)\..\exe\windows\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_32</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)\..\exe\windows\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_32</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug2_dll|Win32'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
@@ -196,12 +199,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)\pestpp_common;$(SolutionDir)\yamr;$(SolutionDir)\lapackpp-2.5.4\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)\libs\common;$(SolutionDir)\libs\pestpp_common;$(SolutionDir)\libs\linear_analysis;$(SolutionDir)\libs\run_managers\abstract_base;$(SolutionDir)\libs\run_managers\yamr;$(SolutionDir)\libs\run_managers\genie_wrapper;$(SolutionDir)\libs\run_managers\serial;$(SolutionDir)\libs\run_managers\external;$(SolutionDir)libs\Eigen</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>mkl_blas95.lib;mkl_lapack95.lib;propack.lib;ws2_32.lib;genie.lib;Advapi32.lib;common.lib;yamr.lib;pestpp_common.lib;pest_routines.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(IFORT_COMPILER14)\compiler\lib\ia32;$(IFORT_COMPILER14)\mkl\lib\ia32;$(SolutionDir)$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>mkl_blas95.lib;mkl_lapack95.lib;ws2_32.lib;propack.lib;Advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(IFORT_COMPILER16)\compiler\lib\ia32;$(IFORT_COMPILER16)\mkl\lib\ia32;$(SolutionDir)$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug2_dll|Win32'">
@@ -239,7 +242,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>mkl_blas95_lp64.lib;mkl_lapack95_lp64.lib;ws2_32.lib;propack.lib;linear_analysis.lib;Advapi32.lib;pestpp_common.lib;pest_routines.lib;mio.lib;abstract_base.lib;serial.lib;external.lib;genie_wrapper.lib;yamr.lib;genie.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mkl_blas95_lp64.lib;mkl_lapack95_lp64.lib;ws2_32.lib;Advapi32.lib;propack.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(IFORT_COMPILER16)\compiler\lib\intel64;$(IFORT_COMPILER16)\mkl\lib\intel64;$(SolutionDir)$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -314,15 +317,15 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\yamr;$(SolutionDir);$(SolutionDir)\pestpp_common;$(SolutionDir)common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)\libs\common;$(SolutionDir)\libs\pestpp_common;$(SolutionDir)\libs\linear_analysis;$(SolutionDir)\libs\run_managers\abstract_base;$(SolutionDir)\libs\run_managers\yamr;$(SolutionDir)\libs\run_managers\genie_wrapper;$(SolutionDir)\libs\run_managers\serial;$(SolutionDir)\libs\run_managers\external;$(SolutionDir)libs\Eigen</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>mkl_blas95.lib;mkl_lapack95.lib;propack.lib;ws2_32.lib;genie.lib;Advapi32.lib;yamr.lib;pestpp_common.lib;pest_routines.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(IFORT_COMPILER14)\compiler\lib\ia32;$(IFORT_COMPILER14)\mkl\lib\ia32;$(SolutionDir)$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>mkl_blas95.lib;mkl_lapack95.lib;ws2_32.lib;propack.lib;Advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(IFORT_COMPILER16)\compiler\lib\ia32;$(IFORT_COMPILER16)\mkl\lib\ia32;$(SolutionDir)$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -338,7 +341,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>mkl_blas95_lp64.lib;mkl_lapack95_lp64.lib;propack.lib;ws2_32.lib;linear_analysis.lib;Advapi32.lib;pestpp_common.lib;pest_routines.lib;mio.lib;abstract_base.lib;serial.lib;external.lib;genie_wrapper.lib;yamr.lib;genie.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mkl_blas95_lp64.lib;mkl_lapack95_lp64.lib;ws2_32.lib;Advapi32.lib;propack.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(IFORT_COMPILER16)\compiler\lib\intel64;$(IFORT_COMPILER16)\mkl\lib\intel64;$(SolutionDir)$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -373,6 +376,29 @@
     <ClCompile Include="sobol.cpp" />
     <ClCompile Include="Stats.cpp" />
     <ClCompile Include="TornadoPlot.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\libs\common\common.vcxproj">
+      <Project>{0193689c-8ed2-4dca-9389-5d233739b1f0}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\libs\pestpp_common\pestpp_common.vcxproj">
+      <Project>{d25cc810-e9e9-4920-82a4-6f585214480e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\libs\run_managers\abstract_base\abstract_base.vcxproj">
+      <Project>{bae973de-66eb-4f44-a6b4-ffbcc8bef530}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\libs\run_managers\genie\genie.vcxproj">
+      <Project>{5bf76059-872c-4a70-9d5f-235c86131ddd}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\libs\run_managers\genie_wrapper\genie_wrapper.vcxproj">
+      <Project>{b8b618d6-2a60-4180-a5c5-ec7b18e0b1ee}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\libs\run_managers\serial\serial.vcxproj">
+      <Project>{07650fa3-aeb1-4a11-90a8-d7e0e50c450f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\libs\run_managers\yamr\yamr.vcxproj">
+      <Project>{aa6e1ec6-2e3d-42ee-b997-2f40814dd2c9}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
