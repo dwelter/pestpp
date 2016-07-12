@@ -1791,7 +1791,11 @@ subroutine mio_wrtsig(ifail,val,word,nw,precis,tval,nopnt)
 #ifdef LAHEY
         if(abs(val).lt.1.0d-300) val=0.0d0
 #endif
-
+        !jwhite 7/12/101 - check for nan value
+        if (val.ne.val) then
+            ifail = -1
+            return
+        endif
         lexp=0
         iflag=0
         word=' '
