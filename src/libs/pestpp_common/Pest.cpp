@@ -101,12 +101,6 @@ void Pest::check_inputs(ostream &f_rec)
 	if (err)
 		throw runtime_error("error in parameter data");
 
-
-
-
-
-
-
 	int n_base = get_pestpp_options().get_n_iter_base();
 	if (n_base == -1 || n_base > 0)
 	{
@@ -150,7 +144,14 @@ void Pest::check_inputs(ostream &f_rec)
 			throw PestError(ss.str());
 		}
 	}
+
+	if (pestpp_options.get_auto_norm() != -999.0)
+	{
+		f_rec << "pest++ option 'autonorm' is deprecated in favor of 'use_parcov_scaling' and is being ignored" << endl;
+		cout << "pest++ option 'autonorm' is deprecated in favor of 'use_parcov_scaling' and is being ignored" << endl;
+	}
 }
+
 void Pest::check_io()
 {
 	//make sure we can atleast access the model IO files
@@ -572,6 +573,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_sweep_base_run(false);
 	pestpp_options.set_sweep_forgive(false);
 	pestpp_options.set_sweep_chunk(500);
+	pestpp_options.set_use_parcov_scaling(false);
 	for(vector<string>::const_iterator b=pestpp_input.begin(),e=pestpp_input.end();
 		b!=e; ++b) {
 			pestpp_options.parce_line(*b);

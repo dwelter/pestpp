@@ -305,7 +305,7 @@ void Mat::to_ascii(const string &filename)
 													 to write ASCII matrix");
 	}
 	out << setw(6) << nrow() << setw(6) << ncol() << setw(6) << icode << endl;
-	out << matrix;
+	out << matrix.toDense() << endl;
 	if (icode == 1)
 	{
 		out<< "* row and column names" << endl;

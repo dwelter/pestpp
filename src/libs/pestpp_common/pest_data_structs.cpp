@@ -279,9 +279,14 @@ ostream& operator<< (ostream &os, const PestppOptions& val)
 	}
 	os << "    uncertainty flag = " << left << setw(20) << val.get_uncert_flag() << endl;
 	os << "    parameter covariance file = " << left << setw(20) << val.get_parcov_filename() << endl;
-	os << "    prediction names = " << endl;
+	os << "    forecast names = " << endl;
 	for (auto &pname : val.get_prediction_names())
 		os << right << setw(15) << pname << endl;
+	os << "    derivative run failure forgive = " << left << setw(15) << val.get_der_forgive() << endl;
+	os << "    run overdue reschedule factor = " << left << setw(20) << val.get_overdue_reched_fac() << endl;
+	os << "    run overdue giveup factor = " << left << setw(20) << val.get_overdue_giveup_fac() << endl;
+	os << "    base parameter jacobian filename = " << left << setw(20) << val.get_basejac_filename() << endl;
+	os << "    use prior parameter covariance upgrade scaling = " << left << setw(10) << val.get_use_parcov_scaling() << endl;
 	os << endl;
 	return os;
 }
@@ -390,7 +395,8 @@ void PestppOptions::parce_line(const string &line)
 				prediction_names.push_back(pname);
 			}
 		}
-		else if ((key == "PARCOV") || (key == "PARAMETER_COVARIANCE"))
+		else if ((key == "PARCOV") || (key == "PARAMETER_COVARIANCE") 
+			|| (key == "PARCOV_FILENAME"))
 		{
 			convert_ip(value, parcov_filename);
 		}
@@ -425,6 +431,13 @@ void PestppOptions::parce_line(const string &line)
 			istringstream is(value);
 			is >> boolalpha >> sweep_base_run;
 		}
+		else if (key == "USE_PARCOV_SCALING")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> use_parcov_scaling;
+		}
+
 		else {
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");
 		}

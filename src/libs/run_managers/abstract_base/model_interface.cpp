@@ -370,7 +370,7 @@ void ModelInterface::run(pest_utils::thread_flag* terminate, pest_utils::thread_
 			auto s_end = err.find_last_not_of(" \t",1000);
 			err = err.substr(0, s_end);
 			
-			throw_mio_error("error processing model output files: offending instruction line: \n" + err);
+			throw_mio_error("error processing model output files:" + err);
 
 		}
 
