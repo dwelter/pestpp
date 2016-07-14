@@ -37,6 +37,7 @@
 #include "SVD_PROPACK.h"
 #include "OutputFileWriter.h"
 #include "debug.h"
+#include "covariance.h"
 
 using namespace std;
 using namespace pest_utils;
@@ -48,12 +49,14 @@ SVDSolver::SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, con
 	const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
 	const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian,
 	DynamicRegularization *_regul_scheme_ptr, OutputFileWriter &_output_file_writer, SVDSolver::MAT_INV _mat_inv,
-	PerformanceLog *_performance_log, const vector<double> &_base_lambda_vec, const string &_description, bool _der_forgive , bool _phiredswh_flag, bool _splitswh_flag, bool _save_next_jacobian)
+	PerformanceLog *_performance_log, const vector<double> &_base_lambda_vec, const string &_description, 
+	bool _der_forgive , bool _phiredswh_flag, bool _splitswh_flag, bool _save_next_jacobian,
+	Covariance _parcov)
 	: ctl_info(_ctl_info), svd_info(_svd_info), par_group_info_ptr(_par_group_info_ptr), ctl_par_info_ptr(_ctl_par_info_ptr), obs_info_ptr(_obs_info), obj_func(_obj_func),
 	file_manager(_file_manager), observations_ptr(_observations), par_transform(_par_transform), der_forgive(_der_forgive), phiredswh_flag(_phiredswh_flag),
 	splitswh_flag(_splitswh_flag), save_next_jacobian(_save_next_jacobian), prior_info_ptr(_prior_info_ptr), jacobian(_jacobian),
 	regul_scheme_ptr(_regul_scheme_ptr), output_file_writer(_output_file_writer), mat_inv(_mat_inv), description(_description), best_lambda(20.0),
-	performance_log(_performance_log), base_lambda_vec(_base_lambda_vec), terminate_local_iteration(false)
+	performance_log(_performance_log), base_lambda_vec(_base_lambda_vec), terminate_local_iteration(false), parcov(_parcov)
 {
 	svd_package = new SVD_EIGEN();
 }
@@ -349,7 +352,16 @@ void SVDSolver::calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSq
 	Eigen::SparseMatrix<double> ident;
 	ident.resize(jac.cols(), jac.cols());
 	ident.setIdentity();
-	Eigen::SparseMatrix<double> JtQJ = jac.transpose() * q_mat * jac;
+	Eigen::SparseMatrix<double> JtQJ;
+	if (parcov.nrow() > 0)
+	{
+		const Eigen::SparseMatrix<double>* cov_inv = parcov.get(numeric_par_names).inv().e_ptr();
+		JtQJ = (jac.transpose() * q_mat * jac) + *cov_inv;
+	}
+	else
+	{
+		JtQJ = jac.transpose() * q_mat * jac;
+	}
 	Eigen::VectorXd upgrade_vec;
 	if (marquardt_type == MarquardtMatrix::IDENT)
 	{

@@ -33,6 +33,7 @@
 #include "OutputFileWriter.h"
 #include "RestartController.h"
 #include "PerformanceLog.h"
+#include "covariance.h"
 
 
 class FileManager;
@@ -55,7 +56,9 @@ public:
 		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, 
 		DynamicRegularization *_regul_scheme_ptr, OutputFileWriter &_output_file_writer,
 		SVDSolver::MAT_INV _mat_inv, PerformanceLog *_performance_log, const std::vector<double> &_base_lambda_vec, 
-		const string &description = string("base parameter solution"), bool _der_forgive = true, bool _phiredswh_flag = false, bool _splitswh_flag = false, bool _save_next_jacobian = true);
+		const string &description = string("base parameter solution"), bool _der_forgive = true, 
+		bool _phiredswh_flag = false, bool _splitswh_flag = false, bool _save_next_jacobian = true,
+		Covariance _parcov = Covariance());
 	virtual ModelRun compute_jacobian(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &cur_run, bool restart_runs = false);
 	virtual ModelRun solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter, ModelRun &cur_run,
 		ModelRun &optimum_run, RestartController &restart_controller, bool calc_first_jacobian = true);
@@ -106,6 +109,8 @@ protected:
 	std::vector<double> base_lambda_vec;
 	bool terminate_local_iteration;
 	bool der_forgive;
+	Covariance parcov;
+
 
 	virtual void limit_parameters_ip(const Parameters &init_active_ctl_pars, Parameters &upgrade_active_ctl_pars,
 		LimitType &limit_type, const Parameters &frozen_ative_ctl_pars);

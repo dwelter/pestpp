@@ -377,6 +377,29 @@ int main(int argc, char* argv[])
 						parcov.from_parameter_bounds(pest_scenario);
 					}
 				}
+			    //check that the parcov matrix has the right parameter names
+				vector<string> missing;
+				vector<string> parcov_names = parcov.get_row_names();
+				const ParameterRec *prec;
+				for (auto &pname : pest_scenario.get_ctl_ordered_par_names())
+				{
+					prec = pest_scenario.get_ctl_parameter_info().get_parameter_rec_ptr(pname);
+					if ((prec->tranform_type == ParameterRec::TRAN_TYPE::LOG) ||
+						(prec->tranform_type == ParameterRec::TRAN_TYPE::NONE))
+					{
+						if (std::find(parcov_names.begin(), parcov_names.end(), pname) == parcov_names.end())
+						{
+							missing.push_back(pname);
+						}
+					}
+				}
+				if (missing.size() > 0)
+				{
+					stringstream ss;
+					for (auto &pname : missing)
+						ss << ',' << pname;
+					throw PestError("parcov missing parameters: " + ss.str());
+				}
 			}
 		}
 		const ParamTransformSeq &base_trans_seq = pest_scenario.get_base_par_tran_seq();

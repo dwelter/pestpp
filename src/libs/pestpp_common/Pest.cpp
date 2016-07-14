@@ -145,10 +145,19 @@ void Pest::check_inputs(ostream &f_rec)
 		}
 	}
 
-	if (pestpp_options.get_auto_norm() != -999.0)
+	if (pestpp_options.get_auto_norm() > 0.0)
 	{
 		f_rec << "pest++ option 'autonorm' is deprecated in favor of 'use_parcov_scaling' and is being ignored" << endl;
 		cout << "pest++ option 'autonorm' is deprecated in favor of 'use_parcov_scaling' and is being ignored" << endl;
+		pestpp_options.set_auto_norm(-999.0);
+	}
+	if (pestpp_options.get_use_parcov_scaling())
+	{
+		if (pestpp_options.get_mat_inv() == PestppOptions::MAT_INV::Q12J)
+		{
+			throw PestError("pest++ mat_inv = q12j, but use_parcov_scaling is true.");
+		}
+
 	}
 }
 
