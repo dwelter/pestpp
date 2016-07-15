@@ -424,7 +424,8 @@ int main(int argc, char* argv[])
 			&pest_scenario.get_ctl_observations(), &obj_func, base_trans_seq, pest_scenario.get_prior_info_ptr(),
 			*base_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(),
 			output_file_writer, mat_inv, &performance_log, pest_scenario.get_pestpp_options().get_base_lambda_vec(), 
-			"base parameter solution", pest_scenario.get_pestpp_options().get_der_forgive());
+			"base parameter solution", pest_scenario.get_pestpp_options().get_der_forgive(),
+			false,false,true,parcov);
 
 		base_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 		//Build Super-Parameter problem
