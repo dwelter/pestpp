@@ -352,16 +352,14 @@ void SVDSolver::calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSq
 	Eigen::SparseMatrix<double> ident;
 	ident.resize(jac.cols(), jac.cols());
 	ident.setIdentity();
-	Eigen::SparseMatrix<double> JtQJ;
+	Eigen::SparseMatrix<double> JtQJ = jac.transpose() * q_mat * jac;
+	
 	if (parcov.nrow() > 0)
 	{
-		const Eigen::SparseMatrix<double>* cov_inv = parcov.get(numeric_par_names).inv().e_ptr();
-		JtQJ = (jac.transpose() * q_mat * jac) + *cov_inv;
+		//const Eigen::SparseMatrix<double>* cov_inv = parcov.get(numeric_par_names).inv().e_ptr();
+		JtQJ = JtQJ + *parcov.get(numeric_par_names).inv().e_ptr();
 	}
-	else
-	{
-		JtQJ = jac.transpose() * q_mat * jac;
-	}
+	
 	Eigen::VectorXd upgrade_vec;
 	if (marquardt_type == MarquardtMatrix::IDENT)
 	{
