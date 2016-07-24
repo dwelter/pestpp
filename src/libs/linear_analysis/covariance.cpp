@@ -237,10 +237,13 @@ void Mat::inv_ip()
 		{
 			triplet_list.push_back(Eigen::Triplet<double>(i, i, diag[i]));
 		}
-		Eigen::SparseMatrix<double> inv_mat(triplet_list.size(), triplet_list.size());
-		inv_mat.setZero();
-		inv_mat.setFromTriplets(triplet_list.begin(), triplet_list.end());
-		matrix = inv_mat;
+		matrix.resize(triplet_list.size(), triplet_list.size());
+		matrix.setZero();
+		matrix.setFromTriplets(triplet_list.begin(),triplet_list.end());
+		//Eigen::SparseMatrix<double> inv_mat(triplet_list.size(), triplet_list.size());
+		//inv_mat.setZero();
+		//inv_mat.setFromTriplets(triplet_list.begin(), triplet_list.end());
+		//matrix = inv_mat;
 		cout << "diagonal inv_ip()" << endl;
 		/*matrix.resize(triplet_list.size(), triplet_list.size());
 		matrix.setZero();
@@ -253,8 +256,9 @@ void Mat::inv_ip()
 	solver.compute(matrix);
 	Eigen::SparseMatrix<double> I(nrow(), nrow());
 	I.setIdentity();
-	Eigen::SparseMatrix<double> inv_mat = solver.solve(I);
-	matrix = inv_mat;
+	//Eigen::SparseMatrix<double> inv_mat = solver.solve(I);
+	//matrix = inv_mat;
+	matrix = solver.solve(I);
 	cout << "full inv_ip()" << endl;
 	/*matrix.setZero();
 	matrix = solver.solve(I);*/
