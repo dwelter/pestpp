@@ -345,7 +345,8 @@ int main(int argc, char* argv[])
 
 		TerminationController termination_ctl(pest_scenario.get_control_info().noptmax, pest_scenario.get_control_info().phiredstp,
 			pest_scenario.get_control_info().nphistp, pest_scenario.get_control_info().nphinored, pest_scenario.get_control_info().relparstp,
-			pest_scenario.get_control_info().nrelpar, pest_scenario.get_regul_scheme_ptr()->get_use_dynamic_reg(), pest_scenario.get_regul_scheme_ptr()->get_phimaccept());
+			pest_scenario.get_control_info().nrelpar, pest_scenario.get_regul_scheme_ptr()->get_use_dynamic_reg(),
+			pest_scenario.get_regul_scheme_ptr()->get_phimaccept(), pest_scenario.get_pestpp_options().get_reg_frac());
 
 		//if we are doing a restart, update the termination_ctl
 		if (restart_flag)
@@ -355,12 +356,8 @@ int main(int argc, char* argv[])
 
 		SVDSolver::MAT_INV mat_inv = SVDSolver::MAT_INV::JTQJ;
 		if (pest_scenario.get_pestpp_options().get_mat_inv() == PestppOptions::Q12J) mat_inv = SVDSolver::MAT_INV::Q12J;
-		SVDSolver base_svd(&pest_scenario.get_control_info(), pest_scenario.get_svd_info(), &pest_scenario.get_base_group_info(),
-			&pest_scenario.get_ctl_parameter_info(), &pest_scenario.get_ctl_observation_info(), file_manager,
-			&pest_scenario.get_ctl_observations(), &obj_func, base_trans_seq, pest_scenario.get_prior_info_ptr(),
-			*base_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(),
-			output_file_writer, mat_inv, &performance_log, pest_scenario.get_pestpp_options().get_base_lambda_vec(), 
-			"base parameter solution", pest_scenario.get_pestpp_options().get_der_forgive());
+		SVDSolver base_svd(pest_scenario, file_manager, &obj_func, base_trans_seq,
+			*base_jacobian_ptr, output_file_writer, mat_inv, &performance_log, "base parameter solution");
 
 		base_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 		//Build Super-Parameter problem
@@ -470,7 +467,7 @@ int main(int argc, char* argv[])
 		}
 		if (!restart_flag || save_restart_rec_header)
 		{
-			fout_rec << "   -----    Starting PEST++ Iterations    ----    " << endl << endl << endl;
+			fout_rec << "   -----    Starting PEST++ Iterations    ----    " << endl << endl;
 		}
 		while (!termination_ctl.terminate())
 		{
@@ -569,11 +566,10 @@ int main(int argc, char* argv[])
 					(*tran_svd).update_reset_frozen_pars(*base_jacobian_ptr, Q_sqrt, base_numeric_pars, max_n_super, super_eigthres, pars, nonregul_obs, cur_run.get_frozen_ctl_pars());
 					(*tr_svda_fixed).reset((*tran_svd).get_frozen_derivative_pars());
 				}
-				SVDASolver super_svd(&svd_control_info, pest_scenario.get_svd_info(), &pest_scenario.get_base_group_info(), &pest_scenario.get_ctl_parameter_info(),
-					&pest_scenario.get_ctl_observation_info(), file_manager, &pest_scenario.get_ctl_observations(), &obj_func,
-					trans_svda, &pest_scenario.get_prior_info(), *super_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(),
-					output_file_writer, mat_inv, &performance_log, pest_scenario.get_pestpp_options().get_base_lambda_vec(), false, base_svd.get_phiredswh_flag(), base_svd.get_splitswh_flag(),
-					pest_scenario.get_pestpp_options().get_max_super_frz_iter());
+				SVDASolver super_svd(pest_scenario, file_manager, &obj_func,
+					trans_svda, *super_jacobian_ptr,
+					output_file_writer, mat_inv, &performance_log,
+					base_svd.get_phiredswh_flag(), base_svd.get_splitswh_flag());
 				super_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 				//use base jacobian to compute first super jacobian if there was not a super upgrade
 				bool calc_first_jacobian = true;

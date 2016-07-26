@@ -288,11 +288,12 @@ ostream& operator<< (ostream &os, const PestppOptions& val)
 
 PestppOptions::PestppOptions(int _n_iter_base, int _n_iter_super, int _max_n_super, double _super_eigthres,
 	SVD_PACK _svd_pack, MAT_INV _mat_inv, double _auto_norm, double _super_relparmax, int _max_run_fail,
-	bool _iter_summary_flag, bool _der_forgive, double _overdue_reched_fac, double _overdue_giveup_fac)
+	bool _iter_summary_flag, bool _der_forgive, double _overdue_reched_fac, double _overdue_giveup_fac, double _reg_frac)
 	: n_iter_base(_n_iter_base), n_iter_super(_n_iter_super), max_n_super(_max_n_super), super_eigthres(_super_eigthres), 
 	svd_pack(_svd_pack), mat_inv(_mat_inv), auto_norm(_auto_norm), super_relparmax(_super_relparmax),
 	max_run_fail(_max_run_fail), max_super_frz_iter(50), max_reg_iter(50), base_lambda_vec({ 0.1, 1.0, 10.0, 100.0, 1000.0 }),
-	iter_summary_flag(_iter_summary_flag), der_forgive(_der_forgive), overdue_reched_fac(_overdue_reched_fac), overdue_giveup_fac(_overdue_giveup_fac)
+	iter_summary_flag(_iter_summary_flag), der_forgive(_der_forgive), overdue_reched_fac(_overdue_reched_fac),
+	overdue_giveup_fac(_overdue_giveup_fac), reg_frac(_reg_frac)
 {
 }
 
@@ -425,6 +426,8 @@ void PestppOptions::parce_line(const string &line)
 			istringstream is(value);
 			is >> boolalpha >> sweep_base_run;
 		}
+		else if (key == "REG_FRAC")
+			convert_ip(value, reg_frac);
 		else {
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");
 		}

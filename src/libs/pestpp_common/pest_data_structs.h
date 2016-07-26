@@ -200,7 +200,7 @@ public:
 		MAT_INV _mat_inv = PestppOptions::JTQJ, double _auto_norm = -999,
 		double _super_relparmax = 0.1, int max_run_fail=3,
 		bool iter_summary_flag = true, bool der_forgive = true,
-		double overdue_reched_fac = 1.15, double overdue_giveup_fac=100);
+		double overdue_reched_fac = 1.15, double overdue_giveup_fac=100, double reg_frac = 0.0);
 	void parce_line(const string &line);
 	int get_max_n_super() const{return max_n_super;}
 	double get_super_eigthres() const{return super_eigthres;}
@@ -250,6 +250,7 @@ public:
 	void set_sweep_forgive(bool _forgive){ sweep_forgive = _forgive; }
 	bool get_sweep_base_run()const { return sweep_base_run; }
 	void set_sweep_base_run(bool _base){ sweep_base_run = _base; }
+	double get_reg_frac()const { return reg_frac; }
 
 private:
 	int n_iter_base;
@@ -272,6 +273,7 @@ private:
 	string basejac_filename;
 	double overdue_reched_fac;
 	double overdue_giveup_fac;
+	double reg_frac;
 
 	string sweep_parameter_csv_file;
 	string sweep_output_csv_file;

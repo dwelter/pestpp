@@ -42,6 +42,22 @@ class PriorInformation;
 class DynamicRegularization;
 class SVDPackage;
 
+
+class MuPoint
+{
+public:
+	double mu;
+	PhiComponets phi_comp;
+	double target_phi_meas;
+	void set(double _mu, const PhiComponets &_phi_comp);
+	double f() const;
+	double error_frac();
+	double error_percent();
+	void print(ostream &os);
+	bool operator< (const MuPoint &rhs);
+};
+
+
 class SVDSolver
 {
 public:
@@ -50,12 +66,11 @@ protected:
 	enum class LimitType {NONE, LBND, UBND, REL, FACT};
 	enum class MarquardtMatrix {IDENT, JTQJ};
 public:
-	SVDSolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_par_group_info_ptr, const ParameterInfo *_ctl_par_info_ptr,
-		const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
-		const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, 
-		DynamicRegularization *_regul_scheme_ptr, OutputFileWriter &_output_file_writer,
-		SVDSolver::MAT_INV _mat_inv, PerformanceLog *_performance_log, const std::vector<double> &_base_lambda_vec, 
-		const string &description = string("base parameter solution"), bool _der_forgive = true, bool _phiredswh_flag = false, bool _splitswh_flag = false, bool _save_next_jacobian = true);
+	SVDSolver(Pest &_pest_scenario, FileManager &_file_manager, ObjectiveFunc *_obj_func,
+		const ParamTransformSeq &_par_transform, Jacobian &_jacobian, 
+		OutputFileWriter &_output_file_writer, SVDSolver::MAT_INV _mat_inv, 
+		PerformanceLog *_performance_log, const string &description = string("base parameter solution"), 
+		bool _phiredswh_flag = false, bool _splitswh_flag = false, bool _save_next_jacobian = true);
 	virtual ModelRun compute_jacobian(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &cur_run, bool restart_runs = false);
 	virtual ModelRun solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter, ModelRun &cur_run,
 		ModelRun &optimum_run, RestartController &restart_controller, bool calc_first_jacobian = true);
@@ -106,6 +121,7 @@ protected:
 	std::vector<double> base_lambda_vec;
 	bool terminate_local_iteration;
 	bool der_forgive;
+	double reg_frac;
 
 	virtual void limit_parameters_ip(const Parameters &init_active_ctl_pars, Parameters &upgrade_active_ctl_pars,
 		LimitType &limit_type, const Parameters &frozen_ative_ctl_pars);
@@ -135,6 +151,7 @@ protected:
 	void dynamic_weight_adj(const ModelRun &base_run, const Jacobian &jacobian, QSqrtMatrix &Q_sqrt,
 		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
 		const Parameters &base_active_ctl_pars, const Parameters &freeze_active_ctl_pars);
+	void dynamic_weight_adj_percent(const ModelRun &base_run, double reg_frac);
 	bool par_heading_out_bnd(double org_par, double new_par, double lower_bnd, double upper_bnd);
 	double sidi_method(const vector<double> &x, const vector<double> &y);
 	double secant_method(double x0, double y0, double x1, double y1);

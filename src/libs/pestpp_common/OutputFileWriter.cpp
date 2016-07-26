@@ -380,34 +380,34 @@ void OutputFileWriter::phi_report(std::ostream &os, int const iter, int const nr
 	{
 		if (final)
 		{
-			os << "    Final phi                                           Total : " << phi_comps.at("TOTAL") << endl;
+			os << "  Final phi                                           Total : " << phi_comps.at("TOTAL") << endl;
 		}
 		else
 		{
-			os << "    Starting phi for this iteration                     Total : " << phi_comps.at("TOTAL") << endl;
+			os << "  Starting phi for this iteration                     Total : " << phi_comps.at("TOTAL") << endl;
 		}		
 	}
 	else
 	{
 		if (final)
 		{
-			os << "    Final regularization weight factor                        : " << dynamic_reg_weight << endl;
-			os << "    Final phi                                           Total : " << phi_comps.at("TOTAL") << endl;
-			os << "    Final measurement phi for this iteration            Total : " << phi_comps.at("MEAS") << endl;
-			os << "    Final regularization phi for this iteration         Total : " << phi_comps.at("REGUL") << endl;
+			os << "  Final regularization weight factor                        : " << dynamic_reg_weight << endl;
+			os << "  Final phi                                           Total : " << phi_comps.at("TOTAL") << endl;
+			os << "  Final measurement phi for this iteration            Total : " << phi_comps.at("MEAS") << endl;
+			os << "  Final regularization phi for this iteration         Total : " << phi_comps.at("REGUL") << endl;
 		}
 		else
 		{
-			os << "    Current regularization weight factor                      : " << dynamic_reg_weight << endl;
-			os << "    Starting phi for this iteration                     Total : " << phi_comps.at("TOTAL") << endl;
-			os << "    Starting measurement phi for this iteration         Total : " << phi_comps.at("MEAS") << endl;
-			os << "    Starting regularization phi for this iteration      Total : " << phi_comps.at("REGUL") << endl;
+			os << "  Current regularization weight factor                      : " << dynamic_reg_weight << endl;
+			os << "  Starting phi for this iteration                     Total : " << phi_comps.at("TOTAL") << endl;
+			os << "  Starting measurement phi for this iteration         Total : " << phi_comps.at("MEAS") << endl;
+			os << "  Starting regularization phi for this iteration      Total : " << phi_comps.at("REGUL") << endl;
 		}
 	}
 	
 	for (auto &gname : pest_scenario.get_ctl_ordered_obs_group_names())
 	{
-		os << "    Contribution to phi from observation group ";
+		os << "  Contribution to phi from observation group ";
 		os << setw(17) << setiosflags(ios::right) << "\"" + lower_cp(gname) + "\" : ";
 		os << phi_comps.at(gname) << endl;
 	}
