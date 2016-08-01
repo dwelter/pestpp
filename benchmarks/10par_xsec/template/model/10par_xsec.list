@@ -103,7 +103,7 @@
  THE FREE FORMAT OPTION HAS BEEN SELECTED
 
  OPENING FILE ON UNIT   99:
- ref_cal\ibound_Layer_1.ref                                                                                                                                                                              
+ ref_cal/ibound_Layer_1.ref                                                                                                                                                                              
 
 
 
@@ -113,7 +113,7 @@
  AQUIFER HEAD WILL BE SET TO  -999.99     AT ALL NO-FLOW NODES (IBOUND=0).
 
  OPENING FILE ON UNIT   99:
- ref_cal\strt_Layer_1.ref                                                                                                                                                                                
+ ref_cal/strt_Layer_1.ref                                                                                                                                                                                
 
 
 
@@ -315,6 +315,6 @@
          TOTAL TIME 1.72800E+05  2880.0      48.000      2.0000     5.47570E-03
 1
 
- Run end date and time (yyyy/mm/dd hh:mm:ss): 2016/01/11 16:28:54
- Elapsed run time:  0.013 Seconds
+ Run end date and time (yyyy/mm/dd hh:mm:ss): 2016/07/11 20:09:20
+ Elapsed run time:  0.000 Seconds
 

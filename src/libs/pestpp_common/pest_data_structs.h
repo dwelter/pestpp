@@ -251,6 +251,8 @@ public:
 	bool get_sweep_base_run()const { return sweep_base_run; }
 	void set_sweep_base_run(bool _base){ sweep_base_run = _base; }
 	double get_reg_frac()const { return reg_frac; }
+	bool get_use_parcov_scaling()const { return use_parcov_scaling; }
+	void set_use_parcov_scaling(bool _scale) { use_parcov_scaling = _scale; }
 
 private:
 	int n_iter_base;
@@ -280,6 +282,7 @@ private:
 	bool sweep_forgive;
 	int sweep_chunk;
 	bool sweep_base_run;
+	bool use_parcov_scaling;
 
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);

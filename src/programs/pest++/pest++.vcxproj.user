@@ -21,7 +21,11 @@
     <LocalDebuggerCommandArguments>pest.pst /H :4005</LocalDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+<<<<<<< HEAD
     <LocalDebuggerWorkingDirectory>$(SolutionDir)\..\..\benchmarks\stor\test</LocalDebuggerWorkingDirectory>
+=======
+    <LocalDebuggerWorkingDirectory>$(SolutionDir)..\benchmarks\henry\master_parcov_diag</LocalDebuggerWorkingDirectory>
+>>>>>>> parcov_scaling
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerDebuggerType>Auto</LocalDebuggerDebuggerType>
   </PropertyGroup>
@@ -33,7 +37,11 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LocalDebuggerCommandArguments>pest_regfrac</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+<<<<<<< HEAD
     <LocalDebuggerWorkingDirectory>$(SolutionDir)\benchmarks\stor\test</LocalDebuggerWorkingDirectory>
+=======
+    <LocalDebuggerWorkingDirectory>$(SolutionDir)benchmarks\10par_xsec\template_parcov</LocalDebuggerWorkingDirectory>
+>>>>>>> parcov_scaling
     <LocalDebuggerDebuggerType>Auto</LocalDebuggerDebuggerType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
