@@ -14,6 +14,7 @@
 #include "Pest.h"
 #include "utilities.h"
 #include "covariance.h"
+#include "FileManager.h"
 
 using namespace std;
 
@@ -817,6 +818,69 @@ Covariance Covariance::diagonal(double val)
 	i.setZero();
 	i.setFromTriplets(triplet_list.begin(), triplet_list.end());
 	return Covariance(*rn_ptr(), i);
+}
+
+void Covariance::try_from(Pest &pest_scenario, FileManager &file_manager)
+{
+	const string parcov_fname = pest_scenario.get_pestpp_options().get_parcov_filename();
+	if (parcov_fname.empty())
+	{
+		this->from_parameter_bounds(pest_scenario);
+	}
+	else
+	{
+		try {
+			this->from_ascii(parcov_fname);
+		}
+		catch (exception &e)
+		{
+			ofstream &f_rec = file_manager.get_ofstream("rec");
+			string message1 = e.what();
+			//cout << "    unable to read ASCII matrix format from file " << parcov_fname;
+			//cout << endl <<"    ..trying to read uncertainty file..." << endl;
+
+			f_rec << "    unable to read ASCII matrix format from file " << parcov_fname;
+			f_rec << endl << " error message:" << message1 << endl;
+			f_rec << endl << "    ..trying to read uncertainty file..." << endl;
+
+			try {
+				this->from_uncertainty_file(parcov_fname);
+			}
+			catch (exception &e)
+			{
+				cout << "    unable to read uncertainty format or ASCII format from file " << parcov_fname;
+				cout << endl << "    reverting to parameter bounds for scaling matrix" << parcov_fname;
+				cout << "    see .rec file for more info. " << endl;
+				f_rec << "    unable to read uncertainy format from file " << parcov_fname;
+				f_rec << endl << "    reverting to parameter bounds for scaling matrix" << endl;
+				f_rec << endl << " error message:" << e.what() << endl;
+				this->from_parameter_bounds(pest_scenario);
+			}
+		}
+		//check that the parcov matrix has the right parameter names
+		vector<string> missing;
+		vector<string> parcov_names = this->get_row_names();
+		const ParameterRec *prec;
+		for (auto &pname : pest_scenario.get_ctl_ordered_par_names())
+		{
+			prec = pest_scenario.get_ctl_parameter_info().get_parameter_rec_ptr(pname);
+			if ((prec->tranform_type == ParameterRec::TRAN_TYPE::LOG) ||
+				(prec->tranform_type == ParameterRec::TRAN_TYPE::NONE))
+			{
+				if (std::find(parcov_names.begin(), parcov_names.end(), pname) == parcov_names.end())
+				{
+					missing.push_back(pname);
+				}
+			}
+		}
+		if (missing.size() > 0)
+		{
+			stringstream ss;
+			for (auto &pname : missing)
+				ss << ',' << pname;
+			throw PestError("parcov missing parameters: " + ss.str());
+		}
+	}
 }
 
 

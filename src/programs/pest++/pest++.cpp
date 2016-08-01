@@ -342,65 +342,7 @@ int main(int argc, char* argv[])
 		Covariance parcov;
 		if (pest_scenario.get_pestpp_options().get_use_parcov_scaling())
 		{
-			const string parcov_fname = pest_scenario.get_pestpp_options().get_parcov_filename();
-			if (parcov_fname.empty())
-			{
-				parcov.from_parameter_bounds(pest_scenario);
-			}
-			else
-			{
-				try {
-					parcov.from_ascii(parcov_fname);
-				}
-				catch (exception &e)
-				{
-					ofstream &f_rec = file_manager.get_ofstream("rec");
-					string message1 = e.what();
-					//cout << "    unable to read ASCII matrix format from file " << parcov_fname;
-					//cout << endl <<"    ..trying to read uncertainty file..." << endl;
-
-					f_rec << "    unable to read ASCII matrix format from file " << parcov_fname;
-					f_rec << endl <<" error message:" << message1 << endl;
-					f_rec << endl <<"    ..trying to read uncertainty file..." << endl;
-
-					try {
-						parcov.from_uncertainty_file(parcov_fname);
-					}
-					catch (exception &e)
-					{
-						cout << "    unable to read uncertainty format or ASCII format from file " << parcov_fname;
-						cout << endl << "    reverting to parameter bounds for scaling matrix" << parcov_fname;
-						cout << "    see .rec file for more info. " << endl;
-						f_rec << "    unable to read uncertainy format from file " << parcov_fname;
-						f_rec << endl << "    reverting to parameter bounds for scaling matrix" << endl;
-						f_rec << endl << " error message:" << e.what() << endl;
-						parcov.from_parameter_bounds(pest_scenario);
-					}
-				}
-			    //check that the parcov matrix has the right parameter names
-				vector<string> missing;
-				vector<string> parcov_names = parcov.get_row_names();
-				const ParameterRec *prec;
-				for (auto &pname : pest_scenario.get_ctl_ordered_par_names())
-				{
-					prec = pest_scenario.get_ctl_parameter_info().get_parameter_rec_ptr(pname);
-					if ((prec->tranform_type == ParameterRec::TRAN_TYPE::LOG) ||
-						(prec->tranform_type == ParameterRec::TRAN_TYPE::NONE))
-					{
-						if (std::find(parcov_names.begin(), parcov_names.end(), pname) == parcov_names.end())
-						{
-							missing.push_back(pname);
-						}
-					}
-				}
-				if (missing.size() > 0)
-				{
-					stringstream ss;
-					for (auto &pname : missing)
-						ss << ',' << pname;
-					throw PestError("parcov missing parameters: " + ss.str());
-				}
-			}
+			parcov.try_from(pest_scenario, file_manager);
 		}
 		const ParamTransformSeq &base_trans_seq = pest_scenario.get_base_par_tran_seq();
 
@@ -421,7 +363,7 @@ int main(int argc, char* argv[])
 		SVDSolver::MAT_INV mat_inv = SVDSolver::MAT_INV::JTQJ;
 		if (pest_scenario.get_pestpp_options().get_mat_inv() == PestppOptions::Q12J) mat_inv = SVDSolver::MAT_INV::Q12J;
 		SVDSolver base_svd(pest_scenario, file_manager, &obj_func, base_trans_seq,
-			*base_jacobian_ptr, output_file_writer, mat_inv, &performance_log, "base parameter solution");
+			*base_jacobian_ptr, output_file_writer, mat_inv, &performance_log, "base parameter solution",parcov);
 		
 		base_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 		//Build Super-Parameter problem

@@ -70,7 +70,7 @@ public:
 	SVDSolver(Pest &_pest_scenario, FileManager &_file_manager, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, Jacobian &_jacobian, 
 		OutputFileWriter &_output_file_writer, SVDSolver::MAT_INV _mat_inv, 
-		PerformanceLog *_performance_log, const string &description = string("base parameter solution"), 
+		PerformanceLog *_performance_log, const string &description = string("base parameter solution"),Covariance parcov=Covariance(),
 		bool _phiredswh_flag = false, bool _splitswh_flag = false, bool _save_next_jacobian = true);
 	virtual ModelRun compute_jacobian(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &cur_run, bool restart_runs = false);
 	virtual ModelRun solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter, ModelRun &cur_run,
