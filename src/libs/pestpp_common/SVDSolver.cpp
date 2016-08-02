@@ -198,7 +198,8 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 			ModelRun prev_run(best_upgrade_run);
 			if (regul_scheme_ptr->get_use_dynamic_reg() && reg_frac > 0.0)
 			{
-				dynamic_weight_adj_percent(best_upgrade_run, 0.10);
+				//dynamic_weight_adj_percent(best_upgrade_run, 0.10);
+				dynamic_weight_adj_percent(best_upgrade_run, reg_frac);
 			}
 			os << endl;
 			// write out report for starting phi
@@ -1472,29 +1473,32 @@ void SVDSolver::dynamic_weight_adj_percent(const ModelRun &base_run, double reg_
 	mu_vec.resize(4);
 
 	// Equalize Reqularization Groups if IREGADJ = 1
-	std::unordered_map<std::string, double> regul_grp_weights;
-	auto reg_grp_phi = base_run.get_obj_func_ptr()->get_group_phi(base_run.get_obs(), base_run.get_ctl_pars(),
-		DynamicRegularization::get_unit_reg_instance(), PhiComponets::OBS_TYPE::REGUL);
-	double avg_reg_grp_phi = 0;
-	for (const auto &igrp : reg_grp_phi)
+	if (regul_scheme_ptr->get_adj_grp_weights())
 	{
-		avg_reg_grp_phi += igrp.second;
-	}
-	if (reg_grp_phi.size() > 0)
-	{
-		avg_reg_grp_phi /= reg_grp_phi.size();
-	}
-	if (avg_reg_grp_phi > 0)
-	{
+		std::unordered_map<std::string, double> regul_grp_weights;
+		auto reg_grp_phi = base_run.get_obj_func_ptr()->get_group_phi(base_run.get_obs(), base_run.get_ctl_pars(),
+			DynamicRegularization::get_unit_reg_instance(), PhiComponets::OBS_TYPE::REGUL);
+		double avg_reg_grp_phi = 0;
 		for (const auto &igrp : reg_grp_phi)
 		{
-			if (igrp.second > 0)
+			avg_reg_grp_phi += igrp.second;
+		}
+		if (reg_grp_phi.size() > 0)
+		{
+			avg_reg_grp_phi /= reg_grp_phi.size();
+		}
+		if (avg_reg_grp_phi > 0)
+		{
+			for (const auto &igrp : reg_grp_phi)
 			{
-				regul_grp_weights[igrp.first] = sqrt(avg_reg_grp_phi / igrp.second);
+				if (igrp.second > 0)
+				{
+					regul_grp_weights[igrp.first] = sqrt(avg_reg_grp_phi / igrp.second);
+				}
 			}
 		}
+		regul_scheme_ptr->set_regul_grp_weights(regul_grp_weights);
 	}
-	regul_scheme_ptr->set_regul_grp_weights(regul_grp_weights);
 
 	DynamicRegularization tmp_regul_scheme = *regul_scheme_ptr;
 	PhiComponets phi_comp_cur = base_run.get_obj_func_ptr()->get_phi_comp(base_run.get_obs(), base_run.get_ctl_pars(), *regul_scheme_ptr);
