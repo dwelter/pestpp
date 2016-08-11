@@ -63,9 +63,15 @@ void OutputFileWriter::iteration_report(std::ostream &os, int iter, int nruns, s
 {
 	os << "OPTIMISATION ITERATION NUMBER: " << iter << endl << endl;
 	os << "  Iteration type: " << iteration_type << endl;
-	os << "    SVD Package: " << svd_type << endl;
-	os << "    Matrix Inversion: " << mat_inv << endl;
-	os << "    Model calls so far : " << nruns << endl;
+	if (!svd_type.empty())
+	{
+		os << "  SVD Package: " << svd_type << endl;
+	}
+	if (!mat_inv.empty())
+	{
+		os << "  Matrix Inversion: " << mat_inv << endl;
+	}
+	os << "  Model calls so far : " << nruns << endl;
 	os << endl;
 }
 

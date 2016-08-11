@@ -277,3 +277,8 @@ bool RunManagerAbstract::get_observations_vec(int run_id, vector<double> &data_v
  {
 	 file_stor.update_run_failed(run_id);
  }
+
+ const RunStorage& RunManagerAbstract::get_runstorage_ref() const
+ {
+	 return file_stor;
+ }

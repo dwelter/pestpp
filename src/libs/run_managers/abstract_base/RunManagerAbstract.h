@@ -69,6 +69,7 @@ public:
 	virtual std::vector<int> get_outstanding_run_ids();
 	virtual ~RunManagerAbstract(void) {}
 	virtual std::string get_run_filename() { return file_stor.get_filename(); }
+	virtual const RunStorage& get_runstorage_ref() const;
 	virtual void print_run_summary(std::ostream &fout) { file_stor.print_run_summary(fout); }
 	//virtual Observations get_init_run_obs() { return init_run_obs; }
 	virtual std::vector<double> get_init_sim() { return init_sim;  }

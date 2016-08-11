@@ -267,6 +267,38 @@ int RunStorage::add_run(const Parameters &pars, const string &info_txt, double i
 	return run_id;
 }
 
+void RunStorage::copy(const RunStorage &rhs_rs)
+{
+	if (buf_stream.is_open())
+	{
+		buf_stream.close();
+	}
+	// std::ofstream::trunc will delete the file if it already exist
+	// a file needs to exist before it can be opened it with read and write 
+	// permission.   So open it with write permission to create it, close 
+	// and then reopen it with read and write permisssion.
+	buf_stream.open(filename.c_str(), ios_base::out | ios_base::binary | std::ofstream::trunc);
+	buf_stream.close();
+	buf_stream.open(filename.c_str(), ios_base::out | ios_base::in | ios_base::binary);
+	assert(buf_stream.good() == true);
+	if (!buf_stream.good())
+	{
+		throw PestFileError(filename);
+	}
+
+	// copy rhs runstorage information
+	std::streampos rhs_initial_pos = rhs_rs.buf_stream.tellg();
+	rhs_rs.buf_stream.seekg(0, ios_base::beg);
+	buf_stream << rhs_rs.buf_stream.rdbuf();
+	rhs_rs.buf_stream.seekg(rhs_initial_pos);
+	beg_run0 = rhs_rs.beg_run0;
+	run_byte_size = rhs_rs.run_byte_size;
+	run_par_byte_size = rhs_rs.run_par_byte_size;
+	run_data_byte_size = rhs_rs.run_par_byte_size;
+	par_names = rhs_rs.par_names;
+	obs_names = rhs_rs.obs_names;
+}
+
 void RunStorage::update_run(int run_id, const Parameters &pars, const Observations &obs)
 {
 	//set run status flage to complete
@@ -302,6 +334,7 @@ void RunStorage::update_run(int run_id, const Parameters &pars, const Observatio
 	buf_stream.write(reinterpret_cast<char*>(&buf_status), sizeof(buf_status));
 	buf_stream.flush();
 }
+
 
 void RunStorage::update_run(int run_id, const Observations &obs)
 {
