@@ -339,6 +339,12 @@ int main(int argc, char* argv[])
 				pest_scenario.get_pestpp_options().get_max_run_fail());
 		}
 
+		//setup the parcov, if needed
+		Covariance parcov;
+		if (pest_scenario.get_pestpp_options().get_use_parcov_scaling())
+		{
+			parcov.try_from(pest_scenario, file_manager);
+		}
 		const ParamTransformSeq &base_trans_seq = pest_scenario.get_base_par_tran_seq();
 
 		ObjectiveFunc obj_func(&(pest_scenario.get_ctl_observations()), &(pest_scenario.get_ctl_observation_info()), &(pest_scenario.get_prior_info()));
@@ -358,8 +364,8 @@ int main(int argc, char* argv[])
 		SVDSolver::MAT_INV mat_inv = SVDSolver::MAT_INV::JTQJ;
 		if (pest_scenario.get_pestpp_options().get_mat_inv() == PestppOptions::Q12J) mat_inv = SVDSolver::MAT_INV::Q12J;
 		SVDSolver base_svd(pest_scenario, file_manager, &obj_func, base_trans_seq,
-			*base_jacobian_ptr, output_file_writer, mat_inv, &performance_log, "base parameter solution");
-
+			*base_jacobian_ptr, output_file_writer, mat_inv, &performance_log, "base parameter solution",parcov);
+		
 		base_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 		//Build Super-Parameter problem
 		Jacobian *super_jacobian_ptr = new Jacobian(file_manager);

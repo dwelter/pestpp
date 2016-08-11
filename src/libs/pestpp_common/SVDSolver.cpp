@@ -37,6 +37,7 @@
 #include "SVD_PROPACK.h"
 #include "OutputFileWriter.h"
 #include "debug.h"
+#include "covariance.h"
 
 using namespace std;
 using namespace pest_utils;
@@ -90,13 +91,14 @@ bool MuPoint::operator< (const MuPoint &rhs)
 SVDSolver::SVDSolver(Pest &_pest_scenario, FileManager &_file_manager, ObjectiveFunc *_obj_func,
 	const ParamTransformSeq &_par_transform, Jacobian &_jacobian,
 	OutputFileWriter &_output_file_writer, SVDSolver::MAT_INV _mat_inv,
-	PerformanceLog *_performance_log, const string &_description, bool _phiredswh_flag, bool _splitswh_flag, bool _save_next_jacobian)
+	PerformanceLog *_performance_log, const string &_description, Covariance _parcov, bool _phiredswh_flag, bool _splitswh_flag, bool _save_next_jacobian)
 	: ctl_info(&_pest_scenario.get_control_info()), svd_info(_pest_scenario.get_svd_info()), par_group_info_ptr(&_pest_scenario.get_base_group_info()),
 	ctl_par_info_ptr(&_pest_scenario.get_ctl_parameter_info()), obs_info_ptr(&_pest_scenario.get_ctl_observation_info()), obj_func(_obj_func),
 	file_manager(_file_manager), observations_ptr(&_pest_scenario.get_ctl_observations()), par_transform(_par_transform), der_forgive(_pest_scenario.get_pestpp_options().get_der_forgive()), phiredswh_flag(_phiredswh_flag),
 	splitswh_flag(_splitswh_flag), save_next_jacobian(_save_next_jacobian), prior_info_ptr(_pest_scenario.get_prior_info_ptr()), jacobian(_jacobian),
 	regul_scheme_ptr(_pest_scenario.get_regul_scheme_ptr()), output_file_writer(_output_file_writer), mat_inv(_mat_inv), description(_description), best_lambda(20.0),
-	performance_log(_performance_log), base_lambda_vec(_pest_scenario.get_pestpp_options().get_base_lambda_vec()), terminate_local_iteration(false), reg_frac(_pest_scenario.get_pestpp_options().get_reg_frac())
+	performance_log(_performance_log), base_lambda_vec(_pest_scenario.get_pestpp_options().get_base_lambda_vec()), terminate_local_iteration(false), reg_frac(_pest_scenario.get_pestpp_options().get_reg_frac()),
+		parcov(_parcov)
 {
 	svd_package = new SVD_EIGEN();
 }
@@ -196,7 +198,8 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 			ModelRun prev_run(best_upgrade_run);
 			if (regul_scheme_ptr->get_use_dynamic_reg() && reg_frac > 0.0)
 			{
-				dynamic_weight_adj_percent(best_upgrade_run, 0.10);
+				//dynamic_weight_adj_percent(best_upgrade_run, 0.10);
+				dynamic_weight_adj_percent(best_upgrade_run, reg_frac);
 			}
 			os << endl;
 			// write out report for starting phi
@@ -400,7 +403,15 @@ void SVDSolver::calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSq
 	Eigen::SparseMatrix<double> ident;
 	ident.resize(jac.cols(), jac.cols());
 	ident.setIdentity();
+	performance_log->log_event("forming JtQJ matrix");
 	Eigen::SparseMatrix<double> JtQJ = jac.transpose() * q_mat * jac;
+	
+	if (parcov.nrow() > 0)
+	{
+		performance_log->log_event("JtQJ plus parcov.inv");
+		JtQJ = JtQJ + *parcov.get(numeric_par_names).inv().e_ptr();
+	}
+	
 	Eigen::VectorXd upgrade_vec;
 	if (marquardt_type == MarquardtMatrix::IDENT)
 	{
@@ -1462,29 +1473,32 @@ void SVDSolver::dynamic_weight_adj_percent(const ModelRun &base_run, double reg_
 	mu_vec.resize(4);
 
 	// Equalize Reqularization Groups if IREGADJ = 1
-	std::unordered_map<std::string, double> regul_grp_weights;
-	auto reg_grp_phi = base_run.get_obj_func_ptr()->get_group_phi(base_run.get_obs(), base_run.get_ctl_pars(),
-		DynamicRegularization::get_unit_reg_instance(), PhiComponets::OBS_TYPE::REGUL);
-	double avg_reg_grp_phi = 0;
-	for (const auto &igrp : reg_grp_phi)
+	if (regul_scheme_ptr->get_adj_grp_weights())
 	{
-		avg_reg_grp_phi += igrp.second;
-	}
-	if (reg_grp_phi.size() > 0)
-	{
-		avg_reg_grp_phi /= reg_grp_phi.size();
-	}
-	if (avg_reg_grp_phi > 0)
-	{
+		std::unordered_map<std::string, double> regul_grp_weights;
+		auto reg_grp_phi = base_run.get_obj_func_ptr()->get_group_phi(base_run.get_obs(), base_run.get_ctl_pars(),
+			DynamicRegularization::get_unit_reg_instance(), PhiComponets::OBS_TYPE::REGUL);
+		double avg_reg_grp_phi = 0;
 		for (const auto &igrp : reg_grp_phi)
 		{
-			if (igrp.second > 0)
+			avg_reg_grp_phi += igrp.second;
+		}
+		if (reg_grp_phi.size() > 0)
+		{
+			avg_reg_grp_phi /= reg_grp_phi.size();
+		}
+		if (avg_reg_grp_phi > 0)
+		{
+			for (const auto &igrp : reg_grp_phi)
 			{
-				regul_grp_weights[igrp.first] = sqrt(avg_reg_grp_phi / igrp.second);
+				if (igrp.second > 0)
+				{
+					regul_grp_weights[igrp.first] = sqrt(avg_reg_grp_phi / igrp.second);
+				}
 			}
 		}
+		regul_scheme_ptr->set_regul_grp_weights(regul_grp_weights);
 	}
-	regul_scheme_ptr->set_regul_grp_weights(regul_grp_weights);
 
 	DynamicRegularization tmp_regul_scheme = *regul_scheme_ptr;
 	PhiComponets phi_comp_cur = base_run.get_obj_func_ptr()->get_phi_comp(base_run.get_obs(), base_run.get_ctl_pars(), *regul_scheme_ptr);

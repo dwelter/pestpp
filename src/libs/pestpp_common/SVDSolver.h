@@ -33,6 +33,7 @@
 #include "OutputFileWriter.h"
 #include "RestartController.h"
 #include "PerformanceLog.h"
+#include "covariance.h"
 
 
 class FileManager;
@@ -69,7 +70,7 @@ public:
 	SVDSolver(Pest &_pest_scenario, FileManager &_file_manager, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, Jacobian &_jacobian, 
 		OutputFileWriter &_output_file_writer, SVDSolver::MAT_INV _mat_inv, 
-		PerformanceLog *_performance_log, const string &description = string("base parameter solution"), 
+		PerformanceLog *_performance_log, const string &description = string("base parameter solution"),Covariance parcov=Covariance(),
 		bool _phiredswh_flag = false, bool _splitswh_flag = false, bool _save_next_jacobian = true);
 	virtual ModelRun compute_jacobian(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &cur_run, bool restart_runs = false);
 	virtual ModelRun solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter, ModelRun &cur_run,
@@ -122,7 +123,8 @@ protected:
 	bool terminate_local_iteration;
 	bool der_forgive;
 	double reg_frac;
-
+	Covariance parcov;
+ 
 	virtual void limit_parameters_ip(const Parameters &init_active_ctl_pars, Parameters &upgrade_active_ctl_pars,
 		LimitType &limit_type, const Parameters &frozen_ative_ctl_pars);
 	virtual Parameters limit_parameters_freeze_all_ip(const Parameters &init_active_ctl_pars,

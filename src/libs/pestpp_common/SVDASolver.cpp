@@ -32,6 +32,7 @@
 #include "Transformation.h"
 #include "PriorInformation.h"
 #include "debug.h"
+#include "covariance.h"
 
 using namespace std;
 using namespace pest_utils;
@@ -44,7 +45,7 @@ SVDASolver::SVDASolver(Pest &_pest_scenario, FileManager &_file_manager, Objecti
 	SVDSolver::MAT_INV _mat_inv, PerformanceLog *_performance_log, bool _phiredswh_flag, bool _splitswh_flag)
 	: SVDSolver(_pest_scenario, _file_manager, _obj_func_ptr, _par_transform, _jacobian,
 		_output_file_writer, _mat_inv, _performance_log,
-		 "super parameter solution", _phiredswh_flag, _splitswh_flag, false),
+		 "super parameter solution", Covariance(), _phiredswh_flag, _splitswh_flag, false),
 		max_super_frz_iter(_pest_scenario.get_pestpp_options().get_max_super_frz_iter())
 {
 }

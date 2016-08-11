@@ -8,6 +8,7 @@
 
 #include "Pest.h"
 #include "logger.h"
+#include "FileManager.h"
 
 using namespace std;
 
@@ -103,6 +104,8 @@ public:
 	Covariance extract(vector<string> &extract_names);
 
 	Covariance diagonal(double val);
+
+	void try_from(Pest &pest_scenario, FileManager &file_manager);
 
 	void from_uncertainty_file(const string &filename);
 	void from_parameter_bounds(Pest &pest_scenario);
