@@ -32,7 +32,7 @@ using namespace std;
 class ModelRun
 {
 public:
-	ModelRun(const ObjectiveFunc *_objectiveFunc, const Observations &_sim_obs);
+	ModelRun(const ObjectiveFunc *_objectiveFunc, const Observations &_sim_obs= Observations());
 	ModelRun() : obj_func_ptr(nullptr){}
 	ModelRun& operator=(const ModelRun &rhs);
 	virtual Parameters get_frozen_ctl_pars() const;

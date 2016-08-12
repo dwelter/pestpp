@@ -58,6 +58,7 @@ public:
 	virtual int add_run(const std::vector<double> &model_pars, const std::string &info_txt="", double info_value=no_data);
 	virtual int add_run(const Parameters &pars, const std::string &info_txt="", double info_value=no_data);
 	virtual int add_run(const Eigen::VectorXd &model_pars, const std::string &info_txt="", double info_value=no_data);
+	void copy(const RunStorage &rhs_rs);
 	void update_run(int run_id, const Parameters &pars, const Observations &obs);
 	void update_run(int run_id, const Observations &obs);
 	void update_run(int run_id, const std::vector<char> serial_data);

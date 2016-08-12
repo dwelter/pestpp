@@ -46,6 +46,7 @@
 #include "RestartController.h"
 #include "PerformanceLog.h"
 #include "debug.h"
+#include "DifferentialEvolution.h"
 
 #include "linear_analysis.h"
 #include "logger.h"
@@ -427,7 +428,6 @@ int main(int argc, char* argv[])
 				fout_rec << "Model run failed.  No results were recorded." << endl << e.what() << endl;
 				exit(1);
 			}
-
 			Parameters tmp_pars;
 			Observations tmp_obs;
 			bool success = run_manager_ptr->get_run(0, tmp_pars, tmp_obs);
@@ -458,6 +458,28 @@ int main(int argc, char* argv[])
 			}
 			termination_ctl.set_terminate(true);
 		}
+
+
+		// Differential Evolution
+		if (pest_scenario.get_pestpp_options().get_global_opt() ==  PestppOptions::OPT_DE)
+		{
+			int rand_seed = 1;
+			int np = 40;
+			int max_gen = 100;
+			double f = 0.8;
+			double cr = 0.9;
+			ModelRun init_run(&obj_func, pest_scenario.get_ctl_observations());
+			Parameters cur_ctl_parameters = pest_scenario.get_ctl_parameters();
+			run_manager_ptr->reinitialize();
+			DifferentialEvolution de_solver(pest_scenario, file_manager, &obj_func,
+				base_trans_seq, output_file_writer, &performance_log, rand_seed);
+			de_solver.initialize_population(*run_manager_ptr, np);
+			de_solver.solve(*run_manager_ptr, restart_ctl, max_gen, f, cr, init_run);
+			run_manager_ptr->free_memory();
+			exit(1);
+		}
+
+
 		//Define model Run for Base Parameters (uses base parameter tranformations)
 		ModelRun cur_run(&obj_func, pest_scenario.get_ctl_observations());
 		
