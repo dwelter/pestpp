@@ -147,9 +147,11 @@ void Pest::check_inputs(ostream &f_rec)
 
 	if (pestpp_options.get_auto_norm() > 0.0)
 	{
-		f_rec << "pest++ option 'autonorm' is deprecated in favor of 'use_parcov_scaling' and is being ignored" << endl;
-		cout << "pest++ option 'autonorm' is deprecated in favor of 'use_parcov_scaling' and is being ignored" << endl;
-		pestpp_options.set_auto_norm(-999.0);
+		if (pestpp_options.get_use_parcov_scaling())
+			throw PestError("Can't use 'autonorm' and 'use_parcov_scaling'");
+		f_rec << "pest++ option 'autonorm' is being deprecated in favor of 'use_parcov_scaling'" << endl;
+		cout << "pest++ option 'autonorm' is being deprecated in favor of 'use_parcov_scaling'" << endl;
+		//pestpp_options.set_auto_norm(-999.0);
 	}
 	if (pestpp_options.get_use_parcov_scaling())
 	{
@@ -590,9 +592,8 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 
 	if (pestpp_options.get_auto_norm() > 0.0)
 	{
-		cout << "WARNING 'autonorm' option is deprecated in favor of use_parcov_scaling. " << endl;
-		cout << "        'autonorm' is being ignored..." << endl;
-		/*double u_bnd;
+		cout << "WARNING 'autonorm' option is being deprecated in favor of use_parcov_scaling. " << endl;
+		double u_bnd;
 		double l_bnd;
 		double avg;
 		double spread;
@@ -615,7 +616,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 				spread = u_bnd - l_bnd;
 				avg = (u_bnd + l_bnd) / 2.0;
 				t_auto_norm->insert(*par_name, -avg, auto_norm/spread);
-		}*/
+		}
 	}
 
 	regul_scheme_ptr->set_max_reg_iter(pestpp_options.get_max_reg_iter());
