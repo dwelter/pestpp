@@ -160,7 +160,7 @@ if __name__ == "__main__":
        # run PEST++ benchmarks
        bm_list = [
         [r'.\stor', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
-        #[r'.\stor', 'template', exe_cmd_pp, 'pest_regfrac', exe_cmd_pp, 4, 'iobj'],
+        [r'.\stor', 'template', exe_cmd_pp, 'pest_regfrac', exe_cmd_pp, 4, 'iobj'],
         [r'.\3pg', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
         [r'.\10par_xsec', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
         [r'.\morris_1991', 'template', exe_cmd_gsa, 'pest', exe_cmd_gsa, 4, 'mio'],
@@ -192,7 +192,7 @@ if __name__ == "__main__":
         print('"%s" operating system not supported.' % sys.platform)
         print('Benchmarks will not be run')
         print()
-    print(bm_list)
+    #print(bm_list)
     for i in bm_list:
         run_dir = i[0]
         ctl_name = i[3]
