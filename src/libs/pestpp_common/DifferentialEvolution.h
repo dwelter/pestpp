@@ -14,9 +14,21 @@ class RunManagerAbstract;
 class RestartController;
 
 
+class ParameterInfoDE
+{
+public:
+	ParameterInfoDE(double _lower_bnd = 0, double _upper_bnd = 0, bool _log_transform = false);
+	ParameterInfoDE(const ParameterInfoDE &rhs);
+	ParameterInfoDE& operator=(const ParameterInfoDE &rhs);
+	~ParameterInfoDE();
+public:
+	double lower_bnd;
+	double upper_bnd;
+	bool log_transform;
+};
+
 class DifferentialEvolution
 {
-	class ParameterInfoDE;
 public:
 	static mt19937_64 rand_engine;
 	DifferentialEvolution(Pest &_pest_scenario, FileManager &_file_manager, ObjectiveFunc *_obj_func,
@@ -46,16 +58,6 @@ private:
 	void initialize_vector(Parameters &ctl_pars);
 	void mutation(RunManagerAbstract &run_manager, double f, double cr);
 	int recombination(RunManagerAbstract &run_manager);
-};
-
-class DifferentialEvolution::ParameterInfoDE
-{
-public:
-	ParameterInfoDE(double _lower_bnd=0, double _upper_bnd=0, bool _log_transform = false);
-public:
-	double lower_bnd;
-	double upper_bnd;
-	bool log_transform;
 };
 
 #endif //DIFFERENTIALEVOLUTION_H_

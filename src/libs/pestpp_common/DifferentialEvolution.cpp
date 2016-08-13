@@ -6,10 +6,27 @@
 
 mt19937_64 DifferentialEvolution::rand_engine = mt19937_64(1);
 
-DifferentialEvolution::ParameterInfoDE::ParameterInfoDE(double _lower_bnd, double _upper_bnd,
+ParameterInfoDE::ParameterInfoDE(double _lower_bnd, double _upper_bnd,
 	bool _log_transform)
 	: lower_bnd(_lower_bnd), upper_bnd(_upper_bnd), log_transform(_log_transform)
 {
+}
+
+ParameterInfoDE::ParameterInfoDE(const ParameterInfoDE &rhs)
+{
+	*this = rhs;
+}
+ParameterInfoDE& ParameterInfoDE::operator=(const ParameterInfoDE &rhs)
+{
+	lower_bnd = rhs.lower_bnd;
+	upper_bnd = rhs.upper_bnd;
+	log_transform = rhs.log_transform;
+	return *this;
+}
+
+ParameterInfoDE::~ParameterInfoDE()
+{
+
 }
 
 DifferentialEvolution::DifferentialEvolution(Pest &_pest_scenario,

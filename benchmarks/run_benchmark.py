@@ -177,11 +177,12 @@ if __name__ == "__main__":
        # run PEST++ and GSA benchmarks
        bm_list = [
         [r'./stor', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
-        [r'./3pg', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
+        [r'./stor', 'template_linux', exe_cmd_pp, 'pest_regfrac', exe_cmd_pp, 4, 'iobj'],
+        #[r'./3pg', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
         [r'./10par_xsec', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
         [r'./morris_1991', 'template_linux', exe_cmd_gsa, 'pest', exe_cmd_gsa, 4, 'mio'],
         [r'./box', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
-        [r'./kirishima', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
+        #[r'./kirishima', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
         [r'./ishigami', 'template_linux', exe_cmd_gsa, 'pest', exe_cmd_gsa, 4, 'sbl']
         #[r'./ames', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
         #[r'./tidal', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
