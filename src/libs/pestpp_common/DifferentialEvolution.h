@@ -36,7 +36,7 @@ public:
 		PerformanceLog *_performance_log, unsigned int seed = 1);
 	void initialize_population(RunManagerAbstract &run_manager, int d);
 	void solve(RunManagerAbstract &run_manager, RestartController &restart_controller,
-		int max_gen, double f, double cr, ModelRun &cur_run);
+		int max_gen, double f, double cr, bool _dither_f, ModelRun &cur_run);
 	~DifferentialEvolution();
 private:
 	FileManager &file_manager;
@@ -51,13 +51,19 @@ private:
 	const PriorInformation *prior_info_ptr;
 	std::vector<std::string> par_list;
 	RunStorage gen_1;
-	double f;
-	int d;
 	int best_run_idx;
+	int failed_runs_old;
+	int failed_runs_new;
+	double phi_avg_old;
+	double phi_avg_new;
 
 	void initialize_vector(Parameters &ctl_pars);
-	void mutation(RunManagerAbstract &run_manager, double f, double cr);
+	void mutation(RunManagerAbstract &run_manager, double f, bool dither_f, double cr);
 	int recombination(RunManagerAbstract &run_manager);
+	void DifferentialEvolution::write_run_summary(std::ostream &os,
+		int nrun_par, double avg_par, double min_par, double max_par,
+		int nrun_can, double avg_can, double min_can, double max_can,
+		int nrun_child, double avg_child, double min_child, double max_child);
 };
 
 #endif //DIFFERENTIALEVOLUTION_H_

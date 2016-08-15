@@ -62,6 +62,7 @@ public:
 	virtual bool get_observations_vec(int run_id, std::vector<double> &data_vec);
 	virtual Observations get_obs_template(double value = -9999.0) const;
 	virtual int get_total_runs(void) const {return total_runs;}
+	virtual int get_num_good_runs(void);
 	virtual int get_num_failed_runs(void);
 	virtual bool n_run_failures_exceeded(int id);
 	virtual int get_nruns(void) {return file_stor.get_nruns();}

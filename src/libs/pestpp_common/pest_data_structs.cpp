@@ -294,12 +294,13 @@ ostream& operator<< (ostream &os, const PestppOptions& val)
 PestppOptions::PestppOptions(int _n_iter_base, int _n_iter_super, int _max_n_super, double _super_eigthres,
 	SVD_PACK _svd_pack, MAT_INV _mat_inv, double _auto_norm, double _super_relparmax, int _max_run_fail,
 	bool _iter_summary_flag, bool _der_forgive, double _overdue_reched_fac, double _overdue_giveup_fac, double _reg_frac,
-	GLOBAL_OPT _global_opt)
+	GLOBAL_OPT _global_opt, double _de_f, double _de_cr, int _de_npopulation, int _de_max_gen, bool _de_dither_f)
 	: n_iter_base(_n_iter_base), n_iter_super(_n_iter_super), max_n_super(_max_n_super), super_eigthres(_super_eigthres), 
 	svd_pack(_svd_pack), mat_inv(_mat_inv), auto_norm(_auto_norm), super_relparmax(_super_relparmax),
 	max_run_fail(_max_run_fail), max_super_frz_iter(50), max_reg_iter(50), base_lambda_vec({ 0.1, 1.0, 10.0, 100.0, 1000.0 }),
 	iter_summary_flag(_iter_summary_flag), der_forgive(_der_forgive), overdue_reched_fac(_overdue_reched_fac),
-	overdue_giveup_fac(_overdue_giveup_fac), reg_frac(_reg_frac), global_opt(_global_opt)
+	overdue_giveup_fac(_overdue_giveup_fac), reg_frac(_reg_frac), global_opt(_global_opt),
+	de_f(_de_f), de_cr(_de_cr), de_npopulation(_de_npopulation), de_max_gen(_de_max_gen), de_dither_f(_de_dither_f)
 {
 }
 
@@ -447,6 +448,29 @@ void PestppOptions::parce_line(const string &line)
 		{
 			if (value == "DE") global_opt = OPT_DE;
 		}
+		else if (key == "DE_F")
+		{
+			convert_ip(value, de_f);
+		}
+		else if (key == "DE_CR")
+		{
+			convert_ip(value, de_cr);
+		}
+		else if (key == "DE_POP_SIZE")
+		{
+			convert_ip(value, de_npopulation);
+		}
+		else if (key == "DE_MAX_GEN")
+		{
+			convert_ip(value, de_max_gen);
+		}
+		else if (key == "DE_DITHER_F")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> de_dither_f;
+		}
+
 		else {
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");
 		}

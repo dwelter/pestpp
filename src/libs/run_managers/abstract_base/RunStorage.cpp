@@ -189,6 +189,20 @@ int RunStorage::get_nruns()
 	return n_runs;
 }
 
+int RunStorage::get_num_good_runs()
+{
+	int n_ok = 0;
+	int n_runs = get_nruns();
+	for (int id = 0; id<n_runs; ++id)
+	{
+		std::int8_t tmp_r_status = get_run_status_native(id);
+		if (tmp_r_status > 0)
+		{
+			++n_ok;
+		}
+	}
+	return n_ok;
+}
 int RunStorage::increment_nruns()
 {
 	buf_stream.seekg(0, ios_base::beg);

@@ -464,17 +464,18 @@ int main(int argc, char* argv[])
 		if (pest_scenario.get_pestpp_options().get_global_opt() ==  PestppOptions::OPT_DE)
 		{
 			int rand_seed = 1;
-			int np = 40;
-			int max_gen = 100;
-			double f = 0.8;
-			double cr = 0.9;
+			int np = pest_scenario.get_pestpp_options().get_de_npopulation();
+			int max_gen = pest_scenario.get_pestpp_options().get_de_max_gen();
+			double f = pest_scenario.get_pestpp_options().get_de_f();
+			double cr = pest_scenario.get_pestpp_options().get_de_cr();
+			bool dither_f = pest_scenario.get_pestpp_options().get_de_dither_f();
 			ModelRun init_run(&obj_func, pest_scenario.get_ctl_observations());
 			Parameters cur_ctl_parameters = pest_scenario.get_ctl_parameters();
 			run_manager_ptr->reinitialize();
 			DifferentialEvolution de_solver(pest_scenario, file_manager, &obj_func,
 				base_trans_seq, output_file_writer, &performance_log, rand_seed);
 			de_solver.initialize_population(*run_manager_ptr, np);
-			de_solver.solve(*run_manager_ptr, restart_ctl, max_gen, f, cr, init_run);
+			de_solver.solve(*run_manager_ptr, restart_ctl, max_gen, f, cr, dither_f, init_run);
 			run_manager_ptr->free_memory();
 			exit(1);
 		}

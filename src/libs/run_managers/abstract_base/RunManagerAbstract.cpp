@@ -198,6 +198,13 @@ const std::set<int> RunManagerAbstract::get_failed_run_ids()
 	return failed_runs;
 }
 
+int RunManagerAbstract::get_num_good_runs(void)
+{
+	int n_runs_ok = file_stor.get_num_good_runs();
+	return n_runs_ok;
+}
+
+
 int RunManagerAbstract::get_num_failed_runs(void)
 {
 	int n_failed = 0;

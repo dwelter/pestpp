@@ -65,6 +65,7 @@ public:
 	void update_run_failed(int run_id);
 	void set_run_nfailed(int run_id, int nfail);
 	int get_nruns();
+	int get_num_good_runs();
 	int increment_nruns();
 	const std::vector<std::string>& get_par_name_vec()const;
 	const std::vector<std::string>& get_obs_name_vec()const;
