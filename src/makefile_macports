@@ -1,7 +1,7 @@
-CXX = 'g++-mp-5'
-CCC = 'g++-mp-5'
-FC = gfortran-mp-5
-GCCLIBDIR :='/opt/local/lib/gcc5'
+CXX = 'g++-mp-6'
+CCC = 'g++-mp-6'
+FC = gfortran-mp-6
+GCCLIBDIR :='/opt/local/lib/gcc6'
 CUR_DIR = $(CURDIR)
 LIBS_DIR = $(CURDIR)/libs
 RUN_MNG_DIR = $(CURDIR)/libs/run_managers
