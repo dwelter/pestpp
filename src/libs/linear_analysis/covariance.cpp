@@ -260,7 +260,7 @@ void Mat::inv_ip()
 	//Eigen::SparseMatrix<double> inv_mat = solver.solve(I);
 	//matrix = inv_mat;
 	matrix = solver.solve(I);
-	cout << "full inv_ip()" << endl;
+	//cout << "full inv_ip()" << endl;
 	/*matrix.setZero();
 	matrix = solver.solve(I);*/
 	

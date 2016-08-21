@@ -341,7 +341,9 @@ int main(int argc, char* argv[])
 
 		//setup the parcov, if needed
 		Covariance parcov;
-		if (pest_scenario.get_pestpp_options().get_use_parcov_scaling())
+		//if (pest_scenario.get_pestpp_options().get_use_parcov_scaling())
+		double parcov_scale_fac = pest_scenario.get_pestpp_options().get_parcov_scale_fac();
+		if (parcov_scale_fac > 0.0)
 		{
 			parcov.try_from(pest_scenario, file_manager);
 		}

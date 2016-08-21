@@ -286,7 +286,7 @@ ostream& operator<< (ostream &os, const PestppOptions& val)
 	os << "    run overdue reschedule factor = " << left << setw(20) << val.get_overdue_reched_fac() << endl;
 	os << "    run overdue giveup factor = " << left << setw(20) << val.get_overdue_giveup_fac() << endl;
 	os << "    base parameter jacobian filename = " << left << setw(20) << val.get_basejac_filename() << endl;
-	os << "    use prior parameter covariance upgrade scaling = " << left << setw(10) << val.get_use_parcov_scaling() << endl;
+	os << "    prior parameter covariance upgrade scaling factor = " << left << setw(10) << val.get_parcov_scale_fac() << endl;
 	os << endl;
 	return os;
 }
@@ -438,12 +438,18 @@ void PestppOptions::parce_line(const string &line)
 		{
 			convert_ip(value, reg_frac);
 		}
-		else if (key == "USE_PARCOV_SCALING")
+		/*else if (key == "USE_PARCOV_SCALING")
 		{
 			transform(value.begin(), value.end(), value.begin(), ::tolower);
 			istringstream is(value);
 			is >> boolalpha >> use_parcov_scaling;
+		}*/
+		else if (key == "PARCOV_SCALE_FAC")
+		{
+			convert_ip(value, parcov_scale_fac);
 		}
+
+
 		else if (key == "GLOBAL_OPT")
 		{
 			if (value == "DE") global_opt = OPT_DE;

@@ -947,6 +947,8 @@ map<string, double> linear_analysis::posterior_prediction_variance()
 void linear_analysis::calc_posterior()
 {
 	log->log("calc_posterior");
+	log->log("inverting obscov");
+	
 	try
 	{
 		align();
@@ -955,10 +957,36 @@ void linear_analysis::calc_posterior()
 	{
 		throw_error("linear_analysis::calc_posterior() error in align() : " + string(e.what()));
 	}
+
+	log->log("invert obscov");
 	try
 	{
-		posterior = Covariance(*parcov.rn_ptr(), ((*jacobian.transpose().e_ptr() * *obscov.inv().e_ptr() * 
-			*jacobian.e_ptr()) + *parcov.inv().e_ptr())).inv();
+		obscov.inv_ip();
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::calc_posterior() error inverting obscov : " + string(e.what()));
+	}
+	log->log("invert obscov");
+
+	try
+	{
+		log->log("form JtQJ");
+		Covariance JtQJ(*parcov.rn_ptr(), (*jacobian.transpose().e_ptr() * *obscov.e_ptr() *
+			*jacobian.e_ptr()));
+		log->log("form JtQJ");
+
+		log->log("invert parcov");
+		Covariance parcov_inv = parcov.inv();
+		log->log("invert parcov");
+
+		log->log("form posterior");
+		posterior = Covariance(*parcov.rn_ptr(), (*JtQJ.e_ptr() + *parcov_inv.e_ptr()));
+		log->log("form posterior");
+
+		log->log("invert posterior");
+		posterior.inv_ip();
+		log->log("invert posterior");
 	}
 	catch (exception &e)
 	{

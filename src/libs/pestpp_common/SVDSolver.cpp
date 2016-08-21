@@ -98,7 +98,7 @@ SVDSolver::SVDSolver(Pest &_pest_scenario, FileManager &_file_manager, Objective
 	splitswh_flag(_splitswh_flag), save_next_jacobian(_save_next_jacobian), prior_info_ptr(_pest_scenario.get_prior_info_ptr()), jacobian(_jacobian),
 	regul_scheme_ptr(_pest_scenario.get_regul_scheme_ptr()), output_file_writer(_output_file_writer), mat_inv(_mat_inv), description(_description), best_lambda(20.0),
 	performance_log(_performance_log), base_lambda_vec(_pest_scenario.get_pestpp_options().get_base_lambda_vec()), terminate_local_iteration(false), reg_frac(_pest_scenario.get_pestpp_options().get_reg_frac()),
-		parcov(_parcov)
+		parcov(_parcov),parcov_scale_fac(_pest_scenario.get_pestpp_options().get_parcov_scale_fac())
 {
 	svd_package = new SVD_EIGEN();
 }
@@ -407,9 +407,11 @@ void SVDSolver::calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSq
 	Eigen::SparseMatrix<double> JtQJ = jac.transpose() * q_mat * jac;
 	
 	if (parcov.nrow() > 0)
+	//if (parcov_scale_fac > 0.0)
 	{
+		cout << parcov_scale_fac << endl;
 		performance_log->log_event("JtQJ plus parcov.inv");
-		JtQJ = JtQJ + *parcov.get(numeric_par_names).inv().e_ptr();
+		JtQJ = JtQJ + (parcov_scale_fac * *parcov.get(numeric_par_names).inv().e_ptr());
 	}
 	
 	Eigen::VectorXd upgrade_vec;
