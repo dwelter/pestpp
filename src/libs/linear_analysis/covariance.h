@@ -27,6 +27,9 @@ public:
 	Mat(vector<string> _row_names, vector<string> _col_names,
 		Eigen::SparseMatrix<double>* _matrix);
 
+	Mat(vector<string> _row_names, vector<string> _col_names,
+		Eigen::SparseMatrix<double> _matrix, MatType _matttype);
+
 	vector<string> get_row_names(){ return row_names; }
 	vector<string> get_col_names(){ return col_names; }
 	const vector<string>* rn_ptr();
@@ -53,6 +56,7 @@ public:
 	Mat transpose();
 	Mat T();
 	Mat inv();
+	void inv_ip(Logger *log);
 	void inv_ip();
 	void SVD();
 

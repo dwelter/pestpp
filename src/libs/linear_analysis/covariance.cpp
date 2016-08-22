@@ -58,6 +58,18 @@ Mat::Mat(vector<string> _row_names, vector<string> _col_names,
 	mattype = MatType::SPARSE;
 }
 
+Mat::Mat(vector<string> _row_names, vector<string> _col_names,
+	Eigen::SparseMatrix<double> _matrix,MatType _mattype)
+{
+	row_names = _row_names;
+	col_names = _col_names;
+	assert(row_names.size() == _matrix.rows());
+	assert(col_names.size() == _matrix.cols());
+	matrix = _matrix;
+	mattype = _mattype;
+}
+
+
 
 const Eigen::SparseMatrix<double>* Mat::e_ptr()
 {
@@ -228,24 +240,37 @@ Mat Mat::inv()
 
 void Mat::inv_ip()
 {
+	Logger* log = new Logger();
+	inv_ip(log);
+	return;
+}
+
+void Mat::inv_ip(Logger *log)
+{
 	if (nrow() != ncol()) throw runtime_error("Mat::inv() error: only symmetric positive definite matrices can be inverted with Mat::inv()");
 	if (mattype == MatType::DIAGONAL)
 	{
+		log->log("inverting diagonal matrix in place");
+		log->log("extracting diagonal");
 		Eigen::VectorXd diag = matrix.diagonal();
+		log->log("inverting diagonal");
 		diag = 1.0 / diag.array();
+		log->log("buidling triplets");
 		vector<Eigen::Triplet<double>> triplet_list;
 		for (int i = 0; i != diag.size(); ++i)
 		{
 			triplet_list.push_back(Eigen::Triplet<double>(i, i, diag[i]));
 		}
+		log->log("resizeing matrix to size " + triplet_list.size());
 		matrix.resize(triplet_list.size(), triplet_list.size());
 		matrix.setZero();
+		log->log("setting matrix from triplets");
 		matrix.setFromTriplets(triplet_list.begin(),triplet_list.end());
 		//Eigen::SparseMatrix<double> inv_mat(triplet_list.size(), triplet_list.size());
 		//inv_mat.setZero();
 		//inv_mat.setFromTriplets(triplet_list.begin(), triplet_list.end());
 		//matrix = inv_mat;
-		cout << "diagonal inv_ip()" << endl;
+		//cout << "diagonal inv_ip()" << endl;
 		/*matrix.resize(triplet_list.size(), triplet_list.size());
 		matrix.setZero();
 		matrix.setFromTriplets(triplet_list.begin(),triplet_list.end());*/
@@ -253,12 +278,17 @@ void Mat::inv_ip()
 	}
 
 	//Eigen::ConjugateGradient<Eigen::SparseMatrix<double>> solver;
+	log->log("inverting non-diagonal matrix in place");
+	log->log("instantiate solver");
 	Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver;
+	log->log("computing inverse");
 	solver.compute(matrix);
+	log->log("getting identity instance for solution");
 	Eigen::SparseMatrix<double> I(nrow(), nrow());
 	I.setIdentity();
 	//Eigen::SparseMatrix<double> inv_mat = solver.solve(I);
 	//matrix = inv_mat;
+	log->log("solving");
 	matrix = solver.solve(I);
 	//cout << "full inv_ip()" << endl;
 	/*matrix.setZero();
@@ -649,7 +679,7 @@ Mat Mat::get(const vector<string> &new_row_names, const vector<string> &new_col_
 	new_matrix.setZero();
 	if (triplet_list.size() > 0)
 		new_matrix.setFromTriplets(triplet_list.begin(), triplet_list.end());
-	return Mat(new_row_names,new_col_names,new_matrix);
+	return Mat(new_row_names,new_col_names,new_matrix,this->mattype);
 }
 
 Mat Mat::extract(const vector<string> &extract_row_names, const vector<string> &extract_col_names)
@@ -1119,6 +1149,8 @@ void Covariance::from_observation_weights(vector<string> obs_names, ObservationI
 		throw runtime_error("Cov::from_observation_weights() error:Error loading covariance from obs weights: no non-zero weighted obs found");
 	}
 	mattype = Mat::MatType::DIAGONAL;
+	/*if (mattype == Mat::MatType::DIAGONAL)
+		cout << "diagonal" << endl;*/
 }
 
 

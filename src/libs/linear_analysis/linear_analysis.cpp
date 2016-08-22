@@ -947,8 +947,6 @@ map<string, double> linear_analysis::posterior_prediction_variance()
 void linear_analysis::calc_posterior()
 {
 	log->log("calc_posterior");
-	log->log("inverting obscov");
-	
 	try
 	{
 		align();
@@ -961,7 +959,7 @@ void linear_analysis::calc_posterior()
 	log->log("invert obscov");
 	try
 	{
-		obscov.inv_ip();
+		obscov.inv_ip(log);
 	}
 	catch (exception &e)
 	{
@@ -985,7 +983,7 @@ void linear_analysis::calc_posterior()
 		log->log("form posterior");
 
 		log->log("invert posterior");
-		posterior.inv_ip();
+		posterior.inv_ip(log);
 		log->log("invert posterior");
 	}
 	catch (exception &e)
@@ -1870,10 +1868,14 @@ void linear_analysis::drop_prior_information(const Pest &pest_scenario)
 			if (find(nonregul.begin(), nonregul.end(), oname) == nonregul.end())
 				pi_names.push_back(oname);
 
-	pi_names.insert(pi_names.end(),pest_scenario.get_ctl_ordered_pi_names().begin(),
+	pi_names.insert(pi_names.end(), pest_scenario.get_ctl_ordered_pi_names().begin(),
 		pest_scenario.get_ctl_ordered_pi_names().end());
-	jacobian.drop_rows(pi_names);
-	obscov.drop_rows(pi_names);
+	if (pi_names.size() > 0)
+	{
+		jacobian.drop_rows(pi_names);
+		obscov.drop_rows(pi_names);
+	}
+
 }
 
 
