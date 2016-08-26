@@ -39,6 +39,7 @@ public:
 		int max_gen, double f, double cr, bool _dither_f, ModelRun &cur_run);
 	~DifferentialEvolution();
 private:
+	const static string solver_type_name;
 	FileManager &file_manager;
 	ObjectiveFunc *obj_func_ptr;
 	std::unordered_map<std::string, ParameterInfoDE> parameter_info;

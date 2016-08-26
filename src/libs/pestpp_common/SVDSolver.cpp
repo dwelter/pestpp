@@ -164,7 +164,7 @@ ModelRun SVDSolver::solve(RunManagerAbstract &run_manager, TerminationController
 		{
 			//
 			//Save information necessary for restart
-			RestartController::write_start_iteration(fout_restart, *this, iter_num, global_iter_num);
+			RestartController::write_start_iteration(fout_restart, this->get_solver_type(), iter_num, global_iter_num);
 			// save state of termination controller
 			termination_ctl.save_state(fout_restart);
 			//write current parameters so we have a backup for restarting
@@ -704,7 +704,7 @@ void SVDSolver::calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqr
 		// Start Solution iterations
 		terminate_local_iteration = false;
 
-		RestartController::write_start_iteration(fout_restart, *this, -9999, -9999);
+		RestartController::write_start_iteration(fout_restart, this->get_solver_type(), -9999, -9999);
 
 		//write current parameters so we have a backup for restarting
 		RestartController::write_start_parameters_updated(fout_restart, file_manager.build_filename("parb", false));

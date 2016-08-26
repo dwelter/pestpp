@@ -3,7 +3,7 @@
 #include "DifferentialEvolution.h"
 #include "RunManagerAbstract.h"
 #include "ModelRunPP.h"
-
+#include "RestartController.h"
 
 mt19937_64 DifferentialEvolution::rand_engine = mt19937_64(1);
 
@@ -29,6 +29,8 @@ ParameterInfoDE::~ParameterInfoDE()
 {
 
 }
+
+const string DifferentialEvolution::solver_type_name = "differential_evolution";
 
 DifferentialEvolution::DifferentialEvolution(Pest &_pest_scenario,
 	FileManager &_file_manager, ObjectiveFunc *_obj_func_ptr,
@@ -66,9 +68,12 @@ void DifferentialEvolution::solve(RunManagerAbstract &run_manager,
 	int max_gen, double f, double cr, bool dither_f, ModelRun &cur_run)
 {
 	ostream &os = file_manager.rec_ofstream();
+	ostream &fout_restart = file_manager.get_ofstream("rst");
 
 	for (int iter = 0; iter < max_gen; ++iter)
 	{
+		RestartController::write_start_iteration(fout_restart, solver_type_name, iter+1, iter+1);
+
 		Parameters tmp_pars;
 		Observations tmp_obs;
 
@@ -86,7 +91,7 @@ void DifferentialEvolution::solve(RunManagerAbstract &run_manager,
 
 		run_manager.reinitialize();
 		mutation(run_manager, f, dither_f, cr);
-
+		RestartController::write_upgrade_runs_built(fout_restart);
 		// make trial vector model runs
 		cout << endl;
 		cout << "  performing trial vector model runs... ";
@@ -114,6 +119,10 @@ void DifferentialEvolution::solve(RunManagerAbstract &run_manager,
 
 void DifferentialEvolution::initialize_population(RunManagerAbstract &run_manager, int d)
 {
+	ostream &fout_restart = file_manager.get_ofstream("rst");
+	int iter = 0;
+
+	RestartController::write_start_iteration(fout_restart, solver_type_name, iter, iter);
 	Parameters ctl_pars;
 	for (int i = 0; i < d; ++i)
 	{
@@ -122,6 +131,7 @@ void DifferentialEvolution::initialize_population(RunManagerAbstract &run_manage
 		par_transform.ctl2model_ip(ctl_pars);
 		run_manager.add_run(ctl_pars);
 	}
+	RestartController::write_upgrade_runs_built(fout_restart);
 	// make innitial population vector model runs
 	cout << endl;
 	cout << "  performing initial population model runs... ";
@@ -343,7 +353,7 @@ int DifferentialEvolution::recombination(RunManagerAbstract &run_manager)
 		}
 		else
 		{
-			// ptocess target parameters and observations
+			// process target parameters and observations
 			par_transform.model2ctl_ip(tmp_pars_targ);
 			run_target.update_ctl(tmp_pars_targ, tmp_obs_targ);
 			double phi_target = run_target.get_phi(DynamicRegularization::get_unit_reg_instance());

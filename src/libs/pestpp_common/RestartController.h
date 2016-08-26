@@ -16,7 +16,7 @@ public:
 	enum class IterationType{BASE, SUPER};
 	RestartController(void);
 	static void write_start_failed_super(std::ostream &fout);
-	static void write_start_iteration(std::ostream &fout, const SVDSolver &svd_solver, int _iter_num, int _global_iter_num);
+	static void write_start_iteration(std::ostream &fout, const std::string &solver_type, int _iter_num, int _global_iter_num);
 	static void write_start_parameters_updated(std::ostream &fout, const std::string &parameter_filename);
 	static void write_finish_parameters_updated(std::ostream &fout, const std::string &parameter_filename);
 	static void write_jac_runs_built(std::ostream &fout); 
