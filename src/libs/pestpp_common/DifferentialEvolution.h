@@ -61,7 +61,7 @@ private:
 	void initialize_vector(Parameters &ctl_pars);
 	void mutation(RunManagerAbstract &run_manager, double f, bool dither_f, double cr);
 	int recombination(RunManagerAbstract &run_manager);
-	void DifferentialEvolution::write_run_summary(std::ostream &os,
+	void write_run_summary(std::ostream &os,
 		int nrun_par, double avg_par, double min_par, double max_par,
 		int nrun_can, double avg_can, double min_can, double max_can,
 		int nrun_child, double avg_child, double min_child, double max_child);

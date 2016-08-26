@@ -955,10 +955,36 @@ void linear_analysis::calc_posterior()
 	{
 		throw_error("linear_analysis::calc_posterior() error in align() : " + string(e.what()));
 	}
+
+	log->log("invert obscov");
 	try
 	{
-		posterior = Covariance(*parcov.rn_ptr(), ((*jacobian.transpose().e_ptr() * *obscov.inv().e_ptr() * 
-			*jacobian.e_ptr()) + *parcov.inv().e_ptr())).inv();
+		obscov.inv_ip(log);
+	}
+	catch (exception &e)
+	{
+		throw_error("linear_analysis::calc_posterior() error inverting obscov : " + string(e.what()));
+	}
+	log->log("invert obscov");
+
+	try
+	{
+		log->log("form JtQJ");
+		Covariance JtQJ(*parcov.rn_ptr(), (*jacobian.transpose().e_ptr() * *obscov.e_ptr() *
+			*jacobian.e_ptr()));
+		log->log("form JtQJ");
+
+		log->log("invert parcov");
+		Covariance parcov_inv = parcov.inv();
+		log->log("invert parcov");
+
+		log->log("form posterior");
+		posterior = Covariance(*parcov.rn_ptr(), (*JtQJ.e_ptr() + *parcov_inv.e_ptr()));
+		log->log("form posterior");
+
+		log->log("invert posterior");
+		posterior.inv_ip(log);
+		log->log("invert posterior");
 	}
 	catch (exception &e)
 	{
@@ -1842,10 +1868,14 @@ void linear_analysis::drop_prior_information(const Pest &pest_scenario)
 			if (find(nonregul.begin(), nonregul.end(), oname) == nonregul.end())
 				pi_names.push_back(oname);
 
-	pi_names.insert(pi_names.end(),pest_scenario.get_ctl_ordered_pi_names().begin(),
+	pi_names.insert(pi_names.end(), pest_scenario.get_ctl_ordered_pi_names().begin(),
 		pest_scenario.get_ctl_ordered_pi_names().end());
-	jacobian.drop_rows(pi_names);
-	obscov.drop_rows(pi_names);
+	if (pi_names.size() > 0)
+	{
+		jacobian.drop_rows(pi_names);
+		obscov.drop_rows(pi_names);
+	}
+
 }
 
 

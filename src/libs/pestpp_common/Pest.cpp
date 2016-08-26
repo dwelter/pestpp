@@ -147,17 +147,22 @@ void Pest::check_inputs(ostream &f_rec)
 
 	if (pestpp_options.get_auto_norm() > 0.0)
 	{
-		if (pestpp_options.get_use_parcov_scaling())
-			throw PestError("Can't use 'autonorm' and 'use_parcov_scaling'");
+		if (pestpp_options.get_parcov_scale_fac() > 0.0)
+			throw PestError("Can't use 'autonorm' and 'parcov_scale_fac' > 0.0");
 		f_rec << "pest++ option 'autonorm' is being deprecated in favor of 'use_parcov_scaling'" << endl;
 		cout << "pest++ option 'autonorm' is being deprecated in favor of 'use_parcov_scaling'" << endl;
 		//pestpp_options.set_auto_norm(-999.0);
 	}
-	if (pestpp_options.get_use_parcov_scaling())
+	if (pestpp_options.get_parcov_scale_fac() > 0.0)
 	{
 		if (pestpp_options.get_mat_inv() == PestppOptions::MAT_INV::Q12J)
 		{
-			throw PestError("pest++ mat_inv = q12j, but use_parcov_scaling is true.");
+			throw PestError("pest++ mat_inv = q12j, but parcov_scale_fac > 0.0.");
+		}
+		if (pestpp_options.get_parcov_scale_fac() > 1.0)
+		{
+			cout << "'parcov_scale_fac' > 1.0, resetting to 1.0" << endl;
+			pestpp_options.set_parcov_scale_fac(1.0);
 		}
 
 	}
@@ -584,7 +589,8 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_sweep_base_run(false);
 	pestpp_options.set_sweep_forgive(false);
 	pestpp_options.set_sweep_chunk(500);
-	pestpp_options.set_use_parcov_scaling(false);
+	//pestpp_options.set_use_parcov_scaling(false);
+	pestpp_options.set_parcov_scale_fac(-999.0);
 	for(vector<string>::const_iterator b=pestpp_input.begin(),e=pestpp_input.end();
 		b!=e; ++b) {
 			pestpp_options.parce_line(*b);
