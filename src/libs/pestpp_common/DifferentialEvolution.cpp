@@ -70,7 +70,7 @@ void DifferentialEvolution::solve(RunManagerAbstract &run_manager,
 	ostream &os = file_manager.rec_ofstream();
 	ostream &fout_restart = file_manager.get_ofstream("rst");
 
-	for (int iter = 0; iter < max_gen; ++iter)
+	for (int iter = 0; iter < max_gen && best_phi > std::numeric_limits<double>::min(); ++iter)
 	{
 		RestartController::write_start_iteration(fout_restart, solver_type_name, iter+1, iter+1);
 
@@ -142,7 +142,7 @@ void DifferentialEvolution::initialize_population(RunManagerAbstract &run_manage
 	// get the best_run to track phi
 	int r_status;
 	int n_par = par_list.size();
-	double best_phi = std::numeric_limits<double>::max();
+	best_phi = std::numeric_limits<double>::max();
 
 	Parameters tmp_pars;
 	Observations tmp_obs;
@@ -287,7 +287,7 @@ int DifferentialEvolution::recombination(RunManagerAbstract &run_manager)
 	Parameters tmp_pars_can;
 	Observations tmp_obs_can;
 
-	double best_phi = std::numeric_limits<double>::max();
+	best_phi = std::numeric_limits<double>::max();
 
 	int d = gen_1.get_nruns();
 	int n_good_runs_targ = gen_1.get_num_good_runs();

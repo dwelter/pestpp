@@ -55,6 +55,7 @@ private:
 	int best_run_idx;
 	int failed_runs_old;
 	int failed_runs_new;
+	double best_phi;
 	double phi_avg_old;
 	double phi_avg_new;
 
