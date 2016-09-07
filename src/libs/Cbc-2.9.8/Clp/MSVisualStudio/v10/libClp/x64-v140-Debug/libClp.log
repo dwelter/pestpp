@@ -62,4 +62,4 @@
 ..\..\..\src\Clp_C_Interface.cpp(1336): warning C4800: 'int': forcing value to bool 'true' or 'false' (performance warning)
 ..\..\..\src\Clp_C_Interface.cpp(1339): warning C4800: 'int': forcing value to bool 'true' or 'false' (performance warning)
   Generating Code...
-  libClp.vcxproj -> E:\svn\Cbc-2.9.8\Cbc\MSVisualStudio\v10\x64-v140-Debug\libClp.lib
+  libClp.vcxproj -> D:\Home\git\pestpp\src\libs\Cbc-2.9.8\Clp\MSVisualStudio\v10\x64-v140-Debug\libClp.lib

@@ -1,1 +1,14 @@
-﻿  libOsi.vcxproj -> E:\svn\Cbc-2.9.8\Cbc\MSVisualStudio\v10\x64-v140-Debug\libOsi.lib
+﻿  OsiSolverInterface.cpp
+  OsiSolverBranch.cpp
+  OsiRowCutDebugger.cpp
+  OsiRowCut.cpp
+  OsiPresolve.cpp
+  OsiNames.cpp
+  OsiCuts.cpp
+  OsiCut.cpp
+  OsiColCut.cpp
+  OsiChooseVariable.cpp
+  OsiBranchingObject.cpp
+  OsiAuxInfo.cpp
+  Generating Code...
+  libOsi.vcxproj -> D:\Home\git\pestpp\src\libs\Cbc-2.9.8\Clp\MSVisualStudio\v10\x64-v140-Debug\libOsi.lib

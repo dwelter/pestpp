@@ -12,4 +12,4 @@
 ..\..\..\src\OsiCommonTest\OsiColCutTest.cpp(279): warning C4800: 'double': forcing value to bool 'true' or 'false' (performance warning)
 ..\..\..\src\OsiCommonTest\OsiColCutTest.cpp(284): warning C4800: 'double': forcing value to bool 'true' or 'false' (performance warning)
   Generating Code...
-  libOsiCommonTest.vcxproj -> E:\svn\Cbc-2.9.8\Cbc\MSVisualStudio\v10\x64-v140-Debug\libOsiCommonTest.lib
+  libOsiCommonTest.vcxproj -> D:\Home\git\pestpp\src\libs\Cbc-2.9.8\Clp\MSVisualStudio\v10\x64-v140-Debug\libOsiCommonTest.lib
