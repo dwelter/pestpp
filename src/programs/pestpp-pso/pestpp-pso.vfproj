@@ -4,9 +4,9 @@
 		<Platform Name="Win32"/>
 		<Platform Name="x64"/></Platforms>
 	<Configurations>
-		<Configuration Name="Debug|Win32" OutputDirectory="$(SolutionDir)$(Platform)\$(Configuration)\" IntermediateDirectory="$(Platform)\$(Configuration)\">
-				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" Preprocess="preprocessYes" PreprocessorDefinitions="__windows__" WarnInterfaces="true" Traceback="true" BoundsCheck="true" StackFrameCheck="true" RuntimeLibrary="rtMultiThreadedDebugDLL"/>
-				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" AdditionalLibraryDirectories="$(SolutionDir)$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)" GenerateDebugInformation="true" SubSystem="subSystemConsole" AdditionalDependencies="yamr.lib ws2_32.lib advapi32.lib pest_routines.lib genie.lib"/>
+		<Configuration Name="Debug|Win32" OutputDirectory="$(SolutionDir)\..\exe\windows\$(Platform)\$(Configuration)\" IntermediateDirectory="$(PlatformName)\$(ConfigurationName)" TargetName="$(ProjectName)_32">
+				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" Preprocess="preprocessYes" PreprocessorDefinitions="__windows__" WarnInterfaces="true" ExternalNameInterpretation="extNameLowerCase" ExternalNameUnderscore="true" Traceback="true" BoundsCheck="true" StackFrameCheck="true" RuntimeLibrary="rtMultiThreadedDebug"/>
+				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" AdditionalLibraryDirectories="$(SolutionDir)$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)" GenerateDebugInformation="true" SubSystem="subSystemConsole" AdditionalDependencies="common.lib mio.lib ws2_32.lib advapi32.lib pest_routines.lib yamr.lib genie.lib genie_wrapper.lib serial.lib external.lib wrappers.lib abstract_base.lib"/>
 				<Tool Name="VFResourceCompilerTool"/>
 				<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
 				<Tool Name="VFCustomBuildTool"/>
@@ -14,7 +14,7 @@
 				<Tool Name="VFPreBuildEventTool"/>
 				<Tool Name="VFPostBuildEventTool"/>
 				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration>
-		<Configuration Name="Release|Win32" OutputDirectory="$(SolutionDir)$(Platform)\$(Configuration)\" IntermediateDirectory="$(PlatformName)\$(ConfigurationName)">
+		<Configuration Name="Release|Win32" OutputDirectory="$(SolutionDir)\..\exe\windows\$(Platform)\$(Configuration)\" IntermediateDirectory="$(PlatformName)\$(ConfigurationName)" TargetName="$(ProjectName)_32">
 				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" Preprocess="preprocessYes" PreprocessorDefinitions="__windows__" ExternalNameInterpretation="extNameLowerCase" ExternalNameUnderscore="true"/>
 				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" AdditionalLibraryDirectories="$(SolutionDir)$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)" SubSystem="subSystemConsole" AdditionalDependencies="yamr.lib ws2_32.lib advapi32.lib pest_routines.lib genie.lib"/>
 				<Tool Name="VFResourceCompilerTool"/>
@@ -34,7 +34,7 @@
 				<Tool Name="VFPreBuildEventTool"/>
 				<Tool Name="VFPostBuildEventTool"/>
 				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration>
-		<Configuration Name="Release|x64" OutputDirectory="$(SolutionDir)$(Platform)\$(Configuration)\">
+		<Configuration Name="Release|x64" OutputDirectory="$(SolutionDir)\..\exe\windows\$(Platform)\$(Configuration)\">
 				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" Preprocess="preprocessYes" PreprocessorDefinitions="__windows__" ExternalNameInterpretation="extNameLowerCase" ExternalNameUnderscore="true"/>
 				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" AdditionalLibraryDirectories="$(SolutionDir)$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)" SubSystem="subSystemConsole" AdditionalDependencies="common.lib mio.lib ws2_32.lib advapi32.lib pest_routines.lib yamr.lib genie.lib genie_wrapper.lib serial.lib external.lib wrappers.lib abstract_base.lib"/>
 				<Tool Name="VFResourceCompilerTool"/>

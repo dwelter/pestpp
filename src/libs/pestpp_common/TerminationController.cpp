@@ -28,12 +28,13 @@ using namespace std;
 
 TerminationController::TerminationController(int _noptmax, double _phiredstp,
 	int _nphistp, int _nphinored, double _relparstp, int _nrelpar, 
-	bool _use_dynaimc_regul, double _phim_accept)
+	bool _use_dynaimc_regul, double _phim_accept, double _reg_frac)
 	: 
 	phiredstp(_phiredstp), relparstp(_relparstp), phim_accept(_phim_accept),
 	current_phi(99e99), nphistp(_nphistp), noptmax(_noptmax), nphinored(_nphinored),
 	nopt_count(0), nphinored_count(0), nrelpar(_nrelpar), nrelpar_count(0),
-	terminate_code(false), use_dynaimc_regul(_use_dynaimc_regul), phi_accept_achieved(false)
+	terminate_code(false), use_dynaimc_regul(_use_dynaimc_regul), phi_accept_achieved(false),
+	reg_frac(_reg_frac)
 {
 	termimate_reason = "unknown";
 }
@@ -56,6 +57,11 @@ bool TerminationController::process_iteration(const PhiComponets &phi_comp, doub
 	if (use_dynaimc_regul == false)
 	{
 		phi = phi_m + phi_r;
+	}
+	else if (reg_frac <= 0)
+	{
+		phi = phi_m;
+		regul_reject = false;
 	}
 	else if (!phi_accept_achieved && phi_m > phim_accept)
 	{

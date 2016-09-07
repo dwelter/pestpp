@@ -19,7 +19,8 @@ OBJECTS	:= FileManager.o \
            RestartController.o \
            OutputFileWriter.o \
 	   PerformanceLog.o \
-           SVDASolver.o
+           SVDASolver.o \
+           DifferentialEvolution.o
  
 $(OUT): $(OBJECTS)
 	ar rcs $(OUT) $(OBJECTS)

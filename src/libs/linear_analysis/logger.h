@@ -9,7 +9,7 @@
 class Logger
 {
 public:
-	Logger(bool _echo = false){ echo = _echo; }
+	Logger(bool _echo = false) { echo = _echo; fout = new std::ofstream(); }
 	Logger(std::ofstream &_fout,bool _echo=false);
 	void log(const std::string &message);
 	void write(const std::string &message);

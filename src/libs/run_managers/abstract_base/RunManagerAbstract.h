@@ -62,6 +62,7 @@ public:
 	virtual bool get_observations_vec(int run_id, std::vector<double> &data_vec);
 	virtual Observations get_obs_template(double value = -9999.0) const;
 	virtual int get_total_runs(void) const {return total_runs;}
+	virtual int get_num_good_runs(void);
 	virtual int get_num_failed_runs(void);
 	virtual bool n_run_failures_exceeded(int id);
 	virtual int get_nruns(void) {return file_stor.get_nruns();}
@@ -69,6 +70,7 @@ public:
 	virtual std::vector<int> get_outstanding_run_ids();
 	virtual ~RunManagerAbstract(void) {}
 	virtual std::string get_run_filename() { return file_stor.get_filename(); }
+	virtual const RunStorage& get_runstorage_ref() const;
 	virtual void print_run_summary(std::ostream &fout) { file_stor.print_run_summary(fout); }
 	//virtual Observations get_init_run_obs() { return init_run_obs; }
 	virtual std::vector<double> get_init_sim() { return init_sim;  }

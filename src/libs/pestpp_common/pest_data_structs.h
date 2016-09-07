@@ -195,12 +195,15 @@ class PestppOptions {
 public:
 	enum SVD_PACK{EIGEN, PROPACK};
 	enum MAT_INV{Q12J, JTQJ};
-	PestppOptions(int _n_iter_base = 50, int _n_iter_super=0, int _max_n_super = 50, 
+	enum GLOBAL_OPT { NONE, OPT_DE};
+	PestppOptions(int _n_iter_base = 50, int _n_iter_super = 0, int _max_n_super = 50,
 		double _super_eigthres = 1.0E-6, SVD_PACK _svd_pack = PestppOptions::EIGEN,
 		MAT_INV _mat_inv = PestppOptions::JTQJ, double _auto_norm = -999,
-		double _super_relparmax = 0.1, int max_run_fail=3,
+		double _super_relparmax = 0.1, int max_run_fail = 3,
 		bool iter_summary_flag = true, bool der_forgive = true,
-		double overdue_reched_fac = 1.15, double overdue_giveup_fac=100);
+		double overdue_reched_fac = 1.15, double overdue_giveup_fac = 100, double reg_frac = -1.0,
+		GLOBAL_OPT _global_opt = PestppOptions::NONE, 
+		double _de_f=0.8, double _de_cr=0.9, int _de_npopulation=40, int _de_max_gen=100, bool _de_dither_f=true);
 	void parce_line(const string &line);
 	int get_max_n_super() const{return max_n_super;}
 	double get_super_eigthres() const{return super_eigthres;}
@@ -216,6 +219,13 @@ public:
 	const vector<double>& get_base_lambda_vec() const {return base_lambda_vec;}	
 	bool get_iter_summary_flag() const { return iter_summary_flag;  }
 	bool get_der_forgive() const { return der_forgive; }
+	GLOBAL_OPT get_global_opt() const { return global_opt;}
+	double get_de_f() const { return de_f; }
+	double get_de_cr() const { return de_cr; }
+	int get_de_npopulation() const { return de_npopulation; }
+	int get_de_max_gen() const { return de_max_gen; }
+	bool get_de_dither_f() const { return de_dither_f; }
+	void set_global_opt(const GLOBAL_OPT _global_opt)  { global_opt = _global_opt; }
 	void set_max_n_super(int _max_n_super) {max_n_super = _max_n_super;}
 	void set_super_eigthres(double _super_eigthres) {super_eigthres = _super_eigthres;}
 	void set_n_iter_base(int _n_iter_base) {n_iter_base = _n_iter_base;}
@@ -250,6 +260,11 @@ public:
 	void set_sweep_forgive(bool _forgive){ sweep_forgive = _forgive; }
 	bool get_sweep_base_run()const { return sweep_base_run; }
 	void set_sweep_base_run(bool _base){ sweep_base_run = _base; }
+	double get_reg_frac()const { return reg_frac; }
+	//bool get_use_parcov_scaling()const { return use_parcov_scaling; }
+	//void set_use_parcov_scaling(bool _scale) { use_parcov_scaling = _scale; }
+	double get_parcov_scale_fac() const { return parcov_scale_fac; }
+	void set_parcov_scale_fac(double _fac) { parcov_scale_fac = _fac; }
 
 private:
 	int n_iter_base;
@@ -272,13 +287,21 @@ private:
 	string basejac_filename;
 	double overdue_reched_fac;
 	double overdue_giveup_fac;
+	double reg_frac;
 
 	string sweep_parameter_csv_file;
 	string sweep_output_csv_file;
 	bool sweep_forgive;
 	int sweep_chunk;
 	bool sweep_base_run;
-
+	//bool use_parcov_scaling;
+	double parcov_scale_fac;
+	GLOBAL_OPT global_opt;
+	double de_f;
+	double de_cr;
+	int de_npopulation;
+	int de_max_gen;
+	bool de_dither_f;
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);
 ostream& operator<< (ostream &os, const ObservationInfo& val);

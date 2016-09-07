@@ -2,10 +2,8 @@ import os
 import subprocess as sp
 import numpy as np
 import kirishima_info as info
-reload(info)
-
-
-
+import imp
+imp.reload(info)
 
 
 

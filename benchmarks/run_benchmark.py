@@ -155,12 +155,16 @@ if __name__ == "__main__":
     if sys.platform == 'win32':
        exe_cmd_pp = r'..\..\..\exe\windows\x64\Release\pest++.exe'
        exe_cmd_gsa = r'..\..\..\exe\windows\x64\Release\gsa.exe'
+       #exe_cmd_pp = r'..\..\..\exe\windows\Win32\Release\pest++_32.exe'
+       #exe_cmd_gsa = r'..\..\..\exe\windows\Win32\Release\gsa_32.exe'
        # run PEST++ benchmarks
        bm_list = [
         [r'.\stor', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
+        [r'.\stor', 'template', exe_cmd_pp, 'pest_regfrac', exe_cmd_pp, 4, 'iobj'],
         [r'.\3pg', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
         [r'.\10par_xsec', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
         [r'.\morris_1991', 'template', exe_cmd_gsa, 'pest', exe_cmd_gsa, 4, 'mio'],
+        [r'.\ackley', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
         [r'.\box', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
         [r'.\kirishima', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
         [r'.\ishigami', 'template', exe_cmd_gsa, 'pest', exe_cmd_gsa, 4, 'sbl']
@@ -174,6 +178,7 @@ if __name__ == "__main__":
        # run PEST++ and GSA benchmarks
        bm_list = [
         [r'./stor', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
+        [r'./stor', 'template_linux', exe_cmd_pp, 'pest_regfrac', exe_cmd_pp, 4, 'iobj'],
         #[r'./3pg', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
         [r'./10par_xsec', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
         [r'./morris_1991', 'template_linux', exe_cmd_gsa, 'pest', exe_cmd_gsa, 4, 'mio'],
@@ -189,14 +194,15 @@ if __name__ == "__main__":
         print('"%s" operating system not supported.' % sys.platform)
         print('Benchmarks will not be run')
         print()
+    #print(bm_list)
     for i in bm_list:
         run_dir = i[0]
         ctl_name = i[3]
         print ('-----------------------------------------------------------------------')
-        print ('starting benchmark in directory "%s"...' % run_dir, flush=True)
+        print ('starting benchmark "%s" in directory "%s"...' % (ctl_name, run_dir), flush=True)
         print(time.strftime("    %a, %d %b %Y %H:%M:%S", time.gmtime()), flush=True)
         f_log.write('-----------------------------------------------------------------------\n')
-        f_log.write('starting benchmark in directory "%s"...\n' % run_dir)
+        f_log.write('starting benchmark "%s" in directory "%s"...\n' % (ctl_name, run_dir))
         f_log.write(time.strftime("    %a, %d %b %Y %H:%M:%S\n", time.gmtime()))
         start_time = time.time()
         # run benchmark

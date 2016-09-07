@@ -235,10 +235,34 @@ void ModelInterface::run(pest_utils::thread_flag* terminate, pest_utils::thread_
 
 		}
 
+		//check for nans in par vals before continuing
+		vector<string> invalid;
+		for (int i = 0; i != par_name_vec.size(); i++)
+		{
+			if (OperSys::double_is_invalid(par_vals.at(i)))
+				invalid.push_back(par_name_vec.at(i));
+		}
+		if (invalid.size() > 0)
+		{
+			stringstream ss;
+			ss << "internal PEST++ error: invalid parameter values passed to model_interface for the following parameters: ";
+			for (auto &i : invalid)
+				ss << i << '\n';
+			throw PestError(ss.str());
+		}
+
 		int npar = par_vals.size();
-		mio_write_model_input_files_w_(&ifail, &npar,
-			pest_utils::StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
-			&par_vals[0]);
+		try
+		{
+			mio_write_model_input_files_w_(&ifail, &npar,
+				pest_utils::StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
+				&par_vals[0]);
+		}
+		catch (exception &e)
+		{
+			string emess = e.what();
+			throw_mio_error("uncaught error writing model input files from template files:" + emess);
+		}
 		if (ifail != 0) throw_mio_error("error writing model input files from template files");
 		
 
@@ -360,21 +384,27 @@ void ModelInterface::run(pest_utils::thread_flag* terminate, pest_utils::thread_
 		obs_vals.resize(nobs, -9999.00);
 		int nerr_len = 500;
 		char err_instruct[500];
-		mio_read_model_output_files_w_(&ifail, &nobs,
-			pest_utils::StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
-			&obs_vals[0]);
-		
+		try {
+			mio_read_model_output_files_w_(&ifail, &nobs,
+				pest_utils::StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
+				&obs_vals[0]);
+		}
+		catch (exception &e)
+		{
+			string emess = e.what();
+			throw_mio_error("uncaught error processing model output files:" + emess);
+		}
 		if (ifail != 0)
 		{
 			string err = string(err_instruct);
 			auto s_end = err.find_last_not_of(" \t",1000);
 			err = err.substr(0, s_end);
 			
-			throw_mio_error("error processing model output files: offending instruction line: \n" + err);
+			throw_mio_error("error processing model output files:" + err);
 
 		}
 
-		vector<string> invalid;
+		invalid.clear();
 		for (int i = 0; i != par_name_vec.size(); i++)
 		{
 			if (OperSys::double_is_invalid(par_vals.at(i)))

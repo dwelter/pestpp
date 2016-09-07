@@ -8,6 +8,7 @@
 
 #include "Pest.h"
 #include "logger.h"
+#include "FileManager.h"
 
 using namespace std;
 
@@ -25,6 +26,9 @@ public:
 	
 	Mat(vector<string> _row_names, vector<string> _col_names,
 		Eigen::SparseMatrix<double>* _matrix);
+
+	Mat(vector<string> _row_names, vector<string> _col_names,
+		Eigen::SparseMatrix<double> _matrix, MatType _matttype);
 
 	vector<string> get_row_names(){ return row_names; }
 	vector<string> get_col_names(){ return col_names; }
@@ -52,6 +56,7 @@ public:
 	Mat transpose();
 	Mat T();
 	Mat inv();
+	void inv_ip(Logger *log);
 	void inv_ip();
 	void SVD();
 
@@ -103,6 +108,8 @@ public:
 	Covariance extract(vector<string> &extract_names);
 
 	Covariance diagonal(double val);
+
+	void try_from(Pest &pest_scenario, FileManager &file_manager);
 
 	void from_uncertainty_file(const string &filename);
 	void from_parameter_bounds(Pest &pest_scenario);

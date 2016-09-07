@@ -14,6 +14,7 @@
 #include "Pest.h"
 #include "utilities.h"
 #include "covariance.h"
+#include "FileManager.h"
 
 using namespace std;
 
@@ -56,6 +57,18 @@ Mat::Mat(vector<string> _row_names, vector<string> _col_names,
 	matrix = *_matrix;
 	mattype = MatType::SPARSE;
 }
+
+Mat::Mat(vector<string> _row_names, vector<string> _col_names,
+	Eigen::SparseMatrix<double> _matrix,MatType _mattype)
+{
+	row_names = _row_names;
+	col_names = _col_names;
+	assert(row_names.size() == _matrix.rows());
+	assert(col_names.size() == _matrix.cols());
+	matrix = _matrix;
+	mattype = _mattype;
+}
+
 
 
 const Eigen::SparseMatrix<double>* Mat::e_ptr()
@@ -227,21 +240,37 @@ Mat Mat::inv()
 
 void Mat::inv_ip()
 {
+	Logger* log = new Logger();
+	inv_ip(log);
+	return;
+}
+
+void Mat::inv_ip(Logger *log)
+{
 	if (nrow() != ncol()) throw runtime_error("Mat::inv() error: only symmetric positive definite matrices can be inverted with Mat::inv()");
 	if (mattype == MatType::DIAGONAL)
 	{
+		log->log("inverting diagonal matrix in place");
+		log->log("extracting diagonal");
 		Eigen::VectorXd diag = matrix.diagonal();
+		log->log("inverting diagonal");
 		diag = 1.0 / diag.array();
+		log->log("buidling triplets");
 		vector<Eigen::Triplet<double>> triplet_list;
 		for (int i = 0; i != diag.size(); ++i)
 		{
 			triplet_list.push_back(Eigen::Triplet<double>(i, i, diag[i]));
 		}
-		Eigen::SparseMatrix<double> inv_mat(triplet_list.size(), triplet_list.size());
-		inv_mat.setZero();
-		inv_mat.setFromTriplets(triplet_list.begin(), triplet_list.end());
-		matrix = inv_mat;
-		cout << "diagonal inv_ip()" << endl;
+		log->log("resizeing matrix to size " + triplet_list.size());
+		matrix.resize(triplet_list.size(), triplet_list.size());
+		matrix.setZero();
+		log->log("setting matrix from triplets");
+		matrix.setFromTriplets(triplet_list.begin(),triplet_list.end());
+		//Eigen::SparseMatrix<double> inv_mat(triplet_list.size(), triplet_list.size());
+		//inv_mat.setZero();
+		//inv_mat.setFromTriplets(triplet_list.begin(), triplet_list.end());
+		//matrix = inv_mat;
+		//cout << "diagonal inv_ip()" << endl;
 		/*matrix.resize(triplet_list.size(), triplet_list.size());
 		matrix.setZero();
 		matrix.setFromTriplets(triplet_list.begin(),triplet_list.end());*/
@@ -249,13 +278,19 @@ void Mat::inv_ip()
 	}
 
 	//Eigen::ConjugateGradient<Eigen::SparseMatrix<double>> solver;
+	log->log("inverting non-diagonal matrix in place");
+	log->log("instantiate solver");
 	Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver;
+	log->log("computing inverse");
 	solver.compute(matrix);
+	log->log("getting identity instance for solution");
 	Eigen::SparseMatrix<double> I(nrow(), nrow());
 	I.setIdentity();
-	Eigen::SparseMatrix<double> inv_mat = solver.solve(I);
-	matrix = inv_mat;
-	cout << "full inv_ip()" << endl;
+	//Eigen::SparseMatrix<double> inv_mat = solver.solve(I);
+	//matrix = inv_mat;
+	log->log("solving");
+	matrix = solver.solve(I);
+	//cout << "full inv_ip()" << endl;
 	/*matrix.setZero();
 	matrix = solver.solve(I);*/
 	
@@ -305,7 +340,7 @@ void Mat::to_ascii(const string &filename)
 													 to write ASCII matrix");
 	}
 	out << setw(6) << nrow() << setw(6) << ncol() << setw(6) << icode << endl;
-	out << matrix;
+	out << matrix.toDense() << endl;
 	if (icode == 1)
 	{
 		out<< "* row and column names" << endl;
@@ -644,7 +679,7 @@ Mat Mat::get(const vector<string> &new_row_names, const vector<string> &new_col_
 	new_matrix.setZero();
 	if (triplet_list.size() > 0)
 		new_matrix.setFromTriplets(triplet_list.begin(), triplet_list.end());
-	return Mat(new_row_names,new_col_names,new_matrix);
+	return Mat(new_row_names,new_col_names,new_matrix,this->mattype);
 }
 
 Mat Mat::extract(const vector<string> &extract_row_names, const vector<string> &extract_col_names)
@@ -813,6 +848,69 @@ Covariance Covariance::diagonal(double val)
 	i.setZero();
 	i.setFromTriplets(triplet_list.begin(), triplet_list.end());
 	return Covariance(*rn_ptr(), i);
+}
+
+void Covariance::try_from(Pest &pest_scenario, FileManager &file_manager)
+{
+	const string parcov_fname = pest_scenario.get_pestpp_options().get_parcov_filename();
+	if (parcov_fname.empty())
+	{
+		this->from_parameter_bounds(pest_scenario);
+	}
+	else
+	{
+		try {
+			this->from_ascii(parcov_fname);
+		}
+		catch (exception &e)
+		{
+			ofstream &f_rec = file_manager.get_ofstream("rec");
+			string message1 = e.what();
+			//cout << "    unable to read ASCII matrix format from file " << parcov_fname;
+			//cout << endl <<"    ..trying to read uncertainty file..." << endl;
+
+			f_rec << "    unable to read ASCII matrix format from file " << parcov_fname;
+			f_rec << endl << " error message:" << message1 << endl;
+			f_rec << endl << "    ..trying to read uncertainty file..." << endl;
+
+			try {
+				this->from_uncertainty_file(parcov_fname);
+			}
+			catch (exception &e)
+			{
+				cout << "    unable to read uncertainty format or ASCII format from file " << parcov_fname;
+				cout << endl << "    reverting to parameter bounds for scaling matrix" << parcov_fname;
+				cout << "    see .rec file for more info. " << endl;
+				f_rec << "    unable to read uncertainy format from file " << parcov_fname;
+				f_rec << endl << "    reverting to parameter bounds for scaling matrix" << endl;
+				f_rec << endl << " error message:" << e.what() << endl;
+				this->from_parameter_bounds(pest_scenario);
+			}
+		}
+		//check that the parcov matrix has the right parameter names
+		vector<string> missing;
+		vector<string> parcov_names = this->get_row_names();
+		const ParameterRec *prec;
+		for (auto &pname : pest_scenario.get_ctl_ordered_par_names())
+		{
+			prec = pest_scenario.get_ctl_parameter_info().get_parameter_rec_ptr(pname);
+			if ((prec->tranform_type == ParameterRec::TRAN_TYPE::LOG) ||
+				(prec->tranform_type == ParameterRec::TRAN_TYPE::NONE))
+			{
+				if (std::find(parcov_names.begin(), parcov_names.end(), pname) == parcov_names.end())
+				{
+					missing.push_back(pname);
+				}
+			}
+		}
+		if (missing.size() > 0)
+		{
+			stringstream ss;
+			for (auto &pname : missing)
+				ss << ',' << pname;
+			throw PestError("parcov missing parameters: " + ss.str());
+		}
+	}
 }
 
 
@@ -1051,6 +1149,8 @@ void Covariance::from_observation_weights(vector<string> obs_names, ObservationI
 		throw runtime_error("Cov::from_observation_weights() error:Error loading covariance from obs weights: no non-zero weighted obs found");
 	}
 	mattype = Mat::MatType::DIAGONAL;
+	/*if (mattype == Mat::MatType::DIAGONAL)
+		cout << "diagonal" << endl;*/
 }
 
 

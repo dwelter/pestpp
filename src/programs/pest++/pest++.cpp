@@ -46,6 +46,7 @@
 #include "RestartController.h"
 #include "PerformanceLog.h"
 #include "debug.h"
+#include "DifferentialEvolution.h"
 
 #include "linear_analysis.h"
 #include "logger.h"
@@ -338,6 +339,14 @@ int main(int argc, char* argv[])
 				pest_scenario.get_pestpp_options().get_max_run_fail());
 		}
 
+		//setup the parcov, if needed
+		Covariance parcov;
+		//if (pest_scenario.get_pestpp_options().get_use_parcov_scaling())
+		double parcov_scale_fac = pest_scenario.get_pestpp_options().get_parcov_scale_fac();
+		if (parcov_scale_fac > 0.0)
+		{
+			parcov.try_from(pest_scenario, file_manager);
+		}
 		const ParamTransformSeq &base_trans_seq = pest_scenario.get_base_par_tran_seq();
 
 		ObjectiveFunc obj_func(&(pest_scenario.get_ctl_observations()), &(pest_scenario.get_ctl_observation_info()), &(pest_scenario.get_prior_info()));
@@ -345,7 +354,8 @@ int main(int argc, char* argv[])
 
 		TerminationController termination_ctl(pest_scenario.get_control_info().noptmax, pest_scenario.get_control_info().phiredstp,
 			pest_scenario.get_control_info().nphistp, pest_scenario.get_control_info().nphinored, pest_scenario.get_control_info().relparstp,
-			pest_scenario.get_control_info().nrelpar, pest_scenario.get_regul_scheme_ptr()->get_use_dynamic_reg(), pest_scenario.get_regul_scheme_ptr()->get_phimaccept());
+			pest_scenario.get_control_info().nrelpar, pest_scenario.get_regul_scheme_ptr()->get_use_dynamic_reg(),
+			pest_scenario.get_regul_scheme_ptr()->get_phimaccept(), pest_scenario.get_pestpp_options().get_reg_frac());
 
 		//if we are doing a restart, update the termination_ctl
 		if (restart_flag)
@@ -355,13 +365,9 @@ int main(int argc, char* argv[])
 
 		SVDSolver::MAT_INV mat_inv = SVDSolver::MAT_INV::JTQJ;
 		if (pest_scenario.get_pestpp_options().get_mat_inv() == PestppOptions::Q12J) mat_inv = SVDSolver::MAT_INV::Q12J;
-		SVDSolver base_svd(&pest_scenario.get_control_info(), pest_scenario.get_svd_info(), &pest_scenario.get_base_group_info(),
-			&pest_scenario.get_ctl_parameter_info(), &pest_scenario.get_ctl_observation_info(), file_manager,
-			&pest_scenario.get_ctl_observations(), &obj_func, base_trans_seq, pest_scenario.get_prior_info_ptr(),
-			*base_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(),
-			output_file_writer, mat_inv, &performance_log, pest_scenario.get_pestpp_options().get_base_lambda_vec(), 
-			"base parameter solution", pest_scenario.get_pestpp_options().get_der_forgive());
-
+		SVDSolver base_svd(pest_scenario, file_manager, &obj_func, base_trans_seq,
+			*base_jacobian_ptr, output_file_writer, mat_inv, &performance_log, "base parameter solution",parcov);
+		
 		base_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 		//Build Super-Parameter problem
 		Jacobian *super_jacobian_ptr = new Jacobian(file_manager);
@@ -424,7 +430,6 @@ int main(int argc, char* argv[])
 				fout_rec << "Model run failed.  No results were recorded." << endl << e.what() << endl;
 				exit(1);
 			}
-
 			Parameters tmp_pars;
 			Observations tmp_obs;
 			bool success = run_manager_ptr->get_run(0, tmp_pars, tmp_obs);
@@ -455,6 +460,29 @@ int main(int argc, char* argv[])
 			}
 			termination_ctl.set_terminate(true);
 		}
+
+
+		// Differential Evolution
+		if (pest_scenario.get_pestpp_options().get_global_opt() ==  PestppOptions::OPT_DE)
+		{
+			int rand_seed = 1;
+			int np = pest_scenario.get_pestpp_options().get_de_npopulation();
+			int max_gen = pest_scenario.get_pestpp_options().get_de_max_gen();
+			double f = pest_scenario.get_pestpp_options().get_de_f();
+			double cr = pest_scenario.get_pestpp_options().get_de_cr();
+			bool dither_f = pest_scenario.get_pestpp_options().get_de_dither_f();
+			ModelRun init_run(&obj_func, pest_scenario.get_ctl_observations());
+			Parameters cur_ctl_parameters = pest_scenario.get_ctl_parameters();
+			run_manager_ptr->reinitialize();
+			DifferentialEvolution de_solver(pest_scenario, file_manager, &obj_func,
+				base_trans_seq, output_file_writer, &performance_log, rand_seed);
+			de_solver.initialize_population(*run_manager_ptr, np);
+			de_solver.solve(*run_manager_ptr, restart_ctl, max_gen, f, cr, dither_f, init_run);
+			run_manager_ptr->free_memory();
+			exit(1);
+		}
+
+
 		//Define model Run for Base Parameters (uses base parameter tranformations)
 		ModelRun cur_run(&obj_func, pest_scenario.get_ctl_observations());
 		
@@ -470,7 +498,7 @@ int main(int argc, char* argv[])
 		}
 		if (!restart_flag || save_restart_rec_header)
 		{
-			fout_rec << "   -----    Starting PEST++ Iterations    ----    " << endl << endl << endl;
+			fout_rec << "   -----    Starting PEST++ Iterations    ----    " << endl << endl;
 		}
 		while (!termination_ctl.terminate())
 		{
@@ -569,11 +597,10 @@ int main(int argc, char* argv[])
 					(*tran_svd).update_reset_frozen_pars(*base_jacobian_ptr, Q_sqrt, base_numeric_pars, max_n_super, super_eigthres, pars, nonregul_obs, cur_run.get_frozen_ctl_pars());
 					(*tr_svda_fixed).reset((*tran_svd).get_frozen_derivative_pars());
 				}
-				SVDASolver super_svd(&svd_control_info, pest_scenario.get_svd_info(), &pest_scenario.get_base_group_info(), &pest_scenario.get_ctl_parameter_info(),
-					&pest_scenario.get_ctl_observation_info(), file_manager, &pest_scenario.get_ctl_observations(), &obj_func,
-					trans_svda, &pest_scenario.get_prior_info(), *super_jacobian_ptr, pest_scenario.get_regul_scheme_ptr(),
-					output_file_writer, mat_inv, &performance_log, pest_scenario.get_pestpp_options().get_base_lambda_vec(), false, base_svd.get_phiredswh_flag(), base_svd.get_splitswh_flag(),
-					pest_scenario.get_pestpp_options().get_max_super_frz_iter());
+				SVDASolver super_svd(pest_scenario, file_manager, &obj_func,
+					trans_svda, *super_jacobian_ptr,
+					output_file_writer, mat_inv, &performance_log,
+					base_svd.get_phiredswh_flag(), base_svd.get_splitswh_flag());
 				super_svd.set_svd_package(pest_scenario.get_pestpp_options().get_svd_pack());
 				//use base jacobian to compute first super jacobian if there was not a super upgrade
 				bool calc_first_jacobian = true;

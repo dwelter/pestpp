@@ -32,6 +32,7 @@
 #include "Transformation.h"
 #include "PriorInformation.h"
 #include "debug.h"
+#include "covariance.h"
 
 using namespace std;
 using namespace pest_utils;
@@ -39,16 +40,13 @@ using namespace Eigen;
 
 const string SVDASolver::svda_solver_type_name = "svda_super_par";
 
-SVDASolver::SVDASolver(const ControlInfo *_ctl_info, const SVDInfo &_svd_info, const ParameterGroupInfo *_base_parameter_group_info_ptr, 
-	const ParameterInfo *_ctl_par_info_ptr, const ObservationInfo *_obs_info, FileManager &_file_manager, const Observations *_observations, ObjectiveFunc *_obj_func,
-	const ParamTransformSeq &_par_transform, const PriorInformation *_prior_info_ptr, Jacobian &_jacobian, DynamicRegularization *_regul_scheme,
-	OutputFileWriter &_output_file_writer, SVDSolver::MAT_INV _mat_inv, PerformanceLog *_performance_log, 
-	const std::vector<double> &_base_lambda_vec, bool _der_forgive, bool _phiredswh_flag, bool _splitswh_flag, int _max_super_frz_iter)
-	: SVDSolver(_ctl_info, _svd_info, _base_parameter_group_info_ptr, _ctl_par_info_ptr, _obs_info,
-		_file_manager, _observations, _obj_func, _par_transform, _prior_info_ptr, _jacobian, 
-		_regul_scheme, _output_file_writer, _mat_inv, _performance_log,
-		_base_lambda_vec, "super parameter solution", _der_forgive, _phiredswh_flag, _splitswh_flag, false),
-		max_super_frz_iter(_max_super_frz_iter)
+SVDASolver::SVDASolver(Pest &_pest_scenario, FileManager &_file_manager, ObjectiveFunc *_obj_func_ptr,
+	const ParamTransformSeq &_par_transform, Jacobian &_jacobian,	OutputFileWriter &_output_file_writer,
+	SVDSolver::MAT_INV _mat_inv, PerformanceLog *_performance_log, bool _phiredswh_flag, bool _splitswh_flag)
+	: SVDSolver(_pest_scenario, _file_manager, _obj_func_ptr, _par_transform, _jacobian,
+		_output_file_writer, _mat_inv, _performance_log,
+		 "super parameter solution", Covariance(), _phiredswh_flag, _splitswh_flag, false),
+		max_super_frz_iter(_pest_scenario.get_pestpp_options().get_max_super_frz_iter())
 {
 }
 
@@ -421,9 +419,8 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 			Parameters frozen_active_ctl_pars;
 			//If running in regularization mode, adjust the regularization weights
 			// define a function type for upgrade methods
-			if (regul_scheme_ptr->get_use_dynamic_reg())
+			if (regul_scheme_ptr->get_use_dynamic_reg() && reg_frac <= 0.0)
 			{
-				os << endl;
 				dynamic_weight_adj(base_run, jacobian, Q_sqrt, residuals_vec, obs_names_vec,
 					base_run_active_ctl_pars, frozen_active_ctl_pars);
 			}
@@ -450,7 +447,7 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 			std::cout << string(message.str().size(), '\b');
 			message.str("");
 			message << "  computing upgrade vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
-			std::cout << message.str() << endl;
+			std::cout << message.str();
 			cout.flush();
 
 			Parameters new_pars;
@@ -480,14 +477,13 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 	run_manager.run();
 
 	// process model runs
-	cout << endl;
 	cout << "  testing upgrade vectors... ";
 	ifstream &fin_frz = file_manager.open_ifile_ext("fpr");
 	bool best_run_updated_flag = false;
 	Parameters base_run_active_ctl_par_tmp = par_transform.ctl2active_ctl_cp(base_run.get_ctl_pars());
 	ModelRun best_upgrade_run(base_run);
 
-	os << "    Summary of upgrade runs:" << endl;
+	os << "  Summary of upgrade runs:" << endl;
 	Parameters new_frozen_pars;
 
 	int n_runs = run_manager.get_nruns();
@@ -506,7 +502,7 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 			double magnitude = Transformable::l2_norm(base_run_active_ctl_par_tmp, tmp_pars);
 
 			streamsize n_prec = os.precision(2);
-			os << "      Lambda = ";
+			os << "    Lambda = ";
 			os << setiosflags(ios::fixed) << setw(8) << i_lambda;
 			os << "; Type: " << setw(4) << lambda_type;
 			os << "; length = " << std::scientific << magnitude;

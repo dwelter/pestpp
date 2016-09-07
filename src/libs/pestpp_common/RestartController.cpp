@@ -17,9 +17,9 @@ RestartController::RestartController(void)
 {
 }
 
-void RestartController::write_start_iteration(ostream &fout, const SVDSolver &svd_solver, int _iter_num, int _global_iter_num)
+void RestartController::write_start_iteration(ostream &fout, const string &solver_type, int _iter_num, int _global_iter_num)
 {
-	fout << "start_iteration " << _iter_num << "  " << _global_iter_num << "  " << svd_solver.get_solver_type() << endl;
+	fout << "start_iteration " << _iter_num << "  " << _global_iter_num << "  " << solver_type << endl;
 
 }
 

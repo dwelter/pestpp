@@ -128,9 +128,9 @@ imas_063                           3             0.5 imas
 * model command line
 python kirishima_run.py 
 * model input/output
-tpl/stage_a.wind.tpl wind/stage_a.wind    
-tpl/stage_a.conf.tpl conf/stage_a.conf    
-background/stage_a.ins stage_a.results      
+tpl/stage_A.wind.tpl wind/stage_a.wind    
+tpl/stage_A.conf.tpl conf/stage_a.conf    
+background/stage_A.ins stage_A.results      
 * prior information
 pi_1  1.0 * log(pumdena) =    3.000000E+00     2.271549E+01  regul
 pi_2  1.0 * log(lithdena) =    3.414973E+00     5.974894E+01  regul
