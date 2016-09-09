@@ -359,12 +359,6 @@
     <ClInclude Include="..\ClpCholeskyTaucs.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ClpCholeskyWssmp.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ClpCholeskyWssmpKKT.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\ClpConfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -696,6 +690,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Idiot.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClpCholeskyWssmp.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClpCholeskyWssmpKKT.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

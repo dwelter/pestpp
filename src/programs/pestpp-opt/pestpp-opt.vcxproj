@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{99F3DA98-8786-445B-99C4-CB24C134CA30}</ProjectGuid>
+    <ProjectGuid>{5F664CD3-FF31-4B38-ADFC-55FE7DC11258}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>pestppopt</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
@@ -100,19 +100,19 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>;WIN32;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)\libs\common;$(SolutionDir)\libs\pestpp_common;$(SolutionDir)\libs\linear_analysis;$(SolutionDir)\libs\run_managers\abstract_base;$(SolutionDir)\libs\run_managers\yamr;$(SolutionDir)\libs\run_managers\genie_wrapper;$(SolutionDir)\libs\run_managers\serial;$(SolutionDir)\libs\run_managers\external;$(SolutionDir)libs\opt;$(SolutionDir)libs\Eigen</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)libs\opt</AdditionalIncludeDirectories>
-      <CompileAsManaged>false</CompileAsManaged>
       <MinimalRebuild>false</MinimalRebuild>
       <FloatingPointModel>Strict</FloatingPointModel>
       <FloatingPointExceptions>true</FloatingPointExceptions>
+      <OpenMPSupport>false</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>libopt.lib;mkl_blas95_lp64.lib;mkl_lapack95_lp64.lib;ws2_32.lib;Advapi32.lib;propack.lib;common.lib;pestpp_common.lib;mio.lib;wrappers.lib;genie.lib;genie_wrapper.lib;yamr.lib;external.lib;serial.lib;abstract_base.lib;linear_analysis.lib;pest_routines.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(IFORT_COMPILER16)\compiler\lib\intel64;$(IFORT_COMPILER16)\mkl\lib\intel64;$(SolutionDir)$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libopt.lib;mkl_blas95_lp64.lib;mkl_lapack95_lp64.lib;ws2_32.lib;Advapi32.lib;propack.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -153,12 +153,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="pestpp-opt.cpp">
-      <RuntimeLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)\libs\common;$(SolutionDir)\libs\pestpp_common;$(SolutionDir)\libs\linear_analysis;$(SolutionDir)\libs\run_managers\abstract_base;$(SolutionDir)\libs\run_managers\yamr;$(SolutionDir)\libs\run_managers\genie_wrapper;$(SolutionDir)\libs\run_managers\serial;$(SolutionDir)\libs\run_managers\external;$(SolutionDir)libs\Eigen;$(SolutionDir)libs\opt</AdditionalIncludeDirectories>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
-    </ClCompile>
+    <ClCompile Include="pestpp-opt.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
