@@ -22,7 +22,11 @@ public:
 	void initialize();
 	void solve();
 	
+	ModelRun get_optimum_run() { return optimum_run; }
+
 private:
+	vector<string> ctl_ord_dec_var_names;
+	vector<string> ctl_ord_constraint_names;
 	PriorInformation* null_prior = new PriorInformation();
 	ModelRun optimum_run;
 	ObjectiveFunc obj_func;
@@ -36,13 +40,13 @@ private:
 	Covariance parcov;
 	FileManager file_mgr;
 	OutputFileWriter* out_wtr_ptr;
-	void solve_lp_problem();
-	void update();
-	void update_decision_vars();
-	void update_constraints();
+	ClpSimplex solve_lp_problem(Jacobian_1to1 &jco);
+	void update(ClpSimplex &model);
+	void update_decision_vars(ClpSimplex &model);
+	void update_constraints(ClpSimplex &model);
 	void separate_scenarios();
 	void make_runs(Jacobian_1to1 &jco);
-	void process_runs();
+	CoinPackedMatrix jacobian_to_coinpackedmatrix(Jacobian_1to1 &jco);
 
 
 
