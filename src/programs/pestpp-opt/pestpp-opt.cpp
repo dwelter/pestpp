@@ -329,8 +329,7 @@ int main(int argc, char* argv[])
 		const ParamTransformSeq &base_trans_seq = pest_scenario.get_base_par_tran_seq();
 
 		ObjectiveFunc obj_func(&(pest_scenario.get_ctl_observations()), &(pest_scenario.get_ctl_observation_info()), &(pest_scenario.get_prior_info()));
-		Jacobian *base_jacobian_ptr = new Jacobian_1to1(file_manager);
-
+		
 		TerminationController termination_ctl(pest_scenario.get_control_info().noptmax, pest_scenario.get_control_info().phiredstp,
 			pest_scenario.get_control_info().nphistp, pest_scenario.get_control_info().nphinored, pest_scenario.get_control_info().relparstp,
 			pest_scenario.get_control_info().nrelpar, pest_scenario.get_regul_scheme_ptr()->get_use_dynamic_reg(),
@@ -445,25 +444,20 @@ int main(int argc, char* argv[])
 		{
 			fout_rec << "   -----    Starting Optimization Iterations    ----    " << endl << endl;
 		}
-		while (!termination_ctl.terminate())
+		sequentialLP slp(pest_scenario, run_manager_ptr, &termination_ctl, 
+				         parcov, file_manager, &output_file_writer);
+
+		slp.solve();
+		/*catch (exception &e)
 		{
-			//base parameter iterations
-			try
-			{
-				
-			}
-			catch (exception &e)
-			{
-				cout << endl << endl;;
-				cout << e.what() << endl;
-				fout_rec << endl << endl;
-				fout_rec << e.what() << endl;
-				cout << "FATAL ERROR: base parameter run failed." << endl;
-				fout_rec << "FATAL ERROR: base parameter run failed." << endl;
-				exit(1);
-			}
-			
-		}
+			cout << endl << endl;;
+			cout << e.what() << endl;
+			fout_rec << endl << endl;
+			fout_rec << e.what() << endl;
+			cout << "FATAL ERROR: " << e.what() << endl;
+			fout_rec << "FATAL ERROR: " << e.what() << endl;
+			exit(1);
+		}*/
 		cout << endl;
 		termination_ctl.termination_summary(cout);
 		cout << endl;
@@ -472,13 +466,13 @@ int main(int argc, char* argv[])
 		cout << "FINAL OPTIMISATION RESULTS" << endl << endl;
 		fout_rec << "FINAL OPTIMISATION RESULTS" << endl << endl;
 
-		fout_rec << "  Optimal parameter values  " << endl;
+		fout_rec << "  Optimal decsision variable values  " << endl;
 		output_file_writer.par_report(fout_rec, optimum_run.get_ctl_pars());
 
-		fout_rec << endl << "  Observations with optimal model-simulated equivalents and residuals" << endl;
+		fout_rec << endl << "  constraints with optimal model-simulated equivalents and residuals (e.g. shadow prices)" << endl;
 		output_file_writer.obs_report(fout_rec, *obj_func.get_obs_ptr(), optimum_run.get_obs(), obj_func);
 
-		fout_rec << endl << "Final composite objective function " << endl;
+		fout_rec << endl << "Final objective function " << endl;
 		map<string, double> phi_report = obj_func.phi_report(optimum_run.get_obs(), optimum_run.get_ctl_pars(), *(pest_scenario.get_regul_scheme_ptr()));
 		output_file_writer.phi_report(fout_rec, termination_ctl.get_iteration_number() + 1, run_manager_ptr->get_total_runs(), phi_report, 0.0, true);
 		output_file_writer.phi_report(cout, termination_ctl.get_iteration_number() + 1, run_manager_ptr->get_total_runs(), phi_report, 0.0, true);
@@ -487,7 +481,6 @@ int main(int argc, char* argv[])
 
 		// clean up
 		fout_rec.close();
-		delete base_jacobian_ptr;
 		delete run_manager_ptr;
 		cout << endl << endl << "Simulation Complete..." << endl;
 		cout << flush;

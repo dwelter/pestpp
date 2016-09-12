@@ -1,0 +1,57 @@
+PEST++ performance logger started at:  16:07:44
+  starting to process control file
+          ( time = 16:07:44,  elapsed time = 3ms )
+  finished processing control file
+          ( time = 16:07:44,  elapsed time = 3ms )
+    starting basic model IO error checking
+            ( time = 16:07:44,  elapsed time = 21ms )
+    finished basic model IO error checking
+            ( time = 16:07:44,  elapsed time = 2ms )
+    commencing to build jacobian parameter sets
+            ( time = 16:07:44,  elapsed time = 18ms )
+    jacobian parameter sets built, commencing model runs
+            ( time = 16:07:44,  elapsed time = 1ms )
+    jacobian runs complete, processing runs
+            ( time = 16:07:45,  elapsed time = 1sec )
+    processing jacobian runs complete
+            ( time = 16:07:45,  elapsed time = 697us )
+    saving jacobian and sen files
+            ( time = 16:07:45,  elapsed time = 25us )
+
+
+-----------------------------------
+starting linear uncertainty analyses
+-----------------------------------
+
+16:07:45-> starting calc_posterior
+16:07:45->-> starting align
+16:07:45->-> finished align, elapsed time = 3ms
+16:07:45-> finished calc_posterior, elapsed time = 7ms
+16:07:45-> starting prior_parameter_variance
+16:07:45-> finished prior_parameter_variance, elapsed time = 17us
+16:07:45-> starting prior_parameter_variance
+16:07:45-> finished prior_parameter_variance, elapsed time = 7us
+16:07:45-> starting prior_parameter_variance
+16:07:45-> finished prior_parameter_variance, elapsed time = 7us
+16:07:45-> starting prior_parameter_variance
+16:07:45-> finished prior_parameter_variance, elapsed time = 7us
+16:07:45-> starting prior_parameter_variance
+16:07:45-> finished prior_parameter_variance, elapsed time = 7us
+16:07:45-> starting prior_parameter_variance
+16:07:45-> finished prior_parameter_variance, elapsed time = 7us
+16:07:45-> starting prior_parameter_variance
+16:07:45-> finished prior_parameter_variance, elapsed time = 7us
+16:07:45-> starting posterior_parameter_variance
+16:07:45-> finished posterior_parameter_variance, elapsed time = 7us
+16:07:45-> starting posterior_parameter_variance
+16:07:45-> finished posterior_parameter_variance, elapsed time = 6us
+16:07:45-> starting posterior_parameter_variance
+16:07:45-> finished posterior_parameter_variance, elapsed time = 7us
+16:07:45-> starting posterior_parameter_variance
+16:07:45-> finished posterior_parameter_variance, elapsed time = 7us
+16:07:45-> starting posterior_parameter_variance
+16:07:45-> finished posterior_parameter_variance, elapsed time = 7us
+16:07:45-> starting posterior_parameter_variance
+16:07:45-> finished posterior_parameter_variance, elapsed time = 7us
+16:07:45-> starting posterior_parameter_variance
+16:07:45-> finished posterior_parameter_variance, elapsed time = 6us

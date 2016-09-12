@@ -302,6 +302,7 @@ private:
 	int de_npopulation;
 	int de_max_gen;
 	bool de_dither_f;
+
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);
 ostream& operator<< (ostream &os, const ObservationInfo& val);

@@ -477,6 +477,7 @@ void PestppOptions::parce_line(const string &line)
 			is >> boolalpha >> de_dither_f;
 		}
 
+	
 		else {
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");
 		}

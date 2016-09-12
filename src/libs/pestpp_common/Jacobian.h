@@ -61,7 +61,6 @@ public:
 	friend void TranSVD::jacobian_reverse(Jacobian &jac);
 	friend void TranNormalize::jacobian_forward(Jacobian &jac);
 	friend void TranNormalize::jacobian_reverse(Jacobian &jac);
-
 	Jacobian(FileManager &_file_manager);
 	virtual const vector<string>& parameter_list() const{return base_numeric_par_names;}
 	virtual const vector<string>& observation_list() const {return  base_sim_obs_names;}

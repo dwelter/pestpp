@@ -1,0 +1,699 @@
+             pestpp-opt version 3.4.0
+
+                 by the petspp development team
+
+using control file: "dewater_pest.pst"
+
+
+PEST++ run mode:- 
+   estimation
+
+Case dimensions:- 
+    Number of parameters = 7
+    Number of adjustable parameters = 7
+    Number of observations = 600
+    Number of prior estimates = 0
+
+Model command line(s):- 
+    mf2005 dewater_pest.nam
+
+Model interface files:-
+    template files:
+      dewater_pest.wel.tpl
+    model input files:
+      dewater_pest.wel
+
+    instruction files:
+      dewater_pest.hds.ins
+    model output files:
+      dewater_pest.hds
+
+
+PEST Control Information
+    relparmax = 10
+    facparmax = 10
+    facorig = 0.001
+    phiredswh = 0.1
+    noptmax = 1
+    phiredstp = 0.01
+    nphistp = 3
+    nphinored = 3
+    relparstp = 0.01
+    nrelpar = 3
+
+PEST++ Options
+    n_iter_base = 1                   
+    n_iter_super = 0                   
+    max_n_super = 7                   
+    super eigthres = 1e-06               
+    svd pack = 0                   
+    auto norm = -999                
+    super relparmax = 0.1                 
+    max super frz iter = 5                   
+    mat inv = 1                   
+    max run fail = 3                   
+    max reg iter = 20                  
+    lambdas = 
+            0.1
+              1
+             10
+            100
+           1000
+    uncertainty flag = 1                   
+    parameter covariance file =                     
+    forecast names = 
+    derivative run failure forgive = 1              
+    run overdue reschedule factor = 1.15                
+    run overdue giveup factor = 100                 
+    base parameter jacobian filename = PEST_DEWATER.BAK.JCB
+    prior parameter covariance upgrade scaling factor = -999      
+
+
+Parameter group information
+NAME            INCREMENT TYPE     DERIVATIVE INCREMENT    INCREMENT LOWER BOUND  FORCE CENTRAL     INCREMENT MULTIPLIER
+pargp                 ABSOLUTE                   -10000                        0         SWITCH                        2
+
+Parameter information
+NAME           TRANSFORMATION        CHANGE LIMIT  INITIAL VALUE    LOWER BOUND    UPPER BOUND          GROUP          SCALE         OFFSET  DERIVATIVE COMMAND
+q1             none                    FACTOR              0              0          20000          pargp             -1              0                   0
+q2             none                    FACTOR              0              0          20000          pargp             -1              0                   0
+q3             none                    FACTOR              0              0          20000          pargp             -1              0                   0
+q4             none                    FACTOR              0              0          20000          pargp             -1              0                   0
+q5             none                    FACTOR              0              0          20000          pargp             -1              0                   0
+q6             none                    FACTOR              0              0          20000          pargp             -1              0                   0
+q7             none                    FACTOR              0              0          20000          pargp             -1              0                   0
+
+Observation information
+NAME                                    VALUE               GROUP              WEIGHT
+h00_00                                     50                 'n'                   0
+h00_01                                     50              obgnme                   0
+h00_02                                     50              obgnme                   0
+h00_03                                     50              obgnme                   0
+h00_04                                     50              obgnme                   0
+h00_05                                     50              obgnme                   0
+h00_06                                     50              obgnme                   0
+h00_07                                     50              obgnme                   0
+h00_08                                     50              obgnme                   0
+h00_09                                     50              obgnme                   0
+h00_10                                     50              obgnme                   0
+h00_11                                     50              obgnme                   0
+h00_12                                     50              obgnme                   0
+h00_13                                     50              obgnme                   0
+h00_14                                     50              obgnme                   0
+h00_15                                     50              obgnme                   0
+h00_16                                     50              obgnme                   0
+h00_17                                     50              obgnme                   0
+h00_18                                     50              obgnme                   0
+h00_19                                     50              obgnme                   0
+h00_20                                     50              obgnme                   0
+h00_21                                     50              obgnme                   0
+h00_22                                     50              obgnme                   0
+h00_23                                     50              obgnme                   0
+h00_24                                     50              obgnme                   0
+h00_25                                     50              obgnme                   0
+h00_26                                     50              obgnme                   0
+h00_27                                     50              obgnme                   0
+h00_28                                     50              obgnme                   0
+h00_29                                     50              obgnme                   0
+h01_00                                     50              obgnme                   0
+h01_01                                     50              obgnme                   0
+h01_02                                     50              obgnme                   0
+h01_03                                     50              obgnme                   0
+h01_04                                     50              obgnme                   0
+h01_05                                     50              obgnme                   0
+h01_06                                     50              obgnme                   0
+h01_07                                     50              obgnme                   0
+h01_08                                     50              obgnme                   0
+h01_09                                     50              obgnme                   0
+h01_10                                     50              obgnme                   0
+h01_11                                     50              obgnme                   0
+h01_12                                     50              obgnme                   0
+h01_13                                     50              obgnme                   0
+h01_14                                     50              obgnme                   0
+h01_15                                     50              obgnme                   0
+h01_16                                     50              obgnme                   0
+h01_17                                     50              obgnme                   0
+h01_18                                     50              obgnme                   0
+h01_19                                     50              obgnme                   0
+h01_20                                     50              obgnme                   0
+h01_21                                     50              obgnme                   0
+h01_22                                     50              obgnme                   0
+h01_23                                     50              obgnme                   0
+h01_24                                     50              obgnme                   0
+h01_25                                     50              obgnme                   0
+h01_26                                     50              obgnme                   0
+h01_27                                     50              obgnme                   0
+h01_28                                     50              obgnme                   0
+h01_29                                     50              obgnme                   0
+h02_00                                     50              obgnme                   0
+h02_01                                     50              obgnme                   0
+h02_02                                     50              obgnme                   0
+h02_03                                     50              obgnme                   0
+h02_04                                     50              obgnme                   0
+h02_05                                     50              obgnme                   0
+h02_06                                     50              obgnme                   0
+h02_07                                     50              obgnme                   0
+h02_08                                     50              obgnme                   0
+h02_09                                     50              obgnme                   0
+h02_10                                     50              obgnme                   0
+h02_11                                     50              obgnme                   0
+h02_12                                     50              obgnme                   0
+h02_13                                     50              obgnme                   0
+h02_14                                     50              obgnme                   0
+h02_15                                     50              obgnme                   0
+h02_16                                     50              obgnme                   0
+h02_17                                     50              obgnme                   0
+h02_18                                     50              obgnme                   0
+h02_19                                     50              obgnme                   0
+h02_20                                     50              obgnme                   0
+h02_21                                     50              obgnme                   0
+h02_22                                     50              obgnme                   0
+h02_23                                     50              obgnme                   0
+h02_24                                     50              obgnme                   0
+h02_25                                     50              obgnme                   0
+h02_26                                     50              obgnme                   0
+h02_27                                     50              obgnme                   0
+h02_28                                     50              obgnme                   0
+h02_29                                     50              obgnme                   0
+h03_00                                     50              obgnme                   0
+h03_01                                     50              obgnme                   0
+h03_02                                     50              obgnme                   0
+h03_03                                     50              obgnme                   0
+h03_04                                     50              obgnme                   0
+h03_05                                     50              obgnme                   0
+h03_06                                     50              obgnme                   0
+h03_07                                     50              obgnme                   0
+h03_08                                     50              obgnme                   0
+h03_09                                     50              obgnme                   0
+h03_10                                     50              obgnme                   0
+h03_11                                     50              obgnme                   0
+h03_12                                     50              obgnme                   0
+h03_13                                     50              obgnme                   0
+h03_14                                     50              obgnme                   0
+h03_15                                     50              obgnme                   0
+h03_16                                     50              obgnme                   0
+h03_17                                     50              obgnme                   0
+h03_18                                     50              obgnme                   0
+h03_19                                     50              obgnme                   0
+h03_20                                     50              obgnme                   0
+h03_21                                     50              obgnme                   0
+h03_22                                     50              obgnme                   0
+h03_23                                     50              obgnme                   0
+h03_24                                     50              obgnme                   0
+h03_25                                     50              obgnme                   0
+h03_26                                     50              obgnme                   0
+h03_27                                     50              obgnme                   0
+h03_28                                     50              obgnme                   0
+h03_29                                     50              obgnme                   0
+h04_00                                     50              obgnme                   0
+h04_01                                     50              obgnme                   0
+h04_02                                     50              obgnme                   0
+h04_03                                     50              obgnme                   0
+h04_04                                     50              obgnme                   0
+h04_05                                     50              obgnme                   0
+h04_06                                     50              obgnme                   0
+h04_07                                     50              obgnme                   0
+h04_08                                     50              obgnme                   0
+h04_09                                     50              obgnme                   0
+h04_10                                     50              obgnme                   0
+h04_11                                     50              obgnme                   0
+h04_12                                     50              obgnme                   0
+h04_13                                     50              obgnme                   0
+h04_14                                     50              obgnme                   0
+h04_15                                     50              obgnme                   0
+h04_16                                     50              obgnme                   0
+h04_17                                     50              obgnme                   0
+h04_18                                     50              obgnme                   0
+h04_19                                     50              obgnme                   0
+h04_20                                     50              obgnme                   0
+h04_21                                     50              obgnme                   0
+h04_22                                     50              obgnme                   0
+h04_23                                     50              obgnme                   0
+h04_24                                     50              obgnme                   0
+h04_25                                     50              obgnme                   0
+h04_26                                     50              obgnme                   0
+h04_27                                     50              obgnme                   0
+h04_28                                     50              obgnme                   0
+h04_29                                     50              obgnme                   0
+h05_00                                     50              obgnme                   0
+h05_01                                     50              obgnme                   0
+h05_02                                     50              obgnme                   0
+h05_03                                     50              obgnme                   0
+h05_04                                     50              obgnme                   0
+h05_05                                     50              obgnme                   0
+h05_06                                     50              obgnme                   0
+h05_07                                     50              obgnme                   0
+h05_08                                     50              obgnme                   0
+h05_09                                     50              obgnme                   0
+h05_10                                     50              obgnme                   0
+h05_11                                     50              obgnme                   0
+h05_12                                     50                   l                   1
+h05_13                                     50              obgnme                   0
+h05_14                                     50                   l                   1
+h05_15                                     50              obgnme                   0
+h05_16                                     50                   l                   1
+h05_17                                     50              obgnme                   0
+h05_18                                     50              obgnme                   0
+h05_19                                     50              obgnme                   0
+h05_20                                     50              obgnme                   0
+h05_21                                     50              obgnme                   0
+h05_22                                     50              obgnme                   0
+h05_23                                     50              obgnme                   0
+h05_24                                     50              obgnme                   0
+h05_25                                     50              obgnme                   0
+h05_26                                     50              obgnme                   0
+h05_27                                     50              obgnme                   0
+h05_28                                     50              obgnme                   0
+h05_29                                     50              obgnme                   0
+h06_00                                     50              obgnme                   0
+h06_01                                     50              obgnme                   0
+h06_02                                     50              obgnme                   0
+h06_03                                     50              obgnme                   0
+h06_04                                     50              obgnme                   0
+h06_05                                     50              obgnme                   0
+h06_06                                     50              obgnme                   0
+h06_07                                     50              obgnme                   0
+h06_08                                     50              obgnme                   0
+h06_09                                     50              obgnme                   0
+h06_10                                     50              obgnme                   0
+h06_11                                     50              obgnme                   0
+h06_12                                     50              obgnme                   0
+h06_13                                     50              obgnme                   0
+h06_14                                     50              obgnme                   0
+h06_15                                     50              obgnme                   0
+h06_16                                     50              obgnme                   0
+h06_17                                     50              obgnme                   0
+h06_18                                     50              obgnme                   0
+h06_19                                     50              obgnme                   0
+h06_20                                     50              obgnme                   0
+h06_21                                     50              obgnme                   0
+h06_22                                     50              obgnme                   0
+h06_23                                     50              obgnme                   0
+h06_24                                     50              obgnme                   0
+h06_25                                     50              obgnme                   0
+h06_26                                     50              obgnme                   0
+h06_27                                     50              obgnme                   0
+h06_28                                     50              obgnme                   0
+h06_29                                     50              obgnme                   0
+h07_00                                     50              obgnme                   0
+h07_01                                     50              obgnme                   0
+h07_02                                     50              obgnme                   0
+h07_03                                     50              obgnme                   0
+h07_04                                     50              obgnme                   0
+h07_05                                     50              obgnme                   0
+h07_06                                     50              obgnme                   0
+h07_07                                     50              obgnme                   0
+h07_08                                     50              obgnme                   0
+h07_09                                     50              obgnme                   0
+h07_10                                     50              obgnme                   0
+h07_11                                     50              obgnme                   0
+h07_12                                     50                   l                   1
+h07_13                                     50              obgnme                   0
+h07_14                                     50              obgnme                   0
+h07_15                                     50              obgnme                   0
+h07_16                                     50                   l                   1
+h07_17                                     50              obgnme                   0
+h07_18                                     50              obgnme                   0
+h07_19                                     50              obgnme                   0
+h07_20                                     50              obgnme                   0
+h07_21                                     50              obgnme                   0
+h07_22                                     50              obgnme                   0
+h07_23                                     50              obgnme                   0
+h07_24                                     50              obgnme                   0
+h07_25                                     50              obgnme                   0
+h07_26                                     50              obgnme                   0
+h07_27                                     50              obgnme                   0
+h07_28                                     50              obgnme                   0
+h07_29                                     50              obgnme                   0
+h08_00                                     50              obgnme                   0
+h08_01                                     50              obgnme                   0
+h08_02                                     50              obgnme                   0
+h08_03                                     50              obgnme                   0
+h08_04                                     50              obgnme                   0
+h08_05                                     50              obgnme                   0
+h08_06                                     50              obgnme                   0
+h08_07                                     50              obgnme                   0
+h08_08                                     50              obgnme                   0
+h08_09                                     50              obgnme                   0
+h08_10                                     50              obgnme                   0
+h08_11                                     50              obgnme                   0
+h08_12                                     50              obgnme                   0
+h08_13                                     50              obgnme                   0
+h08_14                                     50              obgnme                   0
+h08_15                                     50              obgnme                   0
+h08_16                                     50              obgnme                   0
+h08_17                                     50              obgnme                   0
+h08_18                                     50              obgnme                   0
+h08_19                                     50              obgnme                   0
+h08_20                                     50              obgnme                   0
+h08_21                                     50              obgnme                   0
+h08_22                                     50              obgnme                   0
+h08_23                                     50              obgnme                   0
+h08_24                                     50              obgnme                   0
+h08_25                                     50              obgnme                   0
+h08_26                                     50              obgnme                   0
+h08_27                                     50              obgnme                   0
+h08_28                                     50              obgnme                   0
+h08_29                                     50              obgnme                   0
+h09_00                                     50              obgnme                   0
+h09_01                                     50              obgnme                   0
+h09_02                                     50              obgnme                   0
+h09_03                                     50              obgnme                   0
+h09_04                                     50              obgnme                   0
+h09_05                                     50              obgnme                   0
+h09_06                                     50              obgnme                   0
+h09_07                                     50              obgnme                   0
+h09_08                                     50              obgnme                   0
+h09_09                                     50              obgnme                   0
+h09_10                                     50              obgnme                   0
+h09_11                                     50              obgnme                   0
+h09_12                                     50                   l                   1
+h09_13                                     50              obgnme                   0
+h09_14                                     50                   l                   1
+h09_15                                     50              obgnme                   0
+h09_16                                     50              obgnme                   0
+h09_17                                     50              obgnme                   0
+h09_18                                     50              obgnme                   0
+h09_19                                     50              obgnme                   0
+h09_20                                     50              obgnme                   0
+h09_21                                     50              obgnme                   0
+h09_22                                     50              obgnme                   0
+h09_23                                     50              obgnme                   0
+h09_24                                     50              obgnme                   0
+h09_25                                     50              obgnme                   0
+h09_26                                     50              obgnme                   0
+h09_27                                     50              obgnme                   0
+h09_28                                     50              obgnme                   0
+h09_29                                     50              obgnme                   0
+h10_00                                     50              obgnme                   0
+h10_01                                     50              obgnme                   0
+h10_02                                     50              obgnme                   0
+h10_03                                     50              obgnme                   0
+h10_04                                     50              obgnme                   0
+h10_05                                     50              obgnme                   0
+h10_06                                     50              obgnme                   0
+h10_07                                     50              obgnme                   0
+h10_08                                     50              obgnme                   0
+h10_09                                     50              obgnme                   0
+h10_10                                     50              obgnme                   0
+h10_11                                     50              obgnme                   0
+h10_12                                     50              obgnme                   0
+h10_13                                     50              obgnme                   0
+h10_14                                     50              obgnme                   0
+h10_15                                     50                   l                   1
+h10_16                                     50              obgnme                   0
+h10_17                                     50              obgnme                   0
+h10_18                                     50              obgnme                   0
+h10_19                                     50              obgnme                   0
+h10_20                                     50              obgnme                   0
+h10_21                                     50              obgnme                   0
+h10_22                                     50              obgnme                   0
+h10_23                                     50              obgnme                   0
+h10_24                                     50              obgnme                   0
+h10_25                                     50              obgnme                   0
+h10_26                                     50              obgnme                   0
+h10_27                                     50              obgnme                   0
+h10_28                                     50              obgnme                   0
+h10_29                                     50              obgnme                   0
+h11_00                                     50              obgnme                   0
+h11_01                                     50              obgnme                   0
+h11_02                                     50              obgnme                   0
+h11_03                                     50              obgnme                   0
+h11_04                                     50              obgnme                   0
+h11_05                                     50              obgnme                   0
+h11_06                                     50              obgnme                   0
+h11_07                                     50              obgnme                   0
+h11_08                                     50              obgnme                   0
+h11_09                                     50              obgnme                   0
+h11_10                                     50              obgnme                   0
+h11_11                                     50              obgnme                   0
+h11_12                                     50              obgnme                   0
+h11_13                                     50              obgnme                   0
+h11_14                                     50              obgnme                   0
+h11_15                                     50              obgnme                   0
+h11_16                                     50              obgnme                   0
+h11_17                                     50              obgnme                   0
+h11_18                                     50              obgnme                   0
+h11_19                                     50              obgnme                   0
+h11_20                                     50              obgnme                   0
+h11_21                                     50              obgnme                   0
+h11_22                                     50              obgnme                   0
+h11_23                                     50              obgnme                   0
+h11_24                                     50              obgnme                   0
+h11_25                                     50              obgnme                   0
+h11_26                                     50              obgnme                   0
+h11_27                                     50              obgnme                   0
+h11_28                                     50              obgnme                   0
+h11_29                                     50              obgnme                   0
+h12_00                                     50              obgnme                   0
+h12_01                                     50              obgnme                   0
+h12_02                                     50              obgnme                   0
+h12_03                                     50              obgnme                   0
+h12_04                                     50              obgnme                   0
+h12_05                                     50              obgnme                   0
+h12_06                                     50              obgnme                   0
+h12_07                                     50              obgnme                   0
+h12_08                                     50              obgnme                   0
+h12_09                                     50              obgnme                   0
+h12_10                                     50              obgnme                   0
+h12_11                                     50              obgnme                   0
+h12_12                                     50              obgnme                   0
+h12_13                                     50              obgnme                   0
+h12_14                                     50              obgnme                   0
+h12_15                                     50              obgnme                   0
+h12_16                                     50              obgnme                   0
+h12_17                                     50              obgnme                   0
+h12_18                                     50              obgnme                   0
+h12_19                                     50              obgnme                   0
+h12_20                                     50              obgnme                   0
+h12_21                                     50              obgnme                   0
+h12_22                                     50              obgnme                   0
+h12_23                                     50              obgnme                   0
+h12_24                                     50              obgnme                   0
+h12_25                                     50              obgnme                   0
+h12_26                                     50              obgnme                   0
+h12_27                                     50              obgnme                   0
+h12_28                                     50              obgnme                   0
+h12_29                                     50              obgnme                   0
+h13_00                                     50              obgnme                   0
+h13_01                                     50              obgnme                   0
+h13_02                                     50              obgnme                   0
+h13_03                                     50              obgnme                   0
+h13_04                                     50              obgnme                   0
+h13_05                                     50              obgnme                   0
+h13_06                                     50              obgnme                   0
+h13_07                                     50              obgnme                   0
+h13_08                                     50              obgnme                   0
+h13_09                                     50              obgnme                   0
+h13_10                                     50              obgnme                   0
+h13_11                                     50              obgnme                   0
+h13_12                                     50              obgnme                   0
+h13_13                                     50              obgnme                   0
+h13_14                                     50              obgnme                   0
+h13_15                                     50                   l                   1
+h13_16                                     50                   l                   1
+h13_17                                     50              obgnme                   0
+h13_18                                     50              obgnme                   0
+h13_19                                     50              obgnme                   0
+h13_20                                     50              obgnme                   0
+h13_21                                     50              obgnme                   0
+h13_22                                     50              obgnme                   0
+h13_23                                     50              obgnme                   0
+h13_24                                     50              obgnme                   0
+h13_25                                     50              obgnme                   0
+h13_26                                     50              obgnme                   0
+h13_27                                     50              obgnme                   0
+h13_28                                     50              obgnme                   0
+h13_29                                     50              obgnme                   0
+h14_00                                     50              obgnme                   0
+h14_01                                     50              obgnme                   0
+h14_02                                     50              obgnme                   0
+h14_03                                     50              obgnme                   0
+h14_04                                     50              obgnme                   0
+h14_05                                     50              obgnme                   0
+h14_06                                     50              obgnme                   0
+h14_07                                     50              obgnme                   0
+h14_08                                     50              obgnme                   0
+h14_09                                     50              obgnme                   0
+h14_10                                     50              obgnme                   0
+h14_11                                     50              obgnme                   0
+h14_12                                     50              obgnme                   0
+h14_13                                     50              obgnme                   0
+h14_14                                     50              obgnme                   0
+h14_15                                     50              obgnme                   0
+h14_16                                     50              obgnme                   0
+h14_17                                     50              obgnme                   0
+h14_18                                     50              obgnme                   0
+h14_19                                     50              obgnme                   0
+h14_20                                     50              obgnme                   0
+h14_21                                     50              obgnme                   0
+h14_22                                     50              obgnme                   0
+h14_23                                     50              obgnme                   0
+h14_24                                     50              obgnme                   0
+h14_25                                     50              obgnme                   0
+h14_26                                     50              obgnme                   0
+h14_27                                     50              obgnme                   0
+h14_28                                     50              obgnme                   0
+h14_29                                     50              obgnme                   0
+h15_00                                     50              obgnme                   0
+h15_01                                     50              obgnme                   0
+h15_02                                     50              obgnme                   0
+h15_03                                     50              obgnme                   0
+h15_04                                     50              obgnme                   0
+h15_05                                     50              obgnme                   0
+h15_06                                     50              obgnme                   0
+h15_07                                     50              obgnme                   0
+h15_08                                     50              obgnme                   0
+h15_09                                     50              obgnme                   0
+h15_10                                     50              obgnme                   0
+h15_11                                     50              obgnme                   0
+h15_12                                     50              obgnme                   0
+h15_13                                     50              obgnme                   0
+h15_14                                     50              obgnme                   0
+h15_15                                     50              obgnme                   0
+h15_16                                     50              obgnme                   0
+h15_17                                     50              obgnme                   0
+h15_18                                     50              obgnme                   0
+h15_19                                     50              obgnme                   0
+h15_20                                     50              obgnme                   0
+h15_21                                     50              obgnme                   0
+h15_22                                     50              obgnme                   0
+h15_23                                     50              obgnme                   0
+h15_24                                     50              obgnme                   0
+h15_25                                     50              obgnme                   0
+h15_26                                     50              obgnme                   0
+h15_27                                     50              obgnme                   0
+h15_28                                     50              obgnme                   0
+h15_29                                     50              obgnme                   0
+h16_00                                     50              obgnme                   0
+h16_01                                     50              obgnme                   0
+h16_02                                     50              obgnme                   0
+h16_03                                     50              obgnme                   0
+h16_04                                     50              obgnme                   0
+h16_05                                     50              obgnme                   0
+h16_06                                     50              obgnme                   0
+h16_07                                     50              obgnme                   0
+h16_08                                     50              obgnme                   0
+h16_09                                     50              obgnme                   0
+h16_10                                     50              obgnme                   0
+h16_11                                     50              obgnme                   0
+h16_12                                     50              obgnme                   0
+h16_13                                     50              obgnme                   0
+h16_14                                     50              obgnme                   0
+h16_15                                     50              obgnme                   0
+h16_16                                     50              obgnme                   0
+h16_17                                     50              obgnme                   0
+h16_18                                     50              obgnme                   0
+h16_19                                     50              obgnme                   0
+h16_20                                     50              obgnme                   0
+h16_21                                     50              obgnme                   0
+h16_22                                     50              obgnme                   0
+h16_23                                     50              obgnme                   0
+h16_24                                     50              obgnme                   0
+h16_25                                     50              obgnme                   0
+h16_26                                     50              obgnme                   0
+h16_27                                     50              obgnme                   0
+h16_28                                     50              obgnme                   0
+h16_29                                     50              obgnme                   0
+h17_00                                     50              obgnme                   0
+h17_01                                     50              obgnme                   0
+h17_02                                     50              obgnme                   0
+h17_03                                     50              obgnme                   0
+h17_04                                     50              obgnme                   0
+h17_05                                     50              obgnme                   0
+h17_06                                     50              obgnme                   0
+h17_07                                     50              obgnme                   0
+h17_08                                     50              obgnme                   0
+h17_09                                     50              obgnme                   0
+h17_10                                     50              obgnme                   0
+h17_11                                     50              obgnme                   0
+h17_12                                     50              obgnme                   0
+h17_13                                     50              obgnme                   0
+h17_14                                     50              obgnme                   0
+h17_15                                     50              obgnme                   0
+h17_16                                     50              obgnme                   0
+h17_17                                     50              obgnme                   0
+h17_18                                     50              obgnme                   0
+h17_19                                     50              obgnme                   0
+h17_20                                     50              obgnme                   0
+h17_21                                     50              obgnme                   0
+h17_22                                     50              obgnme                   0
+h17_23                                     50              obgnme                   0
+h17_24                                     50              obgnme                   0
+h17_25                                     50              obgnme                   0
+h17_26                                     50              obgnme                   0
+h17_27                                     50              obgnme                   0
+h17_28                                     50              obgnme                   0
+h17_29                                     50              obgnme                   0
+h18_00                                     50              obgnme                   0
+h18_01                                     50              obgnme                   0
+h18_02                                     50              obgnme                   0
+h18_03                                     50              obgnme                   0
+h18_04                                     50              obgnme                   0
+h18_05                                     50              obgnme                   0
+h18_06                                     50              obgnme                   0
+h18_07                                     50              obgnme                   0
+h18_08                                     50              obgnme                   0
+h18_09                                     50              obgnme                   0
+h18_10                                     50              obgnme                   0
+h18_11                                     50              obgnme                   0
+h18_12                                     50              obgnme                   0
+h18_13                                     50              obgnme                   0
+h18_14                                     50              obgnme                   0
+h18_15                                     50              obgnme                   0
+h18_16                                     50              obgnme                   0
+h18_17                                     50              obgnme                   0
+h18_18                                     50              obgnme                   0
+h18_19                                     50              obgnme                   0
+h18_20                                     50              obgnme                   0
+h18_21                                     50              obgnme                   0
+h18_22                                     50              obgnme                   0
+h18_23                                     50              obgnme                   0
+h18_24                                     50              obgnme                   0
+h18_25                                     50              obgnme                   0
+h18_26                                     50              obgnme                   0
+h18_27                                     50              obgnme                   0
+h18_28                                     50              obgnme                   0
+h18_29                                     50              obgnme                   0
+h19_00                                     50              obgnme                   0
+h19_01                                     50              obgnme                   0
+h19_02                                     50              obgnme                   0
+h19_03                                     50              obgnme                   0
+h19_04                                     50              obgnme                   0
+h19_05                                     50              obgnme                   0
+h19_06                                     50              obgnme                   0
+h19_07                                     50              obgnme                   0
+h19_08                                     50              obgnme                   0
+h19_09                                     50              obgnme                   0
+h19_10                                     50              obgnme                   0
+h19_11                                     50              obgnme                   0
+h19_12                                     50              obgnme                   0
+h19_13                                     50              obgnme                   0
+h19_14                                     50              obgnme                   0
+h19_15                                     50              obgnme                   0
+h19_16                                     50              obgnme                   0
+h19_17                                     50              obgnme                   0
+h19_18                                     50              obgnme                   0
+h19_19                                     50              obgnme                   0
+h19_20                                     50              obgnme                   0
+h19_21                                     50              obgnme                   0
+h19_22                                     50              obgnme                   0
+h19_23                                     50              obgnme                   0
+h19_24                                     50              obgnme                   0
+h19_25                                     50              obgnme                   0
+h19_26                                     50              obgnme                   0
+h19_27                                     50              obgnme                   0
+h19_28                                     50              obgnme                   0
+h19_29                                     50              obgnme                   0
+
+Prior information
+
+   no prior information provided
+
+PEST SVD Information
+    maxsing = 7
+    eigthresh = 1e-06
+
+
+   -----    Starting Optimization Iterations    ----    
+
