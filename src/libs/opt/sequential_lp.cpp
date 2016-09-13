@@ -20,7 +20,7 @@ sequentialLP::sequentialLP(Pest &_pest_scenario, RunManagerAbstract* _run_mgr_pt
 	initialize_and_check();
 }
 
-void sequentialLP::throw_squentialLP_error(string message)
+void sequentialLP::throw_sequentialLP_error(string message)
 {
 	string error_message = "error in sequentialLP process: " + message;
 	file_mgr.rec_ofstream() << error_message << endl;
@@ -74,6 +74,19 @@ void sequentialLP::initial_report()
 		*f_rec << setw(20) << constraint_sense_name[name];
 		*f_rec << setw(20) << constraints_obs.get_rec(name) << endl;
 	}
+
+
+	*f_rec << "  ---  SLP objective function  ---  " << endl;
+	*f_rec << setw(20) << " decision var name" << setw(20) << "coefficient" << endl;
+	map<string, double>::iterator end = obj_func_coef_map.end();
+	for (auto &name : ctl_ord_dec_var_names)
+	{
+		*f_rec << setw(20) << left << name;
+		if (obj_func_coef_map.find(name) != end)
+			*f_rec << setw(20) << obj_func_coef_map.at(name) << endl;
+		else
+			*f_rec << setw(20) << "not listed" << endl;
+	}
 	return;
 }
 
@@ -99,19 +112,28 @@ void sequentialLP::constraint_report()
 	return;
 }
 
-void sequentialLP::build_obj_function_components()
+
+void sequentialLP::decision_var_report()
 {
-	for (auto &name : ctl_ord_dec_var_names)
-	{
-		ObservationRec obs_rec;
-		obj_func_obs.insert(name, decision_vars.get_rec(name));
-		obs_rec.group = "SLP phi";
-		obs_rec.weight = obj_func_coef_map[name];
-		obj_func_info.observations[name] = obs_rec;
-		
-	}
+	//TODO: include objective func coefs
 	return;
 }
+
+
+
+//void sequentialLP::initialize_obj_function_components()
+//{
+//	for (auto &name : ctl_ord_dec_var_names)
+//	{
+//		ObservationRec obs_rec;
+//		obj_func_obs.insert(name, decision_vars.get_rec(name));
+//		obs_rec.group = "SLP phi";
+//		obs_rec.weight = obj_func_coef_map[name];
+//		obj_func_info.observations[name] = obs_rec;
+//		
+//	}
+//	return;
+//}
 
 
 void sequentialLP::initialize_and_check()
@@ -122,7 +144,7 @@ void sequentialLP::initialize_and_check()
 	separate_scenarios();
 
 	if (opt_scenario.get_control_info().noptmax < 1)
-		throw_squentialLP_error("noptmax must be greater than 0");
+		throw_sequentialLP_error("noptmax must be greater than 0");
 
 	//set decision vars attrib and ordered dec var name vec
 	//and check for illegal parameter transformations
@@ -144,7 +166,7 @@ void sequentialLP::initialize_and_check()
 		stringstream ss;
 		for (auto &name : problem_trans)
 			ss << ',' << name;
-		throw_squentialLP_error("the following decision variables don't have 'none' type parameter transformation: " + ss.str());
+		throw_sequentialLP_error("the following decision variables don't have 'none' type parameter transformation: " + ss.str());
 	}
 	
 		
@@ -172,14 +194,22 @@ void sequentialLP::initialize_and_check()
 		//check if the obj_str is an observation
 		if (pest_scenario.get_ctl_observations().find(obj_func_str) != pest_scenario.get_ctl_observations().end())
 		{
-			throw_squentialLP_error("observation-based objective function not implemented");
+			throw_sequentialLP_error("observation-based objective function not implemented");
 		}
+		//or if it is a prior info equation
 		else if (pest_scenario.get_prior_info().find(obj_func_str) != pest_scenario.get_prior_info().end())
 		{
 			obj_func_coef_map = pest_scenario.get_prior_info().get_pi_rec_ptr(obj_func_str).get_atom_factors();
 		}
 		else
-			throw_squentialLP_error("unrecognized ++opt_objective_function arg: " + obj_func_str);
+		{
+			//check if this obj_str is a filename
+			ifstream if_obj(obj_func_str);
+			if (!if_obj.good())
+				throw_sequentialLP_error("unrecognized ++opt_objective_function arg: " + obj_func_str);
+			else
+				throw_sequentialLP_error("file-base objective function not implemented");
+		}
 	}
 
 	//check that all obj_coefs are decsision vars
@@ -192,13 +222,14 @@ void sequentialLP::initialize_and_check()
 		stringstream ss;
 		for (auto &name : missing_vars)
 			ss << ', ' << name;
-		throw_squentialLP_error("the following objective function components are not decision variables: " + ss.str());
+		throw_sequentialLP_error("the following objective function components are not decision variables: " + ss.str());
 	}
 
 
+
 	//this is nasty...setup objective function components as obseravtions and obs info
-	build_obj_function_components();
-	///obj_func = ObjectiveFunc(&constraints_obs, &opt_scenario.get_ctl_observation_info(),
+	//initialize_obj_function_components();
+	//obj_func = ObjectiveFunc(&obj_func_obs, &obj_func_info,
 	//	       null_prior);
 	
 	//initialize the current and optimum model run instances
@@ -251,7 +282,7 @@ void sequentialLP::initialize_and_check()
 		{
 			ss << "name:" << pc.first << ", group:" << pc.second << endl;
 		}
-		throw_squentialLP_error("the following constraints do not have the correct group names {'l','g','e'}: " + ss.str());
+		throw_sequentialLP_error("the following constraints do not have the correct group names {'l','g','e'}: " + ss.str());
 	}
 	
 	//allocate the constraint bound arrays 
@@ -291,6 +322,21 @@ void sequentialLP::build_constraint_bound_arrays()
 	return;
 }
 
+void sequentialLP::build_obj_func_coef_array()
+{	
+	ctl_ord_obj_func_coefs = new double[ctl_ord_dec_var_names.size()];
+	double coef;
+	map<string, double>::iterator end = obj_func_coef_map.end();
+	int i = 0;
+	for (auto &name : ctl_ord_dec_var_names)
+	{
+		if (obj_func_coef_map.find(name) != end)
+			ctl_ord_obj_func_coefs[i] = obj_func_coef_map.at(name);
+		i++;
+	}
+	return;
+}
+
 ClpSimplex sequentialLP::solve_lp_problem(Jacobian_1to1 &jco)
 {
 	
@@ -304,16 +350,11 @@ ClpSimplex sequentialLP::solve_lp_problem(Jacobian_1to1 &jco)
 
 	constraint_report();
 
-	//temp obj function
-	double* objective_func = new double[ctl_ord_dec_var_names.size()];
-	for (int i = 0; i < ctl_ord_dec_var_names.size(); ++i)
-	{
-		objective_func[i] = 1.0;
-	}
-	
+	build_obj_func_coef_array();
+
 	//instantiate and load the linear simplex model
 	ClpSimplex model;
-	model.loadProblem(matrix, dec_var_lb, dec_var_ub, objective_func, constraint_lb, constraint_ub);
+	model.loadProblem(matrix, dec_var_lb, dec_var_ub, ctl_ord_obj_func_coefs, constraint_lb, constraint_ub);
 	model.setLogLevel(opt_scenario.get_pestpp_options().get_opt_coin_loglev());
 
 	*f_rec << "  ---  solving linear program for iteration " << slp_iter << "  ---  " << endl;
@@ -344,7 +385,7 @@ ClpSimplex sequentialLP::solve_lp_problem(Jacobian_1to1 &jco)
 		cout << " iteration " << slp_iter << " linear solution is proven optimal" << endl << endl;
 	}
 	else if ((model.isProvenPrimalInfeasible()) && (model.isProvenDualInfeasible()))
-		throw_squentialLP_error("both primal and dual solutions are proven infeasible...cannot continue");
+		throw_sequentialLP_error("both primal and dual solutions are proven infeasible...cannot continue");
 	//otherwise, try again...
 	else
 	{
@@ -383,7 +424,7 @@ CoinPackedMatrix sequentialLP::jacobian_to_coinpackedmatrix(Jacobian_1to1 &jco)
 	Eigen::SparseMatrix<double> eig_ord_jco = jco.get_matrix(ctl_ord_constraint_names, ctl_ord_dec_var_names);
 
 	if (eig_ord_jco.nonZeros() != jco.get_matrix_ptr()->nonZeros())
-		throw_squentialLP_error("sequentialLP::jacobian_to_coinpackedmatrix() error: ordered jco nnz != org jco nnz");
+		throw_sequentialLP_error("sequentialLP::jacobian_to_coinpackedmatrix() error: ordered jco nnz != org jco nnz");
 	
 	file_mgr.rec_ofstream() << "number of nonzero elements in response matrix: " << eig_ord_jco.nonZeros() << " of " << eig_ord_jco.size() << endl;
 	cout << "number of nonzero elements in response matrix: " << eig_ord_jco.nonZeros() << " of " << eig_ord_jco.size() << endl;
@@ -408,12 +449,12 @@ CoinPackedMatrix sequentialLP::jacobian_to_coinpackedmatrix(Jacobian_1to1 &jco)
 	}
 	if (elem_count != eig_ord_jco.nonZeros())
 	{
-		throw_squentialLP_error("sequentialLP::jacobian_to_coinpackedmatrix() error: wrong number of triplet components");
+		throw_sequentialLP_error("sequentialLP::jacobian_to_coinpackedmatrix() error: wrong number of triplet components");
 	}
 
 	if (elem_count == 0)
 	{
-		throw_squentialLP_error("sequentialLP::jacobian_to_coinpackedmatrix() error: zero triplets found");
+		throw_sequentialLP_error("sequentialLP::jacobian_to_coinpackedmatrix() error: zero triplets found");
 	}
 
 	CoinPackedMatrix matrix(true,row_idx,col_idx,elems,elem_count);

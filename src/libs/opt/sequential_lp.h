@@ -30,6 +30,7 @@ private:
 	map<string, double> obj_func_coef_map;
 	Observations obj_func_obs;
 	ObservationInfo obj_func_info;
+	double* ctl_ord_obj_func_coefs;
 	int slp_iter;
 	map<string, ConstraintSense> constraint_sense_map;
 	map <string, string> constraint_sense_name;
@@ -55,9 +56,10 @@ private:
 	OutputFileWriter* out_wtr_ptr;
 	ClpSimplex solve_lp_problem(Jacobian_1to1 &jco);
 
-	void build_obj_function_components();
+	//void initialize_obj_function_components();
 	void initial_report();
 	void constraint_report();
+	void decision_var_report();
 	void update(ClpSimplex &model);
 	void update_decision_vars(ClpSimplex &model);
 	void update_constraints(ClpSimplex &model);
@@ -65,8 +67,9 @@ private:
 	void make_runs(Jacobian_1to1 &jco);
 	CoinPackedMatrix jacobian_to_coinpackedmatrix(Jacobian_1to1 &jco);
 	void build_constraint_bound_arrays();
-	void throw_squentialLP_error(string message);
+	void throw_sequentialLP_error(string message);
 	vector<double> get_constraint_residual_vec();
+	void build_obj_func_coef_array();
 
 };
 
