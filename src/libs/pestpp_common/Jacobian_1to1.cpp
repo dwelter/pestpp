@@ -48,12 +48,12 @@ Jacobian_1to1::Jacobian_1to1(FileManager &_file_manager) : Jacobian(_file_manage
 Jacobian_1to1::~Jacobian_1to1() {
 }
 
-bool Jacobian_1to1::build_runs(ModelRun &init_model_run, vector<string> numeric_par_names, ParamTransformSeq &par_transform,
-		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
-		RunManagerAbstract &run_manager, set<string> &out_of_bound_par, bool phiredswh_flag, bool calc_init_obs)
+bool Jacobian_1to1::build_runs(Parameters &ctl_pars, Observations &ctl_obs, vector<string> numeric_par_names, ParamTransformSeq &par_transform,
+	const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info,
+	RunManagerAbstract &run_manager, set<string> &out_of_bound_par, bool phiredswh_flag, bool calc_init_obs)
 {
-	Parameters model_parameters(par_transform.ctl2model_cp(init_model_run.get_ctl_pars()));
-	base_numeric_parameters = par_transform.ctl2numeric_cp( init_model_run.get_ctl_pars());
+	Parameters model_parameters(par_transform.ctl2model_cp(ctl_pars));
+	base_numeric_parameters = par_transform.ctl2numeric_cp(ctl_pars);
 	run_manager.reinitialize(file_manager.build_filename("rnj"));
 	debug_msg("Jacobian_1to1::build_runs begin");
 
@@ -64,7 +64,7 @@ bool Jacobian_1to1::build_runs(ModelRun &init_model_run, vector<string> numeric_
 	//if base run is has already been complete, update it and mark it as complete
 	// compute runs for to jacobain calculation as it is influenced by derivative type( forward or central)
 	if (!calc_init_obs) {
-		const Observations &init_obs = init_model_run.get_obs();
+		const Observations &init_obs = ctl_obs;
 		run_manager.update_run(run_id, model_parameters, init_obs);
 	}
 
@@ -100,7 +100,7 @@ bool Jacobian_1to1::build_runs(ModelRun &init_model_run, vector<string> numeric_
 				}
 			}
 		}
-		else 
+		else
 		{
 			cout << endl << " warning: failed to compute parameter deriviative for " << i_name << endl;
 			file_manager.rec_ofstream() << " warning: failed to compute parameter deriviative for " << i_name << endl;
@@ -114,6 +114,16 @@ bool Jacobian_1to1::build_runs(ModelRun &init_model_run, vector<string> numeric_
 	if (failed_parameter_names.size() > 0)
 		return false;
 	return true;
+}
+	
+
+bool Jacobian_1to1::build_runs(ModelRun &init_model_run, vector<string> numeric_par_names, ParamTransformSeq &par_transform,
+		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
+		RunManagerAbstract &run_manager, set<string> &out_of_bound_par, bool phiredswh_flag, bool calc_init_obs)
+{
+	Parameters pars = init_model_run.get_ctl_pars();
+	Observations obs = init_model_run.get_obs();
+	return build_runs(pars, obs, numeric_par_names, par_transform, group_info, ctl_par_info, run_manager, out_of_bound_par, phiredswh_flag, calc_init_obs);
 }
 
 

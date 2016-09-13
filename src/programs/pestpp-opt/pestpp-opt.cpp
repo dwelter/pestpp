@@ -448,7 +448,7 @@ int main(int argc, char* argv[])
 				         parcov, file_manager, &output_file_writer);
 
 		slp.solve();
-		optimum_run = slp.get_optimum_run();
+		//optimum_run = slp.get_optimum_run();
 		/*catch (exception &e)
 		{
 			cout << endl << endl;;

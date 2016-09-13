@@ -265,6 +265,10 @@ public:
 	//void set_use_parcov_scaling(bool _scale) { use_parcov_scaling = _scale; }
 	double get_parcov_scale_fac() const { return parcov_scale_fac; }
 	void set_parcov_scale_fac(double _fac) { parcov_scale_fac = _fac; }
+	string get_opt_obj_func()const  { return opt_obj_func; }
+	void set_opt_obj_func(string _opt_obj_func) { opt_obj_func = _opt_obj_func; }
+	int get_opt_coin_loglev()const { return opt_coin_loglev; }
+	void set_opt_coin_loglev(int _lev) { opt_coin_loglev = _lev; }
 
 private:
 	int n_iter_base;
@@ -302,6 +306,9 @@ private:
 	int de_npopulation;
 	int de_max_gen;
 	bool de_dither_f;
+
+	string opt_obj_func;
+	int opt_coin_loglev;
 
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);

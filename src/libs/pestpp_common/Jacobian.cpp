@@ -110,8 +110,8 @@ void Jacobian::add_cols(set<string> &new_pars_names)
 	{
 		base_numeric_par_names.push_back(ipar);
 	}
-	// add empty columns for new parameter.  sensitivities for new parameters will all = 0.
-	matrix.resize(matrix.rows(), matrix.cols() + new_pars_names.size());
+// add empty columns for new parameter.  sensitivities for new parameters will all = 0.
+matrix.resize(matrix.rows(), matrix.cols() + new_pars_names.size());
 }
 
 
@@ -125,20 +125,20 @@ unordered_map<string, int> Jacobian::get_par2col_map() const
 {
 	unordered_map<string, int> par2col_map;
 	int icol_old = 0;
-	for (vector<string>::const_iterator b=base_numeric_par_names.begin(), e=base_numeric_par_names.end();
-		b!=e; ++b, ++icol_old)
+	for (vector<string>::const_iterator b = base_numeric_par_names.begin(), e = base_numeric_par_names.end();
+		b != e; ++b, ++icol_old)
 	{
 		par2col_map[(*b)] = icol_old;
 	}
 	return par2col_map;
 }
-	
+
 unordered_map<string, int> Jacobian::get_obs2row_map() const
 {
 	unordered_map<string, int> obs2row_map;
 	int irow_old = 0;
-	for (vector<string>::const_iterator b=base_sim_obs_names.begin(), e=base_sim_obs_names.end();
-		b!=e; ++b, ++irow_old)
+	for (vector<string>::const_iterator b = base_sim_obs_names.begin(), e = base_sim_obs_names.end();
+		b != e; ++b, ++irow_old)
 	{
 		obs2row_map[(*b)] = irow_old;
 	}
@@ -158,15 +158,15 @@ Eigen::SparseMatrix<double> Jacobian::get_matrix(const vector<string> &obs_names
 
 	// Build mapping of parameter names to column number in new matrix to be returned
 	icol_new = 0;
-	for (vector<string>::const_iterator b=par_names.begin(), e=par_names.end();
-		b!=e; ++b, ++icol_new) {
+	for (vector<string>::const_iterator b = par_names.begin(), e = par_names.end();
+		b != e; ++b, ++icol_new) {
 		par_name2new_index_map[(*b)] = icol_new;
 	}
 
 	// Build mapping of observation names to row  number in new matrix to be returned
 	irow_new = 0;
-	for (vector<string>::const_iterator b=obs_names.begin(), e=obs_names.end();
-		b!=e; ++b, ++irow_new) {
+	for (vector<string>::const_iterator b = obs_names.begin(), e = obs_names.end();
+		b != e; ++b, ++irow_new) {
 		obs_name2newindex_map[(*b)] = irow_new;
 	}
 
@@ -184,7 +184,7 @@ Eigen::SparseMatrix<double> Jacobian::get_matrix(const vector<string> &obs_names
 	const string *obs_name;
 	const string *par_name;
 	std::vector<Eigen::Triplet<double> > triplet_list;
-	for (int icol=0; icol<matrix.outerSize(); ++icol)
+	for (int icol = 0; icol < matrix.outerSize(); ++icol)
 	{
 		for (SparseMatrix<double>::InnerIterator it(matrix, icol); it; ++it)
 		{
@@ -194,7 +194,7 @@ Eigen::SparseMatrix<double> Jacobian::get_matrix(const vector<string> &obs_names
 			found_par = par_name2new_index_map.find(*par_name);
 			found_obs = obs_name2newindex_map.find(*obs_name);
 
-			if(found_par != not_found_par_map && found_obs != not_found_obs_map)
+			if (found_par != not_found_par_map && found_obs != not_found_obs_map)
 			{
 				triplet_list.push_back(Eigen::Triplet<double>(found_obs->second, found_par->second, data));
 			}
@@ -207,29 +207,30 @@ Eigen::SparseMatrix<double> Jacobian::get_matrix(const vector<string> &obs_names
 }
 
 
-bool Jacobian::build_runs(ModelRun &init_model_run, vector<string> numeric_par_names, ParamTransformSeq &par_transform,
-		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
-		RunManagerAbstract &run_manager, set<string> &out_of_bound_par, bool phiredswh_flag, bool calc_init_obs)
+bool Jacobian::build_runs(Parameters &ctl_pars, Observations &ctl_obs, vector<string> numeric_par_names, ParamTransformSeq &par_transform,
+	const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info,
+	RunManagerAbstract &run_manager, set<string> &out_of_bound_par, bool phiredswh_flag, bool calc_init_obs)
 {
+
 	run_manager.reinitialize(file_manager.build_filename("rnj"));
 	failed_parameter_names.clear();
-	
+
 	debug_msg("Jacobian::build_runs method: begin");
 	// add base run
-	Parameters model_pars = par_transform.ctl2model_cp(init_model_run.get_ctl_pars());
+	Parameters model_pars = par_transform.ctl2model_cp(ctl_pars);
 	int run_id = run_manager.add_run(model_pars, "", 0);
 
 	if (!calc_init_obs) {
-		const Observations &observations = init_model_run.get_obs();
+		const Observations &observations = ctl_obs;
 		run_manager.update_run(run_id, model_pars, observations);
 	}
 
 	// compute runs for to jacobain calculation as it is influenced by derivative type( forward or central)
 	out_of_bound_par.clear();
-	Parameters numeric_pars = par_transform.ctl2numeric_cp(init_model_run.get_ctl_pars());
+	Parameters numeric_pars = par_transform.ctl2numeric_cp(ctl_pars);
 
 	vector<double> del_numeric_par_vec;
-	for(const auto &ipar_name : numeric_par_names)
+	for (const auto &ipar_name : numeric_par_names)
 	{
 		debug_print(ipar_name);
 		del_numeric_par_vec.clear();
@@ -239,7 +240,7 @@ bool Jacobian::build_runs(ModelRun &init_model_run, vector<string> numeric_par_n
 		if (success && !del_numeric_par_vec.empty())
 		{
 			debug_msg("success");
-			Parameters numeric_parameters = par_transform.ctl2numeric_cp(init_model_run.get_ctl_pars());
+			Parameters numeric_parameters = par_transform.ctl2numeric_cp(ctl_pars);
 			for (double ipar_val : del_numeric_par_vec)
 			{
 				numeric_parameters.update_rec(ipar_name, ipar_val);
@@ -261,7 +262,19 @@ bool Jacobian::build_runs(ModelRun &init_model_run, vector<string> numeric_par_n
 	{
 		return false;
 	}
-	return true;	
+	return true;
+}
+
+
+
+bool Jacobian::build_runs(ModelRun &init_model_run, vector<string> numeric_par_names, ParamTransformSeq &par_transform,
+		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
+		RunManagerAbstract &run_manager, set<string> &out_of_bound_par, bool phiredswh_flag, bool calc_init_obs)
+{
+	Parameters pars = init_model_run.get_ctl_pars();
+	Observations obs = init_model_run.get_obs();
+	return build_runs(pars, obs, numeric_par_names, par_transform, group_info, ctl_par_info, run_manager, 
+		out_of_bound_par, phiredswh_flag, calc_init_obs);
 }
 
 void Jacobian::make_runs(RunManagerAbstract &run_manager)

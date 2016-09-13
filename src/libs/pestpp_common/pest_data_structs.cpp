@@ -476,7 +476,14 @@ void PestppOptions::parce_line(const string &line)
 			istringstream is(value);
 			is >> boolalpha >> de_dither_f;
 		}
-
+		else if ((key == "OPT_OBJ_FUNC") || (key == "OPT_OBJECTIVE_FUNCTION"))
+		{
+			convert_ip(value,opt_obj_func);
+		}
+		else if (key == "OPT_COIN_LOGLEV")
+		{
+			convert_ip(value, opt_coin_loglev);
+		}
 	
 		else {
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");

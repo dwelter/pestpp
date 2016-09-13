@@ -30,6 +30,28 @@ void sequentialLP::throw_squentialLP_error(string message)
 
 }
 
+vector<double> sequentialLP::get_constraint_residual_vec()
+{
+	vector<double> residuals_vec;
+	residuals_vec.resize(ctl_ord_constraint_names.size(), 0.0);
+
+	Observations::const_iterator found_obs;
+	Observations::const_iterator not_found_obs = constraints_sim.end();
+	PriorInformation::const_iterator found_prior_info;
+	
+	int i = 0;
+	for (vector<string>::iterator b = ctl_ord_constraint_names.begin(), e = ctl_ord_constraint_names.end(); b != e; ++b, ++i)
+	{
+		found_obs = constraints_sim.find(*b);
+		if (found_obs != not_found_obs)
+		{
+			residuals_vec[i] = constraints_obs.get_rec(*b) - (*found_obs).second;
+		}
+		
+	}
+	return residuals_vec;
+}
+
 void sequentialLP::initial_report()
 {
 	ofstream* f_rec = &file_mgr.rec_ofstream();
@@ -58,19 +80,14 @@ void sequentialLP::initial_report()
 void sequentialLP::constraint_report()
 {
 	ofstream* f_rec = &file_mgr.rec_ofstream();
-	vector<double> residuals = current_run.get_residuals_vec(ctl_ord_constraint_names);
-	*f_rec << endl << "  constraint information for iteration " << slp_iter << endl;
+	vector<double> residuals = get_constraint_residual_vec();
+	*f_rec << endl << "  constraint information at start of iteration " << slp_iter << endl;
 	*f_rec << setw(20) << "name" << setw(10) << "sense" << setw(15) << "value";
 	*f_rec << setw(15) << "residual" << setw(15) << "lower bound" << setw(15) << "upper bound" << endl;
-	cout << endl << "  constraint report for iteration " << slp_iter << endl;
-	cout << setw(20) << "name" << setw(10) << "sense" << setw(15) << "value";
-	cout << setw(15) << "residual" << setw(15) << "lower bound" << setw(15) << "upper bound" << endl;
-
 
 	for (int i=0;i<ctl_ord_constraint_names.size();++i)
 	{
 		string name = ctl_ord_constraint_names[i];
-
 		*f_rec << setw(20) << left << name;
 		*f_rec << setw(10) << constraint_sense_name[name];
 		*f_rec << setw(15) << constraints_obs.get_rec(name);
@@ -78,33 +95,59 @@ void sequentialLP::constraint_report()
 		*f_rec << setw(15) << constraint_lb[i];
 		*f_rec << setw(15) << constraint_ub[i] << endl;
 
-		cout << setw(20) << left << name;
-		cout << setw(10) << constraint_sense_name[name];
-		cout << setw(15) << constraints_obs.get_rec(name);
-		cout << setw(15) << residuals[i];
-		cout << setw(15) << constraint_lb[i];
-		cout << setw(15) << constraint_ub[i] << endl;
-
 	}
 	return;
 }
 
+void sequentialLP::build_obj_function_components()
+{
+	for (auto &name : ctl_ord_dec_var_names)
+	{
+		ObservationRec obs_rec;
+		obj_func_obs.insert(name, decision_vars.get_rec(name));
+		obs_rec.group = "SLP phi";
+		obs_rec.weight = obj_func_coef_map[name];
+		obj_func_info.observations[name] = obs_rec;
+		
+	}
+	return;
+}
+
+
 void sequentialLP::initialize_and_check()
 {
+	ofstream *f_rec = &file_mgr.rec_ofstream();
 	//TODO: handle restart condition
 	//TODO: handle base jco condition
 	separate_scenarios();
 
+	if (opt_scenario.get_control_info().noptmax < 1)
+		throw_squentialLP_error("noptmax must be greater than 0");
+
 	//set decision vars attrib and ordered dec var name vec
+	//and check for illegal parameter transformations
 	decision_vars = opt_scenario.get_ctl_parameters();
+	vector<string> problem_trans;
 	for (auto &name : pest_scenario.get_ctl_ordered_par_names())
 	{
 		if (decision_vars.find(name) != decision_vars.end())
 		{
+			if (opt_scenario.get_ctl_parameter_info().get_parameter_rec_ptr(name)->tranform_type != ParameterRec::TRAN_TYPE::NONE)
+				problem_trans.push_back(name);
 			ctl_ord_dec_var_names.push_back(name);
 		}
 	}
+
+	//if any decision vars have a transformation that is not allowed
+	if (problem_trans.size() > 0)
+	{
+		stringstream ss;
+		for (auto &name : problem_trans)
+			ss << ',' << name;
+		throw_squentialLP_error("the following decision variables don't have 'none' type parameter transformation: " + ss.str());
+	}
 	
+		
 	//set the two constraints attribs and ordered constraint name vec
 	constraints_obs = opt_scenario.get_ctl_observations();
 	constraints_sim = Observations(constraints_obs);
@@ -116,16 +159,53 @@ void sequentialLP::initialize_and_check()
 		}
 	}
 	
-	//TODO: override base objective func class with linear obj func class
-	obj_func = ObjectiveFunc(&constraints_obs, &opt_scenario.get_ctl_observation_info(),
-		       null_prior);
-	
+	//initialize the objective function
+	obj_func_str = opt_scenario.get_pestpp_options().get_opt_obj_func();
+	if (empty(obj_func_str))
+	{
+		*f_rec << " warning: no ++opt_objective_function-->forming a generic objective function (1.0 coef for each decision var" << endl;
+		for (auto &name : ctl_ord_dec_var_names)
+			obj_func_coef_map[name] = 1.0;
+	}
+	else
+	{
+		//check if the obj_str is an observation
+		if (pest_scenario.get_ctl_observations().find(obj_func_str) != pest_scenario.get_ctl_observations().end())
+		{
+			throw_squentialLP_error("observation-based objective function not implemented");
+		}
+		else if (pest_scenario.get_prior_info().find(obj_func_str) != pest_scenario.get_prior_info().end())
+		{
+			obj_func_coef_map = pest_scenario.get_prior_info().get_pi_rec_ptr(obj_func_str).get_atom_factors();
+		}
+		else
+			throw_squentialLP_error("unrecognized ++opt_objective_function arg: " + obj_func_str);
+	}
 
+	//check that all obj_coefs are decsision vars
+	vector<string> missing_vars;
+	for (auto &coef : obj_func_coef_map)
+		if (find(ctl_ord_dec_var_names.begin(), ctl_ord_dec_var_names.end(), coef.first) == ctl_ord_dec_var_names.end())
+			missing_vars.push_back(coef.first);
+	if (missing_vars.size() > 0)
+	{
+		stringstream ss;
+		for (auto &name : missing_vars)
+			ss << ', ' << name;
+		throw_squentialLP_error("the following objective function components are not decision variables: " + ss.str());
+	}
+
+
+	//this is nasty...setup objective function components as obseravtions and obs info
+	build_obj_function_components();
+	///obj_func = ObjectiveFunc(&constraints_obs, &opt_scenario.get_ctl_observation_info(),
+	//	       null_prior);
+	
 	//initialize the current and optimum model run instances
-	optimum_run = ModelRun(&obj_func,constraints_sim);
-	optimum_run.set_ctl_parameters(decision_vars);
-	current_run = ModelRun(&obj_func, constraints_sim);
-	current_run.set_ctl_parameters(decision_vars);
+	//optimum_run = ModelRun(&obj_func,constraints_sim);
+	//optimum_run.set_ctl_parameters(decision_vars);
+	//current_run = ModelRun(&obj_func, constraints_sim);
+	//current_run.set_ctl_parameters(decision_vars);
 
 
 	//set the decision var lower and upper bound arrays
@@ -179,8 +259,7 @@ void sequentialLP::initialize_and_check()
 	constraint_ub = new double[ctl_ord_constraint_names.size()];
 
 	//TODO: error checking:
-	//noptmax > 0
-	//no log transform for decision vars
+	
 	initial_report();
 	return;
 }
@@ -188,24 +267,24 @@ void sequentialLP::initialize_and_check()
 void sequentialLP::build_constraint_bound_arrays()
 {
 	
-	vector<double> residuals = current_run.get_residuals_vec(ctl_ord_constraint_names);
+	vector<double> residuals = get_constraint_residual_vec();
 
 	for (int i = 0; i < ctl_ord_constraint_names.size(); ++i)
 	{
 		string name = ctl_ord_constraint_names[i];
 		if (constraint_sense_map[name] == ConstraintSense::less_than)
-			constraint_ub[i] = -residuals[i];
+			constraint_ub[i] = residuals[i];
 		else
 			constraint_ub[i] = COIN_DBL_MAX;
 
 		if (constraint_sense_map[name] == ConstraintSense::greater_than)
-			constraint_lb[i] = -residuals[i];
+			constraint_lb[i] = residuals[i];
 		else
 			constraint_lb[i] = -COIN_DBL_MAX;
 		if (constraint_sense_map[name] == ConstraintSense::equal_to)
 		{
-			constraint_ub[i] = -residuals[i];
-			constraint_lb[i] = -residuals[i];
+			constraint_ub[i] = residuals[i];
+			constraint_lb[i] = residuals[i];
 		}
 	}
 
@@ -235,31 +314,66 @@ ClpSimplex sequentialLP::solve_lp_problem(Jacobian_1to1 &jco)
 	//instantiate and load the linear simplex model
 	ClpSimplex model;
 	model.loadProblem(matrix, dec_var_lb, dec_var_ub, objective_func, constraint_lb, constraint_ub);
+	model.setLogLevel(opt_scenario.get_pestpp_options().get_opt_coin_loglev());
 
 	*f_rec << "  ---  solving linear program for iteration " << slp_iter << "  ---  " << endl;
 	cout << "  ---  solving linear program for iteration " << slp_iter << "  ---  " << endl;
+	
 	//solve the linear program
 	ClpPresolve presolve_info;
 	ClpSimplex* presolved_model = presolve_info.presolvedModel(model);
+	
 	//if presolvedModel is Null, then it is primal infeasible, so 
 	//try the dual
 	if (!presolved_model)
 	{
+		*f_rec << "  ---  primal presolve model infeasible, trying dual..." << endl;
+		cout << "  ---  primal presolve model infeasible, trying dual..." << endl;
 		presolved_model->dual();
 	}
+	
 	//update the status arrays of both the presolve and original models
 	presolve_info.postsolve(true);
 
 	//check the solution
 	model.checkSolution();
 
-	//because of numerical tolerances, solve one more time
-	model.primal(1);
+	if (model.isProvenOptimal())
+	{
+		*f_rec << " iteration " << slp_iter << " linear solution is proven optimal" << endl << endl;
+		cout << " iteration " << slp_iter << " linear solution is proven optimal" << endl << endl;
+	}
+	else if ((model.isProvenPrimalInfeasible()) && (model.isProvenDualInfeasible()))
+		throw_squentialLP_error("both primal and dual solutions are proven infeasible...cannot continue");
+	//otherwise, try again...
+	else
+	{
+		if (model.primalFeasible())
+		{
+			*f_rec << endl << "-->resolving primal in attempt to prove optimal..." << endl;
+			model.primal(1);
+		}
+		else
+		{
+			*f_rec << endl << "-->resolving dual in attempt to prove optimal..." << endl;
+			model.dual(1);
+		}
+		//check the solution
+		model.checkSolution();
+		if (model.isProvenOptimal())
+		{
+			*f_rec << "  ---  iteration " << slp_iter << " linear solution is proven optimal  ---  " << endl << endl;
+			cout << "  ---  iteration " << slp_iter << " linear solution is proven optimal  ---  " << endl << endl;
+		}
+		else
+			*f_rec << "  warning: iteration " << slp_iter << " linear solution is not optimal...continuing" << endl << endl;
+	}
 
-	*f_rec << "  ---  linear program solution complete for iteration " << slp_iter << "  ---  " << endl;
-	cout << "  ---  linear program solution complete for iteration " << slp_iter << "  ---  " << endl;
 
-	//return the model for reporting purposes
+	*f_rec << endl << endl << "  ---  linear program solution complete for iteration " << slp_iter << "  ---  " << endl;
+	cout << endl << endl << "  ---  linear program solution complete for iteration " << slp_iter << "  ---  " << endl;
+
+	//return the model for updating and reporting purposes
 	return model;
 }
 
@@ -338,17 +452,18 @@ void sequentialLP::make_runs(Jacobian_1to1 &jco)
 	cout << "  ---  calculating response matrix for iteration " << slp_iter << "  ---  " << endl;
 	ParamTransformSeq par_trans = opt_scenario.get_base_par_tran_seq();
 	set<string> out_of_bounds;
-	jco.build_runs(optimum_run, opt_scenario.get_ctl_ordered_par_names(), par_trans,
+	jco.build_runs(decision_vars, constraints_sim, opt_scenario.get_ctl_ordered_par_names(), par_trans,
 		opt_scenario.get_base_group_info(), opt_scenario.get_ctl_parameter_info(),
 		*run_mgr_ptr, out_of_bounds);
 	jco.make_runs(*run_mgr_ptr);
 
-	//get the base run and update current_run
+	//get the base run and update simulated constraint values
 	Parameters temp_pars;
 	Observations temp_obs;
-	run_mgr_ptr->get_run(0, temp_pars, temp_obs,false);
+	//run_mgr_ptr->get_run(0, temp_pars, temp_obs,false);
+	run_mgr_ptr->get_run(0, temp_pars, constraints_sim, false);
 	par_trans.model2ctl_ip(temp_pars);
-	current_run.update_ctl(temp_pars, temp_obs);
+	//current_run.update_ctl(temp_pars, temp_obs);
 
 	//process the remaining responses
 	jco.process_runs(par_trans, opt_scenario.get_base_group_info(), *run_mgr_ptr, *null_prior, false);

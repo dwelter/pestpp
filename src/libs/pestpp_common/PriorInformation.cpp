@@ -53,6 +53,13 @@ const PriorInformationRec& PriorInformationRec::operator=(const PriorInformation
 	return *this;
 }
 
+map<string, double> PriorInformationRec::get_atom_factors()
+{
+	map<string, double> piatom_factors;
+	for (auto &piatom : pi_atoms)
+		piatom_factors[piatom.par_name] = piatom.factor;
+	return piatom_factors;
+}
 
 double PriorInformationRec::calc_residual(const Parameters &pars) const
 {

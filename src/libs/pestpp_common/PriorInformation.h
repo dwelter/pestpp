@@ -50,6 +50,7 @@ public:
 	double get_obs_value()const {return pival;}
 	const std::string& get_group() const{return group;}
 	const std::string *get_group_ptr() const{return &group;}
+	std::map<std::string, double> get_atom_factors();
 	~PriorInformationRec(void);
 private:
 	std::vector<PIAtom> pi_atoms;
@@ -73,6 +74,7 @@ public:
 	PriorInformation::const_iterator end() const {return prior_info_map.end();}
 	PriorInformation::const_iterator find(const std::string &key) const {return  prior_info_map.find(key);}
 	PriorInformation::iterator find(const std::string &key) {return  prior_info_map.find(key);}
+	PriorInformationRec get_pi_rec_ptr(std::string name)const { return prior_info_map.at(name); }
 	size_t size() const {return prior_info_map.size();}
 	std::vector<std::string> get_keys() const;
 private:

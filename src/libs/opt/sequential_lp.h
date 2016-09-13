@@ -23,9 +23,13 @@ public:
 	void initialize_and_check();
 	void solve();
 	
-	ModelRun get_optimum_run() { return optimum_run; }
+	//ModelRun get_optimum_run() { return optimum_run; }
 
 private:
+	string obj_func_str;
+	map<string, double> obj_func_coef_map;
+	Observations obj_func_obs;
+	ObservationInfo obj_func_info;
 	int slp_iter;
 	map<string, ConstraintSense> constraint_sense_map;
 	map <string, string> constraint_sense_name;
@@ -36,8 +40,8 @@ private:
 	double* constraint_lb;
 	double* constraint_ub;
 	PriorInformation* null_prior = new PriorInformation();
-	ModelRun current_run;
-	ModelRun optimum_run;
+	//ModelRun current_run;
+	//ModelRun optimum_run;
 	ObjectiveFunc obj_func;
 	Parameters decision_vars;
 	Observations constraints_obs;
@@ -51,6 +55,7 @@ private:
 	OutputFileWriter* out_wtr_ptr;
 	ClpSimplex solve_lp_problem(Jacobian_1to1 &jco);
 
+	void build_obj_function_components();
 	void initial_report();
 	void constraint_report();
 	void update(ClpSimplex &model);
@@ -61,6 +66,7 @@ private:
 	CoinPackedMatrix jacobian_to_coinpackedmatrix(Jacobian_1to1 &jco);
 	void build_constraint_bound_arrays();
 	void throw_squentialLP_error(string message);
+	vector<double> get_constraint_residual_vec();
 
 };
 
