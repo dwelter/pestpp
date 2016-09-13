@@ -20,13 +20,15 @@ public:
 	sequentialLP(Pest &_pest_scenario, RunManagerAbstract* _run_mgr_ptr, 
 		         TerminationController* _termination_ctl_ptr, Covariance &_parcov, 
 				 FileManager &_file_mgr, OutputFileWriter* _out_wtr_ptr);
-	void initialize();
+	void initialize_and_check();
 	void solve();
 	
 	ModelRun get_optimum_run() { return optimum_run; }
 
 private:
 	map<string, ConstraintSense> constraint_sense_map;
+	map <int, string> constraint_sense_name = { {1,"less than"},{2,"greater than"},{3,"equal to"} };
+
 	vector<string> ctl_ord_dec_var_names;
 	vector<string> ctl_ord_constraint_names;
 	double* dec_var_lb;
@@ -48,6 +50,9 @@ private:
 	FileManager file_mgr;
 	OutputFileWriter* out_wtr_ptr;
 	ClpSimplex solve_lp_problem(Jacobian_1to1 &jco);
+
+	void initial_report();
+	void constraint_report(string fieldname, Observations &constraints);
 	void update(ClpSimplex &model);
 	void update_decision_vars(ClpSimplex &model);
 	void update_constraints(ClpSimplex &model);

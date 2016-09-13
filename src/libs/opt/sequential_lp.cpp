@@ -9,13 +9,15 @@
 #include "OutputFileWriter.h"
 #include <Eigen/Sparse>
 #include "CoinFinite.hpp"
+#include "ClpPresolve.hpp"
+#include <iomanip>
 
 sequentialLP::sequentialLP(Pest &_pest_scenario, RunManagerAbstract* _run_mgr_ptr,
 	TerminationController* _termination_ctl_ptr, Covariance &_parcov, FileManager &_file_mgr, 
 	OutputFileWriter* _out_wtr_ptr) : pest_scenario(_pest_scenario), run_mgr_ptr(_run_mgr_ptr),
 	termination_ctl_ptr(_termination_ctl_ptr), parcov(_parcov), file_mgr(_file_mgr), out_wtr_ptr(_out_wtr_ptr)
 {
-	initialize();
+	initialize_and_check();
 }
 
 void sequentialLP::throw_squentialLP_error(string message)
@@ -28,7 +30,40 @@ void sequentialLP::throw_squentialLP_error(string message)
 
 }
 
-void sequentialLP::initialize()
+void sequentialLP::initial_report()
+{
+	ofstream* f_rec = &file_mgr.rec_ofstream();
+	*f_rec << endl << "  -------------------------------------------------------------" << endl;
+	*f_rec << "  ---  sequential linear programming problem information  ---  " << endl;
+	*f_rec << "  -------------------------------------------------------------" << endl << endl;
+	
+	*f_rec << "  ---  decision variables active in LP  ---  " << endl;
+	for (auto &name : ctl_ord_dec_var_names)
+		*f_rec << setw(20) << left << name << endl;
+	*f_rec << " note: bound and initial value info reported in 'parameter' section" << endl << endl;
+
+	*f_rec << "  ---  constraints in LP  ---  " << endl;
+	constraint_report("rhs",constraints_obs);
+	return;
+}
+
+void sequentialLP::constraint_report(string fieldname, Observations &constraints)
+{
+	ofstream* f_rec = &file_mgr.rec_ofstream();
+	*f_rec << setw(20) << "name" << setw(20) << "sense" << setw(20) << fieldname << endl;
+	for (auto &name : ctl_ord_constraint_names)
+	{
+		*f_rec << setw(20) << left << name;
+		*f_rec << setw(20) << constraint_sense_name[int(constraint_sense_map[name])];
+		*f_rec << setw(20) << constraints.get_rec(name) << endl;
+	}
+
+	
+	return;
+
+}
+
+void sequentialLP::initialize_and_check()
 {
 	//TODO: handle restart condition
 	//TODO: handle base jco condition
@@ -43,7 +78,6 @@ void sequentialLP::initialize()
 			ctl_ord_dec_var_names.push_back(name);
 		}
 	}
-
 	
 	//set the two constraints attribs and ordered constraint name vec
 	constraints_obs = opt_scenario.get_ctl_observations();
@@ -56,9 +90,12 @@ void sequentialLP::initialize()
 		}
 	}
 	
+	//TODO: override base objective func class with linear obj func class
 	obj_func = ObjectiveFunc(&constraints_obs, &opt_scenario.get_ctl_observation_info(),
 		       null_prior);
 	
+
+	//initialize the current and optimum model run instances
 	optimum_run = ModelRun(&obj_func,constraints_sim);
 	optimum_run.set_ctl_parameters(decision_vars);
 	current_run = ModelRun(&obj_func, constraints_sim);
@@ -68,10 +105,8 @@ void sequentialLP::initialize()
 	//set the decision var lower and upper bound arrays
 	dec_var_lb = new double[ctl_ord_dec_var_names.size()];
 	dec_var_ub = new double[ctl_ord_constraint_names.size()];
-
 	Parameters parlbnd = opt_scenario.get_ctl_parameter_info().get_low_bnd(ctl_ord_dec_var_names);
 	Parameters parubnd = opt_scenario.get_ctl_parameter_info().get_up_bnd(ctl_ord_dec_var_names);
-	
 	for (int i = 0; i < ctl_ord_dec_var_names.size(); ++i)
 	{
 		dec_var_lb[i] = parlbnd.get_rec(ctl_ord_dec_var_names[i]);
@@ -148,15 +183,36 @@ ClpSimplex sequentialLP::solve_lp_problem(Jacobian_1to1 &jco)
 	//set/update the constraint bound arrays
 	build_constraint_bound_arrays();
 
+	//temp obj function
 	double* objective_func = new double[ctl_ord_dec_var_names.size()];
 	for (int i = 0; i < ctl_ord_dec_var_names.size(); ++i)
 	{
 		objective_func[i] = 1.0;
 	}
 	
+	//instantiate and load the linear simplex model
 	ClpSimplex model;
 	model.loadProblem(matrix, dec_var_lb, dec_var_ub, objective_func, constraint_lb, constraint_ub);
 
+	//solve the linear program
+	ClpPresolve presolve_info;
+	ClpSimplex* presolved_model = presolve_info.presolvedModel(model);
+	//if presolvedModel is Null, then it is primal infeasible, so 
+	//try the dual
+	if (!presolved_model)
+	{
+		presolved_model->dual();
+	}
+	//update the status arrays of both the presolve and original models
+	presolve_info.postsolve(true);
+
+	//check the solution
+	model.checkSolution();
+
+	//because of numerical tolerances, solve one more time
+	model.primal(1);
+
+	//return the model for reporting purposes
 	return model;
 }
 
