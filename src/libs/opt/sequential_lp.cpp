@@ -37,30 +37,56 @@ void sequentialLP::initial_report()
 	*f_rec << "  ---  sequential linear programming problem information  ---  " << endl;
 	*f_rec << "  -------------------------------------------------------------" << endl << endl;
 	
-	*f_rec << "  ---  decision variables active in LP  ---  " << endl;
+	*f_rec << "-->number of iterations of sequential linear programming (noptmax): " << opt_scenario.get_control_info().noptmax << endl;
+	
+	*f_rec << "  ---  decision variables active in SLP  ---  " << endl;
 	for (auto &name : ctl_ord_dec_var_names)
 		*f_rec << setw(20) << left << name << endl;
 	*f_rec << " note: bound and initial value info reported in 'parameter' section" << endl << endl;
 
-	*f_rec << "  ---  constraints in LP  ---  " << endl;
-	constraint_report("rhs",constraints_obs);
-	return;
-}
-
-void sequentialLP::constraint_report(string fieldname, Observations &constraints)
-{
-	ofstream* f_rec = &file_mgr.rec_ofstream();
-	*f_rec << setw(20) << "name" << setw(20) << "sense" << setw(20) << fieldname << endl;
+	*f_rec << "  ---  constraints in SLP  ---  " << endl;
+	*f_rec << setw(20) << "name" << setw(20) << "sense" << setw(20) << "value" << endl;
 	for (auto &name : ctl_ord_constraint_names)
 	{
 		*f_rec << setw(20) << left << name;
-		*f_rec << setw(20) << constraint_sense_name[int(constraint_sense_map[name])];
-		*f_rec << setw(20) << constraints.get_rec(name) << endl;
+		*f_rec << setw(20) << constraint_sense_name[name];
+		*f_rec << setw(20) << constraints_obs.get_rec(name) << endl;
 	}
-
-	
 	return;
+}
 
+void sequentialLP::constraint_report()
+{
+	ofstream* f_rec = &file_mgr.rec_ofstream();
+	vector<double> residuals = current_run.get_residuals_vec(ctl_ord_constraint_names);
+	*f_rec << endl << "  constraint information for iteration " << slp_iter << endl;
+	*f_rec << setw(20) << "name" << setw(10) << "sense" << setw(15) << "value";
+	*f_rec << setw(15) << "residual" << setw(15) << "lower bound" << setw(15) << "upper bound" << endl;
+	cout << endl << "  constraint report for iteration " << slp_iter << endl;
+	cout << setw(20) << "name" << setw(10) << "sense" << setw(15) << "value";
+	cout << setw(15) << "residual" << setw(15) << "lower bound" << setw(15) << "upper bound" << endl;
+
+
+	for (int i=0;i<ctl_ord_constraint_names.size();++i)
+	{
+		string name = ctl_ord_constraint_names[i];
+
+		*f_rec << setw(20) << left << name;
+		*f_rec << setw(10) << constraint_sense_name[name];
+		*f_rec << setw(15) << constraints_obs.get_rec(name);
+		*f_rec << setw(15) << residuals[i];
+		*f_rec << setw(15) << constraint_lb[i];
+		*f_rec << setw(15) << constraint_ub[i] << endl;
+
+		cout << setw(20) << left << name;
+		cout << setw(10) << constraint_sense_name[name];
+		cout << setw(15) << constraints_obs.get_rec(name);
+		cout << setw(15) << residuals[i];
+		cout << setw(15) << constraint_lb[i];
+		cout << setw(15) << constraint_ub[i] << endl;
+
+	}
+	return;
 }
 
 void sequentialLP::initialize_and_check()
@@ -119,11 +145,21 @@ void sequentialLP::initialize_and_check()
 	{
 		string group = opt_scenario.get_ctl_observation_info().get_observation_rec_ptr(name)->group;
 		if (group == "L")
+		{
 			constraint_sense_map[name] = ConstraintSense::less_than;
+			constraint_sense_name[name] = "less than";
+		}
 		else if (group == "G")
+		{
 			constraint_sense_map[name] = ConstraintSense::greater_than;
+			constraint_sense_name[name] = "greater than";
+		}
 		else if ((group == "E") || (group == "N"))
+		{
 			constraint_sense_map[name] = ConstraintSense::equal_to;
+			constraint_sense_name[name] = "equal to";
+		}
+
 		else
 			problem_constraints[name] = group;
 	}
@@ -145,6 +181,7 @@ void sequentialLP::initialize_and_check()
 	//TODO: error checking:
 	//noptmax > 0
 	//no log transform for decision vars
+	initial_report();
 	return;
 }
 
@@ -157,18 +194,18 @@ void sequentialLP::build_constraint_bound_arrays()
 	{
 		string name = ctl_ord_constraint_names[i];
 		if (constraint_sense_map[name] == ConstraintSense::less_than)
-			constraint_ub[i] = residuals[i];
+			constraint_ub[i] = -residuals[i];
 		else
 			constraint_ub[i] = COIN_DBL_MAX;
 
 		if (constraint_sense_map[name] == ConstraintSense::greater_than)
-			constraint_lb[i] = residuals[i];
+			constraint_lb[i] = -residuals[i];
 		else
 			constraint_lb[i] = -COIN_DBL_MAX;
 		if (constraint_sense_map[name] == ConstraintSense::equal_to)
 		{
-			constraint_ub[i] = residuals[i];
-			constraint_lb[i] = residuals[i];
+			constraint_ub[i] = -residuals[i];
+			constraint_lb[i] = -residuals[i];
 		}
 	}
 
@@ -177,11 +214,16 @@ void sequentialLP::build_constraint_bound_arrays()
 
 ClpSimplex sequentialLP::solve_lp_problem(Jacobian_1to1 &jco)
 {
+	
+	ofstream* f_rec = &file_mgr.rec_ofstream();
+
 	//convert Jacobian_1to1 to CoinPackedMatrix
 	CoinPackedMatrix matrix = jacobian_to_coinpackedmatrix(jco);
 
 	//set/update the constraint bound arrays
 	build_constraint_bound_arrays();
+
+	constraint_report();
 
 	//temp obj function
 	double* objective_func = new double[ctl_ord_dec_var_names.size()];
@@ -194,6 +236,8 @@ ClpSimplex sequentialLP::solve_lp_problem(Jacobian_1to1 &jco)
 	ClpSimplex model;
 	model.loadProblem(matrix, dec_var_lb, dec_var_ub, objective_func, constraint_lb, constraint_ub);
 
+	*f_rec << "  ---  solving linear program for iteration " << slp_iter << "  ---  " << endl;
+	cout << "  ---  solving linear program for iteration " << slp_iter << "  ---  " << endl;
 	//solve the linear program
 	ClpPresolve presolve_info;
 	ClpSimplex* presolved_model = presolve_info.presolvedModel(model);
@@ -212,6 +256,9 @@ ClpSimplex sequentialLP::solve_lp_problem(Jacobian_1to1 &jco)
 	//because of numerical tolerances, solve one more time
 	model.primal(1);
 
+	*f_rec << "  ---  linear program solution complete for iteration " << slp_iter << "  ---  " << endl;
+	cout << "  ---  linear program solution complete for iteration " << slp_iter << "  ---  " << endl;
+
 	//return the model for reporting purposes
 	return model;
 }
@@ -224,7 +271,8 @@ CoinPackedMatrix sequentialLP::jacobian_to_coinpackedmatrix(Jacobian_1to1 &jco)
 	if (eig_ord_jco.nonZeros() != jco.get_matrix_ptr()->nonZeros())
 		throw_squentialLP_error("sequentialLP::jacobian_to_coinpackedmatrix() error: ordered jco nnz != org jco nnz");
 	
-	cout << "number of nonzero elements in response matrix: " << eig_ord_jco.nonZeros() << endl;
+	file_mgr.rec_ofstream() << "number of nonzero elements in response matrix: " << eig_ord_jco.nonZeros() << " of " << eig_ord_jco.size() << endl;
+	cout << "number of nonzero elements in response matrix: " << eig_ord_jco.nonZeros() << " of " << eig_ord_jco.size() << endl;
 
 
 	//the triplet elements to pass to the coinpackedmatrix constructor
@@ -265,17 +313,29 @@ void sequentialLP::solve()
 	Jacobian_1to1 jco(file_mgr);
 	jco.set_base_numeric_pars(decision_vars);
 	jco.set_base_sim_obs(constraints_sim);
-
-	for (int i = 0; i < pest_scenario.get_control_info().noptmax; i++)
+	ofstream* f_rec = &file_mgr.rec_ofstream();
+	slp_iter = 1;
+	while (true)
 	{
+		*f_rec << endl << endl << "  ---------------------------------" << endl;
+		*f_rec <<         "  --- starting LP iteration " << slp_iter << "  ---  " << endl;
+		*f_rec << "  ---------------------------------" << endl << endl << endl;
+		cout << endl << endl << "  ----------------------------------" << endl;
+		cout << "  --- starting LP iteration " << slp_iter << "  ---  " << endl;
+		cout << "  ---------------------------------" << endl << endl << endl;
 		make_runs(jco);
 		ClpSimplex model = solve_lp_problem(jco);
 		update(model);
+		slp_iter++;
 	}
 }
 
+
 void sequentialLP::make_runs(Jacobian_1to1 &jco)
 {
+	ofstream *f_rec = &file_mgr.rec_ofstream();
+	*f_rec << "  ---  calculating response matrix for iteration " << slp_iter << "  ---  " << endl;
+	cout << "  ---  calculating response matrix for iteration " << slp_iter << "  ---  " << endl;
 	ParamTransformSeq par_trans = opt_scenario.get_base_par_tran_seq();
 	set<string> out_of_bounds;
 	jco.build_runs(optimum_run, opt_scenario.get_ctl_ordered_par_names(), par_trans,
@@ -292,6 +352,15 @@ void sequentialLP::make_runs(Jacobian_1to1 &jco)
 
 	//process the remaining responses
 	jco.process_runs(par_trans, opt_scenario.get_base_group_info(), *run_mgr_ptr, *null_prior, false);
+	//TODO: deal with failed runs
+
+
+	stringstream ss;
+	ss << slp_iter << ".jcb";
+	string rspmat_file = file_mgr.build_filename(ss.str());
+	*f_rec << endl << "saving iteration " << slp_iter << " reponse matrix to file: " << rspmat_file << endl;
+	jco.save(ss.str());
+
 	return;
 }
 
