@@ -383,6 +383,7 @@ map<string, double> read_twocol_ascii_to_map(string filename, int header_lines, 
 		convert_ip(tokens[data_col], value);
 		result[tokens[0]] = value;
 	}
+	fin.close();
 	return result;
 }
 

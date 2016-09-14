@@ -161,10 +161,49 @@ void sequentialLP::initialize_and_check()
 	if (pest_scenario.get_control_info().noptmax < 1)
 		throw_sequentialLP_error("noptmax must be greater than 0");
 
+	//set the two constraints attribs and ordered constraint name vec
+	vector<string> constraint_groups = pest_scenario.get_pestpp_options().get_opt_constraint_groups();
+	ctl_ord_constraint_names.clear();
+	//if the ++opt_constraint_groups arg was passed
+	if (constraint_groups.size() != 0)
+	{
+		//first make sure all the groups are actually listed in the control file
+		vector<string> missing;
+		vector<string> pst_groups = pest_scenario.get_ctl_ordered_obs_group_names();
+		vector<string>::iterator end = pst_groups.end();
+		vector<string>::iterator start = pst_groups.begin();
+		for (auto grp : constraint_groups)
+			if (find(start, end, grp) == end)
+				missing.push_back(grp);
+		if (missing.size() > 0)
+			throw_sequentialLP_error("the following ++opt_constraint_groups were not found: ", missing);
+
+		//find the parameter in the dec var groups
+		ObservationInfo oinfo = pest_scenario.get_ctl_observation_info();
+		string group;
+		end = constraint_groups.end();
+		start = constraint_groups.begin();
+		for (auto &obs_name : pest_scenario.get_ctl_ordered_obs_names())
+		{
+			group = oinfo.get_observation_rec_ptr(obs_name)->group;
+			if (find(start, end, group) != end)
+				ctl_ord_constraint_names.push_back(obs_name);
+		}
+
+		if (ctl_ord_constraint_names.size() == 0)
+			throw_sequentialLP_error("no constraints found in groups: ", constraint_groups);
+	}
+	//if not ++opt_constraint_names was passed, use all observations as constraints
+	else
+		ctl_ord_constraint_names = pest_scenario.get_ctl_ordered_obs_names();
+
+	constraints_obs = pest_scenario.get_ctl_observations().get_subset(ctl_ord_constraint_names.begin(), ctl_ord_constraint_names.end());
+	constraints_sim = Observations(constraints_obs);
+
+
 	//set decision vars attrib and ordered dec var name vec
 	//and check for illegal parameter transformations
 	vector<string> dec_var_groups = pest_scenario.get_pestpp_options().get_opt_dec_var_groups();
-	decision_vars.clear();
 	ctl_ord_dec_var_names.clear();
 	//if the ++opt_dec_var_groups arg was passed
 	if (dec_var_groups.size() != 0)
@@ -207,22 +246,8 @@ void sequentialLP::initialize_and_check()
 	if (problem_trans.size() > 0)
 		throw_sequentialLP_error("the following decision variables don't have 'none' type parameter transformation: ", problem_trans);
 	
-	//set the decsision_var Parameter instance
-	//decision_vars = pest_scenario.get_ctl_parameters().get_subset(ctl_ord_dec_var_names.begin(), ctl_ord_dec_var_names.end());
-	//needs to include all parameter in the scenario
-	decision_vars = pest_scenario.get_ctl_parameters();
 
-	//set the two constraints attribs and ordered constraint name vec
-	constraints_obs = pest_scenario.get_ctl_observations();
-	constraints_sim = Observations(constraints_obs);
-	for (auto &name : pest_scenario.get_ctl_ordered_obs_names())
-	{
-		if (constraints_obs.find(name) != constraints_obs.end())
-		{
-			ctl_ord_constraint_names.push_back(name);
-		}
-	}
-	
+
 	//initialize the objective function
 	obj_func_str = pest_scenario.get_pestpp_options().get_opt_obj_func();
 	if (obj_func_str.size() == 0)
@@ -292,17 +317,17 @@ void sequentialLP::initialize_and_check()
 	for (auto &name : ctl_ord_constraint_names)
 	{
 		string group = pest_scenario.get_ctl_observation_info().get_observation_rec_ptr(name)->group;
-		if (group == "L")
+		if ((group == "L") || (group == "LESS_THAN"))
 		{
 			constraint_sense_map[name] = ConstraintSense::less_than;
 			constraint_sense_name[name] = "less than";
 		}
-		else if (group == "G")
+		else if ((group == "G") || (group == "GREATER_THAN"))
 		{
 			constraint_sense_map[name] = ConstraintSense::greater_than;
 			constraint_sense_name[name] = "greater than";
 		}
-		else if ((group == "E") || (group == "N"))
+		else if ((group == "E") || (group == "N") || (group == "EQUAL_TO"))
 		{
 			constraint_sense_map[name] = ConstraintSense::equal_to;
 			constraint_sense_name[name] = "equal to";
@@ -456,9 +481,6 @@ CoinPackedMatrix sequentialLP::jacobian_to_coinpackedmatrix(Jacobian_1to1 &jco)
 	
 	Eigen::SparseMatrix<double> eig_ord_jco = jco.get_matrix(ctl_ord_constraint_names, ctl_ord_dec_var_names);
 
-	if (eig_ord_jco.nonZeros() != jco.get_matrix_ptr()->nonZeros())
-		throw_sequentialLP_error("sequentialLP::jacobian_to_coinpackedmatrix() error: ordered jco nnz != org jco nnz");
-	
 	file_mgr.rec_ofstream() << "number of nonzero elements in response matrix: " << eig_ord_jco.nonZeros() << " of " << eig_ord_jco.size() << endl;
 	cout << "number of nonzero elements in response matrix: " << eig_ord_jco.nonZeros() << " of " << eig_ord_jco.size() << endl;
 
@@ -499,7 +521,7 @@ void sequentialLP::solve()
 	//TODO: handle restart condition
 	//TODO: handle base jco condition
 	Jacobian_1to1 jco(file_mgr);
-	jco.set_base_numeric_pars(decision_vars);
+	jco.set_base_numeric_pars(pest_scenario.get_ctl_parameters());
 	jco.set_base_sim_obs(constraints_sim);
 	ofstream* f_rec = &file_mgr.rec_ofstream();
 	slp_iter = 1;
@@ -530,7 +552,8 @@ void sequentialLP::make_runs(Jacobian_1to1 &jco)
 	ion_vars, constraints_sim, pest_scenario.get_ctl_ordered_par_names(), par_trans,
 		pest_scenario.get_base_group_info(), pest_scenario.get_ctl_parameter_info(),
 		*run_mgr_ptr, out_of_bounds);*/
-	bool success = jco.build_runs(decision_vars, constraints_sim, ctl_ord_dec_var_names, par_trans,
+	Parameters pars = pest_scenario.get_ctl_parameters();
+	bool success = jco.build_runs(pars, constraints_sim, ctl_ord_dec_var_names, par_trans,
 		pest_scenario.get_base_group_info(), pest_scenario.get_ctl_parameter_info(),
 		*run_mgr_ptr, out_of_bounds);
 	if (!success)

@@ -129,6 +129,8 @@ public:
 	Observations() : Transformable(){}
 	Observations(const Observations &copyin) : Transformable(copyin) {}
 	Observations(const Observations &copyin, const vector<string> &copy_names) : Transformable(copyin, copy_names){} 
+	template <class NameIterator>
+	Observations get_subset(NameIterator first, NameIterator last)const;
 	virtual ~Observations(){}
 private:
 };
@@ -165,5 +167,22 @@ Parameters Parameters::get_subset (NameIterator first, NameIterator last) const
 	}
 	return subset;
 }
+
+template <class NameIterator>
+Observations Observations::get_subset(NameIterator first, NameIterator last) const
+{
+	Observations subset;
+	for (auto i = first; i != last; ++i)
+	{
+		auto t_iter = find(*i);
+		if (t_iter == this->end())
+		{
+			throw(Transformable_value_error(*i));
+		}
+		subset.insert(t_iter->first, t_iter->second);
+	}
+	return subset;
+}
+
 
 #endif /* TRANSFORMABLE_H_ */

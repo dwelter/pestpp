@@ -44,7 +44,7 @@ private:
 	//ModelRun current_run;
 	//ModelRun optimum_run;
 	ObjectiveFunc obj_func;
-	Parameters decision_vars;
+	//Parameters decision_vars;
 	Observations constraints_obs;
 	Observations constraints_sim;
 	Pest pest_scenario;
@@ -56,7 +56,9 @@ private:
 	OutputFileWriter* out_wtr_ptr;
 	ClpSimplex solve_lp_problem(Jacobian_1to1 &jco);
 
-	//void initialize_obj_function_components();
+	void initialize_obj_function();
+	void initialize_dec_vars();
+	void initialize_constraints();
 	void initial_report();
 	void constraint_report();
 	void decision_var_report();
