@@ -11,6 +11,7 @@
 #include "CoinFinite.hpp"
 #include "ClpPresolve.hpp"
 #include <iomanip>
+#include "utilities.h"
 
 sequentialLP::sequentialLP(Pest &_pest_scenario, RunManagerAbstract* _run_mgr_ptr,
 	TerminationController* _termination_ctl_ptr, Covariance &_parcov, FileManager &_file_mgr, 
@@ -19,6 +20,22 @@ sequentialLP::sequentialLP(Pest &_pest_scenario, RunManagerAbstract* _run_mgr_pt
 {
 	initialize_and_check();
 }
+void sequentialLP::throw_sequentialLP_error(string message,const vector<string> &messages)
+{
+	stringstream ss;
+	for (auto &mess : messages)
+		ss << mess + ',';
+	throw_sequentialLP_error(message + ss.str());
+}
+
+void sequentialLP::throw_sequentialLP_error(string message, const set<string> &messages)
+{
+	stringstream ss;
+	for (auto &mess : messages)
+		ss << mess + ',';
+	throw_sequentialLP_error(message + ss.str());
+}
+
 
 void sequentialLP::throw_sequentialLP_error(string message)
 {
@@ -26,8 +43,6 @@ void sequentialLP::throw_sequentialLP_error(string message)
 	file_mgr.rec_ofstream() << error_message << endl;
 	file_mgr.close_file("rec");
 	throw runtime_error(error_message);
-
-
 }
 
 vector<double> sequentialLP::get_constraint_residual_vec()
@@ -148,28 +163,55 @@ void sequentialLP::initialize_and_check()
 
 	//set decision vars attrib and ordered dec var name vec
 	//and check for illegal parameter transformations
-	decision_vars = pest_scenario.get_ctl_parameters();
-	vector<string> problem_trans;
-	for (auto &name : pest_scenario.get_ctl_ordered_par_names())
+	vector<string> dec_var_groups = pest_scenario.get_pestpp_options().get_opt_dec_var_groups();
+	decision_vars.clear();
+	ctl_ord_dec_var_names.clear();
+	//if the ++opt_dec_var_groups arg was passed
+	if (dec_var_groups.size() != 0)
 	{
-		if (decision_vars.find(name) != decision_vars.end())
+		//first make sure all the groups are actually listed in the control file
+		vector<string> missing;
+		vector<string> pst_groups = pest_scenario.get_ctl_ordered_par_group_names();
+		vector<string>::iterator end = pst_groups.end();
+		vector<string>::iterator start = pst_groups.begin();
+		for (auto grp : dec_var_groups)
+			if (find(start, end, grp) == end)
+				missing.push_back(grp);
+		if (missing.size() > 0)
+			throw_sequentialLP_error("the following ++opt_dec_var_groups were not found: ", missing);
+
+		//find the parameter in the dec var groups
+		ParameterGroupInfo pinfo = pest_scenario.get_base_group_info();
+		string group;
+		end = dec_var_groups.end();
+		start = dec_var_groups.begin();
+		for (auto &par_name : pest_scenario.get_ctl_ordered_par_names())
 		{
-			if (pest_scenario.get_ctl_parameter_info().get_parameter_rec_ptr(name)->tranform_type != ParameterRec::TRAN_TYPE::NONE)
-				problem_trans.push_back(name);
-			ctl_ord_dec_var_names.push_back(name);
+			group = pinfo.get_group_name(par_name);
+			if (find(start, end, group) != end)
+				ctl_ord_dec_var_names.push_back(par_name);
 		}
+
+		if (ctl_ord_dec_var_names.size() == 0)
+			throw_sequentialLP_error("no decision variables found in groups: ", dec_var_groups);
 	}
+	//if not ++opt_dec_var_names was passed, use all parameter as decision variables
+	else
+		ctl_ord_dec_var_names = pest_scenario.get_ctl_ordered_par_names();
 
 	//if any decision vars have a transformation that is not allowed
+	vector<string> problem_trans;
+	for (auto &name : ctl_ord_dec_var_names)		
+		if (pest_scenario.get_ctl_parameter_info().get_parameter_rec_ptr(name)->tranform_type != ParameterRec::TRAN_TYPE::NONE)
+			problem_trans.push_back(name);
 	if (problem_trans.size() > 0)
-	{
-		stringstream ss;
-		for (auto &name : problem_trans)
-			ss << ',' << name;
-		throw_sequentialLP_error("the following decision variables don't have 'none' type parameter transformation: " + ss.str());
-	}
+		throw_sequentialLP_error("the following decision variables don't have 'none' type parameter transformation: ", problem_trans);
 	
-		
+	//set the decsision_var Parameter instance
+	//decision_vars = pest_scenario.get_ctl_parameters().get_subset(ctl_ord_dec_var_names.begin(), ctl_ord_dec_var_names.end());
+	//needs to include all parameter in the scenario
+	decision_vars = pest_scenario.get_ctl_parameters();
+
 	//set the two constraints attribs and ordered constraint name vec
 	constraints_obs = pest_scenario.get_ctl_observations();
 	constraints_sim = Observations(constraints_obs);
@@ -199,7 +241,8 @@ void sequentialLP::initialize_and_check()
 		//or if it is a prior info equation
 		else if (pest_scenario.get_prior_info().find(obj_func_str) != pest_scenario.get_prior_info().end())
 		{
-			obj_func_coef_map = pest_scenario.get_prior_info().get_pi_rec_ptr(obj_func_str).get_atom_factors();
+			//obj_func_coef_map = pest_scenario.get_prior_info().get_pi_rec_ptr(obj_func_str).get_atom_factors();
+			throw_sequentialLP_error("prior-information-based objective function not implemented");
 		}
 		else
 		{
@@ -208,7 +251,7 @@ void sequentialLP::initialize_and_check()
 			if (!if_obj.good())
 				throw_sequentialLP_error("unrecognized ++opt_objective_function arg: " + obj_func_str);
 			else
-				throw_sequentialLP_error("file-base objective function not implemented");
+				obj_func_coef_map = pest_utils::read_twocol_ascii_to_map(obj_func_str);
 		}
 	}
 
@@ -218,14 +261,7 @@ void sequentialLP::initialize_and_check()
 		if (find(ctl_ord_dec_var_names.begin(), ctl_ord_dec_var_names.end(), coef.first) == ctl_ord_dec_var_names.end())
 			missing_vars.push_back(coef.first);
 	if (missing_vars.size() > 0)
-	{
-		stringstream ss;
-		for (auto &name : missing_vars)
-			ss << ', ' << name;
-		throw_sequentialLP_error("the following objective function components are not decision variables: " + ss.str());
-	}
-
-
+		throw_sequentialLP_error("the following objective function components are not decision variables: ", missing_vars);
 
 	//this is nasty...setup objective function components as obseravtions and obs info
 	//initialize_obj_function_components();
@@ -251,7 +287,8 @@ void sequentialLP::initialize_and_check()
 	}
 
 	//build map of constraint sense
-	map<string, string> problem_constraints;
+	//map<string, string> problem_constraints;
+	vector<string> problem_constraints;
 	for (auto &name : ctl_ord_constraint_names)
 	{
 		string group = pest_scenario.get_ctl_observation_info().get_observation_rec_ptr(name)->group;
@@ -272,25 +309,18 @@ void sequentialLP::initialize_and_check()
 		}
 
 		else
-			problem_constraints[name] = group;
+			//problem_constraints[name] = group;
+			problem_constraints.push_back(name + ',' + group);
 	}
 	if (problem_constraints.size() > 0)
 	{
-		stringstream ss;
-		ss << endl;
-		for (auto &pc : problem_constraints)
-		{
-			ss << "name:" << pc.first << ", group:" << pc.second << endl;
-		}
-		throw_sequentialLP_error("the following constraints do not have the correct group names {'l','g','e'}: " + ss.str());
+		throw_sequentialLP_error("the following constraints do not have the correct group names {'l','g','e'}: ",problem_constraints);
 	}
 	
 	//allocate the constraint bound arrays 
 	constraint_lb = new double[ctl_ord_constraint_names.size()];
 	constraint_ub = new double[ctl_ord_constraint_names.size()];
 
-	//TODO: error checking:
-	
 	initial_report();
 	return;
 }
@@ -332,6 +362,8 @@ void sequentialLP::build_obj_func_coef_array()
 	{
 		if (obj_func_coef_map.find(name) != end)
 			ctl_ord_obj_func_coefs[i] = obj_func_coef_map.at(name);
+		else
+			ctl_ord_obj_func_coefs[i] = 0.0;
 		i++;
 	}
 	return;
@@ -348,8 +380,10 @@ ClpSimplex sequentialLP::solve_lp_problem(Jacobian_1to1 &jco)
 	//set/update the constraint bound arrays
 	build_constraint_bound_arrays();
 
+	//report to rec file
 	constraint_report();
 
+	//build the objective function
 	build_obj_func_coef_array();
 
 	//instantiate and load the linear simplex model
@@ -407,9 +441,8 @@ ClpSimplex sequentialLP::solve_lp_problem(Jacobian_1to1 &jco)
 			cout << "  ---  iteration " << slp_iter << " linear solution is proven optimal  ---  " << endl << endl;
 		}
 		else
-			*f_rec << "  warning: iteration " << slp_iter << " linear solution is not optimal...continuing" << endl << endl;
+			*f_rec << "  warning: iteration " << slp_iter << " linear solution is not proven optimal...continuing" << endl << endl;
 	}
-
 
 	*f_rec << endl << endl << "  ---  linear program solution complete for iteration " << slp_iter << "  ---  " << endl;
 	cout << endl << endl << "  ---  linear program solution complete for iteration " << slp_iter << "  ---  " << endl;
@@ -493,7 +526,8 @@ void sequentialLP::make_runs(Jacobian_1to1 &jco)
 	cout << "  ---  calculating response matrix for iteration " << slp_iter << "  ---  " << endl;
 	ParamTransformSeq par_trans = pest_scenario.get_base_par_tran_seq();
 	set<string> out_of_bounds;
-	/*jco.build_runs(decision_vars, constraints_sim, pest_scenario.get_ctl_ordered_par_names(), par_trans,
+	/*jco.build_runs(decis
+	ion_vars, constraints_sim, pest_scenario.get_ctl_ordered_par_names(), par_trans,
 		pest_scenario.get_base_group_info(), pest_scenario.get_ctl_parameter_info(),
 		*run_mgr_ptr, out_of_bounds);*/
 	bool success = jco.build_runs(decision_vars, constraints_sim, ctl_ord_dec_var_names, par_trans,
@@ -501,12 +535,16 @@ void sequentialLP::make_runs(Jacobian_1to1 &jco)
 		*run_mgr_ptr, out_of_bounds);
 	if (!success)
 	{
-		stringstream ss;
+		/*stringstream ss;
 		for (auto &name : jco.get_failed_parameter_names())
 			ss << name << ',';
-		throw_sequentialLP_error("failed to calc derviatives for the following decision vars: " + ss.str());
+		throw_sequentialLP_error( + ss.str());*/
+		const set<string> failed = jco.get_failed_parameter_names();
+		throw_sequentialLP_error("failed to calc derviatives for the following decision vars: ",failed);
 	}
 	jco.make_runs(*run_mgr_ptr);
+
+	//TODO: check for failed runs
 
 	//get the base run and update simulated constraint values
 	Parameters temp_pars;
@@ -540,6 +578,7 @@ void sequentialLP::separate_scenarios()
 
 void sequentialLP::update(ClpSimplex &model)
 {
+	//TODO: run optimal solution
 	update_decision_vars(model);
 	update_constraints(model);
 	return;

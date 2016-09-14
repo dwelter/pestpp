@@ -68,6 +68,8 @@ private:
 	CoinPackedMatrix jacobian_to_coinpackedmatrix(Jacobian_1to1 &jco);
 	void build_constraint_bound_arrays();
 	void throw_sequentialLP_error(string message);
+	void throw_sequentialLP_error(string message,const vector<string> &messages);
+	void throw_sequentialLP_error(string message, const set<string> &messages);
 	vector<double> get_constraint_residual_vec();
 	void build_obj_func_coef_array();
 

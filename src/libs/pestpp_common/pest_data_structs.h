@@ -104,6 +104,7 @@ public:
 	string get_group_name(const string &par_name) const;
 	const ParameterGroupInfo& operator=(const ParameterGroupInfo &rhs);
 	bool have_switch_derivative() const;
+	vector<string> get_group_names() const;
 	~ParameterGroupInfo();
 private:
 	unordered_map<string, ParameterGroupRec*> groups;
@@ -269,6 +270,11 @@ public:
 	void set_opt_obj_func(string _opt_obj_func) { opt_obj_func = _opt_obj_func; }
 	int get_opt_coin_loglev()const { return opt_coin_loglev; }
 	void set_opt_coin_loglev(int _lev) { opt_coin_loglev = _lev; }
+	vector<string> get_opt_dec_var_groups()const { return opt_dec_var_groups; }
+	void set_opt_dec_var_groups(vector<string> _grps) { opt_dec_var_groups = _grps; }
+	vector<string> get_opt_constraint_groups()const { return opt_constraint_groups; }
+	void set_opt_constraint_groups(vector<string> _grps) { opt_constraint_groups = _grps; }
+
 
 private:
 	int n_iter_base;
@@ -309,6 +315,8 @@ private:
 
 	string opt_obj_func;
 	int opt_coin_loglev;
+	vector<string> opt_dec_var_groups;
+	vector<string> opt_constraint_groups;
 
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);

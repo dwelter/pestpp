@@ -41,3 +41,5 @@ mf2005 dewater_pest.nam
 dewater_pest.wel.tpl dewater_pest.wel
 dewater_pest.hds.drop.ins dewater_pest.hds
 ++#base_jacobian(dewater_pest.bak.jcb)
+++opt_obj_func(dewater_pest.objfunc)
+++opt_coin_loglev(4)

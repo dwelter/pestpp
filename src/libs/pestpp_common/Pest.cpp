@@ -593,6 +593,8 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_parcov_scale_fac(-999.0);
 	pestpp_options.set_opt_obj_func("");
 	pestpp_options.set_opt_coin_loglev(0);
+	pestpp_options.set_opt_dec_var_groups(vector<string>());
+	pestpp_options.set_opt_constraint_groups(vector<string>());
 	for(vector<string>::const_iterator b=pestpp_input.begin(),e=pestpp_input.end();
 		b!=e; ++b) {
 			pestpp_options.parce_line(*b);

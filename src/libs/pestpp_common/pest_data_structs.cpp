@@ -139,6 +139,13 @@ const ParameterGroupInfo& ParameterGroupInfo::operator=(const ParameterGroupInfo
 	return *this;
 }
 
+vector<string> ParameterGroupInfo::get_group_names() const
+{
+	vector<string> group_names;
+	for (auto &g : groups)
+		group_names.push_back(g.first);
+	return group_names;
+}
 
 bool ParameterGroupInfo::have_switch_derivative() const
 {
@@ -485,6 +492,28 @@ void PestppOptions::parce_line(const string &line)
 			convert_ip(value, opt_coin_loglev);
 		}
 	
+		else if ((key == "OPT_DEC_VAR_GROUPS") || (key == "OPT_DECISION_VARIABLE_GROUPS"))
+		{
+			opt_dec_var_groups.clear();
+			vector<string> tok;
+			tokenize(value, tok, ", ");
+			for (const auto &name : tok)
+			{
+				opt_dec_var_groups.push_back(name);
+			}
+		}
+
+		else if ((key == "OPT_CONSTRAINT_GROUPS"))
+		{
+			opt_constraint_groups.clear();
+			vector<string> tok;
+			tokenize(value, tok, ", ");
+			for (const auto &name : tok)
+			{
+				opt_constraint_groups.push_back(name);
+			}
+		}
+
 		else {
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");
 		}
