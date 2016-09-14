@@ -183,7 +183,7 @@ void sequentialLP::initialize_and_check()
 	
 	//initialize the objective function
 	obj_func_str = opt_scenario.get_pestpp_options().get_opt_obj_func();
-	if (empty(obj_func_str))
+	if (obj_func_str.size() == 0)
 	{
 		*f_rec << " warning: no ++opt_objective_function-->forming a generic objective function (1.0 coef for each decision var" << endl;
 		for (auto &name : ctl_ord_dec_var_names)
