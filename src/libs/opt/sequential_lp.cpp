@@ -59,7 +59,7 @@ void sequentialLP::initial_report()
 	*f_rec << "  ---  sequential linear programming problem information  ---  " << endl;
 	*f_rec << "  -------------------------------------------------------------" << endl << endl;
 	
-	*f_rec << "-->number of iterations of sequential linear programming (noptmax): " << opt_scenario.get_control_info().noptmax << endl;
+	*f_rec << "-->number of iterations of sequential linear programming (noptmax): " << pest_scenario.get_control_info().noptmax << endl;
 	
 	*f_rec << "  ---  decision variables active in SLP  ---  " << endl;
 	for (auto &name : ctl_ord_dec_var_names)
@@ -143,18 +143,18 @@ void sequentialLP::initialize_and_check()
 	//TODO: handle base jco condition
 	separate_scenarios();
 
-	if (opt_scenario.get_control_info().noptmax < 1)
+	if (pest_scenario.get_control_info().noptmax < 1)
 		throw_sequentialLP_error("noptmax must be greater than 0");
 
 	//set decision vars attrib and ordered dec var name vec
 	//and check for illegal parameter transformations
-	decision_vars = opt_scenario.get_ctl_parameters();
+	decision_vars = pest_scenario.get_ctl_parameters();
 	vector<string> problem_trans;
 	for (auto &name : pest_scenario.get_ctl_ordered_par_names())
 	{
 		if (decision_vars.find(name) != decision_vars.end())
 		{
-			if (opt_scenario.get_ctl_parameter_info().get_parameter_rec_ptr(name)->tranform_type != ParameterRec::TRAN_TYPE::NONE)
+			if (pest_scenario.get_ctl_parameter_info().get_parameter_rec_ptr(name)->tranform_type != ParameterRec::TRAN_TYPE::NONE)
 				problem_trans.push_back(name);
 			ctl_ord_dec_var_names.push_back(name);
 		}
@@ -171,7 +171,7 @@ void sequentialLP::initialize_and_check()
 	
 		
 	//set the two constraints attribs and ordered constraint name vec
-	constraints_obs = opt_scenario.get_ctl_observations();
+	constraints_obs = pest_scenario.get_ctl_observations();
 	constraints_sim = Observations(constraints_obs);
 	for (auto &name : pest_scenario.get_ctl_ordered_obs_names())
 	{
@@ -182,7 +182,7 @@ void sequentialLP::initialize_and_check()
 	}
 	
 	//initialize the objective function
-	obj_func_str = opt_scenario.get_pestpp_options().get_opt_obj_func();
+	obj_func_str = pest_scenario.get_pestpp_options().get_opt_obj_func();
 	if (obj_func_str.size() == 0)
 	{
 		*f_rec << " warning: no ++opt_objective_function-->forming a generic objective function (1.0 coef for each decision var" << endl;
@@ -242,8 +242,8 @@ void sequentialLP::initialize_and_check()
 	//set the decision var lower and upper bound arrays
 	dec_var_lb = new double[ctl_ord_dec_var_names.size()];
 	dec_var_ub = new double[ctl_ord_constraint_names.size()];
-	Parameters parlbnd = opt_scenario.get_ctl_parameter_info().get_low_bnd(ctl_ord_dec_var_names);
-	Parameters parubnd = opt_scenario.get_ctl_parameter_info().get_up_bnd(ctl_ord_dec_var_names);
+	Parameters parlbnd = pest_scenario.get_ctl_parameter_info().get_low_bnd(ctl_ord_dec_var_names);
+	Parameters parubnd = pest_scenario.get_ctl_parameter_info().get_up_bnd(ctl_ord_dec_var_names);
 	for (int i = 0; i < ctl_ord_dec_var_names.size(); ++i)
 	{
 		dec_var_lb[i] = parlbnd.get_rec(ctl_ord_dec_var_names[i]);
@@ -254,7 +254,7 @@ void sequentialLP::initialize_and_check()
 	map<string, string> problem_constraints;
 	for (auto &name : ctl_ord_constraint_names)
 	{
-		string group = opt_scenario.get_ctl_observation_info().get_observation_rec_ptr(name)->group;
+		string group = pest_scenario.get_ctl_observation_info().get_observation_rec_ptr(name)->group;
 		if (group == "L")
 		{
 			constraint_sense_map[name] = ConstraintSense::less_than;
@@ -355,7 +355,7 @@ ClpSimplex sequentialLP::solve_lp_problem(Jacobian_1to1 &jco)
 	//instantiate and load the linear simplex model
 	ClpSimplex model;
 	model.loadProblem(matrix, dec_var_lb, dec_var_ub, ctl_ord_obj_func_coefs, constraint_lb, constraint_ub);
-	model.setLogLevel(opt_scenario.get_pestpp_options().get_opt_coin_loglev());
+	model.setLogLevel(pest_scenario.get_pestpp_options().get_opt_coin_loglev());
 
 	*f_rec << "  ---  solving linear program for iteration " << slp_iter << "  ---  " << endl;
 	cout << "  ---  solving linear program for iteration " << slp_iter << "  ---  " << endl;
@@ -491,11 +491,21 @@ void sequentialLP::make_runs(Jacobian_1to1 &jco)
 	ofstream *f_rec = &file_mgr.rec_ofstream();
 	*f_rec << "  ---  calculating response matrix for iteration " << slp_iter << "  ---  " << endl;
 	cout << "  ---  calculating response matrix for iteration " << slp_iter << "  ---  " << endl;
-	ParamTransformSeq par_trans = opt_scenario.get_base_par_tran_seq();
+	ParamTransformSeq par_trans = pest_scenario.get_base_par_tran_seq();
 	set<string> out_of_bounds;
-	jco.build_runs(decision_vars, constraints_sim, opt_scenario.get_ctl_ordered_par_names(), par_trans,
-		opt_scenario.get_base_group_info(), opt_scenario.get_ctl_parameter_info(),
+	/*jco.build_runs(decision_vars, constraints_sim, pest_scenario.get_ctl_ordered_par_names(), par_trans,
+		pest_scenario.get_base_group_info(), pest_scenario.get_ctl_parameter_info(),
+		*run_mgr_ptr, out_of_bounds);*/
+	bool success = jco.build_runs(decision_vars, constraints_sim, ctl_ord_dec_var_names, par_trans,
+		pest_scenario.get_base_group_info(), pest_scenario.get_ctl_parameter_info(),
 		*run_mgr_ptr, out_of_bounds);
+	if (!success)
+	{
+		stringstream ss;
+		for (auto &name : jco.get_failed_parameter_names())
+			ss << name << ',';
+		throw_sequentialLP_error("failed to calc derviatives for the following decision vars: " + ss.str());
+	}
 	jco.make_runs(*run_mgr_ptr);
 
 	//get the base run and update simulated constraint values
@@ -507,7 +517,7 @@ void sequentialLP::make_runs(Jacobian_1to1 &jco)
 	//current_run.update_ctl(temp_pars, temp_obs);
 
 	//process the remaining responses
-	jco.process_runs(par_trans, opt_scenario.get_base_group_info(), *run_mgr_ptr, *null_prior, false);
+	jco.process_runs(par_trans, pest_scenario.get_base_group_info(), *run_mgr_ptr, *null_prior, false);
 	//TODO: deal with failed runs
 
 
@@ -525,7 +535,7 @@ void sequentialLP::separate_scenarios()
 	//if needed separate scenarios, otherwise, just set the opt_scenario to the pest_scenario.
 
 	//this might be using the copy constructor, needs to be fixed
-	opt_scenario = pest_scenario;
+	//opt_scenario = pest_scenario;
 }
 
 void sequentialLP::update(ClpSimplex &model)

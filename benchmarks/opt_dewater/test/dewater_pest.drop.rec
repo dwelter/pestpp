@@ -136,6 +136,15 @@ H09_14              less than           50
 H10_15              less than           50                  
 H13_15              less than           50                  
 H13_16              less than           50                  
+  ---  SLP objective function  ---  
+ decision var name  coefficient         
+Q1                  1                   
+Q2                  1                   
+Q3                  1                   
+Q4                  1                   
+Q5                  1                   
+Q6                  1                   
+Q7                  1                   
 
 
   ---------------------------------
@@ -160,3 +169,11 @@ H09_14              less than 50             -20.3448       -1.79769e+308  -20.3
 H10_15              less than 50             -19.6552       -1.79769e+308  -19.6552       
 H13_15              less than 50             -19.6552       -1.79769e+308  -19.6552       
 H13_16              less than 50             -18.9655       -1.79769e+308  -18.9655       
+  ---  solving linear program for iteration 1  ---  
+
+-->resolving dual in attempt to prove optimal...
+  ---  iteration 1 linear solution is proven optimal  ---  
+
+
+
+  ---  linear program solution complete for iteration 1  ---  
