@@ -523,11 +523,8 @@ ClpSimplex sequentialLP::solve_lp_problem(Jacobian_1to1 &jco)
 		else
 			*f_rec << "  warning: iteration " << slp_iter << " linear solution is not proven optimal...continuing" << endl << endl;
 	}
-
 	*f_rec << endl << endl << "  ---  linear program solution complete for iteration " << slp_iter << "  ---  " << endl;
 	cout << endl << endl << "  ---  linear program solution complete for iteration " << slp_iter << "  ---  " << endl;
-
-	//cout << "objective function: " << model.getObjValue() << endl;
 
 	//return the model for updating and reporting purposes
 	return model;
@@ -576,12 +573,11 @@ CoinPackedMatrix sequentialLP::jacobian_to_coinpackedmatrix(Jacobian_1to1 &jco)
 
 void sequentialLP::solve()
 {
-	//TODO: handle restart condition
-	//TODO: handle base jco condition
+	ofstream* f_rec = &file_mgr.rec_ofstream();
 	Jacobian_1to1 jco(file_mgr);
 	jco.set_base_numeric_pars(all_pars_and_dec_vars);
 	jco.set_base_sim_obs(constraints_sim);
-	ofstream* f_rec = &file_mgr.rec_ofstream();
+
 	slp_iter = 1;
 	while (true)
 	{
@@ -667,43 +663,85 @@ void sequentialLP::make_response_matrix_runs(Jacobian_1to1 &jco)
 	*f_rec << "  ---  calculating response matrix for iteration " << slp_iter << "  ---  " << endl;
 	cout << "  ---  calculating response matrix for iteration " << slp_iter << "  ---  " << endl;
 	
-	set<string> out_of_bounds;
-	bool success = jco.build_runs(all_pars_and_dec_vars, constraints_sim, ctl_ord_dec_var_names, par_trans,
-		pest_scenario.get_base_group_info(), pest_scenario.get_ctl_parameter_info(),
-		*run_mgr_ptr, out_of_bounds);
-	if (!success)
+
+	//read an existing jacobain
+	string basejac_filename = pest_scenario.get_pestpp_options().get_basejac_filename();
+	if ((slp_iter == 1) && (basejac_filename.size() > 0))
 	{
-		const set<string> failed = jco.get_failed_parameter_names();
-		throw_sequentialLP_error("failed to calc derviatives for the following decision vars: ",failed);
-	}
-	jco.make_runs(*run_mgr_ptr);
+		jco.read(basejac_filename);
+		//check to make sure decision vars and constraints are found
+		vector<string> names = jco.get_base_numeric_par_names();
+		vector<string>::iterator start = names.begin();
+		vector<string>::iterator end = names.end();
+		vector<string> missing;
+		for (auto &name : ctl_ord_dec_var_names)
+			if (find(start, end, name) == end)
+				missing.push_back(name);
+		if (missing.size() > 0)
+			throw_sequentialLP_error("the following decision vars were not found in the jacobian " + basejac_filename + " : ", missing);
+
+		names.clear();
+		names = jco.get_sim_obs_names();
+		start = names.begin();
+		end = names.end();
+		for (auto &name : ctl_ord_constraint_names)
+			if (find(start, end, name) == end)
+				missing.push_back(name);
+		if (missing.size() > 0)
+			throw_sequentialLP_error("the following constraints were not found in the jacobian " + basejac_filename + " : ", missing);
 	
-
-	//check for failed runs
-	//TODO: something better than just dying
-	set<int> failed = run_mgr_ptr->get_failed_run_ids();
-	if (failed.size() > 0)
-		throw_sequentialLP_error("failed runs when filling decision var response matrix...cannot continue ");
-
-
-	//get the base run and update simulated constraint values
-	if (slp_iter == 1)
-	{
-		Parameters temp_pars;
-		Observations temp_obs;
-		run_mgr_ptr->get_run(0, temp_pars, constraints_sim, false);
+		//make the intial base run
+		cout << "  ---  running the model once with initial decision variables  ---  " << endl;
+		int run_id = run_mgr_ptr->add_run(par_trans.ctl2model_cp(all_pars_and_dec_vars));
+		run_mgr_ptr->run();
+		Parameters pars;
+		bool success = run_mgr_ptr->get_run(run_id, pars, constraints_sim);
+		if (!success)
+			throw_sequentialLP_error("initial (base) run with initial decision vars failed...cannot continue");
+		return;
 	}
+
+	else
+	{
+
+		set<string> out_of_bounds;
+		bool success = jco.build_runs(all_pars_and_dec_vars, constraints_sim, ctl_ord_dec_var_names, par_trans,
+			pest_scenario.get_base_group_info(), pest_scenario.get_ctl_parameter_info(),
+			*run_mgr_ptr, out_of_bounds);
+		if (!success)
+		{
+			const set<string> failed = jco.get_failed_parameter_names();
+			throw_sequentialLP_error("failed to calc derviatives for the following decision vars: ", failed);
+		}
+
+		jco.make_runs(*run_mgr_ptr);
+
+		//check for failed runs
+		//TODO: something better than just dying
+		set<int> failed = run_mgr_ptr->get_failed_run_ids();
+		if (failed.size() > 0)
+			throw_sequentialLP_error("failed runs when filling decision var response matrix...cannot continue ");
+
+
+		//get the base run and update simulated constraint values
+		if (slp_iter == 1)
+		{
+			Parameters temp_pars;
+			Observations temp_obs;
+			run_mgr_ptr->get_run(0, temp_pars, constraints_sim, false);
+		}
 		//par_trans.model2ctl_ip(temp_pars);
-	
-	//process the remaining responses
-	jco.process_runs(par_trans, pest_scenario.get_base_group_info(), *run_mgr_ptr, *null_prior, false);
-	//TODO: deal with failed runs
 
-	stringstream ss;
-	ss << slp_iter << ".jcb";
-	string rspmat_file = file_mgr.build_filename(ss.str());
-	*f_rec << endl << "saving iteration " << slp_iter << " reponse matrix to file: " << rspmat_file << endl;
-	jco.save(ss.str());
+		//process the remaining responses
+		jco.process_runs(par_trans, pest_scenario.get_base_group_info(), *run_mgr_ptr, *null_prior, false);
+		//TODO: deal with failed runs
+
+		stringstream ss;
+		ss << slp_iter << ".jcb";
+		string rspmat_file = file_mgr.build_filename(ss.str());
+		*f_rec << endl << "saving iteration " << slp_iter << " reponse matrix to file: " << rspmat_file << endl;
+		jco.save(ss.str());
+	}
 
 	return;
 }
