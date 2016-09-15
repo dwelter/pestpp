@@ -1,0 +1,49 @@
+pcf
+* control data
+             restart          estimation
+         7        10         2         0         2         0
+         1         1              single               point         1         0         0            noobsref
+   2.000000E+01  -3.000000E+00   3.000000E-01   1.000000E-02        -7       999          lamforgive        noderforgive
+   1.000000E+01   1.000000E+01   1.000000E-03         0         0
+   1.000000E-01         1   1.100000E+00               noaui          nosenreuse        noboundscale
+        10   1.000000E-02         3         3   1.000000E-02         3   0.000000E+00         1  -1.000000E+00
+         0         0         0         0             jcosave          verboserec          jcosaveitn          reisaveitn          parsaveitn        noparsaverun
+* singular value decomposition
+1
+7    1.000000E-06
+1 1 1
+* parameter groups
+pargp                   absolute              -1.0000000000E+04      0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller
+pargp1                   absolute              -1.0000000000E+04      0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller
+* parameter data
+q1                     none                   factor                0.0000000000E+00      0.0000000000E+00      2.0000000000E+04       pargp1                 -1.0000000000E+00     0.0000000000E+00      1          
+q2                     none                   factor                0.0000000000E+00      0.0000000000E+00      2.0000000000E+04       pargp1                 -1.0000000000E+00     0.0000000000E+00      1          
+q3                     none                   factor                0.0000000000E+00      0.0000000000E+00      2.0000000000E+04       pargp1                 -1.0000000000E+00     0.0000000000E+00      1          
+q4                     none                   factor                0.0000000000E+00      0.0000000000E+00      2.0000000000E+04       pargp1                 -1.0000000000E+00     0.0000000000E+00      1          
+q5                     none                   factor                0.0000000000E+00      0.0000000000E+00      2.0000000000E+04       pargp1                 -1.0000000000E+00     0.0000000000E+00      1          
+q6                     none                   factor                0.0000000000E+00      0.0000000000E+00      2.0000000000E+04       pargp                 -1.0000000000E+00     0.0000000000E+00      1          
+q7                     none                   factor                0.0000000000E+00      0.0000000000E+00      2.0000000000E+04       pargp                 -1.0000000000E+00     0.0000000000E+00      1
+* observation groups
+l                  
+equal_to
+* observation data
+h05_12                5.0000000000E+01      1.0000000000E+00       l                   
+h05_14                5.0000000000E+01      1.0000000000E+00       l                    
+h05_16                5.0000000000E+01      1.0000000000E+00       l                    
+h07_12                5.0000000000E+01      1.0000000000E+00       l                    
+h07_16                5.0000000000E+01      1.0000000000E+00       l                    
+h09_12                5.0000000000E+01      1.0000000000E+00       l                    
+h09_14                5.0000000000E+01      1.0000000000E+00       l                    
+h10_15                5.0000000000E+01      1.0000000000E+00       l                    
+h13_15                5.0000000000E+01      1.0000000000E+00       l                    
+h13_16                5.0000000000E+01      1.0000000000E+00       l
+* model command line
+mf2005 dewater_pest.nam
+* model input/output
+dewater_pest.wel.tpl dewater_pest.wel
+dewater_pest.hds.drop.ins dewater_pest.hds
+++#base_jacobian(dewater_pest.bak.jcb)
+++opt_obj_func(dewater_pest.listed.objfunc)
+++opt_coin_loglev(4)
+++opt_dec_var_groups(pargp1,pargp)
+++opt_constraint_groups(l,equal_to)

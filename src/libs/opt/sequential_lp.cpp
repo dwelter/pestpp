@@ -14,9 +14,9 @@
 #include "utilities.h"
 
 sequentialLP::sequentialLP(Pest &_pest_scenario, RunManagerAbstract* _run_mgr_ptr,
-	TerminationController* _termination_ctl_ptr, Covariance &_parcov, FileManager &_file_mgr, 
+	Covariance &_parcov, FileManager &_file_mgr, 
 	OutputFileWriter* _out_wtr_ptr) : pest_scenario(_pest_scenario), run_mgr_ptr(_run_mgr_ptr),
-	termination_ctl_ptr(_termination_ctl_ptr), parcov(_parcov), file_mgr(_file_mgr), out_wtr_ptr(_out_wtr_ptr)
+	parcov(_parcov), file_mgr(_file_mgr), out_wtr_ptr(_out_wtr_ptr)
 {
 	initialize_and_check();
 }
@@ -170,15 +170,16 @@ void sequentialLP::postsolve_constraint_report(Observations &upgrade_obs)
 }
 
 
-void sequentialLP::postsolve_decision_var_report(Parameters &upgrade_pars)
+pair<double,double> sequentialLP::postsolve_decision_var_report(Parameters &upgrade_pars)
 {
 	ofstream *f_rec = &file_mgr.rec_ofstream();
 
 	*f_rec << endl << endl << "     decision variable information at end of SLP iteration " << slp_iter << endl << endl;
-	*f_rec << setw(20) << left << "name" << right << setw(15) << "current" << setw(15) << "new";
+	*f_rec << setw(20) << left << "name" << right << setw(15) << "current" << setw(15)  << "new";
 	*f_rec << setw(15) << "objfunc coef" << setw(15) << "cur contrib" << setw(15) << "new contrib" << endl;
 	string name;
-	double obj_coef, cur_val, new_val;
+	double obj_coef, cur_val, new_val, upgrade;
+	double cur_obj=0.0, new_obj=0.0;
 	for (int i = 0; i < ctl_ord_dec_var_names.size(); ++i)
 	{
 		name = ctl_ord_dec_var_names[i];
@@ -191,9 +192,14 @@ void sequentialLP::postsolve_decision_var_report(Parameters &upgrade_pars)
 		*f_rec << setw(15) << obj_coef;
 		*f_rec << setw(15) << cur_val * obj_coef;
 		*f_rec << setw(15) << new_val * obj_coef << endl;
+		cur_obj += cur_val * obj_coef;
+		new_obj += new_val * obj_coef;
 
 	}
-	return;
+
+
+
+	return pair<double,double>(cur_obj,new_obj);
 }
 
 void sequentialLP::initialize_and_check()
@@ -602,49 +608,51 @@ void sequentialLP::process_model(ClpSimplex &model)
 {
 	
 	ofstream *f_rec = &file_mgr.rec_ofstream();
-	
-	//extract decision var vals
-
-	//extract current constraint values
-	//including which are binding
-	/*const double * constraint_vals = model.getReducedCost();
-	Observations preupgrade_constraints;
-	for (int i = 0; i < ctl_ord_constraint_names.size(); ++i)
-	{
-		preupgrade_constraints.insert(ctl_ord_constraint_names[i], constraint_vals[i]);
-	}*/
 
 	//extract (optimal) decision vars
 	const double *dec_var_vals = model.getColSolution();
 	Parameters upgrade_pars(all_pars_and_dec_vars);
+	double val;
 	for (int i = 0; i < ctl_ord_dec_var_names.size(); ++i)
 	{
-		upgrade_pars.update_rec(ctl_ord_dec_var_names[i], dec_var_vals[i]);
+		val = all_pars_and_dec_vars[ctl_ord_dec_var_names[i]];
+		upgrade_pars.update_rec(ctl_ord_dec_var_names[i], val + dec_var_vals[i]);
 	}
+	//run the model with optimal decision var values
 	Observations upgrade_obs;
 	bool success = make_upgrade_run(upgrade_pars,upgrade_obs);
 
 	*f_rec << "  ---  processing results for iteration " << slp_iter << " LP solution  ---  " << endl << endl;
 	double obj_val = model.getObjValue();
-	*f_rec << "  iteration " << slp_iter << " objective function value: " << setw(15) << obj_val << endl << endl;
-	cout << "  iteration " << slp_iter << " objective function value: " << setw(15) << obj_val << endl << endl;
 	
-	postsolve_decision_var_report(upgrade_pars);
+	pair<double,double> cur_new_obj = postsolve_decision_var_report(upgrade_pars);
 	postsolve_constraint_report(upgrade_obs);
 
-	//TODO: check for convergence
+	
+	*f_rec << endl << endl <<  "  ---  iteration " << slp_iter << " objective function value: " << setw(15) << cur_new_obj.second << "  ---  " << endl << endl;
+	cout << endl << endl << "  ---  iteration " << slp_iter << " objective function value: " << setw(15) << cur_new_obj.second << "  ---  " << endl << endl;
 
-	for (auto &name : ctl_ord_dec_var_names)
-		all_pars_and_dec_vars.update_rec(name, upgrade_pars[name]);
+	//track the objective function values
+	if (slp_iter == 1)
+		iter_obj_values.push_back(cur_new_obj.first);
+	iter_obj_values.push_back(cur_new_obj.second);
 
-	//for (auto &name : ctl_ord_constraint_names)
-	//	constraints_sim.update_rec(name, upgrade_obs[name]);
+
+	//TODO: check for convergence here
+	
+
+	//if continuing, update the master decision var instance
+	all_pars_and_dec_vars.update_without_clear(ctl_ord_dec_var_names, upgrade_pars.get_data_vec(ctl_ord_dec_var_names));
+	
+	constraints_sim.update(ctl_ord_constraint_names,upgrade_obs.get_data_vec(ctl_ord_constraint_names));
 
 	return;
 }
 
 bool sequentialLP::make_upgrade_run(Parameters &upgrade_pars, Observations &upgrade_obs)
 {
+	
+	cout << "  ---  running the model once with optimal decision variables  ---  " << endl;
 	int run_id = run_mgr_ptr->add_run(par_trans.ctl2model_cp(upgrade_pars));
 	run_mgr_ptr->run();
 	bool success = run_mgr_ptr->get_run(run_id, upgrade_pars, upgrade_obs);
@@ -669,17 +677,24 @@ void sequentialLP::make_response_matrix_runs(Jacobian_1to1 &jco)
 		throw_sequentialLP_error("failed to calc derviatives for the following decision vars: ",failed);
 	}
 	jco.make_runs(*run_mgr_ptr);
+	
 
-	//TODO: check for failed runs
+	//check for failed runs
+	//TODO: something better than just dying
+	set<int> failed = run_mgr_ptr->get_failed_run_ids();
+	if (failed.size() > 0)
+		throw_sequentialLP_error("failed runs when filling decision var response matrix...cannot continue ");
+
 
 	//get the base run and update simulated constraint values
-	Parameters temp_pars;
-	Observations temp_obs;
-	//run_mgr_ptr->get_run(0, temp_pars, temp_obs,false);
-	run_mgr_ptr->get_run(0, temp_pars, constraints_sim, false);
-	par_trans.model2ctl_ip(temp_pars);
-	//current_run.update_ctl(temp_pars, temp_obs);
-
+	if (slp_iter == 1)
+	{
+		Parameters temp_pars;
+		Observations temp_obs;
+		run_mgr_ptr->get_run(0, temp_pars, constraints_sim, false);
+	}
+		//par_trans.model2ctl_ip(temp_pars);
+	
 	//process the remaining responses
 	jco.process_runs(par_trans, pest_scenario.get_base_group_info(), *run_mgr_ptr, *null_prior, false);
 	//TODO: deal with failed runs
