@@ -161,6 +161,11 @@ void sequentialLP::initialize_and_check()
 	if (pest_scenario.get_control_info().noptmax < 1)
 		throw_sequentialLP_error("noptmax must be greater than 0");
 
+
+
+	//------------------------
+	//  ---  constraints  --- 
+	//------------------------
 	//set the two constraints attribs and ordered constraint name vec
 	vector<string> constraint_groups = pest_scenario.get_pestpp_options().get_opt_constraint_groups();
 	ctl_ord_constraint_names.clear();
@@ -200,6 +205,46 @@ void sequentialLP::initialize_and_check()
 	constraints_obs = pest_scenario.get_ctl_observations().get_subset(ctl_ord_constraint_names.begin(), ctl_ord_constraint_names.end());
 	constraints_sim = Observations(constraints_obs);
 
+	//build map of constraint sense
+	//map<string, string> problem_constraints;
+	vector<string> problem_constraints;
+	for (auto &name : ctl_ord_constraint_names)
+	{
+		string group = pest_scenario.get_ctl_observation_info().get_observation_rec_ptr(name)->group;
+		if ((group == "L") || (group == "LESS_THAN"))
+		{
+			constraint_sense_map[name] = ConstraintSense::less_than;
+			constraint_sense_name[name] = "less than";
+		}
+		else if ((group == "G") || (group == "GREATER_THAN"))
+		{
+			constraint_sense_map[name] = ConstraintSense::greater_than;
+			constraint_sense_name[name] = "greater than";
+		}
+		else if ((group == "E") || (group == "N") || (group == "EQUAL_TO"))
+		{
+			constraint_sense_map[name] = ConstraintSense::equal_to;
+			constraint_sense_name[name] = "equal to";
+		}
+
+		else
+			//problem_constraints[name] = group;
+			problem_constraints.push_back(name + ',' + group);
+	}
+	if (problem_constraints.size() > 0)
+	{
+		throw_sequentialLP_error("the following constraints do not have the correct group names {'l','g','e'}: ", problem_constraints);
+	}
+
+	//allocate the constraint bound arrays 
+	constraint_lb = new double[ctl_ord_constraint_names.size()];
+	constraint_ub = new double[ctl_ord_constraint_names.size()];
+
+
+
+	//-----------------------------
+	//  ---  decision vars  ---  
+	//-----------------------------
 
 	//set decision vars attrib and ordered dec var name vec
 	//and check for illegal parameter transformations
@@ -246,7 +291,22 @@ void sequentialLP::initialize_and_check()
 	if (problem_trans.size() > 0)
 		throw_sequentialLP_error("the following decision variables don't have 'none' type parameter transformation: ", problem_trans);
 	
+	//set the decision var lower and upper bound arrays
+	dec_var_lb = new double[ctl_ord_dec_var_names.size()];
+	dec_var_ub = new double[ctl_ord_constraint_names.size()];
+	Parameters parlbnd = pest_scenario.get_ctl_parameter_info().get_low_bnd(ctl_ord_dec_var_names);
+	Parameters parubnd = pest_scenario.get_ctl_parameter_info().get_up_bnd(ctl_ord_dec_var_names);
+	for (int i = 0; i < ctl_ord_dec_var_names.size(); ++i)
+	{
+		dec_var_lb[i] = parlbnd.get_rec(ctl_ord_dec_var_names[i]);
+		dec_var_ub[i] = parubnd.get_rec(ctl_ord_dec_var_names[i]);
+	}
 
+
+
+	//--------------------------------
+	//  ---  objective function  ---  
+	//--------------------------------
 
 	//initialize the objective function
 	obj_func_str = pest_scenario.get_pestpp_options().get_opt_obj_func();
@@ -288,64 +348,8 @@ void sequentialLP::initialize_and_check()
 	if (missing_vars.size() > 0)
 		throw_sequentialLP_error("the following objective function components are not decision variables: ", missing_vars);
 
-	//this is nasty...setup objective function components as obseravtions and obs info
-	//initialize_obj_function_components();
-	//obj_func = ObjectiveFunc(&obj_func_obs, &obj_func_info,
-	//	       null_prior);
 	
-	//initialize the current and optimum model run instances
-	//optimum_run = ModelRun(&obj_func,constraints_sim);
-	//optimum_run.set_ctl_parameters(decision_vars);
-	//current_run = ModelRun(&obj_func, constraints_sim);
-	//current_run.set_ctl_parameters(decision_vars);
-
-
-	//set the decision var lower and upper bound arrays
-	dec_var_lb = new double[ctl_ord_dec_var_names.size()];
-	dec_var_ub = new double[ctl_ord_constraint_names.size()];
-	Parameters parlbnd = pest_scenario.get_ctl_parameter_info().get_low_bnd(ctl_ord_dec_var_names);
-	Parameters parubnd = pest_scenario.get_ctl_parameter_info().get_up_bnd(ctl_ord_dec_var_names);
-	for (int i = 0; i < ctl_ord_dec_var_names.size(); ++i)
-	{
-		dec_var_lb[i] = parlbnd.get_rec(ctl_ord_dec_var_names[i]);
-		dec_var_ub[i] = parubnd.get_rec(ctl_ord_dec_var_names[i]);
-	}
-
-	//build map of constraint sense
-	//map<string, string> problem_constraints;
-	vector<string> problem_constraints;
-	for (auto &name : ctl_ord_constraint_names)
-	{
-		string group = pest_scenario.get_ctl_observation_info().get_observation_rec_ptr(name)->group;
-		if ((group == "L") || (group == "LESS_THAN"))
-		{
-			constraint_sense_map[name] = ConstraintSense::less_than;
-			constraint_sense_name[name] = "less than";
-		}
-		else if ((group == "G") || (group == "GREATER_THAN"))
-		{
-			constraint_sense_map[name] = ConstraintSense::greater_than;
-			constraint_sense_name[name] = "greater than";
-		}
-		else if ((group == "E") || (group == "N") || (group == "EQUAL_TO"))
-		{
-			constraint_sense_map[name] = ConstraintSense::equal_to;
-			constraint_sense_name[name] = "equal to";
-		}
-
-		else
-			//problem_constraints[name] = group;
-			problem_constraints.push_back(name + ',' + group);
-	}
-	if (problem_constraints.size() > 0)
-	{
-		throw_sequentialLP_error("the following constraints do not have the correct group names {'l','g','e'}: ",problem_constraints);
-	}
 	
-	//allocate the constraint bound arrays 
-	constraint_lb = new double[ctl_ord_constraint_names.size()];
-	constraint_ub = new double[ctl_ord_constraint_names.size()];
-
 	initial_report();
 	return;
 }
@@ -533,15 +537,28 @@ void sequentialLP::solve()
 		cout << endl << endl << "  ----------------------------------" << endl;
 		cout << "  --- starting LP iteration " << slp_iter << "  ---  " << endl;
 		cout << "  ---------------------------------" << endl << endl << endl;
-		make_runs(jco);
+		make_response_matrix_runs(jco);
 		ClpSimplex model = solve_lp_problem(jco);
-		update(model);
+		process_model(model);
+		update_and_report_decision_vars(model);
+		make_upgrade_run();
+		update_and_report_constraints(model);
 		slp_iter++;
 	}
 }
 
 
-void sequentialLP::make_runs(Jacobian_1to1 &jco)
+void sequentialLP::process_model(ClpSimplex &model)
+{
+	return;
+}
+
+void sequentialLP::make_upgrade_run()
+{
+	return;
+}
+
+void sequentialLP::make_response_matrix_runs(Jacobian_1to1 &jco)
 {
 	ofstream *f_rec = &file_mgr.rec_ofstream();
 	*f_rec << "  ---  calculating response matrix for iteration " << slp_iter << "  ---  " << endl;
@@ -602,17 +619,16 @@ void sequentialLP::separate_scenarios()
 void sequentialLP::update(ClpSimplex &model)
 {
 	//TODO: run optimal solution
-	update_decision_vars(model);
-	update_constraints(model);
+	
 	return;
 }
 
-void sequentialLP::update_decision_vars(ClpSimplex &model)
+void sequentialLP::update_and_report_decision_vars(ClpSimplex &model)
 {
 	return;
 }
 
-void sequentialLP::update_constraints(ClpSimplex &model)
+void sequentialLP::update_and_report_constraints(ClpSimplex &model)
 {
 	return;
 }

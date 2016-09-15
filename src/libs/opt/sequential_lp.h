@@ -44,7 +44,7 @@ private:
 	//ModelRun current_run;
 	//ModelRun optimum_run;
 	ObjectiveFunc obj_func;
-	//Parameters decision_vars;
+	Parameters all_pars_and_dec_vars;
 	Observations constraints_obs;
 	Observations constraints_sim;
 	Pest pest_scenario;
@@ -63,10 +63,12 @@ private:
 	void constraint_report();
 	void decision_var_report();
 	void update(ClpSimplex &model);
-	void update_decision_vars(ClpSimplex &model);
-	void update_constraints(ClpSimplex &model);
+	void update_and_report_decision_vars(ClpSimplex &model);
+	void update_and_report_constraints(ClpSimplex &model);
 	void separate_scenarios();
-	void make_runs(Jacobian_1to1 &jco);
+	void make_response_matrix_runs(Jacobian_1to1 &jco);
+	void make_upgrade_run();
+	void process_model(ClpSimplex &model);
 	CoinPackedMatrix jacobian_to_coinpackedmatrix(Jacobian_1to1 &jco);
 	void build_constraint_bound_arrays();
 	void throw_sequentialLP_error(string message);
