@@ -61,14 +61,15 @@ private:
 	void initialize_dec_vars();
 	void initialize_constraints();
 	void initial_report();
-	void constraint_report();
-	void decision_var_report();
+	void presolve_constraint_report();
+	void postsolve_decision_var_report(Parameters &upgrade_pars);
+	void postsolve_constraint_report(Observations &upgrade_obs);
 	void update(ClpSimplex &model);
 	void update_and_report_decision_vars(ClpSimplex &model);
 	void update_and_report_constraints(ClpSimplex &model);
 	void separate_scenarios();
 	void make_response_matrix_runs(Jacobian_1to1 &jco);
-	void make_upgrade_run();
+	bool make_upgrade_run(Parameters &upgrade_pars, Observations &upgrade_obs);
 	void process_model(ClpSimplex &model);
 	CoinPackedMatrix jacobian_to_coinpackedmatrix(Jacobian_1to1 &jco);
 	void build_constraint_bound_arrays();
@@ -76,6 +77,7 @@ private:
 	void throw_sequentialLP_error(string message,const vector<string> &messages);
 	void throw_sequentialLP_error(string message, const set<string> &messages);
 	vector<double> get_constraint_residual_vec();
+	vector<double> get_constraint_residual_vec(Observations &sim_vals);
 	void build_obj_func_coef_array();
 
 };
