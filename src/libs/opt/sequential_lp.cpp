@@ -94,13 +94,28 @@ void sequentialLP::initial_report()
 	*f_rec << "  ---  SLP objective function  ---  " << endl;
 	*f_rec << setw(20) << " decision var name" << setw(20) << "coefficient" << endl;
 	map<string, double>::iterator end = obj_func_coef_map.end();
+	vector<string> missing;
 	for (auto &name : ctl_ord_dec_var_names)
 	{
 		*f_rec << setw(20) << left << name;
 		if (obj_func_coef_map.find(name) != end)
 			*f_rec << setw(20) << obj_func_coef_map.at(name) << endl;
 		else
+		{
 			*f_rec << setw(20) << "not listed" << endl;
+			missing.push_back(name);
+		}
+	}
+	if (missing.size() > 0)
+	{
+		*f_rec << endl << endl << "WARNING: the following decision variables have '0.0' objective function coef:" << endl;
+		cout << endl << endl << "WARNING: the following decision variables have '0.0' objective function coef:" << endl;
+
+		for (auto &name : missing)
+		{
+			*f_rec << "    " << name << endl;
+			*f_rec << "    " << name << endl;
+		}
 	}
 	return;
 }
@@ -246,7 +261,9 @@ void sequentialLP::initialize_and_check()
 	//  ---  decision vars  ---  
 	//-----------------------------
 
-	//set decision vars attrib and ordered dec var name vec
+	all_pars_and_dec_vars = pest_scenario.get_ctl_parameters();
+	par_trans = pest_scenario.get_base_par_tran_seq();
+	//set ordered dec var name vec
 	//and check for illegal parameter transformations
 	vector<string> dec_var_groups = pest_scenario.get_pestpp_options().get_opt_dec_var_groups();
 	ctl_ord_dec_var_names.clear();
@@ -419,7 +436,6 @@ ClpSimplex sequentialLP::solve_lp_problem(Jacobian_1to1 &jco)
 	ClpSimplex model;
 	model.loadProblem(matrix, dec_var_lb, dec_var_ub, ctl_ord_obj_func_coefs, constraint_lb, constraint_ub);
 	model.setLogLevel(pest_scenario.get_pestpp_options().get_opt_coin_loglev());
-
 	*f_rec << "  ---  solving linear program for iteration " << slp_iter << "  ---  " << endl;
 	cout << "  ---  solving linear program for iteration " << slp_iter << "  ---  " << endl;
 	
@@ -441,7 +457,6 @@ ClpSimplex sequentialLP::solve_lp_problem(Jacobian_1to1 &jco)
 
 	//check the solution
 	model.checkSolution();
-
 	if (model.isProvenOptimal())
 	{
 		*f_rec << " iteration " << slp_iter << " linear solution is proven optimal" << endl << endl;
@@ -476,6 +491,8 @@ ClpSimplex sequentialLP::solve_lp_problem(Jacobian_1to1 &jco)
 	*f_rec << endl << endl << "  ---  linear program solution complete for iteration " << slp_iter << "  ---  " << endl;
 	cout << endl << endl << "  ---  linear program solution complete for iteration " << slp_iter << "  ---  " << endl;
 
+	//cout << "objective function: " << model.getObjValue() << endl;
+
 	//return the model for updating and reporting purposes
 	return model;
 }
@@ -488,6 +505,7 @@ CoinPackedMatrix sequentialLP::jacobian_to_coinpackedmatrix(Jacobian_1to1 &jco)
 	file_mgr.rec_ofstream() << "number of nonzero elements in response matrix: " << eig_ord_jco.nonZeros() << " of " << eig_ord_jco.size() << endl;
 	cout << "number of nonzero elements in response matrix: " << eig_ord_jco.nonZeros() << " of " << eig_ord_jco.size() << endl;
 
+	//cout << eig_ord_jco << endl;
 
 	//the triplet elements to pass to the coinpackedmatrix constructor
 	int * row_idx = new int[eig_ord_jco.nonZeros()];
@@ -525,7 +543,7 @@ void sequentialLP::solve()
 	//TODO: handle restart condition
 	//TODO: handle base jco condition
 	Jacobian_1to1 jco(file_mgr);
-	jco.set_base_numeric_pars(pest_scenario.get_ctl_parameters());
+	jco.set_base_numeric_pars(all_pars_and_dec_vars);
 	jco.set_base_sim_obs(constraints_sim);
 	ofstream* f_rec = &file_mgr.rec_ofstream();
 	slp_iter = 1;
@@ -550,6 +568,25 @@ void sequentialLP::solve()
 
 void sequentialLP::process_model(ClpSimplex &model)
 {
+	//TODO: check for convergence
+	ofstream *f_rec = &file_mgr.rec_ofstream();
+	
+	//extract decision var vals
+
+	//extract current constraint values
+	//including which are binding
+	const double *dec_var_vals = model.getColSolution();
+	for (int i = 0; i < ctl_ord_dec_var_names.size(); ++i)
+	{
+		all_pars_and_dec_vars.update_rec(ctl_ord_dec_var_names[i], dec_var_vals[i]);
+	}
+	int run_id = run_mgr_ptr->add_run(par_trans.ctl2model_cp(all_pars_and_dec_vars));
+
+	*f_rec << "  ---  processing results for iteration " << slp_iter << " LP solution  ---  " << endl << endl;
+	double obj_val = model.getObjValue();
+	*f_rec << "  iteration " << slp_iter << " objective function value: " << setw(15) << obj_val << endl;
+	cout << "  iteration " << slp_iter << " objective function value: " << setw(15) << obj_val << endl;
+
 	return;
 }
 
@@ -563,22 +600,13 @@ void sequentialLP::make_response_matrix_runs(Jacobian_1to1 &jco)
 	ofstream *f_rec = &file_mgr.rec_ofstream();
 	*f_rec << "  ---  calculating response matrix for iteration " << slp_iter << "  ---  " << endl;
 	cout << "  ---  calculating response matrix for iteration " << slp_iter << "  ---  " << endl;
-	ParamTransformSeq par_trans = pest_scenario.get_base_par_tran_seq();
+	
 	set<string> out_of_bounds;
-	/*jco.build_runs(decis
-	ion_vars, constraints_sim, pest_scenario.get_ctl_ordered_par_names(), par_trans,
-		pest_scenario.get_base_group_info(), pest_scenario.get_ctl_parameter_info(),
-		*run_mgr_ptr, out_of_bounds);*/
-	Parameters pars = pest_scenario.get_ctl_parameters();
-	bool success = jco.build_runs(pars, constraints_sim, ctl_ord_dec_var_names, par_trans,
+	bool success = jco.build_runs(all_pars_and_dec_vars, constraints_sim, ctl_ord_dec_var_names, par_trans,
 		pest_scenario.get_base_group_info(), pest_scenario.get_ctl_parameter_info(),
 		*run_mgr_ptr, out_of_bounds);
 	if (!success)
 	{
-		/*stringstream ss;
-		for (auto &name : jco.get_failed_parameter_names())
-			ss << name << ',';
-		throw_sequentialLP_error( + ss.str());*/
 		const set<string> failed = jco.get_failed_parameter_names();
 		throw_sequentialLP_error("failed to calc derviatives for the following decision vars: ",failed);
 	}

@@ -45,6 +45,7 @@ private:
 	//ModelRun optimum_run;
 	ObjectiveFunc obj_func;
 	Parameters all_pars_and_dec_vars;
+	ParamTransformSeq par_trans;
 	Observations constraints_obs;
 	Observations constraints_sim;
 	Pest pest_scenario;
