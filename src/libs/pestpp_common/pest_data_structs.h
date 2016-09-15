@@ -274,7 +274,10 @@ public:
 	void set_opt_dec_var_groups(vector<string> _grps) { opt_dec_var_groups = _grps; }
 	vector<string> get_opt_constraint_groups()const { return opt_constraint_groups; }
 	void set_opt_constraint_groups(vector<string> _grps) { opt_constraint_groups = _grps; }
-
+	double get_opt_risk()const { return opt_risk; }
+	void set_opt_risk(double _risk) { opt_risk = _risk; }
+	double get_opt_direction()const { return opt_direction; }
+	void set_opt_direction(double _direction) { opt_direction = _direction; }
 
 private:
 	int n_iter_base;
@@ -317,6 +320,8 @@ private:
 	int opt_coin_loglev;
 	vector<string> opt_dec_var_groups;
 	vector<string> opt_constraint_groups;
+	double opt_risk;
+	double opt_direction;
 
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);

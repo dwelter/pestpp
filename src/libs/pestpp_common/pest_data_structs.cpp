@@ -513,6 +513,22 @@ void PestppOptions::parce_line(const string &line)
 				opt_constraint_groups.push_back(name);
 			}
 		}
+		else if (key == "OPT_RISK")
+		{
+			convert_ip(value, opt_risk);
+		}
+
+		else if (key == "OPT_DIRECTION")
+		{
+			string v;
+			convert_ip(value,v);
+			if (v == "MAX")
+				opt_direction = -1;
+			else if (v == "MIN")
+				opt_direction = 1;
+			else
+				throw runtime_error("++opt_direction arg must be in {MAX,MIN}, not " + v);
+		}
 
 		else {
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");

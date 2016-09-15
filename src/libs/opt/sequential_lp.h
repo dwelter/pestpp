@@ -27,37 +27,39 @@ public:
 
 private:
 	string obj_func_str;
-	map<string, double> obj_func_coef_map;
-	Observations obj_func_obs;
-	ObservationInfo obj_func_info;
-	double* ctl_ord_obj_func_coefs;
+	
 	int slp_iter;
-	vector<double> iter_obj_values;
-	map<string, ConstraintSense> constraint_sense_map;
-	map <string, string> constraint_sense_name;
-	vector<string> ctl_ord_dec_var_names;
-	vector<string> ctl_ord_constraint_names;
+	
 	double* dec_var_lb;
 	double* dec_var_ub;
 	double* constraint_lb;
 	double* constraint_ub;
+	double* ctl_ord_obj_func_coefs;
+	double risk;
+
+	map<string, double> obj_func_coef_map;
+	map<string, ConstraintSense> constraint_sense_map;
+	map <string, string> constraint_sense_name;
+	vector<double> iter_obj_values;
+	vector<string> ctl_ord_dec_var_names;
+	vector<string> ctl_ord_constraint_names;
+	vector<string> nz_obs_names;
+	vector<string> adj_par_names;
+
 	PriorInformation* null_prior = new PriorInformation();
-	//ModelRun current_run;
-	//ModelRun optimum_run;
-	//ObjectiveFunc obj_func;
 	Parameters all_pars_and_dec_vars;
 	ParamTransformSeq par_trans;
 	Observations constraints_obs;
 	Observations constraints_sim;
+	Observations obj_func_obs;
+	ObservationInfo obj_func_info;
 	Pest pest_scenario;
-	//Pest opt_scenario;
 	RunManagerAbstract* run_mgr_ptr;
-	//TerminationController* termination_ctl_ptr;
 	Covariance parcov;
 	FileManager file_mgr;
 	OutputFileWriter* out_wtr_ptr;
+		
 	ClpSimplex solve_lp_problem(Jacobian_1to1 &jco);
-
 	void initialize_obj_function();
 	void initialize_dec_vars();
 	void initialize_constraints();

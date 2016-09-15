@@ -20,6 +20,7 @@ sequentialLP::sequentialLP(Pest &_pest_scenario, RunManagerAbstract* _run_mgr_pt
 {
 	initialize_and_check();
 }
+
 void sequentialLP::throw_sequentialLP_error(string message,const vector<string> &messages)
 {
 	stringstream ss;
@@ -35,7 +36,6 @@ void sequentialLP::throw_sequentialLP_error(string message, const set<string> &m
 		ss << mess + ',';
 	throw_sequentialLP_error(message + ss.str());
 }
-
 
 void sequentialLP::throw_sequentialLP_error(string message)
 {
@@ -81,6 +81,9 @@ void sequentialLP::initial_report()
 	
 	*f_rec << "-->number of iterations of sequential linear programming (noptmax): " << pest_scenario.get_control_info().noptmax << endl;
 	
+	string sense = (pest_scenario.get_pestpp_options().get_opt_direction() == 1) ? "minimize": "maximize";
+	*f_rec << "-->objective function sense (direction): " << sense << endl;
+
 	*f_rec << "  ---  decision variables active in SLP  ---  " << endl;
 	map<string, double>::iterator end = obj_func_coef_map.end();
 	vector<string> missing;
@@ -169,7 +172,6 @@ void sequentialLP::postsolve_constraint_report(Observations &upgrade_obs)
 	return;
 }
 
-
 pair<double,double> sequentialLP::postsolve_decision_var_report(Parameters &upgrade_pars)
 {
 	ofstream *f_rec = &file_mgr.rec_ofstream();
@@ -212,6 +214,12 @@ void sequentialLP::initialize_and_check()
 	if (pest_scenario.get_control_info().noptmax < 1)
 		throw_sequentialLP_error("noptmax must be greater than 0");
 
+	risk = pest_scenario.get_pestpp_options().get_opt_risk();
+	if (risk != 0.5)
+	{
+		if ((risk > 1.0) || (risk < 0.0))
+			throw_sequentialLP_error("++opt_risk parameter must between 0.0 and 1.0");
+	}
 
 
 	//------------------------
@@ -402,6 +410,41 @@ void sequentialLP::initialize_and_check()
 		throw_sequentialLP_error("the following objective function components are not decision variables: ", missing_vars);
 
 	
+	//------------------------------------------
+	//  ---  chance constratints and fosm  ---  
+	//------------------------------------------
+	if (risk != 0.5)
+	{
+		//make sure there is at least one none-decision var adjustable parameter
+		
+		vector<string>::iterator start = ctl_ord_dec_var_names.begin();
+		vector<string>::iterator end = ctl_ord_dec_var_names.end();
+		for (auto &name : pest_scenario.get_ctl_ordered_par_names())
+		{
+			if (find(start, end, name) == end)
+			{
+				ParameterRec::TRAN_TYPE tt = pest_scenario.get_ctl_parameter_info().get_parameter_rec_ptr(name)->tranform_type;
+				if ((tt == ParameterRec::TRAN_TYPE::LOG) || (tt == ParameterRec::TRAN_TYPE::NONE))
+					adj_par_names.push_back(name);
+			}
+		}
+		if (adj_par_names.size() == 0)
+			throw_sequentialLP_error("++opt_risk != 0.5, but no adjustable parameters found in control file");
+		
+		//look for non-zero weighted obs
+		
+		start = ctl_ord_constraint_names.begin();
+		end = ctl_ord_constraint_names.end();
+		for (auto &name : pest_scenario.get_ctl_ordered_obs_names())
+		{
+			if (find(start, end, name) == end)
+			{
+				if (pest_scenario.get_ctl_observation_info().get_observation_rec_ptr(name)->weight > 0.0)
+					nz_obs_names.push_back(name);
+			}
+		}
+
+	}
 	
 	initial_report();
 	return;
@@ -472,6 +515,7 @@ ClpSimplex sequentialLP::solve_lp_problem(Jacobian_1to1 &jco)
 	ClpSimplex model;
 	model.loadProblem(matrix, dec_var_lb, dec_var_ub, ctl_ord_obj_func_coefs, constraint_lb, constraint_ub);
 	model.setLogLevel(pest_scenario.get_pestpp_options().get_opt_coin_loglev());
+	model.setOptimizationDirection(pest_scenario.get_pestpp_options().get_opt_direction());
 	*f_rec << "  ---  solving linear program for iteration " << slp_iter << "  ---  " << endl;
 	cout << "  ---  solving linear program for iteration " << slp_iter << "  ---  " << endl;
 	
@@ -598,7 +642,6 @@ void sequentialLP::solve()
 			break;
 	}
 }
-
 
 void sequentialLP::process_model(ClpSimplex &model)
 {
