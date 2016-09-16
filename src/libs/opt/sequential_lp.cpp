@@ -74,54 +74,54 @@ vector<double> sequentialLP::get_constraint_residual_vec(Observations &sim_vals)
 
 void sequentialLP::initial_report()
 {
-	ofstream* f_rec = &file_mgr.rec_ofstream();
-	*f_rec << endl << "  -------------------------------------------------------------" << endl;
-	*f_rec << "  ---  sequential linear programming problem information  ---  " << endl;
-	*f_rec << "  -------------------------------------------------------------" << endl << endl;
+	ofstream &f_rec = file_mgr.rec_ofstream();
+	f_rec << endl << "  -------------------------------------------------------------" << endl;
+	f_rec << "  ---  sequential linear programming problem information  ---  " << endl;
+	f_rec << "  -------------------------------------------------------------" << endl << endl;
 	
-	*f_rec << "-->number of iterations of sequential linear programming (noptmax): " << pest_scenario.get_control_info().noptmax << endl;
+	f_rec << "-->number of iterations of sequential linear programming (noptmax): " << pest_scenario.get_control_info().noptmax << endl;
 	
 	string sense = (pest_scenario.get_pestpp_options().get_opt_direction() == 1) ? "minimize": "maximize";
-	*f_rec << "-->objective function sense (direction): " << sense << endl;
+	f_rec << "-->objective function sense (direction): " << sense << endl;
 
-	*f_rec << "  ---  decision variables active in SLP  ---  " << endl;
+	f_rec << "  ---  decision variables active in SLP  ---  " << endl;
 	map<string, double>::iterator end = obj_func_coef_map.end();
 	vector<string> missing;
-	*f_rec << setw(20) << left << "name" << setw(25) << "obj func coefficient" << endl;
+	f_rec << setw(20) << left << "name" << setw(25) << "obj func coefficient" << endl;
 
 	for (auto &name : ctl_ord_dec_var_names)
 	{
-		*f_rec << setw(20) << left << name;
+		f_rec << setw(20) << left << name;
 		if (obj_func_coef_map.find(name) != end)
-			*f_rec << setw(25) <<obj_func_coef_map.at(name) << endl;
+			f_rec << setw(25) <<obj_func_coef_map.at(name) << endl;
 		else
 		{
-			*f_rec << setw(25) << "not listed" << endl;
+			f_rec << setw(25) << "not listed" << endl;
 			missing.push_back(name);
 		}	
 	}
 
 	if (missing.size() > 0)
 	{
-		*f_rec << endl << endl << "WARNING: the following decision variables have '0.0' objective function coef:" << endl;
+		f_rec << endl << endl << "WARNING: the following decision variables have '0.0' objective function coef:" << endl;
 		cout << endl << endl << "WARNING: the following decision variables have '0.0' objective function coef:" << endl;
 
 		for (auto &name : missing)
 		{
-			*f_rec << "    " << name << endl;
-			*f_rec << "    " << name << endl;
+			f_rec << "    " << name << endl;
+			f_rec << "    " << name << endl;
 		}
 	}
-	*f_rec << " note: bound and initial value info reported in 'parameter' section" << endl << endl;
+	f_rec << " note: bound and initial value info reported in 'parameter' section" << endl << endl;
 
 
-	*f_rec << "  ---  constraints in SLP  ---  " << endl;
-	*f_rec << setw(20) << "name" << setw(20) << "sense" << setw(20) << "value" << endl;
+	f_rec << "  ---  constraints in SLP  ---  " << endl;
+	f_rec << setw(20) << "name" << setw(20) << "sense" << setw(20) << "value" << endl;
 	for (auto &name : ctl_ord_constraint_names)
 	{
-		*f_rec << setw(20) << left << name;
-		*f_rec << setw(20) << constraint_sense_name[name];
-		*f_rec << setw(20) << constraints_obs.get_rec(name) << endl;
+		f_rec << setw(20) << left << name;
+		f_rec << setw(20) << constraint_sense_name[name];
+		f_rec << setw(20) << constraints_obs.get_rec(name) << endl;
 	}
 
 	return;
@@ -129,21 +129,21 @@ void sequentialLP::initial_report()
 
 void sequentialLP::presolve_constraint_report()
 {
-	ofstream* f_rec = &file_mgr.rec_ofstream();
+	ofstream &f_rec = file_mgr.rec_ofstream();
 	vector<double> residuals = get_constraint_residual_vec();
-	*f_rec << endl << "  constraint information at start of iteration " << slp_iter << endl;
-	*f_rec << setw(20) << left << "name" << right << setw(10) << "sense" << setw(15) << "value";
-	*f_rec << setw(15) << "residual" << setw(15) << "lower bound" << setw(15) << "upper bound" << endl;
+	f_rec << endl << "  constraint information at start of iteration " << slp_iter << endl;
+	f_rec << setw(20) << left << "name" << right << setw(10) << "sense" << setw(15) << "value";
+	f_rec << setw(15) << "residual" << setw(15) << "lower bound" << setw(15) << "upper bound" << endl;
 
 	for (int i=0;i<ctl_ord_constraint_names.size();++i)
 	{
 		string name = ctl_ord_constraint_names[i];
-		*f_rec << setw(20) << left << name;
-		*f_rec << setw(10) << right << constraint_sense_name[name];
-		*f_rec << setw(15) << constraints_obs.get_rec(name);
-		*f_rec << setw(15) << residuals[i];
-		*f_rec << setw(15) << constraint_lb[i];
-		*f_rec << setw(15) << constraint_ub[i] << endl;
+		f_rec << setw(20) << left << name;
+		f_rec << setw(10) << right << constraint_sense_name[name];
+		f_rec << setw(15) << constraints_obs.get_rec(name);
+		f_rec << setw(15) << residuals[i];
+		f_rec << setw(15) << constraint_lb[i];
+		f_rec << setw(15) << constraint_ub[i] << endl;
 
 	}
 	return;
@@ -151,34 +151,34 @@ void sequentialLP::presolve_constraint_report()
 
 void sequentialLP::postsolve_constraint_report(Observations &upgrade_obs)
 {
-	ofstream *f_rec = &file_mgr.rec_ofstream();
-	*f_rec << endl << endl << "     constraint information at end of SLP iteration " << slp_iter << endl << endl;
-	*f_rec << setw(20) << left << "name" << right << setw(10) << "sense" << setw(15) << "required";
-	*f_rec << setw(15) << "current" << setw(15) << "residual";
-	*f_rec << setw(15) << "new" << setw(15) << "residual" << endl;
+	ofstream &f_rec = file_mgr.rec_ofstream();
+	f_rec << endl << endl << "     constraint information at end of SLP iteration " << slp_iter << endl << endl;
+	f_rec << setw(20) << left << "name" << right << setw(10) << "sense" << setw(15) << "required";
+	f_rec << setw(15) << "current" << setw(15) << "residual";
+	f_rec << setw(15) << "new" << setw(15) << "residual" << endl;
 	vector<double> cur_residuals = get_constraint_residual_vec();
 	vector<double> new_residuals = get_constraint_residual_vec(upgrade_obs);
 	for (int i = 0; i<ctl_ord_constraint_names.size(); ++i)
 	{
 		string name = ctl_ord_constraint_names[i];
-		*f_rec << setw(20) << left << name;
-		*f_rec << setw(10) << right << constraint_sense_name[name];
-		*f_rec << setw(15) << constraints_obs.get_rec(name);
-		*f_rec << setw(15) << constraints_sim.get_rec(name);
-		*f_rec << setw(15) << cur_residuals[i];
-		*f_rec << setw(15) << upgrade_obs[name];
-		*f_rec << setw(15) << new_residuals[i] << endl;
+		f_rec << setw(20) << left << name;
+		f_rec << setw(10) << right << constraint_sense_name[name];
+		f_rec << setw(15) << constraints_obs.get_rec(name);
+		f_rec << setw(15) << constraints_sim.get_rec(name);
+		f_rec << setw(15) << cur_residuals[i];
+		f_rec << setw(15) << upgrade_obs[name];
+		f_rec << setw(15) << new_residuals[i] << endl;
 	}
 	return;
 }
 
 pair<double,double> sequentialLP::postsolve_decision_var_report(Parameters &upgrade_pars)
 {
-	ofstream *f_rec = &file_mgr.rec_ofstream();
+	ofstream &f_rec = file_mgr.rec_ofstream();
 
-	*f_rec << endl << endl << "     decision variable information at end of SLP iteration " << slp_iter << endl << endl;
-	*f_rec << setw(20) << left << "name" << right << setw(15) << "current" << setw(15)  << "new";
-	*f_rec << setw(15) << "objfunc coef" << setw(15) << "cur contrib" << setw(15) << "new contrib" << endl;
+	f_rec << endl << endl << "     decision variable information at end of SLP iteration " << slp_iter << endl << endl;
+	f_rec << setw(20) << left << "name" << right << setw(15) << "current" << setw(15)  << "new";
+	f_rec << setw(15) << "objfunc coef" << setw(15) << "cur contrib" << setw(15) << "new contrib" << endl;
 	string name;
 	double obj_coef, cur_val, new_val, upgrade;
 	double cur_obj=0.0, new_obj=0.0;
@@ -188,12 +188,12 @@ pair<double,double> sequentialLP::postsolve_decision_var_report(Parameters &upgr
 		obj_coef = ctl_ord_obj_func_coefs[i];
 		cur_val = all_pars_and_dec_vars[name];
 		new_val = upgrade_pars[name];
-		*f_rec << setw(20) << left << name;
-		*f_rec << setw(15) << right << cur_val;
-		*f_rec << setw(15) << new_val;
-		*f_rec << setw(15) << obj_coef;
-		*f_rec << setw(15) << cur_val * obj_coef;
-		*f_rec << setw(15) << new_val * obj_coef << endl;
+		f_rec << setw(20) << left << name;
+		f_rec << setw(15) << right << cur_val;
+		f_rec << setw(15) << new_val;
+		f_rec << setw(15) << obj_coef;
+		f_rec << setw(15) << cur_val * obj_coef;
+		f_rec << setw(15) << new_val * obj_coef << endl;
 		cur_obj += cur_val * obj_coef;
 		new_obj += new_val * obj_coef;
 
@@ -206,7 +206,7 @@ pair<double,double> sequentialLP::postsolve_decision_var_report(Parameters &upgr
 
 void sequentialLP::initialize_and_check()
 {
-	ofstream *f_rec = &file_mgr.rec_ofstream();
+	ofstream &f_rec = file_mgr.rec_ofstream();
 	//TODO: handle restart condition
 	//TODO: handle base jco condition
 	separate_scenarios();
@@ -373,7 +373,7 @@ void sequentialLP::initialize_and_check()
 	obj_func_str = pest_scenario.get_pestpp_options().get_opt_obj_func();
 	if (obj_func_str.size() == 0)
 	{
-		*f_rec << " warning: no ++opt_objective_function-->forming a generic objective function (1.0 coef for each decision var" << endl;
+		f_rec << " warning: no ++opt_objective_function-->forming a generic objective function (1.0 coef for each decision var" << endl;
 		for (auto &name : ctl_ord_dec_var_names)
 			obj_func_coef_map[name] = 1.0;
 	}
@@ -497,7 +497,7 @@ void sequentialLP::build_obj_func_coef_array()
 ClpSimplex sequentialLP::solve_lp_problem(Jacobian_1to1 &jco)
 {
 	
-	ofstream* f_rec = &file_mgr.rec_ofstream();
+	ofstream &f_rec = file_mgr.rec_ofstream();
 
 	//convert Jacobian_1to1 to CoinPackedMatrix
 	CoinPackedMatrix matrix = jacobian_to_coinpackedmatrix(jco);
@@ -516,7 +516,7 @@ ClpSimplex sequentialLP::solve_lp_problem(Jacobian_1to1 &jco)
 	model.loadProblem(matrix, dec_var_lb, dec_var_ub, ctl_ord_obj_func_coefs, constraint_lb, constraint_ub);
 	model.setLogLevel(pest_scenario.get_pestpp_options().get_opt_coin_loglev());
 	model.setOptimizationDirection(pest_scenario.get_pestpp_options().get_opt_direction());
-	*f_rec << "  ---  solving linear program for iteration " << slp_iter << "  ---  " << endl;
+	f_rec << "  ---  solving linear program for iteration " << slp_iter << "  ---  " << endl;
 	cout << "  ---  solving linear program for iteration " << slp_iter << "  ---  " << endl;
 	
 	//solve the linear program
@@ -527,7 +527,7 @@ ClpSimplex sequentialLP::solve_lp_problem(Jacobian_1to1 &jco)
 	//try the dual
 	if (!presolved_model)
 	{
-		*f_rec << "  ---  primal presolve model infeasible, trying dual..." << endl;
+		f_rec << "  ---  primal presolve model infeasible, trying dual..." << endl;
 		cout << "  ---  primal presolve model infeasible, trying dual..." << endl;
 		presolved_model->dual();
 	}
@@ -539,7 +539,7 @@ ClpSimplex sequentialLP::solve_lp_problem(Jacobian_1to1 &jco)
 	model.checkSolution();
 	if (model.isProvenOptimal())
 	{
-		*f_rec << " iteration " << slp_iter << " linear solution is proven optimal" << endl << endl;
+		f_rec << " iteration " << slp_iter << " linear solution is proven optimal" << endl << endl;
 		cout << " iteration " << slp_iter << " linear solution is proven optimal" << endl << endl;
 	}
 	else if ((model.isProvenPrimalInfeasible()) && (model.isProvenDualInfeasible()))
@@ -549,25 +549,25 @@ ClpSimplex sequentialLP::solve_lp_problem(Jacobian_1to1 &jco)
 	{
 		if (model.primalFeasible())
 		{
-			*f_rec << endl << "-->resolving primal in attempt to prove optimal..." << endl;
+			f_rec << endl << "-->resolving primal in attempt to prove optimal..." << endl;
 			model.primal(1);
 		}
 		else
 		{
-			*f_rec << endl << "-->resolving dual in attempt to prove optimal..." << endl;
+			f_rec << endl << "-->resolving dual in attempt to prove optimal..." << endl;
 			model.dual(1);
 		}
 		//check the solution
 		model.checkSolution();
 		if (model.isProvenOptimal())
 		{
-			*f_rec << "  ---  iteration " << slp_iter << " linear solution is proven optimal  ---  " << endl << endl;
+			f_rec << "  ---  iteration " << slp_iter << " linear solution is proven optimal  ---  " << endl << endl;
 			cout << "  ---  iteration " << slp_iter << " linear solution is proven optimal  ---  " << endl << endl;
 		}
 		else
-			*f_rec << "  warning: iteration " << slp_iter << " linear solution is not proven optimal...continuing" << endl << endl;
+			f_rec << "  warning: iteration " << slp_iter << " linear solution is not proven optimal...continuing" << endl << endl;
 	}
-	*f_rec << endl << endl << "  ---  linear program solution complete for iteration " << slp_iter << "  ---  " << endl;
+	f_rec << endl << endl << "  ---  linear program solution complete for iteration " << slp_iter << "  ---  " << endl;
 	cout << endl << endl << "  ---  linear program solution complete for iteration " << slp_iter << "  ---  " << endl;
 
 	//return the model for updating and reporting purposes
@@ -582,7 +582,7 @@ CoinPackedMatrix sequentialLP::jacobian_to_coinpackedmatrix(Jacobian_1to1 &jco)
 	file_mgr.rec_ofstream() << "number of nonzero elements in response matrix: " << eig_ord_jco.nonZeros() << " of " << eig_ord_jco.size() << endl;
 	cout << "number of nonzero elements in response matrix: " << eig_ord_jco.nonZeros() << " of " << eig_ord_jco.size() << endl;
 
-	cout << eig_ord_jco << endl;
+	//cout << eig_ord_jco << endl;
 
 	//the triplet elements to pass to the coinpackedmatrix constructor
 	int * row_idx = new int[eig_ord_jco.nonZeros()];
@@ -617,7 +617,7 @@ CoinPackedMatrix sequentialLP::jacobian_to_coinpackedmatrix(Jacobian_1to1 &jco)
 
 void sequentialLP::solve()
 {
-	ofstream* f_rec = &file_mgr.rec_ofstream();
+	ofstream &f_rec = file_mgr.rec_ofstream();
 	Jacobian_1to1 jco(file_mgr);
 	jco.set_base_numeric_pars(all_pars_and_dec_vars);
 	jco.set_base_sim_obs(constraints_sim);
@@ -625,9 +625,9 @@ void sequentialLP::solve()
 	slp_iter = 1;
 	while (true)
 	{
-		*f_rec << endl << endl << "  ---------------------------------" << endl;
-		*f_rec <<         "  --- starting LP iteration " << slp_iter << "  ---  " << endl;
-		*f_rec << "  ---------------------------------" << endl << endl << endl;
+		f_rec << endl << endl << "  ---------------------------------" << endl;
+		f_rec <<         "  --- starting LP iteration " << slp_iter << "  ---  " << endl;
+		f_rec << "  ---------------------------------" << endl << endl << endl;
 		cout << endl << endl << "  ----------------------------------" << endl;
 		cout << "  --- starting LP iteration " << slp_iter << "  ---  " << endl;
 		cout << "  ---------------------------------" << endl << endl << endl;
@@ -646,7 +646,7 @@ void sequentialLP::solve()
 void sequentialLP::process_model(ClpSimplex &model)
 {
 	
-	ofstream *f_rec = &file_mgr.rec_ofstream();
+	ofstream &f_rec = file_mgr.rec_ofstream();
 
 	//extract (optimal) decision vars
 	const double *dec_var_vals = model.getColSolution();
@@ -661,14 +661,14 @@ void sequentialLP::process_model(ClpSimplex &model)
 	Observations upgrade_obs;
 	bool success = make_upgrade_run(upgrade_pars,upgrade_obs);
 
-	*f_rec << "  ---  processing results for iteration " << slp_iter << " LP solution  ---  " << endl << endl;
+	f_rec << "  ---  processing results for iteration " << slp_iter << " LP solution  ---  " << endl << endl;
 	double obj_val = model.getObjValue();
 	
 	pair<double,double> cur_new_obj = postsolve_decision_var_report(upgrade_pars);
 	postsolve_constraint_report(upgrade_obs);
 
 	
-	*f_rec << endl << endl <<  "  ---  iteration " << slp_iter << " objective function value: " << setw(15) << cur_new_obj.second << "  ---  " << endl << endl;
+	f_rec << endl << endl <<  "  ---  iteration " << slp_iter << " objective function value: " << setw(15) << cur_new_obj.second << "  ---  " << endl << endl;
 	cout << endl << endl << "  ---  iteration " << slp_iter << " objective function value: " << setw(15) << cur_new_obj.second << "  ---  " << endl << endl;
 
 	//track the objective function values
@@ -702,8 +702,8 @@ bool sequentialLP::make_upgrade_run(Parameters &upgrade_pars, Observations &upgr
 
 void sequentialLP::make_response_matrix_runs(Jacobian_1to1 &jco)
 {
-	ofstream *f_rec = &file_mgr.rec_ofstream();
-	*f_rec << "  ---  calculating response matrix for iteration " << slp_iter << "  ---  " << endl;
+	ofstream &f_rec = file_mgr.rec_ofstream();
+	f_rec << "  ---  calculating response matrix for iteration " << slp_iter << "  ---  " << endl;
 	cout << "  ---  calculating response matrix for iteration " << slp_iter << "  ---  " << endl;
 	
 
@@ -782,7 +782,7 @@ void sequentialLP::make_response_matrix_runs(Jacobian_1to1 &jco)
 		stringstream ss;
 		ss << slp_iter << ".jcb";
 		string rspmat_file = file_mgr.build_filename(ss.str());
-		*f_rec << endl << "saving iteration " << slp_iter << " reponse matrix to file: " << rspmat_file << endl;
+		f_rec << endl << "saving iteration " << slp_iter << " reponse matrix to file: " << rspmat_file << endl;
 		jco.save(ss.str());
 	}
 

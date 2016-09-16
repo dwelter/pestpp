@@ -481,7 +481,7 @@ int main(int argc, char* argv[])
 		fout_rec << "Number of forward model runs performed during optimiztion: " << run_manager_ptr->get_total_runs() << endl;
 
 		// clean up
-		fout_rec.close();
+		//fout_rec.close();
 		delete run_manager_ptr;
 		cout << endl << endl << "Simulation Complete..." << endl;
 		cout << flush;
