@@ -16,7 +16,7 @@
 sequentialLP::sequentialLP(Pest &_pest_scenario, RunManagerAbstract* _run_mgr_ptr,
 	Covariance &_parcov, FileManager &_file_mgr, 
 	OutputFileWriter* _out_wtr_ptr) : pest_scenario(_pest_scenario), run_mgr_ptr(_run_mgr_ptr),
-	parcov(_parcov), file_mgr(_file_mgr), out_wtr_ptr(_out_wtr_ptr)
+	parcov(_parcov), file_mgr(_file_mgr), out_wtr_ptr(_out_wtr_ptr),jco(_file_mgr)
 {
 	initialize_and_check();
 }
@@ -198,9 +198,6 @@ pair<double,double> sequentialLP::postsolve_decision_var_report(Parameters &upgr
 		new_obj += new_val * obj_coef;
 
 	}
-
-
-
 	return pair<double,double>(cur_obj,new_obj);
 }
 
@@ -208,18 +205,9 @@ void sequentialLP::initialize_and_check()
 {
 	ofstream &f_rec = file_mgr.rec_ofstream();
 	//TODO: handle restart condition
-	//TODO: handle base jco condition
-	separate_scenarios();
-
+	
 	if (pest_scenario.get_control_info().noptmax < 1)
 		throw_sequentialLP_error("noptmax must be greater than 0");
-
-	risk = pest_scenario.get_pestpp_options().get_opt_risk();
-	if (risk != 0.5)
-	{
-		if ((risk > 1.0) || (risk < 0.0))
-			throw_sequentialLP_error("++opt_risk parameter must between 0.0 and 1.0");
-	}
 
 
 	//------------------------
@@ -413,10 +401,16 @@ void sequentialLP::initialize_and_check()
 	//------------------------------------------
 	//  ---  chance constratints and fosm  ---  
 	//------------------------------------------
+	risk = pest_scenario.get_pestpp_options().get_opt_risk();
 	if (risk != 0.5)
 	{
-		//make sure there is at least one none-decision var adjustable parameter
-		
+		use_chance = true;
+
+		//make sure risk value is valid
+		if ((risk > 1.0) || (risk < 0.0))
+			throw_sequentialLP_error("++opt_risk parameter must between 0.0 and 1.0");
+
+		//make sure there is at least one none-decision var adjustable parameter		
 		vector<string>::iterator start = ctl_ord_dec_var_names.begin();
 		vector<string>::iterator end = ctl_ord_dec_var_names.end();
 		for (auto &name : pest_scenario.get_ctl_ordered_par_names())
@@ -430,9 +424,8 @@ void sequentialLP::initialize_and_check()
 		}
 		if (adj_par_names.size() == 0)
 			throw_sequentialLP_error("++opt_risk != 0.5, but no adjustable parameters found in control file");
-		
+
 		//look for non-zero weighted obs
-		
 		start = ctl_ord_constraint_names.begin();
 		end = ctl_ord_constraint_names.end();
 		for (auto &name : pest_scenario.get_ctl_ordered_obs_names())
@@ -444,8 +437,33 @@ void sequentialLP::initialize_and_check()
 			}
 		}
 
+		string parcov_filename = pest_scenario.get_pestpp_options().get_parcov_filename();
+		//build the adjustable parameter parcov
+		//from filename
+
+		if (parcov_filename.size() > 0)
+		{
+			Covariance temp_parcov;
+			temp_parcov.from_ascii(parcov_filename);
+			//check that all adj par names in temp_parcov and
+			//check if we need to get a new shorter and reordered parcov
+
+		}
+		//from parameter bounds
+		else
+		{
+			//parcov.from_parameter_bounds();
+		}
+
+		//build the nz_obs obs_cov
+		Covariance obscov;
+		obscov.from_observation_weights(nz_obs_names, pest_scenario.get_ctl_observation_info(), vector<string>(), null_prior);
+
 	}
+	else use_chance = false;
 	
+	jco.set_base_numeric_pars(all_pars_and_dec_vars);
+	jco.set_base_sim_obs(pest_scenario.get_ctl_observations());
 	initial_report();
 	return;
 }
@@ -494,13 +512,13 @@ void sequentialLP::build_obj_func_coef_array()
 	return;
 }
 
-ClpSimplex sequentialLP::solve_lp_problem(Jacobian_1to1 &jco)
+void sequentialLP::iter_solve()
 {
 	
 	ofstream &f_rec = file_mgr.rec_ofstream();
 
 	//convert Jacobian_1to1 to CoinPackedMatrix
-	CoinPackedMatrix matrix = jacobian_to_coinpackedmatrix(jco);
+	CoinPackedMatrix matrix = jacobian_to_coinpackedmatrix();
 
 	//set/update the constraint bound arrays
 	build_constraint_bound_arrays();
@@ -512,7 +530,7 @@ ClpSimplex sequentialLP::solve_lp_problem(Jacobian_1to1 &jco)
 	build_obj_func_coef_array();
 
 	//instantiate and load the linear simplex model
-	ClpSimplex model;
+	//ClpSimplex model;
 	model.loadProblem(matrix, dec_var_lb, dec_var_ub, ctl_ord_obj_func_coefs, constraint_lb, constraint_ub);
 	model.setLogLevel(pest_scenario.get_pestpp_options().get_opt_coin_loglev());
 	model.setOptimizationDirection(pest_scenario.get_pestpp_options().get_opt_direction());
@@ -571,10 +589,10 @@ ClpSimplex sequentialLP::solve_lp_problem(Jacobian_1to1 &jco)
 	cout << endl << endl << "  ---  linear program solution complete for iteration " << slp_iter << "  ---  " << endl;
 
 	//return the model for updating and reporting purposes
-	return model;
+	return;
 }
 
-CoinPackedMatrix sequentialLP::jacobian_to_coinpackedmatrix(Jacobian_1to1 &jco)
+CoinPackedMatrix sequentialLP::jacobian_to_coinpackedmatrix()
 {
 	
 	Eigen::SparseMatrix<double> eig_ord_jco = jco.get_matrix(ctl_ord_constraint_names, ctl_ord_dec_var_names);
@@ -618,10 +636,7 @@ CoinPackedMatrix sequentialLP::jacobian_to_coinpackedmatrix(Jacobian_1to1 &jco)
 void sequentialLP::solve()
 {
 	ofstream &f_rec = file_mgr.rec_ofstream();
-	Jacobian_1to1 jco(file_mgr);
-	jco.set_base_numeric_pars(all_pars_and_dec_vars);
-	jco.set_base_sim_obs(constraints_sim);
-
+	
 	slp_iter = 1;
 	while (true)
 	{
@@ -631,19 +646,18 @@ void sequentialLP::solve()
 		cout << endl << endl << "  ----------------------------------" << endl;
 		cout << "  --- starting LP iteration " << slp_iter << "  ---  " << endl;
 		cout << "  ---------------------------------" << endl << endl << endl;
-		make_response_matrix_runs(jco);
-		ClpSimplex model = solve_lp_problem(jco);
-		process_model(model);
-		update_and_report_decision_vars(model);
-		//make_upgrade_run();
-		update_and_report_constraints(model);
+		
+		iter_presolve();
+		iter_solve();
+		iter_postsolve();
+		
 		slp_iter++;
 		if (slp_iter > pest_scenario.get_control_info().noptmax)
 			break;
 	}
 }
 
-void sequentialLP::process_model(ClpSimplex &model)
+void sequentialLP::iter_postsolve()
 {
 	
 	ofstream &f_rec = file_mgr.rec_ofstream();
@@ -712,7 +726,7 @@ bool sequentialLP::make_upgrade_run(Parameters &upgrade_pars, Observations &upgr
 	return success;
 }
 
-void sequentialLP::make_response_matrix_runs(Jacobian_1to1 &jco)
+void sequentialLP::iter_presolve()
 {
 	ofstream &f_rec = file_mgr.rec_ofstream();
 	f_rec << "  ---  calculating response matrix for iteration " << slp_iter << "  ---  " << endl;
@@ -800,31 +814,5 @@ void sequentialLP::make_response_matrix_runs(Jacobian_1to1 &jco)
 
 	return;
 }
-
-void sequentialLP::separate_scenarios()
-{
-	//if needed separate scenarios, otherwise, just set the opt_scenario to the pest_scenario.
-
-	//this might be using the copy constructor, needs to be fixed
-	//opt_scenario = pest_scenario;
-}
-
-void sequentialLP::update(ClpSimplex &model)
-{
-	//TODO: run optimal solution
-	
-	return;
-}
-
-void sequentialLP::update_and_report_decision_vars(ClpSimplex &model)
-{
-	return;
-}
-
-void sequentialLP::update_and_report_constraints(ClpSimplex &model)
-{
-	return;
-}
-
 
 

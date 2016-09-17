@@ -22,12 +22,13 @@ public:
 				 FileManager &_file_mgr, OutputFileWriter* _out_wtr_ptr);
 	void initialize_and_check();
 	void solve();
+
 	
 	//ModelRun get_optimum_run() { return optimum_run; }
 
 private:
 	string obj_func_str;
-	
+	bool use_chance;
 	int slp_iter;
 	
 	double* dec_var_lb;
@@ -36,6 +37,9 @@ private:
 	double* constraint_ub;
 	double* ctl_ord_obj_func_coefs;
 	double risk;
+
+	ClpSimplex model;
+	Jacobian_1to1 jco;
 
 	map<string, double> obj_func_coef_map;
 	map<string, ConstraintSense> constraint_sense_map;
@@ -59,28 +63,48 @@ private:
 	FileManager file_mgr;
 	OutputFileWriter* out_wtr_ptr;
 		
-	ClpSimplex solve_lp_problem(Jacobian_1to1 &jco);
-	void initialize_obj_function();
-	void initialize_dec_vars();
-	void initialize_constraints();
+	//solve the current LP problem
+	void iter_solve();
+	
+	//report initial conditions to rec file
 	void initial_report();
+
+	//report the constraint info before the solving the current LP problem
 	void presolve_constraint_report();
+
+	//report dec var info the newly solved LP solution.  returns the current and new obj func
 	pair<double,double> postsolve_decision_var_report(Parameters &upgrade_pars);
+	
+	//report the current and newly solved LP constraint info
 	void postsolve_constraint_report(Observations &upgrade_obs);
-	void update(ClpSimplex &model);
-	void update_and_report_decision_vars(ClpSimplex &model);
-	void update_and_report_constraints(ClpSimplex &model);
-	void separate_scenarios();
-	void make_response_matrix_runs(Jacobian_1to1 &jco);
+	
+	//prepare for LP solution, including filling response matrix
+	void iter_presolve();
+	
+	//run the model with dec var values from the newly solved LP problem
 	bool make_upgrade_run(Parameters &upgrade_pars, Observations &upgrade_obs);
-	void process_model(ClpSimplex &model);
-	CoinPackedMatrix jacobian_to_coinpackedmatrix(Jacobian_1to1 &jco);
+	
+	//process the LP solve, including check for convergence
+	void iter_postsolve();
+
+	//convert the jacobian to a coin packed matrix instance
+	CoinPackedMatrix jacobian_to_coinpackedmatrix();
+
+	//convert the constraint info from Transformable to double*
 	void build_constraint_bound_arrays();
+
+	//error handlers
 	void throw_sequentialLP_error(string message);
 	void throw_sequentialLP_error(string message,const vector<string> &messages);
 	void throw_sequentialLP_error(string message, const set<string> &messages);
+
+	//get the current constraint residual vector 
 	vector<double> get_constraint_residual_vec();
+	
+	//get a residual vector comparing constraints_obs and sim_vals
 	vector<double> get_constraint_residual_vec(Observations &sim_vals);
+	
+	//set the double* obj_func array
 	void build_obj_func_coef_array();
 
 };

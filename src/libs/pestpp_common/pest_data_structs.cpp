@@ -513,6 +513,7 @@ void PestppOptions::parce_line(const string &line)
 				opt_constraint_groups.push_back(name);
 			}
 		}
+		
 		else if (key == "OPT_RISK")
 		{
 			convert_ip(value, opt_risk);
