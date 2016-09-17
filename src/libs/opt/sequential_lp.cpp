@@ -452,7 +452,7 @@ void sequentialLP::initialize_and_check()
 		//from parameter bounds
 		else
 		{
-			//parcov.from_parameter_bounds();
+			parcov.from_parameter_bounds(adj_par_names,pest_scenario.get_ctl_parameter_info());
 		}
 
 		//build the nz_obs obs_cov
@@ -687,7 +687,6 @@ void sequentialLP::iter_postsolve()
 	
 	pair<double,double> cur_new_obj = postsolve_decision_var_report(upgrade_pars);
 	postsolve_constraint_report(upgrade_obs);
-
 	
 	f_rec << endl << endl <<  "  ---  iteration " << slp_iter << " objective function value: " << setw(15) << cur_new_obj.second << "  ---  " << endl << endl;
 	cout << endl << endl << "  ---  iteration " << slp_iter << " objective function value: " << setw(15) << cur_new_obj.second << "  ---  " << endl << endl;
@@ -704,6 +703,8 @@ void sequentialLP::iter_postsolve()
 		diff = abs(constraints_sim[name] - upgrade_obs[name]);
 		max_abs_constraint_change = (diff > max_abs_constraint_change) ? diff : max_abs_constraint_change;
 	}
+
+	//TODO: convergence check here
 
 
 	//if continuing, update the master decision var instance
