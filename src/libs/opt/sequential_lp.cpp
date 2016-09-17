@@ -649,13 +649,20 @@ void sequentialLP::process_model(ClpSimplex &model)
 	ofstream &f_rec = file_mgr.rec_ofstream();
 
 	//extract (optimal) decision vars
+	//and track some info for convergence checking
 	const double *dec_var_vals = model.getColSolution();
+	double max_abs_dec_var_change = -1.0E+10;
+	double diff, val;
 	Parameters upgrade_pars(all_pars_and_dec_vars);
-	double val;
+	string name;
 	for (int i = 0; i < ctl_ord_dec_var_names.size(); ++i)
 	{
-		val = all_pars_and_dec_vars[ctl_ord_dec_var_names[i]];
-		upgrade_pars.update_rec(ctl_ord_dec_var_names[i], val + dec_var_vals[i]);
+		name = ctl_ord_dec_var_names[i];
+		val = all_pars_and_dec_vars[name];
+		upgrade_pars.update_rec(name, val + dec_var_vals[i]);
+		diff = abs(dec_var_vals[i]);
+		max_abs_dec_var_change = (diff > max_abs_dec_var_change) ? diff : max_abs_dec_var_change;
+
 	}
 	//run the model with optimal decision var values
 	Observations upgrade_obs;
@@ -676,9 +683,14 @@ void sequentialLP::process_model(ClpSimplex &model)
 		iter_obj_values.push_back(cur_new_obj.first);
 	iter_obj_values.push_back(cur_new_obj.second);
 
+	//check for changes for in constraints
+	double max_abs_constraint_change = -1.0E+10;
+	for (auto &name : ctl_ord_constraint_names)
+	{
+		diff = abs(constraints_sim[name] - upgrade_obs[name]);
+		max_abs_constraint_change = (diff > max_abs_constraint_change) ? diff : max_abs_constraint_change;
+	}
 
-	//TODO: check for convergence here
-	
 
 	//if continuing, update the master decision var instance
 	all_pars_and_dec_vars.update_without_clear(ctl_ord_dec_var_names, upgrade_pars.get_data_vec(ctl_ord_dec_var_names));
