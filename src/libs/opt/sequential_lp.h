@@ -60,6 +60,7 @@ private:
 	Pest pest_scenario;
 	RunManagerAbstract* run_mgr_ptr;
 	Covariance parcov;
+	Covariance obscov;
 	FileManager file_mgr;
 	OutputFileWriter* out_wtr_ptr;
 		
@@ -107,6 +108,8 @@ private:
 	//set the double* obj_func array
 	void build_obj_func_coef_array();
 
+	//calc FOSM-based chance constraint offsets
+	void calc_chance_constraint_offsets();
 };
 
 

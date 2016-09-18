@@ -994,6 +994,10 @@ void linear_analysis::calc_posterior()
 }
 
 
+void linear_analysis::set_predictions(Mat* preds)
+{
+
+}
 
 void linear_analysis::set_predictions(vector<string> preds)
 {

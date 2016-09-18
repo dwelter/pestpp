@@ -5,6 +5,7 @@
 #include "RunManagerAbstract.h"
 #include "TerminationController.h"
 #include "covariance.h"
+#include "linear_analysis.h"
 #include "FileManager.h"
 #include "OutputFileWriter.h"
 #include <Eigen/Sparse>
@@ -410,11 +411,14 @@ void sequentialLP::initialize_and_check()
 		if ((risk > 1.0) || (risk < 0.0))
 			throw_sequentialLP_error("++opt_risk parameter must between 0.0 and 1.0");
 
+		//TODO: reset risk extreme risk values
+
 		//make sure there is at least one none-decision var adjustable parameter		
 		vector<string>::iterator start = ctl_ord_dec_var_names.begin();
 		vector<string>::iterator end = ctl_ord_dec_var_names.end();
 		for (auto &name : pest_scenario.get_ctl_ordered_par_names())
 		{
+			//if this parameter is not a decision var
 			if (find(start, end, name) == end)
 			{
 				ParameterRec::TRAN_TYPE tt = pest_scenario.get_ctl_parameter_info().get_parameter_rec_ptr(name)->tranform_type;
@@ -437,12 +441,14 @@ void sequentialLP::initialize_and_check()
 			}
 		}
 
+		
 		string parcov_filename = pest_scenario.get_pestpp_options().get_parcov_filename();
 		//build the adjustable parameter parcov
 		//from filename
 
 		if (parcov_filename.size() > 0)
 		{
+			throw_sequentialLP_error("parcov from filename not implemented");
 			Covariance temp_parcov;
 			temp_parcov.from_ascii(parcov_filename);
 			//check that all adj par names in temp_parcov and
@@ -456,9 +462,15 @@ void sequentialLP::initialize_and_check()
 		}
 
 		//build the nz_obs obs_cov
-		Covariance obscov;
-		obscov.from_observation_weights(nz_obs_names, pest_scenario.get_ctl_observation_info(), vector<string>(), null_prior);
-
+		if (nz_obs_names.size() == 0)
+		{
+			f_rec << endl << endl << "  ---  WARNING: no nonzero weight observations found." << endl;
+			f_rec << "              Prior constraint uncertainty will be used in chance constraint calculations" << endl;
+		}
+		else
+		{
+			obscov.from_observation_weights(nz_obs_names, pest_scenario.get_ctl_observation_info(), vector<string>(), null_prior);
+		}
 	}
 	else use_chance = false;
 	
@@ -468,10 +480,34 @@ void sequentialLP::initialize_and_check()
 	return;
 }
 
+void sequentialLP::calc_chance_constraint_offsets()
+{
+	//just using the prior or supply parcov to estimate constraint variance
+	/*if (nz_obs_names.size() == 0)
+	{
+		throw_sequentialLP_error("prior only propogation not implemented");
+	}*/
+	//otherwise, calculate parameter posterior covariance
+	//and propogate to constraints
+	
+	vector<string> fosm_row_names(nz_obs_names);
+	fosm_row_names.insert(fosm_row_names.end(), ctl_ord_constraint_names.begin(), ctl_ord_constraint_names.end());
+	Eigen::SparseMatrix<double> fosm_mat = jco.get_matrix(fosm_row_names, adj_par_names);
+	Mat fosm_jco(nz_obs_names,adj_par_names,fosm_mat);
+	linear_analysis la(&fosm_jco, &pest_scenario, &obscov);
+	la.set_predictions(ctl_ord_constraint_names);
+	map<string, double> prior_const_var = la.prior_prediction_variance();
+	map<string, double> post_const_var = la.posterior_prediction_variance();
+	return;
+}
+
 void sequentialLP::build_constraint_bound_arrays()
 {
-	
+
 	vector<double> residuals = get_constraint_residual_vec();
+
+	if (risk != 0.5)
+		calc_chance_constraint_offsets();
 
 	for (int i = 0; i < ctl_ord_constraint_names.size(); ++i)
 	{
