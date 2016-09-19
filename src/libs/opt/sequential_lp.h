@@ -79,6 +79,9 @@ private:
 	//report the constraint info before the solving the current LP problem
 	void presolve_constraint_report();
 
+	//report the fosm chance constraint info before solving the current LP problem
+	void presolve_fosm_report();
+
 	//report dec var info the newly solved LP solution.  returns the current and new obj func
 	pair<double,double> postsolve_decision_var_report(Parameters &upgrade_pars);
 	

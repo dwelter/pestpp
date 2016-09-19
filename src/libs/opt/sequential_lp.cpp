@@ -49,9 +49,9 @@ void sequentialLP::throw_sequentialLP_error(string message)
 vector<double> sequentialLP::get_constraint_residual_vec()
 {
 	if (risk != 0.5)
-		return get_constraint_residual_vec(constraints_sim);
-	else
 		return get_constraint_residual_vec(constraints_fosm);
+	else
+		return get_constraint_residual_vec(constraints_sim);
 }
 
 vector<double> sequentialLP::get_constraint_residual_vec(Observations &sim_vals)
@@ -131,6 +131,30 @@ void sequentialLP::initial_report()
 	return;
 }
 
+void sequentialLP::presolve_fosm_report()
+{
+	ofstream &f_rec = file_mgr.rec_ofstream();
+	vector<double> residuals = get_constraint_residual_vec();
+	f_rec << endl << "  FOSM-based chance constraint information at start of iteration " << slp_iter << endl;
+	f_rec << setw(20) << left << "name" << right << setw(10) << "sense" << setw(15) << "sim value";
+	f_rec << setw(15) << "prior stdev" << setw(15) << "post stdev" << setw(15) << "offset";
+	f_rec << setw(15) << "new sim value" << endl;
+	for (int i = 0; i<ctl_ord_constraint_names.size(); ++i)
+	{
+		string name = ctl_ord_constraint_names[i];
+		f_rec << setw(20) << left << name;
+		f_rec << setw(10) << right << constraint_sense_name[name];
+		f_rec << setw(15) << constraints_sim.get_rec(name);
+		f_rec << setw(15) << prior_constraint_stdev[name];
+		f_rec << setw(15) << post_constraint_stdev[name];
+		f_rec << setw(15) << post_constraint_offset[name];
+		f_rec << setw(15) << constraints_fosm[name] << endl;
+	}
+	f_rec << "  note: 'offset' is the value added to the simulated constraint value to account" << endl;
+	f_rec << "        for the uncertainty in the constraint value arsing for uncertainty in the " << endl;
+	f_rec << "        adjustable parameters identified in the control file." << endl << endl;
+	return;
+}
 void sequentialLP::presolve_constraint_report()
 {
 	ofstream &f_rec = file_mgr.rec_ofstream();
@@ -519,33 +543,31 @@ void sequentialLP::calc_chance_constraint_offsets()
 		post_constraint_offset[name] = logit_approx * post_constraint_stdev[name];
 		old_constraint_val = constraints_sim[name];
 		
-		//if less_than constraint, then add to the sim value, to move positive against
-		// the required constraint value
+		//if less_than constraint, then add to the sim value, to move positive
+		// WRT the required constraint value
 		if (constraint_sense_map[name] == ConstraintSense::less_than)
 			new_constraint_val = old_constraint_val + post_constraint_offset[name];
 		//if greater_than constraint, the substract from the sim value to move 
-		//negatively against the required constraint value
+		//negative WRT the required constraint value
 		else if (constraint_sense_map[name] == ConstraintSense::greater_than)
 			new_constraint_val = old_constraint_val - post_constraint_offset[name];
 		else
 			new_constraint_val = constraints_sim[name];
 		constraints_fosm.insert(name, new_constraint_val);
 	}
-
-	
-
 	return;
 }
 
 void sequentialLP::build_constraint_bound_arrays()
 {
 
-	
+	//if needed update the fosm related attributes before
+	//calculating the residual vector!
 	if (risk != 0.5)
 		calc_chance_constraint_offsets();
 
+	//these residuals will include FOSM-based posterior offsets
 	vector<double> residuals = get_constraint_residual_vec();
-
 
 	for (int i = 0; i < ctl_ord_constraint_names.size(); ++i)
 	{
@@ -596,6 +618,9 @@ void sequentialLP::iter_solve()
 
 	//set/update the constraint bound arrays
 	build_constraint_bound_arrays();
+
+	if (risk != 0.5)
+		presolve_fosm_report();
 
 	//report to rec file
 	presolve_constraint_report();
