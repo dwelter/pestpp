@@ -80,6 +80,8 @@ private:
 	int num_adj_pars() { return adj_par_names.size(); }
 	int num_nz_obs() { return nz_obs_names.size(); }
 
+	int num_nz_pi_constraint_elements();
+
 	//solve the current LP problem
 	void iter_solve();
 	

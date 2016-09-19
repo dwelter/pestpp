@@ -261,9 +261,77 @@ void sequentialLP::initialize_and_check()
 		throw_sequentialLP_error("noptmax must be greater than 0");
 
 
-	//------------------------
-	//  ---  constraints  --- 
-	//------------------------
+
+	//-----------------------------
+	//  ---  decision vars  ---  
+	//-----------------------------
+
+	all_pars_and_dec_vars = pest_scenario.get_ctl_parameters();
+	par_trans = pest_scenario.get_base_par_tran_seq();
+	//set ordered dec var name vec
+	//and check for illegal parameter transformations
+	vector<string> dec_var_groups = pest_scenario.get_pestpp_options().get_opt_dec_var_groups();
+	ctl_ord_dec_var_names.clear();
+	//if the ++opt_dec_var_groups arg was passed
+	if (dec_var_groups.size() != 0)
+	{
+		//first make sure all the groups are actually listed in the control file
+		vector<string> missing;
+		vector<string> pst_groups = pest_scenario.get_ctl_ordered_par_group_names();
+		vector<string>::iterator end = pst_groups.end();
+		vector<string>::iterator start = pst_groups.begin();
+		for (auto grp : dec_var_groups)
+			if (find(start, end, grp) == end)
+				missing.push_back(grp);
+		if (missing.size() > 0)
+			throw_sequentialLP_error("the following ++opt_dec_var_groups were not found: ", missing);
+
+		//find the parameter in the dec var groups
+		ParameterGroupInfo pinfo = pest_scenario.get_base_group_info();
+		string group;
+		end = dec_var_groups.end();
+		start = dec_var_groups.begin();
+		for (auto &par_name : pest_scenario.get_ctl_ordered_par_names())
+		{
+			group = pinfo.get_group_name(par_name);
+			if (find(start, end, group) != end)
+				ctl_ord_dec_var_names.push_back(par_name);
+		}
+
+		if (num_dec_vars() == 0)
+			throw_sequentialLP_error("no decision variables found in groups: ", dec_var_groups);
+	}
+	//if not ++opt_dec_var_names was passed, use all parameter as decision variables
+	else
+		ctl_ord_dec_var_names = pest_scenario.get_ctl_ordered_par_names();
+
+	//if any decision vars have a transformation that is not allowed
+	vector<string> problem_trans;
+	for (auto &name : ctl_ord_dec_var_names)
+		if (pest_scenario.get_ctl_parameter_info().get_parameter_rec_ptr(name)->tranform_type != ParameterRec::TRAN_TYPE::NONE)
+			problem_trans.push_back(name);
+	if (problem_trans.size() > 0)
+		throw_sequentialLP_error("the following decision variables don't have 'none' type parameter transformation: ", problem_trans);
+
+	//set the decision var lower and upper bound arrays
+	dec_var_lb = new double[num_dec_vars()];
+	dec_var_ub = new double[num_dec_vars()];
+	Parameters parlbnd = pest_scenario.get_ctl_parameter_info().get_low_bnd(ctl_ord_dec_var_names);
+	Parameters parubnd = pest_scenario.get_ctl_parameter_info().get_up_bnd(ctl_ord_dec_var_names);
+	for (int i = 0; i < num_dec_vars(); ++i)
+	{
+		dec_var_lb[i] = parlbnd.get_rec(ctl_ord_dec_var_names[i]);
+		dec_var_ub[i] = parubnd.get_rec(ctl_ord_dec_var_names[i]);
+	}
+
+
+
+
+
+
+	//---------------------------
+	//  ---  obs constraints  --- 
+	//---------------------------
 	//set the two constraints attribs and ordered constraint name vec
 	vector<string> constraint_groups = pest_scenario.get_pestpp_options().get_opt_constraint_groups();
 	ctl_ord_obs_constraint_names.clear();
@@ -340,17 +408,20 @@ void sequentialLP::initialize_and_check()
 		if (num_obs_constraints() == 0)
 			throw_sequentialLP_error("no constraints found in groups: ", constraint_groups);
 	}
+
+
 	//if not ++opt_constraint_names was passed, use all observations and prior information as constraints
 	else
 	{
 		ctl_ord_obs_constraint_names = pest_scenario.get_ctl_ordered_obs_names();
 		//TODO: add prior info support here
 	}
-	//TODO: refactor ctl_ord_constraint_names to ctl_ord_obs_constraint_names
+
+
 	constraints_obs = pest_scenario.get_ctl_observations().get_subset(ctl_ord_obs_constraint_names.begin(), ctl_ord_obs_constraint_names.end());
 	constraints_sim = Observations(constraints_obs);
 
-	//build map of constraint sense
+	//build map of obs constraint sense
 	vector<string> problem_constraints;
 	for (auto &name : ctl_ord_obs_constraint_names)
 	{
@@ -380,6 +451,7 @@ void sequentialLP::initialize_and_check()
 		throw_sequentialLP_error("the following obs constraints do not have the correct group names {'l','g','e'}: ", problem_constraints);
 	}
 
+	//build map of pi constraint sense
 	problem_constraints.clear();
 	for (auto &name : ctl_ord_pi_constraint_names)
 	{
@@ -407,6 +479,7 @@ void sequentialLP::initialize_and_check()
 	{
 		throw_sequentialLP_error("the following prior information constraints do not have the correct group names {'l','g','e'}: ", problem_constraints);
 	}
+
 	//allocate the constraint bound arrays 
 	constraint_lb = new double[num_constraints()];
 	constraint_ub = new double[num_constraints()];
@@ -414,68 +487,7 @@ void sequentialLP::initialize_and_check()
 
 
 
-	//-----------------------------
-	//  ---  decision vars  ---  
-	//-----------------------------
-
-	all_pars_and_dec_vars = pest_scenario.get_ctl_parameters();
-	par_trans = pest_scenario.get_base_par_tran_seq();
-	//set ordered dec var name vec
-	//and check for illegal parameter transformations
-	vector<string> dec_var_groups = pest_scenario.get_pestpp_options().get_opt_dec_var_groups();
-	ctl_ord_dec_var_names.clear();
-	//if the ++opt_dec_var_groups arg was passed
-	if (dec_var_groups.size() != 0)
-	{
-		//first make sure all the groups are actually listed in the control file
-		vector<string> missing;
-		vector<string> pst_groups = pest_scenario.get_ctl_ordered_par_group_names();
-		vector<string>::iterator end = pst_groups.end();
-		vector<string>::iterator start = pst_groups.begin();
-		for (auto grp : dec_var_groups)
-			if (find(start, end, grp) == end)
-				missing.push_back(grp);
-		if (missing.size() > 0)
-			throw_sequentialLP_error("the following ++opt_dec_var_groups were not found: ", missing);
-
-		//find the parameter in the dec var groups
-		ParameterGroupInfo pinfo = pest_scenario.get_base_group_info();
-		string group;
-		end = dec_var_groups.end();
-		start = dec_var_groups.begin();
-		for (auto &par_name : pest_scenario.get_ctl_ordered_par_names())
-		{
-			group = pinfo.get_group_name(par_name);
-			if (find(start, end, group) != end)
-				ctl_ord_dec_var_names.push_back(par_name);
-		}
-
-		if (num_dec_vars() == 0)
-			throw_sequentialLP_error("no decision variables found in groups: ", dec_var_groups);
-	}
-	//if not ++opt_dec_var_names was passed, use all parameter as decision variables
-	else
-		ctl_ord_dec_var_names = pest_scenario.get_ctl_ordered_par_names();
-
-	//if any decision vars have a transformation that is not allowed
-	vector<string> problem_trans;
-	for (auto &name : ctl_ord_dec_var_names)		
-		if (pest_scenario.get_ctl_parameter_info().get_parameter_rec_ptr(name)->tranform_type != ParameterRec::TRAN_TYPE::NONE)
-			problem_trans.push_back(name);
-	if (problem_trans.size() > 0)
-		throw_sequentialLP_error("the following decision variables don't have 'none' type parameter transformation: ", problem_trans);
 	
-	//set the decision var lower and upper bound arrays
-	dec_var_lb = new double[num_dec_vars()];
-	dec_var_ub = new double[num_dec_vars()];
-	Parameters parlbnd = pest_scenario.get_ctl_parameter_info().get_low_bnd(ctl_ord_dec_var_names);
-	Parameters parubnd = pest_scenario.get_ctl_parameter_info().get_up_bnd(ctl_ord_dec_var_names);
-	for (int i = 0; i < num_dec_vars(); ++i)
-	{
-		dec_var_lb[i] = parlbnd.get_rec(ctl_ord_dec_var_names[i]);
-		dec_var_ub[i] = parubnd.get_rec(ctl_ord_dec_var_names[i]);
-	}
-
 
 
 	//--------------------------------
@@ -801,6 +813,17 @@ void sequentialLP::iter_solve()
 	return;
 }
 
+int sequentialLP::num_nz_pi_constraint_elements()
+{
+	int num = 0;
+	
+	for (auto &pi_const : pi_constraint_factors)
+	{
+		num += pi_const.second.size();
+	}
+	return num;
+}
+
 CoinPackedMatrix sequentialLP::jacobian_to_coinpackedmatrix()
 {
 	
@@ -812,10 +835,10 @@ CoinPackedMatrix sequentialLP::jacobian_to_coinpackedmatrix()
 	//cout << eig_ord_jco << endl;
 
 	//the triplet elements to pass to the coinpackedmatrix constructor
-	//TODO: including prior information constraints
-	int * row_idx = new int[eig_ord_jco.nonZeros()];
-	int * col_idx = new int[eig_ord_jco.nonZeros()];
-	double * elems = new double[eig_ord_jco.nonZeros()];
+	int num_elems = eig_ord_jco.nonZeros() + num_nz_pi_constraint_elements();
+	int * row_idx = new int[num_elems];
+	int * col_idx = new int[num_elems];
+	double * elems = new double[num_elems];
 	int elem_count = 0;
 
 	//iterate through the eigen sparse matrix
@@ -839,6 +862,26 @@ CoinPackedMatrix sequentialLP::jacobian_to_coinpackedmatrix()
 		throw_sequentialLP_error("sequentialLP::jacobian_to_coinpackedmatrix() error: zero triplets found");
 	}
 
+	//TODO: including prior information constraints
+	int irow = num_obs_constraints() - 1;
+	int jcol;
+	vector<string>::iterator start = ctl_ord_dec_var_names.begin();
+	vector<string>::iterator end = ctl_ord_dec_var_names.end();
+	
+	for (auto &pi_name : ctl_ord_pi_constraint_names)
+	{
+		for (auto &pi_factor : pi_constraint_factors[pi_name])
+		{
+			jcol = find(start, end, pi_factor.first) - start;
+			row_idx[elem_count] = irow;
+			col_idx[elem_count] = jcol;
+			elems[elem_count] = pi_factor.second;
+			elem_count++;
+		}
+		irow++;
+	}
+	if (elem_count != num_elems)
+		throw_sequentialLP_error("problem packing prior information constraints into CoinPackedMatrix...");
 	CoinPackedMatrix matrix(true,row_idx,col_idx,elems,elem_count);
 	return matrix;
 }
