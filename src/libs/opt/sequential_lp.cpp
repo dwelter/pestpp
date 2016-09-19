@@ -57,14 +57,14 @@ vector<double> sequentialLP::get_constraint_residual_vec()
 vector<double> sequentialLP::get_constraint_residual_vec(Observations &sim_vals)
 {
 	vector<double> residuals_vec;
-	residuals_vec.resize(ctl_ord_constraint_names.size(), 0.0);
+	residuals_vec.resize(ctl_ord_obs_constraint_names.size(), 0.0);
 
 	Observations::const_iterator found_obs;
 	Observations::const_iterator not_found_obs = sim_vals.end();
 	PriorInformation::const_iterator found_prior_info;
 
 	int i = 0;
-	for (vector<string>::iterator b = ctl_ord_constraint_names.begin(), e = ctl_ord_constraint_names.end(); b != e; ++b, ++i)
+	for (vector<string>::iterator b = ctl_ord_obs_constraint_names.begin(), e = ctl_ord_obs_constraint_names.end(); b != e; ++b, ++i)
 	{
 		found_obs = sim_vals.find(*b);
 		if (found_obs != not_found_obs)
@@ -121,7 +121,7 @@ void sequentialLP::initial_report()
 
 	f_rec << "  ---  constraints in SLP  ---  " << endl;
 	f_rec << setw(20) << "name" << setw(20) << "sense" << setw(20) << "value" << endl;
-	for (auto &name : ctl_ord_constraint_names)
+	for (auto &name : ctl_ord_obs_constraint_names)
 	{
 		f_rec << setw(20) << left << name;
 		f_rec << setw(20) << constraint_sense_name[name];
@@ -155,9 +155,9 @@ void sequentialLP::presolve_fosm_report()
 	f_rec << setw(20) << left << "name" << right << setw(10) << "sense" << setw(15) << "sim value";
 	f_rec << setw(15) << "prior stdev" << setw(15) << "post stdev" << setw(15) << "offset";
 	f_rec << setw(15) << "new sim value" << endl;
-	for (int i = 0; i<ctl_ord_constraint_names.size(); ++i)
+	for (int i = 0; i<ctl_ord_obs_constraint_names.size(); ++i)
 	{
-		string name = ctl_ord_constraint_names[i];
+		string name = ctl_ord_obs_constraint_names[i];
 		f_rec << setw(20) << left << name;
 		f_rec << setw(10) << right << constraint_sense_name[name];
 		f_rec << setw(15) << constraints_sim.get_rec(name);
@@ -180,9 +180,9 @@ void sequentialLP::presolve_constraint_report()
 	f_rec << setw(20) << left << "name" << right << setw(10) << "sense" << setw(15) << "value";
 	f_rec << setw(15) << "residual" << setw(15) << "lower bound" << setw(15) << "upper bound" << endl;
 
-	for (int i=0;i<ctl_ord_constraint_names.size();++i)
+	for (int i=0;i<ctl_ord_obs_constraint_names.size();++i)
 	{
-		string name = ctl_ord_constraint_names[i];
+		string name = ctl_ord_obs_constraint_names[i];
 		f_rec << setw(20) << left << name;
 		f_rec << setw(10) << right << constraint_sense_name[name];
 		f_rec << setw(15) << constraints_obs.get_rec(name);
@@ -203,9 +203,9 @@ void sequentialLP::postsolve_constraint_report(Observations &upgrade_obs)
 	f_rec << setw(15) << "new" << setw(15) << "residual" << endl;
 	vector<double> cur_residuals = get_constraint_residual_vec();
 	vector<double> new_residuals = get_constraint_residual_vec(upgrade_obs);
-	for (int i = 0; i<ctl_ord_constraint_names.size(); ++i)
+	for (int i = 0; i<ctl_ord_obs_constraint_names.size(); ++i)
 	{
-		string name = ctl_ord_constraint_names[i];
+		string name = ctl_ord_obs_constraint_names[i];
 		f_rec << setw(20) << left << name;
 		f_rec << setw(10) << right << constraint_sense_name[name];
 		f_rec << setw(15) << constraints_obs.get_rec(name);
@@ -260,7 +260,7 @@ void sequentialLP::initialize_and_check()
 	//------------------------
 	//set the two constraints attribs and ordered constraint name vec
 	vector<string> constraint_groups = pest_scenario.get_pestpp_options().get_opt_constraint_groups();
-	ctl_ord_constraint_names.clear();
+	ctl_ord_obs_constraint_names.clear();
 	//if the ++opt_constraint_groups arg was passed
 	if (constraint_groups.size() != 0)
 	{
@@ -284,8 +284,9 @@ void sequentialLP::initialize_and_check()
 		{
 			group = oinfo.get_observation_rec_ptr(obs_name)->group;
 			if (find(start, end, group) != end)
-				ctl_ord_constraint_names.push_back(obs_name);
+				ctl_ord_obs_constraint_names.push_back(obs_name);
 		}
+		//look for prior information constraints
 		const PriorInformation* pinfo = pest_scenario.get_prior_info_ptr();
 		PriorInformationRec pi_rec;
 		for (auto &pi_name : pest_scenario.get_ctl_ordered_pi_names())
@@ -300,26 +301,52 @@ void sequentialLP::initialize_and_check()
 			}
 		}
 
-		//TODO: check the pi constraint factors for compatibility with available 
-		//decision variables
+		//check the pi constraint factors for compatibility with available 
+		start = ctl_ord_dec_var_names.begin();
+		end = ctl_ord_dec_var_names.end();
+		map<string, vector<string>> missing_map;
+		if (pi_constraint_factors.size() > 0)
+		{
+			for (auto &pi_const : pi_constraint_factors)
+			{
+				missing.clear();
+				for (auto &pi_factor : pi_const.second)
+					if (find(start, end, pi_factor.first) == end)
+						missing.push_back(pi_factor.first);
+				if (missing.size() > 0)
+					missing_map[pi_const.first] = missing;
+			}
+		}
+		if (missing_map.size() > 0)
+		{
+			stringstream ss;
+			ss << " the following prior information constraints reference parameters that are not treated as decision variables:" << endl;
+			for (auto &missing_pi : missing_map)
+			{
+				ss << missing_pi.first << ": ";
+				for (auto &par_name : missing_pi.second)
+					ss << par_name << ",";
+			}
+			throw_sequentialLP_error("errors in prior information constraints:" + ss.str());
+		}
 
-		if (ctl_ord_constraint_names.size() == 0)
+		//TODO: investigate a pi constraint only formulation
+		if (num_obs_constraints() == 0)
 			throw_sequentialLP_error("no constraints found in groups: ", constraint_groups);
 	}
 	//if not ++opt_constraint_names was passed, use all observations and prior information as constraints
 	else
 	{
-		ctl_ord_constraint_names = pest_scenario.get_ctl_ordered_obs_names();
+		ctl_ord_obs_constraint_names = pest_scenario.get_ctl_ordered_obs_names();
 		//TODO: add prior info support here
 	}
 	//TODO: refactor ctl_ord_constraint_names to ctl_ord_obs_constraint_names
-	constraints_obs = pest_scenario.get_ctl_observations().get_subset(ctl_ord_constraint_names.begin(), ctl_ord_constraint_names.end());
+	constraints_obs = pest_scenario.get_ctl_observations().get_subset(ctl_ord_obs_constraint_names.begin(), ctl_ord_obs_constraint_names.end());
 	constraints_sim = Observations(constraints_obs);
 
 	//build map of constraint sense
-	//map<string, string> problem_constraints;
 	vector<string> problem_constraints;
-	for (auto &name : ctl_ord_constraint_names)
+	for (auto &name : ctl_ord_obs_constraint_names)
 	{
 		string group = pest_scenario.get_ctl_observation_info().get_observation_rec_ptr(name)->group;
 		if ((group == "L") || (group == "LESS_THAN"))
@@ -344,12 +371,40 @@ void sequentialLP::initialize_and_check()
 	}
 	if (problem_constraints.size() > 0)
 	{
-		throw_sequentialLP_error("the following constraints do not have the correct group names {'l','g','e'}: ", problem_constraints);
+		throw_sequentialLP_error("the following obs constraints do not have the correct group names {'l','g','e'}: ", problem_constraints);
 	}
 
+	problem_constraints.clear();
+	for (auto &name : ctl_ord_pi_constraint_names)
+	{
+		string group = pest_scenario.get_prior_info_ptr()->get_pi_rec_ptr(name).get_group();
+		if ((group == "L") || (group == "LESS_THAN"))
+		{
+			constraint_sense_map[name] = ConstraintSense::less_than;
+			constraint_sense_name[name] = "less than";
+		}
+		else if ((group == "G") || (group == "GREATER_THAN"))
+		{
+			constraint_sense_map[name] = ConstraintSense::greater_than;
+			constraint_sense_name[name] = "greater than";
+		}
+		else if ((group == "E") || (group == "N") || (group == "EQUAL_TO"))
+		{
+			constraint_sense_map[name] = ConstraintSense::equal_to;
+			constraint_sense_name[name] = "equal to";
+		}
+
+		else
+			problem_constraints.push_back(name + ',' + group);
+	}
+	if (problem_constraints.size() > 0)
+	{
+		throw_sequentialLP_error("the following prior information constraints do not have the correct group names {'l','g','e'}: ", problem_constraints);
+	}
 	//allocate the constraint bound arrays 
-	constraint_lb = new double[ctl_ord_constraint_names.size()];
-	constraint_ub = new double[ctl_ord_constraint_names.size()];
+	constraint_lb = new double[num_constraints()];
+	constraint_ub = new double[num_constraints()];
+
 
 
 
@@ -389,7 +444,7 @@ void sequentialLP::initialize_and_check()
 				ctl_ord_dec_var_names.push_back(par_name);
 		}
 
-		if (ctl_ord_dec_var_names.size() == 0)
+		if (num_dec_vars() == 0)
 			throw_sequentialLP_error("no decision variables found in groups: ", dec_var_groups);
 	}
 	//if not ++opt_dec_var_names was passed, use all parameter as decision variables
@@ -405,8 +460,8 @@ void sequentialLP::initialize_and_check()
 		throw_sequentialLP_error("the following decision variables don't have 'none' type parameter transformation: ", problem_trans);
 	
 	//set the decision var lower and upper bound arrays
-	dec_var_lb = new double[ctl_ord_dec_var_names.size()];
-	dec_var_ub = new double[ctl_ord_constraint_names.size()];
+	dec_var_lb = new double[num_dec_vars()];
+	dec_var_ub = new double[num_dec_vars()];
 	Parameters parlbnd = pest_scenario.get_ctl_parameter_info().get_low_bnd(ctl_ord_dec_var_names);
 	Parameters parubnd = pest_scenario.get_ctl_parameter_info().get_up_bnd(ctl_ord_dec_var_names);
 	for (int i = 0; i < ctl_ord_dec_var_names.size(); ++i)
@@ -439,8 +494,8 @@ void sequentialLP::initialize_and_check()
 		//or if it is a prior info equation
 		else if (pest_scenario.get_prior_info().find(obj_func_str) != pest_scenario.get_prior_info().end())
 		{
-			//obj_func_coef_map = pest_scenario.get_prior_info().get_pi_rec_ptr(obj_func_str).get_atom_factors();
-			throw_sequentialLP_error("prior-information-based objective function not implemented");
+			obj_func_coef_map = pest_scenario.get_prior_info().get_pi_rec_ptr(obj_func_str).get_atom_factors();
+			//throw_sequentialLP_error("prior-information-based objective function not implemented");
 		}
 		else
 		{
@@ -469,7 +524,6 @@ void sequentialLP::initialize_and_check()
 	if (risk != 0.5)
 	{
 		use_chance = true;
-
 		//make sure risk value is valid
 		if ((risk > 1.0) || (risk < 0.0))
 			throw_sequentialLP_error("++opt_risk parameter must between 0.0 and 1.0");
@@ -493,8 +547,8 @@ void sequentialLP::initialize_and_check()
 			throw_sequentialLP_error("++opt_risk != 0.5, but no adjustable parameters found in control file");
 
 		//look for non-zero weighted obs
-		start = ctl_ord_constraint_names.begin();
-		end = ctl_ord_constraint_names.end();
+		start = ctl_ord_obs_constraint_names.begin();
+		end = ctl_ord_obs_constraint_names.end();
 		for (auto &name : pest_scenario.get_ctl_ordered_obs_names())
 		{
 			if (find(start, end, name) == end)
@@ -542,30 +596,42 @@ void sequentialLP::calc_chance_constraint_offsets()
 	//the rows of the fosm jacobian include nonzero weight obs (for schur comp) 
 	//plus the names of the names of constraints, which get treated as forecasts
 	vector<string> fosm_row_names(nz_obs_names);
-	fosm_row_names.insert(fosm_row_names.end(), ctl_ord_constraint_names.begin(), ctl_ord_constraint_names.end());
+	fosm_row_names.insert(fosm_row_names.end(), ctl_ord_obs_constraint_names.begin(), ctl_ord_obs_constraint_names.end());
+	
 	//extract the part of the full jco we need for fosm
 	Eigen::SparseMatrix<double> fosm_mat = jco.get_matrix(fosm_row_names, adj_par_names);
 	Mat fosm_jco(fosm_row_names,adj_par_names,fosm_mat);
+	
 	//create a linear object
 	linear_analysis la(&fosm_jco, &pest_scenario, &obscov);
+	
 	//set the prior parameter covariance matrix
 	la.set_parcov(&parcov);
+	
 	//set the predictions (the constraints)
-	la.set_predictions(ctl_ord_constraint_names);
+	la.set_predictions(ctl_ord_obs_constraint_names);
+	
 	//get the prior and posterior variance of the constraints
 	map<string, double> prior_const_var = la.prior_prediction_variance();
 	map<string, double> post_const_var;
-	if (nz_obs_names.size() > 0)
+	
+	//if at least one nz obs was found, then use schur complment, otherwise,
+	//just use the prior constraint uncertainty
+	if (num_nz_obs() > 0)
 		post_const_var = la.posterior_prediction_variance();
 	else
 		post_const_var = prior_const_var;
 	
 	//work out the offset for each constraint
 	//and set the values in the constraints_fosm Obseravtions
-	constraints_fosm.clear();
+	
+	//approx the probit function with the logit function - minimal difference
+	//the logit function approx tells us the value of the standard normal CDF
+	//at a given probability level (e.g. risk level)
 	double logit_approx = log((risk) / (1.0 - risk));
 	double new_constraint_val, old_constraint_val;
-	for (auto &name : ctl_ord_constraint_names)
+	constraints_fosm.clear();
+	for (auto &name : ctl_ord_obs_constraint_names)
 	{
 		prior_constraint_stdev[name] = sqrt(prior_const_var[name]);
 		post_constraint_stdev[name] = sqrt(post_const_var[name]);
@@ -577,10 +643,12 @@ void sequentialLP::calc_chance_constraint_offsets()
 		// WRT the required constraint value
 		if (constraint_sense_map[name] == ConstraintSense::less_than)
 			new_constraint_val = old_constraint_val + post_constraint_offset[name];
+
 		//if greater_than constraint, the substract from the sim value to move 
 		//negative WRT the required constraint value
 		else if (constraint_sense_map[name] == ConstraintSense::greater_than)
 			new_constraint_val = old_constraint_val - post_constraint_offset[name];
+		
 		else
 			new_constraint_val = constraints_sim[name];
 		constraints_fosm.insert(name, new_constraint_val);
@@ -593,15 +661,15 @@ void sequentialLP::build_constraint_bound_arrays()
 
 	//if needed update the fosm related attributes before
 	//calculating the residual vector!
-	if (risk != 0.5)
+	if (use_chance)
 		calc_chance_constraint_offsets();
 
 	//these residuals will include FOSM-based posterior offsets
 	vector<double> residuals = get_constraint_residual_vec();
 
-	for (int i = 0; i < ctl_ord_constraint_names.size(); ++i)
+	for (int i = 0; i < num_obs_constraints(); ++i)
 	{
-		string name = ctl_ord_constraint_names[i];
+		string name = ctl_ord_obs_constraint_names[i];
 		if (constraint_sense_map[name] == ConstraintSense::less_than)
 			constraint_ub[i] = residuals[i];
 		else
@@ -618,12 +686,18 @@ void sequentialLP::build_constraint_bound_arrays()
 		}
 	}
 
+	//TODO: add the pi constraint residuals to the end of the constraint bound vectors
+	for (int i = num_obs_constraints() - 1; i < num_constraints(); ++i)
+	{
+
+	}
+
 	return;
 }
 
 void sequentialLP::build_obj_func_coef_array()
 {	
-	ctl_ord_obj_func_coefs = new double[ctl_ord_dec_var_names.size()];
+	ctl_ord_obj_func_coefs = new double[num_dec_vars()];
 	double coef;
 	map<string, double>::iterator end = obj_func_coef_map.end();
 	int i = 0;
@@ -724,7 +798,7 @@ void sequentialLP::iter_solve()
 CoinPackedMatrix sequentialLP::jacobian_to_coinpackedmatrix()
 {
 	
-	Eigen::SparseMatrix<double> eig_ord_jco = jco.get_matrix(ctl_ord_constraint_names, ctl_ord_dec_var_names);
+	Eigen::SparseMatrix<double> eig_ord_jco = jco.get_matrix(ctl_ord_obs_constraint_names, ctl_ord_dec_var_names);
 
 	file_mgr.rec_ofstream() << "number of nonzero elements in response matrix: " << eig_ord_jco.nonZeros() << " of " << eig_ord_jco.size() << endl;
 	cout << "number of nonzero elements in response matrix: " << eig_ord_jco.nonZeros() << " of " << eig_ord_jco.size() << endl;
@@ -732,6 +806,7 @@ CoinPackedMatrix sequentialLP::jacobian_to_coinpackedmatrix()
 	//cout << eig_ord_jco << endl;
 
 	//the triplet elements to pass to the coinpackedmatrix constructor
+	//TODO: including prior information constraints
 	int * row_idx = new int[eig_ord_jco.nonZeros()];
 	int * col_idx = new int[eig_ord_jco.nonZeros()];
 	double * elems = new double[eig_ord_jco.nonZeros()];
@@ -798,7 +873,7 @@ void sequentialLP::iter_postsolve()
 	double diff, val;
 	Parameters upgrade_pars(all_pars_and_dec_vars);
 	string name;
-	for (int i = 0; i < ctl_ord_dec_var_names.size(); ++i)
+	for (int i = 0; i < num_dec_vars(); ++i)
 	{
 		name = ctl_ord_dec_var_names[i];
 		val = all_pars_and_dec_vars[name];
@@ -827,7 +902,7 @@ void sequentialLP::iter_postsolve()
 
 	//check for changes for in constraints
 	double max_abs_constraint_change = -1.0E+10;
-	for (auto &name : ctl_ord_constraint_names)
+	for (auto &name : ctl_ord_obs_constraint_names)
 	{
 		diff = abs(constraints_sim[name] - upgrade_obs[name]);
 		max_abs_constraint_change = (diff > max_abs_constraint_change) ? diff : max_abs_constraint_change;
@@ -839,7 +914,7 @@ void sequentialLP::iter_postsolve()
 	//if continuing, update the master decision var instance
 	all_pars_and_dec_vars.update_without_clear(ctl_ord_dec_var_names, upgrade_pars.get_data_vec(ctl_ord_dec_var_names));
 	
-	constraints_sim.update(ctl_ord_constraint_names,upgrade_obs.get_data_vec(ctl_ord_constraint_names));
+	constraints_sim.update(ctl_ord_obs_constraint_names,upgrade_obs.get_data_vec(ctl_ord_obs_constraint_names));
 
 	return;
 }
@@ -890,7 +965,7 @@ void sequentialLP::iter_presolve()
 		names = jco.get_sim_obs_names();
 		start = names.begin();
 		end = names.end();
-		for (auto &name : ctl_ord_constraint_names)
+		for (auto &name : ctl_ord_obs_constraint_names)
 			if (find(start, end, name) == end)
 				missing.push_back(name);
 		if (missing.size() > 0)

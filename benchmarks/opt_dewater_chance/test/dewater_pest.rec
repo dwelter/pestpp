@@ -1306,7 +1306,8 @@ h19_28                                     50              obgnme               
 h19_29                                     50              obgnme                   0
 
 Prior information
-PI_CONST1   + 1 * Q1 = 1e+06   1   LESS_THAN
+PI_CONST1   + 1 * Q4 = 1e+06   1   LESS_THAN
+ + 1 * Q1 = 1e+06   1   LESS_THAN
  + 1 * Q2 = 1e+06   1   LESS_THAN
  + 1 * Q3 = 1e+06   1   LESS_THAN
 
@@ -1317,3 +1318,238 @@ PEST SVD Information
 
    -----    Starting Optimization Iterations    ----    
 
+ warning: no ++opt_objective_function-->forming a generic objective function (1.0 coef for each decision var
+
+  -------------------------------------------------------------
+  ---  sequential linear programming problem information  ---  
+  -------------------------------------------------------------
+
+-->number of iterations of sequential linear programming (noptmax): 3
+-->objective function sense (direction): minimize
+  ---  decision variables active in SLP  ---  
+name                obj func coefficient     
+Q1                  1                        
+Q2                  1                        
+Q3                  1                        
+Q4                  1                        
+Q5                  1                        
+Q6                  1                        
+Q7                  1                        
+ note: bound and initial value info reported in 'parameter' section
+
+  ---  constraints in SLP  ---  
+name                sense               value               
+H05_12              less than           50                  
+H05_14              less than           50                  
+H05_16              less than           50                  
+H07_12              less than           50                  
+H07_16              less than           50                  
+H09_12              less than           50                  
+H09_14              less than           50                  
+H10_15              less than           50                  
+H13_15              less than           50                  
+H13_16              less than           50                  
+
+
+  ---------------------------------
+  --- starting LP iteration 1  ---  
+  ---------------------------------
+
+
+  ---  calculating response matrix for iteration 1  ---  
+
+saving iteration 1 reponse matrix to file: dewater_pest.1.jcb
+number of nonzero elements in response matrix: 70 of 70
+
+  constraint information at start of iteration 1
+name                     sense          value       residual    lower bound    upper bound
+H05_12               less than             50       -21.7241  -1.79769e+308       -21.7241
+H05_14               less than             50       -20.3448  -1.79769e+308       -20.3448
+H05_16               less than             50       -18.9655  -1.79769e+308       -18.9655
+H07_12               less than             50       -21.7241  -1.79769e+308       -21.7241
+H07_16               less than             50       -18.9655  -1.79769e+308       -18.9655
+H09_12               less than             50       -21.7241  -1.79769e+308       -21.7241
+H09_14               less than             50       -20.3448  -1.79769e+308       -20.3448
+H10_15               less than             50       -19.6552  -1.79769e+308       -19.6552
+H13_15               less than             50       -19.6552  -1.79769e+308       -19.6552
+H13_16               less than             50       -18.9655  -1.79769e+308       -18.9655
+  ---  solving linear program for iteration 1  ---  
+
+-->resolving dual in attempt to prove optimal...
+  ---  iteration 1 linear solution is proven optimal  ---  
+
+
+
+  ---  linear program solution complete for iteration 1  ---  
+  ---  processing results for iteration 1 LP solution  ---  
+
+
+
+     decision variable information at end of SLP iteration 1
+
+name                        current            new   objfunc coef    cur contrib    new contrib
+Q1                                0        1077.39              1              0        1077.39
+Q2                                0        78.2413              1              0        78.2413
+Q3                                0             -0              1              0             -0
+Q4                                0        768.949              1              0        768.949
+Q5                                0             -0              1              0             -0
+Q6                                0             -0              1              0             -0
+Q7                                0        941.075              1              0        941.075
+
+
+     constraint information at end of SLP iteration 1
+
+name                     sense       required        current       residual            new       residual
+H05_12               less than             50        71.7241       -21.7241             50              0
+H05_14               less than             50        70.3448       -20.3448        47.9256         2.0744
+H05_16               less than             50        68.9655       -18.9655             50              0
+H07_12               less than             50        71.7241       -21.7241        47.9472         2.0528
+H07_16               less than             50        68.9655       -18.9655        48.8833         1.1167
+H09_12               less than             50        71.7241       -21.7241             50              0
+H09_14               less than             50        70.3448       -20.3448        47.3819         2.6181
+H10_15               less than             50        69.6552       -19.6552        48.1416         1.8584
+H13_15               less than             50        69.6552       -19.6552        48.9843         1.0157
+H13_16               less than             50        68.9655       -18.9655             50              0
+
+
+  ---  iteration 1 objective function value:         2865.65  ---  
+
+
+
+  ---------------------------------
+  --- starting LP iteration 2  ---  
+  ---------------------------------
+
+
+  ---  calculating response matrix for iteration 2  ---  
+
+saving iteration 2 reponse matrix to file: dewater_pest.2.jcb
+number of nonzero elements in response matrix: 70 of 70
+
+  constraint information at start of iteration 2
+name                     sense          value       residual    lower bound    upper bound
+H05_12               less than             50              0  -1.79769e+308              0
+H05_14               less than             50         2.0744  -1.79769e+308         2.0744
+H05_16               less than             50              0  -1.79769e+308              0
+H07_12               less than             50         2.0528  -1.79769e+308         2.0528
+H07_16               less than             50         1.1167  -1.79769e+308         1.1167
+H09_12               less than             50              0  -1.79769e+308              0
+H09_14               less than             50         2.6181  -1.79769e+308         2.6181
+H10_15               less than             50         1.8584  -1.79769e+308         1.8584
+H13_15               less than             50         1.0157  -1.79769e+308         1.0157
+H13_16               less than             50              0  -1.79769e+308              0
+  ---  solving linear program for iteration 2  ---  
+ iteration 2 linear solution is proven optimal
+
+
+
+  ---  linear program solution complete for iteration 2  ---  
+  ---  processing results for iteration 2 LP solution  ---  
+
+
+
+     decision variable information at end of SLP iteration 2
+
+name                        current            new   objfunc coef    cur contrib    new contrib
+Q1                          1077.39        1077.39              1        1077.39        1077.39
+Q2                          78.2413        78.2413              1        78.2413        78.2413
+Q3                               -0             -0              1             -0             -0
+Q4                          768.949        768.949              1        768.949        768.949
+Q5                               -0             -0              1             -0             -0
+Q6                               -0             -0              1             -0             -0
+Q7                          941.075        941.075              1        941.075        941.075
+
+
+     constraint information at end of SLP iteration 2
+
+name                     sense       required        current       residual            new       residual
+H05_12               less than             50             50              0             50              0
+H05_14               less than             50        47.9256         2.0744        47.9256         2.0744
+H05_16               less than             50             50              0             50              0
+H07_12               less than             50        47.9472         2.0528        47.9472         2.0528
+H07_16               less than             50        48.8833         1.1167        48.8833         1.1167
+H09_12               less than             50             50              0             50              0
+H09_14               less than             50        47.3819         2.6181        47.3819         2.6181
+H10_15               less than             50        48.1416         1.8584        48.1416         1.8584
+H13_15               less than             50        48.9843         1.0157        48.9843         1.0157
+H13_16               less than             50             50              0             50              0
+
+
+  ---  iteration 2 objective function value:         2865.65  ---  
+
+
+
+  ---------------------------------
+  --- starting LP iteration 3  ---  
+  ---------------------------------
+
+
+  ---  calculating response matrix for iteration 3  ---  
+
+saving iteration 3 reponse matrix to file: dewater_pest.3.jcb
+number of nonzero elements in response matrix: 70 of 70
+
+  constraint information at start of iteration 3
+name                     sense          value       residual    lower bound    upper bound
+H05_12               less than             50              0  -1.79769e+308              0
+H05_14               less than             50         2.0744  -1.79769e+308         2.0744
+H05_16               less than             50              0  -1.79769e+308              0
+H07_12               less than             50         2.0528  -1.79769e+308         2.0528
+H07_16               less than             50         1.1167  -1.79769e+308         1.1167
+H09_12               less than             50              0  -1.79769e+308              0
+H09_14               less than             50         2.6181  -1.79769e+308         2.6181
+H10_15               less than             50         1.8584  -1.79769e+308         1.8584
+H13_15               less than             50         1.0157  -1.79769e+308         1.0157
+H13_16               less than             50              0  -1.79769e+308              0
+  ---  solving linear program for iteration 3  ---  
+ iteration 3 linear solution is proven optimal
+
+
+
+  ---  linear program solution complete for iteration 3  ---  
+  ---  processing results for iteration 3 LP solution  ---  
+
+
+
+     decision variable information at end of SLP iteration 3
+
+name                        current            new   objfunc coef    cur contrib    new contrib
+Q1                          1077.39        1077.39              1        1077.39        1077.39
+Q2                          78.2413        78.2413              1        78.2413        78.2413
+Q3                               -0             -0              1             -0             -0
+Q4                          768.949        768.949              1        768.949        768.949
+Q5                               -0             -0              1             -0             -0
+Q6                               -0             -0              1             -0             -0
+Q7                          941.075        941.075              1        941.075        941.075
+
+
+     constraint information at end of SLP iteration 3
+
+name                     sense       required        current       residual            new       residual
+H05_12               less than             50             50              0             50              0
+H05_14               less than             50        47.9256         2.0744        47.9256         2.0744
+H05_16               less than             50             50              0             50              0
+H07_12               less than             50        47.9472         2.0528        47.9472         2.0528
+H07_16               less than             50        48.8833         1.1167        48.8833         1.1167
+H09_12               less than             50             50              0             50              0
+H09_14               less than             50        47.3819         2.6181        47.3819         2.6181
+H10_15               less than             50        48.1416         1.8584        48.1416         1.8584
+H13_15               less than             50        48.9843         1.0157        48.9843         1.0157
+H13_16               less than             50             50              0             50              0
+
+
+  ---  iteration 3 objective function value:         2865.65  ---  
+
+-----------------------------------------
+     ---   OPTIMIZATION COMPLETE   ---   
+  Reason for terminating PEST++ simulation: unknown
+  Summary of termination criteria:
+  NOPTMAX = 3 ;  NOPT at termination = 0
+  NPHINORED = 3 ;  NPHINORED at termination = 0
+  NRELPAR = 3; RELPARSTP = 0.01 ;  NRELPAR at termination = 0
+  PHIREDSTP = 0.01; NPHISTP = 3
+  NPHISTP lowest PHI's:
+
+FINAL OPTIMISATION RESULTS
+
+Number of forward model runs performed during optimiztion: 27

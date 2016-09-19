@@ -53,7 +53,7 @@ private:
 
 	vector<double> iter_obj_values;
 	vector<string> ctl_ord_dec_var_names;
-	vector<string> ctl_ord_constraint_names;
+	vector<string> ctl_ord_obs_constraint_names;
 	vector<string> ctl_ord_pi_constraint_names;
 	vector<string> nz_obs_names;
 	vector<string> adj_par_names;
@@ -73,6 +73,13 @@ private:
 	FileManager file_mgr;
 	OutputFileWriter* out_wtr_ptr;
 		
+	int num_dec_vars() { return ctl_ord_dec_var_names.size(); }
+	int num_obs_constraints() { return ctl_ord_obs_constraint_names.size(); }
+	int num_pi_constraints() { return ctl_ord_pi_constraint_names.size(); }
+	int num_constraints() { return num_obs_constraints() + num_pi_constraints(); }
+	int num_adj_pars() { return adj_par_names.size(); }
+	int num_nz_obs() { return nz_obs_names.size(); }
+
 	//solve the current LP problem
 	void iter_solve();
 	
