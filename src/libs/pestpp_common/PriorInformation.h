@@ -51,6 +51,7 @@ public:
 	const std::string& get_group() const{return group;}
 	const std::string *get_group_ptr() const{return &group;}
 	std::map<std::string, double> get_atom_factors();
+	std::vector<PIAtom> get_atoms()const { return pi_atoms; }
 	~PriorInformationRec(void);
 private:
 	std::vector<PIAtom> pi_atoms;
@@ -68,6 +69,7 @@ public:
 	PriorInformation() {}	
 	~PriorInformation() {}
 	std::pair<std::string, std::string> AddRecord(const std::string &pi_line);
+	void AddRecord(const std::string &name, const PriorInformationRec* pi_rec_ptr);
 	PriorInformation::iterator begin(){return prior_info_map.begin();}
 	PriorInformation::const_iterator begin() const {return prior_info_map.begin();}
 	PriorInformation::iterator end() {return prior_info_map.end();}

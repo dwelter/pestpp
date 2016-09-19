@@ -48,7 +48,7 @@ void sequentialLP::throw_sequentialLP_error(string message)
 
 vector<double> sequentialLP::get_constraint_residual_vec()
 {
-	if (risk != 0.5)
+	if (use_chance)
 		return get_constraint_residual_vec(constraints_fosm);
 	else
 		return get_constraint_residual_vec(constraints_sim);
@@ -128,7 +128,7 @@ void sequentialLP::initial_report()
 		f_rec << setw(20) << constraints_obs.get_rec(name) << endl;
 	}
 
-	if (risk != 0.5)
+	if (use_chance)
 	{
 		f_rec << endl << endl << "  ---  chance constraint FOSM information  ---  " << endl;
 		f_rec << "   adjustable parameters used in FOSM calculations:" << endl;
@@ -370,8 +370,10 @@ void sequentialLP::initialize_and_check()
 			{
 				ctl_ord_pi_constraint_names.push_back(pi_name);
 				pi_rec = pinfo->get_pi_rec_ptr(pi_name);
-				pi_constraint_factors[pi_name] = pi_rec.get_atom_factors();
-				pi_constraint_rhs[pi_name] = pi_rec.get_obs_value();
+				//pi_constraint_factors[pi_name] = pi_rec.get_atom_factors();
+				//pi_constraint_rhs[pi_name] = pi_rec.get_obs_value();
+				constraints_pi.AddRecord(pi_name, &pi_rec);
+
 			}
 		}
 
@@ -381,14 +383,15 @@ void sequentialLP::initialize_and_check()
 		map<string, vector<string>> missing_map;
 		if (num_pi_constraints() > 0)
 		{
-			for (auto &pi_const : pi_constraint_factors)
+			for (auto &pi_name : ctl_ord_pi_constraint_names)
 			{
+				pi_rec = constraints_pi.get_pi_rec_ptr(pi_name);
 				missing.clear();
-				for (auto &pi_factor : pi_const.second)
+				for (auto &pi_factor : pi_rec.get_atom_factors())
 					if (find(start, end, pi_factor.first) == end)
 						missing.push_back(pi_factor.first);
 				if (missing.size() > 0)
-					missing_map[pi_const.first] = missing;
+					missing_map[pi_name] = missing;
 			}
 		}
 		if (missing_map.size() > 0)
@@ -562,7 +565,7 @@ void sequentialLP::initialize_and_check()
 			}
 		}
 		if (num_adj_pars() == 0)
-			throw_sequentialLP_error("++opt_risk != 0.5, but no adjustable parameters found in control file");
+			throw_sequentialLP_error("++opt_use_chance, but no adjustable parameters found in control file");
 
 		//look for non-zero weighted obs
 		start = ctl_ord_obs_constraint_names.begin();
@@ -703,11 +706,26 @@ void sequentialLP::build_constraint_bound_arrays()
 			constraint_lb[i] = residuals[i];
 		}
 	}
-
-	//TODO: add the pi constraint residuals to the end of the constraint bound vectors
-	for (int i = num_obs_constraints() - 1; i < num_constraints(); ++i)
+	
+	int noc = num_obs_constraints();
+	for (int i = 0; i < num_pi_constraints(); ++i)
 	{
+		string name = ctl_ord_pi_constraint_names[i];
+		double residual = -constraints_pi.get_pi_rec_ptr(name).calc_residual(all_pars_and_dec_vars);
+		if (constraint_sense_map[name] == ConstraintSense::less_than)
+			constraint_ub[i+noc] = residual;
+		else
+			constraint_ub[i+noc] = COIN_DBL_MAX;
 
+		if (constraint_sense_map[name] == ConstraintSense::greater_than)
+			constraint_lb[i+noc] = residual;
+		else
+			constraint_lb[i] = -COIN_DBL_MAX;
+		if (constraint_sense_map[name] == ConstraintSense::equal_to)
+		{
+			constraint_ub[i+noc] = residual;
+			constraint_lb[i+noc] = residual;
+		}
 	}
 
 	return;
@@ -741,7 +759,7 @@ void sequentialLP::iter_solve()
 	//set/update the constraint bound arrays
 	build_constraint_bound_arrays();
 
-	if (risk != 0.5)
+	if (use_chance)
 		presolve_fosm_report();
 
 	//report to rec file
@@ -817,9 +835,9 @@ int sequentialLP::num_nz_pi_constraint_elements()
 {
 	int num = 0;
 	
-	for (auto &pi_const : pi_constraint_factors)
+	for (auto &pi_name : ctl_ord_pi_constraint_names)
 	{
-		num += pi_const.second.size();
+		num += constraints_pi.get_pi_rec_ptr(pi_name).get_atom_factors().size();
 	}
 	return num;
 }
@@ -870,7 +888,7 @@ CoinPackedMatrix sequentialLP::jacobian_to_coinpackedmatrix()
 	
 	for (auto &pi_name : ctl_ord_pi_constraint_names)
 	{
-		for (auto &pi_factor : pi_constraint_factors[pi_name])
+		for (auto &pi_factor : constraints_pi.get_pi_rec_ptr(pi_name).get_atom_factors())
 		{
 			jcol = find(start, end, pi_factor.first) - start;
 			row_idx[elem_count] = irow;

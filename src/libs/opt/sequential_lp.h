@@ -48,8 +48,8 @@ private:
 	map<string, double> post_constraint_stdev;
 	map<string, double> prior_constraint_offset;
 	map<string, double> post_constraint_offset;
-	map<string, map<string, double>> pi_constraint_factors;
-	map<string, double> pi_constraint_rhs;
+	//map<string, map<string, double>> pi_constraint_factors;
+	//map<string, double> pi_constraint_rhs;
 
 	vector<double> iter_obj_values;
 	vector<string> ctl_ord_dec_var_names;
@@ -64,6 +64,7 @@ private:
 	Observations constraints_obs;
 	Observations constraints_sim;
 	Observations constraints_fosm;
+	PriorInformation constraints_pi;
 	Observations obj_func_obs;
 	ObservationInfo obj_func_info;
 	Pest pest_scenario;
