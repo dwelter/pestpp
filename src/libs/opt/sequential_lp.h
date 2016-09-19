@@ -18,8 +18,7 @@ class sequentialLP
 	enum ConstraintSense {less_than,greater_than,equal_to};
 public:
 	sequentialLP(Pest &_pest_scenario, RunManagerAbstract* _run_mgr_ptr, 
-		         Covariance &_parcov, 
-				 FileManager &_file_mgr, OutputFileWriter* _out_wtr_ptr);
+		         Covariance &_parcov, FileManager* _file_mgr);
 	void initialize_and_check();
 	void solve();
 
@@ -71,8 +70,8 @@ private:
 	RunManagerAbstract* run_mgr_ptr;
 	Covariance parcov;
 	Covariance obscov;
-	FileManager file_mgr;
-	OutputFileWriter* out_wtr_ptr;
+	FileManager* file_mgr;
+	//OutputFileWriter* out_wtr_ptr;
 		
 	int num_dec_vars() { return ctl_ord_dec_var_names.size(); }
 	int num_obs_constraints() { return ctl_ord_obs_constraint_names.size(); }

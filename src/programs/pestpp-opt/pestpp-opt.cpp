@@ -265,17 +265,22 @@ int main(int argc, char* argv[])
 		}
 
 		//Initialize OutputFileWriter to hadle IO of suplementary files (.par, .par, .svd)
-		//bool save_eign = pest_scenario.get_svd_info().eigwrite > 0;	
+		//bool save_eign = pest_scenario.get_svd_info().eigwrite > 0;	=
 		OutputFileWriter output_file_writer(file_manager, pest_scenario, restart_flag);
-		output_file_writer.set_svd_output_opt(pest_scenario.get_svd_info().eigwrite);
+		//output_file_writer.set_svd_output_opt(pest_scenario.get_svd_info().eigwrite);
 		if (!restart_flag)
 		{
-			output_file_writer.scenario_report(fout_rec);
+			//output_file_writer.scenario_report(fout_rec);
+			output_file_writer.scenario_io_report(fout_rec);
+			output_file_writer.scenario_pargroup_report(fout_rec);
+			output_file_writer.scenario_par_report(fout_rec);
+			output_file_writer.scenario_obs_report(fout_rec);
+			output_file_writer.scenario_pi_report(fout_rec);
 		}
-		if (pest_scenario.get_pestpp_options().get_iter_summary_flag())
+		/*if (pest_scenario.get_pestpp_options().get_iter_summary_flag())
 		{
 			output_file_writer.write_par_iter(0, pest_scenario.get_ctl_parameters());
-		}
+		}*/
 		RunManagerAbstract *run_manager_ptr;
 		if (run_manager_type == RunManagerType::YAMR)
 		{
@@ -447,8 +452,7 @@ int main(int argc, char* argv[])
 		{
 			fout_rec << "   -----    Starting Optimization Iterations    ----    " << endl << endl;
 		}
-		sequentialLP slp(pest_scenario, run_manager_ptr, 
-				         parcov, file_manager, &output_file_writer);
+		sequentialLP slp(pest_scenario, run_manager_ptr,parcov, &file_manager);
 
 		slp.solve();
 		//optimum_run = slp.get_optimum_run();

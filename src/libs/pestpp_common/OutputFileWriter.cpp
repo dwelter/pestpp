@@ -169,7 +169,24 @@ void OutputFileWriter::scenario_report(std::ostream &os)
 	os << setw(0) << "    Number of parameters = " << pest_scenario.get_ctl_ordered_par_names().size() << endl;
 	os << setw(0) << "    Number of adjustable parameters = " << pest_scenario.get_n_adj_par() << endl;
 	os << setw(0) << "    Number of observations = " << pest_scenario.get_ctl_ordered_obs_names().size() << endl;
-	os << setw(0) << "    Number of prior estimates = "  << pest_scenario.get_ctl_ordered_pi_names().size() << endl << endl;
+	os << setw(0) << "    Number of prior estimates = " << pest_scenario.get_ctl_ordered_pi_names().size() << endl << endl;
+
+	os << pest_scenario.get_control_info() << endl;
+	os << pest_scenario.get_pestpp_options() << endl;
+
+	scenario_io_report(os);
+	scenario_pargroup_report(os);
+	scenario_par_report(os);
+	scenario_obs_report(os);
+	scenario_pi_report(os);
+
+	os << endl << pest_scenario.get_svd_info() << endl;
+	os << endl;
+
+}
+
+void OutputFileWriter::scenario_io_report(std::ostream &os)
+{
 
 	os << "Model command line(s):- " << endl;
 	for (auto &cmd : pest_scenario.get_comline_vec())
@@ -189,7 +206,7 @@ void OutputFileWriter::scenario_report(std::ostream &os)
 	{
 		os << "      " << f << endl;
 	}
-	os << endl <<  "    instruction files:" << endl;
+	os << endl << "    instruction files:" << endl;
 	for (auto &f : pest_scenario.get_insfile_vec())
 	{
 		os << "      " << f << endl;
@@ -200,16 +217,12 @@ void OutputFileWriter::scenario_report(std::ostream &os)
 		os << "      " << f << endl;
 	}
 	os << endl << endl;
+}
 
-	os << pest_scenario.get_control_info() << endl;
-	os << pest_scenario.get_pestpp_options() << endl;
-
+void OutputFileWriter::scenario_pargroup_report(std::ostream &os)
+{
 	const ParameterGroupRec *grp_rec;
-	map<int, string> trans_type;
-	trans_type[0] = "none";
-	trans_type[1] = "fixed";
-	trans_type[2] = "tied";
-	trans_type[3] = "log";
+	
 	os << "Parameter group information" << endl;
 	os << left << setw(15) << "NAME" << right << setw(15) << "INCREMENT TYPE" << setw(25) << "DERIVATIVE INCREMENT";
 	os << setw(25) << "INCREMENT LOWER BOUND" << setw(15) << "FORCE CENTRAL" << setw(25) << "INCREMENT MULTIPLIER" << endl;
@@ -219,17 +232,27 @@ void OutputFileWriter::scenario_report(std::ostream &os)
 		os << left << setw(15) << lower_cp(grp_rec->name) << right << setw(15) << grp_rec->inctyp << setw(25) << grp_rec->derinc;
 		os << setw(25) << grp_rec->derinclb << setw(15) << grp_rec->forcen << setw(25) << grp_rec->derincmul << endl;
 	}
+	os << endl << endl;
+}
+
+void OutputFileWriter::scenario_par_report(std::ostream &os)
+{
+	map<int, string> trans_type;
+	trans_type[0] = "none";
+	trans_type[1] = "fixed";
+	trans_type[2] = "tied";
+	trans_type[3] = "log";
 	os << endl << "Parameter information" << endl;
 	os << left << setw(15) << "NAME" << setw(10) << "TRANSFORMATION" << right << setw(20) << "CHANGE LIMIT" << setw(15) << "INITIAL VALUE";
-	os << setw(15) << "LOWER BOUND";	
+	os << setw(15) << "LOWER BOUND";
 	os << setw(15) << "UPPER BOUND" << setw(15) << "GROUP";
-	
+
 	os << setw(15) << "SCALE" << setw(15) << "OFFSET" << setw(20) << "DERIVATIVE COMMAND" << endl;
 	const ParameterRec* par_rec;
 	for (auto &par_name : pest_scenario.get_ctl_ordered_par_names())
 	{
-		par_rec = pest_scenario.get_ctl_parameter_info().get_parameter_rec_ptr(par_name);		
-		os << left <<setw(15) << lower_cp(par_name);
+		par_rec = pest_scenario.get_ctl_parameter_info().get_parameter_rec_ptr(par_name);
+		os << left << setw(15) << lower_cp(par_name);
 		os << setw(10) << trans_type[static_cast<int>(par_rec->tranform_type)];
 		os << right << setw(20) << par_rec->chglim;
 		os << setw(15) << par_rec->init_value;
@@ -240,18 +263,30 @@ void OutputFileWriter::scenario_report(std::ostream &os)
 		os << setw(15) << par_rec->offset;
 		os << setw(20) << par_rec->dercom << endl;
 	}
+	os << endl << endl;
+}
+
+void OutputFileWriter::scenario_obs_report(std::ostream &os)
+{
+
 	os << endl << "Observation information" << endl;
 	os << left << setw(25) << "NAME" << right << setw(20) << "VALUE" << setw(20) << "GROUP" << setw(20) << "WEIGHT" << endl;
 	const ObservationRec* obs_rec;
 	const Observations &obs = pest_scenario.get_ctl_observations();
 	for (auto &obs_name : pest_scenario.get_ctl_ordered_obs_names())
 	{
-		obs_rec = pest_scenario.get_ctl_observation_info().get_observation_rec_ptr(obs_name);		
+		obs_rec = pest_scenario.get_ctl_observation_info().get_observation_rec_ptr(obs_name);
 		os << left << setw(25) << lower_cp(obs_name);
 		os << right << setw(20) << obs.get_rec(obs_name);
 		os << setw(20) << lower_cp(obs_rec->group);
 		os << setw(20) << obs_rec->weight << endl;
 	}
+	os << endl << endl;
+}
+
+
+void OutputFileWriter::scenario_pi_report(std::ostream &os)
+{
 	const PriorInformation &pi = pest_scenario.get_prior_info();
 	os << endl << "Prior information" << endl;
 	if (pi.size() == 0)
@@ -262,8 +297,7 @@ void OutputFileWriter::scenario_report(std::ostream &os)
 	{
 		os << pi_name.first << "  " << pi_name.second;
 	}
-	os << endl << pest_scenario.get_svd_info() << endl;
-	os << endl;
+	os << endl << endl;
 }
 
 

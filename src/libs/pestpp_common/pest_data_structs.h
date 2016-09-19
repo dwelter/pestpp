@@ -201,7 +201,7 @@ public:
 		double _super_eigthres = 1.0E-6, SVD_PACK _svd_pack = PestppOptions::EIGEN,
 		MAT_INV _mat_inv = PestppOptions::JTQJ, double _auto_norm = -999,
 		double _super_relparmax = 0.1, int max_run_fail = 3,
-		bool iter_summary_flag = true, bool der_forgive = true,
+		bool iter_summary_flag = false, bool der_forgive = true,
 		double overdue_reched_fac = 1.15, double overdue_giveup_fac = 100, double reg_frac = -1.0,
 		GLOBAL_OPT _global_opt = PestppOptions::NONE, 
 		double _de_f=0.8, double _de_cr=0.9, int _de_npopulation=40, int _de_max_gen=100, bool _de_dither_f=true);
@@ -238,7 +238,7 @@ public:
 	void set_max_run_fail(int _max_run_fail){ max_run_fail = _max_run_fail; }
 	void set_max_super_frz_iter(int n) { max_super_frz_iter = n; }
 	void set_max_reg_iter(int n) { max_reg_iter = n; }	
-	void set_iter_summary_flag(bool _iter_summary_flag){iter_summary_flag = _iter_summary_flag;}
+	void set_iter_summary_flag(bool _iter_summary_flag) {iter_summary_flag = _iter_summary_flag;}
 	void set_uncert_flag(bool _flag){uncert = _flag; }
 	bool get_uncert_flag()const { return uncert; }
 	void set_prediction_names(vector<string> _names){ prediction_names = _names; }

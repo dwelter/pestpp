@@ -51,6 +51,12 @@ public:
 	void write_svd(Eigen::VectorXd &Sigma, Eigen::SparseMatrix<double> &Vt, double lambda, const Parameters &freeze_numeric_pars, Eigen::VectorXd &Sigma_trunc);
 	void write_svd_iteration(int iteration_no);
 
+	void scenario_pargroup_report(std::ostream &os);
+	void scenario_io_report(std::ostream &os);
+	void scenario_par_report(std::ostream &os);
+	void scenario_obs_report(std::ostream &os);
+	void scenario_pi_report(std::ostream &os);
+
 	void phi_report(std::ostream &os,int const iter, int const nruns,map<string, double> const phi_comps, double const dynamic_reg_weight,bool final=false);
 	void par_report(std::ostream &os, Parameters const &new_ctl_pars);
 	void par_report(std::ostream &os, int const iter, Parameters const &new_pars, Parameters const &old_pars, string par_type);
