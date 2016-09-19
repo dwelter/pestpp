@@ -1351,6 +1351,16 @@ H13_15              less than           50
 H13_16              less than           50                  
 
 
+  ---  chance constraint FOSM information  ---  
+   adjustable parameters used in FOSM calculations:
+UP_GRAD        
+DN_GRAD        
+
+
+  ---  WARNING: no nonzero weight observations found.
+              Prior constraint uncertainty will be used in chance constraint calculations
+
+
   ---------------------------------
   --- starting LP iteration 1  ---  
   ---------------------------------
@@ -1361,18 +1371,35 @@ H13_16              less than           50
 saving iteration 1 reponse matrix to file: dewater_pest.1.jcb
 number of nonzero elements in response matrix: 70 of 70
 
+  FOSM-based chance constraint information at start of iteration 1
+name                     sense      sim value    prior stdev     post stdev         offset  new sim value
+H05_12               less than        71.7241        3.58799        3.58799        10.5646        82.2887
+H05_14               less than        70.3448        3.53792        3.53792        10.4172         80.762
+H05_16               less than        68.9655        3.55474        3.55474        10.4667        79.4322
+H07_12               less than        71.7241        3.58799        3.58799        10.5646        82.2887
+H07_16               less than        68.9655        3.55474        3.55474        10.4667        79.4322
+H09_12               less than        71.7241        3.58799        3.58799        10.5646        82.2887
+H09_14               less than        70.3448        3.53792        3.53792        10.4172         80.762
+H10_15               less than        69.6552        3.53733        3.53733        10.4155        80.0707
+H13_15               less than        69.6552        3.53733        3.53733        10.4155        80.0707
+H13_16               less than        68.9655        3.55474        3.55474        10.4667        79.4322
+  note: 'offset' is the value added to the simulated constraint value to account
+        for the uncertainty in the constraint value arsing for uncertainty in the 
+        adjustable parameters identified in the control file.
+
+
   constraint information at start of iteration 1
 name                     sense          value       residual    lower bound    upper bound
-H05_12               less than             50       -21.7241  -1.79769e+308       -21.7241
-H05_14               less than             50       -20.3448  -1.79769e+308       -20.3448
-H05_16               less than             50       -18.9655  -1.79769e+308       -18.9655
-H07_12               less than             50       -21.7241  -1.79769e+308       -21.7241
-H07_16               less than             50       -18.9655  -1.79769e+308       -18.9655
-H09_12               less than             50       -21.7241  -1.79769e+308       -21.7241
-H09_14               less than             50       -20.3448  -1.79769e+308       -20.3448
-H10_15               less than             50       -19.6552  -1.79769e+308       -19.6552
-H13_15               less than             50       -19.6552  -1.79769e+308       -19.6552
-H13_16               less than             50       -18.9655  -1.79769e+308       -18.9655
+H05_12               less than             50       -32.2887  -1.79769e+308       -32.2887
+H05_14               less than             50        -30.762  -1.79769e+308        -30.762
+H05_16               less than             50       -29.4322  -1.79769e+308       -29.4322
+H07_12               less than             50       -32.2887  -1.79769e+308       -32.2887
+H07_16               less than             50       -29.4322  -1.79769e+308       -29.4322
+H09_12               less than             50       -32.2887  -1.79769e+308       -32.2887
+H09_14               less than             50        -30.762  -1.79769e+308        -30.762
+H10_15               less than             50       -30.0707  -1.79769e+308       -30.0707
+H13_15               less than             50       -30.0707  -1.79769e+308       -30.0707
+H13_16               less than             50       -29.4322  -1.79769e+308       -29.4322
   ---  solving linear program for iteration 1  ---  
 
 -->resolving dual in attempt to prove optimal...
@@ -1388,31 +1415,31 @@ H13_16               less than             50       -18.9655  -1.79769e+308     
      decision variable information at end of SLP iteration 1
 
 name                        current            new   objfunc coef    cur contrib    new contrib
-Q1                                0        1077.39              1              0        1077.39
-Q2                                0        78.2413              1              0        78.2413
+Q1                                0         1442.8              1              0         1442.8
+Q2                                0        388.815              1              0        388.815
 Q3                                0             -0              1              0             -0
-Q4                                0        768.949              1              0        768.949
+Q4                                0         981.61              1              0         981.61
 Q5                                0             -0              1              0             -0
 Q6                                0             -0              1              0             -0
-Q7                                0        941.075              1              0        941.075
+Q7                                0        1550.66              1              0        1550.66
 
 
      constraint information at end of SLP iteration 1
 
 name                     sense       required        current       residual            new       residual
-H05_12               less than             50        71.7241       -21.7241             50              0
-H05_14               less than             50        70.3448       -20.3448        47.9256         2.0744
-H05_16               less than             50        68.9655       -18.9655             50              0
-H07_12               less than             50        71.7241       -21.7241        47.9472         2.0528
-H07_16               less than             50        68.9655       -18.9655        48.8833         1.1167
-H09_12               less than             50        71.7241       -21.7241             50              0
-H09_14               less than             50        70.3448       -20.3448        47.3819         2.6181
-H10_15               less than             50        69.6552       -19.6552        48.1416         1.8584
-H13_15               less than             50        69.6552       -19.6552        48.9843         1.0157
-H13_16               less than             50        68.9655       -18.9655             50              0
+H05_12               less than             50        71.7241       -32.2887        39.4354        10.5646
+H05_14               less than             50        70.3448        -30.762        36.3143        13.6857
+H05_16               less than             50        68.9655       -29.4322        39.5333        10.4667
+H07_12               less than             50        71.7241       -32.2887         36.661         13.339
+H07_16               less than             50        68.9655       -29.4322        37.8904        12.1096
+H09_12               less than             50        71.7241       -32.2887        39.4354        10.5646
+H09_14               less than             50        70.3448        -30.762         35.811         14.189
+H10_15               less than             50        69.6552       -30.0707        36.7259        13.2741
+H13_15               less than             50        69.6552       -30.0707        37.5279        12.4721
+H13_16               less than             50        68.9655       -29.4322        39.5333        10.4667
 
 
-  ---  iteration 1 objective function value:         2865.65  ---  
+  ---  iteration 1 objective function value:         4363.88  ---  
 
 
 
@@ -1426,20 +1453,39 @@ H13_16               less than             50        68.9655       -18.9655     
 saving iteration 2 reponse matrix to file: dewater_pest.2.jcb
 number of nonzero elements in response matrix: 70 of 70
 
+  FOSM-based chance constraint information at start of iteration 2
+name                     sense      sim value    prior stdev     post stdev         offset  new sim value
+H05_12               less than        39.4354        3.58799        3.58799        10.5646             50
+H05_14               less than        36.3143        3.53792        3.53792        10.4172        46.7315
+H05_16               less than        39.5333         3.5541         3.5541        10.4648        49.9981
+H07_12               less than         36.661        3.58748        3.58748        10.5631        47.2241
+H07_16               less than        37.8904        3.55474        3.55474        10.4667        48.3571
+H09_12               less than        39.4354        3.58799        3.58799        10.5646             50
+H09_14               less than         35.811        3.53735        3.53735        10.4155        46.2265
+H10_15               less than        36.7259        3.53733        3.53733        10.4155        47.1414
+H13_15               less than        37.5279        3.53733        3.53733        10.4155        47.9434
+H13_16               less than        39.5333         3.5541         3.5541        10.4648        49.9981
+  note: 'offset' is the value added to the simulated constraint value to account
+        for the uncertainty in the constraint value arsing for uncertainty in the 
+        adjustable parameters identified in the control file.
+
+
   constraint information at start of iteration 2
 name                     sense          value       residual    lower bound    upper bound
-H05_12               less than             50              0  -1.79769e+308              0
-H05_14               less than             50         2.0744  -1.79769e+308         2.0744
-H05_16               less than             50              0  -1.79769e+308              0
-H07_12               less than             50         2.0528  -1.79769e+308         2.0528
-H07_16               less than             50         1.1167  -1.79769e+308         1.1167
-H09_12               less than             50              0  -1.79769e+308              0
-H09_14               less than             50         2.6181  -1.79769e+308         2.6181
-H10_15               less than             50         1.8584  -1.79769e+308         1.8584
-H13_15               less than             50         1.0157  -1.79769e+308         1.0157
-H13_16               less than             50              0  -1.79769e+308              0
+H05_12               less than             50   -1.96714e-05  -1.79769e+308   -1.96714e-05
+H05_14               less than             50        3.26851  -1.79769e+308        3.26851
+H05_16               less than             50     0.00187873  -1.79769e+308     0.00187873
+H07_12               less than             50        2.77588  -1.79769e+308        2.77588
+H07_16               less than             50        1.64287  -1.79769e+308        1.64287
+H09_12               less than             50   -1.96714e-05  -1.79769e+308   -1.96714e-05
+H09_14               less than             50        3.77348  -1.79769e+308        3.77348
+H10_15               less than             50        2.85864  -1.79769e+308        2.85864
+H13_15               less than             50        2.05664  -1.79769e+308        2.05664
+H13_16               less than             50     0.00187873  -1.79769e+308     0.00187873
   ---  solving linear program for iteration 2  ---  
- iteration 2 linear solution is proven optimal
+
+-->resolving dual in attempt to prove optimal...
+  ---  iteration 2 linear solution is proven optimal  ---  
 
 
 
@@ -1451,31 +1497,31 @@ H13_16               less than             50              0  -1.79769e+308     
      decision variable information at end of SLP iteration 2
 
 name                        current            new   objfunc coef    cur contrib    new contrib
-Q1                          1077.39        1077.39              1        1077.39        1077.39
-Q2                          78.2413        78.2413              1        78.2413        78.2413
+Q1                           1442.8         1442.8              1         1442.8         1442.8
+Q2                          388.815        388.815              1        388.815        388.815
 Q3                               -0             -0              1             -0             -0
-Q4                          768.949        768.949              1        768.949        768.949
+Q4                           981.61        981.611              1         981.61        981.611
 Q5                               -0             -0              1             -0             -0
 Q6                               -0             -0              1             -0             -0
-Q7                          941.075        941.075              1        941.075        941.075
+Q7                          1550.66        1550.66              1        1550.66        1550.66
 
 
      constraint information at end of SLP iteration 2
 
 name                     sense       required        current       residual            new       residual
-H05_12               less than             50             50              0             50              0
-H05_14               less than             50        47.9256         2.0744        47.9256         2.0744
-H05_16               less than             50             50              0             50              0
-H07_12               less than             50        47.9472         2.0528        47.9472         2.0528
-H07_16               less than             50        48.8833         1.1167        48.8833         1.1167
-H09_12               less than             50             50              0             50              0
-H09_14               less than             50        47.3819         2.6181        47.3819         2.6181
-H10_15               less than             50        48.1416         1.8584        48.1416         1.8584
-H13_15               less than             50        48.9843         1.0157        48.9843         1.0157
-H13_16               less than             50             50              0             50              0
+H05_12               less than             50        39.4354   -1.96714e-05        39.4354        10.5646
+H05_14               less than             50        36.3143        3.26851        36.3143        13.6857
+H05_16               less than             50        39.5333     0.00187873        39.5333        10.4667
+H07_12               less than             50         36.661        2.77588         36.661         13.339
+H07_16               less than             50        37.8904        1.64287        37.8904        12.1096
+H09_12               less than             50        39.4354   -1.96714e-05        39.4354        10.5646
+H09_14               less than             50         35.811        3.77348         35.811         14.189
+H10_15               less than             50        36.7259        2.85864        36.7258        13.2742
+H13_15               less than             50        37.5279        2.05664        37.5279        12.4721
+H13_16               less than             50        39.5333     0.00187873        39.5333        10.4667
 
 
-  ---  iteration 2 objective function value:         2865.65  ---  
+  ---  iteration 2 objective function value:         4363.88  ---  
 
 
 
@@ -1489,20 +1535,39 @@ H13_16               less than             50             50              0     
 saving iteration 3 reponse matrix to file: dewater_pest.3.jcb
 number of nonzero elements in response matrix: 70 of 70
 
+  FOSM-based chance constraint information at start of iteration 3
+name                     sense      sim value    prior stdev     post stdev         offset  new sim value
+H05_12               less than        39.4354        3.58799        3.58799        10.5646             50
+H05_14               less than        36.3143        3.53792        3.53792        10.4172        46.7315
+H05_16               less than        39.5333         3.5541         3.5541        10.4648        49.9981
+H07_12               less than         36.661          3.587          3.587        10.5617        47.2227
+H07_16               less than        37.8904         3.5541         3.5541        10.4648        48.3552
+H09_12               less than        39.4354        3.58748        3.58748        10.5631        49.9985
+H09_14               less than         35.811        3.53735        3.53735        10.4155        46.2265
+H10_15               less than        36.7258        3.53837        3.53837        10.4185        47.1443
+H13_15               less than        37.5279        3.53733        3.53733        10.4155        47.9434
+H13_16               less than        39.5333         3.5541         3.5541        10.4648        49.9981
+  note: 'offset' is the value added to the simulated constraint value to account
+        for the uncertainty in the constraint value arsing for uncertainty in the 
+        adjustable parameters identified in the control file.
+
+
   constraint information at start of iteration 3
 name                     sense          value       residual    lower bound    upper bound
-H05_12               less than             50              0  -1.79769e+308              0
-H05_14               less than             50         2.0744  -1.79769e+308         2.0744
-H05_16               less than             50              0  -1.79769e+308              0
-H07_12               less than             50         2.0528  -1.79769e+308         2.0528
-H07_16               less than             50         1.1167  -1.79769e+308         1.1167
-H09_12               less than             50              0  -1.79769e+308              0
-H09_14               less than             50         2.6181  -1.79769e+308         2.6181
-H10_15               less than             50         1.8584  -1.79769e+308         1.8584
-H13_15               less than             50         1.0157  -1.79769e+308         1.0157
-H13_16               less than             50              0  -1.79769e+308              0
+H05_12               less than             50   -1.96714e-05  -1.79769e+308   -1.96714e-05
+H05_14               less than             50        3.26851  -1.79769e+308        3.26851
+H05_16               less than             50     0.00187873  -1.79769e+308     0.00187873
+H07_12               less than             50         2.7773  -1.79769e+308         2.7773
+H07_16               less than             50        1.64478  -1.79769e+308        1.64478
+H09_12               less than             50     0.00148371  -1.79769e+308     0.00148371
+H09_14               less than             50        3.77348  -1.79769e+308        3.77348
+H10_15               less than             50        2.85569  -1.79769e+308        2.85569
+H13_15               less than             50        2.05664  -1.79769e+308        2.05664
+H13_16               less than             50     0.00187873  -1.79769e+308     0.00187873
   ---  solving linear program for iteration 3  ---  
- iteration 3 linear solution is proven optimal
+
+-->resolving dual in attempt to prove optimal...
+  ---  iteration 3 linear solution is proven optimal  ---  
 
 
 
@@ -1514,31 +1579,31 @@ H13_16               less than             50              0  -1.79769e+308     
      decision variable information at end of SLP iteration 3
 
 name                        current            new   objfunc coef    cur contrib    new contrib
-Q1                          1077.39        1077.39              1        1077.39        1077.39
-Q2                          78.2413        78.2413              1        78.2413        78.2413
+Q1                           1442.8         1442.8              1         1442.8         1442.8
+Q2                          388.815        388.815              1        388.815        388.815
 Q3                               -0             -0              1             -0             -0
-Q4                          768.949        768.949              1        768.949        768.949
+Q4                          981.611        981.611              1        981.611        981.611
 Q5                               -0             -0              1             -0             -0
 Q6                               -0             -0              1             -0             -0
-Q7                          941.075        941.075              1        941.075        941.075
+Q7                          1550.66        1550.66              1        1550.66        1550.66
 
 
      constraint information at end of SLP iteration 3
 
 name                     sense       required        current       residual            new       residual
-H05_12               less than             50             50              0             50              0
-H05_14               less than             50        47.9256         2.0744        47.9256         2.0744
-H05_16               less than             50             50              0             50              0
-H07_12               less than             50        47.9472         2.0528        47.9472         2.0528
-H07_16               less than             50        48.8833         1.1167        48.8833         1.1167
-H09_12               less than             50             50              0             50              0
-H09_14               less than             50        47.3819         2.6181        47.3819         2.6181
-H10_15               less than             50        48.1416         1.8584        48.1416         1.8584
-H13_15               less than             50        48.9843         1.0157        48.9843         1.0157
-H13_16               less than             50             50              0             50              0
+H05_12               less than             50        39.4354   -1.96714e-05        39.4354        10.5646
+H05_14               less than             50        36.3143        3.26851        36.3143        13.6857
+H05_16               less than             50        39.5333     0.00187873        39.5333        10.4667
+H07_12               less than             50         36.661         2.7773        36.6609        13.3391
+H07_16               less than             50        37.8904        1.64478        37.8904        12.1096
+H09_12               less than             50        39.4354     0.00148371        39.4354        10.5646
+H09_14               less than             50         35.811        3.77348         35.811         14.189
+H10_15               less than             50        36.7258        2.85569        36.7258        13.2742
+H13_15               less than             50        37.5279        2.05664        37.5279        12.4721
+H13_16               less than             50        39.5333     0.00187873        39.5333        10.4667
 
 
-  ---  iteration 3 objective function value:         2865.65  ---  
+  ---  iteration 3 objective function value:         4363.88  ---  
 
 -----------------------------------------
      ---   OPTIMIZATION COMPLETE   ---   
@@ -1552,4 +1617,4 @@ H13_16               less than             50             50              0     
 
 FINAL OPTIMISATION RESULTS
 
-Number of forward model runs performed during optimiztion: 27
+Number of forward model runs performed during optimiztion: 33

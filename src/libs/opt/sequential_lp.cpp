@@ -57,7 +57,7 @@ vector<double> sequentialLP::get_constraint_residual_vec()
 vector<double> sequentialLP::get_constraint_residual_vec(Observations &sim_vals)
 {
 	vector<double> residuals_vec;
-	residuals_vec.resize(ctl_ord_obs_constraint_names.size(), 0.0);
+	residuals_vec.resize(num_constraints(), 0.0);
 
 	Observations::const_iterator found_obs;
 	Observations::const_iterator not_found_obs = sim_vals.end();
@@ -137,7 +137,7 @@ void sequentialLP::initial_report()
 			f_rec << setw(15) << name << endl;
 
 		}
-		if (nz_obs_names.size() == 0)
+		if (num_nz_obs() == 0)
 		{
 			f_rec << endl << endl << "  ---  WARNING: no nonzero weight observations found." << endl;
 			f_rec << "              Prior constraint uncertainty will be used in chance constraint calculations" << endl;
@@ -155,7 +155,7 @@ void sequentialLP::presolve_fosm_report()
 	f_rec << setw(20) << left << "name" << right << setw(10) << "sense" << setw(15) << "sim value";
 	f_rec << setw(15) << "prior stdev" << setw(15) << "post stdev" << setw(15) << "offset";
 	f_rec << setw(15) << "new sim value" << endl;
-	for (int i = 0; i<ctl_ord_obs_constraint_names.size(); ++i)
+	for (int i = 0; i<num_obs_constraints(); ++i)
 	{
 		string name = ctl_ord_obs_constraint_names[i];
 		f_rec << setw(20) << left << name;
@@ -180,7 +180,7 @@ void sequentialLP::presolve_constraint_report()
 	f_rec << setw(20) << left << "name" << right << setw(10) << "sense" << setw(15) << "value";
 	f_rec << setw(15) << "residual" << setw(15) << "lower bound" << setw(15) << "upper bound" << endl;
 
-	for (int i=0;i<ctl_ord_obs_constraint_names.size();++i)
+	for (int i=0;i<num_obs_constraints();++i)
 	{
 		string name = ctl_ord_obs_constraint_names[i];
 		f_rec << setw(20) << left << name;
@@ -191,6 +191,9 @@ void sequentialLP::presolve_constraint_report()
 		f_rec << setw(15) << constraint_ub[i] << endl;
 
 	}
+
+	//TODO: report prior information constraints
+
 	return;
 }
 
@@ -203,7 +206,7 @@ void sequentialLP::postsolve_constraint_report(Observations &upgrade_obs)
 	f_rec << setw(15) << "new" << setw(15) << "residual" << endl;
 	vector<double> cur_residuals = get_constraint_residual_vec();
 	vector<double> new_residuals = get_constraint_residual_vec(upgrade_obs);
-	for (int i = 0; i<ctl_ord_obs_constraint_names.size(); ++i)
+	for (int i = 0; i<num_obs_constraints(); ++i)
 	{
 		string name = ctl_ord_obs_constraint_names[i];
 		f_rec << setw(20) << left << name;
@@ -214,6 +217,9 @@ void sequentialLP::postsolve_constraint_report(Observations &upgrade_obs)
 		f_rec << setw(15) << upgrade_obs[name];
 		f_rec << setw(15) << new_residuals[i] << endl;
 	}
+
+	//TODO: report prior information constraints
+
 	return;
 }
 
@@ -227,7 +233,7 @@ pair<double,double> sequentialLP::postsolve_decision_var_report(Parameters &upgr
 	string name;
 	double obj_coef, cur_val, new_val, upgrade;
 	double cur_obj=0.0, new_obj=0.0;
-	for (int i = 0; i < ctl_ord_dec_var_names.size(); ++i)
+	for (int i = 0; i < num_dec_vars(); ++i)
 	{
 		name = ctl_ord_dec_var_names[i];
 		obj_coef = ctl_ord_obj_func_coefs[i];
@@ -305,7 +311,7 @@ void sequentialLP::initialize_and_check()
 		start = ctl_ord_dec_var_names.begin();
 		end = ctl_ord_dec_var_names.end();
 		map<string, vector<string>> missing_map;
-		if (pi_constraint_factors.size() > 0)
+		if (num_pi_constraints() > 0)
 		{
 			for (auto &pi_const : pi_constraint_factors)
 			{
@@ -464,7 +470,7 @@ void sequentialLP::initialize_and_check()
 	dec_var_ub = new double[num_dec_vars()];
 	Parameters parlbnd = pest_scenario.get_ctl_parameter_info().get_low_bnd(ctl_ord_dec_var_names);
 	Parameters parubnd = pest_scenario.get_ctl_parameter_info().get_up_bnd(ctl_ord_dec_var_names);
-	for (int i = 0; i < ctl_ord_dec_var_names.size(); ++i)
+	for (int i = 0; i < num_dec_vars(); ++i)
 	{
 		dec_var_lb[i] = parlbnd.get_rec(ctl_ord_dec_var_names[i]);
 		dec_var_ub[i] = parubnd.get_rec(ctl_ord_dec_var_names[i]);
@@ -543,7 +549,7 @@ void sequentialLP::initialize_and_check()
 					adj_par_names.push_back(name);
 			}
 		}
-		if (adj_par_names.size() == 0)
+		if (num_adj_pars() == 0)
 			throw_sequentialLP_error("++opt_risk != 0.5, but no adjustable parameters found in control file");
 
 		//look for non-zero weighted obs
@@ -579,7 +585,7 @@ void sequentialLP::initialize_and_check()
 		}
 
 		//build the nz_obs obs_cov
-		if (nz_obs_names.size() != 0)
+		if (num_nz_obs() != 0)
 			obscov.from_observation_weights(nz_obs_names, pest_scenario.get_ctl_observation_info(), vector<string>(), null_prior);
 		
 	}
