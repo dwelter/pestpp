@@ -79,6 +79,25 @@ double PriorInformationRec::calc_residual(const Parameters &pars) const
 	return (sim_value - pival);
 }
 
+
+pair<double,double> PriorInformationRec::calc_residual_and_sim_val(const Parameters &pars) const
+{
+	double sim_value = 0;
+	double par_value;
+	Parameters::const_iterator p_iter;
+	for (vector<PIAtom>::const_iterator b = pi_atoms.begin(), e = pi_atoms.end();
+		b != e; ++b) {
+		par_value = pars.get_rec((*b).par_name);
+		if ((*b).log_trans) {
+			sim_value += (*b).factor * log10(par_value);
+		}
+		else {
+			sim_value += (*b).factor * par_value;
+		}
+	}
+	return pair<double,double>(sim_value,(sim_value - pival));
+}
+
 bool PriorInformationRec::is_regularization() const
 {
 	bool is_reg = false;

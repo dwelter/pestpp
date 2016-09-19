@@ -197,7 +197,7 @@ void sequentialLP::presolve_constraint_report()
 	return;
 }
 
-void sequentialLP::postsolve_constraint_report(Observations &upgrade_obs)
+void sequentialLP::postsolve_constraint_report(Observations &upgrade_obs,Parameters &upgrade_pars)
 {
 	ofstream &f_rec = file_mgr.rec_ofstream();
 	f_rec << endl << endl << "     constraint information at end of SLP iteration " << slp_iter << endl << endl;
@@ -218,8 +218,27 @@ void sequentialLP::postsolve_constraint_report(Observations &upgrade_obs)
 		f_rec << setw(15) << new_residuals[i] << endl;
 	}
 
-	//TODO: report prior information constraints
-
+	//report prior information constraints
+	if (num_pi_constraints() > 0)
+	{
+		f_rec << endl << endl << "     prior information constraint information at end of SLP iteration " << slp_iter << endl << endl;
+		f_rec << setw(20) << left << "name" << right << setw(10) << "sense" << setw(15) << "required";
+		f_rec << setw(15) << "current" << setw(15) << "residual";
+		f_rec << setw(15) << "new" << setw(15) << "residual" << endl;
+		for (auto &name : ctl_ord_pi_constraint_names)
+		{
+			PriorInformationRec pi_rec = constraints_pi.get_pi_rec_ptr(name);
+			pair<double,double> cur_sim_resid = pi_rec.calc_residual_and_sim_val(all_pars_and_dec_vars);
+			pair<double,double> new_sim_resid = pi_rec.calc_residual_and_sim_val(upgrade_pars);
+			f_rec << setw(20) << left << name;
+			f_rec << setw(10) << right << constraint_sense_name[name];
+			f_rec << setw(15) << pi_rec.get_obs_value();
+			f_rec << setw(15) << cur_sim_resid.first;
+			f_rec << setw(15) << cur_sim_resid.second;
+			f_rec << setw(15) << new_sim_resid.first;
+			f_rec << setw(15) << new_sim_resid.second << endl;
+		}
+	}
 	return;
 }
 
@@ -782,12 +801,12 @@ void sequentialLP::iter_solve()
 	
 	//if presolvedModel is Null, then it is primal infeasible, so 
 	//try the dual
-	if (!presolved_model)
+	/*if (!presolved_model)
 	{
 		f_rec << "  ---  primal presolve model infeasible, trying dual..." << endl;
 		cout << "  ---  primal presolve model infeasible, trying dual..." << endl;
 		presolved_model->dual();
-	}
+	}*/
 	
 	//update the status arrays of both the presolve and original models
 	presolve_info.postsolve(true);
@@ -881,7 +900,7 @@ CoinPackedMatrix sequentialLP::jacobian_to_coinpackedmatrix()
 	}
 
 	//TODO: including prior information constraints
-	int irow = num_obs_constraints() - 1;
+	int irow = num_obs_constraints();
 	int jcol;
 	vector<string>::iterator start = ctl_ord_dec_var_names.begin();
 	vector<string>::iterator end = ctl_ord_dec_var_names.end();
@@ -900,7 +919,12 @@ CoinPackedMatrix sequentialLP::jacobian_to_coinpackedmatrix()
 	}
 	if (elem_count != num_elems)
 		throw_sequentialLP_error("problem packing prior information constraints into CoinPackedMatrix...");
+	
 	CoinPackedMatrix matrix(true,row_idx,col_idx,elems,elem_count);
+	
+	//this is useful for debugging
+	//matrix.dumpMatrix();
+	
 	return matrix;
 }
 
@@ -957,7 +981,7 @@ void sequentialLP::iter_postsolve()
 	double obj_val = model.getObjValue();
 	
 	pair<double,double> cur_new_obj = postsolve_decision_var_report(upgrade_pars);
-	postsolve_constraint_report(upgrade_obs);
+	postsolve_constraint_report(upgrade_obs,upgrade_pars);
 	
 	f_rec << endl << endl <<  "  ---  iteration " << slp_iter << " objective function value: " << setw(15) << cur_new_obj.second << "  ---  " << endl << endl;
 	cout << endl << endl << "  ---  iteration " << slp_iter << " objective function value: " << setw(15) << cur_new_obj.second << "  ---  " << endl << endl;

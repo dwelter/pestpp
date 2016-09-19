@@ -99,7 +99,7 @@ private:
 	pair<double,double> postsolve_decision_var_report(Parameters &upgrade_pars);
 	
 	//report the current and newly solved LP constraint info
-	void postsolve_constraint_report(Observations &upgrade_obs);
+	void postsolve_constraint_report(Observations &upgrade_obs, Parameters &upgrade_pars);
 	
 	//prepare for LP solution, including filling response matrix
 	void iter_presolve();

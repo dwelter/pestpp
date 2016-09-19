@@ -1239,9 +1239,9 @@ transmissivity_layer_1.ref.tpl ref\transmissivity_layer_1.ref
 strt_layer_1.ref.tpl ref\strt_layer_1.ref
 dewater_pest.hds.ins dewater_pest.hds
 * prior information
-pi_const1 1.0 * Q4 + 1.0 * Q1 + 1.0 * Q2 + 1.0 * Q3 = 1000000.0 1.0 less_than
+pi_const1 1.0 * Q4 + 1.0 * Q1 + 1.0 * Q7 = 1500.0 1.0 less_than
 pi_const2 1.0 * Q5 + 1.0 * Q6 = 50000.0 1.0 less_than
 ++opt_dec_var_groups(q)
-++opt_constraint_groups(l)
-++opt_risk(0.5)
+++opt_constraint_groups(l,less_than)
+++opt_risk(0.95)
 ++forecasts(h05_12,h05_14,h05_16,h07_12,h07_16,h09_12,h09_14,h10_15,h13_15,h13_16)
