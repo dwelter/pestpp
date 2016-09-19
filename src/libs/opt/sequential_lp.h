@@ -48,10 +48,13 @@ private:
 	map<string, double> post_constraint_stdev;
 	map<string, double> prior_constraint_offset;
 	map<string, double> post_constraint_offset;
+	map<string, map<string, double>> pi_constraint_factors;
+	map<string, double> pi_constraint_rhs;
 
 	vector<double> iter_obj_values;
 	vector<string> ctl_ord_dec_var_names;
 	vector<string> ctl_ord_constraint_names;
+	vector<string> ctl_ord_pi_constraint_names;
 	vector<string> nz_obs_names;
 	vector<string> adj_par_names;
 

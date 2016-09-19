@@ -128,6 +128,22 @@ void sequentialLP::initial_report()
 		f_rec << setw(20) << constraints_obs.get_rec(name) << endl;
 	}
 
+	if (risk != 0.5)
+	{
+		f_rec << endl << endl << "  ---  chance constraint FOSM information  ---  " << endl;
+		f_rec << "   adjustable parameters used in FOSM calculations:" << endl;
+		for (auto &name : adj_par_names)
+		{
+			f_rec << setw(15) << name << endl;
+
+		}
+		if (nz_obs_names.size() == 0)
+		{
+			f_rec << endl << endl << "  ---  WARNING: no nonzero weight observations found." << endl;
+			f_rec << "              Prior constraint uncertainty will be used in chance constraint calculations" << endl;
+		}
+	}
+
 	return;
 }
 
@@ -155,6 +171,7 @@ void sequentialLP::presolve_fosm_report()
 	f_rec << "        adjustable parameters identified in the control file." << endl << endl;
 	return;
 }
+
 void sequentialLP::presolve_constraint_report()
 {
 	ofstream &f_rec = file_mgr.rec_ofstream();
@@ -258,7 +275,7 @@ void sequentialLP::initialize_and_check()
 		if (missing.size() > 0)
 			throw_sequentialLP_error("the following ++opt_constraint_groups were not found: ", missing);
 
-		//find the parameter in the dec var groups
+		//find the observations in constraints groups
 		ObservationInfo oinfo = pest_scenario.get_ctl_observation_info();
 		string group;
 		end = constraint_groups.end();
@@ -269,14 +286,33 @@ void sequentialLP::initialize_and_check()
 			if (find(start, end, group) != end)
 				ctl_ord_constraint_names.push_back(obs_name);
 		}
+		const PriorInformation* pinfo = pest_scenario.get_prior_info_ptr();
+		PriorInformationRec pi_rec;
+		for (auto &pi_name : pest_scenario.get_ctl_ordered_pi_names())
+		{
+			group = pinfo->get_pi_rec_ptr(pi_name).get_group();
+			if (find(start, end, group) != end)
+			{
+				ctl_ord_pi_constraint_names.push_back(pi_name);
+				pi_rec = pinfo->get_pi_rec_ptr(pi_name);
+				pi_constraint_factors[pi_name] = pi_rec.get_atom_factors();
+				pi_constraint_rhs[pi_name] = pi_rec.get_obs_value();
+			}
+		}
+
+		//TODO: check the pi constraint factors for compatibility with available 
+		//decision variables
 
 		if (ctl_ord_constraint_names.size() == 0)
 			throw_sequentialLP_error("no constraints found in groups: ", constraint_groups);
 	}
-	//if not ++opt_constraint_names was passed, use all observations as constraints
+	//if not ++opt_constraint_names was passed, use all observations and prior information as constraints
 	else
+	{
 		ctl_ord_constraint_names = pest_scenario.get_ctl_ordered_obs_names();
-
+		//TODO: add prior info support here
+	}
+	//TODO: refactor ctl_ord_constraint_names to ctl_ord_obs_constraint_names
 	constraints_obs = pest_scenario.get_ctl_observations().get_subset(ctl_ord_constraint_names.begin(), ctl_ord_constraint_names.end());
 	constraints_sim = Observations(constraints_obs);
 
@@ -489,15 +525,9 @@ void sequentialLP::initialize_and_check()
 		}
 
 		//build the nz_obs obs_cov
-		if (nz_obs_names.size() == 0)
-		{
-			f_rec << endl << endl << "  ---  WARNING: no nonzero weight observations found." << endl;
-			f_rec << "              Prior constraint uncertainty will be used in chance constraint calculations" << endl;
-		}
-		else
-		{
+		if (nz_obs_names.size() != 0)
 			obscov.from_observation_weights(nz_obs_names, pest_scenario.get_ctl_observation_info(), vector<string>(), null_prior);
-		}
+		
 	}
 	else use_chance = false;
 	
