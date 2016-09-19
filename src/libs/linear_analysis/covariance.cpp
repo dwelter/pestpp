@@ -776,11 +776,16 @@ void Mat::drop_rows(const vector<string> &drop_row_names)
 			if (find(drop_row_names.begin(), drop_row_names.end(), name) == drop_row_names.end())
 				new_row_names.push_back(name);
 	}
-	
-	Mat new_mat = get(new_row_names, col_names);
-	matrix = new_mat.get_matrix();
+	if (new_row_names.size() == 0)
+		matrix = Eigen::SparseMatrix<double>();
+	else
+	{
+		Mat new_mat = get(new_row_names, col_names);
+		matrix = new_mat.get_matrix();
+		mattype = new_mat.get_mattype();
+	}
 	row_names = new_row_names;
-	mattype = new_mat.get_mattype();
+	
 }
 
 

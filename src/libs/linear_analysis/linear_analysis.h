@@ -35,6 +35,8 @@ public:
 	void set_predictions(vector<string> preds);
 	void set_predictions(vector<Mat> preds);
 	void set_predictions(Mat* preds);
+	
+	void  set_parcov(Mat* _parcov);
 
 	//get a new linear analysis object consisting of a subset of par and obs names
 	linear_analysis get(vector<string> &new_par_names, vector<string> &new_obs_names);

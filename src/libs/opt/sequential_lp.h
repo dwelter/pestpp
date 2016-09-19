@@ -44,6 +44,11 @@ private:
 	map<string, double> obj_func_coef_map;
 	map<string, ConstraintSense> constraint_sense_map;
 	map <string, string> constraint_sense_name;
+	map<string, double> prior_constraint_stdev;
+	map<string, double> post_constraint_stdev;
+	map<string, double> prior_constraint_offset;
+	map<string, double> post_constraint_offset;
+
 	vector<double> iter_obj_values;
 	vector<string> ctl_ord_dec_var_names;
 	vector<string> ctl_ord_constraint_names;
@@ -55,6 +60,7 @@ private:
 	ParamTransformSeq par_trans;
 	Observations constraints_obs;
 	Observations constraints_sim;
+	Observations constraints_fosm;
 	Observations obj_func_obs;
 	ObservationInfo obj_func_info;
 	Pest pest_scenario;

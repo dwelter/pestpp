@@ -48,7 +48,10 @@ void sequentialLP::throw_sequentialLP_error(string message)
 
 vector<double> sequentialLP::get_constraint_residual_vec()
 {
-	return get_constraint_residual_vec(constraints_sim);
+	if (risk != 0.5)
+		return get_constraint_residual_vec(constraints_sim);
+	else
+		return get_constraint_residual_vec(constraints_fosm);
 }
 
 vector<double> sequentialLP::get_constraint_residual_vec(Observations &sim_vals)
@@ -482,32 +485,67 @@ void sequentialLP::initialize_and_check()
 
 void sequentialLP::calc_chance_constraint_offsets()
 {
-	//just using the prior or supply parcov to estimate constraint variance
-	/*if (nz_obs_names.size() == 0)
-	{
-		throw_sequentialLP_error("prior only propogation not implemented");
-	}*/
-	//otherwise, calculate parameter posterior covariance
-	//and propogate to constraints
-	
+	//the rows of the fosm jacobian include nonzero weight obs (for schur comp) 
+	//plus the names of the names of constraints, which get treated as forecasts
 	vector<string> fosm_row_names(nz_obs_names);
 	fosm_row_names.insert(fosm_row_names.end(), ctl_ord_constraint_names.begin(), ctl_ord_constraint_names.end());
+	//extract the part of the full jco we need for fosm
 	Eigen::SparseMatrix<double> fosm_mat = jco.get_matrix(fosm_row_names, adj_par_names);
-	Mat fosm_jco(nz_obs_names,adj_par_names,fosm_mat);
+	Mat fosm_jco(fosm_row_names,adj_par_names,fosm_mat);
+	//create a linear object
 	linear_analysis la(&fosm_jco, &pest_scenario, &obscov);
+	//set the prior parameter covariance matrix
+	la.set_parcov(&parcov);
+	//set the predictions (the constraints)
 	la.set_predictions(ctl_ord_constraint_names);
+	//get the prior and posterior variance of the constraints
 	map<string, double> prior_const_var = la.prior_prediction_variance();
-	map<string, double> post_const_var = la.posterior_prediction_variance();
+	map<string, double> post_const_var;
+	if (nz_obs_names.size() > 0)
+		post_const_var = la.posterior_prediction_variance();
+	else
+		post_const_var = prior_const_var;
+	
+	//work out the offset for each constraint
+	//and set the values in the constraints_fosm Obseravtions
+	constraints_fosm.clear();
+	double logit_approx = log((risk) / (1.0 - risk));
+	double new_constraint_val, old_constraint_val;
+	for (auto &name : ctl_ord_constraint_names)
+	{
+		prior_constraint_stdev[name] = sqrt(prior_const_var[name]);
+		post_constraint_stdev[name] = sqrt(post_const_var[name]);
+		prior_constraint_offset[name] = logit_approx * prior_constraint_stdev[name];
+		post_constraint_offset[name] = logit_approx * post_constraint_stdev[name];
+		old_constraint_val = constraints_sim[name];
+		
+		//if less_than constraint, then add to the sim value, to move positive against
+		// the required constraint value
+		if (constraint_sense_map[name] == ConstraintSense::less_than)
+			new_constraint_val = old_constraint_val + post_constraint_offset[name];
+		//if greater_than constraint, the substract from the sim value to move 
+		//negatively against the required constraint value
+		else if (constraint_sense_map[name] == ConstraintSense::greater_than)
+			new_constraint_val = old_constraint_val - post_constraint_offset[name];
+		else
+			new_constraint_val = constraints_sim[name];
+		constraints_fosm.insert(name, new_constraint_val);
+	}
+
+	
+
 	return;
 }
 
 void sequentialLP::build_constraint_bound_arrays()
 {
 
-	vector<double> residuals = get_constraint_residual_vec();
-
+	
 	if (risk != 0.5)
 		calc_chance_constraint_offsets();
+
+	vector<double> residuals = get_constraint_residual_vec();
+
 
 	for (int i = 0; i < ctl_ord_constraint_names.size(); ++i)
 	{
@@ -786,6 +824,13 @@ void sequentialLP::iter_presolve()
 		if (missing.size() > 0)
 			throw_sequentialLP_error("the following decision vars were not found in the jacobian " + basejac_filename + " : ", missing);
 
+		for (auto &name : adj_par_names)
+			if (find(start, end, name) == end)
+				missing.push_back(name);
+		if (missing.size() > 0)
+			throw_sequentialLP_error("the following adjustable parameters were not found in the jacobian " + basejac_filename + " : ", missing);
+
+
 		names.clear();
 		names = jco.get_sim_obs_names();
 		start = names.begin();
@@ -811,7 +856,9 @@ void sequentialLP::iter_presolve()
 	{
 
 		set<string> out_of_bounds;
-		bool success = jco.build_runs(all_pars_and_dec_vars, constraints_sim, ctl_ord_dec_var_names, par_trans,
+		vector<string> names_to_run = ctl_ord_dec_var_names;
+		names_to_run.insert(names_to_run.end(), adj_par_names.begin(), adj_par_names.end());
+		bool success = jco.build_runs(all_pars_and_dec_vars, constraints_sim, names_to_run, par_trans,
 			pest_scenario.get_base_group_info(), pest_scenario.get_ctl_parameter_info(),
 			*run_mgr_ptr, out_of_bounds);
 		if (!success)

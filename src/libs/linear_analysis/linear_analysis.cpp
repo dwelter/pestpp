@@ -442,6 +442,14 @@ linear_analysis::linear_analysis(Mat* _jacobian, Pest* pest_scenario, Logger* _l
 	
 }
 
+void  linear_analysis::set_parcov(Mat* _parcov)
+{
+	parcov = *_parcov;
+	//check that everything is kosher
+	//vector<string> missing;
+	//bool aligned = true;
+	//if (jacobian.get_col_names().size() != _parcov.get_row_names.size())
+}
 
 linear_analysis::linear_analysis(Mat* _jacobian, Pest* pest_scenario, Mat* _obscov, Logger* _log)
 {
