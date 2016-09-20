@@ -83,13 +83,13 @@ def build_control_file():
             obj_eq += " - 0.0012 * " + pname
         elif pname.startswith("q"):
             obj_eq += " + 0.001 * " + pname
-    
+    obj_eq += ' = 0.0'
     #pst.prior_information.loc["obj_func","pilbl"] = "obj_func"
     #pst.prior_information.loc["obj_func","equation"] = obj_eq
     #pst.prior_information.loc["obj_func","weight"] = 1.0
     #pst.prior_information.loc["obj_func","obgnme"] = "e"
 
-    pi_eqs,pi_weights,pi_names,pi_groups = [obj_eq],[],["obj_func"],['e']
+    pi_eqs,pi_weights,pi_names,pi_groups = [obj_eq],[],["obj_func"],['obj_func']
     #sp0
     pi_eqs.append(" 1.0 * q1 + 1.0 * q2a = 80000.0")
     pi_groups.append("less_than")
@@ -97,9 +97,9 @@ def build_control_file():
     pi_groups.append("greater_than")
     
     #sp1
-    pi_eqs.append(" 1.0 * q1 + 1.0 * q2b = 80000.0")
+    pi_eqs.append(" 1.0 * q1 + 1.0 * q2b + 1.0 * q4a = 80000.0")
     pi_groups.append("less_than")
-    pi_eqs.append(" 1.0 * q1 + 1.0 * q2b = 30000.0")
+    pi_eqs.append(" 1.0 * q1 + 1.0 * q2b + 1.0 * q4a = 30000.0")
     pi_groups.append("greater_than")
     
     #sp2
@@ -109,9 +109,9 @@ def build_control_file():
     pi_groups.append("greater_than")
     
     #sp3
-    pi_eqs.append(" 1.0 * q1 + 1.0 * q2d + 1.0 * q2d = 80000.0")
+    pi_eqs.append(" 1.0 * q1 + 1.0 * q2d + 1.0 * q4d = 80000.0")
     pi_groups.append("less_than")
-    pi_eqs.append(" 1.0 * q1 + 1.0 * q2d + 1.0 * q2d = 30000.0")
+    pi_eqs.append(" 1.0 * q1 + 1.0 * q2d + 1.0 * q4d = 30000.0")
     pi_groups.append("greater_than")
     
     #sp4
@@ -139,32 +139,32 @@ def build_control_file():
     pi_groups.append("greater_than")
 
     #sp8
-    pi_eqs.append(" 1.0 * q1 + 1.0 * q2a = 80000.0")
+    pi_eqs.append(" 1.0 * q1 + 1.0 * q2a + 1.0 * im9 = 80000.0")
     pi_groups.append("less_than")
-    pi_eqs.append(" 1.0 * q1 + 1.0 * q2a = 45000.0")
+    pi_eqs.append(" 1.0 * q1 + 1.0 * q2a + 1.0 * im9 = 45000.0")
     pi_groups.append("greater_than")
     
     #sp9
-    pi_eqs.append(" 1.0 * q1 + 1.0 * q2b + 1.0 * q4a = 80000.0")
+    pi_eqs.append(" 1.0 * q1 + 1.0 * q2b + 1.0 * q4a + 1.0 * im10 = 80000.0")
     pi_groups.append("less_than")
-    pi_eqs.append(" 1.0 * q1 + 1.0 * q2b + 1.0 * q4a = 45000.0")
+    pi_eqs.append(" 1.0 * q1 + 1.0 * q2b + 1.0 * q4a + 1.0 * im10  = 45000.0")
     pi_groups.append("greater_than")
     
     #sp10
-    pi_eqs.append(" 1.0 * q1 + 1.0 * q2c  = 80000.0")
+    pi_eqs.append(" 1.0 * q1 + 1.0 * q2c + 1.0 * im11 = 80000.0")
     pi_groups.append("less_than")
-    pi_eqs.append(" 1.0 * q1 + 1.0 * q2c  = 45000.0")
+    pi_eqs.append(" 1.0 * q1 + 1.0 * q2c + 1.0 * im11 = 45000.0")
     pi_groups.append("greater_than")
     
     #sp11
-    pi_eqs.append(" 1.0 * q1 + 1.0 * q2d + 1.0 * q4b = 80000.0")
+    pi_eqs.append(" 1.0 * q1 + 1.0 * q2d + 1.0 * q4b + 1.0 * im12 = 80000.0")
     pi_groups.append("less_than")
-    pi_eqs.append(" 1.0 * q1 + 1.0 * q2d + 1.0 * q4b = 45000.0")
+    pi_eqs.append(" 1.0 * q1 + 1.0 * q2d + 1.0 * q4b + 1.0 * im12 = 45000.0")
     pi_groups.append("greater_than")
 
     pi_weights = [1.0 for _ in range(len(pi_eqs))]
     pi_names = ["pi_const{0}".format(i) for i in range(len(pi_eqs))]
-    pi_names[0] = "obj_func"
+    pi_names[0] = "pi_obj_func"
 
     print(len(pi_eqs),len(pi_weights),len(pi_names),len(pi_groups))
 
