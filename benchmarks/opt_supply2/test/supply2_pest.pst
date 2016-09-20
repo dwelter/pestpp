@@ -1,20 +1,20 @@
 pcf
 * control data
              restart          estimation
-        12       480         2        25         5         0
+        12       480         2        25         6         0
          2         1              single               point         1         0         0          noobsreref
    2.000000E+01  -3.000000E+00   3.000000E-01   1.000000E-02        -7       999          lamforgive        noderforgive
    1.000000E+01   1.000000E+01   1.000000E-03         0         0
    1.000000E-01         1   1.100000E+00               noaui          nosenreuse        noboundscale
-         3   1.000000E-02         3         3   1.000000E-02         3   0.000000E+00         1  -1.000000E+00
+         1   1.000000E-02         3         3   1.000000E-02         3   0.000000E+00         1  -1.000000E+00
          0         0         0         0             jcosave          verboserec          jcosaveitn          reisaveitn          parsaveitn        noparsaverun
 * singular value decomposition
 1
 12    1.000000E-06
 1 1 1
 * parameter groups
-pumping                 relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
-external                relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller
+pumping                 absolute              2.5000000000E+02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
+external                absolute              2.5000000000E+02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller
 * parameter data
 q1                     none                   factor                0.0000000000E+00      0.0000000000E+00      5.0000000000E+04       pumping               -1.0000000000E+00     0.0000000000E+00      1          
 q2a                    none                   factor                0.0000000000E+00      0.0000000000E+00      5.0000000000E+04       pumping               -1.0000000000E+00     0.0000000000E+00      1          
@@ -30,10 +30,11 @@ im11                   none                   factor                0.0000000000
 im12                   none                   factor                0.0000000000E+00      0.0000000000E+00      5.0000000000E+04       external              -1.0000000000E+00     0.0000000000E+00      1
 * observation groups
 extra                
+greater_obs          
+greater_pi           
 greater_than         
-greater_than         
-less_than            
-e                    
+less_pi              
+obj_func             
 * observation data
 s1r01_01              0.0000000000E+00      0.0000000000E+00       extra                
 s1r01_02              0.0000000000E+00      0.0000000000E+00       extra                
@@ -503,18 +504,18 @@ s3r09_09              0.0000000000E+00      0.0000000000E+00       extra
 s3r09_10              0.0000000000E+00      0.0000000000E+00       extra                
 s3r09_11              0.0000000000E+00      0.0000000000E+00       extra                
 s3r09_12              0.0000000000E+00      0.0000000000E+00       extra                
-s1r14_09              1.5000000000E+04      1.0000000000E+00       greater_than         
-s1r14_10              1.5000000000E+04      1.0000000000E+00       greater_than         
-s1r14_11              1.5000000000E+04      1.0000000000E+00       greater_than         
-s1r14_12              1.5000000000E+04      1.0000000000E+00       greater_than         
-s1r21_11              2.0000000000E+04      1.0000000000E+00       greater_than         
-s1r21_12              2.0000000000E+04      1.0000000000E+00       greater_than         
-s2r08_09              1.5000000000E+04      1.0000000000E+00       greater_than         
-s2r08_10              1.5000000000E+04      1.0000000000E+00       greater_than         
-s2r08_11              1.5000000000E+04      1.0000000000E+00       greater_than         
-s2r08_12              1.5000000000E+04      1.0000000000E+00       greater_than         
-s3r05_11              3.0000000000E+04      1.0000000000E+00       greater_than         
-s3r05_12              3.0000000000E+04      1.0000000000E+00       greater_than
+s1r14_09              1.5000000000E+04      1.0000000000E+00       greater_obs          
+s1r14_10              1.5000000000E+04      1.0000000000E+00       greater_obs          
+s1r14_11              1.5000000000E+04      1.0000000000E+00       greater_obs          
+s1r14_12              1.5000000000E+04      1.0000000000E+00       greater_obs          
+s1r21_11              2.0000000000E+04      1.0000000000E+00       greater_obs          
+s1r21_12              2.0000000000E+04      1.0000000000E+00       greater_obs          
+s2r08_09              1.5000000000E+04      1.0000000000E+00       greater_obs          
+s2r08_10              1.5000000000E+04      1.0000000000E+00       greater_obs          
+s2r08_11              1.5000000000E+04      1.0000000000E+00       greater_obs          
+s2r08_12              1.5000000000E+04      1.0000000000E+00       greater_obs          
+s3r05_11              3.0000000000E+04      1.0000000000E+00       greater_obs          
+s3r05_12              3.0000000000E+04      1.0000000000E+00       greater_obs
 * model command line
 python.exe supply2.py
 * model input/output
@@ -522,28 +523,32 @@ supply2.wel.tpl supply2.wel
 external.tpl external.dat
 sfr_aq_ex.dat.ins sfr_aq_ex.dat
 * prior information
-obj_func               + 0.001 * q1 + 0.001 * q2a + 0.001 * q2b + 0.001 * q4a + 0.001 * q2c + 0.001 * q2d + 0.001 * q4b + 0.001 * q3 - 0.0012 * im9 - 0.0012 * im10 - 0.0012 * im11 - 0.0012 * im12 1.0000000000E+00     e                    
-pi_const1              1.0 * q1 + 1.0 * q2a = 80000.0                                                                                                                                               1.0000000000E+00     less_than            
-pi_const2              1.0 * q1 + 1.0 * q2a = 30000.0                                                                                                                                               1.0000000000E+00     greater_than         
-pi_const3              1.0 * q1 + 1.0 * q2b = 80000.0                                                                                                                                               1.0000000000E+00     less_than            
-pi_const4              1.0 * q1 + 1.0 * q2b = 30000.0                                                                                                                                               1.0000000000E+00     greater_than         
-pi_const5              1.0 * q1 + 1.0 * q2c = 80000.0                                                                                                                                               1.0000000000E+00     less_than            
-pi_const6              1.0 * q1 + 1.0 * q2c = 30000.0                                                                                                                                               1.0000000000E+00     greater_than         
-pi_const7              1.0 * q1 + 1.0 * q2d + 1.0 * q2d = 80000.0                                                                                                                                   1.0000000000E+00     less_than            
-pi_const8              1.0 * q1 + 1.0 * q2d + 1.0 * q2d = 30000.0                                                                                                                                   1.0000000000E+00     greater_than         
-pi_const9              1.0 * q1 + 1.0 * q2a + 1.0 * q3 = 80000.0                                                                                                                                    1.0000000000E+00     less_than            
-pi_const10             1.0 * q1 + 1.0 * q2a + 1.0 * q3 = 25000.0                                                                                                                                    1.0000000000E+00     greater_than         
-pi_const11             1.0 * q1 + 1.0 * q2b + 1.0 * q3 + 1.0 * q4a = 80000.0                                                                                                                        1.0000000000E+00     less_than            
-pi_const12             1.0 * q1 + 1.0 * q2b + 1.0 * q3 + 1.0 * q4a = 25000.0                                                                                                                        1.0000000000E+00     greater_than         
-pi_const13             1.0 * q1 + 1.0 * q2c + 1.0 * q3 = 80000.0                                                                                                                                    1.0000000000E+00     less_than            
-pi_const14             1.0 * q1 + 1.0 * q2c + 1.0 * q3 = 25000.0                                                                                                                                    1.0000000000E+00     greater_than         
-pi_const15             1.0 * q1 + 1.0 * q2d + 1.0 * q3 + 1.0 * q4b = 80000.0                                                                                                                        1.0000000000E+00     less_than            
-pi_const16             1.0 * q1 + 1.0 * q2d + 1.0 * q3 + 1.0 * q4b = 25000.0                                                                                                                        1.0000000000E+00     greater_than         
-pi_const17             1.0 * q1 + 1.0 * q2a = 80000.0                                                                                                                                               1.0000000000E+00     less_than            
-pi_const18             1.0 * q1 + 1.0 * q2a = 45000.0                                                                                                                                               1.0000000000E+00     greater_than         
-pi_const19             1.0 * q1 + 1.0 * q2b + 1.0 * q4a = 80000.0                                                                                                                                   1.0000000000E+00     less_than            
-pi_const20             1.0 * q1 + 1.0 * q2b + 1.0 * q4a = 45000.0                                                                                                                                   1.0000000000E+00     greater_than         
-pi_const21             1.0 * q1 + 1.0 * q2c  = 80000.0                                                                                                                                              1.0000000000E+00     less_than            
-pi_const22             1.0 * q1 + 1.0 * q2c  = 45000.0                                                                                                                                              1.0000000000E+00     greater_than         
-pi_const23             1.0 * q1 + 1.0 * q2d + 1.0 * q4b = 80000.0                                                                                                                                   1.0000000000E+00     less_than            
-pi_const24             1.0 * q1 + 1.0 * q2d + 1.0 * q4b = 45000.0                                                                                                                                   1.0000000000E+00     greater_than         
+pi_obj_func            0.001 * q1 + 0.001 * q2a + 0.001 * q2b + 0.001 * q4a + 0.001 * q2c + 0.001 * q2d + 0.001 * q4b + 0.001 * q3 - 0.0012 * im9 - 0.0012 * im10 - 0.0012 * im11 - 0.0012 * im12 = 0.0 1.0000000000E+00     obj_func             
+pi_const1              1.0 * q1 + 1.0 * q2a = 80000.0                                                                                                                                                   1.0000000000E+00     less_pi              
+pi_const2              1.0 * q1 + 1.0 * q2a = 30000.0                                                                                                                                                   1.0000000000E+00     greater_pi           
+pi_const3              1.0 * q1 + 1.0 * q2b + 1.0 * q4a = 80000.0                                                                                                                                       1.0000000000E+00     less_pi              
+pi_const4              1.0 * q1 + 1.0 * q2b + 1.0 * q4a = 30000.0                                                                                                                                       1.0000000000E+00     greater_than         
+pi_const5              1.0 * q1 + 1.0 * q2c = 80000.0                                                                                                                                                   1.0000000000E+00     less_pi              
+pi_const6              1.0 * q1 + 1.0 * q2c = 30000.0                                                                                                                                                   1.0000000000E+00     greater_pi           
+pi_const7              1.0 * q1 + 1.0 * q2d + 1.0 * q4b = 80000.0                                                                                                                                       1.0000000000E+00     less_pi              
+pi_const8              1.0 * q1 + 1.0 * q2d + 1.0 * q4b = 30000.0                                                                                                                                       1.0000000000E+00     greater_pi           
+pi_const9              1.0 * q1 + 1.0 * q2a + 1.0 * q3 = 80000.0                                                                                                                                        1.0000000000E+00     less_pi              
+pi_const10             1.0 * q1 + 1.0 * q2a + 1.0 * q3 = 25000.0                                                                                                                                        1.0000000000E+00     greater_pi           
+pi_const11             1.0 * q1 + 1.0 * q2b + 1.0 * q3 + 1.0 * q4a = 80000.0                                                                                                                            1.0000000000E+00     less_pi              
+pi_const12             1.0 * q1 + 1.0 * q2b + 1.0 * q3 + 1.0 * q4a = 25000.0                                                                                                                            1.0000000000E+00     greater_pi           
+pi_const13             1.0 * q1 + 1.0 * q2c + 1.0 * q3 = 80000.0                                                                                                                                        1.0000000000E+00     less_pi              
+pi_const14             1.0 * q1 + 1.0 * q2c + 1.0 * q3 = 25000.0                                                                                                                                        1.0000000000E+00     greater_pi           
+pi_const15             1.0 * q1 + 1.0 * q2d + 1.0 * q3 + 1.0 * q4b = 80000.0                                                                                                                            1.0000000000E+00     less_pi              
+pi_const16             1.0 * q1 + 1.0 * q2d + 1.0 * q3 + 1.0 * q4b = 25000.0                                                                                                                            1.0000000000E+00     greater_pi           
+pi_const17             1.0 * q1 + 1.0 * q2a + 1.0 * im9 = 80000.0                                                                                                                                       1.0000000000E+00     less_pi              
+pi_const18             1.0 * q1 + 1.0 * q2a + 1.0 * im9 = 45000.0                                                                                                                                       1.0000000000E+00     greater_pi           
+pi_const19             1.0 * q1 + 1.0 * q2b + 1.0 * q4a + 1.0 * im10 = 80000.0                                                                                                                          1.0000000000E+00     less_pi              
+pi_const20             1.0 * q1 + 1.0 * q2b + 1.0 * q4a + 1.0 * im10  = 45000.0                                                                                                                         1.0000000000E+00     greater_pi           
+pi_const21             1.0 * q1 + 1.0 * q2c + 1.0 * im11 = 80000.0                                                                                                                                      1.0000000000E+00     less_pi              
+pi_const22             1.0 * q1 + 1.0 * q2c + 1.0 * im11 = 45000.0                                                                                                                                      1.0000000000E+00     greater_pi           
+pi_const23             1.0 * q1 + 1.0 * q2d + 1.0 * q4b + 1.0 * im12 = 80000.0                                                                                                                          1.0000000000E+00     less_pi              
+pi_const24             1.0 * q1 + 1.0 * q2d + 1.0 * q4b + 1.0 * im12 = 45000.0                                                                                                                          1.0000000000E+00     greater_pi           
+++opt_coin_loglev(4)
+++opt_direction(max)
+++opt_obj_func(pi_obj_func)
+++opt_constraint_groups(less_pi,greater_pi,greater_obs)

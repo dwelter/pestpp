@@ -42,6 +42,7 @@ void sequentialLP::throw_sequentialLP_error(string message)
 	string error_message = "error in sequentialLP process: " + message;
 	file_mgr->rec_ofstream() << error_message << endl;
 	file_mgr->close_file("rec");
+	cout << endl << endl << error_message << endl << endl;
 	throw runtime_error(error_message);
 }
 
@@ -88,7 +89,11 @@ void sequentialLP::initial_report()
 	string sense = (pest_scenario.get_pestpp_options().get_opt_direction() == 1) ? "minimize": "maximize";
 	f_rec << "-->objective function sense (direction): " << sense << endl;
 
-	f_rec << "  ---  decision variables active in SLP  ---  " << endl;
+	f_rec << "-->number of decision variable: " << num_dec_vars() << endl;
+	f_rec << "-->number of observation constraints: " << num_obs_constraints() << endl;
+	f_rec << "-->number of prior information constraints: " << num_pi_constraints() << endl << endl;
+
+	f_rec << endl << "  ---  decision variables active in SLP  ---  " << endl;
 	map<string, double>::iterator end = obj_func_coef_map.end();
 	vector<string> missing;
 	f_rec << setw(20) << left << "name" << setw(25) << "obj func coefficient" << endl;
@@ -119,13 +124,25 @@ void sequentialLP::initial_report()
 	f_rec << " note: bound and initial value info reported in 'parameter' section" << endl << endl;
 
 
-	f_rec << "  ---  constraints in SLP  ---  " << endl;
+	f_rec << endl << "  ---  observation constraints in SLP  ---  " << endl;
 	f_rec << setw(20) << "name" << setw(20) << "sense" << setw(20) << "value" << endl;
 	for (auto &name : ctl_ord_obs_constraint_names)
 	{
 		f_rec << setw(20) << left << name;
 		f_rec << setw(20) << constraint_sense_name[name];
 		f_rec << setw(20) << constraints_obs.get_rec(name) << endl;
+	}
+
+	if (num_pi_constraints() > 0)
+	{
+		f_rec << endl << "  ---  prior information constraints in SLP  ---  " << endl;
+		f_rec << setw(20) << "name" << setw(20) << "sense" << setw(20) << "value" << endl;
+		for (auto &name : ctl_ord_pi_constraint_names)
+		{
+			f_rec << setw(20) << left << name;
+			f_rec << setw(20) << constraint_sense_name[name];
+			f_rec << setw(20) << constraints_pi.get_pi_rec_ptr(name).get_obs_value() << endl;
+		}
 	}
 
 	if (use_chance)
@@ -177,14 +194,14 @@ void sequentialLP::presolve_constraint_report()
 	ofstream &f_rec = file_mgr->rec_ofstream();
 	vector<double> residuals = get_constraint_residual_vec();
 	f_rec << endl << "  observation constraint information at start of iteration " << slp_iter << endl;
-	f_rec << setw(20) << left << "name" << right << setw(10) << "sense" << setw(15) << "value";
+	f_rec << setw(20) << left << "name" << right << setw(15) << "sense" << setw(15) << "value";
 	f_rec << setw(15) << "residual" << setw(15) << "lower bound" << setw(15) << "upper bound" << endl;
 
 	for (int i=0;i<num_obs_constraints();++i)
 	{
 		string name = ctl_ord_obs_constraint_names[i];
 		f_rec << setw(20) << left << name;
-		f_rec << setw(10) << right << constraint_sense_name[name];
+		f_rec << setw(15) << right << constraint_sense_name[name];
 		f_rec << setw(15) << constraints_obs.get_rec(name);
 		f_rec << setw(15) << residuals[i];
 		f_rec << setw(15) << constraint_lb[i];
@@ -194,14 +211,14 @@ void sequentialLP::presolve_constraint_report()
 
 	//report prior information constraints
 	f_rec << endl << "  prior information constraint information at start of iteration " << slp_iter << endl;
-	f_rec << setw(20) << left << "name" << right << setw(10) << "sense" << setw(15) << "value";
+	f_rec << setw(20) << left << "name" << right << setw(15) << "sense" << setw(15) << "value";
 	f_rec << setw(15) << "residual" << setw(15) << "lower bound" << setw(15) << "upper bound" << endl;
 	for (int i = 0; i<num_pi_constraints(); ++i)
 	{
 		string name = ctl_ord_pi_constraint_names[i];
 		PriorInformationRec pi_rec = constraints_pi.get_pi_rec_ptr(name);
 		f_rec << setw(20) << left << name;
-		f_rec << setw(10) << right << constraint_sense_name[name];
+		f_rec << setw(15) << right << constraint_sense_name[name];
 		f_rec << setw(15) << pi_rec.get_obs_value();
 		f_rec << setw(15) << pi_rec.calc_residual(all_pars_and_dec_vars);
 		f_rec << setw(15) << constraint_lb[num_obs_constraints() + i];
@@ -215,7 +232,7 @@ void sequentialLP::postsolve_constraint_report(Observations &upgrade_obs,Paramet
 {
 	ofstream &f_rec = file_mgr->rec_ofstream();
 	f_rec << endl << endl << "     constraint information at end of SLP iteration " << slp_iter << endl << endl;
-	f_rec << setw(20) << left << "name" << right << setw(10) << "sense" << setw(15) << "required";
+	f_rec << setw(20) << left << "name" << right << setw(15) << "sense" << setw(15) << "required";
 	if (use_chance)
 		f_rec << setw(15) << "fosm offset";
 	f_rec << setw(15) << "current" << setw(15) << "residual";
@@ -226,7 +243,7 @@ void sequentialLP::postsolve_constraint_report(Observations &upgrade_obs,Paramet
 	{
 		string name = ctl_ord_obs_constraint_names[i];
 		f_rec << setw(20) << left << name;
-		f_rec << setw(10) << right << constraint_sense_name[name];
+		f_rec << setw(15) << right << constraint_sense_name[name];
 		f_rec << setw(15) << constraints_obs.get_rec(name);
 		if (use_chance)
 		{
@@ -250,7 +267,7 @@ void sequentialLP::postsolve_constraint_report(Observations &upgrade_obs,Paramet
 	if (num_pi_constraints() > 0)
 	{
 		f_rec << endl << endl << "     prior information constraint information at end of SLP iteration " << slp_iter << endl << endl;
-		f_rec << setw(20) << left << "name" << right << setw(10) << "sense" << setw(15) << "required";
+		f_rec << setw(20) << left << "name" << right << setw(15) << "sense" << setw(15) << "required";
 		f_rec << setw(15) << "current" << setw(15) << "residual";
 		f_rec << setw(15) << "new" << setw(15) << "residual" << endl;
 		for (auto &name : ctl_ord_pi_constraint_names)
@@ -259,7 +276,7 @@ void sequentialLP::postsolve_constraint_report(Observations &upgrade_obs,Paramet
 			pair<double,double> cur_sim_resid = pi_rec.calc_residual_and_sim_val(all_pars_and_dec_vars);
 			pair<double,double> new_sim_resid = pi_rec.calc_residual_and_sim_val(upgrade_pars);
 			f_rec << setw(20) << left << name;
-			f_rec << setw(10) << right << constraint_sense_name[name];
+			f_rec << setw(15) << right << constraint_sense_name[name];
 			f_rec << setw(15) << pi_rec.get_obs_value();
 			f_rec << setw(15) << cur_sim_resid.first;
 			f_rec << setw(15) << cur_sim_resid.second;
@@ -764,7 +781,7 @@ void sequentialLP::build_constraint_bound_arrays()
 		if (constraint_sense_map[name] == ConstraintSense::greater_than)
 			constraint_lb[i+noc] = residual;
 		else
-			constraint_lb[i] = -COIN_DBL_MAX;
+			constraint_lb[i+noc] = -COIN_DBL_MAX;
 		if (constraint_sense_map[name] == ConstraintSense::equal_to)
 		{
 			constraint_ub[i+noc] = residual;
@@ -802,6 +819,9 @@ void sequentialLP::iter_solve()
 
 	//instantiate and load the linear simplex model
 	//ClpSimplex model;
+	for (int i = 0; i < num_dec_vars(); i++)
+		cout << dec_var_lb[i] << endl;
+
 	model.loadProblem(matrix, dec_var_lb, dec_var_ub, ctl_ord_obj_func_coefs, constraint_lb, constraint_ub);
 	model.setLogLevel(pest_scenario.get_pestpp_options().get_opt_coin_loglev());
 	model.setOptimizationDirection(pest_scenario.get_pestpp_options().get_opt_direction());
@@ -822,8 +842,17 @@ void sequentialLP::iter_solve()
 	}
 	
 	//update the status arrays of both the presolve and original models
-	presolve_info.postsolve(true);
+	//presolve_info.postsolve(true);
 
+	model.primal();
+	//model.checkSolution();
+	/*if (!model.primalFeasible())
+	{
+		model.dual();
+		model.checkSolution();
+		model.primal();
+	}*/
+		
 	//check the solution
 	model.checkSolution();
 	if (model.isProvenOptimal())
@@ -831,8 +860,16 @@ void sequentialLP::iter_solve()
 		f_rec << " iteration " << slp_iter << " linear solution is proven optimal" << endl << endl;
 		cout << " iteration " << slp_iter << " linear solution is proven optimal" << endl << endl;
 	}
-	else if ((model.isProvenPrimalInfeasible()) && (model.isProvenDualInfeasible()))
-		throw_sequentialLP_error("both primal and dual solutions are proven infeasible...cannot continue");
+
+	else if ((!model.primalFeasible()) && (!model.dualFeasible()))
+	{
+		f_rec << "  ---  warning: primal and dual infeasible  ---  " << endl;
+		cout << "  ---  warning: primal and dual infeasible  ---  " << endl;
+#ifndef _DEBUG
+		throw_sequentialLP_error("linear program is primal and dual infeasible...cannot continue");
+#endif
+	}
+
 	//otherwise, try again...
 	else
 	{
@@ -841,7 +878,7 @@ void sequentialLP::iter_solve()
 			f_rec << endl << "-->resolving primal in attempt to prove optimal..." << endl;
 			model.primal(1);
 		}
-		else
+		else if(model.dualFeasible())
 		{
 			f_rec << endl << "-->resolving dual in attempt to prove optimal..." << endl;
 			model.dual(1);
@@ -938,8 +975,9 @@ CoinPackedMatrix sequentialLP::jacobian_to_coinpackedmatrix()
 	CoinPackedMatrix matrix(true,row_idx,col_idx,elems,elem_count);
 	
 	//this is useful for debugging
-	//matrix.dumpMatrix();
-	
+#ifdef _DEBUG
+	matrix.dumpMatrix();
+#endif
 	return matrix;
 }
 
@@ -1085,50 +1123,52 @@ void sequentialLP::iter_presolve()
 		bool success = run_mgr_ptr->get_run(run_id, pars, constraints_sim);
 		if (!success)
 			throw_sequentialLP_error("initial (base) run with initial decision vars failed...cannot continue");
-		return;
 	}
-
-	
-
-	set<string> out_of_bounds;
-	vector<string> names_to_run = ctl_ord_dec_var_names;
-	names_to_run.insert(names_to_run.end(), adj_par_names.begin(), adj_par_names.end());
-	bool success = jco.build_runs(all_pars_and_dec_vars, constraints_sim, names_to_run, par_trans,
-		pest_scenario.get_base_group_info(), pest_scenario.get_ctl_parameter_info(),
-		*run_mgr_ptr, out_of_bounds);
-	if (!success)
+	//otherwise, fill the jacobian
+	else
 	{
-		const set<string> failed = jco.get_failed_parameter_names();
-		throw_sequentialLP_error("failed to calc derviatives for the following decision vars: ", failed);
+
+		set<string> out_of_bounds;
+		vector<string> names_to_run = ctl_ord_dec_var_names;
+		names_to_run.insert(names_to_run.end(), adj_par_names.begin(), adj_par_names.end());
+		bool success = jco.build_runs(all_pars_and_dec_vars, constraints_sim, names_to_run, par_trans,
+			pest_scenario.get_base_group_info(), pest_scenario.get_ctl_parameter_info(),
+			*run_mgr_ptr, out_of_bounds);
+		if (!success)
+		{
+			const set<string> failed = jco.get_failed_parameter_names();
+			throw_sequentialLP_error("failed to calc derviatives for the following decision vars: ", failed);
+		}
+
+		jco.make_runs(*run_mgr_ptr);
+
+		//check for failed runs
+		//TODO: something better than just dying
+		set<int> failed = run_mgr_ptr->get_failed_run_ids();
+		if (failed.size() > 0)
+			throw_sequentialLP_error("failed runs when filling decision var response matrix...cannot continue ");
+
+
+		//get the base run and update simulated constraint values
+		if (slp_iter == 1)
+		{
+			Parameters temp_pars;
+			Observations temp_obs;
+			run_mgr_ptr->get_run(0, temp_pars, constraints_sim, false);
+		}
+		//par_trans.model2ctl_ip(temp_pars);
+
+		//process the remaining responses
+		jco.process_runs(par_trans, pest_scenario.get_base_group_info(), *run_mgr_ptr, *null_prior, false);
+		//TODO: deal with failed runs
+
+		stringstream ss;
+		ss << slp_iter << ".jcb";
+		string rspmat_file = file_mgr->build_filename(ss.str());
+		f_rec << endl << "saving iteration " << slp_iter << " reponse matrix to file: " << rspmat_file << endl;
+		jco.save(ss.str());
 	}
 
-	jco.make_runs(*run_mgr_ptr);
-
-	//check for failed runs
-	//TODO: something better than just dying
-	set<int> failed = run_mgr_ptr->get_failed_run_ids();
-	if (failed.size() > 0)
-		throw_sequentialLP_error("failed runs when filling decision var response matrix...cannot continue ");
-
-
-	//get the base run and update simulated constraint values
-	if (slp_iter == 1)
-	{
-		Parameters temp_pars;
-		Observations temp_obs;
-		run_mgr_ptr->get_run(0, temp_pars, constraints_sim, false);
-	}
-	//par_trans.model2ctl_ip(temp_pars);
-
-	//process the remaining responses
-	jco.process_runs(par_trans, pest_scenario.get_base_group_info(), *run_mgr_ptr, *null_prior, false);
-	//TODO: deal with failed runs
-
-	stringstream ss;
-	ss << slp_iter << ".jcb";
-	string rspmat_file = file_mgr->build_filename(ss.str());
-	f_rec << endl << "saving iteration " << slp_iter << " reponse matrix to file: " << rspmat_file << endl;
-	jco.save(ss.str());
 
 	//set/update the constraint bound arrays
 	build_constraint_bound_arrays();

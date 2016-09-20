@@ -256,8 +256,9 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	base_par_transform.push_back_ctl2active_ctl(t_fixed);
 	base_par_transform.push_back_active_ctl2numeric(t_log);
 	base_par_transform.push_back_active_ctl2numeric(t_auto_norm);
-
+#ifndef _DEBUG
 	try {
+#endif
 	prior_info_string = "";
 	for(lnum=1, sec_begin_lnum=1; getline(fin, line); ++ lnum)
 	{
@@ -564,6 +565,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 		}
 		prior_info_string.clear();
 	}
+#ifndef _DEBUG
 	}
 	catch (PestConversionError &e) {
 		std::stringstream out;
@@ -572,6 +574,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 		e.add_front(out.str());
 		e.raise();
 	}
+#endif
 	fin.close();
 	// process pest++ options last
 	pestpp_options.set_n_iter_super(0);

@@ -29,7 +29,7 @@ def write_external_par_tpl():
 
 
 def build_control_file():
-    write_external_par_tpl()
+    
     tpl_files = ["supply2.wel.tpl",'external.tpl']
     in_files = ["supply2.wel","external.dat"]
     ins_file = "sfr_aq_ex.dat.ins"
@@ -44,13 +44,10 @@ def build_control_file():
     par.loc[:,"pargp"] = "pumping"
     im_names = par.groupby(par.parnme.apply(lambda x:x.startswith("im"))).groups[True]
     par.loc[im_names,"pargp"] = "external"
-    par.loc[im_names,"parub"] = 1.0E+6
-    #pst._rectify_pgroups()
-    #pst.parameter_groups.loc[:,"inctype"] = "absolute"
-    #pst.parameter_groups.loc[:,"derinc"] = 25000.0
-    
-    #pargp.loc[:,"inctyp"] = "absolute"
-    #pargp.loc[:,"derinc"] = 25000.0
+    par.loc[im_names,"parubnd"] = 1.0E+6
+    pst._rectify_pgroups()
+    pst.parameter_groups.loc[:,"inctyp"] = "absolute"
+    pst.parameter_groups.loc[:,"derinc"] = 25000.0
 
     const_dict = {}
     const_dict["s1r14_09"] = 15000.0
@@ -69,21 +66,24 @@ def build_control_file():
     obs.loc[:,"obgnme"] = "extra"
     obs.loc[:,"obsval"] = 0.0
     obs.loc[:,"weight"] = 0.0
-    obs.loc[const_dict.keys(),"obgnme"] = "greater_than"
+    obs.loc[const_dict.keys(),"obgnme"] = "less_obs"
     for obsnme,value in const_dict.items():
         obs.loc[obsnme,"obsval"] = value
         obs.loc[obsnme,"weight"] = 1.0
     obs.sort(["obgnme","obsnme"],inplace=True)
 
-    pst.control_data.noptmax = 3
+    pst.control_data.noptmax = 1
     pst.model_command = ["python.exe supply2.py"]
     obj_eq = ''
     for pname in pst.adj_par_names:
         if pname.startswith("im"):
-            obj_eq += " - 0.0012 * " + pname
+            obj_eq += " + -0.0012 * " + pname
+            #obj_eq += " + 0.0012 * " + pname
         elif pname.startswith("q"):
             obj_eq += " + 0.001 * " + pname
+            #obj_eq += " + -0.001 * " + pname
     obj_eq += ' = 0.0'
+    obj_eq = obj_eq[2:]
     #pst.prior_information.loc["obj_func","pilbl"] = "obj_func"
     #pst.prior_information.loc["obj_func","equation"] = obj_eq
     #pst.prior_information.loc["obj_func","weight"] = 1.0
@@ -92,88 +92,95 @@ def build_control_file():
     pi_eqs,pi_weights,pi_names,pi_groups = [obj_eq],[],["obj_func"],['obj_func']
     #sp0
     pi_eqs.append(" 1.0 * q1 + 1.0 * q2a = 80000.0")
-    pi_groups.append("less_than")
+    pi_groups.append("less_pi")
     pi_eqs.append(" 1.0 * q1 + 1.0 * q2a = 30000.0")
-    pi_groups.append("greater_than")
+    pi_groups.append("greater_pi")
     
     #sp1
     pi_eqs.append(" 1.0 * q1 + 1.0 * q2b + 1.0 * q4a = 80000.0")
-    pi_groups.append("less_than")
+    pi_groups.append("less_pi")
     pi_eqs.append(" 1.0 * q1 + 1.0 * q2b + 1.0 * q4a = 30000.0")
-    pi_groups.append("greater_than")
+    pi_groups.append("greater_pi")
     
     #sp2
     pi_eqs.append(" 1.0 * q1 + 1.0 * q2c = 80000.0")
-    pi_groups.append("less_than")
+    pi_groups.append("less_pi")
     pi_eqs.append(" 1.0 * q1 + 1.0 * q2c = 30000.0")
-    pi_groups.append("greater_than")
+    pi_groups.append("greater_pi")
     
     #sp3
-    pi_eqs.append(" 1.0 * q1 + 1.0 * q2d + 1.0 * q4d = 80000.0")
-    pi_groups.append("less_than")
-    pi_eqs.append(" 1.0 * q1 + 1.0 * q2d + 1.0 * q4d = 30000.0")
-    pi_groups.append("greater_than")
+    pi_eqs.append(" 1.0 * q1 + 1.0 * q2d + 1.0 * q4b = 80000.0")
+    pi_groups.append("less_pi")
+    pi_eqs.append(" 1.0 * q1 + 1.0 * q2d + 1.0 * q4b = 30000.0")
+    pi_groups.append("greater_pi")
     
     #sp4
     pi_eqs.append(" 1.0 * q1 + 1.0 * q2a + 1.0 * q3 = 80000.0")
-    pi_groups.append("less_than")
+    pi_groups.append("less_pi")
     pi_eqs.append(" 1.0 * q1 + 1.0 * q2a + 1.0 * q3 = 25000.0")
-    pi_groups.append("greater_than")
+    pi_groups.append("greater_pi")
     
     #sp5
     pi_eqs.append(" 1.0 * q1 + 1.0 * q2b + 1.0 * q3 + 1.0 * q4a = 80000.0")
-    pi_groups.append("less_than")
+    pi_groups.append("less_pi")
     pi_eqs.append(" 1.0 * q1 + 1.0 * q2b + 1.0 * q3 + 1.0 * q4a = 25000.0")
-    pi_groups.append("greater_than")
+    pi_groups.append("greater_pi")
     
     #sp6
     pi_eqs.append(" 1.0 * q1 + 1.0 * q2c + 1.0 * q3 = 80000.0")
-    pi_groups.append("less_than")
+    pi_groups.append("less_pi")
     pi_eqs.append(" 1.0 * q1 + 1.0 * q2c + 1.0 * q3 = 25000.0")
-    pi_groups.append("greater_than")
+    pi_groups.append("greater_pi")
     
     #sp7
     pi_eqs.append(" 1.0 * q1 + 1.0 * q2d + 1.0 * q3 + 1.0 * q4b = 80000.0")
-    pi_groups.append("less_than")
+    pi_groups.append("less_pi")
     pi_eqs.append(" 1.0 * q1 + 1.0 * q2d + 1.0 * q3 + 1.0 * q4b = 25000.0")
-    pi_groups.append("greater_than")
+    pi_groups.append("greater_pi")
 
     #sp8
     pi_eqs.append(" 1.0 * q1 + 1.0 * q2a + 1.0 * im9 = 80000.0")
-    pi_groups.append("less_than")
+    pi_groups.append("less_pi")
     pi_eqs.append(" 1.0 * q1 + 1.0 * q2a + 1.0 * im9 = 45000.0")
-    pi_groups.append("greater_than")
+    pi_groups.append("greater_pi")
     
     #sp9
     pi_eqs.append(" 1.0 * q1 + 1.0 * q2b + 1.0 * q4a + 1.0 * im10 = 80000.0")
-    pi_groups.append("less_than")
+    pi_groups.append("less_pi")
     pi_eqs.append(" 1.0 * q1 + 1.0 * q2b + 1.0 * q4a + 1.0 * im10  = 45000.0")
-    pi_groups.append("greater_than")
+    pi_groups.append("greater_pi")
     
     #sp10
     pi_eqs.append(" 1.0 * q1 + 1.0 * q2c + 1.0 * im11 = 80000.0")
-    pi_groups.append("less_than")
+    pi_groups.append("less_pi")
     pi_eqs.append(" 1.0 * q1 + 1.0 * q2c + 1.0 * im11 = 45000.0")
-    pi_groups.append("greater_than")
+    pi_groups.append("greater_pi")
     
     #sp11
     pi_eqs.append(" 1.0 * q1 + 1.0 * q2d + 1.0 * q4b + 1.0 * im12 = 80000.0")
-    pi_groups.append("less_than")
+    pi_groups.append("less_pi")
     pi_eqs.append(" 1.0 * q1 + 1.0 * q2d + 1.0 * q4b + 1.0 * im12 = 45000.0")
-    pi_groups.append("greater_than")
+    pi_groups.append("greater_pi")
 
     pi_weights = [1.0 for _ in range(len(pi_eqs))]
     pi_names = ["pi_const{0}".format(i) for i in range(len(pi_eqs))]
     pi_names[0] = "pi_obj_func"
 
-    print(len(pi_eqs),len(pi_weights),len(pi_names),len(pi_groups))
+    #print(len(pi_eqs),len(pi_weights),len(pi_names),len(pi_groups))
 
     pst.prior_information = pd.DataFrame({"pilbl":pi_names,"equation":pi_eqs,
         "weight":pi_weights,"obgnme":pi_groups},index=pi_names)
-    pst.write("supply2_pest.pst")
+
+    pst.pestpp_options["opt_direction"] = "max"
+    pst.pestpp_options["opt_constraint_groups"] = "less_pi,greater_pi,less_obs"
+    pst.pestpp_options["opt_obj_func"] = "pi_obj_func"
+    pst.pestpp_options["opt_coin_loglev"] = 4
+    pst.pestpp_options["base_jacobian"] = "supply2_pest.1.bak.jcb"
+    pst.write("supply2_pest.reuse.pst")
 
 
 if __name__ == "__main__":
     # build_wel_file()
+    #write_external_par_tpl()
     build_control_file()
     write_command_script()

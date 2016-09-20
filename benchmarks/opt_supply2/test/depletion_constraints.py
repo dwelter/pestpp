@@ -49,7 +49,7 @@ def load_sfrout_aq_ex(filename):
 def apply():
     df_org = pd.read_csv(org_ex_name,delim_whitespace=True,index_col=0)
     df = load_sfrout_aq_ex(sfr_file)
-    delta_df = df - df_org
+    delta_df = df_org - df
     delta_df.to_csv(aq_ex_name,sep=' ')
 
 
