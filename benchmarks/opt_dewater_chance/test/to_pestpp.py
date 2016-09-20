@@ -130,7 +130,7 @@ pst.parameter_data.loc[pg['q'],"parlbnd"] = 0.0
 pst.parameter_data.loc[pg['q'],"scale"] = -1.0
 pst.parameter_data.loc[pg['q'],"pargp"] = 'q'
 
-pst.parameter_data.loc[pg['h'],"partrans"] = "log"
+pst.parameter_data.loc[pg['h'],"partrans"] = "fixed"
 pst.parameter_data.loc[pg['h'],"parval1"] = 50.0
 pst.parameter_data.loc[pg['h'],"parubnd"] = 500.0
 pst.parameter_data.loc[pg['h'],"parlbnd"] = 5.0
@@ -158,11 +158,11 @@ pst.parameter_groups.loc['q',"derinc"] = -10000.0
 pst.observation_data.loc[:,"obsval"] = 50.0
 pst.observation_data.loc[:,"weight"] = 0.0
 pst.observation_data.loc[nnz_names,"weight"] = 1.0
-pst.observation_data.loc[nnz_names,"obgnme"] = "l"
+pst.observation_data.loc[nnz_names,"obgnme"] = "l_const"
 
 pst.pestpp_options["forecasts"] = ','.join(nnz_names)
 pst.pestpp_options["opt_dec_var_groups"] = "q"
-pst.pestpp_options["opt_constraint_groups"] = 'l'
+pst.pestpp_options["opt_constraint_groups"] = 'l_const'
 pst.pestpp_options["opt_risk"] = 0.95
 
 pst.prior_information = pst.null_prior

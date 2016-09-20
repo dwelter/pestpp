@@ -388,7 +388,6 @@ map<string, double> read_twocol_ascii_to_map(string filename, int header_lines, 
 }
 
 
-
 void read_par(ifstream &fin, Parameters &pars)
 {
 	string line;

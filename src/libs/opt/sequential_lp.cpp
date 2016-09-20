@@ -299,6 +299,19 @@ pair<double,double> sequentialLP::postsolve_decision_var_report(Parameters &upgr
 	return pair<double,double>(cur_obj,new_obj);
 }
 
+pair<sequentialLP::ConstraintSense,string> sequentialLP::get_sense_from_group_name(string &name)
+{
+
+	if ((name.compare(0, 2, "L_") == 0) || (name.compare(0, 4, "LESS")==0))
+		return pair<ConstraintSense,string>(ConstraintSense::less_than,"less_than");
+	else if ((name.compare(0, 2, "G_") == 0) || (name.compare(0, 7, "GREATER")==0))
+		return pair<ConstraintSense, string>(ConstraintSense::greater_than,"greater_than");
+	else if ((name.compare(0, 2, "N_") == 0) || (name.compare(0, 2, "E_") == 0) || (name.compare(0, 5, "EQUAL")==0))
+		return pair<ConstraintSense,string>(ConstraintSense::equal_to,"equal_to");
+	else
+		return pair<ConstraintSense,string>(ConstraintSense::undefined,"undefined");
+}
+
 void sequentialLP::initialize_and_check()
 {
 	ofstream &f_rec = file_mgr->rec_ofstream();
@@ -370,9 +383,6 @@ void sequentialLP::initialize_and_check()
 		dec_var_lb[i] = parlbnd.get_rec(ctl_ord_dec_var_names[i]);
 		dec_var_ub[i] = parubnd.get_rec(ctl_ord_dec_var_names[i]);
 	}
-
-
-
 
 
 
@@ -476,29 +486,18 @@ void sequentialLP::initialize_and_check()
 	for (auto &name : ctl_ord_obs_constraint_names)
 	{
 		string group = pest_scenario.get_ctl_observation_info().get_observation_rec_ptr(name)->group;
-		if ((group == "L") || (group == "LESS_THAN"))
+		pair<ConstraintSense,string> sense = get_sense_from_group_name(group);
+		if (sense.first == ConstraintSense::undefined)
 		{
-			constraint_sense_map[name] = ConstraintSense::less_than;
-			constraint_sense_name[name] = "less than";
-		}
-		else if ((group == "G") || (group == "GREATER_THAN"))
-		{
-			constraint_sense_map[name] = ConstraintSense::greater_than;
-			constraint_sense_name[name] = "greater than";
-		}
-		else if ((group == "E") || (group == "N") || (group == "EQUAL_TO"))
-		{
-			constraint_sense_map[name] = ConstraintSense::equal_to;
-			constraint_sense_name[name] = "equal to";
-		}
-
-		else
-			//problem_constraints[name] = group;
 			problem_constraints.push_back(name + ',' + group);
+		}
+		constraint_sense_map[name] = sense.first;
+		constraint_sense_name[name] = sense.second;
+		
 	}
 	if (problem_constraints.size() > 0)
 	{
-		throw_sequentialLP_error("the following obs constraints do not have the correct group names {'l','g','e'}: ", problem_constraints);
+		throw_sequentialLP_error("the following obs constraints do not have a correct group name prefix {'l_','less','g_','greater','e_','equal'}: ", problem_constraints);
 	}
 
 	//build map of pi constraint sense
@@ -506,28 +505,17 @@ void sequentialLP::initialize_and_check()
 	for (auto &name : ctl_ord_pi_constraint_names)
 	{
 		string group = pest_scenario.get_prior_info_ptr()->get_pi_rec_ptr(name).get_group();
-		if ((group == "L") || (group == "LESS_THAN"))
+		pair<ConstraintSense, string> sense = get_sense_from_group_name(group);
+		if (sense.first == ConstraintSense::undefined)
 		{
-			constraint_sense_map[name] = ConstraintSense::less_than;
-			constraint_sense_name[name] = "less than";
-		}
-		else if ((group == "G") || (group == "GREATER_THAN"))
-		{
-			constraint_sense_map[name] = ConstraintSense::greater_than;
-			constraint_sense_name[name] = "greater than";
-		}
-		else if ((group == "E") || (group == "N") || (group == "EQUAL_TO"))
-		{
-			constraint_sense_map[name] = ConstraintSense::equal_to;
-			constraint_sense_name[name] = "equal to";
-		}
-
-		else
 			problem_constraints.push_back(name + ',' + group);
+		}
+		constraint_sense_map[name] = sense.first;
+		constraint_sense_name[name] = sense.second;
 	}
 	if (problem_constraints.size() > 0)
 	{
-		throw_sequentialLP_error("the following prior information constraints do not have the correct group names {'l','g','e'}: ", problem_constraints);
+		throw_sequentialLP_error("the following prior info constraints do not have a correct group name prefix {'l_','less','g_','greater','e_','equal'}: ", problem_constraints);
 	}
 
 	//allocate the constraint bound arrays 

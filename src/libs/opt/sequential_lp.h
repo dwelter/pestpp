@@ -15,7 +15,7 @@
 
 class sequentialLP
 {
-	enum ConstraintSense {less_than,greater_than,equal_to};
+	enum ConstraintSense {less_than,greater_than,equal_to,undefined};
 public:
 	sequentialLP(Pest &_pest_scenario, RunManagerAbstract* _run_mgr_ptr, 
 		         Covariance &_parcov, FileManager* _file_mgr);
@@ -80,7 +80,11 @@ private:
 	int num_adj_pars() { return adj_par_names.size(); }
 	int num_nz_obs() { return nz_obs_names.size(); }
 
+	//get the number of non zero elements in the prior information constraints
 	int num_nz_pi_constraint_elements();
+
+	//parse the obs or pi group name to get the constraint sense
+	pair<ConstraintSense,string> get_sense_from_group_name(string &name);
 
 	//solve the current LP problem
 	void iter_solve();
