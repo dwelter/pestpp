@@ -51,7 +51,7 @@ vector<double> sequentialLP::get_constraint_residual_vec()
 	if (use_chance)
 		return get_constraint_residual_vec(constraints_fosm);
 	else
-		return get_constraint_residual_vec(constraints_sim);
+		return get_constraint_residual_vec(constraints_sim_initial);
 }
 
 vector<double> sequentialLP::get_constraint_residual_vec(Observations &sim_vals)
@@ -346,10 +346,13 @@ void sequentialLP::initialize_and_check()
 	//-----------------------------
 
 	all_pars_and_dec_vars = pest_scenario.get_ctl_parameters();
+	all_pars_and_dec_vars_initial = Parameters(all_pars_and_dec_vars);
 	par_trans = pest_scenario.get_base_par_tran_seq();
 	//set ordered dec var name vec
 	//and check for illegal parameter transformations
 	vector<string> dec_var_groups = pest_scenario.get_pestpp_options().get_opt_dec_var_groups();
+	vector<string> ext_var_groups = pest_scenario.get_pestpp_options().get_opt_ext_var_groups();
+	dec_var_groups.insert(dec_var_groups.begin(), ext_var_groups.begin(), ext_var_groups.end());
 	ctl_ord_dec_var_names.clear();
 	//if the ++opt_dec_var_groups arg was passed
 	if (dec_var_groups.size() != 0)
@@ -374,7 +377,12 @@ void sequentialLP::initialize_and_check()
 		{
 			group = pinfo.get_group_name(par_name);
 			if (find(start, end, group) != end)
+			{
 				ctl_ord_dec_var_names.push_back(par_name);
+				//check if this is an ext var
+				if (find(ext_var_groups.begin(), ext_var_groups.end(), group) != ext_var_groups.end())
+					ctl_ord_ext_var_names.push_back(par_name);
+			}
 		}
 
 		if (num_dec_vars() == 0)
@@ -383,6 +391,8 @@ void sequentialLP::initialize_and_check()
 	//if not ++opt_dec_var_names was passed, use all parameter as decision variables
 	else
 		ctl_ord_dec_var_names = pest_scenario.get_ctl_ordered_par_names();
+
+
 
 	//if any decision vars have a transformation that is not allowed
 	vector<string> problem_trans;
@@ -592,6 +602,9 @@ void sequentialLP::initialize_and_check()
 		throw_sequentialLP_error("the following objective function components are not decision variables: ", missing_vars);
 
 	
+
+
+
 	//------------------------------------------
 	//  ---  chance constratints and fosm  ---  
 	//------------------------------------------
@@ -714,8 +727,10 @@ void sequentialLP::calc_chance_constraint_offsets()
 		post_constraint_stdev[name] = sqrt(post_const_var[name]);
 		pr_offset = logit_approx * prior_constraint_stdev[name];
 		pt_offset = logit_approx * post_constraint_stdev[name];
-		old_constraint_val = constraints_sim[name];
-		
+		//important: using the initial simulated constraint values 
+		//old_constraint_val = constraints_sim[name];
+		old_constraint_val = constraints_sim_initial[name];
+
 		//if less_than constraint, then add to the sim value, to move positive
 		// WRT the required constraint value
 		if (constraint_sense_map[name] == ConstraintSense::less_than)
@@ -743,8 +758,8 @@ void sequentialLP::calc_chance_constraint_offsets()
 void sequentialLP::build_constraint_bound_arrays()
 {
 
-	//if needed update the fosm related attributes before
-	//calculating the residual vector!
+	//if needed update the fosm related attributes
+	//before calculating the residual vector!
 	if (use_chance)
 		calc_chance_constraint_offsets();
 
@@ -774,7 +789,7 @@ void sequentialLP::build_constraint_bound_arrays()
 	for (int i = 0; i < num_pi_constraints(); ++i)
 	{
 		string name = ctl_ord_pi_constraint_names[i];
-		double residual = -constraints_pi.get_pi_rec_ptr(name).calc_residual(all_pars_and_dec_vars);
+		double residual = -constraints_pi.get_pi_rec_ptr(name).calc_residual(all_pars_and_dec_vars_initial);
 		if (constraint_sense_map[name] == ConstraintSense::less_than)
 			constraint_ub[i+noc] = residual;
 		else
@@ -868,6 +883,7 @@ void sequentialLP::iter_solve()
 		f_rec << "  ---  warning: primal and dual infeasible  ---  " << endl;
 		cout << "  ---  warning: primal and dual infeasible  ---  " << endl;
 #ifndef _DEBUG
+		//TODO: report current constraints and dec vars before exiting...problably just set the termination controller...
 		throw_sequentialLP_error("linear program is primal and dual infeasible...cannot continue");
 #endif
 	}
@@ -975,7 +991,7 @@ CoinPackedMatrix sequentialLP::jacobian_to_coinpackedmatrix()
 		throw_sequentialLP_error("problem packing prior information constraints into CoinPackedMatrix...");
 	
 	CoinPackedMatrix matrix(true,row_idx,col_idx,elems,elem_count);
-	
+
 	//this is useful for debugging
 #ifdef _DEBUG
 	matrix.dumpMatrix();
@@ -1126,12 +1142,17 @@ void sequentialLP::iter_presolve()
 		if (!success)
 			throw_sequentialLP_error("initial (base) run with initial decision vars failed...cannot continue");
 	}
+
 	//otherwise, fill the jacobian
 	else
 	{
 
 		set<string> out_of_bounds;
-		vector<string> names_to_run = ctl_ord_dec_var_names;
+		vector<string> names_to_run;
+		for (auto &name : ctl_ord_dec_var_names)
+			if (find(ctl_ord_ext_var_names.begin(), ctl_ord_ext_var_names.end(), name) == ctl_ord_ext_var_names.end())
+				names_to_run.push_back(name);
+
 		names_to_run.insert(names_to_run.end(), adj_par_names.begin(), adj_par_names.end());
 		bool success = jco.build_runs(all_pars_and_dec_vars, constraints_sim, names_to_run, par_trans,
 			pest_scenario.get_base_group_info(), pest_scenario.get_ctl_parameter_info(),
@@ -1157,6 +1178,7 @@ void sequentialLP::iter_presolve()
 			Parameters temp_pars;
 			Observations temp_obs;
 			run_mgr_ptr->get_run(0, temp_pars, constraints_sim, false);
+			
 		}
 		//par_trans.model2ctl_ip(temp_pars);
 
@@ -1170,7 +1192,9 @@ void sequentialLP::iter_presolve()
 		f_rec << endl << "saving iteration " << slp_iter << " reponse matrix to file: " << rspmat_file << endl;
 		jco.save(ss.str());
 	}
-
+	//if this is the first time through, set the initial constraint simulated values
+	if (slp_iter == 1)
+		constraints_sim_initial = Observations(constraints_sim);
 
 	//set/update the constraint bound arrays
 	build_constraint_bound_arrays();

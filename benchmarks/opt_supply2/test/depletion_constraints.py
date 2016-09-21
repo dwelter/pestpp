@@ -51,7 +51,7 @@ def apply():
     df = load_sfrout_aq_ex(sfr_file)
     delta_df = df_org - df
     delta_df.to_csv(aq_ex_name,sep=' ')
-
+    df.to_csv("sfr_out.dat")
 
 def setup():
     org_df = load_sfrout_aq_ex(sfr_file)

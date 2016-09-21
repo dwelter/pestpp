@@ -597,6 +597,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_opt_obj_func("");
 	pestpp_options.set_opt_coin_loglev(0);
 	pestpp_options.set_opt_dec_var_groups(vector<string>());
+	pestpp_options.set_opt_ext_var_groups(vector<string>());
 	pestpp_options.set_opt_constraint_groups(vector<string>());
 	pestpp_options.set_opt_risk(0.5);
 	pestpp_options.set_opt_direction(1.0);

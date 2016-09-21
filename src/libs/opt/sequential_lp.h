@@ -54,15 +54,18 @@ private:
 	vector<string> ctl_ord_dec_var_names;
 	vector<string> ctl_ord_obs_constraint_names;
 	vector<string> ctl_ord_pi_constraint_names;
+	vector<string> ctl_ord_ext_var_names;
 	vector<string> nz_obs_names;
 	vector<string> adj_par_names;
 
 	PriorInformation* null_prior = new PriorInformation();
 	Parameters all_pars_and_dec_vars;
+	Parameters all_pars_and_dec_vars_initial;
 	ParamTransformSeq par_trans;
 	Observations constraints_obs;
 	Observations constraints_sim;
 	Observations constraints_fosm;
+	Observations constraints_sim_initial;
 	PriorInformation constraints_pi;
 	Observations obj_func_obs;
 	ObservationInfo obj_func_info;

@@ -272,6 +272,8 @@ public:
 	void set_opt_coin_loglev(int _lev) { opt_coin_loglev = _lev; }
 	vector<string> get_opt_dec_var_groups()const { return opt_dec_var_groups; }
 	void set_opt_dec_var_groups(vector<string> _grps) { opt_dec_var_groups = _grps; }
+	vector<string> get_opt_ext_var_groups()const { return opt_external_var_groups; }
+	void set_opt_ext_var_groups(vector<string> _grps) { opt_external_var_groups = _grps; }
 	vector<string> get_opt_constraint_groups()const { return opt_constraint_groups; }
 	void set_opt_constraint_groups(vector<string> _grps) { opt_constraint_groups = _grps; }
 	double get_opt_risk()const { return opt_risk; }
@@ -319,6 +321,7 @@ private:
 	string opt_obj_func;
 	int opt_coin_loglev;
 	vector<string> opt_dec_var_groups;
+	vector<string> opt_external_var_groups;
 	vector<string> opt_constraint_groups;
 	double opt_risk;
 	double opt_direction;

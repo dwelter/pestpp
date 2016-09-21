@@ -503,6 +503,17 @@ void PestppOptions::parce_line(const string &line)
 			}
 		}
 
+		else if ((key == "OPT_EXT_VAR_GROUPS") || (key == "OPT_EXTERNAL_VARIABLE_GROUPS"))
+		{
+			opt_external_var_groups.clear();
+			vector<string> tok;
+			tokenize(value, tok, ", ");
+			for (const auto &name : tok)
+			{
+				opt_external_var_groups.push_back(name);
+			}
+		}
+
 		else if ((key == "OPT_CONSTRAINT_GROUPS"))
 		{
 			opt_constraint_groups.clear();

@@ -618,7 +618,7 @@ PI_OBJ_FUNC   + 1.095 * Q1 = 0   1   OBJ_FUNC
   ---  sequential linear programming problem information  ---  
   -------------------------------------------------------------
 
--->number of iterations of sequential linear programming (noptmax): 1
+-->number of iterations of sequential linear programming (noptmax): 3
 -->objective function sense (direction): maximize
 -->number of decision variable: 11
 -->number of observation constraints: 12
@@ -811,16 +811,143 @@ PI_CONST24             greater_than          45000              0         -45000
 
   ---  iteration 1 objective function value:         54391.8  ---  
 
------------------------------------------
-     ---   OPTIMIZATION COMPLETE   ---   
-  Reason for terminating PEST++ simulation: unknown
-  Summary of termination criteria:
-  NOPTMAX = 1 ;  NOPT at termination = 0
-  NPHINORED = 3 ;  NPHINORED at termination = 0
-  NRELPAR = 3; RELPARSTP = 0.01 ;  NRELPAR at termination = 0
-  PHIREDSTP = 0.01; NPHISTP = 3
-  NPHISTP lowest PHI's:
 
-FINAL OPTIMISATION RESULTS
 
-Number of forward model runs performed during optimiztion: 13
+  ---------------------------------
+  --- starting LP iteration 2  ---  
+  ---------------------------------
+
+
+  ---  calculating response matrix for iteration 2  ---  
+
+saving iteration 2 reponse matrix to file: supply2_pest.2.jcb
+
+  observation constraint information at start of iteration 2
+name                          sense      obs value      sim value       residual    lower bound    upper bound
+S1R14_09                  less_than          15000          15020          15000  -1.79769e+308          15000
+S1R14_10                  less_than          15000           9720          15000  -1.79769e+308          15000
+S1R14_11                  less_than          15000           9210          15000  -1.79769e+308          15000
+S1R14_12                  less_than          15000           9140          15000  -1.79769e+308          15000
+S1R21_11                  less_than          20000          20000          20000  -1.79769e+308          20000
+S1R21_12                  less_than          20000          19990          20000  -1.79769e+308          20000
+S2R08_09                  less_than          15000            960          15000  -1.79769e+308          15000
+S2R08_10                  less_than          15000          14990          15000  -1.79769e+308          15000
+S2R08_11                  less_than          15000            780          15000  -1.79769e+308          15000
+S2R08_12                  less_than          15000           2850          15000  -1.79769e+308          15000
+S3R05_11                  less_than          30000          23600          30000  -1.79769e+308          30000
+S3R05_12                  less_than          30000          29900          30000  -1.79769e+308          30000
+
+  prior information constraint information at start of iteration 2
+name                          sense      obs value      sim value       residual    lower bound    upper bound
+PI_CONST1                 less_than          80000          53530         -26470  -1.79769e+308          80000
+PI_CONST2              greater_than          30000          53530          23530          30000   1.79769e+308
+PI_CONST3                 less_than          80000          80000   -2.00002e-07  -1.79769e+308          80000
+PI_CONST4              greater_than          30000          80000          50000          30000   1.79769e+308
+PI_CONST5                 less_than          80000        30384.8       -49615.2  -1.79769e+308          80000
+PI_CONST6              greater_than          30000        30384.8        384.753          30000   1.79769e+308
+PI_CONST7                 less_than          80000        38084.9       -41915.1  -1.79769e+308          80000
+PI_CONST8              greater_than          30000        38084.9        8084.93          30000   1.79769e+308
+PI_CONST9                 less_than          80000          53530         -26470  -1.79769e+308          80000
+PI_CONST10             greater_than          25000          53530          28530          25000   1.79769e+308
+PI_CONST11                less_than          80000          80000   -2.00002e-07  -1.79769e+308          80000
+PI_CONST12             greater_than          25000          80000          55000          25000   1.79769e+308
+PI_CONST13                less_than          80000        30384.8       -49615.2  -1.79769e+308          80000
+PI_CONST14             greater_than          25000        30384.8        5384.75          25000   1.79769e+308
+PI_CONST15                less_than          80000        38084.9       -41915.1  -1.79769e+308          80000
+PI_CONST16             greater_than          25000        38084.9        13084.9          25000   1.79769e+308
+PI_CONST17                less_than          80000          53530         -26470  -1.79769e+308          80000
+PI_CONST18             greater_than          45000          53530        8530.04          45000   1.79769e+308
+PI_CONST19                less_than          80000          80000   -2.00002e-07  -1.79769e+308          80000
+PI_CONST20             greater_than          45000          80000          35000          45000   1.79769e+308
+PI_CONST21                less_than          80000          45000         -35000  -1.79769e+308          80000
+PI_CONST22             greater_than          45000          45000      -1.92e-05          45000   1.79769e+308
+PI_CONST23                less_than          80000          45000         -35000  -1.79769e+308          80000
+PI_CONST24             greater_than          45000          45000      -1.61e-05          45000   1.79769e+308
+number of nonzero elements in response matrix: 58 of 132
+  ---  solving linear program for iteration 2  ---  
+
+-->resolving primal in attempt to prove optimal...
+
+WARNING: iteration 2 linear solution is not proven optimal...continuing
+
+
+  ---  linear program solution complete for iteration 2  ---  
+  ---  processing results for iteration 2 LP solution  ---  
+
+
+
+     decision variable information at end of SLP iteration 2
+
+name                        current            new   objfunc coef    cur contrib    new contrib
+IM10                             -0             -0        -0.1092              0              0
+IM11                        14615.2        29220.9       -0.01092       -159.598       -319.092
+IM12                        6915.07        13770.3        -0.1092       -755.126       -1503.72
+IM9                              -0             -0        -0.1104              0              0
+Q1                          3530.04           7018          1.095        3865.39        7684.71
+Q2A                           50000         100000          0.276          13800          27600
+Q2B                           27484        54970.8          0.273        7503.14          15007
+Q2C                         26854.7        53761.1          0.273        7331.34        14676.8
+Q2D                         26682.8        53449.4          0.273        7284.39        14591.7
+Q4A                         48985.9        98011.2          0.273        13373.2        26757.1
+Q4B                         7872.13        15762.3          0.273        2149.09         4303.1
+
+
+     constraint information at end of SLP iteration 2
+
+name                          sense       required        current       residual            new       residual
+S1R14_09                  less_than          15000          15020          15000          30030         -15030
+S1R14_10                  less_than          15000           9720          15000          19420          -4420
+S1R14_11                  less_than          15000           9210          15000          18400          -3400
+S1R14_12                  less_than          15000           9140          15000          18290          -3290
+S1R21_11                  less_than          20000          20000          20000          40000         -20000
+S1R21_12                  less_than          20000          19990          20000          40000         -20000
+S2R08_09                  less_than          15000            960          15000           1910          13090
+S2R08_10                  less_than          15000          14990          15000          30000         -15000
+S2R08_11                  less_than          15000            780          15000           1560          13440
+S2R08_12                  less_than          15000           2850          15000           5710           9290
+S3R05_11                  less_than          30000          23600          30000          47100         -17100
+S3R05_12                  less_than          30000          29900          30000          59700         -29700
+
+
+     prior information constraint information at end of SLP iteration 2
+
+name                          sense       required        current       residual            new       residual
+PI_CONST1                 less_than          80000          53530         -26470         107018          27018
+PI_CONST2              greater_than          30000          53530          23530         107018          77018
+PI_CONST3                 less_than          80000          80000   -2.00002e-07         160000          80000
+PI_CONST4              greater_than          30000          80000          50000         160000         130000
+PI_CONST5                 less_than          80000        30384.8       -49615.2        60779.1       -19220.9
+PI_CONST6              greater_than          30000        30384.8        384.753        60779.1        30779.1
+PI_CONST7                 less_than          80000        38084.9       -41915.1        76229.7        -3770.3
+PI_CONST8              greater_than          30000        38084.9        8084.93        76229.7        46229.7
+PI_CONST9                 less_than          80000          53530         -26470         107018          27018
+PI_CONST10             greater_than          25000          53530          28530         107018          82018
+PI_CONST11                less_than          80000          80000   -2.00002e-07         160000          80000
+PI_CONST12             greater_than          25000          80000          55000         160000         135000
+PI_CONST13                less_than          80000        30384.8       -49615.2        60779.1       -19220.9
+PI_CONST14             greater_than          25000        30384.8        5384.75        60779.1        35779.1
+PI_CONST15                less_than          80000        38084.9       -41915.1        76229.7        -3770.3
+PI_CONST16             greater_than          25000        38084.9        13084.9        76229.7        51229.7
+PI_CONST17                less_than          80000          53530         -26470         107018          27018
+PI_CONST18             greater_than          45000          53530        8530.04         107018          62018
+PI_CONST19                less_than          80000          80000   -2.00002e-07         160000          80000
+PI_CONST20             greater_than          45000          80000          35000         160000         115000
+PI_CONST21                less_than          80000          45000         -35000          90000          10000
+PI_CONST22             greater_than          45000          45000      -1.92e-05          90000          45000
+PI_CONST23                less_than          80000          45000         -35000          90000          10000
+PI_CONST24             greater_than          45000          45000      -1.61e-05          90000          45000
+
+
+  ---  iteration 2 objective function value:          108798  ---  
+
+
+
+  ---------------------------------
+  --- starting LP iteration 3  ---  
+  ---------------------------------
+
+
+  ---  calculating response matrix for iteration 3  ---  
+ warning: failed to compute parameter deriviative for Q2A
+ warning: failed to compute parameter deriviative for Q4A
+error in sequentialLP process: failed to calc derviatives for the following decision vars: Q2A,Q4A,
