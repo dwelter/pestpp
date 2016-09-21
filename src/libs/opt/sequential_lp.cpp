@@ -194,7 +194,7 @@ void sequentialLP::presolve_constraint_report()
 	ofstream &f_rec = file_mgr->rec_ofstream();
 	vector<double> residuals = get_constraint_residual_vec();
 	f_rec << endl << "  observation constraint information at start of iteration " << slp_iter << endl;
-	f_rec << setw(20) << left << "name" << right << setw(15) << "sense" << setw(15) << "value";
+	f_rec << setw(20) << left << "name" << right << setw(15) << "sense" << setw(15) << "obs value" << setw(15) << "sim value";
 	f_rec << setw(15) << "residual" << setw(15) << "lower bound" << setw(15) << "upper bound" << endl;
 
 	for (int i=0;i<num_obs_constraints();++i)
@@ -203,6 +203,7 @@ void sequentialLP::presolve_constraint_report()
 		f_rec << setw(20) << left << name;
 		f_rec << setw(15) << right << constraint_sense_name[name];
 		f_rec << setw(15) << constraints_obs.get_rec(name);
+		f_rec << setw(15) << constraints_sim.get_rec(name);
 		f_rec << setw(15) << residuals[i];
 		f_rec << setw(15) << constraint_lb[i];
 		f_rec << setw(15) << constraint_ub[i] << endl;
@@ -211,7 +212,7 @@ void sequentialLP::presolve_constraint_report()
 
 	//report prior information constraints
 	f_rec << endl << "  prior information constraint information at start of iteration " << slp_iter << endl;
-	f_rec << setw(20) << left << "name" << right << setw(15) << "sense" << setw(15) << "value";
+	f_rec << setw(20) << left << "name" << right << setw(15) << "sense" << setw(15) << "obs value" << setw(15) << "sim value";
 	f_rec << setw(15) << "residual" << setw(15) << "lower bound" << setw(15) << "upper bound" << endl;
 	for (int i = 0; i<num_pi_constraints(); ++i)
 	{
@@ -220,6 +221,7 @@ void sequentialLP::presolve_constraint_report()
 		f_rec << setw(20) << left << name;
 		f_rec << setw(15) << right << constraint_sense_name[name];
 		f_rec << setw(15) << pi_rec.get_obs_value();
+		f_rec << setw(15) << pi_rec.calc_residual_and_sim_val(all_pars_and_dec_vars).first;
 		f_rec << setw(15) << pi_rec.calc_residual(all_pars_and_dec_vars);
 		f_rec << setw(15) << constraint_lb[num_obs_constraints() + i];
 		f_rec << setw(15) << constraint_ub[num_obs_constraints() + i] << endl;

@@ -6,7 +6,8 @@ import pyemu
 
 
 def build_wel_file():
-    wel_data = [[1, 12, 11, 0.0, "Q1"], [1, 16, 17, 0.0, "Q2"], [1, 11, 22, 0.0, "Q3"], [1, 14, 25, 0.0, "Q4"]]
+    #wel_data = [[1, 12, 11, 0.0, "Q1"], [1, 16, 17, 0.0, "Q2"], [1, 11, 22, 0.0, "Q3"], [1, 14, 25, 0.0, "Q4"]]
+    wel_data = [[1, 12, 11, 0.0, "Q1"], [1, 16, 17, 0.0, "Q2"], [1, 14, 25, 0.0, "Q4"]]
     ml = flopy.modflow.Modflow.load("supply2.nam", check=False, verbose=True)
     wel_data = {i: wel_data for i in range(ml.nper)}
     dtype = np.dtype([("layer", int), ("row", int), ("column", int),
@@ -74,16 +75,17 @@ def build_control_file():
 
     pst.control_data.noptmax = 1
     pst.model_command = ["python.exe supply2.py"]
-    obj_eq = ''
-    for pname in pst.adj_par_names:
-        if pname.startswith("im"):
-            obj_eq += " + -0.0012 * " + pname
-            #obj_eq += " + 0.0012 * " + pname
-        elif pname.startswith("q"):
-            obj_eq += " + 0.001 * " + pname
-            #obj_eq += " + -0.001 * " + pname
-    obj_eq += ' = 0.0'
-    obj_eq = obj_eq[2:]
+    obj_eq = ' 1.095 * q1 + 0.276 * q2a + 0.273 * q2b + 0.273 * q2c + 0.273 * q2d + 0.273 * q4a + 0.273 * q4b'
+    obj_eq += ' + -0.1104 + im9 + -0.1092 * im10 + -0.01092 * im11 + -0.1092 * im12 = 0.0'
+    # for pname in pst.adj_par_names:
+    #     if pname.startswith("im"):
+    #         obj_eq += " + -0.0012 * " + pname
+    #         #obj_eq += " + 0.0012 * " + pname
+    #     elif pname.startswith("q"):
+    #         obj_eq += " + 0.001 * " + pname
+    #         #obj_eq += " + -0.001 * " + pname
+    # obj_eq += ' = 0.0'
+    # obj_eq = obj_eq[2:]
     #pst.prior_information.loc["obj_func","pilbl"] = "obj_func"
     #pst.prior_information.loc["obj_func","equation"] = obj_eq
     #pst.prior_information.loc["obj_func","weight"] = 1.0
@@ -115,27 +117,27 @@ def build_control_file():
     pi_groups.append("greater_pi")
     
     #sp4
-    pi_eqs.append(" 1.0 * q1 + 1.0 * q2a + 1.0 * q3 = 80000.0")
+    pi_eqs.append(" 1.0 * q1 + 1.0 * q2a = 80000.0")
     pi_groups.append("less_pi")
-    pi_eqs.append(" 1.0 * q1 + 1.0 * q2a + 1.0 * q3 = 25000.0")
+    pi_eqs.append(" 1.0 * q1 + 1.0 * q2a = 25000.0")
     pi_groups.append("greater_pi")
     
     #sp5
-    pi_eqs.append(" 1.0 * q1 + 1.0 * q2b + 1.0 * q3 + 1.0 * q4a = 80000.0")
+    pi_eqs.append(" 1.0 * q1 + 1.0 * q2b + 1.0 * q4a = 80000.0")
     pi_groups.append("less_pi")
-    pi_eqs.append(" 1.0 * q1 + 1.0 * q2b + 1.0 * q3 + 1.0 * q4a = 25000.0")
+    pi_eqs.append(" 1.0 * q1 + 1.0 * q2b + 1.0 * q4a = 25000.0")
     pi_groups.append("greater_pi")
     
     #sp6
-    pi_eqs.append(" 1.0 * q1 + 1.0 * q2c + 1.0 * q3 = 80000.0")
+    pi_eqs.append(" 1.0 * q1 + 1.0 * q2c = 80000.0")
     pi_groups.append("less_pi")
-    pi_eqs.append(" 1.0 * q1 + 1.0 * q2c + 1.0 * q3 = 25000.0")
+    pi_eqs.append(" 1.0 * q1 + 1.0 * q2c = 25000.0")
     pi_groups.append("greater_pi")
     
     #sp7
-    pi_eqs.append(" 1.0 * q1 + 1.0 * q2d + 1.0 * q3 + 1.0 * q4b = 80000.0")
+    pi_eqs.append(" 1.0 * q1 + 1.0 * q2d + 1.0 * q4b = 80000.0")
     pi_groups.append("less_pi")
-    pi_eqs.append(" 1.0 * q1 + 1.0 * q2d + 1.0 * q3 + 1.0 * q4b = 25000.0")
+    pi_eqs.append(" 1.0 * q1 + 1.0 * q2d + 1.0 * q4b = 25000.0")
     pi_groups.append("greater_pi")
 
     #sp8
@@ -175,8 +177,9 @@ def build_control_file():
     pst.pestpp_options["opt_constraint_groups"] = "less_pi,greater_pi,less_obs"
     pst.pestpp_options["opt_obj_func"] = "pi_obj_func"
     pst.pestpp_options["opt_coin_loglev"] = 4
-    pst.pestpp_options["base_jacobian"] = "supply2_pest.1.bak.jcb"
-    pst.write("supply2_pest.reuse.pst")
+    #pst.pestpp_options["base_jacobian"] = "supply2_pest.1.bak.jcb"
+    pst.parameter_data.sort_index(inplace=True)
+    pst.write("supply2_pest.pst")
 
 
 if __name__ == "__main__":

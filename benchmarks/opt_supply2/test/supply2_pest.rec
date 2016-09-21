@@ -23,25 +23,24 @@ Model interface files:-
 
 Parameter group information
 NAME            INCREMENT TYPE     DERIVATIVE INCREMENT    INCREMENT LOWER BOUND  FORCE CENTRAL     INCREMENT MULTIPLIER
-pumping               ABSOLUTE                      250                        0         SWITCH                        2
-external              ABSOLUTE                      250                        0         SWITCH                        2
+pumping               ABSOLUTE                    25000                        0         SWITCH                        2
+external              ABSOLUTE                    25000                        0         SWITCH                        2
 
 
 
 Parameter information
 NAME           TRANSFORMATION        CHANGE LIMIT  INITIAL VALUE    LOWER BOUND    UPPER BOUND          GROUP          SCALE         OFFSET  DERIVATIVE COMMAND
+im10           none                    FACTOR              0              0          1e+06       external             -1              0                   0
+im11           none                    FACTOR              0              0          1e+06       external             -1              0                   0
+im12           none                    FACTOR              0              0          1e+06       external             -1              0                   0
+im9            none                    FACTOR              0              0          1e+06       external             -1              0                   0
 q1             none                    FACTOR              0              0          50000        pumping             -1              0                   0
 q2a            none                    FACTOR              0              0          50000        pumping             -1              0                   0
 q2b            none                    FACTOR              0              0          50000        pumping             -1              0                   0
-q4a            none                    FACTOR              0              0          50000        pumping             -1              0                   0
 q2c            none                    FACTOR              0              0          50000        pumping             -1              0                   0
 q2d            none                    FACTOR              0              0          50000        pumping             -1              0                   0
+q4a            none                    FACTOR              0              0          50000        pumping             -1              0                   0
 q4b            none                    FACTOR              0              0          50000        pumping             -1              0                   0
-q3             none                    FACTOR              0              0          50000        pumping             -1              0                   0
-im9            none                    FACTOR              0              0          50000       external             -1              0                   0
-im10           none                    FACTOR              0              0          50000       external             -1              0                   0
-im11           none                    FACTOR              0              0          50000       external             -1              0                   0
-im12           none                    FACTOR              0              0          50000       external             -1              0                   0
 
 
 
@@ -515,18 +514,18 @@ s3r09_09                                    0               extra               
 s3r09_10                                    0               extra                   0
 s3r09_11                                    0               extra                   0
 s3r09_12                                    0               extra                   0
-s1r14_09                                15000         greater_obs                   1
-s1r14_10                                15000         greater_obs                   1
-s1r14_11                                15000         greater_obs                   1
-s1r14_12                                15000         greater_obs                   1
-s1r21_11                                20000         greater_obs                   1
-s1r21_12                                20000         greater_obs                   1
-s2r08_09                                15000         greater_obs                   1
-s2r08_10                                15000         greater_obs                   1
-s2r08_11                                15000         greater_obs                   1
-s2r08_12                                15000         greater_obs                   1
-s3r05_11                                30000         greater_obs                   1
-s3r05_12                                30000         greater_obs                   1
+s1r14_09                                15000            less_obs                   1
+s1r14_10                                15000            less_obs                   1
+s1r14_11                                15000            less_obs                   1
+s1r14_12                                15000            less_obs                   1
+s1r21_11                                20000            less_obs                   1
+s1r21_12                                20000            less_obs                   1
+s2r08_09                                15000            less_obs                   1
+s2r08_10                                15000            less_obs                   1
+s2r08_11                                15000            less_obs                   1
+s2r08_12                                15000            less_obs                   1
+s3r05_11                                30000            less_obs                   1
+s3r05_12                                30000            less_obs                   1
 
 
 
@@ -535,28 +534,21 @@ PI_CONST1   + 1 * Q1 = 80000   1   LESS_PI
  + 1 * Q2A = 80000   1   LESS_PI
 PI_CONST10   + 1 * Q1 = 25000   1   GREATER_PI
  + 1 * Q2A = 25000   1   GREATER_PI
- + 1 * Q3 = 25000   1   GREATER_PI
 PI_CONST11   + 1 * Q1 = 80000   1   LESS_PI
  + 1 * Q2B = 80000   1   LESS_PI
- + 1 * Q3 = 80000   1   LESS_PI
  + 1 * Q4A = 80000   1   LESS_PI
 PI_CONST12   + 1 * Q1 = 25000   1   GREATER_PI
  + 1 * Q2B = 25000   1   GREATER_PI
- + 1 * Q3 = 25000   1   GREATER_PI
  + 1 * Q4A = 25000   1   GREATER_PI
 PI_CONST13   + 1 * Q1 = 80000   1   LESS_PI
  + 1 * Q2C = 80000   1   LESS_PI
- + 1 * Q3 = 80000   1   LESS_PI
 PI_CONST14   + 1 * Q1 = 25000   1   GREATER_PI
  + 1 * Q2C = 25000   1   GREATER_PI
- + 1 * Q3 = 25000   1   GREATER_PI
 PI_CONST15   + 1 * Q1 = 80000   1   LESS_PI
  + 1 * Q2D = 80000   1   LESS_PI
- + 1 * Q3 = 80000   1   LESS_PI
  + 1 * Q4B = 80000   1   LESS_PI
 PI_CONST16   + 1 * Q1 = 25000   1   GREATER_PI
  + 1 * Q2D = 25000   1   GREATER_PI
- + 1 * Q3 = 25000   1   GREATER_PI
  + 1 * Q4B = 25000   1   GREATER_PI
 PI_CONST17   + 1 * Q1 = 80000   1   LESS_PI
  + 1 * Q2A = 80000   1   LESS_PI
@@ -591,9 +583,9 @@ PI_CONST24   + 1 * Q1 = 45000   1   GREATER_PI
 PI_CONST3   + 1 * Q1 = 80000   1   LESS_PI
  + 1 * Q2B = 80000   1   LESS_PI
  + 1 * Q4A = 80000   1   LESS_PI
-PI_CONST4   + 1 * Q1 = 30000   1   GREATER_THAN
- + 1 * Q2B = 30000   1   GREATER_THAN
- + 1 * Q4A = 30000   1   GREATER_THAN
+PI_CONST4   + 1 * Q1 = 30000   1   GREATER_PI
+ + 1 * Q2B = 30000   1   GREATER_PI
+ + 1 * Q4A = 30000   1   GREATER_PI
 PI_CONST5   + 1 * Q1 = 80000   1   LESS_PI
  + 1 * Q2C = 80000   1   LESS_PI
 PI_CONST6   + 1 * Q1 = 30000   1   GREATER_PI
@@ -606,19 +598,17 @@ PI_CONST8   + 1 * Q1 = 30000   1   GREATER_PI
  + 1 * Q4B = 30000   1   GREATER_PI
 PI_CONST9   + 1 * Q1 = 80000   1   LESS_PI
  + 1 * Q2A = 80000   1   LESS_PI
- + 1 * Q3 = 80000   1   LESS_PI
-PI_OBJ_FUNC   + 0.001 * Q1 = 0   1   OBJ_FUNC
- + 0.001 * Q2A = 0   1   OBJ_FUNC
- + 0.001 * Q2B = 0   1   OBJ_FUNC
- + 0.001 * Q4A = 0   1   OBJ_FUNC
- + 0.001 * Q2C = 0   1   OBJ_FUNC
- + 0.001 * Q2D = 0   1   OBJ_FUNC
- + 0.001 * Q4B = 0   1   OBJ_FUNC
- + 0.001 * Q3 = 0   1   OBJ_FUNC
- - 0.0012 * IM9 = 0   1   OBJ_FUNC
- - 0.0012 * IM10 = 0   1   OBJ_FUNC
- - 0.0012 * IM11 = 0   1   OBJ_FUNC
- - 0.0012 * IM12 = 0   1   OBJ_FUNC
+PI_OBJ_FUNC   + 1.095 * Q1 = 0   1   OBJ_FUNC
+ + 0.276 * Q2A = 0   1   OBJ_FUNC
+ + 0.273 * Q2B = 0   1   OBJ_FUNC
+ + 0.273 * Q2C = 0   1   OBJ_FUNC
+ + 0.273 * Q2D = 0   1   OBJ_FUNC
+ + 0.273 * Q4A = 0   1   OBJ_FUNC
+ + 0.273 * Q4B = 0   1   OBJ_FUNC
+ - 0.1104 * IM9 = 0   1   OBJ_FUNC
+ - 0.1092 * IM10 = 0   1   OBJ_FUNC
+ - 0.01092 * IM11 = 0   1   OBJ_FUNC
+ - 0.1092 * IM12 = 0   1   OBJ_FUNC
 
 
    -----    Starting Optimization Iterations    ----    
@@ -630,36 +620,68 @@ PI_OBJ_FUNC   + 0.001 * Q1 = 0   1   OBJ_FUNC
 
 -->number of iterations of sequential linear programming (noptmax): 1
 -->objective function sense (direction): maximize
+-->number of decision variable: 11
+-->number of observation constraints: 12
+-->number of prior information constraints: 24
+
+
   ---  decision variables active in SLP  ---  
 name                obj func coefficient     
-Q1                  0.001                    
-Q2A                 0.001                    
-Q2B                 0.001                    
-Q4A                 0.001                    
-Q2C                 0.001                    
-Q2D                 0.001                    
-Q4B                 0.001                    
-Q3                  0.001                    
-IM9                 -0.0012                  
-IM10                -0.0012                  
-IM11                -0.0012                  
-IM12                -0.0012                  
+IM10                -0.1092                  
+IM11                -0.01092                 
+IM12                -0.1092                  
+IM9                 -0.1104                  
+Q1                  1.095                    
+Q2A                 0.276                    
+Q2B                 0.273                    
+Q2C                 0.273                    
+Q2D                 0.273                    
+Q4A                 0.273                    
+Q4B                 0.273                    
  note: bound and initial value info reported in 'parameter' section
 
-  ---  constraints in SLP  ---  
+
+  ---  observation constraints in SLP  ---  
 name                sense               value               
-S1R14_09            greater_than        15000               
-S1R14_10            greater_than        15000               
-S1R14_11            greater_than        15000               
-S1R14_12            greater_than        15000               
-S1R21_11            greater_than        20000               
-S1R21_12            greater_than        20000               
-S2R08_09            greater_than        15000               
-S2R08_10            greater_than        15000               
-S2R08_11            greater_than        15000               
-S2R08_12            greater_than        15000               
-S3R05_11            greater_than        30000               
-S3R05_12            greater_than        30000               
+S1R14_09            less_than           15000               
+S1R14_10            less_than           15000               
+S1R14_11            less_than           15000               
+S1R14_12            less_than           15000               
+S1R21_11            less_than           20000               
+S1R21_12            less_than           20000               
+S2R08_09            less_than           15000               
+S2R08_10            less_than           15000               
+S2R08_11            less_than           15000               
+S2R08_12            less_than           15000               
+S3R05_11            less_than           30000               
+S3R05_12            less_than           30000               
+
+  ---  prior information constraints in SLP  ---  
+name                sense               value               
+PI_CONST1           less_than           80000               
+PI_CONST2           greater_than        30000               
+PI_CONST3           less_than           80000               
+PI_CONST4           greater_than        30000               
+PI_CONST5           less_than           80000               
+PI_CONST6           greater_than        30000               
+PI_CONST7           less_than           80000               
+PI_CONST8           greater_than        30000               
+PI_CONST9           less_than           80000               
+PI_CONST10          greater_than        25000               
+PI_CONST11          less_than           80000               
+PI_CONST12          greater_than        25000               
+PI_CONST13          less_than           80000               
+PI_CONST14          greater_than        25000               
+PI_CONST15          less_than           80000               
+PI_CONST16          greater_than        25000               
+PI_CONST17          less_than           80000               
+PI_CONST18          greater_than        45000               
+PI_CONST19          less_than           80000               
+PI_CONST20          greater_than        45000               
+PI_CONST21          less_than           80000               
+PI_CONST22          greater_than        45000               
+PI_CONST23          less_than           80000               
+PI_CONST24          greater_than        45000               
 
 
   ---------------------------------
@@ -668,3 +690,137 @@ S3R05_12            greater_than        30000
 
 
   ---  calculating response matrix for iteration 1  ---  
+
+saving iteration 1 reponse matrix to file: supply2_pest.1.jcb
+
+  observation constraint information at start of iteration 1
+name                          sense      obs value      sim value       residual    lower bound    upper bound
+S1R14_09                  less_than          15000              0          15000  -1.79769e+308          15000
+S1R14_10                  less_than          15000              0          15000  -1.79769e+308          15000
+S1R14_11                  less_than          15000              0          15000  -1.79769e+308          15000
+S1R14_12                  less_than          15000              0          15000  -1.79769e+308          15000
+S1R21_11                  less_than          20000              0          20000  -1.79769e+308          20000
+S1R21_12                  less_than          20000              0          20000  -1.79769e+308          20000
+S2R08_09                  less_than          15000              0          15000  -1.79769e+308          15000
+S2R08_10                  less_than          15000              0          15000  -1.79769e+308          15000
+S2R08_11                  less_than          15000              0          15000  -1.79769e+308          15000
+S2R08_12                  less_than          15000              0          15000  -1.79769e+308          15000
+S3R05_11                  less_than          30000              0          30000  -1.79769e+308          30000
+S3R05_12                  less_than          30000              0          30000  -1.79769e+308          30000
+
+  prior information constraint information at start of iteration 1
+name                          sense      obs value      sim value       residual    lower bound    upper bound
+PI_CONST1                 less_than          80000              0         -80000  -1.79769e+308          80000
+PI_CONST2              greater_than          30000              0         -30000          30000   1.79769e+308
+PI_CONST3                 less_than          80000              0         -80000  -1.79769e+308          80000
+PI_CONST4              greater_than          30000              0         -30000          30000   1.79769e+308
+PI_CONST5                 less_than          80000              0         -80000  -1.79769e+308          80000
+PI_CONST6              greater_than          30000              0         -30000          30000   1.79769e+308
+PI_CONST7                 less_than          80000              0         -80000  -1.79769e+308          80000
+PI_CONST8              greater_than          30000              0         -30000          30000   1.79769e+308
+PI_CONST9                 less_than          80000              0         -80000  -1.79769e+308          80000
+PI_CONST10             greater_than          25000              0         -25000          25000   1.79769e+308
+PI_CONST11                less_than          80000              0         -80000  -1.79769e+308          80000
+PI_CONST12             greater_than          25000              0         -25000          25000   1.79769e+308
+PI_CONST13                less_than          80000              0         -80000  -1.79769e+308          80000
+PI_CONST14             greater_than          25000              0         -25000          25000   1.79769e+308
+PI_CONST15                less_than          80000              0         -80000  -1.79769e+308          80000
+PI_CONST16             greater_than          25000              0         -25000          25000   1.79769e+308
+PI_CONST17                less_than          80000              0         -80000  -1.79769e+308          80000
+PI_CONST18             greater_than          45000              0         -45000          45000   1.79769e+308
+PI_CONST19                less_than          80000              0         -80000  -1.79769e+308          80000
+PI_CONST20             greater_than          45000              0         -45000          45000   1.79769e+308
+PI_CONST21                less_than          80000              0         -80000  -1.79769e+308          80000
+PI_CONST22             greater_than          45000              0         -45000          45000   1.79769e+308
+PI_CONST23                less_than          80000              0         -80000  -1.79769e+308          80000
+PI_CONST24             greater_than          45000              0         -45000          45000   1.79769e+308
+number of nonzero elements in response matrix: 56 of 132
+  ---  solving linear program for iteration 1  ---  
+
+-->resolving primal in attempt to prove optimal...
+
+WARNING: iteration 1 linear solution is not proven optimal...continuing
+
+
+  ---  linear program solution complete for iteration 1  ---  
+  ---  processing results for iteration 1 LP solution  ---  
+
+
+
+     decision variable information at end of SLP iteration 1
+
+name                        current            new   objfunc coef    cur contrib    new contrib
+IM10                              0             -0        -0.1092             -0              0
+IM11                              0        14615.2       -0.01092             -0       -159.598
+IM12                              0        6915.07        -0.1092             -0       -755.126
+IM9                               0             -0        -0.1104             -0              0
+Q1                                0        3530.04          1.095              0        3865.39
+Q2A                               0          50000          0.276              0          13800
+Q2B                               0          27484          0.273              0        7503.14
+Q2C                               0        26854.7          0.273              0        7331.34
+Q2D                               0        26682.8          0.273              0        7284.39
+Q4A                               0        48985.9          0.273              0        13373.2
+Q4B                               0        7872.13          0.273              0        2149.09
+
+
+     constraint information at end of SLP iteration 1
+
+name                          sense       required        current       residual            new       residual
+S1R14_09                  less_than          15000              0          15000          15020            -20
+S1R14_10                  less_than          15000              0          15000           9720           5280
+S1R14_11                  less_than          15000              0          15000           9210           5790
+S1R14_12                  less_than          15000              0          15000           9140           5860
+S1R21_11                  less_than          20000              0          20000          20000              0
+S1R21_12                  less_than          20000              0          20000          19990             10
+S2R08_09                  less_than          15000              0          15000            960          14040
+S2R08_10                  less_than          15000              0          15000          14990             10
+S2R08_11                  less_than          15000              0          15000            780          14220
+S2R08_12                  less_than          15000              0          15000           2850          12150
+S3R05_11                  less_than          30000              0          30000          23600           6400
+S3R05_12                  less_than          30000              0          30000          29900            100
+
+
+     prior information constraint information at end of SLP iteration 1
+
+name                          sense       required        current       residual            new       residual
+PI_CONST1                 less_than          80000              0         -80000          53530         -26470
+PI_CONST2              greater_than          30000              0         -30000          53530          23530
+PI_CONST3                 less_than          80000              0         -80000          80000   -2.00002e-07
+PI_CONST4              greater_than          30000              0         -30000          80000          50000
+PI_CONST5                 less_than          80000              0         -80000        30384.8       -49615.2
+PI_CONST6              greater_than          30000              0         -30000        30384.8        384.753
+PI_CONST7                 less_than          80000              0         -80000        38084.9       -41915.1
+PI_CONST8              greater_than          30000              0         -30000        38084.9        8084.93
+PI_CONST9                 less_than          80000              0         -80000          53530         -26470
+PI_CONST10             greater_than          25000              0         -25000          53530          28530
+PI_CONST11                less_than          80000              0         -80000          80000   -2.00002e-07
+PI_CONST12             greater_than          25000              0         -25000          80000          55000
+PI_CONST13                less_than          80000              0         -80000        30384.8       -49615.2
+PI_CONST14             greater_than          25000              0         -25000        30384.8        5384.75
+PI_CONST15                less_than          80000              0         -80000        38084.9       -41915.1
+PI_CONST16             greater_than          25000              0         -25000        38084.9        13084.9
+PI_CONST17                less_than          80000              0         -80000          53530         -26470
+PI_CONST18             greater_than          45000              0         -45000          53530        8530.04
+PI_CONST19                less_than          80000              0         -80000          80000   -2.00002e-07
+PI_CONST20             greater_than          45000              0         -45000          80000          35000
+PI_CONST21                less_than          80000              0         -80000          45000         -35000
+PI_CONST22             greater_than          45000              0         -45000          45000      -1.92e-05
+PI_CONST23                less_than          80000              0         -80000          45000         -35000
+PI_CONST24             greater_than          45000              0         -45000          45000      -1.61e-05
+
+
+  ---  iteration 1 objective function value:         54391.8  ---  
+
+-----------------------------------------
+     ---   OPTIMIZATION COMPLETE   ---   
+  Reason for terminating PEST++ simulation: unknown
+  Summary of termination criteria:
+  NOPTMAX = 1 ;  NOPT at termination = 0
+  NPHINORED = 3 ;  NPHINORED at termination = 0
+  NRELPAR = 3; RELPARSTP = 0.01 ;  NRELPAR at termination = 0
+  PHIREDSTP = 0.01; NPHISTP = 3
+  NPHISTP lowest PHI's:
+
+FINAL OPTIMISATION RESULTS
+
+Number of forward model runs performed during optimiztion: 13
