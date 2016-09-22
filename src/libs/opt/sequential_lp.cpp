@@ -859,16 +859,16 @@ void sequentialLP::iter_solve()
 	}
 	
 	//update the status arrays of both the presolve and original models
-	//presolve_info.postsolve(true);
+	presolve_info.postsolve(true);
 
-	model.primal();
-	//model.checkSolution();
-	/*if (!model.primalFeasible())
+	//model.primal();
+	model.checkSolution();
+	if (!model.primalFeasible())
 	{
 		model.dual();
 		model.checkSolution();
 		model.primal();
-	}*/
+	}
 		
 	//check the solution
 	model.checkSolution();
@@ -969,7 +969,7 @@ CoinPackedMatrix sequentialLP::jacobian_to_coinpackedmatrix()
 		throw_sequentialLP_error("sequentialLP::jacobian_to_coinpackedmatrix() error: zero triplets found");
 	}
 
-	//TODO: including prior information constraints
+	//prior information constraints
 	int irow = num_obs_constraints();
 	int jcol;
 	vector<string>::iterator start = ctl_ord_dec_var_names.begin();
@@ -994,6 +994,7 @@ CoinPackedMatrix sequentialLP::jacobian_to_coinpackedmatrix()
 
 	//this is useful for debugging
 #ifdef _DEBUG
+	cout << eig_ord_jco << endl << endl;
 	matrix.dumpMatrix();
 #endif
 	return matrix;
@@ -1039,7 +1040,7 @@ void sequentialLP::iter_postsolve()
 	{
 		name = ctl_ord_dec_var_names[i];
 		val = all_pars_and_dec_vars[name];
-		upgrade_pars.update_rec(name, val + dec_var_vals[i]);
+		upgrade_pars.update_rec(name,dec_var_vals[i]);
 		diff = abs(dec_var_vals[i]);
 		max_abs_dec_var_change = (diff > max_abs_dec_var_change) ? diff : max_abs_dec_var_change;
 
@@ -1109,9 +1110,13 @@ void sequentialLP::iter_presolve()
 		vector<string> names = jco.get_base_numeric_par_names();
 		vector<string>::iterator start = names.begin();
 		vector<string>::iterator end = names.end();
+		vector<string>::iterator ext_start = ctl_ord_ext_var_names.begin();
+		vector<string>::iterator ext_end = ctl_ord_ext_var_names.end();
+
 		vector<string> missing;
 		for (auto &name : ctl_ord_dec_var_names)
-			if (find(start, end, name) == end)
+			//if this dec var is not in the jco and is not an external var
+			if ((find(start, end, name) == end) && (find(ext_start,ext_end,name) == ext_end))
 				missing.push_back(name);
 		if (missing.size() > 0)
 			throw_sequentialLP_error("the following decision vars were not found in the jacobian " + basejac_filename + " : ", missing);
