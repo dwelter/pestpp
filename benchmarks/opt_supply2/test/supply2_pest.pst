@@ -6,15 +6,15 @@ pcf
    2.000000E+01  -3.000000E+00   3.000000E-01   1.000000E-02        -7       999          lamforgive        noderforgive
    1.000000E+01   1.000000E+01   1.000000E-03         0         0
    1.000000E-01         1   1.100000E+00               noaui          nosenreuse        noboundscale
-         3   1.000000E-02         3         3   1.000000E-02         3   0.000000E+00         1  -1.000000E+00
+        30   1.000000E-02         3         3   1.000000E-02         3   0.000000E+00         1  -1.000000E+00
          0         0         0         0             jcosave          verboserec          jcosaveitn          reisaveitn          parsaveitn        noparsaverun
 * singular value decomposition
 1
 11    1.000000E-06
 1 1 1
 * parameter groups
-pumping                 absolute              2.5000000000E+04       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
-external                absolute              2.5000000000E+04       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller
+pumping                 relative           0.1      100  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
+external                relative           0.1      100  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller
 * parameter data
 im10                   none                   factor                0.0000000000E+00      0.0000000000E+00      1.0000000000E+06       external              -1.0000000000E+00     0.0000000000E+00      1          
 im11                   none                   factor                0.0000000000E+00      0.0000000000E+00      1.0000000000E+06       external              -1.0000000000E+00     0.0000000000E+00      1          
@@ -553,3 +553,4 @@ pi_const24             1.0 * q1 + 1.0 * q2d + 1.0 * q4b + 1.0 * im12 = 45000.0  
 ++opt_ext_var_groups(external)
 ++opt_constraint_groups(less_pi,greater_pi,less_obs)
 ++#base_jacobian(supply2_pest.bak.jcb)
+++opt_iter_tol(0.001)

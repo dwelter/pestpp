@@ -241,27 +241,31 @@ void sequentialLP::postsolve_constraint_report(Observations &upgrade_obs,Paramet
 	f_rec << setw(15) << "new" << setw(15) << "residual" << endl;
 	vector<double> cur_residuals = get_constraint_residual_vec();
 	vector<double> new_residuals = get_constraint_residual_vec(upgrade_obs);
+	double sim_val;
 	for (int i = 0; i<num_obs_constraints(); ++i)
 	{
 		string name = ctl_ord_obs_constraint_names[i];
+		sim_val = upgrade_obs[name];
 		f_rec << setw(20) << left << name;
 		f_rec << setw(15) << right << constraint_sense_name[name];
 		f_rec << setw(15) << constraints_obs.get_rec(name);
 		if (use_chance)
 		{
 			double offset = post_constraint_offset[name];
+			sim_val += offset;
 			f_rec << setw(15) << offset;
 			f_rec << setw(15) << constraints_sim.get_rec(name) + offset;
 			f_rec << setw(15) << cur_residuals[i];
-			f_rec << setw(15) << upgrade_obs[name] + offset;
-			f_rec << setw(15) << new_residuals[i] - offset << endl;
+			f_rec << setw(15) << sim_val;
+			f_rec << setw(15) << new_residuals[i] - offset << endl;	
 		}
 		else
 		{
 			f_rec << setw(15) << constraints_sim.get_rec(name);
 			f_rec << setw(15) << cur_residuals[i];
-			f_rec << setw(15) << upgrade_obs[name];
+			f_rec << setw(15) << sim_val;
 			f_rec << setw(15) << new_residuals[i] << endl;
+			
 		}
 	}
 
@@ -287,6 +291,67 @@ void sequentialLP::postsolve_constraint_report(Observations &upgrade_obs,Paramet
 		}
 	}
 	return;
+}
+
+pair<vector<string>, vector<string>> sequentialLP::postsolve_check(Observations &upgrade_obs, Parameters &upgrade_pars)
+{
+	vector<string> invalid_constraints;
+	vector<string> invalid_dec_vars;
+
+	double sim_val, obs_val, scaled_diff;
+	double opt_tol = pest_scenario.get_pestpp_options().get_opt_iter_tol();
+	for (int i = 0; i<num_obs_constraints(); ++i)
+	{
+		string name = ctl_ord_obs_constraint_names[i];
+		sim_val = upgrade_obs[name];
+		if (use_chance)
+		{
+			double offset = post_constraint_offset[name];
+			sim_val += offset;
+		}
+		obs_val = constraints_obs[name];
+		scaled_diff = abs((obs_val - sim_val) / obs_val);
+		//check for invalid obs constraints (e.g. satified)
+		if ((constraint_sense_map[name] == ConstraintSense::less_than) && (sim_val > obs_val) && (scaled_diff > opt_tol))
+			invalid_constraints.push_back(name);
+		else if ((constraint_sense_map[name] == ConstraintSense::greater_than) && (sim_val < obs_val) && (scaled_diff > opt_tol))
+			invalid_constraints.push_back(name);
+		else if ((constraint_sense_map[name] == ConstraintSense::equal_to) && (sim_val != obs_val) && (scaled_diff > opt_tol))
+			invalid_constraints.push_back(name);
+	}
+
+	//report prior information constraints
+	if (num_pi_constraints() > 0)
+	{ 
+		for (auto &name : ctl_ord_pi_constraint_names)
+		{
+			PriorInformationRec pi_rec = constraints_pi.get_pi_rec_ptr(name);
+			pair<double, double> cur_sim_resid = pi_rec.calc_residual_and_sim_val(all_pars_and_dec_vars);
+			pair<double, double> new_sim_resid = pi_rec.calc_residual_and_sim_val(upgrade_pars);
+			//check for invalid pi constraints
+			sim_val = new_sim_resid.first;
+			obs_val = pi_rec.get_obs_value();
+			scaled_diff = abs((obs_val - sim_val) / obs_val);
+			if ((constraint_sense_map[name] == ConstraintSense::less_than) && (sim_val > obs_val) && (scaled_diff > opt_tol))
+				invalid_constraints.push_back(name);
+			else if ((constraint_sense_map[name] == ConstraintSense::greater_than) && (sim_val < obs_val) && (scaled_diff > opt_tol))
+				invalid_constraints.push_back(name);
+			else if ((constraint_sense_map[name] == ConstraintSense::equal_to) && (sim_val != obs_val) && (scaled_diff > opt_tol))
+				invalid_constraints.push_back(name);
+		}
+	}
+
+	Parameters ubnd = pest_scenario.get_ctl_parameter_info().get_up_bnd(ctl_ord_dec_var_names);
+	Parameters lbnd = pest_scenario.get_ctl_parameter_info().get_low_bnd(ctl_ord_dec_var_names);
+	for (auto &name : ctl_ord_dec_var_names)
+	{
+		sim_val = upgrade_pars[name];
+		if ((sim_val > ubnd[name]) || (sim_val < lbnd[name]))
+			invalid_dec_vars.push_back(name);
+	}
+
+	return pair<vector<string>,vector<string>>(invalid_dec_vars,invalid_constraints);
+
 }
 
 pair<double,double> sequentialLP::postsolve_decision_var_report(Parameters &upgrade_pars)
@@ -1081,14 +1146,16 @@ void sequentialLP::iter_postsolve()
 	//check for changes for in constraints
 	double max_abs_constraint_change = -1.0E+10;
 	double max_abs_constraint_val = -1.0E+10;
-
 	for (auto &name : ctl_ord_obs_constraint_names)
 	{
+		
 		diff = abs(constraints_sim[name] - upgrade_obs[name]);
 		max_abs_constraint_change = (diff > max_abs_constraint_change) ? diff : max_abs_constraint_change;
 		max_abs_constraint_val = (val > max_abs_constraint_val) ? val : max_abs_constraint_val;
 	}
 	max_abs_constraint_change /= max(max_abs_constraint_val,1.0);
+
+	pair<vector<string>, vector<string>> invalid_vars_const = postsolve_check(upgrade_obs, upgrade_pars);
 
 	//convergence check
 	double opt_iter_tol = pest_scenario.get_pestpp_options().get_opt_iter_tol();
@@ -1099,10 +1166,27 @@ void sequentialLP::iter_postsolve()
 	f_rec << "-->      scaled  max constraint change:" << setw(15) << max_abs_constraint_change << endl;
 	f_rec << "-->   scaled objective function change:" << setw(15) << obj_func_change << endl;
 	
-	if ((max_abs_dec_var_change > opt_iter_tol) || (max_abs_constraint_change > opt_iter_tol) || (obj_func_change > opt_iter_tol))
+	bool valid = true;
+	if (invalid_vars_const.first.size() > 0)
 	{
-		f_rec << endl << "  ---  convergence not achieved, continuing...  ---  " << endl << endl;
-		cout << endl << "  ---  convergence not achieved, continuing...  ---  " << endl << endl;
+		valid = false;
+		f_rec << "-->the following decision variables are out of bounds:" << endl;
+		for (auto &name : invalid_vars_const.first)
+			f_rec << "-->   " << name << endl;
+	}
+	if (invalid_vars_const.second.size() > 0)
+	{
+		valid = false;
+		f_rec << "-->the following constraints are not satisfied:" << endl;
+		for (auto &name : invalid_vars_const.second)
+			f_rec << "-->   " << name << endl;
+	}
+
+
+	if ((!valid) || (max_abs_dec_var_change > opt_iter_tol) || (max_abs_constraint_change > opt_iter_tol) || (obj_func_change > opt_iter_tol))
+	{
+		//f_rec << endl << "  ---  convergence not achieved, continuing...  ---  " << endl << endl;
+		//cout << endl << "  ---  convergence not achieved, continuing...  ---  " << endl << endl;
 	}
 	else
 	{
@@ -1115,8 +1199,8 @@ void sequentialLP::iter_postsolve()
 	//if continuing, update the master decision var instance
 	all_pars_and_dec_vars.update_without_clear(ctl_ord_dec_var_names, upgrade_pars.get_data_vec(ctl_ord_dec_var_names));
 	
-	constraints_sim.update(ctl_ord_obs_constraint_names,upgrade_obs.get_data_vec(ctl_ord_obs_constraint_names));
-
+	//constraints_sim.update(ctl_ord_obs_constraint_names,upgrade_obs.get_data_vec(ctl_ord_obs_constraint_names));
+	constraints_sim.update_without_clear(ctl_ord_obs_constraint_names, upgrade_obs.get_data_vec(ctl_ord_obs_constraint_names));
 	return;
 }
 
@@ -1201,7 +1285,7 @@ void sequentialLP::iter_presolve()
 		if (slp_iter == 1) init_obs = true;
 		bool success = jco.build_runs(all_pars_and_dec_vars, constraints_sim, names_to_run, par_trans,
 			pest_scenario.get_base_group_info(), pest_scenario.get_ctl_parameter_info(),
-			*run_mgr_ptr, out_of_bounds,init_obs);
+			*run_mgr_ptr, out_of_bounds,false,init_obs);
 		if (!success)
 		{
 			const set<string> failed = jco.get_failed_parameter_names();
