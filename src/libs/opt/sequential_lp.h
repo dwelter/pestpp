@@ -28,6 +28,7 @@ public:
 private:
 	string obj_func_str;
 	bool use_chance;
+	bool terminate;
 	int slp_iter;
 	
 	double* dec_var_lb;

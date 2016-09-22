@@ -280,6 +280,10 @@ public:
 	void set_opt_risk(double _risk) { opt_risk = _risk; }
 	double get_opt_direction()const { return opt_direction; }
 	void set_opt_direction(double _direction) { opt_direction = _direction; }
+	double get_opt_iter_tol()const { return opt_iter_tol; }
+	void set_opt_iter_tol(double _tol) { opt_iter_tol = _tol; }
+
+
 
 private:
 	int n_iter_base;
@@ -325,6 +329,7 @@ private:
 	vector<string> opt_constraint_groups;
 	double opt_risk;
 	double opt_direction;
+	double opt_iter_tol;
 
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);

@@ -542,6 +542,11 @@ void PestppOptions::parce_line(const string &line)
 				throw runtime_error("++opt_direction arg must be in {MAX,MIN}, not " + v);
 		}
 
+		else if (key == "OPT_ITER_TOL")
+		{
+			convert_ip(value, opt_iter_tol);
+		}
+
 		else {
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");
 		}

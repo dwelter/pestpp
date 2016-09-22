@@ -812,6 +812,12 @@ PI_CONST24             greater_than          45000              0         -45000
   ---  iteration 1 objective function value:         54391.8  ---  
 
 
+  ---  convergence check iteration 1  ---  
+
+-->scaled max decision variable change:          50000
+-->      scaled  max constraint change:          29900
+-->   scaled objective function change:              1
+
 
   ---------------------------------
   --- starting LP iteration 2  ---  
@@ -941,6 +947,12 @@ PI_CONST24             greater_than          45000          45000      -1.61e-05
   ---  iteration 2 objective function value:         54405.8  ---  
 
 
+  ---  convergence check iteration 2  ---  
+
+-->scaled max decision variable change:     0.00167848
+-->      scaled  max constraint change:     0.00254061
+-->   scaled objective function change:    0.000257215
+
 
   ---------------------------------
   --- starting LP iteration 3  ---  
@@ -1069,6 +1081,19 @@ PI_CONST24             greater_than          45000          45000      -1.33e-05
 
   ---  iteration 3 objective function value:         54480.1  ---  
 
+
+  ---  convergence check iteration 3  ---  
+
+-->scaled max decision variable change:     0.00428464
+-->      scaled  max constraint change:      0.0253481
+-->   scaled objective function change:     0.00136486
+
+  ---  objective function sequence  ---   
+ iteration       obj func
+         0              0
+         1        54391.8
+         2        54405.8
+         3        54480.1
 -----------------------------------------
      ---   OPTIMIZATION COMPLETE   ---   
   Reason for terminating PEST++ simulation: unknown

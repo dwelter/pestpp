@@ -339,7 +339,7 @@ void sequentialLP::initialize_and_check()
 	if (pest_scenario.get_control_info().noptmax < 1)
 		throw_sequentialLP_error("noptmax must be greater than 0");
 
-
+	terminate = false;
 
 	//-----------------------------
 	//  ---  decision vars  ---  
@@ -1017,10 +1017,17 @@ void sequentialLP::solve()
 		iter_presolve();
 		iter_solve();
 		iter_postsolve();
-		
+		if (terminate) break;
 		slp_iter++;
 		if (slp_iter > pest_scenario.get_control_info().noptmax)
 			break;
+	}
+	f_rec << endl << "  ---  objective function sequence  ---   " << endl << setw(10) << "iteration" << setw(15) << "obj func" << endl;
+	int i = 0;
+	for (auto &obj : iter_obj_values)
+	{
+		f_rec << setw(10) << i << setw(15) << obj << endl;
+		i++;
 	}
 }
 
@@ -1033,6 +1040,8 @@ void sequentialLP::iter_postsolve()
 	//and track some info for convergence checking
 	const double *dec_var_vals = model.getColSolution();
 	double max_abs_dec_var_change = -1.0E+10;
+	double max_abs_dec_var_val = -1.0E+10;
+
 	double diff, val;
 	Parameters upgrade_pars(all_pars_and_dec_vars);
 	string name;
@@ -1040,11 +1049,15 @@ void sequentialLP::iter_postsolve()
 	{
 		name = ctl_ord_dec_var_names[i];
 		val = all_pars_and_dec_vars[name];
+		diff = abs(dec_var_vals[i] - all_pars_and_dec_vars[name]);
 		upgrade_pars.update_rec(name,dec_var_vals[i]);
-		diff = abs(dec_var_vals[i]);
+		
 		max_abs_dec_var_change = (diff > max_abs_dec_var_change) ? diff : max_abs_dec_var_change;
-
+		max_abs_dec_var_val = (abs(val) > max_abs_dec_var_val) ? val : max_abs_dec_var_val;
 	}
+
+	max_abs_dec_var_change /= max(max_abs_dec_var_val,1.0);
+
 	//run the model with optimal decision var values
 	Observations upgrade_obs;
 	bool success = make_upgrade_run(upgrade_pars,upgrade_obs);
@@ -1062,16 +1075,41 @@ void sequentialLP::iter_postsolve()
 	if (slp_iter == 1)
 		iter_obj_values.push_back(cur_new_obj.first);
 	iter_obj_values.push_back(cur_new_obj.second);
+	double obj_func_change = abs(cur_new_obj.first - cur_new_obj.second) / abs(max(max(cur_new_obj.first,cur_new_obj.second),1.0));
+
 
 	//check for changes for in constraints
 	double max_abs_constraint_change = -1.0E+10;
+	double max_abs_constraint_val = -1.0E+10;
+
 	for (auto &name : ctl_ord_obs_constraint_names)
 	{
 		diff = abs(constraints_sim[name] - upgrade_obs[name]);
 		max_abs_constraint_change = (diff > max_abs_constraint_change) ? diff : max_abs_constraint_change;
+		max_abs_constraint_val = (val > max_abs_constraint_val) ? val : max_abs_constraint_val;
 	}
+	max_abs_constraint_change /= max(max_abs_constraint_val,1.0);
 
-	//TODO: convergence check here
+	//convergence check
+	double opt_iter_tol = pest_scenario.get_pestpp_options().get_opt_iter_tol();
+
+	f_rec << endl << "  ---  convergence check iteration " << slp_iter << "  ---  " << endl << endl;
+	f_rec << "-->                     ++opt_iter_tol:" << setw(15) << opt_iter_tol << endl;
+	f_rec << "-->scaled max decision variable change:" << setw(15) << max_abs_dec_var_change << endl;
+	f_rec << "-->      scaled  max constraint change:" << setw(15) << max_abs_constraint_change << endl;
+	f_rec << "-->   scaled objective function change:" << setw(15) << obj_func_change << endl;
+	
+	if ((max_abs_dec_var_change > opt_iter_tol) || (max_abs_constraint_change > opt_iter_tol) || (obj_func_change > opt_iter_tol))
+	{
+		f_rec << endl << "  ---  convergence not achieved, continuing...  ---  " << endl << endl;
+		cout << endl << "  ---  convergence not achieved, continuing...  ---  " << endl << endl;
+	}
+	else
+	{
+		f_rec << endl << "  ---  SLP convergence  ---  " << endl << endl;
+		cout << endl << "  ---  SLP convergence  ---  " << endl << endl;
+		terminate = true;
+	}
 
 
 	//if continuing, update the master decision var instance
@@ -1159,9 +1197,11 @@ void sequentialLP::iter_presolve()
 				names_to_run.push_back(name);
 
 		names_to_run.insert(names_to_run.end(), adj_par_names.begin(), adj_par_names.end());
+		bool init_obs = false;
+		if (slp_iter == 1) init_obs = true;
 		bool success = jco.build_runs(all_pars_and_dec_vars, constraints_sim, names_to_run, par_trans,
 			pest_scenario.get_base_group_info(), pest_scenario.get_ctl_parameter_info(),
-			*run_mgr_ptr, out_of_bounds);
+			*run_mgr_ptr, out_of_bounds,init_obs);
 		if (!success)
 		{
 			const set<string> failed = jco.get_failed_parameter_names();
@@ -1178,7 +1218,7 @@ void sequentialLP::iter_presolve()
 
 
 		//get the base run and update simulated constraint values
-		if (slp_iter == 1)
+		if (init_obs)
 		{
 			Parameters temp_pars;
 			Observations temp_obs;
