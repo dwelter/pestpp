@@ -39,6 +39,8 @@ private:
 	double risk;
 
 	ClpSimplex model;
+	CoinMessageHandler coin_hr;
+	FILE* coin_log_ptr;
 	Jacobian_1to1 jco;
 
 	map<string, double> obj_func_coef_map;

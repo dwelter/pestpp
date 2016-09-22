@@ -404,8 +404,11 @@ void sequentialLP::initialize_and_check()
 	if (pest_scenario.get_control_info().noptmax < 1)
 		throw_sequentialLP_error("noptmax must be greater than 0");
 
-	terminate = false;
+	coin_log_ptr = fopen(file_mgr->build_filename("coin_log").c_str(), "w");
+	coin_hr = CoinMessageHandler(coin_log_ptr);
+	model.passInMessageHandler(&coin_hr);
 
+	terminate = false;
 	//-----------------------------
 	//  ---  decision vars  ---  
 	//-----------------------------
@@ -568,7 +571,7 @@ void sequentialLP::initialize_and_check()
 	else
 	{
 		ctl_ord_obs_constraint_names = pest_scenario.get_ctl_ordered_obs_names();
-		//TODO: add prior info support here
+		ctl_ord_pi_constraint_names = pest_scenario.get_ctl_ordered_pi_names();
 	}
 
 
@@ -681,7 +684,18 @@ void sequentialLP::initialize_and_check()
 		if ((risk > 1.0) || (risk < 0.0))
 			throw_sequentialLP_error("++opt_risk parameter must between 0.0 and 1.0");
 
-		//TODO: reset risk extreme risk values
+		//reset risk extreme risk values
+		if (risk > 0.999)
+		{
+			f_rec << endl << "  ---  note: resetting risk value of " << risk << " to a practical value of " << 0.999 << endl << endl;
+			risk = 0.999;
+		}
+		if (risk > 0.001)
+		{
+			f_rec << endl << "  ---  note: resetting risk value of " << risk << " to a practical value of " << 0.001 << endl << endl;
+			risk = 0.001;
+		}
+
 
 		//make sure there is at least one none-decision var adjustable parameter		
 		vector<string>::iterator start = ctl_ord_dec_var_names.begin();
@@ -907,6 +921,8 @@ void sequentialLP::iter_solve()
 	model.loadProblem(matrix, dec_var_lb, dec_var_ub, ctl_ord_obj_func_coefs, constraint_lb, constraint_ub);
 	model.setLogLevel(pest_scenario.get_pestpp_options().get_opt_coin_loglev());
 	model.setOptimizationDirection(pest_scenario.get_pestpp_options().get_opt_direction());
+
+
 	f_rec << "  ---  solving linear program for iteration " << slp_iter << "  ---  " << endl;
 	cout << "  ---  solving linear program for iteration " << slp_iter << "  ---  " << endl;
 	
@@ -1058,10 +1074,10 @@ CoinPackedMatrix sequentialLP::jacobian_to_coinpackedmatrix()
 	CoinPackedMatrix matrix(true,row_idx,col_idx,elems,elem_count);
 
 	//this is useful for debugging
-#ifdef _DEBUG
-	cout << eig_ord_jco << endl << endl;
-	matrix.dumpMatrix();
-#endif
+//#ifdef _DEBUG
+//	cout << eig_ord_jco << endl << endl;
+//	matrix.dumpMatrix();
+//#endif
 	return matrix;
 }
 
@@ -1312,8 +1328,9 @@ void sequentialLP::iter_presolve()
 		//par_trans.model2ctl_ip(temp_pars);
 
 		//process the remaining responses
-		jco.process_runs(par_trans, pest_scenario.get_base_group_info(), *run_mgr_ptr, *null_prior, false);
-		//TODO: deal with failed runs
+		success = jco.process_runs(par_trans, pest_scenario.get_base_group_info(), *run_mgr_ptr, *null_prior, false);
+		if (!success)
+			throw_sequentialLP_error("error processing response matrix runs ", jco.get_failed_parameter_names());
 
 		stringstream ss;
 		ss << slp_iter << ".jcb";

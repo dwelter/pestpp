@@ -1243,16 +1243,4 @@ PI_CONST24             greater_than          45000          45000      -0.000412
          2        52348.3
          3        52737.2
          4        52737.2
------------------------------------------
-     ---   OPTIMIZATION COMPLETE   ---   
-  Reason for terminating PEST++ simulation: unknown
-  Summary of termination criteria:
-  NOPTMAX = 30 ;  NOPT at termination = 0
-  NPHINORED = 3 ;  NPHINORED at termination = 0
-  NRELPAR = 3; RELPARSTP = 0.01 ;  NRELPAR at termination = 0
-  PHIREDSTP = 0.01; NPHISTP = 3
-  NPHISTP lowest PHI's:
-
-FINAL OPTIMISATION RESULTS
-
 Number of forward model runs performed during optimiztion: 33

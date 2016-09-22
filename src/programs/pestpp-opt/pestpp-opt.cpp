@@ -453,38 +453,7 @@ int main(int argc, char* argv[])
 			fout_rec << "   -----    Starting Optimization Iterations    ----    " << endl << endl;
 		}
 		sequentialLP slp(pest_scenario, run_manager_ptr,parcov, &file_manager);
-
 		slp.solve();
-		//optimum_run = slp.get_optimum_run();
-		/*catch (exception &e)
-		{
-			cout << endl << endl;;
-			cout << e.what() << endl;
-			fout_rec << endl << endl;
-			fout_rec << e.what() << endl;
-			cout << "FATAL ERROR: " << e.what() << endl;
-			fout_rec << "FATAL ERROR: " << e.what() << endl;
-			exit(1);
-		}*/
-		cout << endl;
-		termination_ctl.termination_summary(cout);
-		cout << endl;
-		termination_ctl.termination_summary(fout_rec);
-		fout_rec << endl;
-		cout << "FINAL OPTIMISATION RESULTS" << endl << endl;
-		fout_rec << "FINAL OPTIMISATION RESULTS" << endl << endl;
-
-		//fout_rec << "  Optimal decsision variable values  " << endl;
-		//output_file_writer.par_report(fout_rec, optimum_run.get_ctl_pars());
-
-		//fout_rec << endl << "  constraints with optimal model-simulated equivalents and residuals (e.g. shadow prices)" << endl;
-		//output_file_writer.obs_report(fout_rec, *obj_func.get_obs_ptr(), optimum_run.get_obs(), obj_func);
-
-		//fout_rec << endl << "Final objective function " << endl;
-		//map<string, double> phi_report = obj_func.phi_report(optimum_run.get_obs(), optimum_run.get_ctl_pars(), *(pest_scenario.get_regul_scheme_ptr()));
-		//output_file_writer.phi_report(fout_rec, termination_ctl.get_iteration_number() + 1, run_manager_ptr->get_total_runs(), phi_report, 0.0, true);
-		//output_file_writer.phi_report(cout, termination_ctl.get_iteration_number() + 1, run_manager_ptr->get_total_runs(), phi_report, 0.0, true);
-		//fout_rec << endl << endl;
 		fout_rec << "Number of forward model runs performed during optimiztion: " << run_manager_ptr->get_total_runs() << endl;
 
 		// clean up
