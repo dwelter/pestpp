@@ -203,7 +203,10 @@ void sequentialLP::presolve_constraint_report()
 		f_rec << setw(20) << left << name;
 		f_rec << setw(15) << right << constraint_sense_name[name];
 		f_rec << setw(15) << constraints_obs.get_rec(name);
-		f_rec << setw(15) << constraints_sim.get_rec(name);
+		if (use_chance)
+			f_rec << setw(15) << constraints_fosm.get_rec(name);
+		else
+			f_rec << setw(15) << constraints_sim.get_rec(name);
 		f_rec << setw(15) << residuals[i];
 		f_rec << setw(15) << constraint_lb[i];
 		f_rec << setw(15) << constraint_ub[i] << endl;
@@ -690,7 +693,7 @@ void sequentialLP::initialize_and_check()
 			f_rec << endl << "  ---  note: resetting risk value of " << risk << " to a practical value of " << 0.999 << endl << endl;
 			risk = 0.999;
 		}
-		if (risk > 0.001)
+		if (risk < 0.001)
 		{
 			f_rec << endl << "  ---  note: resetting risk value of " << risk << " to a practical value of " << 0.001 << endl << endl;
 			risk = 0.001;
@@ -915,9 +918,6 @@ void sequentialLP::iter_solve()
 
 	//instantiate and load the linear simplex model
 	//ClpSimplex model;
-	for (int i = 0; i < num_dec_vars(); i++)
-		cout << dec_var_lb[i] << endl;
-
 	model.loadProblem(matrix, dec_var_lb, dec_var_ub, ctl_ord_obj_func_coefs, constraint_lb, constraint_ub);
 	model.setLogLevel(pest_scenario.get_pestpp_options().get_opt_coin_loglev());
 	model.setOptimizationDirection(pest_scenario.get_pestpp_options().get_opt_direction());
