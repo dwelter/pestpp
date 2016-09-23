@@ -91,9 +91,17 @@ void sequentialLP::initial_report()
 
 	f_rec << "-->number of decision variable: " << num_dec_vars() << endl;
 	f_rec << "-->number of observation constraints: " << num_obs_constraints() << endl;
-	f_rec << "-->number of prior information constraints: " << num_pi_constraints() << endl << endl;
+	f_rec << "-->number of prior information constraints: " << num_pi_constraints() << endl;
 
-	f_rec << endl << "  ---  decision variables active in SLP  ---  " << endl;
+	if (use_chance)
+	{
+		f_rec << "-->using FOSM-based chance constraints - good choice!" << endl;
+		f_rec << "-->++opt_risk: " << risk << endl;
+		f_rec << "-->number of adjustable parameters for FOSM calcs: " << num_adj_pars() << endl;
+		f_rec << "-->number of non-zero weight observations for FOSM calcs: " << num_nz_obs() << endl;
+		f_rec << "-->repeat FOSM calcs every: " << pest_scenario.get_pestpp_options().get_opt_recalc_fosm_every() << " iterations" << endl << endl;
+	}
+	f_rec << endl << endl << "  ---  decision variables active in SLP  ---  " << endl;
 	map<string, double>::iterator end = obj_func_coef_map.end();
 	vector<string> missing;
 	f_rec << setw(20) << left << "name" << setw(25) << "obj func coefficient" << endl;
@@ -172,20 +180,35 @@ void sequentialLP::presolve_fosm_report()
 	f_rec << setw(20) << left << "name" << right << setw(10) << "sense" << setw(15) << "sim value";
 	f_rec << setw(15) << "prior stdev" << setw(15) << "post stdev" << setw(15) << "offset";
 	f_rec << setw(15) << "new sim value" << endl;
+	vector<string> out_of_bounds;
 	for (int i = 0; i<num_obs_constraints(); ++i)
 	{
 		string name = ctl_ord_obs_constraint_names[i];
 		f_rec << setw(20) << left << name;
 		f_rec << setw(10) << right << constraint_sense_name[name];
-		f_rec << setw(15) << constraints_sim.get_rec(name);
+		f_rec << setw(15) << constraints_sim_initial.get_rec(name);
 		f_rec << setw(15) << prior_constraint_stdev[name];
 		f_rec << setw(15) << post_constraint_stdev[name];
 		f_rec << setw(15) << post_constraint_offset[name];
 		f_rec << setw(15) << constraints_fosm[name] << endl;
+		if ((constraint_sense_map[name] == ConstraintSense::less_than) && (constraints_obs[name] < constraints_fosm[name]))
+			out_of_bounds.push_back(name);
+		if ((constraint_sense_map[name] == ConstraintSense::greater_than) && (constraints_obs[name] > constraints_fosm[name]))
+			out_of_bounds.push_back(name);
 	}
 	f_rec << "  note: 'offset' is the value added to the simulated constraint value to account" << endl;
 	f_rec << "        for the uncertainty in the constraint value arsing from uncertainty in the " << endl;
 	f_rec << "        adjustable parameters identified in the control file." << endl << endl;
+
+	if (out_of_bounds.size() > 0)
+	{
+		f_rec << "the following fosm constraints are not feasible:" << endl;
+		for (auto &name : out_of_bounds)
+			f_rec << name << endl;
+		throw_sequentialLP_error("fosm-based constraints are infeasible");
+	}
+
+
 	return;
 }
 
@@ -717,7 +740,7 @@ void sequentialLP::initialize_and_check()
 			}
 		}
 		if (num_adj_pars() == 0)
-			throw_sequentialLP_error("++opt_use_chance, but no adjustable parameters found in control file");
+			throw_sequentialLP_error("++opt_risk != 0.5, but no adjustable parameters found in control file");
 
 		//look for non-zero weighted obs
 		start = ctl_ord_obs_constraint_names.begin();
@@ -766,6 +789,17 @@ void sequentialLP::initialize_and_check()
 
 void sequentialLP::calc_chance_constraint_offsets()
 {
+
+	if ((slp_iter != 1) && ((slp_iter+1) % pest_scenario.get_pestpp_options().get_opt_recalc_fosm_every() != 0))
+	{
+		ofstream & f_rec = file_mgr->rec_ofstream();
+		f_rec << endl << "  ---  reusing fosm offsets from previous iteration  ---  " << endl;
+		return;
+	}
+	prior_constraint_offset.clear();
+	prior_constraint_stdev.clear();
+	post_constraint_offset.clear();
+	post_constraint_stdev.clear();
 	//the rows of the fosm jacobian include nonzero weight obs (for schur comp) 
 	//plus the names of the names of constraints, which get treated as forecasts
 	vector<string> fosm_row_names(nz_obs_names);
@@ -773,6 +807,7 @@ void sequentialLP::calc_chance_constraint_offsets()
 	
 	//extract the part of the full jco we need for fosm
 	Eigen::SparseMatrix<double> fosm_mat = jco.get_matrix(fosm_row_names, adj_par_names);
+		
 	Mat fosm_jco(fosm_row_names,adj_par_names,fosm_mat);
 	
 	//create a linear object
@@ -927,11 +962,12 @@ void sequentialLP::iter_solve()
 		model.setRowName(i+num_obs_constraints(), ctl_ord_pi_constraint_names[i]);
 	for (int i = 0; i < num_dec_vars(); ++i)
 		model.setColumnName(i, ctl_ord_dec_var_names[i]);
-	model.setLogLevel(pest_scenario.get_pestpp_options().get_opt_coin_loglev());
+	
 	model.setOptimizationDirection(pest_scenario.get_pestpp_options().get_opt_direction());
 	//if maximum ++opt_coin_loglev, then also write iteration specific mps files
-	if (pest_scenario.get_pestpp_options().get_opt_coin_loglev() >= 4)
+	if (pest_scenario.get_pestpp_options().get_opt_coin_log())
 	{
+		model.setLogLevel(4+8+16+32);
 		stringstream ss;
 		ss << slp_iter << ".mps";
 		string mps_name = file_mgr->build_filename(ss.str());
@@ -977,6 +1013,7 @@ void sequentialLP::iter_solve()
 	{
 		f_rec << "  ---  warning: primal and dual infeasible  ---  " << endl;
 		cout << "  ---  warning: primal and dual infeasible  ---  " << endl;
+		terminate = true;
 #ifndef _DEBUG
 		//TODO: report current constraints and dec vars before exiting...problably just set the termination controller...
 		throw_sequentialLP_error("linear program is primal and dual infeasible...cannot continue");
@@ -1033,6 +1070,9 @@ CoinPackedMatrix sequentialLP::jacobian_to_coinpackedmatrix()
 
 	file_mgr->rec_ofstream() << "number of nonzero elements in response matrix: " << eig_ord_jco.nonZeros() << " of " << eig_ord_jco.size() << endl;
 	cout << "number of nonzero elements in response matrix: " << eig_ord_jco.nonZeros() << " of " << eig_ord_jco.size() << endl;
+
+	if (eig_ord_jco.nonZeros() == 0)
+		throw_sequentialLP_error("response matrix all zeros...cannot continue");
 
 	//cout << eig_ord_jco << endl;
 
@@ -1309,6 +1349,12 @@ void sequentialLP::iter_presolve()
 		if (missing.size() > 0)
 			throw_sequentialLP_error("the following constraints were not found in the jacobian " + basejac_filename + " : ", missing);
 	
+		for (auto &name : nz_obs_names)
+			if (find(start, end, name) == end)
+				missing.push_back(name);
+		if (missing.size() > 0)
+			throw_sequentialLP_error("the following non-zero weight observations were not found in the jacobian " + basejac_filename + " : ", missing);
+
 		//make the intial base run
 		cout << "  ---  running the model once with initial decision variables  ---  " << endl;
 		int run_id = run_mgr_ptr->add_run(par_trans.ctl2model_cp(all_pars_and_dec_vars));
@@ -1322,14 +1368,17 @@ void sequentialLP::iter_presolve()
 	//otherwise, fill the jacobian
 	else
 	{
-
 		set<string> out_of_bounds;
 		vector<string> names_to_run;
 		for (auto &name : ctl_ord_dec_var_names)
 			if (find(ctl_ord_ext_var_names.begin(), ctl_ord_ext_var_names.end(), name) == ctl_ord_ext_var_names.end())
 				names_to_run.push_back(name);
 
-		names_to_run.insert(names_to_run.end(), adj_par_names.begin(), adj_par_names.end());
+		if ((slp_iter == 1) || ((slp_iter+1) % pest_scenario.get_pestpp_options().get_opt_recalc_fosm_every() == 0))
+		{
+			names_to_run.insert(names_to_run.end(), adj_par_names.begin(), adj_par_names.end());
+		}
+
 		bool init_obs = false;
 		if (slp_iter == 1) init_obs = true;
 		bool success = jco.build_runs(all_pars_and_dec_vars, constraints_sim, names_to_run, par_trans,

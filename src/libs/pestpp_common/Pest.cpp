@@ -595,13 +595,14 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	//pestpp_options.set_use_parcov_scaling(false);
 	pestpp_options.set_parcov_scale_fac(-999.0);
 	pestpp_options.set_opt_obj_func("");
-	pestpp_options.set_opt_coin_loglev(0);
+	pestpp_options.set_opt_coin_log(true);
 	pestpp_options.set_opt_dec_var_groups(vector<string>());
 	pestpp_options.set_opt_ext_var_groups(vector<string>());
 	pestpp_options.set_opt_constraint_groups(vector<string>());
 	pestpp_options.set_opt_risk(0.5);
 	pestpp_options.set_opt_direction(1.0);
 	pestpp_options.set_opt_iter_tol(0.001);
+	pestpp_options.set_opt_recalc_fosm_every(1);
 	for(vector<string>::const_iterator b=pestpp_input.begin(),e=pestpp_input.end();
 		b!=e; ++b) {
 			pestpp_options.parce_line(*b);

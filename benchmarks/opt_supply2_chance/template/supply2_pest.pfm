@@ -1,0 +1,119 @@
+PEST++ performance logger started at:  15:42:20
+  starting to process control file
+          ( time = 15:42:20,  elapsed time = 3ms )
+  finished processing control file
+          ( time = 15:42:21,  elapsed time = 1sec )
+    starting basic model IO error checking
+            ( time = 15:42:22,  elapsed time = 452ms )
+    finished basic model IO error checking
+            ( time = 15:42:22,  elapsed time = 5ms )
+15:42:57-> starting set_predictions
+15:42:57->-> starting extracting prediction S1R14_09 from jacobian
+15:42:57->-> finished extracting prediction S1R14_09 from jacobian, elapsed time = 5ms
+15:42:57->-> starting extracting prediction S1R14_10 from jacobian
+15:42:57->-> finished extracting prediction S1R14_10 from jacobian, elapsed time = 5ms
+15:42:57->-> starting extracting prediction S1R14_11 from jacobian
+15:42:57->-> finished extracting prediction S1R14_11 from jacobian, elapsed time = 4ms
+15:42:57->-> starting extracting prediction S1R14_12 from jacobian
+15:42:57->-> finished extracting prediction S1R14_12 from jacobian, elapsed time = 4ms
+15:42:57->-> starting extracting prediction S1R21_11 from jacobian
+15:42:57->-> finished extracting prediction S1R21_11 from jacobian, elapsed time = 4ms
+15:42:57->-> starting extracting prediction S1R21_12 from jacobian
+15:42:57->-> finished extracting prediction S1R21_12 from jacobian, elapsed time = 4ms
+15:42:57->-> starting extracting prediction S2R08_09 from jacobian
+15:42:57->-> finished extracting prediction S2R08_09 from jacobian, elapsed time = 3ms
+15:42:57->-> starting extracting prediction S2R08_10 from jacobian
+15:42:57->-> finished extracting prediction S2R08_10 from jacobian, elapsed time = 3ms
+15:42:57->-> starting extracting prediction S2R08_11 from jacobian
+15:42:57->-> finished extracting prediction S2R08_11 from jacobian, elapsed time = 3ms
+15:42:57->-> starting extracting prediction S2R08_12 from jacobian
+15:42:57->-> finished extracting prediction S2R08_12 from jacobian, elapsed time = 3ms
+15:42:57->-> starting extracting prediction S3R05_11 from jacobian
+15:42:57->-> finished extracting prediction S3R05_11 from jacobian, elapsed time = 3ms
+15:42:57->-> starting extracting prediction S3R05_12 from jacobian
+15:42:57->-> finished extracting prediction S3R05_12 from jacobian, elapsed time = 3ms
+15:42:57-> finished set_predictions, elapsed time = 54ms
+15:42:57-> starting prior_prediction_variance
+15:42:57-> finished prior_prediction_variance, elapsed time = 4ms
+15:42:57-> starting posterior_prediction_variance
+15:42:57->-> starting calc_posterior
+15:42:57->->-> starting align
+15:42:57->->-> finished align, elapsed time = 543us
+15:42:57->->-> starting invert obscov
+15:42:57->->->-> starting inverting diagonal matrix in place
+15:42:57->->->->-> starting extracting diagonal
+15:42:57->->->->->-> starting inverting diagonal
+15:42:57->->->->->->-> starting buidling triplets
+15:42:57->->->->->->->-> starting ng matrix to size 
+15:42:57->->->->->->->->-> starting setting matrix from triplets
+15:42:57->->->->->->->->-> finished invert obscov, elapsed time = 1ms
+15:42:57->->->->->->->->-> starting form JtQJ
+15:42:57->->->->->->->->-> finished form JtQJ, elapsed time = 1ms
+15:42:57->->->->->->->->-> starting invert parcov
+15:42:57->->->->->->->->-> finished invert parcov, elapsed time = 726us
+15:42:57->->->->->->->->-> starting form posterior
+15:42:57->->->->->->->->-> finished form posterior, elapsed time = 354us
+15:42:57->->->->->->->->-> starting invert posterior
+15:42:57->->->->->->->->->-> starting inverting non-diagonal matrix in place
+15:42:57->->->->->->->->->->-> starting instantiate solver
+15:42:57->->->->->->->->->->->-> starting computing inverse
+15:42:57->->->->->->->->->->->->-> starting getting identity instance for solution
+15:42:57->->->->->->->->->->->->->-> starting solving
+15:42:57->->->->->->->->->->->->->-> finished invert posterior, elapsed time = 2ms
+15:42:57->->->->->->->->->->->->-> finished calc_posterior, elapsed time = 7ms
+15:42:57->->->->->->->->->->->-> finished posterior_prediction_variance, elapsed time = 13ms
+15:43:49-> starting set_predictions
+15:43:49->-> starting extracting prediction S1R14_09 from jacobian
+15:43:49->-> finished extracting prediction S1R14_09 from jacobian, elapsed time = 6ms
+15:43:49->-> starting extracting prediction S1R14_10 from jacobian
+15:43:49->-> finished extracting prediction S1R14_10 from jacobian, elapsed time = 5ms
+15:43:49->-> starting extracting prediction S1R14_11 from jacobian
+15:43:49->-> finished extracting prediction S1R14_11 from jacobian, elapsed time = 5ms
+15:43:49->-> starting extracting prediction S1R14_12 from jacobian
+15:43:49->-> finished extracting prediction S1R14_12 from jacobian, elapsed time = 5ms
+15:43:49->-> starting extracting prediction S1R21_11 from jacobian
+15:43:49->-> finished extracting prediction S1R21_11 from jacobian, elapsed time = 5ms
+15:43:49->-> starting extracting prediction S1R21_12 from jacobian
+15:43:49->-> finished extracting prediction S1R21_12 from jacobian, elapsed time = 4ms
+15:43:49->-> starting extracting prediction S2R08_09 from jacobian
+15:43:49->-> finished extracting prediction S2R08_09 from jacobian, elapsed time = 4ms
+15:43:49->-> starting extracting prediction S2R08_10 from jacobian
+15:43:49->-> finished extracting prediction S2R08_10 from jacobian, elapsed time = 4ms
+15:43:49->-> starting extracting prediction S2R08_11 from jacobian
+15:43:49->-> finished extracting prediction S2R08_11 from jacobian, elapsed time = 4ms
+15:43:49->-> starting extracting prediction S2R08_12 from jacobian
+15:43:49->-> finished extracting prediction S2R08_12 from jacobian, elapsed time = 4ms
+15:43:49->-> starting extracting prediction S3R05_11 from jacobian
+15:43:49->-> finished extracting prediction S3R05_11 from jacobian, elapsed time = 3ms
+15:43:49->-> starting extracting prediction S3R05_12 from jacobian
+15:43:49->-> finished extracting prediction S3R05_12 from jacobian, elapsed time = 3ms
+15:43:49-> finished set_predictions, elapsed time = 63ms
+15:43:49-> starting prior_prediction_variance
+15:43:49-> finished prior_prediction_variance, elapsed time = 4ms
+15:43:49-> starting posterior_prediction_variance
+15:43:49->-> starting calc_posterior
+15:43:49->->-> starting align
+15:43:49->->-> finished align, elapsed time = 538us
+15:43:49->->-> starting invert obscov
+15:43:49->->->-> starting inverting diagonal matrix in place
+15:43:49->->->->-> starting extracting diagonal
+15:43:49->->->->->-> starting inverting diagonal
+15:43:49->->->->->->-> starting buidling triplets
+15:43:49->->->->->->->-> starting ng matrix to size 
+15:43:49->->->->->->->->-> starting setting matrix from triplets
+15:43:49->->->->->->->->-> finished invert obscov, elapsed time = 1ms
+15:43:49->->->->->->->->-> starting form JtQJ
+15:43:49->->->->->->->->-> finished form JtQJ, elapsed time = 2ms
+15:43:49->->->->->->->->-> starting invert parcov
+15:43:49->->->->->->->->-> finished invert parcov, elapsed time = 723us
+15:43:49->->->->->->->->-> starting form posterior
+15:43:49->->->->->->->->-> finished form posterior, elapsed time = 360us
+15:43:49->->->->->->->->-> starting invert posterior
+15:43:49->->->->->->->->->-> starting inverting non-diagonal matrix in place
+15:43:49->->->->->->->->->->-> starting instantiate solver
+15:43:49->->->->->->->->->->->-> starting computing inverse
+15:43:49->->->->->->->->->->->->-> starting getting identity instance for solution
+15:43:49->->->->->->->->->->->->->-> starting solving
+15:43:49->->->->->->->->->->->->->-> finished invert posterior, elapsed time = 2ms
+15:43:49->->->->->->->->->->->->-> finished calc_posterior, elapsed time = 8ms
+15:43:49->->->->->->->->->->->-> finished posterior_prediction_variance, elapsed time = 14ms

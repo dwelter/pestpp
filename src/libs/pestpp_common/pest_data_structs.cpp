@@ -487,9 +487,11 @@ void PestppOptions::parce_line(const string &line)
 		{
 			convert_ip(value,opt_obj_func);
 		}
-		else if (key == "OPT_COIN_LOGLEV")
+		else if (key == "OPT_COIN_LOG")
 		{
-			convert_ip(value, opt_coin_loglev);
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> opt_coin_log;
 		}
 	
 		else if ((key == "OPT_DEC_VAR_GROUPS") || (key == "OPT_DECISION_VARIABLE_GROUPS"))
@@ -546,6 +548,12 @@ void PestppOptions::parce_line(const string &line)
 		{
 			convert_ip(value, opt_iter_tol);
 		}
+
+		else if (key == "OPT_RECALC_FOSM_EVERY")
+		{
+			convert_ip(value, opt_recalc_fosm_every);
+		}
+
 
 		else {
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");

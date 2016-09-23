@@ -73,9 +73,27 @@ def build_control_file():
     im_names = par.groupby(par.parnme.apply(lambda x:x.startswith("im"))).groups[True]
     par.loc[im_names,"pargp"] = "external"
     par.loc[im_names,"parubnd"] = 1.0E+6
+
+    t_names = par.groupby(par.parnme.apply(lambda x: x.startswith("t"))).groups[True]
+    par.loc[t_names, "pargp"] = "trans"
+    par.loc[t_names,"parval1"] = 5000.0
+    par.loc[t_names, "parubnd"] = 50000.0
+    par.loc[t_names, 'parlbnd'] = 500.0
+    par.loc[t_names,"partrans"] = "log"
+    par.loc[t_names, "scale"] = 1.0
+
+    seg_names = par.groupby(par.parnme.apply(lambda x: x.startswith("seg"))).groups[True]
+    par.loc[seg_names, "pargp"] = "sfr_seg"
+    par.loc[seg_names, "parval1"] = 5.0
+    par.loc[seg_names, "parubnd"] = 50.0
+    par.loc[seg_names, 'parlbnd'] = 0.5
+    par.loc[seg_names, "partrans"] = "log"
+    par.loc[seg_names, "scale"] = 1.0
+
     pst._rectify_pgroups()
-    pst.parameter_groups.loc[:,"inctyp"] = "absolute"
-    pst.parameter_groups.loc[:,"derinc"] = 25000.0
+
+    pst.parameter_groups.loc["pumping","inctyp"] = "absolute"
+    pst.parameter_groups.loc["pumping","derinc"] = 5000.0
 
     const_dict = {}
     const_dict["s1r14_09"] = 15000.0
@@ -91,13 +109,17 @@ def build_control_file():
     const_dict["s3r05_11"] = 30000.0
     const_dict["s3r05_12"] = 30000.0
     obs = pst.observation_data
-    obs.loc[:,"obgnme"] = "extra"
+    obs.loc[:,"obgnme"] = "extra_sfr"
     obs.loc[:,"obsval"] = 0.0
     obs.loc[:,"weight"] = 0.0
     obs.loc[const_dict.keys(),"obgnme"] = "less_obs"
     for obsnme,value in const_dict.items():
         obs.loc[obsnme,"obsval"] = value
         obs.loc[obsnme,"weight"] = 1.0
+
+    h_groups = obs.groupby(obs.obsnme.apply(lambda x:x.startswith('h'))).groups[True]
+    obs.loc[h_groups,"obgnme"] = "head"
+
     obs.sort(["obgnme","obsnme"],inplace=True)
 
     pst.control_data.noptmax = 1
@@ -203,7 +225,9 @@ def build_control_file():
     pst.pestpp_options["opt_direction"] = "max"
     pst.pestpp_options["opt_constraint_groups"] = "less_pi,greater_pi,less_obs"
     pst.pestpp_options["opt_obj_func"] = "pi_obj_func"
-    pst.pestpp_options["opt_coin_loglev"] = 4
+    pst.pestpp_options["opt_coin_log"] = "true"
+    pst.pestpp_options["opt_dec_var_groups"] = "pumping,external"
+    pst.pestpp_options["opt_ext_var_groups"] = "external"
     #pst.pestpp_options["base_jacobian"] = "supply2_pest.1.bak.jcb"
     pst.parameter_data.sort_index(inplace=True)
     pst.write("supply2_pest.pst")
@@ -212,7 +236,7 @@ def build_control_file():
 if __name__ == "__main__":
     # build_wel_file()
     #write_external_par_tpl()
-    build_control_file()
     #write_command_script()
-    #write_tran_tpl()
-    #write_hds_instruction_file()
+    write_tran_tpl()
+    write_hds_instruction_file()
+    build_control_file()

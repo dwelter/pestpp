@@ -547,7 +547,7 @@ pi_const22             1.0 * q1 + 1.0 * q2c + 1.0 * im11 = 45000.0              
 pi_const23             1.0 * q1 + 1.0 * q2d + 1.0 * q4b + 1.0 * im12 = 80000.0                                                                                                                  1.0000000000E+00     less_pi              
 pi_const24             1.0 * q1 + 1.0 * q2d + 1.0 * q4b + 1.0 * im12 = 45000.0                                                                                                                  1.0000000000E+00     greater_pi           
 ++opt_direction(max)
-++opt_coin_loglev(4)
+++opt_coin_log(true)
 ++opt_obj_func(pi_obj_func)
 ++opt_dec_var_groups(pumping)
 ++opt_ext_var_groups(external)

@@ -1036,7 +1036,7 @@ void linear_analysis::set_predictions(vector<string> preds)
 				cerr << endl << "WARNING: Prediction " + pred + " has no non-zero entries in jacobian. " << endl;
 				cerr << "         This mean that the adjustable parameters have no effect on " << endl;
 				cerr << "         prediction " + pred + ".  The uncertainty for this prediction " << endl;
-				cerr << "         is essential infinite." << endl << endl;
+				cerr << "         is essentially infinite." << endl << endl;
 			}
 			mpred.transpose_ip();
 			predictions[pred] = mpred;

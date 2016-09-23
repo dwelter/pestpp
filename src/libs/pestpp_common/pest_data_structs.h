@@ -268,8 +268,8 @@ public:
 	void set_parcov_scale_fac(double _fac) { parcov_scale_fac = _fac; }
 	string get_opt_obj_func()const  { return opt_obj_func; }
 	void set_opt_obj_func(string _opt_obj_func) { opt_obj_func = _opt_obj_func; }
-	int get_opt_coin_loglev()const { return opt_coin_loglev; }
-	void set_opt_coin_loglev(int _lev) { opt_coin_loglev = _lev; }
+	bool get_opt_coin_log()const { return opt_coin_log; }
+	void set_opt_coin_log(bool _log) { opt_coin_log = _log; }
 	vector<string> get_opt_dec_var_groups()const { return opt_dec_var_groups; }
 	void set_opt_dec_var_groups(vector<string> _grps) { opt_dec_var_groups = _grps; }
 	vector<string> get_opt_ext_var_groups()const { return opt_external_var_groups; }
@@ -282,7 +282,8 @@ public:
 	void set_opt_direction(double _direction) { opt_direction = _direction; }
 	double get_opt_iter_tol()const { return opt_iter_tol; }
 	void set_opt_iter_tol(double _tol) { opt_iter_tol = _tol; }
-
+	int get_opt_recalc_fosm_every()const { return opt_recalc_fosm_every; }
+	void set_opt_recalc_fosm_every(int _every) { opt_recalc_fosm_every = _every; }
 
 
 private:
@@ -323,13 +324,14 @@ private:
 	bool de_dither_f;
 
 	string opt_obj_func;
-	int opt_coin_loglev;
+	bool opt_coin_log;
 	vector<string> opt_dec_var_groups;
 	vector<string> opt_external_var_groups;
 	vector<string> opt_constraint_groups;
 	double opt_risk;
 	double opt_direction;
 	double opt_iter_tol;
+	int opt_recalc_fosm_every;
 
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);
