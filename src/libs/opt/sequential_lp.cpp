@@ -919,18 +919,23 @@ void sequentialLP::iter_solve()
 	//convert Jacobian_1to1 to CoinPackedMatrix
 	CoinPackedMatrix matrix = jacobian_to_coinpackedmatrix();
 
-	//instantiate and load the linear simplex model
-	//ClpSimplex model;
+	//load the linear simplex model
 	model.loadProblem(matrix, dec_var_lb, dec_var_ub, ctl_ord_obj_func_coefs, constraint_lb, constraint_ub);
+	for (int i = 0; i < num_obs_constraints(); ++i)
+		model.setRowName(i, ctl_ord_obs_constraint_names[i]);
+	for (int i = 0; i < ctl_ord_pi_constraint_names.size(); ++i)
+		model.setRowName(i+num_obs_constraints(), ctl_ord_pi_constraint_names[i]);
+	for (int i = 0; i < num_dec_vars(); ++i)
+		model.setColumnName(i, ctl_ord_dec_var_names[i]);
 	model.setLogLevel(pest_scenario.get_pestpp_options().get_opt_coin_loglev());
 	model.setOptimizationDirection(pest_scenario.get_pestpp_options().get_opt_direction());
 	//if maximum ++opt_coin_loglev, then also write iteration specific mps files
-	if (pest_scenario.get_pestpp_options().get_opt_coin_loglev() == 4)
+	if (pest_scenario.get_pestpp_options().get_opt_coin_loglev() >= 4)
 	{
 		stringstream ss;
 		ss << slp_iter << ".mps";
 		string mps_name = file_mgr->build_filename(ss.str());
-		model.writeMps(mps_name.c_str());
+		model.writeMps(mps_name.c_str(),0,1);
 	}
 	f_rec << "  ---  solving linear program for iteration " << slp_iter << "  ---  " << endl;
 	cout << "  ---  solving linear program for iteration " << slp_iter << "  ---  " << endl;
@@ -1206,17 +1211,37 @@ void sequentialLP::iter_postsolve()
 			f_rec << "-->   " << name << endl;
 	}
 
-
-	if ((!valid) || (max_abs_dec_var_change > opt_iter_tol) || (max_abs_constraint_change > opt_iter_tol) || (obj_func_change > opt_iter_tol))
+	//if three or more iters have passed, start testing the last three 
+	//obj func vals to see if we have stagnated
+	bool obj_func_stag = false;
+	
+	int num_obj_vals = iter_obj_values.size();
+	if (num_obj_vals > 3)
 	{
-		//f_rec << endl << "  ---  convergence not achieved, continuing...  ---  " << endl << endl;
-		//cout << endl << "  ---  convergence not achieved, continuing...  ---  " << endl << endl;
+		obj_func_stag = true;
+		double last = iter_obj_values[num_obj_vals-1];
+		for (int i = num_obj_vals-2; i >= num_obj_vals-4; --i)
+		{
+			diff = abs((iter_obj_values[i] - last) / max(1.0, last));
+			if (diff > opt_iter_tol)
+			{
+				obj_func_stag = false;
+				break;
+			}
+			last = iter_obj_values[i];
+		}
 	}
-	else
+
+	//if the obj func has stopped changing or all the other criteria are met
+	if ((obj_func_stag) || ((valid) && (max_abs_dec_var_change <= opt_iter_tol) && (max_abs_constraint_change <= opt_iter_tol) && (obj_func_change <= opt_iter_tol)))
 	{
 		f_rec << endl << "  ---  SLP convergence  ---  " << endl << endl;
 		cout << endl << "  ---  SLP convergence  ---  " << endl << endl;
 		terminate = true;
+	}
+	else
+	{
+		
 	}
 
 
