@@ -360,10 +360,10 @@ pair<vector<string>, vector<string>> sequentialLP::postsolve_check(Observations 
 pair<double,double> sequentialLP::postsolve_decision_var_report(Parameters &upgrade_pars)
 {
 	ofstream &f_rec = file_mgr->rec_ofstream();
-
+	const double *reduced_cost = model.getReducedCost();
 	f_rec << endl << endl << "     decision variable information at end of SLP iteration " << slp_iter << endl << endl;
 	f_rec << setw(20) << left << "name" << right << setw(15) << "current" << setw(15)  << "new";
-	f_rec << setw(15) << "objfunc coef" << setw(15) << "cur contrib" << setw(15) << "new contrib" << endl;
+	f_rec << setw(15) << "objfunc coef" << setw(15) << "cur contrib" << setw(15) << "new contrib" << setw(15) << "reduced cost" << endl;
 	string name;
 	double obj_coef, cur_val, new_val, upgrade;
 	double cur_obj=0.0, new_obj=0.0;
@@ -378,7 +378,8 @@ pair<double,double> sequentialLP::postsolve_decision_var_report(Parameters &upgr
 		f_rec << setw(15) << new_val;
 		f_rec << setw(15) << obj_coef;
 		f_rec << setw(15) << cur_val * obj_coef;
-		f_rec << setw(15) << new_val * obj_coef << endl;
+		f_rec << setw(15) << new_val * obj_coef;
+		f_rec << setw(15) << reduced_cost[i] << endl;
 		cur_obj += cur_val * obj_coef;
 		new_obj += new_val * obj_coef;
 
@@ -412,6 +413,10 @@ void sequentialLP::initialize_and_check()
 	model.passInMessageHandler(&coin_hr);
 
 	terminate = false;
+	
+	
+	
+	
 	//-----------------------------
 	//  ---  decision vars  ---  
 	//-----------------------------
@@ -462,8 +467,6 @@ void sequentialLP::initialize_and_check()
 	//if not ++opt_dec_var_names was passed, use all parameter as decision variables
 	else
 		ctl_ord_dec_var_names = pest_scenario.get_ctl_ordered_par_names();
-
-
 
 	//if any decision vars have a transformation that is not allowed
 	vector<string> problem_trans;
@@ -921,8 +924,14 @@ void sequentialLP::iter_solve()
 	model.loadProblem(matrix, dec_var_lb, dec_var_ub, ctl_ord_obj_func_coefs, constraint_lb, constraint_ub);
 	model.setLogLevel(pest_scenario.get_pestpp_options().get_opt_coin_loglev());
 	model.setOptimizationDirection(pest_scenario.get_pestpp_options().get_opt_direction());
-
-
+	//if maximum ++opt_coin_loglev, then also write iteration specific mps files
+	if (pest_scenario.get_pestpp_options().get_opt_coin_loglev() == 4)
+	{
+		stringstream ss;
+		ss << slp_iter << ".mps";
+		string mps_name = file_mgr->build_filename(ss.str());
+		model.writeMps(mps_name.c_str());
+	}
 	f_rec << "  ---  solving linear program for iteration " << slp_iter << "  ---  " << endl;
 	cout << "  ---  solving linear program for iteration " << slp_iter << "  ---  " << endl;
 	
@@ -1136,7 +1145,6 @@ void sequentialLP::iter_postsolve()
 		max_abs_dec_var_change = (diff > max_abs_dec_var_change) ? diff : max_abs_dec_var_change;
 		max_abs_dec_var_val = (abs(val) > max_abs_dec_var_val) ? val : max_abs_dec_var_val;
 	}
-
 	max_abs_dec_var_change /= max(max_abs_dec_var_val,1.0);
 
 	//run the model with optimal decision var values
