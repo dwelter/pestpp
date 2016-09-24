@@ -837,7 +837,7 @@ void sequentialLP::calc_chance_constraint_offsets()
 	//approx the probit function with the logit function - minimal difference
 	//the logit function approx tells us the value of the standard normal CDF
 	//at a given probability level (e.g. risk level)
-	double logit_approx = log((risk) / (1.0 - risk));
+	double logit_approx = log10((risk) / (1.0 - risk));
 	double new_constraint_val, old_constraint_val;
 	double pr_offset, pt_offset;
 	constraints_fosm.clear();
