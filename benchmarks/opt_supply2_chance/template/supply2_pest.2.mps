@@ -55,11 +55,11 @@ COLUMNS
     Q1 S1R14_10 0.574       
     Q1 S1R14_11 0.574       
     Q1 S1R14_12 0.576       
-    Q1 S1R21_11 0.76        
+    Q1 S1R21_11 0.758       
     Q1 S1R21_12 0.758       
     Q1 S2R08_09 0.014       
-    Q1 S2R08_10 0.014       
-    Q1 S2R08_11 0.016       
+    Q1 S2R08_10 0.016       
+    Q1 S2R08_11 0.014       
     Q1 S2R08_12 0.016       
     Q1 S3R05_11 0.78        
     Q1 S3R05_12 0.78        
@@ -88,10 +88,12 @@ COLUMNS
     Q1 PI_CONST23 1.          
     Q1 PI_CONST24 1.          
     Q2A OBJROW 0.276       
-    Q2A S1R14_09 0.252       
+    Q2A S1R14_09 0.254       
     Q2A S1R14_10 0.012       
+    Q2A S1R14_11 0.002       
     Q2A S1R21_11 0.002       
     Q2A S2R08_09 0.016       
+    Q2A S2R08_10 0.002       
     Q2A PI_CONST1 1.          
     Q2A PI_CONST2 1.          
     Q2A PI_CONST9 1.          
@@ -99,13 +101,12 @@ COLUMNS
     Q2A PI_CONST17 1.          
     Q2A PI_CONST18 1.          
     Q2B OBJROW 0.273       
-    Q2B S1R14_10 0.252       
+    Q2B S1R14_10 0.254       
     Q2B S1R14_11 0.012       
     Q2B S1R14_12 0.002       
-    Q2B S1R21_11 0.026       
+    Q2B S1R21_11 0.024       
     Q2B S2R08_10 0.016       
-    Q2B S2R08_11 0.002       
-    Q2B S3R05_11 0.04        
+    Q2B S3R05_11 0.02        
     Q2B PI_CONST3 1.          
     Q2B PI_CONST4 1.          
     Q2B PI_CONST11 1.          
@@ -114,8 +115,8 @@ COLUMNS
     Q2B PI_CONST20 1.          
     Q2C OBJROW 0.273       
     Q2C S1R14_11 0.252       
-    Q2C S1R14_12 0.012       
-    Q2C S1R21_11 0.616       
+    Q2C S1R14_12 0.014       
+    Q2C S1R21_11 0.614       
     Q2C S1R21_12 0.024       
     Q2C S2R08_11 0.016       
     Q2C S2R08_12 0.002       
@@ -130,9 +131,8 @@ COLUMNS
     Q2D OBJROW 0.273       
     Q2D S1R14_09 0.012       
     Q2D S1R14_12 0.254       
-    Q2D S1R21_11 0.002       
     Q2D S1R21_12 0.614       
-    Q2D S2R08_12 0.016       
+    Q2D S2R08_12 0.018       
     Q2D S3R05_12 0.72        
     Q2D PI_CONST7 1.          
     Q2D PI_CONST8 1.          
@@ -142,8 +142,10 @@ COLUMNS
     Q2D PI_CONST24 1.          
     Q4A OBJROW 0.273       
     Q4A S1R14_10 0.002       
+    Q4A S1R21_11 0.002       
     Q4A S2R08_10 0.294       
     Q4A S2R08_11 0.006       
+    Q4A S3R05_11 0.02        
     Q4A PI_CONST3 1.          
     Q4A PI_CONST4 1.          
     Q4A PI_CONST11 1.          
@@ -151,11 +153,11 @@ COLUMNS
     Q4A PI_CONST19 1.          
     Q4A PI_CONST20 1.          
     Q4B OBJROW 0.273       
-    Q4B S1R14_12 0.002       
-    Q4B S1R21_12 0.022       
+    Q4B S1R14_12 0.004       
+    Q4B S1R21_12 0.024       
     Q4B S2R08_09 0.004       
-    Q4B S2R08_12 0.294       
-    Q4B S3R05_12 0.88        
+    Q4B S2R08_12 0.296       
+    Q4B S3R05_12 0.9         
     Q4B PI_CONST7 1.          
     Q4B PI_CONST8 1.          
     Q4B PI_CONST15 1.          
@@ -163,18 +165,18 @@ COLUMNS
     Q4B PI_CONST23 1.          
     Q4B PI_CONST24 1.          
 RHS
-    RHS S1R14_09 7325.391794 
-    RHS S1R14_10 7901.9406973
-    RHS S1R14_11 14991.834821
-    RHS S1R14_12 14992.071856
-    RHS S1R21_11 12325.374355
-    RHS S1R21_12 19981.359121
-    RHS S2R08_09 14980.366973
-    RHS S2R08_10 14979.698313
-    RHS S2R08_11 14980.0407  
-    RHS S2R08_12 14980.0407  
-    RHS S3R05_11 29997.055561
-    RHS S3R05_12 29997.055561
+    RHS S1R14_09 14999.904477
+    RHS S1R14_10 14999.67436 
+    RHS S1R14_11 14999.904477
+    RHS S1R14_12 14999.899069
+    RHS S1R21_11 19999.793546
+    RHS S1R21_12 19999.788534
+    RHS S2R08_09 14999.846262
+    RHS S2R08_10 14999.861112
+    RHS S2R08_11 14999.846262
+    RHS S2R08_12 14999.848256
+    RHS S3R05_11 29999.800913
+    RHS S3R05_12 29999.842862
     RHS PI_CONST1 80000.      
     RHS PI_CONST3 80000.      
     RHS PI_CONST5 80000.      

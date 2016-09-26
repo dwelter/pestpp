@@ -52,15 +52,15 @@ COLUMNS
     IM9 PI_CONST18 1.          
     Q1 OBJROW 1.095       
     Q1 S1R14_09 0.574       
-    Q1 S1R14_10 0.576       
+    Q1 S1R14_10 0.574       
     Q1 S1R14_11 0.576       
-    Q1 S1R14_12 0.576       
+    Q1 S1R14_12 0.574       
     Q1 S1R21_11 0.758       
-    Q1 S1R21_12 0.758       
-    Q1 S2R08_09 0.014       
-    Q1 S2R08_10 0.014       
+    Q1 S1R21_12 0.76        
+    Q1 S2R08_09 0.016       
+    Q1 S2R08_10 0.016       
     Q1 S2R08_11 0.014       
-    Q1 S2R08_12 0.016       
+    Q1 S2R08_12 0.014       
     Q1 S3R05_11 0.78        
     Q1 S3R05_12 0.78        
     Q1 PI_CONST1 1.          
@@ -88,10 +88,11 @@ COLUMNS
     Q1 PI_CONST23 1.          
     Q1 PI_CONST24 1.          
     Q2A OBJROW 0.276       
-    Q2A S1R14_09 0.254       
+    Q2A S1R14_09 0.252       
     Q2A S1R14_10 0.012       
+    Q2A S1R14_11 0.002       
     Q2A S1R21_11 0.002       
-    Q2A S2R08_09 0.016       
+    Q2A S2R08_09 0.018       
     Q2A S2R08_10 0.002       
     Q2A PI_CONST1 1.          
     Q2A PI_CONST2 1.          
@@ -100,12 +101,11 @@ COLUMNS
     Q2A PI_CONST17 1.          
     Q2A PI_CONST18 1.          
     Q2B OBJROW 0.273       
-    Q2B S1R14_10 0.254       
-    Q2B S1R14_11 0.014       
-    Q2B S1R14_12 0.002       
-    Q2B S1R21_11 0.024       
-    Q2B S2R08_10 0.016       
-    Q2B S2R08_11 0.002       
+    Q2B S1R14_10 0.252       
+    Q2B S1R14_11 0.012       
+    Q2B S1R21_11 0.026       
+    Q2B S1R21_12 0.002       
+    Q2B S2R08_10 0.018       
     Q2B S3R05_11 0.04        
     Q2B PI_CONST3 1.          
     Q2B PI_CONST4 1.          
@@ -116,10 +116,9 @@ COLUMNS
     Q2C OBJROW 0.273       
     Q2C S1R14_11 0.254       
     Q2C S1R14_12 0.012       
-    Q2C S1R21_11 0.614       
-    Q2C S1R21_12 0.024       
+    Q2C S1R21_11 0.616       
+    Q2C S1R21_12 0.026       
     Q2C S2R08_11 0.016       
-    Q2C S2R08_12 0.002       
     Q2C S3R05_11 0.72        
     Q2C S3R05_12 0.04        
     Q2C PI_CONST5 1.          
@@ -130,10 +129,10 @@ COLUMNS
     Q2C PI_CONST22 1.          
     Q2D OBJROW 0.273       
     Q2D S1R14_09 0.012       
-    Q2D S1R14_10 0.002       
     Q2D S1R14_12 0.254       
-    Q2D S1R21_12 0.614       
-    Q2D S2R08_12 0.018       
+    Q2D S1R21_12 0.616       
+    Q2D S2R08_09 0.002       
+    Q2D S2R08_12 0.016       
     Q2D S3R05_12 0.72        
     Q2D PI_CONST7 1.          
     Q2D PI_CONST8 1.          
@@ -142,10 +141,12 @@ COLUMNS
     Q2D PI_CONST23 1.          
     Q2D PI_CONST24 1.          
     Q4A OBJROW 0.273       
-    Q4A S1R14_10 0.002       
-    Q4A S1R21_11 0.002       
-    Q4A S2R08_10 0.296       
-    Q4A S2R08_11 0.006       
+    Q4A S1R14_10 0.252       
+    Q4A S1R14_11 0.012       
+    Q4A S1R21_11 0.026       
+    Q4A S1R21_12 0.002       
+    Q4A S2R08_10 0.018       
+    Q4A S3R05_11 0.04        
     Q4A PI_CONST3 1.          
     Q4A PI_CONST4 1.          
     Q4A PI_CONST11 1.          
@@ -155,9 +156,9 @@ COLUMNS
     Q4B OBJROW 0.273       
     Q4B S1R14_12 0.002       
     Q4B S1R21_12 0.024       
-    Q4B S2R08_09 0.004       
+    Q4B S2R08_09 0.006       
     Q4B S2R08_12 0.294       
-    Q4B S3R05_12 0.88        
+    Q4B S3R05_12 0.9         
     Q4B PI_CONST7 1.          
     Q4B PI_CONST8 1.          
     Q4B PI_CONST15 1.          
@@ -178,29 +179,17 @@ RHS
     RHS S3R05_11 30000.      
     RHS S3R05_12 30000.      
     RHS PI_CONST1 80000.      
-    RHS PI_CONST2 30000.      
     RHS PI_CONST3 80000.      
-    RHS PI_CONST4 30000.      
     RHS PI_CONST5 80000.      
-    RHS PI_CONST6 30000.      
     RHS PI_CONST7 80000.      
-    RHS PI_CONST8 30000.      
     RHS PI_CONST9 80000.      
-    RHS PI_CONST10 25000.      
     RHS PI_CONST11 80000.      
-    RHS PI_CONST12 25000.      
     RHS PI_CONST13 80000.      
-    RHS PI_CONST14 25000.      
     RHS PI_CONST15 80000.      
-    RHS PI_CONST16 25000.      
     RHS PI_CONST17 80000.      
-    RHS PI_CONST18 45000.      
     RHS PI_CONST19 80000.      
-    RHS PI_CONST20 45000.      
     RHS PI_CONST21 80000.      
-    RHS PI_CONST22 45000.      
     RHS PI_CONST23 80000.      
-    RHS PI_CONST24 45000.      
 BOUNDS
  UP BOUND IM10 1000000.    
  UP BOUND IM11 1000000.    

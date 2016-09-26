@@ -86,6 +86,9 @@ private:
 	int num_adj_pars() { return adj_par_names.size(); }
 	int num_nz_obs() { return nz_obs_names.size(); }
 
+	//report the infeasible info
+	void iter_infeasible_report();
+
 	//get the number of non zero elements in the prior information constraints
 	int num_nz_pi_constraint_elements();
 

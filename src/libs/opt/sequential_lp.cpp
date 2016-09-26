@@ -167,6 +167,12 @@ void sequentialLP::initial_report()
 			f_rec << endl << endl << "  ---  WARNING: no nonzero weight observations found." << endl;
 			f_rec << "              Prior constraint uncertainty will be used in chance constraint calculations" << endl;
 		}
+		else
+		{
+			f_rec << "  non-zero weight observations used for conditioning in FOSM calculations: " << endl;
+			for (auto &name : nz_obs_names)
+				f_rec << name << endl;
+		}
 	}
 
 	return;
@@ -177,7 +183,7 @@ void sequentialLP::presolve_fosm_report()
 	ofstream &f_rec = file_mgr->rec_ofstream();
 	vector<double> residuals = get_constraint_residual_vec();
 	f_rec << endl << "  FOSM-based chance constraint information at start of iteration " << slp_iter << endl;
-	f_rec << setw(20) << left << "name" << right << setw(10) << "sense" << setw(15) << "sim value";
+	f_rec << setw(20) << left << "name" << right << setw(10) << "sense" << setw(15) << "obs value" << setw(15) << "sim value";
 	f_rec << setw(15) << "prior stdev" << setw(15) << "post stdev" << setw(15) << "offset";
 	f_rec << setw(15) << "new sim value" << endl;
 	vector<string> out_of_bounds;
@@ -186,6 +192,7 @@ void sequentialLP::presolve_fosm_report()
 		string name = ctl_ord_obs_constraint_names[i];
 		f_rec << setw(20) << left << name;
 		f_rec << setw(10) << right << constraint_sense_name[name];
+		f_rec << setw(15) << constraints_obs[name];
 		f_rec << setw(15) << constraints_sim_initial.get_rec(name);
 		f_rec << setw(15) << prior_constraint_stdev[name];
 		f_rec << setw(15) << post_constraint_stdev[name];
@@ -783,6 +790,8 @@ void sequentialLP::initialize_and_check()
 	
 	jco.set_base_numeric_pars(all_pars_and_dec_vars);
 	jco.set_base_sim_obs(pest_scenario.get_ctl_observations());
+	if (pest_scenario.get_pestpp_options().get_opt_coin_log())
+		model.setLogLevel(4 + 8 + 16 + 32);
 	initial_report();
 	return;
 }
@@ -946,6 +955,33 @@ void sequentialLP::build_obj_func_coef_array()
 	return;
 }
 
+void sequentialLP::iter_infeasible_report()
+{
+	ofstream &f_rec = file_mgr->rec_ofstream();
+	int num_inf = model.numberPrimalInfeasibilities();
+
+	double * inf_ray = new double[num_dec_vars()];
+	inf_ray = model.infeasibilityRay(true);
+	//inf_ray = model.unboundedRay();
+
+	double sum_inf_primal = model.sumPrimalInfeasibilities();
+	double sum_inf_dual = model.sumDualInfeasibilities();
+	double inf_cost = model.infeasibilityCost();
+	f_rec << "----------------------------------" << endl;
+	f_rec << "  ---  infeasibility report  ---  " << endl;
+	f_rec << "----------------------------------" << endl;
+
+	f_rec << "-->number primary infeasible constraints: " << num_inf << endl;
+	f_rec << "-->sum of primal infeasibilites: " << sum_inf_primal << endl;
+	//ClpSimplex::Status stat = model.getRowStatus(0);
+	//f_rec << "-->infeasibility cost: " << inf_cost << endl;
+	if (model.rayExists())
+		for (int i=0;i<num_dec_vars();++i)
+			f_rec << inf_ray[i] << endl;
+	f_rec << endl << endl;
+	return;
+}
+
 void sequentialLP::iter_solve()
 {
 	
@@ -967,7 +1003,6 @@ void sequentialLP::iter_solve()
 	//if maximum ++opt_coin_loglev, then also write iteration specific mps files
 	if (pest_scenario.get_pestpp_options().get_opt_coin_log())
 	{
-		model.setLogLevel(4+8+16+32);
 		stringstream ss;
 		ss << slp_iter << ".mps";
 		string mps_name = file_mgr->build_filename(ss.str());
@@ -979,26 +1014,34 @@ void sequentialLP::iter_solve()
 	//solve the linear program
 	ClpPresolve presolve_info;
 	ClpSimplex* presolved_model = presolve_info.presolvedModel(model);
-	
+
 	//if presolvedModel is Null, then it is primal infeasible, so 
 	//try the dual
 	if (!presolved_model)
 	{
-		f_rec << "  ---  primal presolve model infeasible, trying dual..." << endl;
-		cout << "  ---  primal presolve model infeasible, trying dual..." << endl;
-		model.dual();
+		f_rec << "  ---  primal presolve model infeasible, crashing solution..." << endl;
+		cout << "  ---  primal presolve model infeasible, crashing solution..." << endl;
+		
+		model.moveTowardsPrimalFeasible();
+		model.dual(1);
+		model.checkSolution();
+		model.primal(1);
 	}
 	
 	//update the status arrays of both the presolve and original models
 	presolve_info.postsolve(true);
+	
+	//this seems to help with some test problems
+	model.dual(1);
+	//int all_slack_basis = model.crash(0.001,0);
 
 	//model.primal();
 	model.checkSolution();
 	if (!model.primalFeasible())
 	{
-		model.dual();
+		model.dual(1);
 		model.checkSolution();
-		model.primal();
+		model.primal(1);
 	}
 		
 	//check the solution
@@ -1009,43 +1052,47 @@ void sequentialLP::iter_solve()
 		cout << " iteration " << slp_iter << " linear solution is proven optimal" << endl << endl;
 	}
 
-	else if ((!model.primalFeasible()) && (!model.dualFeasible()))
+	//else if (!model.dualFeasible())
+	//{
+	//	f_rec << "  ---  warning: primal solution unbounded, terminating iterations ---  " << endl;
+	//	cout << "  ---  warning: primal solution unbounded, terminating iterations  ---  " << endl;
+	//	//iter_unbounded_report();
+	//	terminate = true;
+	//}
+	else if (!model.primalFeasible())
 	{
-		f_rec << "  ---  warning: primal and dual infeasible  ---  " << endl;
-		cout << "  ---  warning: primal and dual infeasible  ---  " << endl;
+		f_rec << "  ---  warning: primal solution infeasible, terminating iterations ---  " << endl;
+		cout << "  ---  warning: primal solution infeasible, terminating iterations  ---  " << endl;
+		iter_infeasible_report();
 		terminate = true;
-#ifndef _DEBUG
-		//TODO: report current constraints and dec vars before exiting...problably just set the termination controller...
-		throw_sequentialLP_error("linear program is primal and dual infeasible...cannot continue");
-#endif
 	}
 
 	//otherwise, try again...
-	else
-	{
-		if (model.primalFeasible())
-		{
-			f_rec << endl << "-->resolving primal in attempt to prove optimal..." << endl;
-			model.primal(1);
-		}
-		else if(model.dualFeasible())
-		{
-			f_rec << endl << "-->resolving dual in attempt to prove optimal..." << endl;
-			model.dual(1);
-		}
-		//check the solution
-		model.checkSolution();
-		if (model.isProvenOptimal())
-		{
-			f_rec << "  ---  iteration " << slp_iter << " linear solution is proven optimal  ---  " << endl << endl;
-			cout << "  ---  iteration " << slp_iter << " linear solution is proven optimal  ---  " << endl << endl;
-		}
-		else
-		{
-			f_rec << endl << "WARNING: iteration " << slp_iter << " linear solution is not proven optimal...continuing" << endl << endl;
-			cout << endl << "WARNING: iteration " << slp_iter << " linear solution is not proven optimal...continuing" << endl << endl;
-		}
-	}
+	//else
+	//{
+	//	if (model.primalFeasible())
+	//	{
+	//		f_rec << endl << "-->resolving primal in attempt to prove optimal..." << endl;
+	//		model.primal(1);
+	//	}
+	//	else if(model.dualFeasible())
+	//	{
+	//		f_rec << endl << "-->resolving dual in attempt to prove optimal..." << endl;
+	//		model.dual(1);
+	//	}
+	//	//check the solution
+	//	model.checkSolution();
+	//	if (model.isProvenOptimal())
+	//	{
+	//		f_rec << "  ---  iteration " << slp_iter << " linear solution is proven optimal  ---  " << endl << endl;
+	//		cout << "  ---  iteration " << slp_iter << " linear solution is proven optimal  ---  " << endl << endl;
+	//	}
+	//	else
+	//	{
+	//		f_rec << endl << "WARNING: iteration " << slp_iter << " linear solution is not proven optimal...continuing" << endl << endl;
+	//		cout << endl << "WARNING: iteration " << slp_iter << " linear solution is not proven optimal...continuing" << endl << endl;
+	//	}
+	//}
 	f_rec << endl << "  ---  linear program solution complete for iteration " << slp_iter << "  ---  " << endl;
 	cout << endl << "  ---  linear program solution complete for iteration " << slp_iter << "  ---  " << endl;
 
