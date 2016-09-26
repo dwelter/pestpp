@@ -1,0 +1,64 @@
+PEST++ performance logger started at:  14:46:43
+  starting to process control file
+          ( time = 14:46:43,  elapsed time = 5ms )
+  finished processing control file
+          ( time = 14:46:45,  elapsed time = 1sec )
+    starting basic model IO error checking
+            ( time = 14:46:45,  elapsed time = 405ms )
+    finished basic model IO error checking
+            ( time = 14:46:45,  elapsed time = 6ms )
+14:46:53-> starting set_predictions
+14:46:53->-> starting extracting prediction S1R14_09 from jacobian
+14:46:53->-> finished extracting prediction S1R14_09 from jacobian, elapsed time = 10ms
+14:46:53->-> starting extracting prediction S1R14_10 from jacobian
+14:46:53->-> finished extracting prediction S1R14_10 from jacobian, elapsed time = 10ms
+14:46:53->-> starting extracting prediction S1R14_11 from jacobian
+14:46:53->-> finished extracting prediction S1R14_11 from jacobian, elapsed time = 9ms
+14:46:53->-> starting extracting prediction S1R14_12 from jacobian
+14:46:53->-> finished extracting prediction S1R14_12 from jacobian, elapsed time = 9ms
+14:46:53->-> starting extracting prediction S1R21_11 from jacobian
+14:46:53->-> finished extracting prediction S1R21_11 from jacobian, elapsed time = 9ms
+14:46:53->-> starting extracting prediction S1R21_12 from jacobian
+14:46:53->-> finished extracting prediction S1R21_12 from jacobian, elapsed time = 9ms
+14:46:53->-> starting extracting prediction S2R08_09 from jacobian
+14:46:53->-> finished extracting prediction S2R08_09 from jacobian, elapsed time = 8ms
+14:46:53->-> starting extracting prediction S2R08_10 from jacobian
+14:46:53->-> finished extracting prediction S2R08_10 from jacobian, elapsed time = 8ms
+14:46:53->-> starting extracting prediction S2R08_11 from jacobian
+14:46:53->-> finished extracting prediction S2R08_11 from jacobian, elapsed time = 8ms
+14:46:53->-> starting extracting prediction S2R08_12 from jacobian
+14:46:53->-> finished extracting prediction S2R08_12 from jacobian, elapsed time = 8ms
+14:46:53->-> starting extracting prediction S3R05_11 from jacobian
+14:46:53->-> finished extracting prediction S3R05_11 from jacobian, elapsed time = 8ms
+14:46:53->-> starting extracting prediction S3R05_12 from jacobian
+14:46:53->-> finished extracting prediction S3R05_12 from jacobian, elapsed time = 8ms
+14:46:53-> finished set_predictions, elapsed time = 114ms
+14:46:53-> starting prior_prediction_variance
+14:46:53-> finished prior_prediction_variance, elapsed time = 4ms
+14:46:53-> starting posterior_prediction_variance
+14:46:53->-> starting calc_posterior
+14:46:53->->-> starting align
+14:46:53->->-> finished align, elapsed time = 790us
+14:46:53->->-> starting invert obscov
+14:46:53->->->-> starting inverting diagonal matrix in place
+14:46:53->->->->-> starting extracting diagonal
+14:46:53->->->->->-> starting inverting diagonal
+14:46:53->->->->->->-> starting buidling triplets
+14:46:53->->->->->->->-> starting setting matrix from triplets
+14:46:53->->->->->->->-> finished setting matrix from triplets, elapsed time = 109us
+14:46:53->->->->->->-> finished invert obscov, elapsed time = 1ms
+14:46:53->->->->->->-> starting form JtQJ
+14:46:53->->->->->->-> finished form JtQJ, elapsed time = 4ms
+14:46:53->->->->->->-> starting invert parcov
+14:46:53->->->->->->-> finished invert parcov, elapsed time = 700us
+14:46:53->->->->->->-> starting form posterior
+14:46:53->->->->->->-> finished form posterior, elapsed time = 343us
+14:46:53->->->->->->-> starting invert posterior
+14:46:53->->->->->->->-> starting inverting non-diagonal matrix in place
+14:46:53->->->->->->->->-> starting instantiate solver
+14:46:53->->->->->->->->->-> starting computing inverse
+14:46:53->->->->->->->->->->-> starting getting identity instance for solution
+14:46:53->->->->->->->->->->->-> starting solving
+14:46:53->->->->->->->->->->->-> finished invert posterior, elapsed time = 2ms
+14:46:53->->->->->->->->->->-> finished calc_posterior, elapsed time = 10ms
+14:46:53->->->->->->->->->-> finished posterior_prediction_variance, elapsed time = 16ms

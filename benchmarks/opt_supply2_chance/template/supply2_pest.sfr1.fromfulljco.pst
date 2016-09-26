@@ -2062,4 +2062,6 @@ pi_const24            1.0 * q1 + 1.0 * q2d + 1.0 * q4b + 1.0 * im12 = 0.0       
 ++opt_ext_var_groups(external)
 ++opt_direction(max)
 ++opt_constraint_groups(less_pi,greater_pi,less_obs)
+++base_jacobian(supply2_pest.full.jcb)
+
 

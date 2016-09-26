@@ -207,6 +207,8 @@ void sequentialLP::presolve_fosm_report()
 	f_rec << "        for the uncertainty in the constraint value arsing from uncertainty in the " << endl;
 	f_rec << "        adjustable parameters identified in the control file." << endl << endl;
 
+
+	//this should have been caught in calc_chance_constraints_offsets, but its a good check here too
 	if (out_of_bounds.size() > 0)
 	{
 		f_rec << "the following fosm constraints are not feasible:" << endl;
@@ -214,7 +216,6 @@ void sequentialLP::presolve_fosm_report()
 			f_rec << name << endl;
 		throw_sequentialLP_error("fosm-based constraints are infeasible");
 	}
-
 
 	return;
 }
@@ -768,11 +769,21 @@ void sequentialLP::initialize_and_check()
 
 		if (parcov_filename.size() > 0)
 		{
-			throw_sequentialLP_error("parcov from filename not implemented");
+			//throw_sequentialLP_error("parcov from filename not implemented");
 			Covariance temp_parcov;
 			temp_parcov.from_ascii(parcov_filename);
-			//check that all adj par names in temp_parcov and
-			//check if we need to get a new shorter and reordered parcov
+			//check that all adj par names in temp_parcov
+			vector<string> temp_names = temp_parcov.get_col_names();
+			start = temp_names.begin();
+			end = temp_names.end();
+			vector<string> missing;
+			for (auto &name : adj_par_names)
+				if (find(start, end, name) == end)
+					missing.push_back(name);
+			if (missing.size() > 0)
+				throw_sequentialLP_error("the following adjustable parameters were not found in the ++parcov_filename covaraince matrix: ", missing);
+
+			parcov = temp_parcov.get(adj_par_names);
 
 		}
 		//from parameter bounds
