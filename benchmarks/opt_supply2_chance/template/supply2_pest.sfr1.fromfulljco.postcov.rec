@@ -2379,3 +2379,90 @@ PI_CONST24             greater_than              0              0              0
 
 
   ---  calculating response matrix for iteration 2  ---  
+
+saving iteration 2 reponse matrix to file: supply2_pest.sfr1.fromfulljco.postcov.2.jcb
+
+  FOSM-based chance constraint information at start of iteration 2
+name                     sense       required      sim value    prior stdev     post stdev         offset  new sim value
+S1R14_09             less_than          15000              0        2.77308        2.77308        3.54609        3.54609
+S1R14_10             less_than          15000              0        2496.75        2496.75        3192.73        3192.73
+S1R14_11             less_than          15000              0        2496.75        2496.75        3192.73        3192.73
+S1R14_12             less_than          15000              0        2103.06        2103.06        2689.29        2689.29
+S1R21_11             less_than          20000              0         6.0531         6.0531        7.74042        7.74042
+S1R21_12             less_than          20000              0        2496.76        2496.76        3192.73        3192.73
+S2R08_09             less_than          15000              0        6.54904        6.54904        8.37461        8.37461
+S2R08_10             less_than          15000              0        5.97495        5.97495        7.64048        7.64048
+S2R08_11             less_than          15000              0        6.54904        6.54904        8.37461        8.37461
+S2R08_12             less_than          15000              0        6.77864        6.77864        8.66821        8.66821
+S3R05_11             less_than          30000              0        2.44949        2.44949        3.13229        3.13229
+S3R05_12             less_than          30000              0        2.44949        2.44949        3.13229        3.13229
+  note: 'offset' is the value added to the simulated constraint value to account
+        for the uncertainty in the constraint value arsing from uncertainty in the 
+        adjustable parameters identified in the control file.
+
+
+  observation constraint information at start of iteration 2
+name                          sense       required      sim value       residual    lower bound    upper bound
+S1R14_09                  less_than          15000        3.54609        14996.5  -1.79769e+308        14996.5
+S1R14_10                  less_than          15000        3192.73        11807.3  -1.79769e+308        11807.3
+S1R14_11                  less_than          15000        3192.73        11807.3  -1.79769e+308        11807.3
+S1R14_12                  less_than          15000        2689.29        12310.7  -1.79769e+308        12310.7
+S1R21_11                  less_than          20000        7.74042        19992.3  -1.79769e+308        19992.3
+S1R21_12                  less_than          20000        3192.73        16807.3  -1.79769e+308        16807.3
+S2R08_09                  less_than          15000        8.37461        14991.6  -1.79769e+308        14991.6
+S2R08_10                  less_than          15000        7.64048        14992.4  -1.79769e+308        14992.4
+S2R08_11                  less_than          15000        8.37461        14991.6  -1.79769e+308        14991.6
+S2R08_12                  less_than          15000        8.66821        14991.3  -1.79769e+308        14991.3
+S3R05_11                  less_than          30000        3.13229        29996.9  -1.79769e+308        29996.9
+S3R05_12                  less_than          30000        3.13229        29996.9  -1.79769e+308        29996.9
+
+  prior information constraint information at start of iteration 2
+name                          sense       required      sim value       residual    lower bound    upper bound
+PI_CONST1                 less_than          80000          45379         -34621  -1.79769e+308          80000
+PI_CONST2              greater_than              0          45379          45379             -0   1.79769e+308
+PI_CONST3                 less_than          80000          80000              0  -1.79769e+308          80000
+PI_CONST4              greater_than              0          80000          80000             -0   1.79769e+308
+PI_CONST5                 less_than          80000        25660.7       -54339.3  -1.79769e+308          80000
+PI_CONST6              greater_than              0        25660.7        25660.7             -0   1.79769e+308
+PI_CONST7                 less_than          80000        38387.7       -41612.3  -1.79769e+308          80000
+PI_CONST8              greater_than              0        38387.7        38387.7             -0   1.79769e+308
+PI_CONST9                 less_than          80000          45379         -34621  -1.79769e+308          80000
+PI_CONST10             greater_than              0          45379          45379             -0   1.79769e+308
+PI_CONST11                less_than          80000          80000              0  -1.79769e+308          80000
+PI_CONST12             greater_than              0          80000          80000             -0   1.79769e+308
+PI_CONST13                less_than          80000        25660.7       -54339.3  -1.79769e+308          80000
+PI_CONST14             greater_than              0        25660.7        25660.7             -0   1.79769e+308
+PI_CONST15                less_than          80000        38387.7       -41612.3  -1.79769e+308          80000
+PI_CONST16             greater_than              0        38387.7        38387.7             -0   1.79769e+308
+PI_CONST17                less_than          80000          45379         -34621  -1.79769e+308          80000
+PI_CONST18             greater_than              0          45379          45379             -0   1.79769e+308
+PI_CONST19                less_than          80000          80000              0  -1.79769e+308          80000
+PI_CONST20             greater_than              0          80000          80000             -0   1.79769e+308
+PI_CONST21                less_than          80000        25660.7       -54339.3  -1.79769e+308          80000
+PI_CONST22             greater_than              0        25660.7        25660.7             -0   1.79769e+308
+PI_CONST23                less_than          80000        38387.7       -41612.3  -1.79769e+308          80000
+PI_CONST24             greater_than              0        38387.7        38387.7             -0   1.79769e+308
+number of nonzero elements in response matrix: 46 of 132
+  ---  solving linear program for iteration 2  ---  
+ iteration 2 linear solution is proven optimal
+
+
+  ---  linear program solution complete for iteration 2  ---  
+  ---  processing results for iteration 2 LP solution  ---  
+
+
+
+     decision variable information at end of SLP iteration 2
+
+name                        current            new   objfunc coef    cur contrib    new contrib   reduced cost
+IM10                             -0             -0        -0.1092              0              0      -0.370317
+IM11                             -0             -0       -0.01092              0              0       -0.01092
+IM12                             -0             -0        -0.1092              0              0        -0.1092
+IM9                              -0             -0        -0.1104              0              0        -0.1104
+Q1                               -0        3501.51          1.095             -0        3834.15             -0
+Q2A                           45379          50000          0.276        12524.6          13800       0.184097
+Q2B                         31230.3        27370.4          0.273        8525.88        7472.11             -0
+Q2C                         25660.7        26979.7          0.273        7005.37        7365.45             -0
+Q2D                         30981.4        21424.4          0.273        8457.91        5848.85             -0
+Q4A                         48769.7        49128.1          0.273        13314.1          13412             -0
+Q4B                         7406.36        12841.5          0.273        2021.94        3505.74             -0

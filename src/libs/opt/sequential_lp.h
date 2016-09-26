@@ -18,7 +18,7 @@ class sequentialLP
 	enum ConstraintSense {less_than,greater_than,equal_to,undefined};
 public:
 	sequentialLP(Pest &_pest_scenario, RunManagerAbstract* _run_mgr_ptr, 
-		         Covariance &_parcov, FileManager* _file_mgr);
+		         Covariance &_parcov, FileManager* _file_mgr_ptr, OutputFileWriter of_wr);
 	void initialize_and_check();
 	void solve();
 
@@ -42,6 +42,7 @@ private:
 	CoinMessageHandler coin_hr;
 	FILE* coin_log_ptr;
 	Jacobian_1to1 jco;
+	OutputFileWriter of_wr;
 
 	map<string, double> obj_func_coef_map;
 	map<string, ConstraintSense> constraint_sense_map;
@@ -76,7 +77,7 @@ private:
 	RunManagerAbstract* run_mgr_ptr;
 	Covariance parcov;
 	Covariance obscov;
-	FileManager* file_mgr;
+	FileManager* file_mgr_ptr;
 	//OutputFileWriter* out_wtr_ptr;
 		
 	int num_dec_vars() { return ctl_ord_dec_var_names.size(); }

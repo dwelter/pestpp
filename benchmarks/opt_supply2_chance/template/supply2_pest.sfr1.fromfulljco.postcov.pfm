@@ -1,39 +1,69 @@
-PEST++ performance logger started at:  15:07:34
+PEST++ performance logger started at:  15:56:07
   starting to process control file
-          ( time = 15:07:34,  elapsed time = 6ms )
+          ( time = 15:56:07,  elapsed time = 6ms )
   finished processing control file
-          ( time = 15:07:36,  elapsed time = 1sec )
+          ( time = 15:56:09,  elapsed time = 1sec )
     starting basic model IO error checking
-            ( time = 15:07:36,  elapsed time = 408ms )
+            ( time = 15:56:09,  elapsed time = 408ms )
     finished basic model IO error checking
-            ( time = 15:07:36,  elapsed time = 5ms )
-15:07:51-> starting load_parcov from SUPPLY2_PEST.FOSM.POST.COV
-15:07:51-> finished load_parcov from SUPPLY2_PEST.FOSM.POST.COV, elapsed time = 3ms
-15:07:51-> starting set_predictions
-15:07:51->-> starting extracting prediction S1R14_09 from jacobian
-15:07:51->-> finished extracting prediction S1R14_09 from jacobian, elapsed time = 3ms
-15:07:51->-> starting extracting prediction S1R14_10 from jacobian
-15:07:51->-> finished extracting prediction S1R14_10 from jacobian, elapsed time = 3ms
-15:07:51->-> starting extracting prediction S1R14_11 from jacobian
-15:07:51->-> finished extracting prediction S1R14_11 from jacobian, elapsed time = 3ms
-15:07:51->-> starting extracting prediction S1R14_12 from jacobian
-15:07:51->-> finished extracting prediction S1R14_12 from jacobian, elapsed time = 3ms
-15:07:51->-> starting extracting prediction S1R21_11 from jacobian
-15:07:51->-> finished extracting prediction S1R21_11 from jacobian, elapsed time = 2ms
-15:07:51->-> starting extracting prediction S1R21_12 from jacobian
-15:07:51->-> finished extracting prediction S1R21_12 from jacobian, elapsed time = 2ms
-15:07:51->-> starting extracting prediction S2R08_09 from jacobian
-15:07:51->-> finished extracting prediction S2R08_09 from jacobian, elapsed time = 2ms
-15:07:51->-> starting extracting prediction S2R08_10 from jacobian
-15:07:51->-> finished extracting prediction S2R08_10 from jacobian, elapsed time = 2ms
-15:07:51->-> starting extracting prediction S2R08_11 from jacobian
-15:07:51->-> finished extracting prediction S2R08_11 from jacobian, elapsed time = 2ms
-15:07:51->-> starting extracting prediction S2R08_12 from jacobian
-15:07:51->-> finished extracting prediction S2R08_12 from jacobian, elapsed time = 1ms
-15:07:51->-> starting extracting prediction S3R05_11 from jacobian
-15:07:51->-> finished extracting prediction S3R05_11 from jacobian, elapsed time = 1ms
-15:07:51->-> starting extracting prediction S3R05_12 from jacobian
-15:07:51->-> finished extracting prediction S3R05_12 from jacobian, elapsed time = 944us
-15:07:51-> finished set_predictions, elapsed time = 35ms
-15:07:51-> starting prior_prediction_variance
-15:07:51-> finished prior_prediction_variance, elapsed time = 5ms
+            ( time = 15:56:09,  elapsed time = 5ms )
+15:56:16-> starting load_parcov from SUPPLY2_PEST.FOSM.POST.COV
+15:56:16-> finished load_parcov from SUPPLY2_PEST.FOSM.POST.COV, elapsed time = 3ms
+15:56:16-> starting set_predictions
+15:56:16->-> starting extracting prediction S1R14_09 from jacobian
+15:56:16->-> finished extracting prediction S1R14_09 from jacobian, elapsed time = 3ms
+15:56:16->-> starting extracting prediction S1R14_10 from jacobian
+15:56:16->-> finished extracting prediction S1R14_10 from jacobian, elapsed time = 3ms
+15:56:16->-> starting extracting prediction S1R14_11 from jacobian
+15:56:16->-> finished extracting prediction S1R14_11 from jacobian, elapsed time = 3ms
+15:56:16->-> starting extracting prediction S1R14_12 from jacobian
+15:56:16->-> finished extracting prediction S1R14_12 from jacobian, elapsed time = 3ms
+15:56:16->-> starting extracting prediction S1R21_11 from jacobian
+15:56:16->-> finished extracting prediction S1R21_11 from jacobian, elapsed time = 2ms
+15:56:16->-> starting extracting prediction S1R21_12 from jacobian
+15:56:16->-> finished extracting prediction S1R21_12 from jacobian, elapsed time = 2ms
+15:56:16->-> starting extracting prediction S2R08_09 from jacobian
+15:56:16->-> finished extracting prediction S2R08_09 from jacobian, elapsed time = 2ms
+15:56:16->-> starting extracting prediction S2R08_10 from jacobian
+15:56:16->-> finished extracting prediction S2R08_10 from jacobian, elapsed time = 2ms
+15:56:16->-> starting extracting prediction S2R08_11 from jacobian
+15:56:16->-> finished extracting prediction S2R08_11 from jacobian, elapsed time = 2ms
+15:56:16->-> starting extracting prediction S2R08_12 from jacobian
+15:56:16->-> finished extracting prediction S2R08_12 from jacobian, elapsed time = 1ms
+15:56:16->-> starting extracting prediction S3R05_11 from jacobian
+15:56:16->-> finished extracting prediction S3R05_11 from jacobian, elapsed time = 1ms
+15:56:16->-> starting extracting prediction S3R05_12 from jacobian
+15:56:16->-> finished extracting prediction S3R05_12 from jacobian, elapsed time = 943us
+15:56:16-> finished set_predictions, elapsed time = 35ms
+15:56:16-> starting prior_prediction_variance
+15:56:16-> finished prior_prediction_variance, elapsed time = 5ms
+15:58:51-> starting load_parcov from SUPPLY2_PEST.FOSM.POST.COV
+15:58:51-> finished load_parcov from SUPPLY2_PEST.FOSM.POST.COV, elapsed time = 3ms
+15:58:51-> starting set_predictions
+15:58:51->-> starting extracting prediction S1R14_09 from jacobian
+15:58:51->-> finished extracting prediction S1R14_09 from jacobian, elapsed time = 3ms
+15:58:51->-> starting extracting prediction S1R14_10 from jacobian
+15:58:51->-> finished extracting prediction S1R14_10 from jacobian, elapsed time = 3ms
+15:58:51->-> starting extracting prediction S1R14_11 from jacobian
+15:58:51->-> finished extracting prediction S1R14_11 from jacobian, elapsed time = 3ms
+15:58:51->-> starting extracting prediction S1R14_12 from jacobian
+15:58:51->-> finished extracting prediction S1R14_12 from jacobian, elapsed time = 3ms
+15:58:51->-> starting extracting prediction S1R21_11 from jacobian
+15:58:51->-> finished extracting prediction S1R21_11 from jacobian, elapsed time = 2ms
+15:58:51->-> starting extracting prediction S1R21_12 from jacobian
+15:58:51->-> finished extracting prediction S1R21_12 from jacobian, elapsed time = 2ms
+15:58:51->-> starting extracting prediction S2R08_09 from jacobian
+15:58:51->-> finished extracting prediction S2R08_09 from jacobian, elapsed time = 2ms
+15:58:51->-> starting extracting prediction S2R08_10 from jacobian
+15:58:51->-> finished extracting prediction S2R08_10 from jacobian, elapsed time = 2ms
+15:58:51->-> starting extracting prediction S2R08_11 from jacobian
+15:58:51->-> finished extracting prediction S2R08_11 from jacobian, elapsed time = 2ms
+15:58:51->-> starting extracting prediction S2R08_12 from jacobian
+15:58:51->-> finished extracting prediction S2R08_12 from jacobian, elapsed time = 1ms
+15:58:51->-> starting extracting prediction S3R05_11 from jacobian
+15:58:51->-> finished extracting prediction S3R05_11 from jacobian, elapsed time = 1ms
+15:58:51->-> starting extracting prediction S3R05_12 from jacobian
+15:58:51->-> finished extracting prediction S3R05_12 from jacobian, elapsed time = 918us
+15:58:51-> finished set_predictions, elapsed time = 35ms
+15:58:51-> starting prior_prediction_variance
+15:58:51-> finished prior_prediction_variance, elapsed time = 5ms

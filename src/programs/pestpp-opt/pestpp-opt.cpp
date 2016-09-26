@@ -452,7 +452,7 @@ int main(int argc, char* argv[])
 		{
 			fout_rec << "   -----    Starting Optimization Iterations    ----    " << endl << endl;
 		}
-		sequentialLP slp(pest_scenario, run_manager_ptr,parcov, &file_manager);
+		sequentialLP slp(pest_scenario, run_manager_ptr,parcov, &file_manager, output_file_writer);
 		slp.solve();
 		fout_rec << "Number of forward model runs performed during optimiztion: " << run_manager_ptr->get_total_runs() << endl;
 

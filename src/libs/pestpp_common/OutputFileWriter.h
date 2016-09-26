@@ -51,6 +51,8 @@ public:
 	void write_svd(Eigen::VectorXd &Sigma, Eigen::SparseMatrix<double> &Vt, double lambda, const Parameters &freeze_numeric_pars, Eigen::VectorXd &Sigma_trunc);
 	void write_svd_iteration(int iteration_no);
 
+	void write_opt_constraint_rei(std::ofstream &fout, int iter_no, const Parameters pars, const Observations &obs, const Observations &sim, PriorInformation* pi_ptr);
+
 	void scenario_pargroup_report(std::ostream &os);
 	void scenario_io_report(std::ostream &os);
 	void scenario_par_report(std::ostream &os);
@@ -62,7 +64,7 @@ public:
 	void par_report(std::ostream &os, int const iter, Parameters const &new_pars, Parameters const &old_pars, string par_type);
 	void iteration_report(std::ostream &os, int iter, int nruns, string iteration_type, string svd_type=string(""), string mat_inv=string(""));
 	void scenario_report(std::ostream &os);
-	void obs_report(std::ostream &os, const Observations &obs, const Observations &sim, const ObjectiveFunc &obj_func);
+	void obs_report(std::ostream &os, const Observations &obs, const Observations &sim);
 	
 	void param_change_stats(double p_old, double p_new, bool &have_fac, double &fac_change, bool &have_rel, double &rel_change);
 	void write_par_iter(int iter, Parameters const &ctl_pars);

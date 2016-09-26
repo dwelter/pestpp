@@ -1,0 +1,63 @@
+Coin0513I 23 rows dropped after presolve pass 1
+Coin0513I 23 rows dropped after presolve pass 2
+Coin0506I Presolve 13 (-23) rows, 7 (-4) columns and 47 (-68) elements
+Coin0505I Presolved problem not optimal, resolve after postsolve
+Coin0511I After Postsolve, objective 0, infeasibilities - dual 2.7359993 (7), primal 0 (0)
+Clp1001I Initial range of elements is 0.002 to 1
+Clp1002I Range of elements is 0.051298918 to 19.493589
+Clp1002I Range of elements is 0.078816004 to 12.687779
+Clp1003I Final range of elements is 0.083815917 to 11.930908
+Clp0022I Absolute values of scaled rhs range from 72201.15 to 2249675.9, minimum gap 1e+100
+Clp0020I Absolute values of scaled objective range from 0.09071949 to 1.4594474
+Clp0021I Absolute values of scaled bounds range from 14837.582 to 120371.05, minimum gap 14837.582
+Clp0060I Primal error 0, dual error 0
+Clp0060I Primal error 0, dual error 0
+Clp0006I 0  Obj -0 Dual inf 3.3867037 (7)
+Clp0060I Primal error 0, dual error 0
+Clp0060I Primal error 0, dual error 0
+Clp0006I 0  Obj -0 Dual inf 3.3867037 (7)
+Clp0101I dirOut -1, dirIn 1, theta 13904.078, out 0, dj -0.93007066, alpha -11.930908
+Clp0102I 1 12931.775 In: C5 Out: R0 dj -0.93007066 distance 13904.078
+Clp0101I dirOut -1, dirIn 1, theta 13374.56, out 0, dj -0.68036722, alpha -11.621028
+Clp0102I 2 22031.387 In: C10 Out: R11 dj -0.68036722 distance 13374.56
+Clp0101I dirOut -1, dirIn 1, theta 28366.028, out -0.48120942, dj -0.48120942, alpha 0
+Clp0102I 3 35681.387 In: C9 Out: C9 dj -0.48120942 distance 28366.028
+Clp0101I dirOut -1, dirIn 1, theta 7206.4217, out 0, dj -0.41560586, alpha -0.6308792
+Clp0102I 4 38676.418 In: C6 Out: R7 dj -0.41560586 distance 7206.4217
+Clp0101I dirOut -1, dirIn -1, theta -704.06419, out 0, dj 7.3785445, alpha 30.506195
+Clp0102I 5 43871.387 In: C9 Out: R30 dj 7.3785445 distance -704.06419
+Clp0101I dirOut -1, dirIn 1, theta 43402.82, out 0, dj -0.15419869, alpha -11.930908
+Clp0102I 6 50564.045 In: C7 Out: R4 dj -0.15419869 distance 43402.82
+Clp0101I dirOut -1, dirIn 1, theta 44033.691, out 0, dj -0.029199382, alpha -11.559103
+Clp0102I 7 51849.802 In: C8 Out: R5 dj -0.029199382 distance 44033.691
+Clp0060I Primal error 2.910383e-11, dual error 1.110223e-16
+Clp0006I 7  Obj 51849.802
+Clp0017I Looking optimal with tolerance of 1e-07
+Clp0060I Primal error 2.910383e-11, dual error 1.110223e-16
+Clp0000I Optimal - objective value 51849.802
+Clp0022I Absolute values of scaled rhs range from 72201.15 to 2249675.9, minimum gap 1e+100
+Clp0020I Absolute values of scaled objective range from 0.09071949 to 1.4594474
+Clp0021I Absolute values of scaled bounds range from 14837.582 to 120371.05, minimum gap 14837.582
+Clp0022I Absolute values of scaled rhs range from 72201.15 to 2249675.9, minimum gap 1e+100
+Clp0020I Absolute values of scaled objective range from 0.09071949 to 1.4594474
+Clp0021I Absolute values of scaled bounds range from 14837.582 to 120371.05, minimum gap 14837.582
+Coin0513I 23 rows dropped after presolve pass 1
+Coin0513I 23 rows dropped after presolve pass 2
+Coin0506I Presolve 13 (-23) rows, 7 (-4) columns and 45 (-69) elements
+Coin0505I Presolved problem not optimal, resolve after postsolve
+Coin0511I After Postsolve, objective 0, infeasibilities - dual 2.7359993 (7), primal 0 (0)
+Clp1001I Initial range of elements is 0.002 to 1
+Clp1002I Range of elements is 0.058925565 to 16.970563
+Clp1002I Range of elements is 0.089087081 to 11.224972
+Clp1003I Final range of elements is 0.089087081 to 11.224972
+Clp0022I Absolute values of scaled rhs range from 85833.845 to 2516431.1, minimum gap 1e+100
+Clp0020I Absolute values of scaled objective range from 0.10859952 to 1.1424556
+Clp0021I Absolute values of scaled bounds range from 20486.463 to 100552.93, minimum gap 20486.463
+Clp0060I Primal error 0, dual error 0
+Clp0060I Primal error 0, dual error 0
+Clp0006I 0  Obj -0 Dual inf 3.685412 (7)
+Clp0060I Primal error 0, dual error 0
+Clp0060I Primal error 0, dual error 0
+Clp0006I 0  Obj -0 Dual inf 3.685412 (7)
+Clp0101I dirOut -1, dirIn 1, theta 20486.463, out -0.66629364, dj -0.66629364, alpha 0
+Clp0102I 1 13650 In: C9 Out: C9 dj -
