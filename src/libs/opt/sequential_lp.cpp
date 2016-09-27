@@ -95,7 +95,7 @@ void sequentialLP::initial_report()
 	if (use_chance)
 	{
 		f_rec << "-->using FOSM-based chance constraints - good choice!" << endl;
-		f_rec << "-->++opt_risk: " << risk << endl;
+		f_rec << "-->++opt_risk and corresponding probit function value: " << setw(10) << risk <<'  , ' << setw(10) << probit_val << endl;
 		f_rec << "-->number of adjustable parameters for FOSM calcs: " << num_adj_pars() << endl;
 		f_rec << "-->number of non-zero weight observations for FOSM calcs: " << num_nz_obs() << endl;
 		f_rec << "-->repeat FOSM calcs every: " << pest_scenario.get_pestpp_options().get_opt_recalc_fosm_every() << " iterations" << endl << endl;
@@ -156,24 +156,36 @@ void sequentialLP::initial_report()
 	{
 		f_rec << endl << endl << "  ---  chance constraint FOSM information  ---  " << endl;
 		f_rec << "   adjustable parameters used in FOSM calculations:" << endl;
+		int i = 1;
 		for (auto &name : adj_par_names)
 		{
-			f_rec << setw(15) << name << endl;
+			f_rec << setw(15) << name;
+			if (i % 6 == 0)
+				f_rec << endl;
+			i++;
 
 		}
+		f_rec << endl;
 		if (num_nz_obs() == 0)
 		{
-			f_rec << endl << endl << "  ---  WARNING: no nonzero weight observations found." << endl;
-			f_rec << "              Prior constraint uncertainty will be used in chance constraint calculations" << endl;
+			f_rec << endl << endl << "  ---  Note: No nonzero weight observations found." << endl;
+			f_rec << "           Prior constraint uncertainty will be used in chance constraint calculations" << endl;
 		}
 		else
 		{
 			f_rec << "  non-zero weight observations used for conditioning in FOSM calculations: " << endl;
+			int i = 0;
 			for (auto &name : nz_obs_names)
-				f_rec << name << endl;
+			{
+				f_rec << name;
+				if (i % 6 == 0)
+					f_rec << endl;
+				i++;
+			}
+			f_rec << endl;
+				
 		}
 	}
-
 	return;
 }
 
@@ -197,24 +209,10 @@ void sequentialLP::presolve_fosm_report()
 		f_rec << setw(15) << post_constraint_stdev[name];
 		f_rec << setw(15) << post_constraint_offset[name];
 		f_rec << setw(15) << constraints_fosm[name] << endl;
-		if ((constraint_sense_map[name] == ConstraintSense::less_than) && (constraints_obs[name] < constraints_fosm[name]))
-			out_of_bounds.push_back(name);
-		if ((constraint_sense_map[name] == ConstraintSense::greater_than) && (constraints_obs[name] > constraints_fosm[name]))
-			out_of_bounds.push_back(name);
 	}
 	f_rec << "  note: 'offset' is the value added to the simulated constraint value to account" << endl;
 	f_rec << "        for the uncertainty in the constraint value arsing from uncertainty in the " << endl;
 	f_rec << "        adjustable parameters identified in the control file." << endl << endl;
-
-
-	//this should have been caught in calc_chance_constraints_offsets, but its a good check here too
-	if (out_of_bounds.size() > 0)
-	{
-		f_rec << "the following fosm constraints are not feasible:" << endl;
-		for (auto &name : out_of_bounds)
-			f_rec << name << endl;
-		throw_sequentialLP_error("fosm-based constraints are infeasible");
-	}
 
 	return;
 }
@@ -242,6 +240,8 @@ void sequentialLP::presolve_constraint_report()
 		f_rec << setw(15) << constraint_ub[i] << endl;
 
 	}
+
+	if (num_pi_constraints() == 0) return;
 
 	//report prior information constraints
 	f_rec << endl << "  prior information constraint information at start of iteration " << slp_iter << endl;
@@ -440,6 +440,24 @@ pair<sequentialLP::ConstraintSense,string> sequentialLP::get_sense_from_group_na
 		return pair<ConstraintSense,string>(ConstraintSense::equal_to,"equal_to");
 	else
 		return pair<ConstraintSense,string>(ConstraintSense::undefined,"undefined");
+}
+
+double sequentialLP::get_probit()
+{
+
+	double probit = 0.0;
+	vector<double>::iterator start = probit_inputs.begin();
+	vector<double>::iterator end = probit_inputs.end();
+
+	//find the nearest values in the probit_input vector
+	auto const it = std::lower_bound(start, end, risk);
+	int idx = find(start, end, *it) - start;
+	if (idx >= probit_inputs.size())
+		throw_sequentialLP_error("error looking up probit function value");
+	double output = probit_outputs[idx];
+	return output;
+
+
 }
 
 void sequentialLP::initialize_and_check()
@@ -747,6 +765,8 @@ void sequentialLP::initialize_and_check()
 			risk = 0.001;
 		}
 
+	    probit_val = get_probit();
+
 
 		//make sure there is at least one none-decision var adjustable parameter		
 		vector<string>::iterator start = ctl_ord_dec_var_names.begin();
@@ -823,14 +843,16 @@ void sequentialLP::initialize_and_check()
 
 void sequentialLP::calc_chance_constraint_offsets()
 {
-
+	ofstream & f_rec = file_mgr_ptr->rec_ofstream();
 	if ((slp_iter != 1) && ((slp_iter+1) % pest_scenario.get_pestpp_options().get_opt_recalc_fosm_every() != 0))
 	{
-		ofstream & f_rec = file_mgr_ptr->rec_ofstream();
+		
 		f_rec << endl << "  ---  reusing fosm offsets from previous iteration  ---  " << endl;
+		cout << endl << "  ---  reusing fosm offsets from previous iteration  ---  " << endl;
 		return;
 	}
 	cout << "  ---  calculating FOSM-based chance constraint components  ---  " << endl;
+	f_rec << "  ---  calculating FOSM-based chance constraint components  ---  " << endl;
 	prior_constraint_offset.clear();
 	prior_constraint_stdev.clear();
 	post_constraint_offset.clear();
@@ -868,23 +890,18 @@ void sequentialLP::calc_chance_constraint_offsets()
 	
 	//work out the offset for each constraint
 	//and set the values in the constraints_fosm Obseravtions
-	
-	//approx the probit function with the logit function - minimal difference
-	//the logit function approx tells us the value of the standard normal CDF
-	//at a given probability level (e.g. risk level)
-	double logit_approx = log10((risk) / (1.0 - risk));
 	double new_constraint_val, old_constraint_val, required_val;
 	double pr_offset, pt_offset;
 	//constraints_fosm.clear();
 	Observations iter_fosm;
 
-	map<string,double> out_of_bounds;
+	//map<string,double> out_of_bounds;
 	for (auto &name : ctl_ord_obs_constraint_names)
 	{
 		prior_constraint_stdev[name] = sqrt(prior_const_var[name]);
 		post_constraint_stdev[name] = sqrt(post_const_var[name]);
-		pr_offset = logit_approx * prior_constraint_stdev[name];
-		pt_offset = logit_approx * post_constraint_stdev[name];
+		pr_offset = probit_val * prior_constraint_stdev[name];
+		pt_offset = probit_val * post_constraint_stdev[name];
 		//important: using the initial simulated constraint values 
 		//old_constraint_val = constraints_sim[name];
 		old_constraint_val = constraints_sim_initial[name];
@@ -895,8 +912,9 @@ void sequentialLP::calc_chance_constraint_offsets()
 		if (constraint_sense_map[name] == ConstraintSense::less_than)
 		{
 			new_constraint_val = old_constraint_val + pt_offset;
-			if (new_constraint_val > required_val)
-				out_of_bounds[name] = abs(new_constraint_val - required_val);
+			//if the old val was in bounds and fosm is out
+			/*if ((old_constraint_val <= required_val) && (new_constraint_val > required_val))
+				out_of_bounds[name] = abs(new_constraint_val - required_val);*/
 			post_constraint_offset[name] = pt_offset;
 			prior_constraint_offset[name] = pr_offset;
 		}
@@ -905,8 +923,9 @@ void sequentialLP::calc_chance_constraint_offsets()
 		else if (constraint_sense_map[name] == ConstraintSense::greater_than)
 		{
 			new_constraint_val = old_constraint_val - pt_offset;
-			if (new_constraint_val < required_val)
-				out_of_bounds[name] = abs(new_constraint_val - required_val);
+			//if the old val was inbounds and fosm is out
+			/*if ((old_constraint_val >= required_val) && (new_constraint_val < required_val))
+				out_of_bounds[name] = abs(new_constraint_val - required_val);*/
 			post_constraint_offset[name] = -pt_offset;
 			prior_constraint_offset[name] = -pr_offset;
 		}
@@ -916,31 +935,10 @@ void sequentialLP::calc_chance_constraint_offsets()
 		iter_fosm.insert(name, new_constraint_val);
 	}
 
-	//if one ore more fosm constraints has resulted in an infeasble problem
-	if (out_of_bounds.size() > 0)
-	{
-		ofstream &f_rec = file_mgr_ptr->rec_ofstream();
-		f_rec << "  ---  warning the following FOSM-based constraints have become infeasible:" << endl;
-		f_rec << setw(15) << "name" << setw(15) << "distance" << endl;
-		for (auto &con : out_of_bounds)
-			f_rec << setw(15) << con.first << setw(15) << con.second << endl;
-		//if this is the first iteration, theres not much we can do
-		if (slp_iter == 1)
-			throw_sequentialLP_error("constraints infeasible because of FOSM-based uncertainty");
-		else
-		{
-			f_rec << endl << "  ---  reusing previously-valid FOSM-based constraints  ---  " << endl;
-			cout << endl << "  ---  warning: one or more FOSM-based constraints have become infeasible  ---  " << endl;
-			cout << "  ---  reusing previously-valid FOSM-based constraints  ---  " << endl << endl;
-		}
-	}
-	//if all fosm constraints are feasible, then undate
-	else
-	{
-		vector<string> names = iter_fosm.get_keys();
-		constraints_fosm.update_without_clear(names, iter_fosm.get_data_vec(names));
-	}
+	vector<string> names = iter_fosm.get_keys();
+	constraints_fosm.update_without_clear(names, iter_fosm.get_data_vec(names));
 	cout << "  ---   done with FOSM-based chance constraint calculations  ---  " << endl << endl;
+	f_rec << "  ---   done with FOSM-based chance constraint calculations  ---  " << endl << endl;
 	return;
 }
 
@@ -1305,7 +1303,7 @@ void sequentialLP::iter_postsolve()
 	if (slp_iter == 1)
 	{
 		iter_obj_values.push_back(cur_new_obj.first);
-		obj_best = cur_new_obj.first;
+		obj_best = cur_new_obj.second;
 	}
 	iter_obj_values.push_back(cur_new_obj.second);
 	double obj_func_change = abs(cur_new_obj.first - cur_new_obj.second) / abs(max(max(cur_new_obj.first,cur_new_obj.second),1.0));

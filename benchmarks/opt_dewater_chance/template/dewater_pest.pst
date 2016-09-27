@@ -6,7 +6,7 @@ pcf
    2.000000E+01  -3.000000E+00   3.000000E-01   1.000000E-02        -7       999          lamforgive        noderforgive
    1.000000E+01   1.000000E+01   1.000000E-03         0         0
    1.000000E-01         1   1.100000E+00               noaui          nosenreuse        noboundscale
-         3   1.000000E-02         3         3   1.000000E-02         3   0.000000E+00         1  -1.000000E+00
+         1   1.000000E-02         3         3   1.000000E-02         3   0.000000E+00         1  -1.000000E+00
          0         0         0         0             jcosave          verboserec          jcosaveitn          reisaveitn          parsaveitn        noparsaverun
 * singular value decomposition
 1
@@ -1247,4 +1247,3 @@ dewater_pest.hds.ins dewater_pest.hds
 ++forecasts(h05_12,h05_14,h05_16,h07_12,h07_16,h09_12,h09_14,h10_15,h13_15,h13_16)
 ++opt_risk(0.95)
 ++opt_dec_var_groups(q)
-++opt_coin_loglev(4)
