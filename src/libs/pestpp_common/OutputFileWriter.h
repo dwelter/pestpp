@@ -51,7 +51,7 @@ public:
 	void write_svd(Eigen::VectorXd &Sigma, Eigen::SparseMatrix<double> &Vt, double lambda, const Parameters &freeze_numeric_pars, Eigen::VectorXd &Sigma_trunc);
 	void write_svd_iteration(int iteration_no);
 
-	void write_opt_constraint_rei(std::ofstream &fout, int iter_no, const Parameters pars, const Observations &obs, const Observations &sim, PriorInformation* pi_ptr);
+	void write_opt_constraint_rei(std::ofstream &fout, int iter_no, const Parameters pars, const Observations &obs, const Observations &sim);
 
 	void scenario_pargroup_report(std::ostream &os);
 	void scenario_io_report(std::ostream &os);

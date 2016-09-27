@@ -37,7 +37,9 @@ private:
 	double* constraint_ub;
 	double* ctl_ord_obj_func_coefs;
 	double risk;
+	double obj_best;
 
+	string obj_sense;
 	ClpSimplex model;
 	CoinMessageHandler coin_hr;
 	FILE* coin_log_ptr;
@@ -65,6 +67,7 @@ private:
 	PriorInformation* null_prior = new PriorInformation();
 	Parameters all_pars_and_dec_vars;
 	Parameters all_pars_and_dec_vars_initial;
+	Parameters all_pars_and_dec_vars_best;
 	ParamTransformSeq par_trans;
 	Observations constraints_obs;
 	Observations constraints_sim;

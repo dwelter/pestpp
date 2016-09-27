@@ -86,8 +86,7 @@ void sequentialLP::initial_report()
 	
 	f_rec << "-->number of iterations of sequential linear programming (noptmax): " << pest_scenario.get_control_info().noptmax << endl;
 	
-	string sense = (pest_scenario.get_pestpp_options().get_opt_direction() == 1) ? "minimize": "maximize";
-	f_rec << "-->objective function sense (direction): " << sense << endl;
+	f_rec << "-->objective function sense (direction): " << obj_sense << endl;
 
 	f_rec << "-->number of decision variable: " << num_dec_vars() << endl;
 	f_rec << "-->number of observation constraints: " << num_obs_constraints() << endl;
@@ -326,8 +325,13 @@ void sequentialLP::postsolve_constraint_report(Observations &upgrade_obs,Paramet
 	}
 	stringstream ss;
 	ss << slp_iter << ".rei";
-	//need to work in FOSM offsets here:
-	//of_wr.write_opt_constraint_rei(file_mgr_ptr->open_ofile_ext(ss.str()), slp_iter, upgrade_pars, constraints_obs, constraints_sim, &constraints_pi);
+	of_wr.write_opt_constraint_rei(file_mgr_ptr->open_ofile_ext(ss.str()), slp_iter, upgrade_pars, 
+		pest_scenario.get_ctl_observations(), upgrade_obs);
+	if (use_chance)
+	{
+		f_rec << "  ---  note: residual file " << ss.str() << " reports the simulated" << endl;
+		f_rec << "       constraint values from the model outputs without FOSM offsets" << endl << endl;
+	}
 	return;
 }
 
@@ -461,6 +465,7 @@ void sequentialLP::initialize_and_check()
 
 	all_pars_and_dec_vars = pest_scenario.get_ctl_parameters();
 	all_pars_and_dec_vars_initial = Parameters(all_pars_and_dec_vars);
+	all_pars_and_dec_vars_best = Parameters(all_pars_and_dec_vars);
 	par_trans = pest_scenario.get_base_par_tran_seq();
 	//set ordered dec var name vec
 	//and check for illegal parameter transformations
@@ -675,6 +680,8 @@ void sequentialLP::initialize_and_check()
 
 	//initialize the objective function
 	obj_func_str = pest_scenario.get_pestpp_options().get_opt_obj_func();
+	obj_sense = (pest_scenario.get_pestpp_options().get_opt_direction() == 1) ? "minimize" : "maximize";
+
 	if (obj_func_str.size() == 0)
 	{
 		f_rec << " warning: no ++opt_objective_function-->forming a generic objective function (1.0 coef for each decision var" << endl;
@@ -823,6 +830,7 @@ void sequentialLP::calc_chance_constraint_offsets()
 		f_rec << endl << "  ---  reusing fosm offsets from previous iteration  ---  " << endl;
 		return;
 	}
+	cout << "  ---  calculating FOSM-based chance constraint components  ---  " << endl;
 	prior_constraint_offset.clear();
 	prior_constraint_stdev.clear();
 	post_constraint_offset.clear();
@@ -912,7 +920,7 @@ void sequentialLP::calc_chance_constraint_offsets()
 	if (out_of_bounds.size() > 0)
 	{
 		ofstream &f_rec = file_mgr_ptr->rec_ofstream();
-		f_rec << "  ---  warning the following FOSM-based bounds have become infeasible:" << endl;
+		f_rec << "  ---  warning the following FOSM-based constraints have become infeasible:" << endl;
 		f_rec << setw(15) << "name" << setw(15) << "distance" << endl;
 		for (auto &con : out_of_bounds)
 			f_rec << setw(15) << con.first << setw(15) << con.second << endl;
@@ -922,7 +930,8 @@ void sequentialLP::calc_chance_constraint_offsets()
 		else
 		{
 			f_rec << endl << "  ---  reusing previously-valid FOSM-based constraints  ---  " << endl;
-			cout << endl << "  ---  reusing previously-valid FOSM-based constraints  ---  " << endl;
+			cout << endl << "  ---  warning: one or more FOSM-based constraints have become infeasible  ---  " << endl;
+			cout << "  ---  reusing previously-valid FOSM-based constraints  ---  " << endl << endl;
 		}
 	}
 	//if all fosm constraints are feasible, then undate
@@ -931,7 +940,7 @@ void sequentialLP::calc_chance_constraint_offsets()
 		vector<string> names = iter_fosm.get_keys();
 		constraints_fosm.update_without_clear(names, iter_fosm.get_data_vec(names));
 	}
-
+	cout << "  ---   done with FOSM-based chance constraint calculations  ---  " << endl << endl;
 	return;
 }
 
@@ -1039,6 +1048,7 @@ void sequentialLP::iter_solve()
 	ofstream &f_rec = file_mgr_ptr->rec_ofstream();
 
 	//convert Jacobian_1to1 to CoinPackedMatrix
+	cout << "  ---  forming LP model  --- " << endl;
 	CoinPackedMatrix matrix = jacobian_to_coinpackedmatrix();
 
 	//load the linear simplex model
@@ -1070,7 +1080,7 @@ void sequentialLP::iter_solve()
 	//try the dual
 	if (!presolved_model)
 	{
-		f_rec << "  ---  primal presolve model infeasible, crashing solution..." << endl;
+		f_rec << "  ---  primal presolve model infeasible, crashing solution with additional dual and primal solves..." << endl;
 		cout << "  ---  primal presolve model infeasible, crashing solution..." << endl;
 		
 		model.moveTowardsPrimalFeasible();
@@ -1103,13 +1113,6 @@ void sequentialLP::iter_solve()
 		cout << " iteration " << slp_iter << " linear solution is proven optimal" << endl << endl;
 	}
 
-	//else if (!model.dualFeasible())
-	//{
-	//	f_rec << "  ---  warning: primal solution unbounded, terminating iterations ---  " << endl;
-	//	cout << "  ---  warning: primal solution unbounded, terminating iterations  ---  " << endl;
-	//	//iter_unbounded_report();
-	//	terminate = true;
-	//}
 	else if (!model.primalFeasible())
 	{
 		f_rec << "  ---  warning: primal solution infeasible, terminating iterations ---  " << endl;
@@ -1118,32 +1121,12 @@ void sequentialLP::iter_solve()
 		terminate = true;
 	}
 
-	//otherwise, try again...
-	//else
-	//{
-	//	if (model.primalFeasible())
-	//	{
-	//		f_rec << endl << "-->resolving primal in attempt to prove optimal..." << endl;
-	//		model.primal(1);
-	//	}
-	//	else if(model.dualFeasible())
-	//	{
-	//		f_rec << endl << "-->resolving dual in attempt to prove optimal..." << endl;
-	//		model.dual(1);
-	//	}
-	//	//check the solution
-	//	model.checkSolution();
-	//	if (model.isProvenOptimal())
-	//	{
-	//		f_rec << "  ---  iteration " << slp_iter << " linear solution is proven optimal  ---  " << endl << endl;
-	//		cout << "  ---  iteration " << slp_iter << " linear solution is proven optimal  ---  " << endl << endl;
-	//	}
-	//	else
-	//	{
-	//		f_rec << endl << "WARNING: iteration " << slp_iter << " linear solution is not proven optimal...continuing" << endl << endl;
-	//		cout << endl << "WARNING: iteration " << slp_iter << " linear solution is not proven optimal...continuing" << endl << endl;
-	//	}
-	//}
+	else
+	{
+		f_rec << endl << "iteration " << slp_iter << " linear solution is not proven optimal...continuing" << endl << endl;
+		cout << endl << "iteration " << slp_iter << " linear solution is not proven optimal...continuing" << endl << endl;
+	}
+	
 	f_rec << endl << "  ---  linear program solution complete for iteration " << slp_iter << "  ---  " << endl;
 	cout << endl << "  ---  linear program solution complete for iteration " << slp_iter << "  ---  " << endl;
 
@@ -1262,6 +1245,21 @@ void sequentialLP::solve()
 		f_rec << setw(10) << i << setw(15) << obj << endl;
 		i++;
 	}
+	f_rec << "  ---  best objective function value: " << obj_best << endl;
+	cout << "  ---  best objective function value: " << obj_best << endl;
+	f_rec << "  ---  running model one last time with best decision variables  ---  " << endl;
+	cout << "  ---  running model one last time with best decision variables  ---  " << endl;
+	bool success = make_upgrade_run(all_pars_and_dec_vars_best, constraints_sim);
+	if (!success)
+	{
+		throw_sequentialLP_error("error running model with best decision variable values");
+	}
+	//write 'best' rei
+	of_wr.write_opt_constraint_rei(file_mgr_ptr->open_ofile_ext("res"), slp_iter, all_pars_and_dec_vars_best, 
+		pest_scenario.get_ctl_observations(), constraints_sim);
+	//write 'best' parameters file
+	of_wr.write_par(file_mgr_ptr->open_ofile_ext("par"), all_pars_and_dec_vars_best, 
+		*par_trans.get_offset_ptr(), *par_trans.get_scale_ptr());
 }
 
 void sequentialLP::iter_postsolve()
@@ -1305,10 +1303,27 @@ void sequentialLP::iter_postsolve()
 
 	//track the objective function values
 	if (slp_iter == 1)
+	{
 		iter_obj_values.push_back(cur_new_obj.first);
+		obj_best = cur_new_obj.first;
+	}
 	iter_obj_values.push_back(cur_new_obj.second);
 	double obj_func_change = abs(cur_new_obj.first - cur_new_obj.second) / abs(max(max(cur_new_obj.first,cur_new_obj.second),1.0));
-
+	//if this is a max problem
+	if (pest_scenario.get_pestpp_options().get_opt_direction() == -1)
+	{
+		if (cur_new_obj.second > obj_best)
+		{
+			all_pars_and_dec_vars_best.update_without_clear(ctl_ord_dec_var_names, upgrade_pars.get_data_vec(ctl_ord_dec_var_names));
+			obj_best = cur_new_obj.second;
+		}
+	}
+	else
+		if (cur_new_obj.second < obj_best)
+		{
+			all_pars_and_dec_vars_best.update_without_clear(ctl_ord_dec_var_names, upgrade_pars.get_data_vec(ctl_ord_dec_var_names));
+			obj_best = cur_new_obj.second;
+		}
 
 	//check for changes for in constraints
 	double max_abs_constraint_change = -1.0E+10;

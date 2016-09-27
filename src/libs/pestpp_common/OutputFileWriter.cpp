@@ -483,7 +483,7 @@ void OutputFileWriter::obs_report(ostream &os, const Observations &obs, const Ob
 }
 
 
-void OutputFileWriter::write_opt_constraint_rei(std::ofstream &fout, int iter_no, const Parameters pars, const Observations &obs, const Observations &sim, PriorInformation* pi_ptr)
+void OutputFileWriter::write_opt_constraint_rei(std::ofstream &fout, int iter_no, const Parameters pars, const Observations &obs, const Observations &sim)
 {
 	fout << setiosflags(ios::left);
 	fout.unsetf(ios::floatfield);
