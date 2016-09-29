@@ -1,7 +1,6 @@
 import os
 import numpy as np
 import pandas as pd
-import flopy
 
 sfr_file = "supply2.sfrout"
 aq_ex_name = "sfr_aq_ex.dat"
