@@ -95,7 +95,7 @@ void sequentialLP::initial_report()
 	if (use_chance)
 	{
 		f_rec << "-->using FOSM-based chance constraints - good choice!" << endl;
-		f_rec << "-->++opt_risk and corresponding probit function value: " << setw(10) << risk <<'  , ' << setw(10) << probit_val << endl;
+		f_rec << "-->++opt_risk and corresponding probit function value: " << setw(10) << risk << setw(20) << probit_val << endl;
 		f_rec << "-->number of adjustable parameters for FOSM calcs: " << num_adj_pars() << endl;
 		f_rec << "-->number of non-zero weight observations for FOSM calcs: " << num_nz_obs() << endl;
 		f_rec << "-->repeat FOSM calcs every: " << pest_scenario.get_pestpp_options().get_opt_recalc_fosm_every() << " iterations" << endl << endl;
