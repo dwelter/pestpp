@@ -629,7 +629,7 @@ h19_29                5.0000000000E+01      0.0000000000E+00       obgnme
 * model command line
 mf2005 dewater_pest.base.nam
 * model input/output
-WEL_0000.dat.tpl ref\WEL_0000.dat
+WEL_0000.dat.tpl ref/WEL_0000.dat
 dewater_pest.hds.ins dewater_pest.hds
 ++ opt_constraint_groups(l_const)
 
