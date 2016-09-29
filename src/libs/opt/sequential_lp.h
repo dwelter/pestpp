@@ -122,7 +122,7 @@ private:
 	int num_nz_pi_constraint_elements();
 
 	//parse the obs or pi group name to get the constraint sense
-	pair<ConstraintSense,string> get_sense_from_group_name(string &name);
+	pair<ConstraintSense,string> get_sense_from_group_name(const string &name);
 
 	//solve the current LP problem
 	void iter_solve();

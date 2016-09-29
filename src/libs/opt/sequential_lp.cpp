@@ -429,7 +429,7 @@ pair<double,double> sequentialLP::postsolve_decision_var_report(Parameters &upgr
 	return pair<double,double>(cur_obj,new_obj);
 }
 
-pair<sequentialLP::ConstraintSense,string> sequentialLP::get_sense_from_group_name(string &name)
+pair<sequentialLP::ConstraintSense,string> sequentialLP::get_sense_from_group_name(const string &name)
 {
 
 	if ((name.compare(0, 2, "L_") == 0) || (name.compare(0, 4, "LESS")==0))
@@ -555,6 +555,19 @@ void sequentialLP::initialize_and_check()
 	//---------------------------
 	//set the two constraints attribs and ordered constraint name vec
 	vector<string> constraint_groups = pest_scenario.get_pestpp_options().get_opt_constraint_groups();
+	//if not constraint groups set as ++ arg, then look for all compatible obs groups
+	if (constraint_groups.size() == 0)
+	{
+		for (auto &group : pest_scenario.get_ctl_ordered_obs_group_names())
+			if (get_sense_from_group_name(group).first != ConstraintSense::undefined)
+				constraint_groups.push_back(group);
+
+	}
+
+	//if we still don't have any constraint groups, something is wrong
+	if (constraint_groups.size() == 0)
+		throw_sequentialLP_error("no viable observation or prior information constraint groups found.  Constraint group names must start with the following: {'l_','less','g_','greater'}");
+
 	ctl_ord_obs_constraint_names.clear();
 	//if the ++opt_constraint_groups arg was passed
 	if (constraint_groups.size() != 0)
@@ -635,11 +648,11 @@ void sequentialLP::initialize_and_check()
 
 
 	//if not ++opt_constraint_names was passed, use all observations and prior information as constraints
-	else
+	/*else
 	{
 		ctl_ord_obs_constraint_names = pest_scenario.get_ctl_ordered_obs_names();
 		ctl_ord_pi_constraint_names = pest_scenario.get_ctl_ordered_pi_names();
-	}
+	}*/
 
 
 	constraints_obs = pest_scenario.get_ctl_observations().get_subset(ctl_ord_obs_constraint_names.begin(), ctl_ord_obs_constraint_names.end());
@@ -702,7 +715,7 @@ void sequentialLP::initialize_and_check()
 
 	if (obj_func_str.size() == 0)
 	{
-		f_rec << " warning: no ++opt_objective_function-->forming a generic objective function (1.0 coef for each decision var" << endl;
+		f_rec << " warning: no ++opt_objective_function-->forming a generic objective function (1.0 coef for each decision var)" << endl;
 		for (auto &name : ctl_ord_dec_var_names)
 			obj_func_coef_map[name] = 1.0;
 	}
