@@ -1,7 +1,7 @@
-pcf
+„pcf
 * control data
              restart          estimation
-       609       600         4         0         7         0
+       609       600         4         0         2         0
          3         1              single               point         1         0         0          noobsreref
    2.000000E+01  -3.000000E+00   3.000000E-01   1.000000E-02        -7       999          lamforgive        noderforgive
    1.000000E+01   1.000000E+01   1.000000E-03         0         0
@@ -16,7 +16,7 @@ pcf
 h                       relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
 q                       absolute              -1.0000000000E+04      0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
 u                       relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
-d                       relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller
+d                       relative              1.0000000000E-02       0.0  switc„h                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller
 * parameter data
 q1                     none                   factor                0.0000000000E+00      0.0000000000E+00      2.0000000000E+04       q                     -1.0000000000E+00     0.0000000000E+00      1          
 q2                     none                   factor                0.0000000000E+00      0.0000000000E+00      2.0000000000E+04       q                     -1.0000000000E+00     0.0000000000E+00      1          
@@ -629,12 +629,7 @@ up_grad                none                   factor                8.0000000000
 dn_grad                none                   factor                6.0000000000E+01      5.0000000000E+01      7.0000000000E+01       d                     1.0000000000E+00      0.0000000000E+00      1
 * observation groups
 obgnme               
-l_const   
- less_5         
- l_3            
- junk           
- greater_than_1 
- greater           
+l_const      
 * observation data
 h00_00                5.0000000000E+01      0.0000000000E+00       obgnme               
 h00_01                5.0000000000E+01      0.0000000000E+00       obgnme               
@@ -1231,11 +1226,11 @@ h19_21                5.0000000000E+01      0.0000000000E+00       obgnme
 h19_22                5.0000000000E+01      0.0000000000E+00       obgnme               
 h19_23                5.0000000000E+01      0.0000000000E+00       obgnme               
 h19_24                5.0000000000E+01      0.0000000000E+00       obgnme               
-h19_25                5.0000000000E+01      0.0000000000E+00       less_5              
-h19_26                5.0000000000E+01      0.0000000000E+00       l_3               
-h19_27                5.0000000000E+01      0.0000000000E+00       junk               
-h19_28                5.0000000000E+01      0.0000000000E+00       greater_than_1               
-h19_29                5.0000000000E+01      0.0000000000E+00       greater
+h19_25                5.0000000000E+01      0.0000000000E+00       obgnme              
+h19_26                5.0000000000E+01      0.0000000000E+00       obgnme             
+h19_27                5.0000000000E+01      0.0000000000E+00       obgnme             
+h19_28                5.0000000000E+01      0.0000000000E+00       obgnme              
+h19_29                5.0000000000E+01      0.0000000000E+00       obgnme 
 * model command line
 mf2005 dewater_pest.nam
 * model input/output
@@ -1244,7 +1239,6 @@ transmissivity_layer_1.ref.tpl ref/transmissivity_layer_1.ref
 strt_layer_1.ref.tpl ref\strt_layer_1.ref
 dewater_pest.hds.ins dewater_pest.hds
 ++opt_constraint_groups(l_const)
-++forecasts(h05_12,h05_14,h05_16,h07_12,h07_16,h09_12,h09_14,h10_15,h13_15,h13_16)
 ++opt_risk(0.95)
 ++opt_dec_var_groups(q)
 ++base_jacobian(dewater_pest.full.jcb)

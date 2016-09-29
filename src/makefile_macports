@@ -46,6 +46,7 @@ all:
 
 clean:
 	rm -rf $(EXE_DIR)/*
+	-make -C libs/opt -f makefile_linux clean
 	-make -C libs/mio -f makefile_linux clean
 	-make -C libs/common -f makefile_linux clean
 	-make -C libs/run_managers/abstract_base -f makefile_linux clean
