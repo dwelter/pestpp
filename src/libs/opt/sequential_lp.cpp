@@ -559,9 +559,13 @@ void sequentialLP::initialize_and_check()
 	if (constraint_groups.size() == 0)
 	{
 		for (auto &group : pest_scenario.get_ctl_ordered_obs_group_names())
-			if (get_sense_from_group_name(group).first != ConstraintSense::undefined)
+		{
+			pair<ConstraintSense, string> sense = get_sense_from_group_name(group);
+			if (sense.first != ConstraintSense::undefined)
+			{
 				constraint_groups.push_back(group);
-
+			}
+		}
 	}
 
 	//if we still don't have any constraint groups, something is wrong
