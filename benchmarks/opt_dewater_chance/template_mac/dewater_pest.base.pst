@@ -631,5 +631,4 @@ mf2005 dewater_pest.base.nam
 * model input/output
 WEL_0000.dat.tpl ref/WEL_0000.dat
 dewater_pest.hds.ins dewater_pest.hds
-++ opt_constraint_groups(l_const)
 

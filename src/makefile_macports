@@ -61,3 +61,4 @@ clean:
 	-make -C libs/linear_analysis -f makefile_linux clean
 	-make -C programs/pest++ -f makefile_linux clean
 	-make -C programs/gsa -f makefile_linux clean
+	-make -C programs/pestpp-opt -f makefile_linux clean
