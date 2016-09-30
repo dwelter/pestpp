@@ -22,7 +22,7 @@ public:
 	void initialize_and_check();
 	void solve();
 
-	
+	sequentialLP::~sequentialLP();
 	//ModelRun get_optimum_run() { return optimum_run; }
 
 private:
@@ -36,6 +36,7 @@ private:
 	double* constraint_lb;
 	double* constraint_ub;
 	double* ctl_ord_obj_func_coefs;
+	const double* row_price;
 	double risk;
 	double obj_best;
 	double probit_val;
@@ -68,6 +69,11 @@ private:
 		0.8416,0.8779,0.9154,0.9542,0.9945,1.0364,1.0803,1.1264,1.1750,1.2265,
 		1.2816,1.3408,1.4051,1.4758,1.5548,1.6449,1.7507,1.8808,2.0537,3.0902 };
 
+
+	map<ClpSimplex::Status, string> status_name_map = { {ClpSimplex::Status::atLowerBound,"at lower bound"},
+	{ ClpSimplex::Status::atUpperBound,"at upper bound"},{ClpSimplex::Status::basic,"basic"},
+	{ ClpSimplex::Status::isFree,"free"},{ ClpSimplex::Status::isFixed,"fixed"}};
+		
 	map<string, double> obj_func_coef_map;
 	map<string, ConstraintSense> constraint_sense_map;
 	map <string, string> constraint_sense_name;

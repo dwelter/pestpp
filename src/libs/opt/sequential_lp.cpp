@@ -21,6 +21,16 @@ sequentialLP::sequentialLP(Pest &_pest_scenario, RunManagerAbstract* _run_mgr_pt
 	initialize_and_check();
 }
 
+sequentialLP::~sequentialLP()
+{
+	delete[] dec_var_lb;
+	delete[] dec_var_ub;
+	delete[] constraint_lb;
+	delete[] constraint_ub;
+	delete[] ctl_ord_obj_func_coefs;
+	//delete[] row_price;
+}
+
 void sequentialLP::throw_sequentialLP_error(string message,const vector<string> &messages)
 {
 	stringstream ss;
@@ -177,7 +187,7 @@ void sequentialLP::initial_report()
 			int i = 0;
 			for (auto &name : nz_obs_names)
 			{
-				f_rec << name;
+				f_rec << setw(15) << name;
 				if (i % 6 == 0)
 					f_rec << endl;
 				i++;
@@ -267,7 +277,8 @@ void sequentialLP::postsolve_constraint_report(Observations &upgrade_obs,Paramet
 {
 	ofstream &f_rec = file_mgr_ptr->rec_ofstream();
 	f_rec << endl << endl << "     constraint information at end of SLP iteration " << slp_iter << endl << endl;
-	f_rec << setw(20) << left << "name" << right << setw(15) << "sense" << setw(15) << "required";
+	f_rec << setw(20) << left << "name" << right << setw(15) << "sense" << setw(15) << "required" << setw(25) << "simpex status";
+	f_rec << setw(15) << "price";
 	if (use_chance)
 		f_rec << setw(15) << "fosm offset";
 	f_rec << setw(15) << "current" << setw(15) << "residual";
@@ -282,6 +293,8 @@ void sequentialLP::postsolve_constraint_report(Observations &upgrade_obs,Paramet
 		f_rec << setw(20) << left << name;
 		f_rec << setw(15) << right << constraint_sense_name[name];
 		f_rec << setw(15) << constraints_obs.get_rec(name);
+		f_rec << setw(25) << status_name_map[model.getRowStatus(i)];
+		f_rec << setw(15) << row_price[i];
 		if (use_chance)
 		{
 			double offset = post_constraint_offset[name];
@@ -306,9 +319,10 @@ void sequentialLP::postsolve_constraint_report(Observations &upgrade_obs,Paramet
 	if (num_pi_constraints() > 0)
 	{
 		f_rec << endl << endl << "     prior information constraint information at end of SLP iteration " << slp_iter << endl << endl;
-		f_rec << setw(20) << left << "name" << right << setw(15) << "sense" << setw(15) << "required";
-		f_rec << setw(15) << "current" << setw(15) << "residual";
+		f_rec << setw(20) << left << "name" << right << setw(15) << "sense" << setw(15) << "required" << setw(25) << "simplex status";
+		f_rec << setw(15) << "price" << setw(15) << "current" << setw(15) << "residual";
 		f_rec << setw(15) << "new" << setw(15) << "residual" << endl;
+		int i = 0;
 		for (auto &name : ctl_ord_pi_constraint_names)
 		{
 			PriorInformationRec pi_rec = constraints_pi.get_pi_rec_ptr(name);
@@ -317,10 +331,13 @@ void sequentialLP::postsolve_constraint_report(Observations &upgrade_obs,Paramet
 			f_rec << setw(20) << left << name;
 			f_rec << setw(15) << right << constraint_sense_name[name];
 			f_rec << setw(15) << pi_rec.get_obs_value();
+			f_rec << setw(25) << status_name_map[model.getRowStatus(i+num_obs_constraints())];
+			f_rec << setw(15) << row_price[i + num_obs_constraints()];
 			f_rec << setw(15) << cur_sim_resid.first;
 			f_rec << setw(15) << cur_sim_resid.second;
 			f_rec << setw(15) << new_sim_resid.first;
 			f_rec << setw(15) << new_sim_resid.second << endl;
+			i++;
 		}
 	}
 	stringstream ss;
@@ -402,13 +419,16 @@ pair<double,double> sequentialLP::postsolve_decision_var_report(Parameters &upgr
 	const double *reduced_cost = model.getReducedCost();
 	f_rec << endl << endl << "     decision variable information at end of SLP iteration " << slp_iter << endl << endl;
 	f_rec << setw(20) << left << "name" << right << setw(15) << "current" << setw(15)  << "new";
-	f_rec << setw(15) << "objfunc coef" << setw(15) << "cur contrib" << setw(15) << "new contrib" << setw(15) << "reduced cost" << endl;
+	f_rec << setw(15) << "objfunc coef" << setw(15) << "cur contrib" << setw(15) << "new contrib" << setw(15) << "reduced cost";
+	f_rec << setw(25) << "simplex status" << endl;
 	string name;
+	ClpSimplex::Status status;
 	double obj_coef, cur_val, new_val, upgrade;
 	double cur_obj=0.0, new_obj=0.0;
 	for (int i = 0; i < num_dec_vars(); ++i)
 	{
 		name = ctl_ord_dec_var_names[i];
+		status = model.getColumnStatus(i);
 		obj_coef = ctl_ord_obj_func_coefs[i];
 		cur_val = all_pars_and_dec_vars[name];
 		new_val = upgrade_pars[name];
@@ -418,7 +438,8 @@ pair<double,double> sequentialLP::postsolve_decision_var_report(Parameters &upgr
 		f_rec << setw(15) << obj_coef;
 		f_rec << setw(15) << cur_val * obj_coef;
 		f_rec << setw(15) << new_val * obj_coef;
-		f_rec << setw(15) << reduced_cost[i] << endl;
+		f_rec << setw(15) << reduced_cost[i];
+		f_rec << setw(25) << status_name_map[status] << endl;
 		cur_obj += cur_val * obj_coef;
 		new_obj += new_val * obj_coef;
 
@@ -1281,6 +1302,8 @@ void sequentialLP::iter_postsolve()
 {
 	
 	ofstream &f_rec = file_mgr_ptr->rec_ofstream();
+
+	row_price = model.getRowPrice();
 
 	//extract (optimal) decision vars
 	//and track some info for convergence checking
