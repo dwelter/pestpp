@@ -205,8 +205,8 @@ subroutine mio_put_file(ifail,itype,inum,filename)
        integer, intent(out)            :: ifail      ! indicates error condition
        integer, intent(in)             :: itype      ! type of file
        integer, intent(in)             :: inum       ! file number
-       !character (len=*), intent(in)   :: filename   ! name of file
-       character*50  :: filename
+       character (len=*), intent(in)   :: filename   ! name of file
+       !character*180  :: filename
        integer                         :: icount,i,j,k
        
        errsub = 'Error in subroutine MIO_PUT_FILE:'
@@ -2120,7 +2120,7 @@ end module model_input_output_interface
         integer, intent(out)            :: ifail      ! indicates error condition
         integer, intent(in)             :: itype      ! type of file
         integer, intent(in)             :: inum       ! file number
-        character*50  :: filename
+        character*180  :: filename
         call mio_put_file(ifail,itype,inum,filename)
         return
     end subroutine mio_put_file_w

@@ -85,7 +85,7 @@ int main(int argc, char* argv[])
 		cerr << "    YAMR master:" << endl;
 		cerr << "        gsa control_file.pst /H :port" << endl; 
 		cerr << "    YAMR runner:" << endl;
-		cerr << "        gsa /H hostname:port " << endl << endl;
+		cerr << "        gsa control_file.pst /H hostname:port " << endl << endl;
 		cerr << "    GENIE:" << endl;
 		cerr << "        gsa control_file.pst /G hostname:port" << endl;
 		cerr << "--------------------------------------------------------" << endl;

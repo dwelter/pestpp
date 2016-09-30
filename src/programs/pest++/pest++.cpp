@@ -97,7 +97,7 @@ int main(int argc, char* argv[])
 			cerr << "    YAMR master:" << endl;
 			cerr << "        pest++ control_file.pst /H :port" << endl << endl;
 			cerr << "    YAMR runner:" << endl;
-			cerr << "        pest++ /H hostname:port " << endl << endl;
+			cerr << "        pest++ control_file.pst /H hostname:port " << endl << endl;
 			cerr << "    GENIE:" << endl;
 			cerr << "        pest++ control_file.pst /G hostname:port" << endl << endl;
 			cerr << "    external run manager:" << endl;

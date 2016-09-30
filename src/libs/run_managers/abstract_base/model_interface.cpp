@@ -50,7 +50,8 @@ void ModelInterface::set_files()
 	int itype = 1;
 	for (auto &file : tplfile_vec)
 	{
-		mio_put_file_w_(&ifail, &itype, &inum, pest_utils::string_as_fortran_char_ptr(file, 50));
+		vector<char> f_name = pest_utils::string_as_fortran_char_ptr(file, 180);
+		mio_put_file_w_(&ifail, &itype, &inum, f_name.data());
 		if (ifail != 0) throw_mio_error("putting template file" + file);
 		inum++;
 	}
@@ -60,7 +61,8 @@ void ModelInterface::set_files()
 	itype = 2;
 	for (auto &file : inpfile_vec)
 	{
-		mio_put_file_w_(&ifail, &itype, &inum, pest_utils::string_as_fortran_char_ptr(file, 50));
+		vector<char> f_name = pest_utils::string_as_fortran_char_ptr(file, 180);
+		mio_put_file_w_(&ifail, &itype, &inum, f_name.data());
 		if (ifail != 0) throw_mio_error("putting model input file" + file);
 		inum++;
 	}
@@ -70,7 +72,8 @@ void ModelInterface::set_files()
 	itype = 3;
 	for (auto &file : insfile_vec)
 	{
-		mio_put_file_w_(&ifail, &itype, &inum, pest_utils::string_as_fortran_char_ptr(file, 50));
+		vector<char> f_name = pest_utils::string_as_fortran_char_ptr(file, 180);
+		mio_put_file_w_(&ifail, &itype, &inum, f_name.data());
 		if (ifail != 0) throw_mio_error("putting instruction file" + file);
 		inum++;
 	}
@@ -80,7 +83,8 @@ void ModelInterface::set_files()
 	itype = 4;
 	for (auto &file : outfile_vec)
 	{
-		mio_put_file_w_(&ifail, &itype, &inum, pest_utils::string_as_fortran_char_ptr(file, 50));
+		vector<char> f_name = pest_utils::string_as_fortran_char_ptr(file, 180);
+		mio_put_file_w_(&ifail, &itype, &inum, f_name.data());
 		if (ifail != 0) throw_mio_error("putting model output file" + file);
 		inum++;
 	}

@@ -191,10 +191,11 @@ void string_to_fortran_char(string in, char out[], int length, CASE_CONV conv_ty
 	memcpy(out, in.data(), str_len);
 }
 
-char *string_as_fortran_char_ptr(string in, int size)
+vector<char> string_as_fortran_char_ptr(string in, int _size)
 {
-	char* out = new char[size];
-	string_to_fortran_char(in, out, size);
+	vector<char> out;
+	out.assign(_size, ' ');
+	string_to_fortran_char(in, out.data(), _size);
 	return out;
 }
 
