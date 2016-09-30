@@ -27,13 +27,13 @@ using namespace Eigen;
 
 extern "C" {
   double DEF_DLAMCH(char*);
-  void DEF_DLANBPRO_SPARCE(int *m, int *n, int *k0, int *k, double *U, 
-			   int *ldu, double *V, int *ldv, double *B, int *ldb, 
-			   double *rnorm, double *doption, int *ioption, double *work,
-			   int *iwork, double *dparm, int *iparm, int *ierr);
+//  void DEF_DLANBPRO_SPARCE(int *m, int *n, int *k0, int *k, double *U, 
+//			   int *ldu, double *V, int *ldv, double *B, int *ldb, 
+//		   double *rnorm, double *doption, int *ioption, double *work,
+//			   int *iwork, double *dparm, int *iparm, int *ierr);
   void DEF_DLANSVD(char *jobu, char *jobv,int *m,int *n,int *k, int *kmax, double *U, int *ldu, double *Sigma, double *bnd,
 		   double *V, int *ldv, double *tolin, double *work, int *lwork, int *iwork,int *liwork, double *doption, int *ioption, int *info,
-		   double *dparm, int *iparm);
+		   double *dparm, int *iparm, long *jobu_len, long *jobv_len);
 }
 
 SVD_PROPACK::SVD_PROPACK(int _n_max_sing, double _eign_thres) : SVDPackage("PROPACK", _n_max_sing, _eign_thres)
@@ -62,7 +62,7 @@ void SVD_PROPACK::solve_ip(Eigen::SparseMatrix<double>& A, VectorXd &Sigma, Eige
 	int n_nonzero;
 	int k = min(m_rows, n_cols);
 	k = min(n_max_sing, k);
-        int kmax = k * 10;
+        int kmax = k;
 	int ioption[] = {0, 1};
 	char eps_char = 'e';
 	double eps = DEF_DLAMCH(&eps_char);
@@ -104,7 +104,9 @@ void SVD_PROPACK::solve_ip(Eigen::SparseMatrix<double>& A, VectorXd &Sigma, Eige
 	local_utils::init_array(tmp_v, n_cols*kmax, 0.0);
 	local_utils::init_array(tmp_work,lwork, 0.0);
 	char jobu = 'Y';
-        char jobv = 'Y';
+    char jobv = 'Y';
+	long jobu_len = 1;
+	long jobv_len = 1;
 	int ld_tmpu = m_rows;
 	int ld_tmpv = n_cols;
 	int ld_tmpb = kmax;
@@ -115,7 +117,7 @@ void SVD_PROPACK::solve_ip(Eigen::SparseMatrix<double>& A, VectorXd &Sigma, Eige
 
 	DEF_DLANSVD(&jobu, &jobv, &m_rows, &n_cols, &k, &kmax, tmp_u, &ld_tmpu, tmp_sigma, tmp_bnd,
 		   tmp_v, &ld_tmpv, &tolin, tmp_work, &lwork, tmp_iwork, &liwork, doption, ioption, &info,
-		   dparm,iparm);
+		   dparm,iparm, &jobu_len, &jobv_len);
 
 	//Compute number of singular values to be used in the solution
 	int n_sing_used = 0;

@@ -2120,7 +2120,7 @@ end module model_input_output_interface
         integer, intent(out)            :: ifail      ! indicates error condition
         integer, intent(in)             :: itype      ! type of file
         integer, intent(in)             :: inum       ! file number
-        character*180  :: filename
+        character (len=*), intent(in)   :: filename   ! name of file
         call mio_put_file(ifail,itype,inum,filename)
         return
     end subroutine mio_put_file_w

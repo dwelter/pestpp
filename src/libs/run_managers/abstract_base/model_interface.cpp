@@ -15,7 +15,7 @@ using namespace std;
 extern "C"
 {
 	void mio_initialise_w_(int *, int *, int *, int *, int *);
-	void mio_put_file_w_(int *, int *, int *, char *);
+	void mio_put_file_w_(int *, int *, int *, char *, long *);
 	void mio_get_file_w_(int *, int *, int *, char *);
 	void mio_store_instruction_set_w_(int *);
 	void mio_process_template_files_w_(int *, int *, char *);
@@ -50,8 +50,9 @@ void ModelInterface::set_files()
 	int itype = 1;
 	for (auto &file : tplfile_vec)
 	{
-		vector<char> f_name = pest_utils::string_as_fortran_char_ptr(file, 180);
-		mio_put_file_w_(&ifail, &itype, &inum, f_name.data());
+		long f_name_len = 180;
+		vector<char> f_name = pest_utils::string_as_fortran_char_ptr(file, f_name_len);
+		mio_put_file_w_(&ifail, &itype, &inum, f_name.data(), &f_name_len);
 		if (ifail != 0) throw_mio_error("putting template file" + file);
 		inum++;
 	}
@@ -61,8 +62,9 @@ void ModelInterface::set_files()
 	itype = 2;
 	for (auto &file : inpfile_vec)
 	{
-		vector<char> f_name = pest_utils::string_as_fortran_char_ptr(file, 180);
-		mio_put_file_w_(&ifail, &itype, &inum, f_name.data());
+		long f_name_len = 180;
+		vector<char> f_name = pest_utils::string_as_fortran_char_ptr(file, f_name_len);
+		mio_put_file_w_(&ifail, &itype, &inum, f_name.data(), &f_name_len);
 		if (ifail != 0) throw_mio_error("putting model input file" + file);
 		inum++;
 	}
@@ -72,8 +74,9 @@ void ModelInterface::set_files()
 	itype = 3;
 	for (auto &file : insfile_vec)
 	{
-		vector<char> f_name = pest_utils::string_as_fortran_char_ptr(file, 180);
-		mio_put_file_w_(&ifail, &itype, &inum, f_name.data());
+		long f_name_len = 180;
+		vector<char> f_name = pest_utils::string_as_fortran_char_ptr(file, f_name_len);
+		mio_put_file_w_(&ifail, &itype, &inum, f_name.data(), &f_name_len);
 		if (ifail != 0) throw_mio_error("putting instruction file" + file);
 		inum++;
 	}
@@ -83,8 +86,9 @@ void ModelInterface::set_files()
 	itype = 4;
 	for (auto &file : outfile_vec)
 	{
-		vector<char> f_name = pest_utils::string_as_fortran_char_ptr(file, 180);
-		mio_put_file_w_(&ifail, &itype, &inum, f_name.data());
+		long f_name_len = 180;
+		vector<char> f_name = pest_utils::string_as_fortran_char_ptr(file, f_name_len);
+		mio_put_file_w_(&ifail, &itype, &inum, f_name.data(), &f_name_len);
 		if (ifail != 0) throw_mio_error("putting model output file" + file);
 		inum++;
 	}
