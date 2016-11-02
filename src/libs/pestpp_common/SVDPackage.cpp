@@ -25,8 +25,16 @@
 
 using namespace Eigen;
 
-SVDPackage::SVDPackage(std::string _descritpion, int _n_max_sing, double _eign_thres) : description(_descritpion), n_max_sing(_n_max_sing), eign_thres(_eign_thres) {}
+SVDPackage::SVDPackage(std::string _descritpion, int _n_max_sing, double _eign_thres) : description(_descritpion), n_max_sing(_n_max_sing), eign_thres(_eign_thres) 
+{
+	performance_log = nullptr;
+}
 
+
+void SVDPackage::set_performance_log(PerformanceLog *_performance_log)
+{
+	performance_log = _performance_log;
+}
 
 void SVDPackage::set_max_sing(int _n_max_sing) {
 	n_max_sing = _n_max_sing;

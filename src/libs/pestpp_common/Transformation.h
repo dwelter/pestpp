@@ -39,6 +39,7 @@ class Jacobian;
 class QSqrtMatrix;
 class ParameterGroupInfo;
 class Parameters;
+class PerformanceLog;
 
 using namespace std;
 
@@ -303,6 +304,7 @@ public:
 	const Eigen::SparseMatrix<double>& get_vt() const;
 	void save(ostream &fout) const;
 	void read(istream &fin);
+	void set_performance_log(PerformanceLog *_performance_log);
 protected:
 	SVDPackage *tran_svd_pack;
 

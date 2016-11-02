@@ -37,6 +37,7 @@ extern "C" {
 }
 
 SVD_PROPACK::SVD_PROPACK(int _n_max_sing, double _eign_thres) : SVDPackage("PROPACK", _n_max_sing, _eign_thres)
+
 {
 }
 
@@ -81,8 +82,21 @@ void SVD_PROPACK::solve_ip(Eigen::SparseMatrix<double>& A, VectorXd &Sigma, Eige
 	double *tmp_v = new double[n_cols*kmax];
 	int nb = 1;
 	int lwork =  m_rows + n_cols + 9*kmax + 5*kmax*kmax + 4 + max(3*kmax*kmax+4*kmax+4, nb*max(m_rows,n_cols));
+	if (performance_log)
+	{
+		stringstream info_str;
+		info_str << "allocating lwork; size = " << lwork << endl;
+		performance_log->log_event(info_str.str());
+	}
 	double *tmp_work = new double[lwork];
+	//cerr << "lwork allocated" << endl;
 	int liwork = 8*kmax;
+	if (performance_log)
+	{
+		stringstream info_str;
+		info_str << "allocating tmp_iwork; size = " << liwork << endl;
+		performance_log->log_event(info_str.str());
+	}
 	int *tmp_iwork = new int[liwork];
 	iparm[0] = n_nonzero;
 	int n=0;
@@ -114,11 +128,18 @@ void SVD_PROPACK::solve_ip(Eigen::SparseMatrix<double>& A, VectorXd &Sigma, Eige
 	// Compute singluar values and vectors
 	int info=0;
 	double tolin = 1.0E-4 ;
-
+	if (performance_log)
+	{
+		performance_log->log_event("calling DEF_DLANSVD");
+	}
 	DEF_DLANSVD(&jobu, &jobv, &m_rows, &n_cols, &k, &kmax, tmp_u, &ld_tmpu, tmp_sigma, tmp_bnd,
 		   tmp_v, &ld_tmpv, &tolin, tmp_work, &lwork, tmp_iwork, &liwork, doption, ioption, &info,
 		   dparm,iparm, &jobu_len, &jobv_len);
 
+	if (performance_log)
+	{
+		performance_log->log_event("updating Vt, S and U matricies");
+	}
 	//Compute number of singular values to be used in the solution
 	int n_sing_used = 0;
 	int actual_sing = kmax;

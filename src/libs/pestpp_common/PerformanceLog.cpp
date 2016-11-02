@@ -23,6 +23,7 @@ void PerformanceLog::writetime(stringstream &os, time_t tc) {
 PerformanceLog::PerformanceLog(ofstream &_fout)
 : fout(_fout), indent_size(2), indent_level(0)
 {
+	indent_level_prev = 0;
 	prev_time = system_clock::now();
 	fout << "PEST++ performance logger started at:  " << time_to_string(prev_time) << endl;
 }
@@ -45,10 +46,12 @@ void PerformanceLog::log_event(const string &message, int delta_indent, const st
 	}
 
 	indent_level = max(0, indent_level+delta_indent);
-	fout << string(indent(), ' ') << message << endl;
-	fout << string(indent() + 8, ' ') << "( time = " << time_to_string(time_now) << ",  elapsed time = " <<
+	fout << string(indent_prev() + 8, ' ') << "( time = " << time_to_string(time_now) << ",  elapsed time = " <<
 		elapsed_time_to_string(time_now, prev_time) << " )" << endl;
+	fout << string(indent(), ' ') << message << endl;
 	prev_time = time_now;
+	indent_level_prev = indent_level;
+	fout.flush();
 }
 
 void PerformanceLog::log_summary(const string &message, const std::string &end_tag, const std::string &begin_tag, int delta_indent)
@@ -56,6 +59,8 @@ void PerformanceLog::log_summary(const string &message, const std::string &end_t
 	indent_level = max(0, indent_level + delta_indent);
 	fout << string(indent(), ' ') << message << endl;
 	fout << string(indent()+8, ' ') << "( elapsed time = " << elapsed_time_to_string(tagged_events[end_tag], tagged_events[begin_tag]) << " )" << endl;
+	indent_level_prev = indent_level;
+	fout.flush();
 }
 
 string PerformanceLog::time_to_string(const std::chrono::system_clock::time_point &tmp_time)

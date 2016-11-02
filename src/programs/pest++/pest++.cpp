@@ -381,6 +381,7 @@ int main(int argc, char* argv[])
 		{
 			tran_svd->set_SVD_pack_propack();
 		}
+		tran_svd->set_performance_log(&performance_log);
 
 		TranFixed *tr_svda_fixed = new TranFixed("SVDA Fixed Parameter Transformation");
 		trans_svda = base_trans_seq;

@@ -115,6 +115,7 @@ void SVDSolver::set_svd_package(PestppOptions::SVD_PACK _svd_pack)
 	}
 	svd_package->set_max_sing(svd_info.maxsing);
 	svd_package->set_eign_thres(svd_info.eigthresh);
+	svd_package->set_performance_log(performance_log);
 }
 
 SVDSolver::~SVDSolver(void)
@@ -396,9 +397,10 @@ void SVDSolver::calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSq
 	VectorXd Sigma_trunc;
 	Eigen::SparseMatrix<double> U;
 	Eigen::SparseMatrix<double> Vt;
-
-	Eigen::SparseMatrix<double> q_mat = Q_sqrt.get_sparse_matrix(obs_name_vec, regul);
-	q_mat = (q_mat * q_mat).eval();
+	// the last boolean arguement is an instruction to compute the square weights
+	Eigen::SparseMatrix<double> q_mat = Q_sqrt.get_sparse_matrix(obs_name_vec, regul, true);
+	// removed this line when true added to end of the previous call to get_sparce_matrix
+	//q_mat = (q_mat * q_mat).eval();
 	Eigen::SparseMatrix<double> jac = jacobian.get_matrix(obs_name_vec, numeric_par_names);
 	Eigen::SparseMatrix<double> ident;
 	ident.resize(jac.cols(), jac.cols());
@@ -425,9 +427,13 @@ void SVDSolver::calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSq
 		VectorXd S_diag = S.diagonal();
 		MatrixXd S_tmp = S_diag.asDiagonal();
 		S = S_tmp.sparseView();
-		performance_log->log_event("multiplying JtQJ matrix");
-		JtQJ = (jac * S).transpose() * q_mat * jac * S + lambda * S.transpose() * S;
-		performance_log->log_event("scaling of  JtQJ matrix complete");
+		stringstream info_str1;
+		info_str1 << "S info: " << "rows = " << S.rows() << ": cols = " << S.cols() << ": size = " << S.size() << ": nonzeros = " << S.nonZeros();
+		performance_log->log_event(info_str1.str());
+        performance_log->log_event("JS");
+        Eigen::SparseMatrix<double> JS = jac * S;
+		performance_log->log_event("JS.transpose() * q_mat * JS + lambda * S.transpose() * S");
+		JtQJ = JS.transpose() * q_mat * JS + lambda * S.transpose() * S;
 		// Returns truncated Sigma, U and Vt arrays with small singular parameters trimed off
 		performance_log->log_event("commencing SVD factorization");
 		svd_package->solve_ip(JtQJ, Sigma, U, Vt, Sigma_trunc);

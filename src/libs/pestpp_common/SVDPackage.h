@@ -22,6 +22,7 @@
 #include <string>
 #include<Eigen/Dense>
 #include<Eigen/Sparse>
+#include "PerformanceLog.h"
 
 class SVDPackage
 {
@@ -33,12 +34,13 @@ public:
 	virtual int get_max_sing();
 	virtual void set_eign_thres(double _eign_thres);
 	virtual double get_eign_thres();
-
+	virtual void set_performance_log(PerformanceLog *_performance_log);
 	virtual ~SVDPackage(void){};
 	const std::string description;
 protected:
 	int n_max_sing;
 	double eign_thres;
+	PerformanceLog *performance_log;
 };
 
 class SVD_EIGEN : public SVDPackage

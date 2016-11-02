@@ -565,6 +565,11 @@ void TranSVD::set_SVD_pack_propack()
 	tran_svd_pack = new SVD_PROPACK(max_sing, eigthresh);
 }
 
+void TranSVD::set_performance_log(PerformanceLog *performance_log)
+{
+	tran_svd_pack->set_performance_log(performance_log);
+}
+
 void TranSVD::calc_svd()
 {
 	debug_msg("TranSVD::calc_svd begin");

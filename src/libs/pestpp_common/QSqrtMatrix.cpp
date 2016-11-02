@@ -49,7 +49,7 @@ Eigen::SparseMatrix<double> QSqrtMatrix::get_sparse_matrix(const vector<string> 
 	double weight = 0;
 	double tikhonov_weight = 1.0;
 	const string *group = nullptr;
-	// PEST convention is the the weights are 1/standard deviation but the regualrizatio weight is the square
+	// PEST convention is the the weights are 1/standard deviation but the regularization weight is the square
 	// of this
 	bool use_regul = regul.get_use_dynamic_reg();
 	if (use_regul) tikhonov_weight = sqrt(regul.get_weight());

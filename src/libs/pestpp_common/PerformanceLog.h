@@ -18,10 +18,12 @@ public:
 private:
 	std::ofstream &fout;
 	std::chrono::system_clock::time_point prev_time;
+	int indent_level_prev;
 	int indent_level;
 	int indent_size;
 	std::map<std::string, std::chrono::system_clock::time_point> tagged_events;
 	int indent() { return indent_level * indent_size; }
+	int indent_prev() { return indent_level_prev * indent_size; }
 	std::string time_to_string(const std::chrono::system_clock::time_point &tmp_time);
 	std::string elapsed_time_to_string(std::chrono::system_clock::time_point &current_time, std::chrono::system_clock::time_point &prev_time);
 	void writetime(std::stringstream &os, time_t tc);
