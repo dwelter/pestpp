@@ -22,7 +22,7 @@ public:
 	void initialize_and_check();
 	void solve();
 
-	sequentialLP::~sequentialLP();
+	~sequentialLP();
 	//ModelRun get_optimum_run() { return optimum_run; }
 
 private:
