@@ -122,7 +122,7 @@ bool Jacobian_1to1::build_runs(ModelRun &init_model_run, vector<string> numeric_
 		RunManagerAbstract &run_manager, set<string> &out_of_bound_par, bool phiredswh_flag, bool calc_init_obs)
 {
 	Parameters pars = init_model_run.get_ctl_pars();
-	Observations obs = init_model_run.get_obs();
+	Observations obs = init_model_run.get_obs_template();
 	return build_runs(pars, obs, numeric_par_names, par_transform, group_info, ctl_par_info, run_manager, out_of_bound_par, phiredswh_flag, calc_init_obs);
 }
 

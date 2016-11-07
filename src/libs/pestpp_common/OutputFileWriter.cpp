@@ -111,6 +111,8 @@ void OutputFileWriter::prepare_iteration_summary_files(bool restart_flag)
 
 void OutputFileWriter::write_sen_iter(int iter, map<string, double> &ctl_par_sens)
 {
+	if (!pest_scenario.get_pestpp_options().get_iter_summary_flag())
+		return;
 	ofstream &os = file_manager.get_ofstream("isen");
 	os << iter;
 	map<string, double>::iterator is;
@@ -127,6 +129,8 @@ void OutputFileWriter::write_sen_iter(int iter, map<string, double> &ctl_par_sen
 
 void OutputFileWriter::write_par_iter(int iter, Parameters const &ctl_pars)
 {
+	if (!pest_scenario.get_pestpp_options().get_iter_summary_flag())
+		return;
 	ofstream &os = file_manager.get_ofstream("ipar");
 	os << iter;
 	for (auto &par_name : pest_scenario.get_ctl_ordered_par_names())
@@ -138,6 +142,8 @@ void OutputFileWriter::write_par_iter(int iter, Parameters const &ctl_pars)
 
 void OutputFileWriter::write_obj_iter(int iter, int nruns, map<string, double> const &phi_report)
 {
+	if (!pest_scenario.get_pestpp_options().get_iter_summary_flag())
+		return;
 	ofstream &os = file_manager.get_ofstream("iobj");
 	os << iter << ',' << nruns;
 	os << ',' << phi_report.at("TOTAL");
