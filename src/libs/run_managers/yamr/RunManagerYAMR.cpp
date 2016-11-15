@@ -451,8 +451,9 @@ void RunManagerYAMR::run()
 	cout << message.str() << endl << endl;
 	f_rmr << endl << "---------------------" << endl << message.str() << endl << endl;
 
-	if (model_runs_done == 0)
-		throw PestError("no runs completed successfully");
+	//Removed because it was preventing the restart from functioning properly 
+	//if (model_runs_done == 0)
+	//	throw PestError("no runs completed successfully");
 	
 	if (init_sim.size() == 0)
 	{

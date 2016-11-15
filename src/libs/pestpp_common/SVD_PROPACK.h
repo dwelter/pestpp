@@ -32,7 +32,6 @@ public:
 	void test();
 	~SVD_PROPACK(void);
 private:
-	PerformanceLog *performance_log;
 };
 
 #endif /*SVD_PROPACK_H_*/
