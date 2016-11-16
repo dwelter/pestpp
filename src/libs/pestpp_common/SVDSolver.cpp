@@ -109,10 +109,17 @@ void SVDSolver::set_svd_package(PestppOptions::SVD_PACK _svd_pack)
 		delete svd_package;
 		svd_package = new SVD_PROPACK;
 	}
-	else {
+	else if (_svd_pack == PestppOptions::EIGEN){
 		delete svd_package;
 		svd_package = new SVD_EIGEN;
 	}
+	else if (_svd_pack == PestppOptions::REDSVD)
+	{
+		delete svd_package;
+		svd_package = new SVD_REDSVD;
+
+	}
+
 	svd_package->set_max_sing(svd_info.maxsing);
 	svd_package->set_eign_thres(svd_info.eigthresh);
 	svd_package->set_performance_log(performance_log);

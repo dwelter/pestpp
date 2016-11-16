@@ -41,6 +41,7 @@
     <ClInclude Include="pest_data_structs.h" />
     <ClInclude Include="PriorInformation.h" />
     <ClInclude Include="QSqrtMatrix.h" />
+    <ClInclude Include="RedSVD-h.h" />
     <ClInclude Include="Regularization.h" />
     <ClInclude Include="RestartController.h" />
     <ClInclude Include="SVDASolver.h" />

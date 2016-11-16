@@ -340,7 +340,17 @@ void PestppOptions::parce_line(const string &line)
 			convert_ip(value, n_iter_super); 
 		}
 		else if (key=="SVD_PACK"){
-			if(value == "PROPACK") svd_pack = PROPACK;
+
+			if (value == "PROPACK")
+				svd_pack = PROPACK;
+			else if (value == "REDSVD")
+				svd_pack = REDSVD;
+			else if ((value == "EIGEN") || (value == "JACOBI"))
+				svd_pack == EIGEN;
+			else
+				throw PestParsingError(line, "Invalid ++svd_pack: \"" + value + "\"");
+
+
 		}
 		else if (key=="AUTO_NORM"){
 			convert_ip(value, auto_norm); 

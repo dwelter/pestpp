@@ -193,7 +193,7 @@ public:
 
 class PestppOptions {
 public:
-	enum SVD_PACK{EIGEN, PROPACK};
+	enum SVD_PACK{EIGEN, PROPACK, REDSVD};
 	enum MAT_INV{Q12J, JTQJ};
 	enum GLOBAL_OPT { NONE, OPT_DE};
 	PestppOptions(int _n_iter_base = 50, int _n_iter_super = 0, int _max_n_super = 50,

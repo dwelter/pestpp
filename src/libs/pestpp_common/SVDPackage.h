@@ -53,4 +53,15 @@ public:
 };
 
 
+class SVD_REDSVD : public SVDPackage
+{
+public:
+	SVD_REDSVD(int _n_max_sing = 1000, double _eign_thres = 1.0e-7) : SVDPackage("RedSVD", _n_max_sing, _eign_thres) {}
+	virtual void solve_ip(Eigen::SparseMatrix<double>& A, Eigen::VectorXd &Sigma, Eigen::SparseMatrix<double>& U, 
+		Eigen::SparseMatrix<double>& VT, Eigen::VectorXd &Sigma_trunc);
+	virtual void solve_ip(Eigen::SparseMatrix<double>& A, Eigen::VectorXd &Sigma, Eigen::SparseMatrix<double>& U, 
+		Eigen::SparseMatrix<double>& VT, Eigen::VectorXd &Sigma_trunc, double _eigen_thres);
+	virtual ~SVD_REDSVD(void) {}
+};
+
 #endif //SVDPACKAGE_H_
