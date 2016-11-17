@@ -125,7 +125,7 @@ protected:
 	double reg_frac;
 	Covariance parcov;
 	double parcov_scale_fac;
- 
+	Eigen::SparseMatrix<double> JS;
 	virtual void limit_parameters_ip(const Parameters &init_active_ctl_pars, Parameters &upgrade_active_ctl_pars,
 		LimitType &limit_type, const Parameters &frozen_ative_ctl_pars);
 	virtual Parameters limit_parameters_freeze_all_ip(const Parameters &init_active_ctl_pars,

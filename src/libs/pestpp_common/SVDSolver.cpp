@@ -426,38 +426,58 @@ void SVDSolver::calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSq
 	Eigen::VectorXd upgrade_vec;
 	if (marquardt_type == MarquardtMatrix::IDENT)
 	{
-		//Compute Scaling Matrix Sii
-		performance_log->log_event("commencing to scale JtQJ matrix");
-		svd_package->solve_ip(JtQJ, Sigma, U, Vt, Sigma_trunc, 0.0);
-		VectorXd Sigma_inv_sqrt = Sigma.array().inverse().sqrt();
-		Eigen::SparseMatrix<double> S = Vt.transpose() * Sigma_inv_sqrt.asDiagonal() * U.transpose();
-		VectorXd S_diag = S.diagonal();
-		MatrixXd S_tmp = S_diag.asDiagonal();
-		S = S_tmp.sparseView();
-		stringstream info_str1;
-		info_str1 << "S info: " << "rows = " << S.rows() << ": cols = " << S.cols() << ": size = " << S.size() << ": nonzeros = " << S.nonZeros();
-		performance_log->log_event(info_str1.str());
-        performance_log->log_event("JS");
-        Eigen::SparseMatrix<double> JS = jac * S;
-		performance_log->log_event("JS.transpose() * q_mat * JS + lambda * S.transpose() * S");
-		JtQJ = JS.transpose() * q_mat * JS + lambda * S.transpose() * S;
+		stringstream info_str;
+		bool recalc_js = false;
+		Eigen::SparseMatrix<double> S;
+
+		if (lambda != 0.0)
+		{
+			//Compute Scaling Matrix Sii
+			performance_log->log_event("commencing to scale JtQJ matrix");
+			svd_package->solve_ip(JtQJ, Sigma, U, Vt, Sigma_trunc, 0.0);
+			VectorXd Sigma_inv_sqrt = Sigma.array().inverse().sqrt();
+			S = Vt.transpose() * Sigma_inv_sqrt.asDiagonal() * U.transpose();
+			VectorXd S_diag = S.diagonal();
+			MatrixXd S_tmp = S_diag.asDiagonal();
+			S = S_tmp.sparseView();
+			stringstream info_str1;
+			info_str1 << "S info: " << "rows = " << S.rows() << ": cols = " << S.cols() << ": size = " << S.size() << ": nonzeros = " << S.nonZeros();
+			performance_log->log_event(info_str1.str());
+			performance_log->log_event("JS");
+			JS = jac * S;
+			performance_log->log_event("JS.transpose() * q_mat * JS + lambda * S.transpose() * S");
+			JtQJ = JS.transpose() * q_mat * JS + lambda * S.transpose() * S;
+			info_str.str("");
+			info_str << "S info: " << "rows = " << S.rows() << ": cols = " << S.cols() << ": size = " << S.size() << ": nonzeros = " << S.nonZeros();
+			performance_log->log_event(info_str.str());
+			recalc_js = true;
+		}
+
+		
+
 		// Returns truncated Sigma, U and Vt arrays with small singular parameters trimed off
 		performance_log->log_event("commencing SVD factorization");
 		svd_package->solve_ip(JtQJ, Sigma, U, Vt, Sigma_trunc);
 		performance_log->log_event("SVD factorization complete");
 
+		if (!recalc_js)
+		{
+			VectorXd Sigma_inv_sqrt = Sigma.array().inverse().sqrt();
+			S = Vt.transpose() * Sigma_inv_sqrt.asDiagonal() * U.transpose();
+			VectorXd S_diag = S.diagonal();
+			MatrixXd S_tmp = S_diag.asDiagonal();
+			S = S_tmp.sparseView();
+		}
+
 		output_file_writer.write_svd(Sigma, Vt, lambda, prev_frozen_active_ctl_pars, Sigma_trunc);
 
 		VectorXd Sigma_inv = Sigma.array().inverse();
 		performance_log->log_event("commencing linear algebra multiplication to compute ugrade");
-		stringstream info_str;
+		
 		info_str << "Vt info: " << "rows = " << Vt.rows() << ": cols = " << Vt.cols() << ": size = " << Vt.size() << ": nonzeros = " << Vt.nonZeros();
 		performance_log->log_event(info_str.str());
 		info_str.str("");
 		info_str << "U info: " << "rows = " << U.rows() << ": cols = " << U.cols() << ": size = " << U.size() << ": nonzeros = " << U.nonZeros();
-		performance_log->log_event(info_str.str());
-		info_str.str("");
-		info_str << "S info: " << "rows = " << S.rows() << ": cols = " << S.cols() << ": size = " << S.size() << ": nonzeros = " << S.nonZeros();
 		performance_log->log_event(info_str.str());
 		info_str.str("");
 		info_str << "jac info: " << "rows = " << jac.rows() << ": cols = " << jac.cols() << ": size = " << jac.size() << ": nonzeros = " << jac.nonZeros();
