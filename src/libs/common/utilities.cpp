@@ -332,6 +332,63 @@ vector<string> fortran_str_array_2_vec(char *fstr, int str_len, int array_len)
 	return str_vec;
 }
 
+//template <class dataType>
+//void read_twocol_ascii_to_map(map<string,dataType> &result, string filename, int header_lines, int data_col)
+//{
+//	map<string, dataType> result;
+//	ifstream fin(filename);
+//	if (!fin.good())
+//		throw runtime_error("could not open file " + filename + " for reading");
+//	string line;
+//	dataType value;
+//	vector<string> tokens;
+//	for (int i = 0; i < header_lines; i++)
+//		getline(fin, line);
+//	while (getline(fin, line))
+//	{
+//		strip_ip(line);
+//		if (line.at(0) == '#')
+//			continue;
+//		tokens.clear();
+//		tokenize(line, tokens, "\t\r, ");
+//		//only use the first two columns of file
+//		if (tokens.size() < data_col + 1)
+//			throw runtime_error("not enough entries on line :" + line);
+//		convert_ip(tokens[data_col], value);
+//		result[tokens[0]] = value;
+//	}
+//	return;
+//}
+
+map<string, double> read_twocol_ascii_to_map(string filename, int header_lines, int data_col)
+{
+	map<string, double> result;
+	ifstream fin(filename);
+	if (!fin.good())
+		throw runtime_error("could not open file " + filename + " for reading");
+	string line;
+	double value;
+	vector<string> tokens;
+	for (int i = 0; i < header_lines; i++)
+		getline(fin, line);
+	while (getline(fin, line))
+	{
+		strip_ip(line);
+		if ((line.size() == 0) || (line.at(0) == '#'))
+			continue;
+		tokens.clear();
+		tokenize(line, tokens,"\t\r, ");
+		//only use the first two columns of file
+		if (tokens.size() < data_col + 1)
+			throw runtime_error("not enough entries on line :" + line);
+		convert_ip(tokens[data_col], value);
+		result[tokens[0]] = value;
+	}
+	fin.close();
+	return result;
+}
+
+
 void read_par(ifstream &fin, Parameters &pars)
 {
 	string line;
@@ -408,6 +465,9 @@ void  thread_exceptions::rethrow()
 		std::rethrow_exception(iex);
 	}
 }
+
+
+
 
 } // end of namespace pest_utils
 

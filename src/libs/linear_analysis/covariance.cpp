@@ -776,11 +776,16 @@ void Mat::drop_rows(const vector<string> &drop_row_names)
 			if (find(drop_row_names.begin(), drop_row_names.end(), name) == drop_row_names.end())
 				new_row_names.push_back(name);
 	}
-	
-	Mat new_mat = get(new_row_names, col_names);
-	matrix = new_mat.get_matrix();
+	if (new_row_names.size() == 0)
+		matrix = Eigen::SparseMatrix<double>();
+	else
+	{
+		Mat new_mat = get(new_row_names, col_names);
+		matrix = new_mat.get_matrix();
+		mattype = new_mat.get_mattype();
+	}
 	row_names = new_row_names;
-	mattype = new_mat.get_mattype();
+	
 }
 
 
@@ -1045,16 +1050,16 @@ void Covariance::from_uncertainty_file(const string &filename)
 	col_names = names;
 }
 
-void Covariance::from_parameter_bounds(Pest &pest_scenario)
+void Covariance::from_parameter_bounds(const vector<string> &par_names,const ParameterInfo &par_info)
 {
 	vector<Eigen::Triplet<double>> triplet_list;
 	const ParameterRec* par_rec;
 	int i = 0;
 	double upper, lower;
-	for (auto par_name : pest_scenario.get_ctl_ordered_par_names())
+	for (auto par_name : par_names)
 	{
 		pest_utils::upper_ip(par_name);
-		par_rec = pest_scenario.get_ctl_parameter_info().get_parameter_rec_ptr(par_name);
+		par_rec = par_info.get_parameter_rec_ptr(par_name);
 		upper = par_rec->ubnd;
 		lower = par_rec->lbnd;
 		if (par_rec->tranform_type == ParameterRec::TRAN_TYPE::LOG)
@@ -1080,6 +1085,13 @@ void Covariance::from_parameter_bounds(Pest &pest_scenario)
 		throw runtime_error("Cov::from_parameter_bounds() error:Error loading covariance from parameter bounds: no non-fixed/non-tied parameters found");
 	}
 	mattype = Mat::MatType::DIAGONAL;
+}
+
+
+
+void Covariance::from_parameter_bounds(Pest &pest_scenario)
+{
+	from_parameter_bounds(pest_scenario.get_ctl_ordered_par_names(), pest_scenario.get_ctl_parameter_info());
 }
 
 void Covariance::from_parameter_bounds(const string &pst_filename)

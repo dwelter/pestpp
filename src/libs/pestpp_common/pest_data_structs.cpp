@@ -139,6 +139,13 @@ const ParameterGroupInfo& ParameterGroupInfo::operator=(const ParameterGroupInfo
 	return *this;
 }
 
+vector<string> ParameterGroupInfo::get_group_names() const
+{
+	vector<string> group_names;
+	for (auto &g : groups)
+		group_names.push_back(g.first);
+	return group_names;
+}
 
 bool ParameterGroupInfo::have_switch_derivative() const
 {
@@ -500,6 +507,77 @@ void PestppOptions::parce_line(const string &line)
 			istringstream is(value);
 			is >> boolalpha >> de_dither_f;
 		}
+		else if ((key == "OPT_OBJ_FUNC") || (key == "OPT_OBJECTIVE_FUNCTION"))
+		{
+			convert_ip(value,opt_obj_func);
+		}
+		else if (key == "OPT_COIN_LOG")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> opt_coin_log;
+		}
+	
+		else if ((key == "OPT_DEC_VAR_GROUPS") || (key == "OPT_DECISION_VARIABLE_GROUPS"))
+		{
+			opt_dec_var_groups.clear();
+			vector<string> tok;
+			tokenize(value, tok, ", ");
+			for (const auto &name : tok)
+			{
+				opt_dec_var_groups.push_back(name);
+			}
+		}
+
+		else if ((key == "OPT_EXT_VAR_GROUPS") || (key == "OPT_EXTERNAL_VARIABLE_GROUPS"))
+		{
+			opt_external_var_groups.clear();
+			vector<string> tok;
+			tokenize(value, tok, ", ");
+			for (const auto &name : tok)
+			{
+				opt_external_var_groups.push_back(name);
+			}
+		}
+
+		else if ((key == "OPT_CONSTRAINT_GROUPS"))
+		{
+			opt_constraint_groups.clear();
+			vector<string> tok;
+			tokenize(value, tok, ", ");
+			for (const auto &name : tok)
+			{
+				opt_constraint_groups.push_back(name);
+			}
+		}
+		
+		else if (key == "OPT_RISK")
+		{
+			convert_ip(value, opt_risk);
+		}
+
+		else if (key == "OPT_DIRECTION")
+		{
+			string v;
+			convert_ip(value,v);
+			if (v == "MAX")
+				opt_direction = -1;
+			else if (v == "MIN")
+				opt_direction = 1;
+			else
+				throw runtime_error("++opt_direction arg must be in {MAX,MIN}, not " + v);
+		}
+
+		else if (key == "OPT_ITER_TOL")
+		{
+			convert_ip(value, opt_iter_tol);
+		}
+
+		else if (key == "OPT_RECALC_FOSM_EVERY")
+		{
+			convert_ip(value, opt_recalc_fosm_every);
+		}
+
 
 		else {
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");

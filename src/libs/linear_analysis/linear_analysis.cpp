@@ -442,6 +442,14 @@ linear_analysis::linear_analysis(Mat* _jacobian, Pest* pest_scenario, Logger* _l
 	
 }
 
+void  linear_analysis::set_parcov(Mat* _parcov)
+{
+	parcov = *_parcov;
+	//check that everything is kosher
+	//vector<string> missing;
+	//bool aligned = true;
+	//if (jacobian.get_col_names().size() != _parcov.get_row_names.size())
+}
 
 linear_analysis::linear_analysis(Mat* _jacobian, Pest* pest_scenario, Mat* _obscov, Logger* _log)
 {
@@ -994,6 +1002,10 @@ void linear_analysis::calc_posterior()
 }
 
 
+void linear_analysis::set_predictions(Mat* preds)
+{
+
+}
 
 void linear_analysis::set_predictions(vector<string> preds)
 {
@@ -1024,7 +1036,7 @@ void linear_analysis::set_predictions(vector<string> preds)
 				cerr << endl << "WARNING: Prediction " + pred + " has no non-zero entries in jacobian. " << endl;
 				cerr << "         This mean that the adjustable parameters have no effect on " << endl;
 				cerr << "         prediction " + pred + ".  The uncertainty for this prediction " << endl;
-				cerr << "         is essential infinite." << endl << endl;
+				cerr << "         is essentially infinite." << endl << endl;
 			}
 			mpred.transpose_ip();
 			predictions[pred] = mpred;

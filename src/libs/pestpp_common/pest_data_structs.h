@@ -104,6 +104,7 @@ public:
 	string get_group_name(const string &par_name) const;
 	const ParameterGroupInfo& operator=(const ParameterGroupInfo &rhs);
 	bool have_switch_derivative() const;
+	vector<string> get_group_names() const;
 	~ParameterGroupInfo();
 private:
 	unordered_map<string, ParameterGroupRec*> groups;
@@ -200,7 +201,7 @@ public:
 		double _super_eigthres = 1.0E-6, SVD_PACK _svd_pack = PestppOptions::EIGEN,
 		MAT_INV _mat_inv = PestppOptions::JTQJ, double _auto_norm = -999,
 		double _super_relparmax = 0.1, int max_run_fail = 3,
-		bool iter_summary_flag = true, bool der_forgive = true,
+		bool iter_summary_flag = false, bool der_forgive = true,
 		double overdue_reched_fac = 1.15, double overdue_giveup_fac = 100, double reg_frac = -1.0,
 		GLOBAL_OPT _global_opt = PestppOptions::NONE, 
 		double _de_f=0.8, double _de_cr=0.9, int _de_npopulation=40, int _de_max_gen=100, bool _de_dither_f=true);
@@ -237,7 +238,7 @@ public:
 	void set_max_run_fail(int _max_run_fail){ max_run_fail = _max_run_fail; }
 	void set_max_super_frz_iter(int n) { max_super_frz_iter = n; }
 	void set_max_reg_iter(int n) { max_reg_iter = n; }	
-	void set_iter_summary_flag(bool _iter_summary_flag){iter_summary_flag = _iter_summary_flag;}
+	void set_iter_summary_flag(bool _iter_summary_flag) {iter_summary_flag = _iter_summary_flag;}
 	void set_uncert_flag(bool _flag){uncert = _flag; }
 	bool get_uncert_flag()const { return uncert; }
 	void set_prediction_names(vector<string> _names){ prediction_names = _names; }
@@ -265,6 +266,25 @@ public:
 	//void set_use_parcov_scaling(bool _scale) { use_parcov_scaling = _scale; }
 	double get_parcov_scale_fac() const { return parcov_scale_fac; }
 	void set_parcov_scale_fac(double _fac) { parcov_scale_fac = _fac; }
+	string get_opt_obj_func()const  { return opt_obj_func; }
+	void set_opt_obj_func(string _opt_obj_func) { opt_obj_func = _opt_obj_func; }
+	bool get_opt_coin_log()const { return opt_coin_log; }
+	void set_opt_coin_log(bool _log) { opt_coin_log = _log; }
+	vector<string> get_opt_dec_var_groups()const { return opt_dec_var_groups; }
+	void set_opt_dec_var_groups(vector<string> _grps) { opt_dec_var_groups = _grps; }
+	vector<string> get_opt_ext_var_groups()const { return opt_external_var_groups; }
+	void set_opt_ext_var_groups(vector<string> _grps) { opt_external_var_groups = _grps; }
+	vector<string> get_opt_constraint_groups()const { return opt_constraint_groups; }
+	void set_opt_constraint_groups(vector<string> _grps) { opt_constraint_groups = _grps; }
+	double get_opt_risk()const { return opt_risk; }
+	void set_opt_risk(double _risk) { opt_risk = _risk; }
+	double get_opt_direction()const { return opt_direction; }
+	void set_opt_direction(double _direction) { opt_direction = _direction; }
+	double get_opt_iter_tol()const { return opt_iter_tol; }
+	void set_opt_iter_tol(double _tol) { opt_iter_tol = _tol; }
+	int get_opt_recalc_fosm_every()const { return opt_recalc_fosm_every; }
+	void set_opt_recalc_fosm_every(int _every) { opt_recalc_fosm_every = _every; }
+
 
 private:
 	int n_iter_base;
@@ -302,6 +322,17 @@ private:
 	int de_npopulation;
 	int de_max_gen;
 	bool de_dither_f;
+
+	string opt_obj_func;
+	bool opt_coin_log;
+	vector<string> opt_dec_var_groups;
+	vector<string> opt_external_var_groups;
+	vector<string> opt_constraint_groups;
+	double opt_risk;
+	double opt_direction;
+	double opt_iter_tol;
+	int opt_recalc_fosm_every;
+
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);
 ostream& operator<< (ostream &os, const ObservationInfo& val);

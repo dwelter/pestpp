@@ -24,6 +24,9 @@ public:
 	virtual bool build_runs(ModelRun &model_run, vector<string> numeric_par_names, ParamTransformSeq &par_transform,
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
 		RunManagerAbstract &run_manager, set<string> &out_of_bound_par, bool phiredswh_flag=false, bool calc_init_obs=true);
+	virtual bool build_runs(Parameters &ctl_pars, Observations &ctl_obs, vector<string> numeric_par_names, ParamTransformSeq &par_transform,
+		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info,
+		RunManagerAbstract &run_manager, set<string> &out_of_bound_par, bool phiredswh_flag = false, bool calc_init_obs = true);
 	virtual void make_runs(RunManagerAbstract &run_manager);
 	virtual bool process_runs(ParamTransformSeq &par_transform,
 		const ParameterGroupInfo &group_info, 

@@ -52,6 +52,7 @@
 #include "logger.h"
 #include "covariance.h"
 
+
 using namespace std;
 using namespace pest_utils;
 
@@ -648,7 +649,7 @@ int main(int argc, char* argv[])
 		output_file_writer.par_report(fout_rec, optimum_run.get_ctl_pars());
 
 		fout_rec << endl << "  Observations with optimal model-simulated equivalents and residuals" << endl;
-		output_file_writer.obs_report(fout_rec, *obj_func.get_obs_ptr(), optimum_run.get_obs(), obj_func);
+		output_file_writer.obs_report(fout_rec, *obj_func.get_obs_ptr(), optimum_run.get_obs());
 
 		fout_rec << endl << "Final composite objective function " << endl;
 		map<string, double> phi_report = obj_func.phi_report(optimum_run.get_obs(), optimum_run.get_ctl_pars(), *(pest_scenario.get_regul_scheme_ptr()));

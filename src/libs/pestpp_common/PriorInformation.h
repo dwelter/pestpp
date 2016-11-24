@@ -45,11 +45,14 @@ public:
 		const std::vector<PIAtom> _pi_atoms = std::vector<PIAtom>());
 	const PriorInformationRec& operator=(const PriorInformationRec &rhs);
 	double calc_residual(const Parameters &pars) const;
+	std::pair<double, double> calc_residual_and_sim_val(const Parameters &pars) const;
 	bool is_regularization() const;
 	double get_weight()const {return weight;}
 	double get_obs_value()const {return pival;}
 	const std::string& get_group() const{return group;}
 	const std::string *get_group_ptr() const{return &group;}
+	std::map<std::string, double> get_atom_factors();
+	std::vector<PIAtom> get_atoms()const { return pi_atoms; }
 	~PriorInformationRec(void);
 private:
 	std::vector<PIAtom> pi_atoms;
@@ -67,12 +70,14 @@ public:
 	PriorInformation() {}	
 	~PriorInformation() {}
 	std::pair<std::string, std::string> AddRecord(const std::string &pi_line);
+	void AddRecord(const std::string &name, const PriorInformationRec* pi_rec_ptr);
 	PriorInformation::iterator begin(){return prior_info_map.begin();}
 	PriorInformation::const_iterator begin() const {return prior_info_map.begin();}
 	PriorInformation::iterator end() {return prior_info_map.end();}
 	PriorInformation::const_iterator end() const {return prior_info_map.end();}
 	PriorInformation::const_iterator find(const std::string &key) const {return  prior_info_map.find(key);}
 	PriorInformation::iterator find(const std::string &key) {return  prior_info_map.find(key);}
+	PriorInformationRec get_pi_rec_ptr(std::string name)const { return prior_info_map.at(name); }
 	size_t size() const {return prior_info_map.size();}
 	std::vector<std::string> get_keys() const;
 private:

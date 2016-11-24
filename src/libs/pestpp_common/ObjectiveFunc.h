@@ -42,6 +42,8 @@ public:
 class ObjectiveFunc
 {
 public:
+	ObjectiveFunc() { ; }
+
 	ObjectiveFunc(const Observations *_observations_ptr, const ObservationInfo *_obs_info_ptr, const PriorInformation *_prior_info_ptr) 
 		: observations_ptr(_observations_ptr), obs_info_ptr(_obs_info_ptr), prior_info_ptr(_prior_info_ptr) {} 
 	

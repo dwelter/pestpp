@@ -256,8 +256,9 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	base_par_transform.push_back_ctl2active_ctl(t_fixed);
 	base_par_transform.push_back_active_ctl2numeric(t_log);
 	base_par_transform.push_back_active_ctl2numeric(t_auto_norm);
-
+#ifndef _DEBUG
 	try {
+#endif
 	prior_info_string = "";
 	for(lnum=1, sec_begin_lnum=1; getline(fin, line); ++ lnum)
 	{
@@ -564,6 +565,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 		}
 		prior_info_string.clear();
 	}
+#ifndef _DEBUG
 	}
 	catch (PestConversionError &e) {
 		std::stringstream out;
@@ -572,6 +574,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 		e.add_front(out.str());
 		e.raise();
 	}
+#endif
 	fin.close();
 	// process pest++ options last
 	pestpp_options.set_n_iter_super(0);
@@ -591,6 +594,15 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_sweep_chunk(500);
 	//pestpp_options.set_use_parcov_scaling(false);
 	pestpp_options.set_parcov_scale_fac(-999.0);
+	pestpp_options.set_opt_obj_func("");
+	pestpp_options.set_opt_coin_log(true);
+	pestpp_options.set_opt_dec_var_groups(vector<string>());
+	pestpp_options.set_opt_ext_var_groups(vector<string>());
+	pestpp_options.set_opt_constraint_groups(vector<string>());
+	pestpp_options.set_opt_risk(0.5);
+	pestpp_options.set_opt_direction(1.0);
+	pestpp_options.set_opt_iter_tol(0.001);
+	pestpp_options.set_opt_recalc_fosm_every(1);
 	for(vector<string>::const_iterator b=pestpp_input.begin(),e=pestpp_input.end();
 		b!=e; ++b) {
 			pestpp_options.parce_line(*b);

@@ -53,6 +53,13 @@ const PriorInformationRec& PriorInformationRec::operator=(const PriorInformation
 	return *this;
 }
 
+map<string, double> PriorInformationRec::get_atom_factors()
+{
+	map<string, double> piatom_factors;
+	for (auto &piatom : pi_atoms)
+		piatom_factors[piatom.par_name] = piatom.factor;
+	return piatom_factors;
+}
 
 double PriorInformationRec::calc_residual(const Parameters &pars) const
 {
@@ -70,6 +77,25 @@ double PriorInformationRec::calc_residual(const Parameters &pars) const
 		}
 	}
 	return (sim_value - pival);
+}
+
+
+pair<double,double> PriorInformationRec::calc_residual_and_sim_val(const Parameters &pars) const
+{
+	double sim_value = 0;
+	double par_value;
+	Parameters::const_iterator p_iter;
+	for (vector<PIAtom>::const_iterator b = pi_atoms.begin(), e = pi_atoms.end();
+		b != e; ++b) {
+		par_value = pars.get_rec((*b).par_name);
+		if ((*b).log_trans) {
+			sim_value += (*b).factor * log10(par_value);
+		}
+		else {
+			sim_value += (*b).factor * par_value;
+		}
+	}
+	return pair<double,double>(sim_value,(sim_value - pival));
 }
 
 bool PriorInformationRec::is_regularization() const
@@ -109,6 +135,13 @@ ostream& operator<< (ostream& out, const PriorInformationRec &rhs)
 			out << endl;
 	}
 	return out;
+}
+
+void PriorInformation::AddRecord(const string &name, const PriorInformationRec* pi_rec_ptr)
+{
+	PriorInformationRec pi_rec(pi_rec_ptr->get_obs_value(), pi_rec_ptr->get_weight(), pi_rec_ptr->get_group(), pi_rec_ptr->get_atoms());
+	prior_info_map[name] = pi_rec;
+
 }
 
 pair<string,string> PriorInformation::AddRecord(const string &pi_line)
