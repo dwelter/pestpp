@@ -287,6 +287,20 @@ ostream& operator<< (ostream &os, const PestppOptions& val)
 	os << "    run overdue giveup factor = " << left << setw(20) << val.get_overdue_giveup_fac() << endl;
 	os << "    base parameter jacobian filename = " << left << setw(20) << val.get_basejac_filename() << endl;
 	os << "    prior parameter covariance upgrade scaling factor = " << left << setw(10) << val.get_parcov_scale_fac() << endl;
+	os << "    sweep parameter csv file = " << left << setw(50) << val.get_sweep_parameter_csv_file() << endl;
+	os << "    sweep output csv file = " << left << setw(50) << val.get_sweep_output_csv_file() << endl;
+	os << "    sweep chunk size = " << left << setw(10) << val.get_sweep_chunk() << endl;
+	os << "    sweep base run = " << left << setw(10) << val.get_sweep_base_run() << endl;
+	os << "    sweep forgive failed runs = " << left << setw(10) << val.get_sweep_forgive() << endl;
+	if (val.get_global_opt() == PestppOptions::GLOBAL_OPT::OPT_DE)
+	{
+		os << "    global optimizer = differential evolution (DE)" << endl;
+		os << "    DE CR = " << left << setw(10) << val.get_de_cr() << endl;
+		os << "    DE F = " << left << setw(10) << val.get_de_f() << endl;
+		os << "    DE population size = " << setw(10) << val.get_de_npopulation() << endl;
+		os << "    DE max generations = " << setw(10) << val.get_de_max_gen() << endl;
+		os << "    DE F dither = " << left << setw(10) << val.get_de_dither_f() << endl;
+	}
 	os << endl;
 	return os;
 }
