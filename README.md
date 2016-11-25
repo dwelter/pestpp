@@ -4,7 +4,7 @@ Object Oriented Inverse Modeling Software
 ##Overview
 PEST++ can be compiled for PC, MAC, or Linux and has several run managers to support parallelization.  PEST++ implements "on-the-fly" subspace reparameterization, effectively reproducing the SVD-Assist methodology of PEST without any user intervention.  The user simply specifies how frequently a base Jacobian should be recalculated.  PEST++ also includes automatic Bayes linear parameter and forecast uncertainty estimation, which is completed for free at the end of the PEST++ run.  Also included in PEST++ are global sensitivity analysis codes that implement the method of Morris and the method of Sobol.  Both of these codes include a parallel run manager as well and are fully compatible with the PEST model-independent framework.
 
-##Under Developement
+##Under Development
 * optimization within the PEST model-independent framework, including chance constraints from Bayes Linear estimation
 * global optimization and inversion with Differential Evolution
 * new ways to enforce regularization as component of the composite objective function and in the linear algebra of the inversion problem
@@ -14,7 +14,19 @@ If any of these items are of interest to you, we are looking for contributors!
 Visit the <a href="http://www.pestpp.org">homepage </a> to download the most recent pre-compiled version 
 
 ##Recent Updates
-<b>Update 05/26/2016</b>: PEST++ V3 has been officially released.  It supports a number of really cool features, including global sensitivity analyses, and automatic Bayes linear (first-order, second-moment) parameter and forecast uncertainty estimates.  We also have a utility for fully-parallel parameteric sweeps from csv-based parameter files, which is useful for Monte Carlo, design of experiments, surrogate construction, etc.  All of these tools are based on the model-independent communication framework of PEST, so if you have a problem already setup, these tools are ready for you!
+<b>update 11/25/2016</b>: PEST++ version 3.6 is now available. Some of the many enhancements available in 3.6 include:
+
+* a new approach to implementing regularization. Rather than using the standard pest control file parameters such as ``phimlim``, ``fracphim``, etc, we now offer a single pest++ argument, ``++reg_frac()``, that allows users to specify what fraction  of the composite objective function should be regularization penalty. For example, ``++reg_frac(0.5)`` would result in equal parts data misfit and regularization penalty, which results in the *maximum a posteriori* (MAP) parameter estimate. Using ``++reg_frac()`` will result in substantial speed ups during the lambda calculation process
+
+* a new program for sequential linear programming under uncertainty.  ``pestpp-opt`` is a new executable in the PEST++ suite that uses the standard PEST model independent interface to solve a (sequential) linear programming (LP) problem.  ``pestpp-opt`` relies on the COIN-OR Linear Programming (CLP) solver [https://projects.coin-or.org/Clp]((https://projects.coin-or.org/Clp)).  Also, users have the option to use FOSM-based uncertainty estimation in the evaluation of model-based constraints (such as water levels, stream flows, stream flow depletion, etc) so that a risk-based optimal solution can be found.  See below for the required and optional ``++`` arguments needed to apply ``pestpp-opt``.  Two example problems using the ``pestpp-opt`` tool have been added to the ``benchmarks`` dir.  A publication about this tool is in the works.
+
+* global optimization with differential evolution.  We now have a fully-parallel global solver that implements the differential evolution algorithm (DE) integrated into the pest++ executable.  See below for required and optional ``++`` arguments needed to use the DE solver.
+
+* a new randomization-based SVD solver using the implementation of [https://github.com/ntessore/redsvd-h](https://github.com/ntessore/redsvd-h).  This solver is activated using ``++svd_pack(redsvd)``.  Testing shows it to be very efficient for problems for a wide range of problem sizes, especially with judicious use of ``max_sing``.
+
+* upgrade parameter covariance scaling.  Through the ``++parcov_scale_fac()``, pest++ can now scale the normal matrix (J^tQJ) by a user specified parameter covariance matrix.  If no ``++parcov_filename()`` is provided, pest++ will construct a diagonal parameter covariance matrix from the parameter bounds.  This is a relatively new option and needs more testing, but limited testing to date shows that upgrade vectors resulting from a covariance-scaled normal matrix are more in harmony with expert knowledge.
+
+<b>Update 05/26/2016</b>: PEST++ V3 has been officially released.  It supports a number of really cool features, including global sensitivity analyses, and automatic Bayes linear (first-order, second-moment) parameter and forecast uncertainty estimates.  We also have a utility for fully-parallel parametric sweeps from csv-based parameter files, which is useful for Monte Carlo, design of experiments, surrogate construction, etc.  All of these tools are based on the model-independent communication framework of PEST, so if you have a problem already setup, these tools are ready for you!
 
 <b>Update 10/1/2014</b>: recent stable versions of PEST++ implement dynamic regularization, full restart capabilities, additional options for formulating the normal equations, and an iterative SVD algorithm for very-large problems.  Additionally the YAMR run manager has been improved to use threaded workers so that the master can more easily load balance.  
 ##Latest Report and Documentation
@@ -38,10 +50,18 @@ Welter, D.E., Doherty, J.E., Hunt, R.J., Muffels, C.T., Tonkin, M.J., and Schre√
 * <a ref'"https://github.com/jtwhite79/pyemu">https://github.com/jtwhite79/pyemu </a>
 
 ##Compiling
-The master branch includes a Visual Studio 2013 project, as well as a Makefile.
+The master branch includes a Visual Studio 2015 project, as well as makefiles for linux and mac.
 
 ##Testing
 The benchmarks/ folder contain several test problems of varying problem size which are used to evaluate the performance of various aspects of the PEST++ algorithm and implementation.  
 
 ##Dependencies
 Much work has been done to avoid additional external dependencies in PEST++.  As currently designed, the project is fully self-contained and statically linked.  
+
+###pestpp-opt ``++`` arguments
+* ``++opt dec var groups(<group names>)``: comma-separated string identifying which parameter groups are to be treated as decision variables.  If not passed, all adjustable parameters are treated as decision variables
+* ``++opt_external_dec_var_groups(<group_names>)``: comma-separated string identifying which parameter groups are to be treated as "external" decision variables, that is decision variables that do not influence model-based constraints and therefore do not require a perturbation run of the model to fill columns in the response matrix.
+* ``++opt constraint groups(<group names>)``: comma-separated string identifying which observation and prior information groups are to be treated as constraints.  Groups for "less than" constraints must start with either "l_" or "less"; groups for "greater than" constraints must start with "g_" or "greater".  If not passed, all observation and prior information groups that meet the naming rules will be treated as constraints
+* ``++opt obj func(<obj func name >)``: string identifying the prior information equation or two-column ASCII file that contains the objective function coefficients.  If not passed, then each decision variable is given a coefficient of 1.0 in the objective function.
+* ``++opt_direction(<direction>)``: either "min" or "max", weather to minimize or maximize the objective function. 
+* ``++opt_risk(<risk>)``: a float ranging from 0.0 to 1.0 that is the value to use in the FOSM uncertainty estimation for model-based constraints. a value of 0.5 is a "risk neutral" position and no FOSM measures are calculated.  A value of 0.95 will seek a 95% risk averse solution, while a value of 0.05 will seek a 5% risk tolerant solution. See Wagner and Gorelick, 1987, *Optimal groundwater quality management under parameter uncertainty* for more background of chance-constrained linear programming.a
