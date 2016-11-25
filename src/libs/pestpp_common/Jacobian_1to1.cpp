@@ -121,9 +121,71 @@ bool Jacobian_1to1::build_runs(ModelRun &init_model_run, vector<string> numeric_
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
 		RunManagerAbstract &run_manager, set<string> &out_of_bound_par, bool phiredswh_flag, bool calc_init_obs)
 {
-	Parameters pars = init_model_run.get_ctl_pars();
-	Observations obs = init_model_run.get_obs_template();
-	return build_runs(pars, obs, numeric_par_names, par_transform, group_info, ctl_par_info, run_manager, out_of_bound_par, phiredswh_flag, calc_init_obs);
+	//Parameters pars = init_model_run.get_ctl_pars();
+	//Observations obs = init_model_run.get_obs_template();
+	//return build_runs(pars, obs, numeric_par_names, par_transform, group_info, ctl_par_info, run_manager, out_of_bound_par, phiredswh_flag, calc_init_obs);
+	Parameters model_parameters(par_transform.ctl2model_cp(init_model_run.get_ctl_pars()));
+	base_numeric_parameters = par_transform.ctl2numeric_cp(init_model_run.get_ctl_pars());
+	run_manager.reinitialize(file_manager.build_filename("rnj"));
+	debug_msg("Jacobian_1to1::build_runs begin");
+
+	failed_parameter_names.clear();
+	failed_ctl_parameters.clear();
+	// add base run
+	int run_id = run_manager.add_run(model_parameters, "", 0);
+	//if base run is has already been complete, update it and mark it as complete
+	// compute runs for to jacobain calculation as it is influenced by derivative type( forward or central)
+	if (!calc_init_obs) {
+		const Observations &init_obs = init_model_run.get_obs();
+		run_manager.update_run(run_id, model_parameters, init_obs);
+	}
+
+	Parameters new_derivative_pars;
+	bool success;
+	Parameters base_derivative_parameters = par_transform.numeric2active_ctl_cp(base_numeric_parameters);
+	Parameters base_model_parameters = par_transform.numeric2model_cp(base_numeric_parameters);
+	//Loop through derivative parameters and build the parameter sets necessary for computing the jacobian
+	for (auto &i_name : numeric_par_names)
+	{
+		assert(base_derivative_parameters.find(i_name) != base_derivative_parameters.end());
+		vector<double> tmp_del_numeric_par_vec;
+		double derivative_par_value = base_derivative_parameters.get_rec(i_name);
+		success = get_derivative_parameters(i_name, derivative_par_value, par_transform, group_info, ctl_par_info,
+			tmp_del_numeric_par_vec, phiredswh_flag);
+		if (success && !tmp_del_numeric_par_vec.empty())
+		{
+			// update changed model parameters in model_parameters
+			for (const auto &par : tmp_del_numeric_par_vec)
+			{
+				Parameters new_pars;
+				new_pars.insert(make_pair(i_name, par));
+				par_transform.active_ctl2model_ip(new_pars);
+				for (auto &ipar : new_pars)
+				{
+					model_parameters[ipar.first] = ipar.second;
+				}
+				int id = run_manager.add_run(model_parameters, i_name, par);
+				//reset the perturbed parameters back to the values associated with the base condition
+				for (const auto &ipar : new_pars)
+				{
+					model_parameters[ipar.first] = base_model_parameters[ipar.first];
+				}
+			}
+		}
+		else
+		{
+			cout << endl << " warning: failed to compute parameter deriviative for " << i_name << endl;
+			file_manager.rec_ofstream() << " warning: failed to compute parameter deriviative for " << i_name << endl;
+			failed_parameter_names.insert(i_name);
+			failed_to_increment_parmaeters.insert(i_name, derivative_par_value);
+		}
+	}
+	ofstream &fout_restart = file_manager.get_ofstream("rst");
+	debug_print(failed_parameter_names);
+	debug_msg("Jacobian_1to1::build_runs end");
+	if (failed_parameter_names.size() > 0)
+		return false;
+	return true;
 }
 
 

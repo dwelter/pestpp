@@ -173,7 +173,6 @@ def run_bm(run_dir, template_dir, exe_cmd, p_ctl, slv_exe, n_slaves):
     
 
 if __name__ == "__main__":
-    n_slaves = 4
     exe_cmd_pp = None
     bm_list = []
     exe_cmd_gsa = None
@@ -188,41 +187,43 @@ if __name__ == "__main__":
        #exe_cmd_gsa = r'..\..\..\exe\windows\Win32\Release\gsa_32.exe'
        # run PEST++ benchmarks
        bm_list = [
-        [r'.\stor', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj'],
-        [r'.\stor', 'template', exe_cmd_pp, 'pest_regfrac', exe_cmd_pp, n_slaves, 'iobj'],
-        [r'.\3pg', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj'],
-        [r'.\10par_xsec', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj'],
-        [r'.\morris_1991', 'template', exe_cmd_gsa, 'pest', exe_cmd_gsa, n_slaves, 'mio'],
-        [r'.\ackley', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj'],
-        [r'.\box', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj'],
-        [r'.\kirishima', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj'],
-        [r'.\ishigami', 'template', exe_cmd_gsa, 'pest', exe_cmd_gsa, n_slaves, 'sbl'],
-        [r'.\opt_dewater_chance','template',exe_cmd_opt,"dewater_pest.base",exe_cmd_opt,n_slaves,'par'],
-        [r'.\opt_dewater_chance', 'template', exe_cmd_opt, "dewater_pest.fosm", exe_cmd_opt, n_slaves, 'par'],
-        [r'.\opt_supply2_chance', 'template', exe_cmd_opt, "supply2_pest.base", exe_cmd_opt, n_slaves, 'par'],
-        [r'.\opt_supply2_chance', 'template', exe_cmd_opt, "supply2_pest.fosm", exe_cmd_opt, n_slaves, 'par']
+        [r'.\stor', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
+        [r'.\stor', 'template', exe_cmd_pp, 'pest_regfrac', exe_cmd_pp, 4, 'iobj'],
+        [r'.\3pg', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
+        [r'.\10par_xsec', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
+        [r'.\morris_1991', 'template', exe_cmd_gsa, 'pest', exe_cmd_gsa, 4, 'mio'],
+        [r'.\ackley', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 10, 'iobj'],
+        [r'.\box', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 10, 'iobj'],
+        [r'.\kirishima', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 20, 'iobj'],
+        [r'.\kirishima', 'template', exe_cmd_pp, 'pest_regfrac', exe_cmd_pp, 20, 'iobj'],
 
-           #[r'.\ames', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj'],
-        #[r'.\tidal', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj'],
-        #[r'.\hendry', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj']
+        [r'.\ishigami', 'template', exe_cmd_gsa, 'pest', exe_cmd_gsa, 10, 'sbl'],
+        [r'.\opt_dewater_chance','template',exe_cmd_opt,"dewater_pest.base",exe_cmd_opt,4,'par'],
+        [r'.\opt_dewater_chance', 'template', exe_cmd_opt, "dewater_pest.fosm", exe_cmd_opt, 4, 'par'],
+        [r'.\opt_supply2_chance', 'template', exe_cmd_opt, "supply2_pest.base", exe_cmd_opt, 4, 'par'],
+        [r'.\opt_supply2_chance', 'template', exe_cmd_opt, "supply2_pest.fosm", exe_cmd_opt, 4, 'par']
+
+           #[r'.\ames', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
+        #[r'.\tidal', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
+        #[r'.\hendry', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj']
         ]
     elif sys.platform == 'linux' or  sys.platform == 'linux2':
        exe_cmd_pp = r'../../../exe/linux/pestpp'
        exe_cmd_gsa = r'../../../exe/linux/gsa'
        # run PEST++ and GSA benchmarks
        bm_list = [
-        [r'./stor', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj'],
-        [r'./stor', 'template_linux', exe_cmd_pp, 'pest_regfrac', exe_cmd_pp, n_slaves, 'iobj'],
-        #[r'./3pg', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj'],
-        [r'./10par_xsec', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj'],
-        [r'./morris_1991', 'template_linux', exe_cmd_gsa, 'pest', exe_cmd_gsa, n_slaves, 'mio'],
-        [r'.\ackley', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj'],
-        [r'./box', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj'],
-        #[r'./kirishima', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj'],
-        [r'./ishigami', 'template_linux', exe_cmd_gsa, 'pest', exe_cmd_gsa, n_slaves, 'sbl']
-        #[r'./ames', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj'],
-        #[r'./tidal', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj'],
-        #[r'./hendry', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj']
+        [r'./stor', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
+        [r'./stor', 'template_linux', exe_cmd_pp, 'pest_regfrac', exe_cmd_pp, 4, 'iobj'],
+        #[r'./3pg', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
+        [r'./10par_xsec', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
+        [r'./morris_1991', 'template_linux', exe_cmd_gsa, 'pest', exe_cmd_gsa, 4, 'mio'],
+        [r'.\ackley', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
+        [r'./box', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
+        #[r'./kirishima', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
+        [r'./ishigami', 'template_linux', exe_cmd_gsa, 'pest', exe_cmd_gsa, 4, 'sbl']
+        #[r'./ames', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
+        #[r'./tidal', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
+        #[r'./hendry', 'template_linux', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj']
         ]
 
     else:

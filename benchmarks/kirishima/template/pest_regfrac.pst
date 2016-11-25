@@ -1,0 +1,167 @@
+pcf
+* control data
+restart regularization
+33  63  11  32  2
+         2          1 single               point                         1          0          0 
+              5               2             0.3            0.03         10 
+             1.1              1.1           0.001               0 
+            0.1 
+        60            0.001          8          8            0.001          3 
+         1          1          1 parsaveitn           
+* singular value decomposition
+         1 
+        42           1E-05 
+         1 
+* parameter groups
+median_gra           relative                        0.01               0 switch                             2 parabolic            
+fall_time_           relative                        0.01               0 switch                             2 parabolic            
+plume_heig           relative                        0.01               0 switch                             2 parabolic            
+beta                 relative                        0.01               0 switch                             2 parabolic            
+diffusion_           relative                        0.01               0 switch                             2 parabolic            
+wd_a                 relative                        0.01               0 switch                             2 parabolic            
+ws_a                 relative                        0.01               0 switch                             2 parabolic            
+std_grains           relative                        0.01               0 switch                             2 parabolic            
+alpha                relative                        0.01               0 switch                             2 parabolic            
+eddy_const           relative                        0.01               0 switch                             2 parabolic            
+eruption_m           relative                        0.01               0 switch                             2 parabolic            
+* parameter data
+pumdena              log                  factor                  1000                 800            1200 beta                               1               0          1 
+lithdena             log                  factor                  2600                2400            2800 beta                               1               0          1 
+median_ga            none                 relative               -0.25                  -1               1 median_gra                         1               0          1 
+fall_tima            log                  factor                   100                 0.1            1000 fall_time_                         1               0          1 
+plume_hea            log                  factor                  8000                6000           10000 plume_heig                         1               0          1 
+betaa                fixed                factor                     1                0.01              10 beta                               1               0          1 
+diffusioa            log                  factor                  1000                   1            3000 diffusion_                         1               0          1 
+wd_a_00              log                  factor                   490                   1             720 wd_a                               1               0          1 
+wd_a_01              log                  factor                   490                   1             720 wd_a                               1               0          1 
+wd_a_02              log                  factor                   490                   1             720 wd_a                               1               0          1 
+wd_a_03              log                  factor                   490                   1             720 wd_a                               1               0          1 
+wd_a_04              log                  factor                   490                   1             720 wd_a                               1               0          1 
+wd_a_05              log                  factor                   490                   1             720 wd_a                               1               0          1 
+wd_a_06              log                  factor                   490                   1             720 wd_a                               1               0          1 
+wd_a_07              log                  factor                   490                   1             720 wd_a                               1               0          1 
+wd_a_08              log                  factor                   490                   1             720 wd_a                               1               0          1 
+wd_a_09              log                  factor                   490                   1             720 wd_a                               1               0          1 
+wd_a_10              log                  factor                   490                   1             720 wd_a                               1               0          1 
+ws_a_00              log                  factor                     5                   1              60 ws_a                               1               0          1 
+ws_a_01              log                  factor                     5                   1              60 ws_a                               1               0          1 
+ws_a_02              log                  factor                    10                   1              80 ws_a                               1               0          1 
+ws_a_03              log                  factor                    15                   1             120 ws_a                               1               0          1 
+ws_a_04              log                  factor                    20                   1             120 ws_a                               1               0          1 
+ws_a_05              log                  factor                    30                   1             120 ws_a                               1               0          1 
+ws_a_06              log                  factor                    40                   1             120 ws_a                               1               0          1 
+ws_a_07              log                  factor                    50                   1             120 ws_a                               1               0          1 
+ws_a_08              log                  factor                    60                   1             120 ws_a                               1               0          1 
+ws_a_09              log                  factor                    70                   1             120 ws_a                               1               0          1 
+ws_a_10              log                  factor                    80                   1             120 ws_a                               1               0          1 
+std_graia            log                  factor                     2                   1               3 std_grains                         1               0          1 
+alphaa               log                  factor                     1                0.01              10 alpha                              1               0          1 
+eddy_cona            log                  factor                  0.04               0.001            0.09 eddy_const                         1               0          1 
+eruptiona            log                  factor               5.5E+10               1E+07           1E+11 eruption_m                         1               0          1 
+* observation groups
+imas                 
+regul
+* observation data
+imas_001                          10       0.3333333 imas                 
+imas_002                          18       0.1851852 imas                 
+imas_003                          15       0.2222222 imas                 
+imas_004                          51      0.06535948 imas                 
+imas_005                       55.33      0.06024459 imas                 
+imas_006                       43.67      0.07633005 imas                 
+imas_007                          14       0.2380952 imas                 
+imas_008                        3.67             0.5 imas                 
+imas_009                        1.33             0.5 imas                 
+imas_010                           1             0.5 imas                 
+imas_011                         0.9             0.5 imas                 
+imas_012                         0.4             0.5 imas                 
+imas_013                         0.4             0.5 imas                 
+imas_014                        0.24             0.5 imas                 
+imas_015                           1             0.5 imas                 
+imas_016                           1             0.5 imas                 
+imas_017                           1             0.5 imas                 
+imas_018                         0.9             0.5 imas                 
+imas_019                         0.9             0.5 imas                 
+imas_020                         0.9             0.5 imas                 
+imas_021                         0.4             0.5 imas                 
+imas_022                        1.25             0.5 imas                 
+imas_023                         1.5             0.5 imas                 
+imas_024                         3.5             0.5 imas                 
+imas_025                           6             0.5 imas                 
+imas_026                        11.5       0.2898551 imas                 
+imas_027                        4.75             0.5 imas                 
+imas_028                           2             0.5 imas                 
+imas_029                        6.67       0.4997501 imas                 
+imas_030                         0.9             0.5 imas                 
+imas_031                           2             0.5 imas                 
+imas_032                           4             0.5 imas                 
+imas_033                       14.25       0.2339181 imas                 
+imas_034                          32       0.1041667 imas                 
+imas_035                          15       0.2222222 imas                 
+imas_036                         5.5             0.5 imas                 
+imas_037                       59.25      0.05625879 imas                 
+imas_038                           5             0.5 imas                 
+imas_039                        8.25       0.4040404 imas                 
+imas_040                        3.67             0.5 imas                 
+imas_041                         2.5             0.5 imas                 
+imas_042                          20       0.1666667 imas                 
+imas_043                       42.25      0.07889546 imas                 
+imas_044                          20       0.1666667 imas                 
+imas_045                       17.33       0.1923447 imas                 
+imas_046                          26       0.1282051 imas                 
+imas_047                          15       0.2222222 imas                 
+imas_048                          11       0.3030303 imas                 
+imas_049                         0.8             0.5 imas                 
+imas_050                         0.3             0.5 imas                 
+imas_051                         0.3             0.5 imas                 
+imas_052                        1.67             0.5 imas                 
+imas_053                           4             0.5 imas                 
+imas_054                          55      0.06060606 imas                 
+imas_055                         150      0.02222222 imas                 
+imas_056                         180      0.01851852 imas                 
+imas_057                          43      0.07751938 imas                 
+imas_058                          12       0.2777778 imas                 
+imas_059                          50      0.06666667 imas                 
+imas_060                          20       0.1666667 imas                 
+imas_061                          18       0.1851852 imas                 
+imas_062                           1             0.5 imas                 
+imas_063                           3             0.5 imas                 
+* model command line
+python kirishima_run.py 
+* model input/output
+tpl/stage_A.wind.tpl wind/stage_a.wind    
+tpl/stage_A.conf.tpl conf/stage_a.conf    
+background/stage_A.ins stage_A.results      
+* prior information
+pi_1  1.0 * log(pumdena) =    3.000000E+00     2.271549E+01  regul
+pi_2  1.0 * log(lithdena) =    3.414973E+00     5.974894E+01  regul
+pi_3  1.0 * median_ga =   -2.500000E-01     2.000000E+00  regul
+pi_4  1.0 * log(fall_tima) =    2.000000E+00     1.000000E+00  regul
+pi_5  1.0 * log(plume_hea) =    3.903090E+00     1.803030E+01  regul
+pi_6  1.0 * log(diffusioa) =    3.000000E+00     1.150377E+00  regul
+pi_7  1.0 * log(wd_a_00) =    2.690196E+00     1.399907E+00  regul
+pi_8  1.0 * log(wd_a_01) =    2.690196E+00     1.399907E+00  regul
+pi_9  1.0 * log(wd_a_02) =    2.690196E+00     1.399907E+00  regul
+pi_10  1.0 * log(wd_a_03) =    2.690196E+00     1.399907E+00  regul
+pi_11  1.0 * log(wd_a_04) =    2.690196E+00     1.399907E+00  regul
+pi_12  1.0 * log(wd_a_05) =    2.690196E+00     1.399907E+00  regul
+pi_13  1.0 * log(wd_a_06) =    2.690196E+00     1.399907E+00  regul
+pi_14  1.0 * log(wd_a_07) =    2.690196E+00     1.399907E+00  regul
+pi_15  1.0 * log(wd_a_08) =    2.690196E+00     1.399907E+00  regul
+pi_16  1.0 * log(wd_a_09) =    2.690196E+00     1.399907E+00  regul
+pi_17  1.0 * log(wd_a_10) =    2.690196E+00     1.399907E+00  regul
+pi_18  1.0 * log(ws_a_00) =    6.989700E-01     2.249527E+00  regul
+pi_19  1.0 * log(ws_a_01) =    6.989700E-01     2.249527E+00  regul
+pi_20  1.0 * log(ws_a_02) =    1.000000E+00     2.101845E+00  regul
+pi_21  1.0 * log(ws_a_03) =    1.176091E+00     1.923834E+00  regul
+pi_22  1.0 * log(ws_a_04) =    1.301030E+00     1.923834E+00  regul
+pi_23  1.0 * log(ws_a_05) =    1.477121E+00     1.923834E+00  regul
+pi_24  1.0 * log(ws_a_06) =    1.602060E+00     1.923834E+00  regul
+pi_25  1.0 * log(ws_a_07) =    1.698970E+00     1.923834E+00  regul
+pi_26  1.0 * log(ws_a_08) =    1.778151E+00     1.923834E+00  regul
+pi_27  1.0 * log(ws_a_09) =    1.845098E+00     1.923834E+00  regul
+pi_28  1.0 * log(ws_a_10) =    1.903090E+00     1.923834E+00  regul
+pi_29  1.0 * log(std_graia) =    3.010300E-01     8.383613E+00  regul
+pi_30  1.0 * log(alphaa) =    0.000000E+00     1.333333E+00  regul
+pi_31  1.0 * log(eddy_cona) =   -1.397940E+00     2.046829E+00  regul
+pi_32  1.0 * log(eruptiona) =    1.074036E+01     1.000000E+00  regul
+++reg_frac(0.05)
