@@ -605,6 +605,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_opt_recalc_fosm_every(1);
 	for(vector<string>::const_iterator b=pestpp_input.begin(),e=pestpp_input.end();
 		b!=e; ++b) {
+			
 			pestpp_options.parce_line(*b);
 	}
 

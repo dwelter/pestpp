@@ -1,0 +1,60 @@
+PEST++ performance logger started at:  20:49:19
+  starting to process control file
+          ( time = 20:49:19,  elapsed time = 3ms )
+  finished processing control file
+          ( time = 20:49:19,  elapsed time = 12ms )
+    starting basic model IO error checking
+            ( time = 20:49:19,  elapsed time = 29ms )
+    finished basic model IO error checking
+            ( time = 20:49:19,  elapsed time = 3ms )
+20:49:21-> starting set_predictions
+20:49:21->-> starting extracting prediction H05_12 from jacobian
+20:49:21->-> finished extracting prediction H05_12 from jacobian, elapsed time = 38us
+20:49:21->-> starting extracting prediction H05_14 from jacobian
+20:49:21->-> finished extracting prediction H05_14 from jacobian, elapsed time = 31us
+20:49:21->-> starting extracting prediction H05_16 from jacobian
+20:49:21->-> finished extracting prediction H05_16 from jacobian, elapsed time = 28us
+20:49:21->-> starting extracting prediction H07_12 from jacobian
+20:49:21->-> finished extracting prediction H07_12 from jacobian, elapsed time = 25us
+20:49:21->-> starting extracting prediction H07_16 from jacobian
+20:49:21->-> finished extracting prediction H07_16 from jacobian, elapsed time = 25us
+20:49:21->-> starting extracting prediction H09_12 from jacobian
+20:49:21->-> finished extracting prediction H09_12 from jacobian, elapsed time = 23us
+20:49:21->-> starting extracting prediction H09_14 from jacobian
+20:49:21->-> finished extracting prediction H09_14 from jacobian, elapsed time = 22us
+20:49:21->-> starting extracting prediction H10_15 from jacobian
+20:49:21->-> finished extracting prediction H10_15 from jacobian, elapsed time = 31us
+20:49:21->-> starting extracting prediction H13_15 from jacobian
+20:49:21->-> finished extracting prediction H13_15 from jacobian, elapsed time = 19us
+20:49:21->-> starting extracting prediction H13_16 from jacobian
+20:49:21->-> finished extracting prediction H13_16 from jacobian, elapsed time = 16us
+20:49:21-> finished set_predictions, elapsed time = 440us
+20:49:21-> starting prior_prediction_variance
+20:49:21-> finished prior_prediction_variance, elapsed time = 51us
+20:49:21-> starting posterior_prediction_variance
+20:49:21->-> starting calc_posterior
+20:49:21->->-> starting align
+20:49:21->->-> finished align, elapsed time = 9us
+20:49:21->->-> starting invert obscov
+20:49:21->->->-> starting inverting diagonal matrix in place
+20:49:21->->->->-> starting extracting diagonal
+20:49:21->->->->->-> starting inverting diagonal
+20:49:21->->->->->->-> starting buidling triplets
+20:49:21->->->->->->->-> starting esizeing matrix to size 
+20:49:21->->->->->->->->-> starting setting matrix from triplets
+20:49:21->->->->->->->->-> finished invert obscov, elapsed time = 62us
+20:49:21->->->->->->->->-> starting form JtQJ
+20:49:21->->->->->->->->-> finished form JtQJ, elapsed time = 13us
+20:49:21->->->->->->->->-> starting invert parcov
+20:49:21->->->->->->->->-> finished invert parcov, elapsed time = 14us
+20:49:21->->->->->->->->-> starting form posterior
+20:49:21->->->->->->->->-> finished form posterior, elapsed time = 12us
+20:49:21->->->->->->->->-> starting invert posterior
+20:49:21->->->->->->->->->-> starting inverting non-diagonal matrix in place
+20:49:21->->->->->->->->->->-> starting instantiate solver
+20:49:21->->->->->->->->->->->-> starting computing inverse
+20:49:21->->->->->->->->->->->->-> starting getting identity instance for solution
+20:49:21->->->->->->->->->->->->->-> starting solving
+20:49:21->->->->->->->->->->->->->-> finished invert posterior, elapsed time = 70us
+20:49:21->->->->->->->->->->->->-> finished calc_posterior, elapsed time = 257us
+20:49:21->->->->->->->->->->->-> finished posterior_prediction_variance, elapsed time = 315us

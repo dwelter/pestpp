@@ -279,14 +279,24 @@ ostream& operator<< (ostream &os, const PestppOptions& val)
 	os << "    mat inv = " << left << setw(20) << val.get_mat_inv() << endl;
 	os << "    max run fail = " << left << setw(20) << val.get_max_run_fail() << endl;
 	os << "    max reg iter = " << left << setw(20) << val.get_max_reg_iter() << endl;	
+	if (val.get_reg_frac() > 0.0)
+		os << "    regularization fraction of total phi = " << left << setw(10) << val.get_reg_frac() << endl;
 	os << "    lambdas = " << endl;
 	for (auto &lam : val.get_base_lambda_vec())
 	{
 		os << right << setw(15) << lam << endl;
 	}
-	os << "    uncertainty flag = " << left << setw(20) << val.get_uncert_flag() << endl;
-	os << "    parameter covariance file = " << left << setw(20) << val.get_parcov_filename() << endl;
-	os << "    forecast names = " << endl;
+	if (val.get_uncert_flag())
+	{
+		os << "    using FOSM-based uncertainty estimation for parameters" << endl;
+		os << "    parameter covariance file = " << left << setw(20) << val.get_parcov_filename() << endl;
+		if (val.get_prediction_names().size() > 0)
+		{
+			os << "    using FOSM-based uncertainty for forecasts" << endl;
+			os << "    forecast names = " << endl;
+		}
+		
+	}
 	for (auto &pname : val.get_prediction_names())
 		os << right << setw(15) << pname << endl;
 	os << "    derivative run failure forgive = " << left << setw(15) << val.get_der_forgive() << endl;
@@ -294,11 +304,6 @@ ostream& operator<< (ostream &os, const PestppOptions& val)
 	os << "    run overdue giveup factor = " << left << setw(20) << val.get_overdue_giveup_fac() << endl;
 	os << "    base parameter jacobian filename = " << left << setw(20) << val.get_basejac_filename() << endl;
 	os << "    prior parameter covariance upgrade scaling factor = " << left << setw(10) << val.get_parcov_scale_fac() << endl;
-	os << "    sweep parameter csv file = " << left << setw(50) << val.get_sweep_parameter_csv_file() << endl;
-	os << "    sweep output csv file = " << left << setw(50) << val.get_sweep_output_csv_file() << endl;
-	os << "    sweep chunk size = " << left << setw(10) << val.get_sweep_chunk() << endl;
-	os << "    sweep base run = " << left << setw(10) << val.get_sweep_base_run() << endl;
-	os << "    sweep forgive failed runs = " << left << setw(10) << val.get_sweep_forgive() << endl;
 	if (val.get_global_opt() == PestppOptions::GLOBAL_OPT::OPT_DE)
 	{
 		os << "    global optimizer = differential evolution (DE)" << endl;

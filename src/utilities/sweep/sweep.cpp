@@ -433,6 +433,14 @@ int main(int argc, char* argv[])
 		}
 		pest_scenario.check_inputs(fout_rec);
 
+		PestppOptions ppopt = pest_scenario.get_pestpp_options();
+
+		fout_rec << "    sweep parameter csv file = " << left << setw(50) << ppopt.get_sweep_parameter_csv_file() << endl;
+		fout_rec << "    sweep output csv file = " << left << setw(50) << ppopt.get_sweep_output_csv_file() << endl;
+		fout_rec << "    sweep chunk size = " << left << setw(10) << ppopt.get_sweep_chunk() << endl;
+		fout_rec << "    sweep base run = " << left << setw(10) << ppopt.get_sweep_base_run() << endl;
+		fout_rec << "    sweep forgive failed runs = " << left << setw(10) << ppopt.get_sweep_forgive() << endl;
+
 
 		// process the parameter csv file
 		if (pest_scenario.get_pestpp_options().get_sweep_parameter_csv_file().empty())
@@ -492,6 +500,7 @@ int main(int argc, char* argv[])
 				file_manager.build_filename("rns"), pathname,
 				pest_scenario.get_pestpp_options().get_max_run_fail());
 		}
+		
 
 		const ParamTransformSeq &base_trans_seq = pest_scenario.get_base_par_tran_seq();
 		ObjectiveFunc obj_func(&(pest_scenario.get_ctl_observations()), &(pest_scenario.get_ctl_observation_info()), &(pest_scenario.get_prior_info()));
