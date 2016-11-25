@@ -93,6 +93,8 @@ def compare_par(file1,file2):
                 err_txt += 'Error: Headers in par files do not match\n  1: "%s"\n  2: "%s"\n' % (header1, header2)
             while True:
                 l1,l2 = fin1.readline(),fin2.readline()
+                if l1 == '' or l2 == '':
+                    break
                 p1 = float(l1.strip().split()[1])
                 p2 = float(l2.strip().split()[1])
                 if not compare_float(p1,p2):
@@ -147,18 +149,20 @@ def comare_sbl(file1, file2):
     
     
 def run_bm(run_dir, template_dir, exe_cmd, p_ctl, slv_exe, n_slaves):
-    assert os.path.exists(exe_cmd),"exe_cmd not found:{0}".format(exe_cmd)
+    #assert os.path.exists(exe_cmd),"exe_cmd not found:{0}".format(exe_cmd)
     run_list = []
     #Start Master
     master_dir =  os.path.join(run_dir, 'master')
     run_cmd = r'%s %s /H :4005' % (exe_cmd, p_ctl)
     t_dir = os.path.join(run_dir, template_dir)
+    print('    starting master in dir {0} with command {1}\n'.format(master_dir,run_cmd),flush=True)
     run_list.append(StartProcess(run_cmd, t_dir,  master_dir))
     run_list[-1].start()
     slave_dirs = [os.path.join(run_dir, 'slave_%d' % i) for i in range(1, n_slaves+1)]
     for idir in slave_dirs:
-        print('    starting slave in directory: %s' % idir, flush=True)
         run_cmd = r'%s %s /H localhost:4005' % (slv_exe, p_ctl)
+        print('    starting slave in directory:{0} for command:{1}'.format(idir,run_cmd), flush=True)
+
         run_list.append( StartProcess(run_cmd, t_dir,  idir) )
         run_list[-1].start()
     for t in run_list:
@@ -178,22 +182,27 @@ if __name__ == "__main__":
     if sys.platform == 'win32':
        exe_cmd_pp = r'..\..\..\exe\windows\x64\Release\pest++.exe'
        exe_cmd_gsa = r'..\..\..\exe\windows\x64\Release\gsa.exe'
-       exe_cmd_opt = os.path.join("..","..","..","exe","windows","x64","Release","pestpp-opt.exe")
+       exe_cmd_opt = r'..\..\..\exe\windows\x64\Release\pestpp-opt.exe'
+
        #exe_cmd_pp = r'..\..\..\exe\windows\Win32\Release\pest++_32.exe'
        #exe_cmd_gsa = r'..\..\..\exe\windows\Win32\Release\gsa_32.exe'
        # run PEST++ benchmarks
        bm_list = [
-        # [r'.\stor', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj'],
-        # [r'.\stor', 'template', exe_cmd_pp, 'pest_regfrac', exe_cmd_pp, n_slaves, 'iobj'],
-        # [r'.\3pg', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj'],
-        # [r'.\10par_xsec', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj'],
-        # [r'.\morris_1991', 'template', exe_cmd_gsa, 'pest', exe_cmd_gsa, n_slaves, 'mio'],
-        # [r'.\ackley', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj'],
-        # [r'.\box', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj'],
-        # [r'.\kirishima', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj'],
-        # [r'.\ishigami', 'template', exe_cmd_gsa, 'pest', exe_cmd_gsa, n_slaves, 'sbl'],
-        [r'.\opt_dewater','template',exe_cmd_opt,"dewater_pest.base.pst",exe_cmd_opt,n_slaves,'par']
-        #[r'.\ames', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj'],
+        [r'.\stor', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj'],
+        [r'.\stor', 'template', exe_cmd_pp, 'pest_regfrac', exe_cmd_pp, n_slaves, 'iobj'],
+        [r'.\3pg', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj'],
+        [r'.\10par_xsec', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj'],
+        [r'.\morris_1991', 'template', exe_cmd_gsa, 'pest', exe_cmd_gsa, n_slaves, 'mio'],
+        [r'.\ackley', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj'],
+        [r'.\box', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj'],
+        [r'.\kirishima', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj'],
+        [r'.\ishigami', 'template', exe_cmd_gsa, 'pest', exe_cmd_gsa, n_slaves, 'sbl'],
+        [r'.\opt_dewater_chance','template',exe_cmd_opt,"dewater_pest.base",exe_cmd_opt,n_slaves,'par'],
+        [r'.\opt_dewater_chance', 'template', exe_cmd_opt, "dewater_pest.fosm", exe_cmd_opt, n_slaves, 'par'],
+        [r'.\opt_supply2_chance', 'template', exe_cmd_opt, "supply2_pest.base", exe_cmd_opt, n_slaves, 'par'],
+        [r'.\opt_supply2_chance', 'template', exe_cmd_opt, "supply2_pest.fosm", exe_cmd_opt, n_slaves, 'par']
+
+           #[r'.\ames', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj'],
         #[r'.\tidal', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj'],
         #[r'.\hendry', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, n_slaves, 'iobj']
         ]

@@ -2,7 +2,7 @@
 
                  by the petspp development team
 
-using control file: "dewater_pest.base.pst"
+using control file: "dewater_pest.base"
 
 Model command line(s):- 
     mf2005 dewater_pest.base.nam

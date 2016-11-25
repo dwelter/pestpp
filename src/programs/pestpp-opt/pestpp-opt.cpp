@@ -257,6 +257,7 @@ int main(int argc, char* argv[])
 		}
 #endif
 		pest_scenario.check_inputs(fout_rec);
+		pest_scenario.get_pestpp_options_ptr()->set_iter_summary_flag(false);
 
 		//if base jco arg read from control file, reset restart controller
 		if (!pest_scenario.get_pestpp_options().get_basejac_filename().empty())

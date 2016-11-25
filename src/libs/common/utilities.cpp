@@ -223,8 +223,10 @@ string get_filename_without_ext(const string &filename)
 {
 	// remove .pst or .PST from the end of the filename
 	string new_str = filename;
-	size_t found = filename.find_last_of(".");
-	if (found != string::npos)
+	string filename_lower = lower_cp(filename);
+	//size_t found = filename_lower.find_last_of('.');
+	size_t found = filename_lower.find(".pst");
+	if (found != string::npos)	
 	{
 		new_str = new_str.substr(0, found);
 	}
