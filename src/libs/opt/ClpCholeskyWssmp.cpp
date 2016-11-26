@@ -3,7 +3,7 @@
 // Corporation and others.  All Rights Reserved.
 // This code is licensed under the terms of the Eclipse Public License (EPL).
 
-
+#ifdef _WIN32
 #include "CoinPragma.hpp"
 #include "CoinHelperFunctions.hpp"
 #include "ClpHelperFunctions.hpp"
@@ -96,6 +96,7 @@ extern "C" void ekkwssmp(EKKModel *, int * n,
                          double * rhs , int * ldb , int * nrhs ,
                          double * aux , int * naux ,
                          int   * mrp , int * iparm , double * dparm);
+
 static void F77_FUNC(wssmp,WSSMP)( int *n, int *ia, int *ja,
                    double *avals, double *diag, int *perm, int *invp,
                    double *b, int *ldb, int *nrhs, double *aux, int *
@@ -643,3 +644,4 @@ ClpCholeskyWssmp::solve (double * region)
      std::cout << doubleParameters_[6] << std::endl;
 #endif
 }
+#endif

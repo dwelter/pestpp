@@ -3,7 +3,7 @@
 // Corporation and others.  All Rights Reserved.
 // This code is licensed under the terms of the Eclipse Public License (EPL).
 
-
+#ifdef _WIN32
 #include "CoinPragma.hpp"
 #include "CoinHelperFunctions.hpp"
 #include "ClpHelperFunctions.hpp"
@@ -539,3 +539,4 @@ ClpCholeskyWssmpKKT::solveKKT (double * region1, double * region2, const double 
      std::cout << doubleParameters_[6] << std::endl;
 #endif
 }
+#endif
