@@ -64,41 +64,42 @@ Here is a (more or less) complete list of ``++`` arguments that can be added to 
 
 * ``++super_eigthres(1.0e-8)`` ratio of max to min singular values used to truncate the singular components when forming the super parameter problem
 
-*``++n_iter_base(1)``:number of base (full) parameter iterations to complete as part of the on-the-fly combined base-parameter/super-parameter iteration process.  A value of -1 results in calculation of the base jacobian and formation of the super parameter problem without any base parameter upgrades, replicating the behavior of the "svd-assist" methodology of PEST
+* ``++n_iter_base(1)``:number of base (full) parameter iterations to complete as part of the on-the-fly combined base-parameter/super-parameter iteration process.  A value of -1 results in calculation of the base jacobian and formation of the super parameter problem without any base parameter upgrades, replicating the behavior of the "svd-assist" methodology of PEST
 
-*``++n_iter_super(4)``: number of base (full) parameter iterations to complete as part of the on-the-fly combined base-parameter/super-parameter iteration process
+* ``++n_iter_super(4)``: number of base (full) parameter iterations to complete as part of the on-the-fly combined base-parameter/super-parameter iteration process
 
-*``++svd_pack(propack)``: which SVD solver to use.  valid arguments are ``eigen``(jacobi solution), ``propack``(iterative Lanczos solution) and ``redsvd`` (randomized solution).
+* ``++svd_pack(propack)``: which SVD solver to use.  valid arguments are ``eigen``(jacobi solution), ``propack``(iterative Lanczos solution) and ``redsvd`` (randomized solution).
 
-*``++lambdas(0.1,1,10,100,1000)``: the values of lambda to test in the upgrade part of the solution process. Note that this base list is augmented with values bracketing the previous iterations best lambda.  However, if a single value is specified, only one lambda will be used.
+* ``++lambdas(0.1,1,10,100,1000)``: the values of lambda to test in the upgrade part of the solution process. Note that this base list is augmented with values bracketing the previous iterations best lambda.  However, if a single value is specified, only one lambda will be used.
 
-*``++reg_frac(0.1)``: the portion of the composite phi that will be regularization. If this argument is specified, the ``* regularization`` section of the control file is ignored.  For limited testing, values ranging from 0.05 to 0.25 seem to work well.
+* ``++reg_frac(0.1)``: the portion of the composite phi that will be regularization. If this argument is specified, the ``* regularization`` section of the control file is ignored.  For limited testing, values ranging from 0.05 to 0.25 seem to work well.
 
-*``++base_jacobian(filename)``: an existing binary jacobian file to use for the first iteration
+* ``++base_jacobian(filename)``: an existing binary jacobian file to use for the first iteration
 
-*``++parcov(filename)``: an ASCII PEST-style matrix file or uncertainty file to use as the prior parameter covariance matrix in FOSM uncertainty calculations and/or normal matrix scaling.  If not specified and a prior is needed, one is constructed on-the-fly from parameter bounds
+* ``++parcov(filename)``: an ASCII PEST-style matrix file or uncertainty file to use as the prior parameter covariance matrix in FOSM uncertainty calculations and/or normal matrix scaling.  If not specified and a prior is needed, one is constructed on-the-fly from parameter bounds
 
-*``++uncertainty(true)``:flag to activate or deactivate FOSM-based parameter and (optionally) forecast uncertainty estimation
+* ``++uncertainty(true)``:flag to activate or deactivate FOSM-based parameter and (optionally) forecast uncertainty estimation
 
-*``++forecasts(fore1,fore2...)``:comma separated list of observations to treat as forecasts in the FOSM-based uncertainty estimation
+* ``++forecasts(fore1,fore2...)``:comma separated list of observations to treat as forecasts in the FOSM-based uncertainty estimation
 
-*``++iteration_summary(true)``:flag to activate or deactivate writing iteration-based CSV files summarizing parameters (<base_case>.ipar), objective function (<base_case>.iobj) and sensitivities (<base_case>.isen)
+* ``++iteration_summary(true)``:flag to activate or deactivate writing iteration-based CSV files summarizing parameters (<base_case>.ipar), objective function (<base_case>.iobj) and sensitivities (<base_case>.isen)
 
-*``++max_run_fail(4)``:maximum number of runs that can fail before the run manager emits an error.
+* ``++max_run_fail(4)``:maximum number of runs that can fail before the run manager emits an error.
 
-*``++mat_inv(jtqj)``: the form of the normal matrix to use in the solution process. Valid values are "jtqj" and "q1/2j".
+* ``++mat_inv(jtqj)``: the form of the normal matrix to use in the solution process. Valid values are "jtqj" and "q1/2j".
 
-*``++der_forgive(true)``: a flag to tolerate run failures during the derivative calculation process
+* ``++der_forgive(true)``: a flag to tolerate run failures during the derivative calculation process
 
-*``++parcov_scale_fac(0.01)``: scaling factor to scale the prior parameter covariance matrix by when scaling the normal matrix by the inverse of the prior parameter covariance matrix.  If not specified, no scaling is undertaken; if specified, ``++mat_inv`` must be "jtqj".
+* ``++parcov_scale_fac(0.01)``: scaling factor to scale the prior parameter covariance matrix by when scaling the normal matrix by the inverse of the prior parameter covariance matrix.  If not specified, no scaling is undertaken; if specified, ``++mat_inv`` must be "jtqj".
 
 ###sweep ``++`` arguments
 ``sweep`` is a utility to run a parametric sweep for a series of parameter values.  Useful for things like monte carlo, design of experiment, etc. Designed to be used with ``pyemu`` and the python pandas library.
-*``++sweep_parameter_csv_file(filename)``: the CSV file that lists the runs to be evaluated. REQUIRED
-*``++sweep_output_csv_file(filename)``: the output CSV file from the parametric sweep.  If not passed, output is written to "output.csv"
-*``++sweep_chunk(500)``: number of runs to batch queue for the run manager.  Each chunk is read, run and written as a single batch
-*``++sweep_forgive(true)``: a flag to allow the ``sweep_parameter_csv_file`` to only include a subset of parameters listed in the control file.  If ``true``, then parameters not listed in the ``sweep_parrameter_csv_file`` are given the corresponding ``parval1`` value in the control file
-*``sweep_base_run(true)``: flag to include a "base" run of control file parameter values in the parametric sweep
+
+* ``++sweep_parameter_csv_file(filename)``: the CSV file that lists the runs to be evaluated. REQUIRED
+* ``++sweep_output_csv_file(filename)``: the output CSV file from the parametric sweep.  If not passed, output is written to "output.csv"
+* ``++sweep_chunk(500)``: number of runs to batch queue for the run manager.  Each chunk is read, run and written as a single batch
+* ``++sweep_forgive(true)``: a flag to allow the ``sweep_parameter_csv_file`` to only include a subset of parameters listed in the control file.  If ``true``, then parameters not listed in the ``sweep_parrameter_csv_file`` are given the corresponding ``parval1`` value in the control file
+* ``sweep_base_run(true)``: flag to include a "base" run of control file parameter values in the parametric sweep
 
 ###pestpp-opt ``++`` arguments
 ``pestpp-opt`` is a implementation of sequential linear programming under uncertainty for the PEST-style model-independent interface
