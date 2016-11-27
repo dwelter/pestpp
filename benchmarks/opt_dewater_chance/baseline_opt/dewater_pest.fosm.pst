@@ -1239,9 +1239,9 @@ h19_29                5.0000000000E+01      0.0000000000E+00       greater
 * model command line
 mf2005 dewater_pest.nam
 * model input/output
-WEL_0000.dat.tpl ref\WEL_0000.dat
-transmissivity_layer_1.ref.tpl ref\transmissivity_layer_1.ref
-strt_layer_1.ref.tpl ref\strt_layer_1.ref
+WEL_0000.dat.tpl WEL_0000.dat
+transmissivity_layer_1.ref.tpl transmissivity_layer_1.ref
+strt_layer_1.ref.tpl strt_layer_1.ref
 dewater_pest.hds.ins dewater_pest.hds
 ++opt_constraint_groups(l_const)
 ++forecasts(h05_12,h05_14,h05_16,h07_12,h07_16,h09_12,h09_14,h10_15,h13_15,h13_16)

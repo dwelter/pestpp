@@ -2021,7 +2021,7 @@ s2r08_12              1.5000000000E+04      1.0000000000E+00       less_obs
 s3r05_11              3.0000000000E+04      1.0000000000E+00       less_obs             
 s3r05_12              3.0000000000E+04      1.0000000000E+00       less_obs
 * model command line
-python.exe supply2.py
+python supply2.py
 * model input/output
 supply2.wel.tpl supply2.wel
 external.tpl external.dat

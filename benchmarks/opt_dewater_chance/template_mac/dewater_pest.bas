@@ -2,4 +2,4 @@
  FREE
 OPEN/CLOSE          ref/ibound_layer_1.ref               1     (FREE) -1 ibound_layer_0                
               0
-OPEN/CLOSE            ref/strt_layer_1.ref               1     (FREE) -1 strt_layer_0                  
+OPEN/CLOSE            strt_layer_1.ref               1     (FREE) -1 strt_layer_0                  

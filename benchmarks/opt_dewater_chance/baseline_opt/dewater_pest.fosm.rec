@@ -13,9 +13,9 @@ Model interface files:-
       transmissivity_layer_1.ref.tpl
       strt_layer_1.ref.tpl
     model input files:
-      ref\WEL_0000.dat
-      ref\transmissivity_layer_1.ref
-      ref\strt_layer_1.ref
+      WEL_0000.dat
+      transmissivity_layer_1.ref
+      strt_layer_1.ref
 
     instruction files:
       dewater_pest.hds.ins
@@ -1469,10 +1469,10 @@ number of nonzero elements in response matrix: 70 of 70
 name                        current            new   objfunc coef    cur contrib    new contrib   reduced cost           simplex status
 Q1                                0        1285.28              1              0        1285.28              0                    basic
 Q2                                0        253.753              1              0        253.753              0                    basic
-Q3                                0             -0              1              0             -0      0.0157697           at lower bound
+Q3                                0              0              1              0              0      0.0157697           at lower bound
 Q4                                0        887.261              1              0        887.261              0                    basic
-Q5                                0             -0              1              0             -0      0.0440849           at lower bound
-Q6                                0             -0              1              0             -0      0.0740185           at lower bound
+Q5                                0              0              1              0              0      0.0440849           at lower bound
+Q6                                0              0              1              0              0      0.0740185           at lower bound
 Q7                                0        1286.04              1              0        1286.04              0                    basic
 
 
@@ -1560,10 +1560,10 @@ number of nonzero elements in response matrix: 70 of 70
 name                        current            new   objfunc coef    cur contrib    new contrib   reduced cost           simplex status
 Q1                          1285.28        1285.29              1        1285.28        1285.29              0                    basic
 Q2                          253.753        253.752              1        253.753        253.752              0                    basic
-Q3                               -0             -0              1             -0             -0      0.0157696           at lower bound
+Q3                                0              0              1              0              0      0.0157696           at lower bound
 Q4                          887.261        887.256              1        887.261        887.256              0                    basic
-Q5                               -0             -0              1             -0             -0      0.0440847           at lower bound
-Q6                               -0             -0              1             -0             -0      0.0740184           at lower bound
+Q5                                0              0              1              0              0      0.0440847           at lower bound
+Q6                                0              0              1              0              0      0.0740184           at lower bound
 Q7                          1286.04        1286.04              1        1286.04        1286.04              0                    basic
 
 
