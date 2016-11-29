@@ -164,14 +164,14 @@ ofstream prep_sweep_output_file(Pest &pest_scenario)
 }
 
 
-void process_sweep_runs(ofstream &csv, Pest &pest_scenario, RunManagerAbstract* run_manager_ptr, vector<int> run_ids, ObjectiveFunc obj_func)
+void process_sweep_runs(ofstream &csv, Pest &pest_scenario, RunManagerAbstract* run_manager_ptr, vector<int> run_ids, ObjectiveFunc obj_func,int total_runs_done)
 {
 	Parameters pars;
 	Observations obs;
 	double fail_val = -1.0E+10;
 	for (auto &run_id : run_ids)
 	{
-		csv << run_id;
+		csv << run_id + total_runs_done;
 		// if the run was successful
 		if (run_manager_ptr->get_run(run_id, pars, obs))
 		{
@@ -573,7 +573,7 @@ int main(int argc, char* argv[])
 			run_manager_ptr->run();
 
 			//process the runs
-			process_sweep_runs(obs_stream, pest_scenario, run_manager_ptr, run_ids, obj_func);
+			process_sweep_runs(obs_stream, pest_scenario, run_manager_ptr, run_ids, obj_func,total_runs_done);
 
 			total_runs_done += sweep_pars.size();
 
