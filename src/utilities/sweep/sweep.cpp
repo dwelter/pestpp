@@ -62,7 +62,7 @@ vector<string> prepare_parameter_csv(Parameters pars, ifstream &csv, bool forgiv
 	strip_ip(line);
 	upper_ip(line);
 	tokenize(line, tokens, ",", false);
-	cout << tokens << endl;
+	//cout << tokens << endl;
 	vector<string> header_tokens = tokens;
 
 	// check for parameter names that in the pest control file but that are missing from the csv file
@@ -123,7 +123,7 @@ vector<Parameters> load_parameters_from_csv(vector<string> header_tokens, vector
 				catch (exception &e)
 				{
 					stringstream ss;
-					ss << "error converting '" << tokens[i] << "' to double on line " << lcount << ": " << endl << e.what();
+					ss << "error converting token '" << tokens[i] << "' at location "<< i << " to double on line " << lcount << ": " << line << endl << e.what();
 					throw runtime_error(ss.str());
 				}
 				pars[header_tokens[i]] = val;
