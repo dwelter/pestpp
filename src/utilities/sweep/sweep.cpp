@@ -62,7 +62,7 @@ vector<string> prepare_parameter_csv(Parameters pars, ifstream &csv, bool forgiv
 	strip_ip(line);
 	upper_ip(line);
 	tokenize(line, tokens, ",", false);
-	cout << tokens << endl;
+	//cout << tokens << endl;
 	vector<string> header_tokens = tokens;
 
 	// check for parameter names that in the pest control file but that are missing from the csv file
@@ -123,7 +123,7 @@ vector<Parameters> load_parameters_from_csv(vector<string> header_tokens, vector
 				catch (exception &e)
 				{
 					stringstream ss;
-					ss << "error converting '" << tokens[i] << "' to double on line " << lcount << ": " << endl << e.what();
+					ss << "error converting token '" << tokens[i] << "' at location "<< i << " to double on line " << lcount << ": " << line << endl << e.what();
 					throw runtime_error(ss.str());
 				}
 				pars[header_tokens[i]] = val;
@@ -164,14 +164,14 @@ ofstream prep_sweep_output_file(Pest &pest_scenario)
 }
 
 
-void process_sweep_runs(ofstream &csv, Pest &pest_scenario, RunManagerAbstract* run_manager_ptr, vector<int> run_ids, ObjectiveFunc obj_func)
+void process_sweep_runs(ofstream &csv, Pest &pest_scenario, RunManagerAbstract* run_manager_ptr, vector<int> run_ids, ObjectiveFunc obj_func,int total_runs_done)
 {
 	Parameters pars;
 	Observations obs;
 	double fail_val = -1.0E+10;
 	for (auto &run_id : run_ids)
 	{
-		csv << run_id;
+		csv << run_id + total_runs_done;
 		// if the run was successful
 		if (run_manager_ptr->get_run(run_id, pars, obs))
 		{
@@ -573,7 +573,7 @@ int main(int argc, char* argv[])
 			run_manager_ptr->run();
 
 			//process the runs
-			process_sweep_runs(obs_stream, pest_scenario, run_manager_ptr, run_ids, obj_func);
+			process_sweep_runs(obs_stream, pest_scenario, run_manager_ptr, run_ids, obj_func,total_runs_done);
 
 			total_runs_done += sweep_pars.size();
 
