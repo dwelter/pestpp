@@ -326,6 +326,7 @@
       <PreprocessorDefinitions>CLP_BUILD;_CRT_SECURE_NO_WARNINGS;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(SolutionDir)libs\Eigen;$(SolutionDir)libs\linear_analysis;$(SolutionDir)libs\opt;$(SolutionDir)libs\common;$(SolutionDir)libs\run_managers\abstract_base;$(SolutionDir)libs\pestpp_common</AdditionalIncludeDirectories>
+      <AdditionalOptions>-D_WIN32_WINNT=0x0600 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -358,6 +359,7 @@
       <PreprocessorDefinitions>CLP_BUILD;_CRT_SECURE_NO_WARNINGS;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)libs\Eigen;$(SolutionDir)libs\linear_analysis;$(SolutionDir)libs\opt;$(SolutionDir)libs\common;$(SolutionDir)libs\run_managers\abstract_base;$(SolutionDir)libs\pestpp_common</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalOptions>-D_WIN32_WINNT=0x0600 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

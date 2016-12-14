@@ -108,6 +108,7 @@
       <FloatingPointModel>Strict</FloatingPointModel>
       <FloatingPointExceptions>true</FloatingPointExceptions>
       <OpenMPSupport>false</OpenMPSupport>
+      <AdditionalOptions>-D_WIN32_WINNT=0x0600 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -147,6 +148,7 @@
       <FloatingPointExceptions>true</FloatingPointExceptions>
       <FloatingPointModel>Strict</FloatingPointModel>
       <OpenMPSupport>false</OpenMPSupport>
+      <AdditionalOptions>-D_WIN32_WINNT=0x0600 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

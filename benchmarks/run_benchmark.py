@@ -187,7 +187,6 @@ if __name__ == "__main__":
        #exe_cmd_gsa = r'..\..\..\exe\windows\Win32\Release\gsa_32.exe'
        # run PEST++ benchmarks
        bm_list = [
-        [r'.\stor', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
         [r'.\stor', 'template', exe_cmd_pp, 'pest_regfrac', exe_cmd_pp, 4, 'iobj'],
         [r'.\3pg', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
         [r'.\10par_xsec', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
