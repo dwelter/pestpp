@@ -43,6 +43,8 @@ all:
 	cp programs/pest++/pestpp $(EXE_DIR)
 	cp programs/gsa/gsa $(EXE_DIR)
 	cp programs/pestpp-opt/pestpp-opt $(EXE_DIR)
+	cp utilities/sweep/sweep $(EXE_DIR)
+
 
 clean:
 	rm -rf $(EXE_DIR)/*
