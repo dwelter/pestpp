@@ -149,7 +149,7 @@ ofstream prep_sweep_output_file(Pest &pest_scenario)
 			pest_scenario.get_pestpp_options().get_sweep_output_csv_file());
 	}
 	csv.precision(numeric_limits<double>::digits10);
-	csv << "run_id";
+	csv << "run_id,failed_flag";
 	csv << ",phi,meas_phi,regul_phi";
 	for (auto &ogrp : pest_scenario.get_ctl_ordered_obs_group_names())
 	{
@@ -171,11 +171,11 @@ void process_sweep_runs(ofstream &csv, Pest &pest_scenario, RunManagerAbstract* 
 	double fail_val = -1.0E+10;
 	for (auto &run_id : run_ids)
 	{
-		
+		csv << run_id + total_runs_done;
 		// if the run was successful
 		if (run_manager_ptr->get_run(run_id, pars, obs))
 		{
-			csv << run_id + total_runs_done;
+			csv << ",0";
 			map<string, double> phi_report = obj_func.phi_report(obs, pars, *(pest_scenario.get_regul_scheme_ptr()));
 
 			csv << ',' << phi_report.at("TOTAL");
@@ -200,7 +200,8 @@ void process_sweep_runs(ofstream &csv, Pest &pest_scenario, RunManagerAbstract* 
 		//if the run bombed
 		else
 		{
-			csv << '-1,,,';
+			csv << ",1";
+			csv << ",,,";
 			for (auto &ogrp : pest_scenario.get_ctl_ordered_obs_group_names())
 			{
 				csv << ',';
