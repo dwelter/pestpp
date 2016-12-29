@@ -149,7 +149,7 @@ ofstream prep_sweep_output_file(Pest &pest_scenario)
 			pest_scenario.get_pestpp_options().get_sweep_output_csv_file());
 	}
 	csv.precision(numeric_limits<double>::digits10);
-	csv << "run_id";
+	csv << "run_id,failed_flag";
 	csv << ",phi,meas_phi,regul_phi";
 	for (auto &ogrp : pest_scenario.get_ctl_ordered_obs_group_names())
 	{
@@ -193,7 +193,8 @@ void process_sweep_runs(ofstream &csv, Pest &pest_scenario, RunManagerAbstract* 
 		//if the run bombed
 		else
 		{
-			csv << ',,,';
+			csv << ",1";
+			csv << ",,,";
 			for (auto &ogrp : pest_scenario.get_ctl_ordered_obs_group_names())
 			{
 				csv << ',';
@@ -437,12 +438,16 @@ int main(int argc, char* argv[])
 
 
 		// process the parameter csv file
+		string par_csv_file;
 		if (pest_scenario.get_pestpp_options().get_sweep_parameter_csv_file().empty())
 		{
-			throw runtime_error("control file pest++ type argument 'SWEEP_PARAMETER_CSV_FILE' is required for sweep");
+			//throw runtime_error("control file pest++ type argument 'SWEEP_PARAMETER_CSV_FILE' is required for sweep");
+			cout << "pest++ arg SWEEP_PARAMETER_CSV_FILE not set, using 'SWEEP_IN.CSV'" << endl;
+			par_csv_file = "sweep_in.csv";
 		}
-
-		string par_csv_file = pest_scenario.get_pestpp_options().get_sweep_parameter_csv_file();
+		else
+			par_csv_file = pest_scenario.get_pestpp_options().get_sweep_parameter_csv_file();
+		
 		ifstream par_stream(par_csv_file);
 		if (!par_stream.good())
 		{
