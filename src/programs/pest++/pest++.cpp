@@ -652,9 +652,9 @@ int main(int argc, char* argv[])
 		output_file_writer.obs_report(fout_rec, *obj_func.get_obs_ptr(), optimum_run.get_obs());
 
 		fout_rec << endl << "Final composite objective function " << endl;
-		map<string, double> phi_report = obj_func.phi_report(optimum_run.get_obs(), optimum_run.get_ctl_pars(), *(pest_scenario.get_regul_scheme_ptr()));
-		output_file_writer.phi_report(fout_rec, termination_ctl.get_iteration_number() + 1, run_manager_ptr->get_total_runs(), phi_report, 0.0, true);
-		output_file_writer.phi_report(cout, termination_ctl.get_iteration_number() + 1, run_manager_ptr->get_total_runs(), phi_report, 0.0, true);
+		PhiData phi_data = obj_func.phi_report(optimum_run.get_obs(), optimum_run.get_ctl_pars(), *(pest_scenario.get_regul_scheme_ptr()));
+		output_file_writer.phi_report(fout_rec, termination_ctl.get_iteration_number() + 1, run_manager_ptr->get_total_runs(), phi_data, 0.0, true);
+		output_file_writer.phi_report(cout, termination_ctl.get_iteration_number() + 1, run_manager_ptr->get_total_runs(), phi_data, 0.0, true);
 		fout_rec << endl << endl;
 		fout_rec << "Number of forward model runs performed during optimiztion: " << run_manager_ptr->get_total_runs() << endl;
 			
@@ -715,7 +715,7 @@ int main(int argc, char* argv[])
 			// and report new weights to the rec file
 			fout_rec << endl;
 			ObservationInfo reweight;
-			reweight = normalize_weights_by_residual(pest_scenario, phi_report);
+			reweight = normalize_weights_by_residual(pest_scenario, phi_data);
 			fout_rec << "Note: The observation covariance matrix has been constructed from " << endl;
 			fout_rec << "      weights listed in the pest control file that have been scaled by " << endl;
 			fout_rec << "      by the final objective function components to account for " << endl;

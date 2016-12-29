@@ -175,20 +175,14 @@ void process_sweep_runs(ofstream &csv, Pest &pest_scenario, RunManagerAbstract* 
 		// if the run was successful
 		if (run_manager_ptr->get_run(run_id, pars, obs))
 		{
-			map<string, double> phi_report = obj_func.phi_report(obs, pars, *(pest_scenario.get_regul_scheme_ptr()));
+			PhiData phi_data = obj_func.phi_report(obs, pars, *(pest_scenario.get_regul_scheme_ptr()));
 
-			csv << ',' << phi_report.at("TOTAL");
-			csv << ',' << phi_report.at("MEAS");
-			map<string, double>::const_iterator iregul = phi_report.find("REGUL");
-			double val = 0.0;
-			if (iregul != phi_report.end())
-			{
-				val = phi_report.at("REGUL");
-			}
-			csv << ',' << val;
+			csv << ',' << phi_data.total();
+			csv << ',' << phi_data.meas;
+			csv << ',' << phi_data.regul;
 			for (auto &obs_grp : pest_scenario.get_ctl_ordered_obs_group_names())
 			{
-				csv << ',' << phi_report.at(obs_grp);
+				csv << ',' << phi_data.group_phi.at(obs_grp);
 			}
 			for (auto oname : pest_scenario.get_ctl_ordered_obs_names())
 			{

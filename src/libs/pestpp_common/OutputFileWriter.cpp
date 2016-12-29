@@ -140,24 +140,18 @@ void OutputFileWriter::write_par_iter(int iter, Parameters const &ctl_pars)
 	os << endl;
 }
 
-void OutputFileWriter::write_obj_iter(int iter, int nruns, map<string, double> const &phi_report)
+void OutputFileWriter::write_obj_iter(int iter, int nruns, PhiData const &phi_data)
 {
 	if (!pest_scenario.get_pestpp_options().get_iter_summary_flag())
 		return;
 	ofstream &os = file_manager.get_ofstream("iobj");
 	os << iter << ',' << nruns;
-	os << ',' << phi_report.at("TOTAL");
-	os << ',' << phi_report.at("MEAS");
-	map<string, double>::const_iterator iregul = phi_report.find("REGUL");
-	double val = 0.0;	
-	if (iregul != phi_report.end())
-	{
-		val = phi_report.at("REGUL");
-	}
-	os << ',' << val;
+	os << ',' << phi_data.total();
+	os << ',' << phi_data.meas;
+	os << ',' << phi_data.regul;
 	for (auto &obs_grp : pest_scenario.get_ctl_ordered_obs_group_names())
 	{
-		os << ',' << phi_report.at(obs_grp);
+		os << ',' << phi_data.group_phi.at(obs_grp);
 	}
 	os << endl;
 }
@@ -419,18 +413,18 @@ void OutputFileWriter::param_change_stats(double p_old, double p_new, bool &have
 }
 
 
-void OutputFileWriter::phi_report(std::ostream &os, int const iter, int const nruns, map<string, double> const phi_comps, double const dynamic_reg_weight,bool final)
+void OutputFileWriter::phi_report(std::ostream &os, int const iter, int const nruns, PhiData const &phi_comps, double const dynamic_reg_weight,bool final)
 {
-	map<string, double>::const_iterator it = phi_comps.find("REGUL");
-	if ((!dynamic_reg_weight) || (it == phi_comps.end()))
+	map<string, double>::const_iterator it = phi_comps.group_phi.find("REGUL");
+	if ((!dynamic_reg_weight) || (it == phi_comps.group_phi.end()))
 	{
 		if (final)
 		{
-			os << "  Final phi                                           Total : " << phi_comps.at("TOTAL") << endl;
+			os << "  Final phi                                           Total : " << phi_comps.total() << endl;
 		}
 		else
 		{
-			os << "  Starting phi for this iteration                     Total : " << phi_comps.at("TOTAL") << endl;
+			os << "  Starting phi for this iteration                     Total : " << phi_comps.total() << endl;
 		}		
 	}
 	else
@@ -438,16 +432,16 @@ void OutputFileWriter::phi_report(std::ostream &os, int const iter, int const nr
 		if (final)
 		{
 			os << "  Final regularization weight factor                        : " << dynamic_reg_weight << endl;
-			os << "  Final phi                                           Total : " << phi_comps.at("TOTAL") << endl;
-			os << "  Final measurement phi for this iteration            Total : " << phi_comps.at("MEAS") << endl;
-			os << "  Final regularization phi for this iteration         Total : " << phi_comps.at("REGUL") << endl;
+			os << "  Final phi                                           Total : " << phi_comps.total() << endl;
+			os << "  Final measurement phi for this iteration            Total : " << phi_comps.meas << endl;
+			os << "  Final regularization phi for this iteration         Total : " << phi_comps.regul << endl;
 		}
 		else
 		{
 			os << "  Current regularization weight factor                      : " << dynamic_reg_weight << endl;
-			os << "  Starting phi for this iteration                     Total : " << phi_comps.at("TOTAL") << endl;
-			os << "  Starting measurement phi for this iteration         Total : " << phi_comps.at("MEAS") << endl;
-			os << "  Starting regularization phi for this iteration      Total : " << phi_comps.at("REGUL") << endl;
+			os << "  Starting phi for this iteration                     Total : " << phi_comps.total() << endl;
+			os << "  Starting measurement phi for this iteration         Total : " << phi_comps.meas << endl;
+			os << "  Starting regularization phi for this iteration      Total : " << phi_comps.regul << endl;
 		}
 	}
 	
@@ -455,7 +449,7 @@ void OutputFileWriter::phi_report(std::ostream &os, int const iter, int const nr
 	{
 		os << "  Contribution to phi from observation group ";
 		os << setw(17) << setiosflags(ios::right) << "\"" + lower_cp(gname) + "\" : ";
-		os << phi_comps.at(gname) << endl;
+		os << phi_comps.group_phi.at(gname) << endl;
 	}
 	/*if (pest_scenario.get_pestpp_options().get_iter_summary_flag())
 	{
