@@ -78,6 +78,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)\..\exe\windows\$(Platform)\$(Configuration)\</OutDir>
+    <TargetName>$(ProjectName)_32</TargetName>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -126,12 +129,16 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)\libs\common;$(SolutionDir)\libs\pestpp_common;$(SolutionDir)\libs\linear_analysis;$(SolutionDir)\libs\run_managers\abstract_base;$(SolutionDir)\libs\run_managers\yamr;$(SolutionDir)\libs\run_managers\genie_wrapper;$(SolutionDir)\libs\run_managers\serial;$(SolutionDir)\libs\run_managers\external;$(SolutionDir)libs\opt;$(SolutionDir)libs\Eigen</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>libopt.lib;mkl_blas95.lib;mkl_lapack95.lib;ws2_32.lib;Advapi32.lib;propack.lib;common.lib;pestpp_common.lib;mio.lib;wrappers.lib;genie.lib;genie_wrapper.lib;yamr.lib;external.lib;serial.lib;abstract_base.lib;linear_analysis.lib;pest_routines.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(IFORT_COMPILER16)\compiler\lib\ia32;$(IFORT_COMPILER16)\mkl\lib\ia32;$(SolutionDir)$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
