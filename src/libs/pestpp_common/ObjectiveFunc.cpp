@@ -207,15 +207,14 @@ map<string, double> ObjectiveFunc::get_group_phi(const Observations &sim_obs, co
 	return group_phi;
 }
 
-map<string,double> ObjectiveFunc::phi_report(const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg) const
+PhiData ObjectiveFunc::phi_report(const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg) const
 {
-	map<string, double> group_phi;
+	PhiData phi_data;
 	PhiComponets phi_comp = get_phi_comp(sim_obs, pars, dynamic_reg);
-	double total_phi = phi_comp.meas + phi_comp.regul;		
-	group_phi = get_group_phi(sim_obs, pars, dynamic_reg);
-	group_phi["MEAS"] = phi_comp.meas;	
-	group_phi["TOTAL"] = total_phi;
-	return group_phi;
+	phi_data.meas = phi_comp.meas;
+	phi_data.regul = phi_comp.regul;
+	phi_data.group_phi = get_group_phi(sim_obs, pars, dynamic_reg);
+	return phi_data;
 }
 
 

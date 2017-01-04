@@ -39,6 +39,15 @@ public:
 	pair<double, double> as_pair(){ return pair<double, double>(meas, regul); }
 };
 
+class PhiData
+{
+public:
+	double meas;
+	double regul;
+	double total() const { return meas + regul;}
+	map<string, double> group_phi;
+};
+
 class ObjectiveFunc
 {
 public:
@@ -55,7 +64,7 @@ public:
 	PhiComponets get_phi_comp(const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg, double norm = 2.0) const;
 	map<string, double> get_group_phi(const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg,
 		PhiComponets::OBS_TYPE obs_type = PhiComponets::OBS_TYPE::ALL) const;	
-	map<string,double> phi_report(const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg) const;
+	PhiData phi_report(const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg) const;
 	//PhiComponets full_report(ostream &os, const Observations &sim_obs, const Parameters &pars, const DynamicRegularization &dynamic_reg,bool limit_par=false) const;
 	vector<double> get_residuals_vec(const Observations &sim_obs, const Parameters &pars, const vector<string> &obs_names) const;
 	const Observations* get_obs_ptr() const;

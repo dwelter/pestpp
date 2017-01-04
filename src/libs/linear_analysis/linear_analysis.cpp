@@ -84,7 +84,7 @@ map<string, int> get_nnz_group(Pest &pest_scenario)
 	return grp_nnz;
 }
 
-ObservationInfo normalize_weights_by_residual(Pest &pest_scenario, map<string, double> obj_comps)
+ObservationInfo normalize_weights_by_residual(Pest &pest_scenario, PhiData obj_comps)
 {
 	ObservationInfo obs_info = pest_scenario.get_ctl_observation_info();
 	map<string, string> pst_grps = pest_scenario.get_observation_groups();
@@ -101,13 +101,13 @@ ObservationInfo normalize_weights_by_residual(Pest &pest_scenario, map<string, d
 			cout << " WARNING:  can't use EXPECTED_OBJ option with dynamic" << endl;
 			cout << "           regularization - using PHIMACCEPT instead." << endl;
 		}
-		double tot_obj = obj_comps["MEAS"];
+		double tot_obj = obj_comps.meas;
 		if (tot_obj > 0.0)
 		{
 			double mult = exp_obj / tot_obj;
-			for (auto &oc : obj_comps)
+			for (auto &oc : obj_comps.group_phi)
 			{
-				obj_comps[oc.first] = mult * oc.second;
+				obj_comps.group_phi[oc.first] = mult * oc.second;
 			}
 		}
 	}
@@ -116,29 +116,29 @@ ObservationInfo normalize_weights_by_residual(Pest &pest_scenario, map<string, d
 	{
 		double phimlim = pest_scenario.get_regul_scheme_ptr()->get_phimlim();
 		double phimaccept = pest_scenario.get_regul_scheme_ptr()->get_phimaccept();
-		double tot_obj = obj_comps["MEAS"];
+		double tot_obj = obj_comps.meas;
 		if (tot_obj > phimaccept)
 		{
 			double mult = phimaccept / tot_obj;
-			for (auto &oc : obj_comps)
-				obj_comps[oc.first] = mult * oc.second;				
+			for (auto &oc : obj_comps.group_phi)
+				obj_comps.group_phi[oc.first] = mult * oc.second;
 		}
 		else
 		{
-			for (auto &oc : obj_comps)
-				obj_comps[oc.first] = 0.0;
+			for (auto &oc : obj_comps.group_phi)
+				obj_comps.group_phi[oc.first] = 0.0;
 		}
 	}
 
 	for (auto &ogrp : pst_grps)
 	{
-		if (obj_comps[ogrp.second] <= numeric_limits<double>::min())
+		if (obj_comps.group_phi[ogrp.second] <= numeric_limits<double>::min())
 			continue;
 		obs_rec = obs_info.get_observation_rec_ptr(ogrp.first);
 		if (obs_rec->weight > 0.0)
 		{
 			weight = obs_info.get_observation_rec_ptr(ogrp.first)->weight * 
-				sqrt(((double)grp_nnz[ogrp.second]) / obj_comps[ogrp.second]);
+				sqrt(((double)grp_nnz[ogrp.second]) / obj_comps.group_phi[ogrp.second]);
 			if (weight <= numeric_limits<double>::min())
 				weight = 0.0;
 			else if (weight >= numeric_limits<double>::max())

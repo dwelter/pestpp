@@ -26,6 +26,7 @@
 #include<Eigen/Sparse>
 #include "FileManager.h"
 #include "Pest.h"
+#include "ObjectiveFunc.h"
 
 class Observations;
 class ObjectiveFunc;
@@ -59,7 +60,7 @@ public:
 	void scenario_obs_report(std::ostream &os);
 	void scenario_pi_report(std::ostream &os);
 
-	void phi_report(std::ostream &os,int const iter, int const nruns,map<string, double> const phi_comps, double const dynamic_reg_weight,bool final=false);
+	void phi_report(std::ostream &os,int const iter, int const nruns, PhiData const &phi_comps, double const dynamic_reg_weight,bool final=false);
 	void par_report(std::ostream &os, Parameters const &new_ctl_pars);
 	void par_report(std::ostream &os, int const iter, Parameters const &new_pars, Parameters const &old_pars, string par_type);
 	void iteration_report(std::ostream &os, int iter, int nruns, string iteration_type, string svd_type=string(""), string mat_inv=string(""));
@@ -68,7 +69,7 @@ public:
 	
 	void param_change_stats(double p_old, double p_new, bool &have_fac, double &fac_change, bool &have_rel, double &rel_change);
 	void write_par_iter(int iter, Parameters const &ctl_pars);
-	void write_obj_iter(int iter, int nruns, map<string, double> const &phi_report);
+	void write_obj_iter(int iter, int nruns, PhiData const &pph_data);
 	void write_sen_iter(int iter, map<string, double> &ctl_par_sens);
 
 	void write_jco(bool isBaseIter, string ext, const Jacobian &jco);

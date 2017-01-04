@@ -7,6 +7,7 @@
 #include "Pest.h"
 #include "covariance.h"
 #include "logger.h"
+#include "ObjectiveFunc.h"
 
 using namespace std;
 class linear_analysis
@@ -200,6 +201,6 @@ private:
 map<string, double> get_obj_comps(string &filename);
 map<string, int> get_nnz_group(Pest &pest_scenario);
 ObservationInfo normalize_weights_by_residual(Pest &pest_scenario, string &resid_filename);
-ObservationInfo normalize_weights_by_residual(Pest &pest_scenario, map<string, double> obj);
+ObservationInfo normalize_weights_by_residual(Pest &pest_scenario, PhiData obj);
 
 #endif

@@ -85,9 +85,9 @@ void DifferentialEvolution::solve(RunManagerAbstract &run_manager,
 		// write initial phi report for this iteration
 		bool run_target_ok = gen_1.get_run(best_run_idx, tmp_pars, tmp_obs);
 		par_transform.model2ctl_ip(tmp_pars);
-		map<string, double> phi_comps = obj_func_ptr->phi_report(tmp_obs, tmp_pars, DynamicRegularization::get_unit_reg_instance());
-		output_file_writer.phi_report(cout, iter, run_manager.get_nruns(), phi_comps, DynamicRegularization::get_unit_reg_instance().get_weight(), false);
-		output_file_writer.phi_report(os, iter, run_manager.get_nruns(), phi_comps, DynamicRegularization::get_unit_reg_instance().get_weight(), false);
+		PhiData phi_data  = obj_func_ptr->phi_report(tmp_obs, tmp_pars, DynamicRegularization::get_unit_reg_instance());
+		output_file_writer.phi_report(cout, iter, run_manager.get_nruns(), phi_data, DynamicRegularization::get_unit_reg_instance().get_weight(), false);
+		output_file_writer.phi_report(os, iter, run_manager.get_nruns(), phi_data, DynamicRegularization::get_unit_reg_instance().get_weight(), false);
 
 		run_manager.reinitialize();
 		mutation(run_manager, f, dither_f, cr);
@@ -108,10 +108,10 @@ void DifferentialEvolution::solve(RunManagerAbstract &run_manager,
 			*(par_transform.get_scale_ptr()));
 		file_manager.close_file("par");
 		// write final phi report for this iteration
-		phi_comps = obj_func_ptr->phi_report(tmp_obs, tmp_pars, DynamicRegularization::get_unit_reg_instance());
-		output_file_writer.phi_report(cout, iter, run_manager.get_nruns(), phi_comps, DynamicRegularization::get_unit_reg_instance().get_weight(), true);
+		phi_data = obj_func_ptr->phi_report(tmp_obs, tmp_pars, DynamicRegularization::get_unit_reg_instance());
+		output_file_writer.phi_report(cout, iter, run_manager.get_nruns(), phi_data, DynamicRegularization::get_unit_reg_instance().get_weight(), true);
 		cout << endl;
-		output_file_writer.phi_report(os, iter, run_manager.get_nruns(), phi_comps, DynamicRegularization::get_unit_reg_instance().get_weight(), true);
+		output_file_writer.phi_report(os, iter, run_manager.get_nruns(), phi_data, DynamicRegularization::get_unit_reg_instance().get_weight(), true);
 		os << endl;
 	}
 }
