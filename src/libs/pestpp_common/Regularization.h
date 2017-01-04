@@ -20,7 +20,7 @@
 #define REGULARIZATION_H_
 
 #include <unordered_map>
-
+#include <string>
 class ModelRun;
 
 class DynamicRegularization
