@@ -81,7 +81,7 @@ void MuPoint::print(ostream &os)
 		os.precision(n);
 
 }
-bool MuPoint::operator< (const MuPoint &rhs) 
+bool MuPoint::operator< (const MuPoint &rhs) const
 {
 	return abs(f()) < abs(rhs.f());
 }
