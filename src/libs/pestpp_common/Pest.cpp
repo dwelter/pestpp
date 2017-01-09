@@ -232,9 +232,9 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	double phimlim;
 	double phimaccept;
 	double fracphim;
-	double wfinit;
-	double wfmin;
-	double wfmax;
+	double wfinit = 1.0;
+	double wfmin = 1.0e-10;
+	double wfmax = 1.0e+10;
 	double wffac; 
 	double wftol;
 	bool use_dynamic_reg = false;
@@ -637,7 +637,15 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 				t_auto_norm->insert(*par_name, -avg, auto_norm/spread);
 		}
 	}
+	//if the reg_frac arg was passed, reset the regul pointer
+	if (pestpp_options.get_reg_frac() >= 0.0)
+	{
+		double dummy = -1.0e+10;
+		delete regul_scheme_ptr;
+		regul_scheme_ptr = new DynamicRegularization(use_dynamic_reg, true, dummy,
+			dummy, dummy, wfmin, wfmax, dummy, dummy, wfinit);
 
+	}
 	regul_scheme_ptr->set_max_reg_iter(pestpp_options.get_max_reg_iter());
 //	//Make sure we use Q1/2J is PROPACK is chosen
 //	if (pestpp_options.get_svd_pack() == PestppOptions::SVD_PACK::PROPACK)
