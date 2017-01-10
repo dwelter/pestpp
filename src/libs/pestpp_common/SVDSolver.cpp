@@ -1539,15 +1539,22 @@ void SVDSolver::dynamic_weight_adj_percent(const ModelRun &base_run, double reg_
 	PhiComponets phi_comp_cur = base_run.get_obj_func_ptr()->get_phi_comp(base_run.get_obs(), base_run.get_ctl_pars(), *regul_scheme_ptr);
 
 	double wf_new;
-	if (phi_comp_cur.regul <= 1.0e-10 || reg_frac == 1.0)
+	//if (phi_comp_cur.regul <= wfmin || reg_frac == 1.0)
+	if (reg_frac == 1.0)
 	{
 		wf_new = wfmin;
+	}
+	else if (phi_comp_cur.regul < wfmin)
+	{
+		wf_new = reg_frac * phi_comp_cur.meas / (1.0 - reg_frac);
+		wf_new *= wf_cur;
 	}
 	else
 	{
 		wf_new = reg_frac * phi_comp_cur.meas / (phi_comp_cur.regul * (1.0 - reg_frac));
 		wf_new *= wf_cur;
 	}
+
 	wf_new = max(wf_new, wfmin);
 	wf_new = min(wf_new, wfmax);
 	regul_scheme_ptr->set_weight(wf_new);
