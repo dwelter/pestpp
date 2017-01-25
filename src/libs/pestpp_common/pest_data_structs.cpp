@@ -655,6 +655,28 @@ bool ObservationRec::is_regularization() const
 	return is_reg;
 }
 
+int ObservationInfo::get_nnz_obs() const
+{
+	int nnz = 0;
+	for (auto &obs : observations)
+	{
+		if ((!obs.second.is_regularization()) && (obs.second.weight > 0.0))
+			nnz++;
+	}
+	return nnz;
+}
+
+int ObservationInfo::get_nnz_obs_and_reg() const
+{
+	int nnz = 0;
+	for (auto &obs : observations)
+	{
+		if (obs.second.weight > 0.0)
+			nnz++;
+	}
+	return nnz;
+}
+
 double ObservationInfo::get_weight(const string &obs_name) const
 {
 	return observations.find(obs_name)->second.weight;

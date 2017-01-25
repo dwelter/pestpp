@@ -179,6 +179,8 @@ public:
 	const ObservationRec* get_observation_rec_ptr(const string &name) const;
 	const ObservationGroupRec* get_group_rec_ptr(const string &name) const;
 	Observations get_regulatization_obs(const Observations &obs_in);	
+	int get_nnz_obs() const;
+	int get_nnz_obs_and_reg() const;
 };
 
 class ModelExecInfo {

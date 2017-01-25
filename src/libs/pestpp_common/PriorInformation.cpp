@@ -206,3 +206,14 @@ vector<string> PriorInformation::get_keys() const
 	}
 	return ret_val;
 }
+
+int PriorInformation::get_nnz_pi() const
+{
+	int nnz = 0;
+	for (auto pi : prior_info_map)
+	{
+		if (pi.second.get_weight() > 0.0)
+			nnz++;
+	}
+	return nnz;
+}

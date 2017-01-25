@@ -600,17 +600,19 @@ void OutputFileWriter::write_restart_header(std::ostream &fout)
 
 void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobian &jac,
 	const ObjectiveFunc &obj_func, const ParameterGroupInfo &par_grp_info, const DynamicRegularization &regul,
-	bool is_super)
+	bool is_super, const ParamTransformSeq &par_transform)
 {
 	fout << setiosflags(ios::left);
 	fout.unsetf(ios::floatfield);
 	fout.precision(12);
 	fout << "NUMERIC PARAMETER SENSITIVITIES FOR OPTIMISATION ITERATION NO. " << setw(3) << iter_no << " ----->" << endl;
-	fout << " Parameter name   Group        Current Value           CSS w/reg           CSS w/o reg" << endl;
+	//fout << " Parameter name   Group        Current Value           CSS w/reg           CSS w/o reg" << endl;
+	  fout << "  Parameter name   Group        Current Value        HILL_CSS_w_reg       PEST_CSS_w_reg       HILL_CSS_wo_reg      PEST_CSS_wo_reg" << endl;
 	const vector<string> &par_list = jac.parameter_list();
 	//const vector<string> &par_list = pest_scenario.get_ctl_ordered_par_names();
 	const vector<string> &obs_list = jac.obs_and_reg_list();
 	Parameters pars = jac.get_base_numeric_parameters();
+	Parameters ctl_pars = par_transform.numeric2ctl_cp(pars);
 	if (pars.size() == 0)
 	{
 		fout << "parameter values are not avaialble to compute CSS" << endl;
@@ -626,19 +628,23 @@ void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobia
 		Eigen::SparseMatrix<double> dss_mat_reg = q_sqrt_reg * jac.get_matrix(obs_list, par_list) * par_mat;
 		Eigen::SparseMatrix<double> q_sqrt_no_reg = Q_sqrt.get_sparse_matrix(obs_list, DynamicRegularization::get_zero_reg_instance());
 		Eigen::SparseMatrix<double> dss_mat_no_reg = q_sqrt_no_reg * jac.get_matrix(obs_list, par_list) * par_mat;
+		Eigen::SparseMatrix<double> dss_mat_reg_pest = q_sqrt_reg * jac.get_matrix(obs_list, par_list);
+		Eigen::SparseMatrix<double> dss_mat_no_reg_pest = q_sqrt_no_reg * jac.get_matrix(obs_list, par_list);
 
 		//cout << q_sqrt_reg << endl << endl;
 		//cout << q_sqrt_no_reg << endl << endl;
-		/*cout << q_sqrt_reg << endl << endl;
-		cout << dss_mat_reg << endl << endl;
-		cout << q_sqrt_no_reg << endl << endl;
-		cout << dss_mat_no_reg << endl << endl;
-		cout << jac.get_matrix(obs_list, par_list) << endl;
-*/
+	    //cout << q_sqrt_reg << endl << endl;
+		//cout << dss_mat_reg << endl << endl;
+		//cout << q_sqrt_no_reg << endl << endl;
+		//cout << dss_mat_no_reg << endl << endl;
+		//cout << jac.get_matrix(obs_list, par_list) << endl;
 
 		int n_par = par_list.size();
-		int n_nonzero_weights_reg = q_sqrt_reg.nonZeros();
-		int n_nonzero_weights_no_reg = q_sqrt_no_reg.nonZeros();
+		//int n_nonzero_weights_reg = q_sqrt_reg.nonZeros();
+		//int n_nonzero_weights_no_reg = q_sqrt_no_reg.nonZeros();
+		
+		int n_nonzero_weights_no_reg = obj_func.get_obs_info_ptr()->get_nnz_obs();
+		int n_nonzero_weights_reg = n_nonzero_weights_no_reg + obj_func.get_prior_info_ptr()->get_nnz_pi();
 		vector<string> par_names;
 		if (is_super)
 		{
@@ -663,24 +669,28 @@ void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobia
 			i = is - par_list.begin();
 			fout << "   " << setw(15) << lower_cp(par_list[i])
 				<< " " << setw(12) << lower_cp(par_grp_info.get_group_name(par_list[i]))
-				<< " " << showpoint << setw(20) << pars.get_rec(par_list[i]);
+				<< " " << showpoint << setw(20) << ctl_pars.get_rec(par_list[i]);
 			if (n_nonzero_weights_reg > 0)
 			{
 				fout << " " << showpoint << setw(20) << dss_mat_reg.col(i).norm() / pow(n_nonzero_weights_reg, 2.0);
+				fout << " " << showpoint << setw(20) << dss_mat_reg_pest.col(i).norm() / n_nonzero_weights_reg;
 			}
 			else
 			{
+				fout << " " << showpoint << setw(20) << "NA";
 				fout << " " << showpoint << setw(20) << "NA";
 			}
 			if (n_nonzero_weights_no_reg > 0)
 			{
 				val = dss_mat_no_reg.col(i).norm() / pow(n_nonzero_weights_no_reg, 2.0);
+				fout << " " << showpoint << setw(20) << val;
+				val = dss_mat_no_reg_pest.col(i).norm() / n_nonzero_weights_no_reg;
 				par_sens[pname] = val;
 				fout << " " << showpoint << setw(20) << val;
-
 			}
 			else
 			{
+				fout << " " << showpoint << setw(20) << "NA";
 				fout << " " << showpoint << setw(20) << "NA";
 				par_sens[pname] = -999;
 			}
