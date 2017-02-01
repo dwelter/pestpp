@@ -106,13 +106,13 @@ Here is a (more or less) complete list of ``++`` arguments that can be added to 
 ###pestpp-opt ``++`` arguments
 ``pestpp-opt`` is a implementation of sequential linear programming under uncertainty for the PEST-style model-independent interface
 
-* ``++opt dec var groups(<group names>)``: comma-separated string identifying which parameter groups are to be treated as decision variables.  If not passed, all adjustable parameters are treated as decision variables
+* ``++opt_dec_var_groups(<group names>)``: comma-separated string identifying which parameter groups are to be treated as decision variables.  If not passed, all adjustable parameters are treated as decision variables
 
 * ``++opt_external_dec_var_groups(<group_names>)``: comma-separated string identifying which parameter groups are to be treated as "external" decision variables, that is decision variables that do not influence model-based constraints and therefore do not require a perturbation run of the model to fill columns in the response matrix.
 
-* ``++opt constraint groups(<group names>)``: comma-separated string identifying which observation and prior information groups are to be treated as constraints.  Groups for "less than" constraints must start with either "l_" or "less"; groups for "greater than" constraints must start with "g_" or "greater".  If not passed, all observation and prior information groups that meet the naming rules will be treated as constraints
+* ``++opt_constraint_groups(<group names>)``: comma-separated string identifying which observation and prior information groups are to be treated as constraints.  Groups for "less than" constraints must start with either "l_" or "less"; groups for "greater than" constraints must start with "g_" or "greater".  If not passed, all observation and prior information groups that meet the naming rules will be treated as constraints
 
-* ``++opt obj func(<obj func name >)``: string identifying the prior information equation or two-column ASCII file that contains the objective function coefficients.  If not passed, then each decision variable is given a coefficient of 1.0 in the objective function.
+* ``++opt_obj_func(<obj func name >)``: string identifying the prior information equation or two-column ASCII file that contains the objective function coefficients.  If not passed, then each decision variable is given a coefficient of 1.0 in the objective function.
 
 * ``++opt_direction(<direction>)``: either "min" or "max", weather to minimize or maximize the objective function. 
 
