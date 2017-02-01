@@ -1540,7 +1540,7 @@ void SVDSolver::dynamic_weight_adj_percent(const ModelRun &base_run, double reg_
 
 	double wf_new;
 	//if (phi_comp_cur.regul <= wfmin || reg_frac == 1.0)
-	if (reg_frac == 1.0)
+	if (reg_frac >= 1.0)
 	{
 		wf_new = wfmin;
 	}

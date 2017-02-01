@@ -233,8 +233,8 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	double phimaccept;
 	double fracphim;
 	double wfinit = 1.0;
-	double wfmin = 1.0e-10;
-	double wfmax = 1.0e+10;
+	double wfmin = numeric_limits<double>::min();
+	double wfmax = numeric_limits<double>::max();
 	double wffac; 
 	double wftol;
 	bool use_dynamic_reg = false;
