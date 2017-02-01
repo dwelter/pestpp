@@ -667,9 +667,13 @@ void OutputFileWriter::append_sen(std::ostream &fout, int iter_no, const Jacobia
 			is = find(par_list.begin(), par_list.end(), pname);
 			if (is == par_list.end()) continue;
 			i = is - par_list.begin();
-			fout << "   " << setw(15) << lower_cp(par_list[i])
-				<< " " << setw(12) << lower_cp(par_grp_info.get_group_name(par_list[i]))
-				<< " " << showpoint << setw(20) << ctl_pars.get_rec(par_list[i]);
+			fout << "   " << setw(15) << lower_cp(pname)
+				<< " " << setw(12) << lower_cp(par_grp_info.get_group_name(pname));
+			if (is_super)
+				fout << " " << showpoint << setw(20) << pars.get_rec(pname);
+			else
+				fout << " " << showpoint << setw(20) << ctl_pars.get_rec(pname);
+
 			if (n_nonzero_weights_reg > 0)
 			{
 				fout << " " << showpoint << setw(20) << dss_mat_reg.col(i).norm() / pow(n_nonzero_weights_reg, 2.0);
