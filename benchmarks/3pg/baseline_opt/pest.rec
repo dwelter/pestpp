@@ -1,4 +1,4 @@
-             PEST++ Version 3.2.0
+             PEST++ Version 3.6.0
 
                  by Dave Welter
      Computational Water Resource Engineering
@@ -16,6 +16,45 @@ Case dimensions:-
     Number of adjustable parameters = 5
     Number of observations = 108
     Number of prior estimates = 0
+
+PEST Control Information
+    relparmax = 3
+    facparmax = 3
+    facorig = 0.001
+    phiredswh = 0.1
+    noptmax = 50
+    phiredstp = 0.01
+    nphistp = 3
+    nphinored = 3
+    relparstp = 0.01
+    nrelpar = 3
+
+PEST++ Options
+    n_iter_base = 50                  
+    n_iter_super = 0                   
+    max_n_super = 52                  
+    super eigthres = 1e-06               
+    svd pack = 0                   
+    auto norm = -999                
+    super relparmax = 0.1                 
+    max super frz iter = 5                   
+    mat inv = 1                   
+    max run fail = 3                   
+    max reg iter = 20                  
+    lambdas = 
+            0.1
+              1
+             10
+            100
+           1000
+    using FOSM-based uncertainty estimation for parameters
+    parameter covariance file =                     
+    derivative run failure forgive = 1              
+    run overdue reschedule factor = 1.15                
+    run overdue giveup factor = 100                 
+    base parameter jacobian filename =                     
+    prior parameter covariance upgrade scaling factor = -999      
+
 
 Model command line(s):- 
     model.bat
@@ -52,41 +91,6 @@ Model interface files:-
       rsgsite4.out
 
 
-PEST Control Information
-    relparmax = 3
-    facparmax = 3
-    facorig = 0.001
-    phiredswh = 0.1
-    noptmax = 50
-    phiredstp = 0.01
-    nphistp = 3
-    nphinored = 3
-    relparstp = 0.01
-    nrelpar = 3
-
-PEST++ Options
-    n_iter_base = 50                  
-    n_iter_super = 0                   
-    max_n_super = 52                  
-    super eigthres = 1e-006              
-    svd pack = 0                   
-    auto norm = -999                
-    super relparmax = 0.1                 
-    max super frz iter = 5                   
-    mat inv = 1                   
-    max run fail = 3                   
-    max reg iter = 20                  
-    lambdas = 
-            0.1
-              1
-             10
-            100
-           1000
-    uncertainty flag = 1                   
-    parameter covariance file =                     
-    prediction names = 
-
-
 Parameter group information
 NAME            INCREMENT TYPE     DERIVATIVE INCREMENT    INCREMENT LOWER BOUND  FORCE CENTRAL     INCREMENT MULTIPLIER
 fsp                   RELATIVE                     0.01                        0         SWITCH                        2
@@ -98,6 +102,8 @@ smdp                  RELATIVE                     0.01                        0
 npp                   RELATIVE                     0.01                        0         SWITCH                        2
 fert                  RELATIVE                     0.01                        0         SWITCH                        2
 asw                   RELATIVE                     0.01                        0         SWITCH                        2
+
+
 
 Parameter information
 NAME           TRANSFORMATION        CHANGE LIMIT  INITIAL VALUE    LOWER BOUND    UPPER BOUND          GROUP          SCALE         OFFSET  DERIVATIVE COMMAND
@@ -153,6 +159,8 @@ maxasw_1       fixed                   FACTOR            300             50     
 maxasw_2       fixed                   FACTOR            300             50            450            asw              1              0                   0
 maxasw_3       fixed                   FACTOR            300             50            450            asw              1              0                   0
 maxasw_4       fixed                   FACTOR            300             50            450            asw              1              0                   0
+
+
 
 Observation information
 NAME                                    VALUE               GROUP              WEIGHT
@@ -265,13 +273,17 @@ dbh25_4                                  56.1               site4               
 dbh26_4                                  56.8               site4                   1
 dbh27_4                                  58.4               site4                   1
 
+
+
 Prior information
 
    no prior information provided
 
+
+
 PEST SVD Information
     maxsing = 52
-    eigthresh = 1e-006
+    eigthresh = 1e-06
 
 
    -----    Starting PEST++ Iterations    ----    
@@ -280,34 +292,41 @@ PEST SVD Information
 OPTIMISATION ITERATION NUMBER: 1
 
   Iteration type: base parameter solution
-    SVD Package: Eigen JacobiSVD
-    Matrix Inversion: "Jt Q J"
-    Model calls so far : 0
+  SVD Package: Eigen JacobiSVD
+  Matrix Inversion: "Jt Q J"
+  Model calls so far : 0
 
-    Starting phi for this iteration                     Total : 95439.7
-    Contribution to phi from observation group        "site1" : 30077.3
-    Contribution to phi from observation group        "site2" : 16978.2
-    Contribution to phi from observation group        "site3" : 26997.2
-    Contribution to phi from observation group        "site4" : 21387.1
-    Number of terms in the jacobian equal to zero: 24 / 540 (4.4%)
 
-    Summary of upgrade runs:
-      Lambda =     0.10; Type: upgrade_run; length = 3.68e-001;  phi = 41274.1 (43.25% of starting phi)
-      Lambda =     1.00; Type: upgrade_run; length = 2.91e-001;  phi = 51512.1 (53.97% of starting phi)
-      Lambda =    10.00; Type: upgrade_run; length = 2.91e-001;  phi = 51822.7 (54.30% of starting phi)
-      Lambda =    20.00; Type: upgrade_run; length = 7.61e-002;  phi = 49227.2 (51.58% of starting phi)
-      Lambda =    40.00; Type: upgrade_run; length = 7.07e-002;  phi = 49043.4 (51.39% of starting phi)
-      Lambda =   100.00; Type: upgrade_run; length = 6.92e-002;  phi = 48912.2 (51.25% of starting phi)
-      Lambda =  1000.00; Type: upgrade_run; length = 6.92e-002;  phi = 48561.9 (50.88% of starting phi)
+  Starting phi for this iteration                     Total : 95439.7
+  Contribution to phi from observation group        "site1" : 30077.3
+  Contribution to phi from observation group        "site2" : 16978.2
+  Contribution to phi from observation group        "site3" : 26997.2
+  Contribution to phi from observation group        "site4" : 21387.1
+  Number of terms in the jacobian equal to zero: 24 / 540 (4.4%)
+
+  Summary of upgrade runs:
+    Lambda =     0.10; Type:  upgrade_nrm; length = 2.01e-01;  phi = 9.4e+04 (98.36% of starting phi)
+    Lambda =     0.10; Type:  upgrade_frz; length = 3.68e-01;  phi = 4.1e+04 (43.25% of starting phi)
+    Lambda =     1.00; Type:  upgrade_nrm; length = 2.18e-01;  phi = 8.1e+04 (85.16% of starting phi)
+    Lambda =     1.00; Type:  upgrade_frz; length = 2.91e-01;  phi = 5.2e+04 (53.97% of starting phi)
+    Lambda =    10.00; Type:  upgrade_nrm; length = 5.71e-02;  phi = 7.5e+04 (78.34% of starting phi)
+    Lambda =    10.00; Type:  upgrade_frz; length = 2.91e-01;  phi = 5.2e+04 (54.30% of starting phi)
+    Lambda =    20.00; Type:  upgrade_nrm; length = 4.62e-02;  phi = 7.5e+04 (78.35% of starting phi)
+    Lambda =    20.00; Type:  upgrade_frz; length = 7.61e-02;  phi = 4.9e+04 (51.58% of starting phi)
+    Lambda =    40.00; Type:  upgrade_nrm; length = 4.28e-02;  phi = 7.5e+04 (78.33% of starting phi)
+    Lambda =    40.00; Type:  upgrade_frz; length = 7.07e-02;  phi = 4.9e+04 (51.39% of starting phi)
+    Lambda =   100.00; Type:  upgrade_nrm; length = 4.19e-02;  phi = 7.5e+04 (78.22% of starting phi)
+    Lambda =   100.00; Type:  upgrade_frz; length = 6.92e-02;  phi = 4.9e+04 (51.25% of starting phi)
+    Lambda =  1000.00; Type:  upgrade_nrm; length = 4.42e-02;  phi = 7.3e+04 (76.17% of starting phi)
+    Lambda =  1000.00; Type:  upgrade_frz; length = 6.92e-02;  phi = 4.9e+04 (50.88% of starting phi)
 
     Parameters frozen during best upgrade:
       MSC_1 frozen at 0.015
       NPP1_1 frozen at 0.5
       SLA1_1 frozen at 5.5
 
-  Model calls in iteration 1: 13
-  Total model calls at end of iteration 1: 13
-
+  Model calls in iteration 1: 20
+  Total model calls at end of iteration 1: 20
 
     Iteration 1 Parameter Upgrades (Control File Parameters) 
       Parameter     Current       Previous       Factor       Relative
@@ -382,36 +401,42 @@ OPTIMISATION ITERATION NUMBER: 1
          Maximum relative change = -1.28053   [fsp1_1]
          Maximum factor change = 3   [smdc_1]
 
+
 OPTIMISATION ITERATION NUMBER: 2
 
   Iteration type: base parameter solution
-    SVD Package: Eigen JacobiSVD
-    Matrix Inversion: "Jt Q J"
-    Model calls so far : 13
+  SVD Package: Eigen JacobiSVD
+  Matrix Inversion: "Jt Q J"
+  Model calls so far : 20
 
-    Starting phi for this iteration                     Total : 41274.1
-    Contribution to phi from observation group        "site1" : 14573.9
-    Contribution to phi from observation group        "site2" : 5829.96
-    Contribution to phi from observation group        "site3" : 12343.4
-    Contribution to phi from observation group        "site4" : 8526.86
-    Number of terms in the jacobian equal to zero: 32 / 540 (5.9%)
 
-    Summary of upgrade runs:
-      Lambda =     0.05; Type: upgrade_run; length = 7.09e-001;  phi = 20627 (49.98% of starting phi)
-      Lambda =     0.10; Type: upgrade_run; length = 7.09e-001;  phi = 20199.4 (48.94% of starting phi)
-      Lambda =     0.20; Type: upgrade_run; length = 5.02e-001;  phi = 5524.7 (13.39% of starting phi)
-      Lambda =     1.00; Type: upgrade_run; length = 5.02e-001;  phi = 5411.42 (13.11% of starting phi)
-      Lambda =    10.00; Type: upgrade_run; length = 5.03e-001;  phi = 4559.14 (11.05% of starting phi)
-      Lambda =   100.00; Type: upgrade_run; length = 5.04e-001;  phi = 3401.2 (8.24% of starting phi)
-      Lambda =  1000.00; Type: upgrade_run; length = 8.10e-002;  phi = 2616.07 (6.34% of starting phi)
+  Starting phi for this iteration                     Total : 41274.1
+  Contribution to phi from observation group        "site1" : 14573.9
+  Contribution to phi from observation group        "site2" : 5829.96
+  Contribution to phi from observation group        "site3" : 12343.4
+  Contribution to phi from observation group        "site4" : 8526.86
+  Number of terms in the jacobian equal to zero: 32 / 540 (5.9%)
+
+  Summary of upgrade runs:
+    Lambda =     0.05; Type:  upgrade_nrm; length = 5.35e-01;  phi = 4e+04 (95.91% of starting phi)
+    Lambda =     0.05; Type:  upgrade_frz; length = 7.09e-01;  phi = 2.1e+04 (49.98% of starting phi)
+    Lambda =     0.10; Type:  upgrade_nrm; length = 5.28e-01;  phi = 4e+04 (96.43% of starting phi)
+    Lambda =     0.10; Type:  upgrade_frz; length = 7.09e-01;  phi = 2e+04 (48.94% of starting phi)
+    Lambda =     0.20; Type:  upgrade_nrm; length = 5.00e-01;  phi = 3.1e+04 (75.34% of starting phi)
+    Lambda =     0.20; Type:  upgrade_frz; length = 5.02e-01;  phi = 5.5e+03 (13.39% of starting phi)
+    Lambda =     1.00; Type:  upgrade_nrm; length = 5.00e-01;  phi = 3.1e+04 (73.99% of starting phi)
+    Lambda =     1.00; Type:  upgrade_frz; length = 5.02e-01;  phi = 5.4e+03 (13.11% of starting phi)
+    Lambda =    10.00; Type:  upgrade_nrm; length = 5.01e-01;  phi = 2.4e+04 (58.89% of starting phi)
+    Lambda =    10.00; Type:  upgrade_frz; length = 5.03e-01;  phi = 4.6e+03 (11.05% of starting phi)
+    Lambda =   100.00; Type:  upgrade_nrm; length = 2.95e-01;  phi = 3e+03 (7.31% of starting phi)
+    Lambda =  1000.00; Type:  upgrade_nrm; length = 8.10e-02;  phi = 2.6e+03 (6.34% of starting phi)
 
     Parameters frozen during best upgrade:
       MSC_1 frozen at 0.015
       SLA1_1 frozen at 5.5
 
-  Model calls in iteration 2: 12
-  Total model calls at end of iteration 2: 25
-
+  Model calls in iteration 2: 17
+  Total model calls at end of iteration 2: 37
 
     Iteration 2 Parameter Upgrades (Control File Parameters) 
       Parameter     Current       Previous       Factor       Relative
@@ -486,37 +511,40 @@ OPTIMISATION ITERATION NUMBER: 2
          Maximum relative change = -1.02186   [fsp1_1]
          Maximum factor change = 3   [smdc_1]
 
+
 OPTIMISATION ITERATION NUMBER: 3
 
   Iteration type: base parameter solution
-    SVD Package: Eigen JacobiSVD
-    Matrix Inversion: "Jt Q J"
-    Model calls so far : 25
+  SVD Package: Eigen JacobiSVD
+  Matrix Inversion: "Jt Q J"
+  Model calls so far : 37
 
-    Starting phi for this iteration                     Total : 2616.07
-    Contribution to phi from observation group        "site1" : 1212.77
-    Contribution to phi from observation group        "site2" : 573.426
-    Contribution to phi from observation group        "site3" : 611.083
-    Contribution to phi from observation group        "site4" : 218.794
-    Number of terms in the jacobian equal to zero: 36 / 540 (6.7%)
 
-    Summary of upgrade runs:
-      Lambda =     0.10; Type: upgrade_run; length = 6.88e-001;  phi = 8311.07 (317.69% of starting phi)
-      Lambda =     1.00; Type: upgrade_run; length = 6.83e-001;  phi = 11988.9 (458.28% of starting phi)
-      Lambda =    10.00; Type: upgrade_run; length = 4.84e-001;  phi = 2843.59 (108.70% of starting phi)
-      Lambda =   100.00; Type: upgrade_run; length = 4.69e-001;  phi = 3668.66 (140.24% of starting phi)
-      Lambda =   500.00; Type: upgrade_run; length = 2.40e-001;  phi = 2559.23 (97.83% of starting phi)
-      Lambda =  1000.00; Type: upgrade_run; length = 1.25e-001;  phi = 2572.22 (98.32% of starting phi)
-      Lambda =  2000.00; Type: upgrade_run; length = 6.78e-002;  phi = 2616.56 (100.02% of starting phi)
+  Starting phi for this iteration                     Total : 2616.07
+  Contribution to phi from observation group        "site1" : 1212.77
+  Contribution to phi from observation group        "site2" : 573.426
+  Contribution to phi from observation group        "site3" : 611.083
+  Contribution to phi from observation group        "site4" : 218.794
+  Number of terms in the jacobian equal to zero: 36 / 540 (6.7%)
+
+  Summary of upgrade runs:
+    Lambda =     0.10; Type:  upgrade_nrm; length = 5.18e-01;  phi = 2.6e+03 (98.87% of starting phi)
+    Lambda =     0.10; Type:  upgrade_frz; length = 6.88e-01;  phi = 8.3e+03 (317.69% of starting phi)
+    Lambda =     1.00; Type:  upgrade_nrm; length = 5.47e-01;  phi = 2.5e+03 (94.05% of starting phi)
+    Lambda =     1.00; Type:  upgrade_frz; length = 6.83e-01;  phi = 1.2e+04 (458.28% of starting phi)
+    Lambda =    10.00; Type:  upgrade_nrm; length = 1.73e-01;  phi = 2.5e+03 (96.70% of starting phi)
+    Lambda =    10.00; Type:  upgrade_frz; length = 4.84e-01;  phi = 2.8e+03 (108.70% of starting phi)
+    Lambda =   100.00; Type:  upgrade_nrm; length = 3.65e-01;  phi = 2.4e+03 (89.88% of starting phi)
+    Lambda =   100.00; Type:  upgrade_frz; length = 4.69e-01;  phi = 3.7e+03 (140.24% of starting phi)
+    Lambda =   500.00; Type:  upgrade_nrm; length = 2.40e-01;  phi = 2.6e+03 (97.83% of starting phi)
+    Lambda =  1000.00; Type:  upgrade_nrm; length = 1.25e-01;  phi = 2.6e+03 (98.32% of starting phi)
+    Lambda =  2000.00; Type:  upgrade_nrm; length = 6.78e-02;  phi = 2.6e+03 (100.02% of starting phi)
 
     Parameters frozen during best upgrade:
       SLA1_1 frozen at 5.5
 
-      Switching to central derivatives:
-
-  Model calls in iteration 3: 12
-  Total model calls at end of iteration 3: 37
-
+  Model calls in iteration 3: 16
+  Total model calls at end of iteration 3: 53
 
     Iteration 3 Parameter Upgrades (Control File Parameters) 
       Parameter     Current       Previous       Factor       Relative
@@ -526,22 +554,22 @@ OPTIMISATION ITERATION NUMBER: 3
           fsp0_2          0.75          0.75             1             0
           fsp0_3          0.75          0.75             1             0
           fsp0_4          0.75          0.75             1             0
-          fsp1_1      0.173686      0.138328       1.25561     -0.255612
-          fsp1_2      0.173686      0.138328       1.25561     -0.255612
-          fsp1_3      0.173686      0.138328       1.25561     -0.255612
-          fsp1_4      0.173686      0.138328       1.25561     -0.255612
-          npp1_1      0.772543      0.535135       1.44364      -0.44364
-          npp1_2      0.772543      0.535135       1.44364      -0.44364
-          npp1_3      0.772543      0.535135       1.44364      -0.44364
-          npp1_4      0.772543      0.535135       1.44364      -0.44364
+          fsp1_1       0.15961      0.138328       1.15386     -0.153855
+          fsp1_2       0.15961      0.138328       1.15386     -0.153855
+          fsp1_3       0.15961      0.138328       1.15386     -0.153855
+          fsp1_4       0.15961      0.138328       1.15386     -0.153855
+          npp1_1      0.899947      0.535135       1.68172     -0.681719
+          npp1_2      0.899947      0.535135       1.68172     -0.681719
+          npp1_3      0.899947      0.535135       1.68172     -0.681719
+          npp1_4      0.899947      0.535135       1.68172     -0.681719
           npp0_1         0.229         0.229             1             0
           npp0_2         0.229         0.229             1             0
           npp0_3         0.229         0.229             1             0
           npp0_4         0.229         0.229             1             0
-          smdc_1     0.0119912     0.0105556       1.13601     -0.136011
-          smdc_2     0.0119912     0.0105556       1.13601     -0.136011
-          smdc_3     0.0119912     0.0105556       1.13601     -0.136011
-          smdc_4     0.0119912     0.0105556       1.13601     -0.136011
+          smdc_1          0.01     0.0105556       1.05556     0.0526316
+          smdc_2          0.01     0.0105556       1.05556     0.0526316
+          smdc_3          0.01     0.0105556       1.05556     0.0526316
+          smdc_4          0.01     0.0105556       1.05556     0.0526316
           smdp_1           2.4           2.4             1             0
           smdp_2           2.4           2.4             1             0
           smdp_3           2.4           2.4             1             0
@@ -554,10 +582,10 @@ OPTIMISATION ITERATION NUMBER: 3
            lr0_2        0.0015        0.0015             1             0
            lr0_3        0.0015        0.0015             1             0
            lr0_4        0.0015        0.0015             1             0
-           msc_1     0.0082226         0.015       1.82424      0.451827
-           msc_2     0.0082226         0.015       1.82424      0.451827
-           msc_3     0.0082226         0.015       1.82424      0.451827
-           msc_4     0.0082226         0.015       1.82424      0.451827
+           msc_1     0.0127243         0.015       1.17885      0.151716
+           msc_2     0.0127243         0.015       1.17885      0.151716
+           msc_3     0.0127243         0.015       1.17885      0.151716
+           msc_4     0.0127243         0.015       1.17885      0.151716
           sla0_1          16.1          16.1             1             0
           sla0_2          16.1          16.1             1             0
           sla0_3          16.1          16.1             1             0
@@ -575,51 +603,61 @@ OPTIMISATION ITERATION NUMBER: 3
         maxasw_3           300           300             1             0
         maxasw_4           300           300             1             0
        Maximum changes in "Control File" parameters:
-         Maximum relative change = 0.451827   [msc_4]
-         Maximum factor change = 1.82424   [msc_4]
+         Maximum relative change = -0.681719   [npp1_4]
+         Maximum factor change = 1.68172   [npp1_4]
 
     Iteration 3 Parameter Upgrades (Transformed Numeric Parameters) 
       Parameter     Current       Previous       Factor       Relative
         Name         Value         Value         Change        Change
       ----------  ------------  ------------  ------------  ------------
-          fsp1_1      0.173686      0.138328       1.25561     -0.255612
-           msc_1     0.0082226         0.015       1.82424      0.451827
-          npp1_1      0.772543      0.535135       1.44364      -0.44364
+          fsp1_1       0.15961      0.138328       1.15386     -0.153855
+           msc_1     0.0127243         0.015       1.17885      0.151716
+          npp1_1      0.899947      0.535135       1.68172     -0.681719
           sla1_1           5.5           5.5             1             0
-          smdc_1     0.0119912     0.0105556       1.13601     -0.136011
+          smdc_1          0.01     0.0105556       1.05556     0.0526316
        Maximum changes in "Transformed Numeric" parameters:
-         Maximum relative change = 0.451827   [msc_1]
-         Maximum factor change = 1.82424   [msc_1]
+         Maximum relative change = -0.681719   [npp1_1]
+         Maximum factor change = 1.68172   [npp1_1]
+
 
 OPTIMISATION ITERATION NUMBER: 4
 
   Iteration type: base parameter solution
-    SVD Package: Eigen JacobiSVD
-    Matrix Inversion: "Jt Q J"
-    Model calls so far : 37
+  SVD Package: Eigen JacobiSVD
+  Matrix Inversion: "Jt Q J"
+  Model calls so far : 53
 
-    Starting phi for this iteration                     Total : 2559.23
-    Contribution to phi from observation group        "site1" : 585.107
-    Contribution to phi from observation group        "site2" : 1152.26
-    Contribution to phi from observation group        "site3" : 314.642
-    Contribution to phi from observation group        "site4" : 507.228
-    Number of terms in the jacobian equal to zero: 4 / 540 (0.74%)
 
-    Summary of upgrade runs:
-      Lambda =     0.10; Type: upgrade_run; length = 5.52e-001;  phi = 7669.35 (299.67% of starting phi)
-      Lambda =     1.00; Type: upgrade_run; length = 5.60e-001;  phi = 3431.34 (134.08% of starting phi)
-      Lambda =    10.00; Type: upgrade_run; length = 2.53e-001;  phi = 2822.46 (110.29% of starting phi)
-      Lambda =   100.00; Type: upgrade_run; length = 2.33e-001;  phi = 2758.76 (107.80% of starting phi)
-      Lambda =   250.00; Type: upgrade_run; length = 2.31e-001;  phi = 2315.17 (90.46% of starting phi)
-      Lambda =   500.00; Type: upgrade_run; length = 1.50e-001;  phi = 2279.36 (89.06% of starting phi)
-      Lambda =  1000.00; Type: upgrade_run; length = 7.97e-002;  phi = 2286.69 (89.35% of starting phi)
+  Starting phi for this iteration                     Total : 2351.21
+  Contribution to phi from observation group        "site1" : 911.589
+  Contribution to phi from observation group        "site2" : 741.115
+  Contribution to phi from observation group        "site3" : 432.625
+  Contribution to phi from observation group        "site4" : 265.885
+  Number of terms in the jacobian equal to zero: 32 / 540 (5.9%)
+
+  Summary of upgrade runs:
+    Lambda =     0.10; Type:  upgrade_nrm; length = 2.97e-01;  phi = 2.3e+03 (99.51% of starting phi)
+    Lambda =     0.10; Type:  upgrade_frz; length = 5.21e-01;  phi = 8.2e+03 (350.88% of starting phi)
+    Lambda =     1.00; Type:  upgrade_nrm; length = 2.33e-01;  phi = 2.3e+03 (99.14% of starting phi)
+    Lambda =     1.00; Type:  upgrade_frz; length = 5.16e-01;  phi = 6e+03 (257.13% of starting phi)
+    Lambda =    10.00; Type:  upgrade_nrm; length = 1.10e-01;  phi = 2.3e+03 (98.36% of starting phi)
+    Lambda =    10.00; Type:  upgrade_frz; length = 4.90e-01;  phi = 5.1e+03 (217.28% of starting phi)
+    Lambda =    50.00; Type:  upgrade_nrm; length = 0.00e+00;  phi = 2.4e+03 (100.00% of starting phi)
+    Lambda =    50.00; Type:  upgrade_frz; length = 1.02e-01;  phi = 3.7e+03 (159.26% of starting phi)
+    Lambda =   100.00; Type:  upgrade_nrm; length = 0.00e+00;  phi = 2.4e+03 (100.00% of starting phi)
+    Lambda =   100.00; Type:  upgrade_frz; length = 1.01e-01;  phi = 3.3e+03 (140.46% of starting phi)
+    Lambda =   200.00; Type:  upgrade_nrm; length = 0.00e+00;  phi = 2.4e+03 (100.00% of starting phi)
+    Lambda =   200.00; Type:  upgrade_frz; length = 1.00e-01;  phi = 2.7e+03 (114.51% of starting phi)
+    Lambda =  1000.00; Type:  upgrade_nrm; length = 0.00e+00;  phi = 2.4e+03 (100.00% of starting phi)
+    Lambda =  1000.00; Type:  upgrade_frz; length = 8.61e-02;  phi = 2.3e+03 (99.48% of starting phi)
 
     Parameters frozen during best upgrade:
-      SLA1_1 frozen at 5.5
+      SMDC_1 frozen at 0.01
 
-  Model calls in iteration 4: 17
-  Total model calls at end of iteration 4: 54
+      Switching to central derivatives:
 
+  Model calls in iteration 4: 19
+  Total model calls at end of iteration 4: 72
 
     Iteration 4 Parameter Upgrades (Control File Parameters) 
       Parameter     Current       Previous       Factor       Relative
@@ -629,22 +667,22 @@ OPTIMISATION ITERATION NUMBER: 4
           fsp0_2          0.75          0.75             1             0
           fsp0_3          0.75          0.75             1             0
           fsp0_4          0.75          0.75             1             0
-          fsp1_1      0.208815      0.173686       1.20225     -0.202253
-          fsp1_2      0.208815      0.173686       1.20225     -0.202253
-          fsp1_3      0.208815      0.173686       1.20225     -0.202253
-          fsp1_4      0.208815      0.173686       1.20225     -0.202253
-          npp1_1      0.918741      0.772543       1.18924     -0.189242
-          npp1_2      0.918741      0.772543       1.18924     -0.189242
-          npp1_3      0.918741      0.772543       1.18924     -0.189242
-          npp1_4      0.918741      0.772543       1.18924     -0.189242
+          fsp1_1      0.160894       0.15961       1.00804   -0.00804437
+          fsp1_2      0.160894       0.15961       1.00804   -0.00804437
+          fsp1_3      0.160894       0.15961       1.00804   -0.00804437
+          fsp1_4      0.160894       0.15961       1.00804   -0.00804437
+          npp1_1             1      0.899947       1.11118     -0.111176
+          npp1_2             1      0.899947       1.11118     -0.111176
+          npp1_3             1      0.899947       1.11118     -0.111176
+          npp1_4             1      0.899947       1.11118     -0.111176
           npp0_1         0.229         0.229             1             0
           npp0_2         0.229         0.229             1             0
           npp0_3         0.229         0.229             1             0
           npp0_4         0.229         0.229             1             0
-          smdc_1     0.0112048     0.0119912       1.07019     0.0655866
-          smdc_2     0.0112048     0.0119912       1.07019     0.0655866
-          smdc_3     0.0112048     0.0119912       1.07019     0.0655866
-          smdc_4     0.0112048     0.0119912       1.07019     0.0655866
+          smdc_1          0.01          0.01             1             0
+          smdc_2          0.01          0.01             1             0
+          smdc_3          0.01          0.01             1             0
+          smdc_4          0.01          0.01             1             0
           smdp_1           2.4           2.4             1             0
           smdp_2           2.4           2.4             1             0
           smdp_3           2.4           2.4             1             0
@@ -657,18 +695,18 @@ OPTIMISATION ITERATION NUMBER: 4
            lr0_2        0.0015        0.0015             1             0
            lr0_3        0.0015        0.0015             1             0
            lr0_4        0.0015        0.0015             1             0
-           msc_1     0.0101998     0.0082226       1.24046     -0.240462
-           msc_2     0.0101998     0.0082226       1.24046     -0.240462
-           msc_3     0.0101998     0.0082226       1.24046     -0.240462
-           msc_4     0.0101998     0.0082226       1.24046     -0.240462
+           msc_1     0.0122657     0.0127243       1.03738      0.036037
+           msc_2     0.0122657     0.0127243       1.03738      0.036037
+           msc_3     0.0122657     0.0127243       1.03738      0.036037
+           msc_4     0.0122657     0.0127243       1.03738      0.036037
           sla0_1          16.1          16.1             1             0
           sla0_2          16.1          16.1             1             0
           sla0_3          16.1          16.1             1             0
           sla0_4          16.1          16.1             1             0
-          sla1_1           5.5           5.5             1             0
-          sla1_2           5.5           5.5             1             0
-          sla1_3           5.5           5.5             1             0
-          sla1_4           5.5           5.5             1             0
+          sla1_1         5.545           5.5       1.00818   -0.00818175
+          sla1_2         5.545           5.5       1.00818   -0.00818175
+          sla1_3         5.545           5.5       1.00818   -0.00818175
+          sla1_4         5.545           5.5       1.00818   -0.00818175
           fert_1             1             1             1             0
           fert_2             1             1             1             0
           fert_3             1             1             1             0
@@ -678,53 +716,59 @@ OPTIMISATION ITERATION NUMBER: 4
         maxasw_3           300           300             1             0
         maxasw_4           300           300             1             0
        Maximum changes in "Control File" parameters:
-         Maximum relative change = -0.240462   [msc_4]
-         Maximum factor change = 1.24046   [msc_4]
+         Maximum relative change = -0.111176   [npp1_4]
+         Maximum factor change = 1.11118   [npp1_4]
 
     Iteration 4 Parameter Upgrades (Transformed Numeric Parameters) 
       Parameter     Current       Previous       Factor       Relative
         Name         Value         Value         Change        Change
       ----------  ------------  ------------  ------------  ------------
-          fsp1_1      0.208815      0.173686       1.20225     -0.202253
-           msc_1     0.0101998     0.0082226       1.24046     -0.240462
-          npp1_1      0.918741      0.772543       1.18924     -0.189242
-          sla1_1           5.5           5.5             1             0
-          smdc_1     0.0112048     0.0119912       1.07019     0.0655866
+          fsp1_1      0.160894       0.15961       1.00804   -0.00804437
+           msc_1     0.0122657     0.0127243       1.03738      0.036037
+          npp1_1             1      0.899947       1.11118     -0.111176
+          sla1_1         5.545           5.5       1.00818   -0.00818175
+          smdc_1          0.01          0.01             1             0
        Maximum changes in "Transformed Numeric" parameters:
-         Maximum relative change = -0.240462   [msc_1]
-         Maximum factor change = 1.24046   [msc_1]
+         Maximum relative change = -0.111176   [npp1_1]
+         Maximum factor change = 1.11118   [npp1_1]
+
 
 OPTIMISATION ITERATION NUMBER: 5
 
   Iteration type: base parameter solution
-    SVD Package: Eigen JacobiSVD
-    Matrix Inversion: "Jt Q J"
-    Model calls so far : 54
+  SVD Package: Eigen JacobiSVD
+  Matrix Inversion: "Jt Q J"
+  Model calls so far : 72
 
-    Starting phi for this iteration                     Total : 2279.36
-    Contribution to phi from observation group        "site1" : 819.001
-    Contribution to phi from observation group        "site2" : 758.099
-    Contribution to phi from observation group        "site3" : 397.758
-    Contribution to phi from observation group        "site4" : 304.505
-    Number of terms in the jacobian equal to zero: 20 / 540 (3.7%)
 
-    Summary of upgrade runs:
-      Lambda =     0.10; Type: upgrade_run; length = 5.15e-001;  phi = 8774.37 (384.95% of starting phi)
-      Lambda =     1.00; Type: upgrade_run; length = 1.90e-001;  phi = 3749.6 (164.50% of starting phi)
-      Lambda =    10.00; Type: upgrade_run; length = 1.07e-001;  phi = 2776.08 (121.79% of starting phi)
-      Lambda =   100.00; Type: upgrade_run; length = 1.61e-001;  phi = 9821.26 (430.88% of starting phi)
-      Lambda =   250.00; Type: upgrade_run; length = 1.61e-001;  phi = 10494 (460.39% of starting phi)
-      Lambda =   500.00; Type: upgrade_run; length = 1.61e-001;  phi = 10773.7 (472.66% of starting phi)
-      Lambda =  1000.00; Type: upgrade_run; length = 1.38e-001;  phi = 7041.25 (308.91% of starting phi)
+  Starting phi for this iteration                     Total : 2312.73
+  Contribution to phi from observation group        "site1" : 887.904
+  Contribution to phi from observation group        "site2" : 739.483
+  Contribution to phi from observation group        "site3" : 418.981
+  Contribution to phi from observation group        "site4" : 266.359
+  Number of terms in the jacobian equal to zero: 28 / 540 (5.2%)
+
+  Summary of upgrade runs:
+    Lambda =     0.10; Type:  upgrade_nrm; length = 0.00e+00;  phi = 2.3e+03 (100.00% of starting phi)
+    Lambda =     0.10; Type:  upgrade_frz; length = 4.68e-01;  phi = 8.2e+03 (354.46% of starting phi)
+    Lambda =     1.00; Type:  upgrade_nrm; length = 0.00e+00;  phi = 2.3e+03 (100.00% of starting phi)
+    Lambda =     1.00; Type:  upgrade_frz; length = 4.66e-01;  phi = 7.3e+03 (315.71% of starting phi)
+    Lambda =     5.00; Type:  upgrade_nrm; length = 0.00e+00;  phi = 2.3e+03 (100.00% of starting phi)
+    Lambda =     5.00; Type:  upgrade_frz; length = 4.55e-01;  phi = 4.9e+03 (211.00% of starting phi)
+    Lambda =    10.00; Type:  upgrade_nrm; length = 0.00e+00;  phi = 2.3e+03 (100.00% of starting phi)
+    Lambda =    10.00; Type:  upgrade_frz; length = 4.57e-01;  phi = 3.9e+03 (168.20% of starting phi)
+    Lambda =    20.00; Type:  upgrade_nrm; length = 0.00e+00;  phi = 2.3e+03 (100.00% of starting phi)
+    Lambda =    20.00; Type:  upgrade_frz; length = 4.12e-01;  phi = 3.5e+03 (149.65% of starting phi)
+    Lambda =   100.00; Type:  upgrade_nrm; length = 0.00e+00;  phi = 2.3e+03 (100.00% of starting phi)
+    Lambda =   100.00; Type:  upgrade_frz; length = 7.62e-02;  phi = 2.7e+03 (116.59% of starting phi)
+    Lambda =  1000.00; Type:  upgrade_nrm; length = 0.00e+00;  phi = 2.3e+03 (100.00% of starting phi)
+    Lambda =  1000.00; Type:  upgrade_frz; length = 5.33e-02;  phi = 2.3e+03 (98.06% of starting phi)
 
     Parameters frozen during best upgrade:
       NPP1_1 frozen at 1
-      SLA1_1 frozen at 5.5
-      SMDC_1 frozen at 0.01
 
-  Model calls in iteration 5: 17
-  Total model calls at end of iteration 5: 71
-
+  Model calls in iteration 5: 24
+  Total model calls at end of iteration 5: 96
 
     Iteration 5 Parameter Upgrades (Control File Parameters) 
       Parameter     Current       Previous       Factor       Relative
@@ -734,22 +778,22 @@ OPTIMISATION ITERATION NUMBER: 5
           fsp0_2          0.75          0.75             1             0
           fsp0_3          0.75          0.75             1             0
           fsp0_4          0.75          0.75             1             0
-          fsp1_1      0.139134      0.208815       1.50082      0.333695
-          fsp1_2      0.139134      0.208815       1.50082      0.333695
-          fsp1_3      0.139134      0.208815       1.50082      0.333695
-          fsp1_4      0.139134      0.208815       1.50082      0.333695
-          npp1_1             1      0.918741       1.08845    -0.0884464
-          npp1_2             1      0.918741       1.08845    -0.0884464
-          npp1_3             1      0.918741       1.08845    -0.0884464
-          npp1_4             1      0.918741       1.08845    -0.0884464
+          fsp1_1      0.213303      0.160894       1.32573     -0.325734
+          fsp1_2      0.213303      0.160894       1.32573     -0.325734
+          fsp1_3      0.213303      0.160894       1.32573     -0.325734
+          fsp1_4      0.213303      0.160894       1.32573     -0.325734
+          npp1_1             1             1             1             0
+          npp1_2             1             1             1             0
+          npp1_3             1             1             1             0
+          npp1_4             1             1             1             0
           npp0_1         0.229         0.229             1             0
           npp0_2         0.229         0.229             1             0
           npp0_3         0.229         0.229             1             0
           npp0_4         0.229         0.229             1             0
-          smdc_1          0.01     0.0112048       1.12048      0.107523
-          smdc_2          0.01     0.0112048       1.12048      0.107523
-          smdc_3          0.01     0.0112048       1.12048      0.107523
-          smdc_4          0.01     0.0112048       1.12048      0.107523
+          smdc_1     0.0109834          0.01       1.09834    -0.0983385
+          smdc_2     0.0109834          0.01       1.09834    -0.0983385
+          smdc_3     0.0109834          0.01       1.09834    -0.0983385
+          smdc_4     0.0109834          0.01       1.09834    -0.0983385
           smdp_1           2.4           2.4             1             0
           smdp_2           2.4           2.4             1             0
           smdp_3           2.4           2.4             1             0
@@ -762,18 +806,18 @@ OPTIMISATION ITERATION NUMBER: 5
            lr0_2        0.0015        0.0015             1             0
            lr0_3        0.0015        0.0015             1             0
            lr0_4        0.0015        0.0015             1             0
-           msc_1    0.00990611     0.0101998       1.02965     0.0287959
-           msc_2    0.00990611     0.0101998       1.02965     0.0287959
-           msc_3    0.00990611     0.0101998       1.02965     0.0287959
-           msc_4    0.00990611     0.0101998       1.02965     0.0287959
+           msc_1     0.0105569     0.0122657       1.16187      0.139315
+           msc_2     0.0105569     0.0122657       1.16187      0.139315
+           msc_3     0.0105569     0.0122657       1.16187      0.139315
+           msc_4     0.0105569     0.0122657       1.16187      0.139315
           sla0_1          16.1          16.1             1             0
           sla0_2          16.1          16.1             1             0
           sla0_3          16.1          16.1             1             0
           sla0_4          16.1          16.1             1             0
-          sla1_1           5.5           5.5             1             0
-          sla1_2           5.5           5.5             1             0
-          sla1_3           5.5           5.5             1             0
-          sla1_4           5.5           5.5             1             0
+          sla1_1       5.53545         5.545       1.00173    0.00172244
+          sla1_2       5.53545         5.545       1.00173    0.00172244
+          sla1_3       5.53545         5.545       1.00173    0.00172244
+          sla1_4       5.53545         5.545       1.00173    0.00172244
           fert_1             1             1             1             0
           fert_2             1             1             1             0
           fert_3             1             1             1             0
@@ -783,52 +827,56 @@ OPTIMISATION ITERATION NUMBER: 5
         maxasw_3           300           300             1             0
         maxasw_4           300           300             1             0
        Maximum changes in "Control File" parameters:
-         Maximum relative change = 0.333695   [fsp1_4]
-         Maximum factor change = 1.50082   [fsp1_4]
+         Maximum relative change = -0.325734   [fsp1_4]
+         Maximum factor change = 1.32573   [fsp1_4]
 
     Iteration 5 Parameter Upgrades (Transformed Numeric Parameters) 
       Parameter     Current       Previous       Factor       Relative
         Name         Value         Value         Change        Change
       ----------  ------------  ------------  ------------  ------------
-          fsp1_1      0.139134      0.208815       1.50082      0.333695
-           msc_1    0.00990611     0.0101998       1.02965     0.0287959
-          npp1_1             1      0.918741       1.08845    -0.0884464
-          sla1_1           5.5           5.5             1             0
-          smdc_1          0.01     0.0112048       1.12048      0.107523
+          fsp1_1      0.213303      0.160894       1.32573     -0.325734
+           msc_1     0.0105569     0.0122657       1.16187      0.139315
+          npp1_1             1             1             1             0
+          sla1_1       5.53545         5.545       1.00173    0.00172244
+          smdc_1     0.0109834          0.01       1.09834    -0.0983385
        Maximum changes in "Transformed Numeric" parameters:
-         Maximum relative change = 0.333695   [fsp1_1]
-         Maximum factor change = 1.50082   [fsp1_1]
+         Maximum relative change = -0.325734   [fsp1_1]
+         Maximum factor change = 1.32573   [fsp1_1]
+
 
 OPTIMISATION ITERATION NUMBER: 6
 
   Iteration type: base parameter solution
-    SVD Package: Eigen JacobiSVD
-    Matrix Inversion: "Jt Q J"
-    Model calls so far : 71
+  SVD Package: Eigen JacobiSVD
+  Matrix Inversion: "Jt Q J"
+  Model calls so far : 96
 
-    Starting phi for this iteration                     Total : 2776.08
-    Contribution to phi from observation group        "site1" : 748.929
-    Contribution to phi from observation group        "site2" : 1149.39
-    Contribution to phi from observation group        "site3" : 409.394
-    Contribution to phi from observation group        "site4" : 468.373
-    Number of terms in the jacobian equal to zero: 12 / 540 (2.2%)
 
-    Summary of upgrade runs:
-      Lambda =     0.10; Type: upgrade_run; length = 5.09e-001;  phi = 11465.3 (413.00% of starting phi)
-      Lambda =     1.00; Type: upgrade_run; length = 5.01e-001;  phi = 3626.2 (130.62% of starting phi)
-      Lambda =     5.00; Type: upgrade_run; length = 5.01e-001;  phi = 2412.09 (86.89% of starting phi)
-      Lambda =    10.00; Type: upgrade_run; length = 5.01e-001;  phi = 2447.64 (88.17% of starting phi)
-      Lambda =    20.00; Type: upgrade_run; length = 2.66e-001;  phi = 2405.23 (86.64% of starting phi)
-      Lambda =   100.00; Type: upgrade_run; length = 4.75e-002;  phi = 2395.03 (86.27% of starting phi)
-      Lambda =  1000.00; Type: upgrade_run; length = 4.66e-002;  phi = 2445.82 (88.10% of starting phi)
+  Starting phi for this iteration                     Total : 2267.93
+  Contribution to phi from observation group        "site1" : 863.971
+  Contribution to phi from observation group        "site2" : 705.496
+  Contribution to phi from observation group        "site3" : 418.356
+  Contribution to phi from observation group        "site4" : 280.107
+  Number of terms in the jacobian equal to zero: 28 / 540 (5.2%)
 
-    Parameters frozen during best upgrade:
-      NPP1_1 frozen at 1
-      SMDC_1 frozen at 0.01
+  Summary of upgrade runs:
+    Lambda =     0.10; Type:  upgrade_nrm; length = 0.00e+00;  phi = 2.3e+03 (100.00% of starting phi)
+    Lambda =     0.10; Type:  upgrade_frz; length = 4.70e-01;  phi = 1.3e+04 (592.66% of starting phi)
+    Lambda =     1.00; Type:  upgrade_nrm; length = 0.00e+00;  phi = 2.3e+03 (100.00% of starting phi)
+    Lambda =     1.00; Type:  upgrade_frz; length = 4.65e-01;  phi = 5.2e+03 (230.98% of starting phi)
+    Lambda =    10.00; Type:  upgrade_nrm; length = 0.00e+00;  phi = 2.3e+03 (100.00% of starting phi)
+    Lambda =    10.00; Type:  upgrade_frz; length = 1.47e-01;  phi = 8.8e+03 (386.30% of starting phi)
+    Lambda =   100.00; Type:  upgrade_nrm; length = 0.00e+00;  phi = 2.3e+03 (100.00% of starting phi)
+    Lambda =   100.00; Type:  upgrade_frz; length = 1.47e-01;  phi = 8.9e+03 (390.38% of starting phi)
+    Lambda =   500.00; Type:  upgrade_nrm; length = 0.00e+00;  phi = 2.3e+03 (100.00% of starting phi)
+    Lambda =   500.00; Type:  upgrade_frz; length = 1.43e-01;  phi = 1e+04 (443.95% of starting phi)
+    Lambda =  1000.00; Type:  upgrade_nrm; length = 0.00e+00;  phi = 2.3e+03 (100.00% of starting phi)
+    Lambda =  1000.00; Type:  upgrade_frz; length = 1.43e-01;  phi = 1e+04 (447.00% of starting phi)
+    Lambda =  2000.00; Type:  upgrade_nrm; length = 0.00e+00;  phi = 2.3e+03 (100.00% of starting phi)
+    Lambda =  2000.00; Type:  upgrade_frz; length = 1.14e-01;  phi = 4.9e+03 (216.51% of starting phi)
 
-  Model calls in iteration 6: 17
-  Total model calls at end of iteration 6: 88
-
+  Model calls in iteration 6: 24
+  Total model calls at end of iteration 6: 120
 
     Iteration 6 Parameter Upgrades (Control File Parameters) 
       Parameter     Current       Previous       Factor       Relative
@@ -838,10 +886,10 @@ OPTIMISATION ITERATION NUMBER: 6
           fsp0_2          0.75          0.75             1             0
           fsp0_3          0.75          0.75             1             0
           fsp0_4          0.75          0.75             1             0
-          fsp1_1       0.18569      0.139134       1.33462     -0.334615
-          fsp1_2       0.18569      0.139134       1.33462     -0.334615
-          fsp1_3       0.18569      0.139134       1.33462     -0.334615
-          fsp1_4       0.18569      0.139134       1.33462     -0.334615
+          fsp1_1      0.213303      0.213303             1             0
+          fsp1_2      0.213303      0.213303             1             0
+          fsp1_3      0.213303      0.213303             1             0
+          fsp1_4      0.213303      0.213303             1             0
           npp1_1             1             1             1             0
           npp1_2             1             1             1             0
           npp1_3             1             1             1             0
@@ -850,10 +898,10 @@ OPTIMISATION ITERATION NUMBER: 6
           npp0_2         0.229         0.229             1             0
           npp0_3         0.229         0.229             1             0
           npp0_4         0.229         0.229             1             0
-          smdc_1          0.01          0.01             1             0
-          smdc_2          0.01          0.01             1             0
-          smdc_3          0.01          0.01             1             0
-          smdc_4          0.01          0.01             1             0
+          smdc_1     0.0109834     0.0109834             1             0
+          smdc_2     0.0109834     0.0109834             1             0
+          smdc_3     0.0109834     0.0109834             1             0
+          smdc_4     0.0109834     0.0109834             1             0
           smdp_1           2.4           2.4             1             0
           smdp_2           2.4           2.4             1             0
           smdp_3           2.4           2.4             1             0
@@ -866,18 +914,18 @@ OPTIMISATION ITERATION NUMBER: 6
            lr0_2        0.0015        0.0015             1             0
            lr0_3        0.0015        0.0015             1             0
            lr0_4        0.0015        0.0015             1             0
-           msc_1     0.0138574    0.00990611       1.39887     -0.398875
-           msc_2     0.0138574    0.00990611       1.39887     -0.398875
-           msc_3     0.0138574    0.00990611       1.39887     -0.398875
-           msc_4     0.0138574    0.00990611       1.39887     -0.398875
+           msc_1     0.0105569     0.0105569             1             0
+           msc_2     0.0105569     0.0105569             1             0
+           msc_3     0.0105569     0.0105569             1             0
+           msc_4     0.0105569     0.0105569             1             0
           sla0_1          16.1          16.1             1             0
           sla0_2          16.1          16.1             1             0
           sla0_3          16.1          16.1             1             0
           sla0_4          16.1          16.1             1             0
-          sla1_1       5.50827           5.5        1.0015   -0.00150374
-          sla1_2       5.50827           5.5        1.0015   -0.00150374
-          sla1_3       5.50827           5.5        1.0015   -0.00150374
-          sla1_4       5.50827           5.5        1.0015   -0.00150374
+          sla1_1       5.53545       5.53545             1             0
+          sla1_2       5.53545       5.53545             1             0
+          sla1_3       5.53545       5.53545             1             0
+          sla1_4       5.53545       5.53545             1             0
           fert_1             1             1             1             0
           fert_2             1             1             1             0
           fert_3             1             1             1             0
@@ -887,53 +935,56 @@ OPTIMISATION ITERATION NUMBER: 6
         maxasw_3           300           300             1             0
         maxasw_4           300           300             1             0
        Maximum changes in "Control File" parameters:
-         Maximum relative change = -0.398875   [msc_4]
-         Maximum factor change = 1.39887   [msc_4]
+         Maximum relative change = 0   [maxasw_4]
+         Maximum factor change = 1   [maxasw_4]
 
     Iteration 6 Parameter Upgrades (Transformed Numeric Parameters) 
       Parameter     Current       Previous       Factor       Relative
         Name         Value         Value         Change        Change
       ----------  ------------  ------------  ------------  ------------
-          fsp1_1       0.18569      0.139134       1.33462     -0.334615
-           msc_1     0.0138574    0.00990611       1.39887     -0.398875
+          fsp1_1      0.213303      0.213303             1             0
+           msc_1     0.0105569     0.0105569             1             0
           npp1_1             1             1             1             0
-          sla1_1       5.50827           5.5        1.0015   -0.00150374
-          smdc_1          0.01          0.01             1             0
+          sla1_1       5.53545       5.53545             1             0
+          smdc_1     0.0109834     0.0109834             1             0
        Maximum changes in "Transformed Numeric" parameters:
-         Maximum relative change = -0.398875   [msc_1]
-         Maximum factor change = 1.39887   [msc_1]
+         Maximum relative change = 0   [smdc_1]
+         Maximum factor change = 1   [smdc_1]
+
 
 OPTIMISATION ITERATION NUMBER: 7
 
   Iteration type: base parameter solution
-    SVD Package: Eigen JacobiSVD
-    Matrix Inversion: "Jt Q J"
-    Model calls so far : 88
+  SVD Package: Eigen JacobiSVD
+  Matrix Inversion: "Jt Q J"
+  Model calls so far : 120
 
-    Starting phi for this iteration                     Total : 2395.03
-    Contribution to phi from observation group        "site1" : 1083.17
-    Contribution to phi from observation group        "site2" : 572.851
-    Contribution to phi from observation group        "site3" : 528.269
-    Contribution to phi from observation group        "site4" : 210.739
-    Number of terms in the jacobian equal to zero: 24 / 540 (4.4%)
 
-    Summary of upgrade runs:
-      Lambda =     0.10; Type: upgrade_run; length = 4.97e-001;  phi = 8388.58 (350.25% of starting phi)
-      Lambda =     1.00; Type: upgrade_run; length = 2.22e-002;  phi = 3516.19 (146.81% of starting phi)
-      Lambda =    10.00; Type: upgrade_run; length = 1.24e-001;  phi = 10936.8 (456.65% of starting phi)
-      Lambda =    50.00; Type: upgrade_run; length = 1.24e-001;  phi = 11365.8 (474.56% of starting phi)
-      Lambda =   100.00; Type: upgrade_run; length = 1.24e-001;  phi = 11388.9 (475.52% of starting phi)
-      Lambda =   200.00; Type: upgrade_run; length = 1.24e-001;  phi = 11357.4 (474.21% of starting phi)
-      Lambda =  1000.00; Type: upgrade_run; length = 1.24e-001;  phi = 10926.9 (456.23% of starting phi)
+  Starting phi for this iteration                     Total : 2267.93
+  Contribution to phi from observation group        "site1" : 863.971
+  Contribution to phi from observation group        "site2" : 705.496
+  Contribution to phi from observation group        "site3" : 418.356
+  Contribution to phi from observation group        "site4" : 280.107
+  Number of terms in the jacobian equal to zero: 28 / 540 (5.2%)
 
-    Parameters frozen during best upgrade:
-      NPP1_1 frozen at 1
-      SLA1_1 frozen at 5.5
-      SMDC_1 frozen at 0.01
+  Summary of upgrade runs:
+    Lambda =     0.05; Type:  upgrade_nrm; length = 0.00e+00;  phi = 2.3e+03 (100.00% of starting phi)
+    Lambda =     0.05; Type:  upgrade_frz; length = 4.81e-01;  phi = 6e+03 (266.74% of starting phi)
+    Lambda =     0.10; Type:  upgrade_nrm; length = 0.00e+00;  phi = 2.3e+03 (100.00% of starting phi)
+    Lambda =     0.10; Type:  upgrade_frz; length = 4.70e-01;  phi = 1.3e+04 (592.66% of starting phi)
+    Lambda =     0.20; Type:  upgrade_nrm; length = 0.00e+00;  phi = 2.3e+03 (100.00% of starting phi)
+    Lambda =     0.20; Type:  upgrade_frz; length = 4.65e-01;  phi = 1.5e+04 (678.65% of starting phi)
+    Lambda =     1.00; Type:  upgrade_nrm; length = 0.00e+00;  phi = 2.3e+03 (100.00% of starting phi)
+    Lambda =     1.00; Type:  upgrade_frz; length = 4.65e-01;  phi = 5.2e+03 (230.98% of starting phi)
+    Lambda =    10.00; Type:  upgrade_nrm; length = 0.00e+00;  phi = 2.3e+03 (100.00% of starting phi)
+    Lambda =    10.00; Type:  upgrade_frz; length = 1.47e-01;  phi = 8.8e+03 (386.30% of starting phi)
+    Lambda =   100.00; Type:  upgrade_nrm; length = 0.00e+00;  phi = 2.3e+03 (100.00% of starting phi)
+    Lambda =   100.00; Type:  upgrade_frz; length = 1.47e-01;  phi = 8.9e+03 (390.38% of starting phi)
+    Lambda =  1000.00; Type:  upgrade_nrm; length = 0.00e+00;  phi = 2.3e+03 (100.00% of starting phi)
+    Lambda =  1000.00; Type:  upgrade_frz; length = 1.43e-01;  phi = 1e+04 (447.00% of starting phi)
 
-  Model calls in iteration 7: 17
-  Total model calls at end of iteration 7: 105
-
+  Model calls in iteration 7: 24
+  Total model calls at end of iteration 7: 144
 
     Iteration 7 Parameter Upgrades (Control File Parameters) 
       Parameter     Current       Previous       Factor       Relative
@@ -943,10 +994,10 @@ OPTIMISATION ITERATION NUMBER: 7
           fsp0_2          0.75          0.75             1             0
           fsp0_3          0.75          0.75             1             0
           fsp0_4          0.75          0.75             1             0
-          fsp1_1      0.165654       0.18569       1.12095      0.107903
-          fsp1_2      0.165654       0.18569       1.12095      0.107903
-          fsp1_3      0.165654       0.18569       1.12095      0.107903
-          fsp1_4      0.165654       0.18569       1.12095      0.107903
+          fsp1_1      0.213303      0.213303             1             0
+          fsp1_2      0.213303      0.213303             1             0
+          fsp1_3      0.213303      0.213303             1             0
+          fsp1_4      0.213303      0.213303             1             0
           npp1_1             1             1             1             0
           npp1_2             1             1             1             0
           npp1_3             1             1             1             0
@@ -955,10 +1006,10 @@ OPTIMISATION ITERATION NUMBER: 7
           npp0_2         0.229         0.229             1             0
           npp0_3         0.229         0.229             1             0
           npp0_4         0.229         0.229             1             0
-          smdc_1          0.01          0.01             1             0
-          smdc_2          0.01          0.01             1             0
-          smdc_3          0.01          0.01             1             0
-          smdc_4          0.01          0.01             1             0
+          smdc_1     0.0109834     0.0109834             1             0
+          smdc_2     0.0109834     0.0109834             1             0
+          smdc_3     0.0109834     0.0109834             1             0
+          smdc_4     0.0109834     0.0109834             1             0
           smdp_1           2.4           2.4             1             0
           smdp_2           2.4           2.4             1             0
           smdp_3           2.4           2.4             1             0
@@ -971,18 +1022,18 @@ OPTIMISATION ITERATION NUMBER: 7
            lr0_2        0.0015        0.0015             1             0
            lr0_3        0.0015        0.0015             1             0
            lr0_4        0.0015        0.0015             1             0
-           msc_1    0.00893729     0.0138574       1.55052      0.355053
-           msc_2    0.00893729     0.0138574       1.55052      0.355053
-           msc_3    0.00893729     0.0138574       1.55052      0.355053
-           msc_4    0.00893729     0.0138574       1.55052      0.355053
+           msc_1     0.0105569     0.0105569             1             0
+           msc_2     0.0105569     0.0105569             1             0
+           msc_3     0.0105569     0.0105569             1             0
+           msc_4     0.0105569     0.0105569             1             0
           sla0_1          16.1          16.1             1             0
           sla0_2          16.1          16.1             1             0
           sla0_3          16.1          16.1             1             0
           sla0_4          16.1          16.1             1             0
-          sla1_1           5.5       5.50827        1.0015    0.00150149
-          sla1_2           5.5       5.50827        1.0015    0.00150149
-          sla1_3           5.5       5.50827        1.0015    0.00150149
-          sla1_4           5.5       5.50827        1.0015    0.00150149
+          sla1_1       5.53545       5.53545             1             0
+          sla1_2       5.53545       5.53545             1             0
+          sla1_3       5.53545       5.53545             1             0
+          sla1_4       5.53545       5.53545             1             0
           fert_1             1             1             1             0
           fert_2             1             1             1             0
           fert_3             1             1             1             0
@@ -992,558 +1043,34 @@ OPTIMISATION ITERATION NUMBER: 7
         maxasw_3           300           300             1             0
         maxasw_4           300           300             1             0
        Maximum changes in "Control File" parameters:
-         Maximum relative change = 0.355053   [msc_4]
-         Maximum factor change = 1.55052   [msc_4]
+         Maximum relative change = 0   [maxasw_4]
+         Maximum factor change = 1   [maxasw_4]
 
     Iteration 7 Parameter Upgrades (Transformed Numeric Parameters) 
       Parameter     Current       Previous       Factor       Relative
         Name         Value         Value         Change        Change
       ----------  ------------  ------------  ------------  ------------
-          fsp1_1      0.165654       0.18569       1.12095      0.107903
-           msc_1    0.00893729     0.0138574       1.55052      0.355053
+          fsp1_1      0.213303      0.213303             1             0
+           msc_1     0.0105569     0.0105569             1             0
           npp1_1             1             1             1             0
-          sla1_1           5.5       5.50827        1.0015    0.00150149
-          smdc_1          0.01          0.01             1             0
+          sla1_1       5.53545       5.53545             1             0
+          smdc_1     0.0109834     0.0109834             1             0
        Maximum changes in "Transformed Numeric" parameters:
-         Maximum relative change = 0.355053   [msc_1]
-         Maximum factor change = 1.55052   [msc_1]
-
-OPTIMISATION ITERATION NUMBER: 8
-
-  Iteration type: base parameter solution
-    SVD Package: Eigen JacobiSVD
-    Matrix Inversion: "Jt Q J"
-    Model calls so far : 105
-
-    Starting phi for this iteration                     Total : 3516.19
-    Contribution to phi from observation group        "site1" : 494.972
-    Contribution to phi from observation group        "site2" : 1805.87
-    Contribution to phi from observation group        "site3" : 362.749
-    Contribution to phi from observation group        "site4" : 852.595
-    Number of terms in the jacobian equal to zero: 16 / 540 (3%)
-
-    Summary of upgrade runs:
-      Lambda =     0.10; Type: upgrade_run; length = 5.12e-001;  phi = 8007.19 (227.72% of starting phi)
-      Lambda =     0.50; Type: upgrade_run; length = 5.12e-001;  phi = 8498.63 (241.70% of starting phi)
-      Lambda =     1.00; Type: upgrade_run; length = 5.05e-001;  phi = 4524.45 (128.67% of starting phi)
-      Lambda =     2.00; Type: upgrade_run; length = 5.00e-001;  phi = 4488.64 (127.66% of starting phi)
-      Lambda =    10.00; Type: upgrade_run; length = 5.01e-001;  phi = 3342.04 (95.05% of starting phi)
-      Lambda =   100.00; Type: upgrade_run; length = 4.72e-002;  phi = 2652.31 (75.43% of starting phi)
-      Lambda =  1000.00; Type: upgrade_run; length = 4.12e-002;  phi = 2278.4 (64.80% of starting phi)
-
-    Parameters frozen during best upgrade:
-      NPP1_1 frozen at 1
-      SLA1_1 frozen at 5.5
-
-  Model calls in iteration 8: 17
-  Total model calls at end of iteration 8: 122
-
-
-    Iteration 8 Parameter Upgrades (Control File Parameters) 
-      Parameter     Current       Previous       Factor       Relative
-        Name         Value         Value         Change        Change
-      ----------  ------------  ------------  ------------  ------------
-          fsp0_1          0.75          0.75             1             0
-          fsp0_2          0.75          0.75             1             0
-          fsp0_3          0.75          0.75             1             0
-          fsp0_4          0.75          0.75             1             0
-          fsp1_1      0.206785      0.165654       1.24829     -0.248295
-          fsp1_2      0.206785      0.165654       1.24829     -0.248295
-          fsp1_3      0.206785      0.165654       1.24829     -0.248295
-          fsp1_4      0.206785      0.165654       1.24829     -0.248295
-          npp1_1             1             1             1             0
-          npp1_2             1             1             1             0
-          npp1_3             1             1             1             0
-          npp1_4             1             1             1             0
-          npp0_1         0.229         0.229             1             0
-          npp0_2         0.229         0.229             1             0
-          npp0_3         0.229         0.229             1             0
-          npp0_4         0.229         0.229             1             0
-          smdc_1     0.0107593          0.01       1.07593    -0.0759335
-          smdc_2     0.0107593          0.01       1.07593    -0.0759335
-          smdc_3     0.0107593          0.01       1.07593    -0.0759335
-          smdc_4     0.0107593          0.01       1.07593    -0.0759335
-          smdp_1           2.4           2.4             1             0
-          smdp_2           2.4           2.4             1             0
-          smdp_3           2.4           2.4             1             0
-          smdp_4           2.4           2.4             1             0
-           lrm_1         0.042         0.042             1             0
-           lrm_2         0.042         0.042             1             0
-           lrm_3         0.042         0.042             1             0
-           lrm_4         0.042         0.042             1             0
-           lr0_1        0.0015        0.0015             1             0
-           lr0_2        0.0015        0.0015             1             0
-           lr0_3        0.0015        0.0015             1             0
-           lr0_4        0.0015        0.0015             1             0
-           msc_1     0.0107685    0.00893729        1.2049     -0.204898
-           msc_2     0.0107685    0.00893729        1.2049     -0.204898
-           msc_3     0.0107685    0.00893729        1.2049     -0.204898
-           msc_4     0.0107685    0.00893729        1.2049     -0.204898
-          sla0_1          16.1          16.1             1             0
-          sla0_2          16.1          16.1             1             0
-          sla0_3          16.1          16.1             1             0
-          sla0_4          16.1          16.1             1             0
-          sla1_1           5.5           5.5             1             0
-          sla1_2           5.5           5.5             1             0
-          sla1_3           5.5           5.5             1             0
-          sla1_4           5.5           5.5             1             0
-          fert_1             1             1             1             0
-          fert_2             1             1             1             0
-          fert_3             1             1             1             0
-          fert_4             1             1             1             0
-        maxasw_1           300           300             1             0
-        maxasw_2           300           300             1             0
-        maxasw_3           300           300             1             0
-        maxasw_4           300           300             1             0
-       Maximum changes in "Control File" parameters:
-         Maximum relative change = -0.248295   [fsp1_4]
-         Maximum factor change = 1.24829   [fsp1_4]
-
-    Iteration 8 Parameter Upgrades (Transformed Numeric Parameters) 
-      Parameter     Current       Previous       Factor       Relative
-        Name         Value         Value         Change        Change
-      ----------  ------------  ------------  ------------  ------------
-          fsp1_1      0.206785      0.165654       1.24829     -0.248295
-           msc_1     0.0107685    0.00893729        1.2049     -0.204898
-          npp1_1             1             1             1             0
-          sla1_1           5.5           5.5             1             0
-          smdc_1     0.0107593          0.01       1.07593    -0.0759335
-       Maximum changes in "Transformed Numeric" parameters:
-         Maximum relative change = -0.248295   [fsp1_1]
-         Maximum factor change = 1.24829   [fsp1_1]
-
-OPTIMISATION ITERATION NUMBER: 9
-
-  Iteration type: base parameter solution
-    SVD Package: Eigen JacobiSVD
-    Matrix Inversion: "Jt Q J"
-    Model calls so far : 122
-
-    Starting phi for this iteration                     Total : 2278.4
-    Contribution to phi from observation group        "site1" : 837.437
-    Contribution to phi from observation group        "site2" : 747.199
-    Contribution to phi from observation group        "site3" : 402.858
-    Contribution to phi from observation group        "site4" : 290.906
-    Number of terms in the jacobian equal to zero: 24 / 540 (4.4%)
-
-    Summary of upgrade runs:
-      Lambda =     0.10; Type: upgrade_run; length = 5.07e-001;  phi = 4733.76 (207.77% of starting phi)
-      Lambda =     1.00; Type: upgrade_run; length = 7.75e-002;  phi = 2882.53 (126.52% of starting phi)
-      Lambda =    10.00; Type: upgrade_run; length = 1.38e-001;  phi = 9389.9 (412.13% of starting phi)
-      Lambda =   100.00; Type: upgrade_run; length = 1.38e-001;  phi = 9354.57 (410.58% of starting phi)
-      Lambda =   500.00; Type: upgrade_run; length = 1.38e-001;  phi = 10444.7 (458.42% of starting phi)
-      Lambda =  1000.00; Type: upgrade_run; length = 1.38e-001;  phi = 10591.4 (464.86% of starting phi)
-      Lambda =  2000.00; Type: upgrade_run; length = 1.16e-001;  phi = 6392.94 (280.59% of starting phi)
-
-    Parameters frozen during best upgrade:
-      NPP1_1 frozen at 1
-      SLA1_1 frozen at 5.5
-      SMDC_1 frozen at 0.01
-
-  Model calls in iteration 9: 17
-  Total model calls at end of iteration 9: 139
-
-
-    Iteration 9 Parameter Upgrades (Control File Parameters) 
-      Parameter     Current       Previous       Factor       Relative
-        Name         Value         Value         Change        Change
-      ----------  ------------  ------------  ------------  ------------
-          fsp0_1          0.75          0.75             1             0
-          fsp0_2          0.75          0.75             1             0
-          fsp0_3          0.75          0.75             1             0
-          fsp0_4          0.75          0.75             1             0
-          fsp1_1      0.284322      0.206785       1.37497     -0.374967
-          fsp1_2      0.284322      0.206785       1.37497     -0.374967
-          fsp1_3      0.284322      0.206785       1.37497     -0.374967
-          fsp1_4      0.284322      0.206785       1.37497     -0.374967
-          npp1_1             1             1             1             0
-          npp1_2             1             1             1             0
-          npp1_3             1             1             1             0
-          npp1_4             1             1             1             0
-          npp0_1         0.229         0.229             1             0
-          npp0_2         0.229         0.229             1             0
-          npp0_3         0.229         0.229             1             0
-          npp0_4         0.229         0.229             1             0
-          smdc_1          0.01     0.0107593       1.07593     0.0705745
-          smdc_2          0.01     0.0107593       1.07593     0.0705745
-          smdc_3          0.01     0.0107593       1.07593     0.0705745
-          smdc_4          0.01     0.0107593       1.07593     0.0705745
-          smdp_1           2.4           2.4             1             0
-          smdp_2           2.4           2.4             1             0
-          smdp_3           2.4           2.4             1             0
-          smdp_4           2.4           2.4             1             0
-           lrm_1         0.042         0.042             1             0
-           lrm_2         0.042         0.042             1             0
-           lrm_3         0.042         0.042             1             0
-           lrm_4         0.042         0.042             1             0
-           lr0_1        0.0015        0.0015             1             0
-           lr0_2        0.0015        0.0015             1             0
-           lr0_3        0.0015        0.0015             1             0
-           lr0_4        0.0015        0.0015             1             0
-           msc_1     0.0105374     0.0107685       1.02193     0.0214636
-           msc_2     0.0105374     0.0107685       1.02193     0.0214636
-           msc_3     0.0105374     0.0107685       1.02193     0.0214636
-           msc_4     0.0105374     0.0107685       1.02193     0.0214636
-          sla0_1          16.1          16.1             1             0
-          sla0_2          16.1          16.1             1             0
-          sla0_3          16.1          16.1             1             0
-          sla0_4          16.1          16.1             1             0
-          sla1_1           5.5           5.5             1             0
-          sla1_2           5.5           5.5             1             0
-          sla1_3           5.5           5.5             1             0
-          sla1_4           5.5           5.5             1             0
-          fert_1             1             1             1             0
-          fert_2             1             1             1             0
-          fert_3             1             1             1             0
-          fert_4             1             1             1             0
-        maxasw_1           300           300             1             0
-        maxasw_2           300           300             1             0
-        maxasw_3           300           300             1             0
-        maxasw_4           300           300             1             0
-       Maximum changes in "Control File" parameters:
-         Maximum relative change = -0.374967   [fsp1_4]
-         Maximum factor change = 1.37497   [fsp1_4]
-
-    Iteration 9 Parameter Upgrades (Transformed Numeric Parameters) 
-      Parameter     Current       Previous       Factor       Relative
-        Name         Value         Value         Change        Change
-      ----------  ------------  ------------  ------------  ------------
-          fsp1_1      0.284322      0.206785       1.37497     -0.374967
-           msc_1     0.0105374     0.0107685       1.02193     0.0214636
-          npp1_1             1             1             1             0
-          sla1_1           5.5           5.5             1             0
-          smdc_1          0.01     0.0107593       1.07593     0.0705745
-       Maximum changes in "Transformed Numeric" parameters:
-         Maximum relative change = -0.374967   [fsp1_1]
-         Maximum factor change = 1.37497   [fsp1_1]
-
-OPTIMISATION ITERATION NUMBER: 10
-
-  Iteration type: base parameter solution
-    SVD Package: Eigen JacobiSVD
-    Matrix Inversion: "Jt Q J"
-    Model calls so far : 139
-
-    Starting phi for this iteration                     Total : 2882.53
-    Contribution to phi from observation group        "site1" : 632.942
-    Contribution to phi from observation group        "site2" : 1324.15
-    Contribution to phi from observation group        "site3" : 355.884
-    Contribution to phi from observation group        "site4" : 569.556
-    Number of terms in the jacobian equal to zero: 40 / 540 (7.4%)
-
-    Summary of upgrade runs:
-      Lambda =     0.10; Type: upgrade_run; length = 5.35e-001;  phi = 6259.48 (217.15% of starting phi)
-      Lambda =     0.50; Type: upgrade_run; length = 5.35e-001;  phi = 6259.48 (217.15% of starting phi)
-      Lambda =     1.00; Type: upgrade_run; length = 5.35e-001;  phi = 6259.48 (217.15% of starting phi)
-      Lambda =     2.00; Type: upgrade_run; length = 5.35e-001;  phi = 4263.37 (147.90% of starting phi)
-      Lambda =    10.00; Type: upgrade_run; length = 2.09e-001;  phi = 4663.53 (161.79% of starting phi)
-      Lambda =   100.00; Type: upgrade_run; length = 1.90e-001;  phi = 4802.82 (166.62% of starting phi)
-      Lambda =  1000.00; Type: upgrade_run; length = 1.90e-001;  phi = 4839.36 (167.89% of starting phi)
-
-    Parameters frozen during best upgrade:
-      NPP1_1 frozen at 1
-      SLA1_1 frozen at 6
-      SMDC_1 frozen at 0.01
-
-  Model calls in iteration 10: 17
-  Total model calls at end of iteration 10: 156
-
-
-    Iteration 10 Parameter Upgrades (Control File Parameters) 
-      Parameter     Current       Previous       Factor       Relative
-        Name         Value         Value         Change        Change
-      ----------  ------------  ------------  ------------  ------------
-          fsp0_1          0.75          0.75             1             0
-          fsp0_2          0.75          0.75             1             0
-          fsp0_3          0.75          0.75             1             0
-          fsp0_4          0.75          0.75             1             0
-          fsp1_1     0.0947741      0.284322             3      0.666667
-          fsp1_2     0.0947741      0.284322             3      0.666667
-          fsp1_3     0.0947741      0.284322             3      0.666667
-          fsp1_4     0.0947741      0.284322             3      0.666667
-          npp1_1             1             1             1             0
-          npp1_2             1             1             1             0
-          npp1_3             1             1             1             0
-          npp1_4             1             1             1             0
-          npp0_1         0.229         0.229             1             0
-          npp0_2         0.229         0.229             1             0
-          npp0_3         0.229         0.229             1             0
-          npp0_4         0.229         0.229             1             0
-          smdc_1          0.01          0.01             1             0
-          smdc_2          0.01          0.01             1             0
-          smdc_3          0.01          0.01             1             0
-          smdc_4          0.01          0.01             1             0
-          smdp_1           2.4           2.4             1             0
-          smdp_2           2.4           2.4             1             0
-          smdp_3           2.4           2.4             1             0
-          smdp_4           2.4           2.4             1             0
-           lrm_1         0.042         0.042             1             0
-           lrm_2         0.042         0.042             1             0
-           lrm_3         0.042         0.042             1             0
-           lrm_4         0.042         0.042             1             0
-           lr0_1        0.0015        0.0015             1             0
-           lr0_2        0.0015        0.0015             1             0
-           lr0_3        0.0015        0.0015             1             0
-           lr0_4        0.0015        0.0015             1             0
-           msc_1    0.00804462     0.0105374       1.30987      0.236564
-           msc_2    0.00804462     0.0105374       1.30987      0.236564
-           msc_3    0.00804462     0.0105374       1.30987      0.236564
-           msc_4    0.00804462     0.0105374       1.30987      0.236564
-          sla0_1          16.1          16.1             1             0
-          sla0_2          16.1          16.1             1             0
-          sla0_3          16.1          16.1             1             0
-          sla0_4          16.1          16.1             1             0
-          sla1_1             6           5.5       1.09091    -0.0909091
-          sla1_2             6           5.5       1.09091    -0.0909091
-          sla1_3             6           5.5       1.09091    -0.0909091
-          sla1_4             6           5.5       1.09091    -0.0909091
-          fert_1             1             1             1             0
-          fert_2             1             1             1             0
-          fert_3             1             1             1             0
-          fert_4             1             1             1             0
-        maxasw_1           300           300             1             0
-        maxasw_2           300           300             1             0
-        maxasw_3           300           300             1             0
-        maxasw_4           300           300             1             0
-       Maximum changes in "Control File" parameters:
-         Maximum relative change = 0.666667   [fsp1_4]
-         Maximum factor change = 3   [fsp1_4]
-
-    Iteration 10 Parameter Upgrades (Transformed Numeric Parameters) 
-      Parameter     Current       Previous       Factor       Relative
-        Name         Value         Value         Change        Change
-      ----------  ------------  ------------  ------------  ------------
-          fsp1_1     0.0947741      0.284322             3      0.666667
-           msc_1    0.00804462     0.0105374       1.30987      0.236564
-          npp1_1             1             1             1             0
-          sla1_1             6           5.5       1.09091    -0.0909091
-          smdc_1          0.01          0.01             1             0
-       Maximum changes in "Transformed Numeric" parameters:
-         Maximum relative change = 0.666667   [fsp1_1]
-         Maximum factor change = 3   [fsp1_1]
-
-OPTIMISATION ITERATION NUMBER: 11
-
-  Iteration type: base parameter solution
-    SVD Package: Eigen JacobiSVD
-    Matrix Inversion: "Jt Q J"
-    Model calls so far : 156
-
-    Starting phi for this iteration                     Total : 4263.37
-    Contribution to phi from observation group        "site1" : 1876.24
-    Contribution to phi from observation group        "site2" : 787.856
-    Contribution to phi from observation group        "site3" : 1152.44
-    Contribution to phi from observation group        "site4" : 446.829
-    Number of terms in the jacobian equal to zero: 20 / 540 (3.7%)
-
-    Summary of upgrade runs:
-      Lambda =     0.10; Type: upgrade_run; length = 7.32e-001;  phi = 6598.87 (154.78% of starting phi)
-      Lambda =     1.00; Type: upgrade_run; length = 7.13e-001;  phi = 3302.4 (77.46% of starting phi)
-      Lambda =     2.00; Type: upgrade_run; length = 7.10e-001;  phi = 2965.61 (69.56% of starting phi)
-      Lambda =     4.00; Type: upgrade_run; length = 7.09e-001;  phi = 2816.68 (66.07% of starting phi)
-      Lambda =    10.00; Type: upgrade_run; length = 5.63e-001;  phi = 2901.43 (68.05% of starting phi)
-      Lambda =   100.00; Type: upgrade_run; length = 4.58e-001;  phi = 2904.7 (68.13% of starting phi)
-      Lambda =  1000.00; Type: upgrade_run; length = 8.41e-002;  phi = 2559.4 (60.03% of starting phi)
-
-    Parameters frozen during best upgrade:
-      MSC_1 frozen at 0.015
-      SLA1_1 frozen at 6
-      SMDC_1 frozen at 0.01
-
-  Model calls in iteration 11: 17
-  Total model calls at end of iteration 11: 173
-
-
-    Iteration 11 Parameter Upgrades (Control File Parameters) 
-      Parameter     Current       Previous       Factor       Relative
-        Name         Value         Value         Change        Change
-      ----------  ------------  ------------  ------------  ------------
-          fsp0_1          0.75          0.75             1             0
-          fsp0_2          0.75          0.75             1             0
-          fsp0_3          0.75          0.75             1             0
-          fsp0_4          0.75          0.75             1             0
-          fsp1_1      0.141924     0.0947741        1.4975     -0.497496
-          fsp1_2      0.141924     0.0947741        1.4975     -0.497496
-          fsp1_3      0.141924     0.0947741        1.4975     -0.497496
-          fsp1_4      0.141924     0.0947741        1.4975     -0.497496
-          npp1_1      0.930712             1       1.07445     0.0692883
-          npp1_2      0.930712             1       1.07445     0.0692883
-          npp1_3      0.930712             1       1.07445     0.0692883
-          npp1_4      0.930712             1       1.07445     0.0692883
-          npp0_1         0.229         0.229             1             0
-          npp0_2         0.229         0.229             1             0
-          npp0_3         0.229         0.229             1             0
-          npp0_4         0.229         0.229             1             0
-          smdc_1          0.01          0.01             1             0
-          smdc_2          0.01          0.01             1             0
-          smdc_3          0.01          0.01             1             0
-          smdc_4          0.01          0.01             1             0
-          smdp_1           2.4           2.4             1             0
-          smdp_2           2.4           2.4             1             0
-          smdp_3           2.4           2.4             1             0
-          smdp_4           2.4           2.4             1             0
-           lrm_1         0.042         0.042             1             0
-           lrm_2         0.042         0.042             1             0
-           lrm_3         0.042         0.042             1             0
-           lrm_4         0.042         0.042             1             0
-           lr0_1        0.0015        0.0015             1             0
-           lr0_2        0.0015        0.0015             1             0
-           lr0_3        0.0015        0.0015             1             0
-           lr0_4        0.0015        0.0015             1             0
-           msc_1         0.015    0.00804462        1.8646       -0.8646
-           msc_2         0.015    0.00804462        1.8646       -0.8646
-           msc_3         0.015    0.00804462        1.8646       -0.8646
-           msc_4         0.015    0.00804462        1.8646       -0.8646
-          sla0_1          16.1          16.1             1             0
-          sla0_2          16.1          16.1             1             0
-          sla0_3          16.1          16.1             1             0
-          sla0_4          16.1          16.1             1             0
-          sla1_1             6             6             1             0
-          sla1_2             6             6             1             0
-          sla1_3             6             6             1             0
-          sla1_4             6             6             1             0
-          fert_1             1             1             1             0
-          fert_2             1             1             1             0
-          fert_3             1             1             1             0
-          fert_4             1             1             1             0
-        maxasw_1           300           300             1             0
-        maxasw_2           300           300             1             0
-        maxasw_3           300           300             1             0
-        maxasw_4           300           300             1             0
-       Maximum changes in "Control File" parameters:
-         Maximum relative change = -0.8646   [msc_4]
-         Maximum factor change = 1.8646   [msc_4]
-
-    Iteration 11 Parameter Upgrades (Transformed Numeric Parameters) 
-      Parameter     Current       Previous       Factor       Relative
-        Name         Value         Value         Change        Change
-      ----------  ------------  ------------  ------------  ------------
-          fsp1_1      0.141924     0.0947741        1.4975     -0.497496
-           msc_1         0.015    0.00804462        1.8646       -0.8646
-          npp1_1      0.930712             1       1.07445     0.0692883
-          sla1_1             6             6             1             0
-          smdc_1          0.01          0.01             1             0
-       Maximum changes in "Transformed Numeric" parameters:
-         Maximum relative change = -0.8646   [msc_1]
-         Maximum factor change = 1.8646   [msc_1]
-
-OPTIMISATION ITERATION NUMBER: 12
-
-  Iteration type: base parameter solution
-    SVD Package: Eigen JacobiSVD
-    Matrix Inversion: "Jt Q J"
-    Model calls so far : 173
-
-    Starting phi for this iteration                     Total : 2559.4
-    Contribution to phi from observation group        "site1" : 1260.17
-    Contribution to phi from observation group        "site2" : 483.253
-    Contribution to phi from observation group        "site3" : 630.744
-    Contribution to phi from observation group        "site4" : 185.24
-    Number of terms in the jacobian equal to zero: 28 / 540 (5.2%)
-
-    Summary of upgrade runs:
-      Lambda =     0.10; Type: upgrade_run; length = 7.06e-002;  phi = 6051.4 (236.44% of starting phi)
-      Lambda =     1.00; Type: upgrade_run; length = 2.75e-001;  phi = 2687.13 (104.99% of starting phi)
-      Lambda =    10.00; Type: upgrade_run; length = 5.11e-001;  phi = 2609.83 (101.97% of starting phi)
-      Lambda =   100.00; Type: upgrade_run; length = 2.15e-001;  phi = 4900.01 (191.45% of starting phi)
-      Lambda =   500.00; Type: upgrade_run; length = 8.47e-002;  phi = 3408.11 (133.16% of starting phi)
-      Lambda =  1000.00; Type: upgrade_run; length = 7.48e-002;  phi = 3264.36 (127.54% of starting phi)
-      Lambda =  2000.00; Type: upgrade_run; length = 5.08e-002;  phi = 3266.96 (127.65% of starting phi)
-
-    Parameters frozen during best upgrade:
-      NPP1_1 frozen at 1
-      SLA1_1 frozen at 5.5
-      SMDC_1 frozen at 0.01
-
-  Model calls in iteration 12: 17
-  Total model calls at end of iteration 12: 190
-
-
-    Iteration 12 Parameter Upgrades (Control File Parameters) 
-      Parameter     Current       Previous       Factor       Relative
-        Name         Value         Value         Change        Change
-      ----------  ------------  ------------  ------------  ------------
-          fsp0_1          0.75          0.75             1             0
-          fsp0_2          0.75          0.75             1             0
-          fsp0_3          0.75          0.75             1             0
-          fsp0_4          0.75          0.75             1             0
-          fsp1_1      0.221315      0.141924        1.5594     -0.559396
-          fsp1_2      0.221315      0.141924        1.5594     -0.559396
-          fsp1_3      0.221315      0.141924        1.5594     -0.559396
-          fsp1_4      0.221315      0.141924        1.5594     -0.559396
-          npp1_1             1      0.930712       1.07445    -0.0744465
-          npp1_2             1      0.930712       1.07445    -0.0744465
-          npp1_3             1      0.930712       1.07445    -0.0744465
-          npp1_4             1      0.930712       1.07445    -0.0744465
-          npp0_1         0.229         0.229             1             0
-          npp0_2         0.229         0.229             1             0
-          npp0_3         0.229         0.229             1             0
-          npp0_4         0.229         0.229             1             0
-          smdc_1          0.01          0.01             1             0
-          smdc_2          0.01          0.01             1             0
-          smdc_3          0.01          0.01             1             0
-          smdc_4          0.01          0.01             1             0
-          smdp_1           2.4           2.4             1             0
-          smdp_2           2.4           2.4             1             0
-          smdp_3           2.4           2.4             1             0
-          smdp_4           2.4           2.4             1             0
-           lrm_1         0.042         0.042             1             0
-           lrm_2         0.042         0.042             1             0
-           lrm_3         0.042         0.042             1             0
-           lrm_4         0.042         0.042             1             0
-           lr0_1        0.0015        0.0015             1             0
-           lr0_2        0.0015        0.0015             1             0
-           lr0_3        0.0015        0.0015             1             0
-           lr0_4        0.0015        0.0015             1             0
-           msc_1     0.0109461         0.015       1.37035       0.27026
-           msc_2     0.0109461         0.015       1.37035       0.27026
-           msc_3     0.0109461         0.015       1.37035       0.27026
-           msc_4     0.0109461         0.015       1.37035       0.27026
-          sla0_1          16.1          16.1             1             0
-          sla0_2          16.1          16.1             1             0
-          sla0_3          16.1          16.1             1             0
-          sla0_4          16.1          16.1             1             0
-          sla1_1           5.5             6       1.09091     0.0833333
-          sla1_2           5.5             6       1.09091     0.0833333
-          sla1_3           5.5             6       1.09091     0.0833333
-          sla1_4           5.5             6       1.09091     0.0833333
-          fert_1             1             1             1             0
-          fert_2             1             1             1             0
-          fert_3             1             1             1             0
-          fert_4             1             1             1             0
-        maxasw_1           300           300             1             0
-        maxasw_2           300           300             1             0
-        maxasw_3           300           300             1             0
-        maxasw_4           300           300             1             0
-       Maximum changes in "Control File" parameters:
-         Maximum relative change = -0.559396   [fsp1_4]
-         Maximum factor change = 1.5594   [fsp1_4]
-
-    Iteration 12 Parameter Upgrades (Transformed Numeric Parameters) 
-      Parameter     Current       Previous       Factor       Relative
-        Name         Value         Value         Change        Change
-      ----------  ------------  ------------  ------------  ------------
-          fsp1_1      0.221315      0.141924        1.5594     -0.559396
-           msc_1     0.0109461         0.015       1.37035       0.27026
-          npp1_1             1      0.930712       1.07445    -0.0744465
-          sla1_1           5.5             6       1.09091     0.0833333
-          smdc_1          0.01          0.01             1             0
-       Maximum changes in "Transformed Numeric" parameters:
-         Maximum relative change = -0.559396   [fsp1_1]
-         Maximum factor change = 1.5594   [fsp1_1]
+         Maximum relative change = 0   [smdc_1]
+         Maximum factor change = 1   [smdc_1]
 
 -----------------------------------------
      ---   OPTIMIZATION COMPLETE   ---   
-  Reason for terminating PEST++ simulation: NPHINORED criterion met
+  Reason for terminating PEST++ simulation: PHIREDSTP / NPHISTP criterion met
   Summary of termination criteria:
-  NOPTMAX = 50 ;  NOPT at termination = 12
-  NPHINORED = 3 ;  NPHINORED at termination = 4
-  NRELPAR = 3; RELPARSTP = 0.01 ;  NRELPAR at termination = 0
+  NOPTMAX = 50 ;  NOPT at termination = 7
+  NPHINORED = 3 ;  NPHINORED at termination = 0
+  NRELPAR = 3; RELPARSTP = 0.01 ;  NRELPAR at termination = 2
   PHIREDSTP = 0.01; NPHISTP = 3
   NPHISTP lowest PHI's:
-        2278.4
-        2279.36
-        2395.03
+        2267.93
+        2267.93
+        2267.93
 
 FINAL OPTIMISATION RESULTS
 
@@ -1556,10 +1083,10 @@ FINAL OPTIMISATION RESULTS
     fsp0_2                0.75
     fsp0_3                0.75
     fsp0_4                0.75
-    fsp1_1            0.206785
-    fsp1_2            0.206785
-    fsp1_3            0.206785
-    fsp1_4            0.206785
+    fsp1_1            0.213303
+    fsp1_2            0.213303
+    fsp1_3            0.213303
+    fsp1_4            0.213303
     npp1_1                   1
     npp1_2                   1
     npp1_3                   1
@@ -1568,10 +1095,10 @@ FINAL OPTIMISATION RESULTS
     npp0_2               0.229
     npp0_3               0.229
     npp0_4               0.229
-    smdc_1           0.0107593
-    smdc_2           0.0107593
-    smdc_3           0.0107593
-    smdc_4           0.0107593
+    smdc_1           0.0109834
+    smdc_2           0.0109834
+    smdc_3           0.0109834
+    smdc_4           0.0109834
     smdp_1                 2.4
     smdp_2                 2.4
     smdp_3                 2.4
@@ -1584,18 +1111,18 @@ FINAL OPTIMISATION RESULTS
     lr0_2               0.0015
     lr0_3               0.0015
     lr0_4               0.0015
-    msc_1            0.0107685
-    msc_2            0.0107685
-    msc_3            0.0107685
-    msc_4            0.0107685
+    msc_1            0.0105569
+    msc_2            0.0105569
+    msc_3            0.0105569
+    msc_4            0.0105569
     sla0_1                16.1
     sla0_2                16.1
     sla0_3                16.1
     sla0_4                16.1
-    sla1_1                 5.5
-    sla1_2                 5.5
-    sla1_3                 5.5
-    sla1_4                 5.5
+    sla1_1             5.53545
+    sla1_2             5.53545
+    sla1_3             5.53545
+    sla1_4             5.53545
     fert_1                   1
     fert_2                   1
     fert_3                   1
@@ -1608,124 +1135,124 @@ FINAL OPTIMISATION RESULTS
 
   Observations with optimal model-simulated equivalents and residuals
                  Name        Group             Measured             Modelled             Residual               Weight
-               dbh1_1        site1              17.1000              12.3674              4.73257              1.00000
-               dbh2_1        site1              24.9000              21.5681              3.33186              1.00000
-               dbh3_1        site1              28.3000              25.9719              2.32809              1.00000
-               dbh4_1        site1              29.9000              29.3401             0.559881              1.00000
-               dbh5_1        site1              31.1000              32.0605            -0.960477              1.00000
-               dbh6_1        site1              32.4000              34.3264             -1.92645              1.00000
-               dbh7_1        site1              33.6000              36.3737             -2.77374              1.00000
-               dbh8_1        site1              35.2000              38.2867             -3.08670              1.00000
-               dbh9_1        site1              36.8000              40.0386             -3.23855              1.00000
-              dbh10_1        site1              38.9000              41.7184             -2.81839              1.00000
-              dbh11_1        site1              40.1000              43.2998             -3.19979              1.00000
-              dbh12_1        site1              40.7000              44.7900             -4.09000              1.00000
-              dbh13_1        site1              42.6000              46.1974             -3.59741              1.00000
-              dbh14_1        site1              45.6000              47.5341             -1.93409              1.00000
-              dbh15_1        site1              48.6000              48.8090            -0.209026              1.00000
-              dbh16_1        site1              50.6000              50.0265             0.573487              1.00000
-              dbh17_1        site1              55.5000              51.1831              4.31688              1.00000
-              dbh18_1        site1              59.1000              52.2857              6.81428              1.00000
-              dbh19_1        site1              59.9000              53.3407              6.55927              1.00000
-              dbh20_1        site1              61.5000              54.3539              7.14609              1.00000
-              dbh21_1        site1              62.5000              55.3301              7.16986              1.00000
-              dbh22_1        site1              63.9000              56.2694              7.63063              1.00000
-              dbh23_1        site1              64.9000              57.1730              7.72704              1.00000
-              dbh24_1        site1              66.7000              58.0458              8.65424              1.00000
-              dbh25_1        site1              68.1000              58.8918              9.20818              1.00000
-              dbh26_1        site1              69.4000              59.7143              9.68566              1.00000
-              dbh27_1        site1              72.0000              60.5153              11.4847              1.00000
-               dbh1_2        site2              17.7000              12.3674              5.33257              1.00000
-               dbh2_2        site2              25.8000              21.5681              4.23186              1.00000
-               dbh3_2        site2              28.8000              25.9719              2.82809              1.00000
-               dbh4_2        site2              30.3000              29.3401             0.959881              1.00000
-               dbh5_2        site2              31.2000              32.0605            -0.860477              1.00000
-               dbh6_2        site2              32.1000              34.3264             -2.22644              1.00000
-               dbh7_2        site2              32.9000              36.3737             -3.47374              1.00000
-               dbh8_2        site2              33.8000              38.2867             -4.48670              1.00000
-               dbh9_2        site2              35.4000              40.0386             -4.63855              1.00000
-              dbh10_2        site2              37.2000              41.7184             -4.51839              1.00000
-              dbh11_2        site2              38.0000              43.2998             -5.29979              1.00000
-              dbh12_2        site2              38.5000              44.7900             -6.29000              1.00000
-              dbh13_2        site2              39.8000              46.1974             -6.39741              1.00000
-              dbh14_2        site2              42.2000              47.5341             -5.33409              1.00000
-              dbh15_2        site2              44.6000              48.8090             -4.20903              1.00000
-              dbh16_2        site2              45.4000              50.0265             -4.62651              1.00000
-              dbh17_2        site2              45.5000              51.1831             -5.68312              1.00000
-              dbh18_2        site2              46.8000              52.2857             -5.48572              1.00000
-              dbh19_2        site2              47.3000              53.3407             -6.04073              1.00000
-              dbh20_2        site2              48.3000              54.3539             -6.05391              1.00000
-              dbh21_2        site2              48.9000              55.3301             -6.43014              1.00000
-              dbh22_2        site2              49.8000              56.2694             -6.46937              1.00000
-              dbh23_2        site2              50.4000              57.1730             -6.77296              1.00000
-              dbh24_2        site2              51.2000              58.0458             -6.84576              1.00000
-              dbh25_2        site2              52.5000              58.8918             -6.39182              1.00000
-              dbh26_2        site2              53.1000              59.7143             -6.61434              1.00000
-              dbh27_2        site2              54.2000              60.5153             -6.31534              1.00000
-               dbh1_3        site3              18.5000              12.3674              6.13257              1.00000
-               dbh2_3        site3              26.5000              21.5681              4.93186              1.00000
-               dbh3_3        site3              29.9000              25.9719              3.92809              1.00000
-               dbh4_3        site3              31.4000              29.3401              2.05988              1.00000
-               dbh5_3        site3              32.6000              32.0605             0.539523              1.00000
-               dbh6_3        site3              34.0000              34.3264            -0.326445              1.00000
-               dbh7_3        site3              35.0000              36.3737             -1.37374              1.00000
-               dbh8_3        site3              36.6000              38.2867             -1.68670              1.00000
-               dbh9_3        site3              37.6000              40.0386             -2.43855              1.00000
-              dbh10_3        site3              39.3000              41.7184             -2.41839              1.00000
-              dbh11_3        site3              40.3000              43.2998             -2.99979              1.00000
-              dbh12_3        site3              40.8000              44.7900             -3.99000              1.00000
-              dbh13_3        site3              42.5000              46.1974             -3.69741              1.00000
-              dbh14_3        site3              44.6000              47.5341             -2.93409              1.00000
-              dbh15_3        site3              46.4000              48.8090             -2.40903              1.00000
-              dbh16_3        site3              47.8000              50.0265             -2.22651              1.00000
-              dbh17_3        site3              52.8000              51.1831              1.61688              1.00000
-              dbh18_3        site3              55.5000              52.2857              3.21428              1.00000
-              dbh19_3        site3              57.0000              53.3407              3.65928              1.00000
-              dbh20_3        site3              58.6000              54.3539              4.24609              1.00000
-              dbh21_3        site3              59.2000              55.3301              3.86986              1.00000
-              dbh22_3        site3              60.9000              56.2694              4.63063              1.00000
-              dbh23_3        site3              61.6000              57.1730              4.42704              1.00000
-              dbh24_3        site3              63.0000              58.0458              4.95424              1.00000
-              dbh25_3        site3              64.7000              58.8918              5.80818              1.00000
-              dbh26_3        site3              65.6000              59.7143              5.88566              1.00000
-              dbh27_3        site3              67.8000              60.5153              7.28466              1.00000
-               dbh1_4        site4              20.9000              12.3674              8.53257              1.00000
-               dbh2_4        site4              29.5000              21.5681              7.93186              1.00000
-               dbh3_4        site4              30.3000              25.9719              4.32809              1.00000
-               dbh4_4        site4              31.5000              29.3401              2.15988              1.00000
-               dbh5_4        site4              32.6000              32.0605             0.539523              1.00000
-               dbh6_4        site4              34.0000              34.3264            -0.326445              1.00000
-               dbh7_4        site4              35.0000              36.3737             -1.37374              1.00000
-               dbh8_4        site4              36.5000              38.2867             -1.78670              1.00000
-               dbh9_4        site4              37.6000              40.0386             -2.43855              1.00000
-              dbh10_4        site4              39.5000              41.7184             -2.21839              1.00000
-              dbh11_4        site4              40.4000              43.2998             -2.89979              1.00000
-              dbh12_4        site4              41.0000              44.7900             -3.79000              1.00000
-              dbh13_4        site4              42.4000              46.1974             -3.79741              1.00000
-              dbh14_4        site4              44.8000              47.5341             -2.73409              1.00000
-              dbh15_4        site4              47.3000              48.8090             -1.50903              1.00000
-              dbh16_4        site4              48.6000              50.0265             -1.42651              1.00000
-              dbh17_4        site4              48.9000              51.1831             -2.28312              1.00000
-              dbh18_4        site4              50.6000              52.2857             -1.68572              1.00000
-              dbh19_4        site4              51.5000              53.3407             -1.84072              1.00000
-              dbh20_4        site4              52.3000              54.3539             -2.05391              1.00000
-              dbh21_4        site4              52.8000              55.3301             -2.53014              1.00000
-              dbh22_4        site4              53.8000              56.2694             -2.46937              1.00000
-              dbh23_4        site4              54.1000              57.1730             -3.07296              1.00000
-              dbh24_4        site4              55.2000              58.0458             -2.84576              1.00000
-              dbh25_4        site4              56.1000              58.8918             -2.79182              1.00000
-              dbh26_4        site4              56.8000              59.7143             -2.91434              1.00000
-              dbh27_4        site4              58.4000              60.5153             -2.11534              1.00000
+               dbh1_1        site1              17.1000              12.2617              4.83832              1.00000
+               dbh2_1        site1              24.9000              21.3693              3.53071              1.00000
+               dbh3_1        site1              28.3000              25.7501              2.54988              1.00000
+               dbh4_1        site1              29.9000              29.1158             0.784242              1.00000
+               dbh5_1        site1              31.1000              31.8474            -0.747358              1.00000
+               dbh6_1        site1              32.4000              34.1347             -1.73469              1.00000
+               dbh7_1        site1              33.6000              36.1579             -2.55787              1.00000
+               dbh8_1        site1              35.2000              38.0957             -2.89574              1.00000
+               dbh9_1        site1              36.8000              39.8433             -3.04326              1.00000
+              dbh10_1        site1              38.9000              41.5019             -2.60187              1.00000
+              dbh11_1        site1              40.1000              43.0879             -2.98790              1.00000
+              dbh12_1        site1              40.7000              44.5835             -3.88352              1.00000
+              dbh13_1        site1              42.6000              45.9980             -3.39805              1.00000
+              dbh14_1        site1              45.6000              47.3380             -1.73803              1.00000
+              dbh15_1        site1              48.6000              48.6133           -0.0132600              1.00000
+              dbh16_1        site1              50.6000              49.8314             0.768609              1.00000
+              dbh17_1        site1              55.5000              50.9981              4.50191              1.00000
+              dbh18_1        site1              59.1000              52.1078              6.99224              1.00000
+              dbh19_1        site1              59.9000              53.1658              6.73422              1.00000
+              dbh20_1        site1              61.5000              54.1780              7.32196              1.00000
+              dbh21_1        site1              62.5000              55.1501              7.34993              1.00000
+              dbh22_1        site1              63.9000              56.0867              7.81331              1.00000
+              dbh23_1        site1              64.9000              56.9887              7.91134              1.00000
+              dbh24_1        site1              66.7000              57.8562              8.84380              1.00000
+              dbh25_1        site1              68.1000              58.6942              9.40576              1.00000
+              dbh26_1        site1              69.4000              59.5069              9.89311              1.00000
+              dbh27_1        site1              72.0000              60.2974              11.7026              1.00000
+               dbh1_2        site2              17.7000              12.2617              5.43832              1.00000
+               dbh2_2        site2              25.8000              21.3693              4.43071              1.00000
+               dbh3_2        site2              28.8000              25.7501              3.04988              1.00000
+               dbh4_2        site2              30.3000              29.1158              1.18424              1.00000
+               dbh5_2        site2              31.2000              31.8474            -0.647358              1.00000
+               dbh6_2        site2              32.1000              34.1347             -2.03469              1.00000
+               dbh7_2        site2              32.9000              36.1579             -3.25787              1.00000
+               dbh8_2        site2              33.8000              38.0957             -4.29575              1.00000
+               dbh9_2        site2              35.4000              39.8433             -4.44326              1.00000
+              dbh10_2        site2              37.2000              41.5019             -4.30187              1.00000
+              dbh11_2        site2              38.0000              43.0879             -5.08790              1.00000
+              dbh12_2        site2              38.5000              44.5835             -6.08352              1.00000
+              dbh13_2        site2              39.8000              45.9980             -6.19805              1.00000
+              dbh14_2        site2              42.2000              47.3380             -5.13803              1.00000
+              dbh15_2        site2              44.6000              48.6133             -4.01326              1.00000
+              dbh16_2        site2              45.4000              49.8314             -4.43139              1.00000
+              dbh17_2        site2              45.5000              50.9981             -5.49809              1.00000
+              dbh18_2        site2              46.8000              52.1078             -5.30776              1.00000
+              dbh19_2        site2              47.3000              53.1658             -5.86578              1.00000
+              dbh20_2        site2              48.3000              54.1780             -5.87804              1.00000
+              dbh21_2        site2              48.9000              55.1501             -6.25007              1.00000
+              dbh22_2        site2              49.8000              56.0867             -6.28669              1.00000
+              dbh23_2        site2              50.4000              56.9887             -6.58866              1.00000
+              dbh24_2        site2              51.2000              57.8562             -6.65620              1.00000
+              dbh25_2        site2              52.5000              58.6942             -6.19424              1.00000
+              dbh26_2        site2              53.1000              59.5069             -6.40689              1.00000
+              dbh27_2        site2              54.2000              60.2974             -6.09737              1.00000
+               dbh1_3        site3              18.5000              12.2617              6.23832              1.00000
+               dbh2_3        site3              26.5000              21.3693              5.13071              1.00000
+               dbh3_3        site3              29.9000              25.7501              4.14988              1.00000
+               dbh4_3        site3              31.4000              29.1158              2.28424              1.00000
+               dbh5_3        site3              32.6000              31.8474             0.752642              1.00000
+               dbh6_3        site3              34.0000              34.1347            -0.134688              1.00000
+               dbh7_3        site3              35.0000              36.1579             -1.15787              1.00000
+               dbh8_3        site3              36.6000              38.0957             -1.49574              1.00000
+               dbh9_3        site3              37.6000              39.8433             -2.24326              1.00000
+              dbh10_3        site3              39.3000              41.5019             -2.20187              1.00000
+              dbh11_3        site3              40.3000              43.0879             -2.78790              1.00000
+              dbh12_3        site3              40.8000              44.5835             -3.78352              1.00000
+              dbh13_3        site3              42.5000              45.9980             -3.49805              1.00000
+              dbh14_3        site3              44.6000              47.3380             -2.73803              1.00000
+              dbh15_3        site3              46.4000              48.6133             -2.21326              1.00000
+              dbh16_3        site3              47.8000              49.8314             -2.03139              1.00000
+              dbh17_3        site3              52.8000              50.9981              1.80191              1.00000
+              dbh18_3        site3              55.5000              52.1078              3.39224              1.00000
+              dbh19_3        site3              57.0000              53.1658              3.83422              1.00000
+              dbh20_3        site3              58.6000              54.1780              4.42196              1.00000
+              dbh21_3        site3              59.2000              55.1501              4.04993              1.00000
+              dbh22_3        site3              60.9000              56.0867              4.81331              1.00000
+              dbh23_3        site3              61.6000              56.9887              4.61134              1.00000
+              dbh24_3        site3              63.0000              57.8562              5.14380              1.00000
+              dbh25_3        site3              64.7000              58.6942              6.00576              1.00000
+              dbh26_3        site3              65.6000              59.5069              6.09311              1.00000
+              dbh27_3        site3              67.8000              60.2974              7.50263              1.00000
+               dbh1_4        site4              20.9000              12.2617              8.63832              1.00000
+               dbh2_4        site4              29.5000              21.3693              8.13071              1.00000
+               dbh3_4        site4              30.3000              25.7501              4.54988              1.00000
+               dbh4_4        site4              31.5000              29.1158              2.38424              1.00000
+               dbh5_4        site4              32.6000              31.8474             0.752642              1.00000
+               dbh6_4        site4              34.0000              34.1347            -0.134688              1.00000
+               dbh7_4        site4              35.0000              36.1579             -1.15787              1.00000
+               dbh8_4        site4              36.5000              38.0957             -1.59575              1.00000
+               dbh9_4        site4              37.6000              39.8433             -2.24326              1.00000
+              dbh10_4        site4              39.5000              41.5019             -2.00187              1.00000
+              dbh11_4        site4              40.4000              43.0879             -2.68790              1.00000
+              dbh12_4        site4              41.0000              44.5835             -3.58352              1.00000
+              dbh13_4        site4              42.4000              45.9980             -3.59805              1.00000
+              dbh14_4        site4              44.8000              47.3380             -2.53803              1.00000
+              dbh15_4        site4              47.3000              48.6133             -1.31326              1.00000
+              dbh16_4        site4              48.6000              49.8314             -1.23139              1.00000
+              dbh17_4        site4              48.9000              50.9981             -2.09809              1.00000
+              dbh18_4        site4              50.6000              52.1078             -1.50776              1.00000
+              dbh19_4        site4              51.5000              53.1658             -1.66578              1.00000
+              dbh20_4        site4              52.3000              54.1780             -1.87804              1.00000
+              dbh21_4        site4              52.8000              55.1501             -2.35007              1.00000
+              dbh22_4        site4              53.8000              56.0867             -2.28669              1.00000
+              dbh23_4        site4              54.1000              56.9887             -2.88866              1.00000
+              dbh24_4        site4              55.2000              57.8562             -2.65620              1.00000
+              dbh25_4        site4              56.1000              58.6942             -2.59424              1.00000
+              dbh26_4        site4              56.8000              59.5069             -2.70689              1.00000
+              dbh27_4        site4              58.4000              60.2974             -1.89737              1.00000
 
 Final composite objective function 
-    Final phi                                           Total : 2278.40
-    Contribution to phi from observation group        "site1" : 837.437
-    Contribution to phi from observation group        "site2" : 747.199
-    Contribution to phi from observation group        "site3" : 402.858
-    Contribution to phi from observation group        "site4" : 290.906
+  Final phi                                           Total : 2267.93
+  Contribution to phi from observation group        "site1" : 863.971
+  Contribution to phi from observation group        "site2" : 705.496
+  Contribution to phi from observation group        "site3" : 418.356
+  Contribution to phi from observation group        "site4" : 280.107
 
 
-Number of forward model runs performed during optimiztion: 190
+Number of forward model runs performed during optimiztion: 144
 
 
 
@@ -1761,114 +1288,114 @@ Note: The observation covariance matrix has been constructed from
 Scaled observation weights used to form observation noise covariance matrix:
 
          observation               group       scaled_weight
-             DBH13_2               SITE2            0.190092
-             DBH20_1               SITE1            0.179558
-              DBH9_1               SITE1            0.179558
-             DBH19_1               SITE1            0.179558
-             DBH14_1               SITE1            0.179558
-              DBH1_1               SITE1            0.179558
-              DBH2_1               SITE1            0.179558
-             DBH26_1               SITE1            0.179558
-              DBH3_1               SITE1            0.179558
-             DBH22_2               SITE2            0.190092
-              DBH4_1               SITE1            0.179558
-             DBH16_2               SITE2            0.190092
-              DBH5_1               SITE1            0.179558
-              DBH6_1               SITE1            0.179558
-              DBH7_1               SITE1            0.179558
-             DBH12_2               SITE2            0.190092
-             DBH21_1               SITE1            0.179558
-              DBH8_1               SITE1            0.179558
-             DBH10_1               SITE1            0.179558
-              DBH2_3               SITE3            0.258884
-             DBH11_1               SITE1            0.179558
-             DBH25_2               SITE2            0.190092
-             DBH12_1               SITE1            0.179558
-             DBH13_1               SITE1            0.179558
-             DBH15_1               SITE1            0.179558
-             DBH16_1               SITE1            0.179558
-             DBH17_1               SITE1            0.179558
-              DBH7_2               SITE2            0.190092
-             DBH18_1               SITE1            0.179558
-             DBH15_2               SITE2            0.190092
-              DBH8_2               SITE2            0.190092
-             DBH22_1               SITE1            0.179558
-             DBH17_4               SITE4            0.304653
-              DBH1_2               SITE2            0.190092
-             DBH23_1               SITE1            0.179558
-              DBH2_2               SITE2            0.190092
-             DBH24_1               SITE1            0.179558
-             DBH25_1               SITE1            0.179558
-             DBH10_2               SITE2            0.190092
-             DBH27_1               SITE1            0.179558
-              DBH3_2               SITE2            0.190092
-             DBH18_2               SITE2            0.190092
-              DBH4_2               SITE2            0.190092
-              DBH5_2               SITE2            0.190092
-              DBH6_2               SITE2            0.190092
-              DBH9_2               SITE2            0.190092
-             DBH21_2               SITE2            0.190092
-             DBH11_2               SITE2            0.190092
-              DBH8_3               SITE3            0.258884
-             DBH14_2               SITE2            0.190092
-             DBH26_2               SITE2            0.190092
-             DBH17_2               SITE2            0.190092
-             DBH11_3               SITE3            0.258884
-             DBH19_2               SITE2            0.190092
-             DBH20_2               SITE2            0.190092
-              DBH3_3               SITE3            0.258884
-             DBH23_2               SITE2            0.190092
-             DBH24_2               SITE2            0.190092
-             DBH27_2               SITE2            0.190092
-              DBH1_3               SITE3            0.258884
-              DBH4_3               SITE3            0.258884
-              DBH5_3               SITE3            0.258884
-              DBH6_3               SITE3            0.258884
-              DBH7_3               SITE3            0.258884
-              DBH9_3               SITE3            0.258884
-             DBH10_3               SITE3            0.258884
-             DBH12_3               SITE3            0.258884
-             DBH13_3               SITE3            0.258884
-             DBH14_3               SITE3            0.258884
-             DBH15_3               SITE3            0.258884
-             DBH16_3               SITE3            0.258884
-             DBH17_3               SITE3            0.258884
-             DBH18_3               SITE3            0.258884
-             DBH19_3               SITE3            0.258884
-             DBH20_3               SITE3            0.258884
-             DBH21_3               SITE3            0.258884
-             DBH22_3               SITE3            0.258884
-             DBH23_3               SITE3            0.258884
-             DBH24_3               SITE3            0.258884
-             DBH25_3               SITE3            0.258884
-             DBH26_3               SITE3            0.258884
-             DBH27_3               SITE3            0.258884
-              DBH1_4               SITE4            0.304653
-              DBH2_4               SITE4            0.304653
-              DBH3_4               SITE4            0.304653
-              DBH4_4               SITE4            0.304653
-              DBH5_4               SITE4            0.304653
-              DBH6_4               SITE4            0.304653
-              DBH7_4               SITE4            0.304653
-              DBH8_4               SITE4            0.304653
-              DBH9_4               SITE4            0.304653
-             DBH10_4               SITE4            0.304653
-             DBH11_4               SITE4            0.304653
-             DBH12_4               SITE4            0.304653
-             DBH13_4               SITE4            0.304653
-             DBH14_4               SITE4            0.304653
-             DBH15_4               SITE4            0.304653
-             DBH16_4               SITE4            0.304653
-             DBH18_4               SITE4            0.304653
-             DBH19_4               SITE4            0.304653
-             DBH20_4               SITE4            0.304653
-             DBH21_4               SITE4            0.304653
-             DBH22_4               SITE4            0.304653
-             DBH23_4               SITE4            0.304653
-             DBH24_4               SITE4            0.304653
-             DBH25_4               SITE4            0.304653
-             DBH26_4               SITE4            0.304653
-             DBH27_4               SITE4            0.304653
+              DBH4_4               SITE4            0.310470
+             DBH26_2               SITE2            0.195630
+              DBH9_1               SITE1            0.176780
+              DBH1_1               SITE1            0.176780
+             DBH15_3               SITE3            0.254044
+              DBH2_1               SITE1            0.176780
+              DBH3_1               SITE1            0.176780
+              DBH4_1               SITE1            0.176780
+             DBH22_2               SITE2            0.195630
+              DBH5_1               SITE1            0.176780
+              DBH6_1               SITE1            0.176780
+             DBH18_3               SITE3            0.254044
+              DBH7_1               SITE1            0.176780
+              DBH8_1               SITE1            0.176780
+             DBH10_1               SITE1            0.176780
+             DBH11_1               SITE1            0.176780
+             DBH12_1               SITE1            0.176780
+             DBH13_1               SITE1            0.176780
+              DBH3_3               SITE3            0.254044
+             DBH20_4               SITE4            0.310470
+             DBH14_1               SITE1            0.176780
+             DBH15_1               SITE1            0.176780
+              DBH2_3               SITE3            0.254044
+             DBH18_4               SITE4            0.310470
+             DBH23_2               SITE2            0.195630
+             DBH16_1               SITE1            0.176780
+             DBH17_1               SITE1            0.176780
+             DBH18_1               SITE1            0.176780
+              DBH7_3               SITE3            0.254044
+              DBH6_3               SITE3            0.254044
+             DBH19_1               SITE1            0.176780
+             DBH27_2               SITE2            0.195630
+             DBH14_4               SITE4            0.310470
+             DBH20_1               SITE1            0.176780
+             DBH21_1               SITE1            0.176780
+              DBH5_2               SITE2            0.195630
+             DBH22_1               SITE1            0.176780
+             DBH15_2               SITE2            0.195630
+             DBH23_1               SITE1            0.176780
+             DBH24_1               SITE1            0.176780
+             DBH25_1               SITE1            0.176780
+              DBH9_2               SITE2            0.195630
+             DBH26_1               SITE1            0.176780
+             DBH27_1               SITE1            0.176780
+             DBH19_2               SITE2            0.195630
+              DBH1_2               SITE2            0.195630
+              DBH2_2               SITE2            0.195630
+              DBH3_2               SITE2            0.195630
+             DBH26_4               SITE4            0.310470
+              DBH4_2               SITE2            0.195630
+              DBH6_2               SITE2            0.195630
+              DBH7_2               SITE2            0.195630
+             DBH10_3               SITE3            0.254044
+              DBH8_2               SITE2            0.195630
+              DBH8_3               SITE3            0.254044
+             DBH10_2               SITE2            0.195630
+             DBH11_2               SITE2            0.195630
+             DBH12_2               SITE2            0.195630
+             DBH13_2               SITE2            0.195630
+             DBH14_2               SITE2            0.195630
+             DBH16_2               SITE2            0.195630
+             DBH17_2               SITE2            0.195630
+             DBH23_4               SITE4            0.310470
+             DBH18_2               SITE2            0.195630
+             DBH20_2               SITE2            0.195630
+             DBH21_2               SITE2            0.195630
+             DBH24_2               SITE2            0.195630
+              DBH4_3               SITE3            0.254044
+             DBH25_2               SITE2            0.195630
+              DBH1_3               SITE3            0.254044
+              DBH5_3               SITE3            0.254044
+              DBH9_3               SITE3            0.254044
+             DBH11_3               SITE3            0.254044
+             DBH12_3               SITE3            0.254044
+             DBH13_3               SITE3            0.254044
+             DBH14_3               SITE3            0.254044
+             DBH16_3               SITE3            0.254044
+             DBH17_3               SITE3            0.254044
+             DBH19_3               SITE3            0.254044
+             DBH20_3               SITE3            0.254044
+             DBH21_3               SITE3            0.254044
+             DBH22_3               SITE3            0.254044
+             DBH23_3               SITE3            0.254044
+             DBH24_3               SITE3            0.254044
+             DBH25_3               SITE3            0.254044
+             DBH26_3               SITE3            0.254044
+             DBH27_3               SITE3            0.254044
+              DBH1_4               SITE4            0.310470
+              DBH2_4               SITE4            0.310470
+              DBH3_4               SITE4            0.310470
+              DBH5_4               SITE4            0.310470
+              DBH6_4               SITE4            0.310470
+              DBH7_4               SITE4            0.310470
+              DBH8_4               SITE4            0.310470
+              DBH9_4               SITE4            0.310470
+             DBH10_4               SITE4            0.310470
+             DBH11_4               SITE4            0.310470
+             DBH12_4               SITE4            0.310470
+             DBH13_4               SITE4            0.310470
+             DBH15_4               SITE4            0.310470
+             DBH16_4               SITE4            0.310470
+             DBH17_4               SITE4            0.310470
+             DBH19_4               SITE4            0.310470
+             DBH21_4               SITE4            0.310470
+             DBH22_4               SITE4            0.310470
+             DBH24_4               SITE4            0.310470
+             DBH25_4               SITE4            0.310470
+             DBH27_4               SITE4            0.310470
 
 
 Note : posterior parameter covariance matrix written to file 'pest.post.cov'
@@ -1880,11 +1407,11 @@ Note : posterior parameter covariance matrix written to file 'pest.post.cov'
 
 
                 name          prior_mean         prior_stdev   prior_lower_bound   prior_upper_bound           post_mean          post_stdev    post_lower_bound    post_upper_bound
-              FSP1_1           0.0300000            0.368750           -0.707500            0.767500            0.206785           0.0324564            0.141872            0.271698
-              NPP1_1            0.800000            0.125000            0.550000             1.05000             1.00000            0.124161            0.751678             1.24832
-              SMDC_1           0.0950000             2.49750            -4.90000             5.09000           0.0107593         0.000582987          0.00959336           0.0119253
-               MSC_1           0.0100000          0.00250000          0.00500000           0.0150000           0.0107685          0.00173879          0.00729093           0.0142461
-              SLA1_1             5.70000            0.125000             5.45000             5.95000             5.50000            0.124878             5.25024             5.74976
+              FSP1_1           0.0300000            0.368750           -0.707500            0.767500            0.213303            0.161451           -0.109599            0.536205
+              NPP1_1            0.800000            0.125000            0.550000             1.05000             1.00000            0.124599            0.750802             1.24920
+              SMDC_1           0.0950000             2.49750            -4.90000             5.09000           0.0109834         0.000683620          0.00961615           0.0123506
+               MSC_1           0.0100000          0.00250000          0.00500000           0.0150000           0.0105569          0.00131421          0.00792849           0.0131853
+              SLA1_1             5.70000            0.125000             5.45000             5.95000             5.53545            0.124882             5.28569             5.78521
 
 WARNING: the following parameters were not found in the final 
       base parameter jacobian and were subsequently not included 

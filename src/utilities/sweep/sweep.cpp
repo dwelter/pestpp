@@ -176,7 +176,7 @@ void process_sweep_runs(ofstream &csv, Pest &pest_scenario, RunManagerAbstract* 
 		if (run_manager_ptr->get_run(run_id, pars, obs))
 		{
 			PhiData phi_data = obj_func.phi_report(obs, pars, *(pest_scenario.get_regul_scheme_ptr()));
-
+			csv << ",0";
 			csv << ',' << phi_data.total();
 			csv << ',' << phi_data.meas;
 			csv << ',' << phi_data.regul;

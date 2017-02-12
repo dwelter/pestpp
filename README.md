@@ -14,6 +14,8 @@ If any of these items are of interest to you, we are looking for contributors!
 Visit the <a href="http://www.pestpp.org">homepage </a> to download the most recent pre-compiled version 
 
 ##Recent Updates
+<b>update 01/25/2017</b>: intel C++ builds are avaiable for mac and for windows.  For mac users, these are statically-linked so they do not require compilers to be installed.  For windows users, the intel build circumvents the "missing VCOMP140.DLL" error.  Note the intel windows builds are currently in the ``intel_c_windows`` branch.
+
 <b>update 11/25/2016</b>: PEST++ version 3.6 is now available. Some of the many enhancements available in 3.6 include:
 
 * a new approach to implementing regularization. Rather than using the standard pest control file parameters such as ``phimlim``, ``fracphim``, etc, we now offer a single pest++ argument, ``++reg_frac()``, that allows users to specify what fraction  of the composite objective function should be regularization penalty. For example, ``++reg_frac(0.5)`` would result in equal parts data misfit and regularization penalty, which results in the *maximum a posteriori* (MAP) parameter estimate. Using ``++reg_frac()`` will result in substantial speed ups during the lambda calculation process
@@ -104,14 +106,14 @@ Here is a (more or less) complete list of ``++`` arguments that can be added to 
 ###pestpp-opt ``++`` arguments
 ``pestpp-opt`` is a implementation of sequential linear programming under uncertainty for the PEST-style model-independent interface
 
-* ``++opt dec var groups(<group names>)``: comma-separated string identifying which parameter groups are to be treated as decision variables.  If not passed, all adjustable parameters are treated as decision variables
+* ``++opt_dec_var_groups(<group names>)``: comma-separated string identifying which parameter groups are to be treated as decision variables.  If not passed, all adjustable parameters are treated as decision variables
 
 * ``++opt_external_dec_var_groups(<group_names>)``: comma-separated string identifying which parameter groups are to be treated as "external" decision variables, that is decision variables that do not influence model-based constraints and therefore do not require a perturbation run of the model to fill columns in the response matrix.
 
-* ``++opt constraint groups(<group names>)``: comma-separated string identifying which observation and prior information groups are to be treated as constraints.  Groups for "less than" constraints must start with either "l_" or "less"; groups for "greater than" constraints must start with "g_" or "greater".  If not passed, all observation and prior information groups that meet the naming rules will be treated as constraints
+* ``++opt_constraint_groups(<group names>)``: comma-separated string identifying which observation and prior information groups are to be treated as constraints.  Groups for "less than" constraints must start with either "l_" or "less"; groups for "greater than" constraints must start with "g_" or "greater".  If not passed, all observation and prior information groups that meet the naming rules will be treated as constraints
 
-* ``++opt obj func(<obj func name >)``: string identifying the prior information equation or two-column ASCII file that contains the objective function coefficients.  If not passed, then each decision variable is given a coefficient of 1.0 in the objective function.
+* ``++opt_obj_func(<obj func name >)``: string identifying the prior information equation or two-column ASCII file that contains the objective function coefficients.  If not passed, then each decision variable is given a coefficient of 1.0 in the objective function.
 
-* ``++opt_direction(<direction>)``: either "min" or "max", weather to minimize or maximize the objective function. 
+* ``++opt_direction(<direction>)``: either "min" or "max", whether to minimize or maximize the objective function. 
 
 * ``++opt_risk(<risk>)``: a float ranging from 0.0 to 1.0 that is the value to use in the FOSM uncertainty estimation for model-based constraints. a value of 0.5 is a "risk neutral" position and no FOSM measures are calculated.  A value of 0.95 will seek a 95% risk averse solution, while a value of 0.05 will seek a 5% risk tolerant solution. See Wagner and Gorelick, 1987, *Optimal groundwater quality management under parameter uncertainty* for more background on chance-constrained linear programming

@@ -1874,20 +1874,41 @@ void linear_analysis::write_pred_credible_range(ofstream &fout, string sum_filen
 void linear_analysis::drop_prior_information(const Pest &pest_scenario)
 {
 	vector<string> pi_names;
+	vector<string> obs_names = jacobian.get_row_names();
 	const vector<string> nonregul = pest_scenario.get_nonregul_obs();
 	if (nonregul.size() < pest_scenario.get_ctl_ordered_obs_names().size())
 		for (auto &oname : pest_scenario.get_ctl_ordered_obs_names())
-			if (find(nonregul.begin(), nonregul.end(), oname) == nonregul.end())
+			if ((find(nonregul.begin(), nonregul.end(), oname) == nonregul.end()) &&
+				(find(obs_names.begin(),obs_names.end(),oname) != obs_names.end()))
 				pi_names.push_back(oname);
-
-	pi_names.insert(pi_names.end(), pest_scenario.get_ctl_ordered_pi_names().begin(),
-		pest_scenario.get_ctl_ordered_pi_names().end());
+	for (auto &oname : pest_scenario.get_ctl_ordered_pi_names())
+	{
+		if (find(obs_names.begin(), obs_names.end(), oname) != obs_names.end())
+			pi_names.push_back(oname);
+	}
+	//pi_names.insert(pi_names.end(), pest_scenario.get_ctl_ordered_pi_names().begin(),
+	//	pest_scenario.get_ctl_ordered_pi_names().end());
 	if (pi_names.size() > 0)
 	{
 		jacobian.drop_rows(pi_names);
+	}
+	pi_names.clear();
+	obs_names.clear();
+	obs_names = obscov.get_row_names();
+	if (nonregul.size() < pest_scenario.get_ctl_ordered_obs_names().size())
+		for (auto &oname : pest_scenario.get_ctl_ordered_obs_names())
+			if ((find(nonregul.begin(), nonregul.end(), oname) == nonregul.end()) &&
+				(find(obs_names.begin(), obs_names.end(), oname) != obs_names.end()))
+				pi_names.push_back(oname);
+	for (auto &oname : pest_scenario.get_ctl_ordered_pi_names())
+	{
+		if (find(obs_names.begin(), obs_names.end(), oname) != obs_names.end())
+			pi_names.push_back(oname);
+	}
+	if (pi_names.size() > 0)
+	{
 		obscov.drop_rows(pi_names);
 	}
-
 }
 
 
