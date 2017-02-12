@@ -136,7 +136,10 @@ protected:
 		double &rel_change);
 	void calc_upgrade_vec(double i_lambda, Parameters &frozen_ctl_pars, QSqrtMatrix &Q_sqrt, const DynamicRegularization &regul,
 		Eigen::VectorXd &residuals_vec, vector<string> &obs_names_vec, const Parameters &base_run_ctl_pars,
-		Parameters &new_ctl_pars, MarquardtMatrix marquardt_type, bool scale_upgrade=false);
+		Parameters &new_ctl_pars, MarquardtMatrix marquardt_type, LimitType &limit_type, bool scale_upgrade=false);
+	void calc_upgrade_vec_freeze(double i_lambda, Parameters &frozen_ctl_pars, QSqrtMatrix &Q_sqrt, const DynamicRegularization &regul,
+		Eigen::VectorXd &residuals_vec, vector<string> &obs_names_vec, const Parameters &base_run_ctl_pars,
+		Parameters &new_ctl_pars, MarquardtMatrix marquardt_type, bool scale_upgrade = false);
 	void calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt, const DynamicRegularization &regul,
 		const Eigen::VectorXd &Residuals, const vector<string> &obs_name_vec,
 		const Parameters &base_active_ctl_pars, const Parameters &freeze_active_ctl_pars,

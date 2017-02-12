@@ -114,7 +114,7 @@ Parameters SVDASolver::limit_parameters_freeze_all_ip(const Parameters &init_act
 void SVDASolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_active_ctl_pars, QSqrtMatrix &Q_sqrt,
 	const DynamicRegularization &regul, VectorXd &residuals_vec,
 	vector<string> &obs_names_vec, const Parameters &base_run_active_ctl_pars, Parameters &upgrade_active_ctl_pars,
-	MarquardtMatrix marquardt_type, bool scale_upgrade)
+	MarquardtMatrix marquardt_type, LimitType &limit_type, bool scale_upgrade)
 {
 	Parameters upgrade_ctl_del_pars;
 	Parameters grad_ctl_del_pars;
@@ -455,13 +455,14 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 			Parameters base_numeric_pars = par_transform.ctl2numeric_cp(base_run.get_ctl_pars());
 
 			Parameters frzn_pars;
+			LimitType limit_type;
 			calc_upgrade_vec(i_lambda, frzn_pars, Q_sqrt, *regul_scheme_ptr, residuals_vec,
 				obs_names_vec, base_run_active_ctl_pars,
-				new_pars, MarquardtMatrix::IDENT, false);
+				new_pars, MarquardtMatrix::IDENT, limit_type,false);
 
 			//transform new_pars to model parameters
 			par_transform.active_ctl2model_ip(new_pars);
-			int run_id = run_manager.add_run(new_pars, "upgrade_run", i_lambda);
+			int run_id = run_manager.add_run(new_pars, "upgrade_nrm", i_lambda);
 			save_frozen_pars(fout_frz, frzn_pars, run_id);
 			performance_log->add_indent(-1);
 		}
@@ -504,7 +505,7 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 			streamsize n_prec = os.precision(2);
 			os << "    Lambda = ";
 			os << setiosflags(ios::fixed) << setw(8) << i_lambda;
-			os << "; Type: " << setw(4) << lambda_type;
+			os << "; Type: " << setw(12) << lambda_type;
 			os << "; length = " << std::scientific << magnitude;
 			os << setiosflags(ios::fixed);
 			os.precision(n_prec);

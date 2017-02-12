@@ -150,7 +150,7 @@ void DifferentialEvolution::initialize_population(RunManagerAbstract &run_manage
 	for (int i_run = 0; i_run < d; ++i_run)
 	{
 		bool r_status = gen_1.get_run(i_run, tmp_pars, tmp_obs);
-		if (r_status > 0)
+		if (r_status)
 		{
 			par_transform.model2ctl_ip(tmp_pars);
 			tmp_run.update_ctl(tmp_pars, tmp_obs);
