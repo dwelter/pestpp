@@ -1,0 +1,101 @@
+        40         3         2         0         1   128390.        -1         0
+        40         0         0 
+    1   13    1    1    1     100000.000    51.500   20000.0    47.500    48.500
+    1   13    2    1    2          0.000    51.000   20000.0    47.000    48.000
+    1   14    3    1    3          0.000    20.500   20000.0    46.500    47.500
+    1   15    4    1    4          0.000    20.000   20000.0    46.000    47.000
+    1   16    5    1    5          0.000    49.500   20000.0    45.500    46.500
+    1   16    6    1    6          0.000    49.000   20000.0    45.000    46.000
+    1   16    7    1    7          0.000    48.500   20000.0    44.500    45.500
+    1   16    8    1    8          0.000    48.000   20000.0    44.000    45.000
+    1   16    9    1    9          0.000    47.500   20000.0    43.500    44.500
+    1   16   10    1   10          0.000    47.000   20000.0    40.000    44.000
+    1   16   11    1   11          0.000    46.500   20000.0    42.500    43.500
+    1   16   12    1   12          0.000    46.000   20000.0    42.000    40.000
+    1   15   13    1   13          0.000    45.500   20000.0    41.500    42.500
+    1   14   14    1   14          0.000    45.000   20000.0    41.000    42.000
+    1   13   15    1   15          0.000    44.500   20000.0    40.500    41.500
+    1   12   16    1   16          0.000    44.000   20000.0    40.000    41.000
+    1   12   17    1   17          0.000    43.500   20000.0    39.500    40.500
+    1   12   18    1   18          0.000    40.000   20000.0    39.000    40.000
+    1   12   19    1   19          0.000    42.500   20000.0    38.500    39.500
+    1   13   20    1   20          0.000    42.000   20000.0    38.000    39.000
+    1   14   21    1   21          0.000    41.500   20000.0    37.500    38.500
+    1   14   22    1   22          0.000    41.000   20000.0    37.000    38.000
+    1    9   30    2    1      50000.000    30.000   20000.0    39.250    40.250
+    1    9   29    2    2          0.000    30.000   20000.0    39.000    40.000
+    1    9   28    2    3          0.000    30.000   20000.0    38.750    39.750
+    1    9   27    2    4          0.000    30.000   20000.0    38.500    39.500
+    1   10   26    2    5          0.000    30.000   20000.0    38.250    39.250
+    1   11   25    2    6          0.000    30.000   20000.0    38.000    39.000
+    1   12   24    2    7          0.000    30.000   20000.0    37.750    38.750
+    1   13   23    2    8          0.000    30.000   20000.0    37.500    38.500
+    1   14   22    2    9          0.000    41.000   20000.0    37.000    38.000
+    1   14   22    3    1         -1.000    41.000   20000.0    37.000    38.000
+    1   15   23    3    2          0.000    40.000   20000.0    36.000    37.000
+    1   15   24    3    3          0.000    39.000   20000.0    35.000    36.000
+    1   15   25    3    4          0.000    38.000   20000.0    34.000    35.000
+    1   15   26    3    5          0.000    37.000   20000.0    33.000    34.000
+    1   16   27    3    6          0.000    36.000   20000.0    32.000    33.000
+    1   17   28    3    7          0.000    35.000   20000.0    31.000    32.000
+    1   18   29    3    8          0.000    34.000   20000.0    30.000    31.000
+    1   18   30    3    9          0.000    30.000   20000.0    29.000    30.000
+       20.    0.0025      0.05     width slope and Manning's n for segement 1
+       20.    0.0025      0.05     width slope and Manning's n for segement 1
+       20.    0.0025      0.05     width slope and Manning's n for segement 1
+       20.    0.0025      0.05     width slope and Manning's n for segement 1
+       20.    0.0025      0.05     width slope and Manning's n for segement 1
+       20.    0.0025      0.05     width slope and Manning's n for segement 1
+       20.    0.0025      0.05     width slope and Manning's n for segement 1
+       20.    0.0025      0.05     width slope and Manning's n for segement 1
+       20.    0.0025      0.05     width slope and Manning's n for segement 1
+       20.    0.0025      0.05     width slope and Manning's n for segement 1
+       20.    0.0025      0.05     width slope and Manning's n for segement 1
+       20.    0.0025      0.05     width slope and Manning's n for segement 1
+       20.    0.0025      0.05     width slope and Manning's n for segement 1
+       20.    0.0025      0.05     width slope and Manning's n for segement 1
+       20.    0.0025      0.05     width slope and Manning's n for segement 1
+       20.    0.0025      0.05     width slope and Manning's n for segement 1
+       20.    0.0025      0.05     width slope and Manning's n for segement 1
+       20.    0.0025      0.05     width slope and Manning's n for segement 1
+       20.    0.0025      0.05     width slope and Manning's n for segement 1
+       20.    0.0025      0.05     width slope and Manning's n for segement 1
+       20.    0.0025      0.05     width slope and Manning's n for segement 1
+       20.    0.0025      0.05     width slope and Manning's n for segement 1
+       20.    0.0010      0.05     width slope and Manning's n for segement 2
+       20.    0.0010      0.05     width slope and Manning's n for segement 2
+       20.    0.0010      0.05     width slope and Manning's n for segement 2
+       20.    0.0010      0.05     width slope and Manning's n for segement 2
+       20.    0.0010      0.05     width slope and Manning's n for segement 2
+       20.    0.0010      0.05     width slope and Manning's n for segement 2
+       20.    0.0010      0.05     width slope and Manning's n for segement 2
+       20.    0.0010      0.05     width slope and Manning's n for segement 2
+       20.    0.0010      0.05     width slope and Manning's n for segement 2
+       20.    0.0025      0.05     width slope and Manning's n for segement 3
+       20.    0.0025      0.05     width slope and Manning's n for segement 3
+       20.    0.0025      0.05     width slope and Manning's n for segement 3
+       20.    0.0025      0.05     width slope and Manning's n for segement 3
+       20.    0.0025      0.05     width slope and Manning's n for segement 3
+       20.    0.0025      0.05     width slope and Manning's n for segement 3
+       20.    0.0025      0.05     width slope and Manning's n for segement 3
+       20.    0.0025      0.05     width slope and Manning's n for segement 3
+       20.    0.0025      0.05     width slope and Manning's n for segement 3
+    0    0
+    0    0
+    1    2
+        -3         1         0    period 2
+        -3         1         0    period 3
+        -3         1         0    period 4
+        -3         1         0    period 5
+        -3         1         0    period 6
+        -3         1         0    period 7
+        -3         1         0    period 8
+        -3         1         0    period 9
+        -3         1         0    period 10
+        -3         1         0    period 11
+        -3         1         0    period 12
+END
+
+12345678901234567890123456789012345678901234567890123456789012345678901234567890
+
+
