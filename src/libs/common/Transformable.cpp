@@ -129,9 +129,23 @@ Transformable Transformable::operator-(const Transformable &rhs) const
 {
 	Transformable ret_val(*this);
 	ret_val -= rhs;
+	return ret_val;	
+}
+
+Transformable Transformable::operator+(const Transformable &rhs) const
+{
+	Transformable ret_val(*this);
+	ret_val += rhs;
 	return ret_val;
 
-	
+
+}
+
+Transformable Transformable::operator*(double scale) const
+{
+	Transformable ret_val(*this);
+	ret_val *= scale;
+	return ret_val;
 }
 
 double &Transformable::operator[](const string &name)

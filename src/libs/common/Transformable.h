@@ -68,7 +68,9 @@ public:
 	Transformable& operator+=(const Transformable &rhs);
 	Transformable& operator-=(const Transformable &rhs);
 	Transformable& operator*=(double scale);
+	Transformable operator*(double scale) const;
 	Transformable operator-(const Transformable &rhs) const;
+	Transformable operator+(const Transformable &rhs) const;
 	double &operator[](const string &name);
 	pair<iterator,bool> insert(const string &name, double value);
 	pair<iterator, bool> insert(const pair<string, double> &x);

@@ -220,6 +220,7 @@ public:
 	int get_max_super_frz_iter()const { return max_super_frz_iter; }
 	int get_max_reg_iter()const { return max_reg_iter; }
 	const vector<double>& get_base_lambda_vec() const {return base_lambda_vec;}	
+	const vector<double>& get_lambda_scale_vec() const { return lambda_scale_vec; }
 	bool get_iter_summary_flag() const { return iter_summary_flag;  }
 	bool get_der_forgive() const { return der_forgive; }
 	GLOBAL_OPT get_global_opt() const { return global_opt;}
@@ -301,6 +302,7 @@ private:
 	int max_super_frz_iter;
 	int max_reg_iter;
 	vector<double> base_lambda_vec;	
+	vector<double> lambda_scale_vec;
 	bool iter_summary_flag;
 	bool der_forgive;
 	bool uncert;

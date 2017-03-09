@@ -120,6 +120,7 @@ protected:
 	OutputFileWriter &output_file_writer;
 	PerformanceLog *performance_log;
 	std::vector<double> base_lambda_vec;
+	std::vector<double> lambda_scale_vec;
 	bool terminate_local_iteration;
 	bool der_forgive;
 	double reg_frac;

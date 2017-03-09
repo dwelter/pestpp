@@ -97,7 +97,8 @@ SVDSolver::SVDSolver(Pest &_pest_scenario, FileManager &_file_manager, Objective
 	file_manager(_file_manager), observations_ptr(&_pest_scenario.get_ctl_observations()), par_transform(_par_transform), der_forgive(_pest_scenario.get_pestpp_options().get_der_forgive()), phiredswh_flag(_phiredswh_flag),
 	splitswh_flag(_splitswh_flag), save_next_jacobian(_save_next_jacobian), prior_info_ptr(_pest_scenario.get_prior_info_ptr()), jacobian(_jacobian),
 	regul_scheme_ptr(_pest_scenario.get_regul_scheme_ptr()), output_file_writer(_output_file_writer), mat_inv(_mat_inv), description(_description), best_lambda(20.0),
-	performance_log(_performance_log), base_lambda_vec(_pest_scenario.get_pestpp_options().get_base_lambda_vec()), terminate_local_iteration(false), reg_frac(_pest_scenario.get_pestpp_options().get_reg_frac()),
+	performance_log(_performance_log), base_lambda_vec(_pest_scenario.get_pestpp_options().get_base_lambda_vec()), lambda_scale_vec(_pest_scenario.get_pestpp_options().get_lambda_scale_vec()),
+	terminate_local_iteration(false), reg_frac(_pest_scenario.get_pestpp_options().get_reg_frac()),
 		parcov(_parcov),parcov_scale_fac(_pest_scenario.get_pestpp_options().get_parcov_scale_fac())
 {
 	svd_package = new SVD_EIGEN();
@@ -1044,8 +1045,22 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 				new_pars, MarquardtMatrix::IDENT, limit_type, false);
 
 			Parameters new_par_model = par_transform.active_ctl2model_cp(new_pars);
-			int run_id = run_manager.add_run(new_par_model, "upgrade_nrm", i_lambda);
+			int run_id = run_manager.add_run(new_par_model, "normal", i_lambda);
 			save_frozen_pars(fout_frz, frozen_active_ctl_pars, run_id);
+
+			//Add Scaled Upgrade Vectors
+			Parameters new_numeric_pars = par_transform.model2numeric_cp(new_par_model);
+			Parameters base_numeric_pars = par_transform.model2numeric_cp(base_model_pars);
+			Parameters del_numeric_pars = new_numeric_pars - base_numeric_pars;
+			for (double i_scale : lambda_scale_vec)
+			{
+				Parameters scaled_pars = base_numeric_pars + del_numeric_pars * i_scale;
+				par_transform.numeric2model_ip(scaled_pars);
+				stringstream ss;
+				ss << "scale(" << std::fixed << std::setprecision(2) << i_scale << ")";
+				int run_id = run_manager.add_run(scaled_pars, ss.str(), i_lambda);
+				save_frozen_pars(fout_frz, frozen_active_ctl_pars, run_id);
+			}
 
 			////Try to extend the previous upgrade vector
 			if (limit_type == LimitType::LBND || limit_type == LimitType::UBND)
@@ -1056,7 +1071,7 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 					new_pars, MarquardtMatrix::IDENT, false);
 
 				Parameters new_par_model = par_transform.active_ctl2model_cp(new_pars);
-				int run_id = run_manager.add_run(new_par_model, "upgrade_frz", i_lambda);
+				int run_id = run_manager.add_run(new_par_model, "extended", i_lambda);
 				save_frozen_pars(fout_frz, frozen_active_ctl_pars, run_id);
 			}
 			performance_log->add_indent(-1);
@@ -1108,7 +1123,7 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 			os << "; length = " << std::scientific << magnitude;
 			os << setiosflags(ios::fixed);
 			os.unsetf(ios_base::floatfield); // reset all flags to default
-			os << ";  phi = " << upgrade_run.get_phi(*regul_scheme_ptr);
+			os << ";  phi = " <<  setw(9) << std::setprecision(4) << upgrade_run.get_phi(*regul_scheme_ptr);
 			os.precision(2);
 			os << setiosflags(ios::fixed);
 			os << " (" << upgrade_run.get_phi(*regul_scheme_ptr) / base_run.get_phi(*regul_scheme_ptr) * 100 << "% of starting phi)" << endl;
