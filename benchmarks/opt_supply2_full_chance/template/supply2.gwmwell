@@ -1,0 +1,42 @@
+         2         0                             Stress Period:    1
+         1        12        11 -0.3484406E+04    Flow Variable:Q1         RATIO=  1.0000
+         1        16        17 -0.5000000E+05    Flow Variable:Q2a        RATIO=  1.0000
+         3         0                             Stress Period:    2
+         1        12        11 -0.3484406E+04    Flow Variable:Q1         RATIO=  1.0000
+         1        16        17 -0.2749713E+05    Flow Variable:Q2b        RATIO=  1.0000
+         1        14        25 -0.4901846E+05    Flow Variable:Q4a        RATIO=  1.0000
+         2         0                             Stress Period:    3
+         1        12        11 -0.3484406E+04    Flow Variable:Q1         RATIO=  1.0000
+         1        16        17 -0.2691372E+05    Flow Variable:Q2c        RATIO=  1.0000
+         3         0                             Stress Period:    4
+         1        12        11 -0.3484406E+04    Flow Variable:Q1         RATIO=  1.0000
+         1        16        17 -0.2674986E+05    Flow Variable:Q2d        RATIO=  1.0000
+         1        14        25 -0.8061018E+04    Flow Variable:Q4b        RATIO=  1.0000
+         2         0                             Stress Period:    5
+         1        12        11 -0.3484406E+04    Flow Variable:Q1         RATIO=  1.0000
+         1        16        17 -0.5000000E+05    Flow Variable:Q2a        RATIO=  1.0000
+         3         0                             Stress Period:    6
+         1        12        11 -0.3484406E+04    Flow Variable:Q1         RATIO=  1.0000
+         1        16        17 -0.2749713E+05    Flow Variable:Q2b        RATIO=  1.0000
+         1        14        25 -0.4901846E+05    Flow Variable:Q4a        RATIO=  1.0000
+         2         0                             Stress Period:    7
+         1        12        11 -0.3484406E+04    Flow Variable:Q1         RATIO=  1.0000
+         1        16        17 -0.2691372E+05    Flow Variable:Q2c        RATIO=  1.0000
+         3         0                             Stress Period:    8
+         1        12        11 -0.3484406E+04    Flow Variable:Q1         RATIO=  1.0000
+         1        16        17 -0.2674986E+05    Flow Variable:Q2d        RATIO=  1.0000
+         1        14        25 -0.8061018E+04    Flow Variable:Q4b        RATIO=  1.0000
+         2         0                             Stress Period:    9
+         1        12        11 -0.3484406E+04    Flow Variable:Q1         RATIO=  1.0000
+         1        16        17 -0.5000000E+05    Flow Variable:Q2a        RATIO=  1.0000
+         3         0                             Stress Period:   10
+         1        12        11 -0.3484406E+04    Flow Variable:Q1         RATIO=  1.0000
+         1        16        17 -0.2749713E+05    Flow Variable:Q2b        RATIO=  1.0000
+         1        14        25 -0.4901846E+05    Flow Variable:Q4a        RATIO=  1.0000
+         2         0                             Stress Period:   11
+         1        12        11 -0.3484406E+04    Flow Variable:Q1         RATIO=  1.0000
+         1        16        17 -0.2691372E+05    Flow Variable:Q2c        RATIO=  1.0000
+         3         0                             Stress Period:   12
+         1        12        11 -0.3484406E+04    Flow Variable:Q1         RATIO=  1.0000
+         1        16        17 -0.2674986E+05    Flow Variable:Q2d        RATIO=  1.0000
+         1        14        25 -0.8061018E+04    Flow Variable:Q4b        RATIO=  1.0000

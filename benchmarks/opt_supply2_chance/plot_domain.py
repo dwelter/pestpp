@@ -2,7 +2,7 @@ import os
 import numpy as np
 import pandas as pd
 import matplotlib
-font = {'size'   : 6}
+font = {'size'   : 8}
 
 matplotlib.rc('font', **font)
 from matplotlib.patches import Rectangle,Polygon
