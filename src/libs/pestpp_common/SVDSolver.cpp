@@ -505,7 +505,7 @@ void SVDSolver::calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSq
 		info_str.str("");
 		info_str << "jac info: " << "rows = " << jac.rows() << ": cols = " << jac.cols() << ": size = " << jac.size() << ": nonzeros = " << jac.nonZeros();
 		performance_log->log_event(info_str.str());
-		upgrade_vec = Vt.transpose() * (Sigma_inv.asDiagonal() * (U.transpose() * (jac * (q_mat  * corrected_residuals))));
+		upgrade_vec = Vt.transpose() * (Sigma_inv.asDiagonal() * (U.transpose() * (jac.transpose() * (q_mat  * corrected_residuals))));
 	}
 
 	// scale the upgrade vector using the technique described in the PEST manual
