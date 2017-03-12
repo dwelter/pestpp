@@ -973,7 +973,14 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 	}
 	else
 	{
-		vector<string> obs_names_vec = base_run.get_obs_template().get_keys();
+		vector<string> obs_names_vec;
+		Observations obs = base_run.get_obs();
+		ObservationRec or ;
+		for (auto &o : base_run.get_obs_template().get_keys())
+		{
+			if (base_run.get_obj_func_ptr()->get_obs_info_ptr()->get_weight(o) > 0.0)
+				obs_names_vec.push_back(o);
+		}
 
 		//Freeze Parameter for which the jacobian could not be calculated
 		auto &failed_jac_pars_names = jacobian.get_failed_parameter_names();
