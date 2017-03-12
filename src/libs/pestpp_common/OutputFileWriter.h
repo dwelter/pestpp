@@ -76,6 +76,9 @@ public:
 
 	void write_jco(bool isBaseIter, string ext, const Jacobian &jco);
 
+	void write_upgrade(int iteration, int is_super, double lambda, double scale_factor, Parameters &pars);
+
+
 private:
 	FileManager &file_manager;
 	Pest &pest_scenario;
@@ -83,7 +86,8 @@ private:
 	int eigenwrite;
 	bool save_rei;
 	
-	void prepare_iteration_summary_files(bool restart_flag);	
+	void prepare_iteration_summary_files(bool restart_flag);
+	void prepare_upgrade_summary_files();
 
 };
 #endif /* OUTPUTFILEWRITER_H */

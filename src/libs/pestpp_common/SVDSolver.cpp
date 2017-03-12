@@ -1038,6 +1038,7 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 		stringstream prf_message;
 
 		ofstream &fout_frz = file_manager.open_ofile_ext("fpr");
+		ofstream &fout_rec = file_manager.rec_ofstream();
 		for (double i_lambda : lambda_vec)
 		{
 			prf_message.str("");
@@ -1048,6 +1049,7 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 			message.str("");
 			message << "  computing upgrade vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
 			std::cout << message.str();
+			fout_rec << message.str();
 
 			Parameters new_pars;
 			// reset frozen_active_ctl_pars
@@ -1058,6 +1060,7 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 				new_pars, mar_mat, limit_type, false);
 
 			Parameters new_par_model = par_transform.active_ctl2model_cp(new_pars);
+			output_file_writer.write_upgrade(termination_ctl.get_iteration_number(), 0, i_lambda, 1.0, new_pars);
 			int run_id = run_manager.add_run(new_par_model, "normal", i_lambda);
 			save_frozen_pars(fout_frz, frozen_active_ctl_pars, run_id);
 
@@ -1069,9 +1072,13 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 			{
 				Parameters scaled_pars = base_numeric_pars + del_numeric_pars * i_scale;
 				par_transform.numeric2model_ip(scaled_pars);
+				output_file_writer.write_upgrade(termination_ctl.get_iteration_number(), 
+					0, i_lambda, i_scale, par_transform.numeric2ctl_cp(scaled_pars));
+
 				stringstream ss;
 				ss << "scale(" << std::fixed << std::setprecision(2) << i_scale << ")";
 				int run_id = run_manager.add_run(scaled_pars, ss.str(), i_lambda);
+				fout_rec << "   ...calculating scaled lambda vector-scale factor: " << i_scale << endl;
 				save_frozen_pars(fout_frz, frozen_active_ctl_pars, run_id);
 			}
 

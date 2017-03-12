@@ -56,6 +56,7 @@ OutputFileWriter::OutputFileWriter(FileManager &_file_manager, Pest &_pest_scena
 	if (pest_scenario.get_pestpp_options().get_iter_summary_flag())
 	{
 		prepare_iteration_summary_files(restart_flag);
+		prepare_upgrade_summary_files();
 	}
 }
 
@@ -73,6 +74,29 @@ void OutputFileWriter::iteration_report(std::ostream &os, int iter, int nruns, s
 	}
 	os << "  Model calls so far : " << nruns << endl;
 	os << endl;
+}
+
+void OutputFileWriter::prepare_upgrade_summary_files()
+{
+	file_manager.open_ofile_ext("upg.csv");
+	ofstream &os_up = file_manager.get_ofstream("upg.csv");
+	os_up << "iteration,_is_super,_lambda,_scale_factor";
+	for (auto &par_name : pest_scenario.get_ctl_ordered_par_names())
+	{
+		os_up << ',' << lower_cp(par_name);
+	}
+	os_up << endl;
+}
+
+void OutputFileWriter::write_upgrade(int iteration, int is_super, double lambda, double scale_factor, Parameters &pars)
+{
+	ofstream &os_up = file_manager.get_ofstream("upg.csv");
+	os_up << iteration << ',' << is_super << ',' << lambda << ',' << scale_factor;
+	vector<double> vals = pars.get_data_vec(pest_scenario.get_ctl_ordered_par_names());
+	for (auto &pval : vals)
+		os_up << ',' << pval;
+	os_up << endl;
+
 }
 
 void OutputFileWriter::prepare_iteration_summary_files(bool restart_flag)
