@@ -100,6 +100,7 @@ protected:
 	const static string svd_solver_type_name;
 	SVDPackage *svd_package;
 	MAT_INV mat_inv;
+	MarquardtMatrix mar_mat;
 	const string description;
 	const ControlInfo *ctl_info;
 	SVDInfo svd_info;

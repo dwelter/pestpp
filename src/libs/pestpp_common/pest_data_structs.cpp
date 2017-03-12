@@ -495,7 +495,13 @@ void PestppOptions::parce_line(const string &line)
 		{
 			convert_ip(value, parcov_scale_fac);
 		}
+		else if (key == "JAC_SCALE")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> jac_scale;
 
+		}
 
 		else if (key == "GLOBAL_OPT")
 		{

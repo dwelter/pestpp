@@ -269,6 +269,11 @@ public:
 	//void set_use_parcov_scaling(bool _scale) { use_parcov_scaling = _scale; }
 	double get_parcov_scale_fac() const { return parcov_scale_fac; }
 	void set_parcov_scale_fac(double _fac) { parcov_scale_fac = _fac; }
+	bool get_jac_scale()const { return jac_scale; }
+	void set_jac_scale(bool _jac_scale) { jac_scale = _jac_scale; }
+
+	
+	
 	string get_opt_obj_func()const  { return opt_obj_func; }
 	void set_opt_obj_func(string _opt_obj_func) { opt_obj_func = _opt_obj_func; }
 	bool get_opt_coin_log()const { return opt_coin_log; }
@@ -320,6 +325,8 @@ private:
 	bool sweep_base_run;
 	//bool use_parcov_scaling;
 	double parcov_scale_fac;
+	bool jac_scale;
+
 	GLOBAL_OPT global_opt;
 	double de_f;
 	double de_cr;

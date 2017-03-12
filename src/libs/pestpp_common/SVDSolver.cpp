@@ -101,6 +101,12 @@ SVDSolver::SVDSolver(Pest &_pest_scenario, FileManager &_file_manager, Objective
 	terminate_local_iteration(false), reg_frac(_pest_scenario.get_pestpp_options().get_reg_frac()),
 		parcov(_parcov),parcov_scale_fac(_pest_scenario.get_pestpp_options().get_parcov_scale_fac())
 {
+	if (_pest_scenario.get_pestpp_options().get_jac_scale())
+	{
+		mar_mat = MarquardtMatrix::IDENT;
+	}
+	else
+		mar_mat = MarquardtMatrix::JTQJ;
 	svd_package = new SVD_EIGEN();
 }
 
@@ -995,7 +1001,7 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 			//use call to calc_upgrade_vec to compute frozen parameters
 			calc_upgrade_vec_freeze(0, frozen_active_ctl_pars, Q_sqrt, *regul_scheme_ptr, residuals_vec,
 				obs_names_vec, base_run_active_ctl_par,
-				tmp_new_par, MarquardtMatrix::IDENT, false);
+				tmp_new_par, mar_mat, false);
 			if (regul_scheme_ptr->get_use_dynamic_reg() && reg_frac < 0.0)
 			{
 				dynamic_weight_adj(base_run, jacobian, Q_sqrt, residuals_vec, obs_names_vec,
@@ -1042,7 +1048,7 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 			Parameters frozen_active_ctl_pars = failed_jac_pars;
 			calc_upgrade_vec(i_lambda, frozen_active_ctl_pars, Q_sqrt, *regul_scheme_ptr, residuals_vec,
 				obs_names_vec, base_run_active_ctl_par,
-				new_pars, MarquardtMatrix::IDENT, limit_type, false);
+				new_pars, mar_mat, limit_type, false);
 
 			Parameters new_par_model = par_transform.active_ctl2model_cp(new_pars);
 			int run_id = run_manager.add_run(new_par_model, "normal", i_lambda);
@@ -1068,7 +1074,7 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 				Parameters frozen_active_ctl_pars = failed_jac_pars;
 				calc_upgrade_vec_freeze(i_lambda, frozen_active_ctl_pars, Q_sqrt, *regul_scheme_ptr, residuals_vec,
 					obs_names_vec, base_run_active_ctl_par,
-					new_pars, MarquardtMatrix::IDENT, false);
+					new_pars, mar_mat, false);
 
 				Parameters new_par_model = par_transform.active_ctl2model_cp(new_pars);
 				int run_id = run_manager.add_run(new_par_model, "extended", i_lambda);
