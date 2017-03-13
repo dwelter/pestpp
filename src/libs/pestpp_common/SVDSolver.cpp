@@ -837,7 +837,8 @@ void SVDSolver::calc_upgrade_vec_freeze(double i_lambda, Parameters &prev_frozen
 	}
 
 
-ModelRun SVDSolver::iteration_reuse_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool rerun_base, const string &filename)
+ModelRun SVDSolver::iteration_reuse_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, 
+	bool rerun_base, const string &jco_filename, const string &res_filename)
 {
 	ModelRun new_base_run(base_run);
 	ostream &os = file_manager.rec_ofstream();
@@ -845,11 +846,18 @@ ModelRun SVDSolver::iteration_reuse_jac(RunManagerAbstract &run_manager, Termina
 	vector<string> numeric_parname_vec = par_transform.ctl2numeric_cp(new_base_run.get_ctl_pars()).get_keys();
 
 	
-	string jac_filename = filename;
-	if (filename.empty()) jac_filename = file_manager.build_filename("jcb");
+	string jac_filename = jco_filename;
+	if (jco_filename.empty()) jac_filename = file_manager.build_filename("jcb");
 	cout << "  reading previously computed jacobian:  " << jac_filename << endl;
 	file_manager.get_ofstream("rec") << "  reading previously computed jacobian:  " << jac_filename << endl;
 	jacobian.read(jac_filename);
+
+	if (!res_filename.empty())
+	{
+		Observations temp;
+		string rfile = res_filename;
+		read_res(rfile, temp);
+	}
 
 	if (rerun_base)
 	{

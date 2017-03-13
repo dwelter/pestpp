@@ -272,7 +272,8 @@ public:
 	bool get_jac_scale()const { return jac_scale; }
 	void set_jac_scale(bool _jac_scale) { jac_scale = _jac_scale; }
 
-	
+	void set_hotstart_resfile(string _res_file) { hotstart_resfile = _res_file; }
+	string get_hotstart_resfile() { return hotstart_resfile; }
 	
 	string get_opt_obj_func()const  { return opt_obj_func; }
 	void set_opt_obj_func(string _opt_obj_func) { opt_obj_func = _opt_obj_func; }
@@ -326,6 +327,7 @@ private:
 	//bool use_parcov_scaling;
 	double parcov_scale_fac;
 	bool jac_scale;
+	string hotstart_resfile;
 
 	GLOBAL_OPT global_opt;
 	double de_f;

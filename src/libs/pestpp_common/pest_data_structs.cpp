@@ -456,6 +456,11 @@ void PestppOptions::parce_line(const string &line)
 			convert_ip(value, basejac_filename);
 		}
 
+		else if (key == "HOTSTART_RESFILE")
+		{
+			convert_ip(value, hotstart_resfile);
+		}
+
 		else if (key == "OVERDUE_RESCHED_FAC"){
 			convert_ip(value, overdue_reched_fac);
 		}
