@@ -425,7 +425,7 @@ void read_res(string &res_filename, Observations &obs)
 		strip_ip(line);
 		tokens.clear();
 		tokenize(line, tokens);
-		name = tokens[0];
+		name = upper_cp(tokens[0]);
 		convert_ip(tokens[mod_idx], value);
 		if (find(obs_names.begin(), obs_names.end(), name) == obs_names.end())
 			extra.push_back(name);
@@ -436,22 +436,21 @@ void read_res(string &res_filename, Observations &obs)
 		}
 
 	}
-	if (visited.size() != obs.size())
+	stringstream missing;
+	missing << "the following obs were not found in the residual file: ";
+	int i = 0;
+	for (auto &oname : obs)
 	{
-		stringstream missing;
-		/*missing << "the following obs were not found in the residual file: ";
-		int i = 0;
-		for (auto &oname : obs)
+		if (find(visited.begin(), visited.end(), oname.first) == visited.end())
 		{
-			if (find(visited.begin(), visited.end(), oname.first) == visited.end())
-			{
-				missing << oname.first << ' ';
-				i++;
-				if (i > 5) missing << endl;
-			}
-		}*/
-		throw runtime_error(missing.str());
+			missing << oname.first << ' ';
+			i++;
+			if (i > 5) missing << endl;
+		}
 	}
+	if (i > 0)
+		throw runtime_error(missing.str());
+
 	if (extra.size() > 0)
 	{
 		stringstream ss;

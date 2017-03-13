@@ -273,7 +273,7 @@ public:
 	void set_jac_scale(bool _jac_scale) { jac_scale = _jac_scale; }
 
 	void set_hotstart_resfile(string _res_file) { hotstart_resfile = _res_file; }
-	string get_hotstart_resfile() { return hotstart_resfile; }
+	string get_hotstart_resfile() const  { return hotstart_resfile; }
 	
 	string get_opt_obj_func()const  { return opt_obj_func; }
 	void set_opt_obj_func(string _opt_obj_func) { opt_obj_func = _opt_obj_func; }
