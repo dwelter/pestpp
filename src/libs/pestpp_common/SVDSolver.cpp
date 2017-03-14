@@ -866,10 +866,10 @@ ModelRun SVDSolver::iteration_reuse_jac(RunManagerAbstract &run_manager, Termina
 		Parameters temp_pars = new_base_run.get_ctl_pars();
 		new_base_run.update_ctl(temp_pars, temp_obs);
 		rerun_base = false;
-		message.clear();
-		message << "done" << endl;
-		cout << message.str();
-		file_manager.rec_ofstream() << message.str();
+		//message.clear();
+		//message << "done" << endl;
+		cout << "done" << endl;
+		file_manager.rec_ofstream() << "done" << endl;
 	}
 
 	if (rerun_base)
