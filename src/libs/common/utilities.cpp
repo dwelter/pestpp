@@ -445,7 +445,7 @@ void read_res(string &res_filename, Observations &obs)
 		{
 			missing << oname.first << ' ';
 			i++;
-			if (i > 5) missing << endl;
+			if (i % 5 == 0) missing << endl;
 		}
 	}
 	if (i > 0)
@@ -460,7 +460,7 @@ void read_res(string &res_filename, Observations &obs)
 		{
 			ss << n << ' ';
 			i++;
-			if (i > 5) ss << endl;
+			if (i % 5 == 0) ss << endl;
 		}
 		cout << ss.str();
 	}
