@@ -996,7 +996,6 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 	{
 		vector<string> obs_names_vec;
 		Observations obs = base_run.get_obs();
-		ObservationRec or ;
 		for (auto &o : base_run.get_obs_template().get_keys())
 		{
 			if (base_run.get_obj_func_ptr()->get_obs_info_ptr()->get_weight(o) > 0.0)
@@ -1093,8 +1092,9 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 			{
 				Parameters scaled_pars = base_numeric_pars + del_numeric_pars * i_scale;
 				par_transform.numeric2model_ip(scaled_pars);
+				Parameters scaled_ctl_pars = par_transform.numeric2ctl_cp(scaled_pars);
 				output_file_writer.write_upgrade(termination_ctl.get_iteration_number(), 
-					0, i_lambda, i_scale, par_transform.numeric2ctl_cp(scaled_pars));
+					0, i_lambda, i_scale, scaled_ctl_pars);
 
 				stringstream ss;
 				ss << "scale(" << std::fixed << std::setprecision(2) << i_scale << ")";
