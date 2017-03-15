@@ -49,7 +49,7 @@ Welter, D.E., Doherty, J.E., Hunt, R.J., Muffels, C.T., Tonkin, M.J., and Schre√
 * <a ref="http://www.pesthomepage.org">http://www.pesthomepage.org </a>
 * <a ref="http://wi.water.usgs.gov/models/pestplusplus/">http://wi.water.usgs.gov/models/pestplusplus</a>
 * <a ref="http://wi.water.usgs.gov/models/genie/">http://wi.water.usgs.gov/models/genie/ </a>
-* <a ref'"https://github.com/jtwhite79/pyemu">https://github.com/jtwhite79/pyemu </a>
+* <a ref="https://github.com/jtwhite79/pyemu">https://github.com/jtwhite79/pyemu </a>
 
 ##Compiling
 The master branch includes a Visual Studio 2015 project, as well as makefiles for linux and mac.
@@ -62,6 +62,8 @@ Much work has been done to avoid additional external dependencies in PEST++.  As
 
 ##PEST++ arguments
 Here is a (more or less) complete list of ``++`` arguments that can be added to the control file
+* ``++overdue_resched_fac(1.2)``:YAMR only, if a run is more than <``overdue_resched_fac``> X average run time, reschedule it on available resources
+* ``++overdue_giveup_fac(2.0)``:YAMR only, if a run is more than <``overdue_giveup_fac``> X average run time, mark it as failed
 * ``++max_n_super(20)``: maximum number of super parameters to use
 
 * ``++super_eigthres(1.0e-8)`` ratio of max to min singular values used to truncate the singular components when forming the super parameter problem
@@ -84,7 +86,9 @@ Here is a (more or less) complete list of ``++`` arguments that can be added to 
 
 * ``++forecasts(fore1,fore2...)``:comma separated list of observations to treat as forecasts in the FOSM-based uncertainty estimation
 
-* ``++iteration_summary(true)``:flag to activate or deactivate writing iteration-based CSV files summarizing parameters (<base_case>.ipar), objective function (<base_case>.iobj) and sensitivities (<base_case>.isen)
+* ``++iteration_summary(true)``:flag to activate or deactivate writing iteration-based CSV files summarizing parameters (<base_case>.ipar), objective function (<base_case>.iobj) and sensitivities (<base_case>.isen), as well as upgrade summary (<base_case>.upg.csv) and a jacobian parameter-to-run_id mapping (<base_case>.rid). 
+* ``++jac_scale(true)``: use PEST-style jacobian scaling. Important, but can be costly because it densifies the normal matrix, making SVD take longer.
+* ``++hotstart_resfile(mycase.res)``: use an exising residual file to restart with an existing jacobian to forego the initial, base run and jump straight to upgrade calculations (++base_jacobian arg required).
 
 * ``++max_run_fail(4)``:maximum number of runs that can fail before the run manager emits an error.
 
