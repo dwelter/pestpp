@@ -7,6 +7,7 @@
 #include <iostream>
 #include "Transformable.h"
 #include "Jacobian.h"
+#include "OutputFileWriter.h"
 
 class ParamTransformSeq;
 class ParameterInfo;
@@ -20,7 +21,7 @@ class ParameterRec;
 class Jacobian_1to1 : public Jacobian{
 
 public:
-	Jacobian_1to1(FileManager &_file_manager);
+	Jacobian_1to1(FileManager &_file_manager, OutputFileWriter &_output_file_writer);
 	virtual bool build_runs(ModelRun &model_run, vector<string> numeric_par_names, ParamTransformSeq &par_transform,
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, 
 		RunManagerAbstract &run_manager, set<string> &out_of_bound_par, bool phiredswh_flag=false, bool calc_init_obs=true);
@@ -36,6 +37,7 @@ public:
 protected:
 	Parameters failed_ctl_parameters;
 	Parameters failed_to_increment_parmaeters;
+	OutputFileWriter* output_file_writer_ptr;
 	bool forward_diff(const string &par_name, double derivative_par_value, 
 		const ParameterGroupInfo &group_info, const ParameterInfo &ctl_par_info, const ParamTransformSeq &par_trans, double &new_par_val);
 	bool central_diff(const string &par_name, double derivative_par_value, 

@@ -77,7 +77,7 @@ public:
 	void write_jco(bool isBaseIter, string ext, const Jacobian &jco);
 
 	void write_upgrade(int iteration, int is_super, double lambda, double scale_factor, Parameters &pars);
-
+	void write_jco_run_id(int groupid, std::map<string, vector<int>> &par_run_map);
 
 private:
 	FileManager &file_manager;
@@ -88,6 +88,7 @@ private:
 	
 	void prepare_iteration_summary_files(bool restart_flag);
 	void prepare_upgrade_summary_files();
+	//void prepare_jco_run_id_file();
 
 };
 #endif /* OUTPUTFILEWRITER_H */

@@ -76,6 +76,38 @@ void OutputFileWriter::iteration_report(std::ostream &os, int iter, int nruns, s
 	os << endl;
 }
 
+//void OutputFileWriter::prepare_jco_run_id_file()
+//{
+//	file_manager.open_ofile_ext("irid.csv");
+//	ofstream &os = file_manager.get_ofstream("irid.csv");
+//	os << "group_id";
+//	for (auto &pname : pest_scenario.get_ctl_ordered_par_names())
+//	{
+//		os << ',' << pname;
+//	}
+//	os << endl;
+//}
+
+void OutputFileWriter::write_jco_run_id(int group_id, std::map<string, vector<int>> &par_run_map)
+{
+	if (!pest_scenario.get_pestpp_options().get_iter_summary_flag())
+		return;
+
+	file_manager.open_ofile_ext("rid");
+	ofstream &os = file_manager.get_ofstream("rid");
+	os << endl << "group id: " << group_id << endl;
+	for (auto &pname : pest_scenario.get_ctl_ordered_par_names())
+	{
+		if (!par_run_map.count(pname))
+			continue;
+		os << pname;
+		for (auto &id : par_run_map[pname])
+			os << ',' << id;
+		os << endl;
+	}
+	//file_manager.close_file("rid");
+}
+
 void OutputFileWriter::prepare_upgrade_summary_files()
 {
 	file_manager.open_ofile_ext("upg.csv");
@@ -92,9 +124,19 @@ void OutputFileWriter::write_upgrade(int iteration, int is_super, double lambda,
 {
 	ofstream &os_up = file_manager.get_ofstream("upg.csv");
 	os_up << iteration << ',' << is_super << ',' << lambda << ',' << scale_factor;
-	vector<double> vals = pars.get_data_vec(pest_scenario.get_ctl_ordered_par_names());
-	for (auto &pval : vals)
-		os_up << ',' << pval;
+	//vector<double> vals = pars.get_data_vec(pest_scenario.get_ctl_ordered_par_names());
+	//for (auto &pval : vals)
+	double pval;
+	vector<string> keys = pars.get_keys();
+	for (auto &name : pest_scenario.get_ctl_ordered_par_names())
+	{
+		os_up << ',';
+		if (find(keys.begin(), keys.end(), name) != keys.end())
+		{
+			pval = pars.get_rec(name);
+			os_up << pval;
+		}
+	}
 	os_up << endl;
 
 }
