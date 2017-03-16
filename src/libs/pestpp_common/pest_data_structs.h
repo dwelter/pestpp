@@ -279,6 +279,9 @@ public:
 	void set_opt_obj_func(string _opt_obj_func) { opt_obj_func = _opt_obj_func; }
 	bool get_opt_coin_log()const { return opt_coin_log; }
 	void set_opt_coin_log(bool _log) { opt_coin_log = _log; }
+	bool get_opt_skip_final()const { return opt_skip_final; }
+	void set_opt_skip_final(bool _skip_final) { opt_skip_final = _skip_final; }
+
 	vector<string> get_opt_dec_var_groups()const { return opt_dec_var_groups; }
 	void set_opt_dec_var_groups(vector<string> _grps) { opt_dec_var_groups = _grps; }
 	vector<string> get_opt_ext_var_groups()const { return opt_external_var_groups; }
@@ -338,6 +341,7 @@ private:
 
 	string opt_obj_func;
 	bool opt_coin_log;
+	bool opt_skip_final;
 	vector<string> opt_dec_var_groups;
 	vector<string> opt_external_var_groups;
 	vector<string> opt_constraint_groups;
@@ -345,6 +349,7 @@ private:
 	double opt_direction;
 	double opt_iter_tol;
 	int opt_recalc_fosm_every;
+
 
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);

@@ -110,6 +110,24 @@ void sequentialLP::initial_report()
 		f_rec << "-->number of non-zero weight observations for FOSM calcs: " << num_nz_obs() << endl;
 		f_rec << "-->repeat FOSM calcs every: " << pest_scenario.get_pestpp_options().get_opt_recalc_fosm_every() << " iterations" << endl << endl;
 	}
+	string bj = pest_scenario.get_pestpp_options().get_basejac_filename();
+	if (!bj.empty())
+		f_rec << "-->start with existing jacobian: " << bj << endl;
+	string hotstart = pest_scenario.get_pestpp_options().get_hotstart_resfile();
+	if (!hotstart.empty())
+		f_rec << "-->hot start with residual file: " << hotstart << endl;
+	bool sf = pest_scenario.get_pestpp_options().get_opt_skip_final();
+	super_secret_option = false;
+	if (sf)
+	{
+		f_rec << "-->skipping final, optimal model run" << endl;
+		if ((!bj.empty()) && (pest_scenario.get_control_info().noptmax == 1))
+		{
+			f_rec << "-->super secrect option to skip final run and upgrade run activated..." << endl;
+			super_secret_option = true;
+		}
+
+	}
 	f_rec << endl << endl << "  ---  decision variables active in SLP  ---  " << endl;
 	map<string, double>::iterator end = obj_func_coef_map.end();
 	vector<string> missing;
@@ -1285,17 +1303,20 @@ void sequentialLP::solve()
 	cout << "  ---  best objective function value: " << obj_best << endl;
 	f_rec << "  ---  running model one last time with best decision variables  ---  " << endl;
 	cout << "  ---  running model one last time with best decision variables  ---  " << endl;
-	bool success = make_upgrade_run(all_pars_and_dec_vars_best, constraints_sim);
-	if (!success)
+	if (!pest_scenario.get_pestpp_options().get_opt_skip_final())
 	{
-		throw_sequentialLP_error("error running model with best decision variable values");
+		bool success = make_upgrade_run(all_pars_and_dec_vars_best, constraints_sim);
+		if (!success)
+		{
+			throw_sequentialLP_error("error running model with best decision variable values");
+		}
+		//write 'best' rei
+		of_wr.write_opt_constraint_rei(file_mgr_ptr->open_ofile_ext("res"), slp_iter, all_pars_and_dec_vars_best,
+			pest_scenario.get_ctl_observations(), constraints_sim);
+		//write 'best' parameters file
+		of_wr.write_par(file_mgr_ptr->open_ofile_ext("par"), all_pars_and_dec_vars_best,
+			*par_trans.get_offset_ptr(), *par_trans.get_scale_ptr());
 	}
-	//write 'best' rei
-	of_wr.write_opt_constraint_rei(file_mgr_ptr->open_ofile_ext("res"), slp_iter, all_pars_and_dec_vars_best, 
-		pest_scenario.get_ctl_observations(), constraints_sim);
-	//write 'best' parameters file
-	of_wr.write_par(file_mgr_ptr->open_ofile_ext("par"), all_pars_and_dec_vars_best, 
-		*par_trans.get_offset_ptr(), *par_trans.get_scale_ptr());
 }
 
 void sequentialLP::iter_postsolve()
@@ -1327,8 +1348,10 @@ void sequentialLP::iter_postsolve()
 	max_abs_dec_var_change /= max(max_abs_dec_var_val,1.0);
 
 	//run the model with optimal decision var values
-	Observations upgrade_obs;
-	bool success = make_upgrade_run(upgrade_pars,upgrade_obs);
+
+	Observations upgrade_obs = constraints_sim;
+	if (!super_secret_option)
+		bool success = make_upgrade_run(upgrade_pars,upgrade_obs);
 
 	f_rec << "  ---  processing results for iteration " << slp_iter << " LP solution  ---  " << endl << endl;
 	double obj_val = model.getObjValue();
@@ -1506,14 +1529,32 @@ void sequentialLP::iter_presolve()
 		if (missing.size() > 0)
 			throw_sequentialLP_error("the following non-zero weight observations were not found in the jacobian " + basejac_filename + " : ", missing);
 
-		//make the intial base run
-		cout << "  ---  running the model once with initial decision variables  ---  " << endl;
-		int run_id = run_mgr_ptr->add_run(par_trans.ctl2model_cp(all_pars_and_dec_vars));
-		run_mgr_ptr->run();
-		Parameters pars;
-		bool success = run_mgr_ptr->get_run(run_id, pars, constraints_sim);
-		if (!success)
-			throw_sequentialLP_error("initial (base) run with initial decision vars failed...cannot continue");
+		string res_filename = pest_scenario.get_pestpp_options().get_hotstart_resfile();
+		if (!res_filename.empty())
+		{
+			stringstream message;
+			message << "  reading  residual file " << res_filename << " for hot-start...";
+			cout << message.str();
+			f_rec << message.str();
+			for (auto &oname : pest_scenario.get_ctl_ordered_obs_names())
+				constraints_sim[oname] = -1.0e+30;
+			pest_utils::read_res(res_filename, constraints_sim);
+			f_rec << "done" << endl;
+			cout << "done" << endl;
+
+		}
+		else
+		{
+			//make the intial base run
+			cout << "  ---  running the model once with initial decision variables  ---  " << endl;
+			int run_id = run_mgr_ptr->add_run(par_trans.ctl2model_cp(all_pars_and_dec_vars));
+			run_mgr_ptr->run();
+			Parameters pars;
+			bool success = run_mgr_ptr->get_run(run_id, pars, constraints_sim);
+			if (!success)
+				throw_sequentialLP_error("initial (base) run with initial decision vars failed...cannot continue");
+			
+		}
 	}
 
 	//otherwise, fill the jacobian

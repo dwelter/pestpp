@@ -29,6 +29,7 @@ private:
 	string obj_func_str;
 	bool use_chance;
 	bool terminate;
+	bool super_secret_option;
 	int slp_iter;
 	
 	double* dec_var_lb;

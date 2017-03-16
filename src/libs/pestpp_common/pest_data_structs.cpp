@@ -286,6 +286,14 @@ ostream& operator<< (ostream &os, const PestppOptions& val)
 	{
 		os << right << setw(15) << lam << endl;
 	}
+	if (!val.get_basejac_filename().empty())
+	{
+		os << "   restarting with existing jacobian matrix file: " << val.get_basejac_filename() << endl;
+		if (!val.get_hotstart_resfile().empty())
+		{
+			os << "   and using existing residual file " << val.get_hotstart_resfile() << " to forego initial model run" << endl;
+		}
+	}
 	if (val.get_uncert_flag())
 	{
 		os << "    using FOSM-based uncertainty estimation for parameters" << endl;
@@ -544,7 +552,13 @@ void PestppOptions::parce_line(const string &line)
 			istringstream is(value);
 			is >> boolalpha >> opt_coin_log;
 		}
-	
+		else if (key == "OPT_SKIP_FINAL")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> opt_skip_final;
+		}
+
 		else if ((key == "OPT_DEC_VAR_GROUPS") || (key == "OPT_DECISION_VARIABLE_GROUPS"))
 		{
 			opt_dec_var_groups.clear();
