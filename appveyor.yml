@@ -1,0 +1,11 @@
+skip_commits:
+ message: /^((?!build).)*$/
+after_build:
+- exe\windows\x64\Release\pest++.exe
+
+build: off
+ #parallel: true
+
+test: off
+#
+deploy: off
