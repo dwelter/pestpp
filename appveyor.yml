@@ -3,8 +3,8 @@ skip_commits:
 after_build:
 - exe\windows\x64\Release\pest++.exe
 
-build:
-  parallel: true
+build: off
+ #parallel: true
 
 test: off
 #
