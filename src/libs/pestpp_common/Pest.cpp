@@ -280,7 +280,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 		}
 		else if (line_upper.substr(0,2) == "++")
 		{
-			pestpp_input.push_back(line_upper);
+			pestpp_input.push_back(line);
 		}
 			
 		else if (line_upper[0] == '*')
