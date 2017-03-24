@@ -66,6 +66,7 @@ public:
 protected:
 	enum class LimitType {NONE, LBND, UBND, REL, FACT};
 	enum class MarquardtMatrix {IDENT, JTQJ};
+	enum class UpgradeBounds {ROBUST, CHEAP};
 public:
 	SVDSolver(Pest &_pest_scenario, FileManager &_file_manager, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, Jacobian &_jacobian, 
@@ -101,6 +102,7 @@ protected:
 	SVDPackage *svd_package;
 	MAT_INV mat_inv;
 	MarquardtMatrix mar_mat;
+	UpgradeBounds upgrade_bounds;
 	const string description;
 	const ControlInfo *ctl_info;
 	SVDInfo svd_info;

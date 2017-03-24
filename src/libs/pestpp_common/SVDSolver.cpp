@@ -107,6 +107,10 @@ SVDSolver::SVDSolver(Pest &_pest_scenario, FileManager &_file_manager, Objective
 	}
 	else
 		mar_mat = MarquardtMatrix::JTQJ;
+	if (_pest_scenario.get_pestpp_options().get_upgrade_bounds() == "ROBUST")
+		upgrade_bounds = UpgradeBounds::ROBUST;
+	else
+		upgrade_bounds = UpgradeBounds::CHEAP;
 	svd_package = new SVD_EIGEN();
 }
 
@@ -778,7 +782,7 @@ void SVDSolver::calc_upgrade_vec_freeze(double i_lambda, Parameters &prev_frozen
 	num_upgrade_out_grad_in = check_bnd_par(new_frozen_active_ctl_pars, base_run_active_ctl_pars, upgrade_ctl_del_pars, grad_ctl_del_pars);
 	prev_frozen_active_ctl_pars.insert(new_frozen_active_ctl_pars.begin(), new_frozen_active_ctl_pars.end());
 	//Recompute the ugrade vector without the newly frozen parameters and freeze those at the boundary whose upgrade still goes heads out of bounds
-	if (num_upgrade_out_grad_in > 0)
+	if ((upgrade_bounds == UpgradeBounds::ROBUST) && (num_upgrade_out_grad_in > 0))
 	{
 		new_frozen_active_ctl_pars.clear();
 		performance_log->log_event("commencing recalculation of upgrade vector freezing parameters whose upgrade and gradient point out of bounds");
@@ -791,7 +795,7 @@ void SVDSolver::calc_upgrade_vec_freeze(double i_lambda, Parameters &prev_frozen
 		new_frozen_active_ctl_pars.clear();
 	}
 	//If there are newly frozen parameters recompute the upgrade vector
-	if (new_frozen_active_ctl_pars.size() > 0)
+	if ((upgrade_bounds == UpgradeBounds::ROBUST) && (new_frozen_active_ctl_pars.size() > 0))
 	{
 		performance_log->log_event("commencing recalculation of upgrade vector freezing parameters whose upgrade heads out of bounds");
 		(*this.*calc_lambda_upgrade)(jacobian, Q_sqrt, regul, residuals_vec, obs_names_vec,
@@ -1104,7 +1108,7 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 			}
 
 			////Try to extend the previous upgrade vector
-			if (limit_type == LimitType::LBND || limit_type == LimitType::UBND)
+			if ((upgrade_bounds == UpgradeBounds::ROBUST) &&  (limit_type == LimitType::LBND || limit_type == LimitType::UBND))
 			{
 				Parameters frozen_active_ctl_pars = failed_jac_pars;
 				calc_upgrade_vec_freeze(i_lambda, frozen_active_ctl_pars, Q_sqrt, *regul_scheme_ptr, residuals_vec,

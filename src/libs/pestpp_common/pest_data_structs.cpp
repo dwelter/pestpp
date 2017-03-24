@@ -518,6 +518,17 @@ void PestppOptions::parce_line(const string &line)
 
 		}
 
+		else if (key == "UPGRADE_BOUNDS")
+		{
+			if (value == "ROBUST")
+				convert_ip(value, upgrade_bounds);
+			else if (value == "CHEAP")
+				convert_ip(value, upgrade_bounds);
+			else
+				throw runtime_error("unrecognozed 'upgrade_bounds' option: should 'robust' or 'cheap'");
+			
+		}
+
 		else if (key == "GLOBAL_OPT")
 		{
 			if (value == "DE") global_opt = OPT_DE;

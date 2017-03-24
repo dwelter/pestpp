@@ -564,7 +564,8 @@ int main(int argc, char* argv[])
 			run_ids.clear();
 			for (auto &par : sweep_pars)
 			{
-				run_ids.push_back(run_manager_ptr->add_run(base_trans_seq.ctl2model_cp(par)));
+				Parameters temp = base_trans_seq.active_ctl2model_cp(par);
+				run_ids.push_back(run_manager_ptr->add_run(base_trans_seq.active_ctl2model_cp(par)));
 			}
 
 			//make some runs

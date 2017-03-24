@@ -275,6 +275,10 @@ public:
 	void set_hotstart_resfile(string _res_file) { hotstart_resfile = _res_file; }
 	string get_hotstart_resfile() const  { return hotstart_resfile; }
 	
+	void set_upgrade_bounds(string _upgrade_bounds) { upgrade_bounds = _upgrade_bounds; }
+	string get_upgrade_bounds() const { return upgrade_bounds; }
+
+
 	string get_opt_obj_func()const  { return opt_obj_func; }
 	void set_opt_obj_func(string _opt_obj_func) { opt_obj_func = _opt_obj_func; }
 	bool get_opt_coin_log()const { return opt_coin_log; }
@@ -330,6 +334,7 @@ private:
 	//bool use_parcov_scaling;
 	double parcov_scale_fac;
 	bool jac_scale;
+	string upgrade_bounds;
 	string hotstart_resfile;
 
 	GLOBAL_OPT global_opt;
