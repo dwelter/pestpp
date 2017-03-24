@@ -279,6 +279,11 @@ ostream& operator<< (ostream &os, const PestppOptions& val)
 	os << "    mat inv = " << left << setw(20) << val.get_mat_inv() << endl;
 	os << "    max run fail = " << left << setw(20) << val.get_max_run_fail() << endl;
 	os << "    max reg iter = " << left << setw(20) << val.get_max_reg_iter() << endl;	
+	os << "    use jacobian scaling a la PEST? = ";
+	if (val.get_jac_scale())
+		os << " yes" << endl;
+	else
+		os << " no" << endl;
 	if (val.get_reg_frac() > 0.0)
 		os << "    regularization fraction of total phi = " << left << setw(10) << val.get_reg_frac() << endl;
 	os << "    lambdas = " << endl;
@@ -286,6 +291,10 @@ ostream& operator<< (ostream &os, const PestppOptions& val)
 	{
 		os << right << setw(15) << lam << endl;
 	}
+	os << "    lambda scaling factors = " << endl;
+	for (auto &ls : val.get_lambda_scale_vec())
+		os << right << setw(15) << ls << endl;
+
 	if (!val.get_basejac_filename().empty())
 	{
 		os << "   restarting with existing jacobian matrix file: " << val.get_basejac_filename() << endl;
