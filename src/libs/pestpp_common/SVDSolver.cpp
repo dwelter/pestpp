@@ -717,7 +717,7 @@ void SVDSolver::calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqr
 	prev_frozen_active_ctl_pars.insert(new_frozen_active_ctl_pars.begin(), new_frozen_active_ctl_pars.end());
 
 	//Recompute the ugrade vector without the newly frozen parameters and freeze those at the boundary whose upgrade still goes heads out of bounds
-	if (num_upgrade_out_grad_in > 0)
+	if ((upgrade_bounds == UpgradeBounds::ROBUST) && (num_upgrade_out_grad_in > 0))
 	{
 		new_frozen_active_ctl_pars.clear();
 		performance_log->log_event("commencing recalculation of upgrade vector freezing parameters whose upgrade and gradient point out of bounds");
@@ -730,7 +730,7 @@ void SVDSolver::calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqr
 		new_frozen_active_ctl_pars.clear();
 	}
 	//If there are newly frozen parameters recompute the upgrade vector
-	if (new_frozen_active_ctl_pars.size() > 0)
+	if ((upgrade_bounds == UpgradeBounds::ROBUST) && (new_frozen_active_ctl_pars.size() > 0))
 	{
 		performance_log->log_event("commencing recalculation of upgrade vector freezing parameters whose upgrade heads out of bounds");
 		(*this.*calc_lambda_upgrade)(jacobian, Q_sqrt, regul, residuals_vec, obs_names_vec,
@@ -1586,6 +1586,7 @@ void SVDSolver::limit_parameters_ip(const Parameters &init_active_ctl_pars, Para
 	{
 		upgrade_active_ctl_pars[ipar.first] = ipar.second;
 	}
+	return;
 }
 
 PhiComponets SVDSolver::phi_estimate(const ModelRun &base_run, const Jacobian &jacobian, QSqrtMatrix &Q_sqrt, const DynamicRegularization &regul,
