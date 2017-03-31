@@ -153,6 +153,17 @@ double &Transformable::operator[](const string &name)
 	return items[name];
 }
 
+vector<string> Transformable::get_notnormal_keys()
+{
+	vector<string> not_normal;
+	for (auto &i : items)
+	{
+		if (!std::isnormal(i.second))
+			not_normal.push_back(i.first);
+	}
+	return not_normal;
+}
+
 pair<Transformable::iterator,bool> Transformable::insert(const string &name, double value)
 {
 	pair<string, double> rec(name, value);
