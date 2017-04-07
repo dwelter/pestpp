@@ -682,10 +682,12 @@ void SVDSolver::calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqr
 	}
 }
 
-	void SVDSolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_active_ctl_pars, QSqrtMatrix &Q_sqrt,
-		const DynamicRegularization &regul, VectorXd &residuals_vec, vector<string> &obs_names_vec,
-		const Parameters &base_run_active_ctl_pars, Parameters &upgrade_active_ctl_pars,
-		MarquardtMatrix marquardt_type, LimitType &limit_type, bool scale_upgrade)
+
+
+void SVDSolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_active_ctl_pars, QSqrtMatrix &Q_sqrt,
+	const DynamicRegularization &regul, VectorXd &residuals_vec, vector<string> &obs_names_vec,
+	const Parameters &base_run_active_ctl_pars, Parameters &upgrade_active_ctl_pars,
+	MarquardtMatrix marquardt_type, LimitType &limit_type, bool scale_upgrade)
 {
 	Parameters upgrade_ctl_del_pars;
 	Parameters grad_ctl_del_pars;
@@ -751,8 +753,10 @@ void SVDSolver::calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqr
 			grad_ctl_del_pars, marquardt_type, scale_upgrade);
 	}
 	//Freeze any new parameters that want to go out of bounds
+	performance_log->log_event("limiting out of bounds pars");
 	limit_parameters_ip(base_run_active_ctl_pars, upgrade_active_ctl_pars,
 		limit_type, prev_frozen_active_ctl_pars);
+	performance_log->log_event("checking for denormal floating point values");
 	if (upgrade_active_ctl_pars.get_notnormal_keys().size() > 0)
 	{
 		stringstream ss;
@@ -1106,8 +1110,9 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 			calc_upgrade_vec(i_lambda, frozen_active_ctl_pars, Q_sqrt, *regul_scheme_ptr, residuals_vec,
 				obs_names_vec, base_run_active_ctl_par,
 				new_pars, mar_mat, limit_type, false);
-
+			performance_log->log_event("transforming upgrade pars to model pars");
 			Parameters new_par_model = par_transform.active_ctl2model_cp(new_pars);
+			performance_log->log_event("writing upgrade vector to csv file");
 			output_file_writer.write_upgrade(termination_ctl.get_iteration_number(), 0, i_lambda, 1.0, new_pars);
 			int run_id = run_manager.add_run(new_par_model, "normal", i_lambda);
 			save_frozen_pars(fout_frz, frozen_active_ctl_pars, run_id);
