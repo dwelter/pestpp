@@ -88,6 +88,9 @@ Here is a (more or less) complete list of ``++`` arguments that can be added to 
 
 * ``++iteration_summary(true)``:flag to activate or deactivate writing iteration-based CSV files summarizing parameters (<base_case>.ipar), objective function (<base_case>.iobj) and sensitivities (<base_case>.isen), as well as upgrade summary (<base_case>.upg.csv) and a jacobian parameter-to-run_id mapping (<base_case>.rid). 
 * ``++jac_scale(true)``: use PEST-style jacobian scaling. Important, but can be costly because it densifies the normal matrix, making SVD take longer.
+
+* ``++upgrade_augment(true)``: augment the values of lambda to test by including the best lambda from the previous iteration, as well as best lambda * 2.0 and best lambda / 2.0.  If ``true``, then additional lambdas will be included by attempting to extend each upgrade vector along the region of parameter space defined by parameter bounds.  If ``false``, then only the vectors listed in the ``++lambda()`` arg will be tested and no extended upgrade will be included.  
+
 * ``++hotstart_resfile(mycase.res)``: use an exising residual file to restart with an existing jacobian to forego the initial, base run and jump straight to upgrade calculations (++base_jacobian arg required).
 
 * ``++max_run_fail(4)``:maximum number of runs that can fail before the run manager emits an error.
