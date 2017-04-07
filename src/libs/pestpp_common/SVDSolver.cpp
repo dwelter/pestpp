@@ -99,7 +99,7 @@ SVDSolver::SVDSolver(Pest &_pest_scenario, FileManager &_file_manager, Objective
 	regul_scheme_ptr(_pest_scenario.get_regul_scheme_ptr()), output_file_writer(_output_file_writer), mat_inv(_mat_inv), description(_description), best_lambda(20.0),
 	performance_log(_performance_log), base_lambda_vec(_pest_scenario.get_pestpp_options().get_base_lambda_vec()), lambda_scale_vec(_pest_scenario.get_pestpp_options().get_lambda_scale_vec()),
 	terminate_local_iteration(false), reg_frac(_pest_scenario.get_pestpp_options().get_reg_frac()),
-		parcov(_parcov),parcov_scale_fac(_pest_scenario.get_pestpp_options().get_parcov_scale_fac())
+		parcov(_parcov),parcov_scale_fac(_pest_scenario.get_pestpp_options().get_parcov_scale_fac()),upgrade_augment(_pest_scenario.get_pestpp_options().get_upgrade_augment())
 {
 	if (_pest_scenario.get_pestpp_options().get_jac_scale())
 	{
@@ -1076,7 +1076,7 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 		run_manager.update_run(run_id, base_model_pars, base_run.get_obs());
 		//Marquardt Lambda Update Vector
 		vector<double> lambda_vec = base_lambda_vec;
-		if (lambda_vec.size() > 1)
+		if (upgrade_augment)
 		{
 			lambda_vec.push_back(best_lambda);
 			lambda_vec.push_back(best_lambda / 2.0);
@@ -1137,7 +1137,7 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 			}
 
 			////Try to extend the previous upgrade vector
-			if ((upgrade_bounds == UpgradeBounds::ROBUST) &&  (limit_type == LimitType::LBND || limit_type == LimitType::UBND))
+			if ((upgrade_augment) &&  (limit_type == LimitType::LBND || limit_type == LimitType::UBND))
 			{
 				Parameters frozen_active_ctl_pars = failed_jac_pars;
 				calc_upgrade_vec_freeze(i_lambda, frozen_active_ctl_pars, Q_sqrt, *regul_scheme_ptr, residuals_vec,

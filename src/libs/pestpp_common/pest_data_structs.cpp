@@ -527,6 +527,14 @@ void PestppOptions::parce_line(const string &line)
 
 		}
 
+		else if (key == "UPGRADE_AUGMENT")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> upgrade_augment;
+
+		}
+
 		else if (key == "UPGRADE_BOUNDS")
 		{
 			if (value == "ROBUST")

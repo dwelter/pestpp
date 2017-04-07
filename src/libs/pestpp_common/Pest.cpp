@@ -602,6 +602,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	//pestpp_options.set_use_parcov_scaling(false);
 	pestpp_options.set_parcov_scale_fac(-999.0);
 	pestpp_options.set_jac_scale(true);
+	pestpp_options.set_upgrade_augment(true);
 	pestpp_options.set_opt_obj_func("");
 	pestpp_options.set_opt_coin_log(true);
 	pestpp_options.set_opt_skip_final(false);

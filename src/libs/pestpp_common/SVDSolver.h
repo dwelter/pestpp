@@ -126,6 +126,7 @@ protected:
 	std::vector<double> lambda_scale_vec;
 	bool terminate_local_iteration;
 	bool der_forgive;
+	bool upgrade_augment;
 	double reg_frac;
 	Covariance parcov;
 	double parcov_scale_fac;

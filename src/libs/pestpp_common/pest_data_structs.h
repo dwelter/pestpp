@@ -272,6 +272,9 @@ public:
 	bool get_jac_scale()const { return jac_scale; }
 	void set_jac_scale(bool _jac_scale) { jac_scale = _jac_scale; }
 
+	bool get_upgrade_augment()const { return upgrade_augment; }
+	void set_upgrade_augment(bool _upgrade_augment) { upgrade_augment = _upgrade_augment; }
+
 	void set_hotstart_resfile(string _res_file) { hotstart_resfile = _res_file; }
 	string get_hotstart_resfile() const  { return hotstart_resfile; }
 	
@@ -334,6 +337,7 @@ private:
 	//bool use_parcov_scaling;
 	double parcov_scale_fac;
 	bool jac_scale;
+	bool upgrade_augment;
 	string upgrade_bounds;
 	string hotstart_resfile;
 
