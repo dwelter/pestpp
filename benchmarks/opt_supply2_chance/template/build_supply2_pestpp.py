@@ -77,16 +77,16 @@ def build_control_file():
     t_names = par.groupby(par.parnme.apply(lambda x: x.startswith("t"))).groups[True]
     par.loc[t_names, "pargp"] = "trans"
     par.loc[t_names,"parval1"] = 5000.0
-    par.loc[t_names, "parubnd"] = 50000.0
-    par.loc[t_names, 'parlbnd'] = 500.0
+    par.loc[t_names, "parubnd"] = 6000.0
+    par.loc[t_names, 'parlbnd'] = 4000.0
     par.loc[t_names,"partrans"] = "log"
     par.loc[t_names, "scale"] = 1.0
 
     seg_names = par.groupby(par.parnme.apply(lambda x: x.startswith("seg"))).groups[True]
     par.loc[seg_names, "pargp"] = "sfr_seg"
     par.loc[seg_names, "parval1"] = 5.0
-    par.loc[seg_names, "parubnd"] = 50.0
-    par.loc[seg_names, 'parlbnd'] = 0.5
+    par.loc[seg_names, "parubnd"] = 5.5
+    par.loc[seg_names, 'parlbnd'] = 4.5
     par.loc[seg_names, "partrans"] = "log"
     par.loc[seg_names, "scale"] = 1.0
 
@@ -231,7 +231,7 @@ def build_control_file():
     #pst.pestpp_options["base_jacobian"] = "supply2_pest.1.bak.jcb"
     pst.parameter_data.sort_index(inplace=True)
     pst.write("supply2_pest.pst")
-
+    print(pst.nnz_obs_names)
 
 if __name__ == "__main__":
     # build_wel_file()

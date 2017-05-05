@@ -1,0 +1,16 @@
+#SUPPLY2 Sample Problem, VARCON file
+#August 14, 2006
+ 1                        #1-IPRN
+ Q1  0.0  5.0d4  0.0D2    #2-FVNAME FVMIN FVMAX FVREF
+ Q2a 0.0  5.0d4  0.0D2
+ Q2b 0.0  5.0d4  0.0D2
+ Q2c 0.0  5.0d4  0.0D2
+ Q2d 0.0  5.0d4  0.0D2
+ Q4a 0.0  5.0d4  0.0D2
+ Q4b 0.0  5.0d4  0.0D2
+ Im9  0.0  1.0d6          #3-EVNAME EVMIN EVMAX 
+ Im10 0.0  1.0d6
+ Im11 0.0  1.0d6
+ Im12 0.0  1.0d6
+
+

@@ -1,0 +1,8 @@
+#SUPPLY2 Sample Problem, SOLN file
+#June 15, 2009
+ SLP                            #1-SOLNTYP
+ 50 10000   2000                #5a-SLPITMAX LPITMAX BBITMAX
+0.00001  0.0001  0.2  0.00002 2 #5b-SLPVCRIT SLPZCRIT DINIT DMIN DSC
+1   10  0.5  0.5   5   0.0      #5c-NSIGDIG NPGNMX PGFACT AFACT NINFMX CRITMFC
+ 1 1 0                          #5d-SLPITPRT BBITPRT RANGE
+ 0                              #6a-IBASE

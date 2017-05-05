@@ -194,7 +194,9 @@ void Pest::check_io()
 		for (auto &file : inaccessible_files)
 			missing += file + " , ";
 
-		throw PestError("Could not access the following model interface files: "+missing);
+		//throw PestError("Could not access the following model interface files: "+missing);
+		cout << "WARNING: could not access the following model interface files: " << missing << endl;
+		
 	}
 }
 
