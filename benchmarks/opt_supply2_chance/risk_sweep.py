@@ -135,7 +135,7 @@ def plot():
     # risk_infeas[infeas==True] = np.NaN
     # first_infeas = np.nanmax(risk_infeas)
     # xlim = (0.0,1.0)
-    # ylim = ax.get_ylim()
+    ylim = ax.get_ylim()
     # inf_rect = rect((first_infeas,ylim[0]),xlim[1]-first_infeas,ylim[1]-ylim[0],facecolor="c",alpha=0.5,edgecolor='none')
     # print(risk_vals)
     # ax.add_patch(inf_rect)
@@ -146,6 +146,19 @@ def plot():
     ax.grid()
     #t = ax.text((first_infeas + 1.0)/2.0,sum(ylim)/2.0,"infeasible region",ha='center',va="center",fontsize=10)
     #t.set_bbox({"color":"w"})
+
+    ax.plot((0.5,0.5),(ylim),color='r',lw=1.5)
+    t = ax.text(0.5,ylim[1]*0.99,"risk neutral",ha='center',va="top",fontsize=10,rotation=90.0,color='r')
+    t.set_bbox({"color":"w"})
+    ypos = ylim[1]*0.98
+    plt.annotate(s='', xy=(0.0,ypos), xytext=(0.475,ypos), arrowprops=dict(arrowstyle='<->',color='r'))
+    t = ax.text(0.25,ypos,"risk tolerant",ha='center',va="center",fontsize=10,color='r')
+    t.set_bbox({"color":"w"})
+    plt.annotate(s='', xy=(0.525,ypos), xytext=(1.0,ypos), arrowprops=dict(arrowstyle='<->',color='r'))
+    
+    t = ax.text(0.75,ypos,"risk averse",ha='center',va="center",fontsize=10,color='r')
+    t.set_bbox({"color":"w"})
+
     ax.set_xlabel("risk")
     ax.set_ylabel("optimal objective function value ($)")
     plt.tight_layout()
