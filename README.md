@@ -76,6 +76,8 @@ Here is a (more or less) complete list of ``++`` arguments that can be added to 
 
 * ``++lambdas(0.1,1,10,100,1000)``: the values of lambda to test in the upgrade part of the solution process. Note that this base list is augmented with values bracketing the previous iterations best lambda.  However, if a single value is specified, only one lambda will be used.
 
+* ``++lambda_scale_fac(0.9,0.8,0.7,0.5)``: the values to scale each lambda upgrade vector.  This results in a line search along each upgrade vector direction, so that the number of upgrade vectors = len(lambdas) * len(lambda_scale_fac).  To disable, set = 1.0.
+
 * ``++reg_frac(0.1)``: the portion of the composite phi that will be regularization. If this argument is specified, the ``* regularization`` section of the control file is ignored.  For limited testing, values ranging from 0.05 to 0.25 seem to work well.
 
 * ``++base_jacobian(filename)``: an existing binary jacobian file to use for the first iteration
