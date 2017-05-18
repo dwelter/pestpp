@@ -14,7 +14,7 @@ LIBS :=  '-lpestpp_com -lrm_wrappers -lrm_yamr -lrm_serial -lrm_external -lrm_ge
 #CFLAGS := '-pthread -std=c++11 -Wl,--no-as-needed -g -gdwarf-2' 
 #FFLAGS := '-g -gdwarf-2 -c -cpp'
 
-CFLAGS := '-pthread  -Wl,--no-as-needed -O2' 
+CFLAGS := '-pthread  -Wl,--no-as-needed -O2 -std=c++11' 
 FFLAGS := '-O2 -c -cpp'
 LFLAGS := '-static -static-libgcc -static-libgfortran'
 
