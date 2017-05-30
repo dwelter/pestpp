@@ -12,7 +12,7 @@ import pyemu
 
 
 base = "template"
-wdir_base = "risk_sweep_base"
+wdir_base = "risk_sweep_base1"
 wdir_worth = "risk_sweep_worth"
 
 
@@ -51,6 +51,7 @@ def run_base():
         fname = "risk_{0:04.3f}_".format(risk_val)
         shutil.copy2(rei_files[mx_idx],os.path.join(results_dir,fname+".rei"))
         shutil.copy2("risk_sweep.rec", os.path.join(results_dir, fname + ".rec"))
+        shutil.copy2("risk_sweep.1.par", os.path.join(results_dir, fname + ".par"))
     os.chdir("..")
 
 
@@ -96,16 +97,18 @@ def run_worth():
         fname = "risk_{0:04.3f}_".format(risk_val)
         shutil.copy2(rei_files[mx_idx],os.path.join(results_dir,fname+".rei"))
         shutil.copy2("risk_sweep.rec", os.path.join(results_dir, fname + ".rec"))
+        shutil.copy2("risk_sweep.1.par", os.path.join(results_dir, fname + ".par"))
+        
     os.chdir("..")    
 
-def plot():
+def check_infeas(f):
+    with open(f,'r') as f:
+        for line in f:
+            if "infeasibility report" in line:
+                return True
+    return False
 
-    def check_infeas(f):
-        with open(os.path.join(rdir,f),'r') as f:
-            for line in f:
-                if "infeasibility report" in line:
-                    return True
-        return False
+def plot_tradeoff():
    
     fig = plt.figure(figsize=(19.0 / 2.54, 9.0 / 2.54))
     ax = plt.subplot(111)
@@ -116,10 +119,9 @@ def plot():
     dfs = [pyemu.pst_utils.read_resfile(os.path.join(rdir,f)) for f in rei_files]
     risk_vals = np.array([float(f.split('_')[1]) for f in rei_files])
     obj_func = np.array([df.loc["pi_obj_func","modelled"] for df in dfs])
-    infeas = np.array([check_infeas(f.replace(".rei",".rec")) for f in rei_files])
+    infeas = np.array([check_infeas(os.path.join(rdir,f.replace(".rei",".rec"))) for f in rei_files])
     obj_func[infeas==True] = np.NaN 
     ax.plot(risk_vals,obj_func,'b',lw=0.5,marker=".")
-
 
     rdir = os.path.join(wdir_worth,results_dir)
     rei_files = [f for f in os.listdir(rdir) if f.endswith(".rei")]
@@ -127,7 +129,7 @@ def plot():
     dfs = [pyemu.pst_utils.read_resfile(os.path.join(rdir,f)) for f in rei_files]
     risk_vals = np.array([float(f.split('_')[1]) for f in rei_files])
     obj_func = np.array([df.loc["pi_obj_func","modelled"] for df in dfs])
-    infeas = np.array([check_infeas(f.replace(".rei",".rec")) for f in rei_files])
+    infeas = np.array([check_infeas(os.path.join(rdir,f.replace(".rei",".rec"))) for f in rei_files])
     obj_func[infeas==True] = np.NaN 
     ax.plot(risk_vals,obj_func,'b',lw=0.5,marker=".")
 
@@ -153,7 +155,46 @@ def plot():
     plt.savefig("risk_tradeoff.pdf")
 
 
+def plot_dev_var_bar():
+    fig = plt.figure(figsize=(190.0 / 25.4, 120.0 / 25.4))
+    ax1 = plt.subplot(131)
+    ax2 = plt.subplot(132)
+    ax3 = plt.subplot(133)
+
+
+    rdir = os.path.join(wdir_base,results_dir)
+    pst = pyemu.Pst(os.path.join(base,"supply2_pest.fosm.pst"))
+    dvs = pst.parameter_data.loc[pst.parameter_data.pargp.apply(lambda x: x in ["pumping","external"]),"parnme"]
+    par_files = [f for f in os.listdir(rdir) if f.endswith(".par")]
+    print(par_files)
+    dfs = [pd.read_csv(os.path.join(rdir,f),skiprows=1,header=None,names=["parnme","parval1"],
+        usecols=[0,1],delim_whitespace=True,index_col=0).loc[dvs] for f in par_files]
+    print(dfs[0])
+    risk_vals = np.array([float(f.split('_')[1]) for f in par_files])
+    # obj_func = np.array([df.loc["pi_obj_func","modelled"] for df in dfs])
+    infeas = np.array([check_infeas(os.path.join(rdir,f.replace(".par",".rec"))) for f in par_files])
+    print(infeas)
+    # obj_func[infeas==True] = np.NaN 
+    # ax.plot(risk_vals,obj_func,'b',lw=0.5,marker=".")
+    nu_idx = np.argwhere(risk_vals==0.5)
+    in_idx = np.argwhere(infeas==1)[0] - 1
+    
+    labels = ["A) risk = {0}".format(risk_vals[0]), "B) risk = 0.5", "C) risk = {0}".format(risk_vals[in_idx][0])]
+
+    for ax, df, l  in zip([ax1,ax2,ax3],[dfs[0],dfs[nu_idx],dfs[in_idx]],labels):
+        df.plot(kind="bar",ax=ax,legend=False)
+        ax.set_xlabel("decision variable")
+        ax.text(0.01,1.01,l,transform=ax.transAxes)
+
+    ax1.set_ylabel("pumping rate ($\\frac{m^3}{d}$)")
+    ax2.set_yticklabels([])
+    ax3.set_yticklabels([])
+    plt.tight_layout()
+    plt.savefig("dec_vars.pdf")
+
+
 if __name__ == "__main__":
     #run_base()
     #run_worth()
-    plot()
+    #plot_tradeoff()
+    plot_dev_var_bar()
