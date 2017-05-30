@@ -110,6 +110,7 @@ def check_infeas(f):
 
 def plot_tradeoff():
    
+   
     fig = plt.figure(figsize=(19.0 / 2.54, 9.0 / 2.54))
     ax = plt.subplot(111)
 
@@ -122,6 +123,7 @@ def plot_tradeoff():
     infeas = np.array([check_infeas(os.path.join(rdir,f.replace(".rei",".rec"))) for f in rei_files])
     obj_func[infeas==True] = np.NaN 
     ax.plot(risk_vals,obj_func,'b',lw=0.5,marker=".")
+
 
     rdir = os.path.join(wdir_worth,results_dir)
     rei_files = [f for f in os.listdir(rdir) if f.endswith(".rei")]
@@ -137,7 +139,7 @@ def plot_tradeoff():
     # risk_infeas[infeas==True] = np.NaN
     # first_infeas = np.nanmax(risk_infeas)
     # xlim = (0.0,1.0)
-    # ylim = ax.get_ylim()
+    ylim = ax.get_ylim()
     # inf_rect = rect((first_infeas,ylim[0]),xlim[1]-first_infeas,ylim[1]-ylim[0],facecolor="c",alpha=0.5,edgecolor='none')
     # print(risk_vals)
     # ax.add_patch(inf_rect)
@@ -148,12 +150,24 @@ def plot_tradeoff():
     ax.grid()
     #t = ax.text((first_infeas + 1.0)/2.0,sum(ylim)/2.0,"infeasible region",ha='center',va="center",fontsize=10)
     #t.set_bbox({"color":"w"})
+
+    ax.plot((0.5,0.5),(ylim),color='r',lw=1.5)
+    t = ax.text(0.5,ylim[1]*0.99,"risk neutral",ha='center',va="top",fontsize=10,rotation=90.0,color='r')
+    t.set_bbox({"color":"w"})
+    ypos = ylim[1]*0.98
+    plt.annotate(s='', xy=(0.0,ypos), xytext=(0.475,ypos), arrowprops=dict(arrowstyle='<->',color='r'))
+    t = ax.text(0.25,ypos,"risk tolerant",ha='center',va="center",fontsize=10,color='r')
+    t.set_bbox({"color":"w"})
+    plt.annotate(s='', xy=(0.525,ypos), xytext=(1.0,ypos), arrowprops=dict(arrowstyle='<->',color='r'))
+    
+    t = ax.text(0.75,ypos,"risk averse",ha='center',va="center",fontsize=10,color='r')
+    t.set_bbox({"color":"w"})
+
     ax.set_xlabel("risk")
     ax.set_ylabel("optimal objective function value ($)")
     plt.tight_layout()
     #plt.show()
     plt.savefig("risk_tradeoff.pdf")
-
 
 def plot_dev_var_bar():
     fig = plt.figure(figsize=(190.0 / 25.4, 120.0 / 25.4))
@@ -196,5 +210,5 @@ def plot_dev_var_bar():
 if __name__ == "__main__":
     #run_base()
     #run_worth()
-    #plot_tradeoff()
-    plot_dev_var_bar()
+    plot_tradeoff()
+    #plot_dev_var_bar()
