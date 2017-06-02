@@ -1,71 +1,73 @@
-#ifndef DIFFERENTIALEVOLUTION_H_
-#define DIFFERENTIALEVOLUTION_H_
+#ifndef ENSEMBLE_H_
+#define ENSEMBLE_H_
 
-#include <unordered_map>
+#include <map>
 #include <random>
+#include <Eigen/Dense>
+#include <Eigen/Sparse>
 #include "FileManager.h"
 #include "ObjectiveFunc.h"
 #include "OutputFileWriter.h"
 #include "PerformanceLog.h"
 #include "RunStorage.h"
-
-class Pest;
-class RunManagerAbstract;
-class RestartController;
+#include "covariance.h"
+#include "RunManagerAbstract.h"
 
 
-class ParameterInfoDE
-{
-public:
-	ParameterInfoDE(double _lower_bnd = 0, double _upper_bnd = 0, bool _log_transform = false);
-	ParameterInfoDE(const ParameterInfoDE &rhs);
-	ParameterInfoDE& operator=(const ParameterInfoDE &rhs);
-	~ParameterInfoDE();
-public:
-	double lower_bnd;
-	double upper_bnd;
-	bool log_transform;
-};
 
-class DifferentialEvolution
+class Ensemble
 {
 public:
 	static mt19937_64 rand_engine;
-	DifferentialEvolution(Pest &_pest_scenario, FileManager &_file_manager, ObjectiveFunc *_obj_func,
-		const ParamTransformSeq &_par_transform, OutputFileWriter &_output_file_writer,
-		PerformanceLog *_performance_log, unsigned int seed = 1);
-	void initialize_population(RunManagerAbstract &run_manager, int d);
-	void solve(RunManagerAbstract &run_manager, RestartController &restart_controller,
-		int max_gen, double f, double cr, bool _dither_f, ModelRun &cur_run);
-	~DifferentialEvolution();
-private:
-	const static string solver_type_name;
+	Ensemble(Pest &_pest_scenario, FileManager &_file_manager,
+		OutputFileWriter &_output_file_writer, PerformanceLog *_performance_log, unsigned int seed = 1);
+	
+	Mat to_matrix();
+	Mat to_matrix(vector<string> row_names, vector<string> col_names);
+
+	void write_csv(string file_name);
+	void initialize_with_csv(string &file_name);
+
+	pair<int, int> shape();
+	~Ensemble();
+protected:
+	Pest &pest_scenario;
 	FileManager &file_manager;
 	ObjectiveFunc *obj_func_ptr;
-	std::unordered_map<std::string, ParameterInfoDE> parameter_info;
-	const ParameterInfo *ctl_par_info_ptr;
-	const ParameterGroupInfo *par_group_info_ptr;
-	ParamTransformSeq par_transform;
 	OutputFileWriter &output_file_writer;
 	PerformanceLog *performance_log;
-	const ObservationInfo *obs_info_ptr;
-	const PriorInformation *prior_info_ptr;
-	std::vector<std::string> par_list;
-	RunStorage gen_1;
-	int best_run_idx;
-	int failed_runs_old;
-	int failed_runs_new;
-	double best_phi;
-	double phi_avg_old;
-	double phi_avg_new;
+	Eigen::MatrixXd reals;
+	vector<string> var_names;
+	vector<string> real_names;
+	
+	void from_csv(ifstream &csv);
+	vector<string> prepare_csv(vector<string> names, ifstream &csv, bool forgive);
 
-	void initialize_vector(Parameters &ctl_pars);
-	void mutation(RunManagerAbstract &run_manager, double f, bool dither_f, double cr);
-	int recombination(RunManagerAbstract &run_manager);
-	void write_run_summary(std::ostream &os,
-		int nrun_par, double avg_par, double min_par, double max_par,
-		int nrun_can, double avg_can, double min_can, double max_can,
-		int nrun_child, double avg_child, double min_child, double max_child);
 };
 
-#endif //DIFFERENTIALEVOLUTION_H_
+class ParameterEnsemble : private Ensemble
+{
+public:
+	ParameterEnsemble(Pest &_pest_scenario, FileManager &_file_manager,
+		const ParamTransformSeq &_par_transform, OutputFileWriter &_output_file_writer,
+		PerformanceLog *_performance_log, unsigned int seed = 1);
+	void enforce_bounds();
+	void initialize_with_draws(int num_reals);
+
+private:
+	ParamTransformSeq par_transform;
+};
+
+class ObservationEnsemble : private Ensemble
+{
+public: 
+	ObservationEnsemble(Pest &_pest_scenario, FileManager &_file_manager, ObjectiveFunc *_obj_func,
+    OutputFileWriter &_output_file_writer, PerformanceLog *_performance_log, unsigned int seed = 1);
+	bool update_from_runs(RunManagerAbstract *run_mgmt_ptr);
+	void initialize_with_draws(int num_reals);
+
+private: 
+	ObjectiveFunc *obj_func_ptr;
+};
+
+#endif 
