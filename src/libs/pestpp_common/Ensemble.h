@@ -40,7 +40,7 @@ protected:
 	vector<string> var_names;
 	vector<string> real_names;
 	
-	void from_csv(ifstream &csv);
+	void from_csv(int num_reals,ifstream &csv);
 	vector<string> prepare_csv(vector<string> names, ifstream &csv, bool forgive);
 
 };

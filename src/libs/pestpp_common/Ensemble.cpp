@@ -76,23 +76,24 @@ vector<string> Ensemble::prepare_csv(vector<string> names, ifstream &csv, bool f
 
 }
 
-void Ensemble::from_csv(ifstream &csv)
+void Ensemble::from_csv(int num_reals,ifstream &csv)
 {
 	int lcount = 1;
-	vector<vector<double>> vectors;
+	//vector<vector<double>> vectors;
 	double val;
 	string line;
 	vector<string> tokens;
-	vector<double> vals;
+	//vector<double> vals;
 	string real_id;
 
 	real_names.clear();
-
+	reals.resize(num_reals, var_names.size());
+	int irow = 0;
 	while (getline(csv, line))
 	{
 		pest_utils::strip_ip(line);
 		tokens.clear();
-		vals.clear();
+		//vals.clear();
 		pest_utils::tokenize(line, tokens, ",", false);
 		if (tokens.size() != var_names.size() + 1) // +1 for run id in first column
 		{
@@ -113,42 +114,60 @@ void Ensemble::from_csv(ifstream &csv)
 		}
 		real_names.push_back(real_id);
 
-		for (int i = 1; i<tokens.size(); ++i)
+		for (int jcol = 1; jcol<tokens.size(); ++jcol)
 		{
 			try
 			{
-				val = pest_utils::convert_cp<double>(tokens[i]);
+				val = pest_utils::convert_cp<double>(tokens[jcol]);
 			}
 			catch (exception &e)
 			{
 				stringstream ss;
-				ss << "error converting token '" << tokens[i] << "' to double for " << var_names[i - 1] << " on line " << lcount << " : " << e.what();
+				ss << "error converting token '" << tokens[jcol] << "' to double for " << var_names[jcol - 1] << " on line " << lcount << " : " << e.what();
 				throw runtime_error(ss.str());
 			}
-			vals.push_back(val);
-
+			//vals.push_back(val);
+			reals(irow, jcol - 1) = val;
 		}
-		vectors.push_back(vals);
+		//vectors.push_back(vals);
 		lcount++;
 
 	}
 	//Eigen::MatrixXd reals(vectors.size(), vals.size());
+	if (lcount != num_reals)
+		throw runtime_error("different number of reals found");
 
-	reals.resize(vectors.size(), vals.size());
+	/*reals.resize(vectors.size(), vals.size());
 	for (int i = 0; i < vectors.size(); i++)
 	{
 		double* ptr = &vectors[i][0];
 		Eigen::Map<Eigen::VectorXd> vec_map(ptr, vectors[i].size());
 		reals.row(i) = vec_map;
-	}
+	}*/
 
 }
+
+
 void Ensemble::initialize_with_csv(string &file_name)
 {
 	
 	ifstream csv(file_name);
 	if (!csv.good())
 		throw runtime_error("error opening parameter csv " + file_name + " for reading");
+
+
 	var_names = prepare_csv(pest_scenario.get_ctl_ordered_par_names(),csv,false);
+	//blast through the file to get number of reals
+	string line;
+	int num_reals = 0;
+	while (getline(csv, line))
+		num_reals++;
+	csv.close();
 	
+	csv.open(file_name);
+	if (!csv.good())
+		throw runtime_error("error re-opening parameter csv " + file_name + " for reading");
+	getline(csv, line);
+	from_csv(num_reals, csv);
+
 }
