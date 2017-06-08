@@ -233,10 +233,64 @@ def build_control_file():
     pst.write("supply2_pest.pst")
     print(pst.nnz_obs_names)
 
+
+def get_obj_func():
+    dv_counts = {}
+    with open("supply2.wel.tpl",'r') as f:
+        f.readline()
+        while True:
+            line = f.readline()
+            if line == '':
+                break
+            if "stress period" in line.lower():
+                #print(line)
+                nwel = int(line.split()[0])
+                iper = int(line.split()[-1])
+                for _ in range(nwel):
+                    line = f.readline()
+                    if line == '':
+                        raise exception()
+                    if "~" in line:
+                        w = line.split('~')[1].split()[0]
+                        if w not in dv_counts:
+                            dv_counts[w] = []
+                        dv_counts[w].append(iper)
+    ml = flopy.modflow.Modflow.load("supply2.nam",load_only=[])
+    perlen = ml.dis.perlen.array
+    dv_coefs = {}
+    rate = 0.001
+
+    for dv,pers in dv_counts.items():
+        dv_coefs[dv] = "{0:5.4f}".format(rate * perlen[pers].sum())
+    #print(dv_coefs)
+
+    im_coefs = {}
+    im_rate = 0.0012
+    for iper in range(9,13):
+        im_coefs["im{0}".format(iper)] = "{0:5.4f}".format(im_rate * perlen[iper-1])
+    
+    obj_str = ''
+    dvs = list(dv_coefs.keys())
+    dvs.sort()
+    for dv in dvs:
+        obj_str += ' {0} * {1} +'.format(dv,dv_coefs[dv])
+    obj_str = obj_str[:-1]
+    #print(obj_str)
+    
+    ims = list(im_coefs.keys())
+    ims.sort()
+    for im in ims:
+        obj_str += ' - {0} * {1}'.format(im,im_coefs[im])
+    obs_str = obj_str[:-1] + ' = 0.0'
+    #print(obj_str)
+    return obj_str
+
+
 if __name__ == "__main__":
     # build_wel_file()
     #write_external_par_tpl()
     #write_command_script()
-    write_tran_tpl()
-    write_hds_instruction_file()
-    build_control_file()
+    #write_tran_tpl()
+    #write_hds_instruction_file()
+    #build_control_file()
+    get_obj_func()

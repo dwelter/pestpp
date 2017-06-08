@@ -304,6 +304,11 @@ public:
 	int get_opt_recalc_fosm_every()const { return opt_recalc_fosm_every; }
 	void set_opt_recalc_fosm_every(int _every) { opt_recalc_fosm_every = _every; }
 
+	string get_ies_par_csv()const { return ies_par_csv; }
+	void set_ies_par_csv(string _ies_par_csv) { ies_par_csv = _ies_par_csv; }
+	string get_ies_obs_csv()const { return ies_obs_csv; }
+	void set_ies_obs_csv(string _ies_obs_csv) { ies_obs_csv = _ies_obs_csv; }
+
 
 private:
 	int n_iter_base;
@@ -359,6 +364,8 @@ private:
 	double opt_iter_tol;
 	int opt_recalc_fosm_every;
 
+	string ies_par_csv;
+	string ies_obs_csv;
 
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);

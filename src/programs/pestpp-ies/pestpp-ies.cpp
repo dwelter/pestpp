@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
 	{
 #endif
 		cout << endl << endl;
-		cout << "             sweep.exe - a parameteric sweep utility" << endl;
+		cout << "             pestpp-ies.exe - a GLM iterative ensemble smoother" << endl;
 		cout << "                     for PEST(++) datasets " << endl << endl;
 		cout << "                 by the PEST++ developement team" << endl << endl << endl;
 		// build commandline
@@ -66,22 +66,16 @@ int main(int argc, char* argv[])
 			cerr << "--------------------------------------------------------" << endl;
 			cerr << "usage:" << endl << endl;
 			cerr << "    serial run manager:" << endl;
-			cerr << "        sweep control_file.pst" << endl << endl;
+			cerr << "        pestpp-ies control_file.pst" << endl << endl;
 			cerr << "    YAMR master:" << endl;
-			cerr << "        sweep control_file.pst /H :port" << endl << endl;
+			cerr << "        pestpp-ies control_file.pst /H :port" << endl << endl;
 			cerr << "    YAMR runner:" << endl;
-			cerr << "        sweep control_file.pst /H hostname:port " << endl << endl;
+			cerr << "        pestpp-ies control_file.pst /H hostname:port " << endl << endl;
 			cerr << "control file pest++ options:" << endl;
-			cerr << "    ++sweep_parameter_csv_file(pars_file.csv)" << endl;
-			cerr << "        - csv file with each row as a par set" << endl;
-			cerr << "    ++sweep_forgive(true)" << endl;
-			cerr << "        - forgive control file pars missing from csv file" << endl;
-			cerr << "    ++sweep_output_csv_file(output.csv)" << endl;
-			cerr << "        - the csv to save run results to" << endl;
-			cerr << "    ++sweep_chunk(500)" << endl;
-			cerr << "        - number of runs to process in a single batch" << endl;
-			cerr << "    ++sweep_base_run(true)" << endl;
-			cerr << "        - run the parameter values in control file" << endl;
+			cerr << "    ++ies_par_csv(pars_file.csv)" << endl;
+			cerr << "        - csv file with each row as a parameter realization" << endl;
+			cerr << "    ++ies_obs_csv(obs_file.csv)" << endl;
+			cerr << "        - csv file with each row as an observation realization" << endl;
 			cerr << "--------------------------------------------------------" << endl;
 			exit(0);
 		}
@@ -103,7 +97,7 @@ int main(int argc, char* argv[])
 		it_find = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/e");
 		if (it_find != cmd_arg_vec.end())
 		{
-			throw runtime_error("External run manager not supported by sweep");
+			throw runtime_error("External run manager not supported by pestpp-ies");
 		}
 		//Check for YAMR Slave
 		it_find = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/h");
@@ -179,7 +173,7 @@ int main(int argc, char* argv[])
 		//Check for GENIE Master
 		if (it_find != cmd_arg_vec.end())
 		{
-			throw runtime_error("GENIE not supported by sweep");
+			throw runtime_error("GENIE not supported by pestpp-ies");
 		}
 
 		RestartController restart_ctl;
@@ -193,7 +187,7 @@ int main(int argc, char* argv[])
 		debug_initialize(file_manager.build_filename("dbg"));
 		if (it_find_j != cmd_arg_vec.end())
 		{
-			throw runtime_error("/j option not supported by sweep");
+			throw runtime_error("/j option not supported by pestpp-ies");
 		}
 		else if (it_find_r != cmd_arg_vec.end())
 		{
@@ -219,7 +213,7 @@ int main(int argc, char* argv[])
 
 		if (!restart_flag || save_restart_rec_header)
 		{
-			fout_rec << "             sweep.exe - a parameteric sweep utility" << endl << "for PEST(++) datasets " << endl << endl;
+			fout_rec << "             pestpp-ies.exe - a GLM iterative Ensemble Smoother" << endl << "for PEST(++) datasets " << endl << endl;
 			fout_rec << "                 by the PEST++ developement team" << endl << endl << endl;
 			fout_rec << endl;
 			fout_rec << "using control file: \"" << complete_path << "\"" << endl << endl;
@@ -251,16 +245,9 @@ int main(int argc, char* argv[])
 
 		PestppOptions ppopt = pest_scenario.get_pestpp_options();
 
-		fout_rec << "    sweep parameter csv file = " << left << setw(50) << ppopt.get_sweep_parameter_csv_file() << endl;
-		fout_rec << "    sweep output csv file = " << left << setw(50) << ppopt.get_sweep_output_csv_file() << endl;
-		fout_rec << "    sweep chunk size = " << left << setw(10) << ppopt.get_sweep_chunk() << endl;
-		fout_rec << "    sweep base run = " << left << setw(10) << ppopt.get_sweep_base_run() << endl;
-		fout_rec << "    sweep forgive failed runs = " << left << setw(10) << ppopt.get_sweep_forgive() << endl;
-
-
+		fout_rec << "    pestpp-ies parameter csv file = " << left << setw(50) << ppopt.get_ies_par_csv() << endl;
+		fout_rec << "    pestpp-ies observation csv file = " << left << setw(50) << ppopt.get_ies_obs_csv() << endl;
 		
-
-
 		//Initialize OutputFileWriter to handle IO of suplementary files (.par, .par, .svd)
 		//bool save_eign = pest_scenario.get_svd_info().eigwrite > 0;	
 		OutputFileWriter output_file_writer(file_manager, pest_scenario, restart_flag);
@@ -323,7 +310,7 @@ int main(int argc, char* argv[])
 		// clean up
 		fout_rec.close();
 		delete run_manager_ptr;
-		cout << endl << endl << "Sweep Complete..." << endl;
+		cout << endl << endl << "pestpp-ies analysis complete..." << endl;
 		cout << flush;
 #ifndef _DEBUG
 	}

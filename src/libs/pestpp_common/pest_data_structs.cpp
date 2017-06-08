@@ -648,7 +648,14 @@ void PestppOptions::parce_line(const string &line)
 		{
 			convert_ip(value, opt_recalc_fosm_every);
 		}
-
+		else if ((key == "IES_PAR_CSV") || (key == "IES_PARAMETER_CSV"))
+		{
+			convert_ip(value, ies_par_csv);
+		}
+		else if ((key == "IES_OBS_CSV") || (key == "IES_OBSERVATION_CSV"))
+		{
+			convert_ip(value, ies_obs_csv);
+		}
 
 		else {
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");

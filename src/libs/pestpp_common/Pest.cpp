@@ -617,6 +617,9 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_opt_recalc_fosm_every(1);
 	pestpp_options.set_hotstart_resfile(string());
 	pestpp_options.set_upgrade_bounds("ROBUST");
+	pestpp_options.set_ies_par_csv("");
+	pestpp_options.set_ies_obs_csv("");
+
 	for(vector<string>::const_iterator b=pestpp_input.begin(),e=pestpp_input.end();
 		b!=e; ++b) {
 			
