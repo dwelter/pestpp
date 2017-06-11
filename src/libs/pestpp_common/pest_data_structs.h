@@ -101,6 +101,8 @@ public:
 	void insert_parameter_link(const string &parameter_name, const string & group_name);
 	const ParameterGroupRec* get_group_rec_ptr(const string &par_name) const;
 	const ParameterGroupRec* get_group_by_groupname(const string &group_name) const { return groups.at(group_name); }
+	ParameterGroupRec* get_group_by_groupname_4_mod(const string &group_name) { return groups.at(group_name); }
+	ParameterGroupRec* get_group_rec_ptr_4_mod(const string &par_name);
 	string get_group_name(const string &par_name) const;
 	const ParameterGroupInfo& operator=(const ParameterGroupInfo &rhs);
 	bool have_switch_derivative() const;
@@ -303,7 +305,8 @@ public:
 	void set_opt_iter_tol(double _tol) { opt_iter_tol = _tol; }
 	int get_opt_recalc_fosm_every()const { return opt_recalc_fosm_every; }
 	void set_opt_recalc_fosm_every(int _every) { opt_recalc_fosm_every = _every; }
-
+	double get_opt_iter_derinc_fac() const { return opt_iter_derinc_fac; }
+	void set_opt_iter_derinc_fac(double _opt_iter_derinc_fac) { opt_iter_derinc_fac = _opt_iter_derinc_fac; }
 	string get_ies_par_csv()const { return ies_par_csv; }
 	void set_ies_par_csv(string _ies_par_csv) { ies_par_csv = _ies_par_csv; }
 	string get_ies_obs_csv()const { return ies_obs_csv; }
@@ -363,6 +366,7 @@ private:
 	double opt_direction;
 	double opt_iter_tol;
 	int opt_recalc_fosm_every;
+	double opt_iter_derinc_fac;
 
 	string ies_par_csv;
 	string ies_obs_csv;

@@ -46,6 +46,7 @@ public:
 	const Observations& get_ctl_observations() const {return observation_values;}
 	const ParameterInfo& get_ctl_parameter_info()const {return ctl_parameter_info;}
 	const ParameterGroupInfo& get_base_group_info() const {return  base_group_info;}
+	ParameterGroupInfo* get_base_group_info_ptr() { return  &base_group_info; }
 	const ObservationInfo &get_ctl_observation_info() const {return observation_info;}
 	const std::map<std::string, std::string> get_observation_groups() const;
 	const PriorInformation &get_prior_info() {return prior_info;}

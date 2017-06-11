@@ -94,6 +94,17 @@ const ParameterGroupRec* ParameterGroupInfo::get_group_rec_ptr(const string &nam
 	return ret_val;
 }
 
+ParameterGroupRec* ParameterGroupInfo::get_group_rec_ptr_4_mod(const string &name)
+{
+	ParameterGroupRec *ret_val = 0;
+	unordered_map<string, ParameterGroupRec*>::const_iterator g_iter;
+
+	g_iter = parameter2group.find(name);
+	if (g_iter != parameter2group.end()) {
+		ret_val = (*g_iter).second;
+	}
+	return ret_val;
+}
 
 string ParameterGroupInfo::get_group_name(const string &par_name) const
 {
@@ -625,6 +636,11 @@ void PestppOptions::parce_line(const string &line)
 		else if (key == "OPT_RISK")
 		{
 			convert_ip(value, opt_risk);
+		}
+
+		else if (key == "OPT_ITER_DERINC_FAC")
+		{
+			convert_ip(value, opt_iter_derinc_fac);
 		}
 
 		else if (key == "OPT_DIRECTION")

@@ -39,6 +39,7 @@ private:
 	double* ctl_ord_obj_func_coefs;
 	const double* row_price;
 	double risk;
+	double iter_derinc_fac;
 	double obj_best;
 	double probit_val;
 

@@ -101,7 +101,8 @@ void sequentialLP::initial_report()
 	f_rec << "-->number of decision variable: " << num_dec_vars() << endl;
 	f_rec << "-->number of observation constraints: " << num_obs_constraints() << endl;
 	f_rec << "-->number of prior information constraints: " << num_pi_constraints() << endl;
-
+	if (iter_derinc_fac != 1.0)
+		f_rec << "-->iteration DERINC reduction factor (++opt_iter_derinc_fac): " << iter_derinc_fac << endl;
 	if (use_chance)
 	{
 		f_rec << "-->using FOSM-based chance constraints - good choice!" << endl;
@@ -295,7 +296,7 @@ void sequentialLP::postsolve_constraint_report(Observations &upgrade_obs,Paramet
 {
 	ofstream &f_rec = file_mgr_ptr->rec_ofstream();
 	f_rec << endl << endl << "     constraint information at end of SLP iteration " << slp_iter << endl << endl;
-	f_rec << setw(20) << left << "name" << right << setw(15) << "sense" << setw(15) << "required" << setw(25) << "simpex status";
+	f_rec << setw(20) << left << "name" << right << setw(15) << "sense" << setw(15) << "required" << setw(25) << "simplex status";
 	f_rec << setw(15) << "price";
 	if (use_chance)
 		f_rec << setw(15) << "fosm offset";
@@ -513,7 +514,10 @@ void sequentialLP::initialize_and_check()
 
 	terminate = false;
 	
-	
+	iter_derinc_fac = pest_scenario.get_pestpp_options().get_opt_iter_derinc_fac();
+	if ((iter_derinc_fac > 1.0) || (iter_derinc_fac <= 0.0))
+		throw_sequentialLP_error("++opt_iter_derinc_fac must be greater than 0.0 and less than or equal to 1.0");
+
 	
 	
 	//-----------------------------
@@ -575,6 +579,17 @@ void sequentialLP::initialize_and_check()
 			problem_trans.push_back(name);
 	if (problem_trans.size() > 0)
 		throw_sequentialLP_error("the following decision variables don't have 'none' type parameter transformation: ", problem_trans);
+
+	//make sure all decision variables have an initial value of zero
+	//jwhite 10june2017 - don't need this.  GWM accounts for base pumping in streamflow constraints
+	//but here we leave it up to the user to make sure stream flow depletion constraints are 
+	//in sync with the initial pumping rates
+	//vector<string> problem_vars;
+	//for (auto &name : ctl_ord_dec_var_names)
+	//	if (pest_scenario.get_ctl_parameters().get_rec(name) != 0.0)
+	//		problem_vars.push_back(name);
+	//if (problem_vars.size() > 0)
+	//	throw_sequentialLP_error("the following decision variables have non-zero initial values", problem_vars);
 
 	//set the decision var lower and upper bound arrays
 	dec_var_lb = new double[num_dec_vars()];
@@ -1570,6 +1585,43 @@ void sequentialLP::iter_presolve()
 		{
 			names_to_run.insert(names_to_run.end(), adj_par_names.begin(), adj_par_names.end());
 		}
+		
+		//turn down the purb value each iteration
+		if ((slp_iter > 1) && (iter_derinc_fac != 1.0))
+		{
+			cout << "  ---  decreasing derinc for active decision variables " << endl;
+			file_mgr_ptr->rec_ofstream() << "  ---  decreasing derinc for active decision variables " << endl;
+
+			//find group names for active dec vars
+			vector<string> act_dv_grps; 
+			ParameterGroupInfo* pinfo = pest_scenario.get_base_group_info_ptr();
+
+			const ParameterGroupRec *gr_ptr;
+			for (auto &name : ctl_ord_dec_var_names)
+			{
+				gr_ptr = pinfo->get_group_rec_ptr(name);
+				if (find(act_dv_grps.begin(), act_dv_grps.end(), gr_ptr->name) == act_dv_grps.end())
+					act_dv_grps.push_back(gr_ptr->name);
+			}
+			double org_derinc, new_derinc;
+			ofstream &frec = file_mgr_ptr->rec_ofstream();
+			frec << setw(20) << left << "group_name" << setw(20) << left << "old_derinc" << setw(20) << left << "new_derinc" << endl;
+			for (auto &name : act_dv_grps)
+			{
+				org_derinc = pinfo->get_group_by_groupname_4_mod(name)->derinc;
+				new_derinc = org_derinc * iter_derinc_fac;
+				pinfo->get_group_by_groupname_4_mod(name)->derinc = new_derinc;
+				frec << setw(20) << left << name << setw(20) << left << org_derinc << setw(20) << left << new_derinc << endl;
+			}
+
+		}
+		//ParameterGroupInfo pinfo = pest_scenario.get_base_group_info();
+		//for (auto &name : pinfo.get_group_names())
+		//{
+		//	//pinfo.get_group_by_groupname_4_mod(name)->derinc *= 0.75;
+		//	double inc = pinfo.get_group_by_groupname_4_mod(name)->derinc;
+		//	cout << name << ',' << inc << endl;
+		//}
 
 		bool init_obs = false;
 		if (slp_iter == 1) init_obs = true;
