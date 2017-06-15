@@ -17,6 +17,55 @@ Ensemble::Ensemble(Pest &_pest_scenario,
 	rand_engine.seed(seed);
 }
 
+Mat Ensemble::to_matrix()
+{
+	return to_matrix(real_names, var_names);
+}
+
+Mat Ensemble::to_matrix(vector<string> &row_names, vector<string> &col_names)
+{
+	return Mat();
+}
+
+
+void Ensemble::to_csv(string &file_name)
+{
+
+}
+
+Eigen::VectorXd Ensemble::get_real_vector(int ireal)
+{
+	if (ireal >= shape().first)
+	{
+		stringstream ss;
+		ss << "Ensemble::get_real_vector() : ireal (" << ireal << ") >= reals.shape[0] (" << ireal << ")";
+		throw_ensemble_error(ss.str());
+	}
+	return reals.row(ireal);
+}
+
+Eigen::VectorXd Ensemble::get_real_vector(const string &real_name)
+{
+
+	int idx = find(real_names.begin(), real_names.end(), real_name) - real_names.begin();
+	if (idx >= real_names.size())
+	{
+		stringstream ss;
+		ss << "Ensemble::get_real_vector() real_name '" << real_name << "' not found";
+		throw_ensemble_error(ss.str());
+	}
+	return get_real_vector(idx);
+}
+
+void Ensemble::throw_ensemble_error(string &message)
+{
+	string full_message = "Ensemble Error: " + message;
+	performance_log->log_event(full_message);
+	performance_log->~PerformanceLog();
+	file_manager.rec_ofstream() << endl << endl << "***" << full_message << endl;
+	file_manager.~FileManager();
+	throw runtime_error(full_message);
+}
 
 Ensemble::~Ensemble()
 {
@@ -78,7 +127,7 @@ vector<string> Ensemble::prepare_csv(vector<string> names, ifstream &csv, bool f
 
 void Ensemble::from_csv(int num_reals,ifstream &csv)
 {
-	int lcount = 1;
+	int lcount = 0;
 	//vector<vector<double>> vectors;
 	double val;
 	string line;
@@ -170,4 +219,59 @@ void Ensemble::initialize_with_csv(string &file_name)
 	getline(csv, line);
 	from_csv(num_reals, csv);
 
+}
+
+ParameterEnsemble::ParameterEnsemble(const ParamTransformSeq &_par_transform, Pest &_pest_scenario,
+	FileManager &_file_manager, OutputFileWriter &_output_file_writer,
+	PerformanceLog *_performance_log, unsigned int seed):
+	Ensemble(_pest_scenario,_file_manager,_output_file_writer,_performance_log,seed),par_transform(_par_transform)
+{
+
+}
+
+void ParameterEnsemble::enforce_bounds()
+{
+
+}
+
+void ParameterEnsemble::to_csv(string &file_name)
+{
+	Ensemble::to_csv(file_name);
+}
+
+ObservationEnsemble::ObservationEnsemble(ObjectiveFunc *_obj_func, Pest &_pest_scenario,
+	FileManager &_file_manager, OutputFileWriter &_output_file_writer, PerformanceLog *_performance_log, unsigned int seed) :
+	Ensemble(_pest_scenario, _file_manager, _output_file_writer, _performance_log, seed), obj_func_ptr(_obj_func)
+{
+
+}
+
+EnsemblePair::EnsemblePair(ParameterEnsemble &_pe, ObservationEnsemble &_oe) : pe(_pe), oe(_oe)
+{
+	pair<int, int> par_shape = pe.shape();
+	pair<int, int> obs_shape = oe.shape();
+	if (par_shape.first != obs_shape.first)
+	{
+		stringstream ss;
+		ss << "parameter ensemble shape[0] (" << par_shape.first << ") != observation ensemble shape[0] (" << obs_shape.first << ")";
+		pe.throw_ensemble_error(ss.str());
+	}
+}
+
+void EnsemblePair::run(RunManagerAbstract *run_mgr_ptr)
+{
+	
+	Parameters pars = pe.get_pest_scenario_ptr()->get_ctl_parameters();
+	//for (int ireal = 0; ireal < pe.shape().first; ireal++)
+	Eigen::VectorXd evec;
+	vector<double> svec;
+	vector<string> var_names = pe.get_var_names();
+	for (auto &real_name : pe.get_real_names())
+	{
+		evec = pe.get_real_vector(real_name);
+		const vector<double> svec(evec.data(), evec.data() + evec.size());
+		pars.update_without_clear(var_names,svec);
+
+		//run_mgr_ptr->add_run()
+	}
 }

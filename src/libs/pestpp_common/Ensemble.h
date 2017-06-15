@@ -23,12 +23,20 @@ public:
 		OutputFileWriter &_output_file_writer, PerformanceLog *_performance_log, unsigned int seed = 1);
 	
 	Mat to_matrix();
-	Mat to_matrix(vector<string> row_names, vector<string> col_names);
+	Mat to_matrix(vector<string> &row_names, vector<string> &col_names);
 
-	void write_csv(string file_name);
+	void to_csv(string &file_name);
 	void initialize_with_csv(string &file_name);
+	pair<int, int> shape() { return pair<int, int>(reals.rows(), reals.cols()); }
+	void throw_ensemble_error(string &message);
+	const vector<string> get_var_names() const { return var_names; }
+	const vector<string> get_real_names() const { return real_names; }
 
-	pair<int, int> shape();
+	Eigen::VectorXd get_real_vector(int ireal);
+	Eigen::VectorXd get_real_vector(const string &real_name);
+	Eigen::VectorXd get_var_values(int icol);
+	Eigen::VectorXd get_var_values(const string &var_name);
+
 	~Ensemble();
 protected:
 	Pest &pest_scenario;
@@ -38,36 +46,49 @@ protected:
 	PerformanceLog *performance_log;
 	Eigen::MatrixXd reals;
 	vector<string> var_names;
-	vector<string> real_names;
-	
+	vector<string> real_names;	
 	void from_csv(int num_reals,ifstream &csv);
 	vector<string> prepare_csv(vector<string> names, ifstream &csv, bool forgive);
-
 };
 
-class ParameterEnsemble : private Ensemble
+class ParameterEnsemble : public Ensemble
 {
+	enum transStatus { CTL, NUM, MODEL };
 public:
-	ParameterEnsemble(Pest &_pest_scenario, FileManager &_file_manager,
-		const ParamTransformSeq &_par_transform, OutputFileWriter &_output_file_writer,
+	ParameterEnsemble(const ParamTransformSeq &_par_transform, Pest &_pest_scenario,
+		FileManager &_file_manager,OutputFileWriter &_output_file_writer,
 		PerformanceLog *_performance_log, unsigned int seed = 1);
 	void enforce_bounds();
-	void initialize_with_draws(int num_reals);
-
+	void to_csv(string &file_name);
+	Pest* get_pest_scenario_ptr() { return &pest_scenario; }
+	const transStatus get_trans_status() const { return tstat; }
 private:
 	ParamTransformSeq par_transform;
+	transStatus tstat;
 };
 
-class ObservationEnsemble : private Ensemble
+class ObservationEnsemble : public Ensemble
 {
 public: 
-	ObservationEnsemble(Pest &_pest_scenario, FileManager &_file_manager, ObjectiveFunc *_obj_func,
+	ObservationEnsemble(ObjectiveFunc *_obj_func, Pest &_pest_scenario, FileManager &_file_manager,
     OutputFileWriter &_output_file_writer, PerformanceLog *_performance_log, unsigned int seed = 1);
 	bool update_from_runs(RunManagerAbstract *run_mgmt_ptr);
-	void initialize_with_draws(int num_reals);
-
+	
 private: 
 	ObjectiveFunc *obj_func_ptr;
 };
 
+class EnsemblePair
+{
+public:
+	EnsemblePair(ParameterEnsemble &_pe, ObservationEnsemble &_oe);
+
+	void run(RunManagerAbstract *run_mgr_ptr);
+
+private:
+	ParameterEnsemble pe;
+	ObservationEnsemble oe;
+	vector<string> active_reals;
+
+};
 #endif 
