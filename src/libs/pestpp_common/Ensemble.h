@@ -27,7 +27,7 @@ public:
 
 	void to_csv(string &file_name);
 	pair<int, int> shape() { return pair<int, int>(reals.rows(), reals.cols()); }
-	void throw_ensemble_error(string &message);
+	void throw_ensemble_error(string message);
 	const vector<string> get_var_names() const { return var_names; }
 	const vector<string> get_real_names() const { return real_names; }
 
@@ -35,6 +35,10 @@ public:
 	Eigen::VectorXd get_real_vector(const string &real_name);
 	Eigen::VectorXd get_var_values(int icol);
 	Eigen::VectorXd get_var_values(const string &var_name);
+	Eigen::MatrixXd* eptr();
+	Eigen::MatrixXd* eptr(vector<string> row_names, vector<string> col_names);
+	const Eigen::MatrixXd get_reals() const { return reals; }
+
 
 	~Ensemble();
 protected:
@@ -52,8 +56,9 @@ protected:
 
 class ParameterEnsemble : public Ensemble
 {
-	enum transStatus { CTL, NUM, MODEL };
+	
 public:
+	enum transStatus { CTL, NUM, MODEL };
 	ParameterEnsemble(const ParamTransformSeq &_par_transform, Pest &_pest_scenario,
 		FileManager &_file_manager,OutputFileWriter &_output_file_writer,
 		PerformanceLog *_performance_log, unsigned int seed = 1);
@@ -63,6 +68,9 @@ public:
 	void to_csv(string &file_name);
 	Pest* get_pest_scenario_ptr() { return &pest_scenario; }
 	const transStatus get_trans_status() const { return tstat; }
+	void set_trans_status(transStatus _tstat) { tstat = _tstat; }
+	const ParamTransformSeq get_par_transform() const { return par_transform; }
+	
 private:
 	ParamTransformSeq par_transform;
 	transStatus tstat;
@@ -73,7 +81,7 @@ class ObservationEnsemble : public Ensemble
 public: 
 	ObservationEnsemble(ObjectiveFunc *_obj_func, Pest &_pest_scenario, FileManager &_file_manager,
     OutputFileWriter &_output_file_writer, PerformanceLog *_performance_log, unsigned int seed = 1);
-	bool update_from_runs(RunManagerAbstract *run_mgmt_ptr);
+	void update_from_obs(int row_idx, Observations &obs);
 	void initialize_with_csv(string &file_name);
 
 private: 
@@ -90,7 +98,7 @@ public:
 private:
 	ParameterEnsemble pe;
 	ObservationEnsemble oe;
-	vector<string> active_reals;
+	vector<int> active_real_indices;
 
 };
 #endif 

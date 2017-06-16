@@ -315,6 +315,8 @@ int main(int argc, char* argv[])
 
 		EnsemblePair epair(pe, oe);
 
+		epair.run(run_manager_ptr);
+
 		// clean up
 		fout_rec.close();
 		delete run_manager_ptr;

@@ -74,7 +74,7 @@ Eigen::VectorXd Ensemble::get_real_vector(const string &real_name)
 	return get_real_vector(idx);
 }
 
-void Ensemble::throw_ensemble_error(string &message)
+void Ensemble::throw_ensemble_error(string message)
 {
 	string full_message = "Ensemble Error: " + message;
 	performance_log->log_event(full_message);
@@ -179,7 +179,7 @@ void Ensemble::from_csv(int num_reals,ifstream &csv)
 			throw runtime_error(ss.str());
 		}
 		real_names.push_back(real_id);
-
+		enum transStatus { CTL, NUM, MODEL };
 		for (int jcol = 1; jcol<tokens.size(); ++jcol)
 		{
 			try
@@ -197,6 +197,7 @@ void Ensemble::from_csv(int num_reals,ifstream &csv)
 		}
 		//vectors.push_back(vals);
 		lcount++;
+		irow++;
 
 	}
 	//Eigen::MatrixXd reals(vectors.size(), vals.size());
@@ -231,7 +232,6 @@ void ParameterEnsemble::initialize_with_csv(string &file_name)
 	if (!csv.good())
 		throw runtime_error("error opening parameter csv " + file_name + " for reading");
 
-
 	var_names = prepare_csv(pest_scenario.get_ctl_ordered_par_names(), csv, false);
 	//blast through the file to get number of reals
 	string line;
@@ -245,10 +245,9 @@ void ParameterEnsemble::initialize_with_csv(string &file_name)
 		throw runtime_error("error re-opening parameter csv " + file_name + " for reading");
 	getline(csv, line);
 	from_csv(num_reals, csv);
-
+	tstat = transStatus::CTL;
+	//cout << reals << endl;
 }
-
-
 
 void ParameterEnsemble::enforce_bounds()
 {
@@ -264,6 +263,14 @@ ObservationEnsemble::ObservationEnsemble(ObjectiveFunc *_obj_func, Pest &_pest_s
 	FileManager &_file_manager, OutputFileWriter &_output_file_writer, PerformanceLog *_performance_log, unsigned int seed) :
 	Ensemble(_pest_scenario, _file_manager, _output_file_writer, _performance_log, seed), obj_func_ptr(_obj_func)
 {
+
+}
+
+void ObservationEnsemble::update_from_obs(int row_idx, Observations &obs)
+{
+	if (row_idx >= real_names.size())
+		throw_ensemble_error("ObservtionEnsemble.update_from_obs() obs_idx out of range");
+	reals.row(row_idx) = obs.get_data_eigen_vec(var_names);
 
 }
 
@@ -303,6 +310,10 @@ EnsemblePair::EnsemblePair(ParameterEnsemble &_pe, ObservationEnsemble &_oe) : p
 		ss << "parameter ensemble shape[0] (" << par_shape.first << ") != observation ensemble shape[0] (" << obs_shape.first << ")";
 		pe.throw_ensemble_error(ss.str());
 	}
+
+	//initialize active real tracker
+	for (int i = 0; i < par_shape.first; i++)
+		active_real_indices.push_back(i);
 }
 
 void EnsemblePair::run(RunManagerAbstract *run_mgr_ptr)
@@ -313,17 +324,44 @@ void EnsemblePair::run(RunManagerAbstract *run_mgr_ptr)
 	Eigen::VectorXd evec;
 	vector<double> svec;
 	vector<string> var_names = pe.get_var_names();
-	for (auto &real_name : pe.get_real_names())
+	//for (auto &real_name : pe.get_real_names())
+	map<int, int> real_run_ids;
+	int run_id;
+	for (auto &act_idx : active_real_indices)
 	{
-		evec = pe.get_real_vector(real_name);
+		evec = pe.get_real_vector(act_idx);
 		const vector<double> svec(evec.data(), evec.data() + evec.size());
 		pars.update_without_clear(var_names,svec);
+		if (pe.get_trans_status() == ParameterEnsemble::transStatus::CTL)
+			pe.get_par_transform().ctl2model_ip(pars);
+		else if (pe.get_trans_status() == ParameterEnsemble::transStatus::NUM)
+			pe.get_par_transform().numeric2model_ip(pars);
 
-		//if (pe.get_trans_status() == pe::transStatus::CTL)
-
-
-		run_mgr_ptr->add_run(pars);
+		run_id = run_mgr_ptr->add_run(pars);
+		real_run_ids[act_idx] =  run_id;
 	}
+	//pe.set_trans_status(ParameterEnsemble::transStatus::MODEL);
+	//cout << pe.get_reals() << endl;
+	
+	run_mgr_ptr->run();
 
-	//run_m
+	set<int> failed_runs = run_mgr_ptr->get_failed_run_ids();
+	vector<int> failed_real_idxs;
+	Observations obs;
+	cout << oe.get_reals() << endl;
+	for (auto &real_run_id : real_run_ids)
+	{
+		if (failed_runs.find(real_run_id.second) != failed_runs.end())
+			failed_real_idxs.push_back(real_run_id.first);
+		else
+		{
+			run_mgr_ptr->get_run(real_run_id.second, pars, obs);
+			oe.update_from_obs(real_run_id.first, obs);
+		}
+	}
+	//cout << oe.get_reals() << endl;
+	//cout << pe.get_reals() << endl;
+
+
+
 }
