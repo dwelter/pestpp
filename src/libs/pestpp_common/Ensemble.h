@@ -28,6 +28,7 @@ public:
 	void to_csv(string &file_name);
 	pair<int, int> shape() { return pair<int, int>(reals.rows(), reals.cols()); }
 	void throw_ensemble_error(string message);
+	void throw_ensemble_error(string message,vector<string> vec);
 	const vector<string> get_var_names() const { return var_names; }
 	const vector<string> get_real_names() const { return real_names; }
 
@@ -35,8 +36,8 @@ public:
 	Eigen::VectorXd get_real_vector(const string &real_name);
 	Eigen::VectorXd get_var_values(int icol);
 	Eigen::VectorXd get_var_values(const string &var_name);
-	Eigen::MatrixXd* eptr();
-	Eigen::MatrixXd* eptr(vector<string> row_names, vector<string> col_names);
+	const Eigen::MatrixXd* eptr() const { return &reals; }
+	Eigen::MatrixXd get_eigen(vector<string> row_names, vector<string> col_names);
 	const Eigen::MatrixXd get_reals() const { return reals; }
 
 
@@ -96,8 +97,8 @@ public:
 	void run(RunManagerAbstract *run_mgr_ptr);
 
 private:
-	ParameterEnsemble pe;
-	ObservationEnsemble oe;
+	ParameterEnsemble &pe;
+	ObservationEnsemble &oe;
 	vector<int> active_real_indices;
 
 };

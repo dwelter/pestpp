@@ -313,9 +313,22 @@ int main(int argc, char* argv[])
 		ObservationEnsemble oe(&obj_func, pest_scenario, file_manager, output_file_writer, &performance_log);
 		oe.initialize_with_csv(pest_scenario.get_pestpp_options().get_ies_obs_csv());
 
+		ObservationEnsemble oe_org = oe;
+
 		EnsemblePair epair(pe, oe);
 
 		epair.run(run_manager_ptr);
+		vector<string>obs_names = pest_scenario.get_ctl_ordered_obs_names();
+		string last = obs_names[obs_names.size()-1];
+		obs_names.pop_back();
+		obs_names.pop_back();
+		obs_names.insert(obs_names.begin(), last);
+		obs_names.insert(obs_names.begin(), last);
+		obs_names.insert(obs_names.begin(), last);
+
+		cout << oe.get_eigen(pe.get_real_names(),obs_names) << endl;
+		cout << oe.get_reals() << endl;
+
 
 		// clean up
 		fout_rec.close();

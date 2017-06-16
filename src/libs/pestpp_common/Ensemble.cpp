@@ -27,6 +27,53 @@ Mat Ensemble::to_matrix(vector<string> &row_names, vector<string> &col_names)
 	return Mat();
 }
 
+Eigen::MatrixXd Ensemble::get_eigen(vector<string> row_names, vector<string> col_names)
+{
+	if (row_names.size() == 0)
+		throw_ensemble_error("Ensemble.get_eigen() row_names empty");
+	if (col_names.size() == 0)
+		throw_ensemble_error("Ensemble.get_eigen( col_names empty");
+	vector<string> missing;
+	vector<string>::iterator iter,start=real_names.begin(),end=real_names.end();
+	vector<int> row_idxs,col_idxs;
+	for (auto &rname : row_names)
+	{
+		iter = find(start, end, rname);
+		if (iter == end)
+			missing.push_back(rname);
+		row_idxs.push_back(iter - start);
+	}
+	if (missing.size() > 0)
+		throw_ensemble_error("Ensemble.get_eigen() the following row_names not found:", missing);
+	start = var_names.begin();
+	end = var_names.end();
+	for (auto cname : col_names)
+	{
+		iter = find(start, end, cname);
+		if (iter == end)
+			missing.push_back(cname);
+		col_idxs.push_back(iter - start);
+	}
+	if (missing.size() > 0)
+		throw_ensemble_error("Ensemble.get_eigen() the following col_names not found:", missing);
+	Eigen::MatrixXd mat;
+	mat.resize(row_names.size(), col_names.size());
+	int i=0, j=0;
+	for (auto &ii : row_idxs)
+	{
+		j = 0;
+		for (auto &jj : col_idxs)
+		{
+			cout << i << ',' << j << ';' << ii << ',' << jj << endl;
+			mat(i, j) = reals(ii, jj);
+			j++;
+		}
+		i++;
+	}
+
+	return mat;
+	
+}
 
 void Ensemble::to_csv(string &file_name)
 {
@@ -72,6 +119,15 @@ Eigen::VectorXd Ensemble::get_real_vector(const string &real_name)
 		throw_ensemble_error(ss.str());
 	}
 	return get_real_vector(idx);
+}
+
+void Ensemble::throw_ensemble_error(string message, vector<string> vec)
+{
+	stringstream ss;
+	ss << ' ';
+	for (auto &v : vec)
+		ss << v << ',';
+	throw_ensemble_error(message + ss.str());
 }
 
 void Ensemble::throw_ensemble_error(string message)
@@ -297,8 +353,6 @@ void ObservationEnsemble::initialize_with_csv(string &file_name)
 	from_csv(num_reals, csv);
 
 }
-
-
 
 EnsemblePair::EnsemblePair(ParameterEnsemble &_pe, ObservationEnsemble &_oe) : pe(_pe), oe(_oe)
 {
