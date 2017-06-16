@@ -30,6 +30,23 @@ Mat Ensemble::to_matrix(vector<string> &row_names, vector<string> &col_names)
 
 void Ensemble::to_csv(string &file_name)
 {
+	ofstream csv(file_name);
+	if (!csv.good())
+	{
+		throw_ensemble_error("Ensemble.to_csv() error opening csv file " + file_name + " for writing");
+	}
+	for (auto &vname : var_names)
+		csv << vname << ',';
+	csv << endl;
+	for (int ireal = 0; ireal < reals.rows(); ireal++)
+	{
+		csv << real_names[ireal] << ',';
+		for (int ivar=0; ivar < reals.cols(); ivar++)
+		{
+			csv << reals.block(ireal, ivar,1,1) << ',';
+
+		}
+	}
 
 }
 
@@ -197,29 +214,7 @@ void Ensemble::from_csv(int num_reals,ifstream &csv)
 }
 
 
-void Ensemble::initialize_with_csv(string &file_name)
-{
-	
-	ifstream csv(file_name);
-	if (!csv.good())
-		throw runtime_error("error opening parameter csv " + file_name + " for reading");
 
-
-	var_names = prepare_csv(pest_scenario.get_ctl_ordered_par_names(),csv,false);
-	//blast through the file to get number of reals
-	string line;
-	int num_reals = 0;
-	while (getline(csv, line))
-		num_reals++;
-	csv.close();
-	
-	csv.open(file_name);
-	if (!csv.good())
-		throw runtime_error("error re-opening parameter csv " + file_name + " for reading");
-	getline(csv, line);
-	from_csv(num_reals, csv);
-
-}
 
 ParameterEnsemble::ParameterEnsemble(const ParamTransformSeq &_par_transform, Pest &_pest_scenario,
 	FileManager &_file_manager, OutputFileWriter &_output_file_writer,
@@ -228,6 +223,32 @@ ParameterEnsemble::ParameterEnsemble(const ParamTransformSeq &_par_transform, Pe
 {
 
 }
+
+void ParameterEnsemble::initialize_with_csv(string &file_name)
+{
+
+	ifstream csv(file_name);
+	if (!csv.good())
+		throw runtime_error("error opening parameter csv " + file_name + " for reading");
+
+
+	var_names = prepare_csv(pest_scenario.get_ctl_ordered_par_names(), csv, false);
+	//blast through the file to get number of reals
+	string line;
+	int num_reals = 0;
+	while (getline(csv, line))
+		num_reals++;
+	csv.close();
+
+	csv.open(file_name);
+	if (!csv.good())
+		throw runtime_error("error re-opening parameter csv " + file_name + " for reading");
+	getline(csv, line);
+	from_csv(num_reals, csv);
+
+}
+
+
 
 void ParameterEnsemble::enforce_bounds()
 {
@@ -245,6 +266,32 @@ ObservationEnsemble::ObservationEnsemble(ObjectiveFunc *_obj_func, Pest &_pest_s
 {
 
 }
+
+void ObservationEnsemble::initialize_with_csv(string &file_name)
+{
+
+	ifstream csv(file_name);
+	if (!csv.good())
+		throw runtime_error("error opening observation csv " + file_name + " for reading");
+
+
+	var_names = prepare_csv(pest_scenario.get_ctl_ordered_obs_names(), csv, false);
+	//blast through the file to get number of reals
+	string line;
+	int num_reals = 0;
+	while (getline(csv, line))
+		num_reals++;
+	csv.close();
+
+	csv.open(file_name);
+	if (!csv.good())
+		throw runtime_error("error re-opening observation csv " + file_name + " for reading");
+	getline(csv, line);
+	from_csv(num_reals, csv);
+
+}
+
+
 
 EnsemblePair::EnsemblePair(ParameterEnsemble &_pe, ObservationEnsemble &_oe) : pe(_pe), oe(_oe)
 {
@@ -272,6 +319,11 @@ void EnsemblePair::run(RunManagerAbstract *run_mgr_ptr)
 		const vector<double> svec(evec.data(), evec.data() + evec.size());
 		pars.update_without_clear(var_names,svec);
 
-		//run_mgr_ptr->add_run()
+		//if (pe.get_trans_status() == pe::transStatus::CTL)
+
+
+		run_mgr_ptr->add_run(pars);
 	}
+
+	//run_m
 }

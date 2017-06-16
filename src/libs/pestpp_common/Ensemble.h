@@ -26,7 +26,6 @@ public:
 	Mat to_matrix(vector<string> &row_names, vector<string> &col_names);
 
 	void to_csv(string &file_name);
-	void initialize_with_csv(string &file_name);
 	pair<int, int> shape() { return pair<int, int>(reals.rows(), reals.cols()); }
 	void throw_ensemble_error(string &message);
 	const vector<string> get_var_names() const { return var_names; }
@@ -58,6 +57,8 @@ public:
 	ParameterEnsemble(const ParamTransformSeq &_par_transform, Pest &_pest_scenario,
 		FileManager &_file_manager,OutputFileWriter &_output_file_writer,
 		PerformanceLog *_performance_log, unsigned int seed = 1);
+	void initialize_with_csv(string &file_name);
+
 	void enforce_bounds();
 	void to_csv(string &file_name);
 	Pest* get_pest_scenario_ptr() { return &pest_scenario; }
@@ -73,7 +74,8 @@ public:
 	ObservationEnsemble(ObjectiveFunc *_obj_func, Pest &_pest_scenario, FileManager &_file_manager,
     OutputFileWriter &_output_file_writer, PerformanceLog *_performance_log, unsigned int seed = 1);
 	bool update_from_runs(RunManagerAbstract *run_mgmt_ptr);
-	
+	void initialize_with_csv(string &file_name);
+
 private: 
 	ObjectiveFunc *obj_func_ptr;
 };

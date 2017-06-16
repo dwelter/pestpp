@@ -310,7 +310,10 @@ int main(int argc, char* argv[])
 		ParameterEnsemble pe(base_trans_seq, pest_scenario, file_manager, output_file_writer, &performance_log);
 		pe.initialize_with_csv(pest_scenario.get_pestpp_options().get_ies_par_csv());
 
+		ObservationEnsemble oe(&obj_func, pest_scenario, file_manager, output_file_writer, &performance_log);
+		oe.initialize_with_csv(pest_scenario.get_pestpp_options().get_ies_obs_csv());
 
+		EnsemblePair epair(pe, oe);
 
 		// clean up
 		fout_rec.close();
