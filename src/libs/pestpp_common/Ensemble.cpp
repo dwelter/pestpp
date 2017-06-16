@@ -416,6 +416,19 @@ void EnsemblePair::run(RunManagerAbstract *run_mgr_ptr)
 			oe.update_from_obs(real_run_id.first, obs);
 		}
 	}
+	//remove failed reals from active_idx
+	vector<int>::iterator iter;
+	for (auto &fi : failed_real_idxs)
+	{
+		iter = find(active_real_indices.begin(), active_real_indices.end(), fi);
+		if (iter == active_real_indices.end())
+		{
+			stringstream ss;
+			ss << "EnsemblePair.run() failed real idx " << fi << " not found in active_real_idxs";
+			pe.throw_ensemble_error(ss.str());
+		}
+		active_real_indices.erase(iter);
+	}
 	//cout << oe.get_reals() << endl;
 	//cout << pe.get_reals() << endl;
 }
