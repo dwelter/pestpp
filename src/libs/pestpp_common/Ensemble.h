@@ -71,7 +71,8 @@ public:
 	const transStatus get_trans_status() const { return tstat; }
 	void set_trans_status(transStatus _tstat) { tstat = _tstat; }
 	const ParamTransformSeq get_par_transform() const { return par_transform; }
-	
+	void transform_ip(transStatus to_tstat);
+
 private:
 	ParamTransformSeq par_transform;
 	transStatus tstat;
@@ -84,7 +85,7 @@ public:
     OutputFileWriter &_output_file_writer, PerformanceLog *_performance_log, unsigned int seed = 1);
 	void update_from_obs(int row_idx, Observations &obs);
 	void initialize_with_csv(string &file_name);
-
+	vector<double> get_phi_vec();
 private: 
 	ObjectiveFunc *obj_func_ptr;
 };
@@ -95,7 +96,12 @@ public:
 	EnsemblePair(ParameterEnsemble &_pe, ObservationEnsemble &_oe);
 
 	void run(RunManagerAbstract *run_mgr_ptr);
-
+	ObservationEnsemble* get_oe_ptr() { return &oe; }
+	ParameterEnsemble* get_pe_ptr() { return &pe; }
+	Eigen::MatrixXd get_active_oe_eigen();
+	Eigen::MatrixXd get_active_oe_eigen(const vector<string> &obs_names);
+	Eigen::MatrixXd get_active_pe_eigen();
+	Eigen::MatrixXd get_active_pe_eigen(const vector<string> &par_names);
 private:
 	ParameterEnsemble &pe;
 	ObservationEnsemble &oe;

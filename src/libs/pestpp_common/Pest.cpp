@@ -200,6 +200,16 @@ void Pest::check_io()
 	}
 }
 
+const vector<string> Pest::get_ctl_ordered_nz_obs_names()
+{
+	vector<string> nz_obs;
+	for (auto &oname : ctl_ordered_obs_names)
+		if (observation_info.get_observation_rec_ptr(oname)->weight > 0.0)
+			nz_obs.push_back(oname);
+	return nz_obs;
+}
+
+
 const map<string, string> Pest::get_observation_groups() const
 {
 	map<string, string> obs_grp_map;

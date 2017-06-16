@@ -64,13 +64,12 @@ Eigen::MatrixXd Ensemble::get_eigen(vector<string> row_names, vector<string> col
 		j = 0;
 		for (auto &jj : col_idxs)
 		{
-			cout << i << ',' << j << ';' << ii << ',' << jj << endl;
+			//cout << i << ',' << j << ';' << ii << ',' << jj << endl;
 			mat(i, j) = reals(ii, jj);
 			j++;
 		}
 		i++;
 	}
-
 	return mat;
 	
 }
@@ -307,11 +306,15 @@ void ParameterEnsemble::initialize_with_csv(string &file_name)
 
 void ParameterEnsemble::enforce_bounds()
 {
-
+	throw_ensemble_error("pe.enforce_bounds() not implemented");
 }
 
 void ParameterEnsemble::to_csv(string &file_name)
 {
+	throw_ensemble_error("pe.to_csv() not implemented");
+	if (tstat == ParameterEnsemble::transStatus::MODEL)
+		
+
 	Ensemble::to_csv(file_name);
 }
 
@@ -415,7 +418,31 @@ void EnsemblePair::run(RunManagerAbstract *run_mgr_ptr)
 	}
 	//cout << oe.get_reals() << endl;
 	//cout << pe.get_reals() << endl;
-
-
-
 }
+
+Eigen::MatrixXd EnsemblePair::get_active_oe_eigen()
+{
+	return get_active_oe_eigen(oe.get_var_names());
+}
+
+Eigen::MatrixXd EnsemblePair::get_active_oe_eigen(const vector<string> &obs_names)
+{
+	vector<string> act_real_names, oe_real_names = oe.get_real_names();
+	for (auto &i : active_real_indices)
+		act_real_names.push_back(oe_real_names[i]);
+	return pe.get_eigen(act_real_names, obs_names);
+}
+
+Eigen::MatrixXd EnsemblePair::get_active_pe_eigen()
+{
+	return get_active_pe_eigen(pe.get_var_names());
+}
+
+Eigen::MatrixXd EnsemblePair::get_active_pe_eigen(const vector<string> &par_names)
+{
+	vector<string> act_real_names, pe_real_names = pe.get_real_names();
+	for (auto &i : active_real_indices)
+		act_real_names.push_back(pe_real_names[i]);
+	return pe.get_eigen(act_real_names, par_names);
+}
+

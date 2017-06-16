@@ -318,17 +318,19 @@ int main(int argc, char* argv[])
 		EnsemblePair epair(pe, oe);
 
 		epair.run(run_manager_ptr);
-		vector<string>obs_names = pest_scenario.get_ctl_ordered_obs_names();
+		/*vector<string>obs_names = pest_scenario.get_ctl_ordered_obs_names();
 		string last = obs_names[obs_names.size()-1];
 		obs_names.pop_back();
 		obs_names.pop_back();
 		obs_names.insert(obs_names.begin(), last);
 		obs_names.insert(obs_names.begin(), last);
-		obs_names.insert(obs_names.begin(), last);
+		obs_names.insert(obs_names.begin(), last);*/
+
+		vector<string> obs_names = pest_scenario.get_ctl_ordered_nz_obs_names();
 
 		cout << oe.get_eigen(pe.get_real_names(),obs_names) << endl;
 		cout << oe.get_reals() << endl;
-
+		cout << oe.get_eigen(epair.get_oe_ptr()->get_real_names(), obs_names) - oe.get_eigen(oe.get_real_names(), obs_names) << endl;
 
 		// clean up
 		fout_rec.close();
