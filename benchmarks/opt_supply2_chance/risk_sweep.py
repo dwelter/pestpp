@@ -12,7 +12,7 @@ import pyemu
 
 
 base = "template"
-wdir_base = "risk_sweep_base1"
+wdir_base = "risk_sweep_base"
 wdir_worth = "risk_sweep_worth"
 
 
@@ -34,13 +34,18 @@ def run_base():
     [os.remove(f) for f in os.listdir('.') if f.endswith(".rei")] 
 
     risk_vals = [0.01]
-    risk_vals.extend([x for x in np.arange(0.025,1.0,0.025)])
+    risk_vals.extend([x for x in np.arange(0.05,1.0,0.05)])
     risk_vals.extend([0.99])
     #risk_vals = [0.1,0.5,0.9]
     print(risk_vals)
 
     pst = pyemu.Pst("supply2_pest.fosm.pst")
-
+    #pst.control_data.noptmax = 2
+    # jco = pyemu.Jco.from_binary("supply2_pest.full.jcb")
+    # par = pst.parameter_data
+    # fosm_names = list(par.loc[par.pargp.apply(lambda x: x in ["trans","sfr_seg"]),"parnme"].values)
+    # jco = jco.get(col_names=fosm_names)
+    # jco.to_binary("supply2_pest.fosm.jcb")
     for risk_val in risk_vals:
         pst.pestpp_options["opt_risk"] = risk_val
         pst.write("risk_sweep.pst")
@@ -52,6 +57,7 @@ def run_base():
         shutil.copy2(rei_files[mx_idx],os.path.join(results_dir,fname+".rei"))
         shutil.copy2("risk_sweep.rec", os.path.join(results_dir, fname + ".rec"))
         shutil.copy2("risk_sweep.1.par", os.path.join(results_dir, fname + ".par"))
+        #break
     os.chdir("..")
 
 
@@ -125,15 +131,15 @@ def plot_tradeoff():
     ax.plot(risk_vals,obj_func,'b',lw=0.5,marker=".")
 
 
-    rdir = os.path.join(wdir_worth,results_dir)
-    rei_files = [f for f in os.listdir(rdir) if f.endswith(".rei")]
-    print(rei_files)
-    dfs = [pyemu.pst_utils.read_resfile(os.path.join(rdir,f)) for f in rei_files]
-    risk_vals = np.array([float(f.split('_')[1]) for f in rei_files])
-    obj_func = np.array([df.loc["pi_obj_func","modelled"] for df in dfs])
-    infeas = np.array([check_infeas(os.path.join(rdir,f.replace(".rei",".rec"))) for f in rei_files])
-    obj_func[infeas==True] = np.NaN 
-    ax.plot(risk_vals,obj_func,'b',lw=0.5,marker=".")
+    # rdir = os.path.join(wdir_worth,results_dir)
+    # rei_files = [f for f in os.listdir(rdir) if f.endswith(".rei")]
+    # print(rei_files)
+    # dfs = [pyemu.pst_utils.read_resfile(os.path.join(rdir,f)) for f in rei_files]
+    # risk_vals = np.array([float(f.split('_')[1]) for f in rei_files])
+    # obj_func = np.array([df.loc["pi_obj_func","modelled"] for df in dfs])
+    # infeas = np.array([check_infeas(os.path.join(rdir,f.replace(".rei",".rec"))) for f in rei_files])
+    # obj_func[infeas==True] = np.NaN 
+    # ax.plot(risk_vals,obj_func,'b',lw=0.5,marker=".")
 
     # risk_infeas = risk_vals.copy()
     # risk_infeas[infeas==True] = np.NaN
@@ -208,7 +214,7 @@ def plot_dev_var_bar():
 
 
 if __name__ == "__main__":
-    #run_base()
+    run_base()
     #run_worth()
     plot_tradeoff()
-    #plot_dev_var_bar()
+    plot_dev_var_bar()
