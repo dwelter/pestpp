@@ -17,6 +17,40 @@ Ensemble::Ensemble(Pest &_pest_scenario,
 	rand_engine.seed(seed);
 }
 
+Eigen::MatrixXd Ensemble::get_eigen_mean_diff()
+{
+	Eigen::MatrixXd _reals = reals; //copy
+	double mean;
+	pair<int, int> s = shape();
+	for (int j = 0; j < reals.cols(); j++)
+	{
+		mean = reals.col(j).mean();
+		_reals.col(j) = _reals.col(j) - (Eigen::VectorXd::Ones(s.first) * mean);
+	}
+	return _reals;
+
+}
+
+void Ensemble::from_eigen_mat(Eigen::MatrixXd _reals, vector<string> _real_names, vector<string> _var_names)
+{
+	if (_reals.rows() != _real_names.size())
+		throw_ensemble_error("Ensemble.from_eigen_mat() rows != real_names.size");
+	if (_reals.cols() != _var_names.size())
+		throw_ensemble_error("Ensemble.from_eigen_mat() cols != var_names.size");
+	reals = _reals;
+	var_names = _var_names;
+	real_names = _real_names;
+}
+
+void Ensemble::set_reals(Eigen::MatrixXd _reals)
+{
+	if (_reals.rows() != real_names.size())
+		throw_ensemble_error("Ensemble.set_reals() rows != real_names.size");
+	if (_reals.cols() != var_names.size())
+		throw_ensemble_error("Ensemble.set_reals() cols != var_names.size");
+	reals = _reals;
+}
+
 Mat Ensemble::to_matrix()
 {
 	return to_matrix(real_names, var_names);
@@ -197,7 +231,7 @@ vector<string> Ensemble::prepare_csv(vector<string> names, ifstream &csv, bool f
 
 }
 
-void Ensemble::from_csv(int num_reals,ifstream &csv)
+void Ensemble::read_csv(int num_reals,ifstream &csv)
 {
 	int lcount = 0;
 	//vector<vector<double>> vectors;
@@ -280,7 +314,7 @@ ParameterEnsemble::ParameterEnsemble(const ParamTransformSeq &_par_transform, Pe
 
 }
 
-void ParameterEnsemble::initialize_with_csv(string &file_name)
+void ParameterEnsemble::from_csv(string &file_name)
 {
 
 	ifstream csv(file_name);
@@ -299,7 +333,7 @@ void ParameterEnsemble::initialize_with_csv(string &file_name)
 	if (!csv.good())
 		throw runtime_error("error re-opening parameter csv " + file_name + " for reading");
 	getline(csv, line);
-	from_csv(num_reals, csv);
+	Ensemble::read_csv(num_reals, csv);
 	tstat = transStatus::CTL;
 	//cout << reals << endl;
 }
@@ -318,6 +352,14 @@ void ParameterEnsemble::to_csv(string &file_name)
 	Ensemble::to_csv(file_name);
 }
 
+ParameterEnsemble ParameterEnsemble::get_mean_diff()
+{
+	ParameterEnsemble new_pe = *this;
+	new_pe.set_reals(get_eigen_mean_diff());
+	return new_pe;
+}
+
+
 ObservationEnsemble::ObservationEnsemble(ObjectiveFunc *_obj_func, Pest &_pest_scenario,
 	FileManager &_file_manager, OutputFileWriter &_output_file_writer, PerformanceLog *_performance_log, unsigned int seed) :
 	Ensemble(_pest_scenario, _file_manager, _output_file_writer, _performance_log, seed), obj_func_ptr(_obj_func)
@@ -333,7 +375,7 @@ void ObservationEnsemble::update_from_obs(int row_idx, Observations &obs)
 
 }
 
-void ObservationEnsemble::initialize_with_csv(string &file_name)
+void ObservationEnsemble::from_csv(string &file_name)
 {
 
 	ifstream csv(file_name);
@@ -353,9 +395,18 @@ void ObservationEnsemble::initialize_with_csv(string &file_name)
 	if (!csv.good())
 		throw runtime_error("error re-opening observation csv " + file_name + " for reading");
 	getline(csv, line);
-	from_csv(num_reals, csv);
+	Ensemble::read_csv(num_reals, csv);
 
 }
+
+ObservationEnsemble ObservationEnsemble::get_mean_diff()
+{
+	ObservationEnsemble new_oe = *this;
+	new_oe.set_reals(get_eigen_mean_diff());
+	return new_oe;
+}
+
+
 
 EnsemblePair::EnsemblePair(ParameterEnsemble &_pe, ObservationEnsemble &_oe) : pe(_pe), oe(_oe)
 {
@@ -405,7 +456,7 @@ void EnsemblePair::run(RunManagerAbstract *run_mgr_ptr)
 	set<int> failed_runs = run_mgr_ptr->get_failed_run_ids();
 	vector<int> failed_real_idxs;
 	Observations obs;
-	cout << oe.get_reals() << endl;
+	//cout << oe.get_reals() << endl;
 	for (auto &real_run_id : real_run_ids)
 	{
 		if (failed_runs.find(real_run_id.second) != failed_runs.end())
@@ -443,7 +494,7 @@ Eigen::MatrixXd EnsemblePair::get_active_oe_eigen(const vector<string> &obs_name
 	vector<string> act_real_names, oe_real_names = oe.get_real_names();
 	for (auto &i : active_real_indices)
 		act_real_names.push_back(oe_real_names[i]);
-	return pe.get_eigen(act_real_names, obs_names);
+	return oe.get_eigen(act_real_names, obs_names);
 }
 
 Eigen::MatrixXd EnsemblePair::get_active_pe_eigen()
@@ -459,3 +510,10 @@ Eigen::MatrixXd EnsemblePair::get_active_pe_eigen(const vector<string> &par_name
 	return pe.get_eigen(act_real_names, par_names);
 }
 
+//EnsemblePair EnsemblePair::get_mean_diff()
+//{
+//	ParameterEnsemble _pe = pe.get_mean_diff();
+//
+//	return
+//
+//}

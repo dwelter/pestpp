@@ -308,16 +308,21 @@ int main(int argc, char* argv[])
 		}
 
 		ParameterEnsemble pe(base_trans_seq, pest_scenario, file_manager, output_file_writer, &performance_log);
-		pe.initialize_with_csv(pest_scenario.get_pestpp_options().get_ies_par_csv());
+		pe.from_csv(pest_scenario.get_pestpp_options().get_ies_par_csv());
+
+		cout << *pe.get_mean_diff().eptr() << endl;
+
 
 		ObservationEnsemble oe(&obj_func, pest_scenario, file_manager, output_file_writer, &performance_log);
-		oe.initialize_with_csv(pest_scenario.get_pestpp_options().get_ies_obs_csv());
+		oe.from_csv(pest_scenario.get_pestpp_options().get_ies_obs_csv());
 
 		ObservationEnsemble oe_org = oe;
 
 		EnsemblePair epair(pe, oe);
 
 		epair.run(run_manager_ptr);
+
+		
 		/*vector<string>obs_names = pest_scenario.get_ctl_ordered_obs_names();
 		string last = obs_names[obs_names.size()-1];
 		obs_names.pop_back();
@@ -326,11 +331,13 @@ int main(int argc, char* argv[])
 		obs_names.insert(obs_names.begin(), last);
 		obs_names.insert(obs_names.begin(), last);*/
 
-		vector<string> obs_names = pest_scenario.get_ctl_ordered_nz_obs_names();
-
+		/*vector<string> obs_names = pest_scenario.get_ctl_ordered_nz_obs_names();
 		cout << oe.get_eigen(pe.get_real_names(),obs_names) << endl;
 		cout << oe.get_reals() << endl;
 		cout << oe.get_eigen(epair.get_oe_ptr()->get_real_names(), obs_names) - oe.get_eigen(oe.get_real_names(), obs_names) << endl;
+*/
+		//cout << epair.get_active_oe_eigen() << endl;
+		//cout << epair.get_active_pe_eigen() << endl;
 
 		// clean up
 		fout_rec.close();
