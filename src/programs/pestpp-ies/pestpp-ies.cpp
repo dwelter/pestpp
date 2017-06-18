@@ -310,7 +310,7 @@ int main(int argc, char* argv[])
 		ParameterEnsemble pe(base_trans_seq, pest_scenario, file_manager, output_file_writer, &performance_log);
 		pe.from_csv(pest_scenario.get_pestpp_options().get_ies_par_csv());
 
-		cout << *pe.get_mean_diff().get_reals_ptr() << endl;
+		cout << pe.get_eigen_mean_diff() << endl;
 
 		ObservationEnsemble oe(&obj_func, pest_scenario, file_manager, output_file_writer, &performance_log);
 		oe.from_csv(pest_scenario.get_pestpp_options().get_ies_obs_csv());
@@ -323,9 +323,9 @@ int main(int argc, char* argv[])
 		epair.run(run_manager_ptr);
 		epair.process_runs(run_manager_ptr);
 
-		cout << epair.get_active_oe_mean_diff() << endl;
-		cout << epair.get_active_pe_mean_diff() << endl;
-		
+		cout << epair.get_pe_ptr()->get_eigen_mean_diff(epair.get_pe_active_names()) << endl;
+		cout << epair.get_oe_ptr()->get_eigen_mean_diff(epair.get_oe_active_names()) << endl;
+		cout << *epair.get_oe_ptr()->get_eigen_ptr() - *oe.get_eigen_ptr() << endl;
 		/*vector<string>obs_names = pest_scenario.get_ctl_ordered_obs_names();
 		string last = obs_names[obs_names.size()-1];
 		obs_names.pop_back();

@@ -37,14 +37,15 @@ public:
 	Eigen::VectorXd get_real_vector(const string &real_name);
 	Eigen::MatrixXd get_eigen(vector<string> row_names, vector<string> col_names);
 
-	const Eigen::MatrixXd get_reals() const { return reals; }
-	const Eigen::MatrixXd* get_reals_ptr() const { return &reals; }
+	const Eigen::MatrixXd get_eigen() const { return reals; }
+	const Eigen::MatrixXd* get_eigen_ptr() const { return &reals; }
 	void set_reals(Eigen::MatrixXd _reals);
 
 	Eigen::MatrixXd get_eigen_mean_diff();
 	Eigen::MatrixXd get_eigen_mean_diff(vector<string> &_real_names);
-
 	
+	void reorder(vector<string> &_real_names, vector<string> *_var_names);
+
 	~Ensemble();
 protected:
 	Pest &pest_scenario;
@@ -76,7 +77,7 @@ public:
 	void set_trans_status(transStatus _tstat) { tstat = _tstat; }
 	const ParamTransformSeq get_par_transform() const { return par_transform; }
 	void transform_ip(transStatus to_tstat);
-	ParameterEnsemble get_mean_diff();
+	//ParameterEnsemble get_mean_diff();
 private:
 	ParamTransformSeq par_transform;
 	transStatus tstat;
@@ -90,7 +91,7 @@ public:
 	void update_from_obs(int row_idx, Observations &obs);
 	void from_csv(string &file_name);
 	vector<double> get_phi_vec();
-	ObservationEnsemble get_mean_diff();
+	//ObservationEnsemble get_mean_diff();
 private: 
 	ObjectiveFunc *obj_func_ptr;
 };
@@ -102,22 +103,22 @@ public:
 	void queue_runs(RunManagerAbstract *run_mgr_ptr);
 	void run(RunManagerAbstract *run_mgr_ptr);
 	void process_runs(RunManagerAbstract *run_mgr_ptr);
-	ObservationEnsemble* get_oe_ptr() { return &oe; }
-	ParameterEnsemble* get_pe_ptr() { return &pe; }
-	Eigen::MatrixXd get_active_oe_eigen();
+	/*Eigen::MatrixXd get_active_oe_eigen();
 	Eigen::MatrixXd get_active_pe_eigen();
 	Eigen::MatrixXd get_active_oe_mean_diff();
-	Eigen::MatrixXd get_active_pe_mean_diff();
+	Eigen::MatrixXd get_active_pe_mean_diff();*/
 
-	
+	ParameterEnsemble* get_pe_ptr() { return &pe; }
+	ObservationEnsemble* get_oe_ptr() { return &oe; }
 	const vector<int> get_act_real_indices() const { return active_real_indices; }
 	void set_act_real_indices(vector<int> _act_real_indices) { active_real_indices = _act_real_indices; }
-
+	vector<string> get_pe_active_names();
+	vector<string> get_oe_active_names();
 	//EnsemblePair get_mean_diff();
 
 private:
-	ParameterEnsemble pe;
-	ObservationEnsemble oe;
+	ParameterEnsemble &pe;
+	ObservationEnsemble &oe;
 	vector<int> active_real_indices;
 	map<int, int> real_run_ids;
 };

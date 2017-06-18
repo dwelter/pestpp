@@ -394,12 +394,12 @@ void ParameterEnsemble::to_csv(string &file_name)
 	Ensemble::to_csv(file_name);
 }
 
-ParameterEnsemble ParameterEnsemble::get_mean_diff()
-{
-	ParameterEnsemble new_pe = *this;
-	new_pe.set_reals(get_eigen_mean_diff());
-	return new_pe;
-}
+//ParameterEnsemble ParameterEnsemble::get_mean_diff()
+//{
+//	ParameterEnsemble new_pe = *this;
+//	new_pe.set_reals(get_eigen_mean_diff());
+//	return new_pe;
+//}
 
 
 ObservationEnsemble::ObservationEnsemble(ObjectiveFunc *_obj_func, Pest &_pest_scenario,
@@ -441,12 +441,12 @@ void ObservationEnsemble::from_csv(string &file_name)
 
 }
 
-ObservationEnsemble ObservationEnsemble::get_mean_diff()
-{
-	ObservationEnsemble new_oe = *this;
-	new_oe.set_reals(get_eigen_mean_diff());
-	return new_oe;
-}
+//ObservationEnsemble ObservationEnsemble::get_mean_diff()
+//{
+//	ObservationEnsemble new_oe = *this;
+//	new_oe.set_reals(get_eigen_mean_diff());
+//	return new_oe;
+//}
 
 
 
@@ -534,35 +534,53 @@ void EnsemblePair::process_runs(RunManagerAbstract *run_mgr_ptr)
 	//cout << pe.get_reals() << endl;
 }
 
-Eigen::MatrixXd EnsemblePair::get_active_oe_eigen()
+vector<string> EnsemblePair::get_oe_active_names()
 {
-	vector<string> act_real_names, oe_real_names = oe.get_real_names();
+	vector<string> act_real_names, real_names = oe.get_real_names();
 	for (auto &i : active_real_indices)
-		act_real_names.push_back(oe_real_names[i]);
-	return oe.get_eigen(act_real_names, vector<string>());
+		act_real_names.push_back(real_names[i]);
+	return act_real_names;
 }
 
-Eigen::MatrixXd EnsemblePair::get_active_pe_eigen()
+
+vector<string> EnsemblePair::get_pe_active_names()
 {
-	vector<string> act_real_names, pe_real_names = pe.get_real_names();
+	vector<string> act_real_names, real_names = pe.get_real_names();
 	for (auto &i : active_real_indices)
-		act_real_names.push_back(pe_real_names[i]);
-	return pe.get_eigen(act_real_names, vector<string>());
+		act_real_names.push_back(real_names[i]);
+	return act_real_names;
 }
 
-Eigen::MatrixXd EnsemblePair::get_active_pe_mean_diff()
-{
-	vector<string> act_real_names, pe_real_names = pe.get_real_names();
-	for (auto &i : active_real_indices)
-		act_real_names.push_back(pe_real_names[i]);
-	return pe.get_eigen_mean_diff(act_real_names);
-}
 
-Eigen::MatrixXd EnsemblePair::get_active_oe_mean_diff()
-{
-	vector<string> act_real_names, oe_real_names = oe.get_real_names();
-	for (auto &i : active_real_indices)
-		act_real_names.push_back(oe_real_names[i]);
-	return oe.get_eigen_mean_diff(act_real_names);
-
-}
+//Eigen::MatrixXd EnsemblePair::get_active_oe_eigen()
+//{
+//	vector<string> act_real_names, oe_real_names = oe.get_real_names();
+//	for (auto &i : active_real_indices)
+//		act_real_names.push_back(oe_real_names[i]);
+//	return oe.get_eigen(act_real_names, vector<string>());
+//}
+//
+//Eigen::MatrixXd EnsemblePair::get_active_pe_eigen()
+//{
+//	vector<string> act_real_names, pe_real_names = pe.get_real_names();
+//	for (auto &i : active_real_indices)
+//		act_real_names.push_back(pe_real_names[i]);
+//	return pe.get_eigen(act_real_names, vector<string>());
+//}
+//
+//Eigen::MatrixXd EnsemblePair::get_active_pe_mean_diff()
+//{
+//	vector<string> act_real_names, pe_real_names = pe.get_real_names();
+//	for (auto &i : active_real_indices)
+//		act_real_names.push_back(pe_real_names[i]);
+//	return pe.get_eigen_mean_diff(act_real_names);
+//}
+//
+//Eigen::MatrixXd EnsemblePair::get_active_oe_mean_diff()
+//{
+//	vector<string> act_real_names, oe_real_names = oe.get_real_names();
+//	for (auto &i : active_real_indices)
+//		act_real_names.push_back(oe_real_names[i]);
+//	return oe.get_eigen_mean_diff(act_real_names);
+//
+//}
