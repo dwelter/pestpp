@@ -17,19 +17,31 @@ Ensemble::Ensemble(Pest &_pest_scenario,
 	rand_engine.seed(seed);
 }
 
+
 Eigen::MatrixXd Ensemble::get_eigen_mean_diff()
 {
-	Eigen::MatrixXd _reals = reals; //copy
+	return get_eigen_mean_diff(vector<string>());
+}
+
+Eigen::MatrixXd Ensemble::get_eigen_mean_diff(vector<string> &_real_names)
+{
+	Eigen::MatrixXd _reals;
+	if (_real_names.size() == 0)
+		_reals = reals;
+	else
+		_reals = get_eigen(_real_names, vector<string>());
+
 	double mean;
-	pair<int, int> s = shape();
-	for (int j = 0; j < reals.cols(); j++)
+	int s = _reals.rows();
+	for (int j = 0; j < _reals.cols(); j++)
 	{
-		mean = reals.col(j).mean();
-		_reals.col(j) = _reals.col(j) - (Eigen::VectorXd::Ones(s.first) * mean);
+		mean = _reals.col(j).mean();
+		_reals.col(j) = _reals.col(j) - (Eigen::VectorXd::Ones(s) * mean);
 	}
 	return _reals;
 
 }
+
 
 void Ensemble::from_eigen_mat(Eigen::MatrixXd _reals, vector<string> _real_names, vector<string> _var_names)
 {
@@ -63,34 +75,67 @@ Mat Ensemble::to_matrix(vector<string> &row_names, vector<string> &col_names)
 
 Eigen::MatrixXd Ensemble::get_eigen(vector<string> row_names, vector<string> col_names)
 {
-	if (row_names.size() == 0)
-		throw_ensemble_error("Ensemble.get_eigen() row_names empty");
-	if (col_names.size() == 0)
-		throw_ensemble_error("Ensemble.get_eigen( col_names empty");
-	vector<string> missing;
-	vector<string>::iterator iter,start=real_names.begin(),end=real_names.end();
-	vector<int> row_idxs,col_idxs;
+	vector<string> missing_rows,missing_cols;
+	vector<string>::iterator iter, start = real_names.begin(), end = real_names.end();
+	vector<int> row_idxs, col_idxs;
+	Eigen::MatrixXd mat;
+	//find row indices
 	for (auto &rname : row_names)
 	{
 		iter = find(start, end, rname);
 		if (iter == end)
-			missing.push_back(rname);
+			missing_rows.push_back(rname);
 		row_idxs.push_back(iter - start);
 	}
-	if (missing.size() > 0)
-		throw_ensemble_error("Ensemble.get_eigen() the following row_names not found:", missing);
+	//find col indices
 	start = var_names.begin();
 	end = var_names.end();
 	for (auto cname : col_names)
 	{
 		iter = find(start, end, cname);
 		if (iter == end)
-			missing.push_back(cname);
+			missing_cols.push_back(cname);
 		col_idxs.push_back(iter - start);
 	}
-	if (missing.size() > 0)
-		throw_ensemble_error("Ensemble.get_eigen() the following col_names not found:", missing);
-	Eigen::MatrixXd mat;
+
+	// only mess with columns, keep rows the same
+	if (row_names.size() == 0) 
+	{		
+		if (missing_cols.size() > 0)
+			throw_ensemble_error("Ensemble.get_eigen() the following col_names not found:", missing_cols);
+		mat.resize(real_names.size(), col_names.size());
+		int j = 0;
+		for (auto &jj : col_idxs)
+		{
+			mat.col(j) = reals.col(jj);
+			j++;
+		}
+		return mat;
+
+	}
+
+	// only mess with rows, keep cols the same
+	if (col_names.size() == 0) 
+	{
+		if (missing_rows.size() > 0)
+			throw_ensemble_error("Ensemble.get_eigen() the following row_names not found:", missing_rows);
+		mat.resize(row_names.size(), var_names.size());
+		int i = 0;
+		for (auto &ii : row_idxs)
+		{
+			mat.row(i) = reals.row(ii);
+			i++;
+		}
+		return mat;
+
+	}
+
+	//the slow one where we are rearranging rows and cols
+	if (missing_rows.size() > 0)
+		throw_ensemble_error("Ensemble.get_eigen() the following row_names not found:", missing_rows);
+	
+	if (missing_cols.size() > 0)
+		throw_ensemble_error("Ensemble.get_eigen() the following col_names not found:", missing_cols);
 	mat.resize(row_names.size(), col_names.size());
 	int i=0, j=0;
 	for (auto &ii : row_idxs)
@@ -177,7 +222,7 @@ Ensemble::~Ensemble()
 {
 }
 
-vector<string> Ensemble::prepare_csv(vector<string> names, ifstream &csv, bool forgive)
+vector<string> Ensemble::prepare_csv(const vector<string> &names, ifstream &csv, bool forgive)
 {
 	if (!csv.good())
 	{
@@ -214,9 +259,6 @@ vector<string> Ensemble::prepare_csv(vector<string> names, ifstream &csv, bool f
 			cout << ss.str() << endl << "continuing anyway..." << endl;
 	}
 
-	//build up a list of idxs to use
-	//vector<int> header_idxs;
-	//map<string, int> header_info;
 	vector<string> header_names;
 	for (int i = 0; i < header_tokens.size(); i++)
 	{
@@ -424,37 +466,45 @@ EnsemblePair::EnsemblePair(ParameterEnsemble &_pe, ObservationEnsemble &_oe) : p
 		active_real_indices.push_back(i);
 }
 
-void EnsemblePair::run(RunManagerAbstract *run_mgr_ptr)
+void EnsemblePair::queue_runs(RunManagerAbstract *run_mgr_ptr)
 {
-	
+
 	Parameters pars = pe.get_pest_scenario_ptr()->get_ctl_parameters();
 	//for (int ireal = 0; ireal < pe.shape().first; ireal++)
 	Eigen::VectorXd evec;
 	vector<double> svec;
 	vector<string> var_names = pe.get_var_names();
 	//for (auto &real_name : pe.get_real_names())
-	map<int, int> real_run_ids;
+	real_run_ids.clear();
 	int run_id;
 	for (auto &act_idx : active_real_indices)
 	{
 		evec = pe.get_real_vector(act_idx);
 		const vector<double> svec(evec.data(), evec.data() + evec.size());
-		pars.update_without_clear(var_names,svec);
+		pars.update_without_clear(var_names, svec);
 		if (pe.get_trans_status() == ParameterEnsemble::transStatus::CTL)
 			pe.get_par_transform().ctl2model_ip(pars);
 		else if (pe.get_trans_status() == ParameterEnsemble::transStatus::NUM)
 			pe.get_par_transform().numeric2model_ip(pars);
 
 		run_id = run_mgr_ptr->add_run(pars);
-		real_run_ids[act_idx] =  run_id;
+		real_run_ids[act_idx] = run_id;
 	}
 	//pe.set_trans_status(ParameterEnsemble::transStatus::MODEL);
 	//cout << pe.get_reals() << endl;
-	
-	run_mgr_ptr->run();
+}
 
+void EnsemblePair::run(RunManagerAbstract *run_mgr_ptr)
+{
+	run_mgr_ptr->run();
+}
+
+void EnsemblePair::process_runs(RunManagerAbstract *run_mgr_ptr)
+{
+	
 	set<int> failed_runs = run_mgr_ptr->get_failed_run_ids();
 	vector<int> failed_real_idxs;
+	Parameters pars = pe.get_pest_scenario_ptr()->get_ctl_parameters();
 	Observations obs;
 	//cout << oe.get_reals() << endl;
 	for (auto &real_run_id : real_run_ids)
@@ -486,34 +536,33 @@ void EnsemblePair::run(RunManagerAbstract *run_mgr_ptr)
 
 Eigen::MatrixXd EnsemblePair::get_active_oe_eigen()
 {
-	return get_active_oe_eigen(oe.get_var_names());
-}
-
-Eigen::MatrixXd EnsemblePair::get_active_oe_eigen(const vector<string> &obs_names)
-{
 	vector<string> act_real_names, oe_real_names = oe.get_real_names();
 	for (auto &i : active_real_indices)
 		act_real_names.push_back(oe_real_names[i]);
-	return oe.get_eigen(act_real_names, obs_names);
+	return oe.get_eigen(act_real_names, vector<string>());
 }
 
 Eigen::MatrixXd EnsemblePair::get_active_pe_eigen()
 {
-	return get_active_pe_eigen(pe.get_var_names());
+	vector<string> act_real_names, pe_real_names = pe.get_real_names();
+	for (auto &i : active_real_indices)
+		act_real_names.push_back(pe_real_names[i]);
+	return pe.get_eigen(act_real_names, vector<string>());
 }
 
-Eigen::MatrixXd EnsemblePair::get_active_pe_eigen(const vector<string> &par_names)
+Eigen::MatrixXd EnsemblePair::get_active_pe_mean_diff()
 {
 	vector<string> act_real_names, pe_real_names = pe.get_real_names();
 	for (auto &i : active_real_indices)
 		act_real_names.push_back(pe_real_names[i]);
-	return pe.get_eigen(act_real_names, par_names);
+	return pe.get_eigen_mean_diff(act_real_names);
 }
 
-//EnsemblePair EnsemblePair::get_mean_diff()
-//{
-//	ParameterEnsemble _pe = pe.get_mean_diff();
-//
-//	return
-//
-//}
+Eigen::MatrixXd EnsemblePair::get_active_oe_mean_diff()
+{
+	vector<string> act_real_names, oe_real_names = oe.get_real_names();
+	for (auto &i : active_real_indices)
+		act_real_names.push_back(oe_real_names[i]);
+	return oe.get_eigen_mean_diff(act_real_names);
+
+}

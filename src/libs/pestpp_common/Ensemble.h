@@ -35,15 +35,16 @@ public:
 
 	Eigen::VectorXd get_real_vector(int ireal);
 	Eigen::VectorXd get_real_vector(const string &real_name);
-	Eigen::VectorXd get_var_values(int icol);
-	Eigen::VectorXd get_var_values(const string &var_name);
-	const Eigen::MatrixXd* eptr() const { return &reals; }
 	Eigen::MatrixXd get_eigen(vector<string> row_names, vector<string> col_names);
+
 	const Eigen::MatrixXd get_reals() const { return reals; }
+	const Eigen::MatrixXd* get_reals_ptr() const { return &reals; }
 	void set_reals(Eigen::MatrixXd _reals);
 
 	Eigen::MatrixXd get_eigen_mean_diff();
+	Eigen::MatrixXd get_eigen_mean_diff(vector<string> &_real_names);
 
+	
 	~Ensemble();
 protected:
 	Pest &pest_scenario;
@@ -55,7 +56,7 @@ protected:
 	vector<string> var_names;
 	vector<string> real_names;	
 	void read_csv(int num_reals,ifstream &csv);
-	vector<string> prepare_csv(vector<string> names, ifstream &csv, bool forgive);
+	vector<string> prepare_csv(const vector<string> &names, ifstream &csv, bool forgive);
 };
 
 class ParameterEnsemble : public Ensemble
@@ -98,23 +99,26 @@ class EnsemblePair
 {
 public:
 	EnsemblePair(ParameterEnsemble &_pe, ObservationEnsemble &_oe);
-
+	void queue_runs(RunManagerAbstract *run_mgr_ptr);
 	void run(RunManagerAbstract *run_mgr_ptr);
+	void process_runs(RunManagerAbstract *run_mgr_ptr);
 	ObservationEnsemble* get_oe_ptr() { return &oe; }
 	ParameterEnsemble* get_pe_ptr() { return &pe; }
 	Eigen::MatrixXd get_active_oe_eigen();
-	Eigen::MatrixXd get_active_oe_eigen(const vector<string> &obs_names);
 	Eigen::MatrixXd get_active_pe_eigen();
-	Eigen::MatrixXd get_active_pe_eigen(const vector<string> &par_names);
+	Eigen::MatrixXd get_active_oe_mean_diff();
+	Eigen::MatrixXd get_active_pe_mean_diff();
+
+	
 	const vector<int> get_act_real_indices() const { return active_real_indices; }
 	void set_act_real_indices(vector<int> _act_real_indices) { active_real_indices = _act_real_indices; }
 
-	EnsemblePair get_mean_diff();
+	//EnsemblePair get_mean_diff();
 
 private:
 	ParameterEnsemble pe;
 	ObservationEnsemble oe;
 	vector<int> active_real_indices;
-
+	map<int, int> real_run_ids;
 };
 #endif 
