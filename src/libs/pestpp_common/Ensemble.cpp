@@ -77,8 +77,10 @@ void Ensemble::set_eigen(Eigen::MatrixXd _reals)
 void Ensemble::reorder(vector<string> &_real_names, vector<string> &_var_names)
 {
 	reals = get_eigen(_real_names, _var_names);
-	var_names = _var_names;
-	real_names = _real_names;
+	if (_var_names.size() != 0)
+		var_names = _var_names;
+	if (_real_names.size() != 0)
+		real_names = _real_names;
 }
 
 Eigen::MatrixXd Ensemble::get_eigen(vector<string> row_names, vector<string> col_names)
@@ -168,6 +170,7 @@ void Ensemble::to_csv(string &file_name)
 	{
 		throw_ensemble_error("Ensemble.to_csv() error opening csv file " + file_name + " for writing");
 	}
+	csv << "real_name" << ',';
 	for (auto &vname : var_names)
 		csv << vname << ',';
 	csv << endl;
@@ -177,8 +180,8 @@ void Ensemble::to_csv(string &file_name)
 		for (int ivar=0; ivar < reals.cols(); ivar++)
 		{
 			csv << reals.block(ireal, ivar,1,1) << ',';
-
 		}
+		csv << endl;
 	}
 
 }
@@ -434,11 +437,35 @@ void ParameterEnsemble::enforce_bounds()
 
 void ParameterEnsemble::to_csv(string &file_name)
 {
-	throw_ensemble_error("pe.to_csv() not implemented");
-	if (tstat == ParameterEnsemble::transStatus::MODEL)
-		
+	
+	ofstream csv(file_name);
+	if (!csv.good())
+	{
+		throw_ensemble_error("ParameterEnsemble.to_csv() error opening csv file " + file_name + " for writing");
+	}
+	csv << "real_name" << ',';
+	for (auto &vname : var_names)
+		csv << vname << ',';
+	csv << endl;
+	Parameters pars = pest_scenario_ptr->get_ctl_parameters();
+	vector<double> svec;
+	Eigen::VectorXd evec;
+	svec.resize(reals.cols());
+	for (int ireal = 0; ireal < reals.rows(); ireal++)
+	{
+		csv << real_names[ireal] << ',';
+		//evec = reals.row(ireal);
+		//svec.assign(evec.data(), evec.data() + evec.size());
+		pars.update_without_clear(var_names, reals.row(ireal));
+		if (tstat == transStatus::MODEL)
+			par_transform.model2ctl_ip(pars);
+		else if (tstat == transStatus::NUM)
+			par_transform.numeric2ctl_ip(pars);
 
-	Ensemble::to_csv(file_name);
+		for (auto &name : var_names)
+			csv << pars[name] << ',';
+		csv << endl;
+	}
 }
 
 //ParameterEnsemble ParameterEnsemble::get_mean_diff()
@@ -448,13 +475,11 @@ void ParameterEnsemble::to_csv(string &file_name)
 //	return new_pe;
 //}
 
-
 //ObservationEnsemble::ObservationEnsemble(ObjectiveFunc *_obj_func, Pest &_pest_scenario,
 //	FileManager &_file_manager, OutputFileWriter &_output_file_writer, PerformanceLog *_performance_log, unsigned int seed) :
 //	Ensemble(_pest_scenario, _file_manager, _output_file_writer, _performance_log, seed), obj_func_ptr(_obj_func)
 ObservationEnsemble::ObservationEnsemble(Pest *_pest_scenario_ptr): Ensemble(_pest_scenario_ptr)
 {
-	obj_func = ObjectiveFunc();
 }
 
 void ObservationEnsemble::update_from_obs(int row_idx, Observations &obs)

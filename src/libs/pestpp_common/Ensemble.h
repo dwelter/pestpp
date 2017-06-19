@@ -104,10 +104,7 @@ public:
 	void from_csv(string &file_name, const vector<string> &ordered_names);
 	void from_csv(string &file_name);
 	void from_eigen_mat(Eigen::MatrixXd mat, const vector<string> &_real_names, const vector<string> &_var_names);
-	vector<double> get_phi_vec();
 	//ObservationEnsemble get_mean_diff();
-private: 
-	ObjectiveFunc obj_func;
 };
 
 class EnsemblePair
