@@ -3,20 +3,21 @@
 #include "Ensemble.h"
 #include "RestartController.h"
 #include "utilities.h"
+#include "ParamTransformSeq.h"
+#include "ObjectiveFunc.h"
 
 mt19937_64 Ensemble::rand_engine = mt19937_64(1);
 
-
-Ensemble::Ensemble(Pest &_pest_scenario,
-	FileManager &_file_manager,OutputFileWriter &_output_file_writer,
-	PerformanceLog *_performance_log,  unsigned int seed)
-	: pest_scenario(_pest_scenario), file_manager(_file_manager),
-	output_file_writer(_output_file_writer), performance_log(_performance_log)
+//Ensemble::Ensemble(Pest &_pest_scenario,
+//	FileManager &_file_manager,OutputFileWriter &_output_file_writer,
+//	PerformanceLog *_performance_log,  unsigned int seed)
+//	: pest_scenario(_pest_scenario), file_manager(_file_manager),
+//	output_file_writer(_output_file_writer), performance_log(_performance_log)
+Ensemble::Ensemble(Pest *_pest_scenario_ptr): pest_scenario_ptr(_pest_scenario_ptr)
 {
 	// initialize random number generator
-	rand_engine.seed(seed);
+	rand_engine.seed(1123433458);
 }
-
 
 Eigen::MatrixXd Ensemble::get_eigen_mean_diff()
 {
@@ -43,7 +44,7 @@ Eigen::MatrixXd Ensemble::get_eigen_mean_diff(vector<string> &_real_names)
 }
 
 
-void Ensemble::from_eigen_mat(Eigen::MatrixXd _reals, vector<string> _real_names, vector<string> _var_names)
+void Ensemble::from_eigen_mat(Eigen::MatrixXd _reals, const vector<string> &_real_names, const vector<string> &_var_names)
 {
 	if (_reals.rows() != _real_names.size())
 		throw_ensemble_error("Ensemble.from_eigen_mat() rows != real_names.size");
@@ -211,10 +212,10 @@ void Ensemble::throw_ensemble_error(string message, vector<string> vec)
 void Ensemble::throw_ensemble_error(string message)
 {
 	string full_message = "Ensemble Error: " + message;
-	performance_log->log_event(full_message);
-	performance_log->~PerformanceLog();
-	file_manager.rec_ofstream() << endl << endl << "***" << full_message << endl;
-	file_manager.~FileManager();
+	//performance_log->log_event(full_message);
+	//performance_log->~PerformanceLog();
+	//file_manager.rec_ofstream() << endl << endl << "***" << full_message << endl;
+	//file_manager.~FileManager();
 	throw runtime_error(full_message);
 }
 
@@ -348,12 +349,14 @@ void Ensemble::read_csv(int num_reals,ifstream &csv)
 
 
 
-ParameterEnsemble::ParameterEnsemble(const ParamTransformSeq &_par_transform, Pest &_pest_scenario,
-	FileManager &_file_manager, OutputFileWriter &_output_file_writer,
-	PerformanceLog *_performance_log, unsigned int seed):
-	Ensemble(_pest_scenario,_file_manager,_output_file_writer,_performance_log,seed),par_transform(_par_transform)
+//ParameterEnsemble::ParameterEnsemble(const ParamTransformSeq &_par_transform, Pest &_pest_scenario,
+//	FileManager &_file_manager, OutputFileWriter &_output_file_writer,
+//	PerformanceLog *_performance_log, unsigned int seed):
+//	Ensemble(_pest_scenario,_file_manager,_output_file_writer,_performance_log,seed),
+//	par_transform(_par_transform)
+ParameterEnsemble::ParameterEnsemble(Pest *_pest_scenario_ptr):Ensemble(_pest_scenario_ptr)
 {
-
+	par_transform = pest_scenario_ptr->get_base_par_tran_seq();
 }
 
 void ParameterEnsemble::from_csv(string &file_name)
@@ -361,9 +364,9 @@ void ParameterEnsemble::from_csv(string &file_name)
 
 	ifstream csv(file_name);
 	if (!csv.good())
-		throw runtime_error("error opening parameter csv " + file_name + " for reading");
-
-	var_names = prepare_csv(pest_scenario.get_ctl_ordered_par_names(), csv, false);
+		throw runtime_error("error opening parameter csv " + file_name + " for reading"); 
+	vector<string> ordered_names = pest_scenario_ptr->get_ctl_ordered_par_names();
+	var_names = prepare_csv(ordered_names, csv, false);
 	//blast through the file to get number of reals
 	string line;
 	int num_reals = 0;
@@ -376,6 +379,26 @@ void ParameterEnsemble::from_csv(string &file_name)
 		throw runtime_error("error re-opening parameter csv " + file_name + " for reading");
 	getline(csv, line);
 	Ensemble::read_csv(num_reals, csv);
+
+	//sort var_names according to ctl ordered par names
+	vector<string> ordered_var_names;
+	vector<string>::iterator start = var_names.begin();
+	vector<string>::iterator end = var_names.end();
+
+	for (auto &name : ordered_names)
+		if (find(start, end, name) != end)
+			ordered_var_names.push_back(name);
+	if (var_names.size() != ordered_var_names.size())
+	{
+		stringstream ss;
+		ss << "ordered names size " << ordered_var_names.size() << " != var names size " << var_names.size();
+		throw_ensemble_error(ss.str());
+	}
+	if (var_names != ordered_var_names)
+	{
+		reals = get_eigen(vector<string>(), ordered_var_names);
+		var_names = ordered_var_names;
+	}
 	tstat = transStatus::CTL;
 	//cout << reals << endl;
 }
@@ -402,11 +425,12 @@ void ParameterEnsemble::to_csv(string &file_name)
 //}
 
 
-ObservationEnsemble::ObservationEnsemble(ObjectiveFunc *_obj_func, Pest &_pest_scenario,
-	FileManager &_file_manager, OutputFileWriter &_output_file_writer, PerformanceLog *_performance_log, unsigned int seed) :
-	Ensemble(_pest_scenario, _file_manager, _output_file_writer, _performance_log, seed), obj_func_ptr(_obj_func)
+//ObservationEnsemble::ObservationEnsemble(ObjectiveFunc *_obj_func, Pest &_pest_scenario,
+//	FileManager &_file_manager, OutputFileWriter &_output_file_writer, PerformanceLog *_performance_log, unsigned int seed) :
+//	Ensemble(_pest_scenario, _file_manager, _output_file_writer, _performance_log, seed), obj_func_ptr(_obj_func)
+ObservationEnsemble::ObservationEnsemble(Pest *_pest_scenario_ptr): Ensemble(_pest_scenario_ptr)
 {
-
+	obj_func = ObjectiveFunc();
 }
 
 void ObservationEnsemble::update_from_obs(int row_idx, Observations &obs)
@@ -424,8 +448,9 @@ void ObservationEnsemble::from_csv(string &file_name)
 	if (!csv.good())
 		throw runtime_error("error opening observation csv " + file_name + " for reading");
 
+	vector<string> ordered_names = pest_scenario_ptr->get_ctl_ordered_obs_names();
 
-	var_names = prepare_csv(pest_scenario.get_ctl_ordered_obs_names(), csv, false);
+	var_names = prepare_csv(ordered_names, csv, false);
 	//blast through the file to get number of reals
 	string line;
 	int num_reals = 0;
@@ -434,11 +459,31 @@ void ObservationEnsemble::from_csv(string &file_name)
 	csv.close();
 
 	csv.open(file_name);
-	if (!csv.good())
+	if (!csv.good()) 
 		throw runtime_error("error re-opening observation csv " + file_name + " for reading");
 	getline(csv, line);
 	Ensemble::read_csv(num_reals, csv);
 
+	//sort var_names according to ctl ordered par names
+	vector<string> ordered_var_names;
+	vector<string>::iterator start = var_names.begin();
+	vector<string>::iterator end = var_names.end();
+
+
+	for (auto &name : ordered_names)
+		if (find(start, end, name) != end)
+			ordered_var_names.push_back(name);
+	if (var_names.size() != ordered_var_names.size())
+	{
+		stringstream ss;
+		ss << "ordered names size " << ordered_var_names.size() << " != var names size " << var_names.size();
+		throw_ensemble_error(ss.str());
+	}
+	if (var_names != ordered_var_names)
+	{
+		reals = get_eigen(vector<string>(), ordered_var_names);
+		var_names = ordered_var_names;
+	}
 }
 
 //ObservationEnsemble ObservationEnsemble::get_mean_diff()
@@ -499,7 +544,7 @@ void EnsemblePair::run(RunManagerAbstract *run_mgr_ptr)
 	run_mgr_ptr->run();
 }
 
-void EnsemblePair::process_runs(RunManagerAbstract *run_mgr_ptr)
+vector<int> EnsemblePair::process_runs(RunManagerAbstract *run_mgr_ptr)
 {
 	
 	set<int> failed_runs = run_mgr_ptr->get_failed_run_ids();
@@ -532,6 +577,7 @@ void EnsemblePair::process_runs(RunManagerAbstract *run_mgr_ptr)
 	}
 	//cout << oe.get_reals() << endl;
 	//cout << pe.get_reals() << endl;
+	return failed_real_idxs;
 }
 
 vector<string> EnsemblePair::get_oe_active_names()
@@ -541,7 +587,6 @@ vector<string> EnsemblePair::get_oe_active_names()
 		act_real_names.push_back(real_names[i]);
 	return act_real_names;
 }
-
 
 vector<string> EnsemblePair::get_pe_active_names()
 {

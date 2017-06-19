@@ -27,6 +27,7 @@
 #include "debug.h"
 #include "logger.h"
 #include "Ensemble.h"
+#include "EnsembleSmoother.h"
 
 using namespace std;
 using namespace pest_utils;
@@ -307,12 +308,23 @@ int main(int argc, char* argv[])
 			run_manager_ptr->initialize(base_trans_seq.ctl2model_cp(cur_ctl_parameters), pest_scenario.get_ctl_observations());
 		}
 
-		ParameterEnsemble pe(base_trans_seq, pest_scenario, file_manager, output_file_writer, &performance_log);
+		IterEnsembleSmoother ies(pest_scenario, file_manager, output_file_writer, &performance_log, run_manager_ptr);
+
+		ies.initialize();
+
+		for (int iter = 0; iter < pest_scenario.get_control_info().noptmax; iter++)
+		{
+			ies.solve();
+		}
+
+		ies.finalize();
+
+		/*ParameterEnsemble pe(&pest_scenario);
 		pe.from_csv(pest_scenario.get_pestpp_options().get_ies_par_csv());
 
 		cout << pe.get_eigen_mean_diff() << endl;
 
-		ObservationEnsemble oe(&obj_func, pest_scenario, file_manager, output_file_writer, &performance_log);
+		ObservationEnsemble oe(&pest_scenario);
 		oe.from_csv(pest_scenario.get_pestpp_options().get_ies_obs_csv());
 
 		ObservationEnsemble oe_org = oe;
@@ -323,9 +335,19 @@ int main(int argc, char* argv[])
 		epair.run(run_manager_ptr);
 		epair.process_runs(run_manager_ptr);
 
+		vector<string>obs_names = pest_scenario.get_ctl_ordered_obs_names();
+		string last = obs_names[obs_names.size()-1];
+		obs_names.pop_back();
+		obs_names.pop_back();
+		obs_names.insert(obs_names.begin(), last);
+		obs_names.insert(obs_names.begin(), last);
+		obs_names.insert(obs_names.begin(), last);
+
 		cout << epair.get_pe_ptr()->get_eigen_mean_diff(epair.get_pe_active_names()) << endl;
 		cout << epair.get_oe_ptr()->get_eigen_mean_diff(epair.get_oe_active_names()) << endl;
-		cout << *epair.get_oe_ptr()->get_eigen_ptr() - *oe.get_eigen_ptr() << endl;
+		cout << epair.get_oe_ptr()->get_eigen(vector<string>(),obs_names) - oe.get_eigen(vector<string>(),obs_names) << endl;
+		*/
+		
 		/*vector<string>obs_names = pest_scenario.get_ctl_ordered_obs_names();
 		string last = obs_names[obs_names.size()-1];
 		obs_names.pop_back();

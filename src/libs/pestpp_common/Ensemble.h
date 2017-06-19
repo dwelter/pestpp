@@ -19,14 +19,15 @@ class Ensemble
 {
 public:
 	static mt19937_64 rand_engine;
-	Ensemble(Pest &_pest_scenario, FileManager &_file_manager,
-		OutputFileWriter &_output_file_writer, PerformanceLog *_performance_log, unsigned int seed = 1);
-	
+	//Ensemble(Pest &_pest_scenario, FileManager &_file_manager,
+	//	OutputFileWriter &_output_file_writer, PerformanceLog *_performance_log, unsigned int seed = 1);
+	Ensemble(Pest* _pest_scenario);
+	Ensemble() { ; }
 	Mat to_matrix();
 	Mat to_matrix(vector<string> &row_names, vector<string> &col_names);
 
 	void to_csv(string &file_name);
-	void from_eigen_mat(Eigen::MatrixXd mat, vector<string> real_names, vector<string> var_names);
+	void from_eigen_mat(Eigen::MatrixXd mat, const vector<string> &real_names, const vector<string> &var_names);
 	pair<int, int> shape() { return pair<int, int>(reals.rows(), reals.cols()); }
 	void throw_ensemble_error(string message);
 	void throw_ensemble_error(string message,vector<string> vec);
@@ -45,14 +46,17 @@ public:
 	Eigen::MatrixXd get_eigen_mean_diff(vector<string> &_real_names);
 	
 	void reorder(vector<string> &_real_names, vector<string> *_var_names);
-
+	Pest* get_pest_scenario_ptr() { return pest_scenario_ptr; }
+	Pest get_pest_scenario() { return *pest_scenario_ptr; }
+	void set_pest_scenario(Pest *_pest_scenario) { pest_scenario_ptr = _pest_scenario; }
 	~Ensemble();
 protected:
-	Pest &pest_scenario;
-	FileManager &file_manager;
-	ObjectiveFunc *obj_func_ptr;
-	OutputFileWriter &output_file_writer;
-	PerformanceLog *performance_log;
+	Pest* pest_scenario_ptr;
+	//FileManager &file_manager;
+	//ObjectiveFunc *obj_func_ptr;
+	//OutputFileWriter &output_file_writer;
+	//PerformanceLog *performance_log;
+
 	Eigen::MatrixXd reals;
 	vector<string> var_names;
 	vector<string> real_names;	
@@ -65,14 +69,17 @@ class ParameterEnsemble : public Ensemble
 	
 public:
 	enum transStatus { CTL, NUM, MODEL };
-	ParameterEnsemble(const ParamTransformSeq &_par_transform, Pest &_pest_scenario,
+	/*ParameterEnsemble(const ParamTransformSeq &_par_transform, Pest &_pest_scenario,
 		FileManager &_file_manager,OutputFileWriter &_output_file_writer,
 		PerformanceLog *_performance_log, unsigned int seed = 1);
+	*/
+	ParameterEnsemble(Pest *_pest_scenario_ptr);
+	ParameterEnsemble() { ; }
 	void from_csv(string &file_name);
 
 	void enforce_bounds();
 	void to_csv(string &file_name);
-	Pest* get_pest_scenario_ptr() { return &pest_scenario; }
+	//Pest* get_pest_scenario_ptr() { return &pest_scenario; }
 	const transStatus get_trans_status() const { return tstat; }
 	void set_trans_status(transStatus _tstat) { tstat = _tstat; }
 	const ParamTransformSeq get_par_transform() const { return par_transform; }
@@ -86,14 +93,17 @@ private:
 class ObservationEnsemble : public Ensemble
 {
 public: 
-	ObservationEnsemble(ObjectiveFunc *_obj_func, Pest &_pest_scenario, FileManager &_file_manager,
+	/*ObservationEnsemble(ObjectiveFunc *_obj_func, Pest &_pest_scenario, FileManager &_file_manager,
     OutputFileWriter &_output_file_writer, PerformanceLog *_performance_log, unsigned int seed = 1);
+	*/
+	ObservationEnsemble(Pest *_pest_scenario_ptr);
+	ObservationEnsemble() { ; }
 	void update_from_obs(int row_idx, Observations &obs);
 	void from_csv(string &file_name);
 	vector<double> get_phi_vec();
 	//ObservationEnsemble get_mean_diff();
 private: 
-	ObjectiveFunc *obj_func_ptr;
+	ObjectiveFunc obj_func;
 };
 
 class EnsemblePair
@@ -102,7 +112,7 @@ public:
 	EnsemblePair(ParameterEnsemble &_pe, ObservationEnsemble &_oe);
 	void queue_runs(RunManagerAbstract *run_mgr_ptr);
 	void run(RunManagerAbstract *run_mgr_ptr);
-	void process_runs(RunManagerAbstract *run_mgr_ptr);
+	vector<int> process_runs(RunManagerAbstract *run_mgr_ptr);
 	/*Eigen::MatrixXd get_active_oe_eigen();
 	Eigen::MatrixXd get_active_pe_eigen();
 	Eigen::MatrixXd get_active_oe_mean_diff();
