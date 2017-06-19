@@ -55,7 +55,7 @@ void Ensemble::from_eigen_mat(Eigen::MatrixXd _reals, const vector<string> &_rea
 	real_names = _real_names;
 }
 
-void Ensemble::set_reals(Eigen::MatrixXd _reals)
+void Ensemble::set_eigen(Eigen::MatrixXd _reals)
 {
 	if (_reals.rows() != real_names.size())
 		throw_ensemble_error("Ensemble.set_reals() rows != real_names.size");
@@ -64,14 +64,21 @@ void Ensemble::set_reals(Eigen::MatrixXd _reals)
 	reals = _reals;
 }
 
-Mat Ensemble::to_matrix()
-{
-	return to_matrix(real_names, var_names);
-}
+//Mat Ensemble::to_matrix()
+//{
+//	return to_matrix(real_names, var_names);
+//}
+//
+//Mat Ensemble::to_matrix(vector<string> &row_names, vector<string> &col_names)
+//{
+//	return Mat();
+//}
 
-Mat Ensemble::to_matrix(vector<string> &row_names, vector<string> &col_names)
+void Ensemble::reorder(vector<string> &_real_names, vector<string> &_var_names)
 {
-	return Mat();
+	reals = get_eigen(_real_names, _var_names);
+	var_names = _var_names;
+	real_names = _real_names;
 }
 
 Eigen::MatrixXd Ensemble::get_eigen(vector<string> row_names, vector<string> col_names)
@@ -359,6 +366,20 @@ ParameterEnsemble::ParameterEnsemble(Pest *_pest_scenario_ptr):Ensemble(_pest_sc
 	par_transform = pest_scenario_ptr->get_base_par_tran_seq();
 }
 
+void ParameterEnsemble::from_eigen_mat(Eigen::MatrixXd mat, const vector<string> &_real_names, const vector<string> &_var_names)
+{
+	vector<string> missing;
+	vector<string>::const_iterator start = _var_names.begin();
+	vector<string>::const_iterator end = _var_names.end();
+
+	for (auto &name : pest_scenario_ptr->get_ctl_ordered_par_names())
+		if (find(start, end, name) == end)
+			missing.push_back(name);
+	if (missing.size() > 0)
+		throw_ensemble_error("ParameterEnsemble.from_eigen_mat() the following par names no found: ", missing);
+	Ensemble::from_eigen_mat(mat, _real_names, _var_names);
+}
+
 void ParameterEnsemble::from_csv(string &file_name)
 {
 
@@ -395,10 +416,7 @@ void ParameterEnsemble::from_csv(string &file_name)
 		throw_ensemble_error(ss.str());
 	}
 	if (var_names != ordered_var_names)
-	{
-		reals = get_eigen(vector<string>(), ordered_var_names);
-		var_names = ordered_var_names;
-	}
+		reorder(vector<string>(), ordered_var_names);
 	tstat = transStatus::CTL;
 	//cout << reals << endl;
 }
@@ -443,7 +461,6 @@ void ObservationEnsemble::update_from_obs(int row_idx, Observations &obs)
 
 void ObservationEnsemble::from_csv(string &file_name)
 {
-
 	ifstream csv(file_name);
 	if (!csv.good())
 		throw runtime_error("error opening observation csv " + file_name + " for reading");
@@ -469,7 +486,6 @@ void ObservationEnsemble::from_csv(string &file_name)
 	vector<string>::iterator start = var_names.begin();
 	vector<string>::iterator end = var_names.end();
 
-
 	for (auto &name : ordered_names)
 		if (find(start, end, name) != end)
 			ordered_var_names.push_back(name);
@@ -480,10 +496,21 @@ void ObservationEnsemble::from_csv(string &file_name)
 		throw_ensemble_error(ss.str());
 	}
 	if (var_names != ordered_var_names)
-	{
-		reals = get_eigen(vector<string>(), ordered_var_names);
-		var_names = ordered_var_names;
-	}
+		reorder(vector<string>(), ordered_var_names);
+}
+
+void ObservationEnsemble::from_eigen_mat(Eigen::MatrixXd mat, const vector<string> &_real_names, const vector<string> &_var_names)
+{
+	vector<string> missing;
+	vector<string>::const_iterator start = _var_names.begin();
+	vector<string>::const_iterator end = _var_names.end();
+
+	for (auto &name : pest_scenario_ptr->get_ctl_ordered_obs_names())
+		if (find(start, end, name) == end)
+			missing.push_back(name);
+	if (missing.size() > 0)
+		throw_ensemble_error("ObservationEnsemble.from_eigen_mat() the following obs names no found: ", missing);
+	Ensemble::from_eigen_mat(mat, _real_names, _var_names);
 }
 
 //ObservationEnsemble ObservationEnsemble::get_mean_diff()

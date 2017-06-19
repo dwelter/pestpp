@@ -27,7 +27,7 @@ public:
 	Mat to_matrix(vector<string> &row_names, vector<string> &col_names);
 
 	void to_csv(string &file_name);
-	void from_eigen_mat(Eigen::MatrixXd mat, const vector<string> &real_names, const vector<string> &var_names);
+	void from_eigen_mat(Eigen::MatrixXd mat, const vector<string> &_real_names, const vector<string> &_var_names);
 	pair<int, int> shape() { return pair<int, int>(reals.rows(), reals.cols()); }
 	void throw_ensemble_error(string message);
 	void throw_ensemble_error(string message,vector<string> vec);
@@ -40,12 +40,12 @@ public:
 
 	const Eigen::MatrixXd get_eigen() const { return reals; }
 	const Eigen::MatrixXd* get_eigen_ptr() const { return &reals; }
-	void set_reals(Eigen::MatrixXd _reals);
+	void set_eigen(Eigen::MatrixXd _reals);
 
 	Eigen::MatrixXd get_eigen_mean_diff();
 	Eigen::MatrixXd get_eigen_mean_diff(vector<string> &_real_names);
 	
-	void reorder(vector<string> &_real_names, vector<string> *_var_names);
+	void reorder(vector<string> &_real_names, vector<string> &_var_names);
 	Pest* get_pest_scenario_ptr() { return pest_scenario_ptr; }
 	Pest get_pest_scenario() { return *pest_scenario_ptr; }
 	void set_pest_scenario(Pest *_pest_scenario) { pest_scenario_ptr = _pest_scenario; }
@@ -76,7 +76,7 @@ public:
 	ParameterEnsemble(Pest *_pest_scenario_ptr);
 	ParameterEnsemble() { ; }
 	void from_csv(string &file_name);
-
+	void from_eigen_mat(Eigen::MatrixXd mat, const vector<string> &_real_names, const vector<string> &_var_names);
 	void enforce_bounds();
 	void to_csv(string &file_name);
 	//Pest* get_pest_scenario_ptr() { return &pest_scenario; }
@@ -100,6 +100,7 @@ public:
 	ObservationEnsemble() { ; }
 	void update_from_obs(int row_idx, Observations &obs);
 	void from_csv(string &file_name);
+	void from_eigen_mat(Eigen::MatrixXd mat, const vector<string> &_real_names, const vector<string> &_var_names);
 	vector<double> get_phi_vec();
 	//ObservationEnsemble get_mean_diff();
 private: 
@@ -125,7 +126,7 @@ public:
 	vector<string> get_pe_active_names();
 	vector<string> get_oe_active_names();
 	//EnsemblePair get_mean_diff();
-
+	int num_active() { return active_real_indices.size(); }
 private:
 	ParameterEnsemble &pe;
 	ObservationEnsemble &oe;
