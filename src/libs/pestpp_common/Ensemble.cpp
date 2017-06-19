@@ -380,13 +380,19 @@ void ParameterEnsemble::from_eigen_mat(Eigen::MatrixXd mat, const vector<string>
 	Ensemble::from_eigen_mat(mat, _real_names, _var_names);
 }
 
+
 void ParameterEnsemble::from_csv(string &file_name)
+{
+	from_csv(file_name, pest_scenario_ptr->get_ctl_ordered_par_names());
+}
+
+
+void ParameterEnsemble::from_csv(string &file_name, const vector<string> &ordered_names)
 {
 
 	ifstream csv(file_name);
 	if (!csv.good())
 		throw runtime_error("error opening parameter csv " + file_name + " for reading"); 
-	vector<string> ordered_names = pest_scenario_ptr->get_ctl_ordered_par_names();
 	var_names = prepare_csv(ordered_names, csv, false);
 	//blast through the file to get number of reals
 	string line;
@@ -461,12 +467,13 @@ void ObservationEnsemble::update_from_obs(int row_idx, Observations &obs)
 
 void ObservationEnsemble::from_csv(string &file_name)
 {
+	from_csv(file_name, pest_scenario_ptr->get_ctl_ordered_obs_names());
+}
+void ObservationEnsemble::from_csv(string &file_name, const vector<string> &ordered_names)
+{
 	ifstream csv(file_name);
 	if (!csv.good())
 		throw runtime_error("error opening observation csv " + file_name + " for reading");
-
-	vector<string> ordered_names = pest_scenario_ptr->get_ctl_ordered_obs_names();
-
 	var_names = prepare_csv(ordered_names, csv, false);
 	//blast through the file to get number of reals
 	string line;

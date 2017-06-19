@@ -36,8 +36,9 @@ public:
 
 	Eigen::VectorXd get_real_vector(int ireal);
 	Eigen::VectorXd get_real_vector(const string &real_name);
-	Eigen::MatrixXd get_eigen(vector<string> row_names, vector<string> col_names);
 
+
+	Eigen::MatrixXd get_eigen(vector<string> row_names, vector<string> col_names);
 	const Eigen::MatrixXd get_eigen() const { return reals; }
 	const Eigen::MatrixXd* get_eigen_ptr() const { return &reals; }
 	void set_eigen(Eigen::MatrixXd _reals);
@@ -75,6 +76,7 @@ public:
 	*/
 	ParameterEnsemble(Pest *_pest_scenario_ptr);
 	ParameterEnsemble() { ; }
+	void from_csv(string &file_name,const vector<string> &ordered_names);
 	void from_csv(string &file_name);
 	void from_eigen_mat(Eigen::MatrixXd mat, const vector<string> &_real_names, const vector<string> &_var_names);
 	void enforce_bounds();
@@ -99,6 +101,7 @@ public:
 	ObservationEnsemble(Pest *_pest_scenario_ptr);
 	ObservationEnsemble() { ; }
 	void update_from_obs(int row_idx, Observations &obs);
+	void from_csv(string &file_name, const vector<string> &ordered_names);
 	void from_csv(string &file_name);
 	void from_eigen_mat(Eigen::MatrixXd mat, const vector<string> &_real_names, const vector<string> &_var_names);
 	vector<double> get_phi_vec();
