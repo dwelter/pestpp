@@ -209,6 +209,18 @@ const vector<string> Pest::get_ctl_ordered_nz_obs_names()
 	return nz_obs;
 }
 
+const vector<string> Pest::get_ctl_ordered_adj_par_names()
+{
+	vector<string> adj_pars;
+	ParameterRec::TRAN_TYPE ttype;
+	for (auto &pname : ctl_ordered_par_names)
+	{
+		ttype = ctl_parameter_info.get_parameter_rec_ptr(pname)->tranform_type;
+		if ((ttype != ParameterRec::TRAN_TYPE::FIXED) && (ttype != ParameterRec::TRAN_TYPE::TIED))
+			adj_pars.push_back(pname);
+	}
+	return adj_pars;
+}
 
 const map<string, string> Pest::get_observation_groups() const
 {

@@ -79,6 +79,10 @@ void IterEnsembleSmoother::initialize()
 
 	oe_org_real_names = oe.get_real_names();
 	pe_org_real_names = pe.get_real_names();
+
+	act_obs_names = pest_scenario.get_ctl_ordered_nz_obs_names();
+	act_par_names = pest_scenario.get_ctl_ordered_adj_par_names();
+
 	fphi << "iteration,num_active,";
 	for (auto &s : phi_stat_names)
 		fphi << s << ',';
@@ -86,6 +90,8 @@ void IterEnsembleSmoother::initialize()
 		fphi << rname << ',';
 	fphi << endl;
 	oe_base = oe; //copy
+	//reorder this for later...
+	oe_base.reorder(vector<string>(), act_obs_names);
 
 	if (true) //eventually the restart conditional
 	{
@@ -106,7 +112,7 @@ void IterEnsembleSmoother::initialize()
 	performance_log->log_event("load obscov");
 	Covariance obscov;
     obscov.from_observation_weights(pest_scenario);
-	obscov = obscov.get(pest_scenario.get_ctl_ordered_nz_obs_names());
+	obscov = obscov.get(act_obs_names);
 	obscov.inv_ip();
 	//NEED SQRT operator to matrix
 	obscov_inv_sqrt = obscov.get_matrix().diagonal().cwiseSqrt().asDiagonal();
@@ -128,14 +134,13 @@ void IterEnsembleSmoother::initialize()
 		else
 			throw_ies_error("unrecognized parcov_filename extension: " + extension);
 	}
-	parcov = parcov.get(pest_scenario.get_ctl_ordered_par_names());
+	parcov = parcov.get(act_par_names);
 	parcov.inv_ip();
 	Eigen::SparseMatrix<double> parcov_eigen = parcov.get_matrix();
 
 	performance_log->log_event("calculate prior par diff");
 	//no scaling...chen and oliver scale this...
 	prior_pe_diff = pe.get_eigen_mean_diff();
-
 
 }
 
@@ -149,26 +154,53 @@ void IterEnsembleSmoother::solve()
 	if (oe.shape().first < 2)
 		throw_ies_error(string("less than 2 active realizations...cannot continue"));
 
+	double scale = (1.0 / (sqrt(double(oe.shape().first - 1))));
+	
+	performance_log->log_event("calculate residual matrix");
+	//oe_base var_names should be ordered by act_obs_names, so only reorder real_names
+	//oe should only include active realizations, so only reorder var_names
+	Eigen::MatrixXd scaled_residual = obscov_inv_sqrt * (oe.get_eigen(vector<string>(), act_obs_names) - oe_base.get_eigen(oe.get_real_names(), vector<string>())).transpose();
+
+	
 	performance_log->log_event("calculate scaled obs diff");
-	Eigen::MatrixXd obs_diff = (1.0/(sqrt(double(oe.shape().first - 1))) * (obscov_inv_sqrt * oe.get_eigen_mean_diff().transpose()));
+	Eigen::MatrixXd diff = oe.get_eigen_mean_diff(vector<string>(),act_obs_names).transpose();
+	//cout << diff.rows() << ',' << diff.cols() << endl;
+	//cout << obscov_inv_sqrt.rows() << ',' << obscov_inv_sqrt.cols() << endl;
+	Eigen::MatrixXd obs_diff = scale * (obscov_inv_sqrt * diff);
 
 	performance_log->log_event("calculate scaled par diff");
-	Eigen::MatrixXd par_diff = (1.0 / (sqrt(double(pe.shape().first - 1))) * (pe.get_eigen_mean_diff().transpose()));
+	diff = pe.get_eigen_mean_diff(vector<string>(), act_par_names).transpose();
+	Eigen::MatrixXd par_diff = scale * diff;
 
 	performance_log->log_event("SVD of obs diff");
 	RedSVD::RedSVD<Eigen::MatrixXd> rsvd(obs_diff);
 	
+	
 	vector<double> lam_mults;
 	lam_mults.push_back(1.0);
-	
+	Eigen::MatrixXd ivec, upgrade_1, s = rsvd.singularValues(), V = rsvd.matrixV(), Ut = rsvd.matrixU().transpose();
+
 	for (auto &lam_mult : lam_mults)
 	{
 		ss.str("");
 		double cur_lam = last_best_lam * lam_mult;
 		ss << "starting calcs for lambda" << cur_lam;
 		performance_log->log_event("form scaled identity matrix");
-		Eigen::VectorXd ivec = ((cur_lam + 1.0) * rsvd.singularValues().cwiseProduct(rsvd.singularValues()));
-		//need to invert ivec and get diagonal view
+		ivec = (1.0 / ((cur_lam + 1.0) * s.cwiseProduct(s)).array());
+		cout << "V:" << V.rows() << ',' << V.cols() << endl;
+		cout << "Ut" << Ut.rows() << ',' << Ut.cols() << endl;
+		cout << "s:" << s.size() << endl;
+		cout << "ivec:" << ivec.size() << endl;
+		cout << "par_diff:" << par_diff.rows() << ',' << par_diff.cols() << endl;
+		performance_log->log_event("calculate portion of upgrade_1 for localization");
+		upgrade_1 = -1.0 * par_diff * V * s.asDiagonal() * ivec.asDiagonal() * Ut;
+		//localization here...
+
+		performance_log->log_event("apply residuals to upgrade_1");
+		upgrade_1 = upgrade_1 * scaled_residual;
+		cout << "upgrade_1:" << upgrade_1.rows() << ',' << upgrade_1.cols() << endl;
+
+
 
 
 	}

@@ -23,8 +23,8 @@ public:
 	//	OutputFileWriter &_output_file_writer, PerformanceLog *_performance_log, unsigned int seed = 1);
 	Ensemble(Pest* _pest_scenario);
 	Ensemble() { ; }
-	Mat to_matrix();
-	Mat to_matrix(vector<string> &row_names, vector<string> &col_names);
+	
+	//Ensemble get(vector<string> &_real_names, vector<string> &_var_names);
 
 	void to_csv(string &file_name);
 	void from_eigen_mat(Eigen::MatrixXd mat, const vector<string> &_real_names, const vector<string> &_var_names);
@@ -44,7 +44,7 @@ public:
 	void set_eigen(Eigen::MatrixXd _reals);
 
 	Eigen::MatrixXd get_eigen_mean_diff();
-	Eigen::MatrixXd get_eigen_mean_diff(vector<string> &_real_names);
+	Eigen::MatrixXd get_eigen_mean_diff(const vector<string> &_real_names, const vector<string> &_var_names);
 	
 	void reorder(vector<string> &_real_names, vector<string> &_var_names);
 	Pest* get_pest_scenario_ptr() { return pest_scenario_ptr; }

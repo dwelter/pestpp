@@ -19,18 +19,33 @@ Ensemble::Ensemble(Pest *_pest_scenario_ptr): pest_scenario_ptr(_pest_scenario_p
 	rand_engine.seed(1123433458);
 }
 
+//Ensemble Ensemble::get(vector<string> &_real_names, vector<string> &_var_names)
+//{
+//	Ensemble new_en(pest_scenario_ptr);
+//
+//	if ((_real_names.size() == 0) && (_var_names.size() == 0))
+//	{
+//		new_en.from_eigen_mat(reals, real_names, var_names);
+//	}
+//	else
+//	{
+//		new_en.from
+//	}
+//
+//}
+
 Eigen::MatrixXd Ensemble::get_eigen_mean_diff()
 {
-	return get_eigen_mean_diff(vector<string>());
+	return get_eigen_mean_diff(vector<string>(),vector<string>());
 }
 
-Eigen::MatrixXd Ensemble::get_eigen_mean_diff(vector<string> &_real_names)
+Eigen::MatrixXd Ensemble::get_eigen_mean_diff(const vector<string> &_real_names, const vector<string> &_var_names)
 {
 	Eigen::MatrixXd _reals;
-	if (_real_names.size() == 0)
+	if ((_real_names.size() == 0) && (_var_names.size() == 0))
 		_reals = reals;
 	else
-		_reals = get_eigen(_real_names, vector<string>());
+		_reals = get_eigen(_real_names, _var_names);
 
 	double mean;
 	int s = _reals.rows();

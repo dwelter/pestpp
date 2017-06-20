@@ -38,6 +38,7 @@ private:
 	ofstream fphi;
 	vector<string> phi_stat_names;
 	vector<string> oe_org_real_names, pe_org_real_names;
+	vector<string> act_obs_names, act_par_names;
 
 	ParameterEnsemble pe;
 	ObservationEnsemble oe, oe_base;

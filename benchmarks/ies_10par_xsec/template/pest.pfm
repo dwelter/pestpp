@@ -1,25 +1,51 @@
-PEST++ performance logger started at:  20:25:10
-        ( time = 20:25:10,  elapsed time = 3ms )
+PEST++ performance logger started at:  08:35:59
+        ( time = 08:35:59,  elapsed time = 3ms )
   starting to process control file
-          ( time = 20:25:10,  elapsed time = 37ms )
+          ( time = 08:35:59,  elapsed time = 37ms )
   finished processing control file
-          ( time = 20:25:10,  elapsed time = 13ms )
+          ( time = 08:35:59,  elapsed time = 13ms )
     starting basic model IO error checking
-            ( time = 20:25:10,  elapsed time = 10ms )
+            ( time = 08:35:59,  elapsed time = 3ms )
     finished basic model IO error checking
-            ( time = 20:25:10,  elapsed time = 14ms )
+            ( time = 08:35:59,  elapsed time = 14ms )
     processing par csv
-            ( time = 20:25:10,  elapsed time = 7ms )
+            ( time = 08:35:59,  elapsed time = 8ms )
     processing obs csv
-            ( time = 20:25:10,  elapsed time = 11ms )
+            ( time = 08:35:59,  elapsed time = 9ms )
     running initial ensemble
-            ( time = 20:25:10,  elapsed time = 216us )
+            ( time = 08:35:59,  elapsed time = 218us )
     queuing 5 runs
-            ( time = 20:25:10,  elapsed time = 3ms )
+            ( time = 08:35:59,  elapsed time = 11ms )
     making runs
-            ( time = 20:25:12,  elapsed time = 1sec )
+            ( time = 08:36:00,  elapsed time = 1sec )
     processing runs
-            ( time = 20:25:12,  elapsed time = 4ms )
+            ( time = 08:36:00,  elapsed time = 4ms )
     the following par:obs realization runs failed: 0:0,
-            ( time = 20:25:12,  elapsed time = 204us )
+            ( time = 08:36:00,  elapsed time = 244us )
     resizing initial par and obs ensembles to remove failed realizations
+            ( time = 08:36:01,  elapsed time = 30ms )
+    load obscov
+            ( time = 08:36:01,  elapsed time = 22ms )
+    load parcov
+            ( time = 08:36:01,  elapsed time = 20ms )
+    calculate prior par diff
+            ( time = 08:36:01,  elapsed time = 409us )
+    starting solve for iteration: 1
+            ( time = 08:36:01,  elapsed time = 126us )
+    calculate residual matrix
+            ( time = 08:36:04,  elapsed time = 3sec )
+    calculate scaled obs diff
+            ( time = 08:36:04,  elapsed time = 422us )
+    calculate scaled par diff
+            ( time = 08:36:04,  elapsed time = 655us )
+    SVD of obs diff
+            ( time = 08:36:05,  elapsed time = 603ms )
+    form scaled identity matrix
+            ( time = 08:36:05,  elapsed time = 3ms )
+    calculate portion of upgrade_1 for localization
+            ( time = 08:36:05,  elapsed time = 281us )
+    apply residuals to upgrade_1
+            ( time = 08:36:05,  elapsed time = 1ms )
+    starting solve for iteration: 2
+            ( time = 08:36:05,  elapsed time = 130us )
+    calculate residual matrix
