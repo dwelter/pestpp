@@ -98,6 +98,18 @@ void Ensemble::reorder(vector<string> &_real_names, vector<string> &_var_names)
 		real_names = _real_names;
 }
 
+
+void Ensemble::drop_rows(vector<int> &row_idxs)
+{
+	vector<int>::iterator start = row_idxs.begin(), end = row_idxs.end();
+	vector<string> keep_names;
+	for (int ireal = 0; ireal < reals.rows(); ireal++)
+		if (find(start, end, ireal) == end)
+			keep_names.push_back(real_names[ireal]);
+	reals = get_eigen(keep_names, vector<string>());
+	real_names = keep_names;
+}
+
 Eigen::MatrixXd Ensemble::get_eigen(vector<string> row_names, vector<string> col_names)
 {
 	vector<string> missing_rows,missing_cols;
@@ -199,6 +211,16 @@ void Ensemble::to_csv(string &file_name)
 		csv << endl;
 	}
 
+}
+
+const vector<string> Ensemble::get_real_names(vector<int> &indices)
+{
+	vector<string> names;
+	for (auto &i : indices)
+	{
+		names.push_back(real_names[i]);
+	}
+	return names;
 }
 
 Eigen::VectorXd Ensemble::get_real_vector(int ireal)
@@ -384,6 +406,37 @@ ParameterEnsemble::ParameterEnsemble(Pest *_pest_scenario_ptr):Ensemble(_pest_sc
 	par_transform = pest_scenario_ptr->get_base_par_tran_seq();
 }
 
+map<int,int> ParameterEnsemble::add_runs(RunManagerAbstract *run_mgr_ptr, vector<int> &real_idxs)
+{
+	map<int,int> real_run_ids;
+	Parameters pars = get_pest_scenario_ptr()->get_ctl_parameters();
+	//for (int ireal = 0; ireal < pe.shape().first; ireal++)
+	Eigen::VectorXd evec;
+	vector<double> svec;
+	//for (auto &real_name : pe.get_real_names())
+	int run_id;
+	vector<string> run_real_names;
+	if (real_idxs.size() > 0)
+		for (auto i : real_idxs)
+			run_real_names.push_back(real_names[i]);
+	else
+		run_real_names = real_names;
+
+	for (auto &rname : run_real_names)
+	{
+		//evec = get_real_vector(rname);
+		//const vector<double> svec(evec.data(), evec.data() + evec.size());
+		pars.update_without_clear(var_names, get_real_vector(rname));
+		if (tstat == ParameterEnsemble::transStatus::CTL)
+			par_transform.ctl2model_ip(pars);
+		else if (tstat == ParameterEnsemble::transStatus::NUM)
+			par_transform.numeric2model_ip(pars);
+		run_id = run_mgr_ptr->add_run(pars);
+		real_run_ids[find(real_names.begin(), real_names.end(), rname) - real_names.begin()]  = run_id;
+	}
+	return real_run_ids;
+}
+
 void ParameterEnsemble::from_eigen_mat(Eigen::MatrixXd mat, const vector<string> &_real_names, const vector<string> &_var_names)
 {
 	vector<string> missing;
@@ -502,7 +555,26 @@ void ObservationEnsemble::update_from_obs(int row_idx, Observations &obs)
 	if (row_idx >= real_names.size())
 		throw_ensemble_error("ObservtionEnsemble.update_from_obs() obs_idx out of range");
 	reals.row(row_idx) = obs.get_data_eigen_vec(var_names);
+}
 
+vector<int> ObservationEnsemble::update_from_runs(map<int,int> &real_run_ids, RunManagerAbstract *run_mgr_ptr)
+{
+	set<int> failed_runs = run_mgr_ptr->get_failed_run_ids();
+	vector<int> failed_real_idxs;
+	Parameters pars = pest_scenario_ptr->get_ctl_parameters();
+	Observations obs = pest_scenario_ptr->get_ctl_observations();
+	//cout << oe.get_reals() << endl;
+	for (auto &real_run_id : real_run_ids)
+	{
+		if (failed_runs.find(real_run_id.second) != failed_runs.end())
+			failed_real_idxs.push_back(real_run_id.first);
+		else
+		{
+			run_mgr_ptr->get_run(real_run_id.second, pars, obs);
+			update_from_obs(real_run_id.first, obs);
+		}
+	}
+	return failed_real_idxs;
 }
 
 void ObservationEnsemble::from_csv(string &file_name)
@@ -670,6 +742,21 @@ vector<string> EnsemblePair::get_pe_active_names()
 	return act_real_names;
 }
 
+
+//these are too dangerous! dont use
+//void EnsemblePair::set_pe(ParameterEnsemble &_pe)
+//{
+//	if (pe.shape() != _pe.shape())
+//		pe.throw_ensemble_error("EnsemblePair::set_pe() pe.shape != _pe.shape");
+//	pe = _pe;
+//}
+//
+//void EnsemblePair::set_oe(ObservationEnsemble &_oe)
+//{
+//	if (oe.shape() != _oe.shape())
+//		oe.throw_ensemble_error("EnsemblePair::set_oe() oe.shape != _oe.shape");
+//	oe = _oe;
+//}
 
 //Eigen::MatrixXd EnsemblePair::get_active_oe_eigen()
 //{

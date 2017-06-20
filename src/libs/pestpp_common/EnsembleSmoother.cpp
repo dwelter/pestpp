@@ -93,20 +93,29 @@ void IterEnsembleSmoother::initialize()
 	//reorder this for later...
 	oe_base.reorder(vector<string>(), act_obs_names);
 
-	if (true) //eventually the restart conditional
+	string obs_restart_csv = pest_scenario.get_pestpp_options().get_ies_obs_restart_csv();
+
+	//no restart
+	if (obs_restart_csv.size() == 0)
 	{
 		performance_log->log_event("running initial ensemble");
-		EnsemblePair epair = run_ensemble(pe,oe);
-		if (pe.shape().first != epair.num_active())
+		//pe.add_runs(run_mgr_ptr);
+		run_ensemble(pe,oe);
+		/*if (pe.shape().first != epair.num_active())
 		{
 			performance_log->log_event("resizing initial par and obs ensembles to remove failed realizations");
 			pe.reorder(epair.get_pe_active_names(), vector<string>());
 			oe.reorder(epair.get_oe_active_names(), vector<string>());
-		}
+		}*/
 		report_and_save();
 	}
 	else
 	{
+		performance_log->log_event("restart IES with existing obs ensemble csv: " + obs_restart_csv);
+		ObservationEnsemble restart_oe(&pest_scenario);
+		restart_oe.from_csv(obs_restart_csv);
+		//check that the new oe is consistent with oe and pe
+
 
 	}
 	performance_log->log_event("load obscov");
@@ -175,16 +184,18 @@ void IterEnsembleSmoother::solve()
 	performance_log->log_event("SVD of obs diff");
 	RedSVD::RedSVD<Eigen::MatrixXd> rsvd(obs_diff);
 	
-	
 	vector<double> lam_mults;
 	lam_mults.push_back(1.0);
 	Eigen::MatrixXd ivec, upgrade_1, s = rsvd.singularValues(), V = rsvd.matrixV(), Ut = rsvd.matrixU().transpose();
 
+	vector<ParameterEnsemble> pe_lams;
+	
 	for (auto &lam_mult : lam_mults)
 	{
 		ss.str("");
 		double cur_lam = last_best_lam * lam_mult;
 		ss << "starting calcs for lambda" << cur_lam;
+		performance_log->log_event(ss.str());
 		performance_log->log_event("form scaled identity matrix");
 		ivec = (1.0 / ((cur_lam + 1.0) * s.cwiseProduct(s)).array());
 		cout << "V:" << V.rows() << ',' << V.cols() << endl;
@@ -194,16 +205,50 @@ void IterEnsembleSmoother::solve()
 		cout << "par_diff:" << par_diff.rows() << ',' << par_diff.cols() << endl;
 		performance_log->log_event("calculate portion of upgrade_1 for localization");
 		upgrade_1 = -1.0 * par_diff * V * s.asDiagonal() * ivec.asDiagonal() * Ut;
+		
 		//localization here...
 
 		performance_log->log_event("apply residuals to upgrade_1");
 		upgrade_1 = upgrade_1 * scaled_residual;
 		cout << "upgrade_1:" << upgrade_1.rows() << ',' << upgrade_1.cols() << endl;
+		cout << "pe:" << pe.shape().first << "," << pe.shape().second << endl;
+		cout << upgrade_1 << endl;
+		 
+		ParameterEnsemble pe_lam = pe;
+		pe_lam.set_eigen(*pe_lam.get_eigen_ptr() + upgrade_1.transpose());
+		pe_lams.push_back(pe_lam);
 
-
-
-
+		/*EnsemblePair epair(pe_lam, oe);
+		epair.queue_runs(run_mgr_ptr);
+		real_run_ids.push_back(epair.get_real_run_ids());
+		ss.str("");
+		ss << file_manager.get_base_filename() << ".pe.iter" << iter << ".lam" << cur_lam << ".csv";
+		pe_lam.to_csv(ss.str());
+		*/
 	}
+
+	//queue up runs
+	ObservationEnsemble oe_lam = oe;
+	vector<map<int, int>> real_run_ids_lams;
+	for (auto &pe_lam : pe_lams)
+	{
+		//real_run_ids_lams.push_back(pe_lam.add_runs(run_mgr_ptr));
+		run_ensemble(pe_lam, oe_lam);
+	}
+
+	//make runs
+	//run_mgr_ptr->run();
+
+	//process runs to find "best" lambda
+	//ObservationEnsemble oe_lam = oe; //copy
+	//vector<int> failed_real_idxs;
+	//for (int ilam = 0; ilam < real_run_ids_lams.size(); ilam++)
+	//{
+	//	map<int, int> rids = real_run_ids_lams[ilam];
+	//	failed_real_idxs = oe_lam.update_from_runs(rids, run_mgr_ptr);
+	//	if 
+	//}
+
 
 
 
@@ -286,31 +331,100 @@ void IterEnsembleSmoother::report_and_save()
 	}
 }
 
-EnsemblePair IterEnsembleSmoother::run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe)
+//EnsemblePair IterEnsembleSmoother::run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe)
+//{
+//
+//	EnsemblePair epair(pe, oe);
+//	stringstream ss;
+//	ss << "queuing " << _pe.shape().first << " runs";
+//	performance_log->log_event(ss.str());
+//	try
+//	{
+//		epair.queue_runs(run_mgr_ptr);
+//	}
+//	catch (const exception &e)
+//	{
+//		stringstream ss;
+//		ss << "error processing obs csv: " << e.what();
+//		throw_ies_error(ss.str());
+//	}
+//	catch (...)
+//	{
+//		throw_ies_error(string("error queuing runs"));
+//	}
+//	performance_log->log_event("making runs");
+//	try
+//	{
+//		epair.run(run_mgr_ptr);
+//	}
+//	catch (const exception &e)
+//	{
+//		stringstream ss;
+//		ss << "error running ensemble: " << e.what();
+//		throw_ies_error(ss.str());
+//	}
+//	catch (...)
+//	{
+//		throw_ies_error(string("error running ensemble"));
+//	}
+//	
+//	performance_log->log_event("processing runs");
+//	vector<int> failed_real_indices;
+//	try
+//	{
+//		failed_real_indices = epair.process_runs(run_mgr_ptr);
+//	}
+//	catch (const exception &e)
+//	{
+//		stringstream ss;
+//		ss << "error processing runs: " << e.what();
+//		throw_ies_error(ss.str());
+//	}
+//	catch (...)
+//	{
+//		throw_ies_error(string("error processing runs"));
+//	}
+//
+//	if (failed_real_indices.size() > 0)
+//	{
+//		stringstream ss;
+//		vector<string> par_real_names = pe.get_real_names();
+//		vector<string> obs_real_names = oe.get_real_names();
+//		ss << "the following par:obs realization runs failed: ";
+//		for (auto &i : failed_real_indices)
+//		{
+//			ss << par_real_names[i] << ":" << obs_real_names[i] << ',';
+//		}
+//		performance_log->log_event(ss.str());
+//	}
+//	return epair;
+//}
+
+void IterEnsembleSmoother::run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe)
 {
 
-	EnsemblePair epair(pe, oe);
 	stringstream ss;
 	ss << "queuing " << _pe.shape().first << " runs";
 	performance_log->log_event(ss.str());
+	map<int, int> real_run_ids;
 	try
 	{
-		epair.queue_runs(run_mgr_ptr);
+		real_run_ids = _pe.add_runs(run_mgr_ptr);
 	}
 	catch (const exception &e)
 	{
 		stringstream ss;
-		ss << "error processing obs csv: " << e.what();
+		ss << "run_ensemble() error queueing runs: " << e.what();
 		throw_ies_error(ss.str());
 	}
 	catch (...)
 	{
-		throw_ies_error(string("error queuing runs"));
+		throw_ies_error(string("run_ensemble() error queueing runs"));
 	}
 	performance_log->log_event("making runs");
 	try
 	{
-		epair.run(run_mgr_ptr);
+		run_mgr_ptr->run();
 	}
 	catch (const exception &e)
 	{
@@ -322,12 +436,12 @@ EnsemblePair IterEnsembleSmoother::run_ensemble(ParameterEnsemble &_pe, Observat
 	{
 		throw_ies_error(string("error running ensemble"));
 	}
-	
+
 	performance_log->log_event("processing runs");
 	vector<int> failed_real_indices;
 	try
 	{
-		failed_real_indices = epair.process_runs(run_mgr_ptr);
+		failed_real_indices = _oe.update_from_runs(real_run_ids,run_mgr_ptr);
 	}
 	catch (const exception &e)
 	{
@@ -351,12 +465,11 @@ EnsemblePair IterEnsembleSmoother::run_ensemble(ParameterEnsemble &_pe, Observat
 			ss << par_real_names[i] << ":" << obs_real_names[i] << ',';
 		}
 		performance_log->log_event(ss.str());
+		performance_log->log_event("dropping failed realizations");
+		_pe.drop_rows(failed_real_indices);
+		_oe.drop_rows(failed_real_indices);
 	}
-	return epair;
 }
-
-
-
 
 
 void IterEnsembleSmoother::finalize()

@@ -642,6 +642,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_upgrade_bounds("ROBUST");
 	pestpp_options.set_ies_par_csv("");
 	pestpp_options.set_ies_obs_csv("");
+	pestpp_options.set_ies_obs_restart_csv("");
 
 	for(vector<string>::const_iterator b=pestpp_input.begin(),e=pestpp_input.end();
 		b!=e; ++b) {

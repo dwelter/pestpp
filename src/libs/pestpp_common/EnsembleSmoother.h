@@ -46,7 +46,8 @@ private:
 	Eigen::DiagonalMatrix<double,Eigen::Dynamic> obscov_inv_sqrt;
 
 
-	EnsemblePair run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe);
+	//EnsemblePair run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe);
+	void run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe);
 	map<string, double> get_phi_vec_stats();
 	map<string,PhiComponets> get_phi_info();
 	void report_and_save();

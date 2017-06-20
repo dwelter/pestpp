@@ -34,9 +34,10 @@ public:
 	const vector<string> get_var_names() const { return var_names; }
 	const vector<string> get_real_names() const { return real_names; }
 
+	const vector<string> get_real_names(vector<int> &indices);
+
 	Eigen::VectorXd get_real_vector(int ireal);
 	Eigen::VectorXd get_real_vector(const string &real_name);
-
 
 	Eigen::MatrixXd get_eigen(vector<string> row_names, vector<string> col_names);
 	const Eigen::MatrixXd get_eigen() const { return reals; }
@@ -47,6 +48,7 @@ public:
 	Eigen::MatrixXd get_eigen_mean_diff(const vector<string> &_real_names, const vector<string> &_var_names);
 	
 	void reorder(vector<string> &_real_names, vector<string> &_var_names);
+	void drop_rows(vector<int> &real_idxs);
 	Pest* get_pest_scenario_ptr() { return pest_scenario_ptr; }
 	Pest get_pest_scenario() { return *pest_scenario_ptr; }
 	void set_pest_scenario(Pest *_pest_scenario) { pest_scenario_ptr = _pest_scenario; }
@@ -86,6 +88,9 @@ public:
 	void set_trans_status(transStatus _tstat) { tstat = _tstat; }
 	const ParamTransformSeq get_par_transform() const { return par_transform; }
 	void transform_ip(transStatus to_tstat);
+
+	map<int,int> add_runs(RunManagerAbstract *run_mgr_ptr,vector<int> &real_idxs=vector<int>());
+
 	//ParameterEnsemble get_mean_diff();
 private:
 	ParamTransformSeq par_transform;
@@ -104,6 +109,7 @@ public:
 	void from_csv(string &file_name, const vector<string> &ordered_names);
 	void from_csv(string &file_name);
 	void from_eigen_mat(Eigen::MatrixXd mat, const vector<string> &_real_names, const vector<string> &_var_names);
+	vector<int> update_from_runs(map<int,int> &real_run_ids, RunManagerAbstract *run_mgr_ptr);
 	//ObservationEnsemble get_mean_diff();
 };
 
@@ -127,6 +133,11 @@ public:
 	vector<string> get_oe_active_names();
 	//EnsemblePair get_mean_diff();
 	int num_active() { return active_real_indices.size(); }
+	//void set_pe(ParameterEnsemble &_pe);
+	//void set_oe(ObservationEnsemble &_oe);
+	map<int, int> get_real_run_ids() { return real_run_ids; }
+	void set_real_run_ids(map<int, int> &_real_run_ids) { real_run_ids = _real_run_ids; }
+
 private:
 	ParameterEnsemble &pe;
 	ObservationEnsemble &oe;

@@ -210,5 +210,111 @@
  
  SOLVING FOR HEAD 
 
- MATRIX IS SEVERELY NON-DIAGONALLY DOMINANT.  CHECK INPUT FILES.
- -- STOP EXECUTION (PCG7AP)
+ OUTPUT CONTROL FOR STRESS PERIOD    1   TIME STEP    1
+    SAVE HEAD FOR ALL LAYERS
+
+ HEAD WILL BE SAVED ON UNIT   51 AT END OF TIME STEP    1, STRESS PERIOD    1
+1
+  VOLUMETRIC BUDGET FOR ENTIRE MODEL AT END OF TIME STEP    1, STRESS PERIOD   1
+  ------------------------------------------------------------------------------
+
+     CUMULATIVE VOLUMES      L**3       RATES FOR THIS TIME STEP      L**3/T
+     ------------------                 ------------------------
+
+           IN:                                      IN:
+           ---                                      ---
+             STORAGE =           0.0000               STORAGE =           0.0000
+       CONSTANT HEAD =           0.0000         CONSTANT HEAD =           0.0000
+               WELLS =           0.5000                 WELLS =           0.5000
+
+            TOTAL IN =           0.5000              TOTAL IN =           0.5000
+
+          OUT:                                     OUT:
+          ----                                     ----
+             STORAGE =           0.0000               STORAGE =           0.0000
+       CONSTANT HEAD =           0.5000         CONSTANT HEAD =           0.5000
+               WELLS =           0.0000                 WELLS =           0.0000
+
+           TOTAL OUT =           0.5000             TOTAL OUT =           0.5000
+
+            IN - OUT =           0.0000              IN - OUT =           0.0000
+
+ PERCENT DISCREPANCY =           0.00     PERCENT DISCREPANCY =           0.00
+
+
+
+
+
+
+         TIME SUMMARY AT END OF TIME STEP    1 IN STRESS PERIOD    1
+                    SECONDS     MINUTES      HOURS       DAYS        YEARS
+                    -----------------------------------------------------------
+   TIME STEP LENGTH  86400.      1440.0      24.000     1.00000     2.73785E-03
+ STRESS PERIOD TIME  86400.      1440.0      24.000     1.00000     2.73785E-03
+         TOTAL TIME  86400.      1440.0      24.000     1.00000     2.73785E-03
+1
+1
+                            STRESS PERIOD NO.    2, LENGTH =  1.0000000    
+                            -----------------------------------------------
+
+                              NUMBER OF TIME STEPS =     1
+
+                               MULTIPLIER FOR DELT =     1.000
+
+                            INITIAL TIME STEP SIZE =  1.0000000    
+
+ WELL NO.  LAYER   ROW   COL   STRESS RATE         
+ --------------------------------------------------
+      1      1      1     10      1.0000    
+
+      1 WELL 
+ 
+ SOLVING FOR HEAD 
+
+ OUTPUT CONTROL FOR STRESS PERIOD    2   TIME STEP    1
+    SAVE HEAD FOR ALL LAYERS
+
+ HEAD WILL BE SAVED ON UNIT   51 AT END OF TIME STEP    1, STRESS PERIOD    2
+1
+  VOLUMETRIC BUDGET FOR ENTIRE MODEL AT END OF TIME STEP    1, STRESS PERIOD   2
+  ------------------------------------------------------------------------------
+
+     CUMULATIVE VOLUMES      L**3       RATES FOR THIS TIME STEP      L**3/T
+     ------------------                 ------------------------
+
+           IN:                                      IN:
+           ---                                      ---
+             STORAGE =           0.0000               STORAGE =           0.0000
+       CONSTANT HEAD =           0.0000         CONSTANT HEAD =           0.0000
+               WELLS =           1.5000                 WELLS =           1.0000
+
+            TOTAL IN =           1.5000              TOTAL IN =           1.0000
+
+          OUT:                                     OUT:
+          ----                                     ----
+             STORAGE =           0.0000               STORAGE =           0.0000
+       CONSTANT HEAD =           1.5000         CONSTANT HEAD =           1.0000
+               WELLS =           0.0000                 WELLS =           0.0000
+
+           TOTAL OUT =           1.5000             TOTAL OUT =           1.0000
+
+            IN - OUT =           0.0000              IN - OUT =           0.0000
+
+ PERCENT DISCREPANCY =           0.00     PERCENT DISCREPANCY =           0.00
+
+
+
+
+
+
+         TIME SUMMARY AT END OF TIME STEP    1 IN STRESS PERIOD    2
+                    SECONDS     MINUTES      HOURS       DAYS        YEARS
+                    -----------------------------------------------------------
+   TIME STEP LENGTH  86400.      1440.0      24.000     1.00000     2.73785E-03
+ STRESS PERIOD TIME  86400.      1440.0      24.000     1.00000     2.73785E-03
+         TOTAL TIME 1.72800E+05  2880.0      48.000      2.0000     5.47570E-03
+1
+
+ Run end date and time (yyyy/mm/dd hh:mm:ss): 2017/06/20 15:53:13
+ Elapsed run time:  0.018 Seconds
+
