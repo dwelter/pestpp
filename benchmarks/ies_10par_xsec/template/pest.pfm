@@ -1,0 +1,25 @@
+PEST++ performance logger started at:  20:25:10
+        ( time = 20:25:10,  elapsed time = 3ms )
+  starting to process control file
+          ( time = 20:25:10,  elapsed time = 37ms )
+  finished processing control file
+          ( time = 20:25:10,  elapsed time = 13ms )
+    starting basic model IO error checking
+            ( time = 20:25:10,  elapsed time = 10ms )
+    finished basic model IO error checking
+            ( time = 20:25:10,  elapsed time = 14ms )
+    processing par csv
+            ( time = 20:25:10,  elapsed time = 7ms )
+    processing obs csv
+            ( time = 20:25:10,  elapsed time = 11ms )
+    running initial ensemble
+            ( time = 20:25:10,  elapsed time = 216us )
+    queuing 5 runs
+            ( time = 20:25:10,  elapsed time = 3ms )
+    making runs
+            ( time = 20:25:12,  elapsed time = 1sec )
+    processing runs
+            ( time = 20:25:12,  elapsed time = 4ms )
+    the following par:obs realization runs failed: 0:0,
+            ( time = 20:25:12,  elapsed time = 204us )
+    resizing initial par and obs ensembles to remove failed realizations
