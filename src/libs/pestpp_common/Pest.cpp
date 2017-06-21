@@ -643,7 +643,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_ies_par_csv("");
 	pestpp_options.set_ies_obs_csv("");
 	pestpp_options.set_ies_obs_restart_csv("");
-
+	pestpp_options.set_ies_lam_mults(vector<double>());
 	for(vector<string>::const_iterator b=pestpp_input.begin(),e=pestpp_input.end();
 		b!=e; ++b) {
 			
@@ -672,6 +672,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 			b!=e; ++b) {
 				par_name = &((*b).first);
 				u_bnd = (*b).second;
+
 				l_bnd = lower_bnd.get_rec(*par_name);
 				spread = u_bnd - l_bnd;
 				avg = (u_bnd + l_bnd) / 2.0;

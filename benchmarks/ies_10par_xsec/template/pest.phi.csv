@@ -1,2 +1,2 @@
-iteration,num_active,mean,standard deviation,min,max,0,1,2,3,4,
-0,4,387.355,624.005,0.5188,1467.28,,67.8809,0.5188,13.7421,1467.28,
+iteration,ensemble_size,phi_mean,phi_standard_deviation,phi_min,phi_max,0,1,2,3,4
+0,4,-4.70808e+66,2.71821e+66,-6.27744e+66,1467.28,,67.8809,0.5188,13.7421,1467.28,

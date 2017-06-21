@@ -676,7 +676,16 @@ void PestppOptions::parce_line(const string &line)
 		{
 			convert_ip(value, ies_obs_restart_csv);
 		}
-
+		else if (key == "IES_LAMBDA_MULTS")
+		{
+			ies_lam_mults.clear();
+			vector<string> tok;
+			tokenize(value, tok, ",");
+			for (const auto &iscale : tok)
+			{
+				ies_lam_mults.push_back(convert_cp<double>(iscale));
+			}
+		}
 
 		else {
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");

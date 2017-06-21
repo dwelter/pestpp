@@ -315,6 +315,8 @@ public:
 	void set_ies_obs_csv(string _ies_obs_csv) { ies_obs_csv = _ies_obs_csv; }
 	string get_ies_obs_restart_csv() const { return ies_obs_restart_csv;  }
 	void set_ies_obs_restart_csv(string _ies_obs_restart_csv) { ies_obs_restart_csv = _ies_obs_restart_csv; }
+	vector<double> get_ies_lam_mults() { return ies_lam_mults; }
+	void set_ies_lam_mults(vector<double> _ies_lam_mults) { ies_lam_mults = _ies_lam_mults; }
 
 private:
 	int n_iter_base;
@@ -374,7 +376,7 @@ private:
 	string ies_par_csv;
 	string ies_obs_csv;
 	string ies_obs_restart_csv;
-
+	vector<double> ies_lam_mults;
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);
 ostream& operator<< (ostream &os, const ObservationInfo& val);

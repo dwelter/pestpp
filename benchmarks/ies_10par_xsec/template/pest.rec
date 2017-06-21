@@ -143,10 +143,11 @@ PEST SVD Information
   ---  IterEnsembleSmoother iteration 0 report  ---  
         number of active realizations: 4
         number of model runs: 4
-        phi vector max:    1467.28
-        phi vector mean:    387.355
-        phi vector min:     0.5188
-        phi vector standard deviation:    624.005
+ensemble size:               4                   
+ensemble mean:               -4.70808e+66        
+ensemble standard deviation: 2.71821e+66         
+ensemble min:                -6.27744e+66        
+ensemble max:                1467.28             
       current obs ensemble saved to pest.0.obs.csv
       current par ensemble saved to pest.0.par.csv
       current ensemble phi info saved to pest.phi.csv

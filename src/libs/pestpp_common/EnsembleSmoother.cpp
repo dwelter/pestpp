@@ -9,6 +9,61 @@
 #include "covariance.h"
 #include "RedSVD-h.h";
 
+
+PhiStats::PhiStats(const map<string, PhiComponets> &_phi_info)
+{
+	update(_phi_info);
+}
+void PhiStats::update(const map<string, PhiComponets> &_phi_info)
+{
+	phi_info = _phi_info;
+	map<string, double> stats;
+	Eigen::VectorXd phi_vec;
+	size = phi_info.size();
+	phi_vec.resize(size);
+	PhiComponets pc;
+	int i = 0;
+	for (auto &pi : phi_info)
+		phi_vec[i] = pi.second.meas;
+	mean = phi_vec.mean();
+	Eigen::VectorXd centered = (phi_vec - (Eigen::VectorXd::Ones(phi_vec.size()) * mean));
+	double var = (centered.cwiseProduct(centered)).sum();
+	std = sqrt(var / double(phi_vec.size()));
+	max = phi_vec.maxCoeff();
+	min = phi_vec.minCoeff();
+}
+
+void PhiStats::rec_report(ofstream &f_rec)
+{
+	f_rec << "ensemble size:               " << setw(20) << left << size << endl;
+	f_rec << "ensemble mean:               " << setw(20) << left << mean << endl;
+	f_rec << "ensemble standard deviation: " << setw(20) << left << std << endl;
+	f_rec << "ensemble min:                " << setw(20) << left << min << endl;
+	f_rec << "ensemble max:                " << setw(20) << left << max << endl;
+}
+
+void PhiStats::initialize_csv(ofstream &csv, const vector<string> &names)
+{
+	csv << "iteration,ensemble_size,phi_mean,phi_standard_deviation,phi_min,phi_max";
+	for (auto &name : names)
+		csv << ',' << name;
+	csv << endl;
+}
+
+void PhiStats::csv_report(ofstream &csv, const int iter, const vector<string> &names)
+{
+	csv << iter << ',' << size << ',' << mean << ',' << std << ',' << min << ',' << max << ',';
+
+	//vector<string>::iterator start = oe_real_names.begin(), end = oe_real_names.end();
+	for (auto &rname : names)
+	{
+		if (phi_info.find(rname) != phi_info.end())
+			csv << phi_info[rname].meas;
+		csv << ',';
+	}
+}
+
+
 IterEnsembleSmoother::IterEnsembleSmoother(Pest &_pest_scenario, FileManager &_file_manager,
 	OutputFileWriter &_output_file_writer, PerformanceLog *_performance_log,
 	RunManagerAbstract* _run_mgr_ptr) : pest_scenario(_pest_scenario), file_manager(_file_manager),
@@ -37,22 +92,24 @@ void IterEnsembleSmoother::initialize()
 {
 	iter = 0;
 
+	//need to make this a ++ arg
 	last_best_lam = 1.0;
 
-	phi_stat_names.push_back("mean");
-	phi_stat_names.push_back("standard deviation");
-	phi_stat_names.push_back("min");
-	phi_stat_names.push_back("max");
-	
+	last_best_mean = 1.0E+30;
+	last_best_std = 1.0e+30;
+
+	lam_mults = pest_scenario.get_pestpp_options_ptr()->get_ies_lam_mults();
+	if (lam_mults.size() == 0)
+		lam_mults.push_back(1.0);
 
 	performance_log->log_event("processing par csv");
+	stringstream ss;
 	try
 	{
 		pe.from_csv(pest_scenario.get_pestpp_options().get_ies_par_csv());
 	}
 	catch (const exception &e)
 	{
-		stringstream ss;
 		ss << "error processing par csv: " << e.what();
 		throw_ies_error(ss.str());
 	}
@@ -68,7 +125,6 @@ void IterEnsembleSmoother::initialize()
 	}
 	catch (const exception &e)
 	{
-		stringstream ss;
 		ss << "error processing obs csv: " << e.what();
 		throw_ies_error(ss.str());
 	}
@@ -83,41 +139,20 @@ void IterEnsembleSmoother::initialize()
 	act_obs_names = pest_scenario.get_ctl_ordered_nz_obs_names();
 	act_par_names = pest_scenario.get_ctl_ordered_adj_par_names();
 
-	fphi << "iteration,num_active,";
+	/*fphi << "iteration,num_active,";
 	for (auto &s : phi_stat_names)
 		fphi << s << ',';
 	for (auto &rname : oe.get_real_names())
 		fphi << rname << ',';
-	fphi << endl;
+	fphi << endl;*/
+
+	PhiStats::initialize_csv(fphi, oe_org_real_names);
+
 	oe_base = oe; //copy
 	//reorder this for later...
 	oe_base.reorder(vector<string>(), act_obs_names);
 
-	string obs_restart_csv = pest_scenario.get_pestpp_options().get_ies_obs_restart_csv();
-
-	//no restart
-	if (obs_restart_csv.size() == 0)
-	{
-		performance_log->log_event("running initial ensemble");
-		//pe.add_runs(run_mgr_ptr);
-		run_ensemble(pe,oe);
-		/*if (pe.shape().first != epair.num_active())
-		{
-			performance_log->log_event("resizing initial par and obs ensembles to remove failed realizations");
-			pe.reorder(epair.get_pe_active_names(), vector<string>());
-			oe.reorder(epair.get_oe_active_names(), vector<string>());
-		}*/
-		report_and_save();
-	}
-	else
-	{
-		performance_log->log_event("restart IES with existing obs ensemble csv: " + obs_restart_csv);
-		ObservationEnsemble restart_oe(&pest_scenario);
-		restart_oe.from_csv(obs_restart_csv);
-		//check that the new oe is consistent with oe and pe
-
-
-	}
+	
 	performance_log->log_event("load obscov");
 	Covariance obscov;
     obscov.from_observation_weights(pest_scenario);
@@ -150,7 +185,36 @@ void IterEnsembleSmoother::initialize()
 	performance_log->log_event("calculate prior par diff");
 	//no scaling...chen and oliver scale this...
 	prior_pe_diff = pe.get_eigen_mean_diff();
+	string obs_restart_csv = pest_scenario.get_pestpp_options().get_ies_obs_restart_csv();
+	
+	//no restartPhi
+	if (obs_restart_csv.size() == 0)
+	{
+		performance_log->log_event("running initial ensemble");
+		run_ensemble(pe, oe);
+	}
+	else
+	{
+		performance_log->log_event("restart IES with existing obs ensemble csv: " + obs_restart_csv);
+		//ObservationEnsemble restart_oe(&pest_scenario);
+		try
+		{
+			oe.from_csv(obs_restart_csv);
+		}
+		catch (const exception &e)
+		{
+			ss << "error loading restart obs ensemble csv:" << e.what();
+			throw_ies_error(ss.str());
+		}
+		catch (...)
+		{
+			throw_ies_error(string("error loading restat obs ensemble csv"));
+		}
 
+	}
+	PhiStats phistats = report_and_save();
+	last_best_mean = phistats.get_mean();
+	last_best_std = phistats.get_std();
 }
 
 void IterEnsembleSmoother::solve()
@@ -184,12 +248,8 @@ void IterEnsembleSmoother::solve()
 	performance_log->log_event("SVD of obs diff");
 	RedSVD::RedSVD<Eigen::MatrixXd> rsvd(obs_diff);
 	
-	vector<double> lam_mults;
-	lam_mults.push_back(1.0);
 	Eigen::MatrixXd ivec, upgrade_1, s = rsvd.singularValues(), V = rsvd.matrixV(), Ut = rsvd.matrixU().transpose();
-
 	vector<ParameterEnsemble> pe_lams;
-	
 	for (auto &lam_mult : lam_mults)
 	{
 		ss.str("");
@@ -217,24 +277,33 @@ void IterEnsembleSmoother::solve()
 		ParameterEnsemble pe_lam = pe;
 		pe_lam.set_eigen(*pe_lam.get_eigen_ptr() + upgrade_1.transpose());
 		pe_lams.push_back(pe_lam);
-
-		/*EnsemblePair epair(pe_lam, oe);
-		epair.queue_runs(run_mgr_ptr);
-		real_run_ids.push_back(epair.get_real_run_ids());
-		ss.str("");
-		ss << file_manager.get_base_filename() << ".pe.iter" << iter << ".lam" << cur_lam << ".csv";
-		pe_lam.to_csv(ss.str());
-		*/
 	}
 
 	//queue up runs
-	ObservationEnsemble oe_lam = oe;
+	ObservationEnsemble oe_lam = oe, oe_lam_best = oe;//two copies
+	ParameterEnsemble pe_lam_best = pe; //copy
 	vector<map<int, int>> real_run_ids_lams;
+	PhiStats phistats;
+	int best_idx = -1;
+	double best_mean = 1.0e+30, best_std = 1.0e+30;
 	for (auto &pe_lam : pe_lams)
 	{
-		//real_run_ids_lams.push_back(pe_lam.add_runs(run_mgr_ptr));
 		run_ensemble(pe_lam, oe_lam);
+		phistats.update(get_phi_info(oe_lam));
+		if (phistats.get_mean() < best_mean)
+		{
+			oe_lam_best = oe_lam;
+			best_mean = phistats.get_mean();
+			pe_lam_best = pe_lam;
+		}
 	}
+
+	if (false)//subset stuff here
+	{
+
+	}
+
+	//phi_stats = report_and_save();
 
 	//make runs
 	//run_mgr_ptr->run();
@@ -250,12 +319,10 @@ void IterEnsembleSmoother::solve()
 	//}
 
 
-
-
 }
 
 
-map<string,PhiComponets> IterEnsembleSmoother::get_phi_info()
+map<string,PhiComponets> IterEnsembleSmoother::get_phi_info(ObservationEnsemble &_oe)
 {
 	Observations obs = pest_scenario.get_ctl_observations();
 	Parameters pars = pest_scenario.get_ctl_parameters();
@@ -276,35 +343,38 @@ map<string,PhiComponets> IterEnsembleSmoother::get_phi_info()
 	return phi_comps_ensemble;
 }
 
-map<string, double> IterEnsembleSmoother::get_phi_vec_stats()
-{
-	map<string,PhiComponets> phi_info = get_phi_info();
-	map<string, double> stats;
-	Eigen::VectorXd phi_vec;
-	phi_vec.resize(oe.shape().first);
-	PhiComponets pc;
-	vector<string> obs_reals = oe.get_real_names();
-	for (int ireal = 0; ireal < oe.shape().first; ireal++)
-		phi_vec[ireal] = phi_info[obs_reals[ireal]].meas;
-	stats["mean"] = phi_vec.mean();
-	Eigen::VectorXd centered = (phi_vec - (Eigen::VectorXd::Ones(phi_vec.size()) * stats["mean"]));
-	double var = (centered.cwiseProduct(centered)).sum();
+//map<string, double> IterEnsembleSmoother::get_phi_vec_stats(map<string,PhiComponets> &phi_info)
+//{
+//	//map<string,PhiComponets> phi_info = get_phi_info();
+//	map<string, double> stats;
+//	Eigen::VectorXd phi_vec;
+//	phi_vec.resize(oe.shape().first);
+//	PhiComponets pc;
+//	vector<string> obs_reals = oe.get_real_names();
+//	for (int ireal = 0; ireal < oe.shape().first; ireal++)
+//		phi_vec[ireal] = phi_info[obs_reals[ireal]].meas;
+//	stats["mean"] = phi_vec.mean();
+//	Eigen::VectorXd centered = (phi_vec - (Eigen::VectorXd::Ones(phi_vec.size()) * stats["mean"]));
+//	double var = (centered.cwiseProduct(centered)).sum();
+//
+//	stats["standard deviation"] = sqrt(var / double(phi_vec.size()));
+//	stats["max"] = phi_vec.maxCoeff();
+//	stats["min"] = phi_vec.minCoeff();
+//	return stats;
+//}
 
-	stats["standard deviation"] = sqrt(var / double(phi_vec.size()));
-	stats["max"] = phi_vec.maxCoeff();
-	stats["min"] = phi_vec.minCoeff();
-	return stats;
-}
-
-void IterEnsembleSmoother::report_and_save()
+PhiStats IterEnsembleSmoother::report_and_save()
 {
 	ofstream &f_rec = file_manager.rec_ofstream();
 	f_rec << endl << "  ---  IterEnsembleSmoother iteration " << iter << " report  ---  " << endl;
 	f_rec << "        number of active realizations: " << pe.shape().first << endl;
 	f_rec << "        number of model runs: " << run_mgr_ptr->get_total_runs() << endl;
-	map<string, double> phi_stats = get_phi_vec_stats();
-	for (auto phi_info : phi_stats)
-		f_rec << "        phi vector " << phi_info.first << ": " << setw(10) << phi_info.second << endl;
+	
+	map<string, PhiComponets> phi_info = get_phi_info(oe);
+	PhiStats phistats(phi_info);
+	
+	phistats.rec_report(f_rec);
+
 	stringstream ss;
 	ss << file_manager.get_base_filename() << "." << iter << ".obs.csv";
 	oe.to_csv(ss.str());
@@ -314,21 +384,11 @@ void IterEnsembleSmoother::report_and_save()
 	pe.to_csv(ss.str());
 	f_rec << "      current par ensemble saved to " << ss.str() << endl;
 	f_rec << "      current ensemble phi info saved to " << fphi_name << endl;
-	map<string, PhiComponets> phi_info = get_phi_info();
+	
+	phistats.csv_report(fphi, iter, oe_org_real_names);
 
-	fphi << iter << ',';
-	fphi << oe.shape().first << ',';
-
-	for (auto &s : phi_stat_names)
-		fphi << phi_stats[s] << ',';
-	vector<string> oe_real_names = oe.get_real_names();
-	vector<string>::iterator start = oe_real_names.begin(), end = oe_real_names.end();
-	for (auto &rname : oe_org_real_names)
-	{
-		if (find(start, end, rname) != end)
-			fphi << phi_info[rname].meas;
-		fphi << ',';
-	}
+	
+	return phistats;
 }
 
 //EnsemblePair IterEnsembleSmoother::run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe)
