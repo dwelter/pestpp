@@ -64,3 +64,4 @@ misc\head.ins model\10par_xsec.hds
 ++ #AUTO_NORM(4)
 ++ ies_parameter_csv(par.csv)
 ++ ies_observation_csv(obs.csv)
+++sweep_parameter_csv_file(par.csv)

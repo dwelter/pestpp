@@ -1,4 +1,4 @@
-             pestpp-ies.exe - a GLM iterative Ensemble Smoother
+             sweep.exe - a parameteric sweep utility
 for PEST(++) datasets 
 
                  by the PEST++ developement team
@@ -7,8 +7,11 @@ for PEST(++) datasets
 
 using control file: "pest.pst"
 
-    pestpp-ies parameter csv file = PAR.CSV                                           
-    pestpp-ies observation csv file = OBS.CSV                                           
+    sweep parameter csv file = par.csv                                           
+    sweep output csv file = sweep_out.csv                                     
+    sweep chunk size = 500       
+    sweep base run = 0         
+    sweep forgive failed runs = 0         
 
 PEST++ run mode:- 
    estimation
@@ -139,15 +142,3 @@ PEST SVD Information
     eigthresh = 1e-06
 
 
-
-  ---  IterEnsembleSmoother iteration 0 report  ---  
-        number of active realizations: 4
-        number of model runs: 4
-ensemble size:               4                   
-ensemble mean:               -4.70808e+66        
-ensemble standard deviation: 2.71821e+66         
-ensemble min:                -6.27744e+66        
-ensemble max:                1467.28             
-      current obs ensemble saved to pest.0.obs.csv
-      current par ensemble saved to pest.0.par.csv
-      current ensemble phi info saved to pest.phi.csv

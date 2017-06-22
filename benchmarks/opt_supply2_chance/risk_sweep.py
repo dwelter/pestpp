@@ -175,7 +175,39 @@ def plot_tradeoff():
     #plt.show()
     plt.savefig("risk_tradeoff.pdf")
 
+def get_gwm_decvar_vals(filename):
+    dv_vals = {}
+    with open(filename,'r') as f:
+        while True:
+            line = f.readline()
+            if line == '':
+                raise Exception()
+            if "OPTIMAL RATES FOR EACH FLOW VARIABLE" in line:
+                [f.readline() for _ in range(4)]
+                while "----" not in line:
+                    line = f.readline()
+                    if"----" in line:
+                        break
+                    #print(line)
+                    raw = line.lower().strip().split()
+                    dv_vals[raw[0]] = float(raw[1])
+                [f.readline() for _ in range(7)]
+                while True:
+                    line = f.readline()
+                    if "----" in line:
+                        break
+                    raw = line.lower().strip().split()
+                    dv_vals[raw[0]] = float(raw[2])
+                
+                return dv_vals
+
+
+
+
 def plot_dev_var_bar():
+
+    #parse the gwm output file for dec var values
+    gwm_dvs = get_gwm_decvar_vals(os.path.join("baseline_opt","supply2.gwmout"))
     fig = plt.figure(figsize=(190.0 / 25.4, 120.0 / 25.4))
     ax1 = plt.subplot(131)
     ax2 = plt.subplot(132)
@@ -202,19 +234,26 @@ def plot_dev_var_bar():
     labels = ["A) risk = {0}".format(risk_vals[0]), "B) risk = 0.5", "C) risk = {0}".format(risk_vals[in_idx][0])]
 
     for ax, df, l  in zip([ax1,ax2,ax3],[dfs[0],dfs[nu_idx],dfs[in_idx]],labels):
-        df.plot(kind="bar",ax=ax,legend=False)
+        if "0.5" in l:
+            print(gwm_dvs)
+            df.loc[:,"gwm"] = df.index.map(lambda x: gwm_dvs[x])
+            df.plot(kind="bar",ax=ax,legend=False,alpha=0.5)
+        else:
+            df.plot(kind="bar",ax=ax,legend=False,alpha=0.5)
         ax.set_xlabel("decision variable")
         ax.text(0.01,1.01,l,transform=ax.transAxes)
+        
+
 
     ax1.set_ylabel("pumping rate ($\\frac{m^3}{d}$)")
     ax2.set_yticklabels([])
     ax3.set_yticklabels([])
     plt.tight_layout()
+    #plt.show()
     plt.savefig("dec_vars.pdf")
 
-
 if __name__ == "__main__":
-    run_base()
+    #run_base()
     #run_worth()
     plot_tradeoff()
     plot_dev_var_bar()
