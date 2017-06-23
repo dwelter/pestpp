@@ -61,14 +61,15 @@ private:
 	vector<string> oe_org_real_names, pe_org_real_names;
 	vector<string> act_obs_names, act_par_names;
 
-	ParameterEnsemble pe;
+	ParameterEnsemble pe, pe_base;
 	ObservationEnsemble oe, oe_base;
-	Eigen::MatrixXd prior_pe_diff;
+	//Eigen::MatrixXd prior_pe_diff;
+	Eigen::MatrixXd Am;
 	Eigen::DiagonalMatrix<double,Eigen::Dynamic> obscov_inv_sqrt;
 
 
 	//EnsemblePair run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe);
-	void run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe);
+	vector<int> run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe);
 	//map<string, double> get_phi_vec_stats(map<string,PhiComponets> &phi_info);
 	map<string,PhiComponets> get_phi_info(ObservationEnsemble &_oe);
 	PhiStats report_and_save();

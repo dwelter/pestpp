@@ -232,14 +232,14 @@
           OUT:                                     OUT:
           ----                                     ----
              STORAGE =           0.0000               STORAGE =           0.0000
-       CONSTANT HEAD =           0.5000         CONSTANT HEAD =           0.5000
+       CONSTANT HEAD =           0.5016         CONSTANT HEAD =           0.5016
                WELLS =           0.0000                 WELLS =           0.0000
 
-           TOTAL OUT =           0.5000             TOTAL OUT =           0.5000
+           TOTAL OUT =           0.5016             TOTAL OUT =           0.5016
 
-            IN - OUT =           0.0000              IN - OUT =           0.0000
+            IN - OUT =      -1.5632E-03              IN - OUT =      -1.5632E-03
 
- PERCENT DISCREPANCY =           0.00     PERCENT DISCREPANCY =           0.00
+ PERCENT DISCREPANCY =          -0.31     PERCENT DISCREPANCY =          -0.31
 
 
 
@@ -293,14 +293,14 @@
           OUT:                                     OUT:
           ----                                     ----
              STORAGE =           0.0000               STORAGE =           0.0000
-       CONSTANT HEAD =           1.5000         CONSTANT HEAD =           1.0000
+       CONSTANT HEAD =           1.5047         CONSTANT HEAD =           1.0031
                WELLS =           0.0000                 WELLS =           0.0000
 
-           TOTAL OUT =           1.5000             TOTAL OUT =           1.0000
+           TOTAL OUT =           1.5047             TOTAL OUT =           1.0031
 
-            IN - OUT =           0.0000              IN - OUT =           0.0000
+            IN - OUT =      -4.6896E-03              IN - OUT =      -3.1264E-03
 
- PERCENT DISCREPANCY =           0.00     PERCENT DISCREPANCY =           0.00
+ PERCENT DISCREPANCY =          -0.31     PERCENT DISCREPANCY =          -0.31
 
 
 
@@ -315,6 +315,6 @@
          TOTAL TIME 1.72800E+05  2880.0      48.000      2.0000     5.47570E-03
 1
 
- Run end date and time (yyyy/mm/dd hh:mm:ss): 2017/06/22 13:55:04
- Elapsed run time:  0.018 Seconds
+ Run end date and time (yyyy/mm/dd hh:mm:ss): 2017/06/22 14:58:12
+ Elapsed run time:  0.020 Seconds
 

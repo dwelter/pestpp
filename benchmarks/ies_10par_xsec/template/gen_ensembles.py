@@ -22,4 +22,5 @@ def ies():
     ies.initialize(parensemble="par.csv",obsensemble="obs.csv")
     ies.update()
 
+gen()
 ies()

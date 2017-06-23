@@ -152,7 +152,10 @@ void IterEnsembleSmoother::initialize()
 	//reorder this for later...
 	oe_base.reorder(vector<string>(), act_obs_names);
 
-	
+	pe_base = pe;
+	//reorder this for later
+	pe_base.reorder(vector<string>(), act_par_names);
+
 	performance_log->log_event("load obscov");
 	Covariance obscov;
     obscov.from_observation_weights(pest_scenario);
@@ -184,10 +187,18 @@ void IterEnsembleSmoother::initialize()
 
 	performance_log->log_event("calculate prior par diff");
 	//no scaling...chen and oliver scale this...
-	prior_pe_diff = pe.get_eigen_mean_diff();
-	string obs_restart_csv = pest_scenario.get_pestpp_options().get_ies_obs_restart_csv();
 	
-	//no restartPhi
+	if (false) //eventually ies_use_approx
+	{
+		performance_log->log_event("calculating 'Am' matrix for full solution");
+		double scale = (1.0 / (sqrt(double(pe.shape().first - 1))));
+		Eigen::MatrixXd par_diff = scale * pe.get_eigen_mean_diff();
+		RedSVD::RedSVD<Eigen::MatrixXd> rsvd(par_diff);
+		Am = rsvd.matrixU() * rsvd.singularValues().inverse();
+	}
+
+	string obs_restart_csv = pest_scenario.get_pestpp_options().get_ies_obs_restart_csv();	
+	//no restart
 	if (obs_restart_csv.size() == 0)
 	{
 		performance_log->log_event("running initial ensemble");
@@ -210,8 +221,8 @@ void IterEnsembleSmoother::initialize()
 		{
 			throw_ies_error(string("error loading restat obs ensemble csv"));
 		}
-
 	}
+	
 	PhiStats phistats = report_and_save();
 	last_best_mean = phistats.get_mean();
 	last_best_std = phistats.get_std();
@@ -227,13 +238,22 @@ void IterEnsembleSmoother::solve()
 	if (oe.shape().first < 2)
 		throw_ies_error(string("less than 2 active realizations...cannot continue"));
 
+	//build up some components for subsetting later
+	vector<int> drop_idxs;
+	int subset = 3; // eventually ++ies_subset
+	if (false) //eventaully if ies_subset
+	{
+		for (int i = subset; i < pe.shape().first; i++)
+			drop_idxs.push_back(i);
+	}
+
 	double scale = (1.0 / (sqrt(double(oe.shape().first - 1))));
 	
 	performance_log->log_event("calculate residual matrix");
 	//oe_base var_names should be ordered by act_obs_names, so only reorder real_names
 	//oe should only include active realizations, so only reorder var_names
-	Eigen::MatrixXd scaled_residual = obscov_inv_sqrt * (oe.get_eigen(vector<string>(), act_obs_names) - oe_base.get_eigen(oe.get_real_names(), vector<string>())).transpose();
-
+	Eigen::MatrixXd scaled_residual = obscov_inv_sqrt * (oe.get_eigen(vector<string>(), act_obs_names) - 
+		oe_base.get_eigen(oe.get_real_names(), vector<string>())).transpose();
 	
 	performance_log->log_event("calculate scaled obs diff");
 	Eigen::MatrixXd diff = oe.get_eigen_mean_diff(vector<string>(),act_obs_names).transpose();
@@ -245,10 +265,16 @@ void IterEnsembleSmoother::solve()
 	diff = pe.get_eigen_mean_diff(vector<string>(), act_par_names).transpose();
 	Eigen::MatrixXd par_diff = scale * diff;
 
+	cout << "scaled_residual" << endl << scaled_residual << endl << endl;
+	cout << "par_diff" << endl << par_diff << endl << endl;
+	cout << "obs_diff" << endl << obs_diff << endl << endl;
+
+
 	performance_log->log_event("SVD of obs diff");
 	RedSVD::RedSVD<Eigen::MatrixXd> rsvd(obs_diff);
 	
 	Eigen::MatrixXd ivec, upgrade_1, s = rsvd.singularValues(), V = rsvd.matrixV(), Ut = rsvd.matrixU().transpose();
+	Eigen::MatrixXd s2 = s.cwiseProduct(s);
 	vector<ParameterEnsemble> pe_lams;
 	for (auto &lam_mult : lam_mults)
 	{
@@ -257,30 +283,64 @@ void IterEnsembleSmoother::solve()
 		ss << "starting calcs for lambda" << cur_lam;
 		performance_log->log_event(ss.str());
 		performance_log->log_event("form scaled identity matrix");
-		ivec = (1.0 / ((cur_lam + 1.0) * s.cwiseProduct(s)).array());
-		cout << "V:" << V.rows() << ',' << V.cols() << endl;
-		cout << "Ut" << Ut.rows() << ',' << Ut.cols() << endl;
-		cout << "s:" << s.size() << endl;
-		cout << "ivec:" << ivec.size() << endl;
-		cout << "par_diff:" << par_diff.rows() << ',' << par_diff.cols() << endl;
+		ivec = ((Eigen::VectorXd::Ones(s2.size()) * (cur_lam + 1.0)) + s2).inverse();
 		performance_log->log_event("calculate portion of upgrade_1 for localization");
 		upgrade_1 = -1.0 * par_diff * V * s.asDiagonal() * ivec.asDiagonal() * Ut;
 		
 		//localization here...
 
 		performance_log->log_event("apply residuals to upgrade_1");
-		upgrade_1 = upgrade_1 * scaled_residual;
-		cout << "upgrade_1:" << upgrade_1.rows() << ',' << upgrade_1.cols() << endl;
-		cout << "pe:" << pe.shape().first << "," << pe.shape().second << endl;
-		cout << upgrade_1 << endl;
+		upgrade_1 = (upgrade_1 * scaled_residual).transpose();
 		 
 		ParameterEnsemble pe_lam = pe;
-		pe_lam.set_eigen(*pe_lam.get_eigen_ptr() + upgrade_1.transpose());
+		pe_lam.set_eigen(*pe_lam.get_eigen_ptr() + upgrade_1);
+
+		/*cout << "V:" << V.rows() << ',' << V.cols() << endl;
+		cout << V << endl << endl;
+		cout << "Ut" << Ut.rows() << ',' << Ut.cols() << endl;
+		cout << Ut << endl << endl;
+		cout << "s:" << s.size() << endl;
+		cout << s << endl << endl;
+		cout << "ivec:" << ivec.size() << endl;
+		cout << ivec << endl << endl;
+		cout << "par_diff:" << par_diff.rows() << ',' << par_diff.cols() << endl;
+		cout << "upgrade_1:" << upgrade_1.rows() << ',' << upgrade_1.cols() << endl;
+		cout << upgrade_1 << endl << endl;
+		cout << "pe_lam:" << pe_lam.shape().first << "," << pe.shape().second << endl;
+		cout << *pe_lam.get_eigen_ptr() << endl << endl;*/
+
+		if ((false) && (iter > 1))//eventually ies_use_approx
+		{
+			performance_log->log_event("calculating parameter correction (full solution)");
+
+			performance_log->log_event("forming scaled par resid");
+			Eigen::MatrixXd scaled_par_resid = pe.get_eigen(vector<string>(), act_par_names) - 
+				pe_base.get_eigen(pe.get_real_names(), vector<string>());
+			performance_log->log_event("forming x4");
+			Eigen::MatrixXd x4 = Am.transpose() * scaled_par_resid;
+			performance_log->log_event("forming x5");
+			Eigen::MatrixXd x5 = Am * x4;
+			performance_log->log_event("forming x6");
+			Eigen::MatrixXd x6 = par_diff.transpose() * x5;
+			performance_log->log_event("forming x7");
+			Eigen::MatrixXd x7 = ivec * x6;
+			performance_log->log_event("forming upgrade_2");
+			Eigen::MatrixXd upgrade_2 = -1.0 * (par_diff * x7);
+			pe_lam.set_eigen(*pe_lam.get_eigen_ptr() + upgrade_2.transpose());
+			
+		}
+
 		pe_lams.push_back(pe_lam);
 	}
 
 	//queue up runs
 	ObservationEnsemble oe_lam = oe, oe_lam_best = oe;//two copies
+	//drop the last rows of oe_lam and oe_lam_best if we are subsetting
+	if (false) //++ies_subset
+	{
+		oe_lam.drop_rows(drop_idxs);
+		oe_lam_best.drop_rows(drop_idxs);
+	}
 	ParameterEnsemble pe_lam_best = pe; //copy
 	vector<map<int, int>> real_run_ids_lams;
 	PhiStats phistats;
@@ -288,6 +348,13 @@ void IterEnsembleSmoother::solve()
 	double best_mean = 1.0e+30, best_std = 1.0e+30;
 	for (auto &pe_lam : pe_lams)
 	{
+		if (false) //++ies_subset
+		{
+			//don't want to drop rows because we are going to need one of these whole later
+			//prob need to pass through a vector of ints to the _pe.run_ensemble...
+			//pe_lam.drop_rows(drop_idxs);
+			
+		}
 		run_ensemble(pe_lam, oe_lam);
 		phistats.update(get_phi_info(oe_lam));
 		if (phistats.get_mean() < best_mean)
@@ -460,12 +527,12 @@ PhiStats IterEnsembleSmoother::report_and_save()
 //	return epair;
 //}
 
-void IterEnsembleSmoother::run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe)
+vector<int> IterEnsembleSmoother::run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe)
 {
-
 	stringstream ss;
 	ss << "queuing " << _pe.shape().first << " runs";
 	performance_log->log_event(ss.str());
+	
 	map<int, int> real_run_ids;
 	try
 	{
@@ -529,6 +596,7 @@ void IterEnsembleSmoother::run_ensemble(ParameterEnsemble &_pe, ObservationEnsem
 		_pe.drop_rows(failed_real_indices);
 		_oe.drop_rows(failed_real_indices);
 	}
+	return failed_real_indices;
 }
 
 
