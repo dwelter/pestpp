@@ -92,9 +92,6 @@ void IterEnsembleSmoother::initialize()
 {
 	iter = 0;
 
-	//need to make this a ++ arg
-	last_best_lam = 1.0;
-
 	last_best_mean = 1.0E+30;
 	last_best_std = 1.0e+30;
 
@@ -188,7 +185,7 @@ void IterEnsembleSmoother::initialize()
 	performance_log->log_event("calculate prior par diff");
 	//no scaling...chen and oliver scale this...
 	
-	if (false) //eventually ies_use_approx
+	if (!pest_scenario.get_pestpp_options().get_ies_use_approx()) //eventually ies_use_approx
 	{
 		performance_log->log_event("calculating 'Am' matrix for full solution");
 		double scale = (1.0 / (sqrt(double(pe.shape().first - 1))));
@@ -223,9 +220,18 @@ void IterEnsembleSmoother::initialize()
 		}
 	}
 	
+	
+
 	PhiStats phistats = report_and_save();
 	last_best_mean = phistats.get_mean();
 	last_best_std = phistats.get_std();
+	last_best_lam = pest_scenario.get_pestpp_options().get_ies_init_lam();
+	if (last_best_lam <= 0.0)
+	{
+		double x = last_best_mean / (2.0 * double(oe.shape().second));
+		last_best_lam = pow(10.0,(floor(log10(x))));
+	}
+	file_manager.rec_ofstream() << "  ---  current lambda: " << setw(20) << left << last_best_lam << endl;
 }
 
 void IterEnsembleSmoother::solve()
@@ -265,10 +271,11 @@ void IterEnsembleSmoother::solve()
 	diff = pe.get_eigen_mean_diff(vector<string>(), act_par_names).transpose();
 	Eigen::MatrixXd par_diff = scale * diff;
 
+#ifdef _DEBUG
 	cout << "scaled_residual" << endl << scaled_residual << endl << endl;
 	cout << "par_diff" << endl << par_diff << endl << endl;
 	cout << "obs_diff" << endl << obs_diff << endl << endl;
-
+#endif
 
 	performance_log->log_event("SVD of obs diff");
 	RedSVD::RedSVD<Eigen::MatrixXd> rsvd(obs_diff);
@@ -283,9 +290,9 @@ void IterEnsembleSmoother::solve()
 		ss << "starting calcs for lambda" << cur_lam;
 		performance_log->log_event(ss.str());
 		performance_log->log_event("form scaled identity matrix");
-		ivec = ((Eigen::VectorXd::Ones(s2.size()) * (cur_lam + 1.0)) + s2).inverse();
+		ivec = ((Eigen::VectorXd::Ones(s2.size()) * (cur_lam + 1.0)) + s2).asDiagonal().inverse();
 		performance_log->log_event("calculate portion of upgrade_1 for localization");
-		upgrade_1 = -1.0 * par_diff * V * s.asDiagonal() * ivec.asDiagonal() * Ut;
+		upgrade_1 = -1.0 * par_diff * V * s.asDiagonal() * ivec * Ut;
 		
 		//localization here...
 
@@ -295,7 +302,8 @@ void IterEnsembleSmoother::solve()
 		ParameterEnsemble pe_lam = pe;
 		pe_lam.set_eigen(*pe_lam.get_eigen_ptr() + upgrade_1);
 
-		/*cout << "V:" << V.rows() << ',' << V.cols() << endl;
+#ifdef _DEBUG
+		cout << "V:" << V.rows() << ',' << V.cols() << endl;
 		cout << V << endl << endl;
 		cout << "Ut" << Ut.rows() << ',' << Ut.cols() << endl;
 		cout << Ut << endl << endl;
@@ -307,9 +315,10 @@ void IterEnsembleSmoother::solve()
 		cout << "upgrade_1:" << upgrade_1.rows() << ',' << upgrade_1.cols() << endl;
 		cout << upgrade_1 << endl << endl;
 		cout << "pe_lam:" << pe_lam.shape().first << "," << pe.shape().second << endl;
-		cout << *pe_lam.get_eigen_ptr() << endl << endl;*/
+		cout << *pe_lam.get_eigen_ptr() << endl << endl;
+#endif
 
-		if ((false) && (iter > 1))//eventually ies_use_approx
+		if ((!pest_scenario.get_pestpp_options().get_ies_use_approx()) && (iter > 1))//eventually ies_use_approx
 		{
 			performance_log->log_event("calculating parameter correction (full solution)");
 
