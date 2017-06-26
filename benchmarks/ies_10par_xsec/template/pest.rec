@@ -144,10 +144,51 @@ PEST SVD Information
         number of active realizations: 4
         number of model runs: 4
 ensemble size:               4                   
-ensemble mean:               -4.70808e+66        
-ensemble standard deviation: 2.71821e+66         
-ensemble min:                -6.27744e+66        
+ensemble mean:               387.355             
+ensemble standard deviation: 624.005             
+ensemble min:                0.5188              
 ensemble max:                1467.28             
       current obs ensemble saved to pest.0.obs.csv
       current par ensemble saved to pest.0.par.csv
       current ensemble phi info saved to pest.phi.csv
+  ---  current lambda: 1000                
+  ---  lambda: 100                 , mean: 387.355             , std: 624.005             
+  ---  lambda: 10000               , mean: 387.355             , std: 624.005             
+  ---  lambda: 100                 , mean: 387.355             , std: 624.005             
+  ---  lambda: 10000               , mean: 387.355             , std: 624.005             
+  ---  lambda: 100                 , mean: 387.355             , std: 624.005             
+  ---  lambda: 10000               , mean: 387.355             , std: 624.005             
+  ---  lambda: 100                 , mean: 387.355             , std: 624.005             
+  ---  lambda: 10000               , mean: 387.355             , std: 624.005             
+  ---  lambda: 100                 , mean: 387.355             , std: 624.005             
+  ---  lambda: 10000               , mean: 387.355             , std: 624.005             
+  ---  lambda: 100                 , mean: 387.355             , std: 624.005             
+  ---  lambda: 10000               , mean: 387.355             , std: 624.005             
+  ---  lambda: 100                 , mean: 387.355             , std: 624.005             
+  ---  lambda: 10000               , mean: 387.355             , std: 624.005             
+  ---  lambda: 100                 , mean: 387.355             , std: 624.005             
+  ---  lambda: 10000               , mean: 387.355             , std: 624.005             
+  ---  lambda: 100                 , mean: 387.355             , std: 624.005             
+  ---  lambda: 10000               , mean: 387.355             , std: 624.005             
+  ---  lambda: 100                 , mean: 387.355             , std: 624.005             
+  ---  lambda: 10000               , mean: 387.355             , std: 624.005             
+  ---  lambda: 100                 , mean: 387.355             , std: 624.005             
+  ---  lambda: 10000               , mean: 387.355             , std: 624.005             
+  ---  lambda: 100                 , mean: 387.355             , std: 624.005             
+  ---  lambda: 10000               , mean: 387.355             , std: 624.005             
+  ---  lambda: 100                 , mean: 387.355             , std: 624.005             
+  ---  lambda: 10000               , mean: 387.355             , std: 624.005             
+  ---  lambda: 100                 , mean: 387.355             , std: 624.005             
+  ---  lambda: 10000               , mean: 387.355             , std: 624.005             
+  ---  lambda: 100                 , mean: 387.355             , std: 624.005             
+  ---  lambda: 10000               , mean: 387.355             , std: 624.005             
+  ---  lambda: 100                 , mean: 387.355             , std: 624.005             
+  ---  lambda: 10000               , mean: 387.355             , std: 624.005             
+  ---  lambda: 100                 , mean: 387.355             , std: 624.005             
+  ---  lambda: 10000               , mean: 387.355             , std: 624.005             
+  ---  lambda: 100                 , mean: 387.355             , std: 624.005             
+  ---  lambda: 10000               , mean: 387.355             , std: 624.005             
+  ---  lambda: 100                 , mean: 387.355             , std: 624.005             
+  ---  lambda: 10000               , mean: 387.355             , std: 624.005             
+  ---  lambda: 100                 , mean: 387.355             , std: 624.005             
+  ---  lambda: 10000               , mean: 387.355             , std: 624.005             

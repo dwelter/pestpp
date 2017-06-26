@@ -73,7 +73,7 @@ private:
 	//map<string, double> get_phi_vec_stats(map<string,PhiComponets> &phi_info);
 	map<string,PhiComponets> get_phi_info(ObservationEnsemble &_oe);
 	PhiStats report_and_save();
-	void lam_test_report(vector<double> lambdas, vector<PhiStats> &phi_stats_vec);
+	void lam_test_report(double lambda, PhiStats &phistats);
 
 };
 

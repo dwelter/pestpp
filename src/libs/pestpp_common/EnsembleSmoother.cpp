@@ -24,7 +24,10 @@ void PhiStats::update(const map<string, PhiComponets> &_phi_info)
 	PhiComponets pc;
 	int i = 0;
 	for (auto &pi : phi_info)
+	{
 		phi_vec[i] = pi.second.meas;
+		i++;
+	}
 	mean = phi_vec.mean();
 	Eigen::VectorXd centered = (phi_vec - (Eigen::VectorXd::Ones(phi_vec.size()) * mean));
 	double var = (centered.cwiseProduct(centered)).sum();
@@ -232,6 +235,7 @@ void IterEnsembleSmoother::initialize()
 		last_best_lam = pow(10.0,(floor(log10(x))));
 	}
 	file_manager.rec_ofstream() << "  ---  current lambda: " << setw(20) << left << last_best_lam << endl;
+	pe.transform_ip(ParameterEnsemble::transStatus::NUM);
 }
 
 void IterEnsembleSmoother::solve()
@@ -283,6 +287,7 @@ void IterEnsembleSmoother::solve()
 	Eigen::MatrixXd ivec, upgrade_1, s = rsvd.singularValues(), V = rsvd.matrixV(), Ut = rsvd.matrixU().transpose();
 	Eigen::MatrixXd s2 = s.cwiseProduct(s);
 	vector<ParameterEnsemble> pe_lams;
+	vector<double> lam_vals;
 	for (auto &lam_mult : lam_mults)
 	{
 		ss.str("");
@@ -340,6 +345,7 @@ void IterEnsembleSmoother::solve()
 		}
 
 		pe_lams.push_back(pe_lam);
+		lam_vals.push_back(cur_lam);
 	}
 
 	//queue up runs
@@ -355,7 +361,8 @@ void IterEnsembleSmoother::solve()
 	PhiStats phistats;
 	int best_idx = -1;
 	double best_mean = 1.0e+30, best_std = 1.0e+30;
-	for (auto &pe_lam : pe_lams)
+	//for (auto &pe_lam : pe_lams)
+	for (int i=0;i<pe_lams.size();i++)
 	{
 		if (false) //++ies_subset
 		{
@@ -364,13 +371,15 @@ void IterEnsembleSmoother::solve()
 			//pe_lam.drop_rows(drop_idxs);
 			
 		}
-		run_ensemble(pe_lam, oe_lam);
+		run_ensemble(pe_lams[i], oe_lam);
 		phistats.update(get_phi_info(oe_lam));
+		lam_test_report(lam_vals[i],phistats);
+
 		if (phistats.get_mean() < best_mean)
 		{
 			oe_lam_best = oe_lam;
 			best_mean = phistats.get_mean();
-			pe_lam_best = pe_lam;
+			pe_lam_best = pe_lams[i];
 		}
 	}
 
@@ -397,6 +406,13 @@ void IterEnsembleSmoother::solve()
 
 }
 
+void IterEnsembleSmoother::lam_test_report(double lambda, PhiStats &phistats)
+{
+	ofstream &frec = file_manager.rec_ofstream();
+	frec << "  ---  lambda: " << setw(20) << left << lambda;
+	frec << ", mean: " << setw(20) << left << phistats.get_mean();
+	frec << ", std: " << setw(20) << left << phistats.get_std() << endl;
+}
 
 map<string,PhiComponets> IterEnsembleSmoother::get_phi_info(ObservationEnsemble &_oe)
 {

@@ -148,7 +148,6 @@ Eigen::MatrixXd Ensemble::get_eigen(vector<string> row_names, vector<string> col
 			j++;
 		}
 		return mat;
-
 	}
 
 	// only mess with rows, keep cols the same
@@ -164,7 +163,6 @@ Eigen::MatrixXd Ensemble::get_eigen(vector<string> row_names, vector<string> col
 			i++;
 		}
 		return mat;
-
 	}
 
 	//the slow one where we are rearranging rows and cols
@@ -535,6 +533,26 @@ void ParameterEnsemble::to_csv(string &file_name)
 		csv << endl;
 	}
 }
+
+void ParameterEnsemble::transform_ip(transStatus to_tstat)
+{
+	if (to_tstat == tstat)
+		return;
+	if ((to_tstat == transStatus::NUM) && (tstat == transStatus::CTL))
+	{
+		Parameters pars = pest_scenario_ptr->get_ctl_parameters();
+		for (int ireal = 0; ireal < reals.rows(); ireal++)
+		{
+			pars.update_without_clear(var_names, reals.row(ireal));
+			par_transform.ctl2numeric_ip(pars);
+			reals.row(ireal) = pars.get_data_eigen_vec(var_names);
+		}
+
+	}
+	else
+		throw_ensemble_error("ParameterEnsemble::transform_ip() only CTL to NUM implemented");
+}
+
 
 //ParameterEnsemble ParameterEnsemble::get_mean_diff()
 //{
