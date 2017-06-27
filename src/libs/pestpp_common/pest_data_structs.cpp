@@ -696,6 +696,11 @@ void PestppOptions::parce_line(const string &line)
 		{
 			convert_ip(value, ies_obs_restart_csv);
 		}
+		else if (key == "IES_SUBSET_SIZE")
+		{
+			convert_ip(value, ies_subset_size);
+		}
+
 		else {
 
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");

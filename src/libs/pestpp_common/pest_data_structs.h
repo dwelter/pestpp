@@ -321,6 +321,9 @@ public:
 	void set_ies_init_lam(double _ies_init_lam) { ies_init_lam = _ies_init_lam; }
 	const bool get_ies_use_approx() const { return ies_use_approx; }
 	void set_ies_use_approx(bool _ies_use_approx) { ies_use_approx = _ies_use_approx; }
+	const int get_ies_subset_size() const { return ies_subset_size; }
+	void set_ies_subset_size(int _ies_subset_size) { ies_subset_size = _ies_subset_size; }
+
 
 private:
 	int n_iter_base;
@@ -377,6 +380,7 @@ private:
 	int opt_recalc_fosm_every;
 	double opt_iter_derinc_fac;
 
+	int ies_subset_size;
 	string ies_par_csv;
 	string ies_obs_csv;
 	string ies_obs_restart_csv;

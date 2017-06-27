@@ -51,7 +51,7 @@ private:
 	PerformanceLog *performance_log;
 	RunManagerAbstract* run_mgr_ptr;
 
-	int iter;
+	int iter,subset_size;
 	double last_best_lam, last_best_mean,last_best_std;
 
 	vector<double> lam_mults;
@@ -70,6 +70,7 @@ private:
 
 	//EnsemblePair run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe);
 	vector<int> run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe);
+	vector<ObservationEnsemble> run_lambda_ensembles(vector<ParameterEnsemble> &pe_lams);
 	//map<string, double> get_phi_vec_stats(map<string,PhiComponets> &phi_info);
 	map<string,PhiComponets> get_phi_info(ObservationEnsemble &_oe);
 	PhiStats report_and_save();

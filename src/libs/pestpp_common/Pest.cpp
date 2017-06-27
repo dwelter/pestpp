@@ -646,6 +646,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_ies_lam_mults(vector<double>());
 	pestpp_options.set_ies_init_lam(-999);
 	pestpp_options.set_ies_use_approx(true);
+	pestpp_options.set_ies_subset_size(-1);
 	for(vector<string>::const_iterator b=pestpp_input.begin(),e=pestpp_input.end();
 		b!=e; ++b) {
 			
