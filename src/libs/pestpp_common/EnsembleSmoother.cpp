@@ -7,7 +7,8 @@
 #include "EnsembleSmoother.h"
 #include "ObjectiveFunc.h"
 #include "covariance.h"
-#include "RedSVD-h.h";
+#include "RedSVD-h.h"
+#include "SVDPackage.h"
 
 
 PhiStats::PhiStats(const map<string, PhiComponets> &_phi_info)
@@ -135,7 +136,12 @@ void IterEnsembleSmoother::initialize()
 	{
 		throw_ies_error(string("error processing obs csv"));
 	}
-
+	if (pe.shape().first != oe.shape().first)
+	{
+		ss.str("");
+		ss << "parameter ensemble rows (" << pe.shape().first << ") not equal to observation ensemble rows (" << oe.shape().first << ")";
+		throw_ies_error(ss.str());
+	}
 	oe_org_real_names = oe.get_real_names();
 	pe_org_real_names = pe.get_real_names();
 
@@ -281,16 +287,21 @@ void IterEnsembleSmoother::solve()
 	diff = pe.get_eigen_mean_diff(vector<string>(), act_par_names).transpose();
 	Eigen::MatrixXd par_diff = scale * diff;
 
-#ifdef _DEBUG
-	cout << "scaled_residual" << endl << scaled_residual << endl << endl;
-	cout << "par_diff" << endl << par_diff << endl << endl;
-	cout << "obs_diff" << endl << obs_diff << endl << endl;
-#endif
+//#ifdef _DEBUG
+//	cout << "scaled_residual" << endl << scaled_residual << endl << endl;
+//	cout << "par_diff" << endl << par_diff << endl << endl;
+//	cout << "obs_diff" << endl << obs_diff << endl << endl;
+//#endif
 
 	performance_log->log_event("SVD of obs diff");
-	RedSVD::RedSVD<Eigen::MatrixXd> rsvd(obs_diff);
-	
-	Eigen::MatrixXd ivec, upgrade_1, s = rsvd.singularValues(), V = rsvd.matrixV(), Ut = rsvd.matrixU().transpose();
+	RedSVD::RedSVD<Eigen::MatrixXd> rsvd1(obs_diff);	
+	Eigen::MatrixXd s1 = rsvd1.singularValues(), V1 = rsvd1.matrixV(), Ut1 = rsvd1.matrixU().transpose();
+	Eigen::MatrixXd ivec, upgrade_1, s,V,Ut;
+
+	SVD_REDSVD rsvd;
+	rsvd.set_performance_log(performance_log);
+	rsvd.solve_ip(obs_diff, s, Ut, V, pest_scenario.get_svd_info().eigthresh, pest_scenario.get_svd_info().maxsing);
+	Ut.transposeInPlace();
 	Eigen::MatrixXd s2 = s.cwiseProduct(s);
 	vector<ParameterEnsemble> pe_lams;
 	vector<double> lam_vals;
@@ -317,19 +328,19 @@ void IterEnsembleSmoother::solve()
 		pe_lam.set_eigen(*pe_lam.get_eigen_ptr() + upgrade_1);
 
 #ifdef _DEBUG
-		cout << "V:" << V.rows() << ',' << V.cols() << endl;
-		cout << V << endl << endl;
-		cout << "Ut" << Ut.rows() << ',' << Ut.cols() << endl;
-		cout << Ut << endl << endl;
-		cout << "s:" << s.size() << endl;
-		cout << s << endl << endl;
-		cout << "ivec:" << ivec.size() << endl;
-		cout << ivec << endl << endl;
-		cout << "par_diff:" << par_diff.rows() << ',' << par_diff.cols() << endl;
+//		cout << "V:" << V.rows() << ',' << V.cols() << endl;
+//		cout << V << endl << endl;
+//		cout << "Ut" << Ut.rows() << ',' << Ut.cols() << endl;
+//		cout << Ut << endl << endl;
+//		cout << "s:" << s.size() << endl;
+//		cout << s << endl << endl;
+//		cout << "ivec:" << ivec.size() << endl;
+//		cout << ivec << endl << endl;
+//		cout << "par_diff:" << par_diff.rows() << ',' << par_diff.cols() << endl;
 		cout << "upgrade_1:" << upgrade_1.rows() << ',' << upgrade_1.cols() << endl;
 		cout << upgrade_1 << endl << endl;
-		cout << "pe_lam:" << pe_lam.shape().first << "," << pe.shape().second << endl;
-		cout << *pe_lam.get_eigen_ptr() << endl << endl;
+//		cout << "pe_lam:" << pe_lam.shape().first << "," << pe.shape().second << endl;
+//		cout << *pe_lam.get_eigen_ptr() << endl << endl;
 #endif
 
 		if ((!pest_scenario.get_pestpp_options().get_ies_use_approx()) && (iter > 1))//eventually ies_use_approx
@@ -353,6 +364,11 @@ void IterEnsembleSmoother::solve()
 			
 		}
 
+		pe_lam.enforce_bounds();
+//#ifdef _DEBUG
+//		cout << "pe_lam:" << pe_lam.shape().first << "," << pe.shape().second << endl;
+//		cout << *pe_lam.get_eigen_ptr() << endl << endl;
+//#endif
 		pe_lams.push_back(pe_lam);
 		lam_vals.push_back(cur_lam);
 	}
@@ -373,12 +389,13 @@ void IterEnsembleSmoother::solve()
 	vector<ObservationEnsemble> oe_lams = run_lambda_ensembles(pe_lams);
 
 	for (int i=0;i<pe_lams.size();i++)
-	{		
+	{	
+		//map<string, PhiComponets> temp = get_phi_info(oe_lams[i]);
 		phistats.update(get_phi_info(oe_lams[i]));
 		lam_test_report(lam_vals[i],phistats);
 		if (phistats.get_mean() < best_mean)
 		{
-			oe_lam_best = oe_lam;
+			oe_lam_best = oe_lams[i];
 			best_mean = phistats.get_mean();
 			best_idx = i;
 		}
@@ -386,9 +403,12 @@ void IterEnsembleSmoother::solve()
 
 	if (false)//subset stuff here
 	{
-		run_ensemble(pe_lams[best_idx], oe_lam);
+		run_ensemble(pe_lams[best_idx], oe_lam_best);
 	}
-	phistats = report_and_save();
+	//cout << oe_lam_best.get_var_names() << endl;
+	//cout << *oe_lam_best.get_eigen_ptr() << endl;
+
+	phistats.update(get_phi_info(oe_lam_best));
 	frec << "  ---  last mean, current mean: " << last_best_mean << ',' << phistats.get_mean() << endl;
 	frec << "  ---  last stdev, current stdev: " << last_best_std << ',' << phistats.get_std() << endl;
 	cout << "  ---  last mean, current mean: " << last_best_mean << ',' << phistats.get_mean() << endl;
@@ -402,7 +422,7 @@ void IterEnsembleSmoother::solve()
 
 		pe = pe_lams[best_idx];
 		oe = oe_lam_best;
-
+		
 		if (phistats.get_std() < last_best_std)
 		{
 			frec << "  ---  updating lambda from " << last_best_lam << " to " << lam_vals[best_idx] << endl;
@@ -428,25 +448,7 @@ void IterEnsembleSmoother::solve()
 		frec << " ---  increasing lambda from " << last_best_lam << " to " << new_lam << endl;
 		cout << " ---  increasing lambda from " << last_best_lam << " to " << new_lam << endl;
 	}
-
-	
-
-	//phi_stats = report_and_save();
-
-	//make runs
-	//run_mgr_ptr->run();
-
-	//process runs to find "best" lambda
-	//ObservationEnsemble oe_lam = oe; //copy
-	//vector<int> failed_real_idxs;
-	//for (int ilam = 0; ilam < real_run_ids_lams.size(); ilam++)
-	//{
-	//	map<int, int> rids = real_run_ids_lams[ilam];
-	//	failed_real_idxs = oe_lam.update_from_runs(rids, run_mgr_ptr);
-	//	if 
-	//}
-
-
+	report_and_save();
 }
 
 void IterEnsembleSmoother::lam_test_report(double lambda, PhiStats &phistats)
@@ -463,40 +465,20 @@ map<string,PhiComponets> IterEnsembleSmoother::get_phi_info(ObservationEnsemble 
 	Parameters pars = pest_scenario.get_ctl_parameters();
 	ObjectiveFunc obj_func(&(pest_scenario.get_ctl_observations()), &(pest_scenario.get_ctl_observation_info()), &(pest_scenario.get_prior_info()));
 	PhiComponets phi_comps;
-	vector<string> par_reals = pe.get_real_names(), obs_reals = oe.get_real_names();
+	vector<string> par_reals = pe.get_real_names(), obs_reals = _oe.get_real_names();
 	vector<double> svec;
 	Eigen::VectorXd evec;
 	map<string, PhiComponets> phi_comps_ensemble;
 	//for (auto &name : oe.get_real_names())
-	for (int ireal=0;ireal<oe.shape().first;ireal++)
+	for (int ireal=0;ireal<_oe.shape().first;ireal++)
 	{
-		obs.update_without_clear(oe.get_var_names(),oe.get_real_vector(obs_reals[ireal]));
+		obs.update_without_clear(_oe.get_var_names(),_oe.get_real_vector(obs_reals[ireal]));
 		pars.update_without_clear(pe.get_var_names(), pe.get_real_vector(par_reals[ireal]));
 		phi_comps = obj_func.get_phi_comp(obs, pars, pest_scenario.get_regul_scheme_ptr());
 		phi_comps_ensemble[obs_reals[ireal]] = phi_comps;
 	}
 	return phi_comps_ensemble;
 }
-
-//map<string, double> IterEnsembleSmoother::get_phi_vec_stats(map<string,PhiComponets> &phi_info)
-//{
-//	//map<string,PhiComponets> phi_info = get_phi_info();
-//	map<string, double> stats;
-//	Eigen::VectorXd phi_vec;
-//	phi_vec.resize(oe.shape().first);
-//	PhiComponets pc;
-//	vector<string> obs_reals = oe.get_real_names();
-//	for (int ireal = 0; ireal < oe.shape().first; ireal++)
-//		phi_vec[ireal] = phi_info[obs_reals[ireal]].meas;
-//	stats["mean"] = phi_vec.mean();
-//	Eigen::VectorXd centered = (phi_vec - (Eigen::VectorXd::Ones(phi_vec.size()) * stats["mean"]));
-//	double var = (centered.cwiseProduct(centered)).sum();
-//
-//	stats["standard deviation"] = sqrt(var / double(phi_vec.size()));
-//	stats["max"] = phi_vec.maxCoeff();
-//	stats["min"] = phi_vec.minCoeff();
-//	return stats;
-//}
 
 PhiStats IterEnsembleSmoother::report_and_save()
 {
@@ -526,80 +508,13 @@ PhiStats IterEnsembleSmoother::report_and_save()
 	return phistats;
 }
 
-//EnsemblePair IterEnsembleSmoother::run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe)
-//{
-//
-//	EnsemblePair epair(pe, oe);
-//	stringstream ss;
-//	ss << "queuing " << _pe.shape().first << " runs";
-//	performance_log->log_event(ss.str());
-//	try
-//	{
-//		epair.queue_runs(run_mgr_ptr);
-//	}
-//	catch (const exception &e)
-//	{
-//		stringstream ss;
-//		ss << "error processing obs csv: " << e.what();
-//		throw_ies_error(ss.str());
-//	}
-//	catch (...)
-//	{
-//		throw_ies_error(string("error queuing runs"));
-//	}
-//	performance_log->log_event("making runs");
-//	try
-//	{
-//		epair.run(run_mgr_ptr);
-//	}
-//	catch (const exception &e)
-//	{
-//		stringstream ss;
-//		ss << "error running ensemble: " << e.what();
-//		throw_ies_error(ss.str());
-//	}
-//	catch (...)
-//	{
-//		throw_ies_error(string("error running ensemble"));
-//	}
-//	
-//	performance_log->log_event("processing runs");
-//	vector<int> failed_real_indices;
-//	try
-//	{
-//		failed_real_indices = epair.process_runs(run_mgr_ptr);
-//	}
-//	catch (const exception &e)
-//	{
-//		stringstream ss;
-//		ss << "error processing runs: " << e.what();
-//		throw_ies_error(ss.str());
-//	}
-//	catch (...)
-//	{
-//		throw_ies_error(string("error processing runs"));
-//	}
-//
-//	if (failed_real_indices.size() > 0)
-//	{
-//		stringstream ss;
-//		vector<string> par_real_names = pe.get_real_names();
-//		vector<string> obs_real_names = oe.get_real_names();
-//		ss << "the following par:obs realization runs failed: ";
-//		for (auto &i : failed_real_indices)
-//		{
-//			ss << par_real_names[i] << ":" << obs_real_names[i] << ',';
-//		}
-//		performance_log->log_event(ss.str());
-//	}
-//	return epair;
-//}
 
 vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<ParameterEnsemble> &pe_lams)
 {
 	stringstream ss;
 	ss << "queuing " << pe_lams.size() << " ensembles";
 	performance_log->log_event(ss.str());
+	run_mgr_ptr->reinitialize();
 	vector<int> subset_idxs;
 	if (subset_size > 0)
 		for (int i = 0; i < subset_size; i++)
@@ -626,6 +541,7 @@ vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<Pa
 	performance_log->log_event("making runs");
 	try
 	{
+		
 		run_mgr_ptr->run();
 	}
 	catch (const exception &e)
@@ -648,6 +564,7 @@ vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<Pa
 	for (int i=0;i<pe_lams.size();i++)
 	{
 		ObservationEnsemble _oe = oe;
+		real_run_ids = real_run_ids_vec[i];
 		try
 		{
 			failed_real_indices = _oe.update_from_runs(real_run_ids, run_mgr_ptr);
@@ -689,7 +606,7 @@ vector<int> IterEnsembleSmoother::run_ensemble(ParameterEnsemble &_pe, Observati
 	stringstream ss;
 	ss << "queuing " << _pe.shape().first << " runs";
 	performance_log->log_event(ss.str());
-	
+	run_mgr_ptr->reinitialize();
 	map<int, int> real_run_ids;
 	try
 	{

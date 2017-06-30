@@ -80,7 +80,8 @@ public:
 	ParameterEnsemble() { ; }
 	void from_csv(string &file_name,const vector<string> &ordered_names);
 	void from_csv(string &file_name);
-	void from_eigen_mat(Eigen::MatrixXd mat, const vector<string> &_real_names, const vector<string> &_var_names);
+	void from_eigen_mat(Eigen::MatrixXd mat, const vector<string> &_real_names, const vector<string> &_var_names,
+		transStatus _tstat = transStatus::NUM);
 	void enforce_bounds();
 	void to_csv(string &file_name);
 	//Pest* get_pest_scenario_ptr() { return &pest_scenario; }

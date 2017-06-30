@@ -6,11 +6,11 @@ restart estimation
  1e-1   -4.0   0.3  0.03    10	    999
 5.0   5.0   1.0e-3
 0.1  
-20   .005  4   4  .005   4
+1   .005  4   4  .005   4
 1    1    1
 * singular value decomposition
 1
-11  1.0000000E-06 
+1  1.0000000E-03 
 0
 * parameter groups
 k     relative     1.0000E-02   0.000      switch      2.000      parabolic
@@ -64,6 +64,6 @@ misc\head.ins model\10par_xsec.hds
 ++ #AUTO_NORM(4)
 ++ ies_parameter_csv(par.csv)
 ++ ies_observation_csv(obs.csv)
-++sweep_parameter_csv_file(par.csv)
-++ ies_lambda_mults(0.1,10.0)
-++ies_init_lam(1000.0)
+++sweep_parameter_csv_file(par1.csv)
+++ ies_lambda_mults(1.0)
+++ies_init_lam(1.0)

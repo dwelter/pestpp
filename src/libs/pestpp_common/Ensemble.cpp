@@ -435,7 +435,7 @@ map<int,int> ParameterEnsemble::add_runs(RunManagerAbstract *run_mgr_ptr, vector
 	return real_run_ids;
 }
 
-void ParameterEnsemble::from_eigen_mat(Eigen::MatrixXd mat, const vector<string> &_real_names, const vector<string> &_var_names)
+void ParameterEnsemble::from_eigen_mat(Eigen::MatrixXd mat, const vector<string> &_real_names, const vector<string> &_var_names, ParameterEnsemble::transStatus _tstat)
 {
 	vector<string> missing;
 	vector<string>::const_iterator start = _var_names.begin();
@@ -447,6 +447,7 @@ void ParameterEnsemble::from_eigen_mat(Eigen::MatrixXd mat, const vector<string>
 	if (missing.size() > 0)
 		throw_ensemble_error("ParameterEnsemble.from_eigen_mat() the following par names no found: ", missing);
 	Ensemble::from_eigen_mat(mat, _real_names, _var_names);
+	tstat = _tstat;
 }
 
 
@@ -498,7 +499,35 @@ void ParameterEnsemble::from_csv(string &file_name, const vector<string> &ordere
 
 void ParameterEnsemble::enforce_bounds()
 {
-	throw_ensemble_error("pe.enforce_bounds() not implemented");
+	//throw_ensemble_error("pe.enforce_bounds() not implemented");
+	if (tstat != ParameterEnsemble::transStatus::NUM)
+	{
+		throw_ensemble_error("pe.enforce_bounds() tstat != NUM not implemented");
+	}
+	ParameterInfo pinfo = pest_scenario_ptr->get_ctl_parameter_info();
+	Parameters lower = pest_scenario_ptr->get_ctl_parameter_info().get_low_bnd(var_names);
+	Parameters upper = pest_scenario_ptr->get_ctl_parameter_info().get_up_bnd(var_names);
+	par_transform.ctl2numeric_ip(lower);
+	par_transform.ctl2numeric_ip(upper);
+	Eigen::VectorXd col;
+	double l, u, v;
+	for (int j = 0; j < reals.cols(); j++)
+	{
+		l = lower[var_names[j]];
+		u = upper[var_names[j]];
+		col = reals.col(j);
+		//cout << var_names[j] <<',' << l <<','<< u << endl;
+		//cout << col << endl << endl;
+		for (int i = 0; i < reals.rows(); i++)
+		{
+			v = col(i);
+			v = v < l ? l : v;
+			col(i) = v > u ? u : v;
+		}
+		//cout << col << endl;
+		reals.col(j) = col;
+	}
+
 }
 
 void ParameterEnsemble::to_csv(string &file_name)
@@ -551,6 +580,7 @@ void ParameterEnsemble::transform_ip(transStatus to_tstat)
 	}
 	else
 		throw_ensemble_error("ParameterEnsemble::transform_ip() only CTL to NUM implemented");
+	tstat = to_tstat;
 }
 
 
@@ -572,7 +602,11 @@ void ObservationEnsemble::update_from_obs(int row_idx, Observations &obs)
 {
 	if (row_idx >= real_names.size())
 		throw_ensemble_error("ObservtionEnsemble.update_from_obs() obs_idx out of range");
+	//Eigen::VectorXd temp = obs.get_data_eigen_vec(var_names);
+	//cout << reals.row(row_idx) << endl << endl;
 	reals.row(row_idx) = obs.get_data_eigen_vec(var_names);
+	//cout << reals.row(row_idx) << endl;
+	return;
 }
 
 vector<int> ObservationEnsemble::update_from_runs(map<int,int> &real_run_ids, RunManagerAbstract *run_mgr_ptr)
