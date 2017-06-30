@@ -17,17 +17,17 @@
 class PhiStats
 {
 public:
-	PhiStats(const map<string, PhiComponets> &_phi_info);
+	PhiStats(const map<string, double> &_phi_info);
 	PhiStats() { ; }
 	void rec_report(ofstream &f_rec);
 	void csv_report(ofstream &csv, const int iter, const vector<string> &names);
-	void update(const map<string, PhiComponets> &_phi_info);
+	void update(const map<string, double> &_phi_info);
 	const double get_mean() const { return mean; }
 	const double get_std() const { return std;  }
 	static void initialize_csv(ofstream &csv, const vector<string> &names);
 
 private:
-	map<string, PhiComponets> phi_info;
+	map<string, double> phi_map;
 	double mean, std, min, max;
 	int size;
 };
@@ -72,10 +72,10 @@ private:
 	vector<int> run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe);
 	vector<ObservationEnsemble> run_lambda_ensembles(vector<ParameterEnsemble> &pe_lams);
 	//map<string, double> get_phi_vec_stats(map<string,PhiComponets> &phi_info);
-	map<string,PhiComponets> get_phi_info(ObservationEnsemble &_oe);
+	//map<string,PhiComponets> get_phi_info(ObservationEnsemble &_oe);
 	PhiStats report_and_save();
 	void lam_test_report(double lambda, PhiStats &phistats);
-
+	map<string, double> get_phi_map(ObservationEnsemble &_oe);
 };
 
 

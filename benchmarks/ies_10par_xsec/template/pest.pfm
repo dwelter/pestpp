@@ -1,63 +1,65 @@
-PEST++ performance logger started at:  10:38:23
-        ( time = 10:38:23,  elapsed time = 3ms )
+PEST++ performance logger started at:  12:44:52
+        ( time = 12:44:52,  elapsed time = 3ms )
   starting to process control file
-          ( time = 10:38:23,  elapsed time = 46ms )
+          ( time = 12:44:52,  elapsed time = 46ms )
   finished processing control file
-          ( time = 10:38:23,  elapsed time = 13ms )
+          ( time = 12:44:52,  elapsed time = 13ms )
     starting basic model IO error checking
-            ( time = 10:38:23,  elapsed time = 3ms )
+            ( time = 12:44:52,  elapsed time = 3ms )
     finished basic model IO error checking
-            ( time = 10:38:23,  elapsed time = 14ms )
+            ( time = 12:44:52,  elapsed time = 14ms )
     processing par csv
-            ( time = 10:38:23,  elapsed time = 38ms )
+            ( time = 12:44:52,  elapsed time = 38ms )
     processing obs csv
-            ( time = 10:38:23,  elapsed time = 37ms )
+            ( time = 12:44:52,  elapsed time = 36ms )
     load obscov
-            ( time = 10:38:23,  elapsed time = 21ms )
+            ( time = 12:44:52,  elapsed time = 22ms )
     load parcov
-            ( time = 10:38:23,  elapsed time = 24ms )
+            ( time = 12:44:52,  elapsed time = 20ms )
     calculate prior par diff
-            ( time = 10:38:23,  elapsed time = 174us )
+            ( time = 12:44:52,  elapsed time = 141us )
     running initial ensemble
-            ( time = 10:38:23,  elapsed time = 175us )
+            ( time = 12:44:52,  elapsed time = 156us )
     queuing 30 runs
-            ( time = 10:38:23,  elapsed time = 76ms )
+            ( time = 12:44:52,  elapsed time = 35ms )
     making runs
-            ( time = 10:38:27,  elapsed time = 4sec )
+            ( time = 12:44:56,  elapsed time = 4sec )
     processing runs
-            ( time = 10:38:27,  elapsed time = 31ms )
+            ( time = 12:44:56,  elapsed time = 31ms )
     the following par:obs realization runs failed: 0:0,
-            ( time = 10:38:27,  elapsed time = 154us )
+            ( time = 12:44:56,  elapsed time = 136us )
     dropping failed realizations
-            ( time = 10:38:28,  elapsed time = 157ms )
+            ( time = 12:44:56,  elapsed time = 122ms )
     starting solve for iteration: 1
-            ( time = 10:38:28,  elapsed time = 152us )
+            ( time = 12:44:56,  elapsed time = 148us )
     calculate residual matrix
-            ( time = 10:38:28,  elapsed time = 1ms )
+            ( time = 12:44:56,  elapsed time = 1ms )
     calculate scaled obs diff
-            ( time = 10:38:28,  elapsed time = 432us )
+            ( time = 12:44:56,  elapsed time = 431us )
     calculate scaled par diff
-            ( time = 10:38:28,  elapsed time = 1ms )
+            ( time = 12:44:56,  elapsed time = 1ms )
     SVD of obs diff
-            ( time = 10:38:33,  elapsed time = 5sec )
+            ( time = 12:44:56,  elapsed time = 156us )
     starting REDSVD
-            ( time = 10:38:33,  elapsed time = 1ms )
+            ( time = 12:44:56,  elapsed time = 729us )
     retrieving REDSVD components
-            ( time = 10:38:33,  elapsed time = 193us )
+            ( time = 12:44:56,  elapsed time = 195us )
     triming REDSVD components to 1elements
-            ( time = 10:38:48,  elapsed time = 14sec )
+            ( time = 12:44:56,  elapsed time = 176us )
     done REDSVD
-            ( time = 10:38:52,  elapsed time = 4sec )
+            ( time = 12:44:56,  elapsed time = 2ms )
     starting calcs for lambda1
-            ( time = 10:38:52,  elapsed time = 153us )
+            ( time = 12:44:56,  elapsed time = 128us )
     form scaled identity matrix
-            ( time = 10:38:52,  elapsed time = 167us )
+            ( time = 12:44:56,  elapsed time = 146us )
     calculate portion of upgrade_1 for localization
-            ( time = 10:38:52,  elapsed time = 292us )
+            ( time = 12:44:56,  elapsed time = 274us )
     apply residuals to upgrade_1
-            ( time = 10:38:52,  elapsed time = 254ms )
+            ( time = 12:44:56,  elapsed time = 4ms )
     queuing 1 ensembles
-            ( time = 10:38:52,  elapsed time = 64ms )
+            ( time = 12:44:56,  elapsed time = 75ms )
     making runs
-            ( time = 10:38:56,  elapsed time = 3sec )
+            ( time = 12:45:00,  elapsed time = 3sec )
     processing runs
+            ( time = 12:45:00,  elapsed time = 49ms )
+    updating parameter ensemble

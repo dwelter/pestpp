@@ -144,10 +144,10 @@ PEST SVD Information
         number of active realizations: 29
         number of model runs: 29
 ensemble size:               29                  
-ensemble mean:               225.212             
-ensemble standard deviation: 277.264             
-ensemble min:                3.293               
-ensemble max:                1189.69             
+ensemble mean:               226.69              
+ensemble standard deviation: 284.091             
+ensemble min:                9.84446             
+ensemble max:                1224.43             
       current obs ensemble saved to pest.0.obs.csv
       current par ensemble saved to pest.0.par.csv
       current ensemble phi info saved to pest.phi.csv
@@ -157,4 +157,20 @@ ensemble max:                1189.69
 
   ---  starting solve for iteration: 1
    ...starting calcs for lambda1
-  ---  lambda: 1                   , mean: 48.9244             , std: 65.8097             
+  ---  lambda: 1                   , mean: 51.9159             , std: 67.9885             
+  ---  last mean, current mean: 226.69,51.9159
+  ---  last stdev, current stdev: 284.091,67.9885
+ ---  updating parameter ensemble  ---  
+  ---  updating lambda from 1 to 0.75
+
+  ---  IterEnsembleSmoother iteration 1 report  ---  
+        number of active realizations: 29
+        number of model runs: 58
+ensemble size:               29                  
+ensemble mean:               51.9159             
+ensemble standard deviation: 67.9885             
+ensemble min:                2.50786             
+ensemble max:                328.811             
+      current obs ensemble saved to pest.1.obs.csv
+      current par ensemble saved to pest.1.par.csv
+      current ensemble phi info saved to pest.phi.csv
