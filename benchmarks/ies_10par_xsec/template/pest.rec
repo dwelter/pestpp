@@ -24,7 +24,7 @@ PEST Control Information
     facparmax = 5
     facorig = 0.001
     phiredswh = 0.1
-    noptmax = 1
+    noptmax = 2
     phiredstp = 0.005
     nphistp = 4
     nphinored = 4
@@ -143,11 +143,11 @@ PEST SVD Information
   ---  IterEnsembleSmoother iteration 0 report  ---  
         number of active realizations: 29
         number of model runs: 29
-ensemble size:               29                  
-ensemble mean:               226.69              
-ensemble standard deviation: 284.091             
-ensemble min:                9.84446             
-ensemble max:                1224.43             
+   ensemble size:               29                  
+   ensemble phi mean:               226.69              
+   ensemble phi standard deviation: 284.091             
+   ensemble phi min:                9.84446             
+   ensemble phi max:                1224.43             
       current obs ensemble saved to pest.0.obs.csv
       current par ensemble saved to pest.0.par.csv
       current ensemble phi info saved to pest.phi.csv
@@ -156,21 +156,61 @@ ensemble max:                1224.43
 
 
   ---  starting solve for iteration: 1
-   ...starting calcs for lambda1
+   ...starting calcs for lambda: 0.1
+   ...finished calcs for lambda: 0.1
+   ...starting calcs for lambda: 1
+   ...finished calcs for lambda: 1
+   ...starting calcs for lambda: 10
+   ...finished calcs for lambda: 10
+  ---  running lambda ensembles...  ---  
+  ---  evaluting lambda ensemble results  --  
+  ---  lambda: 0.1                 , mean: 52.1428             , std: 68.2992             
   ---  lambda: 1                   , mean: 51.9159             , std: 67.9885             
-  ---  last mean, current mean: 226.69,51.9159
-  ---  last stdev, current stdev: 284.091,67.9885
- ---  updating parameter ensemble  ---  
-  ---  updating lambda from 1 to 0.75
+  ---  lambda: 10                  , mean: 50.7433             , std: 65.5797             
+  ---  last mean, current mean: 226.69,50.7433
+  ---  last stdev, current stdev: 284.091,65.5797
+  ---  updating parameter ensemble  ---  
+  ---  updating lambda from 1 to 7.5
 
   ---  IterEnsembleSmoother iteration 1 report  ---  
         number of active realizations: 29
-        number of model runs: 58
-ensemble size:               29                  
-ensemble mean:               51.9159             
-ensemble standard deviation: 67.9885             
-ensemble min:                2.50786             
-ensemble max:                328.811             
+        number of model runs: 116
+   ensemble size:               29                  
+   ensemble phi mean:               50.7433             
+   ensemble phi standard deviation: 65.5797             
+   ensemble phi min:                1.76805             
+   ensemble phi max:                316.65              
       current obs ensemble saved to pest.1.obs.csv
       current par ensemble saved to pest.1.par.csv
+      current ensemble phi info saved to pest.phi.csv
+
+
+
+  ---  starting solve for iteration: 2
+   ...starting calcs for lambda: 0.75
+   ...finished calcs for lambda: 0.75
+   ...starting calcs for lambda: 7.5
+   ...finished calcs for lambda: 7.5
+   ...starting calcs for lambda: 75
+   ...finished calcs for lambda: 75
+  ---  running lambda ensembles...  ---  
+  ---  evaluting lambda ensemble results  --  
+  ---  lambda: 0.75                , mean: 62.1569             , std: 94.994              
+  ---  lambda: 7.5                 , mean: 48.0305             , std: 68.0353             
+  ---  lambda: 75                  , mean: 26.4828             , std: 25.5304             
+  ---  last mean, current mean: 50.7433,26.4828
+  ---  last stdev, current stdev: 284.091,25.5304
+  ---  updating parameter ensemble  ---  
+  ---  updating lambda from 7.5 to 56.25
+
+  ---  IterEnsembleSmoother iteration 2 report  ---  
+        number of active realizations: 29
+        number of model runs: 203
+   ensemble size:               29                  
+   ensemble phi mean:               26.4828             
+   ensemble phi standard deviation: 25.5304             
+   ensemble phi min:                0.337051            
+   ensemble phi max:                95.3632             
+      current obs ensemble saved to pest.2.obs.csv
+      current par ensemble saved to pest.2.par.csv
       current ensemble phi info saved to pest.phi.csv

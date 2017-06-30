@@ -39,11 +39,17 @@ void PhiStats::update(const map<string, double> &_phi_map)
 
 void PhiStats::rec_report(ofstream &f_rec)
 {
-	f_rec << "ensemble size:               " << setw(20) << left << size << endl;
-	f_rec << "ensemble mean:               " << setw(20) << left << mean << endl;
-	f_rec << "ensemble standard deviation: " << setw(20) << left << std << endl;
-	f_rec << "ensemble min:                " << setw(20) << left << min << endl;
-	f_rec << "ensemble max:                " << setw(20) << left << max << endl;
+	f_rec << "   ensemble size:               " << setw(20) << left << size << endl;
+	f_rec << "   ensemble phi mean:               " << setw(20) << left << mean << endl;
+	f_rec << "   ensemble phi standard deviation: " << setw(20) << left << std << endl;
+	f_rec << "   ensemble phi min:                " << setw(20) << left << min << endl;
+	f_rec << "   ensemble phi max:                " << setw(20) << left << max << endl;
+	cout << "   ensemble size:               " << setw(20) << left << size << endl;
+	cout << "   ensemble phi mean:               " << setw(20) << left << mean << endl;
+	cout << "   ensemble phi standard deviation: " << setw(20) << left << std << endl;
+	cout << "   ensemble phi min:                " << setw(20) << left << min << endl;
+	cout << "   ensemble phi max:                " << setw(20) << left << max << endl;
+
 }
 
 void PhiStats::initialize_csv(ofstream &csv, const vector<string> &names)
@@ -98,7 +104,8 @@ void IterEnsembleSmoother::initialize()
 
 	last_best_mean = 1.0E+30;
 	last_best_std = 1.0e+30;
-
+	lambda_max = 1.0E+10;
+	lambda_min = 1.0E-10;
 	lam_mults = pest_scenario.get_pestpp_options_ptr()->get_ies_lam_mults();
 	if (lam_mults.size() == 0)
 		lam_mults.push_back(1.0);
@@ -310,8 +317,8 @@ void IterEnsembleSmoother::solve()
 		ss.str("");
 		double cur_lam = last_best_lam * lam_mult;
 		ss << "starting calcs for lambda" << cur_lam;
-		cout << "   ...starting calcs for lambda" << cur_lam << endl;
-		frec << "   ...starting calcs for lambda" << cur_lam << endl;
+		cout << "   ...starting calcs for lambda: " << cur_lam << endl;
+		frec << "   ...starting calcs for lambda: " << cur_lam << endl;
 
 		performance_log->log_event(ss.str());
 		performance_log->log_event("form scaled identity matrix");
@@ -371,6 +378,9 @@ void IterEnsembleSmoother::solve()
 //#endif
 		pe_lams.push_back(pe_lam);
 		lam_vals.push_back(cur_lam);
+		frec << "   ...finished calcs for lambda: " << cur_lam << endl;
+		cout << "   ...finished calcs for lambda: " << cur_lam << endl;
+
 	}
 
 	//queue up runs
@@ -386,7 +396,11 @@ void IterEnsembleSmoother::solve()
 	PhiStats phistats;
 	int best_idx = -1;
 	double best_mean = 1.0e+30, best_std = 1.0e+30;
+	frec << "  ---  running lambda ensembles...  ---  " << endl;
+	cout << "  ---  running lambda ensembles...  ---  " << endl;
 	vector<ObservationEnsemble> oe_lams = run_lambda_ensembles(pe_lams);
+	frec << "  ---  evaluting lambda ensemble results  --  " << endl;
+	cout << "  ---  evaluting lambda ensemble results  --  " << endl;
 
 	for (int i=0;i<pe_lams.size();i++)
 	{	
@@ -414,23 +428,21 @@ void IterEnsembleSmoother::solve()
 	cout << "  ---  last mean, current mean: " << last_best_mean << ',' << phistats.get_mean() << endl;
 	cout << "  ---  last stdev, current stdev: " << last_best_std << ',' << phistats.get_std() << endl;
 
-	if (phistats.get_mean() < last_best_mean)
+	if (phistats.get_mean() < last_best_mean * 1.1)
 	{
-		frec << " ---  updating parameter ensemble  ---  " << endl;
-		cout << " ---  updating parameter ensemble  ---  " << endl;
+		frec << "  ---  updating parameter ensemble  ---  " << endl;
+		cout << "  ---  updating parameter ensemble  ---  " << endl;
 		performance_log->log_event("updating parameter ensemble");
-
+		last_best_mean = phistats.get_mean();
 		pe = pe_lams[best_idx];
 		oe = oe_lam_best;
 		
-		if (phistats.get_std() < last_best_std)
+		if (phistats.get_std() < last_best_std * 1.1)
 		{
 			double new_lam = lam_vals[best_idx] * 0.75;
-			//TODO set lambda min and check here
+			new_lam = (new_lam < lambda_min) ? lambda_min : new_lam;
 			frec << "  ---  updating lambda from " << last_best_lam << " to " << new_lam << endl;
-			cout << "  ---  updating lambda from " << last_best_lam << " to " << new_lam << endl;
-
-			
+			cout << "  ---  updating lambda from " << last_best_lam << " to " << new_lam << endl;	
 			last_best_lam = new_lam;
 		}
 		else
@@ -445,8 +457,8 @@ void IterEnsembleSmoother::solve()
 		frec << "  ---  not updating parameter ensemble  ---  " << endl;
 		cout << "  ---  not updating parameter ensemble  ---  " << endl;
 
-		double new_lam = last_best_mean * *max_element(lam_mults.begin(), lam_mults.end()) * 5.0;
-		//TODO set lambda max and check here
+		double new_lam = last_best_mean * *max_element(lam_mults.begin(), lam_mults.end()) * 10.0;
+		new_lam = (new_lam > lambda_max) ? lambda_max : new_lam;
 		frec << " ---  increasing lambda from " << last_best_lam << " to " << new_lam << endl;
 		cout << " ---  increasing lambda from " << last_best_lam << " to " << new_lam << endl;
 	}
@@ -459,6 +471,9 @@ void IterEnsembleSmoother::lam_test_report(double lambda, PhiStats &phistats)
 	frec << "  ---  lambda: " << setw(20) << left << lambda;
 	frec << ", mean: " << setw(20) << left << phistats.get_mean();
 	frec << ", std: " << setw(20) << left << phistats.get_std() << endl;
+	cout << "  ---  lambda: " << setw(20) << left << lambda;
+	cout << ", mean: " << setw(20) << left << phistats.get_mean();
+	cout << ", std: " << setw(20) << left << phistats.get_std() << endl;
 }
 
 //map<string,PhiComponets> IterEnsembleSmoother::get_phi_info(ObservationEnsemble &_oe)
@@ -521,6 +536,10 @@ PhiStats IterEnsembleSmoother::report_and_save()
 	f_rec << "        number of active realizations: " << pe.shape().first << endl;
 	f_rec << "        number of model runs: " << run_mgr_ptr->get_total_runs() << endl;
 	
+	cout << endl << "  ---  IterEnsembleSmoother iteration " << iter << " report  ---  " << endl;
+	cout << "        number of active realizations: " << pe.shape().first << endl;
+	cout << "        number of model runs: " << run_mgr_ptr->get_total_runs() << endl;
+
 	map<string, double> phi_info = get_phi_map(oe);
 	PhiStats phistats(phi_info);
 	

@@ -34,8 +34,8 @@ def ies():
     pst.control_data.noptmax = 1
     ies = pyemu.EnsembleSmoother(pst=pst,verbose="ies.log")
     ies.initialize(parensemble="par1.csv",obsensemble="obs1.csv")
-    ies.update()
-
+    ies.update(lambda_mults=[10.,1,0.1])
+    ies.update(lambda_mults=[10.,1,0.1])
 if __name__ == "__main__":
     gen_full()
     ies()

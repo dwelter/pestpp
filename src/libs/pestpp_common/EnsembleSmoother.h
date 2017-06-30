@@ -42,8 +42,8 @@ public:
 	void initialize();
 	void solve();
 	void finalize();
-	
 	void throw_ies_error(string &message);
+
 private:
 	Pest &pest_scenario;
 	FileManager &file_manager;
@@ -53,7 +53,7 @@ private:
 
 	int iter,subset_size;
 	double last_best_lam, last_best_mean,last_best_std;
-
+	double lambda_max, lambda_min;
 	vector<double> lam_mults;
 
 	string fphi_name;
