@@ -69,7 +69,7 @@ private:
 
 
 	//EnsemblePair run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe);
-	vector<int> run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe);
+	vector<int> run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe, vector<int> &real_idxs=vector<int>());
 	vector<ObservationEnsemble> run_lambda_ensembles(vector<ParameterEnsemble> &pe_lams);
 	//map<string, double> get_phi_vec_stats(map<string,PhiComponets> &phi_info);
 	//map<string,PhiComponets> get_phi_info(ObservationEnsemble &_oe);

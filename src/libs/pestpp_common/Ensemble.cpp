@@ -110,6 +110,18 @@ void Ensemble::drop_rows(vector<int> &row_idxs)
 	real_names = keep_names;
 }
 
+void Ensemble::keep_rows(vector<int> &row_idxs)
+{
+	vector<int>::iterator start = row_idxs.begin(), end = row_idxs.end();
+	vector<string> keep_names;
+	for (int ireal = 0; ireal < reals.rows(); ireal++)
+		if (find(start, end, ireal) != end)
+			keep_names.push_back(real_names[ireal]);
+	reals = get_eigen(keep_names, vector<string>());
+	real_names = keep_names;
+}
+
+
 Eigen::MatrixXd Ensemble::get_eigen(vector<string> row_names, vector<string> col_names)
 {
 	vector<string> missing_rows,missing_cols;
@@ -264,6 +276,18 @@ void Ensemble::throw_ensemble_error(string message)
 	throw runtime_error(full_message);
 }
 
+void Ensemble::set_real_names(vector<string>& _real_names)
+{
+	if (_real_names.size() != real_names.size())
+	{
+		stringstream ss;
+		ss << " set_real_names() _real_names.size(): " << _real_names.size() << " != real_names.size(): " << real_names.size();
+		throw_ensemble_error(ss.str());
+
+	}
+	real_names = _real_names;
+}
+
 Ensemble::~Ensemble()
 {
 }
@@ -317,6 +341,39 @@ vector<string> Ensemble::prepare_csv(const vector<string> &names, ifstream &csv,
 	}
 	return header_names;
 
+}
+
+void Ensemble::append_other_rows(Ensemble &other)
+{
+	if (other.shape().second != shape().second)
+		throw_ensemble_error("append_other_rows(): different number of var_names in other");
+	vector<string> probs;
+	vector<string>::iterator start = var_names.begin(), end = var_names.end();
+	for (auto &vname : other.get_var_names())
+		if (find(start, end, vname) == end)
+			probs.push_back(vname);
+	if (probs.size() > 0)
+		throw_ensemble_error("append_other_rows(): the following other::var_names not in this::var_names: ", probs);
+	start = real_names.begin();
+	end = real_names.end();
+	for (auto &rname : other.get_real_names())
+
+		if (find(start, end, rname) != end)
+			probs.push_back(rname);
+	if (probs.size() > 0)
+		throw_ensemble_error("append_other_rows(): the following other::real_names are also in this::real_names: ", probs);
+	vector<string> new_real_names = real_names;
+	for (auto &rname : other.get_real_names())
+		new_real_names.push_back(rname);
+	//Eigen::MatrixXd org_reals = reals;
+	//reals.resize(new_real_names.size(), var_names.size());
+	reals.conservativeResize(new_real_names.size(), var_names.size());
+		//for (int i = 0; i < org_reals.rows(), i++)
+		//	reals.row(i) = 
+	int iother = 0;
+	for (int i = real_names.size(); i < new_real_names.size(); i++)
+		reals.row(i) = other.get_real_vector(iother);
+	real_names = new_real_names;
 }
 
 void Ensemble::read_csv(int num_reals,ifstream &csv)
@@ -609,6 +666,17 @@ void ObservationEnsemble::update_from_obs(int row_idx, Observations &obs)
 	return;
 }
 
+void ObservationEnsemble::update_from_obs(string real_name, Observations &obs)
+{
+	vector<string>::iterator real,start = real_names.begin(), end = real_names.end();
+	real = find(start, end, real_name);
+	if (real == end)
+	{
+		throw_ensemble_error("real_name not in real_names:" + real_name);
+	}
+	update_from_obs(real - start, obs);
+}
+
 vector<int> ObservationEnsemble::update_from_runs(map<int,int> &real_run_ids, RunManagerAbstract *run_mgr_ptr)
 {
 	set<int> failed_runs = run_mgr_ptr->get_failed_run_ids();
@@ -616,6 +684,7 @@ vector<int> ObservationEnsemble::update_from_runs(map<int,int> &real_run_ids, Ru
 	Parameters pars = pest_scenario_ptr->get_ctl_parameters();
 	Observations obs = pest_scenario_ptr->get_ctl_observations();
 	//cout << oe.get_reals() << endl;
+	string real_name;
 	for (auto &real_run_id : real_run_ids)
 	{
 		if (failed_runs.find(real_run_id.second) != failed_runs.end())
@@ -623,6 +692,7 @@ vector<int> ObservationEnsemble::update_from_runs(map<int,int> &real_run_ids, Ru
 		else
 		{
 			run_mgr_ptr->get_run(real_run_id.second, pars, obs);
+			//real_name = real_names[real_run_id.first];
 			update_from_obs(real_run_id.first, obs);
 		}
 	}

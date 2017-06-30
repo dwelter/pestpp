@@ -47,11 +47,15 @@ public:
 	Eigen::MatrixXd get_eigen_mean_diff();
 	Eigen::MatrixXd get_eigen_mean_diff(const vector<string> &_real_names, const vector<string> &_var_names);
 	
+	void append_other_rows(Ensemble &other);
+
 	void reorder(vector<string> &_real_names, vector<string> &_var_names);
-	void drop_rows(vector<int> &real_idxs);
+	void drop_rows(vector<int> &row_idxs);
+	void keep_rows(vector<int> &row__idxs);
 	Pest* get_pest_scenario_ptr() { return pest_scenario_ptr; }
 	Pest get_pest_scenario() { return *pest_scenario_ptr; }
 	void set_pest_scenario(Pest *_pest_scenario) { pest_scenario_ptr = _pest_scenario; }
+	void set_real_names(vector<string> &_real_names);
 	~Ensemble();
 protected:
 	Pest* pest_scenario_ptr;
@@ -107,6 +111,7 @@ public:
 	ObservationEnsemble(Pest *_pest_scenario_ptr);
 	ObservationEnsemble() { ; }
 	void update_from_obs(int row_idx, Observations &obs);
+	void update_from_obs(string real_name, Observations &obs);
 	void from_csv(string &file_name, const vector<string> &ordered_names);
 	void from_csv(string &file_name);
 	void from_eigen_mat(Eigen::MatrixXd mat, const vector<string> &_real_names, const vector<string> &_var_names);
