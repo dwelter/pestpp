@@ -39,12 +39,12 @@ void PhiStats::update(const map<string, double> &_phi_map)
 
 void PhiStats::rec_report(ofstream &f_rec)
 {
-	f_rec << "   ensemble size:               " << setw(20) << left << size << endl;
+	f_rec << "   ensemble size:                   " << setw(20) << left << size << endl;
 	f_rec << "   ensemble phi mean:               " << setw(20) << left << mean << endl;
 	f_rec << "   ensemble phi standard deviation: " << setw(20) << left << std << endl;
 	f_rec << "   ensemble phi min:                " << setw(20) << left << min << endl;
 	f_rec << "   ensemble phi max:                " << setw(20) << left << max << endl;
-	cout << "   ensemble size:               " << setw(20) << left << size << endl;
+	cout << "   ensemble size:                   " << setw(20) << left << size << endl;
 	cout << "   ensemble phi mean:               " << setw(20) << left << mean << endl;
 	cout << "   ensemble phi standard deviation: " << setw(20) << left << std << endl;
 	cout << "   ensemble phi min:                " << setw(20) << left << min << endl;
@@ -101,7 +101,7 @@ void IterEnsembleSmoother::throw_ies_error(string &message)
 void IterEnsembleSmoother::initialize()
 {
 	iter = 0;
-
+	ofstream &frec = file_manager.rec_ofstream();
 	last_best_mean = 1.0E+30;
 	last_best_std = 1.0e+30;
 	lambda_max = 1.0E+10;
@@ -149,6 +149,22 @@ void IterEnsembleSmoother::initialize()
 		ss << "parameter ensemble rows (" << pe.shape().first << ") not equal to observation ensemble rows (" << oe.shape().first << ")";
 		throw_ies_error(ss.str());
 	}
+
+	
+	if (subset_size > pe.shape().first)
+	{
+		//ss.str("");
+		//ss << "subset_size " << subset_size << "greater than initial ensemble size " << pe.shape().first;
+		//throw_ies_error(ss.str());
+		use_subset = false;
+	}
+	else
+	{
+		frec << "  ---  using first " << subset_size << " realizations in ensemble lambda testing" << endl;
+		cout << "  ---  using first " << subset_size << " realizations in ensemble lambda testing" << endl;
+		use_subset = true;
+	}
+		
 	oe_org_real_names = oe.get_real_names();
 	pe_org_real_names = pe.get_real_names();
 
@@ -161,6 +177,8 @@ void IterEnsembleSmoother::initialize()
 	for (auto &rname : oe.get_real_names())
 		fphi << rname << ',';
 	fphi << endl;*/
+
+
 
 	PhiStats::initialize_csv(fphi, oe_org_real_names);
 
@@ -212,6 +230,8 @@ void IterEnsembleSmoother::initialize()
 		RedSVD::RedSVD<Eigen::MatrixXd> rsvd(par_diff);
 		Am = rsvd.matrixU() * rsvd.singularValues().inverse();
 	}
+
+	
 
 	string obs_restart_csv = pest_scenario.get_pestpp_options().get_ies_obs_restart_csv();	
 	//no restart
@@ -267,13 +287,15 @@ void IterEnsembleSmoother::solve()
 	if (oe.shape().first < 2)
 		throw_ies_error(string("less than 2 active realizations...cannot continue"));
 
-	//build up some components for subsetting later
-	vector<int> drop_idxs;
-	int subset = 3; // eventually ++ies_subset
-	if (false) //eventaully if ies_subset
+	if ((use_subset) && (subset_size > pe.shape().first))
 	{
-		for (int i = subset; i < pe.shape().first; i++)
-			drop_idxs.push_back(i);
+		ss.str("");
+		ss << "++ies_subset size (" << subset_size << ") greater than ensemble size (" << pe.shape().first << ")";
+		frec << "  ---  " << ss.str() << endl;
+		cout << "  ---  " << ss.str() << endl;
+		frec << "  ...reducing ++ies_subset_size to " << pe.shape().first << endl;
+		cout << "  ...reducing ++ies_subset_size to " << pe.shape().first << endl;
+		subset_size = pe.shape().first;
 	}
 
 	double scale = (1.0 / (sqrt(double(oe.shape().first - 1))));
@@ -331,8 +353,8 @@ void IterEnsembleSmoother::solve()
 		performance_log->log_event("apply residuals to upgrade_1");
 		upgrade_1 = (upgrade_1 * scaled_residual).transpose();
 		 
-		ParameterEnsemble pe_lam = pe;
-		pe_lam.set_eigen(*pe_lam.get_eigen_ptr() + upgrade_1);
+		ParameterEnsemble pe_lam = pe;//copy
+		pe_lam.add_to_cols(upgrade_1, pe_base.get_var_names());
 
 #ifdef _DEBUG
 //		cout << "V:" << V.rows() << ',' << V.cols() << endl;
@@ -384,13 +406,16 @@ void IterEnsembleSmoother::solve()
 	}
 
 	//queue up runs
-	ObservationEnsemble oe_lam = oe, oe_lam_best = oe;//two copies
-	//drop the last rows of oe_lam and oe_lam_best if we are subsetting
-	if (subset_size > 0) //++ies_subset
-	{
-		oe_lam.drop_rows(drop_idxs);
-		oe_lam_best.drop_rows(drop_idxs);
-	}
+	//ObservationEnsemble oe_lam = oe, oe_lam_best = oe;//two copies
+	////drop the last rows of oe_lam and oe_lam_best if we are subsetting
+	//if (subset_size < pe.shape().first) //++ies_subset
+	//{
+	//	vector<int> keep_idxs;
+	//	for (int i = 0; i < subset_size; i++)
+	//		keep_idxs.push_back(i);
+	//	oe_lam.keep_rows(keep_idxs);
+	//	oe_lam_best.keep_rows(keep_idxs);
+	//}
 	//ParameterEnsemble pe_lam_best = pe; //copy
 	vector<map<int, int>> real_run_ids_lams;
 	PhiStats phistats;
@@ -401,7 +426,7 @@ void IterEnsembleSmoother::solve()
 	vector<ObservationEnsemble> oe_lams = run_lambda_ensembles(pe_lams);
 	frec << "  ---  evaluting lambda ensemble results  --  " << endl;
 	cout << "  ---  evaluting lambda ensemble results  --  " << endl;
-
+	ObservationEnsemble oe_lam_best;
 	for (int i=0;i<pe_lams.size();i++)
 	{	
 		//map<string, PhiComponets> temp = get_phi_info(oe_lams[i]);
@@ -415,8 +440,11 @@ void IterEnsembleSmoother::solve()
 		}
 	}
 
-	if (subset_size > 0)//subset stuff here
+	
+
+	if ((use_subset) && (subset_size < pe.shape().first))//subset stuff here
 	{
+
 		ObservationEnsemble remaining_oe_lam = oe;//copy
 		ParameterEnsemble remaining_pe_lam = pe_lams[best_idx];
 
@@ -431,6 +459,9 @@ void IterEnsembleSmoother::solve()
 			temp_idxs.push_back(ss.str());
 			ireal++;
 		}
+		frec << "  ---  running remaining realizations from best lambda: " << lam_vals[best_idx] << endl;
+		cout << "  ---  running remaining realizations from best lambda: " << lam_vals[best_idx] << endl;
+
 		remaining_pe_lam.keep_rows(real_idxs);
 		remaining_oe_lam.keep_rows(real_idxs);
 		org_pe_idxs = remaining_pe_lam.get_real_names();
@@ -438,6 +469,7 @@ void IterEnsembleSmoother::solve()
 		remaining_pe_lam.set_real_names(temp_idxs);
 		remaining_oe_lam.set_real_names(temp_idxs);
 		vector<int> fails = run_ensemble(remaining_pe_lam, remaining_oe_lam);
+		//cout << *remaining_oe_lam.get_eigen_ptr() << endl;
 		if (fails.size() > 0)
 		{
 			vector<string> new_pe_idxs, new_oe_idxs;
@@ -558,12 +590,12 @@ PhiStats IterEnsembleSmoother::report_and_save()
 {
 	ofstream &f_rec = file_manager.rec_ofstream();
 	f_rec << endl << "  ---  IterEnsembleSmoother iteration " << iter << " report  ---  " << endl;
-	f_rec << "        number of active realizations: " << pe.shape().first << endl;
-	f_rec << "        number of model runs: " << run_mgr_ptr->get_total_runs() << endl;
+	f_rec << "   number of active realizations:  " << pe.shape().first << endl;
+	f_rec << "   number of model runs:           " << run_mgr_ptr->get_total_runs() << endl;
 	
 	cout << endl << "  ---  IterEnsembleSmoother iteration " << iter << " report  ---  " << endl;
-	cout << "        number of active realizations: " << pe.shape().first << endl;
-	cout << "        number of model runs: " << run_mgr_ptr->get_total_runs() << endl;
+	cout << "   number of active realizations:   " << pe.shape().first << endl;
+	cout << "   number of model runs:            " << run_mgr_ptr->get_total_runs() << endl;
 
 	map<string, double> phi_info = get_phi_map(oe);
 	PhiStats phistats(phi_info);
@@ -594,7 +626,7 @@ vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<Pa
 	performance_log->log_event(ss.str());
 	run_mgr_ptr->reinitialize();
 	vector<int> subset_idxs;
-	if (subset_size > 0)
+	if ((use_subset) && (subset_size < pe_lams[0].shape().first))
 	{
 		for (int i = 0; i < subset_size; i++)
 			subset_idxs.push_back(i);
@@ -637,14 +669,14 @@ vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<Pa
 	performance_log->log_event("processing runs");
 	vector<int> failed_real_indices;
 	vector<ObservationEnsemble> obs_lams;
-	ObservationEnsemble _oe;
+	ObservationEnsemble _oe = oe;//copy
+	if (subset_size < pe_lams[0].shape().first)
+		_oe.keep_rows(subset_idxs);
 	map<int, int> real_run_ids;
 	//for (auto &real_run_ids : real_run_ids_vec)
 	for (int i=0;i<pe_lams.size();i++)
 	{
-		ObservationEnsemble _oe = oe;
-		if (subset_size > 0)
-			_oe.keep_rows(subset_idxs);
+		
 		real_run_ids = real_run_ids_vec[i];
 		try
 		{

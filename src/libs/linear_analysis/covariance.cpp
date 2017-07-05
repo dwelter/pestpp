@@ -241,6 +241,7 @@ Mat Mat::inv()
 void Mat::inv_ip()
 {
 	Logger* log = new Logger();
+	log->set_echo(false);
 	inv_ip(log);
 	return;
 }

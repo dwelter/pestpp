@@ -15,6 +15,7 @@ public:
 	void write(const std::string &message);
 	void error(const std::string &message);
 	void warning(const std::string &message);
+	void set_echo(bool _echo) { echo = _echo; }
 	~Logger();
 private:
 	bool echo;

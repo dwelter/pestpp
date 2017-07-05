@@ -98,7 +98,6 @@ void Ensemble::reorder(vector<string> &_real_names, vector<string> &_var_names)
 		real_names = _real_names;
 }
 
-
 void Ensemble::drop_rows(vector<int> &row_idxs)
 {
 	vector<int>::iterator start = row_idxs.begin(), end = row_idxs.end();
@@ -109,6 +108,7 @@ void Ensemble::drop_rows(vector<int> &row_idxs)
 	reals = get_eigen(keep_names, vector<string>());
 	real_names = keep_names;
 }
+
 
 void Ensemble::keep_rows(vector<int> &row_idxs)
 {
@@ -343,6 +343,32 @@ vector<string> Ensemble::prepare_csv(const vector<string> &names, ifstream &csv,
 
 }
 
+void Ensemble::add_to_cols(Eigen::MatrixXd &_reals, const vector<string> &_var_names)
+{
+	vector<string>::iterator start = var_names.begin(), end = var_names.end();
+	vector<string> missing;
+	for (auto &vname : _var_names)
+		if (find(start, end, vname) == end)
+			missing.push_back(vname);
+	if (missing.size() > 0)
+		throw_ensemble_error("add_to_cols(): the following var_names not found: ", missing);
+	if (_var_names.size() != _reals.cols())
+		throw_ensemble_error("add_to_cols(): _reals.cols() != _var_names.size()");
+	if (_reals.rows() != reals.rows())
+		throw_ensemble_error("add_to_cols(): _reals.rows() != reals.rows()");
+	int i_this;
+	string vname;
+	for (int i = 0; i < _var_names.size(); i++)
+	{
+		vname = _var_names[i];
+		i_this = find(start, end, vname) - start;
+		reals.col(i_this) += _reals.col(i);
+	}
+}
+
+
+
+
 void Ensemble::append_other_rows(Ensemble &other)
 {
 	if (other.shape().second != shape().second)
@@ -372,7 +398,10 @@ void Ensemble::append_other_rows(Ensemble &other)
 		//	reals.row(i) = 
 	int iother = 0;
 	for (int i = real_names.size(); i < new_real_names.size(); i++)
+	{
 		reals.row(i) = other.get_real_vector(iother);
+		iother++;
+	}
 	real_names = new_real_names;
 }
 
@@ -461,6 +490,14 @@ ParameterEnsemble::ParameterEnsemble(Pest *_pest_scenario_ptr):Ensemble(_pest_sc
 	par_transform = pest_scenario_ptr->get_base_par_tran_seq();
 }
 
+//ParameterEnsemble ParameterEnsemble::get_new(const vector<string> &_real_names, const vector<string> &_var_names)
+//{
+//	ParameterEnsemble new_pe(pest_scenario_ptr);	
+//	new_pe.from_eigen_mat(get_eigen(_real_names, _var_names),_real_names,_var_names);
+//	return new_pe;
+//}
+
+
 map<int,int> ParameterEnsemble::add_runs(RunManagerAbstract *run_mgr_ptr, vector<int> &real_idxs)
 {
 	map<int,int> real_run_ids;
@@ -502,7 +539,7 @@ void ParameterEnsemble::from_eigen_mat(Eigen::MatrixXd mat, const vector<string>
 		if (find(start, end, name) == end)
 			missing.push_back(name);
 	if (missing.size() > 0)
-		throw_ensemble_error("ParameterEnsemble.from_eigen_mat() the following par names no found: ", missing);
+		throw_ensemble_error("ParameterEnsemble.from_eigen_mat() the following par names not found: ", missing);
 	Ensemble::from_eigen_mat(mat, _real_names, _var_names);
 	tstat = _tstat;
 }

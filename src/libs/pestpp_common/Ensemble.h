@@ -36,6 +36,9 @@ public:
 
 	const vector<string> get_real_names(vector<int> &indices);
 
+	void add_to_cols(Eigen::MatrixXd &_reals, const vector<string> &_var_names);
+
+
 	Eigen::VectorXd get_real_vector(int ireal);
 	Eigen::VectorXd get_real_vector(const string &real_name);
 
@@ -51,7 +54,7 @@ public:
 
 	void reorder(vector<string> &_real_names, vector<string> &_var_names);
 	void drop_rows(vector<int> &row_idxs);
-	void keep_rows(vector<int> &row__idxs);
+	void keep_rows(vector<int> &row_idxs);
 	Pest* get_pest_scenario_ptr() { return pest_scenario_ptr; }
 	Pest get_pest_scenario() { return *pest_scenario_ptr; }
 	void set_pest_scenario(Pest *_pest_scenario) { pest_scenario_ptr = _pest_scenario; }
@@ -82,6 +85,10 @@ public:
 	*/
 	ParameterEnsemble(Pest *_pest_scenario_ptr);
 	ParameterEnsemble() { ; }
+	
+	//ParameterEnsemble get_new(const vector<string> &_real_names, const vector<string> &_var_names);
+
+	
 	void from_csv(string &file_name,const vector<string> &ordered_names);
 	void from_csv(string &file_name);
 	void from_eigen_mat(Eigen::MatrixXd mat, const vector<string> &_real_names, const vector<string> &_var_names,

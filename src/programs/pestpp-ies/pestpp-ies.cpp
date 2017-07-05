@@ -78,6 +78,14 @@ int main(int argc, char* argv[])
 			cerr << "        - csv file with each row as a parameter realization" << endl;
 			cerr << "    ++ies_obs_csv(obs_file.csv)" << endl;
 			cerr << "        - csv file with each row as an observation realization" << endl;
+			cerr << "    ++ies_lambda_mults(0.1,1.0,10.0,100.0)" << endl;
+			cerr << "        - different lambda multiplers to test during each ies iter" << endl;
+			cerr << "    ++ies_initial_lambda(1.0)" << endl;
+			cerr << "        - initial lambda value to use in ies" << endl;
+			cerr << "    ++ies_subset_size(10)" << endl;
+			cerr << "        - number of realization to eval during lambda testing" << endl;
+			cerr << "    ++ies_use_approx(true)" << endl;
+			cerr << "        - use the 'approximate' upgrade solution" << endl;
 			cerr << "--------------------------------------------------------" << endl;
 			exit(0);
 		}
@@ -193,16 +201,7 @@ int main(int argc, char* argv[])
 		}
 		else if (it_find_r != cmd_arg_vec.end())
 		{
-			ifstream &fin_rst = file_manager.open_ifile_ext("rst");
-			restart_ctl.process_rst_file(fin_rst);
-			file_manager.close_file("rst");
-			restart_flag = true;
-			file_manager.open_default_files(true);
-			ofstream &fout_rec_tmp = file_manager.rec_ofstream();
-			fout_rec_tmp << endl << endl;
-			fout_rec_tmp << "Restarting sweep ....." << endl << endl;
-			cout << "    Restarting sweep ....." << endl << endl;
-
+			throw runtime_error("/r option not supported by pestpp-ies");
 		}
 		else
 		{
@@ -247,21 +246,19 @@ int main(int argc, char* argv[])
 
 		PestppOptions ppopt = pest_scenario.get_pestpp_options();
 
-		fout_rec << "    pestpp-ies parameter csv file = " << left << setw(50) << ppopt.get_ies_par_csv() << endl;
-		fout_rec << "    pestpp-ies observation csv file = " << left << setw(50) << ppopt.get_ies_obs_csv() << endl;
 		
 		//Initialize OutputFileWriter to handle IO of suplementary files (.par, .par, .svd)
 		//bool save_eign = pest_scenario.get_svd_info().eigwrite > 0;	
 		OutputFileWriter output_file_writer(file_manager, pest_scenario, restart_flag);
-		output_file_writer.set_svd_output_opt(pest_scenario.get_svd_info().eigwrite);
-		if (!restart_flag)
-		{
-			output_file_writer.scenario_report(fout_rec);
-		}
-		if (pest_scenario.get_pestpp_options().get_iter_summary_flag())
-		{
-			output_file_writer.write_par_iter(0, pest_scenario.get_ctl_parameters());
-		}
+		//output_file_writer.scenario_report(fout_rec);
+		output_file_writer.scenario_io_report(fout_rec);
+		output_file_writer.scenario_pargroup_report(fout_rec);
+		output_file_writer.scenario_par_report(fout_rec);
+		output_file_writer.scenario_obs_report(fout_rec);
+		//fout_rec << "    pestpp-ies parameter csv file = " << left << setw(50) << ppopt.get_ies_par_csv() << endl;
+		//fout_rec << "    pestpp-ies observation csv file = " << left << setw(50) << ppopt.get_ies_obs_csv() << endl;
+
+
 		RunManagerAbstract *run_manager_ptr;
 		if (run_manager_type == RunManagerType::YAMR)
 		{
@@ -319,50 +316,7 @@ int main(int argc, char* argv[])
 
 		ies.finalize();
 
-		/*ParameterEnsemble pe(&pest_scenario);
-		pe.from_csv(pest_scenario.get_pestpp_options().get_ies_par_csv());
-
-		cout << pe.get_eigen_mean_diff() << endl;
-
-		ObservationEnsemble oe(&pest_scenario);
-		oe.from_csv(pest_scenario.get_pestpp_options().get_ies_obs_csv());
-
-		ObservationEnsemble oe_org = oe;
-
-		EnsemblePair epair(pe, oe);
-
-		epair.queue_runs(run_manager_ptr);
-		epair.run(run_manager_ptr);
-		epair.process_runs(run_manager_ptr);
-
-		vector<string>obs_names = pest_scenario.get_ctl_ordered_obs_names();
-		string last = obs_names[obs_names.size()-1];
-		obs_names.pop_back();
-		obs_names.pop_back();
-		obs_names.insert(obs_names.begin(), last);
-		obs_names.insert(obs_names.begin(), last);
-		obs_names.insert(obs_names.begin(), last);
-
-		cout << epair.get_pe_ptr()->get_eigen_mean_diff(epair.get_pe_active_names()) << endl;
-		cout << epair.get_oe_ptr()->get_eigen_mean_diff(epair.get_oe_active_names()) << endl;
-		cout << epair.get_oe_ptr()->get_eigen(vector<string>(),obs_names) - oe.get_eigen(vector<string>(),obs_names) << endl;
-		*/
 		
-		/*vector<string>obs_names = pest_scenario.get_ctl_ordered_obs_names();
-		string last = obs_names[obs_names.size()-1];
-		obs_names.pop_back();
-		obs_names.pop_back();
-		obs_names.insert(obs_names.begin(), last);
-		obs_names.insert(obs_names.begin(), last);
-		obs_names.insert(obs_names.begin(), last);*/
-
-		/*vector<string> obs_names = pest_scenario.get_ctl_ordered_nz_obs_names();
-		cout << oe.get_eigen(pe.get_real_names(),obs_names) << endl;
-		cout << oe.get_reals() << endl;
-		cout << oe.get_eigen(epair.get_oe_ptr()->get_real_names(), obs_names) - oe.get_eigen(oe.get_real_names(), obs_names) << endl;
-*/
-		//cout << epair.get_active_oe_eigen() << endl;
-		//cout << epair.get_active_pe_eigen() << endl;
 
 		// clean up
 		fout_rec.close();

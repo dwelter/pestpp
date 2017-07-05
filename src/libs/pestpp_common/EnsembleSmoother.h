@@ -52,6 +52,7 @@ private:
 	RunManagerAbstract* run_mgr_ptr;
 
 	int iter,subset_size;
+	bool use_subset;
 	double last_best_lam, last_best_mean,last_best_std;
 	double lambda_max, lambda_min;
 	vector<double> lam_mults;

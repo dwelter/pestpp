@@ -35,7 +35,7 @@ void Logger::write(const std::string &message)
 		fout->flush();
 	}
 		
-	if ((echo) || (!fout->good()))
+	if (echo) 
 		cout << time_to_string(time_now) << " : " << message << endl;
 }
 
@@ -68,7 +68,7 @@ void Logger::log(const string &message)
 			*fout <<  " starting " << message << endl;
 			fout->flush();
 		}
-		if ((echo) || (!fout->good()))
+		if (echo)
 			cout << time_to_string(time_now) << "-> starting " << message << endl;
 	}
 	else
@@ -85,7 +85,7 @@ void Logger::log(const string &message)
 				elapsed_time_to_string(time_now, time_start) << endl; 
 			fout->flush();
 		}
-		if ((echo) || (!fout->good()))
+		if (echo)
 			cout << time_to_string(time_now) << "-> finished " << message << ", elapsed time = " <<
 				elapsed_time_to_string(time_now, time_start) << endl;
 		tagged_events.erase(message_iter);
