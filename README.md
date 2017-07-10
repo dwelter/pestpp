@@ -70,7 +70,7 @@ Here is a (more or less) complete list of ``++`` arguments that can be added to 
 
 * ``++n_iter_base(1)``:number of base (full) parameter iterations to complete as part of the on-the-fly combined base-parameter/super-parameter iteration process.  A value of -1 results in calculation of the base jacobian and formation of the super parameter problem without any base parameter upgrades, replicating the behavior of the "svd-assist" methodology of PEST
 
-* ``++n_iter_super(4)``: number of base (full) parameter iterations to complete as part of the on-the-fly combined base-parameter/super-parameter iteration process
+* ``++n_iter_super(4)``: number of super (reduced dimension) parameter iterations to complete as part of the on-the-fly combined base-parameter/super-parameter iteration process
 
 * ``++svd_pack(propack)``: which SVD solver to use.  valid arguments are ``eigen``(jacobi solution), ``propack``(iterative Lanczos solution) and ``redsvd`` (randomized solution).
 
