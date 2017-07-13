@@ -102,9 +102,7 @@ public:
 	virtual int add_run(const Eigen::VectorXd &model_pars, const std::string &info_txt="", double info_valuee=RunStorage::no_data);
 	virtual void update_run(int run_id, const Parameters &pars, const Observations &obs);
 	virtual void run();
-	~RunManagerYAMR(void);
-
-protected: 
+	~RunManagerYAMR(void); 
 	int get_n_waiting_runs() { return waiting_runs.size(); }
 private:
 	std::string port;
@@ -164,22 +162,22 @@ private:
 	map<string, int> get_slave_stats();
 };
 
-class RunManagerYAMRCondor : private RunManagerYAMR
+class RunManagerYAMRCondor : public RunManagerYAMR
 {
 public:
 	RunManagerYAMRCondor(const std::string &stor_filename, const std::string &port, std::ofstream &_f_rmr, int _max_n_failure,
-		double overdue_reched_fac, double overdue_giveup_fac);
+		double overdue_reched_fac, double overdue_giveup_fac,string _condor_submit_file);
 	virtual void run();
-	void set_submit_file(string _submit_file) { submit_file = _submit_file; parse_submit_file(); }
-	void parse_submit_file();
+	
 private:
 	int max_condor_queue;
 	vector<string> submit_lines;
+	void parse_submit_file();
+	int get_cluster();
 	string submit_file;
-	string cluster;
 	void write_submit_file();
-	string submit();
-	void cleanup();
+	int submit();
+	void cleanup(int cluster);
 
 };
 

@@ -302,12 +302,29 @@ int main(int argc, char* argv[])
 			strip_ip(port);
 			strip_ip(port, "front", ":");
 			const ModelExecInfo &exi = pest_scenario.get_model_exec_info();
-			run_manager_ptr = new RunManagerYAMR(
-				file_manager.build_filename("rns"), port,
-				file_manager.open_ofile_ext("rmr"),
-				pest_scenario.get_pestpp_options().get_max_run_fail(),
-				pest_scenario.get_pestpp_options().get_overdue_reched_fac(),
-				pest_scenario.get_pestpp_options().get_overdue_giveup_fac());
+			//check for condor wrapper
+			string csf = pest_scenario.get_pestpp_options().get_condor_submit_file();
+			if (csf.size() > 0)
+			{
+				if (!pest_utils::check_exist_in(csf))
+					throw runtime_error("++condor_submit_file '" + csf + "' not found");
+				run_manager_ptr = new RunManagerYAMRCondor(
+					file_manager.build_filename("rns"), port,
+					file_manager.open_ofile_ext("rmr"),
+					pest_scenario.get_pestpp_options().get_max_run_fail(),
+					pest_scenario.get_pestpp_options().get_overdue_reched_fac(),
+					pest_scenario.get_pestpp_options().get_overdue_giveup_fac(),
+					csf);
+			}
+			else
+			{
+				run_manager_ptr = new RunManagerYAMR(
+					file_manager.build_filename("rns"), port,
+					file_manager.open_ofile_ext("rmr"),
+					pest_scenario.get_pestpp_options().get_max_run_fail(),
+					pest_scenario.get_pestpp_options().get_overdue_reched_fac(),
+					pest_scenario.get_pestpp_options().get_overdue_giveup_fac());
+			}
 		}
 		else if (run_manager_type == RunManagerType::GENIE)
 		{

@@ -1351,26 +1351,22 @@ RunManagerYAMR::~RunManagerYAMR(void)
 
 RunManagerYAMRCondor::RunManagerYAMRCondor(const std::string & stor_filename, 
 	const std::string & port, std::ofstream & _f_rmr, int _max_n_failure, 
-	double overdue_reched_fac, double overdue_giveup_fac): RunManagerYAMR(stor_filename,
+	double overdue_reched_fac, double overdue_giveup_fac, string _condor_submit_file): RunManagerYAMR(stor_filename,
 		port,_f_rmr,_max_n_failure,overdue_reched_fac,overdue_giveup_fac)
 {
+	submit_file = _condor_submit_file;
+	parse_submit_file();
 }
 
 void RunManagerYAMRCondor::run()
 {
-	write_submit_file();
-	cluster = submit();
-	RunManagerYAMR::run();
-	//clean up 
-
+	int cluster = submit();
+	//RunManagerYAMR::run();
+	cleanup(cluster);
+	
 }
 
 void RunManagerYAMRCondor::write_submit_file()
-{
-
-}
-
-string RunManagerYAMRCondor::submit()
 {
 	ofstream f_out("temp.sub");
 	if (!f_out.good())
@@ -1379,12 +1375,76 @@ string RunManagerYAMRCondor::submit()
 		f_out << line << endl;
 	int n_q = min(max_condor_queue, get_n_waiting_runs());
 	f_out << "queue " << n_q << endl;
-	return string();
+
 }
 
-void RunManagerYAMRCondor::cleanup()
+int RunManagerYAMRCondor::get_cluster()
 {
+	string line, lower_line;
+	int cluster = -999;
+	string tag = "submitted to cluster";
+	vector<string> tokens;
 
+	//first check for err from condor_submit
+	vector<string> err_lines;
+	ifstream f_err("cs_temp.stderr");
+	if (f_err.good())
+	{
+		while (getline(f_err, line))
+		{
+			err_lines.push_back(line);
+		}
+
+		if (err_lines.size() > 0)
+		{
+			stringstream ss;
+			for (auto &l : err_lines)
+				ss << l << endl;
+			throw runtime_error("condor_submit issued error: " + ss.str());
+		}
+	}
+	f_err.close();
+
+	ifstream f_in("cs_temp.stdout");
+	if (!f_in.good())
+		throw runtime_error("error opening cs_temp.stdout to read cluster info from condor_submit");
+	while (getline(f_in, line))
+	{
+		if (line.find(tag))
+		{
+			pest_utils::tokenize(pest_utils::strip_cp(line), tokens);
+			try
+			{
+				pest_utils::convert_ip(tokens[tokens.size() - 1], cluster);
+			}
+			catch (exception &e)
+			{
+				throw runtime_error("error parsing '" + tokens[tokens.size() - 1] + "' to int on line: " + line);
+			}
+			break;
+		}
+	}
+	f_in.close();
+	if (cluster == -999)
+	{
+		throw runtime_error("cluster number not found in cs_temp.stdout");
+	}
+	return cluster;
+}
+
+int RunManagerYAMRCondor::submit()
+{
+	write_submit_file();
+	stringstream ss;
+	system("condor_submit temp.sub 1>cs_temp.stdout 2>cs_temp.stderr");
+	return get_cluster();
+}
+
+void RunManagerYAMRCondor::cleanup(int cluster)
+{
+	stringstream ss;
+	ss << "condor_remove cluster " << cluster;
+	system(ss.str().c_str());
 }
 
 void RunManagerYAMRCondor::parse_submit_file()
@@ -1400,7 +1460,7 @@ void RunManagerYAMRCondor::parse_submit_file()
 		pest_utils::strip_ip(line);
 		//check if this line starts with 'queue'
 		lower_line = pest_utils::lower_cp(line);
-		if (lower_line.compare(0, q_tag.size(), q_tag))
+		if (lower_line.compare(0, q_tag.size(), q_tag) == 0)
 		{
 			q_line = line;
 			pest_utils::tokenize(line, tokens);
@@ -1415,7 +1475,7 @@ void RunManagerYAMRCondor::parse_submit_file()
 	{
 		try
 		{
-			pest_utils::convert_ip(tokens[2], max_condor_queue);
+			pest_utils::convert_ip(tokens[1], max_condor_queue);
 		}
 		catch (exception &e)
 		{
