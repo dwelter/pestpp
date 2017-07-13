@@ -103,6 +103,9 @@ public:
 	virtual void update_run(int run_id, const Parameters &pars, const Observations &obs);
 	virtual void run();
 	~RunManagerYAMR(void);
+
+protected: 
+	int get_n_waiting_runs() { return waiting_runs.size(); }
 private:
 	std::string port;
 	static const int BACKLOG;
@@ -159,6 +162,25 @@ private:
 	virtual void update_run_failed(int run_id, int socket_fd);
 	virtual void update_run_failed(int run_id);
 	map<string, int> get_slave_stats();
+};
+
+class RunManagerYAMRCondor : private RunManagerYAMR
+{
+public:
+	RunManagerYAMRCondor(const std::string &stor_filename, const std::string &port, std::ofstream &_f_rmr, int _max_n_failure,
+		double overdue_reched_fac, double overdue_giveup_fac);
+	virtual void run();
+	void set_submit_file(string _submit_file) { submit_file = _submit_file; parse_submit_file(); }
+	void parse_submit_file();
+private:
+	int max_condor_queue;
+	vector<string> submit_lines;
+	string submit_file;
+	string cluster;
+	void write_submit_file();
+	string submit();
+	void cleanup();
+
 };
 
 #endif /* RUNMANAGERYAMR_H */

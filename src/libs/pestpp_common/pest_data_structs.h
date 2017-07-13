@@ -256,6 +256,8 @@ public:
 	void set_overdue_reched_fac(double _val) { overdue_reched_fac = _val; }
 	double get_overdue_giveup_fac()const { return overdue_giveup_fac; }
 	void set_overdue_giveup_fac(double _val) { overdue_giveup_fac = _val; }
+	string get_condor_submit_file() const { return condor_submit_file; }
+	void set_condor_submit_file(string _condor_submit_file) { condor_submit_file = _condor_submit_file; }
 	string get_sweep_parameter_csv_file()const { return sweep_parameter_csv_file; }
 	void set_sweep_parameter_csv_file(string _file) { sweep_parameter_csv_file = _file; }
 	string get_sweep_output_csv_file()const { return sweep_output_csv_file; }
@@ -347,6 +349,7 @@ private:
 	string basejac_filename;
 	double overdue_reched_fac;
 	double overdue_giveup_fac;
+	string condor_submit_file;
 	double reg_frac;
 
 	string sweep_parameter_csv_file;

@@ -1348,3 +1348,78 @@ RunManagerYAMR::~RunManagerYAMR(void)
 	}
 	w_cleanup();
 }
+
+RunManagerYAMRCondor::RunManagerYAMRCondor(const std::string & stor_filename, 
+	const std::string & port, std::ofstream & _f_rmr, int _max_n_failure, 
+	double overdue_reched_fac, double overdue_giveup_fac): RunManagerYAMR(stor_filename,
+		port,_f_rmr,_max_n_failure,overdue_reched_fac,overdue_giveup_fac)
+{
+}
+
+void RunManagerYAMRCondor::run()
+{
+	write_submit_file();
+	cluster = submit();
+	RunManagerYAMR::run();
+	//clean up 
+
+}
+
+void RunManagerYAMRCondor::write_submit_file()
+{
+
+}
+
+string RunManagerYAMRCondor::submit()
+{
+	ofstream f_out("temp.sub");
+	if (!f_out.good())
+		throw runtime_error("error opening temp.sub for writing");
+	for (auto &line : submit_lines)
+		f_out << line << endl;
+	int n_q = min(max_condor_queue, get_n_waiting_runs());
+	f_out << "queue " << n_q << endl;
+	return string();
+}
+
+void RunManagerYAMRCondor::cleanup()
+{
+
+}
+
+void RunManagerYAMRCondor::parse_submit_file()
+{
+	ifstream f_in(submit_file);
+	if (!f_in.good())
+		throw runtime_error("error opening submit file '" + submit_file + "' for reading");
+	string line,lower_line,q_line;
+	string q_tag = "queue";
+	vector<string> tokens;
+	while (getline(f_in, line))
+	{
+		pest_utils::strip_ip(line);
+		//check if this line starts with 'queue'
+		lower_line = pest_utils::lower_cp(line);
+		if (lower_line.compare(0, q_tag.size(), q_tag))
+		{
+			q_line = line;
+			pest_utils::tokenize(line, tokens);
+		}
+		else
+			submit_lines.push_back(line);
+	}
+	f_in.close();
+	if (tokens.size() == 0)
+		throw runtime_error("'queue' line not found in submit file " + submit_file);
+	else
+	{
+		try
+		{
+			pest_utils::convert_ip(tokens[2], max_condor_queue);
+		}
+		catch (exception &e)
+		{
+			runtime_error("error converting '" + tokens[2] + "' from line '" + q_line + "' to int");
+		}
+	}
+}
