@@ -1376,6 +1376,7 @@ RunManagerYAMRCondor::RunManagerYAMRCondor(const std::string & stor_filename,
 void RunManagerYAMRCondor::run()
 {
 	int cluster = submit();
+	cout << " on condor cluster " << cluster << endl;
 	RunManagerYAMR::run();
 	cleanup(cluster);
 	
@@ -1389,6 +1390,7 @@ void RunManagerYAMRCondor::write_submit_file()
 	for (auto &line : submit_lines)
 		f_out << line << endl;
 	int n_q = min(max_condor_queue, get_n_waiting_runs());
+	cout << "queueing "  << n_q << " slaves " ;
 	f_out << "queue " << n_q << endl;
 
 }
@@ -1461,10 +1463,10 @@ void RunManagerYAMRCondor::cleanup(int cluster)
 {
 	RunManagerYAMR::close_slaves();
 	stringstream ss;
-	ss << "condor_rm cluster " << cluster << " 1>cr_temp.stdout 2>cr_temp.stderr";
+	ss << "condor_rm -forecx cluster " << cluster << " 1>cr_temp.stdout 2>cr_temp.stderr";
 	system(ss.str().c_str());
 	w_sleep(2000);
-
+	cout << "   all slaves freed " << endl << endl;
 }
 
 void RunManagerYAMRCondor::parse_submit_file()
