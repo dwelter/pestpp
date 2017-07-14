@@ -564,6 +564,21 @@ void RunManagerYAMR::listen()
 	} // END looping through file descriptors
 }
 
+void RunManagerYAMR::close_slaves()
+{
+	/*for (int i = 0; i <= fdmax; i++) 
+	{
+		list<SlaveInfoRec>::iterator slave_info_iter = socket_to_iter_map.at(i);
+		if (slave_info_iter != slave_info_set.end())
+			close_slave(slave_info_iter);
+	}*/
+	vector<int> sock_nums;
+	for (auto &si : socket_to_iter_map)
+		sock_nums.push_back(si.first);
+	for (auto si : sock_nums)
+		close_slave(si);
+
+}
 
 void RunManagerYAMR::close_slave(int i_sock)
 {
@@ -1361,7 +1376,7 @@ RunManagerYAMRCondor::RunManagerYAMRCondor(const std::string & stor_filename,
 void RunManagerYAMRCondor::run()
 {
 	int cluster = submit();
-	//RunManagerYAMR::run();
+	RunManagerYAMR::run();
 	cleanup(cluster);
 	
 }
@@ -1408,14 +1423,16 @@ int RunManagerYAMRCondor::get_cluster()
 	ifstream f_in("cs_temp.stdout");
 	if (!f_in.good())
 		throw runtime_error("error opening cs_temp.stdout to read cluster info from condor_submit");
+	double temp;
 	while (getline(f_in, line))
 	{
-		if (line.find(tag))
+		if (line.find(tag) != string::npos)
 		{
 			pest_utils::tokenize(pest_utils::strip_cp(line), tokens);
 			try
 			{
-				pest_utils::convert_ip(tokens[tokens.size() - 1], cluster);
+				pest_utils::convert_ip(tokens[tokens.size() - 1], temp);
+				cluster = int(temp);
 			}
 			catch (exception &e)
 			{
@@ -1442,9 +1459,12 @@ int RunManagerYAMRCondor::submit()
 
 void RunManagerYAMRCondor::cleanup(int cluster)
 {
+	RunManagerYAMR::close_slaves();
 	stringstream ss;
-	ss << "condor_remove cluster " << cluster;
+	ss << "condor_rm cluster " << cluster << " 1>cr_temp.stdout 2>cr_temp.stderr";
 	system(ss.str().c_str());
+	w_sleep(2000);
+
 }
 
 void RunManagerYAMRCondor::parse_submit_file()
