@@ -202,7 +202,7 @@ public:
 	enum MAT_INV { Q12J, JTQJ };
 	enum GLOBAL_OPT { NONE, OPT_DE };
 	PestppOptions(int _n_iter_base = 50, int _n_iter_super = 0, int _max_n_super = 50,
-		double _super_eigthres = 1.0E-6, SVD_PACK _svd_pack = PestppOptions::EIGEN,
+		double _super_eigthres = 1.0E-6, SVD_PACK _svd_pack = PestppOptions::REDSVD,
 		MAT_INV _mat_inv = PestppOptions::JTQJ, double _auto_norm = -999,
 		double _super_relparmax = 0.1, int max_run_fail = 3,
 		bool iter_summary_flag = true, bool der_forgive = true,

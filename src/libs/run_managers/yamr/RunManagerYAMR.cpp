@@ -572,12 +572,17 @@ void RunManagerYAMR::close_slaves()
 		if (slave_info_iter != slave_info_set.end())
 			close_slave(slave_info_iter);
 	}*/
-	vector<int> sock_nums;
-	for (auto &si : socket_to_iter_map)
-		sock_nums.push_back(si.first);
-	for (auto si : sock_nums)
-		close_slave(si);
-
+	while (socket_to_iter_map.size() > 0)
+	{
+		listen();
+		vector<int> sock_nums;
+		for (auto &si : socket_to_iter_map)
+			sock_nums.push_back(si.first);
+		for (auto si : sock_nums)
+			close_slave(si);
+		w_sleep(2000);
+		
+	}
 }
 
 void RunManagerYAMR::close_slave(int i_sock)
@@ -1463,9 +1468,14 @@ void RunManagerYAMRCondor::cleanup(int cluster)
 {
 	RunManagerYAMR::close_slaves();
 	stringstream ss;
-	ss << "condor_rm -forecx cluster " << cluster << " 1>cr_temp.stdout 2>cr_temp.stderr";
+	ss << "condor_rm " << cluster << " 1>cr_temp.stdout 2>cr_temp.stderr";
 	system(ss.str().c_str());
 	w_sleep(2000);
+	ss.str(string());
+	ss << "condor_rm " << cluster << " -forcex 1>cr_temp.stdout 2>cr_temp.stderr";
+	w_sleep(2000);
+	system(ss.str().c_str());
+	RunManagerYAMR::close_slaves();
 	cout << "   all slaves freed " << endl << endl;
 }
 
