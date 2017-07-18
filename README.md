@@ -103,6 +103,8 @@ Here is a (more or less) complete list of ``++`` arguments that can be added to 
 
 * ``++parcov_scale_fac(0.01)``: scaling factor to scale the prior parameter covariance matrix by when scaling the normal matrix by the inverse of the prior parameter covariance matrix.  If not specified, no scaling is undertaken; if specified, ``++mat_inv`` must be "jtqj".
 
+* ``++condor_submit_file(pest.sub)``: a HTCondor submit file.  Setting this arg results in use of a specialized version of the YAMR run manager where the ``condor_submit()`` command is issued before the run manager starts, and, once a set of runs are complete, the workers are released and the ``condor_rm()`` command is issued.  This specialized run manager is useful for those sharing an HTCondor pool so that during the upgrade calculation process, all workers are released and during upgrade testing, only the required number workers are queued.  As with all things PEST and PEST++, it is up to the user to make sure the relative paths between the location of the submit file, the control file and the instance of PEST++ are in sync.
+
 ### sweep ``++`` arguments
 ``sweep`` is a utility to run a parametric sweep for a series of parameter values.  Useful for things like monte carlo, design of experiment, etc. Designed to be used with ``pyemu`` and the python pandas library.
 
