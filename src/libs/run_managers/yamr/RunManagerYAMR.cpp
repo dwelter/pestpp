@@ -564,6 +564,26 @@ void RunManagerYAMR::listen()
 	} // END looping through file descriptors
 }
 
+void RunManagerYAMR::close_slaves()
+{
+	/*for (int i = 0; i <= fdmax; i++) 
+	{
+		list<SlaveInfoRec>::iterator slave_info_iter = socket_to_iter_map.at(i);
+		if (slave_info_iter != slave_info_set.end())
+			close_slave(slave_info_iter);
+	}*/
+	while (socket_to_iter_map.size() > 0)
+	{
+		listen();
+		vector<int> sock_nums;
+		for (auto &si : socket_to_iter_map)
+			sock_nums.push_back(si.first);
+		for (auto si : sock_nums)
+			close_slave(si);
+		w_sleep(2000);
+		
+	}
+}
 
 void RunManagerYAMR::close_slave(int i_sock)
 {
@@ -1361,7 +1381,8 @@ RunManagerYAMRCondor::RunManagerYAMRCondor(const std::string & stor_filename,
 void RunManagerYAMRCondor::run()
 {
 	int cluster = submit();
-	//RunManagerYAMR::run();
+	cout << " on condor cluster " << cluster << endl;
+	RunManagerYAMR::run();
 	cleanup(cluster);
 	
 }
@@ -1374,6 +1395,7 @@ void RunManagerYAMRCondor::write_submit_file()
 	for (auto &line : submit_lines)
 		f_out << line << endl;
 	int n_q = min(max_condor_queue, get_n_waiting_runs());
+	cout << "queueing "  << n_q << " slaves " ;
 	f_out << "queue " << n_q << endl;
 
 }
@@ -1408,14 +1430,16 @@ int RunManagerYAMRCondor::get_cluster()
 	ifstream f_in("cs_temp.stdout");
 	if (!f_in.good())
 		throw runtime_error("error opening cs_temp.stdout to read cluster info from condor_submit");
+	double temp;
 	while (getline(f_in, line))
 	{
-		if (line.find(tag))
+		if (line.find(tag) != string::npos)
 		{
 			pest_utils::tokenize(pest_utils::strip_cp(line), tokens);
 			try
 			{
-				pest_utils::convert_ip(tokens[tokens.size() - 1], cluster);
+				pest_utils::convert_ip(tokens[tokens.size() - 1], temp);
+				cluster = int(temp);
 			}
 			catch (exception &e)
 			{
@@ -1442,9 +1466,17 @@ int RunManagerYAMRCondor::submit()
 
 void RunManagerYAMRCondor::cleanup(int cluster)
 {
+	RunManagerYAMR::close_slaves();
 	stringstream ss;
-	ss << "condor_remove cluster " << cluster;
+	ss << "condor_rm " << cluster << " 1>cr_temp.stdout 2>cr_temp.stderr";
 	system(ss.str().c_str());
+	w_sleep(2000);
+	ss.str(string());
+	ss << "condor_rm " << cluster << " -forcex 1>cr_temp.stdout 2>cr_temp.stderr";
+	w_sleep(2000);
+	system(ss.str().c_str());
+	RunManagerYAMR::close_slaves();
+	cout << "   all slaves freed " << endl << endl;
 }
 
 void RunManagerYAMRCondor::parse_submit_file()

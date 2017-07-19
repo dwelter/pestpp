@@ -104,6 +104,8 @@ public:
 	virtual void run();
 	~RunManagerYAMR(void); 
 	int get_n_waiting_runs() { return waiting_runs.size(); }
+	void close_slaves();
+
 private:
 	std::string port;
 	static const int BACKLOG;
@@ -134,7 +136,7 @@ private:
 	void kill_all_active_runs();
 	void close_slave(int i_sock);
 	void close_slave(list<SlaveInfoRec>::iterator slave_info_iter);
-
+	
 	std::ofstream &f_rmr;
 	void listen();
 	bool process_model_run(int sock_id, NetPackage &net_pack);
