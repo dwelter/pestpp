@@ -678,6 +678,11 @@ void PestppOptions::parce_line(const string &line)
 		}
 		else if ((key == "IES_OBS_RESTART_CSV") || (key == "IES_OBSERVATION_RESTART_CSV"))
 		{
+			convert_ip(value, ies_obs_restart_csv);
+		}
+
+		else if ((key == "IES_USE_APPROXIMATE_SOLUTION") || (key == "IES_USE_APPROX"))
+		{
 			transform(value.begin(), value.end(), value.begin(), ::tolower);
 			istringstream is(value);
 			is >> boolalpha >> ies_use_approx;

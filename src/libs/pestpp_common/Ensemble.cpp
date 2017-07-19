@@ -424,6 +424,8 @@ void Ensemble::read_csv(int num_reals,ifstream &csv)
 		tokens.clear();
 		//vals.clear();
 		pest_utils::tokenize(line, tokens, ",", false);
+		if (tokens[tokens.size() - 1].size() == 0)
+			tokens.pop_back();
 		if (tokens.size() != var_names.size() + 1) // +1 for run id in first column
 		{
 			stringstream ss;

@@ -231,8 +231,6 @@ void IterEnsembleSmoother::initialize()
 		Am = rsvd.matrixU() * rsvd.singularValues().inverse();
 	}
 
-	
-
 	string obs_restart_csv = pest_scenario.get_pestpp_options().get_ies_obs_restart_csv();	
 	//no restart
 	if (obs_restart_csv.size() == 0)
@@ -257,9 +255,77 @@ void IterEnsembleSmoother::initialize()
 		{
 			throw_ies_error(string("error loading restat obs ensemble csv"));
 		}
+		//check that restart oe is in sync
+		stringstream ss;
+		vector<string> oe_real_names = oe.get_real_names(),oe_base_real_names = oe_base.get_real_names();
+		vector<string>::const_iterator start, end;
+		vector<string> missing;
+		start = oe_base_real_names.begin();
+		end = oe_base_real_names.end();
+		for (auto &rname : oe_real_names)
+			if (find(start, end, rname) == end)
+				missing.push_back(rname);
+		if (missing.size() > 0)
+		{
+			ss << "the following realization names were not found in the restart obs csv:";
+			for (auto &m : missing)
+				ss << m << ",";
+			throw_ies_error(ss.str());
+
+		}
+		if (oe.shape().first < oe_base.shape().first) //maybe some runs failed...
+		{		
+			//find which realizations are missing and reorder oe_base, pe and pe_base
+			vector<string> pe_real_names;
+			start = oe_base_real_names.begin();
+			end = oe_base_real_names.end();	
+			vector<string>::const_iterator it;
+			int iit;
+			for (int i = 0; i < oe.shape().first; i++)
+			{
+				it = find(start, end, oe_real_names[i]);
+				if (it != end)
+				{
+					iit = it - start;
+					pe_real_names.push_back(pe_org_real_names[iit]);
+				}
+			}
+			try
+			{
+				oe_base.reorder(oe_real_names, vector<string>());
+			}
+			catch (exception &e)
+			{
+				ss << "error reordering oe_base with restart oe:" << e.what();
+				throw_ies_error(ss.str());
+			}
+			catch (...)
+			{
+				throw_ies_error(string("error reordering oe_base with restart oe"));
+			}
+			try
+			{
+				pe.reorder(pe_real_names, vector<string>());
+			}
+			catch (exception &e)
+			{
+				ss << "error reordering pe with restart oe:" << e.what();
+				throw_ies_error(ss.str());
+			}
+			catch (...)
+			{
+				throw_ies_error(string("error reordering pe with restart oe"));
+			}
+			
+
+		}
+		else if (oe.shape().first > oe_base.shape().first) //something is wrong
+		{
+			ss << "restart oe has too many rows: " << oe.shape().first << " compared to oe_base: " << oe_base.shape().first;
+			throw_ies_error(ss.str());
+		}
 	}
-	
-	
+
 	map<string, double> phi_vec = get_phi_map(oe);
 	PhiStats phistats = report_and_save();
 	last_best_mean = phistats.get_mean();
@@ -273,6 +339,7 @@ void IterEnsembleSmoother::initialize()
 	file_manager.rec_ofstream() << "  ---  current lambda: " << setw(20) << left << last_best_lam << endl;
 	pe.transform_ip(ParameterEnsemble::transStatus::NUM);
 }
+
 
 void IterEnsembleSmoother::solve()
 {

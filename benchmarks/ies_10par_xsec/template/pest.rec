@@ -73,7 +73,7 @@ h02_10                                    5.1                head               
 
   ---  IterEnsembleSmoother iteration 0 report  ---  
    number of active realizations:  29
-   number of model runs:           29
+   number of model runs:           0
    ensemble size:                   29                  
    ensemble phi mean:               100.213             
    ensemble phi standard deviation: 176.342             
@@ -105,7 +105,7 @@ h02_10                                    5.1                head               
 
   ---  IterEnsembleSmoother iteration 1 report  ---  
    number of active realizations:  29
-   number of model runs:           116
+   number of model runs:           87
    ensemble size:                   29                  
    ensemble phi mean:               56.7241             
    ensemble phi standard deviation: 62.968              
@@ -136,7 +136,7 @@ h02_10                                    5.1                head               
 
   ---  IterEnsembleSmoother iteration 2 report  ---  
    number of active realizations:  29
-   number of model runs:           203
+   number of model runs:           174
    ensemble size:                   29                  
    ensemble phi mean:               32.9425             
    ensemble phi standard deviation: 36.8157             
