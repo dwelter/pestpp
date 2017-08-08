@@ -1040,8 +1040,8 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 
 		// populate vectors with sorted observations (standard and prior info) and parameters
 		{
-			vector<string> prior_info_names = prior_info_ptr->get_keys();
-			obs_names_vec.insert(obs_names_vec.end(), prior_info_names.begin(), prior_info_names.end());
+			//vector<string> prior_info_names = prior_info_ptr->get_keys();
+			//obs_names_vec.insert(obs_names_vec.end(), prior_info_names.begin(), prior_info_names.end());
 		}
 
 		// build weights matrix sqrt(Q)
@@ -1660,9 +1660,11 @@ PhiComponets SVDSolver::phi_estimate(const ModelRun &base_run, const Jacobian &j
 	VectorXd delta_par_vec = transformable_2_egien_vec(delta_par, numeric_par_names);
 	Eigen::SparseMatrix<double> jac = jacobian.get_matrix(obs_names_vec, numeric_par_names);
 	VectorXd delta_obs_vec = jac * delta_par_vec;
-	Transformable delta_obs(obs_names_vec, delta_obs_vec);
+	//Transformable delta_obs(obs_names_vec, delta_obs_vec);
 	Observations projected_obs = base_run.get_obs();
-	projected_obs += delta_obs;
+	Observations full_delta_obs(projected_obs);
+	full_delta_obs.update_without_clear(obs_names_vec,delta_obs_vec);
+	projected_obs += full_delta_obs;
 
 	PhiComponets proj_phi_comp = base_run.get_obj_func_ptr()->get_phi_comp(projected_obs, new_ctl_pars, regul_scheme);
 	return proj_phi_comp;

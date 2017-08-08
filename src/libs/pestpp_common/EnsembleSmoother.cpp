@@ -206,6 +206,7 @@ void IterEnsembleSmoother::initialize()
 	else
 	{
 		string extension = parcov_filename.substr(parcov_filename.size() - 3, 3);
+		pest_utils::upper_ip(extension);
 		if (extension.compare("COV") == 0)
 			parcov.from_ascii(parcov_filename);
 		else if ((extension.compare("JCO") == 0) || (extension.compare("JCB") == 0))

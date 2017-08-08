@@ -394,8 +394,8 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 
 		// populate vectors with sorted observations (standard and prior info) and parameters
 		{
-			vector<string> prior_info_names = prior_info_ptr->get_keys();
-			obs_names_vec.insert(obs_names_vec.end(), prior_info_names.begin(), prior_info_names.end());
+			//vector<string> prior_info_names = prior_info_ptr->get_keys();
+			//obs_names_vec.insert(obs_names_vec.end(), prior_info_names.begin(), prior_info_names.end());
 		}
 
 		//build residuals vector
