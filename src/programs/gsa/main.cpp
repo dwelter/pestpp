@@ -260,18 +260,33 @@ int main(int argc, char* argv[])
 
 	map<string, string> gsa_opt_map;
 	//process .gsa file
-	try
+	string gsa_filename = file_manager.get_base_filename() + ".gsa";
+	if (!check_exist_in(gsa_filename))
 	{
-		gsa_opt_map = GsaAbstractBase::process_gsa_file(file_manager.open_ifile_ext("gsa"), file_manager);
-		file_manager.close_file("gsa");
+		cout << "WARNING: " << gsa_filename << " not found, using standard settings and Method of Morris:" << endl;
+		cout << "     MORRIS_P: 4" << endl;
+		cout << "     MORRIS_R: 4" << endl;
+		cout << "     MORRIS_DELTA: 0.666" << endl;
+		gsa_opt_map["METHOD"] = "MORRIS";
+		gsa_opt_map["MORRIS_DELTA"] = ".666666";
+		gsa_opt_map["MORRIS_P"] = "4";
+		gsa_opt_map["MORRIS_R"] = "4";
+		gsa_opt_map["RAND_SEED"] = "2";
 	}
-	catch(PestError e)
+	else
 	{
-		cerr << "Error prococessing .gsa file: " << file_manager.build_filename("gsa") << endl << endl;
-		cerr << e.what() << endl << endl;
-		throw(e);
+		try
+		{
+			gsa_opt_map = GsaAbstractBase::process_gsa_file(file_manager.open_ifile_ext("gsa"), file_manager);
+			file_manager.close_file("gsa");
+		}
+		catch (PestError e)
+		{
+			cerr << "Error prococessing .gsa file: " << file_manager.build_filename("gsa") << endl << endl;
+			cerr << e.what() << endl << endl;
+			throw(e);
+		}
 	}
-
 	//Build Transformation with ctl_2_numberic
 	ParamTransformSeq base_partran_seq(pest_scenario.get_base_par_tran_seq());
 	Parameters ctl_par = pest_scenario.get_ctl_parameters();
