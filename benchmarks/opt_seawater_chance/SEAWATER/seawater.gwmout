@@ -1,0 +1,702 @@
+
+                                  MODFLOW-LGR2     
+    U.S. GEOLOGICAL SURVEY MODULAR FINITE-DIFFERENCE GROUNDWATER FLOW MODEL
+                 Version GWM-2005 1.5.2 091115,FROM MF-LGR V2.0  
+
+
+
+
+ OPENING GWM FILE FOR GWM1 -- GROUNDWATER MANAGEMENT PROCESS
+ INPUT READ FROM UNIT  18
+
+ #SEAWATER Sample Problem, GWM file                                                                                                                                                                      
+ #August 12, 2007                                                                                                                                                                                        
+
+ OPENING DECISION-VARIABLE FILE ON UNIT   17:
+ seawater.decvar                                                                                                                                                                                         
+ #SEAWATER Sample Problem, DECVAR file
+ #August 14, 2006
+
+ OPTIMAL FLOW VARIABLE VALUES WILL BE WRITTEN TO UNIT NUMBER:  20
+
+ NO. OF FLOW-RATE DECISION VARIABLES (NFVAR)       8
+ NO. OF EXTERNAL DECISION VARIABLES (NEVAR):       0
+ BINARY VARIABLES ARE NOT ACTIVE.
+
+ FLOW-RATE VARIABLES: WEL-TYPE
+                                                   FRACTION
+  NUMBER     NAME       TYPE      LAY   ROW   COL   OF FLOW
+ ----------------------------------------------------------
+    1      W1         WITHDRAWAL     1    7   12    1.0000
+   AVAILABLE IN STRESS PERIODS: 1
+
+    2      W2         WITHDRAWAL     1   10   13    1.0000
+   AVAILABLE IN STRESS PERIODS: 1
+
+    3      W3         WITHDRAWAL     1   10   16    1.0000
+   AVAILABLE IN STRESS PERIODS: 1
+
+    4      W4         WITHDRAWAL     1   12   15    1.0000
+   AVAILABLE IN STRESS PERIODS: 1
+
+    5      W5         WITHDRAWAL     1   15   11    0.5000
+                                     2   15   11    0.5000
+   AVAILABLE IN STRESS PERIODS: 1
+
+    6      I1          INJECTION     1    7   27    0.5000
+                                     2    7   27    0.5000
+   AVAILABLE IN STRESS PERIODS: 1
+
+    7      I2          INJECTION     1   11   27    0.5000
+                                     2   11   27    0.5000
+   AVAILABLE IN STRESS PERIODS: 1
+
+    8      I3          INJECTION     1   15   27    0.5000
+                                     2   15   27    0.5000
+   AVAILABLE IN STRESS PERIODS: 1
+
+
+      773 BYTES OF MEMORY ALLOCATED TO STORE DATA FOR DECISION VARIABLES
+
+ CLOSING DECISION-VARIABLE FILE
+
+
+ OPENING OBJECTIVE-FUNCTION FILE ON UNIT   17:
+ seawater.objfnc                                                                                                                                                                                         
+ #SEAWATER Sample Problem, OBJFNC file
+ #February 20, 2005
+
+ OBJECTIVE TYPE: MAX   FUNCTION TYPE: WSDV
+
+ NO. OF FLOW-RATE DECISION VARIABLES IN OBJECTIVE FUNCTION (NFVOBJ):    8
+ NO. OF EXTERNAL DECISION VARIABLES IN OBJECTIVE FUNCTION (NEVOBJ):     0
+ NO. OF BINARY DECISION VARIABLES IN OBJECTIVE FUNCTION (NBVOBJ):       0
+ NO. OF STATE VARIABLES IN OBJECTIVE FUNCTION (NSVOBJ):                 0
+
+ OBJECTIVE FUNCTION: (excluding flow duration terms)
+
+ MAX    +  1.00E+00 W1         +  1.00E+00 W2         +  1.00E+00 W3        
+        +  1.00E+00 W4         +  1.00E+00 W5         -  1.00E+00 I1        
+        -  1.00E+00 I2         -  1.00E+00 I3        
+
+       32 BYTES OF MEMORY ALLOCATED TO STORE DATA FOR OBJECTIVE-FUNCTION
+
+ CLOSING OBJECTIVE-FUNCTION FILE
+
+
+ OPENING DECISION-VARIABLE CONSTRAINTS FILE ON UNIT   17:
+ seawater.varcon                                                                                                                                                                                         
+ #SEAWATER Sample Problem, VARCON file
+ #February 20, 2005
+
+ FLOW RATE VARIABLES:
+                        MINIMUM        MAXIMUM        REFERENCE
+  NUMBER   NAME         FLOW RATE      FLOW RATE      FLOW RATE
+----------------------------------------------------------------
+    1      W1           0.000E+00      1.000E+04      0.000E+00
+    2      W2           0.000E+00      1.000E+04      0.000E+00
+    3      W3           0.000E+00      1.000E+04      0.000E+00
+    4      W4           0.000E+00      1.000E+04      0.000E+00
+    5      W5           0.000E+00      1.000E+04      0.000E+00
+    6      I1           0.000E+00      1.000E+04      0.000E+00
+    7      I2           0.000E+00      1.000E+04      0.000E+00
+    8      I3           0.000E+00      1.000E+04      0.000E+00
+
+ CLOSING DECISION-VARIABLE CONSTRAINTS FILE
+
+
+ OPENING SUMMATION CONSTRAINTS FILE ON UNIT   17:
+ seawater.sumcon                                                                                                                                                                                         
+ #SEAWATER Sample Problem, GWM file
+ #February 20, 2005
+
+ NUMBER OF SUMMATION CONSTRAINTS:     1
+
+ SUMMATION CONSTRAINTS:
+
+ rech-a    
+   +  1.00E+00 W1         +  1.00E+00 W2         +  1.00E+00 W3        
+   +  1.00E+00 W4         +  1.00E+00 W5         -  1.00E+00 I1        
+   -  1.00E+00 I2         -  1.00E+00 I3        
+
+  >=   0.00E+00
+
+       90 BYTES OF MEMORY ALLOCATED TO STORE DATA FOR SUMMATION CONSTRAINTS
+
+ CLOSING SUMMATION CONSTRAINTS FILE
+
+
+ OPENING HEAD CONSTRAINTS FILE ON UNIT   17:
+ seawater.hedcon                                                                                                                                                                                         
+ #SEAWATER Sample Problem, HEDCON file
+ #February 20, 2005
+
+ HEAD CONSTRAINTS:
+                     MNW WELLID or         RIGHT-HAND    STRESS
+ NUMBER  NAME        LAY  ROW  COL  TYPE      SIDE       PERIOD
+ ---------------------------------------------------------------
+     1   m-01          1    7   27   <    5.0000E+00         1
+     2   m-02          1   11   27   <    5.0000E+00         1
+     3   m-03          1   15   27   <    5.0000E+00         1
+
+ HEAD-DIFFERENCE CONSTRAINTS:
+                       FIRST CELL    SECOND CELL    RIGHT-HAND  STRESS
+ NUMBER  NAME        LAY  ROW  COL  LAY  ROW  COL      SIDE     PERIOD
+ ---------------------------------------------------------------------
+     4   hd-01         1    1   29    2    1   29   5.0000E-02     1
+     5   hd-02         1    3   29    2    3   29   5.0000E-02     1
+     6   hd-03         1    5   29    2    5   29   5.0000E-02     1
+     7   hd-04         1    7   29    2    7   29   5.0000E-02     1
+     8   hd-05         1    9   29    2    9   29   5.0000E-02     1
+     9   hd-06         1   11   29    2   11   29   5.0000E-02     1
+    10   hd-07         1   13   29    2   13   29   5.0000E-02     1
+    11   hd-08         1   15   29    2   15   29   5.0000E-02     1
+    12   hd-09         1   17   29    2   17   29   5.0000E-02     1
+    13   hd-10         1   19   29    2   19   29   5.0000E-02     1
+
+ GRADIENT CONSTRAINTS:
+                       FIRST CELL    SECOND CELL                             STRESS
+ NUMBER  NAME        LAY  ROW  COL  LAY  ROW  COL      LEN         GRAD      PERIOD
+ ----------------------------------------------------------------------------------
+    14   gd-01         1    1   28    1    1   30   4.0000E+02   3.7500E-03     1
+    15   gd-02         2    1   28    2    1   30   4.0000E+02   3.7500E-03     1
+    16   gd-03         1    3   28    1    3   30   4.0000E+02   3.7500E-03     1
+    17   gd-04         2    3   28    2    3   30   4.0000E+02   3.7500E-03     1
+    18   gd-05         1    5   28    1    5   30   4.0000E+02   3.7500E-03     1
+    19   gd-06         2    5   28    2    5   30   4.0000E+02   3.7500E-03     1
+    20   gd-07         1    7   28    1    7   30   4.0000E+02   3.7500E-03     1
+    21   gd-08         2    7   28    2    7   30   4.0000E+02   3.7500E-03     1
+    22   gd-09         1    9   28    1    9   30   4.0000E+02   3.7500E-03     1
+    23   gd-10         2    9   28    2    9   30   4.0000E+02   3.7500E-03     1
+    24   gd-11         1   11   28    1   11   30   4.0000E+02   3.7500E-03     1
+    25   gd-12         2   11   28    2   11   30   4.0000E+02   3.7500E-03     1
+    26   gd-13         1   13   28    1   13   30   4.0000E+02   3.7500E-03     1
+    27   gd-14         2   13   28    2   13   30   4.0000E+02   3.7500E-03     1
+    28   gd-15         1   15   28    1   15   30   4.0000E+02   3.7500E-03     1
+    29   gd-16         2   15   28    2   15   30   4.0000E+02   3.7500E-03     1
+    30   gd-17         1   17   28    1   17   30   4.0000E+02   3.7500E-03     1
+    31   gd-18         2   17   28    2   17   30   4.0000E+02   3.7500E-03     1
+    32   gd-19         1   19   28    1   19   30   4.0000E+02   3.7500E-03     1
+    33   gd-20         2   19   28    2   19   30   4.0000E+02   3.7500E-03     1
+
+     2310 BYTES OF MEMORY ALLOCATED TO STORE DATA FOR HEAD CONSTRAINTS
+
+ CLOSING HEAD CONSTRAINTS FILE
+
+
+ OPENING SOLUTION FILE ON UNIT   17:
+ seawater.soln                                                                                                                                                                                           
+ #SEAWATER Sample Problem, SOLN file
+ #June 15, 2009
+
+ SOLNTYP IS SLP: GWM WILL USE SEQUENTIAL ITERATION OF THE
+ NONLINEAR PROBLEM UNTIL A SOLUTION IS FOUND OR THE PROBLEM
+ DOES NOT CONVERGE.
+
+ MAXIMUM NUMBER OF LP ITERATIONS:               1000
+ MAXIMUM NUMBER OF BRANCH AND BOUND ITER:          0
+
+ MAXIMUM NUMBER OF SLP ITERATIONS:                10
+
+ SLP VARIABLE CONVERGENCE CRITERION (SLPVCRIT):    1.00000E+00
+ SLP OBJECTIVE CONVERGENCE CRITERION (SLPZCRIT):   1.00000E-03
+
+ PERTURBATION VALUES (DINIT, DMIN, AND DSC):  -0.50D-01 -0.50D-04  0.50D+01
+
+ MAXIMUM NUMBER OF PERTURBATION ATTEMPTS:         10
+ BASE FLOW RATE RELAXATION PARAMETER (AFACT) 0.50000
+ PERTURBATION ADJUSTMENT FACTOR (PGFACT):    0.50000
+
+ SLPITPRT>=1: PRINT SLP ITERATIONS.
+
+ OUTPUT FROM BRANCH-AND-BOUND ALGORITHM WILL NOT BE PRINTED.
+
+ CRITMFC SET TO                               0.000D+00
+ GWM WILL ACCEPT FLOW PROCESS RESULTS THAT MEET GWF
+ CONVERGENCE CRITERIA
+
+ BASE PUMPING RATES TAKEN FROM FVREF SPECIFIED IN VARCON INPUT FILE
+ 
+     PROBLEM SIZE
+ 
+  NUMBER OF VARIABLES (INCLUDING SLACKS)          42
+  NUMBER OF CONSTRAINT EQUATIONS                  34
+ 
+
+    33410 BYTES OF MEMORY ALLOCATED FOR RESPONSE MATRIX ALGORITHM
+
+ CLOSING SOLUTION AND OUTPUT FILE
+
+---------------------------------------------------------------
+               Solution Algorithm
+---------------------------------------------------------------
+  Begin Solution Algorithm
+    Running Base Flow Process Simulation
+      Status of Simulation-Based Constraints 
+      Constraint Type        Name       Status   Distance To RHS
+      ---------------        ----       ------   ---------------
+      Head Bound             m-01       Satisfied     3.7103E-01
+      Head Bound             m-02       Satisfied     4.8707E-01
+      Head Bound             m-03       Satisfied     5.1690E-01
+      Head Difference        hd-01      Satisfied     5.3533E-02
+      Head Difference        hd-02      Satisfied     5.3335E-02
+      Head Difference        hd-03      Satisfied     5.2875E-02
+      Head Difference        hd-04      Satisfied     5.2172E-02
+      Head Difference        hd-05      Satisfied     5.1312E-02
+      Head Difference        hd-06      Satisfied     5.0499E-02
+      Head Difference        hd-07      Satisfied     5.0027E-02
+      Head Difference        hd-08      Satisfied     5.0048E-02
+      Head Difference        hd-09      Satisfied     5.0374E-02
+      Head Difference        hd-10      Satisfied     5.0681E-02
+      Head Gradient          gd-01      Satisfied     9.4952E-01
+      Head Gradient          gd-02      Satisfied     8.9861E-01
+      Head Gradient          gd-03      Satisfied     9.4284E-01
+      Head Gradient          gd-04      Satisfied     8.9200E-01
+      Head Gradient          gd-05      Satisfied     9.2728E-01
+      Head Gradient          gd-06      Satisfied     8.7661E-01
+      Head Gradient          gd-07      Satisfied     9.0348E-01
+      Head Gradient          gd-08      Satisfied     8.5307E-01
+      Head Gradient          gd-09      Satisfied     8.7427E-01
+      Head Gradient          gd-10      Satisfied     8.2417E-01
+      Head Gradient          gd-11      Satisfied     8.4655E-01
+      Head Gradient          gd-12      Satisfied     7.9675E-01
+      Head Gradient          gd-13      Satisfied     8.3044E-01
+      Head Gradient          gd-14      Satisfied     7.8080E-01
+      Head Gradient          gd-15      Satisfied     8.3121E-01
+      Head Gradient          gd-16      Satisfied     7.8156E-01
+      Head Gradient          gd-17      Satisfied     8.4240E-01
+      Head Gradient          gd-18      Satisfied     7.9262E-01
+      Head Gradient          gd-19      Satisfied     8.5287E-01
+      Head Gradient          gd-20      Satisfied     8.0298E-01
+      Summation              rech-a     Satisfied     0.0000E+00
+
+  Distance to RHS is the absolute value of the difference between the
+    the right hand side of the constraint and the left side of the
+    constraint evaluated using the current set of decision variable values.
+    
+    Calculating Response Matrix
+      Perturb Flow Variable    1
+       By Perturbation Value:  5.000000E+02
+      Perturb Flow Variable    2
+       By Perturbation Value:  5.000000E+02
+      Perturb Flow Variable    3
+       By Perturbation Value:  5.000000E+02
+      Perturb Flow Variable    4
+       By Perturbation Value:  5.000000E+02
+      Perturb Flow Variable    5
+       By Perturbation Value:  5.000000E+02
+      Perturb Flow Variable    6
+       By Perturbation Value: -5.000000E+02
+      Perturb Flow Variable    7
+       By Perturbation Value: -5.000000E+02
+      Perturb Flow Variable    8
+       By Perturbation Value: -5.000000E+02
+ 
+      Average Number of Significant Digits in Matrix  6.393939E+00
+    
+    Solving Linear Program
+    Feasible Solution Found
+    Optimal Solution Found
+    Objective Value  1.412443E+04
+  SLP Algorithm: End Iteration    1
+  No SLP convergence at this iteration
+ 
+  SLP Algorithm: Begin Iteration     2
+    Running Base Flow Process Simulation
+      Status of Simulation-Based Constraints 
+      Constraint Type        Name       Status   Distance To RHS
+      ---------------        ----       ------   ---------------
+      Head Bound             m-01       Satisfied     2.0549E+00
+      Head Bound             m-02       Satisfied     1.8048E+00
+      Head Bound             m-03       Satisfied     1.9387E+00
+      Head Difference        hd-01      Satisfied     2.7829E-02
+      Head Difference        hd-02      Satisfied     2.7734E-02
+      Head Difference        hd-03      Satisfied     2.7586E-02
+      Head Difference        hd-04      Satisfied     2.7594E-02
+      Head Difference        hd-05      Satisfied     2.7646E-02
+      Head Difference        hd-06      Satisfied     2.9108E-02
+      Head Difference        hd-07      Satisfied     2.7611E-02
+      Head Difference        hd-08      Satisfied     2.8253E-02
+      Head Difference        hd-09      Satisfied     2.7601E-02
+      Head Difference        hd-10      Satisfied     2.7596E-02
+      Head Gradient          gd-01      Satisfied     4.9407E-02
+      Head Gradient          gd-02      Satisfied     6.4056E-03
+      Head Gradient          gd-03      Satisfied     4.5939E-02
+      Head Gradient          gd-04      Satisfied     2.9631E-03
+      Head Gradient          gd-05      Satisfied     4.0503E-02
+      Head Gradient          gd-06      Not Met       2.4294E-03
+      Head Gradient          gd-07      Satisfied     4.0970E-02
+      Head Gradient          gd-08      Not Met       2.3047E-03
+      Head Gradient          gd-09      Satisfied     4.2385E-02
+      Head Gradient          gd-10      Not Met       5.2509E-04
+      Head Gradient          gd-11      Satisfied     9.7447E-02
+      Head Gradient          gd-12      Satisfied     5.1164E-02
+      Head Gradient          gd-13      Satisfied     4.0931E-02
+      Head Gradient          gd-14      Not Met       1.9472E-03
+      Head Gradient          gd-15      Satisfied     6.5654E-02
+      Head Gradient          gd-16      Satisfied     2.0929E-02
+      Head Gradient          gd-17      Satisfied     4.0929E-02
+      Head Gradient          gd-18      Not Met       1.9924E-03
+      Head Gradient          gd-19      Satisfied     4.0902E-02
+      Head Gradient          gd-20      Not Met       2.0380E-03
+      Summation              rech-a     Satisfied     1.4124E+04
+
+  Distance to RHS is the absolute value of the difference between the
+    the right hand side of the constraint and the left side of the
+    constraint evaluated using the current set of decision variable values.
+    
+    Calculating Response Matrix
+      Perturb Flow Variable    1
+       By Perturbation Value:  1.004000E+02
+      Perturb Flow Variable    2
+       By Perturbation Value:  1.004000E+02
+      Perturb Flow Variable    3
+       By Perturbation Value:  1.004000E+02
+      Perturb Flow Variable    4
+       By Perturbation Value:  1.004000E+02
+      Perturb Flow Variable    5
+       By Perturbation Value:  1.004000E+02
+      Perturb Flow Variable    6
+       By Perturbation Value: -1.004000E+02
+      Perturb Flow Variable    7
+       By Perturbation Value: -1.004000E+02
+      Perturb Flow Variable    8
+       By Perturbation Value: -1.004000E+02
+ 
+      Average Number of Significant Digits in Matrix  5.742424E+00
+    
+    Solving Linear Program
+    Feasible Solution Found
+    Optimal Solution Found
+    Objective Value  1.408782E+04
+    Relative Change in Objective Value
+      Needs to be less than SLPZCRIT =  1.000000E-03
+      Value at this iteration        =  2.599125E-03
+    Maximum Relative Change in Variables
+      Needs to be less than SLPVCRIT =  1.000000E+00
+      For Flow Variable Max Change   =  7.213238E-03
+  SLP Algorithm: End Iteration    2
+  No SLP convergence at this iteration
+ 
+  SLP Algorithm: Begin Iteration     3
+    Running Base Flow Process Simulation
+      Status of Simulation-Based Constraints 
+      Constraint Type        Name       Status   Distance To RHS
+      ---------------        ----       ------   ---------------
+      Head Bound             m-01       Satisfied     2.0505E+00
+      Head Bound             m-02       Satisfied     1.8023E+00
+      Head Bound             m-03       Satisfied     1.9355E+00
+      Head Difference        hd-01      Satisfied     2.7897E-02
+      Head Difference        hd-02      Satisfied     2.7802E-02
+      Head Difference        hd-03      Satisfied     2.7653E-02
+      Head Difference        hd-04      Satisfied     2.7658E-02
+      Head Difference        hd-05      Satisfied     2.7706E-02
+      Head Difference        hd-06      Satisfied     2.9156E-02
+      Head Difference        hd-07      Satisfied     2.7665E-02
+      Head Difference        hd-08      Satisfied     2.8304E-02
+      Head Difference        hd-09      Satisfied     2.7656E-02
+      Head Difference        hd-10      Satisfied     2.7652E-02
+      Head Gradient          gd-01      Satisfied     5.1911E-02
+      Head Gradient          gd-02      Satisfied     8.8922E-03
+      Head Gradient          gd-03      Satisfied     4.8431E-02
+      Head Gradient          gd-04      Satisfied     5.4380E-03
+      Head Gradient          gd-05      Satisfied     4.2950E-02
+      Head Gradient          gd-06      Satisfied     7.4041E-09
+      Head Gradient          gd-07      Satisfied     4.3288E-02
+      Head Gradient          gd-08      Satisfied     1.6934E-08
+      Head Gradient          gd-09      Satisfied     4.4562E-02
+      Head Gradient          gd-10      Satisfied     1.6376E-03
+      Head Gradient          gd-11      Satisfied     9.9181E-02
+      Head Gradient          gd-12      Satisfied     5.2901E-02
+      Head Gradient          gd-13      Satisfied     4.2891E-02
+      Head Gradient          gd-14      Satisfied     1.9462E-08
+      Head Gradient          gd-15      Satisfied     6.7484E-02
+      Head Gradient          gd-16      Satisfied     2.2754E-02
+      Head Gradient          gd-17      Satisfied     4.2935E-02
+      Head Gradient          gd-18      Satisfied     6.3879E-09
+      Head Gradient          gd-19      Satisfied     4.2954E-02
+      Head Gradient          gd-20      Satisfied     7.6349E-10
+      Summation              rech-a     Satisfied     1.4088E+04
+
+  Distance to RHS is the absolute value of the difference between the
+    the right hand side of the constraint and the left side of the
+    constraint evaluated using the current set of decision variable values.
+    
+    Calculating Response Matrix
+      Perturb Flow Variable    1
+       By Perturbation Value:  2.048000E+01
+      Perturb Flow Variable    2
+       By Perturbation Value:  2.048000E+01
+      Perturb Flow Variable    3
+       By Perturbation Value:  2.048000E+01
+      Perturb Flow Variable    4
+       By Perturbation Value:  2.048000E+01
+      Perturb Flow Variable    5
+       By Perturbation Value:  2.048000E+01
+      Perturb Flow Variable    6
+       By Perturbation Value: -2.048000E+01
+      Perturb Flow Variable    7
+       By Perturbation Value: -2.048000E+01
+      Perturb Flow Variable    8
+       By Perturbation Value: -2.048000E+01
+ 
+      Average Number of Significant Digits in Matrix  5.234848E+00
+    
+    Solving Linear Program
+    Feasible Solution Found
+    Optimal Solution Found
+    Objective Value  1.408782E+04
+    Relative Change in Objective Value
+      Needs to be less than SLPZCRIT =  1.000000E-03
+      Value at this iteration        =  1.552010E-08
+    Maximum Relative Change in Variables
+      Needs to be less than SLPVCRIT =  1.000000E+00
+      For Flow Variable Max Change   =  4.864511E-08
+  SLP Algorithm: End Iteration    3
+  SLP Iterations have converged
+
+----------------------------------------------------------------------
+               Groundwater Management Solution
+----------------------------------------------------------------------
+
+       OPTIMAL SOLUTION FOUND 
+
+       OPTIMAL RATES FOR EACH FLOW VARIABLE 
+       ---------------------------------------
+Variable           Withdrawal          Injection           Contribution
+Name               Rate                Rate                To Objective
+----------         --------------      ------------        ------------
+ W1                1.000000E+04                            1.000000E+04
+ W2                3.300918E+03                            3.300918E+03
+ W3                0.000000E+00                            0.000000E+00
+ W4                0.000000E+00                            0.000000E+00
+ W5                1.677461E+03                            1.677461E+03
+ I1                                    6.293964E+01       -6.293964E+01
+ I2                                    5.321157E+02       -5.321157E+02
+ I3                                    2.955083E+02       -2.955083E+02
+                   ------------        ------------        ------------
+TOTALS             1.497838E+04        8.905636E+02        1.408782E+04
+
+
+       OBJECTIVE FUNCTION VALUE                            1.408782E+04
+
+       BINDING CONSTRAINTS 
+Constraint Type        Name     Status      Shadow Price
+---------------        ----     ------      ------------
+Head Gradient          gd-06    Binding     -5.7711E+03
+Head Gradient          gd-08    Binding     -9.5888E+02
+Head Gradient          gd-14    Binding     -8.0729E+03
+Head Gradient          gd-18    Binding     -1.4636E+02
+Head Gradient          gd-20    Binding     -2.1473E+03
+Maximum Flow Rate      W1       Binding    Not Available
+
+  Binding constraint and range analysis values are determined from the linear
+    program and based on the response matrix approximation of the flow-process.
+ 
+       RANGE ANALYSIS 
+
+
+       Constraint Ranges
+
+  Lower/Upper Bound are the values of the RHS beyond which basis will change.
+    Leaving is the variable which will leave the basis. 
+    Entering is the variable which will enter the basis.
+    If the entering or leaving variable is a constraint name,
+      then the constraint slack variable is active
+
+Constraint                Original      Lower/Upper
+Name        Slack         RHS           Bound            Entering    Leaving
+----------  ----------    ----------    ----------       ----------  ----------
+m-01        2.0505E+00    5.0000E+00    2.9495E+00       gd-06       m-01      
+                                          Infinity       ----- No Change -----
+
+m-02        1.8023E+00    5.0000E+00    3.1977E+00       gd-18       m-02      
+                                          Infinity       ----- No Change -----
+
+m-03        1.9355E+00    5.0000E+00    3.0645E+00       gd-20       m-03      
+                                          Infinity       ----- No Change -----
+
+hd-01       2.7897E-02    5.0000E-02     -Infinity       ----- No Change -----
+                                        7.7897E-02       gd-06       hd-01     
+
+hd-02       2.7802E-02    5.0000E-02     -Infinity       ----- No Change -----
+                                        7.7802E-02       gd-06       hd-02     
+
+hd-03       2.7653E-02    5.0000E-02     -Infinity       ----- No Change -----
+                                        7.7653E-02       gd-06       hd-03     
+
+hd-04       2.7658E-02    5.0000E-02     -Infinity       ----- No Change -----
+                                        7.7658E-02       gd-08       hd-04     
+
+hd-05       2.7706E-02    5.0000E-02     -Infinity       ----- No Change -----
+                                        7.7706E-02       gd-20       hd-05     
+
+hd-06       2.9156E-02    5.0000E-02     -Infinity       ----- No Change -----
+                                        7.9156E-02       gd-20       hd-06     
+
+hd-07       2.7665E-02    5.0000E-02     -Infinity       ----- No Change -----
+                                        7.7665E-02       gd-14       hd-07     
+
+hd-08       2.8304E-02    5.0000E-02     -Infinity       ----- No Change -----
+                                        7.8304E-02       gd-18       hd-08     
+
+hd-09       2.7656E-02    5.0000E-02     -Infinity       ----- No Change -----
+                                        7.7656E-02       gd-18       hd-09     
+
+hd-10       2.7652E-02    5.0000E-02     -Infinity       ----- No Change -----
+                                        7.7652E-02       gd-20       hd-10     
+
+gd-01       5.1911E-02    1.5000E+00     -Infinity       ----- No Change -----
+                                        1.5519E+00       gd-06       gd-01     
+
+gd-02       8.8922E-03    1.5000E+00     -Infinity       ----- No Change -----
+                                        1.5089E+00       gd-06       gd-02     
+
+gd-03       4.8431E-02    1.5000E+00     -Infinity       ----- No Change -----
+                                        1.5484E+00       gd-06       gd-03     
+
+gd-04       5.4380E-03    1.5000E+00     -Infinity       ----- No Change -----
+                                        1.5054E+00       gd-06       gd-04     
+
+gd-05       4.2950E-02    1.5000E+00     -Infinity       ----- No Change -----
+                                        1.5429E+00       gd-06       gd-05     
+
+gd-06       0.0000E+00    1.5000E+00    1.4962E+00       gd-06       gd-04     
+                                        1.5100E+00       gd-18       I1        
+
+gd-07       4.3288E-02    1.5000E+00     -Infinity       ----- No Change -----
+                                        1.5433E+00       gd-08       gd-07     
+
+gd-08       0.0000E+00    1.5000E+00    1.4935E+00       gd-20       gd-10     
+                                        1.5133E+00       gd-06       gd-04     
+
+gd-09       4.4562E-02    1.5000E+00     -Infinity       ----- No Change -----
+                                        1.5446E+00       gd-20       gd-09     
+
+gd-10       1.6375E-03    1.5000E+00     -Infinity       ----- No Change -----
+                                        1.5016E+00       gd-20       gd-10     
+
+gd-11       9.9181E-02    1.5000E+00     -Infinity       ----- No Change -----
+                                        1.5992E+00       gd-20       gd-11     
+
+gd-12       5.2901E-02    1.5000E+00     -Infinity       ----- No Change -----
+                                        1.5529E+00       gd-20       gd-12     
+
+gd-13       4.2891E-02    1.5000E+00     -Infinity       ----- No Change -----
+                                        1.5429E+00       gd-14       gd-13     
+
+gd-14       0.0000E+00    1.5000E+00    1.4984E+00       gd-20       gd-10     
+                                        1.5301E+00       gd-18       I1        
+
+gd-15       6.7484E-02    1.5000E+00     -Infinity       ----- No Change -----
+                                        1.5675E+00       gd-18       gd-15     
+
+gd-16       2.2754E-02    1.5000E+00     -Infinity       ----- No Change -----
+                                        1.5228E+00       gd-18       gd-16     
+
+gd-17       4.2935E-02    1.5000E+00     -Infinity       ----- No Change -----
+                                        1.5429E+00       gd-18       gd-17     
+
+gd-18       0.0000E+00    1.5000E+00    1.4935E+00       gd-18       gd-16     
+                                        1.5015E+00       gd-20       gd-10     
+
+gd-19       4.2954E-02    1.5000E+00     -Infinity       ----- No Change -----
+                                        1.5430E+00       gd-20       gd-19     
+
+gd-20       0.0000E+00    1.5000E+00    1.4975E+00       gd-20       gd-10     
+                                        1.5094E+00       gd-18       gd-16     
+
+rech-a      1.4088E+04    0.0000E+00     -Infinity       ----- No Change -----
+                                        1.4088E+04       -- Degenerate Basis -
+
+
+
+       Objective-Function Coefficient Ranges 
+
+  Lower/Upper Bound are the values of the coefficients beyond which basis will change.
+    Leaving is the variable which will leave the basis. 
+    Entering is the variable which will enter the basis.
+    If the entering or leaving variable is a constraint name,
+      then the constraint slack variable is active
+    Basic variables are shown with zero reduced cost
+
+Variable    Reduced       Original      Lower/Upper
+Name        Cost          Coefficient   Bound            Entering    Leaving
+----------  ----------    ----------    ----------       ----------  ----------
+W1          3.2130E-03    1.0000E+00    9.9679E-01       W1          W5        
+                                          Infinity       ----- No Change -----
+
+W2          0.0000E+00    1.0000E+00    9.9801E-01       gd-18       gd-10     
+                                        1.0020E+00       W1          W5        
+
+W3         -3.4944E-03    1.0000E+00      Infinity       ----- No Change -----
+                                        1.0035E+00       W3          W2        
+
+W4         -3.5757E-03    1.0000E+00      Infinity       ----- No Change -----
+                                        1.0036E+00       W4          W5        
+
+W5          0.0000E+00    1.0000E+00    9.9462E-01       W1          W5        
+                                        1.0018E+00       gd-18       gd-10     
+
+I1          0.0000E+00   -1.0000E+00   -1.9137E+00       gd-06       I1        
+                                       -9.4052E-01       gd-18       gd-10     
+
+I2          0.0000E+00   -1.0000E+00   -1.0083E+00       gd-18       gd-10     
+                                       -7.8598E-01       W3          W2        
+
+I3          0.0000E+00   -1.0000E+00   -1.1114E+00       gd-20       gd-16     
+                                       -9.9345E-01       gd-18       gd-10     
+
+---------------------------------------------------------------
+         Final Flow Process Simulation
+---------------------------------------------------------------
+  Running Final Flow Process Simulation
+    using Optimal Flow Variable Rates 
+    
+      Status of Simulation-Based Constraints 
+        Using Optimal Flow Rate Variable Values
+
+                                           Simulated    Specified
+                                            By Flow        in
+      Constraint Type        Name           Process    Constraints   Difference
+      ---------------        ----          ----------   ----------   ----------
+      Head Bound             m-01          2.9495E+00 < 5.0000E+00  -2.0505E+00
+      Head Bound             m-02          3.1977E+00 < 5.0000E+00  -1.8023E+00
+      Head Bound             m-03          3.0645E+00 < 5.0000E+00  -1.9355E+00
+      Head Difference        hd-01         7.7897E-02 > 5.0000E-02   2.7897E-02
+      Head Difference        hd-02         7.7802E-02 > 5.0000E-02   2.7802E-02
+      Head Difference        hd-03         7.7653E-02 > 5.0000E-02   2.7653E-02
+      Head Difference        hd-04         7.7658E-02 > 5.0000E-02   2.7658E-02
+      Head Difference        hd-05         7.7706E-02 > 5.0000E-02   2.7706E-02
+      Head Difference        hd-06         7.9156E-02 > 5.0000E-02   2.9156E-02
+      Head Difference        hd-07         7.7665E-02 > 5.0000E-02   2.7665E-02
+      Head Difference        hd-08         7.8304E-02 > 5.0000E-02   2.8304E-02
+      Head Difference        hd-09         7.7656E-02 > 5.0000E-02   2.7656E-02
+      Head Difference        hd-10         7.7652E-02 > 5.0000E-02   2.7652E-02
+      Head Gradient          gd-01         1.5519E+00 > 1.5000E+00   5.1911E-02
+      Head Gradient          gd-02         1.5089E+00 > 1.5000E+00   8.8922E-03
+      Head Gradient          gd-03         1.5484E+00 > 1.5000E+00   4.8431E-02
+      Head Gradient          gd-04         1.5054E+00 > 1.5000E+00   5.4380E-03
+      Head Gradient          gd-05         1.5429E+00 > 1.5000E+00   4.2950E-02
+      Head Gradient          gd-06         1.5000E+00 > 1.5000E+00   2.0521E-08
+      Head Gradient          gd-07         1.5433E+00 > 1.5000E+00   4.3288E-02
+      Head Gradient          gd-08         1.5000E+00 > 1.5000E+00   1.9897E-08
+      Head Gradient          gd-09         1.5446E+00 > 1.5000E+00   4.4562E-02
+      Head Gradient          gd-10         1.5016E+00 > 1.5000E+00   1.6376E-03
+      Head Gradient          gd-11         1.5992E+00 > 1.5000E+00   9.9181E-02
+      Head Gradient          gd-12         1.5529E+00 > 1.5000E+00   5.2901E-02
+      Head Gradient          gd-13         1.5429E+00 > 1.5000E+00   4.2891E-02
+      Head Gradient          gd-14         1.5000E+00 > 1.5000E+00   1.8763E-08
+      Head Gradient          gd-15         1.5675E+00 > 1.5000E+00   6.7484E-02
+      Head Gradient          gd-16         1.5228E+00 > 1.5000E+00   2.2754E-02
+      Head Gradient          gd-17         1.5429E+00 > 1.5000E+00   4.2935E-02
+      Head Gradient          gd-18         1.5000E+00 > 1.5000E+00   1.8723E-08
+      Head Gradient          gd-19         1.5430E+00 > 1.5000E+00   4.2954E-02
+      Head Gradient          gd-20         1.5000E+00 > 1.5000E+00   1.8721E-08
+      Summation              rech-a        1.4088E+04 > 0.0000E+00   1.4088E+04
+
+  Difference is computed by subtracting right hand side of the constraint 
+    from the left side of the constraint.
+  Precision limitations and nonlinear response may cause the 
+    values of the binding constraints computed directly by the flow process 
+    to differ from those computed using the linear program.  

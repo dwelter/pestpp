@@ -1,0 +1,11 @@
+#SEAWATER Sample Problem, VARCON file
+#February 20, 2005
+ 1                         #1-IPRN
+ W1 0.0d0  1.0d4  0.0d0    #2-FVNAME FVMIN FVMAX FVREF
+ W2 0.0d0  1.0d4  0.0d0
+ W3 0.0d0  1.0d4  0.0d0
+ W4 0.0d0  1.0d4  0.0d0
+ W5 0.0d0  1.0d4  0.0d0
+ I1 0.0d0  1.0d4  0.0d0
+ I2 0.0d0  1.0d4  0.0d0
+ I3 0.0d0  1.0d4  0.0d0

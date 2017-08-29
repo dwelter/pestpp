@@ -1,0 +1,5 @@
+#  PVAL file for GWM Seawater Sample Problem 
+#  The recharge parameter is set to 0.002 in this file
+#  and overrides the value specified in the recharge file
+    1  
+REC-SP1  0.0020 

@@ -1,0 +1,7 @@
+         0     1E+10         1     1.000         1         0
+11 0 
+OPEN/CLOSE         .\anisotropy_factor.ref               1   (2E15.6) -1 anisotropy factor             
+OPEN/CLOSE  .\Horizontal_Hydraulic_Conductivity_Layer_1.ref               1     (FREE) -1 hy                            
+OPEN/CLOSE  .\Vertical_Conductance_Layer_1.ref               1     (FREE) -1 vcont                         
+OPEN/CLOSE            .\WETDRY_Layer_1.ref               1     (FREE) -1 wetdry                        
+OPEN/CLOSE    .\Transmissivity_Layer_2.ref               1     (FREE) -1 tran                          
