@@ -164,6 +164,7 @@ def process_hds():
     hg1 = (arr[0,:,27] - arr[0,:,29]) / (2.0 * delt)
     hg2 = (arr[1,:,27] - arr[0,:,29]) / (2.0 * delt)
     vg1 = (arr[0,:,28] - arr[1,:,28])
+    print(arr[0,:,28], arr[1,:,28])
     hg1_labels = ["hg1_r{0}".format(i+1) for i in range(nrow)]
     hg2_labels = ["hg2_r{0}".format(i+1) for i in range(nrow)]
     vg1_labels = ["vg1_r{0}".format(i+1) for i in range(nrow)]
@@ -211,7 +212,7 @@ def setup_pest():
     par.loc["ex", "pargp"] = "existing"
 
     prefixes = ["rch", "hy1", "tr2", "vcd"]
-    parvals = [0.002,5.0,800.0,0.5]
+    parvals = [0.002,5.0,800.0,0.05]
     for prefix,parval in zip(prefixes,parvals):
         p = par.parnme.apply(lambda x: x.startswith(prefix))
         par.loc[p, "parval1"] = parval
@@ -244,7 +245,7 @@ def setup_pest():
     vg_obs.loc[:, "row"] = vg_obs.obsnme.apply(lambda x: int(x.split('_')[-1][1:]))
     vg_odd_rows = vg_obs.loc[vg_obs.row.apply(lambda x: x % 2 != 0), "obsnme"]
     obs.loc[vg_odd_rows, "weight"] = 1.0
-    obs.loc[vg_odd_rows, "obgnme"] = "less_vg"
+    obs.loc[vg_odd_rows, "obgnme"] = "greater_vg"
     obs.loc[vg_odd_rows,"obsval"] = 0.05
 
     # water levels at injection wells
@@ -266,15 +267,18 @@ def setup_pest():
 
     pst.model_command = ["python forward_run.py"]
 
-    pst.control_data.noptmax = 4
+    pst.control_data.noptmax = 0
     pst.pestpp_options["opt_direction"] = "max"
-    pst.pestpp_options["opt_constraint_groups"] = "greater_sum,less_vg,less_wl,greater_hg"
+    pst.pestpp_options["opt_constraint_groups"] = "greater_sum,greater_vg,less_wl,greater_hg"
     pst.pestpp_options["opt_obj_func"] = "obj_func"
     pst.pestpp_options["opt_coin_log"] = "true"
     pst.pestpp_options["opt_dec_var_groups"] = "extrac_dv,inject_dv"
+    pst.write(os.path.join("seawater_pest_init.pst"))
+    pst.control_data.noptmax = 4
     pst.write(os.path.join("seawater_pest.pst"))
+    
     os.system("pestchek seawater_pest.pst")
-    #os.system("ipestpp-opt seawater_pest.pst")
+    os.system("ipestpp seawater_pest_init.pst")
     os.chdir("..")
 
 
