@@ -1,0 +1,38 @@
+PEST++ performance logger started at:  14:14:38
+        ( time = 14:14:38,  elapsed time = 874us )
+  starting to process control file
+          ( time = 14:14:38,  elapsed time = 19ms )
+  finished processing control file
+          ( time = 14:14:38,  elapsed time = 20ms )
+    starting basic model IO error checking
+            ( time = 14:14:38,  elapsed time = 3ms )
+    finished basic model IO error checking
+14:14:39-> starting set_predictions
+14:14:39->-> starting extracting prediction S1R14_09 from jacobian
+14:14:39->-> finished extracting prediction S1R14_09 from jacobian, elapsed time = 4ms
+14:14:39->-> starting extracting prediction S1R14_10 from jacobian
+14:14:39->-> finished extracting prediction S1R14_10 from jacobian, elapsed time = 4ms
+14:14:39->-> starting extracting prediction S1R14_11 from jacobian
+14:14:39->-> finished extracting prediction S1R14_11 from jacobian, elapsed time = 4ms
+14:14:39->-> starting extracting prediction S1R14_12 from jacobian
+14:14:39->-> finished extracting prediction S1R14_12 from jacobian, elapsed time = 4ms
+14:14:39->-> starting extracting prediction S1R21_11 from jacobian
+14:14:39->-> finished extracting prediction S1R21_11 from jacobian, elapsed time = 4ms
+14:14:39->-> starting extracting prediction S1R21_12 from jacobian
+14:14:39->-> finished extracting prediction S1R21_12 from jacobian, elapsed time = 4ms
+14:14:39->-> starting extracting prediction S2R08_09 from jacobian
+14:14:39->-> finished extracting prediction S2R08_09 from jacobian, elapsed time = 4ms
+14:14:39->-> starting extracting prediction S2R08_10 from jacobian
+14:14:39->-> finished extracting prediction S2R08_10 from jacobian, elapsed time = 4ms
+14:14:39->-> starting extracting prediction S2R08_11 from jacobian
+14:14:39->-> finished extracting prediction S2R08_11 from jacobian, elapsed time = 4ms
+14:14:39->-> starting extracting prediction S2R08_12 from jacobian
+14:14:39->-> finished extracting prediction S2R08_12 from jacobian, elapsed time = 4ms
+14:14:39->-> starting extracting prediction S3R05_11 from jacobian
+14:14:39->-> finished extracting prediction S3R05_11 from jacobian, elapsed time = 4ms
+14:14:39 : WARNING: Prediction S3R05_11 has no non-zero entries in jacobian row/
+14:14:39->-> starting extracting prediction S3R05_12 from jacobian
+14:14:39->-> finished extracting prediction S3R05_12 from jacobian, elapsed time = 2ms
+14:14:39-> finished set_predictions, elapsed time = 53ms
+14:14:39-> starting prior_prediction_variance
+14:14:39-> finished prior_prediction_variance, elapsed time = 577us

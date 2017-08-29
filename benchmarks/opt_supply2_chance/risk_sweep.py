@@ -208,7 +208,7 @@ def plot_dev_var_bar():
 
     #parse the gwm output file for dec var values
     gwm_dvs = get_gwm_decvar_vals(os.path.join("baseline_opt","supply2.gwmout"))
-    fig = plt.figure(figsize=(190.0 / 25.4, 120.0 / 25.4))
+    fig = plt.figure(figsize=(190.0 / 25.4, 70.0 / 25.4))
     ax1 = plt.subplot(131)
     ax2 = plt.subplot(132)
     ax3 = plt.subplot(133)
@@ -248,12 +248,17 @@ def plot_dev_var_bar():
     ax1.set_ylabel("pumping rate ($\\frac{m^3}{d}$)")
     ax2.set_yticklabels([])
     ax3.set_yticklabels([])
+    for ax in [ax1,ax2,ax3]:
+        ax.set_ylim(0,55000)
+        ax.grid()
     plt.tight_layout()
     #plt.show()
     plt.savefig("dec_vars.pdf")
 
+
+
 if __name__ == "__main__":
     #run_base()
     #run_worth()
-    plot_tradeoff()
+    #plot_tradeoff()
     plot_dev_var_bar()
