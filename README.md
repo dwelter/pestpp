@@ -108,11 +108,9 @@ Here is a (more or less) complete list of ``++`` arguments that can be added to 
 ### sweep ``++`` arguments
 ``sweep`` is a utility to run a parametric sweep for a series of parameter values.  Useful for things like monte carlo, design of experiment, etc. Designed to be used with ``pyemu`` and the python pandas library.
 
-* ``++sweep_parameter_csv_file(filename)``: the CSV file that lists the runs to be evaluated. REQUIRED
-* ``++sweep_output_csv_file(filename)``: the output CSV file from the parametric sweep.  If not passed, output is written to "output.csv"
+* ``++sweep_parameter_csv_file(filename)``: the CSV file that lists the runs to be evaluated. "sweep_in.csv" is the default
+* ``++sweep_output_csv_file(filename)``: the output CSV file from the parametric sweep.  If not passed, output is written to "sweep_out.csv"
 * ``++sweep_chunk(500)``: number of runs to batch queue for the run manager.  Each chunk is read, run and written as a single batch
-* ``++sweep_forgive(true)``: a flag to allow the ``sweep_parameter_csv_file`` to only include a subset of parameters listed in the control file.  If ``true``, then parameters not listed in the ``sweep_parrameter_csv_file`` are given the corresponding ``parval1`` value in the control file
-* ``sweep_base_run(true)``: flag to include a "base" run of control file parameter values in the parametric sweep
 
 ### pestpp-opt ``++`` arguments
 ``pestpp-opt`` is a implementation of sequential linear programming under uncertainty for the PEST-style model-independent interface
