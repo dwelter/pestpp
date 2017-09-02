@@ -11,7 +11,7 @@ PEST++ can be compiled for PC, MAC, or Linux and has several run managers to sup
 
 If any of these items are of interest to you, we are looking for contributors!
 
-Visit the <a href="http://www.pestpp.org">homepage </a> to download the most recent pre-compiled version 
+precompiled binaries are available in the "exes" folder
 
 ## Recent Updates
 <b>update 01/25/2017</b>: intel C++ builds are avaiable for mac and for windows.  For mac users, these are statically-linked so they do not require compilers to be installed.  For windows users, the intel build circumvents the "missing VCOMP140.DLL" error.  Note the intel windows builds are currently in the ``intel_c_windows`` branch.
