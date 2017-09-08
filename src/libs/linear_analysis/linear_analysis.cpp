@@ -112,7 +112,7 @@ ObservationInfo normalize_weights_by_residual(Pest &pest_scenario, PhiData obj_c
 		}
 	}
 	//if using regularization, we need to check if scaling is needed -> is phimaccept been satisfied
-	if ((pest_scenario.get_regul_scheme_ptr()->get_use_dynamic_reg()))
+	/*if ((pest_scenario.get_regul_scheme_ptr()->get_use_dynamic_reg()))
 	{
 		double phimlim = pest_scenario.get_regul_scheme_ptr()->get_phimlim();
 		double phimaccept = pest_scenario.get_regul_scheme_ptr()->get_phimaccept();
@@ -129,7 +129,7 @@ ObservationInfo normalize_weights_by_residual(Pest &pest_scenario, PhiData obj_c
 				obj_comps.group_phi[oc.first] = 0.0;
 		}
 	}
-
+*/
 	for (auto &ogrp : pst_grps)
 	{
 		if (obj_comps.group_phi[ogrp.second] <= numeric_limits<double>::min())
