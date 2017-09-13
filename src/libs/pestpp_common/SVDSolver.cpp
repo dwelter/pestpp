@@ -1464,9 +1464,10 @@ void SVDSolver::iteration_update_and_report(ostream &os, const ModelRun &base_ru
 		PhiData phi_data = obj_func->phi_report(base_run.get_obs(), base_run.get_ctl_pars(), *regul_scheme_ptr);
 		output_file_writer.write_obj_iter(0, 0, phi_data);
 	}
-
-	output_file_writer.par_report(os, termination_ctl.get_iteration_number()+1, new_ctl_pars, old_ctl_pars, "Control File");
 	PhiData phi_data = obj_func->phi_report(upgrade.get_obs(), upgrade.get_ctl_pars(), *regul_scheme_ptr);
+
+	output_file_writer.phi_report(os, termination_ctl.get_iteration_number(), run_manager.get_total_runs(), phi_data, regul_scheme_ptr->get_weight(), false, "Final");
+	output_file_writer.par_report(os, termination_ctl.get_iteration_number()+1, new_ctl_pars, old_ctl_pars, "Control File");
 	output_file_writer.write_obj_iter(termination_ctl.get_iteration_number() + 1, run_manager.get_total_runs(), phi_data);
 	for (const auto &ipar : new_ctl_pars)
 	{

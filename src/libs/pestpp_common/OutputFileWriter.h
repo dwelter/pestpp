@@ -62,7 +62,8 @@ public:
 	void scenario_obs_report(std::ostream &os);
 	void scenario_pi_report(std::ostream &os);
 
-	void phi_report(std::ostream &os,int const iter, int const nruns, PhiData const &phi_comps, double const dynamic_reg_weight,bool final=false);
+	void phi_report(std::ostream &os,int const iter, int const nruns, PhiData const &phi_comps,
+		double const dynamic_reg_weight,bool final=false, string tag="Starting");
 	void par_report(std::ostream &os, Parameters const &new_ctl_pars);
 	void par_report(std::ostream &os, int const iter, Parameters const &new_pars, Parameters const &old_pars, string par_type);
 	void iteration_report(std::ostream &os, int iter, int nruns, string iteration_type, string svd_type=string(""), string mat_inv=string(""));

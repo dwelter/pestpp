@@ -479,7 +479,9 @@ void OutputFileWriter::param_change_stats(double p_old, double p_new, bool &have
 }
 
 
-void OutputFileWriter::phi_report(std::ostream &os, int const iter, int const nruns, PhiData const &phi_comps, double const dynamic_reg_weight,bool final)
+
+
+void OutputFileWriter::phi_report(std::ostream &os, int const iter, int const nruns, PhiData const &phi_comps, double const dynamic_reg_weight,bool final,string tag)
 {
 	map<string, double>::const_iterator it = phi_comps.group_phi.find("REGUL");
 	if ((!dynamic_reg_weight) || (it == phi_comps.group_phi.end()))
@@ -490,7 +492,7 @@ void OutputFileWriter::phi_report(std::ostream &os, int const iter, int const nr
 		}
 		else
 		{
-			os << "  Starting phi for this iteration                     Total : " << phi_comps.total() << endl;
+			os << endl << "  " << tag << " phi for this iteration                     Total : " << phi_comps.total() << endl << endl << endl;
 		}		
 	}
 	else
@@ -505,9 +507,9 @@ void OutputFileWriter::phi_report(std::ostream &os, int const iter, int const nr
 		else
 		{
 			os << "  Current regularization weight factor                      : " << dynamic_reg_weight << endl;
-			os << "  Starting phi for this iteration                     Total : " << phi_comps.total() << endl;
-			os << "  Starting measurement phi for this iteration         Total : " << phi_comps.meas << endl;
-			os << "  Starting regularization phi for this iteration      Total : " << phi_comps.regul << endl;
+			os << "  " << tag << " phi for this iteration                     Total : " << phi_comps.total() << endl;
+			os << "  " << tag << " measurement phi for this iteration         Total : " << phi_comps.meas << endl;
+			os << "  " << tag << " regularization phi for this iteration      Total : " << phi_comps.regul << endl;
 		}
 	}
 	
