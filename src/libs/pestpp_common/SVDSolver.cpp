@@ -1123,6 +1123,8 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 			Parameters del_numeric_pars = new_numeric_pars - base_numeric_pars;
 			for (double i_scale : lambda_scale_vec)
 			{
+				if (i_scale == 1.0)
+					continue;
 				Parameters scaled_pars = base_numeric_pars + del_numeric_pars * i_scale;
 				par_transform.numeric2model_ip(scaled_pars);
 				Parameters scaled_ctl_pars = par_transform.numeric2ctl_cp(scaled_pars);
