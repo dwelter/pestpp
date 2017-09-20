@@ -1,10 +1,10 @@
-#PEST++
+# PEST++
 Object Oriented Inverse Modeling Software
 <br><br><br>
-##Overview
+## Overview
 PEST++ can be compiled for PC, MAC, or Linux and has several run managers to support parallelization.  PEST++ implements "on-the-fly" subspace reparameterization, effectively reproducing the SVD-Assist methodology of PEST without any user intervention.  The user simply specifies how frequently a base Jacobian should be recalculated.  PEST++ also includes automatic Bayes linear parameter and forecast uncertainty estimation, which is completed for free at the end of the PEST++ run.  Also included in PEST++ are global sensitivity analysis codes that implement the method of Morris and the method of Sobol.  Both of these codes include a parallel run manager as well and are fully compatible with the PEST model-independent framework.
 
-##Under Development
+## Under Development
 * optimization within the PEST model-independent framework, including chance constraints from Bayes Linear estimation
 * global optimization and inversion with Differential Evolution
 * new ways to enforce regularization as component of the composite objective function and in the linear algebra of the inversion problem
@@ -13,7 +13,9 @@ If any of these items are of interest to you, we are looking for contributors!
 
 precompiled binaries are available in the "exes" folder in the repo
 
-##Recent Updates
+## Recent Updates
+<b> update 09/20/2017</b>: the new optimization under uncertainty tool is ready!  A supporting publication is in the works and should be available soon (a link will be posted once it is accepted).  This new tool uses the same control file/template file/instruction file approach as other PEST(++) applications, so applying this tool to your problem should be seamless.  Optional "++" args for tool are available further done this page.
+
 <b>update 01/25/2017</b>: intel C++ builds are avaiable for mac and for windows.  For mac users, these are statically-linked so they do not require compilers to be installed.  For windows users, the intel build circumvents the "missing VCOMP140.DLL" error.  Note the intel windows builds are currently in the ``intel_c_windows`` branch.
 
 <b>update 11/25/2016</b>: PEST++ version 3.6 is now available. Some of the many enhancements available in 3.6 include:
@@ -35,7 +37,7 @@ precompiled binaries are available in the "exes" folder in the repo
 Welter, D.E., White, J.T., Hunt, R.J., and Doherty, J.E., 2015, Approaches in highly parameterized inversion— PEST++ Version 3, a Parameter ESTimation and uncertainty analysis software suite optimized for large environmental models: U.S. Geological Survey Techniques and Methods, book 7, chap. C12, 54 p., <a ref="http://dx.doi.org/10.3133/tm7C12">http://dx.doi.org/10.3133/tm7C12</a>.
 
 
-##PEST++ References:
+## PEST++ References:
 
 Morris, M.D. 1991. "Factorial Sampling Plans for Preliminary Computational Experiments".  Technometrics 33(2)"161-174
 
@@ -44,23 +46,23 @@ Modeling and Computation, 1(4):407-414.
 
 Welter, D.E., Doherty, J.E., Hunt, R.J., Muffels, C.T., Tonkin, M.J., and Schreüder, W.A., 2012, Approaches in highly parameterized inversion—PEST++, a Parameter ESTimation code optimized for large environmental models: U.S. Geological Survey Techniques and Methods, book 7, section C5, 47 p., available only at <a ref="http://pubs.usgs.gov/tm/tm7c5">http://pubs.usgs.gov/tm/tm7c5</a>.
 
-###Related Links:
+### Related Links:
 
 * <a ref="http://www.pesthomepage.org">http://www.pesthomepage.org </a>
 * <a ref="http://wi.water.usgs.gov/models/pestplusplus/">http://wi.water.usgs.gov/models/pestplusplus</a>
 * <a ref="http://wi.water.usgs.gov/models/genie/">http://wi.water.usgs.gov/models/genie/ </a>
 * <a ref'"https://github.com/jtwhite79/pyemu">https://github.com/jtwhite79/pyemu </a>
 
-##Compiling
+## Compiling
 The master branch includes a Visual Studio 2015 project, as well as makefiles for linux and mac.
 
-##Testing
+## Testing
 The benchmarks/ folder contain several test problems of varying problem size which are used to evaluate the performance of various aspects of the PEST++ algorithm and implementation.  
 
-##Dependencies
+## Dependencies
 Much work has been done to avoid additional external dependencies in PEST++.  As currently designed, the project is fully self-contained and statically linked.  
 
-##PEST++ arguments
+## PEST++ arguments
 Here is a (more or less) complete list of ``++`` arguments that can be added to the control file
 * ``++max_n_super(20)``: maximum number of super parameters to use
 
@@ -94,7 +96,7 @@ Here is a (more or less) complete list of ``++`` arguments that can be added to 
 
 * ``++parcov_scale_fac(0.01)``: scaling factor to scale the prior parameter covariance matrix by when scaling the normal matrix by the inverse of the prior parameter covariance matrix.  If not specified, no scaling is undertaken; if specified, ``++mat_inv`` must be "jtqj".
 
-###sweep ``++`` arguments
+### sweep ``++`` arguments
 ``sweep`` is a utility to run a parametric sweep for a series of parameter values.  Useful for things like monte carlo, design of experiment, etc. Designed to be used with ``pyemu`` and the python pandas library.
 
 * ``++sweep_parameter_csv_file(filename)``: the CSV file that lists the runs to be evaluated. REQUIRED
@@ -103,7 +105,7 @@ Here is a (more or less) complete list of ``++`` arguments that can be added to 
 * ``++sweep_forgive(true)``: a flag to allow the ``sweep_parameter_csv_file`` to only include a subset of parameters listed in the control file.  If ``true``, then parameters not listed in the ``sweep_parrameter_csv_file`` are given the corresponding ``parval1`` value in the control file
 * ``sweep_base_run(true)``: flag to include a "base" run of control file parameter values in the parametric sweep
 
-###pestpp-opt ``++`` arguments
+### pestpp-opt ``++`` arguments
 ``pestpp-opt`` is a implementation of sequential linear programming under uncertainty for the PEST-style model-independent interface
 
 * ``++opt_dec_var_groups(<group names>)``: comma-separated string identifying which parameter groups are to be treated as decision variables.  If not passed, all adjustable parameters are treated as decision variables
