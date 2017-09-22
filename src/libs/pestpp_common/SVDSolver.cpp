@@ -1107,9 +1107,21 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 			// reset frozen_active_ctl_pars
 			LimitType limit_type;
 			Parameters frozen_active_ctl_pars = failed_jac_pars;
-			calc_upgrade_vec(i_lambda, frozen_active_ctl_pars, Q_sqrt, *regul_scheme_ptr, residuals_vec,
-				obs_names_vec, base_run_active_ctl_par,
-				new_pars, mar_mat, limit_type, false);
+			try
+			{
+				calc_upgrade_vec(i_lambda, frozen_active_ctl_pars, Q_sqrt, *regul_scheme_ptr, residuals_vec,
+					obs_names_vec, base_run_active_ctl_par, new_pars, mar_mat, limit_type, false);
+			}
+			catch (const runtime_error& error)
+			{
+				stringstream ss;
+				ss << "error computing upgrade vector for lambda " << i_lambda << ", skipping : " << error.what();
+				fout_rec << endl << endl << ss.str() << endl;
+				std::cout << endl << ss.str() << endl;
+				performance_log->log_event(ss.str());
+				performance_log->add_indent(-1);
+				continue;
+			}
 			performance_log->log_event("transforming upgrade pars to model pars");
 			Parameters new_par_model = par_transform.active_ctl2model_cp(new_pars);
 			performance_log->log_event("writing upgrade vector to csv file");
