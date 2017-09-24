@@ -58,10 +58,10 @@ cax = plt.axes([0.85,0.075,0.025,0.9])
 #i = ax.imshow(harray,interpolation="nearest",alpha=0.5,extent=ml.sr.get_extent())
 i = ax.pcolormesh(ml.sr.xedge,ml.sr.yedge,harray,alpha=0.5)
 c = plt.colorbar(i,cax=cax)
-c.set_label("water level (m)",labelpad=0.1)
+c.set_label("water level (ft)",labelpad=0.1)
 
-ax.set_xlabel("x distance (m)",labelpad=0.1)
-ax.set_ylabel("y distance (m)",labelpad=0.1)
+ax.set_xlabel("x distance (ft)",labelpad=0.1)
+ax.set_ylabel("y distance (ft)",labelpad=0.1)
 ax.scatter(wel_x,wel_y,marker='.',s=10,color='k',label="pumping well cell",zorder=10)
 for x,y,l in zip(wel_x,wel_y,wel_label):
     t = ax.text(x+10,y+10,l,ha="left",va="bottom")
