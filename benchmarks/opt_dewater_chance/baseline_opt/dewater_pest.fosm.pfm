@@ -1,33 +1,29 @@
-PEST++ performance logger started at:  2016-11-27 10:15:26
-        ( time = 2016-11-27 10:15:26,  elapsed time = 648us )
+PEST++ performance logger started at:  12:34:45
+        ( time = 12:34:45,  elapsed time = 1ms )
   starting to process control file
-          ( time = 2016-11-27 10:15:26,  elapsed time = 14ms )
+          ( time = 12:34:45,  elapsed time = 13ms )
   finished processing control file
-          ( time = 2016-11-27 10:15:26,  elapsed time = 3ms )
-    starting basic model IO error checking
-            ( time = 2016-11-27 10:15:26,  elapsed time = 107us )
-    finished basic model IO error checking
-2016-11-27 10:15:26-> starting set_predictions
-2016-11-27 10:15:26->-> starting extracting prediction H05_12 from jacobian
-2016-11-27 10:15:26->-> finished extracting prediction H05_12 from jacobian, elapsed time = 3ms
-2016-11-27 10:15:26->-> starting extracting prediction H05_14 from jacobian
-2016-11-27 10:15:26->-> finished extracting prediction H05_14 from jacobian, elapsed time = 2ms
-2016-11-27 10:15:26->-> starting extracting prediction H05_16 from jacobian
-2016-11-27 10:15:26->-> finished extracting prediction H05_16 from jacobian, elapsed time = 2ms
-2016-11-27 10:15:26->-> starting extracting prediction H07_12 from jacobian
-2016-11-27 10:15:26->-> finished extracting prediction H07_12 from jacobian, elapsed time = 2ms
-2016-11-27 10:15:26->-> starting extracting prediction H07_16 from jacobian
-2016-11-27 10:15:26->-> finished extracting prediction H07_16 from jacobian, elapsed time = 2ms
-2016-11-27 10:15:26->-> starting extracting prediction H09_12 from jacobian
-2016-11-27 10:15:26->-> finished extracting prediction H09_12 from jacobian, elapsed time = 2ms
-2016-11-27 10:15:26->-> starting extracting prediction H09_14 from jacobian
-2016-11-27 10:15:26->-> finished extracting prediction H09_14 from jacobian, elapsed time = 2ms
-2016-11-27 10:15:26->-> starting extracting prediction H10_15 from jacobian
-2016-11-27 10:15:26->-> finished extracting prediction H10_15 from jacobian, elapsed time = 2ms
-2016-11-27 10:15:26->-> starting extracting prediction H13_15 from jacobian
-2016-11-27 10:15:26->-> finished extracting prediction H13_15 from jacobian, elapsed time = 2ms
-2016-11-27 10:15:26->-> starting extracting prediction H13_16 from jacobian
-2016-11-27 10:15:26->-> finished extracting prediction H13_16 from jacobian, elapsed time = 1ms
-2016-11-27 10:15:26-> finished set_predictions, elapsed time = 24ms
-2016-11-27 10:15:26-> starting prior_prediction_variance
-2016-11-27 10:15:26-> finished prior_prediction_variance, elapsed time = 316us
+12:34:46-> starting set_predictions
+12:34:46->-> starting extracting prediction H05_12 from jacobian
+12:34:46->-> finished extracting prediction H05_12 from jacobian, elapsed time = 4ms
+12:34:46->-> starting extracting prediction H05_14 from jacobian
+12:34:46->-> finished extracting prediction H05_14 from jacobian, elapsed time = 3ms
+12:34:46->-> starting extracting prediction H05_16 from jacobian
+12:34:46->-> finished extracting prediction H05_16 from jacobian, elapsed time = 3ms
+12:34:46->-> starting extracting prediction H07_12 from jacobian
+12:34:46->-> finished extracting prediction H07_12 from jacobian, elapsed time = 3ms
+12:34:46->-> starting extracting prediction H07_16 from jacobian
+12:34:46->-> finished extracting prediction H07_16 from jacobian, elapsed time = 3ms
+12:34:46->-> starting extracting prediction H09_12 from jacobian
+12:34:46->-> finished extracting prediction H09_12 from jacobian, elapsed time = 3ms
+12:34:46->-> starting extracting prediction H09_14 from jacobian
+12:34:46->-> finished extracting prediction H09_14 from jacobian, elapsed time = 3ms
+12:34:46->-> starting extracting prediction H10_15 from jacobian
+12:34:46->-> finished extracting prediction H10_15 from jacobian, elapsed time = 3ms
+12:34:46->-> starting extracting prediction H13_15 from jacobian
+12:34:46->-> finished extracting prediction H13_15 from jacobian, elapsed time = 3ms
+12:34:46->-> starting extracting prediction H13_16 from jacobian
+12:34:46->-> finished extracting prediction H13_16 from jacobian, elapsed time = 1ms
+12:34:46-> finished set_predictions, elapsed time = 34ms
+12:34:46-> starting prior_prediction_variance
+12:34:46-> finished prior_prediction_variance, elapsed time = 537us

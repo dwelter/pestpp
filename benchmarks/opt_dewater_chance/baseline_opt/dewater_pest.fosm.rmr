@@ -1,0 +1,41 @@
+
+YAMR Master listening on socket:0.0.0.0:4005 (IPv4)
+running model 1 times
+
+    waiting for slaves to appear...
+
+
+09/24/17 12:34:45->new connection from: IGSKIACWGSCLHD1.gs.doi.net:56036
+09/24/17 12:34:45->new connection from: IGSKIACWGSCLHD1.gs.doi.net:56037
+09/24/17 12:34:45->new connection from: IGSKIACWGSCLHD1.gs.doi.net:56038
+09/24/17 12:34:45->initializing new slave connection from: IGSKIACWGSCLHD1.gs.doi.net:56036; number of slaves: 3; working dir: E:\git\pestpp\benchmarks\opt_dewater_chance\slave_1
+09/24/17 12:34:45->new connection from: IGSKIACWGSCLHD1.gs.doi.net:56039
+09/24/17 12:34:45->initializing new slave connection from: IGSKIACWGSCLHD1.gs.doi.net:56037; number of slaves: 4; working dir: E:\git\pestpp\benchmarks\opt_dewater_chance\slave_2
+09/24/17 12:34:45->initializing new slave connection from: IGSKIACWGSCLHD1.gs.doi.net:56038; number of slaves: 4; working dir: E:\git\pestpp\benchmarks\opt_dewater_chance\slave_3
+09/24/17 12:34:45->initializing new slave connection from: IGSKIACWGSCLHD1.gs.doi.net:56039; number of slaves: 4; working dir: E:\git\pestpp\benchmarks\opt_dewater_chance\slave_4
+09/24/17 12:34:46->new slave ready: IGSKIACWGSCLHD1.gs.doi.net:56036
+09/24/17 12:34:46->Sending run 0 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\opt_dewater_chance\slave_1  (group id = 1, run id = 0, concurrent runs = 1)
+09/24/17 12:34:46->new slave ready: IGSKIACWGSCLHD1.gs.doi.net:56038
+09/24/17 12:34:46->new slave ready: IGSKIACWGSCLHD1.gs.doi.net:56037
+09/24/17 12:34:46->new slave ready: IGSKIACWGSCLHD1.gs.doi.net:56039
+09/24/17 12:34:46->run 0 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\opt_dewater_chance\slave_1  (run time = 0.0103667 min, group id = 1, run id = 0 concurrent = 1)
+
+---------------------
+   1 runs complete :  0 runs failed
+
+running model 1 times
+
+09/24/17 12:34:46->Sending run 1 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\opt_dewater_chance\slave_2  (group id = 1, run id = 1, concurrent runs = 1)
+09/24/17 12:34:47->run 1 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\opt_dewater_chance\slave_2  (run time = 0.00865 min, group id = 1, run id = 1 concurrent = 1)
+
+---------------------
+   1 runs complete :  0 runs failed
+
+running model 1 times
+
+09/24/17 12:34:47->Sending run 2 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\opt_dewater_chance\slave_1  (group id = 1, run id = 2, concurrent runs = 1)
+09/24/17 12:34:47->run 2 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\opt_dewater_chance\slave_1  (run time = 0.00936667 min, group id = 1, run id = 2 concurrent = 1)
+
+---------------------
+   1 runs complete :  0 runs failed
+
