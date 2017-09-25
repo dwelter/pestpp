@@ -119,3 +119,8 @@ Here is a (more or less) complete list of ``++`` arguments that can be added to 
 * ``++opt_direction(<direction>)``: either "min" or "max", whether to minimize or maximize the objective function. 
 
 * ``++opt_risk(<risk>)``: a float ranging from 0.0 to 1.0 that is the value to use in the FOSM uncertainty estimation for model-based constraints. a value of 0.5 is a "risk neutral" position and no FOSM measures are calculated.  A value of 0.95 will seek a 95% risk averse solution, while a value of 0.05 will seek a 5% risk tolerant solution. See Wagner and Gorelick, 1987, *Optimal groundwater quality management under parameter uncertainty* for more background on chance-constrained linear programming
+
+
+### USGS disclaimer
+
+This software has been approved for release by the U.S. Geological Survey (USGS). Although the software has been subjected to rigorous review, the USGS reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use
