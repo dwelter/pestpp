@@ -195,8 +195,8 @@ if __name__ == "__main__":
         [r'.\kirishima', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 20, 'iobj'],
 
         [r'.\ishigami', 'template', exe_cmd_gsa, 'pest', exe_cmd_gsa, 10, 'sbl'],
-        [r'.\opt_dewater_chance','template',exe_cmd_opt,"dewater_pest.base",exe_cmd_opt,4,'par'],
-        [r'.\opt_dewater_chance', 'template', exe_cmd_opt, "dewater_pest.fosm", exe_cmd_opt, 4, 'par'],
+        [r'.\opt_dewater_chance','template',exe_cmd_opt,"dewater_pest.base",exe_cmd_opt,1,'1.par'],
+        [r'.\opt_dewater_chance', 'template', exe_cmd_opt, "dewater_pest.fosm", exe_cmd_opt, 1, '1.par'],
         [r'.\opt_supply2_chance', 'template', exe_cmd_opt, "supply2_pest.base", exe_cmd_opt, 4, 'par'],
         [r'.\opt_supply2_chance', 'template', exe_cmd_opt, "supply2_pest.fosm", exe_cmd_opt, 4, 'par'],
         [r'.\opt_seawater_chance', 'template', exe_cmd_opt, "seawater_pest", exe_cmd_opt, 4, 'par']
@@ -252,7 +252,7 @@ if __name__ == "__main__":
         elif i[-1] == 'sbl':                              
             err_txt = comare_sbl(os.path.join(run_dir, 'baseline_opt', '%s.sbl' % ctl_name),
                               os.path.join(run_dir, 'master', '%s.sbl' % ctl_name))
-        elif i[-1] == "par":
+        elif i[-1] == "par" or i[-1] == "1.par":
             err_txt = compare_par(os.path.join(run_dir, "baseline_opt","%s.par" % ctl_name),
                                 os.path.join(run_dir,"master","%s.par" % ctl_name))
         else:
