@@ -31,7 +31,9 @@
 #endif
 
 #ifdef OS_LINUX
+#include "stdio.h"
 #include <unistd.h>
+
 #endif
 
 #ifdef OS_WIN
@@ -99,7 +101,7 @@ char* OperSys::gets_s(char *str, size_t len)
   return ::gets_s(str, len);
  #endif
  #ifdef OS_LINUX
-  return gets(str);
+  return gets_s(str, len);
  #endif
 
 }

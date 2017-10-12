@@ -1,5 +1,5 @@
 #include "sequential_lp.h"
-#include "pest.h"
+#include "Pest.h"
 #include "Jacobian_1to1.h"
 #include "ClpSimplex.hpp"
 #include "RunManagerAbstract.h"
