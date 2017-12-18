@@ -54,8 +54,8 @@ public:
 	const SVDInfo& get_svd_info() const {return svd_info;}
 	const ControlInfo&  get_control_info() const {return control_info;}
 	const ParamTransformSeq& get_base_par_tran_seq() const {return base_par_transform;}
-	const vector<string> &get_ctl_ordered_par_names() {return ctl_ordered_par_names;}
-	const vector<string> &get_ctl_ordered_obs_names() {return ctl_ordered_obs_names;}
+	const vector<string> &get_ctl_ordered_par_names() const {return ctl_ordered_par_names;}
+	const vector<string> &get_ctl_ordered_obs_names() const {return ctl_ordered_obs_names;}
 	const vector<string> &get_ctl_ordered_par_group_names() { return ctl_ordered_par_group_names; }
 	const vector<string> &get_ctl_ordered_obs_group_names() { return ctl_ordered_obs_group_names; }
 	const vector<string> &get_ctl_ordered_pi_names() const { return ctl_ordered_pi_names; }
