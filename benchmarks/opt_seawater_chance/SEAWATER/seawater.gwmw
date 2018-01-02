@@ -1,0 +1,13 @@
+        12         0                             Stress Period:    1
+         1         7        12 -0.1000000E+05    Flow Variable:W1         RATIO=  1.0000
+         1        10        13 -0.3300918E+04    Flow Variable:W2         RATIO=  1.0000
+         1        10        16  0.0000000E+00    Flow Variable:W3         RATIO=  1.0000
+         1        12        15  0.0000000E+00    Flow Variable:W4         RATIO=  1.0000
+         1        15        11 -0.8387307E+03    Flow Variable:W5         RATIO=  0.5000
+         2        15        11 -0.8387307E+03    Flow Variable:W5         RATIO=  0.5000
+         1         7        27  0.3146982E+02    Flow Variable:I1         RATIO=  0.5000
+         2         7        27  0.3146982E+02    Flow Variable:I1         RATIO=  0.5000
+         1        11        27  0.2660578E+03    Flow Variable:I2         RATIO=  0.5000
+         2        11        27  0.2660578E+03    Flow Variable:I2         RATIO=  0.5000
+         1        15        27  0.1477542E+03    Flow Variable:I3         RATIO=  0.5000
+         2        15        27  0.1477542E+03    Flow Variable:I3         RATIO=  0.5000

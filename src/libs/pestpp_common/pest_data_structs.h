@@ -101,6 +101,8 @@ public:
 	void insert_parameter_link(const string &parameter_name, const string & group_name);
 	const ParameterGroupRec* get_group_rec_ptr(const string &par_name) const;
 	const ParameterGroupRec* get_group_by_groupname(const string &group_name) const { return groups.at(group_name); }
+	ParameterGroupRec* get_group_by_groupname_4_mod(const string &group_name) { return groups.at(group_name); }
+	ParameterGroupRec* get_group_rec_ptr_4_mod(const string &par_name);
 	string get_group_name(const string &par_name) const;
 	const ParameterGroupInfo& operator=(const ParameterGroupInfo &rhs);
 	bool have_switch_derivative() const;
@@ -196,83 +198,101 @@ public:
 
 class PestppOptions {
 public:
-	enum SVD_PACK{EIGEN, PROPACK, REDSVD};
-	enum MAT_INV{Q12J, JTQJ};
-	enum GLOBAL_OPT { NONE, OPT_DE};
+	enum SVD_PACK { EIGEN, PROPACK, REDSVD };
+	enum MAT_INV { Q12J, JTQJ };
+	enum GLOBAL_OPT { NONE, OPT_DE };
 	PestppOptions(int _n_iter_base = 50, int _n_iter_super = 0, int _max_n_super = 50,
-		double _super_eigthres = 1.0E-6, SVD_PACK _svd_pack = PestppOptions::EIGEN,
+		double _super_eigthres = 1.0E-6, SVD_PACK _svd_pack = PestppOptions::REDSVD,
 		MAT_INV _mat_inv = PestppOptions::JTQJ, double _auto_norm = -999,
 		double _super_relparmax = 0.1, int max_run_fail = 3,
 		bool iter_summary_flag = true, bool der_forgive = true,
 		double overdue_reched_fac = 1.15, double overdue_giveup_fac = 100, double reg_frac = -1.0,
-		GLOBAL_OPT _global_opt = PestppOptions::NONE, 
-		double _de_f=0.8, double _de_cr=0.9, int _de_npopulation=40, int _de_max_gen=100, bool _de_dither_f=true);
+		GLOBAL_OPT _global_opt = PestppOptions::NONE,
+		double _de_f = 0.8, double _de_cr = 0.9, int _de_npopulation = 40, int _de_max_gen = 100, bool _de_dither_f = true);
 	void parce_line(const string &line);
-	int get_max_n_super() const{return max_n_super;}
-	double get_super_eigthres() const{return super_eigthres;}
-	int get_n_iter_base() const{return n_iter_base;}
-	int get_n_iter_super() const{return n_iter_super;}
-	SVD_PACK get_svd_pack() const {return svd_pack;}
-	MAT_INV get_mat_inv() const { return mat_inv;}
-	double get_auto_norm() const{return auto_norm;}
-	double get_super_relparmax() const{ return super_relparmax; }
-	int get_max_run_fail() const{ return max_run_fail; }
+	int get_max_n_super() const { return max_n_super; }
+	double get_super_eigthres() const { return super_eigthres; }
+	int get_n_iter_base() const { return n_iter_base; }
+	int get_n_iter_super() const { return n_iter_super; }
+	SVD_PACK get_svd_pack() const { return svd_pack; }
+	MAT_INV get_mat_inv() const { return mat_inv; }
+	double get_auto_norm() const { return auto_norm; }
+	double get_super_relparmax() const { return super_relparmax; }
+	int get_max_run_fail() const { return max_run_fail; }
 	int get_max_super_frz_iter()const { return max_super_frz_iter; }
 	int get_max_reg_iter()const { return max_reg_iter; }
-	const vector<double>& get_base_lambda_vec() const {return base_lambda_vec;}	
+	const vector<double>& get_base_lambda_vec() const { return base_lambda_vec; }
 	const vector<double>& get_lambda_scale_vec() const { return lambda_scale_vec; }
-	bool get_iter_summary_flag() const { return iter_summary_flag;  }
+	bool get_iter_summary_flag() const { return iter_summary_flag; }
 	bool get_der_forgive() const { return der_forgive; }
-	GLOBAL_OPT get_global_opt() const { return global_opt;}
+	GLOBAL_OPT get_global_opt() const { return global_opt; }
 	double get_de_f() const { return de_f; }
 	double get_de_cr() const { return de_cr; }
 	int get_de_npopulation() const { return de_npopulation; }
 	int get_de_max_gen() const { return de_max_gen; }
 	bool get_de_dither_f() const { return de_dither_f; }
-	void set_global_opt(const GLOBAL_OPT _global_opt)  { global_opt = _global_opt; }
-	void set_max_n_super(int _max_n_super) {max_n_super = _max_n_super;}
-	void set_super_eigthres(double _super_eigthres) {super_eigthres = _super_eigthres;}
-	void set_n_iter_base(int _n_iter_base) {n_iter_base = _n_iter_base;}
-	void set_n_iter_super(int _n_iter_super){n_iter_super = _n_iter_super;}
-	void set_svd_pack(const SVD_PACK _svd_pack=EIGEN) {svd_pack = _svd_pack;}
+	void set_global_opt(const GLOBAL_OPT _global_opt) { global_opt = _global_opt; }
+	void set_max_n_super(int _max_n_super) { max_n_super = _max_n_super; }
+	void set_super_eigthres(double _super_eigthres) { super_eigthres = _super_eigthres; }
+	void set_n_iter_base(int _n_iter_base) { n_iter_base = _n_iter_base; }
+	void set_n_iter_super(int _n_iter_super) { n_iter_super = _n_iter_super; }
+	void set_svd_pack(const SVD_PACK _svd_pack = EIGEN) { svd_pack = _svd_pack; }
 	void set_mat_inv(const MAT_INV _mat_inv = JTQJ) { mat_inv = _mat_inv; }
-	void set_auto_norm(double _auto_norm) {auto_norm = _auto_norm;};
+	void set_auto_norm(double _auto_norm) { auto_norm = _auto_norm; };
 	void set_super_relparmax(double _super_relparmax) { super_relparmax = _super_relparmax; };
-	void set_max_run_fail(int _max_run_fail){ max_run_fail = _max_run_fail; }
+	void set_max_run_fail(int _max_run_fail) { max_run_fail = _max_run_fail; }
 	void set_max_super_frz_iter(int n) { max_super_frz_iter = n; }
-	void set_max_reg_iter(int n) { max_reg_iter = n; }	
-	void set_iter_summary_flag(const bool _iter_summary_flag) {iter_summary_flag = _iter_summary_flag;}
-	void set_uncert_flag(bool _flag){uncert = _flag; }
+	void set_max_reg_iter(int n) { max_reg_iter = n; }
+	void set_iter_summary_flag(const bool _iter_summary_flag) { iter_summary_flag = _iter_summary_flag; }
+	void set_uncert_flag(bool _flag) { uncert = _flag; }
 	bool get_uncert_flag()const { return uncert; }
-	void set_prediction_names(vector<string> _names){ prediction_names = _names; }
+	void set_prediction_names(vector<string> _names) { prediction_names = _names; }
 	vector<string> get_prediction_names()const { return prediction_names; }
-	void set_parcov_filename(string _filename){ parcov_filename = _filename; }
+	void set_parcov_filename(string _filename) { parcov_filename = _filename; }
 	string get_parcov_filename()const { return parcov_filename; }
-	void set_basejac_filename(string _filename){ basejac_filename = _filename; }
+	void set_basejac_filename(string _filename) { basejac_filename = _filename; }
 	string get_basejac_filename()const { return basejac_filename; }
 	double get_overdue_reched_fac()const { return overdue_reched_fac; }
-	void set_overdue_reched_fac(double _val){ overdue_reched_fac = _val; }
+	void set_overdue_reched_fac(double _val) { overdue_reched_fac = _val; }
 	double get_overdue_giveup_fac()const { return overdue_giveup_fac; }
-	void set_overdue_giveup_fac(double _val){ overdue_giveup_fac = _val; }
+	void set_overdue_giveup_fac(double _val) { overdue_giveup_fac = _val; }
+	string get_condor_submit_file() const { return condor_submit_file; }
+	void set_condor_submit_file(string _condor_submit_file) { condor_submit_file = _condor_submit_file; }
 	string get_sweep_parameter_csv_file()const { return sweep_parameter_csv_file; }
-	void set_sweep_parameter_csv_file(string _file){ sweep_parameter_csv_file = _file; }
+	void set_sweep_parameter_csv_file(string _file) { sweep_parameter_csv_file = _file; }
 	string get_sweep_output_csv_file()const { return sweep_output_csv_file; }
-	void set_sweep_output_csv_file(string _file){ sweep_output_csv_file = _file; }
+	void set_sweep_output_csv_file(string _file) { sweep_output_csv_file = _file; }
 	int get_sweep_chunk()const { return sweep_chunk; }
-	void set_sweep_chunk(int _chunk){ sweep_chunk = _chunk; }
+	void set_sweep_chunk(int _chunk) { sweep_chunk = _chunk; }
 	bool get_sweep_forgive()const { return sweep_forgive; }
-	void set_sweep_forgive(bool _forgive){ sweep_forgive = _forgive; }
+	void set_sweep_forgive(bool _forgive) { sweep_forgive = _forgive; }
 	bool get_sweep_base_run()const { return sweep_base_run; }
-	void set_sweep_base_run(bool _base){ sweep_base_run = _base; }
+	void set_sweep_base_run(bool _base) { sweep_base_run = _base; }
 	double get_reg_frac()const { return reg_frac; }
 	//bool get_use_parcov_scaling()const { return use_parcov_scaling; }
 	//void set_use_parcov_scaling(bool _scale) { use_parcov_scaling = _scale; }
 	double get_parcov_scale_fac() const { return parcov_scale_fac; }
 	void set_parcov_scale_fac(double _fac) { parcov_scale_fac = _fac; }
-	string get_opt_obj_func()const  { return opt_obj_func; }
+	bool get_jac_scale()const { return jac_scale; }
+	void set_jac_scale(bool _jac_scale) { jac_scale = _jac_scale; }
+
+	bool get_upgrade_augment()const { return upgrade_augment; }
+	void set_upgrade_augment(bool _upgrade_augment) { upgrade_augment = _upgrade_augment; }
+
+	void set_hotstart_resfile(string _res_file) { hotstart_resfile = _res_file; }
+	string get_hotstart_resfile() const { return hotstart_resfile; }
+
+	void set_upgrade_bounds(string _upgrade_bounds) { upgrade_bounds = _upgrade_bounds; }
+	string get_upgrade_bounds() const { return upgrade_bounds; }
+
+
+	string get_opt_obj_func()const { return opt_obj_func; }
 	void set_opt_obj_func(string _opt_obj_func) { opt_obj_func = _opt_obj_func; }
 	bool get_opt_coin_log()const { return opt_coin_log; }
 	void set_opt_coin_log(bool _log) { opt_coin_log = _log; }
+	bool get_opt_skip_final()const { return opt_skip_final; }
+	void set_opt_skip_final(bool _skip_final) { opt_skip_final = _skip_final; }
+
 	vector<string> get_opt_dec_var_groups()const { return opt_dec_var_groups; }
 	void set_opt_dec_var_groups(vector<string> _grps) { opt_dec_var_groups = _grps; }
 	vector<string> get_opt_ext_var_groups()const { return opt_external_var_groups; }
@@ -287,6 +307,24 @@ public:
 	void set_opt_iter_tol(double _tol) { opt_iter_tol = _tol; }
 	int get_opt_recalc_fosm_every()const { return opt_recalc_fosm_every; }
 	void set_opt_recalc_fosm_every(int _every) { opt_recalc_fosm_every = _every; }
+	double get_opt_iter_derinc_fac() const { return opt_iter_derinc_fac; }
+	void set_opt_iter_derinc_fac(double _opt_iter_derinc_fac) { opt_iter_derinc_fac = _opt_iter_derinc_fac; }
+
+
+	string get_ies_par_csv()const { return ies_par_csv; }
+	void set_ies_par_csv(string _ies_par_csv) { ies_par_csv = _ies_par_csv; }
+	string get_ies_obs_csv()const { return ies_obs_csv; }
+	void set_ies_obs_csv(string _ies_obs_csv) { ies_obs_csv = _ies_obs_csv; }
+	string get_ies_obs_restart_csv() const { return ies_obs_restart_csv; }
+	void set_ies_obs_restart_csv(string _ies_obs_restart_csv) { ies_obs_restart_csv = _ies_obs_restart_csv; }
+	vector<double> get_ies_lam_mults() { return ies_lam_mults; }
+	void set_ies_lam_mults(vector<double> _ies_lam_mults) { ies_lam_mults = _ies_lam_mults; }
+	const double get_ies_init_lam() const {return ies_init_lam;}
+	void set_ies_init_lam(double _ies_init_lam) { ies_init_lam = _ies_init_lam; }
+	const bool get_ies_use_approx() const { return ies_use_approx; }
+	void set_ies_use_approx(bool _ies_use_approx) { ies_use_approx = _ies_use_approx; }
+	const int get_ies_subset_size() const { return ies_subset_size; }
+	void set_ies_subset_size(int _ies_subset_size) { ies_subset_size = _ies_subset_size; }
 
 
 private:
@@ -311,6 +349,7 @@ private:
 	string basejac_filename;
 	double overdue_reched_fac;
 	double overdue_giveup_fac;
+	string condor_submit_file;
 	double reg_frac;
 
 	string sweep_parameter_csv_file;
@@ -320,6 +359,11 @@ private:
 	bool sweep_base_run;
 	//bool use_parcov_scaling;
 	double parcov_scale_fac;
+	bool jac_scale;
+	bool upgrade_augment;
+	string upgrade_bounds;
+	string hotstart_resfile;
+
 	GLOBAL_OPT global_opt;
 	double de_f;
 	double de_cr;
@@ -329,6 +373,7 @@ private:
 
 	string opt_obj_func;
 	bool opt_coin_log;
+	bool opt_skip_final;
 	vector<string> opt_dec_var_groups;
 	vector<string> opt_external_var_groups;
 	vector<string> opt_constraint_groups;
@@ -336,7 +381,15 @@ private:
 	double opt_direction;
 	double opt_iter_tol;
 	int opt_recalc_fosm_every;
+	double opt_iter_derinc_fac;
 
+	int ies_subset_size;
+	string ies_par_csv;
+	string ies_obs_csv;
+	string ies_obs_restart_csv;
+	double ies_init_lam;
+	bool ies_use_approx;
+	vector<double> ies_lam_mults;
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);
 ostream& operator<< (ostream &os, const ObservationInfo& val);

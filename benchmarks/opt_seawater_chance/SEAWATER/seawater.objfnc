@@ -1,0 +1,15 @@
+#SEAWATER Sample Problem, OBJFNC file
+#February 20, 2005
+ 1          #1-IPRN
+ MAX  WSDV  #2-OBJTYP FNTYP
+ 8  0  0    #3-NFVOBJ NEVOBJ NBVOBJ
+ W1 1.00    #4-FVNAME FVOBJC
+ W2 1.00
+ W3 1.00
+ W4 1.00
+ W5 1.00
+ I1 -1.00
+ I2 -1.00
+ I3 -1.00
+
+

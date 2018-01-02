@@ -46,6 +46,7 @@ public:
 	const Observations& get_ctl_observations() const {return observation_values;}
 	const ParameterInfo& get_ctl_parameter_info()const {return ctl_parameter_info;}
 	const ParameterGroupInfo& get_base_group_info() const {return  base_group_info;}
+	ParameterGroupInfo* get_base_group_info_ptr() { return  &base_group_info; }
 	const ObservationInfo &get_ctl_observation_info() const {return observation_info;}
 	const std::map<std::string, std::string> get_observation_groups() const;
 	const PriorInformation &get_prior_info() {return prior_info;}
@@ -53,11 +54,13 @@ public:
 	const SVDInfo& get_svd_info() const {return svd_info;}
 	const ControlInfo&  get_control_info() const {return control_info;}
 	const ParamTransformSeq& get_base_par_tran_seq() const {return base_par_transform;}
-	const vector<string> &get_ctl_ordered_par_names() {return ctl_ordered_par_names;}
+	const vector<string> &get_ctl_ordered_par_names() const {return ctl_ordered_par_names;}
 	const vector<string> &get_ctl_ordered_obs_names() const {return ctl_ordered_obs_names;}
 	const vector<string> &get_ctl_ordered_par_group_names() { return ctl_ordered_par_group_names; }
-	const vector<string> &get_ctl_ordered_obs_group_names() const { return ctl_ordered_obs_group_names; }
+	const vector<string> &get_ctl_ordered_obs_group_names() { return ctl_ordered_obs_group_names; }
 	const vector<string> &get_ctl_ordered_pi_names() const { return ctl_ordered_pi_names; }
+	const vector<string> get_ctl_ordered_nz_obs_names();
+	const vector<string> get_ctl_ordered_adj_par_names();
 	const ModelExecInfo &get_model_exec_info() {return model_exec_info;}
 	const  vector<string> &get_comline_vec();
 	const  vector<string> &get_tplfile_vec();

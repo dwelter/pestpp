@@ -1,8 +1,8 @@
-             pestpp-opt version 3.5.0
+             pestpp-opt version 3.7.0
 
                  by the petspp development team
 
-using control file: "supply2_pest.base"
+using control file: "supply2_pest.base.pst"
 
 Model command line(s):- 
     python supply2.py
@@ -2273,7 +2273,7 @@ Q4B                               0        7828.34          0.273              0
 
      constraint information at end of SLP iteration 1
 
-name                          sense       required            simpex status          price        current       residual            new       residual
+name                          sense       required           simplex status          price        current       residual            new       residual
 S1R14_09                  less_than          15000           at upper bound       0.362876              0          15000          15080            -80
 S1R14_10                  less_than          15000                    basic             -0              0          15000           9800           5200
 S1R14_11                  less_than          15000                    basic             -0              0          15000           9180           5820
@@ -2408,7 +2408,7 @@ Q4B                         7828.34        7645.88          0.273        2137.14
 
      constraint information at end of SLP iteration 2
 
-name                          sense       required            simpex status          price        current       residual            new       residual
+name                          sense       required           simplex status          price        current       residual            new       residual
 S1R14_09                  less_than          15000           at upper bound       0.358863          15080          15000          14980             20
 S1R14_10                  less_than          15000                    basic             -0           9800          15000           9690           5310
 S1R14_11                  less_than          15000                    basic             -0           9180          15000           9170           5830
@@ -2543,7 +2543,7 @@ Q4B                         7645.88        7802.74          0.273        2087.32
 
      constraint information at end of SLP iteration 3
 
-name                          sense       required            simpex status          price        current       residual            new       residual
+name                          sense       required           simplex status          price        current       residual            new       residual
 S1R14_09                  less_than          15000           at upper bound       0.359503          14980          15000          14980             20
 S1R14_10                  less_than          15000                    basic             -0           9690          15000           9780           5220
 S1R14_11                  less_than          15000                    basic             -0           9170          15000           9180           5820

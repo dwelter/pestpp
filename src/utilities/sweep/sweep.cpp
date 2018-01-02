@@ -46,7 +46,7 @@ using namespace std;
 using namespace pest_utils;
 
 
-vector<string> prepare_parameter_csv(Parameters pars, ifstream &csv, bool forgive)
+map<string,int> prepare_parameter_csv(Parameters pars, ifstream &csv, bool forgive)
 {
 	if (!csv.good())
 	{
@@ -56,14 +56,14 @@ vector<string> prepare_parameter_csv(Parameters pars, ifstream &csv, bool forgiv
 	//process the header
 	//any missing header labels will be marked to ignore those columns later
 	string line;
-	vector<string> tokens;
+	vector<string> header_tokens;
 	if (!getline(csv, line))
 		throw runtime_error("error reading header (first) line from csv file :");
 	strip_ip(line);
 	upper_ip(line);
-	tokenize(line, tokens, ",", false);
+	tokenize(line, header_tokens, ",", false);
 	//cout << tokens << endl;
-	vector<string> header_tokens = tokens;
+	//vector<string> header_tokens = tokens;
 
 	// check for parameter names that in the pest control file but that are missing from the csv file
 	vector<string> missing_names;
@@ -83,60 +83,90 @@ vector<string> prepare_parameter_csv(Parameters pars, ifstream &csv, bool forgiv
 			cout << ss.str() << endl << "continuing anyway..." << endl;
 	}
 
-	return header_tokens;
+	//build up a list of idxs to use
+	vector<string> ctl_pnames = pars.get_keys();
+	vector<int> header_idxs;
+	map<string, int> header_info;
+	for (int i = 0; i < header_tokens.size(); i++)
+	{
+		if (find(ctl_pnames.begin(), ctl_pnames.end(), header_tokens[i]) != ctl_pnames.end())
+		{
+			//header_idxs.push_back(i);
+			header_info[header_tokens[i]] = i;
+		}
+	}
+	return header_info;
 }
 
-vector<Parameters> load_parameters_from_csv(vector<string> header_tokens, vector<string> ctl_pnames, ifstream &csv, int chunk)
+pair<vector<int>,vector<Parameters>> load_parameters_from_csv(map<string,int> &header_info, ifstream &csv, int chunk)
 {
-	
-
 	//process each parameter value line in the csv file
 	int lcount = 1;
+	//map<int,Parameters> sweep_pars;
+	vector<int> run_ids;
 	vector<Parameters> sweep_pars;
 	double val;
 	string line;
-	vector<string> tokens;
+	vector<string> tokens,names;
+	vector<double> vals;
 	Parameters pars;
+	int run_id;
 	while (getline(csv, line))
 	{
 		strip_ip(line);
 		tokens.clear();
+		vals.clear();
+		names.clear();
 		tokenize(line, tokens, ",", false);
-		if (tokens.size() != header_tokens.size())
+		if (tokens.size() != header_info.size()+1) // +1 for run id in first column
 		{
 			stringstream ss;
 			ss << "error parsing csv file on line " << lcount << ": wrong number of tokens, ";
-			ss << "expecting " << header_tokens.size() << ", found " << tokens.size();
+			ss << "expecting " << header_info.size() + 1 << ", found " << tokens.size();
+			throw runtime_error(ss.str());
+		}
+		try
+		{
+			convert_ip(tokens[0], run_id);
+		}
+		catch (exception &e)
+		{
+			stringstream ss;
+			ss << "error converting token '" << tokens[0] << "' to <int> run_id on line " << lcount << ": " << line << endl << e.what();
 			throw runtime_error(ss.str());
 		}
 
-		for (int i = 0; i < header_tokens.size(); i++)
+		//for (int i = 0; i < header_tokens.size(); i++)
+		for (auto hi : header_info)
 		{
 			// if the par name of this column is in the passed-in par names, then replace the
 			// value in pars
-			if (find(ctl_pnames.begin(), ctl_pnames.end(), header_tokens[i]) != ctl_pnames.end())
+			//if (find(ctl_pnames.begin(), ctl_pnames.end(), header_tokens[i]) != ctl_pnames.end())
+			//{
+			try
 			{
-				try
-				{
-					val = convert_cp<double>(tokens[i]);
-				}
-				catch (exception &e)
-				{
-					stringstream ss;
-					ss << "error converting token '" << tokens[i] << "' at location "<< i << " to double on line " << lcount << ": " << line << endl << e.what();
-					throw runtime_error(ss.str());
-				}
-				pars[header_tokens[i]] = val;
+				val = convert_cp<double>(tokens[hi.second]);
 			}
+			catch (exception &e)
+			{
+				stringstream ss;
+				ss << "error converting token '" << tokens[hi.second] << "' at location "<< hi.first << " to double on line " << lcount << ": " << line << endl << e.what();
+				throw runtime_error(ss.str());
+			}
+			vals.push_back(val);
+			names.push_back(hi.first);
+			//pars[i] = val;
+			//}
 		}
-		//make a cope of pars and store it
+		pars.update_without_clear(names, vals);
 		sweep_pars.push_back(pars);
+		run_ids.push_back(run_id);
 		lcount++;
 		if (lcount > chunk)
 			break;
 	}
 	//csv.close();
-	return sweep_pars;
+	return pair<vector<int>,vector<Parameters>> (run_ids,sweep_pars);
 }
 
 
@@ -149,7 +179,7 @@ ofstream prep_sweep_output_file(Pest &pest_scenario)
 			pest_scenario.get_pestpp_options().get_sweep_output_csv_file());
 	}
 	csv.precision(numeric_limits<double>::digits10);
-	csv << "run_id,failed_flag";
+	csv << "run_id,input_run_id,failed_flag";
 	csv << ",phi,meas_phi,regul_phi";
 	for (auto &ogrp : pest_scenario.get_ctl_ordered_obs_group_names())
 	{
@@ -164,19 +194,25 @@ ofstream prep_sweep_output_file(Pest &pest_scenario)
 }
 
 
-void process_sweep_runs(ofstream &csv, Pest &pest_scenario, RunManagerAbstract* run_manager_ptr, vector<int> run_ids, ObjectiveFunc obj_func,int total_runs_done)
+void process_sweep_runs(ofstream &csv, Pest &pest_scenario, RunManagerAbstract* run_manager_ptr, vector<int> run_ids, vector<int> listed_run_ids, ObjectiveFunc obj_func,int total_runs_done)
 {
 	Parameters pars;
 	Observations obs;
 	double fail_val = -1.0E+10;
-	for (auto &run_id : run_ids)
+	int run_id, listed_run_id;
+	//for (auto &run_id : run_ids)
+	for (int i = 0;i <run_ids.size();++i)
 	{
+		run_id = run_ids[i];
+		listed_run_id = listed_run_ids[i];
 		csv << run_id + total_runs_done;
+		csv << ',' << listed_run_id;
 		// if the run was successful
 		if (run_manager_ptr->get_run(run_id, pars, obs))
 		{
 			PhiData phi_data = obj_func.phi_report(obs, pars, *(pest_scenario.get_regul_scheme_ptr()));
 			csv << ",0";
+
 			csv << ',' << phi_data.total();
 			csv << ',' << phi_data.meas;
 			csv << ',' << phi_data.regul;
@@ -454,7 +490,7 @@ int main(int argc, char* argv[])
 			throw runtime_error("could not open parameter csv file " + par_csv_file);
 		}
 
-		vector<string> header_tokens = prepare_parameter_csv(pest_scenario.get_ctl_parameters(),
+		map<string,int> header_info = prepare_parameter_csv(pest_scenario.get_ctl_parameters(),
 			par_stream, pest_scenario.get_pestpp_options().get_sweep_forgive());
 		
 
@@ -523,22 +559,23 @@ int main(int argc, char* argv[])
 
 		int chunk = pest_scenario.get_pestpp_options().get_sweep_chunk();
 		vector<int> run_ids;
-		vector<Parameters> sweep_pars;
+		pair<vector<int>,vector<Parameters>> sweep_par_info;
 		
 		//if desired, add the base run to the list of runs
 		if (pest_scenario.get_pestpp_options().get_sweep_base_run())
 		{
-			sweep_pars.push_back(pest_scenario.get_ctl_parameters());
+			throw runtime_error("base runs no longer supported by sweep");
+			//sweep_pars[-999] = pest_scenario.get_ctl_parameters();
 		}
 		int total_runs_done = 0;
 		while (true)
 		{
 			//read some realizations
-			sweep_pars.clear();
+			//sweep_pars.clear();
+			cout << "reading par values...";
 			try{
 				performance_log.log_event("starting to read parameter csv file", 1);
-				sweep_pars = load_parameters_from_csv(header_tokens, pest_scenario.get_ctl_parameters().get_keys(), 
-					par_stream, chunk);
+				sweep_par_info = load_parameters_from_csv(header_info, par_stream, chunk);
 				performance_log.log_event("finished reading parameter csv file");
 			}
 			catch (exception &e)
@@ -551,20 +588,24 @@ int main(int argc, char* argv[])
 
 				throw runtime_error(ss.str());
 			}
-
+			cout << "done" << endl;
 			// if there are no parameters to run, we are done
-			if (sweep_pars.size() == 0)
+			if (sweep_par_info.first.size() == 0)
+			{
+				cout << "no more runs...done" << endl;
 				break;
-
+			}
 			run_manager_ptr->reinitialize();
 
-			cout << "starting runs " << total_runs_done << " --> " << total_runs_done + sweep_pars.size() << endl;
+			cout << "starting runs " << total_runs_done << " --> " << total_runs_done + sweep_par_info.first.size() << endl;
 
 			// queue up some runs
 			run_ids.clear();
-			for (auto &par : sweep_pars)
+			for (auto &par : sweep_par_info.second)
 			{
-				run_ids.push_back(run_manager_ptr->add_run(base_trans_seq.ctl2model_cp(par)));
+				//Parameters temp = base_trans_seq.active_ctl2model_cp(par);
+		        run_ids.push_back(run_manager_ptr->add_run(base_trans_seq.active_ctl2model_cp(par)));
+		
 			}
 
 			//make some runs
@@ -572,9 +613,12 @@ int main(int argc, char* argv[])
 			run_manager_ptr->run();
 
 			//process the runs
-			process_sweep_runs(obs_stream, pest_scenario, run_manager_ptr, run_ids, obj_func,total_runs_done);
+			cout << "processing runs...";
+			//process_sweep_runs(obs_stream, pest_scenario, run_manager_ptr, run_ids, obj_func,total_runs_done);
+			process_sweep_runs(obs_stream, pest_scenario, run_manager_ptr,run_ids, sweep_par_info.first, obj_func, total_runs_done);
 
-			total_runs_done += sweep_pars.size();
+			cout << "done" << endl;
+			total_runs_done += sweep_par_info.first.size();
 
 		}
 

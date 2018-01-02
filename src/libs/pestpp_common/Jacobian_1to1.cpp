@@ -36,13 +36,14 @@
 #include "FileManager.h"
 #include "PriorInformation.h"
 #include "debug.h"
-
+#include "OutputFileWriter.h"
 
 using namespace std;
 using namespace pest_utils;
 
-Jacobian_1to1::Jacobian_1to1(FileManager &_file_manager) : Jacobian(_file_manager) 
+Jacobian_1to1::Jacobian_1to1(FileManager &_file_manager, OutputFileWriter &_output_file_writer) : Jacobian(_file_manager) 
 {
+	output_file_writer_ptr = &_output_file_writer;
 }
 
 Jacobian_1to1::~Jacobian_1to1() {
@@ -73,6 +74,7 @@ bool Jacobian_1to1::build_runs(Parameters &ctl_pars, Observations &ctl_obs, vect
 	Parameters base_derivative_parameters = par_transform.numeric2active_ctl_cp(base_numeric_parameters);
 	Parameters base_model_parameters = par_transform.numeric2model_cp(base_numeric_parameters);
 	//Loop through derivative parameters and build the parameter sets necessary for computing the jacobian
+	std::map<string, vector<int>> par_run_map;
 	for (auto &i_name : numeric_par_names)
 	{
 		assert(base_derivative_parameters.find(i_name) != base_derivative_parameters.end());
@@ -93,6 +95,10 @@ bool Jacobian_1to1::build_runs(Parameters &ctl_pars, Observations &ctl_obs, vect
 					model_parameters[ipar.first] = ipar.second;
 				}
 				int id = run_manager.add_run(model_parameters, i_name, par);
+				if (par_run_map.count(i_name) == 0)
+					par_run_map[i_name] = vector<int>{ id };
+				else
+					par_run_map[i_name].push_back(id);
 				//reset the perturbed parameters back to the values associated with the base condition
 				for (const auto &ipar : new_pars)
 				{
@@ -108,6 +114,7 @@ bool Jacobian_1to1::build_runs(Parameters &ctl_pars, Observations &ctl_obs, vect
 			failed_to_increment_parmaeters.insert(i_name, derivative_par_value);
 		}
 	}
+	output_file_writer_ptr->write_jco_run_id(run_manager.get_cur_groupid(), par_run_map);
 	ofstream &fout_restart = file_manager.get_ofstream("rst");
 	debug_print(failed_parameter_names);
 	debug_msg("Jacobian_1to1::build_runs end");
@@ -145,6 +152,7 @@ bool Jacobian_1to1::build_runs(ModelRun &init_model_run, vector<string> numeric_
 	Parameters base_derivative_parameters = par_transform.numeric2active_ctl_cp(base_numeric_parameters);
 	Parameters base_model_parameters = par_transform.numeric2model_cp(base_numeric_parameters);
 	//Loop through derivative parameters and build the parameter sets necessary for computing the jacobian
+	std::map<string, vector<int>> par_run_map;
 	for (auto &i_name : numeric_par_names)
 	{
 		assert(base_derivative_parameters.find(i_name) != base_derivative_parameters.end());
@@ -165,6 +173,11 @@ bool Jacobian_1to1::build_runs(ModelRun &init_model_run, vector<string> numeric_
 					model_parameters[ipar.first] = ipar.second;
 				}
 				int id = run_manager.add_run(model_parameters, i_name, par);
+				
+				if (par_run_map.count(i_name) == 0)
+					par_run_map[i_name] = vector<int>{ id };
+				else
+					par_run_map[i_name].push_back(id);
 				//reset the perturbed parameters back to the values associated with the base condition
 				for (const auto &ipar : new_pars)
 				{
@@ -180,9 +193,13 @@ bool Jacobian_1to1::build_runs(ModelRun &init_model_run, vector<string> numeric_
 			failed_to_increment_parmaeters.insert(i_name, derivative_par_value);
 		}
 	}
+	output_file_writer_ptr->write_jco_run_id(run_manager.get_cur_groupid(), par_run_map);
+
 	ofstream &fout_restart = file_manager.get_ofstream("rst");
 	debug_print(failed_parameter_names);
 	debug_msg("Jacobian_1to1::build_runs end");
+	
+	output_file_writer_ptr->write_jco_run_id(run_manager.get_cur_groupid(), par_run_map);
 	if (failed_parameter_names.size() > 0)
 		return false;
 	return true;

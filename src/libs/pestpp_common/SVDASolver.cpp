@@ -394,8 +394,8 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 
 		// populate vectors with sorted observations (standard and prior info) and parameters
 		{
-			vector<string> prior_info_names = prior_info_ptr->get_keys();
-			obs_names_vec.insert(obs_names_vec.end(), prior_info_names.begin(), prior_info_names.end());
+			//vector<string> prior_info_names = prior_info_ptr->get_keys();
+			//obs_names_vec.insert(obs_names_vec.end(), prior_info_names.begin(), prior_info_names.end());
 		}
 
 		//build residuals vector
@@ -463,6 +463,7 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 			//transform new_pars to model parameters
 			par_transform.active_ctl2model_ip(new_pars);
 			int run_id = run_manager.add_run(new_pars, "upgrade_nrm", i_lambda);
+			output_file_writer.write_upgrade(termination_ctl.get_iteration_number(), 1, i_lambda, 1.0, new_pars);
 			save_frozen_pars(fout_frz, frzn_pars, run_id);
 			performance_log->add_indent(-1);
 		}

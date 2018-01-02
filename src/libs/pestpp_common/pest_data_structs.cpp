@@ -94,6 +94,17 @@ const ParameterGroupRec* ParameterGroupInfo::get_group_rec_ptr(const string &nam
 	return ret_val;
 }
 
+ParameterGroupRec* ParameterGroupInfo::get_group_rec_ptr_4_mod(const string &name)
+{
+	ParameterGroupRec *ret_val = 0;
+	unordered_map<string, ParameterGroupRec*>::const_iterator g_iter;
+
+	g_iter = parameter2group.find(name);
+	if (g_iter != parameter2group.end()) {
+		ret_val = (*g_iter).second;
+	}
+	return ret_val;
+}
 
 string ParameterGroupInfo::get_group_name(const string &par_name) const
 {
@@ -279,12 +290,29 @@ ostream& operator<< (ostream &os, const PestppOptions& val)
 	os << "    mat inv = " << left << setw(20) << val.get_mat_inv() << endl;
 	os << "    max run fail = " << left << setw(20) << val.get_max_run_fail() << endl;
 	os << "    max reg iter = " << left << setw(20) << val.get_max_reg_iter() << endl;	
+	os << "    use jacobian scaling a la PEST? = ";
+	if (val.get_jac_scale())
+		os << " yes" << endl;
+	else
+		os << " no" << endl;
 	if (val.get_reg_frac() > 0.0)
 		os << "    regularization fraction of total phi = " << left << setw(10) << val.get_reg_frac() << endl;
 	os << "    lambdas = " << endl;
 	for (auto &lam : val.get_base_lambda_vec())
 	{
 		os << right << setw(15) << lam << endl;
+	}
+	os << "    lambda scaling factors = " << endl;
+	for (auto &ls : val.get_lambda_scale_vec())
+		os << right << setw(15) << ls << endl;
+
+	if (!val.get_basejac_filename().empty())
+	{
+		os << "   restarting with existing jacobian matrix file: " << val.get_basejac_filename() << endl;
+		if (!val.get_hotstart_resfile().empty())
+		{
+			os << "   and using existing residual file " << val.get_hotstart_resfile() << " to forego initial model run" << endl;
+		}
 	}
 	if (val.get_uncert_flag())
 	{
@@ -346,13 +374,15 @@ void PestppOptions::parce_line(const string &line)
 	}
 	string tmp_line = line.substr(0, found);
 	strip_ip(tmp_line, "both", "\t\n\r+ ");
-	upper_ip(tmp_line);
+	//upper_ip(tmp_line);
 
 
 	for (std::sregex_iterator i(tmp_line.begin(), tmp_line.end(), lambda_reg); i != end_reg; ++i)
 	{
 		string key = (*i)[1];
-		string value = (*i)[2];
+		string org_value = (*i)[2];
+		upper_ip(key);
+		string value = upper_cp(org_value);
 
 		if (key=="MAX_N_SUPER"){
 			convert_ip(value, max_n_super); 
@@ -448,12 +478,17 @@ void PestppOptions::parce_line(const string &line)
 		else if ((key == "PARCOV") || (key == "PARAMETER_COVARIANCE") 
 			|| (key == "PARCOV_FILENAME"))
 		{
-			convert_ip(value, parcov_filename);
+			convert_ip(org_value, parcov_filename);
 		}
 
 		else if ((key == "BASE_JACOBIAN") || (key == "BASE_JACOBIAN_FILENAME"))
 		{
-			convert_ip(value, basejac_filename);
+			convert_ip(org_value, basejac_filename);
+		}
+
+		else if (key == "HOTSTART_RESFILE")
+		{
+			convert_ip(org_value, hotstart_resfile);
 		}
 
 		else if (key == "OVERDUE_RESCHED_FAC"){
@@ -462,11 +497,14 @@ void PestppOptions::parce_line(const string &line)
 		else if (key == "OVERDUE_GIVEUP_FAC"){
 			convert_ip(value, overdue_giveup_fac);
 		}
-		else if (key == "SWEEP_PARAMETER_CSV_FILE")
-			convert_ip(value, sweep_parameter_csv_file);
-		
-		else if (key == "SWEEP_OUTPUT_CSV_FILE")
-			convert_ip(value, sweep_output_csv_file);
+		else if (key == "CONDOR_SUBMIT_FILE")
+		{
+			convert_ip(value, condor_submit_file);
+		}
+		else if ((key == "SWEEP_PARAMETER_CSV_FILE") || (key == "SWEEP_PAR_CSV"))
+			convert_ip(org_value, sweep_parameter_csv_file);	
+		else if ((key == "SWEEP_OUTPUT_CSV_FILE") || (key == "SWEEP_OBS_CSV"))
+			convert_ip(org_value, sweep_output_csv_file);
 		else if (key == "SWEEP_CHUNK")
 			convert_ip(value, sweep_chunk);
 		else if (key == "SWEEP_FORGIVE")
@@ -495,7 +533,32 @@ void PestppOptions::parce_line(const string &line)
 		{
 			convert_ip(value, parcov_scale_fac);
 		}
+		else if (key == "JAC_SCALE")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> jac_scale;
 
+		}
+
+		else if (key == "UPGRADE_AUGMENT")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> upgrade_augment;
+
+		}
+
+		else if (key == "UPGRADE_BOUNDS")
+		{
+			if (value == "ROBUST")
+				convert_ip(value, upgrade_bounds);
+			else if (value == "CHEAP")
+				convert_ip(value, upgrade_bounds);
+			else
+				throw runtime_error("unrecognozed 'upgrade_bounds' option: should 'robust' or 'cheap'");
+			
+		}
 
 		else if (key == "GLOBAL_OPT")
 		{
@@ -533,7 +596,13 @@ void PestppOptions::parce_line(const string &line)
 			istringstream is(value);
 			is >> boolalpha >> opt_coin_log;
 		}
-	
+		else if (key == "OPT_SKIP_FINAL")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> opt_skip_final;
+		}
+
 		else if ((key == "OPT_DEC_VAR_GROUPS") || (key == "OPT_DECISION_VARIABLE_GROUPS"))
 		{
 			opt_dec_var_groups.clear();
@@ -572,6 +641,11 @@ void PestppOptions::parce_line(const string &line)
 			convert_ip(value, opt_risk);
 		}
 
+		else if (key == "OPT_ITER_DERINC_FAC")
+		{
+			convert_ip(value, opt_iter_derinc_fac);
+		}
+
 		else if (key == "OPT_DIRECTION")
 		{
 			string v;
@@ -593,9 +667,50 @@ void PestppOptions::parce_line(const string &line)
 		{
 			convert_ip(value, opt_recalc_fosm_every);
 		}
+		else if ((key == "IES_PAR_CSV") || (key == "IES_PARAMETER_CSV"))
+		{
+			convert_ip(value, ies_par_csv);
+		}
+		else if ((key == "IES_OBS_CSV") || (key == "IES_OBSERVATION_CSV"))
+		{
+			convert_ip(value, ies_obs_csv);
+		}
+		else if ((key == "IES_OBS_RESTART_CSV") || (key == "IES_OBSERVATION_RESTART_CSV"))
+		{
+			convert_ip(value, ies_obs_restart_csv);
+		}
 
+		else if ((key == "IES_USE_APPROXIMATE_SOLUTION") || (key == "IES_USE_APPROX"))
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> ies_use_approx;
+		}
+		else if (key == "IES_LAMBDA_MULTS")
+		{
+			ies_lam_mults.clear();
+			vector<string> tok;
+			tokenize(value, tok, ",");
+			for (const auto &iscale : tok)
+			{
+				ies_lam_mults.push_back(convert_cp<double>(iscale));
+			}
+		}
+		else if ((key == "IES_INIT_LAM") || (key == "IES_INITIAL_LAMBDA"))
+		{
+			convert_ip(value, ies_init_lam);
+		}
+		else if (key == "IES_USE_APPROX") 
+		{
+			convert_ip(value, ies_obs_restart_csv);
+		}
+		else if (key == "IES_SUBSET_SIZE")
+		{
+			convert_ip(value, ies_subset_size);
+		}
 
 		else {
+
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");
 		}
 	}

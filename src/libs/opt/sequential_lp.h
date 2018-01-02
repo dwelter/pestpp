@@ -2,7 +2,7 @@
 #ifndef SEQUENTIAL_LP_H
 #define SEQUENTIAL_LP_H
 
-#include "pest.h"
+#include "Pest.h"
 #include "Jacobian_1to1.h"
 #include "ClpSimplex.hpp"
 #include "RunManagerAbstract.h"
@@ -29,6 +29,7 @@ private:
 	string obj_func_str;
 	bool use_chance;
 	bool terminate;
+	bool super_secret_option;
 	int slp_iter;
 	
 	double* dec_var_lb;
@@ -38,6 +39,7 @@ private:
 	double* ctl_ord_obj_func_coefs;
 	const double* row_price;
 	double risk;
+	double iter_derinc_fac;
 	double obj_best;
 	double probit_val;
 

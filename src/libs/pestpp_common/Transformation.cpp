@@ -500,16 +500,20 @@ void TranTied::reverse(Transformable &data)
 	string const *base_name;
 	double *factor;
 	Transformable::iterator base_iter;
-	for (map<string, pair_string_double>::iterator b=items.begin(), e=items.end();
-		b!=e; ++b)
+	for (map<string, pair_string_double>::iterator b = items.begin(), e = items.end();
+		b != e; ++b)
 	{
 		base_name = &(b->second.first);
 		factor = &(b->second.second);
 		base_iter = data.find(*base_name);
 		if (base_iter != data.end())
 		{
+			//cout << b->first << ',' << data[b->first] <<  ',' << (*base_iter).second << endl;
+			data.erase(b->first);
 			data.insert(b->first, (*base_iter).second * (*factor));
+			//cout << b->first << ',' << data[b->first] << ',' << (*base_iter).second << endl;
 		}
+
 	}
 }
 

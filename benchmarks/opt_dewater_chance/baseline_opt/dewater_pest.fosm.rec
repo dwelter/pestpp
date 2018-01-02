@@ -1,8 +1,8 @@
-             pestpp-opt version 3.5.0
+             pestpp-opt version 3.7.0
 
                  by the petspp development team
 
-using control file: "dewater_pest.fosm.pst"
+using control file: "dewater_pest.fosm"
 
 Model command line(s):- 
     mf2005 dewater_pest.nam
@@ -1264,7 +1264,7 @@ Prior information
   ---  sequential linear programming problem information  ---  
   -------------------------------------------------------------
 
--->number of iterations of sequential linear programming (noptmax): 5
+-->number of iterations of sequential linear programming (noptmax): 1
 -->objective function sense (direction): minimize
 -->number of decision variable: 7
 -->number of observation constraints: 10
@@ -1275,6 +1275,7 @@ Prior information
 -->number of non-zero weight observations for FOSM calcs: 0
 -->repeat FOSM calcs every: 100 iterations
 
+-->start with existing jacobian: dewater_pest.full.jcb
 
 
   ---  decision variables active in SLP  ---  
@@ -1427,16 +1428,16 @@ UP_GRAD        DN_GRAD
 
   FOSM-based chance constraint information at start of iteration 1
 name                     sense       required      sim value    prior stdev     post stdev         offset  new sim value
-H05_12               less_than             50        71.7241        3.63105        3.63105        5.97272        77.6968
-H05_14               less_than             50        70.3448        3.58246        3.58246        5.89279        76.2376
-H05_16               less_than             50        68.9655        3.59647        3.59647        5.91584        74.8813
-H07_12               less_than             50        71.7241        3.62987        3.62987        5.97078        77.6949
-H07_16               less_than             50        68.9655         3.5975         3.5975        5.91752         74.883
-H09_12               less_than             50        71.7241         3.6267         3.6267        5.96556        77.6897
-H09_14               less_than             50        70.3448        3.57702        3.57702        5.88384        76.2286
-H10_15               less_than             50        69.6552        3.57644        3.57644        5.88288        75.5381
-H13_15               less_than             50        69.6552        3.57958        3.57958        5.88805        75.5433
-H13_16               less_than             50        68.9655        3.59662        3.59662        5.91608        74.8816
+H05_12               less_than             50        71.8656        3.63105        3.63105        5.97272        77.8383
+H05_14               less_than             50        70.5354        3.58246        3.58246        5.89279        76.4282
+H05_16               less_than             50        69.0759        3.59647        3.59647        5.91584        74.9917
+H07_12               less_than             50        71.7668        3.62987        3.62987        5.97078        77.7376
+H07_16               less_than             50        69.1937         3.5975         3.5975        5.91752        75.1112
+H09_12               less_than             50        71.6331         3.6267         3.6267        5.96556        77.5987
+H09_14               less_than             50        70.4277        3.57702        3.57702        5.88384        76.3115
+H10_15               less_than             50        69.7575        3.57644        3.57644        5.88288        75.6404
+H13_15               less_than             50        69.5163        3.57958        3.57958        5.88805        75.4044
+H13_16               less_than             50        68.8941        3.59662        3.59662        5.91608        74.8102
   note: 'offset' is the value added to the simulated constraint value to account
         for the uncertainty in the constraint value arsing from uncertainty in the 
         adjustable parameters identified in the control file.
@@ -1444,16 +1445,16 @@ H13_16               less_than             50        68.9655        3.59662     
 
   observation constraint information at start of iteration 1
 name                          sense       required      sim value       residual    lower bound    upper bound
-H05_12                    less_than             50        77.6968       -27.6968  -1.79769e+308       -27.6968
-H05_14                    less_than             50        76.2376       -26.2376  -1.79769e+308       -26.2376
-H05_16                    less_than             50        74.8813       -24.8813  -1.79769e+308       -24.8813
-H07_12                    less_than             50        77.6949       -27.6949  -1.79769e+308       -27.6949
-H07_16                    less_than             50         74.883        -24.883  -1.79769e+308        -24.883
-H09_12                    less_than             50        77.6897       -27.6897  -1.79769e+308       -27.6897
-H09_14                    less_than             50        76.2286       -26.2286  -1.79769e+308       -26.2286
-H10_15                    less_than             50        75.5381       -25.5381  -1.79769e+308       -25.5381
-H13_15                    less_than             50        75.5433       -25.5433  -1.79769e+308       -25.5433
-H13_16                    less_than             50        74.8816       -24.8816  -1.79769e+308       -24.8816
+H05_12                    less_than             50        77.8383       -27.8383  -1.79769e+308       -27.8383
+H05_14                    less_than             50        76.4282       -26.4282  -1.79769e+308       -26.4282
+H05_16                    less_than             50        74.9917       -24.9917  -1.79769e+308       -24.9917
+H07_12                    less_than             50        77.7376       -27.7376  -1.79769e+308       -27.7376
+H07_16                    less_than             50        75.1112       -25.1112  -1.79769e+308       -25.1112
+H09_12                    less_than             50        77.5987       -27.5987  -1.79769e+308       -27.5987
+H09_14                    less_than             50        76.3115       -26.3115  -1.79769e+308       -26.3115
+H10_15                    less_than             50        75.6404       -25.6404  -1.79769e+308       -25.6404
+H13_15                    less_than             50        75.4044       -25.4044  -1.79769e+308       -25.4044
+H13_16                    less_than             50        74.8102       -24.8102  -1.79769e+308       -24.8102
 number of nonzero elements in response matrix: 70 of 70
   ---  solving linear program for iteration 1  ---  
  iteration 1 linear solution is proven optimal
@@ -1467,142 +1468,49 @@ number of nonzero elements in response matrix: 70 of 70
      decision variable information at end of SLP iteration 1
 
 name                        current            new   objfunc coef    cur contrib    new contrib   reduced cost           simplex status
-Q1                                0        1285.28              1              0        1285.28              0                    basic
-Q2                                0        253.753              1              0        253.753              0                    basic
-Q3                                0              0              1              0              0      0.0157697           at lower bound
-Q4                                0        887.261              1              0        887.261              0                    basic
-Q5                                0              0              1              0              0      0.0440849           at lower bound
-Q6                                0              0              1              0              0      0.0740185           at lower bound
-Q7                                0        1286.04              1              0        1286.04              0                    basic
+Q1                                0        1324.96              1              0        1324.96              0                    basic
+Q2                                0        265.301              1              0        265.301              0                    basic
+Q3                                0             -0              1              0             -0      0.0157697           at lower bound
+Q4                                0        845.478              1              0        845.478              0                    basic
+Q5                                0             -0              1              0             -0      0.0440849           at lower bound
+Q6                                0             -0              1              0             -0      0.0740185           at lower bound
+Q7                                0        1277.53              1              0        1277.53              0                    basic
 
 
      constraint information at end of SLP iteration 1
 
-name                          sense       required            simpex status          price    fosm offset        current       residual            new       residual
-H05_12                    less_than             50           at upper bound       -27.2734        5.97272        77.6968       -27.6968             50   -1.61057e-05
-H05_14                    less_than             50                    basic              0        5.89279        76.2376       -26.2376        47.2541        2.74591
-H05_16                    less_than             50           at upper bound       -32.5929        5.91584        74.8813       -24.8813             50   -3.60215e-05
-H07_12                    less_than             50                    basic              0        5.97078        77.6949       -27.6949        47.5417        2.45832
-H07_16                    less_than             50                    basic              0        5.91752         74.883        -24.883        48.5889        1.41108
-H09_12                    less_than             50           at upper bound       -31.1847        5.96556        77.6897       -27.6897        50.0001   -5.55638e-05
-H09_14                    less_than             50                    basic              0        5.88384        76.2286       -26.2286         46.731        3.26896
-H10_15                    less_than             50                    basic              0        5.88288        75.5381       -25.5381        47.5744        2.42562
-H13_15                    less_than             50                    basic              0        5.88805        75.5433       -25.5433        48.3966        1.60345
-H13_16                    less_than             50           at upper bound       -51.5443        5.91608        74.8816       -24.8816             50    1.90664e-05
+name                          sense       required           simplex status          price    fosm offset        current       residual            new       residual
+H05_12                    less_than             50           at upper bound       -27.2734        5.97272        77.8383       -27.8383        49.7956       0.204384
+H05_14                    less_than             50                    basic              0        5.89279        76.4282       -26.4282        47.4134        2.58661
+H05_16                    less_than             50           at upper bound       -32.5929        5.91584        74.9917       -24.9917        50.3722      -0.372236
+H07_12                    less_than             50                    basic              0        5.97078        77.7376       -27.7376        47.5734        2.42662
+H07_16                    less_than             50                    basic              0        5.91752        75.1112       -25.1112        48.7622        1.23778
+H09_12                    less_than             50           at upper bound       -31.1847        5.96556        77.5987       -27.5987        49.9964     0.00364444
+H09_14                    less_than             50                    basic              0        5.88384        76.3115       -26.3115        46.8675        3.13246
+H10_15                    less_than             50                    basic              0        5.88288        75.6404       -25.6404        47.6824        2.31762
+H13_15                    less_than             50                    basic              0        5.88805        75.4044       -25.4044        48.3082        1.69185
+H13_16                    less_than             50           at upper bound       -51.5443        5.91608        74.8102       -24.8102        50.0329     -0.0328809
   ---  note: residual file 1.rei reports the simulated
        constraint values from the model outputs without FOSM offsets
 
 
 
-  ---  iteration 1 objective function value:         3712.34  ---  
+  ---  iteration 1 objective function value:         3713.28  ---  
 
 
   ---  convergence check iteration 1  ---  
 
 -->                     ++opt_iter_tol:          0.001
--->scaled max decision variable change:        1286.04
--->      scaled  max constraint change:        30.1532
+-->scaled max decision variable change:        1324.96
+-->      scaled  max constraint change:        30.1642
 -->   scaled objective function change:              1
-
-
-  ---------------------------------
-  --- starting LP iteration 2  ---  
-  ---------------------------------
-
-
-  ---  calculating response matrix for iteration 2  ---  
-
-saving iteration 2 reponse matrix to file: dewater_pest.fosm.2.jcb
-
-  ---  reusing fosm offsets from previous iteration  ---  
-
-  FOSM-based chance constraint information at start of iteration 2
-name                     sense       required      sim value    prior stdev     post stdev         offset  new sim value
-H05_12               less_than             50        71.7241        3.63105        3.63105        5.97272        77.6968
-H05_14               less_than             50        70.3448        3.58246        3.58246        5.89279        76.2376
-H05_16               less_than             50        68.9655        3.59647        3.59647        5.91584        74.8813
-H07_12               less_than             50        71.7241        3.62987        3.62987        5.97078        77.6949
-H07_16               less_than             50        68.9655         3.5975         3.5975        5.91752         74.883
-H09_12               less_than             50        71.7241         3.6267         3.6267        5.96556        77.6897
-H09_14               less_than             50        70.3448        3.57702        3.57702        5.88384        76.2286
-H10_15               less_than             50        69.6552        3.57644        3.57644        5.88288        75.5381
-H13_15               less_than             50        69.6552        3.57958        3.57958        5.88805        75.5433
-H13_16               less_than             50        68.9655        3.59662        3.59662        5.91608        74.8816
-  note: 'offset' is the value added to the simulated constraint value to account
-        for the uncertainty in the constraint value arsing from uncertainty in the 
-        adjustable parameters identified in the control file.
-
-
-  observation constraint information at start of iteration 2
-name                          sense       required      sim value       residual    lower bound    upper bound
-H05_12                    less_than             50        77.6968       -27.6968  -1.79769e+308       -27.6968
-H05_14                    less_than             50        76.2376       -26.2376  -1.79769e+308       -26.2376
-H05_16                    less_than             50        74.8813       -24.8813  -1.79769e+308       -24.8813
-H07_12                    less_than             50        77.6949       -27.6949  -1.79769e+308       -27.6949
-H07_16                    less_than             50         74.883        -24.883  -1.79769e+308        -24.883
-H09_12                    less_than             50        77.6897       -27.6897  -1.79769e+308       -27.6897
-H09_14                    less_than             50        76.2286       -26.2286  -1.79769e+308       -26.2286
-H10_15                    less_than             50        75.5381       -25.5381  -1.79769e+308       -25.5381
-H13_15                    less_than             50        75.5433       -25.5433  -1.79769e+308       -25.5433
-H13_16                    less_than             50        74.8816       -24.8816  -1.79769e+308       -24.8816
-number of nonzero elements in response matrix: 70 of 70
-  ---  solving linear program for iteration 2  ---  
- iteration 2 linear solution is proven optimal
-
-
-  ---  linear program solution complete for iteration 2  ---  
-  ---  processing results for iteration 2 LP solution  ---  
-
-
-
-     decision variable information at end of SLP iteration 2
-
-name                        current            new   objfunc coef    cur contrib    new contrib   reduced cost           simplex status
-Q1                          1285.28        1285.29              1        1285.28        1285.29              0                    basic
-Q2                          253.753        253.752              1        253.753        253.752              0                    basic
-Q3                                0              0              1              0              0      0.0157696           at lower bound
-Q4                          887.261        887.256              1        887.261        887.256              0                    basic
-Q5                                0              0              1              0              0      0.0440847           at lower bound
-Q6                                0              0              1              0              0      0.0740184           at lower bound
-Q7                          1286.04        1286.04              1        1286.04        1286.04              0                    basic
-
-
-     constraint information at end of SLP iteration 2
-
-name                          sense       required            simpex status          price    fosm offset        current       residual            new       residual
-H05_12                    less_than             50           at upper bound       -27.2732        5.97272             50       -27.6968             50   -1.61057e-05
-H05_14                    less_than             50                    basic              0        5.89279        47.2541       -26.2376        47.2541        2.74591
-H05_16                    less_than             50           at upper bound       -32.5929        5.91584             50       -24.8813             50   -3.60215e-05
-H07_12                    less_than             50                    basic              0        5.97078        47.5417       -27.6949        47.5417        2.45832
-H07_16                    less_than             50                    basic              0        5.91752        48.5889        -24.883         48.589        1.41098
-H09_12                    less_than             50           at upper bound       -31.1849        5.96556        50.0001       -27.6897        50.0001   -5.55638e-05
-H09_14                    less_than             50                    basic              0        5.88384         46.731       -26.2286         46.731        3.26896
-H10_15                    less_than             50                    basic              0        5.88288        47.5744       -25.5381        47.5744        2.42562
-H13_15                    less_than             50                    basic              0        5.88805        48.3966       -25.5433        48.3966        1.60345
-H13_16                    less_than             50           at upper bound       -51.5442        5.91608             50       -24.8816             50    1.90664e-05
-  ---  note: residual file 2.rei reports the simulated
-       constraint values from the model outputs without FOSM offsets
-
-
-
-  ---  iteration 2 objective function value:         3712.34  ---  
-
-
-  ---  convergence check iteration 2  ---  
-
--->                     ++opt_iter_tol:          0.001
--->scaled max decision variable change:    4.12834e-06
--->      scaled  max constraint change:    7.77582e-08
--->   scaled objective function change:    2.75595e-07
-
-  ---  SLP convergence  ---  
-
+-->the following constraints are not satisfied:
+-->   H05_16
 
   ---  objective function sequence  ---   
  iteration       obj func
          0              0
-         1        3712.34
-         2        3712.34
-  ---  best objective function value: 3712.34
+         1        3713.28
+  ---  best objective function value: 3713.28
   ---  running model one last time with best decision variables  ---  
-Number of forward model runs performed during optimiztion: 11
+Number of forward model runs performed during optimiztion: 3

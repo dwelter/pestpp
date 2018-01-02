@@ -153,6 +153,17 @@ double &Transformable::operator[](const string &name)
 	return items[name];
 }
 
+vector<string> Transformable::get_notnormal_keys()
+{
+	vector<string> not_normal;
+	for (auto &i : items)
+	{
+		if (!std::isnormal(i.second))
+			not_normal.push_back(i.first);
+	}
+	return not_normal;
+}
+
 pair<Transformable::iterator,bool> Transformable::insert(const string &name, double value)
 {
 	pair<string, double> rec(name, value);
@@ -300,6 +311,18 @@ void Transformable::update_without_clear(const vector<string> &names, const vect
 		items[names[i]] = values[i];
 	}
 }
+
+void Transformable::update_without_clear(const vector<string> &names, const Eigen::VectorXd &values)
+{
+	assert(names.size() == values.size());
+	size_t n_rec = names.size();
+	items.reserve(n_rec);
+	for (size_t i = 0; i<n_rec; ++i)
+	{
+		items[names[i]] = values[i];
+	}
+}
+
 vector<double> Transformable::get_data_vec(const vector<string> &keys) const
 {
 	vector<double> v;

@@ -390,6 +390,82 @@ map<string, double> read_twocol_ascii_to_map(string filename, int header_lines, 
 	return result;
 }
 
+void read_res(string &res_filename, Observations &obs)
+{
+	map<string, double> result;
+	ifstream fin(res_filename);
+	if (!fin.good())
+		throw runtime_error("could not open residuals file " + res_filename + " for reading");
+	vector<string> tokens;
+	string line,name;
+	double value;
+	bool found = false;
+	int mod_idx;
+	while (getline(fin, line))
+	{
+		strip_ip(line);
+		upper_ip(line);
+		if (line.find("MODELLED") != std::string::npos)
+		{
+			tokens.clear();
+			tokenize(line, tokens);
+			mod_idx = find(tokens.begin(), tokens.end(), "MODELLED") - tokens.begin();
+			found = true;
+			break;
+		}
+	}
+
+	if (!found)
+		throw runtime_error("didn't find header line with 'modelled' in res file");
+	vector<string> extra;
+	vector<string> visited;
+	vector<string> obs_names = obs.get_keys();
+	while (getline(fin,line))
+	{
+		strip_ip(line);
+		tokens.clear();
+		tokenize(line, tokens);
+		name = upper_cp(tokens[0]);
+		convert_ip(tokens[mod_idx], value);
+		if (find(obs_names.begin(), obs_names.end(), name) == obs_names.end())
+			extra.push_back(name);
+		else
+		{
+			obs[name] = value;
+			visited.push_back(name);
+		}
+
+	}
+	stringstream missing;
+	missing << "the following obs were not found in the residual file: ";
+	int i = 0;
+	for (auto &oname : obs)
+	{
+		if (find(visited.begin(), visited.end(), oname.first) == visited.end())
+		{
+			missing << oname.first << ' ';
+			i++;
+			if (i % 5 == 0) missing << endl;
+		}
+	}
+	if (i > 0)
+		throw runtime_error(missing.str());
+
+	if (extra.size() > 0)
+	{
+		stringstream ss;
+		ss << "extra obs found res file...ignoring: ";
+		int i = 0;
+		for (auto &n : extra)
+		{
+			ss << n << ' ';
+			i++;
+			if (i % 5 == 0) ss << endl;
+		}
+		cout << ss.str();
+	}
+}
+
 
 void read_par(ifstream &fin, Parameters &pars)
 {

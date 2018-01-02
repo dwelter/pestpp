@@ -1,0 +1,16 @@
+#SEAWATER Sample Problem, GWM file
+#February 20, 2005
+ 1              #1-IPRN
+ 1              #2-SMCNUM
+ rech-a 8 ge 0. #3a-SMCNAME NTERMS TYPE RHS 
+  W1  1.0       #3b-GVNAME GVCOEFF
+  W2  1.0
+  W3  1.0
+  W4  1.0
+  W5  1.0
+  I1 -1.0
+  I2 -1.0
+  I3 -1.0
+
+
+

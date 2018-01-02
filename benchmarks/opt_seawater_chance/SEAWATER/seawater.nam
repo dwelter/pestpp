@@ -1,0 +1,10 @@
+LIST  10  seawater.lst
+DIS   11  seawater.dis
+BAS6  12  seawater.ba6
+BCF6  13  seawater.bc6
+WEL   14  seawater.wel
+RCH   15  seawater.rch
+PCG   16  seawater.pcg
+PVAL  17  seawater.pval
+GWM   18  seawater.gwm
+DATA  20  seawater.gwmw
