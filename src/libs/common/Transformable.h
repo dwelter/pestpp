@@ -89,10 +89,11 @@ public:
 	void update_rec(const string &name, double value);
 	void update(const vector<string> &names, const vector<double> &values); 
 	void update_without_clear(const vector<string> &names, const vector<double> &values);
+	void update_without_clear(const vector<string> &names, const Eigen::VectorXd &values);
 	const_iterator find(const string &name) const;
 	size_t size() const {return items.size();}
 	void clear() {items.clear();}
-
+	vector<string> get_notnormal_keys();
 	vector<string> get_keys() const;
 	vector<double> get_data_vec(const vector<string> &keys) const;
 	Eigen::VectorXd get_data_eigen_vec(const vector<string> &keys) const;

@@ -241,6 +241,7 @@ Mat Mat::inv()
 void Mat::inv_ip()
 {
 	Logger* log = new Logger();
+	log->set_echo(false);
 	inv_ip(log);
 	return;
 }
@@ -919,7 +920,7 @@ void Covariance::try_from(Pest &pest_scenario, FileManager &file_manager)
 }
 
 
-Covariance Covariance::get(vector<string> &other_names)
+Covariance Covariance::get(const vector<string> &other_names)
 {
 	Covariance new_cov(Mat::get(other_names, other_names));
 	return new_cov;

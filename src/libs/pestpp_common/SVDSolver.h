@@ -66,6 +66,7 @@ public:
 protected:
 	enum class LimitType {NONE, LBND, UBND, REL, FACT};
 	enum class MarquardtMatrix {IDENT, JTQJ};
+	enum class UpgradeBounds {ROBUST, CHEAP};
 public:
 	SVDSolver(Pest &_pest_scenario, FileManager &_file_manager, ObjectiveFunc *_obj_func,
 		const ParamTransformSeq &_par_transform, Jacobian &_jacobian, 
@@ -75,7 +76,7 @@ public:
 	virtual ModelRun compute_jacobian(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &cur_run, bool restart_runs = false);
 	virtual ModelRun solve(RunManagerAbstract &run_manager, TerminationController &termination_ctl, int max_iter, ModelRun &cur_run,
 		ModelRun &optimum_run, RestartController &restart_controller, bool calc_first_jacobian = true);
-	virtual ModelRun iteration_reuse_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool rerun_base = true, const std::string &filename = "");
+	virtual ModelRun iteration_reuse_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool rerun_base = true, const std::string &jco_filename = "",const std::string &res_filename="");
 	virtual void iteration_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool calc_init_obs = false, bool restart_runs = false);
 	virtual ModelRun iteration_upgrd(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool restart_runs = false);
 	virtual void set_svd_package(PestppOptions::SVD_PACK _svd_pack);
@@ -100,6 +101,8 @@ protected:
 	const static string svd_solver_type_name;
 	SVDPackage *svd_package;
 	MAT_INV mat_inv;
+	MarquardtMatrix mar_mat;
+	UpgradeBounds upgrade_bounds;
 	const string description;
 	const ControlInfo *ctl_info;
 	SVDInfo svd_info;
@@ -123,6 +126,7 @@ protected:
 	std::vector<double> lambda_scale_vec;
 	bool terminate_local_iteration;
 	bool der_forgive;
+	bool upgrade_augment;
 	double reg_frac;
 	Covariance parcov;
 	double parcov_scale_fac;

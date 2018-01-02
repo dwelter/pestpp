@@ -11,9 +11,17 @@ PEST++ can be compiled for PC, MAC, or Linux and has several run managers to sup
 
 If any of these items are of interest to you, we are looking for contributors!
 
+<<<<<<< HEAD
 precompiled binaries are available in the "exes" folder
 
 ## Recent Updates
+=======
+precompiled binaries are available in the "exes" folder in the repo
+
+## Recent Updates
+<b> update 09/20/2017</b>: the new optimization under uncertainty tool is ready!  A supporting publication is in the works and should be available soon (a link will be posted once it is accepted).  This new tool uses the same control file/template file/instruction file approach as other PEST(++) applications, so applying this tool to your problem should be seamless.  Optional "++" args for tool are available further done this page.
+
+>>>>>>> origin/develop
 <b>update 01/25/2017</b>: intel C++ builds are avaiable for mac and for windows.  For mac users, these are statically-linked so they do not require compilers to be installed.  For windows users, the intel build circumvents the "missing VCOMP140.DLL" error.  Note the intel windows builds are currently in the ``intel_c_windows`` branch.
 
 <b>update 11/25/2016</b>: PEST++ version 3.6 is now available. Some of the many enhancements available in 3.6 include:
@@ -103,8 +111,11 @@ Here is a (more or less) complete list of ``++`` arguments that can be added to 
 
 * ``++parcov_scale_fac(0.01)``: scaling factor to scale the prior parameter covariance matrix by when scaling the normal matrix by the inverse of the prior parameter covariance matrix.  If not specified, no scaling is undertaken; if specified, ``++mat_inv`` must be "jtqj".
 
+<<<<<<< HEAD
 * ``++condor_submit_file(pest.sub)``: a HTCondor submit file.  Setting this arg results in use of a specialized version of the YAMR run manager where the ``condor_submit()`` command is issued before the run manager starts, and, once a set of runs are complete, the workers are released and the ``condor_rm()`` command is issued.  This specialized run manager is useful for those sharing an HTCondor pool so that during the upgrade calculation process, all workers are released and during upgrade testing, only the required number workers are queued.  As with all things PEST and PEST++, it is up to the user to make sure the relative paths between the location of the submit file, the control file and the instance of PEST++ are in sync.
 
+=======
+>>>>>>> origin/develop
 ### sweep ``++`` arguments
 ``sweep`` is a utility to run a parametric sweep for a series of parameter values.  Useful for things like monte carlo, design of experiment, etc. Designed to be used with ``pyemu`` and the python pandas library.
 
@@ -126,3 +137,8 @@ Here is a (more or less) complete list of ``++`` arguments that can be added to 
 * ``++opt_direction(<direction>)``: either "min" or "max", whether to minimize or maximize the objective function. 
 
 * ``++opt_risk(<risk>)``: a float ranging from 0.0 to 1.0 that is the value to use in the FOSM uncertainty estimation for model-based constraints. a value of 0.5 is a "risk neutral" position and no FOSM measures are calculated.  A value of 0.95 will seek a 95% risk averse solution, while a value of 0.05 will seek a 5% risk tolerant solution. See Wagner and Gorelick, 1987, *Optimal groundwater quality management under parameter uncertainty* for more background on chance-constrained linear programming
+
+
+### USGS disclaimer
+
+This software has been approved for release by the U.S. Geological Survey (USGS). Although the software has been subjected to rigorous review, the USGS reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use

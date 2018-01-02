@@ -1,0 +1,9 @@
+#SEAWATER Sample Problem, SOLN file
+#June 15, 2009
+ SLP                         #1-SOLNTYP
+ 10 1000  0                  #5a-SLPITMAX LPITMAX BBITMAX
+1.0  0.001   -0.05 -0.00005 5  #5b-SLPVCRIT SLPZCRIT DINIT DMIN DSC
+1  10  0.5  0.5   5  0.0     #5c-NSIGDIG NPGNMX PGFACT AFACT NINFMX  CRITMFC
+1 0 1                        #5d-SLPITPRT BBITPRT RANGE
+ 0                           #6a-IBASE
+

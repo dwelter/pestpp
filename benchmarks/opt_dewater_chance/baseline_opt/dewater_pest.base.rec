@@ -1,8 +1,8 @@
-             pestpp-opt version 3.5.0
+             pestpp-opt version 3.7.0
 
                  by the petspp development team
 
-using control file: "dewater_pest.base.pst"
+using control file: "dewater_pest.base"
 
 Model command line(s):- 
     mf2005 dewater_pest.nam
@@ -1264,11 +1264,12 @@ Prior information
   ---  sequential linear programming problem information  ---  
   -------------------------------------------------------------
 
--->number of iterations of sequential linear programming (noptmax): 5
+-->number of iterations of sequential linear programming (noptmax): 1
 -->objective function sense (direction): minimize
 -->number of decision variable: 7
 -->number of observation constraints: 10
 -->number of prior information constraints: 0
+-->start with existing jacobian: dewater_pest.full.jcb
 
 
   ---  decision variables active in SLP  ---  
@@ -1309,16 +1310,16 @@ H13_16              less_than           50
 
   observation constraint information at start of iteration 1
 name                          sense       required      sim value       residual    lower bound    upper bound
-H05_12                    less_than             50        71.7241       -21.7241  -1.79769e+308       -21.7241
-H05_14                    less_than             50        70.3448       -20.3448  -1.79769e+308       -20.3448
-H05_16                    less_than             50        68.9655       -18.9655  -1.79769e+308       -18.9655
-H07_12                    less_than             50        71.7241       -21.7241  -1.79769e+308       -21.7241
-H07_16                    less_than             50        68.9655       -18.9655  -1.79769e+308       -18.9655
-H09_12                    less_than             50        71.7241       -21.7241  -1.79769e+308       -21.7241
-H09_14                    less_than             50        70.3448       -20.3448  -1.79769e+308       -20.3448
-H10_15                    less_than             50        69.6552       -19.6552  -1.79769e+308       -19.6552
-H13_15                    less_than             50        69.6552       -19.6552  -1.79769e+308       -19.6552
-H13_16                    less_than             50        68.9655       -18.9655  -1.79769e+308       -18.9655
+H05_12                    less_than             50        71.8656       -21.8656  -1.79769e+308       -21.8656
+H05_14                    less_than             50        70.5354       -20.5354  -1.79769e+308       -20.5354
+H05_16                    less_than             50        69.0759       -19.0759  -1.79769e+308       -19.0759
+H07_12                    less_than             50        71.7668       -21.7668  -1.79769e+308       -21.7668
+H07_16                    less_than             50        69.1937       -19.1937  -1.79769e+308       -19.1937
+H09_12                    less_than             50        71.6331       -21.6331  -1.79769e+308       -21.6331
+H09_14                    less_than             50        70.4277       -20.4277  -1.79769e+308       -20.4277
+H10_15                    less_than             50        69.7575       -19.7575  -1.79769e+308       -19.7575
+H13_15                    less_than             50        69.5163       -19.5163  -1.79769e+308       -19.5163
+H13_16                    less_than             50        68.8941       -18.8941  -1.79769e+308       -18.8941
 number of nonzero elements in response matrix: 70 of 70
   ---  solving linear program for iteration 1  ---  
  iteration 1 linear solution is proven optimal
@@ -1332,117 +1333,46 @@ number of nonzero elements in response matrix: 70 of 70
      decision variable information at end of SLP iteration 1
 
 name                        current            new   objfunc coef    cur contrib    new contrib   reduced cost           simplex status
-Q1                                0        1077.39              1              0        1077.39              0                    basic
-Q2                                0        78.2413              1              0        78.2413              0                    basic
-Q3                                0              0              1              0              0      0.0157697           at lower bound
-Q4                                0        768.949              1              0        768.949              0                    basic
-Q5                                0              0              1              0              0      0.0440849           at lower bound
-Q6                                0              0              1              0              0      0.0740185           at lower bound
-Q7                                0        941.075              1              0        941.075              0                    basic
+Q1                                0        1117.07              1              0        1117.07              0                    basic
+Q2                                0        89.7894              1              0        89.7894              0                    basic
+Q3                                0             -0              1              0             -0      0.0157697           at lower bound
+Q4                                0        727.167              1              0        727.167              0                    basic
+Q5                                0             -0              1              0             -0      0.0440849           at lower bound
+Q6                                0             -0              1              0             -0      0.0740185           at lower bound
+Q7                                0        932.569              1              0        932.569              0                    basic
 
 
      constraint information at end of SLP iteration 1
 
-name                          sense       required            simpex status          price        current       residual            new       residual
-H05_12                    less_than             50           at upper bound       -27.2734        71.7241       -21.7241             50              0
-H05_14                    less_than             50                    basic              0        70.3448       -20.3448        47.9256         2.0744
-H05_16                    less_than             50           at upper bound       -32.5929        68.9655       -18.9655             50              0
-H07_12                    less_than             50                    basic              0        71.7241       -21.7241        47.9472         2.0528
-H07_16                    less_than             50                    basic              0        68.9655       -18.9655        48.8833         1.1167
-H09_12                    less_than             50           at upper bound       -31.1847        71.7241       -21.7241             50              0
-H09_14                    less_than             50                    basic              0        70.3448       -20.3448        47.3819         2.6181
-H10_15                    less_than             50                    basic              0        69.6552       -19.6552        48.1416         1.8584
-H13_15                    less_than             50                    basic              0        69.6552       -19.6552        48.9843         1.0157
-H13_16                    less_than             50           at upper bound       -51.5443        68.9655       -18.9655             50              0
+name                          sense       required           simplex status          price        current       residual            new       residual
+H05_12                    less_than             50           at upper bound       -27.2734        71.8656       -21.8656        49.7551         0.2449
+H05_14                    less_than             50                    basic              0        70.5354       -20.5354        47.9411         2.0589
+H05_16                    less_than             50           at upper bound       -32.5929        69.0759       -19.0759        50.2341        -0.2341
+H07_12                    less_than             50                    basic              0        71.7668       -21.7668        47.8786         2.1214
+H07_16                    less_than             50                    basic              0        69.1937       -19.1937        48.9603         1.0397
+H09_12                    less_than             50           at upper bound       -31.1847        71.6331       -21.6331        49.9005         0.0995
+H09_14                    less_than             50                    basic              0        70.4277       -20.4277        47.4659         2.5341
+H10_15                    less_than             50                    basic              0        69.7575       -19.7575        48.1967         1.8033
+H13_15                    less_than             50                    basic              0        69.5163       -19.5163        48.8701         1.1299
+H13_16                    less_than             50           at upper bound       -51.5443        68.8941       -18.8941        49.9916         0.0084
 
 
-  ---  iteration 1 objective function value:         2865.65  ---  
+  ---  iteration 1 objective function value:         2866.59  ---  
 
 
   ---  convergence check iteration 1  ---  
 
 -->                     ++opt_iter_tol:          0.001
--->scaled max decision variable change:        1077.39
--->      scaled  max constraint change:        23.7769
+-->scaled max decision variable change:        1117.07
+-->      scaled  max constraint change:        23.8882
 -->   scaled objective function change:              1
-
-
-  ---------------------------------
-  --- starting LP iteration 2  ---  
-  ---------------------------------
-
-
-  ---  calculating response matrix for iteration 2  ---  
-
-saving iteration 2 reponse matrix to file: dewater_pest.base.2.jcb
-
-  observation constraint information at start of iteration 2
-name                          sense       required      sim value       residual    lower bound    upper bound
-H05_12                    less_than             50             50       -21.7241  -1.79769e+308       -21.7241
-H05_14                    less_than             50        47.9256       -20.3448  -1.79769e+308       -20.3448
-H05_16                    less_than             50             50       -18.9655  -1.79769e+308       -18.9655
-H07_12                    less_than             50        47.9472       -21.7241  -1.79769e+308       -21.7241
-H07_16                    less_than             50        48.8833       -18.9655  -1.79769e+308       -18.9655
-H09_12                    less_than             50             50       -21.7241  -1.79769e+308       -21.7241
-H09_14                    less_than             50        47.3819       -20.3448  -1.79769e+308       -20.3448
-H10_15                    less_than             50        48.1416       -19.6552  -1.79769e+308       -19.6552
-H13_15                    less_than             50        48.9843       -19.6552  -1.79769e+308       -19.6552
-H13_16                    less_than             50             50       -18.9655  -1.79769e+308       -18.9655
-number of nonzero elements in response matrix: 70 of 70
-  ---  solving linear program for iteration 2  ---  
- iteration 2 linear solution is proven optimal
-
-
-  ---  linear program solution complete for iteration 2  ---  
-  ---  processing results for iteration 2 LP solution  ---  
-
-
-
-     decision variable information at end of SLP iteration 2
-
-name                        current            new   objfunc coef    cur contrib    new contrib   reduced cost           simplex status
-Q1                          1077.39        1077.39              1        1077.39        1077.39              0                    basic
-Q2                          78.2413        78.2423              1        78.2413        78.2423              0                    basic
-Q3                                0              0              1              0              0      0.0157694           at lower bound
-Q4                          768.949        768.944              1        768.949        768.944              0                    basic
-Q5                                0              0              1              0              0      0.0440848           at lower bound
-Q6                                0              0              1              0              0      0.0740188           at lower bound
-Q7                          941.075        941.076              1        941.075        941.076              0                    basic
-
-
-     constraint information at end of SLP iteration 2
-
-name                          sense       required            simpex status          price        current       residual            new       residual
-H05_12                    less_than             50           at upper bound       -27.2734             50       -21.7241             50              0
-H05_14                    less_than             50                    basic              0        47.9256       -20.3448        47.9256         2.0744
-H05_16                    less_than             50           at upper bound       -32.5929             50       -18.9655             50              0
-H07_12                    less_than             50                    basic              0        47.9472       -21.7241        47.9473         2.0527
-H07_16                    less_than             50                    basic              0        48.8833       -18.9655        48.8833         1.1167
-H09_12                    less_than             50           at upper bound       -31.1847             50       -21.7241             50              0
-H09_14                    less_than             50                    basic              0        47.3819       -20.3448        47.3819         2.6181
-H10_15                    less_than             50                    basic              0        48.1416       -19.6552        48.1416         1.8584
-H13_15                    less_than             50                    basic              0        48.9843       -19.6552        48.9843         1.0157
-H13_16                    less_than             50           at upper bound       -51.5443             50       -18.9655             50              0
-
-
-  ---  iteration 2 objective function value:         2865.65  ---  
-
-
-  ---  convergence check iteration 2  ---  
-
--->                     ++opt_iter_tol:          0.001
--->scaled max decision variable change:    4.87922e-06
--->      scaled  max constraint change:    1.06261e-07
--->   scaled objective function change:    8.32376e-08
-
-  ---  SLP convergence  ---  
-
+-->the following constraints are not satisfied:
+-->   H05_16
 
   ---  objective function sequence  ---   
  iteration       obj func
          0              0
-         1        2865.65
-         2        2865.65
-  ---  best objective function value: 2865.65
+         1        2866.59
+  ---  best objective function value: 2866.59
   ---  running model one last time with best decision variables  ---  
-Number of forward model runs performed during optimiztion: 11
+Number of forward model runs performed during optimiztion: 3

@@ -1,0 +1,9 @@
+#Seawater sample problem for GWM
+ 2   20   30    1    4    0  NLAY,NROW,NCOL,NPER,ITMUNI,LENUNI
+ 0 0
+CONSTANT   2.000000E+02  DELR
+CONSTANT   2.000000E+02  DELC
+CONSTANT   1.000000E+02  TOP of system          
+CONSTANT   -1.000000E+01  Layer BOTM layer   1
+CONSTANT   -2.000000E+01  Layer BOTM layer   2
+ 1.000E+00         1 1.000E+00  SS  PERLEN,NSTP,TSMULT,Ss/tr

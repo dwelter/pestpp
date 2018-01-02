@@ -62,6 +62,56 @@ void SVD_REDSVD::solve_ip(Eigen::SparseMatrix<double>& A, Eigen::VectorXd &Sigma
 	solve_ip(A, Sigma, U, Vt, Sigma_trunc, eign_thres);
 }
 
+void SVD_REDSVD::solve_ip(Eigen::MatrixXd& A, Eigen::MatrixXd &Sigma, Eigen::MatrixXd& U,
+	Eigen::MatrixXd& V, double _eigen_thres, int _max_sing)
+{
+	performance_log->log_event("starting REDSVD");
+
+	RedSVD::RedSVD<MatrixXd> red_svd(A);
+	performance_log->log_event("retrieving REDSVD components");
+	U = red_svd.matrixU();
+	V = red_svd.matrixV();
+	VectorXd Sigma_full = red_svd.singularValues();
+
+	int kmax = (Sigma_full.size() < n_max_sing) ? Sigma_full.size() : n_max_sing;
+	int num_sing_used = 0;
+	double eig_ratio;
+	for (int i_sing = 0; i_sing < kmax; ++i_sing)
+	{
+		eig_ratio = Sigma_full[i_sing] / Sigma_full[0];
+		if ((eig_ratio > _eigen_thres) && (i_sing < _max_sing))
+		{
+			++num_sing_used;
+		}
+		else
+		{
+			break;
+		}
+	}
+	std::stringstream ss;
+	ss << "triming REDSVD components to " << num_sing_used << "elements";
+	performance_log->log_event(ss.str());
+
+	Sigma = Sigma_full.head(num_sing_used);
+	//Sigma_trunc = Sigma_full.tail(Sigma_full.size() - num_sing_used);
+	if (num_sing_used == 1)
+	{
+		Eigen::VectorXd temp = V.col(0);
+		V.resize(V.rows(),1);
+		V.col(0) = temp;
+		temp = U.col(0);
+		U.resize(U.rows(),1);
+		U.col(0) = temp;
+	}
+	else
+	{
+		V = V.leftCols(num_sing_used);
+		U = U.leftCols(num_sing_used);
+
+	}
+	performance_log->log_event("done REDSVD");
+	return;
+}
 
 void SVD_REDSVD::solve_ip(Eigen::SparseMatrix<double>& A, Eigen::VectorXd &Sigma, Eigen::SparseMatrix<double>& U,
 	Eigen::SparseMatrix<double>& VT, Eigen::VectorXd &Sigma_trunc, double _eigen_thres)

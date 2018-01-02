@@ -1,0 +1,21 @@
+#SEAWATER Sample Problem, DECVAR file
+#August 14, 2006
+ 1 20                        #1-IPRN  GWMWFILE
+ 8 0 0                       #2-NFVAR  NEVAR  NBVAR
+ W1  1  1  7  12  W  Y  1    #3a-FVNAME NC LAY ROW COL FTYPE FSTAT WSP
+ W2  1  1 10  13  W  Y  1
+ W3  1  1 10  16  W  Y  1
+ W4  1  1 12  15  W  Y  1
+ W5  2  0  0   0  W  Y  1
+     0.500 1 15 11           #3b-RATIO LAY ROW COL
+     0.500 2 15 11 
+ I1  2  0  0   0  I  Y  1
+     0.500 1 7 27
+     0.500 2 7 27
+ I2  2  0  0   0  I  Y  1
+     0.500 1 11 27
+     0.500 2 11 27
+ I3  2  0  0   0  I  Y  1
+     0.500 1 15 27
+     0.500 2 15 27
+

@@ -157,15 +157,22 @@ void Pest::check_inputs(ostream &f_rec)
 	{
 		if (pestpp_options.get_mat_inv() == PestppOptions::MAT_INV::Q12J)
 		{
+			f_rec << "pest++ mat_inv = q12j, but parcov_scale_fac > 0.0." << endl;
 			throw PestError("pest++ mat_inv = q12j, but parcov_scale_fac > 0.0.");
 		}
 		if (pestpp_options.get_parcov_scale_fac() > 1.0)
 		{
 			cout << "'parcov_scale_fac' > 1.0, resetting to 1.0" << endl;
+			f_rec << "'parcov_scale_fac' > 1.0, resetting to 1.0" << endl;
 			pestpp_options.set_parcov_scale_fac(1.0);
 		}
-
 	}
+	if (pestpp_options.get_hotstart_resfile().size() > 0)
+		if (pestpp_options.get_basejac_filename().size() == 0)
+		{
+			cout << "'base_jacobian' is none, so 'hotstart_resfile' being ignored..." << endl;
+			f_rec << "'base_jacobian' is none, so 'hotstart_resfile' being ignored..." << endl;
+		}		
 }
 
 void Pest::check_io()
@@ -187,8 +194,32 @@ void Pest::check_io()
 		for (auto &file : inaccessible_files)
 			missing += file + " , ";
 
-		throw PestError("Could not access the following model interface files: "+missing);
+		//throw PestError("Could not access the following model interface files: "+missing);
+		cout << "WARNING: could not access the following model interface files: " << missing << endl;
+		
 	}
+}
+
+const vector<string> Pest::get_ctl_ordered_nz_obs_names()
+{
+	vector<string> nz_obs;
+	for (auto &oname : ctl_ordered_obs_names)
+		if (observation_info.get_observation_rec_ptr(oname)->weight > 0.0)
+			nz_obs.push_back(oname);
+	return nz_obs;
+}
+
+const vector<string> Pest::get_ctl_ordered_adj_par_names()
+{
+	vector<string> adj_pars;
+	ParameterRec::TRAN_TYPE ttype;
+	for (auto &pname : ctl_ordered_par_names)
+	{
+		ttype = ctl_parameter_info.get_parameter_rec_ptr(pname)->tranform_type;
+		if ((ttype != ParameterRec::TRAN_TYPE::FIXED) && (ttype != ParameterRec::TRAN_TYPE::TIED))
+			adj_pars.push_back(pname);
+	}
+	return adj_pars;
 }
 
 const map<string, string> Pest::get_observation_groups() const
@@ -273,7 +304,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 		}
 		else if (line_upper.substr(0,2) == "++")
 		{
-			pestpp_input.push_back(line_upper);
+			pestpp_input.push_back(line);
 		}
 			
 		else if (line_upper[0] == '*')
@@ -594,8 +625,11 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_sweep_chunk(500);
 	//pestpp_options.set_use_parcov_scaling(false);
 	pestpp_options.set_parcov_scale_fac(-999.0);
+	pestpp_options.set_jac_scale(true);
+	pestpp_options.set_upgrade_augment(true);
 	pestpp_options.set_opt_obj_func("");
 	pestpp_options.set_opt_coin_log(true);
+	pestpp_options.set_opt_skip_final(false);
 	pestpp_options.set_opt_dec_var_groups(vector<string>());
 	pestpp_options.set_opt_ext_var_groups(vector<string>());
 	pestpp_options.set_opt_constraint_groups(vector<string>());
@@ -603,6 +637,18 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_opt_direction(1.0);
 	pestpp_options.set_opt_iter_tol(0.001);
 	pestpp_options.set_opt_recalc_fosm_every(1);
+	pestpp_options.set_opt_iter_derinc_fac(1.0);
+	pestpp_options.set_hotstart_resfile(string());
+	pestpp_options.set_upgrade_bounds("ROBUST");
+	pestpp_options.set_ies_par_csv("");
+	pestpp_options.set_ies_obs_csv("");
+	pestpp_options.set_ies_obs_restart_csv("");
+	pestpp_options.set_ies_lam_mults(vector<double>());
+	pestpp_options.set_ies_init_lam(-999);
+	pestpp_options.set_ies_use_approx(true);
+	pestpp_options.set_ies_subset_size(100000000);
+	pestpp_options.set_condor_submit_file(string());
+
 	for(vector<string>::const_iterator b=pestpp_input.begin(),e=pestpp_input.end();
 		b!=e; ++b) {
 			
@@ -631,6 +677,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 			b!=e; ++b) {
 				par_name = &((*b).first);
 				u_bnd = (*b).second;
+
 				l_bnd = lower_bnd.get_rec(*par_name);
 				spread = u_bnd - l_bnd;
 				avg = (u_bnd + l_bnd) / 2.0;

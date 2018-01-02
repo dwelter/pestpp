@@ -102,7 +102,10 @@ public:
 	virtual int add_run(const Eigen::VectorXd &model_pars, const std::string &info_txt="", double info_valuee=RunStorage::no_data);
 	virtual void update_run(int run_id, const Parameters &pars, const Observations &obs);
 	virtual void run();
-	~RunManagerYAMR(void);
+	~RunManagerYAMR(void); 
+	int get_n_waiting_runs() { return waiting_runs.size(); }
+	void close_slaves();
+
 private:
 	std::string port;
 	static const int BACKLOG;
@@ -133,7 +136,7 @@ private:
 	void kill_all_active_runs();
 	void close_slave(int i_sock);
 	void close_slave(list<SlaveInfoRec>::iterator slave_info_iter);
-
+	
 	std::ofstream &f_rmr;
 	void listen();
 	bool process_model_run(int sock_id, NetPackage &net_pack);
@@ -159,6 +162,25 @@ private:
 	virtual void update_run_failed(int run_id, int socket_fd);
 	virtual void update_run_failed(int run_id);
 	map<string, int> get_slave_stats();
+};
+
+class RunManagerYAMRCondor : public RunManagerYAMR
+{
+public:
+	RunManagerYAMRCondor(const std::string &stor_filename, const std::string &port, std::ofstream &_f_rmr, int _max_n_failure,
+		double overdue_reched_fac, double overdue_giveup_fac,string _condor_submit_file);
+	virtual void run();
+	
+private:
+	int max_condor_queue;
+	vector<string> submit_lines;
+	void parse_submit_file();
+	int get_cluster();
+	string submit_file;
+	void write_submit_file();
+	int submit();
+	void cleanup(int cluster);
+
 };
 
 #endif /* RUNMANAGERYAMR_H */

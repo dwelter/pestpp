@@ -1,0 +1,16 @@
+#SUPPLY2 Sample Problem, OBJFNC file
+#August 14, 2006
+ 1             #1-IPRN
+ MAX  WSDV     #2-OBJTYP FNTYP
+ 7  4  0       #3-NFVOBJ NEVOBJ  NBVOBJ
+ Q1  0.001     #4-FVNAME  FVOBJC
+ Q2a 0.001    
+ Q2b 0.001
+ Q2c 0.001
+ Q2d 0.001
+ Q4a 0.001
+ Q4b 0.001
+ Im9    -0.0012  #5-EVNAME  EVOBJC
+ Im10   -0.0012
+ Im11   -0.0012
+ Im12   -0.0012

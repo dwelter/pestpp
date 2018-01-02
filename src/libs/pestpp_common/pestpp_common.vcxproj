@@ -29,6 +29,8 @@
   <ItemGroup>
     <ClInclude Include="DifferentialEvolution.h" />
     <ClInclude Include="eigen_tools.h" />
+    <ClInclude Include="Ensemble.h" />
+    <ClInclude Include="EnsembleSmoother.h" />
     <ClInclude Include="FileManager.h" />
     <ClInclude Include="Jacobian.h" />
     <ClInclude Include="Jacobian_1to1.h" />
@@ -55,6 +57,8 @@
   <ItemGroup>
     <ClCompile Include="DifferentialEvolution.cpp" />
     <ClCompile Include="eigen_tools.cpp" />
+    <ClCompile Include="Ensemble.cpp" />
+    <ClCompile Include="EnsembleSmoother.cpp" />
     <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="Jacobian.cpp" />
     <ClCompile Include="Jacobian_1to1.cpp" />

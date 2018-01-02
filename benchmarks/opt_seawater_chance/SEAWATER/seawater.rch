@@ -1,0 +1,7 @@
+# Recharge file for GWM Seawater Problem with a Parameter defined
+PARAMETER  1 
+         1        -1
+REC-SP1   RCH   0.0000  1
+NONE      ALL   1
+         1         1
+         REC-SP1  

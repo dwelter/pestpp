@@ -99,8 +99,18 @@ SVDSolver::SVDSolver(Pest &_pest_scenario, FileManager &_file_manager, Objective
 	regul_scheme_ptr(_pest_scenario.get_regul_scheme_ptr()), output_file_writer(_output_file_writer), mat_inv(_mat_inv), description(_description), best_lambda(20.0),
 	performance_log(_performance_log), base_lambda_vec(_pest_scenario.get_pestpp_options().get_base_lambda_vec()), lambda_scale_vec(_pest_scenario.get_pestpp_options().get_lambda_scale_vec()),
 	terminate_local_iteration(false), reg_frac(_pest_scenario.get_pestpp_options().get_reg_frac()),
-		parcov(_parcov),parcov_scale_fac(_pest_scenario.get_pestpp_options().get_parcov_scale_fac())
+		parcov(_parcov),parcov_scale_fac(_pest_scenario.get_pestpp_options().get_parcov_scale_fac()),upgrade_augment(_pest_scenario.get_pestpp_options().get_upgrade_augment())
 {
+	if (_pest_scenario.get_pestpp_options().get_jac_scale())
+	{
+		mar_mat = MarquardtMatrix::IDENT;
+	}
+	else
+		mar_mat = MarquardtMatrix::JTQJ;
+	if (_pest_scenario.get_pestpp_options().get_upgrade_bounds() == "ROBUST")
+		upgrade_bounds = UpgradeBounds::ROBUST;
+	else
+		upgrade_bounds = UpgradeBounds::CHEAP;
 	svd_package = new SVD_EIGEN();
 }
 
@@ -505,7 +515,7 @@ void SVDSolver::calc_lambda_upgrade_vec_JtQJ(const Jacobian &jacobian, const QSq
 		info_str.str("");
 		info_str << "jac info: " << "rows = " << jac.rows() << ": cols = " << jac.cols() << ": size = " << jac.size() << ": nonzeros = " << jac.nonZeros();
 		performance_log->log_event(info_str.str());
-		upgrade_vec = Vt.transpose() * (Sigma_inv.asDiagonal() * (U.transpose() * (jac * (q_mat  * corrected_residuals))));
+		upgrade_vec = Vt.transpose() * (Sigma_inv.asDiagonal() * (U.transpose() * (jac.transpose() * (q_mat  * corrected_residuals))));
 	}
 
 	// scale the upgrade vector using the technique described in the PEST manual
@@ -618,6 +628,8 @@ void SVDSolver::calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqr
 	Eigen::VectorXd upgrade_vec;
 	upgrade_vec = Vt.transpose() * (Sigma_inv.asDiagonal() * (U.transpose() * (q_sqrt  * corrected_residuals)));
 
+	
+
 	// scale the upgrade vector using the technique described in the PEST manual
 	if (scale_upgrade)
 	{
@@ -670,10 +682,12 @@ void SVDSolver::calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqr
 	}
 }
 
-	void SVDSolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_active_ctl_pars, QSqrtMatrix &Q_sqrt,
-		const DynamicRegularization &regul, VectorXd &residuals_vec, vector<string> &obs_names_vec,
-		const Parameters &base_run_active_ctl_pars, Parameters &upgrade_active_ctl_pars,
-		MarquardtMatrix marquardt_type, LimitType &limit_type, bool scale_upgrade)
+
+
+void SVDSolver::calc_upgrade_vec(double i_lambda, Parameters &prev_frozen_active_ctl_pars, QSqrtMatrix &Q_sqrt,
+	const DynamicRegularization &regul, VectorXd &residuals_vec, vector<string> &obs_names_vec,
+	const Parameters &base_run_active_ctl_pars, Parameters &upgrade_active_ctl_pars,
+	MarquardtMatrix marquardt_type, LimitType &limit_type, bool scale_upgrade)
 {
 	Parameters upgrade_ctl_del_pars;
 	Parameters grad_ctl_del_pars;
@@ -702,12 +716,23 @@ void SVDSolver::calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqr
 	(*this.*calc_lambda_upgrade)(jacobian, Q_sqrt, regul, residuals_vec, obs_names_vec,
 		base_run_active_ctl_pars, prev_frozen_active_ctl_pars, i_lambda, upgrade_active_ctl_pars, upgrade_ctl_del_pars,
 		grad_ctl_del_pars, marquardt_type, scale_upgrade);
+	if (upgrade_active_ctl_pars.get_notnormal_keys().size() > 0) 
+	{
+		stringstream ss;
+		for (auto &n : upgrade_active_ctl_pars.get_notnormal_keys())
+			ss << n << ',';
+		string message = "not normal floating point in upgrade pars: " + ss.str();
+		file_manager.rec_ofstream() << message << endl;
+		cout << message;
+		throw runtime_error(message);
+
+	}
 	performance_log->log_event("commencing check of parameter bounds");
 	num_upgrade_out_grad_in = check_bnd_par(new_frozen_active_ctl_pars, base_run_active_ctl_pars, upgrade_ctl_del_pars, grad_ctl_del_pars);
 	prev_frozen_active_ctl_pars.insert(new_frozen_active_ctl_pars.begin(), new_frozen_active_ctl_pars.end());
 
 	//Recompute the ugrade vector without the newly frozen parameters and freeze those at the boundary whose upgrade still goes heads out of bounds
-	if (num_upgrade_out_grad_in > 0)
+	if ((upgrade_bounds == UpgradeBounds::ROBUST) && (num_upgrade_out_grad_in > 0))
 	{
 		new_frozen_active_ctl_pars.clear();
 		performance_log->log_event("commencing recalculation of upgrade vector freezing parameters whose upgrade and gradient point out of bounds");
@@ -720,7 +745,7 @@ void SVDSolver::calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqr
 		new_frozen_active_ctl_pars.clear();
 	}
 	//If there are newly frozen parameters recompute the upgrade vector
-	if (new_frozen_active_ctl_pars.size() > 0)
+	if ((upgrade_bounds == UpgradeBounds::ROBUST) && (new_frozen_active_ctl_pars.size() > 0))
 	{
 		performance_log->log_event("commencing recalculation of upgrade vector freezing parameters whose upgrade heads out of bounds");
 		(*this.*calc_lambda_upgrade)(jacobian, Q_sqrt, regul, residuals_vec, obs_names_vec,
@@ -728,8 +753,21 @@ void SVDSolver::calc_lambda_upgrade_vecQ12J(const Jacobian &jacobian, const QSqr
 			grad_ctl_del_pars, marquardt_type, scale_upgrade);
 	}
 	//Freeze any new parameters that want to go out of bounds
+	performance_log->log_event("limiting out of bounds pars");
 	limit_parameters_ip(base_run_active_ctl_pars, upgrade_active_ctl_pars,
 		limit_type, prev_frozen_active_ctl_pars);
+	performance_log->log_event("checking for denormal floating point values");
+	if (upgrade_active_ctl_pars.get_notnormal_keys().size() > 0)
+	{
+		stringstream ss;
+		for (auto &n : upgrade_active_ctl_pars.get_notnormal_keys())
+			ss << n << ',';
+		string message = "not normal floating point in upgrade pars after applying limits: " + ss.str();
+		file_manager.rec_ofstream() << message << endl;
+		cout << message;
+		throw runtime_error(message);
+
+	}
 		//	limit_type, freeze_active_ctl_pars, true);
 	//new_frozen_active_ctl_pars.clear();
 	//new_frozen_active_ctl_pars = limit_parameters_freeze_all_ip(base_run_active_ctl_pars, base_run_active_ctl_pars, prev_frozen_active_ctl_pars);
@@ -772,7 +810,7 @@ void SVDSolver::calc_upgrade_vec_freeze(double i_lambda, Parameters &prev_frozen
 	num_upgrade_out_grad_in = check_bnd_par(new_frozen_active_ctl_pars, base_run_active_ctl_pars, upgrade_ctl_del_pars, grad_ctl_del_pars);
 	prev_frozen_active_ctl_pars.insert(new_frozen_active_ctl_pars.begin(), new_frozen_active_ctl_pars.end());
 	//Recompute the ugrade vector without the newly frozen parameters and freeze those at the boundary whose upgrade still goes heads out of bounds
-	if (num_upgrade_out_grad_in > 0)
+	if ((upgrade_bounds == UpgradeBounds::ROBUST) && (num_upgrade_out_grad_in > 0))
 	{
 		new_frozen_active_ctl_pars.clear();
 		performance_log->log_event("commencing recalculation of upgrade vector freezing parameters whose upgrade and gradient point out of bounds");
@@ -785,7 +823,7 @@ void SVDSolver::calc_upgrade_vec_freeze(double i_lambda, Parameters &prev_frozen
 		new_frozen_active_ctl_pars.clear();
 	}
 	//If there are newly frozen parameters recompute the upgrade vector
-	if (new_frozen_active_ctl_pars.size() > 0)
+	if ((upgrade_bounds == UpgradeBounds::ROBUST) && (new_frozen_active_ctl_pars.size() > 0))
 	{
 		performance_log->log_event("commencing recalculation of upgrade vector freezing parameters whose upgrade heads out of bounds");
 		(*this.*calc_lambda_upgrade)(jacobian, Q_sqrt, regul, residuals_vec, obs_names_vec,
@@ -831,7 +869,8 @@ void SVDSolver::calc_upgrade_vec_freeze(double i_lambda, Parameters &prev_frozen
 	}
 
 
-ModelRun SVDSolver::iteration_reuse_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, bool rerun_base, const string &filename)
+ModelRun SVDSolver::iteration_reuse_jac(RunManagerAbstract &run_manager, TerminationController &termination_ctl, ModelRun &base_run, 
+	bool rerun_base, const string &jco_filename, const string &res_filename)
 {
 	ModelRun new_base_run(base_run);
 	ostream &os = file_manager.rec_ofstream();
@@ -839,11 +878,31 @@ ModelRun SVDSolver::iteration_reuse_jac(RunManagerAbstract &run_manager, Termina
 	vector<string> numeric_parname_vec = par_transform.ctl2numeric_cp(new_base_run.get_ctl_pars()).get_keys();
 
 	
-	string jac_filename = filename;
-	if (filename.empty()) jac_filename = file_manager.build_filename("jcb");
+	string jac_filename = jco_filename;
+	if (jco_filename.empty()) jac_filename = file_manager.build_filename("jcb");
 	cout << "  reading previously computed jacobian:  " << jac_filename << endl;
 	file_manager.get_ofstream("rec") << "  reading previously computed jacobian:  " << jac_filename << endl;
 	jacobian.read(jac_filename);
+
+	if (!res_filename.empty())
+	{
+		stringstream message;
+
+		message << "  reading  residual file " << res_filename << " for hot-start...";
+		cout << message.str();
+		file_manager.rec_ofstream() << message.str();
+
+		Observations temp_obs = new_base_run.get_obs_template();
+		string rfile = res_filename;
+		read_res(rfile, temp_obs);
+		Parameters temp_pars = new_base_run.get_ctl_pars();
+		new_base_run.update_ctl(temp_pars, temp_obs);
+		rerun_base = false;
+		//message.clear();
+		//message << "done" << endl;
+		cout << "done" << endl;
+		file_manager.rec_ofstream() << "done" << endl;
+	}
 
 	if (rerun_base)
 	{
@@ -967,7 +1026,13 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 	}
 	else
 	{
-		vector<string> obs_names_vec = base_run.get_obs_template().get_keys();
+		vector<string> obs_names_vec;
+		Observations obs = base_run.get_obs();
+		for (auto &o : base_run.get_obs_template().get_keys())
+		{
+			if (base_run.get_obj_func_ptr()->get_obs_info_ptr()->get_weight(o) > 0.0)
+				obs_names_vec.push_back(o);
+		}
 
 		//Freeze Parameter for which the jacobian could not be calculated
 		auto &failed_jac_pars_names = jacobian.get_failed_parameter_names();
@@ -995,7 +1060,7 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 			//use call to calc_upgrade_vec to compute frozen parameters
 			calc_upgrade_vec_freeze(0, frozen_active_ctl_pars, Q_sqrt, *regul_scheme_ptr, residuals_vec,
 				obs_names_vec, base_run_active_ctl_par,
-				tmp_new_par, MarquardtMatrix::IDENT, false);
+				tmp_new_par, mar_mat, false);
 			if (regul_scheme_ptr->get_use_dynamic_reg() && reg_frac < 0.0)
 			{
 				dynamic_weight_adj(base_run, jacobian, Q_sqrt, residuals_vec, obs_names_vec,
@@ -1011,7 +1076,7 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 		run_manager.update_run(run_id, base_model_pars, base_run.get_obs());
 		//Marquardt Lambda Update Vector
 		vector<double> lambda_vec = base_lambda_vec;
-		if (lambda_vec.size() > 1)
+		if (upgrade_augment)
 		{
 			lambda_vec.push_back(best_lambda);
 			lambda_vec.push_back(best_lambda / 2.0);
@@ -1025,6 +1090,7 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 		stringstream prf_message;
 
 		ofstream &fout_frz = file_manager.open_ofile_ext("fpr");
+		ofstream &fout_rec = file_manager.rec_ofstream();
 		for (double i_lambda : lambda_vec)
 		{
 			prf_message.str("");
@@ -1035,16 +1101,31 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 			message.str("");
 			message << "  computing upgrade vector (lambda = " << i_lambda << ")  " << ++i_update_vec << " / " << lambda_vec.size() << "             ";
 			std::cout << message.str();
+			fout_rec << message.str();
 
 			Parameters new_pars;
 			// reset frozen_active_ctl_pars
 			LimitType limit_type;
 			Parameters frozen_active_ctl_pars = failed_jac_pars;
-			calc_upgrade_vec(i_lambda, frozen_active_ctl_pars, Q_sqrt, *regul_scheme_ptr, residuals_vec,
-				obs_names_vec, base_run_active_ctl_par,
-				new_pars, MarquardtMatrix::IDENT, limit_type, false);
-
+			try
+			{
+				calc_upgrade_vec(i_lambda, frozen_active_ctl_pars, Q_sqrt, *regul_scheme_ptr, residuals_vec,
+					obs_names_vec, base_run_active_ctl_par, new_pars, mar_mat, limit_type, false);
+			}
+			catch (const runtime_error& error)
+			{
+				stringstream ss;
+				ss << "error computing upgrade vector for lambda " << i_lambda << ", skipping : " << error.what();
+				fout_rec << endl << endl << ss.str() << endl;
+				std::cout << endl << ss.str() << endl;
+				performance_log->log_event(ss.str());
+				performance_log->add_indent(-1);
+				continue;
+			}
+			performance_log->log_event("transforming upgrade pars to model pars");
 			Parameters new_par_model = par_transform.active_ctl2model_cp(new_pars);
+			performance_log->log_event("writing upgrade vector to csv file");
+			output_file_writer.write_upgrade(termination_ctl.get_iteration_number(), 0, i_lambda, 1.0, new_pars);
 			int run_id = run_manager.add_run(new_par_model, "normal", i_lambda);
 			save_frozen_pars(fout_frz, frozen_active_ctl_pars, run_id);
 
@@ -1054,21 +1135,28 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 			Parameters del_numeric_pars = new_numeric_pars - base_numeric_pars;
 			for (double i_scale : lambda_scale_vec)
 			{
+				if (i_scale == 1.0)
+					continue;
 				Parameters scaled_pars = base_numeric_pars + del_numeric_pars * i_scale;
 				par_transform.numeric2model_ip(scaled_pars);
+				Parameters scaled_ctl_pars = par_transform.numeric2ctl_cp(scaled_pars);
+				output_file_writer.write_upgrade(termination_ctl.get_iteration_number(), 
+					0, i_lambda, i_scale, scaled_ctl_pars);
+
 				stringstream ss;
 				ss << "scale(" << std::fixed << std::setprecision(2) << i_scale << ")";
 				int run_id = run_manager.add_run(scaled_pars, ss.str(), i_lambda);
+				fout_rec << "   ...calculating scaled lambda vector-scale factor: " << i_scale << endl;
 				save_frozen_pars(fout_frz, frozen_active_ctl_pars, run_id);
 			}
 
 			////Try to extend the previous upgrade vector
-			if (limit_type == LimitType::LBND || limit_type == LimitType::UBND)
+			if ((upgrade_augment) &&  (limit_type == LimitType::LBND || limit_type == LimitType::UBND))
 			{
 				Parameters frozen_active_ctl_pars = failed_jac_pars;
 				calc_upgrade_vec_freeze(i_lambda, frozen_active_ctl_pars, Q_sqrt, *regul_scheme_ptr, residuals_vec,
 					obs_names_vec, base_run_active_ctl_par,
-					new_pars, MarquardtMatrix::IDENT, false);
+					new_pars, mar_mat, false);
 
 				Parameters new_par_model = par_transform.active_ctl2model_cp(new_pars);
 				int run_id = run_manager.add_run(new_par_model, "extended", i_lambda);
@@ -1184,7 +1272,7 @@ void SVDSolver::check_limits(const Parameters &init_active_ctl_pars, const Param
 	double b_facorg_lim;
 	pair<bool, double> par_limit;
 	const ParameterRec *p_info;
-
+	
 	for (auto &ipar : upgrade_active_ctl_pars)
 	{
 		name = &(ipar.first);  // parameter name
@@ -1390,9 +1478,10 @@ void SVDSolver::iteration_update_and_report(ostream &os, const ModelRun &base_ru
 		PhiData phi_data = obj_func->phi_report(base_run.get_obs(), base_run.get_ctl_pars(), *regul_scheme_ptr);
 		output_file_writer.write_obj_iter(0, 0, phi_data);
 	}
-
-	output_file_writer.par_report(os, termination_ctl.get_iteration_number()+1, new_ctl_pars, old_ctl_pars, "Control File");
 	PhiData phi_data = obj_func->phi_report(upgrade.get_obs(), upgrade.get_ctl_pars(), *regul_scheme_ptr);
+
+	output_file_writer.phi_report(os, termination_ctl.get_iteration_number(), run_manager.get_total_runs(), phi_data, regul_scheme_ptr->get_weight(), false, "Final");
+	output_file_writer.par_report(os, termination_ctl.get_iteration_number()+1, new_ctl_pars, old_ctl_pars, "Control File");
 	output_file_writer.write_obj_iter(termination_ctl.get_iteration_number() + 1, run_manager.get_total_runs(), phi_data);
 	for (const auto &ipar : new_ctl_pars)
 	{
@@ -1524,6 +1613,11 @@ void SVDSolver::limit_parameters_ip(const Parameters &init_active_ctl_pars, Para
 			limit_type = limit_type_map[*name];
 		}
 	}
+	if (limit_factor == 0.0)
+	{
+		cout << endl <<  "WARNING: zero-length upgrade vector resulting from parameter bounds enforcement" << endl;
+		file_manager.rec_ofstream() << "WARNING: zero-length upgrade vector resulting from parameter bounds enforcement" << endl;
+	}
 	// Apply limit factor to numeric PEST upgrade parameters
 	if (limit_factor != 1.0)
 	{
@@ -1541,6 +1635,7 @@ void SVDSolver::limit_parameters_ip(const Parameters &init_active_ctl_pars, Para
 	{
 		upgrade_active_ctl_pars[ipar.first] = ipar.second;
 	}
+	return;
 }
 
 PhiComponets SVDSolver::phi_estimate(const ModelRun &base_run, const Jacobian &jacobian, QSqrtMatrix &Q_sqrt, const DynamicRegularization &regul,
@@ -1580,9 +1675,11 @@ PhiComponets SVDSolver::phi_estimate(const ModelRun &base_run, const Jacobian &j
 	VectorXd delta_par_vec = transformable_2_egien_vec(delta_par, numeric_par_names);
 	Eigen::SparseMatrix<double> jac = jacobian.get_matrix(obs_names_vec, numeric_par_names);
 	VectorXd delta_obs_vec = jac * delta_par_vec;
-	Transformable delta_obs(obs_names_vec, delta_obs_vec);
+	//Transformable delta_obs(obs_names_vec, delta_obs_vec);
 	Observations projected_obs = base_run.get_obs();
-	projected_obs += delta_obs;
+	Observations full_delta_obs(projected_obs);
+	full_delta_obs.update_without_clear(obs_names_vec,delta_obs_vec);
+	projected_obs += full_delta_obs;
 
 	PhiComponets proj_phi_comp = base_run.get_obj_func_ptr()->get_phi_comp(projected_obs, new_ctl_pars, regul_scheme);
 	return proj_phi_comp;

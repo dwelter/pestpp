@@ -11,7 +11,7 @@ import flopy
 import pyemu
 
 
-model_ws = "template_mac"
+model_ws = os.path.join("template_mac")
 pst = pyemu.Pst(os.path.join(model_ws,"supply2_pest.base.pst"))
 # pst.parrep(os.path.join("baseline_opt","supply2_pest.base.par"))
 # pst.control_data.noptmax = 0
@@ -53,14 +53,15 @@ for w in [wel_x,wel_y,wel_label]:
     w.pop(2)
 
 fig = plt.figure(figsize=(17.15/2.54,10.15/2.54))
-ax = plt.axes([0.05,0.075,0.7,0.9])
-cax = plt.axes([0.75,0.075,0.025,0.9])
-i = ax.imshow(harray,interpolation="nearest",alpha=0.5,extent=ml.sr.get_extent())
+ax = plt.axes([0.1,0.075,0.7,0.9])
+cax = plt.axes([0.85,0.075,0.025,0.9])
+#i = ax.imshow(harray,interpolation="nearest",alpha=0.5,extent=ml.sr.get_extent())
+i = ax.pcolormesh(ml.sr.xedge,ml.sr.yedge,harray,alpha=0.5)
 c = plt.colorbar(i,cax=cax)
-c.set_label("water level (m)",labelpad=0.1)
+c.set_label("water level (ft)",labelpad=0.1)
 
-ax.set_xlabel("x distance (m)",labelpad=0.1)
-ax.set_ylabel("y distance (m)",labelpad=0.1)
+ax.set_xlabel("x distance (ft)",labelpad=0.1)
+ax.set_ylabel("y distance (ft)",labelpad=0.1)
 ax.scatter(wel_x,wel_y,marker='.',s=10,color='k',label="pumping well cell",zorder=10)
 for x,y,l in zip(wel_x,wel_y,wel_label):
     t = ax.text(x+10,y+10,l,ha="left",va="bottom")

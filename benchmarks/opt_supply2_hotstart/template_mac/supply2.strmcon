@@ -1,0 +1,20 @@
+#SUPPLY2 Sample Problem, STRMCON file
+#August 14, 2006
+ 1                          #1-IPRN
+ 0 12                       #2-NSF NSD
+ S01.9  1 14 le 15000. 9    #4-SDNAME SEG REACH TYPSD BND NSP
+ S01.10 1 14 le 15000. 10
+ S01.11 1 14 le 15000. 11
+ S01.12 1 14 le 15000. 12
+ S02.11 1 21 le 20000. 11
+ S02.12 1 21 le 20000. 12
+ S03.9  2  8 le 15000. 9
+ S03.10 2  8 le 15000. 10
+ S03.11 2  8 le 15000. 11
+ S03.12 2  8 le 15000. 12
+ S04.11 3  5 le 30000. 11
+ S04.12 3  5 le 30000. 12
+
+
+
+
