@@ -2,14 +2,18 @@
 *.slo
 *.lo
 *.o
+*.obj
+*.mod
 
 # Compiled Dynamic libraries
 *.so
+*.dll
 
 # Compiled Static libraries
 *.lai
 *.la
 *.a
+*.lib
 
 /morris_meth/ipch
 /morris_meth/Debug
