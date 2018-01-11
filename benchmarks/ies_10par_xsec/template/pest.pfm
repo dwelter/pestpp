@@ -1,89 +1,21 @@
-PEST++ performance logger started at:  18:05:40
-        ( time = 18:05:40,  elapsed time = 2ms )
+PEST++ performance logger started at:  22:47:02
+        ( time = 22:47:03,  elapsed time = 712ms )
   starting to process control file
-          ( time = 18:05:40,  elapsed time = 27ms )
+          ( time = 22:47:03,  elapsed time = 44ms )
   finished processing control file
-          ( time = 18:05:40,  elapsed time = 10ms )
+          ( time = 22:47:03,  elapsed time = 67ms )
     starting basic model IO error checking
-            ( time = 18:05:40,  elapsed time = 5ms )
+            ( time = 22:47:03,  elapsed time = 92ms )
     finished basic model IO error checking
-            ( time = 18:05:40,  elapsed time = 11ms )
+            ( time = 22:47:03,  elapsed time = 40ms )
     processing par csv
-            ( time = 18:05:40,  elapsed time = 18ms )
+            ( time = 22:47:03,  elapsed time = 27ms )
     processing obs csv
-            ( time = 18:05:40,  elapsed time = 19ms )
+            ( time = 22:47:03,  elapsed time = 21ms )
     load obscov
-            ( time = 18:05:40,  elapsed time = 1ms )
+            ( time = 22:47:03,  elapsed time = 2ms )
     load parcov
-            ( time = 18:05:40,  elapsed time = 1ms )
+            ( time = 22:47:03,  elapsed time = 1ms )
     calculate prior par diff
-            ( time = 18:05:40,  elapsed time = 107us )
+            ( time = 22:47:03,  elapsed time = 87us )
     restart IES with existing obs ensemble csv: OBS_RESTART.CSV
-            ( time = 18:05:40,  elapsed time = 108ms )
-    starting solve for iteration: 1
-            ( time = 18:05:40,  elapsed time = 170us )
-    calculate residual matrix
-            ( time = 18:05:40,  elapsed time = 553us )
-    calculate scaled obs diff
-            ( time = 18:05:40,  elapsed time = 17ms )
-    calculate scaled par diff
-            ( time = 18:05:40,  elapsed time = 160ms )
-    SVD of obs diff
-            ( time = 18:05:40,  elapsed time = 200us )
-    starting REDSVD
-            ( time = 18:05:40,  elapsed time = 443us )
-    retrieving REDSVD components
-            ( time = 18:05:40,  elapsed time = 90us )
-    triming REDSVD components to 1elements
-            ( time = 18:05:40,  elapsed time = 82us )
-    done REDSVD
-            ( time = 18:05:40,  elapsed time = 836us )
-    starting calcs for lambda1
-            ( time = 18:05:40,  elapsed time = 106us )
-    form scaled identity matrix
-            ( time = 18:05:40,  elapsed time = 88us )
-    calculate portion of upgrade_1 for localization
-            ( time = 18:05:40,  elapsed time = 124us )
-    apply residuals to upgrade_1
-            ( time = 18:05:40,  elapsed time = 4ms )
-    queuing 1 ensembles
-            ( time = 18:05:40,  elapsed time = 28ms )
-    making runs
-            ( time = 18:05:47,  elapsed time = 6sec )
-    processing runs
-            ( time = 18:05:47,  elapsed time = 41ms )
-    updating parameter ensemble
-            ( time = 18:05:47,  elapsed time = 94ms )
-    starting solve for iteration: 2
-            ( time = 18:05:47,  elapsed time = 213us )
-    calculate residual matrix
-            ( time = 18:05:47,  elapsed time = 618us )
-    calculate scaled obs diff
-            ( time = 18:05:47,  elapsed time = 38ms )
-    calculate scaled par diff
-            ( time = 18:05:47,  elapsed time = 369ms )
-    SVD of obs diff
-            ( time = 18:05:47,  elapsed time = 190us )
-    starting REDSVD
-            ( time = 18:05:47,  elapsed time = 377us )
-    retrieving REDSVD components
-            ( time = 18:05:47,  elapsed time = 100us )
-    triming REDSVD components to 1elements
-            ( time = 18:05:47,  elapsed time = 121us )
-    done REDSVD
-            ( time = 18:05:47,  elapsed time = 3ms )
-    starting calcs for lambda0.75
-            ( time = 18:05:47,  elapsed time = 240us )
-    form scaled identity matrix
-            ( time = 18:05:47,  elapsed time = 114us )
-    calculate portion of upgrade_1 for localization
-            ( time = 18:05:47,  elapsed time = 163us )
-    apply residuals to upgrade_1
-            ( time = 18:05:48,  elapsed time = 8ms )
-    queuing 1 ensembles
-            ( time = 18:05:48,  elapsed time = 34ms )
-    making runs
-            ( time = 18:05:55,  elapsed time = 7sec )
-    processing runs
-            ( time = 18:05:55,  elapsed time = 103ms )
-    updating parameter ensemble

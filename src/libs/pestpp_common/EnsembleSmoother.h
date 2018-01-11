@@ -19,8 +19,8 @@ class PhiHandler
 public:
 	enum phiType { MEAS, COMPOSITE, REGUL, ACTUAL };
 	PhiHandler(Pest &_pest_scenario, FileManager &_file_manager, 
-		       ObservationEnsemble &_base_oe, ParameterEnsemble &_base_pe,
-		       Covariance &_parcov_inv);
+		       ObservationEnsemble &_oe_base, ParameterEnsemble &_pe_base,
+		       Covariance &_parcov_inv, double *_reg_factor);
 	void update(ObservationEnsemble &oe, ParameterEnsemble &pe);
 	pair<double, double> get_composite_mean_std(ObservationEnsemble &oe, ParameterEnsemble &pe);
 	double get_mean(phiType pt);
@@ -31,19 +31,21 @@ public:
 	void write(int iter_num);
 
 private:
-	void prepare_csv(ofstream &csv);
-	void update_meas(ObservationEnsemble &oe);
-	void update_regul(ParameterEnsemble &pe);
-	void update_actual(ObservationEnsemble &oe);
-	void update_composite();
+	void prepare_csv(ofstream &csv,vector<string> &names);
+	map<string, double> calc_meas(ObservationEnsemble &oe);
+	map<string, double> calc_regul(ParameterEnsemble &pe);
+	map<string, double> calc_actual(ObservationEnsemble &oe);
+	map<string, double> calc_composite(map<string,double> &_meas, map<string,double> &_regul);
+	map<string, double> get_phi_map(PhiHandler::phiType &pt);
+	void write_csv(int iter_num, ofstream &csv, map<string, double> &phi_map,
+		           vector<string> &names);
 
-	void write_csv(int iter_num, ofstream &csv, map<string, double> &phi_map);
-
-	vector<string> names;
+	double *reg_factor;
+	vector<string> oreal_names,preal_names;
 	Pest &pest_scenario;
 	FileManager &file_manager;
-	ObservationEnsemble &base_oe;
-	ParameterEnsemble &base_pe;
+	ObservationEnsemble &oe_base;
+	ParameterEnsemble &pe_base;
 	Covariance &parcov_inv;
 	map<string, double> meas;
 	map<string, double> regul;
