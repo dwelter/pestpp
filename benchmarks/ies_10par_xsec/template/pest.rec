@@ -1,4 +1,4 @@
-             pestpp-ies.exe - a GLM iterative Ensemble Smoother
+             sweep.exe - a parameteric sweep utility
 for PEST(++) datasets 
 
                  by the PEST++ developement team
@@ -6,6 +6,66 @@ for PEST(++) datasets
 
 
 using control file: "pest.pst"
+
+    sweep parameter csv file = par1.csv                                          
+    sweep output csv file = sweep_out.csv                                     
+    sweep chunk size = 500       
+    sweep base run = 0         
+    sweep forgive failed runs = 0         
+
+PEST++ run mode:- 
+   estimation
+
+Case dimensions:- 
+    Number of parameters = 11
+    Number of adjustable parameters = 9
+    Number of observations = 20
+    Number of prior estimates = 0
+
+PEST Control Information
+    relparmax = 5
+    facparmax = 5
+    facorig = 0.001
+    phiredswh = 0.1
+    noptmax = 1
+    phiredstp = 0.005
+    nphistp = 4
+    nphinored = 4
+    relparstp = 0.005
+    nrelpar = 4
+
+PEST++ Options
+    n_iter_base = 1                   
+    n_iter_super = 4                   
+    max_n_super = 10                  
+    super eigthres = 1e-08               
+    svd pack = 2                   
+    auto norm = -999                
+    super relparmax = 0.1                 
+    max super frz iter = 5                   
+    mat inv = 1                   
+    max run fail = 3                   
+    max reg iter = 20                  
+    use jacobian scaling a la PEST? =  yes
+    lambdas = 
+            0.1
+              1
+             10
+            100
+           1000
+    lambda scaling factors = 
+            0.9
+            0.8
+            0.7
+            0.5
+    using FOSM-based uncertainty estimation for parameters
+    parameter covariance file =                     
+    derivative run failure forgive = 1              
+    run overdue reschedule factor = 1.15                
+    run overdue giveup factor = 100                 
+    base parameter jacobian filename =                     
+    prior parameter covariance upgrade scaling factor = -999      
+
 
 Model command line(s):- 
     model.bat
@@ -71,11 +131,14 @@ h02_10                                    5.1                head               
 
 
 
+Prior information
 
- iteration number : 0
- number of active realizations: 30
-       phi type           mean            std            min            max
-      composite        196.651        407.719      0.0788772        1892.36
-       measured        196.651        407.719      0.0788772        1892.36
- regularization              0              0              0              0
-         actual        196.349        402.408         0.8762        1856.69
+   no prior information provided
+
+
+
+PEST SVD Information
+    maxsing = 1
+    eigthresh = 0.001
+
+

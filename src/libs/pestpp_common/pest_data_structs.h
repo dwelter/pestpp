@@ -325,6 +325,8 @@ public:
 	void set_ies_use_approx(bool _ies_use_approx) { ies_use_approx = _ies_use_approx; }
 	const int get_ies_subset_size() const { return ies_subset_size; }
 	void set_ies_subset_size(int _ies_subset_size) { ies_subset_size = _ies_subset_size; }
+	const double get_ies_reg_factor() const { return ies_reg_factor; }
+	void set_ies_reg_factor(double _ies_reg_factor) { ies_reg_factor = _ies_reg_factor; }
 
 
 private:
@@ -389,6 +391,7 @@ private:
 	string ies_obs_restart_csv;
 	double ies_init_lam;
 	bool ies_use_approx;
+	double ies_reg_factor;
 	vector<double> ies_lam_mults;
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);

@@ -11,19 +11,22 @@
 #include "SVDPackage.h"
 
 
-PhiHandler::PhiHandler(Pest &_pest_scenario, FileManager &_file_manager, 
-					   ObservationEnsemble &_oe_base, ParameterEnsemble &_pe_base,
-		               Covariance &_parcov_inv, double *_reg_factor):
-	pest_scenario(_pest_scenario),file_manager(_file_manager),oe_base(_oe_base),pe_base(_pe_base),
-	parcov_inv(_parcov_inv)
+PhiHandler::PhiHandler(Pest *_pest_scenario, FileManager *_file_manager,
+	ObservationEnsemble *_oe_base, ParameterEnsemble *_pe_base,
+	Covariance *_parcov_inv, double *_reg_factor)	
 {
+	pest_scenario = _pest_scenario;
+	file_manager = _file_manager;
+	oe_base = _oe_base;
+	pe_base = _pe_base;
 	reg_factor = _reg_factor;
-	oreal_names = oe_base.get_real_names();
-	preal_names = pe_base.get_real_names();
-	prepare_csv(file_manager.open_ofile_ext("phi.actual.csv"),oreal_names);
-	prepare_csv(file_manager.open_ofile_ext("phi.meas.csv"),oreal_names);
-	prepare_csv(file_manager.open_ofile_ext("phi.composite.csv"),oreal_names);
-	prepare_csv(file_manager.open_ofile_ext("phi.regul.csv"),preal_names);
+	parcov_inv = _parcov_inv;
+	oreal_names = oe_base->get_real_names();
+	preal_names = pe_base->get_real_names();
+	prepare_csv(file_manager->open_ofile_ext("phi.actual.csv"),oreal_names);
+	prepare_csv(file_manager->open_ofile_ext("phi.meas.csv"),oreal_names);
+	prepare_csv(file_manager->open_ofile_ext("phi.composite.csv"),oreal_names);
+	prepare_csv(file_manager->open_ofile_ext("phi.regul.csv"),preal_names);
 
 }
 
@@ -56,10 +59,6 @@ map<string, double>* PhiHandler::get_phi_map(PhiHandler::phiType &pt)
 	}
 }
 
-pair<double, double> PhiHandler::get_composite_mean_std(ObservationEnsemble & oe, ParameterEnsemble & pe)
-{
-	return pair<double, double>();
-}
 
 double PhiHandler::get_mean(phiType pt)
 {
@@ -102,7 +101,7 @@ double PhiHandler::get_min(phiType pt)
 	return mn;
 }
 
-map<string, double> PhiHandler::get_summary_stats(PhiHandler::phiType &pt)
+map<string, double> PhiHandler::get_summary_stats(PhiHandler::phiType pt)
 {
 	map<string, double> stats;
 	stats["mean"] = get_mean(pt);
@@ -112,7 +111,7 @@ map<string, double> PhiHandler::get_summary_stats(PhiHandler::phiType &pt)
 	return stats;
 }
 
-string PhiHandler::get_summary_string(PhiHandler::phiType &pt)
+string PhiHandler::get_summary_string(PhiHandler::phiType pt)
 {
 	map<string, double> stats = get_summary_stats(pt);
 	stringstream ss;
@@ -137,72 +136,87 @@ string PhiHandler::get_summary_string(PhiHandler::phiType &pt)
 	return ss.str();
 }
 
-void PhiHandler::report(int iter_num)
-{
-	ofstream &f = file_manager.rec_ofstream();
 
-	f << endl << endl << " iteration number : " << iter_num << endl;
-	f << " number of active realizations: " << meas.size() << endl;
-	f << setw(15) << "phi type" << setw(15) << "mean" << setw(15) << "std" << setw(15) << "min" << setw(15) << "max" << endl;
-	PhiHandler::phiType pt = PhiHandler::phiType::COMPOSITE;
-	f << get_summary_string(pt);
-	pt = PhiHandler::phiType::MEAS;
-	f << get_summary_string(pt);
-	pt = PhiHandler::phiType::REGUL;
-	f << get_summary_string(pt);
-	pt = PhiHandler::phiType::ACTUAL;
-	f << get_summary_string(pt);
+string PhiHandler::get_summary_header()
+{
+	stringstream ss;
+	ss << setw(15) << "phi type" << setw(15) << "mean" << setw(15) << "std" << setw(15) << "min" << setw(15) << "max" << endl;
+	return ss.str();
+
+}
+
+
+void PhiHandler::report()
+{
+	ofstream &f = file_manager->rec_ofstream();
+	f << get_summary_header();
+	cout << get_summary_header();
+	string s = get_summary_string(PhiHandler::phiType::COMPOSITE);
+	f << s;
+	cout << s;
+	s = get_summary_string(PhiHandler::phiType::MEAS);
+	f << s;
+	cout << s;
+	s = get_summary_string(PhiHandler::phiType::REGUL);
+	f << s;
+	cout << s;
+	s = get_summary_string(PhiHandler::phiType::ACTUAL);
+	f << s;
+	cout << s;
+	f << endl << endl;
 	f.flush();
 
-
 }
 
-void PhiHandler::write(int iter_num)
+void PhiHandler::write(int iter_num, int total_runs)
 {
-	write_csv(iter_num, file_manager.get_ofstream("phi.actual.csv"), actual,oreal_names);
-	write_csv(iter_num, file_manager.get_ofstream("phi.meas.csv"), meas, oreal_names);
-	write_csv(iter_num, file_manager.get_ofstream("phi.regul.csv"), regul, preal_names);
-	write_csv(iter_num, file_manager.get_ofstream("phi.composite.csv"), composite, oreal_names);
+	write_csv(iter_num, total_runs, file_manager->get_ofstream("phi.actual.csv"), phiType::ACTUAL,oreal_names);
+	write_csv(iter_num, total_runs, file_manager->get_ofstream("phi.meas.csv"), phiType::MEAS, oreal_names);
+	write_csv(iter_num, total_runs, file_manager->get_ofstream("phi.regul.csv"), phiType::REGUL, preal_names);
+	write_csv(iter_num, total_runs, file_manager->get_ofstream("phi.composite.csv"), phiType::COMPOSITE, oreal_names);
 }
 
-void PhiHandler::write_csv(int iter_num, ofstream &csv, map<string, double> &phi_map, vector<string> &names)
+void PhiHandler::write_csv(int iter_num, int total_runs, ofstream &csv, phiType pt, vector<string> &names)
 {
-	map<string, double>::iterator pmi = phi_map.end();
-	csv << iter_num << ',' << phi_map.size();
+	map<string, double>* phi_map = get_phi_map(pt);
+	map<string, double>::iterator pmi = phi_map->end();
+	csv << iter_num << ',' << total_runs;
+	map<string, double> stats = get_summary_stats(pt);
+	csv << ',' << stats["mean"] << ',' << stats["std"] << ',' << stats["min"] << ',' << stats["max"];
 	for (auto &name : names)
 	{
 		csv << ',';
-		if (phi_map.find(name) != pmi)
-			csv << phi_map[name];
+		if (phi_map->find(name) != pmi)
+			csv << &phi_map->at(name);
 	}
+	csv.flush();
 }
 
 void PhiHandler::prepare_csv(ofstream & csv,vector<string> &names)
 {
-	csv << "iteration,ensemble_size,phi_mean,phi_standard_deviation,phi_min,phi_max";
+	csv << "iteration,total_runs,mean,standard_deviation,min,max";
 	for (auto &name : names)
 		csv << ',' << name;
 	csv << endl;
-	
 }
 
 map<string, double> PhiHandler::calc_meas(ObservationEnsemble & oe)
 {
 	map<string, double> phi_map;
-	ObservationInfo oinfo = pest_scenario.get_ctl_observation_info();
+	ObservationInfo oinfo = pest_scenario->get_ctl_observation_info();
 	Eigen::VectorXd oe_base_vec, oe_vec, q, diff;
-	vector<string> act_obs_names = pest_scenario.get_ctl_ordered_nz_obs_names();
+	vector<string> act_obs_names = pest_scenario->get_ctl_ordered_nz_obs_names();
 	q.resize(act_obs_names.size());
 	double w;
 	//for (auto &oname : act_obs_names)
 	for (int i = 0; i < act_obs_names.size(); i++)
 		q(i) = oinfo.get_weight(act_obs_names[i]);
-	vector<string> base_real_names = oe_base.get_real_names(), oe_real_names = oe.get_real_names();
+	vector<string> base_real_names = oe_base->get_real_names(), oe_real_names = oe.get_real_names();
 	vector<string>::iterator start = base_real_names.begin(), end = base_real_names.end();
 	double phi;
 	string rname;
 
-	Eigen::MatrixXd oe_reals = oe.get_eigen(vector<string>(), oe_base.get_var_names());
+	Eigen::MatrixXd oe_reals = oe.get_eigen(vector<string>(), oe_base->get_var_names());
 	//for (auto &rname : _oe.get_real_names())
 	//meas.clear();
 	for (int i = 0; i<oe.shape().first; i++)
@@ -210,7 +224,7 @@ map<string, double> PhiHandler::calc_meas(ObservationEnsemble & oe)
 		rname = oe_real_names[i];
 		if (find(start, end, rname) == end)
 			continue;
-		oe_base_vec = oe_base.get_real_vector(rname);
+		oe_base_vec = oe_base->get_real_vector(rname);
 		oe_vec = oe_reals.row(i);
 		diff = (oe_vec - oe_base_vec).cwiseProduct(q);
 		phi = (diff.cwiseProduct(diff)).sum();
@@ -223,14 +237,13 @@ map<string, double> PhiHandler::calc_regul(ParameterEnsemble & pe)
 {	
 	map<string, double> phi_map;
 	vector<string> real_names = pe.get_real_names();
-	pe_base.transform_ip(ParameterEnsemble::transStatus::NUM);
+	pe_base->transform_ip(ParameterEnsemble::transStatus::NUM);
 	pe.transform_ip(ParameterEnsemble::transStatus::NUM);
-	Eigen::MatrixXd diff = pe.get_eigen() - pe_base.get_eigen(real_names, vector<string>());
-	cout << diff.rows() << ' ' << diff.cols() << endl;
-	cout << parcov_inv.e_ptr()->rows() << ' ' << parcov_inv.e_ptr()->cols() << endl;
-
-	diff = diff * *parcov_inv.e_ptr() * diff.transpose();
-	cout << diff.rows() << ' ' << diff.cols() << endl;
+	Eigen::MatrixXd diff = pe.get_eigen() - pe_base->get_eigen(real_names, vector<string>());
+	//cout << diff.rows() << ' ' << diff.cols() << endl;
+	//cout << parcov_inv->e_ptr()->rows() << ' ' << parcov_inv->e_ptr()->cols() << endl;
+	diff = diff * *parcov_inv->e_ptr() * diff.transpose();
+	//cout << diff.rows() << ' ' << diff.cols() << endl;
 
 	//regul.clear();
 	for (int i = 0; i < real_names.size(); i++)
@@ -241,10 +254,10 @@ map<string, double> PhiHandler::calc_regul(ParameterEnsemble & pe)
 map<string, double> PhiHandler::calc_actual(ObservationEnsemble & oe)
 {
 	map<string, double> phi_map;
-	ObservationInfo oinfo = pest_scenario.get_ctl_observation_info();
-	Observations obs = pest_scenario.get_ctl_observations();
+	ObservationInfo oinfo = pest_scenario->get_ctl_observation_info();
+	Observations obs = pest_scenario->get_ctl_observations();
 	Eigen::VectorXd obs_val_vec, oe_vec, q, diff;
-	vector<string> act_obs_names = pest_scenario.get_ctl_ordered_nz_obs_names();
+	vector<string> act_obs_names = pest_scenario->get_ctl_ordered_nz_obs_names();
 	q.resize(act_obs_names.size());
 	obs_val_vec.resize(act_obs_names.size());
 	double w;
@@ -255,12 +268,12 @@ map<string, double> PhiHandler::calc_actual(ObservationEnsemble & oe)
 		obs_val_vec(i) = obs[act_obs_names[i]];
 	}
 		
-	vector<string> base_real_names = oe_base.get_real_names(), oe_real_names = oe.get_real_names();
+	vector<string> base_real_names = oe_base->get_real_names(), oe_real_names = oe.get_real_names();
 	vector<string>::iterator start = base_real_names.begin(), end = base_real_names.end();
 	double phi;
 	string rname;
 
-	Eigen::MatrixXd oe_reals = oe.get_eigen(vector<string>(), oe_base.get_var_names());
+	Eigen::MatrixXd oe_reals = oe.get_eigen(vector<string>(), oe_base->get_var_names());
 	//for (auto &rname : _oe.get_real_names())
 	//meas.clear();
 	for (int i = 0; i<oe.shape().first; i++)
@@ -284,7 +297,7 @@ map<string, double> PhiHandler::calc_composite(map<string, double> &_meas, map<s
 	string prn, orn;
 	double reg, mea;
 	map<string, double>::iterator meas_end = _meas.end(), regul_end = _regul.end();
-	for (int i = 0; i < oe_base.shape().first; i++)
+	for (int i = 0; i < oe_base->shape().first; i++)
 	{
 		prn = preal_names[i];
 		orn = oreal_names[i];
@@ -300,67 +313,6 @@ map<string, double> PhiHandler::calc_composite(map<string, double> &_meas, map<s
 }	
 
 
-PhiStats::PhiStats(const map<string, double> &_phi_map)
-{
-	update(_phi_map);
-}
-void PhiStats::update(const map<string, double> &_phi_map)
-{
-	phi_map = _phi_map;
-	map<string, double> stats;
-	Eigen::VectorXd phi_vec;
-	size = phi_map.size();
-	phi_vec.resize(size);
-	PhiComponets pc;
-	int i = 0;
-	for (auto &pi : phi_map)
-	{
-		phi_vec[i] = pi.second;
-		i++;
-	}
-	mean = phi_vec.mean();
-	Eigen::VectorXd centered = (phi_vec - (Eigen::VectorXd::Ones(phi_vec.size()) * mean));
-	double var = (centered.cwiseProduct(centered)).sum();
-	std = sqrt(var / double(phi_vec.size()));
-	max = phi_vec.maxCoeff();
-	min = phi_vec.minCoeff();
-}
-
-void PhiStats::rec_report(ofstream &f_rec)
-{
-	f_rec << "   ensemble size:                   " << setw(20) << left << size << endl;
-	f_rec << "   ensemble phi mean:               " << setw(20) << left << mean << endl;
-	f_rec << "   ensemble phi standard deviation: " << setw(20) << left << std << endl;
-	f_rec << "   ensemble phi min:                " << setw(20) << left << min << endl;
-	f_rec << "   ensemble phi max:                " << setw(20) << left << max << endl;
-	cout << "   ensemble size:                   " << setw(20) << left << size << endl;
-	cout << "   ensemble phi mean:               " << setw(20) << left << mean << endl;
-	cout << "   ensemble phi standard deviation: " << setw(20) << left << std << endl;
-	cout << "   ensemble phi min:                " << setw(20) << left << min << endl;
-	cout << "   ensemble phi max:                " << setw(20) << left << max << endl;
-
-}
-
-void PhiStats::initialize_csv(ofstream &csv, const vector<string> &names)
-{
-	csv << "iteration,ensemble_size,phi_mean,phi_standard_deviation,phi_min,phi_max";
-	for (auto &name : names)
-		csv << ',' << name;
-	csv << endl;
-}
-
-void PhiStats::csv_report(ofstream &csv, const int iter, const vector<string> &names)
-{
-	csv << iter << ',' << size << ',' << mean << ',' << std << ',' << min << ',' << max << ',';
-
-	//vector<string>::iterator start = oe_real_names.begin(), end = oe_real_names.end();
-	for (auto &rname : names)
-	{
-		if (phi_map.find(rname) != phi_map.end())
-			csv << phi_map[rname];
-		csv << ',';
-	}
-}
 
 
 IterEnsembleSmoother::IterEnsembleSmoother(Pest &_pest_scenario, FileManager &_file_manager,
@@ -371,10 +323,10 @@ IterEnsembleSmoother::IterEnsembleSmoother(Pest &_pest_scenario, FileManager &_f
 {
 	pe.set_pest_scenario(&pest_scenario);
 	oe.set_pest_scenario(&pest_scenario);
-	fphi_name = file_manager.get_base_filename() + ".phi.csv";
-	fphi.open(fphi_name);
-	if (!fphi.good())
-		throw_ies_error("initialize: unable to open phi csv file " + fphi_name);
+	//fphi_name = file_manager.get_base_filename() + ".phi.csv";
+	//fphi.open(fphi_name);
+	//if (!fphi.good())
+	//	throw_ies_error("initialize: unable to open phi csv file " + fphi_name);
 }
 
 void IterEnsembleSmoother::throw_ies_error(string &message)
@@ -401,6 +353,7 @@ void IterEnsembleSmoother::initialize()
 
 	subset_size = pest_scenario.get_pestpp_options().get_ies_subset_size();
 	
+	reg_factor = pest_scenario.get_pestpp_options().get_ies_reg_factor();
 
 	performance_log->log_event("processing par csv");
 	stringstream ss;
@@ -460,16 +413,7 @@ void IterEnsembleSmoother::initialize()
 	act_obs_names = pest_scenario.get_ctl_ordered_nz_obs_names();
 	act_par_names = pest_scenario.get_ctl_ordered_adj_par_names();
 
-	/*fphi << "iteration,num_active,";
-	for (auto &s : phi_stat_names)
-		fphi << s << ',';
-	for (auto &rname : oe.get_real_names())
-		fphi << rname << ',';
-	fphi << endl;*/
-
-
-
-	PhiStats::initialize_csv(fphi, oe_org_real_names);
+	//PhiStats::initialize_csv(fphi, oe_org_real_names);
 
 	oe_base = oe; //copy
 	//reorder this for later...
@@ -488,27 +432,25 @@ void IterEnsembleSmoother::initialize()
 	obscov_inv_sqrt = obscov.get_matrix().diagonal().cwiseSqrt().asDiagonal();
 	
 	performance_log->log_event("load parcov");
-	Covariance parcov;
 	string parcov_filename = pest_scenario.get_pestpp_options().get_parcov_filename();
 	if (parcov_filename.size() == 0)
-		parcov.from_parameter_bounds(pest_scenario);
+		parcov_inv.from_parameter_bounds(pest_scenario);
 	else
 	{
 		string extension = parcov_filename.substr(parcov_filename.size() - 3, 3);
 		pest_utils::upper_ip(extension);
 		if (extension.compare("COV") == 0)
-			parcov.from_ascii(parcov_filename);
+			parcov_inv.from_ascii(parcov_filename);
 		else if ((extension.compare("JCO") == 0) || (extension.compare("JCB") == 0))
-			parcov.from_binary(parcov_filename);
+			parcov_inv.from_binary(parcov_filename);
 		else if (extension.compare("UNC") == 0)
-			parcov.from_uncertainty_file(parcov_filename);
+			parcov_inv.from_uncertainty_file(parcov_filename);
 		else
 			throw_ies_error("unrecognized parcov_filename extension: " + extension);
 	}
-	parcov = parcov.get(act_par_names);
-	parcov.inv_ip();
-	Eigen::SparseMatrix<double> parcov_eigen = parcov.get_matrix();
-
+	parcov_inv = parcov_inv.get(act_par_names);
+	parcov_inv.inv_ip();
+	
 	performance_log->log_event("calculate prior par diff");
 	//no scaling...chen and oliver scale this...
 	
@@ -615,18 +557,15 @@ void IterEnsembleSmoother::initialize()
 			throw_ies_error(ss.str());
 		}
 	}
-	/*PhiHandler(Pest &_pest_scenario, FileManager &_file_manager,
-		ObservationEnsemble &_oe_base, ParameterEnsemble &_pe_base,
-		Covariance &_parcov_inv, double *_reg_factor);*/
-	double reg_factor = 0.0;
-	pe.transform_ip(ParameterEnsemble::transStatus::NUM);
-	PhiHandler ph(pest_scenario, file_manager, oe_base, pe_base, parcov, &reg_factor);
+
+	ph = PhiHandler(&pest_scenario, &file_manager, &oe_base, &pe_base, &parcov_inv, &reg_factor);
 	ph.update(oe, pe);
-	ph.report(0);
-	map<string, double> phi_vec = get_phi_map(oe);
-	PhiStats phistats = report_and_save();
-	last_best_mean = phistats.get_mean();
-	last_best_std = phistats.get_std();
+	frec <<endl << "  ---  initial phi summary ---  " << endl;
+	ph.report();
+	ph.write(0, run_mgr_ptr->get_total_runs());
+	
+	last_best_mean = ph.get_mean(PhiHandler::phiType::COMPOSITE);
+	last_best_mean = ph.get_std(PhiHandler::phiType::COMPOSITE);
 	last_best_lam = pest_scenario.get_pestpp_options().get_ies_init_lam();
 	if (last_best_lam <= 0.0)
 	{
@@ -634,6 +573,7 @@ void IterEnsembleSmoother::initialize()
 		last_best_lam = pow(10.0,(floor(log10(x))));
 	}
 	file_manager.rec_ofstream() << "  ---  current lambda: " << setw(20) << left << last_best_lam << endl;
+	cout << "  ---  current lambda: " << setw(20) << left << last_best_lam << endl;
 	pe.transform_ip(ParameterEnsemble::transStatus::NUM);
 }
 
@@ -673,7 +613,7 @@ void IterEnsembleSmoother::solve()
 	performance_log->log_event("calculate scaled obs diff");
 	Eigen::MatrixXd diff = oe.get_eigen_mean_diff(vector<string>(),act_obs_names).transpose();
 	//cout << diff.rows() << ',' << diff.cols() << endl;
-	cout << diff << endl;
+	//cout << diff << endl;
 	//cout << obscov_inv_sqrt.rows() << ',' << obscov_inv_sqrt.cols() << endl;
 	Eigen::MatrixXd obs_diff = scale * (obscov_inv_sqrt * diff);
 
@@ -683,9 +623,9 @@ void IterEnsembleSmoother::solve()
 	Eigen::MatrixXd par_diff = scale * diff;
 
 //#ifdef _DEBUG
-	cout << "scaled_residual" << endl << scaled_residual << endl << endl;
-	cout << "par_diff" << endl << par_diff << endl << endl;
-	cout << "obs_diff" << endl << obs_diff << endl << endl;
+	//cout << "scaled_residual" << endl << scaled_residual << endl << endl;
+	//cout << "par_diff" << endl << par_diff << endl << endl;
+	//cout << "obs_diff" << endl << obs_diff << endl << endl;
 //#endif
 
 	performance_log->log_event("SVD of obs diff");
@@ -738,7 +678,7 @@ void IterEnsembleSmoother::solve()
 //		cout << *pe_lam.get_eigen_ptr() << endl << endl;
 #endif
 
-		if ((!pest_scenario.get_pestpp_options().get_ies_use_approx()) && (iter > 1))//eventually ies_use_approx
+		if ((!pest_scenario.get_pestpp_options().get_ies_use_approx()) && (iter > 1))
 		{
 			performance_log->log_event("calculating parameter correction (full solution)");
 
@@ -784,9 +724,12 @@ void IterEnsembleSmoother::solve()
 	//}
 	//ParameterEnsemble pe_lam_best = pe; //copy
 	vector<map<int, int>> real_run_ids_lams;
-	PhiStats phistats;
+	//PhiStats phistats;
+	
+	//ph.report(0);
 	int best_idx = -1;
 	double best_mean = 1.0e+30, best_std = 1.0e+30;
+	double mean, std;
 	frec << "  ---  running lambda ensembles...  ---  " << endl;
 	cout << "  ---  running lambda ensembles...  ---  " << endl;
 	vector<ObservationEnsemble> oe_lams = run_lambda_ensembles(pe_lams);
@@ -796,17 +739,22 @@ void IterEnsembleSmoother::solve()
 	for (int i=0;i<pe_lams.size();i++)
 	{	
 		//map<string, PhiComponets> temp = get_phi_info(oe_lams[i]);
-		phistats.update(get_phi_map(oe_lams[i]));
-		lam_test_report(lam_vals[i],phistats);
-		if (phistats.get_mean() < best_mean)
+		//histats.update(get_phi_map(oe_lams[i]));
+		frec << "  --- lambda value " << setw(15) << lam_vals[i] << " phi summary ---  " << endl;
+		ph.update(oe_lams[i], pe_lams[i]);
+		ph.report();
+		mean = ph.get_mean(PhiHandler::phiType::COMPOSITE);
+		std = ph.get_std(PhiHandler::phiType::COMPOSITE);
+		//lam_test_report(lam_vals[i],phistats);
+		if (mean < best_mean)
 		{
 			oe_lam_best = oe_lams[i];
-			best_mean = phistats.get_mean();
+			best_mean = mean;
+			best_std = std;
 			best_idx = i;
 		}
-	}
 
-	
+	}
 
 	if ((use_subset) && (subset_size < pe.shape().first))//subset stuff here
 	{
@@ -863,22 +811,27 @@ void IterEnsembleSmoother::solve()
 	//cout << oe_lam_best.get_var_names() << endl;
 	//cout << *oe_lam_best.get_eigen_ptr() << endl;
 
-	phistats.update(get_phi_map(oe_lam_best));
-	frec << "  ---  last mean, current mean: " << last_best_mean << ',' << phistats.get_mean() << endl;
-	frec << "  ---  last stdev, current stdev: " << last_best_std << ',' << phistats.get_std() << endl;
-	cout << "  ---  last mean, current mean: " << last_best_mean << ',' << phistats.get_mean() << endl;
-	cout << "  ---  last stdev, current stdev: " << last_best_std << ',' << phistats.get_std() << endl;
+	//phistats.update(get_phi_map(oe_lam_best));
+	ph.update(oe_lam_best, pe_lams[best_idx]);
 
-	if (phistats.get_mean() < last_best_mean * 1.1)
+	frec << "  ---  last mean: " << setw(15) << last_best_mean << ", last stdev: " << setw(15) << last_best_std << endl;
+	cout << "  ---  last mean: " << setw(15) << last_best_mean << ", last stdev: " << setw(15) << last_best_std << endl;
+	frec << "  ---  current phi stats  ---  " << endl;
+	cout << "  ---  current phi stats  ---  " << endl;
+	ph.report();
+	best_mean = ph.get_mean(PhiHandler::phiType::COMPOSITE);
+	best_std = ph.get_std(PhiHandler::phiType::COMPOSITE);
+	if (best_mean < last_best_mean * 1.1)
 	{
 		frec << "  ---  updating parameter ensemble  ---  " << endl;
 		cout << "  ---  updating parameter ensemble  ---  " << endl;
 		performance_log->log_event("updating parameter ensemble");
-		last_best_mean = phistats.get_mean();
+		last_best_mean = best_mean;
+
 		pe = pe_lams[best_idx];
 		oe = oe_lam_best;
 		
-		if (phistats.get_std() < last_best_std * 1.1)
+		if (best_std < last_best_std * 1.1)
 		{
 			double new_lam = lam_vals[best_idx] * 0.75;
 			new_lam = (new_lam < lambda_min) ? lambda_min : new_lam;
@@ -891,6 +844,7 @@ void IterEnsembleSmoother::solve()
 			frec << "  ---  not updating lambda  --- " << endl;
 		    cout << "  ---  not updating lambda  --- " << endl;
 		}
+		last_best_std = best_std;
 	}
 
 	else
@@ -907,52 +861,7 @@ void IterEnsembleSmoother::solve()
 	report_and_save();
 }
 
-void IterEnsembleSmoother::lam_test_report(double lambda, PhiStats &phistats)
-{
-	ofstream &frec = file_manager.rec_ofstream();
-	frec << "  ---  lambda: " << setw(10) << left << lambda;
-	frec << ", mean: " << setw(10) << left << phistats.get_mean();
-	frec << ", std: " << setw(10) << left << phistats.get_std() << endl;
-	cout << "  ---  lambda: " << setw(10) << left << lambda;
-	cout << ", mean: " << setw(10) << left << phistats.get_mean();
-	cout << ", std: " << setw(10) << left << phistats.get_std() << endl;
-}
-
-
-map<string, double> IterEnsembleSmoother::get_phi_map(ObservationEnsemble &_oe)
-{
-	map<string, double> phi_map;
-	ObservationInfo oinfo = pest_scenario.get_ctl_observation_info();
-	Eigen::VectorXd oe_base_vec, oe_vec, q, diff;
-
-	q.resize(act_obs_names.size());
-	double w;
-	//for (auto &oname : act_obs_names)
-	for (int i = 0; i < act_obs_names.size(); i++)
-		q(i) = oinfo.get_weight(act_obs_names[i]);
-	vector<string> base_real_names = oe_base.get_real_names(),oe_real_names = _oe.get_real_names();
-	vector<string>::iterator start = base_real_names.begin(), end = base_real_names.end();
-	double phi;
-	string rname;
-	
-	Eigen::MatrixXd oe_reals = _oe.get_eigen(vector<string>(), oe_base.get_var_names());
-	//for (auto &rname : _oe.get_real_names())
-	for (int i=0; i<_oe.shape().first;i++)
-	{
-		rname = oe_real_names[i];
-		if (find(start, end, rname) == end)
-			continue;
-		oe_base_vec = oe_base.get_real_vector(rname);
-		oe_vec = oe_reals.row(i);
-		diff = (oe_vec - oe_base_vec).cwiseProduct(q);
-		phi = (diff.cwiseProduct(diff)).sum();
-		phi_map[rname] = phi;
-	}
-	return phi_map;
-}
-
-
-PhiStats IterEnsembleSmoother::report_and_save()
+void IterEnsembleSmoother::report_and_save()
 {
 	ofstream &f_rec = file_manager.rec_ofstream();
 	f_rec << endl << "  ---  IterEnsembleSmoother iteration " << iter << " report  ---  " << endl;
@@ -963,11 +872,6 @@ PhiStats IterEnsembleSmoother::report_and_save()
 	cout << "   number of active realizations:   " << pe.shape().first << endl;
 	cout << "   number of model runs:            " << run_mgr_ptr->get_total_runs() << endl;
 
-	map<string, double> phi_info = get_phi_map(oe);
-	PhiStats phistats(phi_info);
-	
-	phistats.rec_report(f_rec);
-
 	stringstream ss;
 	ss << file_manager.get_base_filename() << "." << iter << ".obs.csv";
 	oe.to_csv(ss.str());
@@ -976,12 +880,10 @@ PhiStats IterEnsembleSmoother::report_and_save()
 	ss << file_manager.get_base_filename() << "." << iter << ".par.csv";
 	pe.to_csv(ss.str());
 	f_rec << "      current par ensemble saved to " << ss.str() << endl;
-	f_rec << "      current ensemble phi info saved to " << fphi_name << endl;
 	
-	phistats.csv_report(fphi, iter, oe_org_real_names);
-
+	ph.report();
+	ph.write(iter,run_mgr_ptr->get_total_runs());
 	
-	return phistats;
 }
 
 

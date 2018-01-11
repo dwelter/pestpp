@@ -35,7 +35,7 @@ def ies():
     ies = pyemu.EnsembleSmoother(pst=pst,verbose="ies.log")
     ies.initialize(parensemble="par1.csv",obsensemble="obs1.csv",restart_obsensemble="sweep_out.csv")
     ies.update(lambda_mults=[1.0])
-    ies.update(lambda_mults=[1.0])
+    #ies.update(lambda_mults=[1.0])
 
     #ies.update(lambda_mults=[10.,1,0.1])
 if __name__ == "__main__":
