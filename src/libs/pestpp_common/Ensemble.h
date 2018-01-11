@@ -100,7 +100,7 @@ public:
 	void set_trans_status(transStatus _tstat) { tstat = _tstat; }
 	const ParamTransformSeq get_par_transform() const { return par_transform; }
 	void transform_ip(transStatus to_tstat);
-
+	void set_pest_scenario(Pest *_pest_scenario);
 	map<int,int> add_runs(RunManagerAbstract *run_mgr_ptr,vector<int> &real_idxs=vector<int>());
 
 	//ParameterEnsemble get_mean_diff();

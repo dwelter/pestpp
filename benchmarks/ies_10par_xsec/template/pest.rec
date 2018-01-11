@@ -72,76 +72,14 @@ h02_10                                    5.1                head               
 
 
   ---  IterEnsembleSmoother iteration 0 report  ---  
-   number of active realizations:  29
+   number of active realizations:  30
    number of model runs:           0
-   ensemble size:                   29                  
-   ensemble phi mean:               100.213             
-   ensemble phi standard deviation: 176.342             
-   ensemble phi min:                0.122482            
-   ensemble phi max:                808.138             
+   ensemble size:                   30                  
+   ensemble phi mean:               196.651             
+   ensemble phi standard deviation: 400.866             
+   ensemble phi min:                0.0788772           
+   ensemble phi max:                1892.36             
       current obs ensemble saved to pest.0.obs.csv
       current par ensemble saved to pest.0.par.csv
       current ensemble phi info saved to pest.phi.csv
   ---  current lambda: 1                   
-
-
-
-  ---  starting solve for iteration: 1
-   ...starting calcs for lambda: 0.1
-   ...finished calcs for lambda: 0.1
-   ...starting calcs for lambda: 1
-   ...finished calcs for lambda: 1
-   ...starting calcs for lambda: 10
-   ...finished calcs for lambda: 10
-  ---  running lambda ensembles...  ---  
-  ---  evaluting lambda ensemble results  --  
-  ---  lambda: 0.1       , mean: 62.0893   , std: 64.5006   
-  ---  lambda: 1         , mean: 61.1886   , std: 63.7658   
-  ---  lambda: 10        , mean: 56.7241   , std: 62.968    
-  ---  last mean, current mean: 100.213,56.7241
-  ---  last stdev, current stdev: 176.342,62.968
-  ---  updating parameter ensemble  ---  
-  ---  updating lambda from 1 to 7.5
-
-  ---  IterEnsembleSmoother iteration 1 report  ---  
-   number of active realizations:  29
-   number of model runs:           87
-   ensemble size:                   29                  
-   ensemble phi mean:               56.7241             
-   ensemble phi standard deviation: 62.968              
-   ensemble phi min:                0.0710606           
-   ensemble phi max:                284.193             
-      current obs ensemble saved to pest.1.obs.csv
-      current par ensemble saved to pest.1.par.csv
-      current ensemble phi info saved to pest.phi.csv
-
-
-
-  ---  starting solve for iteration: 2
-   ...starting calcs for lambda: 0.75
-   ...finished calcs for lambda: 0.75
-   ...starting calcs for lambda: 7.5
-   ...finished calcs for lambda: 7.5
-   ...starting calcs for lambda: 75
-   ...finished calcs for lambda: 75
-  ---  running lambda ensembles...  ---  
-  ---  evaluting lambda ensemble results  --  
-  ---  lambda: 0.75      , mean: 38.3817   , std: 36.6235   
-  ---  lambda: 7.5       , mean: 36.4163   , std: 35.5167   
-  ---  lambda: 75        , mean: 32.9425   , std: 36.8157   
-  ---  last mean, current mean: 56.7241,32.9425
-  ---  last stdev, current stdev: 176.342,36.8157
-  ---  updating parameter ensemble  ---  
-  ---  updating lambda from 7.5 to 56.25
-
-  ---  IterEnsembleSmoother iteration 2 report  ---  
-   number of active realizations:  29
-   number of model runs:           174
-   ensemble size:                   29                  
-   ensemble phi mean:               32.9425             
-   ensemble phi standard deviation: 36.8157             
-   ensemble phi min:                0.0108059           
-   ensemble phi max:                127.151             
-      current obs ensemble saved to pest.2.obs.csv
-      current par ensemble saved to pest.2.par.csv
-      current ensemble phi info saved to pest.phi.csv

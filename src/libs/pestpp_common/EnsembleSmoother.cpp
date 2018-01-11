@@ -254,7 +254,7 @@ void IterEnsembleSmoother::initialize()
 		}
 		catch (...)
 		{
-			throw_ies_error(string("error loading restat obs ensemble csv"));
+			throw_ies_error(string("error loading restart obs ensemble csv"));
 		}
 		//check that restart oe is in sync
 		stringstream ss;
@@ -377,17 +377,19 @@ void IterEnsembleSmoother::solve()
 	performance_log->log_event("calculate scaled obs diff");
 	Eigen::MatrixXd diff = oe.get_eigen_mean_diff(vector<string>(),act_obs_names).transpose();
 	//cout << diff.rows() << ',' << diff.cols() << endl;
+	cout << diff << endl;
 	//cout << obscov_inv_sqrt.rows() << ',' << obscov_inv_sqrt.cols() << endl;
 	Eigen::MatrixXd obs_diff = scale * (obscov_inv_sqrt * diff);
 
 	performance_log->log_event("calculate scaled par diff");
+	pe.transform_ip(ParameterEnsemble::transStatus::NUM);
 	diff = pe.get_eigen_mean_diff(vector<string>(), act_par_names).transpose();
 	Eigen::MatrixXd par_diff = scale * diff;
 
 //#ifdef _DEBUG
-//	cout << "scaled_residual" << endl << scaled_residual << endl << endl;
-//	cout << "par_diff" << endl << par_diff << endl << endl;
-//	cout << "obs_diff" << endl << obs_diff << endl << endl;
+	cout << "scaled_residual" << endl << scaled_residual << endl << endl;
+	cout << "par_diff" << endl << par_diff << endl << endl;
+	cout << "obs_diff" << endl << obs_diff << endl << endl;
 //#endif
 
 	performance_log->log_event("SVD of obs diff");

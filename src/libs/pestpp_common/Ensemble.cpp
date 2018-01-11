@@ -499,6 +499,12 @@ ParameterEnsemble::ParameterEnsemble(Pest *_pest_scenario_ptr):Ensemble(_pest_sc
 //	return new_pe;
 //}
 
+void ParameterEnsemble::set_pest_scenario(Pest *_pest_scenario)
+{
+	pest_scenario_ptr = _pest_scenario;
+	par_transform = pest_scenario_ptr->get_base_par_tran_seq();
+}
+
 
 map<int,int> ParameterEnsemble::add_runs(RunManagerAbstract *run_mgr_ptr, vector<int> &real_idxs)
 {
@@ -550,6 +556,7 @@ void ParameterEnsemble::from_eigen_mat(Eigen::MatrixXd mat, const vector<string>
 void ParameterEnsemble::from_csv(string &file_name)
 {
 	from_csv(file_name, pest_scenario_ptr->get_ctl_ordered_par_names());
+	
 }
 
 

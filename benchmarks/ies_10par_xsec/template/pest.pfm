@@ -1,121 +1,21 @@
-PEST++ performance logger started at:  13:13:47
-        ( time = 13:13:47,  elapsed time = 4ms )
+PEST++ performance logger started at:  15:31:32
+        ( time = 15:31:32,  elapsed time = 4ms )
   starting to process control file
-          ( time = 13:13:47,  elapsed time = 53ms )
+          ( time = 15:31:32,  elapsed time = 31ms )
   finished processing control file
-          ( time = 13:13:47,  elapsed time = 13ms )
+          ( time = 15:31:32,  elapsed time = 14ms )
     starting basic model IO error checking
-            ( time = 13:13:47,  elapsed time = 3ms )
+            ( time = 15:31:32,  elapsed time = 12ms )
     finished basic model IO error checking
-            ( time = 13:13:47,  elapsed time = 14ms )
+            ( time = 15:31:32,  elapsed time = 39ms )
     processing par csv
-            ( time = 13:13:47,  elapsed time = 34ms )
+            ( time = 15:31:32,  elapsed time = 28ms )
     processing obs csv
-            ( time = 13:13:49,  elapsed time = 2sec )
+            ( time = 15:31:32,  elapsed time = 23ms )
     load obscov
-            ( time = 13:13:49,  elapsed time = 4ms )
+            ( time = 15:31:32,  elapsed time = 2ms )
     load parcov
-            ( time = 13:13:49,  elapsed time = 2ms )
+            ( time = 15:31:32,  elapsed time = 1ms )
     calculate prior par diff
-            ( time = 13:13:49,  elapsed time = 184us )
+            ( time = 15:31:32,  elapsed time = 127us )
     restart IES with existing obs ensemble csv: OBS_RESTART.CSV
-            ( time = 13:14:02,  elapsed time = 12sec )
-    starting solve for iteration: 1
-            ( time = 13:14:02,  elapsed time = 192us )
-    calculate residual matrix
-            ( time = 13:14:02,  elapsed time = 1ms )
-    calculate scaled obs diff
-            ( time = 13:14:02,  elapsed time = 484us )
-    calculate scaled par diff
-            ( time = 13:14:02,  elapsed time = 1ms )
-    SVD of obs diff
-            ( time = 13:14:02,  elapsed time = 188us )
-    starting REDSVD
-            ( time = 13:14:02,  elapsed time = 804us )
-    retrieving REDSVD components
-            ( time = 13:14:02,  elapsed time = 228us )
-    triming REDSVD components to 1elements
-            ( time = 13:14:02,  elapsed time = 210us )
-    done REDSVD
-            ( time = 13:14:02,  elapsed time = 2ms )
-    starting calcs for lambda0.1
-            ( time = 13:14:02,  elapsed time = 167us )
-    form scaled identity matrix
-            ( time = 13:14:02,  elapsed time = 186us )
-    calculate portion of upgrade_1 for localization
-            ( time = 13:14:02,  elapsed time = 301us )
-    apply residuals to upgrade_1
-            ( time = 13:14:02,  elapsed time = 8ms )
-    starting calcs for lambda1
-            ( time = 13:14:02,  elapsed time = 164us )
-    form scaled identity matrix
-            ( time = 13:14:02,  elapsed time = 184us )
-    calculate portion of upgrade_1 for localization
-            ( time = 13:14:02,  elapsed time = 288us )
-    apply residuals to upgrade_1
-            ( time = 13:14:02,  elapsed time = 8ms )
-    starting calcs for lambda10
-            ( time = 13:14:02,  elapsed time = 163us )
-    form scaled identity matrix
-            ( time = 13:14:02,  elapsed time = 181us )
-    calculate portion of upgrade_1 for localization
-            ( time = 13:14:02,  elapsed time = 293us )
-    apply residuals to upgrade_1
-            ( time = 13:14:02,  elapsed time = 9ms )
-    queuing 3 ensembles
-            ( time = 13:14:02,  elapsed time = 57ms )
-    making runs
-            ( time = 13:14:22,  elapsed time = 19sec )
-    processing runs
-            ( time = 13:14:22,  elapsed time = 151ms )
-    updating parameter ensemble
-            ( time = 13:22:36,  elapsed time = 8min )
-    starting solve for iteration: 2
-            ( time = 13:22:36,  elapsed time = 159us )
-    calculate residual matrix
-            ( time = 13:22:36,  elapsed time = 1ms )
-    calculate scaled obs diff
-            ( time = 13:22:36,  elapsed time = 387us )
-    calculate scaled par diff
-            ( time = 13:22:36,  elapsed time = 952us )
-    SVD of obs diff
-            ( time = 13:22:36,  elapsed time = 134us )
-    starting REDSVD
-            ( time = 13:22:36,  elapsed time = 558us )
-    retrieving REDSVD components
-            ( time = 13:22:36,  elapsed time = 183us )
-    triming REDSVD components to 1elements
-            ( time = 13:22:36,  elapsed time = 155us )
-    done REDSVD
-            ( time = 13:22:36,  elapsed time = 2ms )
-    starting calcs for lambda0.75
-            ( time = 13:22:36,  elapsed time = 123us )
-    form scaled identity matrix
-            ( time = 13:22:36,  elapsed time = 137us )
-    calculate portion of upgrade_1 for localization
-            ( time = 13:22:36,  elapsed time = 288us )
-    apply residuals to upgrade_1
-            ( time = 13:22:36,  elapsed time = 8ms )
-    starting calcs for lambda7.5
-            ( time = 13:22:36,  elapsed time = 128us )
-    form scaled identity matrix
-            ( time = 13:22:36,  elapsed time = 136us )
-    calculate portion of upgrade_1 for localization
-            ( time = 13:22:36,  elapsed time = 239us )
-    apply residuals to upgrade_1
-            ( time = 13:22:36,  elapsed time = 8ms )
-    starting calcs for lambda75
-            ( time = 13:22:36,  elapsed time = 127us )
-    form scaled identity matrix
-            ( time = 13:22:36,  elapsed time = 136us )
-    calculate portion of upgrade_1 for localization
-            ( time = 13:22:36,  elapsed time = 238us )
-    apply residuals to upgrade_1
-            ( time = 13:22:36,  elapsed time = 9ms )
-    queuing 3 ensembles
-            ( time = 13:22:36,  elapsed time = 48ms )
-    making runs
-            ( time = 13:22:47,  elapsed time = 11sec )
-    processing runs
-            ( time = 13:22:47,  elapsed time = 136ms )
-    updating parameter ensemble
