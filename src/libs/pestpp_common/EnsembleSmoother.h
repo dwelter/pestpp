@@ -27,7 +27,9 @@ public:
 	double get_std(phiType pt);
 	double get_max(phiType pt);
 	double get_min(phiType pt);
-	void rec_report(int iter_num);
+	map<string, double> get_summary_stats(phiType &pt);
+	string get_summary_string(phiType &pt);
+	void report(int iter_num);
 	void write(int iter_num);
 
 private:
@@ -36,7 +38,7 @@ private:
 	map<string, double> calc_regul(ParameterEnsemble &pe);
 	map<string, double> calc_actual(ObservationEnsemble &oe);
 	map<string, double> calc_composite(map<string,double> &_meas, map<string,double> &_regul);
-	map<string, double> get_phi_map(PhiHandler::phiType &pt);
+	map<string, double>* get_phi_map(PhiHandler::phiType &pt);
 	void write_csv(int iter_num, ofstream &csv, map<string, double> &phi_map,
 		           vector<string> &names);
 

@@ -70,3 +70,12 @@ h02_09                                    4.7                head               
 h02_10                                    5.1                head                   0
 
 
+
+
+ iteration number : 0
+ number of active realizations: 30
+       phi type           mean            std            min            max
+      composite        196.651        407.719      0.0788772        1892.36
+       measured        196.651        407.719      0.0788772        1892.36
+ regularization              0              0              0              0
+         actual        196.349        402.408         0.8762        1856.69

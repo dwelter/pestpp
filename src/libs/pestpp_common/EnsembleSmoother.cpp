@@ -41,18 +41,18 @@ void PhiHandler::update(ObservationEnsemble & oe, ParameterEnsemble & pe)
 
 }
 
-map<string, double> PhiHandler::get_phi_map(PhiHandler::phiType &pt)
+map<string, double>* PhiHandler::get_phi_map(PhiHandler::phiType &pt)
 {
 	switch (pt)
 	{
 	case PhiHandler::phiType::ACTUAL:
-		return actual;
+		return &actual;
 	case PhiHandler::phiType::COMPOSITE:
-		return composite;
+		return &composite;
 	case PhiHandler::phiType::MEAS:
-		return meas;
+		return &meas;
 	case PhiHandler::phiType::REGUL:
-		return regul;
+		return &regul;
 	}
 }
 
@@ -63,41 +63,97 @@ pair<double, double> PhiHandler::get_composite_mean_std(ObservationEnsemble & oe
 
 double PhiHandler::get_mean(phiType pt)
 {
-	double mean;
-	map<string, double> phi_map = get_phi_map(pt);
-	for (auto &p : phi_map)
-		mean = mean + p.second;
-	return mean / phi_map.size();
+	double mean = 0.0;
+	map<string, double>* phi_map = get_phi_map(pt);
+	map<string, double>::iterator pi = phi_map->begin(), end = phi_map->end();
+	for (pi;pi != end; ++pi)
+		mean = mean + pi->second;
+	return mean / phi_map->size();
 }
 
 double PhiHandler::get_std(phiType pt)
 {
 	double mean = get_mean(pt);
-	double var;
-	map<string, double> phi_map = get_phi_map(pt);
-	for (auto &p : phi_map)
-		var = var + (pow(p.second - mean,2));
-	return sqrt(var/(phi_map.size()-1));
+	double var = 0.0;
+	map<string, double>* phi_map = get_phi_map(pt);
+	map<string, double>::iterator pi = phi_map->begin(), end = phi_map->end();
+	for (pi; pi != end; ++pi)
+		var = var + (pow(pi->second - mean,2));
+	return sqrt(var/(phi_map->size()-1));
 }
 
 double PhiHandler::get_max(phiType pt)
 {
 	double mx = -1.0e+30;
-	for (auto &p : get_phi_map(pt))
-		mx = (p.second > mx) ? p.second : mx;
+	map<string, double>* phi_map = get_phi_map(pt);
+	map<string, double>::iterator pi = phi_map->begin(), end = phi_map->end();
+	for (pi; pi != end; ++pi)
+		mx = (pi->second > mx) ? pi->second : mx;
 	return mx;
 }
 
 double PhiHandler::get_min(phiType pt)
 {
 	double mn = 1.0e+30;
-	for (auto &p : get_phi_map(pt))
-		mn = (p.second < mn) ? p.second : mn;
+	map<string, double>* phi_map = get_phi_map(pt);
+	map<string, double>::iterator pi = phi_map->begin(), end = phi_map->end();
+	for (pi; pi != end; ++pi)
+		mn = (pi->second < mn) ? pi->second : mn;
 	return mn;
 }
 
-void PhiHandler::rec_report(int iter_num)
+map<string, double> PhiHandler::get_summary_stats(PhiHandler::phiType &pt)
 {
+	map<string, double> stats;
+	stats["mean"] = get_mean(pt);
+	stats["std"] = get_std(pt);
+	stats["max"] = get_max(pt);
+	stats["min"] = get_min(pt);
+	return stats;
+}
+
+string PhiHandler::get_summary_string(PhiHandler::phiType &pt)
+{
+	map<string, double> stats = get_summary_stats(pt);
+	stringstream ss;
+	string typ;
+	switch (pt)
+	{
+	case PhiHandler::phiType::ACTUAL:
+		typ = "actual";
+		break;
+	case PhiHandler::phiType::MEAS:
+		typ = "measured";
+		break;
+	case PhiHandler::phiType::REGUL:
+		typ = "regularization";
+		break;
+	case PhiHandler::phiType::COMPOSITE:
+		typ = "composite";
+		break;
+	}
+
+	ss << setw(15) << typ << setw(15) << stats["mean"] << setw(15) << stats["std"] << setw(15) << stats["min"] << setw(15) << stats["max"] << endl;
+	return ss.str();
+}
+
+void PhiHandler::report(int iter_num)
+{
+	ofstream &f = file_manager.rec_ofstream();
+
+	f << endl << endl << " iteration number : " << iter_num << endl;
+	f << " number of active realizations: " << meas.size() << endl;
+	f << setw(15) << "phi type" << setw(15) << "mean" << setw(15) << "std" << setw(15) << "min" << setw(15) << "max" << endl;
+	PhiHandler::phiType pt = PhiHandler::phiType::COMPOSITE;
+	f << get_summary_string(pt);
+	pt = PhiHandler::phiType::MEAS;
+	f << get_summary_string(pt);
+	pt = PhiHandler::phiType::REGUL;
+	f << get_summary_string(pt);
+	pt = PhiHandler::phiType::ACTUAL;
+	f << get_summary_string(pt);
+	f.flush();
+
 
 }
 
@@ -185,7 +241,38 @@ map<string, double> PhiHandler::calc_regul(ParameterEnsemble & pe)
 map<string, double> PhiHandler::calc_actual(ObservationEnsemble & oe)
 {
 	map<string, double> phi_map;
-	actual.clear();
+	ObservationInfo oinfo = pest_scenario.get_ctl_observation_info();
+	Observations obs = pest_scenario.get_ctl_observations();
+	Eigen::VectorXd obs_val_vec, oe_vec, q, diff;
+	vector<string> act_obs_names = pest_scenario.get_ctl_ordered_nz_obs_names();
+	q.resize(act_obs_names.size());
+	obs_val_vec.resize(act_obs_names.size());
+	double w;
+	//for (auto &oname : act_obs_names)
+	for (int i = 0; i < act_obs_names.size(); i++)
+	{
+		q(i) = oinfo.get_weight(act_obs_names[i]);
+		obs_val_vec(i) = obs[act_obs_names[i]];
+	}
+		
+	vector<string> base_real_names = oe_base.get_real_names(), oe_real_names = oe.get_real_names();
+	vector<string>::iterator start = base_real_names.begin(), end = base_real_names.end();
+	double phi;
+	string rname;
+
+	Eigen::MatrixXd oe_reals = oe.get_eigen(vector<string>(), oe_base.get_var_names());
+	//for (auto &rname : _oe.get_real_names())
+	//meas.clear();
+	for (int i = 0; i<oe.shape().first; i++)
+	{
+		rname = oe_real_names[i];
+		if (find(start, end, rname) == end)
+			continue;
+		oe_vec = oe_reals.row(i);
+		diff = (oe_vec - obs_val_vec).cwiseProduct(q);
+		phi = (diff.cwiseProduct(diff)).sum();
+		phi_map[rname] = phi;
+	}
 	return phi_map;
 }
 
@@ -535,6 +622,7 @@ void IterEnsembleSmoother::initialize()
 	pe.transform_ip(ParameterEnsemble::transStatus::NUM);
 	PhiHandler ph(pest_scenario, file_manager, oe_base, pe_base, parcov, &reg_factor);
 	ph.update(oe, pe);
+	ph.report(0);
 	map<string, double> phi_vec = get_phi_map(oe);
 	PhiStats phistats = report_and_save();
 	last_best_mean = phistats.get_mean();

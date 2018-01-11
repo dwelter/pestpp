@@ -1,21 +1,21 @@
-PEST++ performance logger started at:  22:47:02
-        ( time = 22:47:03,  elapsed time = 712ms )
+PEST++ performance logger started at:  09:24:14
+        ( time = 09:24:14,  elapsed time = 45ms )
   starting to process control file
-          ( time = 22:47:03,  elapsed time = 44ms )
+          ( time = 09:24:14,  elapsed time = 78ms )
   finished processing control file
-          ( time = 22:47:03,  elapsed time = 67ms )
+          ( time = 09:24:14,  elapsed time = 38ms )
     starting basic model IO error checking
-            ( time = 22:47:03,  elapsed time = 92ms )
+            ( time = 09:24:15,  elapsed time = 258ms )
     finished basic model IO error checking
-            ( time = 22:47:03,  elapsed time = 40ms )
+            ( time = 09:24:15,  elapsed time = 206ms )
     processing par csv
-            ( time = 22:47:03,  elapsed time = 27ms )
+            ( time = 09:24:15,  elapsed time = 35ms )
     processing obs csv
-            ( time = 22:47:03,  elapsed time = 21ms )
+            ( time = 09:24:15,  elapsed time = 20ms )
     load obscov
-            ( time = 22:47:03,  elapsed time = 2ms )
+            ( time = 09:24:15,  elapsed time = 3ms )
     load parcov
-            ( time = 22:47:03,  elapsed time = 1ms )
+            ( time = 09:24:15,  elapsed time = 1ms )
     calculate prior par diff
-            ( time = 22:47:03,  elapsed time = 87us )
+            ( time = 09:24:15,  elapsed time = 86us )
     restart IES with existing obs ensemble csv: OBS_RESTART.CSV
