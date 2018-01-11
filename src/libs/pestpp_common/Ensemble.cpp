@@ -635,14 +635,14 @@ void ParameterEnsemble::enforce_bounds()
 
 void ParameterEnsemble::to_csv(string &file_name)
 {
-	
+	vector<string> names = pest_scenario_ptr->get_ctl_ordered_adj_par_names();
 	ofstream csv(file_name);
 	if (!csv.good())
 	{
 		throw_ensemble_error("ParameterEnsemble.to_csv() error opening csv file " + file_name + " for writing");
 	}
 	csv << "real_name" << ',';
-	for (auto &vname : var_names)
+	for (auto &vname : names)
 		csv << vname << ',';
 	csv << endl;
 	Parameters pars = pest_scenario_ptr->get_ctl_parameters();
@@ -660,7 +660,7 @@ void ParameterEnsemble::to_csv(string &file_name)
 		else if (tstat == transStatus::NUM)
 			par_transform.numeric2ctl_ip(pars);
 
-		for (auto &name : var_names)
+		for (auto &name : names)
 			csv << pars[name] << ',';
 		csv << endl;
 	}
@@ -673,17 +673,23 @@ void ParameterEnsemble::transform_ip(transStatus to_tstat)
 	if ((to_tstat == transStatus::NUM) && (tstat == transStatus::CTL))
 	{
 		Parameters pars = pest_scenario_ptr->get_ctl_parameters();
+		vector<string> adj_par_names = pest_scenario_ptr->get_ctl_ordered_adj_par_names();
+		Eigen::MatrixXd new_reals = Eigen::MatrixXd(shape().first, adj_par_names.size());
 		for (int ireal = 0; ireal < reals.rows(); ireal++)
 		{
 			pars.update_without_clear(var_names, reals.row(ireal));
 			par_transform.ctl2numeric_ip(pars);
-			reals.row(ireal) = pars.get_data_eigen_vec(var_names);
+			assert(pars.size() == adj_par_names.size());
+			new_reals.row(ireal) = pars.get_data_eigen_vec(adj_par_names);
 		}
+		reals = new_reals;
+		var_names = adj_par_names;
+		tstat = to_tstat;
 
 	}
 	else
 		throw_ensemble_error("ParameterEnsemble::transform_ip() only CTL to NUM implemented");
-	tstat = to_tstat;
+	
 }
 
 
