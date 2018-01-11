@@ -14,6 +14,45 @@
 #include "RunManagerAbstract.h"
 #include "ObjectiveFunc.h"
 
+class PhiHandler
+{
+public:
+	enum phiType { MEAS, COMPOSITE, REGUL, ACTUAL };
+	PhiHandler(Pest &_pest_scenario, FileManager &_file_manager, 
+		       ObservationEnsemble &_base_oe, ParameterEnsemble &_base_pe,
+		       Covariance &_parcov_inv);
+	void update(ObservationEnsemble &oe, ParameterEnsemble &pe);
+	pair<double, double> get_composite_mean_std(ObservationEnsemble &oe, ParameterEnsemble &pe);
+	double get_mean(phiType pt);
+	double get_std(phiType pt);
+	double get_max(phiType pt);
+	double get_min(phiType pt);
+	void rec_report(int iter_num);
+	void write(int iter_num);
+
+private:
+	void prepare_csv(ofstream &csv);
+	void update_meas(ObservationEnsemble &oe);
+	void update_regul(ParameterEnsemble &pe);
+	void update_actual(ObservationEnsemble &oe);
+	void update_composite();
+
+	void write_csv(int iter_num, ofstream &csv, map<string, double> &phi_map);
+
+	vector<string> names;
+	Pest &pest_scenario;
+	FileManager &file_manager;
+	ObservationEnsemble &base_oe;
+	ParameterEnsemble &base_pe;
+	Covariance &parcov_inv;
+	map<string, double> meas;
+	map<string, double> regul;
+	map<string, double> composite;
+	map<string, double> actual;
+
+
+};
+
 class PhiStats
 {
 public:
