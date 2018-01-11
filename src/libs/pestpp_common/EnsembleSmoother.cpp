@@ -240,8 +240,10 @@ map<string, double> PhiHandler::calc_regul(ParameterEnsemble & pe)
 	pe_base->transform_ip(ParameterEnsemble::transStatus::NUM);
 	pe.transform_ip(ParameterEnsemble::transStatus::NUM);
 	Eigen::MatrixXd diff = pe.get_eigen() - pe_base->get_eigen(real_names, vector<string>());
+	//cout << diff << endl;
 	//cout << diff.rows() << ' ' << diff.cols() << endl;
 	//cout << parcov_inv->e_ptr()->rows() << ' ' << parcov_inv->e_ptr()->cols() << endl;
+	//cout << *parcov_inv->e_ptr() << endl;
 	diff = diff * *parcov_inv->e_ptr() * diff.transpose();
 	//cout << diff.rows() << ' ' << diff.cols() << endl;
 
@@ -565,7 +567,7 @@ void IterEnsembleSmoother::initialize()
 	ph.write(0, run_mgr_ptr->get_total_runs());
 	
 	last_best_mean = ph.get_mean(PhiHandler::phiType::COMPOSITE);
-	last_best_mean = ph.get_std(PhiHandler::phiType::COMPOSITE);
+	last_best_std = ph.get_std(PhiHandler::phiType::COMPOSITE);
 	last_best_lam = pest_scenario.get_pestpp_options().get_ies_init_lam();
 	if (last_best_lam <= 0.0)
 	{
@@ -711,22 +713,7 @@ void IterEnsembleSmoother::solve()
 
 	}
 
-	//queue up runs
-	//ObservationEnsemble oe_lam = oe, oe_lam_best = oe;//two copies
-	////drop the last rows of oe_lam and oe_lam_best if we are subsetting
-	//if (subset_size < pe.shape().first) //++ies_subset
-	//{
-	//	vector<int> keep_idxs;
-	//	for (int i = 0; i < subset_size; i++)
-	//		keep_idxs.push_back(i);
-	//	oe_lam.keep_rows(keep_idxs);
-	//	oe_lam_best.keep_rows(keep_idxs);
-	//}
-	//ParameterEnsemble pe_lam_best = pe; //copy
 	vector<map<int, int>> real_run_ids_lams;
-	//PhiStats phistats;
-	
-	//ph.report(0);
 	int best_idx = -1;
 	double best_mean = 1.0e+30, best_std = 1.0e+30;
 	double mean, std;
@@ -735,17 +722,19 @@ void IterEnsembleSmoother::solve()
 	vector<ObservationEnsemble> oe_lams = run_lambda_ensembles(pe_lams);
 	frec << "  ---  evaluting lambda ensemble results  --  " << endl;
 	cout << "  ---  evaluting lambda ensemble results  --  " << endl;
+
+	frec << "  ---  last mean: " << setw(15) << last_best_mean << ", last stdev: " << setw(15) << last_best_std << endl;
+	cout << "  ---  last mean: " << setw(15) << last_best_mean << ", last stdev: " << setw(15) << last_best_std << endl;
+
 	ObservationEnsemble oe_lam_best;
 	for (int i=0;i<pe_lams.size();i++)
 	{	
-		//map<string, PhiComponets> temp = get_phi_info(oe_lams[i]);
-		//histats.update(get_phi_map(oe_lams[i]));
-		frec << "  --- lambda value " << setw(15) << lam_vals[i] << " phi summary ---  " << endl;
+		frec << "  --- lambda value " << lam_vals[i] << " phi summary ---  " << endl;
+		cout << "  --- lambda value " << lam_vals[i] << " phi summary ---  " << endl;
 		ph.update(oe_lams[i], pe_lams[i]);
 		ph.report();
 		mean = ph.get_mean(PhiHandler::phiType::COMPOSITE);
 		std = ph.get_std(PhiHandler::phiType::COMPOSITE);
-		//lam_test_report(lam_vals[i],phistats);
 		if (mean < best_mean)
 		{
 			oe_lam_best = oe_lams[i];
@@ -808,17 +797,7 @@ void IterEnsembleSmoother::solve()
 		oe_lam_best.append_other_rows(remaining_oe_lam);
 
 	}
-	//cout << oe_lam_best.get_var_names() << endl;
-	//cout << *oe_lam_best.get_eigen_ptr() << endl;
-
-	//phistats.update(get_phi_map(oe_lam_best));
 	ph.update(oe_lam_best, pe_lams[best_idx]);
-
-	frec << "  ---  last mean: " << setw(15) << last_best_mean << ", last stdev: " << setw(15) << last_best_std << endl;
-	cout << "  ---  last mean: " << setw(15) << last_best_mean << ", last stdev: " << setw(15) << last_best_std << endl;
-	frec << "  ---  current phi stats  ---  " << endl;
-	cout << "  ---  current phi stats  ---  " << endl;
-	ph.report();
 	best_mean = ph.get_mean(PhiHandler::phiType::COMPOSITE);
 	best_std = ph.get_std(PhiHandler::phiType::COMPOSITE);
 	if (best_mean < last_best_mean * 1.1)
@@ -863,10 +842,10 @@ void IterEnsembleSmoother::solve()
 
 void IterEnsembleSmoother::report_and_save()
 {
-	ofstream &f_rec = file_manager.rec_ofstream();
-	f_rec << endl << "  ---  IterEnsembleSmoother iteration " << iter << " report  ---  " << endl;
-	f_rec << "   number of active realizations:  " << pe.shape().first << endl;
-	f_rec << "   number of model runs:           " << run_mgr_ptr->get_total_runs() << endl;
+	ofstream &frec = file_manager.rec_ofstream();
+	frec << endl << "  ---  IterEnsembleSmoother iteration " << iter << " report  ---  " << endl;
+	frec << "   number of active realizations:  " << pe.shape().first << endl;
+	frec << "   number of model runs:           " << run_mgr_ptr->get_total_runs() << endl;
 	
 	cout << endl << "  ---  IterEnsembleSmoother iteration " << iter << " report  ---  " << endl;
 	cout << "   number of active realizations:   " << pe.shape().first << endl;
@@ -875,11 +854,13 @@ void IterEnsembleSmoother::report_and_save()
 	stringstream ss;
 	ss << file_manager.get_base_filename() << "." << iter << ".obs.csv";
 	oe.to_csv(ss.str());
-	f_rec << "      current obs ensemble saved to " << ss.str() << endl;
+	frec << "      current obs ensemble saved to " << ss.str() << endl;
+	cout << "      current obs ensemble saved to " << ss.str() << endl;
 	ss.str("");
 	ss << file_manager.get_base_filename() << "." << iter << ".par.csv";
 	pe.to_csv(ss.str());
-	f_rec << "      current par ensemble saved to " << ss.str() << endl;
+	frec << "      current par ensemble saved to " << ss.str() << endl;
+	cout << "      current par ensemble saved to " << ss.str() << endl;
 	
 	ph.report();
 	ph.write(iter,run_mgr_ptr->get_total_runs());

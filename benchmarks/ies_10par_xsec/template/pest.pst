@@ -67,6 +67,6 @@ misc\head.ins model\10par_xsec.hds
 ++ ies_observation_csv(obs.csv)
 ++ ies_obs_restart_csv(obs_restart.csv)
 ++ sweep_parameter_csv_file(par1.csv)
-++ ies_lambda_mults(1.0)
+++ ies_lambda_mults(0.1,1.0,10.0)
 ++ies_init_lam(1.0)
-++#ies_subset_size(10)
+++ ies_subset_size(10)

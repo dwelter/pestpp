@@ -1,4 +1,4 @@
-             sweep.exe - a parameteric sweep utility
+             pestpp-ies.exe - a GLM iterative Ensemble Smoother
 for PEST(++) datasets 
 
                  by the PEST++ developement team
@@ -6,66 +6,6 @@ for PEST(++) datasets
 
 
 using control file: "pest.pst"
-
-    sweep parameter csv file = par1.csv                                          
-    sweep output csv file = sweep_out.csv                                     
-    sweep chunk size = 500       
-    sweep base run = 0         
-    sweep forgive failed runs = 0         
-
-PEST++ run mode:- 
-   estimation
-
-Case dimensions:- 
-    Number of parameters = 11
-    Number of adjustable parameters = 9
-    Number of observations = 20
-    Number of prior estimates = 0
-
-PEST Control Information
-    relparmax = 5
-    facparmax = 5
-    facorig = 0.001
-    phiredswh = 0.1
-    noptmax = 1
-    phiredstp = 0.005
-    nphistp = 4
-    nphinored = 4
-    relparstp = 0.005
-    nrelpar = 4
-
-PEST++ Options
-    n_iter_base = 1                   
-    n_iter_super = 4                   
-    max_n_super = 10                  
-    super eigthres = 1e-08               
-    svd pack = 2                   
-    auto norm = -999                
-    super relparmax = 0.1                 
-    max super frz iter = 5                   
-    mat inv = 1                   
-    max run fail = 3                   
-    max reg iter = 20                  
-    use jacobian scaling a la PEST? =  yes
-    lambdas = 
-            0.1
-              1
-             10
-            100
-           1000
-    lambda scaling factors = 
-            0.9
-            0.8
-            0.7
-            0.5
-    using FOSM-based uncertainty estimation for parameters
-    parameter covariance file =                     
-    derivative run failure forgive = 1              
-    run overdue reschedule factor = 1.15                
-    run overdue giveup factor = 100                 
-    base parameter jacobian filename =                     
-    prior parameter covariance upgrade scaling factor = -999      
-
 
 Model command line(s):- 
     model.bat
@@ -130,15 +70,54 @@ h02_09                                    4.7                head               
 h02_10                                    5.1                head                   0
 
 
+  ---  using first 10 realizations in ensemble lambda testing
 
-Prior information
-
-   no prior information provided
-
-
-
-PEST SVD Information
-    maxsing = 1
-    eigthresh = 0.001
+  ---  initial phi summary ---  
+       phi type           mean            std            min            max
+      composite        196.651        407.719      0.0788772        1892.36
+       measured        196.651        407.719      0.0788772        1892.36
+ regularization              0              0              0              0
+         actual        196.349        402.408         0.8762        1856.69
 
 
+  ---  current lambda: 1                   
+
+
+
+  ---  starting solve for iteration: 1
+   ...starting calcs for lambda: 0.1
+   ...finished calcs for lambda: 0.1
+   ...starting calcs for lambda: 1
+   ...finished calcs for lambda: 1
+   ...starting calcs for lambda: 10
+   ...finished calcs for lambda: 10
+  ---  running lambda ensembles...  ---  
+  ---  evaluting lambda ensemble results  --  
+  ---  last mean: 196.651        , last stdev: 407.719        
+  --- lambda value 0.1 phi summary ---  
+       phi type           mean            std            min            max
+      composite        21.1506        28.7525      0.0127498         97.453
+       measured        21.1506        28.7525      0.0127498         97.453
+ regularization       0.788325        1.57451    0.000675383        7.24047
+         actual        23.9835        31.9597         0.1306        105.125
+
+
+  --- lambda value 1 phi summary ---  
+       phi type           mean            std            min            max
+      composite        21.2448        28.8265      0.0127498        97.7209
+       measured        21.2448        28.8265      0.0127498        97.7209
+ regularization        0.78103         1.5588    0.000668564        7.16829
+         actual        24.0962        32.0445         0.1289        105.411
+
+
+  --- lambda value 10 phi summary ---  
+       phi type           mean            std            min            max
+      composite         22.251        29.4157       0.015108        99.9579
+       measured         22.251        29.4157       0.015108        99.9579
+ regularization       0.713782        1.41411    0.000605704        6.50289
+         actual        25.2867        32.7077         0.1697        107.763
+
+
+  ---  running remaining realizations from best lambda: 0.1
+  ---  updating parameter ensemble  ---  
+  ---  updating lambda from 1 to 0.075

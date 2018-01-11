@@ -1,4 +1,5 @@
 import os
+import shutil
 import pandas as pd
 import pyemu
 pst_file = "pest.pst"
@@ -29,15 +30,16 @@ def gen_full():
     df = pd.read_csv("sweep_out.csv")
     df = df.loc[:,pst.observation_data.obsnme.apply(str.upper)]
     df.to_csv("obs_restart.csv")
+    shutil.copy2("sweep_out.csv","sweep_out.bak.csv")
 
 def ies():
     pst.control_data.noptmax = 1
     ies = pyemu.EnsembleSmoother(pst=pst,verbose="ies.log")
-    ies.initialize(parensemble="par1.csv",obsensemble="obs1.csv",restart_obsensemble="sweep_out.csv")
-    ies.update(lambda_mults=[1.0])
+    ies.initialize(parensemble="par1.csv",obsensemble="obs1.csv",restart_obsensemble="sweep_out.bak.csv")
+    ies.update(lambda_mults=[0.1,1.0,10.0],run_subset=10)
     #ies.update(lambda_mults=[1.0])
 
-    #ies.update(lambda_mults=[10.,1,0.1])
+    #ies.update(lambda_mults=[10.,1,0.1],run_subset=10)
 if __name__ == "__main__":
     gen_full()
     ies()
