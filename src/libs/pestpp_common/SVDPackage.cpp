@@ -113,6 +113,21 @@ void SVD_REDSVD::solve_ip(Eigen::MatrixXd& A, Eigen::MatrixXd &Sigma, Eigen::Mat
 	return;
 }
 
+void SVD_REDSVD::solve_ip(Eigen::MatrixXd& A, Eigen::MatrixXd &Sigma, Eigen::MatrixXd& U,
+	Eigen::MatrixXd& V)
+{
+	performance_log->log_event("starting REDSVD");
+
+	RedSVD::RedSVD<MatrixXd> red_svd(A);
+	performance_log->log_event("retrieving REDSVD components");
+	U = red_svd.matrixU();
+	V = red_svd.matrixV();
+	Sigma = red_svd.singularValues();
+	performance_log->log_event("done REDSVD");
+	return;
+}
+
+
 void SVD_REDSVD::solve_ip(Eigen::SparseMatrix<double>& A, Eigen::VectorXd &Sigma, Eigen::SparseMatrix<double>& U,
 	Eigen::SparseMatrix<double>& VT, Eigen::VectorXd &Sigma_trunc, double _eigen_thres)
 {

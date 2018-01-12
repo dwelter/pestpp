@@ -71,17 +71,3 @@ h02_10                                    5.1                head               
 
 
   ---  using first 10 realizations in ensemble lambda testing
-
-  ---  initial phi summary ---  
-       phi type           mean            std            min            max
-      composite        196.651        407.719      0.0788772        1892.36
-       measured        196.651        407.719      0.0788772        1892.36
- regularization              0              0              0              0
-         actual        196.349        402.408         0.8762        1856.69
-
-
-  ---  current lambda: 1                   
-
-
-
-  ---  starting solve for iteration: 1

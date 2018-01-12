@@ -1,73 +1,73 @@
-2018-01-12 22:40:23.642333 starting: opening ies.log for logging
-2018-01-12 22:40:24.080326 using approximate parcov in solution
-2018-01-12 22:40:24.080326 starting: initializing with existing ensembles
-2018-01-12 22:40:24.080326 starting: loading parensemble from file
-2018-01-12 22:40:24.133325 finished: loading parensemble from file took: 0:00:00.052999
-2018-01-12 22:40:24.145324 starting: loading obsensemble from file
-2018-01-12 22:40:24.247321 finished: loading obsensemble from file took: 0:00:00.101997
-2018-01-12 22:40:24.247321 finished: initializing with existing ensembles took: 0:00:00.166995
-2018-01-12 22:40:24.247321 using approximate parcov in solution
-2018-01-12 22:40:24.248324 starting: loading restart_obsensemble restart_obs1.csv
-2018-01-12 22:40:24.429321 finished: loading restart_obsensemble restart_obs1.csv took: 0:00:00.180997
-2018-01-12 22:40:24.731311 starting: inverting parcov for regul phi calcs
-2018-01-12 22:40:24.798313 finished: inverting parcov for regul phi calcs took: 0:00:00.067002
-2018-01-12 22:40:24.970308 **** phi summary ****
-2018-01-12 22:40:24.970308 regul factor:               0
-2018-01-12 22:40:24.970308 composite mean:         32.8978, std:         16.1153
-2018-01-12 22:40:24.970308 meas      mean:         32.8978, std:         16.1153
-2018-01-12 22:40:24.970308 actual    mean:         26.1722, std:         15.3489
-2018-01-12 22:40:24.970308 reg       mean:               0, std:               0
-2018-01-12 22:40:24.970308 *********************
-2018-01-12 22:40:24.970308 current lambda:          0.001
-2018-01-12 22:40:25.029305 starting: iteration 1
-2018-01-12 22:40:25.029305 30 active realizations
-2018-01-12 22:40:25.029305 starting: calculate scaled delta obs
-2018-01-12 22:40:25.043304 finished: calculate scaled delta obs took: 0:00:00.013999
-2018-01-12 22:40:25.043304 starting: calculate scaled delta par
-2018-01-12 22:40:25.045304 finished: calculate scaled delta par took: 0:00:00.002000
-2018-01-12 22:40:25.045304 starting: calculate pseudo inv comps
-2018-01-12 22:40:25.048305 finished: calculate pseudo inv comps took: 0:00:00.003001
-2018-01-12 22:40:25.048305 starting: calculate obs diff matrix
-2018-01-12 22:40:25.063305 finished: calculate obs diff matrix took: 0:00:00.015000
-2018-01-12 22:40:25.076306 starting: calcs for  lambda 1.0
-2018-01-12 22:40:25.079305 starting: building upgrade_1 matrix
-2018-01-12 22:40:25.082306 finished: building upgrade_1 matrix took: 0:00:00.003001
-2018-01-12 22:40:25.082306 starting: applying residuals
-2018-01-12 22:40:25.082306 finished: applying residuals took: 0:00:00
-2018-01-12 22:40:25.082306 starting: processing upgrade_1
-2018-01-12 22:40:25.155332 finished: processing upgrade_1 took: 0:00:00.073026
-2018-01-12 22:40:25.156303 starting: enforcing bounds
-2018-01-12 22:40:25.177303 finished: enforcing bounds took: 0:00:00.021000
-2018-01-12 22:40:25.177303 starting: filling fixed parameters
-2018-01-12 22:40:25.183304 finished: filling fixed parameters took: 0:00:00.006001
-2018-01-12 22:40:25.183304 finished: calcs for  lambda 1.0 took: 0:00:00.106998
-2018-01-12 22:40:25.184305 starting: evaluating ensembles for lambdas : 1.000E-03
-2018-01-12 22:40:25.186319 starting: removing existing sweep in/out files
-2018-01-12 22:40:25.189302 finished: removing existing sweep in/out files took: 0:00:00.002983
-2018-01-12 22:40:25.189302 starting: evaluating ensemble of size 30 locally with sweep
-2018-01-12 22:41:04.172555 finished: evaluating ensemble of size 30 locally with sweep took: 0:00:38.983253
-2018-01-12 22:41:04.172555 starting: reading sweep out csv sweep_out.csv
-2018-01-12 22:41:04.264555 finished: reading sweep out csv sweep_out.csv took: 0:00:00.092000
-2018-01-12 22:41:04.264555 total runs:30
-2018-01-12 22:41:04.264555 finished: evaluating ensembles for lambdas : 1.000E-03 took: 0:00:39.080250
-2018-01-12 22:41:04.268557 starting: calc lambda phi vectors
-2018-01-12 22:41:04.310550 finished: calc lambda phi vectors took: 0:00:00.041993
-2018-01-12 22:41:04.310550 **************************
-2018-01-12 22:41:04.310550 lambda testing summary
-2018-01-12 22:41:04.310550 total runs:30
-2018-01-12 22:41:04.310550 iteration: 1
-2018-01-12 22:41:04.311552 current lambda:          0.001, mean:        32.8978, std:        16.1153
-2018-01-12 22:41:04.311552  tested lambda:          0.001, meas mean:        10.7994, meas std:         4.4184
-2018-01-12 22:41:04.311552                               regul mean:        152.446, regul std:        97.1361
-2018-01-12 22:41:04.470549 **** phi summary ****
-2018-01-12 22:41:04.470549 regul factor:               0
-2018-01-12 22:41:04.470549 composite mean:         10.7994, std:          4.4184
-2018-01-12 22:41:04.470549 meas      mean:         10.7994, std:          4.4184
-2018-01-12 22:41:04.470549 actual    mean:         5.50492, std:         2.78427
-2018-01-12 22:41:04.470549 reg       mean:         152.446, std:         97.1361
-2018-01-12 22:41:04.470549 *********************
-2018-01-12 22:41:04.470549    best lambda:          0.001, mean:        10.7994, std:         4.4184
-2018-01-12 22:41:04.470549 updating lambda:         0.00075
-2018-01-12 22:41:04.470549 **************************
+2018-01-13 08:41:21.454576 starting: opening ies.log for logging
+2018-01-13 08:41:21.926626 using approximate parcov in solution
+2018-01-13 08:41:21.926626 starting: initializing with existing ensembles
+2018-01-13 08:41:21.926626 starting: loading parensemble from file
+2018-01-13 08:41:21.977628 finished: loading parensemble from file took: 0:00:00.051002
+2018-01-13 08:41:21.991648 starting: loading obsensemble from file
+2018-01-13 08:41:22.102626 finished: loading obsensemble from file took: 0:00:00.110978
+2018-01-13 08:41:22.102626 finished: initializing with existing ensembles took: 0:00:00.176000
+2018-01-13 08:41:22.102626 using approximate parcov in solution
+2018-01-13 08:41:22.102626 starting: loading restart_obsensemble restart_obs1.csv
+2018-01-13 08:41:22.225635 finished: loading restart_obsensemble restart_obs1.csv took: 0:00:00.123009
+2018-01-13 08:41:22.484797 starting: inverting parcov for regul phi calcs
+2018-01-13 08:41:22.535659 finished: inverting parcov for regul phi calcs took: 0:00:00.050862
+2018-01-13 08:41:22.779679 **** phi summary ****
+2018-01-13 08:41:22.779679 regul factor:               0
+2018-01-13 08:41:22.779679 composite mean:         32.8978, std:         16.1153
+2018-01-13 08:41:22.779679 meas      mean:         32.8978, std:         16.1153
+2018-01-13 08:41:22.779679 actual    mean:         26.1722, std:         15.3489
+2018-01-13 08:41:22.779679 reg       mean:               0, std:               0
+2018-01-13 08:41:22.779679 *********************
+2018-01-13 08:41:22.780679 current lambda:          0.001
+2018-01-13 08:41:22.892684 starting: iteration 1
+2018-01-13 08:41:22.892684 30 active realizations
+2018-01-13 08:41:22.892684 starting: calculate scaled delta obs
+2018-01-13 08:41:22.906714 finished: calculate scaled delta obs took: 0:00:00.014030
+2018-01-13 08:41:22.906714 starting: calculate scaled delta par
+2018-01-13 08:41:22.908685 finished: calculate scaled delta par took: 0:00:00.001971
+2018-01-13 08:41:22.908685 starting: calculate pseudo inv comps
+2018-01-13 08:41:32.546431 finished: calculate pseudo inv comps took: 0:00:09.637746
+2018-01-13 08:41:32.546431 starting: calculate obs diff matrix
+2018-01-13 08:41:32.572433 finished: calculate obs diff matrix took: 0:00:00.026002
+2018-01-13 08:41:32.590583 starting: calcs for  lambda 1.0
+2018-01-13 08:41:32.597562 starting: building upgrade_1 matrix
+2018-01-13 08:41:37.733827 finished: building upgrade_1 matrix took: 0:00:05.136265
+2018-01-13 08:41:37.733827 starting: applying residuals
+2018-01-13 08:41:37.733827 finished: applying residuals took: 0:00:00
+2018-01-13 08:41:37.734827 starting: processing upgrade_1
+2018-01-13 08:41:37.784890 finished: processing upgrade_1 took: 0:00:00.050063
+2018-01-13 08:41:37.785830 starting: enforcing bounds
+2018-01-13 08:41:37.814844 finished: enforcing bounds took: 0:00:00.029014
+2018-01-13 08:41:37.814844 starting: filling fixed parameters
+2018-01-13 08:41:37.823832 finished: filling fixed parameters took: 0:00:00.008988
+2018-01-13 08:41:37.824833 finished: calcs for  lambda 1.0 took: 0:00:05.234250
+2018-01-13 08:41:37.824833 starting: evaluating ensembles for lambdas : 1.000E-03
+2018-01-13 08:41:37.826862 starting: removing existing sweep in/out files
+2018-01-13 08:41:37.836852 finished: removing existing sweep in/out files took: 0:00:00.009990
+2018-01-13 08:41:37.837834 starting: evaluating ensemble of size 30 locally with sweep
+2018-01-13 08:42:04.271865 finished: evaluating ensemble of size 30 locally with sweep took: 0:00:26.434031
+2018-01-13 08:42:04.272865 starting: reading sweep out csv sweep_out.csv
+2018-01-13 08:42:04.397030 finished: reading sweep out csv sweep_out.csv took: 0:00:00.124165
+2018-01-13 08:42:04.397030 total runs:30
+2018-01-13 08:42:04.397030 finished: evaluating ensembles for lambdas : 1.000E-03 took: 0:00:26.572197
+2018-01-13 08:42:04.399876 starting: calc lambda phi vectors
+2018-01-13 08:42:04.434876 finished: calc lambda phi vectors took: 0:00:00.035000
+2018-01-13 08:42:04.435878 **************************
+2018-01-13 08:42:04.435878 lambda testing summary
+2018-01-13 08:42:04.435878 total runs:30
+2018-01-13 08:42:04.435878 iteration: 1
+2018-01-13 08:42:04.435878 current lambda:          0.001, mean:        32.8978, std:        16.1153
+2018-01-13 08:42:04.435878  tested lambda:          0.001, meas mean:        10.7994, meas std:         4.4184
+2018-01-13 08:42:04.435878                               regul mean:        152.446, regul std:        97.1361
+2018-01-13 08:42:04.740964 **** phi summary ****
+2018-01-13 08:42:04.740964 regul factor:               0
+2018-01-13 08:42:04.740964 composite mean:         10.7994, std:          4.4184
+2018-01-13 08:42:04.740964 meas      mean:         10.7994, std:          4.4184
+2018-01-13 08:42:04.740964 actual    mean:         5.50492, std:         2.78427
+2018-01-13 08:42:04.741899 reg       mean:         152.446, std:         97.1361
+2018-01-13 08:42:04.741899 *********************
+2018-01-13 08:42:04.741899    best lambda:          0.001, mean:        10.7994, std:         4.4184
+2018-01-13 08:42:04.741899 updating lambda:         0.00075
+2018-01-13 08:42:04.741899 **************************
 
-2018-01-12 22:41:05.002555 finished: iteration 1 took: 0:00:39.973250
+2018-01-13 08:42:05.072926 finished: iteration 1 took: 0:00:42.180242

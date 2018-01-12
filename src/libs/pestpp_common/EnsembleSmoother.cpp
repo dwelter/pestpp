@@ -453,8 +453,12 @@ void IterEnsembleSmoother::initialize()
 	}
 	parcov_inv = parcov_inv.get(act_par_names);
 	parcov_inv.inv_ip();
+	//need this here for Am calcs...
+	pe.transform_ip(ParameterEnsemble::transStatus::NUM);
+	pe_base.transform_ip(ParameterEnsemble::transStatus::NUM);
 	
-	performance_log->log_event("calculate prior par diff");
+	
+	//performance_log->log_event("calculate prior par diff");
 	//no scaling...chen and oliver scale this...
 	
 	if (!pest_scenario.get_pestpp_options().get_ies_use_approx()) //eventually ies_use_approx
@@ -462,8 +466,17 @@ void IterEnsembleSmoother::initialize()
 		performance_log->log_event("calculating 'Am' matrix for full solution");
 		double scale = (1.0 / (sqrt(double(pe.shape().first - 1))));
 		Eigen::MatrixXd par_diff = scale * pe.get_eigen_mean_diff();
-		RedSVD::RedSVD<Eigen::MatrixXd> rsvd(par_diff);
-		Am = rsvd.matrixU() * rsvd.singularValues().inverse();
+		//RedSVD::RedSVD<Eigen::MatrixXd> rsvd(par_diff);
+		//Am = rsvd.matrixU() * rsvd.singularValues().inverse();
+		
+		Eigen::MatrixXd ivec, upgrade_1, s, V, U, st;
+		SVD_REDSVD rsvd;
+		rsvd.set_performance_log(performance_log);
+		rsvd.solve_ip(par_diff, s, U, V);// , pest_scenario.get_svd_info().maxsing);
+		cout << "U " << U.rows() << ',' << U.cols() << endl;
+		cout << "s " << s.rows() << ',' << s.cols() << endl;
+		Am = U * s.asDiagonal().inverse();
+		cout << "Am " << Am.rows() << ',' << Am.cols() << endl;
 	}
 
 	string obs_restart_csv = pest_scenario.get_pestpp_options().get_ies_obs_restart_csv();	
@@ -664,7 +677,7 @@ void IterEnsembleSmoother::solve()
 
 		performance_log->log_event("apply residuals to upgrade_1");
 		upgrade_1 = (upgrade_1 * scaled_residual).transpose();
-	    cout << "upgrade_1" << endl << upgrade_1 << endl;
+	    //cout << "upgrade_1" << endl << upgrade_1 << endl;
 		ParameterEnsemble pe_lam = pe;//copy
 		pe_lam.add_to_cols(upgrade_1, pe_base.get_var_names());
 
@@ -692,13 +705,20 @@ void IterEnsembleSmoother::solve()
 			Eigen::MatrixXd scaled_par_resid = pe.get_eigen(vector<string>(), act_par_names) - 
 				pe_base.get_eigen(pe.get_real_names(), vector<string>());
 			performance_log->log_event("forming x4");
-			Eigen::MatrixXd x4 = Am.transpose() * scaled_par_resid;
+			cout << "par_diff " << par_diff.rows() << ',' << par_diff.cols() << endl;
+			cout << "Am " << Am.rows() << ',' << Am.cols() << endl;
+			Eigen::MatrixXd x4 = Am * scaled_par_resid.transpose();
 			performance_log->log_event("forming x5");
+			cout << "x4 " << x4.rows() << ',' << x4.cols() << endl;
 			Eigen::MatrixXd x5 = Am * x4;
 			performance_log->log_event("forming x6");
-			Eigen::MatrixXd x6 = par_diff.transpose() * x5;
+			cout <<"x5 " <<  x5.rows() << ',' << x5.cols() << endl;
+			Eigen::MatrixXd x6 = par_diff * x5;
 			performance_log->log_event("forming x7");
-			Eigen::MatrixXd x7 = ivec * x6;
+			cout << "V: " << V.rows() << "," << V.cols() << endl;
+			cout << "ivec: " << ivec.rows() << ',' << ivec.cols() << endl;
+			cout << "x6: " << x6.rows() << ',' << x6.cols() << endl;
+			Eigen::MatrixXd x7 = V * ivec *V.transpose() * x6;
 			performance_log->log_event("forming upgrade_2");
 			Eigen::MatrixXd upgrade_2 = -1.0 * (par_diff * x7);
 			pe_lam.set_eigen(*pe_lam.get_eigen_ptr() + upgrade_2.transpose());

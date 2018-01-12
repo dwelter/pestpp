@@ -36,7 +36,7 @@ def prep():
     pst.pestpp_options["ies_observation_csv"] = "obs.csv"
     pst.pestpp_options["ies_obs_restart_csv"] = "restart_obs.csv"
     pst.pestpp_options["parcov_filename"] = "freyberg_prior.jcb"
-    pst.observation_data.loc[pst.nnz_obs_names,"weight"] /= 10.0
+    #pst.observation_data.loc[pst.nnz_obs_names,"weight"] /= 10.0
     pst.write("pest.pst")
 
     #dia_parcov = pyemu.Cov.from_parameter_data(pst,sigma_range=6.0)

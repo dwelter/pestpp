@@ -1,29 +1,25 @@
-PEST++ performance logger started at:  14:29:10
-        ( time = 14:29:10,  elapsed time = 5ms )
+PEST++ performance logger started at:  09:42:44
+        ( time = 09:42:44,  elapsed time = 26ms )
   starting to process control file
-          ( time = 14:29:10,  elapsed time = 27ms )
+          ( time = 09:42:44,  elapsed time = 40ms )
   finished processing control file
-          ( time = 14:29:10,  elapsed time = 11ms )
+          ( time = 09:42:44,  elapsed time = 26ms )
     starting basic model IO error checking
-            ( time = 14:29:10,  elapsed time = 21ms )
+            ( time = 09:42:44,  elapsed time = 27ms )
     finished basic model IO error checking
-            ( time = 14:29:10,  elapsed time = 26ms )
+            ( time = 09:42:44,  elapsed time = 129ms )
     processing par csv
-            ( time = 14:29:10,  elapsed time = 35ms )
+            ( time = 09:42:44,  elapsed time = 22ms )
     processing obs csv
-            ( time = 14:29:10,  elapsed time = 23ms )
+            ( time = 09:42:44,  elapsed time = 108ms )
     load obscov
-            ( time = 14:29:10,  elapsed time = 1ms )
+            ( time = 09:42:44,  elapsed time = 5ms )
     load parcov
-            ( time = 14:29:10,  elapsed time = 1ms )
-    calculate prior par diff
-            ( time = 14:29:10,  elapsed time = 61us )
-    restart IES with existing obs ensemble csv: OBS_RESTART.CSV
-            ( time = 14:29:11,  elapsed time = 89ms )
-    starting solve for iteration: 1
-            ( time = 14:29:11,  elapsed time = 93us )
-    calculate residual matrix
-            ( time = 14:29:11,  elapsed time = 1ms )
-    calculate scaled obs diff
-            ( time = 14:29:11,  elapsed time = 220us )
-    calculate scaled par diff
+            ( time = 09:42:44,  elapsed time = 14ms )
+    calculating 'Am' matrix for full solution
+            ( time = 09:42:44,  elapsed time = 364us )
+    starting REDSVD
+            ( time = 09:42:44,  elapsed time = 6ms )
+    retrieving REDSVD components
+            ( time = 09:42:44,  elapsed time = 150us )
+    done REDSVD
