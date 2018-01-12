@@ -80,7 +80,7 @@ EXT_LIBS = \
         ${MKLROOT}/lib/intel64/libmkl_sequential.a \
         ${MKLROOT}/lib/intel64/libmkl_core.a \
     -Wl,--end-group \
-    -lifcore -lpthread -lm -ldl
+    -lifport -lifcore -lpthread -lm -ldl
 else ifeq ($(SYSTEM),mac)
 EXT_INCLUDES = -I${MKLROOT}/include/intel64/lp64 -I${MKLROOT}/include
 EXT_LIBS = \
