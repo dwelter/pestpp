@@ -1,0 +1,21 @@
+2018-01-12 15:47:30.571691 starting: opening ies.log for logging
+2018-01-12 15:47:31.259823 using approximate parcov in solution
+2018-01-12 15:47:31.260752 starting: initializing with existing ensembles
+2018-01-12 15:47:31.260752 starting: loading parensemble from file
+2018-01-12 15:47:31.328684 finished: loading parensemble from file took: 0:00:00.067932
+2018-01-12 15:47:31.351707 starting: loading obsensemble from file
+2018-01-12 15:47:31.773676 finished: loading obsensemble from file took: 0:00:00.421969
+2018-01-12 15:47:31.773676 finished: initializing with existing ensembles took: 0:00:00.512924
+2018-01-12 15:47:31.773676 using approximate parcov in solution
+2018-01-12 15:47:31.773676 starting: loading restart_obsensemble restart_obs1.csv
+2018-01-12 15:47:31.987673 finished: loading restart_obsensemble restart_obs1.csv took: 0:00:00.213997
+2018-01-12 15:47:32.847674 starting: inverting parcov for regul phi calcs
+2018-01-12 15:47:33.005691 finished: inverting parcov for regul phi calcs took: 0:00:00.158017
+2018-01-12 15:47:33.339657 **** phi summary ****
+2018-01-12 15:47:33.340655 regul factor:               0
+2018-01-12 15:47:33.340655 composite mean:          164363, std:          123457
+2018-01-12 15:47:33.340655 meas      mean:          164363, std:          123457
+2018-01-12 15:47:33.346658 actual    mean:          164588, std:          125944
+2018-01-12 15:47:33.346658 reg       mean:               0, std:               0
+2018-01-12 15:47:33.346658 *********************
+2018-01-12 15:47:33.347656 current lambda:             10

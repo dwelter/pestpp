@@ -1,77 +1,29 @@
-PEST++ performance logger started at:  12:20:27
-        ( time = 12:20:27,  elapsed time = 12ms )
+PEST++ performance logger started at:  14:29:10
+        ( time = 14:29:10,  elapsed time = 5ms )
   starting to process control file
-          ( time = 12:20:28,  elapsed time = 44ms )
+          ( time = 14:29:10,  elapsed time = 27ms )
   finished processing control file
-          ( time = 12:20:28,  elapsed time = 17ms )
+          ( time = 14:29:10,  elapsed time = 11ms )
     starting basic model IO error checking
-            ( time = 12:20:28,  elapsed time = 63ms )
+            ( time = 14:29:10,  elapsed time = 21ms )
     finished basic model IO error checking
-            ( time = 12:20:28,  elapsed time = 322ms )
+            ( time = 14:29:10,  elapsed time = 26ms )
     processing par csv
-            ( time = 12:20:28,  elapsed time = 20ms )
+            ( time = 14:29:10,  elapsed time = 35ms )
     processing obs csv
-            ( time = 12:20:28,  elapsed time = 46ms )
+            ( time = 14:29:10,  elapsed time = 23ms )
     load obscov
-            ( time = 12:20:28,  elapsed time = 2ms )
+            ( time = 14:29:10,  elapsed time = 1ms )
     load parcov
-            ( time = 12:20:28,  elapsed time = 13ms )
+            ( time = 14:29:10,  elapsed time = 1ms )
     calculate prior par diff
-            ( time = 12:20:28,  elapsed time = 108us )
+            ( time = 14:29:10,  elapsed time = 61us )
     restart IES with existing obs ensemble csv: OBS_RESTART.CSV
-            ( time = 12:20:28,  elapsed time = 218ms )
+            ( time = 14:29:11,  elapsed time = 89ms )
     starting solve for iteration: 1
-            ( time = 12:20:28,  elapsed time = 107us )
+            ( time = 14:29:11,  elapsed time = 93us )
     calculate residual matrix
-            ( time = 12:20:28,  elapsed time = 2ms )
+            ( time = 14:29:11,  elapsed time = 1ms )
     calculate scaled obs diff
-            ( time = 12:20:28,  elapsed time = 313us )
+            ( time = 14:29:11,  elapsed time = 220us )
     calculate scaled par diff
-            ( time = 12:20:28,  elapsed time = 840us )
-    SVD of obs diff
-            ( time = 12:20:28,  elapsed time = 113us )
-    starting REDSVD
-            ( time = 12:20:28,  elapsed time = 2ms )
-    retrieving REDSVD components
-            ( time = 12:20:28,  elapsed time = 3ms )
-    triming REDSVD components to 1elements
-            ( time = 12:20:28,  elapsed time = 107us )
-    done REDSVD
-            ( time = 12:20:28,  elapsed time = 5ms )
-    starting calcs for lambda0.1
-            ( time = 12:20:28,  elapsed time = 83us )
-    form scaled identity matrix
-            ( time = 12:20:28,  elapsed time = 93us )
-    calculate portion of upgrade_1 for localization
-            ( time = 12:20:28,  elapsed time = 155us )
-    apply residuals to upgrade_1
-            ( time = 12:20:28,  elapsed time = 13ms )
-    starting calcs for lambda1
-            ( time = 12:20:28,  elapsed time = 338us )
-    form scaled identity matrix
-            ( time = 12:20:28,  elapsed time = 243us )
-    calculate portion of upgrade_1 for localization
-            ( time = 12:20:28,  elapsed time = 154us )
-    apply residuals to upgrade_1
-            ( time = 12:20:29,  elapsed time = 416ms )
-    starting calcs for lambda10
-            ( time = 12:20:29,  elapsed time = 410us )
-    form scaled identity matrix
-            ( time = 12:20:29,  elapsed time = 98us )
-    calculate portion of upgrade_1 for localization
-            ( time = 12:20:29,  elapsed time = 199us )
-    apply residuals to upgrade_1
-            ( time = 12:20:29,  elapsed time = 213ms )
-    queuing 3 ensembles
-            ( time = 12:20:29,  elapsed time = 49ms )
-    making runs
-            ( time = 12:20:36,  elapsed time = 7sec )
-    processing runs
-            ( time = 12:22:04,  elapsed time = 1min )
-    queuing 20 runs
-            ( time = 12:22:04,  elapsed time = 22ms )
-    making runs
-            ( time = 12:22:07,  elapsed time = 3sec )
-    processing runs
-            ( time = 12:22:26,  elapsed time = 18sec )
-    updating parameter ensemble

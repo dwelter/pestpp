@@ -187,8 +187,9 @@ void PhiHandler::write_csv(int iter_num, int total_runs, ofstream &csv, phiType 
 	{
 		csv << ',';
 		if (phi_map->find(name) != pmi)
-			csv << &phi_map->at(name);
+			csv << phi_map->at(name);
 	}
+	csv << endl;
 	csv.flush();
 }
 
@@ -639,6 +640,8 @@ void IterEnsembleSmoother::solve()
 	rsvd.set_performance_log(performance_log);
 	rsvd.solve_ip(obs_diff, s, Ut, V, pest_scenario.get_svd_info().eigthresh, pest_scenario.get_svd_info().maxsing);
 	Ut.transposeInPlace();
+	//cout << "V" << V << endl;
+	//cout << "Ut" << endl << Ut << endl;
 	Eigen::MatrixXd s2 = s.cwiseProduct(s);
 	vector<ParameterEnsemble> pe_lams;
 	vector<double> lam_vals;
@@ -647,7 +650,7 @@ void IterEnsembleSmoother::solve()
 		ss.str("");
 		double cur_lam = last_best_lam * lam_mult;
 		ss << "starting calcs for lambda" << cur_lam;
-		cout << "   ...starting calcs for lambda: " << cur_lam << endl;
+		//cout << "   ...starting calcs for lambda: " << cur_lam << endl;
 		frec << "   ...starting calcs for lambda: " << cur_lam << endl;
 
 		performance_log->log_event(ss.str());
@@ -660,7 +663,7 @@ void IterEnsembleSmoother::solve()
 
 		performance_log->log_event("apply residuals to upgrade_1");
 		upgrade_1 = (upgrade_1 * scaled_residual).transpose();
-		 
+		//cout << "upgrade_1" << endl << upgrade_1 << endl;
 		ParameterEnsemble pe_lam = pe;//copy
 		pe_lam.add_to_cols(upgrade_1, pe_base.get_var_names());
 
@@ -792,7 +795,7 @@ void IterEnsembleSmoother::solve()
 			remaining_oe_lam.set_real_names(org_oe_idxs);
 			
 		}
-		pe_lams[best_idx].drop_rows(real_idxs);
+		pe_lams[best_idx].drop_rows(real_idxs); 
 		pe_lams[best_idx].append_other_rows(remaining_pe_lam);
 		oe_lam_best.append_other_rows(remaining_oe_lam);
 
