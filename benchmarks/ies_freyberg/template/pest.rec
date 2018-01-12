@@ -88,18 +88,18 @@ rcond38        log                     FACTOR           4500            450     
 rcond39        log                     FACTOR           4500            450          45000          rcond              1              0                   0
 ss             log                     FACTOR          0.001         0.0001           0.01        storage              1              0                   0
 sy             log                     FACTOR            0.1           0.01           0.25        storage              1              0                   0
-wf1_1          fixed                   FACTOR            100             90            110        welflux             -1              0                   0
-wf2_1          fixed                   FACTOR            100             90            110        welflux             -1              0                   0
-wf3_1          fixed                   FACTOR            100             90            110        welflux             -1              0                   0
-wf4_1          fixed                   FACTOR            100             90            110        welflux             -1              0                   0
-wf5_1          fixed                   FACTOR            100             90            110        welflux             -1              0                   0
-wf6_1          fixed                   FACTOR            100             90            110        welflux             -1              0                   0
-wf1_2          fixed                   FACTOR            100             50            150        welflux             -1              0                   0
-wf2_2          fixed                   FACTOR            100             50            150        welflux             -1              0                   0
-wf3_2          fixed                   FACTOR            100             50            150        welflux             -1              0                   0
-wf4_2          fixed                   FACTOR            100             50            150        welflux             -1              0                   0
-wf5_2          fixed                   FACTOR            100             50            150        welflux             -1              0                   0
-wf6_2          fixed                   FACTOR            100             50            150        welflux             -1              0                   0
+wf1_1          fixed                   FACTOR            100             90            110        welflux              1              0                   0
+wf2_1          fixed                   FACTOR            100             90            110        welflux              1              0                   0
+wf3_1          fixed                   FACTOR            100             90            110        welflux              1              0                   0
+wf4_1          fixed                   FACTOR            100             90            110        welflux              1              0                   0
+wf5_1          fixed                   FACTOR            100             90            110        welflux              1              0                   0
+wf6_1          fixed                   FACTOR            100             90            110        welflux              1              0                   0
+wf1_2          fixed                   FACTOR            100             50            150        welflux              1              0                   0
+wf2_2          fixed                   FACTOR            100             50            150        welflux              1              0                   0
+wf3_2          fixed                   FACTOR            100             50            150        welflux              1              0                   0
+wf4_2          fixed                   FACTOR            100             50            150        welflux              1              0                   0
+wf5_2          fixed                   FACTOR            100             50            150        welflux              1              0                   0
+wf6_2          fixed                   FACTOR            100             50            150        welflux              1              0                   0
 hkr00c00       log                     FACTOR              5            0.5             50             hk              1              0                   0
 hkr00c01       log                     FACTOR              5            0.5             50             hk              1              0                   0
 hkr00c02       log                     FACTOR              5            0.5             50             hk              1              0                   0
@@ -859,13 +859,13 @@ h00_02_05                             25.7091            forecast               
 h00_02_06                             25.1322            forecast                   0
 h00_02_07                              24.556            forecast                   0
 h00_02_08                             23.9179            forecast                   0
-h00_02_09                             23.2213            head_cal                 100
+h00_02_09                             23.2213            head_cal                   1
 h00_02_10                             22.5131            forecast                   0
 h00_02_11                             21.8269            forecast                   0
 h00_02_12                             21.0876            forecast                   0
 h00_02_13                             20.3899            forecast                   0
 h00_02_14                             19.6764            forecast                   0
-h00_02_15                             19.8145            head_cal                 100
+h00_02_15                             19.8145            head_cal                   1
 h00_02_16                             19.9196            forecast                   0
 h00_02_17                             19.9861            forecast                   0
 h00_02_18                             20.0316            forecast                   0
@@ -878,7 +878,7 @@ h00_03_04                             26.3084            forecast               
 h00_03_05                             25.7671            forecast                   0
 h00_03_06                             25.1404            forecast                   0
 h00_03_07                             24.5174            forecast                   0
-h00_03_08                             23.7921            head_cal                 100
+h00_03_08                             23.7921            head_cal                   1
 h00_03_09                             23.0118            forecast                   0
 h00_03_10                             22.2933            forecast                   0
 h00_03_11                             21.6121            forecast                   0
@@ -1080,7 +1080,7 @@ h00_13_06                             -999.99            forecast               
 h00_13_07                             -999.99            forecast                   0
 h00_13_08                             19.5092            forecast                   0
 h00_13_09                             19.3456            forecast                   0
-h00_13_10                             19.0462            head_cal                 100
+h00_13_10                             19.0462            head_cal                   1
 h00_13_11                              18.643            forecast                   0
 h00_13_12                             18.1693            forecast                   0
 h00_13_13                              17.683            forecast                   0
@@ -1126,7 +1126,7 @@ h00_15_12                             17.8775            forecast               
 h00_15_13                             17.3419            forecast                   0
 h00_15_14                             16.7236            forecast                   0
 h00_15_15                             17.1463            forecast                   0
-h00_15_16                             17.4893            head_cal                 100
+h00_15_16                             17.4893            head_cal                   1
 h00_15_17                             17.7211            forecast                   0
 h00_15_18                             17.8523            forecast                   0
 h00_15_19                             17.9098            forecast                   0
@@ -1240,7 +1240,7 @@ h00_21_06                             21.7224            forecast               
 h00_21_07                             21.2754            forecast                   0
 h00_21_08                             20.5262            forecast                   0
 h00_21_09                             19.9039            forecast                   0
-h00_21_10                             19.1784            head_cal                 100
+h00_21_10                             19.1784            head_cal                   1
 h00_21_11                             18.2463            forecast                   0
 h00_21_12                             17.1101            forecast                   0
 h00_21_13                              16.098            forecast                   0
@@ -1265,7 +1265,7 @@ h00_22_11                             18.3631            forecast               
 h00_22_12                             17.1613            forecast                   0
 h00_22_13                             16.0496            forecast                   0
 h00_22_14                             15.1411            forecast                   0
-h00_22_15                             15.7381            head_cal                 100
+h00_22_15                             15.7381            head_cal                   1
 h00_22_16                             16.2309            forecast                   0
 h00_22_17                             16.5721            forecast                   0
 h00_22_18                             16.7534            forecast                   0
@@ -1294,7 +1294,7 @@ h00_24_00                             25.8922            forecast               
 h00_24_01                              25.776            forecast                   0
 h00_24_02                             25.5608            forecast                   0
 h00_24_03                             25.1566            forecast                   0
-h00_24_04                             24.4748            head_cal                 100
+h00_24_04                             24.4748            head_cal                   1
 h00_24_05                             23.6714            forecast                   0
 h00_24_06                             22.8657            forecast                   0
 h00_24_07                             22.0892            forecast                   0
@@ -1405,7 +1405,7 @@ h00_29_11                             17.1997            forecast               
 h00_29_12                             16.2099            forecast                   0
 h00_29_13                             15.0258            forecast                   0
 h00_29_14                             13.5513            forecast                   0
-h00_29_15                             14.5513            head_cal                 100
+h00_29_15                             14.5513            head_cal                   1
 h00_29_16                             15.3644            forecast                   0
 h00_29_17                             15.7955            forecast                   0
 h00_29_18                             16.0124            forecast                   0
@@ -1500,7 +1500,7 @@ h00_34_06                             20.6895            forecast               
 h00_34_07                             20.0959            forecast                   0
 h00_34_08                             19.2764            forecast                   0
 h00_34_09                             18.0959            forecast                   0
-h00_34_10                             16.4269            head_cal                 100
+h00_34_10                             16.4269            head_cal                   1
 h00_34_11                             14.0774            forecast                   0
 h00_34_12                             13.5406            forecast                   0
 h00_34_13                             13.0745            forecast                   0
@@ -3216,34 +3216,35 @@ sw_gw_2                              -537.595            forecast               
 
 
 
+
   ---  initial phi summary ---  
        phi type           mean            std            min            max
-      composite         164363         125568        19105.9         496118
-       measured         164363         125568        19105.9         496118
+      composite        32.8978        16.3908        4.03567        84.8028
+       measured        32.8978        16.3908        4.03567        84.8028
  regularization              0              0              0              0
-         actual         164588         125944        19117.6         495432
+         actual        26.1722        15.3489        4.63752        59.9933
 
 
-  ---  current lambda: 10                  
+  ---  current lambda: 0.001               
 
 
 
   ---  starting solve for iteration: 1
-   ...starting calcs for lambda: 10
-   ...finished calcs for lambda: 10
+   ...starting calcs for lambda: 0.001
+   ...finished calcs for lambda: 0.001
   ---  running lambda ensembles...  ---  
   ---  evaluting lambda ensemble results  --  
-  ---  last mean: 164363         , last stdev: 125568         
-  --- lambda value 10 phi summary ---  
+  ---  last mean: 32.8978        , last stdev: 16.3908        
+  --- lambda value 0.001 phi summary ---  
        phi type           mean            std            min            max
-      composite          25249        22650.9        699.592        53903.7
-       measured          25249        22650.9        699.592        53903.7
- regularization        821.139        240.221        234.186        1301.82
-         actual        25342.9        22699.7         674.16        54180.7
+      composite        10.7917        4.48671        3.18704        21.3667
+       measured        10.7917        4.48671        3.18704        21.3667
+ regularization        152.593        98.7467         7.7971        462.272
+         actual        5.50422        2.78466         1.4887        12.5886
 
 
   ---  updating parameter ensemble  ---  
-  ---  updating lambda from 10 to 7.5
+  ---  updating lambda from 0.001 to 0.00075
 
   ---  IterEnsembleSmoother iteration 1 report  ---  
    number of active realizations:  30
@@ -3251,73 +3252,9 @@ sw_gw_2                              -537.595            forecast               
       current obs ensemble saved to pest.1.obs.csv
       current par ensemble saved to pest.1.par.csv
        phi type           mean            std            min            max
-      composite          25249        22650.9        699.592        53903.7
-       measured          25249        22650.9        699.592        53903.7
- regularization        821.139        240.221        234.186        1301.82
-         actual        25342.9        22699.7         674.16        54180.7
-
-
-
-
-
-  ---  starting solve for iteration: 2
-   ...starting calcs for lambda: 7.5
-   ...finished calcs for lambda: 7.5
-  ---  running lambda ensembles...  ---  
-  ---  evaluting lambda ensemble results  --  
-  ---  last mean: 25249          , last stdev: 22650.9        
-  --- lambda value 7.5 phi summary ---  
-       phi type           mean            std            min            max
-      composite        26341.9        26482.6         139.11        58278.4
-       measured        26341.9        26482.6         139.11        58278.4
- regularization        1427.79         313.49        717.033        2155.46
-         actual        26414.9        26553.5        166.807        58270.5
-
-
-  ---  updating parameter ensemble  ---  
-  ---  not updating lambda  --- 
-
-  ---  IterEnsembleSmoother iteration 2 report  ---  
-   number of active realizations:  30
-   number of model runs:           60
-      current obs ensemble saved to pest.2.obs.csv
-      current par ensemble saved to pest.2.par.csv
-       phi type           mean            std            min            max
-      composite        26341.9        26482.6         139.11        58278.4
-       measured        26341.9        26482.6         139.11        58278.4
- regularization        1427.79         313.49        717.033        2155.46
-         actual        26414.9        26553.5        166.807        58270.5
-
-
-
-
-
-  ---  starting solve for iteration: 3
-   ...starting calcs for lambda: 7.5
-   ...finished calcs for lambda: 7.5
-  ---  running lambda ensembles...  ---  
-  ---  evaluting lambda ensemble results  --  
-  ---  last mean: 26341.9        , last stdev: 26482.6        
-  --- lambda value 7.5 phi summary ---  
-       phi type           mean            std            min            max
-      composite        28918.2        28882.4        124.694        62553.6
-       measured        28918.2        28882.4        124.694        62553.6
- regularization        1529.63        330.754        745.055        2331.27
-         actual        28992.9        28951.8        123.044        63267.3
-
-
-  ---  updating parameter ensemble  ---  
-  ---  updating lambda from 7.5 to 5.625
-
-  ---  IterEnsembleSmoother iteration 3 report  ---  
-   number of active realizations:  30
-   number of model runs:           90
-      current obs ensemble saved to pest.3.obs.csv
-      current par ensemble saved to pest.3.par.csv
-       phi type           mean            std            min            max
-      composite        28918.2        28882.4        124.694        62553.6
-       measured        28918.2        28882.4        124.694        62553.6
- regularization        1529.63        330.754        745.055        2331.27
-         actual        28992.9        28951.8        123.044        63267.3
+      composite        10.7917        4.48671        3.18704        21.3667
+       measured        10.7917        4.48671        3.18704        21.3667
+ regularization        152.593        98.7467         7.7971        462.272
+         actual        5.50422        2.78466         1.4887        12.5886
 
 

@@ -528,7 +528,7 @@ map<int,int> ParameterEnsemble::add_runs(RunManagerAbstract *run_mgr_ptr, vector
 		//const vector<double> svec(evec.data(), evec.data() + evec.size());
 		pars.update_without_clear(var_names, get_real_vector(rname));
 		if (tstat == ParameterEnsemble::transStatus::CTL)
-			par_transform.ctl2model_ip(pars);
+			par_transform.active_ctl2model_ip(pars);
 		else if (tstat == ParameterEnsemble::transStatus::NUM)
 			par_transform.numeric2model_ip(pars);
 		run_id = run_mgr_ptr->add_run(pars);
@@ -635,7 +635,7 @@ void ParameterEnsemble::enforce_bounds()
 
 void ParameterEnsemble::to_csv(string &file_name)
 {
-	vector<string> names = pest_scenario_ptr->get_ctl_ordered_adj_par_names();
+	vector<string> names = pest_scenario_ptr->get_ctl_ordered_par_names();
 	ofstream csv(file_name);
 	if (!csv.good())
 	{

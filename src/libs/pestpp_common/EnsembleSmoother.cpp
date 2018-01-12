@@ -563,7 +563,8 @@ void IterEnsembleSmoother::initialize()
 
 	ph = PhiHandler(&pest_scenario, &file_manager, &oe_base, &pe_base, &parcov_inv, &reg_factor);
 	ph.update(oe, pe);
-	frec <<endl << "  ---  initial phi summary ---  " << endl;
+	frec << endl <<endl << "  ---  initial phi summary ---  " << endl;
+	cout << endl <<endl << "  ---  initial phi summary ---  " << endl;
 	ph.report();
 	ph.write(0, run_mgr_ptr->get_total_runs());
 	
@@ -663,7 +664,7 @@ void IterEnsembleSmoother::solve()
 
 		performance_log->log_event("apply residuals to upgrade_1");
 		upgrade_1 = (upgrade_1 * scaled_residual).transpose();
-		//cout << "upgrade_1" << endl << upgrade_1 << endl;
+	    cout << "upgrade_1" << endl << upgrade_1 << endl;
 		ParameterEnsemble pe_lam = pe;//copy
 		pe_lam.add_to_cols(upgrade_1, pe_base.get_var_names());
 

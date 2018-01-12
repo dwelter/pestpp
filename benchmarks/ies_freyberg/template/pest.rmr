@@ -5,115 +5,121 @@ running model 30 times
     waiting for slaves to appear...
 
 
-01/12/18 13:48:20->new connection from: vm-mac7262.corp.gns.cri.nz:55955
-01/12/18 13:48:20->initializing new slave connection from: vm-mac7262.corp.gns.cri.nz:55955; number of slaves: 1; working dir: C:\Dev\pestpp\benchmarks\ies_freyberg\slave_0
-01/12/18 13:48:21->new connection from: vm-mac7262.corp.gns.cri.nz:55956
-01/12/18 13:48:21->initializing new slave connection from: vm-mac7262.corp.gns.cri.nz:55956; number of slaves: 2; working dir: C:\Dev\pestpp\benchmarks\ies_freyberg\slave_1
-01/12/18 13:48:21->new connection from: vm-mac7262.corp.gns.cri.nz:55957
-01/12/18 13:48:21->initializing new slave connection from: vm-mac7262.corp.gns.cri.nz:55957; number of slaves: 3; working dir: C:\Dev\pestpp\benchmarks\ies_freyberg\slave_2
-01/12/18 13:48:21->new slave ready: vm-mac7262.corp.gns.cri.nz:55955
-01/12/18 13:48:21->Sending run 0 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_0  (group id = 2, run id = 0, concurrent runs = 1)
-01/12/18 13:48:22->new slave ready: vm-mac7262.corp.gns.cri.nz:55956
-01/12/18 13:48:22->Sending run 1 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_1  (group id = 2, run id = 1, concurrent runs = 1)
-01/12/18 13:48:22->new connection from: vm-mac7262.corp.gns.cri.nz:55958
-01/12/18 13:48:22->initializing new slave connection from: vm-mac7262.corp.gns.cri.nz:55958; number of slaves: 4; working dir: C:\Dev\pestpp\benchmarks\ies_freyberg\slave_3
-01/12/18 13:48:22->new slave ready: vm-mac7262.corp.gns.cri.nz:55957
-01/12/18 13:48:22->Sending run 2 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_2  (group id = 2, run id = 2, concurrent runs = 1)
-01/12/18 13:48:23->new slave ready: vm-mac7262.corp.gns.cri.nz:55958
-01/12/18 13:48:23->Sending run 3 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_3  (group id = 2, run id = 3, concurrent runs = 1)
-01/12/18 13:48:25->run 0 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_0  (run time = 0.0553333 min, group id = 2, run id = 0 concurrent = 1)
-01/12/18 13:48:25->Sending run 4 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_0  (group id = 2, run id = 4, concurrent runs = 1)
-01/12/18 13:48:25->new connection from: vm-mac7262.corp.gns.cri.nz:55959
-01/12/18 13:48:25->initializing new slave connection from: vm-mac7262.corp.gns.cri.nz:55959; number of slaves: 5; working dir: C:\Dev\pestpp\benchmarks\ies_freyberg\slave_4
-01/12/18 13:48:25->run 1 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_1  (run time = 0.05815 min, group id = 2, run id = 1 concurrent = 1)
-01/12/18 13:48:25->Sending run 5 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_1  (group id = 2, run id = 5, concurrent runs = 1)
-01/12/18 13:48:26->run 2 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_2  (run time = 0.0612167 min, group id = 2, run id = 2 concurrent = 1)
-01/12/18 13:48:26->Sending run 6 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_2  (group id = 2, run id = 6, concurrent runs = 1)
-01/12/18 13:48:26->new slave ready: vm-mac7262.corp.gns.cri.nz:55959
-01/12/18 13:48:26->Sending run 7 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_4  (group id = 2, run id = 7, concurrent runs = 1)
-01/12/18 13:48:27->run 3 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_3  (run time = 0.0570167 min, group id = 2, run id = 3 concurrent = 1)
-01/12/18 13:48:27->Sending run 8 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_3  (group id = 2, run id = 8, concurrent runs = 1)
-01/12/18 13:48:27->run 4 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_0  (run time = 0.0496667 min, group id = 2, run id = 4 concurrent = 1)
-01/12/18 13:48:27->Sending run 9 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_0  (group id = 2, run id = 9, concurrent runs = 1)
-01/12/18 13:48:29->run 5 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_1  (run time = 0.0557 min, group id = 2, run id = 5 concurrent = 1)
-01/12/18 13:48:29->Sending run 10 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_1  (group id = 2, run id = 10, concurrent runs = 1)
-01/12/18 13:48:29->run 6 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_2  (run time = 0.0559 min, group id = 2, run id = 6 concurrent = 1)
-01/12/18 13:48:29->Sending run 11 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_2  (group id = 2, run id = 11, concurrent runs = 1)
-01/12/18 13:48:29->new connection from: vm-mac7262.corp.gns.cri.nz:55960
-01/12/18 13:48:29->initializing new slave connection from: vm-mac7262.corp.gns.cri.nz:55960; number of slaves: 6; working dir: C:\Dev\pestpp\benchmarks\ies_freyberg\slave_5
-01/12/18 13:48:31->run 8 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_3  (run time = 0.0618833 min, group id = 2, run id = 8 concurrent = 1)
-01/12/18 13:48:31->Sending run 12 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_3  (group id = 2, run id = 12, concurrent runs = 1)
-01/12/18 13:48:31->new slave ready: vm-mac7262.corp.gns.cri.nz:55960
-01/12/18 13:48:31->Sending run 13 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_5  (group id = 2, run id = 13, concurrent runs = 1)
-01/12/18 13:48:31->run 7 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_4  (run time = 0.0825667 min, group id = 2, run id = 7 concurrent = 1)
-01/12/18 13:48:31->Sending run 14 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_4  (group id = 2, run id = 14, concurrent runs = 1)
-01/12/18 13:48:31->run 9 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_0  (run time = 0.0580333 min, group id = 2, run id = 9 concurrent = 1)
-01/12/18 13:48:31->Sending run 15 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_0  (group id = 2, run id = 15, concurrent runs = 1)
-01/12/18 13:48:32->run 11 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_2  (run time = 0.0500333 min, group id = 2, run id = 11 concurrent = 1)
-01/12/18 13:48:32->Sending run 16 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_2  (group id = 2, run id = 16, concurrent runs = 1)
-01/12/18 13:48:32->run 10 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_1  (run time = 0.0541167 min, group id = 2, run id = 10 concurrent = 1)
-01/12/18 13:48:32->Sending run 17 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_1  (group id = 2, run id = 17, concurrent runs = 1)
-01/12/18 13:48:32->new connection from: vm-mac7262.corp.gns.cri.nz:55961
-01/12/18 13:48:32->initializing new slave connection from: vm-mac7262.corp.gns.cri.nz:55961; number of slaves: 7; working dir: C:\Dev\pestpp\benchmarks\ies_freyberg\slave_6
-01/12/18 13:48:34->run 12 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_3  (run time = 0.0593333 min, group id = 2, run id = 12 concurrent = 1)
-01/12/18 13:48:34->Sending run 18 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_3  (group id = 2, run id = 18, concurrent runs = 1)
-01/12/18 13:48:34->run 14 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_4  (run time = 0.06745 min, group id = 2, run id = 14 concurrent = 1)
-01/12/18 13:48:34->Sending run 19 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_4  (group id = 2, run id = 19, concurrent runs = 1)
-01/12/18 13:48:34->new slave ready: vm-mac7262.corp.gns.cri.nz:55961
-01/12/18 13:48:34->Sending run 20 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_6  (group id = 2, run id = 20, concurrent runs = 1)
-01/12/18 13:48:35->run 13 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_5  (run time = 0.0666333 min, group id = 2, run id = 13 concurrent = 1)
-01/12/18 13:48:35->Sending run 21 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_5  (group id = 2, run id = 21, concurrent runs = 1)
-01/12/18 13:48:35->new connection from: vm-mac7262.corp.gns.cri.nz:55962
-01/12/18 13:48:35->initializing new slave connection from: vm-mac7262.corp.gns.cri.nz:55962; number of slaves: 8; working dir: C:\Dev\pestpp\benchmarks\ies_freyberg\slave_7
-01/12/18 13:48:35->run 16 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_2  (run time = 0.0535167 min, group id = 2, run id = 16 concurrent = 1)
-01/12/18 13:48:35->Sending run 22 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_2  (group id = 2, run id = 22, concurrent runs = 1)
-01/12/18 13:48:35->run 17 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_1  (run time = 0.0571667 min, group id = 2, run id = 17 concurrent = 1)
-01/12/18 13:48:35->Sending run 23 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_1  (group id = 2, run id = 23, concurrent runs = 1)
-01/12/18 13:48:35->run 15 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_0  (run time = 0.0627667 min, group id = 2, run id = 15 concurrent = 1)
-01/12/18 13:48:35->Sending run 24 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_0  (group id = 2, run id = 24, concurrent runs = 1)
-01/12/18 13:48:36->new slave ready: vm-mac7262.corp.gns.cri.nz:55962
-01/12/18 13:48:36->Sending run 25 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_7  (group id = 2, run id = 25, concurrent runs = 1)
-01/12/18 13:48:39->run 18 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_3  (run time = 0.0668667 min, group id = 2, run id = 18 concurrent = 1)
-01/12/18 13:48:39->Sending run 26 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_3  (group id = 2, run id = 26, concurrent runs = 1)
-01/12/18 13:48:39->run 19 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_4  (run time = 0.0757833 min, group id = 2, run id = 19 concurrent = 1)
-01/12/18 13:48:39->Sending run 27 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_4  (group id = 2, run id = 27, concurrent runs = 1)
-01/12/18 13:48:39->run 22 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_2  (run time = 0.0622833 min, group id = 2, run id = 22 concurrent = 1)
-01/12/18 13:48:39->Sending run 28 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_2  (group id = 2, run id = 28, concurrent runs = 1)
-01/12/18 13:48:40->run 21 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_5  (run time = 0.07345 min, group id = 2, run id = 21 concurrent = 1)
-01/12/18 13:48:40->Sending run 29 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_5  (group id = 2, run id = 29, concurrent runs = 1)
-01/12/18 13:48:40->run 24 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_0  (run time = 0.0711167 min, group id = 2, run id = 24 concurrent = 1)
-01/12/18 13:48:40->rescheduling overdue run 23 (0.07965|0.0571667 minutes) on: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_1
-01/12/18 13:48:40->Sending run 23 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_0  (group id = 2, run id = 23, concurrent runs = 2)
-01/12/18 13:48:40->2 concurrent runs for run id = 23
-01/12/18 13:48:40->run 23 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_1  (run time = 0.0697833 min, group id = 2, run id = 23 concurrent = 2)
-01/12/18 13:48:40->sending kill request; reason: completed on alternative node; run id:23; slave: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_0
-01/12/18 13:48:40->rescheduling overdue run 20 (0.1017|0.0698806 minutes) on: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_6
-01/12/18 13:48:40->Sending run 20 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_1  (group id = 2, run id = 20, concurrent runs = 2)
-01/12/18 13:48:40->2 concurrent runs for run id = 20
-01/12/18 13:48:40->run 20 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_6  (run time = 0.10385 min, group id = 2, run id = 20 concurrent = 2)
-01/12/18 13:48:40->sending kill request; reason: completed on alternative node; run id:20; slave: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_1
-01/12/18 13:48:41->new connection from: vm-mac7262.corp.gns.cri.nz:55963
-01/12/18 13:48:41->initializing new slave connection from: vm-mac7262.corp.gns.cri.nz:55963; number of slaves: 9; working dir: C:\Dev\pestpp\benchmarks\ies_freyberg\slave_8
-01/12/18 13:48:42->Run 23 killed on slave: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_0, run id = 23 concurrent = 0
-01/12/18 13:48:42->rescheduling overdue run 25 (0.0913333|0.0747333 minutes) on: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_7
-01/12/18 13:48:42->Sending run 25 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_6  (group id = 2, run id = 25, concurrent runs = 2)
-01/12/18 13:48:42->2 concurrent runs for run id = 25
-01/12/18 13:48:42->rescheduling overdue run 25 (0.0913333|0.0747333 minutes) on: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_7
-01/12/18 13:48:42->Sending run 25 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_0  (group id = 2, run id = 25, concurrent runs = 3)
-01/12/18 13:48:42->3 concurrent runs for run id = 25
-01/12/18 13:48:42->run 26 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_3  (run time = 0.0597167 min, group id = 2, run id = 26 concurrent = 1)
-01/12/18 13:48:42->new slave ready: vm-mac7262.corp.gns.cri.nz:55963
-01/12/18 13:48:42->Run 20 killed on slave: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_1, run id = 20 concurrent = 0
-01/12/18 13:48:43->run 25 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_7  (run time = 0.108683 min, group id = 2, run id = 25 concurrent = 3)
-01/12/18 13:48:43->sending kill request; reason: completed on alternative node; run id:25; slave: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_6
-01/12/18 13:48:43->sending kill request; reason: completed on alternative node; run id:25; slave: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_0
-01/12/18 13:48:43->Run 25 killed on slave: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_6, run id = 25 concurrent = 0
-01/12/18 13:48:43->Run 25 killed on slave: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_0, run id = 25 concurrent = 0
-01/12/18 13:48:43->run 28 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_2  (run time = 0.0602333 min, group id = 2, run id = 28 concurrent = 1)
-01/12/18 13:48:43->run 27 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_4  (run time = 0.0694333 min, group id = 2, run id = 27 concurrent = 1)
-01/12/18 13:48:43->new connection from: vm-mac7262.corp.gns.cri.nz:55964
-01/12/18 13:48:43->initializing new slave connection from: vm-mac7262.corp.gns.cri.nz:55964; number of slaves: 10; working dir: C:\Dev\pestpp\benchmarks\ies_freyberg\slave_9
-01/12/18 13:48:43->run 29 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_5  (run time = 0.0663333 min, group id = 2, run id = 29 concurrent = 1)
+01/12/18 22:39:49->new connection from: vm-mac7262.corp.gns.cri.nz:57086
+01/12/18 22:39:49->initializing new slave connection from: vm-mac7262.corp.gns.cri.nz:57086; number of slaves: 1; working dir: C:\Dev\pestpp\benchmarks\ies_freyberg\slave_0
+01/12/18 22:39:49->new connection from: vm-mac7262.corp.gns.cri.nz:57087
+01/12/18 22:39:49->initializing new slave connection from: vm-mac7262.corp.gns.cri.nz:57087; number of slaves: 2; working dir: C:\Dev\pestpp\benchmarks\ies_freyberg\slave_1
+01/12/18 22:39:50->new connection from: vm-mac7262.corp.gns.cri.nz:57088
+01/12/18 22:39:50->initializing new slave connection from: vm-mac7262.corp.gns.cri.nz:57088; number of slaves: 3; working dir: C:\Dev\pestpp\benchmarks\ies_freyberg\slave_2
+01/12/18 22:39:50->new slave ready: vm-mac7262.corp.gns.cri.nz:57086
+01/12/18 22:39:50->Sending run 0 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_0  (group id = 2, run id = 0, concurrent runs = 1)
+01/12/18 22:39:50->new slave ready: vm-mac7262.corp.gns.cri.nz:57087
+01/12/18 22:39:50->Sending run 1 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_1  (group id = 2, run id = 1, concurrent runs = 1)
+01/12/18 22:39:50->new connection from: vm-mac7262.corp.gns.cri.nz:57089
+01/12/18 22:39:50->initializing new slave connection from: vm-mac7262.corp.gns.cri.nz:57089; number of slaves: 4; working dir: C:\Dev\pestpp\benchmarks\ies_freyberg\slave_3
+01/12/18 22:39:51->new slave ready: vm-mac7262.corp.gns.cri.nz:57088
+01/12/18 22:39:51->Sending run 2 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_2  (group id = 2, run id = 2, concurrent runs = 1)
+01/12/18 22:39:51->new connection from: vm-mac7262.corp.gns.cri.nz:57090
+01/12/18 22:39:51->initializing new slave connection from: vm-mac7262.corp.gns.cri.nz:57090; number of slaves: 5; working dir: C:\Dev\pestpp\benchmarks\ies_freyberg\slave_4
+01/12/18 22:39:52->new slave ready: vm-mac7262.corp.gns.cri.nz:57089
+01/12/18 22:39:52->Sending run 3 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_3  (group id = 2, run id = 3, concurrent runs = 1)
+01/12/18 22:39:52->new slave ready: vm-mac7262.corp.gns.cri.nz:57090
+01/12/18 22:39:52->Sending run 4 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_4  (group id = 2, run id = 4, concurrent runs = 1)
+01/12/18 22:39:53->new connection from: vm-mac7262.corp.gns.cri.nz:57091
+01/12/18 22:39:53->initializing new slave connection from: vm-mac7262.corp.gns.cri.nz:57091; number of slaves: 6; working dir: C:\Dev\pestpp\benchmarks\ies_freyberg\slave_5
+01/12/18 22:39:53->run 0 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_0  (run time = 0.0513333 min, group id = 2, run id = 0 concurrent = 1)
+01/12/18 22:39:53->Sending run 5 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_0  (group id = 2, run id = 5, concurrent runs = 1)
+01/12/18 22:39:53->run 1 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_1  (run time = 0.0544667 min, group id = 2, run id = 1 concurrent = 1)
+01/12/18 22:39:53->Sending run 6 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_1  (group id = 2, run id = 6, concurrent runs = 1)
+01/12/18 22:39:54->new slave ready: vm-mac7262.corp.gns.cri.nz:57091
+01/12/18 22:39:54->Sending run 7 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_5  (group id = 2, run id = 7, concurrent runs = 1)
+01/12/18 22:39:54->run 2 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_2  (run time = 0.0636 min, group id = 2, run id = 2 concurrent = 1)
+01/12/18 22:39:54->Sending run 8 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_2  (group id = 2, run id = 8, concurrent runs = 1)
+01/12/18 22:39:54->new connection from: vm-mac7262.corp.gns.cri.nz:57092
+01/12/18 22:39:54->initializing new slave connection from: vm-mac7262.corp.gns.cri.nz:57092; number of slaves: 7; working dir: C:\Dev\pestpp\benchmarks\ies_freyberg\slave_6
+01/12/18 22:39:56->new slave ready: vm-mac7262.corp.gns.cri.nz:57092
+01/12/18 22:39:56->Sending run 9 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_6  (group id = 2, run id = 9, concurrent runs = 1)
+01/12/18 22:39:57->run 3 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_3  (run time = 0.0808 min, group id = 2, run id = 3 concurrent = 1)
+01/12/18 22:39:57->Sending run 10 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_3  (group id = 2, run id = 10, concurrent runs = 1)
+01/12/18 22:39:57->new connection from: vm-mac7262.corp.gns.cri.nz:57093
+01/12/18 22:39:57->initializing new slave connection from: vm-mac7262.corp.gns.cri.nz:57093; number of slaves: 8; working dir: C:\Dev\pestpp\benchmarks\ies_freyberg\slave_7
+01/12/18 22:39:57->run 4 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_4  (run time = 0.0750833 min, group id = 2, run id = 4 concurrent = 1)
+01/12/18 22:39:57->Sending run 11 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_4  (group id = 2, run id = 11, concurrent runs = 1)
+01/12/18 22:39:57->run 5 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_0  (run time = 0.0611333 min, group id = 2, run id = 5 concurrent = 1)
+01/12/18 22:39:57->Sending run 12 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_0  (group id = 2, run id = 12, concurrent runs = 1)
+01/12/18 22:39:58->run 6 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_1  (run time = 0.0621833 min, group id = 2, run id = 6 concurrent = 1)
+01/12/18 22:39:58->Sending run 13 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_1  (group id = 2, run id = 13, concurrent runs = 1)
+01/12/18 22:39:58->run 8 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_2  (run time = 0.0601333 min, group id = 2, run id = 8 concurrent = 1)
+01/12/18 22:39:58->Sending run 14 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_2  (group id = 2, run id = 14, concurrent runs = 1)
+01/12/18 22:39:58->new slave ready: vm-mac7262.corp.gns.cri.nz:57093
+01/12/18 22:39:58->Sending run 15 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_7  (group id = 2, run id = 15, concurrent runs = 1)
+01/12/18 22:39:58->new connection from: vm-mac7262.corp.gns.cri.nz:57094
+01/12/18 22:39:58->initializing new slave connection from: vm-mac7262.corp.gns.cri.nz:57094; number of slaves: 9; working dir: C:\Dev\pestpp\benchmarks\ies_freyberg\slave_8
+01/12/18 22:40:00->run 7 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_5  (run time = 0.1057 min, group id = 2, run id = 7 concurrent = 1)
+01/12/18 22:40:00->Sending run 16 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_5  (group id = 2, run id = 16, concurrent runs = 1)
+01/12/18 22:40:01->new slave ready: vm-mac7262.corp.gns.cri.nz:57094
+01/12/18 22:40:01->Sending run 17 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_8  (group id = 2, run id = 17, concurrent runs = 1)
+01/12/18 22:40:03->new connection from: vm-mac7262.corp.gns.cri.nz:57096
+01/12/18 22:40:03->initializing new slave connection from: vm-mac7262.corp.gns.cri.nz:57096; number of slaves: 10; working dir: C:\Dev\pestpp\benchmarks\ies_freyberg\slave_9
+01/12/18 22:40:04->run 10 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_3  (run time = 0.0987667 min, group id = 2, run id = 10 concurrent = 1)
+01/12/18 22:40:04->Sending run 18 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_3  (group id = 2, run id = 18, concurrent runs = 1)
+01/12/18 22:40:04->run 11 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_4  (run time = 0.0967667 min, group id = 2, run id = 11 concurrent = 1)
+01/12/18 22:40:04->Sending run 19 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_4  (group id = 2, run id = 19, concurrent runs = 1)
+01/12/18 22:40:04->run 12 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_0  (run time = 0.0886333 min, group id = 2, run id = 12 concurrent = 1)
+01/12/18 22:40:04->Sending run 20 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_0  (group id = 2, run id = 20, concurrent runs = 1)
+01/12/18 22:40:05->new slave ready: vm-mac7262.corp.gns.cri.nz:57096
+01/12/18 22:40:05->Sending run 21 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_9  (group id = 2, run id = 21, concurrent runs = 1)
+01/12/18 22:40:05->run 9 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_6  (run time = 0.14755 min, group id = 2, run id = 9 concurrent = 1)
+01/12/18 22:40:05->Sending run 22 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_6  (group id = 2, run id = 22, concurrent runs = 1)
+01/12/18 22:40:05->run 13 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_1  (run time = 0.0964 min, group id = 2, run id = 13 concurrent = 1)
+01/12/18 22:40:05->Sending run 23 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_1  (group id = 2, run id = 23, concurrent runs = 1)
+01/12/18 22:40:06->run 14 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_2  (run time = 0.100133 min, group id = 2, run id = 14 concurrent = 1)
+01/12/18 22:40:06->Sending run 24 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_2  (group id = 2, run id = 24, concurrent runs = 1)
+01/12/18 22:40:08->run 16 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_5  (run time = 0.11625 min, group id = 2, run id = 16 concurrent = 1)
+01/12/18 22:40:08->Sending run 25 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_5  (group id = 2, run id = 25, concurrent runs = 1)
+01/12/18 22:40:08->run 15 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_7  (run time = 0.168867 min, group id = 2, run id = 15 concurrent = 1)
+01/12/18 22:40:08->Sending run 26 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_7  (group id = 2, run id = 26, concurrent runs = 1)
+01/12/18 22:40:10->run 20 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_0  (run time = 0.0946667 min, group id = 2, run id = 20 concurrent = 1)
+01/12/18 22:40:10->Sending run 27 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_0  (group id = 2, run id = 27, concurrent runs = 1)
+01/12/18 22:40:12->run 17 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_8  (run time = 0.197733 min, group id = 2, run id = 17 concurrent = 1)
+01/12/18 22:40:12->Sending run 28 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_8  (group id = 2, run id = 28, concurrent runs = 1)
+01/12/18 22:40:13->run 19 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_4  (run time = 0.1197 min, group id = 2, run id = 19 concurrent = 1)
+01/12/18 22:40:13->Sending run 29 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_4  (group id = 2, run id = 29, concurrent runs = 1)
+01/12/18 22:40:13->run 18 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_3  (run time = 0.1249 min, group id = 2, run id = 18 concurrent = 1)
+01/12/18 22:40:13->rescheduling overdue run 23 (0.119317|0.0964 minutes) on: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_1
+01/12/18 22:40:13->Sending run 23 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_3  (group id = 2, run id = 23, concurrent runs = 2)
+01/12/18 22:40:13->2 concurrent runs for run id = 23
+01/12/18 22:40:13->run 23 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_1  (run time = 0.1111 min, group id = 2, run id = 23 concurrent = 2)
+01/12/18 22:40:13->sending kill request; reason: completed on alternative node; run id:23; slave: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_3
+01/12/18 22:40:13->run 22 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_6  (run time = 0.14175 min, group id = 2, run id = 22 concurrent = 1)
+01/12/18 22:40:13->rescheduling overdue run 24 (0.1194|0.100133 minutes) on: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_2
+01/12/18 22:40:13->Sending run 24 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_1  (group id = 2, run id = 24, concurrent runs = 2)
+01/12/18 22:40:13->2 concurrent runs for run id = 24
+01/12/18 22:40:13->rescheduling overdue run 24 (0.119417|0.100133 minutes) on: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_2
+01/12/18 22:40:13->Sending run 24 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_6  (group id = 2, run id = 24, concurrent runs = 3)
+01/12/18 22:40:13->3 concurrent runs for run id = 24
+01/12/18 22:40:13->run 24 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_2  (run time = 0.109767 min, group id = 2, run id = 24 concurrent = 3)
+01/12/18 22:40:13->sending kill request; reason: completed on alternative node; run id:24; slave: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_1
+01/12/18 22:40:13->sending kill request; reason: completed on alternative node; run id:24; slave: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_6
+01/12/18 22:40:14->rescheduling overdue run 21 (0.154017|0.131637 minutes) on: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_9
+01/12/18 22:40:14->Sending run 21 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_2  (group id = 2, run id = 21, concurrent runs = 2)
+01/12/18 22:40:14->2 concurrent runs for run id = 21
+01/12/18 22:40:14->Run 23 killed on slave: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_3, run id = 23 concurrent = 0
+01/12/18 22:40:14->rescheduling overdue run 21 (0.155117|0.131637 minutes) on: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_9
+01/12/18 22:40:14->Sending run 21 to: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_3  (group id = 2, run id = 21, concurrent runs = 3)
+01/12/18 22:40:14->3 concurrent runs for run id = 21
+01/12/18 22:40:15->Run 24 killed on slave: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_1, run id = 24 concurrent = 0
+01/12/18 22:40:16->run 25 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_5  (run time = 0.124133 min, group id = 2, run id = 25 concurrent = 1)
+01/12/18 22:40:16->run 21 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_9  (run time = 0.180017 min, group id = 2, run id = 21 concurrent = 3)
+01/12/18 22:40:16->sending kill request; reason: completed on alternative node; run id:21; slave: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_2
+01/12/18 22:40:16->sending kill request; reason: completed on alternative node; run id:21; slave: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_3
+01/12/18 22:40:16->Run 24 killed on slave: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_6, run id = 24 concurrent = 0
+01/12/18 22:40:16->Run 21 killed on slave: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_3, run id = 21 concurrent = 0
+01/12/18 22:40:16->run 26 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_7  (run time = 0.150783 min, group id = 2, run id = 26 concurrent = 1)
+01/12/18 22:40:16->Run 21 killed on slave: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_2, run id = 21 concurrent = 0
+01/12/18 22:40:17->run 27 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_0  (run time = 0.100033 min, group id = 2, run id = 27 concurrent = 1)
+01/12/18 22:40:17->run 28 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_8  (run time = 0.136667 min, group id = 2, run id = 28 concurrent = 1)
+01/12/18 22:40:17->run 29 received from: vm-mac7262.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\ies_freyberg\slave_4  (run time = 0.0974167 min, group id = 2, run id = 29 concurrent = 1)
 
 ---------------------
    30 runs complete :  0 runs failed
