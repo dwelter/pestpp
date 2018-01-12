@@ -1,5 +1,6 @@
 # This file is part of PEST++
-include ../../global.mak
+top_builddir = ../..
+include $(top_builddir)/global.mak
 
 LIB := $(LIB_PRE)mio$(LIB_EXT)
 OBJECTS := mio$(OBJ_EXT)

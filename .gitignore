@@ -15,6 +15,9 @@
 *.a
 *.lib
 
+# User files
+/src/local.mak
+
 /morris_meth/ipch
 /morris_meth/Debug
 /pest++/ipch

@@ -6,26 +6,22 @@
 #       =win
 # COMPILER=gcc (default)
 #         =intel
-# E.g. $ COMPILER=intel make
+# These can be kept in local.mak
+-include $(top_builddir)/local.mak
 
-#SYSTEM ?= mac
-SYSTEM  ?= linux
-#SYSTEM ?= win
+# Defaults (if unset, or missing local.mak)
+SYSTEM ?= linux
 COMPILER ?= gcc
-#COMPILER ?= intel
-
-# Absolute path to this directory
-PESTPP_ROOT	:=	$(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 
 ifeq ($(SYSTEM),mac)
 # macOS
-bindir = $(abspath $(PESTPP_ROOT)/../exe/mac)/
+bindir = $(top_builddir)/../exe/mac/
 else ifeq ($(SYSTEM),linux)
 # GNU Linux
-bindir = $(abspath $(PESTPP_ROOT)/../exe/linux)/
+bindir = $(top_builddir)/../exe/linux/
 else ifeq ($(SYSTEM),win)
 # Microsoft Windows
-bindir = $(abspath $(PESTPP_ROOT)/../exe/windows)/
+bindir = $(top_builddir)/../exe/windows/
 else
 $(error SYSTEM not understood: $(SYSTEM). Use one of mac, linux or win.)
 endif
@@ -111,7 +107,7 @@ LDFLAGS += -pthread -static
 # r=insert with replacement; c=create archive; s=add index
 ARFLAGS := rcs
 
-LIBS_DIR :=	$(PESTPP_ROOT)/libs
+LIBS_DIR :=	$(top_builddir)/libs
 
 PESTPP_INCLUDES := \
     -I $(LIBS_DIR)/Eigen \

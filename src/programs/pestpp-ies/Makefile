@@ -1,5 +1,6 @@
 # This file is part of PEST++
-include ../../global.mak
+top_builddir = ../..
+include $(top_builddir)/global.mak
 
 EXE := pestpp-ies$(EXE_EXT)
 OBJECTS := pestpp-ies$(OBJ_EXT)

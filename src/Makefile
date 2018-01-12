@@ -1,7 +1,8 @@
 # Top-level GNU Make file for PEST++
 
 # Customize options in global.mak
-include ./global.mak
+top_builddir = .
+include $(top_builddir)/global.mak
 
 
 all: libs-target programs-target utilities-target

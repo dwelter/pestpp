@@ -1,5 +1,6 @@
 # This file is part of PEST++
-include ../../../global.mak
+top_builddir = ../../..
+include $(top_builddir)/global.mak
 
 LIB := $(LIB_PRE)rm_external$(LIB_EXT)
 OBJECTS := RunManagerExternal$(OBJ_EXT)

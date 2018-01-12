@@ -1,5 +1,6 @@
 # This file is part of PEST++
-include ../../global.mak
+top_builddir = ../..
+include $(top_builddir)/global.mak
 
 EXE := pbin2ascii$(EXE_EXT)
 OBJECTS := pbin2asciicpp$(OBJ_EXT)
