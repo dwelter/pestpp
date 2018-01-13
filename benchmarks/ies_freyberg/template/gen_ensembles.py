@@ -32,10 +32,12 @@ def prep():
     [os.remove(csv_file) for csv_file in csv_files]
 
     pst = pyemu.Pst(os.path.join("pest.pst"))
+    pst.control_data.noptmax = 2
     pst.pestpp_options["ies_parameter_csv"] = "par.csv"
     pst.pestpp_options["ies_observation_csv"] = "obs.csv"
     pst.pestpp_options["ies_obs_restart_csv"] = "restart_obs.csv"
     pst.pestpp_options["parcov_filename"] = "freyberg_prior.jcb"
+    pst.pestpp_options["ies_use_approx"] = "false"
     #pst.observation_data.loc[pst.nnz_obs_names,"weight"] /= 10.0
     pst.write("pest.pst")
 
@@ -68,17 +70,12 @@ def prep():
     df.to_csv("restart_obs1.csv")
     df = df.loc[:,pst.observation_data.obsnme.apply(str.upper)]
     df.to_csv("restart_obs.csv")
-    pst.pestpp_options["ies_parameter_csv"] = "par.csv"
-    pst.pestpp_options["ies_observation_csv"] = "obs.csv"
-    pst.pestpp_options["ies_obs_restart_csv"] = "restart_obs.csv"
-    pst.pestpp_options["parcov_filename"] = "freyberg_prior.jcb"
-    pst.write("pest.pst")
-
 def ies():
     parcov = pyemu.Cov.from_binary("freyberg_prior.jcb")
     es = pyemu.EnsembleSmoother("pest.pst",parcov=parcov,verbose="ies.log")
     es.initialize(parensemble="par1.csv",obsensemble="obs1.csv",restart_obsensemble="restart_obs1.csv")
-    es.update()
+    es.update(use_approx=False)
+    es.update(use_approx=False)
     #es.update(lambda_mults=[0.1,1.0,10.0],run_subset=10)
 
     #es.update(lambda_mults=[0.1,1.0,10.0],run_subset=10)

@@ -105,8 +105,11 @@ void SVD_REDSVD::solve_ip(Eigen::MatrixXd& A, Eigen::MatrixXd &Sigma, Eigen::Mat
 	}
 	else
 	{
-		V = V.leftCols(num_sing_used);
-		U = U.leftCols(num_sing_used);
+		Eigen::MatrixXd temp = V.leftCols(num_sing_used);
+		V = temp;
+		temp = U.leftCols(num_sing_used);
+		U = temp;
+		
 
 	}
 	performance_log->log_event("done REDSVD");

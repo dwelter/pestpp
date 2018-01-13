@@ -34,7 +34,7 @@ Parameter information
 NAME           TRANSFORMATION        CHANGE LIMIT  INITIAL VALUE    LOWER BOUND    UPPER BOUND          GROUP          SCALE         OFFSET  DERIVATIVE COMMAND
 stage          fixed                   FACTOR              1            0.1              3              k              1              0                   0
 k_01           log                     FACTOR            2.5           0.25             25              k              1              0                   0
-k_02           tied                    FACTOR            2.5           0.25             25              k              1              0                   0
+k_02           log                     FACTOR            2.5           0.25             25              k              1              0                   0
 k_03           log                     FACTOR            2.5           0.25             25              k              1              0                   0
 k_04           log                     FACTOR            2.5           0.25             25              k              1              0                   0
 k_05           log                     FACTOR            2.5           0.25             25              k              1              0                   0
@@ -70,4 +70,19 @@ h02_09                                    4.7                head               
 h02_10                                    5.1                head                   0
 
 
-  ---  using first 10 realizations in ensemble lambda testing
+
+
+  ---  initial phi summary ---  
+       phi type           mean            std            min            max
+      composite        120.624        225.227      0.0164888        914.667
+       measured        120.624        225.227      0.0164888        914.667
+ regularization              0              0              0              0
+         actual        120.914        233.929          0.325        983.521
+
+
+  ---  current lambda: 1                   
+
+
+
+  ---  starting solve for iteration: 1
+   ...starting calcs for lambda: 1

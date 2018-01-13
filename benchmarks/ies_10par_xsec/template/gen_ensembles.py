@@ -41,5 +41,5 @@ def ies():
 
     #ies.update(lambda_mults=[10.,1,0.1],run_subset=10)
 if __name__ == "__main__":
-    #gen_full()
+    gen_full()
     ies()

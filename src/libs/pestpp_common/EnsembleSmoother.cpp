@@ -472,11 +472,18 @@ void IterEnsembleSmoother::initialize()
 		Eigen::MatrixXd ivec, upgrade_1, s, V, U, st;
 		SVD_REDSVD rsvd;
 		rsvd.set_performance_log(performance_log);
-		rsvd.solve_ip(par_diff, s, U, V);// , pest_scenario.get_svd_info().maxsing);
+		rsvd.solve_ip(par_diff, s, U, V, pest_scenario.get_svd_info().eigthresh, pest_scenario.get_svd_info().maxsing);
+		//rsvd.solve_ip(par_diff, s, U, V);
 		cout << "U " << U.rows() << ',' << U.cols() << endl;
 		cout << "s " << s.rows() << ',' << s.cols() << endl;
+		cout << s << endl;
+		s = s.asDiagonal().inverse();
+		cout << "U " << U.rows() << ',' << U.cols() << endl;
+		cout << "s " << s.rows() << ',' << s.cols() << endl;
+		cout << U << endl;
+
 		Am = U * s.asDiagonal().inverse();
-		cout << "Am " << Am.rows() << ',' << Am.cols() << endl;
+		//cout << "Am " << Am.rows() << ',' << Am.cols() << endl;
 	}
 
 	string obs_restart_csv = pest_scenario.get_pestpp_options().get_ies_obs_restart_csv();	
@@ -697,17 +704,52 @@ void IterEnsembleSmoother::solve()
 //		cout << *pe_lam.get_eigen_ptr() << endl << endl;
 #endif
 
-		if ((!pest_scenario.get_pestpp_options().get_ies_use_approx()) && (iter > 1))
+		//if ((!pest_scenario.get_pestpp_options().get_ies_use_approx()) && (iter > 1))
+		if (true)
 		{
 			performance_log->log_event("calculating parameter correction (full solution)");
 
 			performance_log->log_event("forming scaled par resid");
 			Eigen::MatrixXd scaled_par_resid = pe.get_eigen(vector<string>(), act_par_names) - 
 				pe_base.get_eigen(pe.get_real_names(), vector<string>());
+			ofstream f("upgrade_2.out");
 			performance_log->log_event("forming x4");
+			cout << "scaled_par_resid " << scaled_par_resid.rows() << ',' << scaled_par_resid.cols() << endl;
+			cout << "Am " << Am.rows() << ',' << Am.cols() << endl;
+			f << "scaled_par_resid" << endl << scaled_par_resid << endl;
+			f << "Am" << endl << Am << endl;
+
+			Eigen::MatrixXd x4 = Am.transpose() * scaled_par_resid;
+			f << "x4" << endl << x4 << endl;
+
+			performance_log->log_event("forming x5");
+			cout << "x4 " << x4.rows() << ',' << x4.cols() << endl;
+			Eigen::MatrixXd x5 = Am.transpose() * x4;
+			f << "x5" << endl << x5 << endl;
+
+			performance_log->log_event("forming x6");
+			cout <<"x5 " <<  x5.rows() << ',' << x5.cols() << endl;
+			Eigen::MatrixXd x6 = par_diff.transpose() * x5;
+			f << "x6" << endl << x6 << endl;
+
+			performance_log->log_event("forming x7");
+			cout << "V: " << V.rows() << "," << V.cols() << endl;
+			cout << "ivec: " << ivec.rows() << ',' << ivec.cols() << endl;
+			cout << "x6: " << x6.rows() << ',' << x6.cols() << endl;
+			Eigen::MatrixXd x7 = V * ivec *V.transpose() * x6;
+			f << "x7" << endl << x7 << endl;
+
+			performance_log->log_event("forming upgrade_2");
+			Eigen::MatrixXd upgrade_2 = -1.0 * (par_diff * x7);
+			f << "upgrade_2" << endl << upgrade_2 << endl;
+
+			cout << "upgrade_2" << endl << upgrade_2 << endl;
+			return;
+
+			/*performance_log->log_event("forming x4");
 			cout << "par_diff " << par_diff.rows() << ',' << par_diff.cols() << endl;
 			cout << "Am " << Am.rows() << ',' << Am.cols() << endl;
-			Eigen::MatrixXd x4 = Am * scaled_par_resid.transpose();
+			Eigen::MatrixXd x4 = Am.transpose() * scaled_par_resid;
 			performance_log->log_event("forming x5");
 			cout << "x4 " << x4.rows() << ',' << x4.cols() << endl;
 			Eigen::MatrixXd x5 = Am * x4;
@@ -719,8 +761,13 @@ void IterEnsembleSmoother::solve()
 			cout << "ivec: " << ivec.rows() << ',' << ivec.cols() << endl;
 			cout << "x6: " << x6.rows() << ',' << x6.cols() << endl;
 			Eigen::MatrixXd x7 = V * ivec *V.transpose() * x6;
+			cout << "x7: " << x7.rows() << x7.cols() << endl;
 			performance_log->log_event("forming upgrade_2");
 			Eigen::MatrixXd upgrade_2 = -1.0 * (par_diff * x7);
+			cout << "upgrade_2" << endl << upgrade_2 << endl;
+			return;*/
+
+
 			pe_lam.set_eigen(*pe_lam.get_eigen_ptr() + upgrade_2.transpose());
 			
 		}

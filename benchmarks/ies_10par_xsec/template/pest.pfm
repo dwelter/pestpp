@@ -1,25 +1,65 @@
-PEST++ performance logger started at:  09:42:44
-        ( time = 09:42:44,  elapsed time = 26ms )
+PEST++ performance logger started at:  13:50:57
+        ( time = 13:50:57,  elapsed time = 182ms )
   starting to process control file
-          ( time = 09:42:44,  elapsed time = 40ms )
+          ( time = 13:50:57,  elapsed time = 33ms )
   finished processing control file
-          ( time = 09:42:44,  elapsed time = 26ms )
+          ( time = 13:50:57,  elapsed time = 10ms )
     starting basic model IO error checking
-            ( time = 09:42:44,  elapsed time = 27ms )
+            ( time = 13:50:57,  elapsed time = 221ms )
     finished basic model IO error checking
-            ( time = 09:42:44,  elapsed time = 129ms )
+            ( time = 13:50:58,  elapsed time = 446ms )
     processing par csv
-            ( time = 09:42:44,  elapsed time = 22ms )
+            ( time = 13:50:58,  elapsed time = 29ms )
     processing obs csv
-            ( time = 09:42:44,  elapsed time = 108ms )
+            ( time = 13:50:58,  elapsed time = 23ms )
     load obscov
-            ( time = 09:42:44,  elapsed time = 5ms )
+            ( time = 13:50:58,  elapsed time = 2ms )
     load parcov
-            ( time = 09:42:44,  elapsed time = 14ms )
+            ( time = 13:50:58,  elapsed time = 29ms )
     calculating 'Am' matrix for full solution
-            ( time = 09:42:44,  elapsed time = 364us )
+            ( time = 13:50:58,  elapsed time = 496us )
     starting REDSVD
-            ( time = 09:42:44,  elapsed time = 6ms )
+            ( time = 13:50:58,  elapsed time = 12ms )
     retrieving REDSVD components
-            ( time = 09:42:44,  elapsed time = 150us )
+            ( time = 13:50:58,  elapsed time = 163us )
     done REDSVD
+            ( time = 13:50:58,  elapsed time = 247us )
+    restart IES with existing obs ensemble csv: OBS_RESTART.CSV
+            ( time = 13:50:58,  elapsed time = 416ms )
+    starting solve for iteration: 1
+            ( time = 13:50:58,  elapsed time = 163us )
+    calculate residual matrix
+            ( time = 13:50:58,  elapsed time = 696us )
+    calculate scaled obs diff
+            ( time = 13:50:58,  elapsed time = 221us )
+    calculate scaled par diff
+            ( time = 13:50:58,  elapsed time = 927us )
+    SVD of obs diff
+            ( time = 13:50:58,  elapsed time = 84us )
+    starting REDSVD
+            ( time = 13:50:58,  elapsed time = 360us )
+    retrieving REDSVD components
+            ( time = 13:50:58,  elapsed time = 123us )
+    triming REDSVD components to 1elements
+            ( time = 13:50:58,  elapsed time = 136us )
+    done REDSVD
+            ( time = 13:50:58,  elapsed time = 174us )
+    starting calcs for lambda1
+            ( time = 13:50:58,  elapsed time = 70us )
+    form scaled identity matrix
+            ( time = 13:50:58,  elapsed time = 145us )
+    calculate portion of upgrade_1 for localization
+            ( time = 13:50:58,  elapsed time = 170us )
+    apply residuals to upgrade_1
+            ( time = 13:50:58,  elapsed time = 711us )
+    calculating parameter correction (full solution)
+            ( time = 13:50:58,  elapsed time = 71us )
+    forming scaled par resid
+            ( time = 13:50:58,  elapsed time = 1ms )
+    forming x4
+            ( time = 13:50:58,  elapsed time = 9ms )
+    forming x5
+            ( time = 13:51:03,  elapsed time = 4sec )
+    forming x6
+            ( time = 13:51:07,  elapsed time = 4sec )
+    forming x7
