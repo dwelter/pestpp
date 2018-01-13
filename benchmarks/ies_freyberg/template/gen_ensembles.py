@@ -81,5 +81,5 @@ def ies():
     #es.update(lambda_mults=[0.1,1.0,10.0],run_subset=10)
 
 if __name__ == "__main__":
-    prep()
+    #prep()
     ies()

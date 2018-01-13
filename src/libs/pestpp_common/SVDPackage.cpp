@@ -91,8 +91,9 @@ void SVD_REDSVD::solve_ip(Eigen::MatrixXd& A, Eigen::MatrixXd &Sigma, Eigen::Mat
 	std::stringstream ss;
 	ss << "triming REDSVD components to " << num_sing_used << "elements";
 	performance_log->log_event(ss.str());
-
+	//std::cout << Sigma_full << std::endl;
 	Sigma = Sigma_full.head(num_sing_used);
+	//std::cout << Sigma << std::endl;
 	//Sigma_trunc = Sigma_full.tail(Sigma_full.size() - num_sing_used);
 	if (num_sing_used == 1)
 	{
@@ -105,10 +106,12 @@ void SVD_REDSVD::solve_ip(Eigen::MatrixXd& A, Eigen::MatrixXd &Sigma, Eigen::Mat
 	}
 	else
 	{
+		//std::cout << U.col(0);
 		Eigen::MatrixXd temp = V.leftCols(num_sing_used);
 		V = temp;
 		temp = U.leftCols(num_sing_used);
 		U = temp;
+		//std::cout << U.col(0);
 		
 
 	}
