@@ -124,24 +124,24 @@ h02_10                                    5.1                head               
   ---  last mean: 25.8557        , last stdev: 32.8067        
   --- lambda value 0.75 phi summary ---  
        phi type           mean            std            min            max
-      composite        186.118        650.231      0.0156806        3436.13
-       measured        186.118        650.231      0.0156806        3436.13
- regularization           -nan           -nan    1.82015e-05        76.2633
-         actual        190.238        651.173         0.2228        3430.58
+      composite        13.0674        25.3631      0.0156806        138.012
+       measured        13.0674        25.3631      0.0156806        138.012
+ regularization        1.21595        1.51259    1.82015e-05        5.72504
+         actual        13.4956        24.1185         0.2228        131.018
 
 
-  ---  not updating parameter ensemble  ---  
- ---  increasing lambda from 0.75 to 258.557
+  ---  updating parameter ensemble  ---  
+  ---  updating lambda from 0.75 to 0.5625
 
   ---  IterEnsembleSmoother iteration 2 report  ---  
    number of active realizations:  30
-   number of model runs:           59
+   number of model runs:           60
       current obs ensemble saved to pest.2.obs.csv
       current par ensemble saved to pest.2.par.csv
        phi type           mean            std            min            max
-      composite        186.118        650.231      0.0156806        3436.13
-       measured        186.118        650.231      0.0156806        3436.13
- regularization           -nan           -nan    1.82015e-05        76.2633
-         actual        190.238        651.173         0.2228        3430.58
+      composite        13.0674        25.3631      0.0156806        138.012
+       measured        13.0674        25.3631      0.0156806        138.012
+ regularization        1.21595        1.51259    1.82015e-05        5.72504
+         actual        13.4956        24.1185         0.2228        131.018
 
 

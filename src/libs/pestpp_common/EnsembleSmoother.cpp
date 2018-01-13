@@ -718,36 +718,36 @@ void IterEnsembleSmoother::solve()
 			Eigen::MatrixXd scaled_par_resid = pe.get_eigen(vector<string>(), act_par_names) - 
 				pe_base.get_eigen(pe.get_real_names(), vector<string>());
 			scaled_par_resid.transposeInPlace();
-			//ofstream f("upgrade_2.out");
+			ofstream f("upgrade_2.out");
 			performance_log->log_event("forming x4");
 			cout << "scaled_par_resid " << scaled_par_resid.rows() << ',' << scaled_par_resid.cols() << endl;
 			cout << "Am " << Am.rows() << ',' << Am.cols() << endl;
-			//f << "scaled_par_resid" << endl << scaled_par_resid << endl;
-			//f << "Am" << endl << Am << endl;
+			f << "scaled_par_resid" << endl << scaled_par_resid << endl;
+			f << "Am" << endl << Am << endl;
 
 			Eigen::MatrixXd x4 = Am * scaled_par_resid;
-			//f << "x4" << endl << x4 << endl;
+			f << "x4" << endl << x4 << endl;
 
 			performance_log->log_event("forming x5");
 			cout << "x4 " << x4.rows() << ',' << x4.cols() << endl;
 			Eigen::MatrixXd x5 = Am.transpose() * x4;
-			//f << "x5" << endl << x5 << endl;
+			f << "x5" << endl << x5 << endl;
 
 			performance_log->log_event("forming x6");
 			cout <<"x5 " <<  x5.rows() << ',' << x5.cols() << endl;
 			Eigen::MatrixXd x6 = par_diff.transpose() * x5;
-			//f << "x6" << endl << x6 << endl;
+			f << "x6" << endl << x6 << endl;
 
 			performance_log->log_event("forming x7");
 			cout << "V: " << V.rows() << "," << V.cols() << endl;
 			cout << "ivec: " << ivec.rows() << ',' << ivec.cols() << endl;
 			cout << "x6: " << x6.rows() << ',' << x6.cols() << endl;
 			Eigen::MatrixXd x7 = V * ivec *V.transpose() * x6;
-			//f << "x7" << endl << x7 << endl;
+			f << "x7" << endl << x7 << endl;
 
 			performance_log->log_event("forming upgrade_2");
 			Eigen::MatrixXd upgrade_2 = -1.0 * (par_diff * x7);
-			//f << "upgrade_2" << endl << upgrade_2 << endl;
+			f << "upgrade_2" << endl << upgrade_2 << endl;
 
 			/*performance_log->log_event("forming x4");
 			cout << "par_diff " << par_diff.rows() << ',' << par_diff.cols() << endl;
@@ -772,7 +772,7 @@ void IterEnsembleSmoother::solve()
 
 			cout << "upgrade_2: " << upgrade_2.rows() << ',' << upgrade_2.cols() << endl;
 			cout << "oe_lam: " << pe_lam.shape().first << ',' << pe_lam.shape().second << endl;
-
+			f << "upgrade_2 " << endl << upgrade_2 << endl;
 			pe_lam.set_eigen(*pe_lam.get_eigen_ptr() + upgrade_2.transpose());
 			
 		}

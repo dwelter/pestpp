@@ -225,6 +225,6 @@ if __name__ == "__main__":
     run()
     process()
     end = datetime.now()
-    print("took: {0}".format(str(end-start)))
+    #print("took: {0}".format(str(end-start)))
     #write_hds_ins()
     #make_pst()
