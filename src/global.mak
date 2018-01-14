@@ -32,6 +32,7 @@ EXE_EXT	= .exe
 OBJ_EXT	= .obj
 LIB_EXT	= .lib
 CP = copy
+RM = del /Q
 MKDIR = md
 else
 # POSIX (mac, linux)
