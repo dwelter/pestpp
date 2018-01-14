@@ -71,6 +71,7 @@ public:
 	void throw_ies_error(string &message);
 
 private:
+	bool ies_save_mat;
 	Pest &pest_scenario;
 	FileManager &file_manager;
 	OutputFileWriter &output_file_writer;

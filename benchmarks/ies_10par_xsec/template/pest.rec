@@ -124,10 +124,10 @@ h02_10                                    5.1                head               
   ---  last mean: 25.8557        , last stdev: 32.8067        
   --- lambda value 0.75 phi summary ---  
        phi type           mean            std            min            max
-      composite        13.0674        25.3631      0.0156806        138.012
-       measured        13.0674        25.3631      0.0156806        138.012
- regularization        1.21595        1.51259    1.82015e-05        5.72504
-         actual        13.4956        24.1185         0.2228        131.018
+      composite        13.0711        25.3831      0.0156806        138.124
+       measured        13.0711        25.3831      0.0156806        138.124
+ regularization        1.21581        1.51257    1.72842e-05        5.72692
+         actual        13.4956        24.1402         0.2173        131.149
 
 
   ---  updating parameter ensemble  ---  
@@ -139,9 +139,137 @@ h02_10                                    5.1                head               
       current obs ensemble saved to pest.2.obs.csv
       current par ensemble saved to pest.2.par.csv
        phi type           mean            std            min            max
-      composite        13.0674        25.3631      0.0156806        138.012
-       measured        13.0674        25.3631      0.0156806        138.012
- regularization        1.21595        1.51259    1.82015e-05        5.72504
-         actual        13.4956        24.1185         0.2228        131.018
+      composite        13.0711        25.3831      0.0156806        138.124
+       measured        13.0711        25.3831      0.0156806        138.124
+ regularization        1.21581        1.51257    1.72842e-05        5.72692
+         actual        13.4956        24.1402         0.2173        131.149
+
+
+
+
+
+  ---  starting solve for iteration: 3
+   ...starting calcs for lambda: 0.5625
+   ...finished calcs for lambda: 0.5625
+  ---  running lambda ensembles...  ---  
+  ---  evaluting lambda ensemble results  --  
+  ---  last mean: 13.0711        , last stdev: 25.3831        
+  --- lambda value 0.5625 phi summary ---  
+       phi type           mean            std            min            max
+      composite        15.5551         27.072      0.0180194         131.01
+       measured        15.5551         27.072      0.0180194         131.01
+ regularization        1.73928         1.9568    0.000962617        8.42335
+         actual        15.5511        22.8761         0.2785        102.619
+
+
+  ---  not updating parameter ensemble  ---  
+ ---  increasing lambda from 0.5625 to 5.625
+
+  ---  IterEnsembleSmoother iteration 3 report  ---  
+   number of active realizations:  30
+   number of model runs:           90
+      current obs ensemble saved to pest.3.obs.csv
+      current par ensemble saved to pest.3.par.csv
+       phi type           mean            std            min            max
+      composite        15.5551         27.072      0.0180194         131.01
+       measured        15.5551         27.072      0.0180194         131.01
+ regularization        1.73928         1.9568    0.000962617        8.42335
+         actual        15.5511        22.8761         0.2785        102.619
+
+
+
+
+
+  ---  starting solve for iteration: 4
+   ...starting calcs for lambda: 5.625
+   ...finished calcs for lambda: 5.625
+  ---  running lambda ensembles...  ---  
+  ---  evaluting lambda ensemble results  --  
+  ---  last mean: 13.0711        , last stdev: 25.3831        
+  --- lambda value 5.625 phi summary ---  
+       phi type           mean            std            min            max
+      composite         13.411        25.1027      0.0143541         128.41
+       measured         13.411        25.1027      0.0143541         128.41
+ regularization        1.40031        1.52406    0.000355167         5.6637
+         actual        13.4197        20.7534         0.2421        100.817
+
+
+  ---  updating parameter ensemble  ---  
+  ---  updating lambda from 5.625 to 4.21875
+
+  ---  IterEnsembleSmoother iteration 4 report  ---  
+   number of active realizations:  30
+   number of model runs:           120
+      current obs ensemble saved to pest.4.obs.csv
+      current par ensemble saved to pest.4.par.csv
+       phi type           mean            std            min            max
+      composite         13.411        25.1027      0.0143541         128.41
+       measured         13.411        25.1027      0.0143541         128.41
+ regularization        1.40031        1.52406    0.000355167         5.6637
+         actual        13.4197        20.7534         0.2421        100.817
+
+
+
+
+
+  ---  starting solve for iteration: 5
+   ...starting calcs for lambda: 4.21875
+   ...finished calcs for lambda: 4.21875
+  ---  running lambda ensembles...  ---  
+  ---  evaluting lambda ensemble results  --  
+  ---  last mean: 13.411         , last stdev: 25.1027        
+  --- lambda value 4.21875 phi summary ---  
+       phi type           mean            std            min            max
+      composite        7.59043        14.2231      0.0101114        69.2659
+       measured        7.59043        14.2231      0.0101114        69.2659
+ regularization        1.72891        1.83687    0.000411177        6.42954
+         actual        7.79895        11.3273           0.17         49.697
+
+
+  ---  updating parameter ensemble  ---  
+  ---  updating lambda from 4.21875 to 3.16406
+
+  ---  IterEnsembleSmoother iteration 5 report  ---  
+   number of active realizations:  30
+   number of model runs:           150
+      current obs ensemble saved to pest.5.obs.csv
+      current par ensemble saved to pest.5.par.csv
+       phi type           mean            std            min            max
+      composite        7.59043        14.2231      0.0101114        69.2659
+       measured        7.59043        14.2231      0.0101114        69.2659
+ regularization        1.72891        1.83687    0.000411177        6.42954
+         actual        7.79895        11.3273           0.17         49.697
+
+
+
+
+
+  ---  starting solve for iteration: 6
+   ...starting calcs for lambda: 3.16406
+   ...finished calcs for lambda: 3.16406
+  ---  running lambda ensembles...  ---  
+  ---  evaluting lambda ensemble results  --  
+  ---  last mean: 7.59043        , last stdev: 14.2231        
+  --- lambda value 3.16406 phi summary ---  
+       phi type           mean            std            min            max
+      composite        5.18644        8.26449      0.0101114        33.8548
+       measured        5.18644        8.26449      0.0101114        33.8548
+ regularization        2.01704        2.32712    0.000415629        9.00259
+         actual        5.62056        7.06293         0.1514        30.4042
+
+
+  ---  updating parameter ensemble  ---  
+  ---  updating lambda from 3.16406 to 2.37305
+
+  ---  IterEnsembleSmoother iteration 6 report  ---  
+   number of active realizations:  30
+   number of model runs:           180
+      current obs ensemble saved to pest.6.obs.csv
+      current par ensemble saved to pest.6.par.csv
+       phi type           mean            std            min            max
+      composite        5.18644        8.26449      0.0101114        33.8548
+       measured        5.18644        8.26449      0.0101114        33.8548
+ regularization        2.01704        2.32712    0.000415629        9.00259
+         actual        5.62056        7.06293         0.1514        30.4042
 
 

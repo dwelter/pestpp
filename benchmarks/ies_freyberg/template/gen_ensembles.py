@@ -74,9 +74,9 @@ def ies():
     parcov = pyemu.Cov.from_binary("freyberg_prior.jcb")
     es = pyemu.EnsembleSmoother("pest.pst",parcov=parcov,verbose="ies.log")
     es.initialize(parensemble="par1.csv",obsensemble="obs1.csv",restart_obsensemble="restart_obs1.csv")
-    es.update(use_approx=False)
-    es.update(use_approx=False)
-    #es.update(lambda_mults=[0.1,1.0,10.0],run_subset=10)
+    for i in range(2):
+        es.update(use_approx=False)
+    #es.update(lambda_mults=[0.1,1.0,# 10.0],run_subset=10)
 
     #es.update(lambda_mults=[0.1,1.0,10.0],run_subset=10)
 
