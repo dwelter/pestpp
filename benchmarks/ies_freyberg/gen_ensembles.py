@@ -38,13 +38,14 @@ def prep():
         #xy = pd.read_csv("freyberg.xy")
 
     pst = pyemu.Pst(os.path.join(pyemu_dir,"pest.pst"))
-    pst.control_data.noptmax = 2
+    pst.control_data.noptmax = 6
     pst.pestpp_options["ies_parameter_csv"] = "par.csv"
     pst.pestpp_options["ies_observation_csv"] = "obs.csv"
     pst.pestpp_options["ies_obs_restart_csv"] = "restart_obs.csv"
     pst.pestpp_options["parcov_filename"] = "freyberg_prior.jcb"
-    pst.pestpp_options["ies_use_approx"] = "false"
-    pst.svd_data.eigthresh = 1.0e-5
+    pst.pestpp_options["ies_use_approx"] = "true"
+    pst.svd_data.eigthresh = 1.0e-4
+    pst.svd_data.maxsing = 1000000
     #pst.observation_data.loc[pst.nnz_obs_names,"weight"] /= 10.0
     pst.write(os.path.join(pyemu_dir,"pest.pst"))
     pst.write(os.path.join(pestpp_dir, "pest.pst"))
@@ -87,12 +88,12 @@ def ies():
                                 slave_dir=os.path.join("..","template"),num_slaves=5)
     es.initialize(parensemble="par.csv",obsensemble="obs.csv",restart_obsensemble="restart_obs.csv")
     for i in range(es.pst.control_data.noptmax):
-        es.update(use_approx=False)
+        es.update(use_approx=True)
     #es.update(lambda_mults=[0.1,1.0,# 10.0],run_subset=10)
 
     #es.update(lambda_mults=[0.1,1.0,10.0],run_subset=10)
     os.chdir('..')
 if __name__ == "__main__":
     #prep()
-    ies()
-    #pyemu.helpers.start_slaves("template","sweep.exe","pest.pst",num_slaves=5)
+    #ies()
+    pyemu.helpers.start_slaves("template","sweep.exe","pest.pst",num_slaves=5)

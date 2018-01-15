@@ -11,6 +11,7 @@
 #include <Eigen/IterativeLinearSolvers>
 #include <Eigen/SparseCholesky>
 
+#include "SVDPackage.h"
 #include "Pest.h"
 #include "utilities.h"
 #include "covariance.h"
@@ -236,6 +237,18 @@ Mat Mat::inv()
 	I.setIdentity();
 	Eigen::SparseMatrix<double> inv_mat = solver.solve(I);
 	return Mat(row_names, col_names, inv_mat);
+}
+
+void Mat::pseudo_inv_ip(double eigthresh, int maxsing)
+{
+	//Eigen::MatrixXd ivec, upgrade_1, s, V, U, st;
+	Eigen::SparseMatrix<double> Vt, U;
+	Eigen::VectorXd s, st;
+	SVD_REDSVD rsvd(eigthresh,maxsing);
+	//rsvd.set_performance_log(performance_log);
+
+	rsvd.solve_ip(matrix, s, U, Vt, st);
+	matrix = Vt.transpose() * st * U.transpose();
 }
 
 void Mat::inv_ip()

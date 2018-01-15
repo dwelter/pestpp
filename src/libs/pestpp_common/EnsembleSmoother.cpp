@@ -453,7 +453,7 @@ void IterEnsembleSmoother::initialize()
 			throw_ies_error("unrecognized parcov_filename extension: " + extension);
 	}
 	parcov_inv = parcov_inv.get(act_par_names);
-	parcov_inv.inv_ip();
+	parcov_inv.pseudo_inv_ip(1.0e-6,pest_scenario.get_n_adj_par());
 	//need this here for Am calcs...
 	pe.transform_ip(ParameterEnsemble::transStatus::NUM);
 	pe_base.transform_ip(ParameterEnsemble::transStatus::NUM);

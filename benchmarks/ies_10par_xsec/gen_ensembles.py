@@ -18,12 +18,13 @@ def prep():
 
    
     pst = pyemu.Pst(os.path.join(pyemu_dir,"pest.pst"))
-    pst.control_data.noptmax = 2
+    pst.control_data.noptmax = 20
     pst.pestpp_options["ies_parameter_csv"] = "par.csv"
     pst.pestpp_options["ies_observation_csv"] = "obs.csv"
     pst.pestpp_options["ies_obs_restart_csv"] = "restart_obs.csv"
     pst.pestpp_options["ies_use_approx"] = "false"
     pst.svd_data.eigthresh = 1.0e-5
+    pst.svd_data.maxsing = 20
     #pst.observation_data.loc[pst.nnz_obs_names,"weight"] /= 10.0
     pst.write(os.path.join(pyemu_dir,"pest.pst"))
     pst.write(os.path.join(pestpp_dir, "pest.pst"))
