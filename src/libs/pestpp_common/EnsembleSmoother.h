@@ -105,7 +105,7 @@ private:
 	//map<string, double> get_phi_vec_stats(map<string,PhiComponets> &phi_info);
 	//map<string,PhiComponets> get_phi_info(ObservationEnsemble &_oe);
 	void report_and_save();
+	void save_mat(string prefix, Eigen::MatrixXd &mat);
 };
-
 
 #endif 

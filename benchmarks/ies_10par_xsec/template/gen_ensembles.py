@@ -34,7 +34,7 @@ def gen_full():
 
 def ies():
     pst.control_data.noptmax = 1
-    ies = pyemu.EnsembleSmoother(pst=pst,verbose="ies.log")
+    ies = pyemu.EnsembleSmoother(pst=pst,verbose="ies.log",save_mats=True)
     ies.initialize(parensemble="par1.csv",obsensemble="obs1.csv",restart_obsensemble="sweep_out.bak.csv")
     for i in range(6):
         ies.update(lambda_mults=[1.0],use_approx=False)

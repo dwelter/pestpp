@@ -462,14 +462,15 @@ void IterEnsembleSmoother::initialize()
 	//performance_log->log_event("calculate prior par diff");
 	//no scaling...chen and oliver scale this...
 	
-	if (!pest_scenario.get_pestpp_options().get_ies_use_approx()) //eventually ies_use_approx
+	//if (!pest_scenario.get_pestpp_options().get_ies_use_approx()) //eventually ies_use_approx
+	if (true)
 	{
 		performance_log->log_event("calculating 'Am' matrix for full solution");
 		double scale = (1.0 / (sqrt(double(pe.shape().first - 1))));
 		Eigen::MatrixXd par_diff = scale * pe.get_eigen_mean_diff();
 		par_diff.transposeInPlace();
 		if (ies_save_mat)
-			file_manager.open_ofile_ext("prior_par_diff.dat") << par_diff << endl;
+			save_mat("prior_par_diff.dat",par_diff);
 		//RedSVD::RedSVD<Eigen::MatrixXd> rsvd(par_diff);
 		//Am = rsvd.matrixU() * rsvd.singularValues().inverse();
 		
@@ -496,9 +497,13 @@ void IterEnsembleSmoother::initialize()
 		if (ies_save_mat)
 		{
 			cout << "Am:" << Am.rows() << ',' << Am.cols() << endl;
-			file_manager.open_ofile_ext("am.dat") << Am << endl;
+			/*file_manager.open_ofile_ext("am.dat") << Am << endl;
 			file_manager.open_ofile_ext("Am_U.dat") << U << endl;
-			file_manager.open_ofile_ext("Am_s_inv.dat") << temp2 << endl;
+			file_manager.open_ofile_ext("Am_s_inv.dat") << temp2 << endl;*/
+			save_mat("am.dat", Am);
+			save_mat("am_u.dat", U);
+			save_mat("am_v.dat", V);
+			save_mat("am_s_inv.dat", temp2);
 
 
 
@@ -622,6 +627,17 @@ void IterEnsembleSmoother::initialize()
 }
 
 
+void IterEnsembleSmoother::save_mat(string prefix, Eigen::MatrixXd &mat)
+{
+	stringstream ss;
+	ss << iter << '.' << prefix;
+	ofstream &f = file_manager.open_ofile_ext(ss.str());
+	f << mat << endl;
+	f.close();
+
+}
+
+
 void IterEnsembleSmoother::solve()
 {
 	iter++;
@@ -656,7 +672,8 @@ void IterEnsembleSmoother::solve()
 	if (ies_save_mat)
 	{
 		cout << "scaled_residual:" << scaled_residual.rows() << ',' << scaled_residual.cols() << endl;
-		file_manager.open_ofile_ext("scaled_residual.dat") << scaled_residual << endl;
+		save_mat("scaled_residual", scaled_residual);
+		//file_manager.open_ofile_ext("scaled_residual.dat") << scaled_residual << endl;
 	}
 		
 	performance_log->log_event("calculate scaled obs diff");
@@ -668,7 +685,8 @@ void IterEnsembleSmoother::solve()
 	if (ies_save_mat)
 	{
 		cout << "obs_diff" << obs_diff.rows() << ',' << obs_diff.cols() << endl;
-		file_manager.open_ofile_ext("obs_diff.dat") << obs_diff << endl;
+		//file_manager.open_ofile_ext("obs_diff.dat") << obs_diff << endl;
+		save_mat("obs_diff.dat", obs_diff);
 	}
 
 	performance_log->log_event("calculate scaled par diff");
@@ -678,7 +696,8 @@ void IterEnsembleSmoother::solve()
 	if (ies_save_mat)
 	{
 		cout << "par_diff:" << par_diff.rows() << ',' << par_diff.cols() << endl;
-		file_manager.open_ofile_ext("par_diff.dat") << par_diff << endl;
+		save_mat("par_diff.dat", par_diff);
+		//file_manager.open_ofile_ext("par_diff.dat") << par_diff << endl;
 	}
 
 //#ifdef _DEBUG
@@ -702,9 +721,11 @@ void IterEnsembleSmoother::solve()
 	if (ies_save_mat)
 	{
 		cout << "s2:" << s2.rows() << ',' << s2.cols() << endl;
-		file_manager.open_ofile_ext("s2.dat") << s2 << endl;
+		//file_manager.open_ofile_ext("s2.dat") << s2 << endl;
 		cout << "Ut:" << Ut.rows() << ',' << Ut.cols() << endl;
-		file_manager.open_ofile_ext("Ut.dat") << Ut << endl;
+		//file_manager.open_ofile_ext("Ut.dat") << Ut << endl;
+		save_mat("ut.dat", Ut);
+		save_mat("s2.dat", s2);
 	}
 
 	vector<ParameterEnsemble> pe_lams;
@@ -723,7 +744,8 @@ void IterEnsembleSmoother::solve()
 		if (ies_save_mat)
 		{
 			cout << "ivec:" << ivec.rows() << ',' << ivec.cols() << endl;
-			file_manager.open_ofile_ext("ivec.dat") << ivec << endl;
+			//file_manager.open_ofile_ext("ivec.dat") << ivec << endl;
+			save_mat("ivec.dat", ivec);
 		}
 		
 		performance_log->log_event("calculate portion of upgrade_1 for localization");
@@ -736,14 +758,16 @@ void IterEnsembleSmoother::solve()
 		if (ies_save_mat)
 		{
 			cout << "upgrade_1:" << upgrade_1.rows() << ',' << upgrade_1.cols() << endl;
-			file_manager.open_ofile_ext("upgrade_1.dat") << upgrade_1 << endl;
+			//file_manager.open_ofile_ext("upgrade_1.dat") << upgrade_1 << endl;
+			save_mat("upgrade_1.dat", upgrade_1);
 		}
 		//cout << "upgrade_1" << endl << upgrade_1 << endl;
 		ParameterEnsemble pe_lam = pe;//copy
 		pe_lam.add_to_cols(upgrade_1, pe_base.get_var_names());
 
 
-		if ((!pest_scenario.get_pestpp_options().get_ies_use_approx()) && (iter > 1))
+		//if ((!pest_scenario.get_pestpp_options().get_ies_use_approx()) && (iter > 1))
+		if (true)
 		{
 			performance_log->log_event("calculating parameter correction (full solution)");
 
@@ -756,13 +780,15 @@ void IterEnsembleSmoother::solve()
 			if (ies_save_mat)
 			{
 				cout << "scaled_par_resid:" << scaled_par_resid.rows() << ',' << scaled_par_resid.cols() << endl;
-				file_manager.open_ofile_ext("scaled_par_resid.dat") << scaled_par_resid << endl;
+				//file_manager.open_ofile_ext("scaled_par_resid.dat") << scaled_par_resid << endl;
+				save_mat("scaled_par_resid.dat", scaled_par_resid);
 			}
 			Eigen::MatrixXd x4 = Am.transpose() * scaled_par_resid;
 			if (ies_save_mat)
 			{
 				cout << "x4:" << x4.rows() << ',' << x4.cols() << endl;
-				file_manager.open_ofile_ext("x4.dat") << x4 << endl;
+				//file_manager.open_ofile_ext("x4.dat") << x4 << endl;
+				save_mat("x4.dat", x4);
 			}
 
 
@@ -771,7 +797,8 @@ void IterEnsembleSmoother::solve()
 			if (ies_save_mat)
 			{
 				cout << "x5:" << x5.rows() << ',' << x5.cols() << endl;
-				file_manager.open_ofile_ext("x5.dat") << x5 << endl;
+				//file_manager.open_ofile_ext("x5.dat") << x5 << endl;
+				save_mat("x5.dat", x5);
 			}
 
 			
@@ -780,7 +807,8 @@ void IterEnsembleSmoother::solve()
 			if (ies_save_mat)
 			{
 				cout << "x6:" << x6.rows() << ',' << x6.cols() << endl;
-				file_manager.open_ofile_ext("x6.dat") << x6 << endl;
+				//file_manager.open_ofile_ext("x6.dat") << x6 << endl;
+				save_mat("x6.dat", x6);
 			}
 			
 			
@@ -788,13 +816,15 @@ void IterEnsembleSmoother::solve()
 			if (ies_save_mat)
 			{
 				cout << "V:" << V.rows() << ',' << V.cols() << endl;
-				file_manager.open_ofile_ext("V.dat") << V << endl;
+				//file_manager.open_ofile_ext("V.dat") << V << endl;
+				save_mat("V.dat", V);
 			}
 			Eigen::MatrixXd x7 = V * ivec *V.transpose() * x6;
 			if (ies_save_mat)
 			{
 				cout << "x7:" << x7.rows() << ',' << x7.cols() << endl;
-				file_manager.open_ofile_ext("x7.dat") << x7 << endl;
+				//file_manager.open_ofile_ext("x7.dat") << x7 << endl;
+				save_mat("x7.dat", x7);
 			}
 
 
@@ -803,7 +833,8 @@ void IterEnsembleSmoother::solve()
 			if (ies_save_mat)
 			{
 				cout << "upgrade_2:" << upgrade_2.rows() << ',' << upgrade_2.cols() << endl;
-				file_manager.open_ofile_ext("upgrade_2.dat") << upgrade_2 << endl;
+				//file_manager.open_ofile_ext("upgrade_2.dat") << upgrade_2 << endl;
+				save_mat("upgrade_2", upgrade_2);
 			}
 
 
@@ -965,7 +996,7 @@ void IterEnsembleSmoother::solve()
 	{
 		frec << "  ---  not updating parameter ensemble  ---  " << endl;
 		cout << "  ---  not updating parameter ensemble  ---  " << endl;
-
+		ph.update(oe, pe);
 		//double new_lam = last_best_mean * *max_element(lam_mults.begin(), lam_mults.end()) * 10.0;
 		double new_lam = last_best_lam * 10.0;
 		new_lam = (new_lam > lambda_max) ? lambda_max : new_lam;
