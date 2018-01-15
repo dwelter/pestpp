@@ -15,7 +15,7 @@ restart estimation
 * parameter groups
 k     relative     1.0000E-02   0.000      switch      2.000      parabolic
 * parameter data
-stage   fixed   factor      1.0       1.00000E-01   3.00000E+00  k      1.0000       0.000        1 
+stage    log   factor      1.0       1.00000E-01   3.00000E+00  k      1.0000       0.000        1 
 k_01     log   factor       2.5       2.50000E-01   2.50000E+01  k      1.0000       0.000        1
 k_02     log   factor       2.5       2.50000E-01   2.50000E+01  k      1.0000       0.000        1
 k_03     log   factor       2.5       2.50000E-01   2.50000E+01  k      1.0000       0.000        1
@@ -62,12 +62,3 @@ misc\head.ins model\10par_xsec.hds
 ++ SUPER_EIGTHRES(1.0e-8)
 ++ MAX_N_SUPER(10)
 ++ #AUTO_NORM(4)
-++ ies_parameter_csv(par.csv)
-++ ies_observation_csv(obs.csv)
-++ ies_obs_restart_csv(obs_restart.csv)
-++ sweep_parameter_csv_file(par1.csv)
-++#ies_lambda_mults(0.1,1.0,10.0)
-++ies_lambda_mults(1.0)
-++ies_init_lam(1.0)
-++#ies_subset_size(10)
-++ies_use_approx(false)

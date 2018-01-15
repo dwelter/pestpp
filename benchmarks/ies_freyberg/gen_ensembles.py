@@ -5,7 +5,7 @@ import flopy
 import pyemu
 
 pyemu_dir = "es_pyemu"
-pestpp_dir = "es_pestpp"
+pestpp_dir = "master"
 
 def prep():
     if os.path.exists(pyemu_dir):

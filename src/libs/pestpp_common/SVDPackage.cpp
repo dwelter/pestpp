@@ -79,7 +79,7 @@ void SVD_REDSVD::solve_ip(Eigen::MatrixXd& A, Eigen::MatrixXd &Sigma, Eigen::Mat
 	for (int i_sing = 0; i_sing < kmax; ++i_sing)
 	{
 		eig_ratio = Sigma_full[i_sing] / Sigma_full[0];
-		if ((eig_ratio > _eigen_thres) && (i_sing < _max_sing))
+		if ((eig_ratio > _eigen_thres) && (i_sing <= _max_sing))
 		{
 			++num_sing_used;
 		}

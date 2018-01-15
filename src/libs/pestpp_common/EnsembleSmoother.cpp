@@ -78,7 +78,7 @@ double PhiHandler::get_std(phiType pt)
 	map<string, double>::iterator pi = phi_map->begin(), end = phi_map->end();
 	for (pi; pi != end; ++pi)
 		var = var + (pow(pi->second - mean,2));
-	return sqrt(var/(phi_map->size()-1));
+	return sqrt(var/(phi_map->size()));
 }
 
 double PhiHandler::get_max(phiType pt)
@@ -462,8 +462,7 @@ void IterEnsembleSmoother::initialize()
 	//performance_log->log_event("calculate prior par diff");
 	//no scaling...chen and oliver scale this...
 	
-	//if (!pest_scenario.get_pestpp_options().get_ies_use_approx()) //eventually ies_use_approx
-	if (true)
+	if (!pest_scenario.get_pestpp_options().get_ies_use_approx()) //eventually ies_use_approx
 	{
 		performance_log->log_event("calculating 'Am' matrix for full solution");
 		double scale = (1.0 / (sqrt(double(pe.shape().first - 1))));
@@ -766,8 +765,7 @@ void IterEnsembleSmoother::solve()
 		pe_lam.add_to_cols(upgrade_1, pe_base.get_var_names());
 
 
-		//if ((!pest_scenario.get_pestpp_options().get_ies_use_approx()) && (iter > 1))
-		if (true)
+		if ((!pest_scenario.get_pestpp_options().get_ies_use_approx()) && (iter > 1))
 		{
 			performance_log->log_event("calculating parameter correction (full solution)");
 
