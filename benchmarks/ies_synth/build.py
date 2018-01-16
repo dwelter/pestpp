@@ -4,9 +4,9 @@ import numpy as np
 import flopy
 import pyemu
 
-
 def setup():
-    nlay, nrow, ncol = 2, 250, 250
+
+    nlay, nrow, ncol = 3, 300, 300
     nper = 1
     perlen = 1.0
     nstp = 1
@@ -70,6 +70,8 @@ def setup():
     #grid_props.append(["upw.hk",0])
     for k in range(m.nlay):
         grid_props.append(["upw.hk",k])
+        grid_props.append(["upw.vka",k])
+        grid_props.append(["upw.ss",k])
 
     ph = pyemu.helpers.PstFromFlopyModel(m,new_model_ws="template",grid_props=grid_props,hds_kperk=hds_kperk,
                                     model_exe_name="mfnwt",build_prior=False,remove_existing=True)
@@ -98,7 +100,8 @@ def prep():
     pst.pestpp_options["ies_obs_restart_csv"] = "restart_obs.csv"
     pst.pestpp_options["ies_use_approx"] = "true"
     pst.svd_data.eigthresh = 1.0e-5
-    pst.svd_data.maxsing = 1.0e+10
+    pst.svd_data.maxsing = 1.0e+6
+    pst.control_data.noptmax = 1
     pst.write(os.path.join("master","pest.pst"))
 
 if __name__ == "__main__":

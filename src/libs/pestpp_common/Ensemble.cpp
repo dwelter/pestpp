@@ -308,14 +308,17 @@ vector<string> Ensemble::prepare_csv(const vector<string> &names, ifstream &csv,
 	pest_utils::strip_ip(line);
 	pest_utils::upper_ip(line);
 	pest_utils::tokenize(line, header_tokens, ",", false);
+	std::set<string> hset(header_tokens.begin(), header_tokens.end());
 	//cout << tokens << endl;
 	//vector<string> header_tokens = tokens;
 
 	// check for parameter names that in the pest control file but that are missing from the csv file
 	vector<string> missing_names;
+	set<string>::iterator end = hset.end();
 	string name;
 	for (auto &name : names)
-		if (find(header_tokens.begin(), header_tokens.end(), name) == header_tokens.end())
+		//if (find(header_tokens.begin(), header_tokens.end(), name) == header_tokens.end())
+		if (hset.find(name) == end)
 			missing_names.push_back(name);
 
 	if (missing_names.size() > 0)
@@ -330,9 +333,13 @@ vector<string> Ensemble::prepare_csv(const vector<string> &names, ifstream &csv,
 	}
 
 	vector<string> header_names;
+	hset.clear();
+	hset = set<string>(names.begin(), names.end());
+	end = hset.end();
 	for (int i = 0; i < header_tokens.size(); i++)
 	{
-		if (find(names.begin(), names.end(), header_tokens[i]) != names.end())
+		//if (find(names.begin(), names.end(), header_tokens[i]) != names.end())
+		if (hset.find(header_tokens[i]) != end)
 		{
 			//header_idxs.push_back(i);
 			//header_info[header_tokens[i]] = i;

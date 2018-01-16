@@ -449,7 +449,7 @@ void IterEnsembleSmoother::initialize()
 	pe_base.reorder(vector<string>(), act_par_names);
 
 	performance_log->log_event("load obscov");
-	cout << " --- initializing obs cov from obnservation weights  ---  " << endl << endl;
+	cout << " m --- initializing obs cov from obnservation weights" << endl << endl;
 	Covariance obscov;
     obscov.from_observation_weights(pest_scenario);
 	obscov = obscov.get(act_obs_names);
@@ -462,7 +462,7 @@ void IterEnsembleSmoother::initialize()
 	string parcov_filename = pest_scenario.get_pestpp_options().get_parcov_filename();
 	if (parcov_filename.size() == 0)
 	{
-		cout << "  ---  initializing par cov from parameter bounds  ---  " << endl << endl;
+		cout << "  ---  initializing par cov from parameter bounds" << endl << endl;
 		parcov_inv.from_parameter_bounds(pest_scenario);
 	}
 	else
