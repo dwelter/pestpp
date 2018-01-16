@@ -344,6 +344,7 @@ void IterEnsembleSmoother::throw_ies_error(string &message)
 
 void IterEnsembleSmoother::initialize()
 {
+	cout << "  ---  initializing ---  " << endl << endl;
 	ies_save_mat = true;
 	iter = 0;
 	ofstream &frec = file_manager.rec_ofstream();
@@ -354,16 +355,22 @@ void IterEnsembleSmoother::initialize()
 	lam_mults = pest_scenario.get_pestpp_options_ptr()->get_ies_lam_mults();
 	if (lam_mults.size() == 0)
 		lam_mults.push_back(1.0);
+	cout << "...using lambda multipliers: ";
+	for (auto &lm : lam_mults)
+		cout << lm << ' , ';
+	cout << endl;
 
 	subset_size = pest_scenario.get_pestpp_options().get_ies_subset_size();
-	
 	reg_factor = pest_scenario.get_pestpp_options().get_ies_reg_factor();
+	cout << "...using reg_factor:" << reg_factor << endl;
 
-	performance_log->log_event("processing par csv");
+	string par_csv = pest_scenario.get_pestpp_options().get_ies_par_csv();
+	performance_log->log_event("processing par csv "+par_csv);
+	cout << "  ---  loading par ensemble from csv file " << par_csv << endl << endl;
 	stringstream ss;
 	try
 	{
-		pe.from_csv(pest_scenario.get_pestpp_options().get_ies_par_csv());
+		pe.from_csv(par_csv);
 	}
 	catch (const exception &e)
 	{
@@ -374,11 +381,13 @@ void IterEnsembleSmoother::initialize()
 	{
 		throw_ies_error(string("error processing par csv"));
 	}
+	string obs_csv = pest_scenario.get_pestpp_options().get_ies_obs_csv();
+	performance_log->log_event("processing obs csv "+obs_csv);
+	cout << "  ---  loading obs ensemble from csv file " << obs_csv << endl << endl;
 
-	performance_log->log_event("processing obs csv");
 	try
 	{
-		oe.from_csv(pest_scenario.get_pestpp_options().get_ies_obs_csv());
+		oe.from_csv(obs_csv);
 	}
 	catch (const exception &e)
 	{
@@ -428,6 +437,7 @@ void IterEnsembleSmoother::initialize()
 	pe_base.reorder(vector<string>(), act_par_names);
 
 	performance_log->log_event("load obscov");
+	cout << " --- initializing obs cov from obnservation weights  ---  " << endl << endl;
 	Covariance obscov;
     obscov.from_observation_weights(pest_scenario);
 	obscov = obscov.get(act_obs_names);
@@ -436,11 +446,16 @@ void IterEnsembleSmoother::initialize()
 	obscov_inv_sqrt = obscov.get_matrix().diagonal().cwiseSqrt().asDiagonal();
 	
 	performance_log->log_event("load parcov");
+	 
 	string parcov_filename = pest_scenario.get_pestpp_options().get_parcov_filename();
 	if (parcov_filename.size() == 0)
+	{
+		cout << "  ---  initializing par cov from parameter bounds  ---  " << endl << endl;
 		parcov_inv.from_parameter_bounds(pest_scenario);
+	}
 	else
 	{
+		cout << "  ---  initializing par cov from file " << parcov_filename << endl << endl;
 		string extension = parcov_filename.substr(parcov_filename.size() - 3, 3);
 		pest_utils::upper_ip(extension);
 		if (extension.compare("COV") == 0)
@@ -452,19 +467,19 @@ void IterEnsembleSmoother::initialize()
 		else
 			throw_ies_error("unrecognized parcov_filename extension: " + extension);
 	}
+	performance_log->log_event("inverting parcov");
 	parcov_inv = parcov_inv.get(act_par_names);
-	parcov_inv.pseudo_inv_ip(1.0e-6,pest_scenario.get_n_adj_par());
+	parcov_inv.inv_ip();
 	//need this here for Am calcs...
 	pe.transform_ip(ParameterEnsemble::transStatus::NUM);
 	pe_base.transform_ip(ParameterEnsemble::transStatus::NUM);
 	
 	
-	//performance_log->log_event("calculate prior par diff");
-	//no scaling...chen and oliver scale this...
-	
 	if (!pest_scenario.get_pestpp_options().get_ies_use_approx()) //eventually ies_use_approx
 	{
+		cout << "  ---  using full (MAP) update solution  ---  " << endl << endl;
 		performance_log->log_event("calculating 'Am' matrix for full solution");
+		cout << "  forming Am matrix" << endl;
 		double scale = (1.0 / (sqrt(double(pe.shape().first - 1))));
 		Eigen::MatrixXd par_diff = scale * pe.get_eigen_mean_diff();
 		par_diff.transposeInPlace();
@@ -515,11 +530,13 @@ void IterEnsembleSmoother::initialize()
 	if (obs_restart_csv.size() == 0)
 	{
 		performance_log->log_event("running initial ensemble");
+		cout << "  ---  running initial ensemble of " << oe.shape().first << " realizations" << endl << endl;
 		run_ensemble(pe, oe);
 	}
 	else
 	{
 		performance_log->log_event("restart IES with existing obs ensemble csv: " + obs_restart_csv);
+		cout << "  ---  restarting with existing obs csv " << obs_restart_csv << endl;
 		//ObservationEnsemble restart_oe(&pest_scenario);
 		try
 		{
@@ -555,6 +572,7 @@ void IterEnsembleSmoother::initialize()
 		if (oe.shape().first < oe_base.shape().first) //maybe some runs failed...
 		{		
 			//find which realizations are missing and reorder oe_base, pe and pe_base
+			cout << "  ---  shape mismatch detected with restart obs ensemble...checking for compatibility..." << endl;
 			vector<string> pe_real_names;
 			start = oe_base_real_names.begin();
 			end = oe_base_real_names.end();	
@@ -604,7 +622,7 @@ void IterEnsembleSmoother::initialize()
 			throw_ies_error(ss.str());
 		}
 	}
-
+	performance_log->log_event("calc initial phi");
 	ph = PhiHandler(&pest_scenario, &file_manager, &oe_base, &pe_base, &parcov_inv, &reg_factor);
 	ph.update(oe, pe);
 	frec << endl <<endl << "  ---  initial phi summary ---  " << endl;
@@ -620,9 +638,12 @@ void IterEnsembleSmoother::initialize()
 		double x = last_best_mean / (2.0 * double(oe.shape().second));
 		last_best_lam = pow(10.0,(floor(log10(x))));
 	}
+	
 	file_manager.rec_ofstream() << "  ---  current lambda: " << setw(20) << left << last_best_lam << endl;
 	cout << "  ---  current lambda: " << setw(20) << left << last_best_lam << endl;
-	pe.transform_ip(ParameterEnsemble::transStatus::NUM);
+	
+	//pe.transform_ip(ParameterEnsemble::transStatus::NUM);
+	cout << "  ---  initialization complete  --- " << endl << endl << endl;
 }
 
 
@@ -666,6 +687,7 @@ void IterEnsembleSmoother::solve()
 	performance_log->log_event("calculate residual matrix");
 	//oe_base var_names should be ordered by act_obs_names, so only reorder real_names
 	//oe should only include active realizations, so only reorder var_names
+	cout << "...calculating residual matrix" << endl;
 	Eigen::MatrixXd scaled_residual = obscov_inv_sqrt * (oe.get_eigen(vector<string>(), act_obs_names) - 
 		oe_base.get_eigen(oe.get_real_names(), vector<string>())).transpose();
 	if (ies_save_mat)
@@ -676,6 +698,7 @@ void IterEnsembleSmoother::solve()
 	}
 		
 	performance_log->log_event("calculate scaled obs diff");
+	cout << "...calculating obs diff matrix" << endl;
 	Eigen::MatrixXd diff = oe.get_eigen_mean_diff(vector<string>(),act_obs_names).transpose();
 	//cout << diff.rows() << ',' << diff.cols() << endl;
 	//cout << diff << endl;
@@ -689,6 +712,8 @@ void IterEnsembleSmoother::solve()
 	}
 
 	performance_log->log_event("calculate scaled par diff");
+	cout << "...calculating par diff matrix" << endl;
+
 	pe.transform_ip(ParameterEnsemble::transStatus::NUM);
 	diff = pe.get_eigen_mean_diff(vector<string>(), act_par_names).transpose();
 	Eigen::MatrixXd par_diff = scale * diff;
@@ -706,6 +731,8 @@ void IterEnsembleSmoother::solve()
 //#endif
 
 	performance_log->log_event("SVD of obs diff");
+	cout << "...calculating SVD of obs diff matrix" << endl;
+
 	//RedSVD::RedSVD<Eigen::MatrixXd> rsvd1(obs_diff);	
 	//Eigen::MatrixXd s1 = rsvd1.singularValues(), V1 = rsvd1.matrixV(), Ut1 = rsvd1.matrixU().transpose();
 	Eigen::MatrixXd ivec, upgrade_1, s,V,Ut;
@@ -722,6 +749,7 @@ void IterEnsembleSmoother::solve()
 		cout << "s2:" << s2.rows() << ',' << s2.cols() << endl;
 		//file_manager.open_ofile_ext("s2.dat") << s2 << endl;
 		cout << "Ut:" << Ut.rows() << ',' << Ut.cols() << endl;
+		cout << "V:" << V.rows() << ',' << V.cols() << endl;
 		//file_manager.open_ofile_ext("Ut.dat") << Ut << endl;
 		save_mat("ut.dat", Ut);
 		save_mat("s2.dat", s2);
@@ -739,6 +767,8 @@ void IterEnsembleSmoother::solve()
 
 		performance_log->log_event(ss.str());
 		performance_log->log_event("form scaled identity matrix");
+		cout << "...calculating scaled identity matrix" << endl;
+
 		ivec = ((Eigen::VectorXd::Ones(s2.size()) * (cur_lam + 1.0)) + s2).asDiagonal().inverse();
 		if (ies_save_mat)
 		{
@@ -748,7 +778,26 @@ void IterEnsembleSmoother::solve()
 		}
 		
 		performance_log->log_event("calculate portion of upgrade_1 for localization");
-		upgrade_1 = -1.0 * par_diff * V * s.asDiagonal() * ivec * Ut;
+		cout << "...calculating portion of upgrade_1 matrix for localization" << endl;
+
+		upgrade_1 = -1.0 * par_diff;
+		cout << "upgrade_1:" << upgrade_1.rows() << ',' << upgrade_1.cols() << endl;
+
+		cout << "..times V" << endl;
+		upgrade_1 = upgrade_1 *  V;
+		cout << "upgrade_1:" << upgrade_1.rows() << ',' << upgrade_1.cols() << endl;
+
+		cout << "..times s" << endl;
+		upgrade_1 = upgrade_1 * s.asDiagonal();
+		cout << "upgrade_1:" << upgrade_1.rows() << ',' << upgrade_1.cols() << endl;
+
+		cout << "..times ivec" << endl;
+		upgrade_1 = upgrade_1 * ivec;
+		cout << "upgrade_1:" << upgrade_1.rows() << ',' << upgrade_1.cols() << endl;
+
+		cout << "..times Ut" << endl;
+		upgrade_1 = upgrade_1 * Ut;
+
 		
 		//localization here...
 
