@@ -71,7 +71,7 @@ public:
 	void throw_ies_error(string &message);
 
 private:
-	bool ies_save_mat;
+	int  verbose_level;
 	Pest &pest_scenario;
 	FileManager &file_manager;
 	OutputFileWriter &output_file_writer;
@@ -106,6 +106,7 @@ private:
 	//map<string,PhiComponets> get_phi_info(ObservationEnsemble &_oe);
 	void report_and_save();
 	void save_mat(string prefix, Eigen::MatrixXd &mat);
+	void check_ensembles(ObservationEnsemble &oe, ParameterEnsemble &pe);
 };
 
 #endif 
