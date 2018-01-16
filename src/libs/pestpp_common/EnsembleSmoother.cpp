@@ -240,17 +240,23 @@ map<string, double> PhiHandler::calc_regul(ParameterEnsemble & pe)
 	vector<string> real_names = pe.get_real_names();
 	pe_base->transform_ip(ParameterEnsemble::transStatus::NUM);
 	pe.transform_ip(ParameterEnsemble::transStatus::NUM);
-	Eigen::MatrixXd diff = pe.get_eigen() - pe_base->get_eigen(real_names, vector<string>());
+	Eigen::MatrixXd diff_mat = pe.get_eigen() - pe_base->get_eigen(real_names, vector<string>());
+	Eigen::VectorXd parcov_inv_diag = parcov_inv->e_ptr()->diagonal();
 	//cout << diff << endl;
 	//cout << diff.rows() << ' ' << diff.cols() << endl;
 	//cout << parcov_inv->e_ptr()->rows() << ' ' << parcov_inv->e_ptr()->cols() << endl;
 	//cout << *parcov_inv->e_ptr() << endl;
-	diff = diff * *parcov_inv->e_ptr() * diff.transpose();
+	//diff = diff * *parcov_inv->e_ptr() * diff.transpose();
 	//cout << diff.rows() << ' ' << diff.cols() << endl;
-
-	//regul.clear();
+	
+	Eigen::VectorXd diff;
 	for (int i = 0; i < real_names.size(); i++)
-		phi_map[real_names[i]] = diff(i,i);
+	{	
+		diff = diff_mat.row(i);
+		diff = diff.cwiseProduct(diff);
+		diff = diff.cwiseProduct(parcov_inv_diag);
+		phi_map[real_names[i]] = diff.sum();
+	}
 	return phi_map;
 }
 
@@ -777,32 +783,37 @@ void IterEnsembleSmoother::solve()
 			save_mat("ivec.dat", ivec);
 		}
 		
-		performance_log->log_event("calculate portion of upgrade_1 for localization");
-		cout << "...calculating portion of upgrade_1 matrix for localization" << endl;
+		//performance_log->log_event("calculate portion of upgrade_1 for localization");
+		//cout << "...calculating portion of upgrade_1 matrix for localization" << endl;
 
-		upgrade_1 = -1.0 * par_diff;
-		cout << "upgrade_1:" << upgrade_1.rows() << ',' << upgrade_1.cols() << endl;
+		//upgrade_1 = -1.0 * par_diff;
+		//cout << "upgrade_1:" << upgrade_1.rows() << ',' << upgrade_1.cols() << endl;
 
-		cout << "..times V" << endl;
-		upgrade_1 = upgrade_1 *  V;
-		cout << "upgrade_1:" << upgrade_1.rows() << ',' << upgrade_1.cols() << endl;
+		//cout << "..times V" << endl;
+		//upgrade_1 = upgrade_1 *  V;
+		//cout << "upgrade_1:" << upgrade_1.rows() << ',' << upgrade_1.cols() << endl;
 
-		cout << "..times s" << endl;
-		upgrade_1 = upgrade_1 * s.asDiagonal();
-		cout << "upgrade_1:" << upgrade_1.rows() << ',' << upgrade_1.cols() << endl;
+		//cout << "..times s" << endl;
+		//upgrade_1 = upgrade_1 * s.asDiagonal();
+		//cout << "upgrade_1:" << upgrade_1.rows() << ',' << upgrade_1.cols() << endl;
 
-		cout << "..times ivec" << endl;
-		upgrade_1 = upgrade_1 * ivec;
-		cout << "upgrade_1:" << upgrade_1.rows() << ',' << upgrade_1.cols() << endl;
+		//cout << "..times ivec" << endl;
+		//upgrade_1 = upgrade_1 * ivec;
+		//cout << "upgrade_1:" << upgrade_1.rows() << ',' << upgrade_1.cols() << endl;
 
-		cout << "..times Ut" << endl;
-		upgrade_1 = upgrade_1 * Ut;
+		//cout << "..times Ut" << endl;
+		//upgrade_1 = upgrade_1 * Ut;
+		//
+		////localization here...
 
-		
-		//localization here...
+		//performance_log->log_event("apply residuals to upgrade_1");
+		//upgrade_1 = (upgrade_1 * scaled_residual).transpose();
 
-		performance_log->log_event("apply residuals to upgrade_1");
-		upgrade_1 = (upgrade_1 * scaled_residual).transpose();
+		Eigen::MatrixXd X1 = Ut * scaled_residual;
+		Eigen::MatrixXd X2 = ivec * X1;
+		Eigen::MatrixXd X3 = V * s.asDiagonal() * X2;
+		upgrade_1 = -1.0 * par_diff * X3;
+		upgrade_1.transposeInPlace();
 		if (ies_save_mat)
 		{
 			cout << "upgrade_1:" << upgrade_1.rows() << ',' << upgrade_1.cols() << endl;

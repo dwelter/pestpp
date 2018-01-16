@@ -57,6 +57,6 @@ def ies():
     #es.update(lambda_mults=[0.1,1.0,10.0],run_subset=10)
     os.chdir('..')
 if __name__ == "__main__":
-    prep()
+    #prep()
     ies()
     #pyemu.helpers.start_slaves("template","sweep.exe","pest.pst",num_slaves=5)
