@@ -4,17 +4,18 @@ import numpy as np
 import flopy
 import pyemu
 
-#nlay, nrow, ncol = 1, 250, 250
-nlay, nrow, ncol = 116, 78, 59
+nlay, nrow, ncol = 3, 250, 250
+
+
+# nlay, nrow, ncol = 116, 78, 59
 
 def setup():
-
-
+    run_fieldgen()
     nper = 1
     perlen = 1.0
     nstp = 1
-    #botm = np.arange(-10, (nlay)*10, -10)
-    botm = np.linspace(-10,-100,nlay)
+    # botm = np.arange(-10, (nlay)*10, -10)
+    botm = np.linspace(-10, -100, nlay)
     m = flopy.modflow.Modflow("pest", version="mfnwt", exe_name="mfnwt", external_path='.', verbose=True)
     steady = [False for _ in range(nper)]
     steady[0] = True
@@ -56,11 +57,14 @@ def setup():
         ghb_data[iper] = gd
     flopy.modflow.ModflowGhb(m, stress_period_data=ghb_data, ipakcb=50)
 
-    hk = 10.0 ** (np.random.randn(nlay, nrow, ncol) * 0.01)
-    vka = 10.0 ** (np.random.randn(nlay, nrow, ncol) * 0.01)
-    #print(hk.min(), hk.max(), hk.mean(), hk.std())
-    #hk = np.loadtxt("hk.dat")
-    #vka = hk / 10.0
+    #hk = 10.0 ** (np.random.randn(nlay, nrow, ncol) * 0.01)
+    #vka = 10.0 ** (np.random.randn(nlay, nrow, ncol) * 0.01)
+    # print(hk.min(), hk.max(), hk.mean(), hk.std())
+    # hk = np.loadtxt("hk.dat")
+    # vka = hk / 10.0
+    hk = [np.loadtxt(os.path.join("truth_reals",f)) for f in os.listdir("truth_reals") if "real_" in f]
+    vka = 10.**(np.random.normal(-1,0.25,(nlay,nrow,ncol)))
+
     flopy.modflow.ModflowUpw(m, hk=hk, vka=vka, ss=0.001, sy=0.1, ipakcb=50)
 
     flopy.modflow.ModflowOc(m, save_every=True,
@@ -71,50 +75,53 @@ def setup():
     m.write_input()
     m.run_model()
     grid_props = []
-    hds_kperk = [[0,0]]
-    #grid_props.append(["upw.hk",0])
+    hds_kperk = [[0, 0]]
+    # grid_props.append(["upw.hk",0])
     for k in range(m.nlay):
-        grid_props.append(["upw.hk",k])
-        grid_props.append(["upw.vka",k])
-        grid_props.append(["upw.ss",k])
+        grid_props.append(["upw.hk", k])
+        grid_props.append(["upw.vka", k])
+        grid_props.append(["upw.ss", k])
 
-    m.upw.hk = hk.mean()
-    m.upw.vka = vka.mean()
-    ph = pyemu.helpers.PstFromFlopyModel(m,new_model_ws="template",grid_props=grid_props,hds_kperk=hds_kperk,
-                                    model_exe_name="mfnwt",build_prior=False,remove_existing=True)
+    m.upw.hk = m.upw.hk.array.mean()
+    m.upw.vka = m.upw.vka.array.mean()
+    for kper,rarr in m.wel.stress_period_data.data.items():
+        rarr["flux"] = 500.0
 
-    ph.pst.observation_data.loc[:,"weight"] = 0.0
+    ph = pyemu.helpers.PstFromFlopyModel(m, new_model_ws="template", grid_props=grid_props, hds_kperk=hds_kperk,
+                                         model_exe_name="mfnwt", build_prior=False, remove_existing=True)
+
+    ph.pst.observation_data.loc[:, "weight"] = 0.0
     obs = ph.pst.observation_data
-    hds_obs = obs.loc[obs.obgnme=="hds",:]
+    hds_obs = obs.loc[obs.obgnme == "hds", :]
 
-    obs_idx = np.random.randint(0,hds_obs.shape[0],250)
+    obs_idx = np.random.randint(0, hds_obs.shape[0], 250)
     nz_obs_names = hds_obs.obsnme.iloc[obs_idx]
 
-    ph.pst.observation_data.loc[nz_obs_names,"weight"] = 1.0
-    #noise = np.random.randn(ph.pst.nnz_obs)
-    #ph.pst.observation_data.loc[ph.pst.nnz_obs_names,"obsval"] += noise
-    ph.pst.write(os.path.join("template","pest.pst"))
+    ph.pst.observation_data.loc[nz_obs_names, "weight"] = 1.0
+    # noise = np.random.randn(ph.pst.nnz_obs)
+    # ph.pst.observation_data.loc[ph.pst.nnz_obs_names,"obsval"] += noise
+    ph.pst.write(os.path.join("template", "pest.pst"))
 
     num_reals = 100
     parcov = pyemu.Cov.from_parameter_data(ph.pst)
-    pe = pyemu.ParameterEnsemble.from_gaussian_draw(ph.pst,parcov,num_reals=num_reals)
-    #pe.to_csv(os.path.join("template","par.csv"))
+    pe = pyemu.ParameterEnsemble.from_gaussian_draw(ph.pst, parcov, num_reals=num_reals)
+    # pe.to_csv(os.path.join("template","par.csv"))
     pe.to_binary(os.path.join("template", "par.jcb"))
 
-    oe = pyemu.ObservationEnsemble.from_id_gaussian_draw(ph.pst,num_reals=num_reals)
-    oe.to_binary(os.path.join("template","obs.jcb"))
+    oe = pyemu.ObservationEnsemble.from_id_gaussian_draw(ph.pst, num_reals=num_reals)
+    oe.to_binary(os.path.join("template", "obs.jcb"))
 
     oe = pyemu.ObservationEnsemble.from_id_gaussian_draw(ph.pst, num_reals=num_reals)
     oe.to_binary(os.path.join("template", "restart_obs.jcb"))
 
-    pyemu.helpers.run("pestpp pest.pst",cwd="template")
+    pyemu.helpers.run("pestpp pest.pst", cwd="template")
 
 
 def prep():
     if os.path.exists("master"):
-       shutil.rmtree("master")
-    shutil.copytree("template","master")
-    pst = pyemu.Pst(os.path.join("master","pest.pst"))
+        shutil.rmtree("master")
+    shutil.copytree("template", "master")
+    pst = pyemu.Pst(os.path.join("master", "pest.pst"))
     pst.pestpp_options["ies_parameter_csv"] = "par.jcb"
     pst.pestpp_options["ies_observation_csv"] = "obs.jcb"
     pst.pestpp_options["ies_obs_restart_csv"] = "restart_obs.jcb"
@@ -122,78 +129,98 @@ def prep():
     pst.svd_data.eigthresh = 1.0e-5
     pst.svd_data.maxsing = 1.0e+6
     pst.control_data.noptmax = 1
-    pst.write(os.path.join("master","pest.pst"))
+    pst.write(os.path.join("master", "pest.pst"))
 
 
-# def run_fieldgen():
-#     d = "reals"
-#     # if os.path.exists(d):
-#     #     shutil.rmtree(d)
-#     # os.mkdir(d)
-#
-#     with open(os.path.join(d,"settings.fig"),'w') as f:
-#         f.write("date=dd/mm/yyyy\ncolrow=no\n")
-#
-#     with open(os.path.join(d,"grid.spc"),'w') as f:
-#         f.write("{0} {1}\n0.0 0.0 0.0\n".format(nrow,ncol))
-#         [f.write("1.0 ") for _ in range(ncol)]
-#         f.write('\n')
-#         [f.write("1.0 ") for _ in range(ncol)]
-#         f.write('\n')
-#
-#     np.savetxt(os.path.join(d,"zone.dat"),np.ones((nrow,ncol)),fmt="%3d")
-#
-#     v = pyemu.geostats.ExpVario(1.0,300.0,2.5,45.0)
-#     gs = pyemu.geostats.GeoStruct(variograms=[v])
-#     gs.to_struct_file(os.path.join(d,"struct.dat"))
-#     num_reals = 10
-#     with open(os.path.join(d,"fieldgen.in"),'w') as f:
-#         f.write('grid.spc\n\n')
-#         f.write("zone.dat\nf\n")
-#         f.write("struct.dat\nstruct1\no\n")
-#         f.write("10\n")
-#         f.write("{0}\n".format(num_reals))
-#         f.write("real_\nf\n")
-#         f.write('20\n\n')
-#
-#     pyemu.helpers.run("fieldgen <fieldgen.in",cwd=d)
-#
-#     import matplotlib.pyplot as plt
-#
-#     rfiles = [f for f in os.listdir(d) if "real_" in f]
-#     for r in rfiles:
-#         arr =np.loadtxt()
+def run_fieldgen():
+    d_truth = "truth_reals"
+
+    d_reals = "reals"
+
+    vt = pyemu.geostats.ExpVario(1.0, 300.0, 2.5, 45.0)
+    gs_truth = pyemu.geostats.GeoStruct(variograms=[vt], transform="log")
+    #gs_truth.to_struct_file(os.path.join(d_truth, "struct.dat"))
+
+    vr = pyemu.geostats.ExpVario(1.0, 1000.0, 2.5, 0.0)
+    gs_reals = pyemu.geostats.GeoStruct(variograms=[vr], transform="log")
+    #gs_truth.to_struct_file(os.path.join(d_reals, "struct.dat"))
+
+    for d,num_reals,gs in zip([d_truth,d_reals],[nlay,100],[gs_truth,gs_reals]):
+        if os.path.exists(d):
+            shutil.rmtree(d)
+        os.mkdir(d)
+
+        gs.to_struct_file(os.path.join(d, "struct.dat"))
+
+        with open(os.path.join(d, "settings.fig"), 'w') as f:
+            f.write("date=dd/mm/yyyy\ncolrow=no\n")
+
+        with open(os.path.join(d, "grid.spc"), 'w') as f:
+            f.write("{0} {1}\n0.0 0.0 0.0\n".format(nrow, ncol))
+            [f.write("1.0 ") for _ in range(ncol)]
+            f.write('\n')
+            [f.write("1.0 ") for _ in range(ncol)]
+            f.write('\n')
+
+        np.savetxt(os.path.join(d, "zone.dat"), np.ones((nrow, ncol)), fmt="%3d")
+
+
+        with open(os.path.join(d, "fieldgen.in"), 'w') as f:
+            f.write('grid.spc\n\n')
+            f.write("zone.dat\nf\n")
+            f.write("struct.dat\nstruct1\no\n")
+            f.write("10\n")
+            f.write("{0}\n".format(num_reals))
+            f.write("real_\nf\n")
+            f.write('20\n\n')
+
+        pyemu.helpers.run("fieldgen <fieldgen.in", cwd=d)
+
+        import matplotlib.pyplot as plt
+
+        rfiles = [f for f in os.listdir(d) if "real_" in f]
+        import matplotlib.pyplot as plt
+        #arrs = []
+        for r in rfiles:
+            r = os.path.join(d, r)
+            arr = np.fromfile(r, sep=' ').reshape(nrow, ncol)
+            np.savetxt(r, arr, fmt="%15.6E")
+            #p = plt.imshow(arr)
+            #plt.colorbar(p)
+            #plt.show()
+            #break
+    #return arrs
 
 def process_training_image():
     if not os.path.exists("_data"):
         os.mkdir("_data")
     ti_file = "ti_strebelle.sgems.txt"
     ti_file = "TI1.SGEMS"
-    with open(ti_file,'r') as f:
+    with open(ti_file, 'r') as f:
         line = f.readline()
-        nrow,ncol,nlay = [int(i) for i in line.strip().split()]
+        nrow, ncol, nlay = [int(i) for i in line.strip().split()]
         f.readline()
         f.readline()
-        arr = np.loadtxt(f).reshape(nlay,nrow,ncol)
+        arr = np.loadtxt(f).reshape(nlay, nrow, ncol)
     # import matplotlib.pyplot as plt
     # plt.imshow(arr)
     # plt.show()
-    vd = {0:0.01,1:2.0,2:50.0,3:250.0}
+    vd = {0: 0.01, 1: 2.0, 2: 50.0, 3: 250.0}
     hk = np.zeros_like(arr) + vd[0]
-    for i,k in vd.items():
-        hk[arr==i] = k
-
+    for i, k in vd.items():
+        hk[arr == i] = k
 
     for k in range(nlay):
-        np.savetxt(os.path.join("_data","hk_{0}.dat".format(k)),hk[1,:,:],fmt="%15.6E")
+        np.savetxt(os.path.join("_data", "hk_{0}.dat".format(k)), hk[1, :, :], fmt="%15.6E")
     import matplotlib.pyplot as plt
-    plt.imshow(arr[0,:,:])
+    plt.imshow(arr[0, :, :])
     plt.show()
 
     return hk
 
 
 if __name__ == "__main__":
-    process_training_image()
-    #setup()
-    #prep()
+    # process_training_image()
+    #run_fieldgen()
+    setup()
+    # prep()
