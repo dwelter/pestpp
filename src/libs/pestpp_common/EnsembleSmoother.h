@@ -106,7 +106,7 @@ private:
 	//map<string,PhiComponets> get_phi_info(ObservationEnsemble &_oe);
 	void report_and_save();
 	void save_mat(string prefix, Eigen::MatrixXd &mat);
-	void check_ensembles(ObservationEnsemble &oe, ParameterEnsemble &pe);
+	//void check_ensembles(ObservationEnsemble &oe, ParameterEnsemble &pe);
 };
 
 #endif 

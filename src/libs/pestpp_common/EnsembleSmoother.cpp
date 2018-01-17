@@ -351,7 +351,7 @@ void IterEnsembleSmoother::throw_ies_error(string &message)
 void IterEnsembleSmoother::initialize()
 {
 	cout << "  ---  initializing ---  " << endl << endl;
-	verbose_level = 2;
+	verbose_level = pest_scenario.get_pestpp_options_ptr()->get_ies_verbose_level();
 	iter = 0;
 	ofstream &frec = file_manager.rec_ofstream();
 	last_best_mean = 1.0E+30;
@@ -371,39 +371,97 @@ void IterEnsembleSmoother::initialize()
 	cout << "...using reg_factor:" << reg_factor << endl;
 
 	string par_csv = pest_scenario.get_pestpp_options().get_ies_par_csv();
+	string par_ext = pest_utils::lower_cp(par_csv).substr(par_csv.size()-3, par_csv.size());
+
 	performance_log->log_event("processing par csv "+par_csv);
-	cout << "  ---  loading par ensemble from csv file " << par_csv << endl << endl;
 	stringstream ss;
-	try
+	if (par_ext.compare("csv") == 0)
 	{
-		pe.from_csv(par_csv);
+		
+		cout << "  ---  loading par ensemble from csv file " << par_csv << endl << endl;
+		try
+		{
+			pe.from_csv(par_csv);
+		}
+		catch (const exception &e)
+		{
+			ss << "error processing par csv: " << e.what();
+			throw_ies_error(ss.str());
+		}
+		catch (...)
+		{
+			throw_ies_error(string("error processing par csv"));
+		}
 	}
-	catch (const exception &e)
+	else if ((par_ext.compare("jcb") == 0) || (par_ext.compare("jco") == 0))
 	{
-		ss << "error processing par csv: " << e.what();
+		cout << "  ---  loading par ensemble from binary file " << par_csv << endl << endl;
+		try
+		{
+			pe.from_binary(par_csv);
+		}
+		catch (const exception &e)
+		{
+			ss << "error processing par jcb: " << e.what();
+			throw_ies_error(ss.str());
+		}
+		catch (...)
+		{
+			throw_ies_error(string("error processing par jcb"));
+		}
+	}
+	else
+	{
+		ss << "unrecognized par csv extension " << par_ext << ", looking for csv, jcb, or jco";
 		throw_ies_error(ss.str());
-	}
-	catch (...)
-	{
-		throw_ies_error(string("error processing par csv"));
 	}
 	string obs_csv = pest_scenario.get_pestpp_options().get_ies_obs_csv();
-	performance_log->log_event("processing obs csv "+obs_csv);
-	cout << "  ---  loading obs ensemble from csv file " << obs_csv << endl << endl;
+	string obs_ext = pest_utils::lower_cp(obs_csv).substr(obs_csv.size() - 3, obs_csv.size());
 
-	try
+	performance_log->log_event("processing obs csv "+obs_csv);
+	if (obs_ext.compare("csv") == 0)
 	{
-		oe.from_csv(obs_csv);
+		cout << "  ---  loading obs ensemble from csv file " << obs_csv << endl << endl;
+
+		try
+		{
+			oe.from_csv(obs_csv);
+		}
+		catch (const exception &e)
+		{
+			ss << "error processing obs csv: " << e.what();
+			throw_ies_error(ss.str());
+		}
+		catch (...)
+		{
+			throw_ies_error(string("error processing obs csv"));
+		}
 	}
-	catch (const exception &e)
+	else if ((obs_ext.compare("jcb") == 0) || (obs_ext.compare("jco") == 0))
 	{
-		ss << "error processing obs csv: " << e.what();
+		cout << "  ---  loading obs ensemble from binary file " << obs_csv << endl << endl;
+
+		try
+		{
+			oe.from_binary(obs_csv);
+		}
+		catch (const exception &e)
+		{
+			ss << "error processing obs binary file: " << e.what();
+			throw_ies_error(ss.str());
+		}
+		catch (...)
+		{
+			throw_ies_error(string("error processing obs binary file"));
+		}
+	}
+	else
+	{
+		ss << "unrecognized obs ensemble extension " << obs_ext << ", looing for csv, jcb, or jco";
 		throw_ies_error(ss.str());
 	}
-	catch (...)
-	{
-		throw_ies_error(string("error processing obs csv"));
-	}
+
+		
 	if (pe.shape().first != oe.shape().first)
 	{
 		ss.str("");
@@ -534,20 +592,48 @@ void IterEnsembleSmoother::initialize()
 	else
 	{
 		performance_log->log_event("restart IES with existing obs ensemble csv: " + obs_restart_csv);
-		cout << "  ---  restarting with existing obs csv " << obs_restart_csv << endl;
-		//ObservationEnsemble restart_oe(&pest_scenario);
-		try
+		cout << "  ---  restarting with existing obs ensemble " << obs_restart_csv << endl;
+		string obs_ext = pest_utils::lower_cp(obs_csv).substr(obs_csv.size() - 3, obs_csv.size());
+		if (obs_ext.compare("csv") == 0)
 		{
-			oe.from_csv(obs_restart_csv);
+			cout << "  ---  loading restart obs ensemble from csv file " << obs_restart_csv << endl << endl;
+
+			try
+			{
+				oe.from_csv(obs_restart_csv);
+			}
+			catch (const exception &e)
+			{
+				ss << "error processing restart obs csv: " << e.what();
+				throw_ies_error(ss.str());
+			}
+			catch (...)
+			{
+				throw_ies_error(string("error processing restart obs csv"));
+			}
 		}
-		catch (const exception &e)
+		else if ((obs_ext.compare("jcb") == 0) || (obs_ext.compare("jco") == 0))
 		{
-			ss << "error loading restart obs ensemble csv:" << e.what();
+			cout << "  ---  loading restart obs ensemble from binary file " << obs_restart_csv << endl << endl;
+
+			try
+			{
+				oe.from_binary(obs_restart_csv);
+			}
+			catch (const exception &e)
+			{
+				ss << "error processing restart obs binary file: " << e.what();
+				throw_ies_error(ss.str());
+			}
+			catch (...)
+			{
+				throw_ies_error(string("error processing restart obs binary file"));
+			}
+		}
+		else
+		{
+			ss << "unrecognized restart obs ensemble extension " << obs_ext << ", looing for csv, jcb, or jco";
 			throw_ies_error(ss.str());
-		}
-		catch (...)
-		{
-			throw_ies_error(string("error loading restart obs ensemble csv"));
 		}
 		//check that restart oe is in sync
 		stringstream ss;

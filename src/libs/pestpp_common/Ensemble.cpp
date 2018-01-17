@@ -1,5 +1,7 @@
 #include <random>
 #include <iomanip>
+#include <unordered_set>
+#include <iterator>
 #include "Ensemble.h"
 #include "RestartController.h"
 #include "utilities.h"
@@ -308,13 +310,13 @@ vector<string> Ensemble::prepare_csv(const vector<string> &names, ifstream &csv,
 	pest_utils::strip_ip(line);
 	pest_utils::upper_ip(line);
 	pest_utils::tokenize(line, header_tokens, ",", false);
-	std::set<string> hset(header_tokens.begin(), header_tokens.end());
+	unordered_set<string> hset(header_tokens.begin(), header_tokens.end());
 	//cout << tokens << endl;
 	//vector<string> header_tokens = tokens;
 
 	// check for parameter names that in the pest control file but that are missing from the csv file
 	vector<string> missing_names;
-	set<string>::iterator end = hset.end();
+	unordered_set<string>::iterator end = hset.end();
 	string name;
 	for (auto &name : names)
 		//if (find(header_tokens.begin(), header_tokens.end(), name) == header_tokens.end())
@@ -334,7 +336,7 @@ vector<string> Ensemble::prepare_csv(const vector<string> &names, ifstream &csv,
 
 	vector<string> header_names;
 	hset.clear();
-	hset = set<string>(names.begin(), names.end());
+	hset = unordered_set<string>(names.begin(), names.end());
 	end = hset.end();
 	for (int i = 0; i < header_tokens.size(); i++)
 	{
@@ -411,6 +413,105 @@ void Ensemble::append_other_rows(Ensemble &other)
 	}
 	real_names = new_real_names;
 }
+
+
+void Ensemble::from_binary(string &file_name, vector<string> &names, bool transposed)
+{
+	var_names.clear();
+	real_names.clear();
+	ifstream in;
+	in.open(file_name.c_str(), ifstream::binary);
+
+	int n_col;
+	int n_nonzero;
+	int n_row;
+	int i, j, n;
+	double data;
+	char col_name[12];
+	char row_name[20];
+
+	// read header
+	in.read((char*)&n_col, sizeof(n_col));
+	in.read((char*)&n_row, sizeof(n_row));
+	if (n_col > 0) throw runtime_error("Ensemble:::from_binary() error: binary matrix file " + file_name + " was produced by deprecated version of PEST");
+
+	n_col = -n_col;
+	n_row = -n_row;
+	////read number nonzero elements in jacobian (observations + prior information)
+	in.read((char*)&n_nonzero, sizeof(n_nonzero));
+
+	// record current position in file
+	streampos begin_sen_pos = in.tellg();
+
+	//advance to col names section
+	in.seekg(n_nonzero*(sizeof(double) + sizeof(int)), ios_base::cur);
+
+	//read col names	
+	vector<string>* col_names = &var_names;
+	vector<string>* row_names = &real_names;
+	if (transposed)
+	{
+		col_names = &real_names;
+		row_names = &var_names;
+	}
+
+	for (int i_rec = 0; i_rec<n_col; ++i_rec)
+	{
+		in.read(col_name, 12);
+		string temp_col = string(col_name, 12);
+		pest_utils::strip_ip(temp_col);
+		pest_utils::upper_ip(temp_col);
+		col_names->push_back(temp_col);
+	}
+	//read row names
+	for (int i_rec = 0; i_rec<n_row; ++i_rec)
+	{
+		in.read(row_name, 20);
+		string temp_row = pest_utils::strip_cp(string(row_name, 20));
+		pest_utils::upper_ip(temp_row);
+		row_names->push_back(temp_row);
+	}
+
+	//make sure that var_names is compatible with names
+	if (var_names.size() != names.size())
+	{
+		set<string> vset(var_names.begin(), var_names.end());
+		set<string> nset(names.begin(), names.end());
+		vector<string> diff;
+		set_symmetric_difference(vset.begin(), vset.end(), nset.begin(), nset.end(),std::back_inserter(diff));
+		throw_ensemble_error("the following names are common between the var names in the binary file and the var names expected", diff);
+	}
+
+	//return to sensitivity section of file
+	in.seekg(begin_sen_pos, ios_base::beg);
+
+	// read matrix
+	/*if (transposed)
+		reals.resize(n_col, n_row);
+	else*/
+	reals.resize(n_row, n_col);
+	reals.setZero();
+	for (int i_rec = 0; i_rec<n_nonzero; ++i_rec)
+	{
+		in.read((char*)&(n), sizeof(n));
+		--n;
+		in.read((char*)&(data), sizeof(data));
+		//j = int(n / (n_obs_and_pi)); // column index
+		//i = (n - n_obs_and_pi*j) % n_obs_and_pi;  //row index
+		j = int(n / (n_row)); // column index
+		i = (n - n_row*j) % n_row;  //row index
+	
+		/*if (transposed)
+			reals(j, i) = data;
+		else*/
+		reals(i, j) = data;
+	}
+	if (transposed)
+		reals.transposeInPlace();
+	in.close();
+}
+
+
 
 void Ensemble::read_csv(int num_reals,ifstream &csv)
 {
@@ -489,22 +590,10 @@ void Ensemble::read_csv(int num_reals,ifstream &csv)
 
 
 
-//ParameterEnsemble::ParameterEnsemble(const ParamTransformSeq &_par_transform, Pest &_pest_scenario,
-//	FileManager &_file_manager, OutputFileWriter &_output_file_writer,
-//	PerformanceLog *_performance_log, unsigned int seed):
-//	Ensemble(_pest_scenario,_file_manager,_output_file_writer,_performance_log,seed),
-//	par_transform(_par_transform)
 ParameterEnsemble::ParameterEnsemble(Pest *_pest_scenario_ptr):Ensemble(_pest_scenario_ptr)
 {
 	par_transform = pest_scenario_ptr->get_base_par_tran_seq();
 }
-
-//ParameterEnsemble ParameterEnsemble::get_new(const vector<string> &_real_names, const vector<string> &_var_names)
-//{
-//	ParameterEnsemble new_pe(pest_scenario_ptr);	
-//	new_pe.from_eigen_mat(get_eigen(_real_names, _var_names),_real_names,_var_names);
-//	return new_pe;
-//}
 
 void ParameterEnsemble::set_pest_scenario(Pest *_pest_scenario)
 {
@@ -559,6 +648,14 @@ void ParameterEnsemble::from_eigen_mat(Eigen::MatrixXd mat, const vector<string>
 	tstat = _tstat;
 }
 
+
+void ParameterEnsemble::from_binary(string &file_name)
+{
+	//Ensemble::from_binary(file_name, pest_scenario_ptr->get_ctl_ordered_par_names(), false);
+	vector<string> names = pest_scenario_ptr->get_ctl_ordered_par_names();
+	Ensemble::from_binary(file_name, names, false);
+	tstat = transStatus::CTL;
+}
 
 void ParameterEnsemble::from_csv(string &file_name)
 {
@@ -758,6 +855,12 @@ vector<int> ObservationEnsemble::update_from_runs(map<int,int> &real_run_ids, Ru
 	return failed_real_idxs;
 }
 
+void ObservationEnsemble::from_binary(string &file_name)
+{
+	vector<string> names = pest_scenario_ptr->get_ctl_ordered_obs_names();
+	Ensemble::from_binary(file_name, names, true);
+}
+
 void ObservationEnsemble::from_csv(string &file_name)
 {
 	from_csv(file_name, pest_scenario_ptr->get_ctl_ordered_obs_names());
@@ -812,162 +915,3 @@ void ObservationEnsemble::from_eigen_mat(Eigen::MatrixXd mat, const vector<strin
 		throw_ensemble_error("ObservationEnsemble.from_eigen_mat() the following obs names no found: ", missing);
 	Ensemble::from_eigen_mat(mat, _real_names, _var_names);
 }
-
-//ObservationEnsemble ObservationEnsemble::get_mean_diff()
-//{
-//	ObservationEnsemble new_oe = *this;
-//	new_oe.set_reals(get_eigen_mean_diff());
-//	return new_oe;
-//}
-
-
-
-EnsemblePair::EnsemblePair(ParameterEnsemble &_pe, ObservationEnsemble &_oe) : pe(_pe), oe(_oe)
-{
-	pair<int, int> par_shape = pe.shape();
-	pair<int, int> obs_shape = oe.shape();
-	if (par_shape.first != obs_shape.first)
-	{
-		stringstream ss;
-		ss << "parameter ensemble shape[0] (" << par_shape.first << ") != observation ensemble shape[0] (" << obs_shape.first << ")";
-		pe.throw_ensemble_error(ss.str());
-	}
-
-	//initialize active real tracker
-	for (int i = 0; i < par_shape.first; i++)
-		active_real_indices.push_back(i);
-}
-
-void EnsemblePair::queue_runs(RunManagerAbstract *run_mgr_ptr)
-{
-
-	Parameters pars = pe.get_pest_scenario_ptr()->get_ctl_parameters();
-	//for (int ireal = 0; ireal < pe.shape().first; ireal++)
-	Eigen::VectorXd evec;
-	vector<double> svec;
-	vector<string> var_names = pe.get_var_names();
-	//for (auto &real_name : pe.get_real_names())
-	real_run_ids.clear();
-	int run_id;
-	for (auto &act_idx : active_real_indices)
-	{
-		evec = pe.get_real_vector(act_idx);
-		const vector<double> svec(evec.data(), evec.data() + evec.size());
-		pars.update_without_clear(var_names, svec);
-		if (pe.get_trans_status() == ParameterEnsemble::transStatus::CTL)
-			pe.get_par_transform().ctl2model_ip(pars);
-		else if (pe.get_trans_status() == ParameterEnsemble::transStatus::NUM)
-			pe.get_par_transform().numeric2model_ip(pars);
-
-		run_id = run_mgr_ptr->add_run(pars);
-		real_run_ids[act_idx] = run_id;
-	}
-	//pe.set_trans_status(ParameterEnsemble::transStatus::MODEL);
-	//cout << pe.get_reals() << endl;
-}
-
-void EnsemblePair::run(RunManagerAbstract *run_mgr_ptr)
-{
-	run_mgr_ptr->run();
-}
-
-vector<int> EnsemblePair::process_runs(RunManagerAbstract *run_mgr_ptr)
-{
-	
-	set<int> failed_runs = run_mgr_ptr->get_failed_run_ids();
-	vector<int> failed_real_idxs;
-	Parameters pars = pe.get_pest_scenario_ptr()->get_ctl_parameters();
-	Observations obs;
-	//cout << oe.get_reals() << endl;
-	for (auto &real_run_id : real_run_ids)
-	{
-		if (failed_runs.find(real_run_id.second) != failed_runs.end())
-			failed_real_idxs.push_back(real_run_id.first);
-		else
-		{
-			run_mgr_ptr->get_run(real_run_id.second, pars, obs);
-			oe.update_from_obs(real_run_id.first, obs);
-		}
-	}
-	//remove failed reals from active_idx
-	vector<int>::iterator iter;
-	for (auto &fi : failed_real_idxs)
-	{
-		iter = find(active_real_indices.begin(), active_real_indices.end(), fi);
-		if (iter == active_real_indices.end())
-		{
-			stringstream ss;
-			ss << "EnsemblePair.run() failed real idx " << fi << " not found in active_real_idxs";
-			pe.throw_ensemble_error(ss.str());
-		}
-		active_real_indices.erase(iter);
-	}
-	//cout << oe.get_reals() << endl;
-	//cout << pe.get_reals() << endl;
-	return failed_real_idxs;
-}
-
-vector<string> EnsemblePair::get_oe_active_names()
-{
-	vector<string> act_real_names, real_names = oe.get_real_names();
-	for (auto &i : active_real_indices)
-		act_real_names.push_back(real_names[i]);
-	return act_real_names;
-}
-
-vector<string> EnsemblePair::get_pe_active_names()
-{
-	vector<string> act_real_names, real_names = pe.get_real_names();
-	for (auto &i : active_real_indices)
-		act_real_names.push_back(real_names[i]);
-	return act_real_names;
-}
-
-
-//these are too dangerous! dont use
-//void EnsemblePair::set_pe(ParameterEnsemble &_pe)
-//{
-//	if (pe.shape() != _pe.shape())
-//		pe.throw_ensemble_error("EnsemblePair::set_pe() pe.shape != _pe.shape");
-//	pe = _pe;
-//}
-//
-//void EnsemblePair::set_oe(ObservationEnsemble &_oe)
-//{
-//	if (oe.shape() != _oe.shape())
-//		oe.throw_ensemble_error("EnsemblePair::set_oe() oe.shape != _oe.shape");
-//	oe = _oe;
-//}
-
-//Eigen::MatrixXd EnsemblePair::get_active_oe_eigen()
-//{
-//	vector<string> act_real_names, oe_real_names = oe.get_real_names();
-//	for (auto &i : active_real_indices)
-//		act_real_names.push_back(oe_real_names[i]);
-//	return oe.get_eigen(act_real_names, vector<string>());
-//}
-//
-//Eigen::MatrixXd EnsemblePair::get_active_pe_eigen()
-//{
-//	vector<string> act_real_names, pe_real_names = pe.get_real_names();
-//	for (auto &i : active_real_indices)
-//		act_real_names.push_back(pe_real_names[i]);
-//	return pe.get_eigen(act_real_names, vector<string>());
-//}
-//
-//Eigen::MatrixXd EnsemblePair::get_active_pe_mean_diff()
-//{
-//	vector<string> act_real_names, pe_real_names = pe.get_real_names();
-//	for (auto &i : active_real_indices)
-//		act_real_names.push_back(pe_real_names[i]);
-//	return pe.get_eigen_mean_diff(act_real_names);
-//}
-//
-//Eigen::MatrixXd EnsemblePair::get_active_oe_mean_diff()
-//{
-//	vector<string> act_real_names, oe_real_names = oe.get_real_names();
-//	for (auto &i : active_real_indices)
-//		act_real_names.push_back(oe_real_names[i]);
-//	return oe.get_eigen_mean_diff(act_real_names);
-//
-//}

@@ -82,22 +82,23 @@ def setup():
     num_reals = 100
     parcov = pyemu.Cov.from_parameter_data(ph.pst)
     pe = pyemu.ParameterEnsemble.from_gaussian_draw(ph.pst,parcov,num_reals=num_reals)
-    pe.to_csv(os.path.join("template","par.csv"))
+    #pe.to_csv(os.path.join("template","par.csv"))
+    pe.to_binary(os.path.join("template", "par.jcb"))
 
     oe = pyemu.ObservationEnsemble.from_id_gaussian_draw(ph.pst,num_reals=num_reals)
-    oe.to_csv(os.path.join("template","obs.csv"))
+    oe.to_binary(os.path.join("template","obs.jcb"))
 
     oe = pyemu.ObservationEnsemble.from_id_gaussian_draw(ph.pst, num_reals=num_reals)
-    oe.to_csv(os.path.join("template", "restart_obs.csv"))
+    oe.to_binary(os.path.join("template", "restart_obs.jcb"))
 
 def prep():
     if os.path.exists("master"):
        shutil.rmtree("master")
     shutil.copytree("template","master")
     pst = pyemu.Pst(os.path.join("master","pest.pst"))
-    pst.pestpp_options["ies_parameter_csv"] = "par.csv"
-    pst.pestpp_options["ies_observation_csv"] = "obs.csv"
-    pst.pestpp_options["ies_obs_restart_csv"] = "restart_obs.csv"
+    pst.pestpp_options["ies_parameter_csv"] = "par.jcb"
+    pst.pestpp_options["ies_observation_csv"] = "obs.jcb"
+    pst.pestpp_options["ies_obs_restart_csv"] = "restart_obs.jcb"
     pst.pestpp_options["ies_use_approx"] = "true"
     pst.svd_data.eigthresh = 1.0e-5
     pst.svd_data.maxsing = 1.0e+6

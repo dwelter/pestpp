@@ -328,6 +328,8 @@ public:
 	const double get_ies_reg_factor() const { return ies_reg_factor; }
 	void set_ies_reg_factor(double _ies_reg_factor) { ies_reg_factor = _ies_reg_factor; }
 
+	const int get_ies_verbose_level() { return ies_verbose_level; }
+	void st_ies_verbose_level(int _ies_verbose_level) { ies_verbose_level = _ies_verbose_level; }
 
 private:
 	int n_iter_base;
@@ -393,6 +395,7 @@ private:
 	bool ies_use_approx;
 	double ies_reg_factor;
 	vector<double> ies_lam_mults;
+	int ies_verbose_level;
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);
 ostream& operator<< (ostream &os, const ObservationInfo& val);

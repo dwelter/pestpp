@@ -19,10 +19,10 @@ def prep():
    
     pst = pyemu.Pst(os.path.join(pyemu_dir,"pest.pst"))
     pst.control_data.noptmax = 20
-    pst.pestpp_options["ies_parameter_csv"] = "par.csv"
-    pst.pestpp_options["ies_observation_csv"] = "obs.csv"
-    pst.pestpp_options["ies_obs_restart_csv"] = "restart_obs.csv"
-    pst.pestpp_options["ies_use_approx"] = "false"
+    pst.pestpp_options["ies_parameter_csv"] = "par.jcb"
+    pst.pestpp_options["ies_observation_csv"] = "obs.jcb"
+    pst.pestpp_options["ies_obs_restart_csv"] = "restart_obs.jcb"
+    pst.pestpp_options["ies_use_approx"] = "true"
     pst.svd_data.eigthresh = 1.0e-5
     pst.svd_data.maxsing = 20
     #pst.observation_data.loc[pst.nnz_obs_names,"weight"] /= 10.0
@@ -35,16 +35,21 @@ def prep():
     oe = pyemu.ObservationEnsemble.from_id_gaussian_draw(pst,num_reals=num_reals)
     oe.to_csv(os.path.join(pyemu_dir,"obs.csv"))
     oe.to_csv(os.path.join(pestpp_dir, "obs.csv"))
+    oe.to_binary(os.path.join(pestpp_dir, "obs.jcb"))
 
     pe.to_csv(os.path.join(pyemu_dir,"sweep_in.csv"))
     pe.to_csv(os.path.join(pyemu_dir,"par.csv"))
     pe.to_csv(os.path.join(pestpp_dir, "par.csv"))
+    pe.to_binary(os.path.join(pestpp_dir, "par.jcb"))
 
     pyemu.helpers.start_slaves(pyemu_dir,"sweep","pest.pst", num_slaves=5,master_dir="sweep_master",cleanup=False)
     df = pd.read_csv(os.path.join("sweep_master","sweep_out.csv"))
     df.to_csv(os.path.join(pyemu_dir,"restart_obs.csv"))
     df = df.loc[:,pst.observation_data.obsnme.apply(str.upper)]
     df.to_csv(os.path.join(pestpp_dir,"restart_obs.csv"))
+    oe = pyemu.ObservationEnsemble.from_dataframe(df=df,pst=pst)
+    oe.to_binary(os.path.join(pestpp_dir, "restart_obs.jcb"))
+
 def ies():
     os.chdir(pyemu_dir)
     es = pyemu.EnsembleSmoother("pest.pst",verbose="ies.log",save_mats=True,
@@ -56,7 +61,13 @@ def ies():
 
     #es.update(lambda_mults=[0.1,1.0,10.0],run_subset=10)
     os.chdir('..')
+
+def test():
+    pst = pyemu.Pst(os.path.join(pestpp_dir,"pest.pst"))
+    m = pyemu.ObservationEnsemble.from_binary(pst,os.path.join(pestpp_dir, "restart_obs.jcb"))
+    print(m)
 if __name__ == "__main__":
-    #prep()
+    prep()
     ies()
+    #test()
     #pyemu.helpers.start_slaves("template","sweep.exe","pest.pst",num_slaves=5)

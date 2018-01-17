@@ -712,6 +712,10 @@ void PestppOptions::parce_line(const string &line)
 		{
 			convert_ip(value, ies_reg_factor);
 		}
+		else if (key == "IES_VERBOSE_LEVEL")
+		{
+			convert_ip(value, ies_verbose_level);
+		}
 		else {
 
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");

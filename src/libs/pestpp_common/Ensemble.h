@@ -71,6 +71,7 @@ protected:
 	vector<string> var_names;
 	vector<string> real_names;	
 	void read_csv(int num_reals,ifstream &csv);
+	void from_binary(string &file_name, vector<string> &names,  bool transposed);
 	vector<string> prepare_csv(const vector<string> &names, ifstream &csv, bool forgive);
 };
 
@@ -91,6 +92,7 @@ public:
 	
 	void from_csv(string &file_name,const vector<string> &ordered_names);
 	void from_csv(string &file_name);
+	void from_binary(string &file_name);// { Ensemble::from_binary(file_name, false); }
 	void from_eigen_mat(Eigen::MatrixXd mat, const vector<string> &_real_names, const vector<string> &_var_names,
 		transStatus _tstat = transStatus::NUM);
 	void enforce_bounds();
@@ -122,39 +124,10 @@ public:
 	void from_csv(string &file_name, const vector<string> &ordered_names);
 	void from_csv(string &file_name);
 	void from_eigen_mat(Eigen::MatrixXd mat, const vector<string> &_real_names, const vector<string> &_var_names);
+	void from_binary(string &file_name);// { Ensemble::from_binary(file_name, true); }
 	vector<int> update_from_runs(map<int,int> &real_run_ids, RunManagerAbstract *run_mgr_ptr);
 	//ObservationEnsemble get_mean_diff();
 };
 
-class EnsemblePair
-{
-public:
-	EnsemblePair(ParameterEnsemble &_pe, ObservationEnsemble &_oe);
-	void queue_runs(RunManagerAbstract *run_mgr_ptr);
-	void run(RunManagerAbstract *run_mgr_ptr);
-	vector<int> process_runs(RunManagerAbstract *run_mgr_ptr);
-	/*Eigen::MatrixXd get_active_oe_eigen();
-	Eigen::MatrixXd get_active_pe_eigen();
-	Eigen::MatrixXd get_active_oe_mean_diff();
-	Eigen::MatrixXd get_active_pe_mean_diff();*/
 
-	ParameterEnsemble* get_pe_ptr() { return &pe; }
-	ObservationEnsemble* get_oe_ptr() { return &oe; }
-	const vector<int> get_act_real_indices() const { return active_real_indices; }
-	void set_act_real_indices(vector<int> _act_real_indices) { active_real_indices = _act_real_indices; }
-	vector<string> get_pe_active_names();
-	vector<string> get_oe_active_names();
-	//EnsemblePair get_mean_diff();
-	int num_active() { return active_real_indices.size(); }
-	//void set_pe(ParameterEnsemble &_pe);
-	//void set_oe(ObservationEnsemble &_oe);
-	map<int, int> get_real_run_ids() { return real_run_ids; }
-	void set_real_run_ids(map<int, int> &_real_run_ids) { real_run_ids = _real_run_ids; }
-
-private:
-	ParameterEnsemble &pe;
-	ObservationEnsemble &oe;
-	vector<int> active_real_indices;
-	map<int, int> real_run_ids;
-};
 #endif 
