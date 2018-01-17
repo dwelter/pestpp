@@ -129,25 +129,68 @@ Eigen::MatrixXd Ensemble::get_eigen(vector<string> row_names, vector<string> col
 	vector<string> missing_rows,missing_cols;
 	vector<string>::iterator iter, start = real_names.begin(), end = real_names.end();
 	vector<int> row_idxs, col_idxs;
+
+	
+	
+
+	//check for missing
+	vector<string> missing;
+
+	if (row_names.size() > 0)
+	{
+		map<string, int> real_map;
+		for (int i = 0; i < real_names.size(); i++)
+			real_map[real_names[i]] = i;
+		set<string> real_set(real_names.begin(), end = real_names.end());
+		set<string>::iterator end = real_set.end();
+		for (auto &name : row_names)
+		{
+			if (real_set.find(name) == end)
+				missing.push_back(name);
+			row_idxs.push_back(real_map[name]);
+		}
+		if (missing.size() > 0)
+			throw_ensemble_error("Ensemble.get_eigen() error: the following realization names were not found:", missing);
+	}
+	if (col_names.size() > 0)
+	{
+		map<string, int> var_map;
+		for (int i = 0; i < var_names.size(); i++)
+			var_map[var_names[i]] = i;
+		set<string> var_set(var_names.begin(), var_names.end());
+		set<string>::iterator end = var_set.end();
+		for (auto &name : col_names)
+		{
+			if (var_set.find(name) == end)
+				missing.push_back(name);
+			col_idxs.push_back(var_map[name]);
+		}
+		if (missing.size() > 0)
+			throw_ensemble_error("Ensemble.get_eigen() error: the following variable names were not found:", missing);
+	}
+
+
 	Eigen::MatrixXd mat;
 	//find row indices
-	for (auto &rname : row_names)
-	{
-		iter = find(start, end, rname);
-		if (iter == end)
-			missing_rows.push_back(rname);
-		row_idxs.push_back(iter - start);
-	}
+	//for (auto &rname : row_names)
+	//{
+	//	iter = find(start, end, rname);
+	//	if (iter == end)
+	//		missing_rows.push_back(rname);
+	//	row_idxs.push_back(iter - start);
+	//	row_idxs.push_back(row_map[rname]);
+	//}
 	//find col indices
-	start = var_names.begin();
-	end = var_names.end();
-	for (auto cname : col_names)
+	//start = var_names.begin();
+	//end = var_names.end();
+	/*for (auto cname : col_names)
 	{
 		iter = find(start, end, cname);
 		if (iter == end)
 			missing_cols.push_back(cname);
 		col_idxs.push_back(iter - start);
-	}
+		col_idxs.push_back(col_map[cname]);
+	}*/
 
 	// only mess with columns, keep rows the same
 	if (row_names.size() == 0) 
