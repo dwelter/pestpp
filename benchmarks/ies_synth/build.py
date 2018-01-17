@@ -5,14 +5,15 @@ import flopy
 import pyemu
 
 nlay, nrow, ncol = 3, 250, 250
-
+num_reals = 30
 
 # nlay, nrow, ncol = 116, 78, 59
 
 def setup():
     run_fieldgen()
+
     nper = 1
-    perlen = 1.0
+    perlen = 100.0
     nstp = 1
     # botm = np.arange(-10, (nlay)*10, -10)
     botm = np.linspace(-10, -100, nlay)
@@ -20,7 +21,8 @@ def setup():
     steady = [False for _ in range(nper)]
     steady[0] = True
     flopy.modflow.ModflowDis(m, nlay=nlay, nrow=nrow, ncol=ncol, nper=nper,
-                             perlen=perlen, nstp=nstp, top=0.0, botm=botm, steady=steady)
+                             perlen=perlen, nstp=nstp, top=0.0, botm=botm, steady=steady,
+                             delr=100,delc=100)
 
     flopy.modflow.ModflowBas(m, strt=0.0, ibound=1)
 
@@ -28,8 +30,8 @@ def setup():
 
     wel_i = [i for i in range(wel_step, nrow, wel_step)]
     wel_j = [j for j in range(wel_step, ncol, wel_step)]
-    wel_max = 0
-    wel_min = -1000
+    wel_max = -100
+    wel_min = -200
 
     wel_data = {}
     for iper in range(nper):
@@ -39,21 +41,26 @@ def setup():
             wd.append([nlay - 1, i, j, f])
         wel_data[iper] = wd
 
+    flopy.modflow.ModflowRch(m,rech=0.00001)
+
     flopy.modflow.ModflowWel(m, stress_period_data=wel_data, ipakcb=50)
 
     ghb_stage1 = np.random.uniform(-9, 0, nper)
     ghb_stage2 = np.random.uniform(-9, 0, nper)
     ghb_stage_sw = np.random.uniform(-1, 0, nper)
+    ghb_stage1[0] = 0.0
+    ghb_stage2[0] = -5.0
+
     ghb_data = {}
     for iper, (g1, g2, gs) in enumerate(zip(ghb_stage1, ghb_stage2, ghb_stage_sw)):
         gd = []
         for i in range(0, int(nrow / 2)):
-            gd.append([0, i, 0, g1, 1.0])
+            gd.append([0, i, 0, g1, 100.0])
         for i in range(int(nrow / 2), nrow):
-            gd.append([0, i, ncol - 1, g2, 10.0])
-        for j in range(wel_step, ncol, wel_step):
-            for i in range(nrow):
-                gd.append([0, i, j, gs, 5.0])
+            gd.append([0, i, ncol - 1, g2, 100.0])
+        j = int(ncol / 2)
+        for i in range(nrow):
+            gd.append([0, i, j, gs, 100.0])
         ghb_data[iper] = gd
     flopy.modflow.ModflowGhb(m, stress_period_data=ghb_data, ipakcb=50)
 
@@ -70,10 +77,11 @@ def setup():
     flopy.modflow.ModflowOc(m, save_every=True,
                             save_types=["save head"])  # ,"save budget","print budget"])#stress_period_data=None)
 
-    flopy.modflow.ModflowNwt(m, iprnwt=1, headtol=0.5)
+    flopy.modflow.ModflowNwt(m, iprnwt=1, headtol=0.01)
     m.model_ws = "temp"
     m.write_input()
     m.run_model()
+
     grid_props = []
     hds_kperk = [[0, 0]]
     # grid_props.append(["upw.hk",0])
@@ -81,14 +89,18 @@ def setup():
         grid_props.append(["upw.hk", k])
         grid_props.append(["upw.vka", k])
         grid_props.append(["upw.ss", k])
-
+    bc_props = []
+    for kper in range(m.nper):
+        bc_props.append(["wel.flux",kper])
+        #bc_props.append(["ghb.bhead",kper])
     m.upw.hk = m.upw.hk.array.mean()
     m.upw.vka = m.upw.vka.array.mean()
     for kper,rarr in m.wel.stress_period_data.data.items():
-        rarr["flux"] = 500.0
+        rarr["flux"] = (wel_max + wel_min) / 2.0
 
     ph = pyemu.helpers.PstFromFlopyModel(m, new_model_ws="template", grid_props=grid_props, hds_kperk=hds_kperk,
-                                         model_exe_name="mfnwt", build_prior=False, remove_existing=True)
+                                         model_exe_name="mfnwt", build_prior=False, remove_existing=True,
+                                         bc_props=bc_props)
 
     ph.pst.observation_data.loc[:, "weight"] = 0.0
     obs = ph.pst.observation_data
@@ -100,9 +112,9 @@ def setup():
     ph.pst.observation_data.loc[nz_obs_names, "weight"] = 1.0
     # noise = np.random.randn(ph.pst.nnz_obs)
     # ph.pst.observation_data.loc[ph.pst.nnz_obs_names,"obsval"] += noise
+    ph.pst.pestpp_options["sweep_par_csv"] = "par.jcb"
     ph.pst.write(os.path.join("template", "pest.pst"))
 
-    num_reals = 100
     parcov = pyemu.Cov.from_parameter_data(ph.pst)
     pe = pyemu.ParameterEnsemble.from_gaussian_draw(ph.pst, parcov, num_reals=num_reals)
     # pe.to_csv(os.path.join("template","par.csv"))
@@ -126,11 +138,16 @@ def prep():
     pst.pestpp_options["ies_observation_csv"] = "obs.jcb"
     pst.pestpp_options["ies_obs_restart_csv"] = "restart_obs.jcb"
     pst.pestpp_options["ies_use_approx"] = "true"
+
     pst.svd_data.eigthresh = 1.0e-5
     pst.svd_data.maxsing = 1.0e+6
     pst.control_data.noptmax = 1
     pst.write(os.path.join("master", "pest.pst"))
 
+
+def run_sweep():
+    shutil.copytree("template","master_sweep")
+    pyemu.helpers.start_slaves("template","sweep","pest.pst",num_slaves=5,master_dir="master_sweep")
 
 def run_fieldgen():
     d_truth = "truth_reals"
@@ -145,7 +162,7 @@ def run_fieldgen():
     gs_reals = pyemu.geostats.GeoStruct(variograms=[vr], transform="log")
     #gs_truth.to_struct_file(os.path.join(d_reals, "struct.dat"))
 
-    for d,num_reals,gs in zip([d_truth,d_reals],[nlay,100],[gs_truth,gs_reals]):
+    for d,nr,gs in zip([d_truth,d_reals],[nlay,num_reals],[gs_truth,gs_reals]):
         if os.path.exists(d):
             shutil.rmtree(d)
         os.mkdir(d)
@@ -170,7 +187,7 @@ def run_fieldgen():
             f.write("zone.dat\nf\n")
             f.write("struct.dat\nstruct1\no\n")
             f.write("10\n")
-            f.write("{0}\n".format(num_reals))
+            f.write("{0}\n".format(nr))
             f.write("real_\nf\n")
             f.write('20\n\n')
 
@@ -218,9 +235,19 @@ def process_training_image():
 
     return hk
 
+def test():
+    #pe = pyemu.ParameterEnsemble.from_binary(os.path.join("master_sweep","par.jcb"))
+    jco = pyemu.Jco.from_binary(os.path.join("master_sweep","par.jcb"))
+    jco = jco.get(row_names=['2'])
+    print(jco)
+    jco.to_binary(os.path.join("master_sweep","par.jcb"))
+    pyemu.helpers.run("sweep pest.pst",cwd="master_sweep")
+
 
 if __name__ == "__main__":
     # process_training_image()
     #run_fieldgen()
-    setup()
+    #setup()
+    run_sweep()
+    #test()
     # prep()
