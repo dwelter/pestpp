@@ -472,9 +472,6 @@ void IterEnsembleSmoother::initialize()
 	
 	if (subset_size > pe.shape().first)
 	{
-		//ss.str("");
-		//ss << "subset_size " << subset_size << "greater than initial ensemble size " << pe.shape().first;
-		//throw_ies_error(ss.str());
 		use_subset = false;
 	}
 	else
@@ -507,7 +504,7 @@ void IterEnsembleSmoother::initialize()
 	pe_base.reorder(vector<string>(), act_par_names);
 
 	performance_log->log_event("load obscov");
-	cout << " m --- initializing obs cov from obnservation weights" << endl << endl;
+	cout << "  --- initializing obs cov from observation weights" << endl << endl;
 	Covariance obscov;
     obscov.from_observation_weights(pest_scenario);
 	obscov = obscov.get(act_obs_names);
@@ -538,10 +535,12 @@ void IterEnsembleSmoother::initialize()
 			throw_ies_error("unrecognized parcov_filename extension: " + extension);
 	}
 	performance_log->log_event("inverting parcov");
+	cout << "...inverting parcov";
 	parcov_inv = parcov_inv.get(act_par_names);
 	parcov_inv.inv_ip();
 	//need this here for Am calcs...
-	pe.transform_ip(ParameterEnsemble::transStatus::NUM);
+	cout << "...transforming parameter ensembles to numeric";
+	pe.transform_ip(ParameterEnsemble::transStatus::NUM);;
 	pe_base.transform_ip(ParameterEnsemble::transStatus::NUM);
 	
 	
@@ -565,6 +564,7 @@ void IterEnsembleSmoother::initialize()
 		rsvd.set_performance_log(performance_log);
 
 		rsvd.solve_ip(par_diff, s, U, V, pest_scenario.get_svd_info().eigthresh, pest_scenario.get_svd_info().maxsing);
+		par_diff.resize(0, 0);
 		Eigen::MatrixXd temp = s.asDiagonal();
 		Eigen::MatrixXd temp2 = temp.inverse();
 		Am = U * temp;
@@ -579,6 +579,8 @@ void IterEnsembleSmoother::initialize()
 				save_mat("am_s_inv.dat", temp2);
 			}
 		}	
+		U.resize(0, 0);
+		V.resize(0, 0);
 	}
 
 	string obs_restart_csv = pest_scenario.get_pestpp_options().get_ies_obs_restart_csv();	
@@ -818,8 +820,8 @@ void IterEnsembleSmoother::solve()
 	rsvd.set_performance_log(performance_log);
 	rsvd.solve_ip(obs_diff, s, Ut, V, pest_scenario.get_svd_info().eigthresh, pest_scenario.get_svd_info().maxsing);
 	Ut.transposeInPlace();
-	//cout << "V" << V << endl;
-	//cout << "Ut" << endl << Ut << endl;
+	obs_diff.resize(0, 0);
+	
 	Eigen::MatrixXd s2 = s.cwiseProduct(s);
 	if (verbose_level > 1)
 	{
@@ -890,6 +892,9 @@ void IterEnsembleSmoother::solve()
 			if (verbose_level > 2)
 				save_mat("X1.dat", X1);
 		}
+		scaled_residual.resize(0, 0);
+		Ut.resize(0, 0);
+		
 		
 		cout << "...forming X2" << endl;
 		Eigen::MatrixXd X2 = ivec * X1;
@@ -899,6 +904,7 @@ void IterEnsembleSmoother::solve()
 			if (verbose_level > 2)
 				save_mat("X2.dat", X2);
 		}
+		X1.resize(0, 0);
 
 		cout << "...forming X3" << endl;
 		Eigen::MatrixXd X3 = V * s.asDiagonal() * X2;
@@ -908,6 +914,7 @@ void IterEnsembleSmoother::solve()
 			if (verbose_level > 2)
 				save_mat("X3.dat", X3);
 		}
+		X2.resize(0, 0);
 
 		cout << "...forming upgrade_1" << endl;
 		upgrade_1 = -1.0 * par_diff * X3;
@@ -918,18 +925,14 @@ void IterEnsembleSmoother::solve()
 			if (verbose_level > 2)
 				save_mat("upgrade_1.dat", upgrade_1);
 		}
+		X3.resize(0,0);
 
 		//cout << "upgrade_1" << endl << upgrade_1 << endl;
 		ParameterEnsemble pe_lam = pe;//copy
 		pe_lam.add_to_cols(upgrade_1, pe_base.get_var_names());
 
-		X1.resize(0, 0);
-		X2.resize(0, 0);
-		X3.resize(0, 0);
 		upgrade_1.resize(0, 0);
-		scaled_residual.resize(0, 0);
-		Ut.resize(0, 0);
-		obs_diff.resize(0, 0);
+		
 
 		if ((!pest_scenario.get_pestpp_options().get_ies_use_approx()) && (iter > 1))
 		{
