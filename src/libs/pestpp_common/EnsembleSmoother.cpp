@@ -363,7 +363,7 @@ void IterEnsembleSmoother::initialize()
 		lam_mults.push_back(1.0);
 	cout << "...using lambda multipliers: ";
 	for (auto mult : lam_mults)
-		cout << mult << ' , ';
+		cout << mult << " , ";
 	cout << endl;
 
 	subset_size = pest_scenario.get_pestpp_options().get_ies_subset_size();
@@ -535,11 +535,11 @@ void IterEnsembleSmoother::initialize()
 			throw_ies_error("unrecognized parcov_filename extension: " + extension);
 	}
 	performance_log->log_event("inverting parcov");
-	cout << "...inverting parcov";
+	cout << "  ---  inverting parcov" << endl;
 	parcov_inv = parcov_inv.get(act_par_names);
 	parcov_inv.inv_ip();
 	//need this here for Am calcs...
-	cout << "...transforming parameter ensembles to numeric";
+	cout << "  ---  transforming parameter ensembles to numeric" << endl;
 	pe.transform_ip(ParameterEnsemble::transStatus::NUM);;
 	pe_base.transform_ip(ParameterEnsemble::transStatus::NUM);
 	
@@ -929,8 +929,8 @@ void IterEnsembleSmoother::solve()
 
 		//cout << "upgrade_1" << endl << upgrade_1 << endl;
 		ParameterEnsemble pe_lam = pe;//copy
-		pe_lam.add_to_cols(upgrade_1, pe_base.get_var_names());
-
+		//pe_lam.add_to_cols(upgrade_1, pe_base.get_var_names());
+		pe_lam.set_eigen(*pe_lam.get_eigen_ptr() + upgrade_1);
 		upgrade_1.resize(0, 0);
 		
 
@@ -1003,6 +1003,7 @@ void IterEnsembleSmoother::solve()
 				if (verbose_level > 2)
 					save_mat("upgrade_2", upgrade_2);
 			}
+
 			pe_lam.set_eigen(*pe_lam.get_eigen_ptr() + upgrade_2.transpose());
 
 			
@@ -1010,17 +1011,18 @@ void IterEnsembleSmoother::solve()
 		}
 
 		pe_lam.enforce_bounds();
+		return;
 //#ifdef _DEBUG
 //		cout << "pe_lam:" << pe_lam.shape().first << "," << pe.shape().second << endl;
 //		cout << *pe_lam.get_eigen_ptr() << endl << endl;
 //#endif
 		pe_lams.push_back(pe_lam);
 		lam_vals.push_back(cur_lam);
-		frec << "   ...finished calcs for lambda: " << cur_lam << endl;
-		cout << "   ...finished calcs for lambda: " << cur_lam << endl;
+		frec << "  ---  finished calcs for lambda: " << cur_lam << endl;
+		cout << "  ---  finished calcs for lambda: " << cur_lam << endl;
 
 	}
-
+	//return;
 	vector<map<int, int>> real_run_ids_lams;
 	int best_idx = -1;
 	double best_mean = 1.0e+30, best_std = 1.0e+30;
