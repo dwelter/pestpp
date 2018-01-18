@@ -1011,7 +1011,7 @@ void IterEnsembleSmoother::solve()
 		}
 
 		pe_lam.enforce_bounds();
-		return;
+
 //#ifdef _DEBUG
 //		cout << "pe_lam:" << pe_lam.shape().first << "," << pe.shape().second << endl;
 //		cout << *pe_lam.get_eigen_ptr() << endl << endl;

@@ -1,10 +1,11 @@
 import os
 import shutil
 import numpy as np
+import pandas as pd
 import flopy
 import pyemu
 
-nlay, nrow, ncol = 3, 250, 250
+nlay, nrow, ncol = 6, 250, 250
 num_reals = 30
 
 # nlay, nrow, ncol = 116, 78, 59
@@ -146,8 +147,16 @@ def prep():
 
 
 def run_sweep():
+    if os.path.exists("master_sweep"):
+        shutil.rmtree("master_sweep")
     shutil.copytree("template","master_sweep")
     pyemu.helpers.start_slaves("template","sweep","pest.pst",num_slaves=5,master_dir="master_sweep")
+    pst = pyemu.Pst(os.path.join("master_sweep","pest.pst"))
+    df = pd.read_csv(os.path.join("master_sweep","sweep_out.csv"))
+    df = df.loc[:,pst.observation_data.obsnme.apply(str.upper)]
+    oe = pyemu.ObservationEnsemble.from_dataframe(df=df,pst=pst)
+    oe.to_binary(os.path.join("master","restart_obs.jcb"))
+
 
 def run_fieldgen():
     d_truth = "truth_reals"
@@ -245,9 +254,13 @@ def test():
 
 
 if __name__ == "__main__":
+
     # process_training_image()
     #run_fieldgen()
     #setup()
-    run_sweep()
+    #run_sweep()
     #test()
-    # prep()
+    #prep()
+    pyemu.helpers.start_slaves("template", "sweep", "pest.pst", num_slaves=6, master_dir=None)
+
+

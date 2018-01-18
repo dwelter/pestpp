@@ -255,7 +255,7 @@ void Mat::pseudo_inv_ip(double eigthresh, int maxsing)
 void Mat::inv_ip()
 {
 	Logger* log = new Logger();
-	log->set_echo(false);
+	log->set_echo(true);
 	inv_ip(log);
 	return;
 }
@@ -267,17 +267,19 @@ void Mat::inv_ip(Logger *log)
 	{
 		log->log("inverting diagonal matrix in place");
 		log->log("extracting diagonal");
-		Eigen::VectorXd diag = matrix.diagonal();
+		Eigen::VectorXd diag = matrix.diagonal().eval();
 		log->log("inverting diagonal");
-		diag = 1.0 / diag.array();
-		log->log("buidling triplets");
+		//diag = 1.0 / diag.array();
+		log->log("building triplets");
 		vector<Eigen::Triplet<double>> triplet_list;
 		for (int i = 0; i != diag.size(); ++i)
 		{
-			triplet_list.push_back(Eigen::Triplet<double>(i, i, diag[i]));
+			if (i%10000 == 0)
+				cout << i << " , " << diag[i] << endl;
+			triplet_list.push_back(Eigen::Triplet<double>(i, i, 1.0/diag[i]));
 		}
-		log->log("resizeing matrix to size " + triplet_list.size());
-		matrix.resize(triplet_list.size(), triplet_list.size());
+		//log->log("resizeing matrix to size " + triplet_list.size());
+		//matrix.conservativeResize(triplet_list.size(),triplet_list.size());
 		matrix.setZero();
 		log->log("setting matrix from triplets");
 		matrix.setFromTriplets(triplet_list.begin(),triplet_list.end());
