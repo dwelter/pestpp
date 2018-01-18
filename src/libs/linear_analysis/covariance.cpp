@@ -252,10 +252,10 @@ void Mat::pseudo_inv_ip(double eigthresh, int maxsing)
 	matrix = Vt.transpose() * st * U.transpose();
 }
 
-void Mat::inv_ip()
+void Mat::inv_ip(bool echo)
 {
 	Logger* log = new Logger();
-	log->set_echo(true);
+	log->set_echo(echo);
 	inv_ip(log);
 	return;
 }
@@ -274,8 +274,6 @@ void Mat::inv_ip(Logger *log)
 		vector<Eigen::Triplet<double>> triplet_list;
 		for (int i = 0; i != diag.size(); ++i)
 		{
-			if (i%10000 == 0)
-				cout << i << " , " << diag[i] << endl;
 			triplet_list.push_back(Eigen::Triplet<double>(i, i, 1.0/diag[i]));
 		}
 		//log->log("resizeing matrix to size " + triplet_list.size());
