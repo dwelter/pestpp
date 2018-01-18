@@ -1093,6 +1093,7 @@ void Covariance::from_parameter_bounds(const vector<string> &par_names,const Par
 		{
 			row_names.push_back(par_name);
 			col_names.push_back(par_name);
+			//double temp = pow((upper - lower) / 4.0,2.0);
 			triplet_list.push_back(Eigen::Triplet<double>(i, i, pow((upper - lower) / 4.0, 2.0)));
 			i++;
 		}

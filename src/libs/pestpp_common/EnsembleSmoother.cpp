@@ -410,6 +410,10 @@ void IterEnsembleSmoother::initialize()
 	{
 		cout << "...drawing " << num_reals << " parameter realizations" << endl;
 		pe.draw(num_reals, parcov_inv);
+		stringstream ss;
+		ss << file_manager.get_base_filename() << ".0.par.csv";
+		cout << "...saving initial parameter ensemble to " << ss.str() << endl;
+		pe.to_csv(ss.str());
 	}
 	else
 	{
@@ -472,6 +476,10 @@ void IterEnsembleSmoother::initialize()
 	{
 		cout << "drawing " << num_reals << " observation noise realizations" << endl;
 		oe.draw(num_reals, obscov);
+		stringstream ss;
+		ss << file_manager.get_base_filename() << ".0.obs.csv";
+		cout << "...saving initial observation ensemble to " << ss.str() << endl;
+		oe.to_csv(ss.str());
 	}
 	else
 	{
@@ -480,7 +488,6 @@ void IterEnsembleSmoother::initialize()
 		if (obs_ext.compare("csv") == 0)
 		{
 			cout << "  ---  loading obs ensemble from csv file " << obs_csv << endl;
-
 			try
 			{
 				oe.from_csv(obs_csv);
@@ -619,12 +626,13 @@ void IterEnsembleSmoother::initialize()
 		performance_log->log_event("running initial ensemble");
 		cout << "  ---  running initial ensemble of " << oe.shape().first << " realizations" << endl;
 		run_ensemble(pe, oe);
+		pe.transform_ip(ParameterEnsemble::transStatus::NUM);
 	}
 	else
 	{
 		performance_log->log_event("restart IES with existing obs ensemble csv: " + obs_restart_csv);
 		cout << "  ---  restarting with existing obs ensemble " << obs_restart_csv << endl;
-		string obs_ext = pest_utils::lower_cp(obs_csv).substr(obs_csv.size() - 3, obs_csv.size());
+		string obs_ext = pest_utils::lower_cp(obs_restart_csv).substr(obs_restart_csv.size() - 3, obs_restart_csv.size());
 		if (obs_ext.compare("csv") == 0)
 		{
 			cout << "  ---  loading restart obs ensemble from csv file " << obs_restart_csv << endl;

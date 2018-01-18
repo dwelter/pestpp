@@ -72,9 +72,9 @@ protected:
 	Eigen::MatrixXd reals;
 	vector<string> var_names;
 	vector<string> real_names;	
-	void read_csv(int num_reals,ifstream &csv);
+	void read_csv(int num_reals,ifstream &csv, map<string,int> header_info);
 	void from_binary(string &file_name, vector<string> &names,  bool transposed);
-	vector<string> prepare_csv(const vector<string> &names, ifstream &csv, bool forgive);
+	map<string,int> prepare_csv(const vector<string> &names, ifstream &csv, bool forgive);
 };
 
 class ParameterEnsemble : public Ensemble

@@ -19,12 +19,20 @@ Ensemble::Ensemble(Pest *_pest_scenario_ptr): pest_scenario_ptr(_pest_scenario_p
 
 void Ensemble::draw(int num_reals, Covariance &cov, Transformable &tran)
 {
+
+	if ((var_names.size() > 50000) && (!cov.isdiagonal()))
+		cout << "  ---  Ensemble::draw() warning: non-diagonal cov used to draw using a lot of variables...this might run out of memory..." << endl << endl;
 	reals.resize(num_reals, var_names.size());
 	reals.setZero();
 	RedSVD::sample_gaussian(reals);
 	if (cov.isdiagonal())
 	{
-		
+		Eigen::VectorXd std = cov.e_ptr()->diagonal().cwiseSqrt();
+		for (int j = 0; j < var_names.size(); j++)
+		{
+			cout << var_names[j] << " , " << std(j) << endl;
+			reals.col(j) *= std(j);
+		}
 
 	}
 	else
@@ -34,10 +42,23 @@ void Ensemble::draw(int num_reals, Covariance &cov, Transformable &tran)
 		Eigen::MatrixXd proj = eig.eigenvectors() * eig.eigenvalues().cwiseSqrt();
 		for (int i = 0; i < num_reals; i++)
 			reals.row(i) = proj * reals.row(i);
+	}
+	real_names.clear();
+	stringstream ss;
+	for (int i = 0; i < num_reals; i++)
+	{
+		ss.str("");
+		ss << i;
+		real_names.push_back(ss.str());
+	}
+
+	for (int j = 0; j < var_names.size(); j++)
+	{
+		cout << var_names[j] << " , " << tran.get_rec(var_names[j]) << endl;
+		reals.col(j) = reals.col(j).array() + tran.get_rec(var_names[j]);
 
 	}
-	
-
+		
 }
 
 Eigen::MatrixXd Ensemble::get_eigen_mean_diff()
@@ -341,7 +362,7 @@ Ensemble::~Ensemble()
 {
 }
 
-vector<string> Ensemble::prepare_csv(const vector<string> &names, ifstream &csv, bool forgive)
+map<string,int> Ensemble::prepare_csv(const vector<string> &names, ifstream &csv, bool forgive)
 {
 	if (!csv.good())
 	{
@@ -382,20 +403,23 @@ vector<string> Ensemble::prepare_csv(const vector<string> &names, ifstream &csv,
 	}
 
 	vector<string> header_names;
+	map<string, int> header_info;
 	hset.clear();
 	hset = unordered_set<string>(names.begin(), names.end());
 	end = hset.end();
+	var_names.clear();
 	for (int i = 0; i < header_tokens.size(); i++)
 	{
 		//if (find(names.begin(), names.end(), header_tokens[i]) != names.end())
 		if (hset.find(header_tokens[i]) != end)
 		{
 			//header_idxs.push_back(i);
-			//header_info[header_tokens[i]] = i;
-			header_names.push_back(header_tokens[i]);
+			header_info[header_tokens[i]] = i;
+			var_names.push_back(header_tokens[i]);
+			//header_names.push_back(header_tokens[i]);
 		}
 	}
-	return header_names;
+	return header_info;
 
 }
 
@@ -560,7 +584,7 @@ void Ensemble::from_binary(string &file_name, vector<string> &names, bool transp
 
 
 
-void Ensemble::read_csv(int num_reals,ifstream &csv)
+void Ensemble::read_csv(int num_reals,ifstream &csv, map<string,int> header_info)
 {
 	int lcount = 0;
 	//vector<vector<double>> vectors;
@@ -581,13 +605,13 @@ void Ensemble::read_csv(int num_reals,ifstream &csv)
 		pest_utils::tokenize(line, tokens, ",", false);
 		if (tokens[tokens.size() - 1].size() == 0)
 			tokens.pop_back();
-		if (tokens.size() != var_names.size() + 1) // +1 for run id in first column
-		{
-			stringstream ss;
-			ss << "error parsing csv file on line " << lcount << ": wrong number of tokens, ";
-			ss << "expecting " << var_names.size() + 1 << ", found " << tokens.size();
-			throw runtime_error(ss.str());
-		}
+		//if (tokens.size() != var_names.size() + 1) // +1 for run id in first column
+		//{
+		//	stringstream ss;
+		//	ss << "error parsing csv file on line " << lcount << ": wrong number of tokens, ";
+		//	ss << "expecting " << var_names.size() + 1 << ", found " << tokens.size();
+		//	throw runtime_error(ss.str());
+		//}
 		try
 		{
 			pest_utils::convert_ip(tokens[0], real_id);
@@ -599,21 +623,26 @@ void Ensemble::read_csv(int num_reals,ifstream &csv)
 			throw runtime_error(ss.str());
 		}
 		real_names.push_back(real_id);
-		enum transStatus { CTL, NUM, MODEL };
-		for (int jcol = 1; jcol<tokens.size(); ++jcol)
+		//enum transStatus { CTL, NUM, MODEL };
+		//for (int jcol = 1; jcol<tokens.size(); ++jcol)
+		map<string, int> var_map;
+		for (int i = 0; i < var_names.size(); i++)
+			var_map[var_names[i]] = i;
+
+		for (auto &hi : header_info)
 		{
 			try
 			{
-				val = pest_utils::convert_cp<double>(tokens[jcol]);
+				val = pest_utils::convert_cp<double>(tokens[hi.second]);
 			}
 			catch (exception &e)
 			{
 				stringstream ss;
-				ss << "error converting token '" << tokens[jcol] << "' to double for " << var_names[jcol - 1] << " on line " << lcount << " : " << e.what();
+				ss << "error converting token '" << tokens[hi.second] << "' to double for " << hi.first << " on line " << lcount << " : " << e.what();
 				throw runtime_error(ss.str());
 			}
 			//vals.push_back(val);
-			reals(irow, jcol - 1) = val;
+			reals(irow, var_map[hi.first]) = val;
 		}
 		//vectors.push_back(vals);
 		lcount++;
@@ -647,9 +676,10 @@ void ParameterEnsemble::draw(int num_reals, Covariance &cov)
 	var_names = pest_scenario_ptr->get_ctl_ordered_adj_par_names();
 	Parameters par = pest_scenario_ptr->get_ctl_parameters();
 	par_transform.active_ctl2numeric_ip(par);
+	tstat = transStatus::NUM;
 	Ensemble::draw(num_reals, cov, par);
 	enforce_bounds();
-	tstat = transStatus::NUM;
+	
 }
 
 void ParameterEnsemble::set_pest_scenario(Pest *_pest_scenario)
@@ -716,7 +746,8 @@ void ParameterEnsemble::from_binary(string &file_name)
 
 void ParameterEnsemble::from_csv(string &file_name)
 {
-	from_csv(file_name, pest_scenario_ptr->get_ctl_ordered_par_names());
+	//from_csv(file_name, pest_scenario_ptr->get_ctl_ordered_par_names());
+	from_csv(file_name, pest_scenario_ptr->get_ctl_ordered_adj_par_names());
 	
 }
 
@@ -726,7 +757,7 @@ void ParameterEnsemble::from_csv(string &file_name, const vector<string> &ordere
 	ifstream csv(file_name);
 	if (!csv.good())
 		throw runtime_error("error opening parameter csv " + file_name + " for reading"); 
-	var_names = prepare_csv(ordered_names, csv, false);
+	map<string,int>header_info = prepare_csv(ordered_names, csv, false);
 	//blast through the file to get number of reals
 	string line;
 	int num_reals = 0;
@@ -738,7 +769,7 @@ void ParameterEnsemble::from_csv(string &file_name, const vector<string> &ordere
 	if (!csv.good())
 		throw runtime_error("error re-opening parameter csv " + file_name + " for reading");
 	getline(csv, line);
-	Ensemble::read_csv(num_reals, csv);
+	Ensemble::read_csv(num_reals, csv, header_info);
 
 	//sort var_names according to ctl ordered par names
 	vector<string> ordered_var_names;
@@ -766,6 +797,7 @@ void ParameterEnsemble::enforce_bounds()
 	if (tstat != ParameterEnsemble::transStatus::NUM)
 	{
 		throw_ensemble_error("pe.enforce_bounds() tstat != NUM not implemented");
+
 	}
 	ParameterInfo pinfo = pest_scenario_ptr->get_ctl_parameter_info();
 	Parameters lower = pest_scenario_ptr->get_ctl_parameter_info().get_low_bnd(var_names);
@@ -926,14 +958,15 @@ void ObservationEnsemble::from_binary(string &file_name)
 
 void ObservationEnsemble::from_csv(string &file_name)
 {
-	from_csv(file_name, pest_scenario_ptr->get_ctl_ordered_obs_names());
+	//from_csv(file_name, pest_scenario_ptr->get_ctl_ordered_obs_names());
+	from_csv(file_name, pest_scenario_ptr->get_ctl_ordered_nz_obs_names());
 }
 void ObservationEnsemble::from_csv(string &file_name, const vector<string> &ordered_names)
 {
 	ifstream csv(file_name);
 	if (!csv.good())
 		throw runtime_error("error opening observation csv " + file_name + " for reading");
-	var_names = prepare_csv(ordered_names, csv, false);
+	map<string,int> header_info = prepare_csv(ordered_names, csv, false);
 	//blast through the file to get number of reals
 	string line;
 	int num_reals = 0;
@@ -945,7 +978,7 @@ void ObservationEnsemble::from_csv(string &file_name, const vector<string> &orde
 	if (!csv.good()) 
 		throw runtime_error("error re-opening observation csv " + file_name + " for reading");
 	getline(csv, line);
-	Ensemble::read_csv(num_reals, csv);
+	Ensemble::read_csv(num_reals, csv,header_info);
 
 	//sort var_names according to ctl ordered par names
 	vector<string> ordered_var_names;

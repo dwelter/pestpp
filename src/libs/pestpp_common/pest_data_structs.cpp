@@ -675,7 +675,8 @@ void PestppOptions::parce_line(const string &line)
 		{
 			convert_ip(value, ies_obs_csv);
 		}
-		else if ((key == "IES_OBS_RESTART_CSV") || (key == "IES_OBSERVATION_RESTART_CSV"))
+		else if ((key == "IES_OBS_RESTART_CSV") || (key == "IES_OBSERVATION_RESTART_CSV") 
+			|| (key == "IES_RESTART_OBS_CSV"))
 		{
 			convert_ip(value, ies_obs_restart_csv);
 		}
