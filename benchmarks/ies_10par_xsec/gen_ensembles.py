@@ -23,6 +23,7 @@ def prep():
     pst.pestpp_options["ies_observation_csv"] = "obs.jcb"
     pst.pestpp_options["ies_obs_restart_csv"] = "restart_obs.jcb"
     pst.pestpp_options["ies_use_approx"] = "true"
+    pst.pestpp_options["ies_use_prior_scaling"] = "true"
     pst.svd_data.eigthresh = 1.0e-5
     pst.svd_data.maxsing = 20
     #pst.observation_data.loc[pst.nnz_obs_names,"weight"] /= 10.0

@@ -77,6 +77,8 @@ public:
 	int nrow(){ return row_names.size(); }
 	int ncol(){ return col_names.size(); }	
 
+	bool isdiagonal();
+
 
 protected:
 	bool autoalign;
@@ -128,6 +130,7 @@ public:
 	vector<double> standard_normal(default_random_engine gen);
 	void cholesky();
 
+	
 private:
 	Eigen::SparseMatrix<double> lower_cholesky;
 };

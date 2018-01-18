@@ -735,6 +735,12 @@ Mat Mat::extract(const vector<string> &extract_row_names, const string &extract_
 	return extract(extract_row_names, extract_col_names);
 }
 
+bool Mat::isdiagonal()
+{
+	if (mattype == MatType::DIAGONAL)
+		return true;
+	return false;
+}
 
 void Mat::drop_cols(const vector<string> &drop_col_names)
 {

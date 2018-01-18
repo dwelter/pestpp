@@ -59,6 +59,8 @@ public:
 	Pest get_pest_scenario() { return *pest_scenario_ptr; }
 	void set_pest_scenario(Pest *_pest_scenario) { pest_scenario_ptr = _pest_scenario; }
 	void set_real_names(vector<string> &_real_names);
+
+	void draw(int num_reals, Covariance &cov, Transformable &tran);
 	~Ensemble();
 protected:
 	Pest* pest_scenario_ptr;
@@ -105,6 +107,8 @@ public:
 	void set_pest_scenario(Pest *_pest_scenario);
 	map<int,int> add_runs(RunManagerAbstract *run_mgr_ptr,vector<int> &real_idxs=vector<int>());
 
+	void draw(int num_reals, Covariance &cov);
+	
 	//ParameterEnsemble get_mean_diff();
 private:
 	ParamTransformSeq par_transform;
@@ -126,6 +130,8 @@ public:
 	void from_eigen_mat(Eigen::MatrixXd mat, const vector<string> &_real_names, const vector<string> &_var_names);
 	void from_binary(string &file_name);// { Ensemble::from_binary(file_name, true); }
 	vector<int> update_from_runs(map<int,int> &real_run_ids, RunManagerAbstract *run_mgr_ptr);
+	void draw(int num_reals, Covariance &cov);
+
 	//ObservationEnsemble get_mean_diff();
 };
 

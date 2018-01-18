@@ -7,34 +7,38 @@
 #include "utilities.h"
 #include "ParamTransformSeq.h"
 #include "ObjectiveFunc.h"
+#include "RedSVD-h.h"
 
 mt19937_64 Ensemble::rand_engine = mt19937_64(1);
 
-//Ensemble::Ensemble(Pest &_pest_scenario,
-//	FileManager &_file_manager,OutputFileWriter &_output_file_writer,
-//	PerformanceLog *_performance_log,  unsigned int seed)
-//	: pest_scenario(_pest_scenario), file_manager(_file_manager),
-//	output_file_writer(_output_file_writer), performance_log(_performance_log)
 Ensemble::Ensemble(Pest *_pest_scenario_ptr): pest_scenario_ptr(_pest_scenario_ptr)
 {
 	// initialize random number generator
 	rand_engine.seed(1123433458);
 }
 
-//Ensemble Ensemble::get(vector<string> &_real_names, vector<string> &_var_names)
-//{
-//	Ensemble new_en(pest_scenario_ptr);
-//
-//	if ((_real_names.size() == 0) && (_var_names.size() == 0))
-//	{
-//		new_en.from_eigen_mat(reals, real_names, var_names);
-//	}
-//	else
-//	{
-//		new_en.from
-//	}
-//
-//}
+void Ensemble::draw(int num_reals, Covariance &cov, Transformable &tran)
+{
+	reals.resize(num_reals, var_names.size());
+	reals.setZero();
+	RedSVD::sample_gaussian(reals);
+	if (cov.isdiagonal())
+	{
+		
+
+	}
+	else
+	{
+		RedSVD::RedSymEigen<Eigen::MatrixXd> eig;
+		eig.compute(cov.e_ptr()->toDense(),50);
+		Eigen::MatrixXd proj = eig.eigenvectors() * eig.eigenvalues().cwiseSqrt();
+		for (int i = 0; i < num_reals; i++)
+			reals.row(i) = proj * reals.row(i);
+
+	}
+	
+
+}
 
 Eigen::MatrixXd Ensemble::get_eigen_mean_diff()
 {
@@ -419,8 +423,6 @@ void Ensemble::add_to_cols(Eigen::MatrixXd &_reals, const vector<string> &_var_n
 }
 
 
-
-
 void Ensemble::append_other_rows(Ensemble &other)
 {
 	if (other.shape().second != shape().second)
@@ -480,6 +482,8 @@ void Ensemble::from_binary(string &file_name, vector<string> &names, bool transp
 
 	n_col = -n_col;
 	n_row = -n_row;
+	if ((n_col > 1e8) || (n_row > 1e8))
+		throw_ensemble_error("Ensemble::from_binary() n_col or n_row > 1e8, something is prob wrong");
 	////read number nonzero elements in jacobian (observations + prior information)
 	in.read((char*)&n_nonzero, sizeof(n_nonzero));
 
@@ -638,6 +642,16 @@ ParameterEnsemble::ParameterEnsemble(Pest *_pest_scenario_ptr):Ensemble(_pest_sc
 	par_transform = pest_scenario_ptr->get_base_par_tran_seq();
 }
 
+void ParameterEnsemble::draw(int num_reals, Covariance &cov)
+{
+	var_names = pest_scenario_ptr->get_ctl_ordered_adj_par_names();
+	Parameters par = pest_scenario_ptr->get_ctl_parameters();
+	par_transform.active_ctl2numeric_ip(par);
+	Ensemble::draw(num_reals, cov, par);
+	enforce_bounds();
+	tstat = transStatus::NUM;
+}
+
 void ParameterEnsemble::set_pest_scenario(Pest *_pest_scenario)
 {
 	pest_scenario_ptr = _pest_scenario;
@@ -705,7 +719,6 @@ void ParameterEnsemble::from_csv(string &file_name)
 	from_csv(file_name, pest_scenario_ptr->get_ctl_ordered_par_names());
 	
 }
-
 
 void ParameterEnsemble::from_csv(string &file_name, const vector<string> &ordered_names)
 {
@@ -852,6 +865,13 @@ void ParameterEnsemble::transform_ip(transStatus to_tstat)
 //	Ensemble(_pest_scenario, _file_manager, _output_file_writer, _performance_log, seed), obj_func_ptr(_obj_func)
 ObservationEnsemble::ObservationEnsemble(Pest *_pest_scenario_ptr): Ensemble(_pest_scenario_ptr)
 {
+}
+
+void ObservationEnsemble::draw(int num_reals, Covariance &cov)
+{
+	var_names = pest_scenario_ptr->get_ctl_ordered_nz_obs_names();
+	Observations obs = pest_scenario_ptr->get_ctl_observations();
+	Ensemble::draw(num_reals, cov, obs);
 }
 
 void ObservationEnsemble::update_from_obs(int row_idx, Observations &obs)

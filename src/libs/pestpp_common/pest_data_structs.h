@@ -317,7 +317,7 @@ public:
 	void set_ies_obs_csv(string _ies_obs_csv) { ies_obs_csv = _ies_obs_csv; }
 	string get_ies_obs_restart_csv() const { return ies_obs_restart_csv; }
 	void set_ies_obs_restart_csv(string _ies_obs_restart_csv) { ies_obs_restart_csv = _ies_obs_restart_csv; }
-	vector<double> get_ies_lam_mults() { return ies_lam_mults; }
+	vector<double> get_ies_lam_mults() const { return ies_lam_mults; }
 	void set_ies_lam_mults(vector<double> _ies_lam_mults) { ies_lam_mults = _ies_lam_mults; }
 	const double get_ies_init_lam() const {return ies_init_lam;}
 	void set_ies_init_lam(double _ies_init_lam) { ies_init_lam = _ies_init_lam; }
@@ -327,9 +327,12 @@ public:
 	void set_ies_subset_size(int _ies_subset_size) { ies_subset_size = _ies_subset_size; }
 	const double get_ies_reg_factor() const { return ies_reg_factor; }
 	void set_ies_reg_factor(double _ies_reg_factor) { ies_reg_factor = _ies_reg_factor; }
-
-	const int get_ies_verbose_level() { return ies_verbose_level; }
-	void st_ies_verbose_level(int _ies_verbose_level) { ies_verbose_level = _ies_verbose_level; }
+	const int get_ies_verbose_level() const { return ies_verbose_level; }
+	void set_ies_verbose_level(int _ies_verbose_level) { ies_verbose_level = _ies_verbose_level; }
+	const bool get_ies_use_prior_scaling() const { return ies_use_prior_scaling; }
+	void set_ies_use_prior_scaling(bool _ies_use_prior_scaling) { ies_use_prior_scaling = _ies_use_prior_scaling; }
+	const int get_ies_num_reals() const { return ies_num_reals; }
+	void set_ies_num_reals(int _ies_num_reals) { ies_num_reals = _ies_num_reals; }
 
 private:
 	int n_iter_base;
@@ -396,6 +399,8 @@ private:
 	double ies_reg_factor;
 	vector<double> ies_lam_mults;
 	int ies_verbose_level;
+	bool ies_use_prior_scaling;
+	int ies_num_reals;
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);
 ostream& operator<< (ostream &os, const ObservationInfo& val);

@@ -716,6 +716,16 @@ void PestppOptions::parce_line(const string &line)
 		{
 			convert_ip(value, ies_verbose_level);
 		}
+		else if (key == "IES_USE_PRIOR_SCALING")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> ies_use_prior_scaling;
+		}
+		else if (key == "IES_NUM_REALS")
+		{
+			convert_ip(value, ies_num_reals);
+		}
 		else {
 
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");

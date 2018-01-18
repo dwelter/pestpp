@@ -358,7 +358,7 @@ void IterEnsembleSmoother::initialize()
 	last_best_std = 1.0e+30;
 	lambda_max = 1.0E+10;
 	lambda_min = 1.0E-10;
-	lam_mults = pest_scenario.get_pestpp_options_ptr()->get_ies_lam_mults();
+	lam_mults = pest_scenario.get_pestpp_options().get_ies_lam_mults();
 	if (lam_mults.size() == 0)
 		lam_mults.push_back(1.0);
 	cout << "...using lambda multipliers: ";
@@ -366,102 +366,162 @@ void IterEnsembleSmoother::initialize()
 		cout << mult << " , ";
 	cout << endl;
 
+	bool echo = false;
+	if (verbose_level > 1)
+		echo = true;
+
+	act_obs_names = pest_scenario.get_ctl_ordered_nz_obs_names();
+	act_par_names = pest_scenario.get_ctl_ordered_adj_par_names();
+
 	subset_size = pest_scenario.get_pestpp_options().get_ies_subset_size();
 	reg_factor = pest_scenario.get_pestpp_options().get_ies_reg_factor();
 	cout << "...using reg_factor:" << reg_factor << endl;
+	int num_reals = pest_scenario.get_pestpp_options().get_ies_num_reals();
+	
+	stringstream ss;
+
+
+	performance_log->log_event("load parcov");
+	string parcov_filename = pest_scenario.get_pestpp_options().get_parcov_filename();
+	if (parcov_filename.size() == 0)
+	{
+		cout << "  ---  initializing par cov from parameter bounds" << endl;
+		parcov_inv.from_parameter_bounds(pest_scenario);
+	}
+	else
+	{
+		cout << "  ---  initializing par cov from file " << parcov_filename << endl;
+		string extension = parcov_filename.substr(parcov_filename.size() - 3, 3);
+		pest_utils::upper_ip(extension);
+		if (extension.compare("COV") == 0)
+			parcov_inv.from_ascii(parcov_filename);
+		else if ((extension.compare("JCO") == 0) || (extension.compare("JCB") == 0))
+			parcov_inv.from_binary(parcov_filename);
+		else if (extension.compare("UNC") == 0)
+			parcov_inv.from_uncertainty_file(parcov_filename);
+		else
+			throw_ies_error("unrecognized parcov_filename extension: " + extension);
+	}	
+	parcov_inv = parcov_inv.get(act_par_names);
+	
 
 	string par_csv = pest_scenario.get_pestpp_options().get_ies_par_csv();
-	string par_ext = pest_utils::lower_cp(par_csv).substr(par_csv.size()-3, par_csv.size());
-
-	performance_log->log_event("processing par csv "+par_csv);
-	stringstream ss;
-	if (par_ext.compare("csv") == 0)
+	if (par_csv.size() == 0)
 	{
-		
-		cout << "  ---  loading par ensemble from csv file " << par_csv << endl << endl;
-		try
-		{
-			pe.from_csv(par_csv);
-		}
-		catch (const exception &e)
-		{
-			ss << "error processing par csv: " << e.what();
-			throw_ies_error(ss.str());
-		}
-		catch (...)
-		{
-			throw_ies_error(string("error processing par csv"));
-		}
-	}
-	else if ((par_ext.compare("jcb") == 0) || (par_ext.compare("jco") == 0))
-	{
-		cout << "  ---  loading par ensemble from binary file " << par_csv << endl << endl;
-		try
-		{
-			pe.from_binary(par_csv);
-		}
-		catch (const exception &e)
-		{
-			ss << "error processing par jcb: " << e.what();
-			throw_ies_error(ss.str());
-		}
-		catch (...)
-		{
-			throw_ies_error(string("error processing par jcb"));
-		}
+		cout << "...drawing " << num_reals << " parameter realizations" << endl;
+		pe.draw(num_reals, parcov_inv);
 	}
 	else
 	{
-		ss << "unrecognized par csv extension " << par_ext << ", looking for csv, jcb, or jco";
-		throw_ies_error(ss.str());
+		string par_ext = pest_utils::lower_cp(par_csv).substr(par_csv.size() - 3, par_csv.size());
+		performance_log->log_event("processing par csv " + par_csv);	
+		if (par_ext.compare("csv") == 0)
+		{
+			cout << "  ---  loading par ensemble from csv file " << par_csv << endl;
+			try
+			{
+				pe.from_csv(par_csv);
+			}
+			catch (const exception &e)
+			{
+				ss << "error processing par csv: " << e.what();
+				throw_ies_error(ss.str());
+			}
+			catch (...)
+			{
+				throw_ies_error(string("error processing par csv"));
+			}
+		}
+		else if ((par_ext.compare("jcb") == 0) || (par_ext.compare("jco") == 0))
+		{
+			cout << "  ---  loading par ensemble from binary file " << par_csv << endl;
+			try
+			{
+				pe.from_binary(par_csv);
+			}
+			catch (const exception &e)
+			{
+				ss << "error processing par jcb: " << e.what();
+				throw_ies_error(ss.str());
+			}
+			catch (...)
+			{
+				throw_ies_error(string("error processing par jcb"));
+			}
+		}
+		else
+		{
+			ss << "unrecognized par csv extension " << par_ext << ", looking for csv, jcb, or jco";
+			throw_ies_error(ss.str());
+		}
 	}
+	performance_log->log_event("inverting parcov");
+	cout << "  ---  inverting parcov" << endl;
+	parcov_inv.inv_ip(echo);
+
+
+	//obs ensemble
+	num_reals = pe.shape().first;
+	performance_log->log_event("load obscov");
+	cout << "  ---  initializing obs cov from observation weights" << endl;
+	Covariance obscov;
+	obscov.from_observation_weights(pest_scenario);
+	obscov = obscov.get(act_obs_names);
 	string obs_csv = pest_scenario.get_pestpp_options().get_ies_obs_csv();
-	string obs_ext = pest_utils::lower_cp(obs_csv).substr(obs_csv.size() - 3, obs_csv.size());
-
-	performance_log->log_event("processing obs csv "+obs_csv);
-	if (obs_ext.compare("csv") == 0)
+	if (obs_csv.size() == 0)
 	{
-		cout << "  ---  loading obs ensemble from csv file " << obs_csv << endl << endl;
-
-		try
-		{
-			oe.from_csv(obs_csv);
-		}
-		catch (const exception &e)
-		{
-			ss << "error processing obs csv: " << e.what();
-			throw_ies_error(ss.str());
-		}
-		catch (...)
-		{
-			throw_ies_error(string("error processing obs csv"));
-		}
-	}
-	else if ((obs_ext.compare("jcb") == 0) || (obs_ext.compare("jco") == 0))
-	{
-		cout << "  ---  loading obs ensemble from binary file " << obs_csv << endl << endl;
-
-		try
-		{
-			oe.from_binary(obs_csv);
-		}
-		catch (const exception &e)
-		{
-			ss << "error processing obs binary file: " << e.what();
-			throw_ies_error(ss.str());
-		}
-		catch (...)
-		{
-			throw_ies_error(string("error processing obs binary file"));
-		}
+		cout << "drawing " << num_reals << " observation noise realizations" << endl;
+		oe.draw(num_reals, obscov);
 	}
 	else
 	{
-		ss << "unrecognized obs ensemble extension " << obs_ext << ", looing for csv, jcb, or jco";
-		throw_ies_error(ss.str());
-	}
+		string obs_ext = pest_utils::lower_cp(obs_csv).substr(obs_csv.size() - 3, obs_csv.size());
+		performance_log->log_event("processing obs csv " + obs_csv);
+		if (obs_ext.compare("csv") == 0)
+		{
+			cout << "  ---  loading obs ensemble from csv file " << obs_csv << endl;
 
+			try
+			{
+				oe.from_csv(obs_csv);
+			}
+			catch (const exception &e)
+			{
+				ss << "error processing obs csv: " << e.what();
+				throw_ies_error(ss.str());
+			}
+			catch (...)
+			{
+				throw_ies_error(string("error processing obs csv"));
+			}
+		}
+		else if ((obs_ext.compare("jcb") == 0) || (obs_ext.compare("jco") == 0))
+		{
+			cout << "  ---  loading obs ensemble from binary file " << obs_csv << endl;
+
+			try
+			{
+				oe.from_binary(obs_csv);
+			}
+			catch (const exception &e)
+			{
+				stringstream ss;
+				ss << "error processing obs binary file: " << e.what();
+				throw_ies_error(ss.str());
+			}
+			catch (...)
+			{
+				throw_ies_error(string("error processing obs binary file"));
+			}
+		}
+		else
+		{
+			ss << "unrecognized obs ensemble extension " << obs_ext << ", looing for csv, jcb, or jco";
+			throw_ies_error(ss.str());
+		}
+	}
 		
+
 	if (pe.shape().first != oe.shape().first)
 	{
 		ss.str("");
@@ -469,7 +529,7 @@ void IterEnsembleSmoother::initialize()
 		throw_ies_error(ss.str());
 	}
 
-	
+
 	if (subset_size > pe.shape().first)
 	{
 		use_subset = false;
@@ -481,11 +541,10 @@ void IterEnsembleSmoother::initialize()
 		use_subset = true;
 	}
 		
+
 	oe_org_real_names = oe.get_real_names();
 	pe_org_real_names = pe.get_real_names();
 
-	act_obs_names = pest_scenario.get_ctl_ordered_nz_obs_names();
-	act_par_names = pest_scenario.get_ctl_ordered_adj_par_names();
 
 	//check for compatibility between pe, oe and control file
 	if (oe.shape().first != pe.shape().first)
@@ -495,6 +554,7 @@ void IterEnsembleSmoother::initialize()
 		throw_ies_error(ss.str());
 	}
 
+
 	oe_base = oe; //copy
 	//reorder this for later...
 	oe_base.reorder(vector<string>(), act_obs_names);
@@ -502,51 +562,19 @@ void IterEnsembleSmoother::initialize()
 	pe_base = pe; //copy
 	//reorder this for later
 	pe_base.reorder(vector<string>(), act_par_names);
-
-	performance_log->log_event("load obscov");
-	cout << "  --- initializing obs cov from observation weights" << endl << endl;
-	Covariance obscov;
-    obscov.from_observation_weights(pest_scenario);
-	obscov = obscov.get(act_obs_names);
-	obscov.inv_ip();
+	
+	obscov.inv_ip(echo);
 	//NEED SQRT operator to matrix
 	obscov_inv_sqrt = obscov.get_matrix().diagonal().cwiseSqrt().asDiagonal();
-	
-	performance_log->log_event("load parcov");
-	 
-	string parcov_filename = pest_scenario.get_pestpp_options().get_parcov_filename();
-	if (parcov_filename.size() == 0)
-	{
-		cout << "  ---  initializing par cov from parameter bounds" << endl << endl;
-		parcov_inv.from_parameter_bounds(pest_scenario);
-	}
-	else
-	{
-		cout << "  ---  initializing par cov from file " << parcov_filename << endl << endl;
-		string extension = parcov_filename.substr(parcov_filename.size() - 3, 3);
-		pest_utils::upper_ip(extension);
-		if (extension.compare("COV") == 0)
-			parcov_inv.from_ascii(parcov_filename);
-		else if ((extension.compare("JCO") == 0) || (extension.compare("JCB") == 0))
-			parcov_inv.from_binary(parcov_filename);
-		else if (extension.compare("UNC") == 0)
-			parcov_inv.from_uncertainty_file(parcov_filename);
-		else
-			throw_ies_error("unrecognized parcov_filename extension: " + extension);
-	}
-	performance_log->log_event("inverting parcov");
-	cout << "  ---  inverting parcov" << endl;
-	parcov_inv = parcov_inv.get(act_par_names);
-	parcov_inv.inv_ip();
+		
 	//need this here for Am calcs...
 	cout << "  ---  transforming parameter ensembles to numeric" << endl;
 	pe.transform_ip(ParameterEnsemble::transStatus::NUM);;
 	pe_base.transform_ip(ParameterEnsemble::transStatus::NUM);
 	
-	
 	if (!pest_scenario.get_pestpp_options().get_ies_use_approx()) 
 	{
-		cout << "  ---  using full (MAP) update solution  ---  " << endl << endl;
+		cout << "  ---  using full (MAP) update solution  ---  " << endl;
 		performance_log->log_event("calculating 'Am' matrix for full solution");
 		cout << "  forming Am matrix" << endl;
 		double scale = (1.0 / (sqrt(double(pe.shape().first - 1))));
@@ -583,12 +611,13 @@ void IterEnsembleSmoother::initialize()
 		V.resize(0, 0);
 	}
 
+
 	string obs_restart_csv = pest_scenario.get_pestpp_options().get_ies_obs_restart_csv();	
 	//no restart
 	if (obs_restart_csv.size() == 0)
 	{
 		performance_log->log_event("running initial ensemble");
-		cout << "  ---  running initial ensemble of " << oe.shape().first << " realizations" << endl << endl;
+		cout << "  ---  running initial ensemble of " << oe.shape().first << " realizations" << endl;
 		run_ensemble(pe, oe);
 	}
 	else
@@ -598,8 +627,7 @@ void IterEnsembleSmoother::initialize()
 		string obs_ext = pest_utils::lower_cp(obs_csv).substr(obs_csv.size() - 3, obs_csv.size());
 		if (obs_ext.compare("csv") == 0)
 		{
-			cout << "  ---  loading restart obs ensemble from csv file " << obs_restart_csv << endl << endl;
-
+			cout << "  ---  loading restart obs ensemble from csv file " << obs_restart_csv << endl;
 			try
 			{
 				oe.from_csv(obs_restart_csv);
@@ -616,7 +644,7 @@ void IterEnsembleSmoother::initialize()
 		}
 		else if ((obs_ext.compare("jcb") == 0) || (obs_ext.compare("jco") == 0))
 		{
-			cout << "  ---  loading restart obs ensemble from binary file " << obs_restart_csv << endl << endl;
+			cout << "  ---  loading restart obs ensemble from binary file " << obs_restart_csv << endl;
 
 			try
 			{
@@ -708,6 +736,8 @@ void IterEnsembleSmoother::initialize()
 			throw_ies_error(ss.str());
 		}
 	}
+
+
 	performance_log->log_event("calc initial phi");
 	ph = PhiHandler(&pest_scenario, &file_manager, &oe_base, &pe_base, &parcov_inv, &reg_factor);
 	ph.update(oe, pe);
@@ -729,7 +759,7 @@ void IterEnsembleSmoother::initialize()
 	cout << "  ---  current lambda: " << setw(20) << left << last_best_lam << endl;
 	
 	//pe.transform_ip(ParameterEnsemble::transStatus::NUM);
-	cout << "  ---  initialization complete  --- " << endl << endl << endl;
+	cout << "  ---  initialization complete  --- " << endl << endl;
 }
 
 
@@ -749,8 +779,8 @@ void IterEnsembleSmoother::solve()
 	iter++;
 	stringstream ss;
 	ofstream &frec = file_manager.rec_ofstream();
-	frec << endl << endl << endl << "  ---  starting solve for iteration: " << iter << endl;
-	cout << endl << endl << endl << "  ---  starting solve for iteration: " << iter << endl;
+	frec << endl << "  ---  starting solve for iteration: " << iter << endl;
+	cout << endl << "  ---  starting solve for iteration: " << iter << endl;
 	ss << "starting solve for iteration: " << iter;
 	performance_log->log_event(ss.str());
 
@@ -803,7 +833,15 @@ void IterEnsembleSmoother::solve()
 
 	pe.transform_ip(ParameterEnsemble::transStatus::NUM);
 	diff = pe.get_eigen_mean_diff(vector<string>(), act_par_names).transpose();
-	Eigen::MatrixXd par_diff = scale * diff;
+	Eigen::MatrixXd par_diff;
+	if (pest_scenario.get_pestpp_options().get_ies_use_prior_scaling())
+	{
+		cout << "...applying prior par cov scaling to par diff matrix" << endl;
+		par_diff = scale * *parcov_inv.e_ptr() * diff;
+	}
+	else
+		par_diff = scale * diff;
+		
 	if (verbose_level > 1)
 	{
 		cout << "par_diff:" << par_diff.rows() << ',' << par_diff.cols() << endl;
