@@ -16,16 +16,16 @@ def prep():
 
     shutil.copytree("template",pyemu_dir)
     shutil.copytree("template", pestpp_dir)
-
-   
+    num_reals = 15
     pst = pyemu.Pst(os.path.join(pyemu_dir,"pest.pst"))
     pst.control_data.noptmax = 20
-    pst.pestpp_options["ies_parameter_csv"] = "par.csv"
-    pst.pestpp_options["ies_observation_csv"] = "obs.csv"
-    pst.pestpp_options["ies_obs_restart_csv"] = "restart_obs.csv"
+    #pst.pestpp_options["ies_parameter_csv"] = "par.csv"
+    #pst.pestpp_options["ies_observation_csv"] = "obs.csv"
+    #pst.pestpp_options["ies_obs_restart_csv"] = "restart_obs.csv"
     pst.pestpp_options["ies_use_approx"] = "true"
     pst.pestpp_options["ies_use_prior_scaling"] = "false"
-    pst.pestpp_options["ies_num_reals"] = "10";
+    pst.pestpp_options["ies_num_reals"] = "{0}".format(num_reals)
+    pst.pestpp_options["parcov_filename"] = "prior.cov"
     pst.svd_data.eigthresh = 1.0e-5
     pst.svd_data.maxsing = 20
     #pst.observation_data.loc[pst.nnz_obs_names,"weight"] /= 10.0
@@ -33,7 +33,11 @@ def prep():
     pst.write(os.path.join(pestpp_dir, "pest.pst"))
     #dia_parcov = pyemu.Cov.from_parameter_data(pst,sigma_range=6.0)
     parcov = pyemu.Cov.from_parameter_data(pst)
-    num_reals = 10
+    print(parcov.as_2d)
+    parcov = pyemu.Cov(parcov.as_2d,names=parcov.row_names)
+    print(parcov.x)
+    parcov.to_ascii(os.path.join(pestpp_dir,"prior.cov"))
+
     pe = pyemu.ParameterEnsemble.from_gaussian_draw(pst,parcov,num_reals=num_reals,use_homegrown=True)
     oe = pyemu.ObservationEnsemble.from_id_gaussian_draw(pst,num_reals=num_reals)
     oe.to_csv(os.path.join(pyemu_dir,"obs.csv"))

@@ -30,18 +30,34 @@ void Ensemble::draw(int num_reals, Covariance &cov, Transformable &tran)
 		Eigen::VectorXd std = cov.e_ptr()->diagonal().cwiseSqrt();
 		for (int j = 0; j < var_names.size(); j++)
 		{
-			cout << var_names[j] << " , " << std(j) << endl;
+			//cout << var_names[j] << " , " << std(j) << endl;
 			reals.col(j) *= std(j);
 		}
-
 	}
 	else
 	{
+		//totally arbitrary hack 
+		int ncomps = std::min<int>(100,var_names.size());
 		RedSVD::RedSymEigen<Eigen::MatrixXd> eig;
-		eig.compute(cov.e_ptr()->toDense(),50);
-		Eigen::MatrixXd proj = eig.eigenvectors() * eig.eigenvalues().cwiseSqrt();
+		eig.compute(cov.e_ptr()->toDense(),ncomps);
+		Eigen::MatrixXd evec(var_names.size(), var_names.size());
+		evec.setZero();
+		evec.leftCols(ncomps) = eig.eigenvectors();
+		Eigen::VectorXd eval(var_names.size());
+		eval.setZero();
+		eval.topRows(ncomps) = eig.eigenvalues().cwiseSqrt();
+
+		//Eigen::MatrixXd proj = eig.eigenvectors() * eig.eigenvalues().cwiseSqrt().asDiagonal();
+		Eigen::MatrixXd proj = evec * eval.asDiagonal();
 		for (int i = 0; i < num_reals; i++)
-			reals.row(i) = proj * reals.row(i);
+		{
+			/*Eigen::VectorXd v = reals.row(i);
+			cout << v.rows() << " , " << v.cols() << endl;
+			cout << proj.rows() << " , " << proj.cols() << endl;
+			Eigen::MatrixXd t = proj * v;
+			cout << t.rows() << " , " << t.cols() << endl;*/
+			reals.row(i) = proj * reals.row(i).transpose();
+		}
 	}
 	real_names.clear();
 	stringstream ss;

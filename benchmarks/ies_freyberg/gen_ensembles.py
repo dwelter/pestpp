@@ -39,9 +39,10 @@ def prep():
 
     pst = pyemu.Pst(os.path.join(pyemu_dir,"pest.pst"))
     pst.control_data.noptmax = 6
-    pst.pestpp_options["ies_parameter_csv"] = "par.csv"
-    pst.pestpp_options["ies_observation_csv"] = "obs.csv"
-    pst.pestpp_options["ies_obs_restart_csv"] = "restart_obs.csv"
+    pst.pestpp_options = {}
+    #pst.pestpp_options["ies_parameter_csv"] = "par.csv"
+    #pst.pestpp_options["ies_observation_csv"] = "obs.csv"
+    #pst.pestpp_options["ies_obs_restart_csv"] = "restart_obs.csv"
     pst.pestpp_options["parcov_filename"] = "freyberg_prior.jcb"
     pst.pestpp_options["ies_use_approx"] = "true"
     pst.svd_data.eigthresh = 1.0e-4
@@ -94,6 +95,6 @@ def ies():
     #es.update(lambda_mults=[0.1,1.0,10.0],run_subset=10)
     os.chdir('..')
 if __name__ == "__main__":
-    #prep()
+    prep()
     #ies()
-    pyemu.helpers.start_slaves("template","sweep.exe","pest.pst",num_slaves=5)
+    #pyemu.helpers.start_slaves("template","sweep.exe","pest.pst",num_slaves=5)
