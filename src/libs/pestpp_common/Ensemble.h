@@ -60,7 +60,7 @@ public:
 	void set_pest_scenario(Pest *_pest_scenario) { pest_scenario_ptr = _pest_scenario; }
 	void set_real_names(vector<string> &_real_names);
 
-	void draw(int num_reals, Covariance &cov, Transformable &tran);
+	void draw(int num_reals, Covariance &cov, Transformable &tran, const vector<string> &draw_names);
 	~Ensemble();
 protected:
 	Pest* pest_scenario_ptr;
@@ -92,7 +92,7 @@ public:
 	//ParameterEnsemble get_new(const vector<string> &_real_names, const vector<string> &_var_names);
 
 	
-	void from_csv(string &file_name,const vector<string> &ordered_names);
+	//void from_csv(string &file_name,const vector<string> &ordered_names);
 	void from_csv(string &file_name);
 	void from_binary(string &file_name);// { Ensemble::from_binary(file_name, false); }
 	void from_eigen_mat(Eigen::MatrixXd mat, const vector<string> &_real_names, const vector<string> &_var_names,
@@ -125,7 +125,7 @@ public:
 	ObservationEnsemble() { ; }
 	void update_from_obs(int row_idx, Observations &obs);
 	void update_from_obs(string real_name, Observations &obs);
-	void from_csv(string &file_name, const vector<string> &ordered_names);
+	//void from_csv(string &file_name, const vector<string> &ordered_names);
 	void from_csv(string &file_name);
 	void from_eigen_mat(Eigen::MatrixXd mat, const vector<string> &_real_names, const vector<string> &_var_names);
 	void from_binary(string &file_name);// { Ensemble::from_binary(file_name, true); }

@@ -17,33 +17,35 @@ Ensemble::Ensemble(Pest *_pest_scenario_ptr): pest_scenario_ptr(_pest_scenario_p
 	rand_engine.seed(1123433458);
 }
 
-void Ensemble::draw(int num_reals, Covariance &cov, Transformable &tran)
+void Ensemble::draw(int num_reals, Covariance &cov, Transformable &tran, const vector<string> &draw_names)
 {
 
-	if ((var_names.size() > 50000) && (!cov.isdiagonal()))
+	if ((draw_names.size() > 50000) && (!cov.isdiagonal()))
 		cout << "  ---  Ensemble::draw() warning: non-diagonal cov used to draw using a lot of variables...this might run out of memory..." << endl << endl;
-	reals.resize(num_reals, var_names.size());
-	reals.setZero();
-	RedSVD::sample_gaussian(reals);
+	
+	Eigen::MatrixXd draws(num_reals, draw_names.size());
+	draws.setZero();
+	RedSVD::sample_gaussian(draws);
 	if (cov.isdiagonal())
 	{
 		Eigen::VectorXd std = cov.e_ptr()->diagonal().cwiseSqrt();
-		for (int j = 0; j < var_names.size(); j++)
+
+		for (int j = 0; j < draw_names.size(); j++)
 		{
 			//cout << var_names[j] << " , " << std(j) << endl;
-			reals.col(j) *= std(j);
+			draws.col(j) *= std(j);
 		}
 	}
 	else
 	{
 		//totally arbitrary hack 
-		int ncomps = std::min<int>(100,var_names.size());
+		int ncomps = std::min<int>(100,draw_names.size());
 		RedSVD::RedSymEigen<Eigen::MatrixXd> eig;
 		eig.compute(cov.e_ptr()->toDense(),ncomps);
-		Eigen::MatrixXd evec(var_names.size(), var_names.size());
+		Eigen::MatrixXd evec(draw_names.size(), draw_names.size());
 		evec.setZero();
 		evec.leftCols(ncomps) = eig.eigenvectors();
-		Eigen::VectorXd eval(var_names.size());
+		Eigen::VectorXd eval(draw_names.size());
 		eval.setZero();
 		eval.topRows(ncomps) = eig.eigenvalues().cwiseSqrt();
 
@@ -56,7 +58,7 @@ void Ensemble::draw(int num_reals, Covariance &cov, Transformable &tran)
 			cout << proj.rows() << " , " << proj.cols() << endl;
 			Eigen::MatrixXd t = proj * v;
 			cout << t.rows() << " , " << t.cols() << endl;*/
-			reals.row(i) = proj * reals.row(i).transpose();
+			draws.row(i) = proj * draws.row(i).transpose();
 		}
 	}
 	real_names.clear();
@@ -68,11 +70,19 @@ void Ensemble::draw(int num_reals, Covariance &cov, Transformable &tran)
 		real_names.push_back(ss.str());
 	}
 
+	reals.resize(num_reals, var_names.size());
+	reals.setZero();
+	vector<string>::const_iterator start = draw_names.begin(), end=draw_names.end(), name;
 	for (int j = 0; j < var_names.size(); j++)
 	{
-		cout << var_names[j] << " , " << tran.get_rec(var_names[j]) << endl;
-		reals.col(j) = reals.col(j).array() + tran.get_rec(var_names[j]);
-
+		int jj;
+		name = find(start, end, var_names[j]);
+		if (name != end)
+		{
+			jj = name - start;
+			//cout << var_names[j] << " , " << tran.get_rec(var_names[j]) << endl;
+			reals.col(j) = draws.col(jj).array() + tran.get_rec(var_names[j]);
+		}
 	}
 		
 }
@@ -423,7 +433,6 @@ map<string,int> Ensemble::prepare_csv(const vector<string> &names, ifstream &csv
 	hset.clear();
 	hset = unordered_set<string>(names.begin(), names.end());
 	end = hset.end();
-	var_names.clear();
 	for (int i = 0; i < header_tokens.size(); i++)
 	{
 		//if (find(names.begin(), names.end(), header_tokens[i]) != names.end())
@@ -431,7 +440,7 @@ map<string,int> Ensemble::prepare_csv(const vector<string> &names, ifstream &csv
 		{
 			//header_idxs.push_back(i);
 			header_info[header_tokens[i]] = i;
-			var_names.push_back(header_tokens[i]);
+			//var_names.push_back(header_tokens[i]);
 			//header_names.push_back(header_tokens[i]);
 		}
 	}
@@ -635,7 +644,7 @@ void Ensemble::read_csv(int num_reals,ifstream &csv, map<string,int> header_info
 		catch (exception &e)
 		{
 			stringstream ss;
-			ss << "error converting token '" << tokens[0] << "' to <string> run_id on line " << lcount << ": " << line << endl << e.what();
+			ss << "error converting token '" << tokens[0] << "' to <int> run_id on line " << lcount << ": " << line << endl << e.what();
 			throw runtime_error(ss.str());
 		}
 		real_names.push_back(real_id);
@@ -693,7 +702,7 @@ void ParameterEnsemble::draw(int num_reals, Covariance &cov)
 	Parameters par = pest_scenario_ptr->get_ctl_parameters();
 	par_transform.active_ctl2numeric_ip(par);
 	tstat = transStatus::NUM;
-	Ensemble::draw(num_reals, cov, par);
+	Ensemble::draw(num_reals, cov, par, var_names);
 	enforce_bounds();
 	
 }
@@ -762,18 +771,11 @@ void ParameterEnsemble::from_binary(string &file_name)
 
 void ParameterEnsemble::from_csv(string &file_name)
 {
-	//from_csv(file_name, pest_scenario_ptr->get_ctl_ordered_par_names());
-	from_csv(file_name, pest_scenario_ptr->get_ctl_ordered_adj_par_names());
-	
-}
-
-void ParameterEnsemble::from_csv(string &file_name, const vector<string> &ordered_names)
-{
-
 	ifstream csv(file_name);
 	if (!csv.good())
 		throw runtime_error("error opening parameter csv " + file_name + " for reading"); 
-	map<string,int>header_info = prepare_csv(ordered_names, csv, false);
+	var_names = pest_scenario_ptr->get_ctl_ordered_adj_par_names();
+	map<string,int>header_info = prepare_csv(var_names, csv, false);
 	//blast through the file to get number of reals
 	string line;
 	int num_reals = 0;
@@ -788,7 +790,7 @@ void ParameterEnsemble::from_csv(string &file_name, const vector<string> &ordere
 	Ensemble::read_csv(num_reals, csv, header_info);
 
 	//sort var_names according to ctl ordered par names
-	vector<string> ordered_var_names;
+	/*vector<string> ordered_var_names;
 	vector<string>::iterator start = var_names.begin();
 	vector<string>::iterator end = var_names.end();
 
@@ -802,7 +804,7 @@ void ParameterEnsemble::from_csv(string &file_name, const vector<string> &ordere
 		throw_ensemble_error(ss.str());
 	}
 	if (var_names != ordered_var_names)
-		reorder(vector<string>(), ordered_var_names);
+		reorder(vector<string>(), ordered_var_names);*/
 	tstat = transStatus::CTL;
 	//cout << reals << endl;
 }
@@ -917,9 +919,10 @@ ObservationEnsemble::ObservationEnsemble(Pest *_pest_scenario_ptr): Ensemble(_pe
 
 void ObservationEnsemble::draw(int num_reals, Covariance &cov)
 {
-	var_names = pest_scenario_ptr->get_ctl_ordered_nz_obs_names();
+	//var_names = pest_scenario_ptr->get_ctl_ordered_nz_obs_names();
+	var_names = pest_scenario_ptr->get_ctl_ordered_obs_names();
 	Observations obs = pest_scenario_ptr->get_ctl_observations();
-	Ensemble::draw(num_reals, cov, obs);
+	Ensemble::draw(num_reals, cov, obs, pest_scenario_ptr->get_ctl_ordered_nz_obs_names());
 }
 
 void ObservationEnsemble::update_from_obs(int row_idx, Observations &obs)
@@ -974,15 +977,11 @@ void ObservationEnsemble::from_binary(string &file_name)
 
 void ObservationEnsemble::from_csv(string &file_name)
 {
-	//from_csv(file_name, pest_scenario_ptr->get_ctl_ordered_obs_names());
-	from_csv(file_name, pest_scenario_ptr->get_ctl_ordered_nz_obs_names());
-}
-void ObservationEnsemble::from_csv(string &file_name, const vector<string> &ordered_names)
-{
+	var_names = pest_scenario_ptr->get_ctl_ordered_obs_names();
 	ifstream csv(file_name);
 	if (!csv.good())
 		throw runtime_error("error opening observation csv " + file_name + " for reading");
-	map<string,int> header_info = prepare_csv(ordered_names, csv, false);
+	map<string,int> header_info = prepare_csv(pest_scenario_ptr->get_ctl_ordered_nz_obs_names(), csv, false);
 	//blast through the file to get number of reals
 	string line;
 	int num_reals = 0;
@@ -996,8 +995,8 @@ void ObservationEnsemble::from_csv(string &file_name, const vector<string> &orde
 	getline(csv, line);
 	Ensemble::read_csv(num_reals, csv,header_info);
 
-	//sort var_names according to ctl ordered par names
-	vector<string> ordered_var_names;
+	//sort var_names according to ctl ordered var names
+	/*vector<string> ordered_var_names;
 	vector<string>::iterator start = var_names.begin();
 	vector<string>::iterator end = var_names.end();
 
@@ -1009,9 +1008,9 @@ void ObservationEnsemble::from_csv(string &file_name, const vector<string> &orde
 		stringstream ss;
 		ss << "ordered names size " << ordered_var_names.size() << " != var names size " << var_names.size();
 		throw_ensemble_error(ss.str());
-	}
-	if (var_names != ordered_var_names)
-		reorder(vector<string>(), ordered_var_names);
+	}*/
+	//if (var_names != ordered_var_names)
+	//	reorder(vector<string>(), ordered_var_names);
 }
 
 void ObservationEnsemble::from_eigen_mat(Eigen::MatrixXd mat, const vector<string> &_real_names, const vector<string> &_var_names)

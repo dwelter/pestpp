@@ -19,9 +19,9 @@ def prep():
     num_reals = 15
     pst = pyemu.Pst(os.path.join(pyemu_dir,"pest.pst"))
     pst.control_data.noptmax = 20
-    #pst.pestpp_options["ies_parameter_csv"] = "par.csv"
-    #pst.pestpp_options["ies_observation_csv"] = "obs.csv"
-    #pst.pestpp_options["ies_obs_restart_csv"] = "restart_obs.csv"
+    pst.pestpp_options["ies_parameter_csv"] = "par.csv"
+    pst.pestpp_options["ies_observation_csv"] = "obs.csv"
+    pst.pestpp_options["ies_obs_restart_csv"] = "restart_obs.csv"
     pst.pestpp_options["ies_use_approx"] = "true"
     pst.pestpp_options["ies_use_prior_scaling"] = "false"
     pst.pestpp_options["ies_num_reals"] = "{0}".format(num_reals)
