@@ -541,6 +541,7 @@ void IterEnsembleSmoother::initialize()
 	parcov_inv = parcov_inv.get(act_par_names);
 	
 	initialize_pe(parcov_inv); //not inverted yet..
+	Covariance c = pe.get_diagonal_cov_matrix();
 	
 	performance_log->log_event("inverting parcov");
 	cout << "  ---  inverting parcov" << endl;
@@ -816,6 +817,8 @@ void IterEnsembleSmoother::drop_bad_phi(ParameterEnsemble &_pe, ObservationEnsem
 			cout << i << " , ";
 			frec << i << " , ";
 		}
+		cout << endl;
+		frec << endl;
 		try
 		{
 			_pe.drop_rows(idxs);
@@ -1139,6 +1142,9 @@ void IterEnsembleSmoother::solve()
 	ObservationEnsemble oe_lam_best;
 	for (int i=0;i<pe_lams.size();i++)
 	{	
+		//for testing...
+		//pest_scenario.get_pestpp_options_ptr()->set_ies_bad_phi(0.0);
+		
 		drop_bad_phi(pe_lams[i], oe_lams[i]);
 		if (pe_lams[i].shape().first == 0)
 		{
@@ -1161,7 +1167,7 @@ void IterEnsembleSmoother::solve()
 		}
 	}
 
-	if ((use_subset) && (subset_size < pe.shape().first))//subset stuff here
+	if ((best_idx != -1) && (use_subset) && (subset_size < pe.shape().first))//subset stuff here
 	{
 
 		ObservationEnsemble remaining_oe_lam = oe;//copy
@@ -1211,6 +1217,18 @@ void IterEnsembleSmoother::solve()
 		pe_lams[best_idx].drop_rows(real_idxs); 
 		pe_lams[best_idx].append_other_rows(remaining_pe_lam);
 		oe_lam_best.append_other_rows(remaining_oe_lam);
+		drop_bad_phi(pe_lams[best_idx], oe_lam_best);
+		if (oe_lam_best.shape().first == 0)
+		{
+			throw_ies_error(string("all realization dropped after finishing subset runs...something might be wrong..."));
+		}
+	}
+	if (best_idx == -1)
+	{
+		cout << endl << endl << "  --- WARNING:  unsuccessful lambda testing, resetting lambda to 10000.0  ---  " << endl << endl;
+		frec << endl << endl << "  --- WARNING:  unsuccessful lambda testing, resetting lambda to 10000.0  ---  " << endl << endl;
+		last_best_lam = 10000.0;
+		return;
 
 	}
 	ph.update(oe_lam_best, pe_lams[best_idx]);

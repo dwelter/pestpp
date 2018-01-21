@@ -52,6 +52,8 @@ public:
 	
 	void append_other_rows(Ensemble &other);
 
+	Covariance get_diagonal_cov_matrix();
+
 	void reorder(vector<string> &_real_names, vector<string> &_var_names);
 	void drop_rows(vector<int> &row_idxs);
 	void keep_rows(vector<int> &row_idxs);
@@ -108,7 +110,7 @@ public:
 	map<int,int> add_runs(RunManagerAbstract *run_mgr_ptr,vector<int> &real_idxs=vector<int>());
 
 	void draw(int num_reals, Covariance &cov);
-	
+	Covariance get_diagonal_cov_matrix();
 	//ParameterEnsemble get_mean_diff();
 private:
 	ParamTransformSeq par_transform;

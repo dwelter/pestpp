@@ -844,7 +844,7 @@ Covariance::Covariance()
 	mattype = MatType::SPARSE;
 }
 
-Covariance::Covariance(vector<string> _names, Eigen::SparseMatrix<double> _matrix)
+Covariance::Covariance(vector<string> _names, Eigen::SparseMatrix<double> _matrix, Mat::MatType _mattype)
 {	
 	if ((_names.size() != _matrix.rows()) || (_names.size() != _matrix.cols()))
 		throw runtime_error("Covariance::Covariance() error: names.size() does not match matrix dimensions");
@@ -852,7 +852,7 @@ Covariance::Covariance(vector<string> _names, Eigen::SparseMatrix<double> _matri
 	row_names = _names;
 	col_names = _names;
 	icode = 1;
-	mattype = MatType::SPARSE;
+	mattype =_mattype;
 }
 
 Covariance::Covariance(Mat _mat)

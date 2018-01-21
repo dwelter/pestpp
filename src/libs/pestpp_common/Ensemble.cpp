@@ -8,6 +8,7 @@
 #include "ParamTransformSeq.h"
 #include "ObjectiveFunc.h"
 #include "RedSVD-h.h"
+#include "covariance.h"
 
 mt19937_64 Ensemble::rand_engine = mt19937_64(1);
 
@@ -87,6 +88,25 @@ void Ensemble::draw(int num_reals, Covariance &cov, Transformable &tran, const v
 		
 }
 
+Covariance Ensemble::get_diagonal_cov_matrix()
+{
+	
+	Eigen::MatrixXd meandiff = get_eigen_mean_diff();
+	double var;
+	vector<Eigen::Triplet<double>> triplets;
+	double num_reals = double(reals.rows());
+	for (int j = 0; j < var_names.size(); j++)
+	{
+		var = (reals.col(j).cwiseProduct(reals.col(j))).sum() / num_reals;
+		triplets.push_back(Eigen::Triplet<double>(j, j, var));
+	}
+	Eigen::SparseMatrix<double> mat;
+	mat.conservativeResize(triplets.size(), triplets.size());
+	mat.setFromTriplets(triplets.begin(), triplets.end());
+	Covariance cov(var_names, mat, Covariance::MatType::DIAGONAL);
+	return cov;
+}
+
 Eigen::MatrixXd Ensemble::get_eigen_mean_diff()
 {
 	return get_eigen_mean_diff(vector<string>(),vector<string>());
@@ -158,7 +178,10 @@ void Ensemble::drop_rows(vector<int> &row_idxs)
 	for (int ireal = 0; ireal < reals.rows(); ireal++)
 		if (find(start, end, ireal) == end)
 			keep_names.push_back(real_names[ireal]);
-	reals = get_eigen(keep_names, vector<string>());
+	if (keep_names.size() == 0)
+		reals = Eigen::MatrixXd();
+	else	
+		reals = get_eigen(keep_names, vector<string>());
 	real_names = keep_names;
 }
 
@@ -898,7 +921,11 @@ void ParameterEnsemble::transform_ip(transStatus to_tstat)
 		throw_ensemble_error("ParameterEnsemble::transform_ip() only CTL to NUM implemented");
 	
 }
-
+Covariance ParameterEnsemble::get_diagonal_cov_matrix()
+{
+	transform_ip(transStatus::NUM);
+	return Ensemble::get_diagonal_cov_matrix();
+}
 
 //ParameterEnsemble ParameterEnsemble::get_mean_diff()
 //{
