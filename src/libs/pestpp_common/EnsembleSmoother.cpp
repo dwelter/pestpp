@@ -201,6 +201,17 @@ void PhiHandler::prepare_csv(ofstream & csv,vector<string> &names)
 	csv << endl;
 }
 
+vector<int> PhiHandler::get_idxs_greater_than(double bad_phi, ObservationEnsemble &oe)
+{
+	map<string, double> _meas = calc_meas(oe);
+	vector<int> idxs;
+	vector<string> names = oe.get_real_names();
+	for (int i=0;i<names.size();i++)
+		if (_meas[names[i]] > bad_phi)
+			idxs.push_back(i);
+	return idxs;
+}
+
 map<string, double> PhiHandler::calc_meas(ObservationEnsemble & oe)
 {
 	map<string, double> phi_map;
@@ -348,6 +359,131 @@ void IterEnsembleSmoother::throw_ies_error(string &message)
 	throw runtime_error("IterEnsembleSmoother error: " + message);
 }
 
+void IterEnsembleSmoother::initialize_pe(Covariance &cov)
+{
+	stringstream ss;
+	int num_reals = pest_scenario.get_pestpp_options().get_ies_num_reals();
+	string par_csv = pest_scenario.get_pestpp_options().get_ies_par_csv();
+	if (par_csv.size() == 0)
+	{
+		cout << "...drawing " << num_reals << " parameter realizations" << endl;
+		pe.draw(num_reals, cov);
+		stringstream ss;
+		ss << file_manager.get_base_filename() << ".0.par.csv";
+		cout << "...saving initial parameter ensemble to " << ss.str() << endl;
+		pe.to_csv(ss.str());
+	}
+	else
+	{
+		string par_ext = pest_utils::lower_cp(par_csv).substr(par_csv.size() - 3, par_csv.size());
+		performance_log->log_event("processing par csv " + par_csv);
+		if (par_ext.compare("csv") == 0)
+		{
+			cout << "  ---  loading par ensemble from csv file " << par_csv << endl;
+			try
+			{
+				pe.from_csv(par_csv);
+			}
+			catch (const exception &e)
+			{
+				ss << "error processing par csv: " << e.what();
+				throw_ies_error(ss.str());
+			}
+			catch (...)
+			{
+				throw_ies_error(string("error processing par csv"));
+			}
+		}
+		else if ((par_ext.compare("jcb") == 0) || (par_ext.compare("jco") == 0))
+		{
+			cout << "  ---  loading par ensemble from binary file " << par_csv << endl;
+			try
+			{
+				pe.from_binary(par_csv);
+			}
+			catch (const exception &e)
+			{
+				ss << "error processing par jcb: " << e.what();
+				throw_ies_error(ss.str());
+			}
+			catch (...)
+			{
+				throw_ies_error(string("error processing par jcb"));
+			}
+		}
+		else
+		{
+			ss << "unrecognized par csv extension " << par_ext << ", looking for csv, jcb, or jco";
+			throw_ies_error(ss.str());
+		}
+	}
+}
+
+void IterEnsembleSmoother::initialize_oe(Covariance &cov)
+{
+	stringstream ss;
+	int num_reals = pe.shape().first;
+	performance_log->log_event("load obscov");
+	cout << "  ---  initializing obs cov from observation weights" << endl;
+	
+	string obs_csv = pest_scenario.get_pestpp_options().get_ies_obs_csv();
+	if (obs_csv.size() == 0)
+	{
+		cout << "drawing " << num_reals << " observation noise realizations" << endl;
+		oe.draw(num_reals, cov);
+		stringstream ss;
+		ss << file_manager.get_base_filename() << ".0.obs.csv";
+		cout << "...saving initial observation ensemble to " << ss.str() << endl;
+		oe.to_csv(ss.str());
+	}
+	else
+	{
+		string obs_ext = pest_utils::lower_cp(obs_csv).substr(obs_csv.size() - 3, obs_csv.size());
+		performance_log->log_event("processing obs csv " + obs_csv);
+		if (obs_ext.compare("csv") == 0)
+		{
+			cout << "  ---  loading obs ensemble from csv file " << obs_csv << endl;
+			try
+			{
+				oe.from_csv(obs_csv);
+			}
+			catch (const exception &e)
+			{
+				ss << "error processing obs csv: " << e.what();
+				throw_ies_error(ss.str());
+			}
+			catch (...)
+			{
+				throw_ies_error(string("error processing obs csv"));
+			}
+		}
+		else if ((obs_ext.compare("jcb") == 0) || (obs_ext.compare("jco") == 0))
+		{
+			cout << "  ---  loading obs ensemble from binary file " << obs_csv << endl;
+
+			try
+			{
+				oe.from_binary(obs_csv);
+			}
+			catch (const exception &e)
+			{
+				stringstream ss;
+				ss << "error processing obs binary file: " << e.what();
+				throw_ies_error(ss.str());
+			}
+			catch (...)
+			{
+				throw_ies_error(string("error processing obs binary file"));
+			}
+		}
+		else
+		{
+			ss << "unrecognized obs ensemble extension " << obs_ext << ", looing for csv, jcb, or jco";
+			throw_ies_error(ss.str());
+		}
+	}
+}
+
 void IterEnsembleSmoother::initialize()
 {
 	cout << "  ---  initializing ---  " << endl << endl;
@@ -404,130 +540,19 @@ void IterEnsembleSmoother::initialize()
 	}	
 	parcov_inv = parcov_inv.get(act_par_names);
 	
-
-	string par_csv = pest_scenario.get_pestpp_options().get_ies_par_csv();
-	if (par_csv.size() == 0)
-	{
-		cout << "...drawing " << num_reals << " parameter realizations" << endl;
-		pe.draw(num_reals, parcov_inv);
-		stringstream ss;
-		ss << file_manager.get_base_filename() << ".0.par.csv";
-		cout << "...saving initial parameter ensemble to " << ss.str() << endl;
-		pe.to_csv(ss.str());
-	}
-	else
-	{
-		string par_ext = pest_utils::lower_cp(par_csv).substr(par_csv.size() - 3, par_csv.size());
-		performance_log->log_event("processing par csv " + par_csv);	
-		if (par_ext.compare("csv") == 0)
-		{
-			cout << "  ---  loading par ensemble from csv file " << par_csv << endl;
-			try
-			{
-				pe.from_csv(par_csv);
-			}
-			catch (const exception &e)
-			{
-				ss << "error processing par csv: " << e.what();
-				throw_ies_error(ss.str());
-			}
-			catch (...)
-			{
-				throw_ies_error(string("error processing par csv"));
-			}
-		}
-		else if ((par_ext.compare("jcb") == 0) || (par_ext.compare("jco") == 0))
-		{
-			cout << "  ---  loading par ensemble from binary file " << par_csv << endl;
-			try
-			{
-				pe.from_binary(par_csv);
-			}
-			catch (const exception &e)
-			{
-				ss << "error processing par jcb: " << e.what();
-				throw_ies_error(ss.str());
-			}
-			catch (...)
-			{
-				throw_ies_error(string("error processing par jcb"));
-			}
-		}
-		else
-		{
-			ss << "unrecognized par csv extension " << par_ext << ", looking for csv, jcb, or jco";
-			throw_ies_error(ss.str());
-		}
-	}
+	initialize_pe(parcov_inv); //not inverted yet..
+	
 	performance_log->log_event("inverting parcov");
 	cout << "  ---  inverting parcov" << endl;
 	parcov_inv.inv_ip(echo);
 
 
 	//obs ensemble
-	num_reals = pe.shape().first;
-	performance_log->log_event("load obscov");
-	cout << "  ---  initializing obs cov from observation weights" << endl;
 	Covariance obscov;
 	obscov.from_observation_weights(pest_scenario);
 	obscov = obscov.get(act_obs_names);
-	string obs_csv = pest_scenario.get_pestpp_options().get_ies_obs_csv();
-	if (obs_csv.size() == 0)
-	{
-		cout << "drawing " << num_reals << " observation noise realizations" << endl;
-		oe.draw(num_reals, obscov);
-		stringstream ss;
-		ss << file_manager.get_base_filename() << ".0.obs.csv";
-		cout << "...saving initial observation ensemble to " << ss.str() << endl;
-		oe.to_csv(ss.str());
-	}
-	else
-	{
-		string obs_ext = pest_utils::lower_cp(obs_csv).substr(obs_csv.size() - 3, obs_csv.size());
-		performance_log->log_event("processing obs csv " + obs_csv);
-		if (obs_ext.compare("csv") == 0)
-		{
-			cout << "  ---  loading obs ensemble from csv file " << obs_csv << endl;
-			try
-			{
-				oe.from_csv(obs_csv);
-			}
-			catch (const exception &e)
-			{
-				ss << "error processing obs csv: " << e.what();
-				throw_ies_error(ss.str());
-			}
-			catch (...)
-			{
-				throw_ies_error(string("error processing obs csv"));
-			}
-		}
-		else if ((obs_ext.compare("jcb") == 0) || (obs_ext.compare("jco") == 0))
-		{
-			cout << "  ---  loading obs ensemble from binary file " << obs_csv << endl;
+	initialize_oe(obscov);
 
-			try
-			{
-				oe.from_binary(obs_csv);
-			}
-			catch (const exception &e)
-			{
-				stringstream ss;
-				ss << "error processing obs binary file: " << e.what();
-				throw_ies_error(ss.str());
-			}
-			catch (...)
-			{
-				throw_ies_error(string("error processing obs binary file"));
-			}
-		}
-		else
-		{
-			ss << "unrecognized obs ensemble extension " << obs_ext << ", looing for csv, jcb, or jco";
-			throw_ies_error(ss.str());
-		}
-	}
-		
 
 	if (pe.shape().first != oe.shape().first)
 	{
@@ -554,14 +579,15 @@ void IterEnsembleSmoother::initialize()
 
 
 	//check for compatibility between pe, oe and control file
-	if (oe.shape().first != pe.shape().first)
+	/*if (oe.shape().first != pe.shape().first)
 	{
 		stringstream ss;
 		ss << " pe ( " << pe.shape().first << ") has different number of realizations than oe (" << oe.shape().first << ")";		
 		throw_ies_error(ss.str());
 	}
+*/
 
-
+	
 	oe_base = oe; //copy
 	//reorder this for later...
 	oe_base.reorder(vector<string>(), act_obs_names);
@@ -691,6 +717,8 @@ void IterEnsembleSmoother::initialize()
 			throw_ies_error(ss.str());
 
 		}
+
+
 		if (oe.shape().first < oe_base.shape().first) //maybe some runs failed...
 		{		
 			//find which realizations are missing and reorder oe_base, pe and pe_base
@@ -735,8 +763,6 @@ void IterEnsembleSmoother::initialize()
 			{
 				throw_ies_error(string("error reordering pe with restart oe"));
 			}
-			
-
 		}
 		else if (oe.shape().first > oe_base.shape().first) //something is wrong
 		{
@@ -748,6 +774,11 @@ void IterEnsembleSmoother::initialize()
 
 	performance_log->log_event("calc initial phi");
 	ph = PhiHandler(&pest_scenario, &file_manager, &oe_base, &pe_base, &parcov_inv, &reg_factor);
+	drop_bad_phi(pe, oe);
+	if (oe.shape().first == 0)
+	{
+		throw_ies_error(string("all realizations dropped as 'bad'"));
+	}
 	ph.update(oe, pe);
 	frec << endl <<endl << "  ---  initial phi summary ---  " << endl;
 	cout << endl <<endl << "  ---  initial phi summary ---  " << endl;
@@ -770,6 +801,38 @@ void IterEnsembleSmoother::initialize()
 	cout << "  ---  initialization complete  --- " << endl << endl;
 }
 
+void IterEnsembleSmoother::drop_bad_phi(ParameterEnsemble &_pe, ObservationEnsemble &_oe)
+{
+	assert(_pe.shape().first == _oe.shape().first);
+	vector<int> idxs = ph.get_idxs_greater_than(pest_scenario.get_pestpp_options().get_ies_bad_phi(), _oe);
+	
+	if (idxs.size() > 0)
+	{
+		ofstream &frec = file_manager.rec_ofstream();
+		cout << " dropping " << idxs.size() << " realizations as 'bad', indices: ";
+		frec << " dropping " << idxs.size() << " realizations as 'bad', indices: ";
+		for (auto i : idxs)
+		{
+			cout << i << " , ";
+			frec << i << " , ";
+		}
+		try
+		{
+			_pe.drop_rows(idxs);
+			_oe.drop_rows(idxs);
+		}
+		catch (const exception &e)
+		{
+			stringstream ss;
+			ss << "drop_bad_phi() error : " << e.what();
+			throw_ies_error(ss.str());
+		}
+		catch (...)
+		{
+			throw_ies_error(string("drop_bad_phi() error"));
+		}
+	}
+}
 
 void IterEnsembleSmoother::save_mat(string prefix, Eigen::MatrixXd &mat)
 {
@@ -825,9 +888,6 @@ void IterEnsembleSmoother::solve()
 	performance_log->log_event("calculate scaled obs diff");
 	cout << "...calculating obs diff matrix" << endl;
 	Eigen::MatrixXd diff = oe.get_eigen_mean_diff(vector<string>(),act_obs_names).transpose();
-	//cout << diff.rows() << ',' << diff.cols() << endl;
-	//cout << diff << endl;
-	//cout << obscov_inv_sqrt.rows() << ',' << obscov_inv_sqrt.cols() << endl;
 	Eigen::MatrixXd obs_diff = scale * (obscov_inv_sqrt * diff);
 	if (verbose_level > 1)
 	{
@@ -930,6 +990,7 @@ void IterEnsembleSmoother::solve()
 
 		//performance_log->log_event("apply residuals to upgrade_1");
 		//upgrade_1 = (upgrade_1 * scaled_residual).transpose();
+		
 		cout << "...forming X1" << endl;
 		Eigen::MatrixXd X1 = Ut * scaled_residual;
 		if (verbose_level > 1)
@@ -973,13 +1034,10 @@ void IterEnsembleSmoother::solve()
 		}
 		X3.resize(0,0);
 
-		//cout << "upgrade_1" << endl << upgrade_1 << endl;
-		ParameterEnsemble pe_lam = pe;//copy
-		//pe_lam.add_to_cols(upgrade_1, pe_base.get_var_names());
+		ParameterEnsemble pe_lam = pe;
 		pe_lam.set_eigen(*pe_lam.get_eigen_ptr() + upgrade_1);
 		upgrade_1.resize(0, 0);
 		
-
 		if ((!pest_scenario.get_pestpp_options().get_ies_use_approx()) && (iter > 1))
 		{
 			performance_log->log_event("calculating parameter correction (full solution)");
@@ -1004,7 +1062,6 @@ void IterEnsembleSmoother::solve()
 					save_mat("x4.dat", x4);
 			}
 
-
 			performance_log->log_event("forming x5");
 			Eigen::MatrixXd x5 = Am * x4;
 			if (verbose_level > 1)
@@ -1013,7 +1070,6 @@ void IterEnsembleSmoother::solve()
 				if (verbose_level > 2)
 					save_mat("x5.dat", x5);
 			}
-
 			
 			performance_log->log_event("forming x6");
 			Eigen::MatrixXd x6 = par_diff.transpose() * x5;
@@ -1023,15 +1079,14 @@ void IterEnsembleSmoother::solve()
 				if (verbose_level > 2)
 					save_mat("x6.dat", x6);
 			}
-			
-			
+						
 			performance_log->log_event("forming x7");
 			if (verbose_level > 1)
 			{
 				cout << "V: " << V.rows() << ',' << V.cols() << endl;
 				if (verbose_level > 2)
 					save_mat("V.dat", V);
-			}
+			}	
 			Eigen::MatrixXd x7 = V * ivec *V.transpose() * x6;
 			if (verbose_level > 1)
 			{
@@ -1039,7 +1094,6 @@ void IterEnsembleSmoother::solve()
 				if (verbose_level > 2)
 					save_mat("x7.dat", x7);
 			}
-
 
 			performance_log->log_event("forming upgrade_2");
 			Eigen::MatrixXd upgrade_2 = -1.0 * (par_diff * x7);
@@ -1075,7 +1129,7 @@ void IterEnsembleSmoother::solve()
 	double mean, std;
 	frec << "  ---  running lambda ensembles...  ---  " << endl;
 	cout << "  ---  running lambda ensembles...  ---  " << endl;
-	vector<ObservationEnsemble> oe_lams = run_lambda_ensembles(pe_lams);
+	vector<ObservationEnsemble> oe_lams = run_lambda_ensembles(pe_lams, lam_vals);
 	frec << "  ---  evaluting lambda ensemble results  --  " << endl;
 	cout << "  ---  evaluting lambda ensemble results  --  " << endl;
 
@@ -1085,6 +1139,13 @@ void IterEnsembleSmoother::solve()
 	ObservationEnsemble oe_lam_best;
 	for (int i=0;i<pe_lams.size();i++)
 	{	
+		drop_bad_phi(pe_lams[i], oe_lams[i]);
+		if (pe_lams[i].shape().first == 0)
+		{
+			cout << "all realizations dropped as 'bad' for lambda " << lam_vals[i] << endl;
+			file_manager.rec_ofstream() << "all realizations dropped as 'bad' for lambda " << lam_vals[i] << endl;
+			continue;
+		}
 		frec << "  --- lambda value " << lam_vals[i] << " phi summary ---  " << endl;
 		cout << "  --- lambda value " << lam_vals[i] << " phi summary ---  " << endl;
 		ph.update(oe_lams[i], pe_lams[i]);
@@ -1098,7 +1159,6 @@ void IterEnsembleSmoother::solve()
 			best_std = std;
 			best_idx = i;
 		}
-
 	}
 
 	if ((use_subset) && (subset_size < pe.shape().first))//subset stuff here
@@ -1225,7 +1285,7 @@ void IterEnsembleSmoother::report_and_save()
 }
 
 
-vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<ParameterEnsemble> &pe_lams)
+vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<ParameterEnsemble> &pe_lams, vector<double> &lam_vals)
 {
 	stringstream ss;
 	ss << "queuing " << pe_lams.size() << " ensembles";
@@ -1310,8 +1370,16 @@ vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<Pa
 				ss << par_real_names[i] << ":" << obs_real_names[i] << ',';
 			}
 			performance_log->log_event(ss.str());
-			performance_log->log_event("dropping failed realizations");
-			_oe.drop_rows(failed_real_indices);
+			if (failed_real_indices.size() == _oe.shape().first)
+			{
+				cout << endl << endl << "  ---   WARNING: all realization failed for lambda multiplier :" << lam_vals[i] << endl << endl;
+				_oe = ObservationEnsemble();
+			}
+			else
+			{
+				performance_log->log_event("dropping failed realizations");
+				_oe.drop_rows(failed_real_indices);
+			}
 			
 		}
 		obs_lams.push_back(_oe);

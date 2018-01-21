@@ -105,9 +105,9 @@ def draw_invest():
     pe = pyemu.ParameterEnsemble.from_gaussian_draw(pst, parcov, num_reals=num_reals, use_homegrown=True)
     oe = pyemu.ObservationEnsemble.from_id_gaussian_draw(pst, num_reals=num_reals)
 if __name__ == "__main__":
-    prep()
+    #prep()
     #ies()
     #test()
-    #pyemu.helpers.start_slaves("template","sweep.exe","pest.pst",num_slaves=5)
+    pyemu.helpers.start_slaves("template","sweep.exe","pest.pst",num_slaves=5)
     #draw_invest()
     #check()

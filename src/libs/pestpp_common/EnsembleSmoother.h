@@ -27,8 +27,10 @@ public:
 	double get_std(phiType pt);
 	double get_max(phiType pt);
 	double get_min(phiType pt);
+	map<string, double>* get_phi_map(PhiHandler::phiType &pt);
 	void report();
 	void write(int iter_num, int total_runs);
+	vector<int> get_idxs_greater_than(double bad_phi, ObservationEnsemble &oe);
 
 private:
 	map<string, double> get_summary_stats(phiType pt);
@@ -39,7 +41,7 @@ private:
 	map<string, double> calc_regul(ParameterEnsemble &pe);
 	map<string, double> calc_actual(ObservationEnsemble &oe);
 	map<string, double> calc_composite(map<string,double> &_meas, map<string,double> &_regul);
-	map<string, double>* get_phi_map(PhiHandler::phiType &pt);
+	//map<string, double>* get_phi_map(PhiHandler::phiType &pt);
 	void write_csv(int iter_num, int total_runs,ofstream &csv, phiType pt,
 		           vector<string> &names);
 
@@ -101,11 +103,14 @@ private:
 
 	//EnsemblePair run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe);
 	vector<int> run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe, vector<int> &real_idxs=vector<int>());
-	vector<ObservationEnsemble> run_lambda_ensembles(vector<ParameterEnsemble> &pe_lams);
+	vector<ObservationEnsemble> run_lambda_ensembles(vector<ParameterEnsemble> &pe_lams, vector<double> &lam_vals);
 	//map<string, double> get_phi_vec_stats(map<string,PhiComponets> &phi_info);
 	//map<string,PhiComponets> get_phi_info(ObservationEnsemble &_oe);
 	void report_and_save();
 	void save_mat(string prefix, Eigen::MatrixXd &mat);
+	void initialize_pe(Covariance &cov);
+	void initialize_oe(Covariance &cov);
+	void drop_bad_phi(ParameterEnsemble &_pe, ObservationEnsemble &_oe);
 	//void check_ensembles(ObservationEnsemble &oe, ParameterEnsemble &pe);
 };
 

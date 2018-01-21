@@ -181,9 +181,6 @@ Eigen::MatrixXd Ensemble::get_eigen(vector<string> row_names, vector<string> col
 	vector<string>::iterator iter, start = real_names.begin(), end = real_names.end();
 	vector<int> row_idxs, col_idxs;
 
-	
-	
-
 	//check for missing
 	vector<string> missing;
 

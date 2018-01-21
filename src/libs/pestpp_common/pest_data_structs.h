@@ -333,6 +333,9 @@ public:
 	void set_ies_use_prior_scaling(bool _ies_use_prior_scaling) { ies_use_prior_scaling = _ies_use_prior_scaling; }
 	const int get_ies_num_reals() const { return ies_num_reals; }
 	void set_ies_num_reals(int _ies_num_reals) { ies_num_reals = _ies_num_reals; }
+	const double get_ies_bad_phi() const { return ies_bad_phi; }
+	void set_ies_bad_phi(double _ies_bad_phi) { ies_bad_phi = _ies_bad_phi; }
+
 
 private:
 	int n_iter_base;
@@ -401,6 +404,7 @@ private:
 	int ies_verbose_level;
 	bool ies_use_prior_scaling;
 	int ies_num_reals;
+	double ies_bad_phi;
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);
 ostream& operator<< (ostream &os, const ObservationInfo& val);
