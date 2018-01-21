@@ -112,6 +112,20 @@ private:
 	void initialize_oe(Covariance &cov);
 	void drop_bad_phi(ParameterEnsemble &_pe, ObservationEnsemble &_oe);
 	//void check_ensembles(ObservationEnsemble &oe, ParameterEnsemble &pe);
+	template<typename T, typename A>
+	void message(int level, string &_message, vector<T, A> _extras);
+	void message(int level, string &_message);
+	
+	template<typename T, typename A>
+	void message(int level, const char* _message, vector<T, A> _extras) { message(int, string(_message), _extras); }
+	void message(int level, const char* _message) { message(level, string(_message)); }
+
+	template<typename T>
+	void message(int level, string &_message, T extra);
+
+	template<typename T>
+	void message(int level, const char* _message, T extra) { message(level, string(_message), extra); }
+
 };
 
 #endif 

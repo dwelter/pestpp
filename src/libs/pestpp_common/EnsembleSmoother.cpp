@@ -484,9 +484,49 @@ void IterEnsembleSmoother::initialize_oe(Covariance &cov)
 	}
 }
 
+template<typename T, typename A>
+void IterEnsembleSmoother::message(int level, string &_message, vector<T, A> _extras)
+{
+	stringstream ss;
+	if (level == 0)
+		ss << endl << "  ---  ";
+	else if (level == 1)
+		ss << "...";
+	
+	if (_extras.size() > 0)
+	{
+		
+		for (auto &e : _extras)
+			ss << e << " , ";
+		
+	}
+	if (level == 0)
+		ss << "  ---  ";
+
+	_message += ss.str();
+	cout << _message << endl;
+	file_manager.rec_ofstream() << _message << endl;
+
+}
+
+void IterEnsembleSmoother::message(int level, string &_message)
+{
+	message(level, _message, vector<string>());
+}
+
+template<typename T>
+void IterEnsembleSmoother::message(int level, string &_message, T extra)
+{
+	stringstream ss;
+	ss << _message << " " << T;
+	message(level, ss.str());
+}
+
 void IterEnsembleSmoother::initialize()
 {
-	cout << "  ---  initializing ---  " << endl << endl;
+	//cout << "  ---  initializing ---  " << endl << endl;
+	message(0, "initializing");
+
 	verbose_level = pest_scenario.get_pestpp_options_ptr()->get_ies_verbose_level();
 	iter = 0;
 	ofstream &frec = file_manager.rec_ofstream();
@@ -497,11 +537,9 @@ void IterEnsembleSmoother::initialize()
 	lam_mults = pest_scenario.get_pestpp_options().get_ies_lam_mults();
 	if (lam_mults.size() == 0)
 		lam_mults.push_back(1.0);
-	cout << "...using lambda multipliers: ";
-	for (auto mult : lam_mults)
-		cout << mult << " , ";
-	cout << endl;
-
+	//cout << "...using lambda multipliers: ";
+	message(1, "using lambda multipliers", lam_mults);
+	
 	bool echo = false;
 	if (verbose_level > 1)
 		echo = true;
@@ -511,7 +549,8 @@ void IterEnsembleSmoother::initialize()
 
 	subset_size = pest_scenario.get_pestpp_options().get_ies_subset_size();
 	reg_factor = pest_scenario.get_pestpp_options().get_ies_reg_factor();
-	cout << "...using reg_factor:" << reg_factor << endl;
+	//cout << "...using reg_factor:" << reg_factor << endl;
+	message(1,"using reg_factor", reg_factor);
 	int num_reals = pest_scenario.get_pestpp_options().get_ies_num_reals();
 	
 	stringstream ss;
@@ -521,12 +560,14 @@ void IterEnsembleSmoother::initialize()
 	string parcov_filename = pest_scenario.get_pestpp_options().get_parcov_filename();
 	if (parcov_filename.size() == 0)
 	{
-		cout << "  ---  initializing par cov from parameter bounds" << endl;
+		//cout << "  ---  initializing par cov from parameter bounds" << endl;
+		message(0, "initializing par cov from parameter bounds");
 		parcov_inv.from_parameter_bounds(pest_scenario);
 	}
 	else
 	{
-		cout << "  ---  initializing par cov from file " << parcov_filename << endl;
+		//cout << "  ---  initializing par cov from file " << parcov_filename << endl;
+		message(0, "initializing par cov from file", parcov_filename);
 		string extension = parcov_filename.substr(parcov_filename.size() - 3, 3);
 		pest_utils::upper_ip(extension);
 		if (extension.compare("COV") == 0)
@@ -569,8 +610,9 @@ void IterEnsembleSmoother::initialize()
 	}
 	else
 	{
-		frec << "  ---  using first " << subset_size << " realizations in ensemble lambda testing" << endl;
-		cout << "  ---  using first " << subset_size << " realizations in ensemble lambda testing" << endl;
+		//frec << "  ---  using first " << subset_size << " realizations in ensemble lambda testing" << endl;
+		//cout << "  ---  using first " << subset_size << " realizations in ensemble lambda testing" << endl;
+		message(0, "using subset in lamda testing, only first ", subset_size);
 		use_subset = true;
 	}
 		
@@ -602,15 +644,18 @@ void IterEnsembleSmoother::initialize()
 	obscov_inv_sqrt = obscov.get_matrix().diagonal().cwiseSqrt().asDiagonal();
 		
 	//need this here for Am calcs...
-	cout << "  ---  transforming parameter ensembles to numeric" << endl;
+	//cout << "  ---  transforming parameter ensembles to numeric" << endl;
+	message(0, "transforming parameter ensembles to numeric");
 	pe.transform_ip(ParameterEnsemble::transStatus::NUM);;
 	pe_base.transform_ip(ParameterEnsemble::transStatus::NUM);
 	
 	if (!pest_scenario.get_pestpp_options().get_ies_use_approx()) 
 	{
-		cout << "  ---  using full (MAP) update solution  ---  " << endl;
+		//cout << "  ---  using full (MAP) update solution  ---  " << endl;
+		message(0, "using full (MAP) update solution");
 		performance_log->log_event("calculating 'Am' matrix for full solution");
-		cout << "  forming Am matrix" << endl;
+		//cout << "  forming Am matrix" << endl;
+		message(1, "forming Am matrix");
 		double scale = (1.0 / (sqrt(double(pe.shape().first - 1))));
 		Eigen::MatrixXd par_diff = scale * pe.get_eigen_mean_diff();
 		par_diff.transposeInPlace();
@@ -651,18 +696,21 @@ void IterEnsembleSmoother::initialize()
 	if (obs_restart_csv.size() == 0)
 	{
 		performance_log->log_event("running initial ensemble");
-		cout << "  ---  running initial ensemble of " << oe.shape().first << " realizations" << endl;
+		//cout << "  ---  running initial ensemble of " << oe.shape().first << " realizations" << endl;
+		message(0, "running initial ensemble of size", oe.shape().first);
 		run_ensemble(pe, oe);
 		pe.transform_ip(ParameterEnsemble::transStatus::NUM);
 	}
 	else
 	{
 		performance_log->log_event("restart IES with existing obs ensemble csv: " + obs_restart_csv);
-		cout << "  ---  restarting with existing obs ensemble " << obs_restart_csv << endl;
+		//cout << "  ---  restarting with existing obs ensemble " << obs_restart_csv << endl;
+		message(0, "restarting with existing obs ensemble", obs_restart_csv);
 		string obs_ext = pest_utils::lower_cp(obs_restart_csv).substr(obs_restart_csv.size() - 3, obs_restart_csv.size());
 		if (obs_ext.compare("csv") == 0)
 		{
-			cout << "  ---  loading restart obs ensemble from csv file " << obs_restart_csv << endl;
+			//cout << "  ---  loading restart obs ensemble from csv file " << obs_restart_csv << endl;
+			message(1, "loading restart obs ensemble from csv file", obs_restart_csv);
 			try
 			{
 				oe.from_csv(obs_restart_csv);
@@ -679,8 +727,8 @@ void IterEnsembleSmoother::initialize()
 		}
 		else if ((obs_ext.compare("jcb") == 0) || (obs_ext.compare("jco") == 0))
 		{
-			cout << "  ---  loading restart obs ensemble from binary file " << obs_restart_csv << endl;
-
+			//cout << "  ---  loading restart obs ensemble from binary file " << obs_restart_csv << endl;
+			message(1, "loading restart obs ensemble from binary file", obs_restart_csv);
 			try
 			{
 				oe.from_binary(obs_restart_csv);
@@ -723,7 +771,8 @@ void IterEnsembleSmoother::initialize()
 		if (oe.shape().first < oe_base.shape().first) //maybe some runs failed...
 		{		
 			//find which realizations are missing and reorder oe_base, pe and pe_base
-			cout << "  ---  shape mismatch detected with restart obs ensemble...checking for compatibility..." << endl;
+			//cout << "  ---  shape mismatch detected with restart obs ensemble...checking for compatibility..." << endl;
+			message(0, "shape mismatch detected with restart obs ensemble...checking for compatibility");
 			vector<string> pe_real_names;
 			start = oe_base_real_names.begin();
 			end = oe_base_real_names.end();	
@@ -781,8 +830,9 @@ void IterEnsembleSmoother::initialize()
 		throw_ies_error(string("all realizations dropped as 'bad'"));
 	}
 	ph.update(oe, pe);
-	frec << endl <<endl << "  ---  initial phi summary ---  " << endl;
-	cout << endl <<endl << "  ---  initial phi summary ---  " << endl;
+	//frec << endl <<endl << "  ---  initial phi summary ---  " << endl;
+	//cout << endl <<endl << "  ---  initial phi summary ---  " << endl;
+	message(0, "initial phi summary");
 	ph.report();
 	ph.write(0, run_mgr_ptr->get_total_runs());
 	
@@ -795,11 +845,13 @@ void IterEnsembleSmoother::initialize()
 		last_best_lam = pow(10.0,(floor(log10(x))));
 	}
 	
-	file_manager.rec_ofstream() << "  ---  current lambda: " << setw(20) << left << last_best_lam << endl;
-	cout << "  ---  current lambda: " << setw(20) << left << last_best_lam << endl;
+	//file_manager.rec_ofstream() << "  ---  current lambda: " << setw(20) << left << last_best_lam << endl;
+	//cout << "  ---  current lambda: " << setw(20) << left << last_best_lam << endl;
+	message(0, "current lambda:", last_best_lam);
 	
 	//pe.transform_ip(ParameterEnsemble::transStatus::NUM);
-	cout << "  ---  initialization complete  --- " << endl << endl;
+	//cout << "  ---  initialization complete  --- " << endl << endl;
+	message(0, "initialization complete");
 }
 
 void IterEnsembleSmoother::drop_bad_phi(ParameterEnsemble &_pe, ObservationEnsemble &_oe)
@@ -809,7 +861,7 @@ void IterEnsembleSmoother::drop_bad_phi(ParameterEnsemble &_pe, ObservationEnsem
 	
 	if (idxs.size() > 0)
 	{
-		ofstream &frec = file_manager.rec_ofstream();
+		/*ofstream &frec = file_manager.rec_ofstream();
 		cout << " dropping " << idxs.size() << " realizations as 'bad', indices: ";
 		frec << " dropping " << idxs.size() << " realizations as 'bad', indices: ";
 		for (auto i : idxs)
@@ -818,7 +870,10 @@ void IterEnsembleSmoother::drop_bad_phi(ParameterEnsemble &_pe, ObservationEnsem
 			frec << i << " , ";
 		}
 		cout << endl;
-		frec << endl;
+		frec << endl;*/
+		message(0, "droppping realizations as bad: ", idxs.size());
+		message(1, "dropped indices: ", idxs);
+
 		try
 		{
 			_pe.drop_rows(idxs);
@@ -853,8 +908,9 @@ void IterEnsembleSmoother::solve()
 	iter++;
 	stringstream ss;
 	ofstream &frec = file_manager.rec_ofstream();
-	frec << endl << "  ---  starting solve for iteration: " << iter << endl;
-	cout << endl << "  ---  starting solve for iteration: " << iter << endl;
+	//frec << endl << "  ---  starting solve for iteration: " << iter << endl;
+	//cout << endl << "  ---  starting solve for iteration: " << iter << endl;
+	message(0, "starting solve for iteration:", iter);
 	ss << "starting solve for iteration: " << iter;
 	performance_log->log_event(ss.str());
 
@@ -877,7 +933,8 @@ void IterEnsembleSmoother::solve()
 	performance_log->log_event("calculate residual matrix");
 	//oe_base var_names should be ordered by act_obs_names, so only reorder real_names
 	//oe should only include active realizations, so only reorder var_names
-	cout << "...calculating residual matrix" << endl;
+	//cout << "...calculating residual matrix" << endl;
+	message(1, "calculating residual matrix");
 	Eigen::MatrixXd scaled_residual = obscov_inv_sqrt * (oe.get_eigen(vector<string>(), act_obs_names) - 
 		oe_base.get_eigen(oe.get_real_names(), vector<string>())).transpose();
 	if (verbose_level > 1)
@@ -889,7 +946,8 @@ void IterEnsembleSmoother::solve()
 	}
 		
 	performance_log->log_event("calculate scaled obs diff");
-	cout << "...calculating obs diff matrix" << endl;
+	//cout << "...calculating obs diff matrix" << endl;
+	message(1, "calculating obs diff matrix");
 	Eigen::MatrixXd diff = oe.get_eigen_mean_diff(vector<string>(),act_obs_names).transpose();
 	Eigen::MatrixXd obs_diff = scale * (obscov_inv_sqrt * diff);
 	if (verbose_level > 1)
@@ -900,8 +958,8 @@ void IterEnsembleSmoother::solve()
 	}
 
 	performance_log->log_event("calculate scaled par diff");
-	cout << "...calculating par diff matrix" << endl;
-
+	//cout << "...calculating par diff matrix" << endl;
+	message(1, "calculating par diff matrix");
 	pe.transform_ip(ParameterEnsemble::transStatus::NUM);
 	diff = pe.get_eigen_mean_diff(vector<string>(), act_par_names).transpose();
 	Eigen::MatrixXd par_diff;
@@ -921,8 +979,8 @@ void IterEnsembleSmoother::solve()
 	}
 
 	performance_log->log_event("SVD of obs diff");
-	cout << "...calculating SVD of obs diff matrix" << endl;
-
+	//cout << "...calculating SVD of obs diff matrix" << endl;
+	message(1, "calculating SVD of obs diff matrix");
 	Eigen::MatrixXd ivec, upgrade_1, s,V,Ut;
 
 	SVD_REDSVD rsvd;
@@ -952,12 +1010,13 @@ void IterEnsembleSmoother::solve()
 		double cur_lam = last_best_lam * lam_mult;
 		ss << "starting calcs for lambda" << cur_lam;
 		//cout << "   ...starting calcs for lambda: " << cur_lam << endl;
-		frec << "   ...starting calcs for lambda: " << cur_lam << endl;
+		//frec << "   ...starting calcs for lambda: " << cur_lam << endl;
+		message(1, "starting lambda calcs for lambda", cur_lam);
 
 		performance_log->log_event(ss.str());
 		performance_log->log_event("form scaled identity matrix");
-		cout << "...calculating scaled identity matrix" << endl;
-
+		//cout << "...calculating scaled identity matrix" << endl;
+		message(1, "calculating scaled identity matrix");
 		ivec = ((Eigen::VectorXd::Ones(s2.size()) * (cur_lam + 1.0)) + s2).asDiagonal().inverse();
 		if (verbose_level > 1)
 		{
@@ -994,7 +1053,8 @@ void IterEnsembleSmoother::solve()
 		//performance_log->log_event("apply residuals to upgrade_1");
 		//upgrade_1 = (upgrade_1 * scaled_residual).transpose();
 		
-		cout << "...forming X1" << endl;
+		//cout << "...forming X1" << endl;
+		message(1, "forming X1");
 		Eigen::MatrixXd X1 = Ut * scaled_residual;
 		if (verbose_level > 1)
 		{
@@ -1006,7 +1066,8 @@ void IterEnsembleSmoother::solve()
 		Ut.resize(0, 0);
 		
 		
-		cout << "...forming X2" << endl;
+		//cout << "...forming X2" << endl;
+		message(1, "forming X2");
 		Eigen::MatrixXd X2 = ivec * X1;
 		if (verbose_level > 1)
 		{
@@ -1016,7 +1077,8 @@ void IterEnsembleSmoother::solve()
 		}
 		X1.resize(0, 0);
 
-		cout << "...forming X3" << endl;
+		//cout << "...forming X3" << endl;
+		message(1, "forming X3");
 		Eigen::MatrixXd X3 = V * s.asDiagonal() * X2;
 		if (verbose_level > 1)
 		{
@@ -1026,7 +1088,8 @@ void IterEnsembleSmoother::solve()
 		}
 		X2.resize(0, 0);
 
-		cout << "...forming upgrade_1" << endl;
+		//cout << "...forming upgrade_1" << endl;
+		message(1, "forming upgrade_1");
 		upgrade_1 = -1.0 * par_diff * X3;
 		upgrade_1.transposeInPlace();
 		if (verbose_level > 1)
@@ -1044,13 +1107,14 @@ void IterEnsembleSmoother::solve()
 		if ((!pest_scenario.get_pestpp_options().get_ies_use_approx()) && (iter > 1))
 		{
 			performance_log->log_event("calculating parameter correction (full solution)");
-
+			message(1, "calculating parameter correction (full solution, MAP)");
 			performance_log->log_event("forming scaled par resid");
 			Eigen::MatrixXd scaled_par_resid = pe.get_eigen(vector<string>(), act_par_names) - 
 				pe_base.get_eigen(pe.get_real_names(), vector<string>());
 			scaled_par_resid.transposeInPlace();
 			
 			performance_log->log_event("forming x4");
+			message(1, "forming X4");
 			if (verbose_level > 1)
 			{
 				cout << "scaled_par_resid: " << scaled_par_resid.rows() << ',' << scaled_par_resid.cols() << endl;
@@ -1066,6 +1130,7 @@ void IterEnsembleSmoother::solve()
 			}
 
 			performance_log->log_event("forming x5");
+			message(1, "forming X5");
 			Eigen::MatrixXd x5 = Am * x4;
 			if (verbose_level > 1)
 			{
@@ -1074,6 +1139,7 @@ void IterEnsembleSmoother::solve()
 					save_mat("x5.dat", x5);
 			}
 			
+			message(1, "forming X6");
 			performance_log->log_event("forming x6");
 			Eigen::MatrixXd x6 = par_diff.transpose() * x5;
 			if (verbose_level > 1)
@@ -1082,7 +1148,8 @@ void IterEnsembleSmoother::solve()
 				if (verbose_level > 2)
 					save_mat("x6.dat", x6);
 			}
-						
+				
+			message(1, "forming X7");
 			performance_log->log_event("forming x7");
 			if (verbose_level > 1)
 			{
@@ -1099,6 +1166,7 @@ void IterEnsembleSmoother::solve()
 			}
 
 			performance_log->log_event("forming upgrade_2");
+			message(1, "forming upgrade_2");
 			Eigen::MatrixXd upgrade_2 = -1.0 * (par_diff * x7);
 			if (verbose_level > 1)
 			{
@@ -1121,8 +1189,9 @@ void IterEnsembleSmoother::solve()
 //#endif
 		pe_lams.push_back(pe_lam);
 		lam_vals.push_back(cur_lam);
-		frec << "  ---  finished calcs for lambda: " << cur_lam << endl;
-		cout << "  ---  finished calcs for lambda: " << cur_lam << endl;
+		//frec << "  ---  finished calcs for lambda: " << cur_lam << endl;
+		//cout << "  ---  finished calcs for lambda: " << cur_lam << endl;
+		message(0, "finished calcs for lambda:", cur_lam);
 
 	}
 	//return;
@@ -1130,14 +1199,18 @@ void IterEnsembleSmoother::solve()
 	int best_idx = -1;
 	double best_mean = 1.0e+30, best_std = 1.0e+30;
 	double mean, std;
-	frec << "  ---  running lambda ensembles...  ---  " << endl;
-	cout << "  ---  running lambda ensembles...  ---  " << endl;
+	//frec << "  ---  running lambda ensembles...  ---  " << endl;
+	//cout << "  ---  running lambda ensembles...  ---  " << endl;
+	message(0, "running lambda ensembles");
 	vector<ObservationEnsemble> oe_lams = run_lambda_ensembles(pe_lams, lam_vals);
-	frec << "  ---  evaluting lambda ensemble results  --  " << endl;
-	cout << "  ---  evaluting lambda ensemble results  --  " << endl;
+	//frec << "  ---  evaluting lambda ensemble results  --  " << endl;
+	//cout << "  ---  evaluting lambda ensemble results  --  " << endl;
+	message(0, "evaluting lambda ensembles");
 
-	frec << "  ---  last mean: " << setw(15) << last_best_mean << ", last stdev: " << setw(15) << last_best_std << endl;
-	cout << "  ---  last mean: " << setw(15) << last_best_mean << ", last stdev: " << setw(15) << last_best_std << endl;
+	//frec << "  ---  last mean: " << setw(15) << last_best_mean << ", last stdev: " << setw(15) << last_best_std << endl;
+	//cout << "  ---  last mean: " << setw(15) << last_best_mean << ", last stdev: " << setw(15) << last_best_std << endl;
+	message(0, "last mean:", last_best_mean);
+	message(0, "last stdev", last_best_std);
 
 	ObservationEnsemble oe_lam_best;
 	for (int i=0;i<pe_lams.size();i++)
@@ -1148,12 +1221,14 @@ void IterEnsembleSmoother::solve()
 		drop_bad_phi(pe_lams[i], oe_lams[i]);
 		if (pe_lams[i].shape().first == 0)
 		{
-			cout << "all realizations dropped as 'bad' for lambda " << lam_vals[i] << endl;
-			file_manager.rec_ofstream() << "all realizations dropped as 'bad' for lambda " << lam_vals[i] << endl;
+			//cout << "all realizations dropped as 'bad' for lambda " << lam_vals[i] << endl;
+			//file_manager.rec_ofstream() << "all realizations dropped as 'bad' for lambda " << lam_vals[i] << endl;
+			message(1, "all realizations dropped as 'bad' for lambda ", lam_vals[i]);
 			continue;
 		}
-		frec << "  --- lambda value " << lam_vals[i] << " phi summary ---  " << endl;
-		cout << "  --- lambda value " << lam_vals[i] << " phi summary ---  " << endl;
+		/*frec << "  --- lambda value " << lam_vals[i] << " phi summary ---  " << endl;
+		cout << "  --- lambda value " << lam_vals[i] << " phi summary ---  " << endl;*/
+		message(0, "phi summary for lambda:", lam_vals[i]);
 		ph.update(oe_lams[i], pe_lams[i]);
 		ph.report();
 		mean = ph.get_mean(PhiHandler::phiType::COMPOSITE);
@@ -1184,8 +1259,9 @@ void IterEnsembleSmoother::solve()
 			temp_idxs.push_back(ss.str());
 			ireal++;
 		}
-		frec << "  ---  running remaining realizations from best lambda: " << lam_vals[best_idx] << endl;
-		cout << "  ---  running remaining realizations from best lambda: " << lam_vals[best_idx] << endl;
+		//frec << "  ---  running remaining realizations from best lambda: " << lam_vals[best_idx] << endl;
+		//cout << "  ---  running remaining realizations from best lambda: " << lam_vals[best_idx] << endl;
+		message(0, "running remaining realizations for best lambda:", lam_vals[best_idx]);
 
 		remaining_pe_lam.keep_rows(real_idxs);
 		remaining_oe_lam.keep_rows(real_idxs);
@@ -1225,8 +1301,9 @@ void IterEnsembleSmoother::solve()
 	}
 	if (best_idx == -1)
 	{
-		cout << endl << endl << "  --- WARNING:  unsuccessful lambda testing, resetting lambda to 10000.0  ---  " << endl << endl;
-		frec << endl << endl << "  --- WARNING:  unsuccessful lambda testing, resetting lambda to 10000.0  ---  " << endl << endl;
+		//cout << endl << endl << "  --- WARNING:  unsuccessful lambda testing, resetting lambda to 10000.0  ---  " << endl << endl;
+		//frec << endl << endl << "  --- WARNING:  unsuccessful lambda testing, resetting lambda to 10000.0  ---  " << endl << endl;
+		message(0, "WARNING:  unsuccessful lambda testing, resetting lambda to 10000.0");
 		last_best_lam = 10000.0;
 		return;
 
@@ -1236,8 +1313,9 @@ void IterEnsembleSmoother::solve()
 	best_std = ph.get_std(PhiHandler::phiType::COMPOSITE);
 	if (best_mean < last_best_mean * 1.1)
 	{
-		frec << "  ---  updating parameter ensemble  ---  " << endl;
-		cout << "  ---  updating parameter ensemble  ---  " << endl;
+		//frec << "  ---  updating parameter ensemble  ---  " << endl;
+		//cout << "  ---  updating parameter ensemble  ---  " << endl;
+		message(0,"updating parameter ensemble");
 		performance_log->log_event("updating parameter ensemble");
 		last_best_mean = best_mean;
 
@@ -1248,28 +1326,32 @@ void IterEnsembleSmoother::solve()
 		{
 			double new_lam = lam_vals[best_idx] * 0.75;
 			new_lam = (new_lam < lambda_min) ? lambda_min : new_lam;
-			frec << "  ---  updating lambda from " << last_best_lam << " to " << new_lam << endl;
-			cout << "  ---  updating lambda from " << last_best_lam << " to " << new_lam << endl;	
+			//frec << "  ---  updating lambda from " << last_best_lam << " to " << new_lam << endl;
+			//cout << "  ---  updating lambda from " << last_best_lam << " to " << new_lam << endl;	
+			message(0, "updating lambda to ", new_lam);
 			last_best_lam = new_lam;
 		}
 		else
 		{
-			frec << "  ---  not updating lambda  --- " << endl;
-		    cout << "  ---  not updating lambda  --- " << endl;
+			/*frec << "  ---  not updating lambda  --- " << endl;
+		    cout << "  ---  not updating lambda  --- " << endl;*/
+			message(0, "not updating lambda");
 		}
 		last_best_std = best_std;
 	}
 
 	else
 	{
-		frec << "  ---  not updating parameter ensemble  ---  " << endl;
-		cout << "  ---  not updating parameter ensemble  ---  " << endl;
+		/*frec << "  ---  not updating parameter ensemble  ---  " << endl;
+		cout << "  ---  not updating parameter ensemble  ---  " << endl;*/
+		message(0, "not updating parameter ensemble");
 		ph.update(oe, pe);
 		//double new_lam = last_best_mean * *max_element(lam_mults.begin(), lam_mults.end()) * 10.0;
 		double new_lam = last_best_lam * 10.0;
 		new_lam = (new_lam > lambda_max) ? lambda_max : new_lam;
-		frec << " ---  increasing lambda from " << last_best_lam << " to " << new_lam << endl;
-		cout << " ---  increasing lambda from " << last_best_lam << " to " << new_lam << endl;
+		//frec << " ---  increasing lambda from " << last_best_lam << " to " << new_lam << endl;
+		//cout << " ---  increasing lambda from " << last_best_lam << " to " << new_lam << endl;
+		message(0, "incresing lambda to: ", new_lam);
 		last_best_lam = new_lam;
 	}
 	report_and_save();

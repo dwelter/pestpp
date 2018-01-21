@@ -20,9 +20,8 @@ Ensemble::Ensemble(Pest *_pest_scenario_ptr): pest_scenario_ptr(_pest_scenario_p
 
 void Ensemble::draw(int num_reals, Covariance &cov, Transformable &tran, const vector<string> &draw_names)
 {
-
 	if ((draw_names.size() > 50000) && (!cov.isdiagonal()))
-		cout << "  ---  Ensemble::draw() warning: non-diagonal cov used to draw using a lot of variables...this might run out of memory..." << endl << endl;
+		cout << "  ---  Ensemble::draw() warning: non-diagonal cov used to draw for lots of variables...this might run out of memory..." << endl << endl;
 	
 	Eigen::MatrixXd draws(num_reals, draw_names.size());
 	draws.setZero();
@@ -85,8 +84,8 @@ void Ensemble::draw(int num_reals, Covariance &cov, Transformable &tran, const v
 			reals.col(j) = draws.col(jj).array() + tran.get_rec(var_names[j]);
 		}
 	}
-		
 }
+
 
 Covariance Ensemble::get_diagonal_cov_matrix()
 {
