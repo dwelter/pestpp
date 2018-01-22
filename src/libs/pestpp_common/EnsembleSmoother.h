@@ -87,6 +87,7 @@ private:
 	bool use_subset;
 	double last_best_lam, last_best_mean,last_best_std;
 	double lambda_max, lambda_min;
+	int warn_min_reals, error_min_reals;
 	vector<double> lam_mults;
 
 	//string fphi_name;
@@ -125,6 +126,8 @@ private:
 
 	template<typename T>
 	void message(int level, const char* _message, T extra) { message(level, string(_message), extra); }
+
+	void sanity_checks();
 
 };
 

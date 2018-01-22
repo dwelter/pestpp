@@ -33,6 +33,7 @@ PhiHandler::PhiHandler(Pest *_pest_scenario, FileManager *_file_manager,
 
 void PhiHandler::update(ObservationEnsemble & oe, ParameterEnsemble & pe)
 {
+	//update the various phi component vectors
 	meas.clear();
 	meas = calc_meas(oe);
 	regul.clear();
@@ -501,21 +502,78 @@ void IterEnsembleSmoother::message(int level, string &_message, T extra)
 	message(level, ss.str());
 }
 
+void IterEnsembleSmoother::sanity_checks()
+{
+	PestppOptions* ppo = pest_scenario.get_pestpp_options_ptr();
+	string par_csv = ppo->get_ies_par_csv();
+	string obs_csv = ppo->get_ies_obs_csv();
+	string restart = ppo->get_ies_obs_restart_csv();
+	vector<string> errors;
+	vector<string> warnings;
+	if ((par_csv.size() == 0) && (restart.size() > 0))
+		errors.push_back("ies_par_csv is empty but ies_restart_obs_csv is not - how can this work?");
+	if (ppo->get_ies_bad_phi() <= 0.0)
+		errors.push_back("ies_bad_phi <= 0.0, really?");
+	/*if (ppo->get_ies_init_lam() > lambda_max)
+		errors.push_back("ies_init_lambda > lambda_max");
+	if (ppo->get_ies_init_lam() < lambda_min)
+		errors.push_back("ies_init_lambda < lambda min");*/
+	if ((ppo->get_ies_num_reals() < 30) && (par_csv.size() == 0))
+		warnings.push_back("num_reals < 30...might need more...");
+	if (ppo->get_ies_reg_factor() < 0.0)
+		errors.push_back("ies_reg_factor < 0.0 - WRONG!");
+	if (ppo->get_ies_reg_factor() > 1.0)
+		errors.push_back("ies_reg_factor > 1.0 - nope");
+	if ((par_csv.size() == 0) && (ppo->get_ies_subset_size() < 10000000) && (ppo->get_ies_num_reals() < ppo->get_ies_subset_size() * 2))
+		warnings.push_back("ies_num_reals < 2*ies_subset_size: you not gaining that much using subset here");
+	if ((ppo->get_ies_subset_size() < 100000001) && (ppo->get_ies_lam_mults().size() == 1))
+	{
+		warnings.push_back("only one lambda mult to test, no point in use subset, resetting");
+		ppo->set_ies_subset_size(100000000);
+	}
+	if ((ppo->get_ies_verbose_level() < 0) || (ppo->get_ies_verbose_level() > 2))
+	{
+		warnings.push_back("ies_verbose_level must be between 0 and 2, resetting to 2");
+		ppo->set_ies_verbose_level(2);
+	}
+	
+	if (warnings.size() > 0)
+	{
+		message(0, "sanity_check warnings");
+		for (auto &w : warnings)
+			message(1, w);
+	}
+	if (errors.size() > 0)
+	{
+		message(0, "sanity_check errors - uh oh");
+		for (auto &e : errors)
+			message(1, e);
+		throw_ies_error(string("sanity_check() found some problems - please review rec file"));
+	}
+
+}
+
 void IterEnsembleSmoother::initialize()
 {
 	message(0, "initializing");
 
+	
+
 	verbose_level = pest_scenario.get_pestpp_options_ptr()->get_ies_verbose_level();
 	iter = 0;
-	ofstream &frec = file_manager.rec_ofstream();
+	//ofstream &frec = file_manager.rec_ofstream();
 	last_best_mean = 1.0E+30;
 	last_best_std = 1.0e+30;
 	lambda_max = 1.0E+10;
 	lambda_min = 1.0E-10;
+	warn_min_reals = 30;
+	error_min_reals = 3;
 	lam_mults = pest_scenario.get_pestpp_options().get_ies_lam_mults();
 	if (lam_mults.size() == 0)
 		lam_mults.push_back(1.0);
 	message(1, "using lambda multipliers", lam_mults);
+	
+	sanity_checks();
 	
 	bool echo = false;
 	if (verbose_level > 1)
@@ -563,7 +621,7 @@ void IterEnsembleSmoother::initialize()
 	
 	performance_log->log_event("inverting parcov");
 	message(1, "inverting prior parameter covariance matrix");
-	parcov_inv.inv_ip(echo);
+	//parcov_inv.inv_ip(echo);
 
 
 	//obs ensemble
@@ -781,6 +839,18 @@ void IterEnsembleSmoother::initialize()
 	{
 		throw_ies_error(string("all realizations dropped as 'bad'"));
 	}
+	if (oe.shape().first <= error_min_reals)
+	{
+		message(0, "too few active realizations:", oe.shape().first);
+		message(1, "need at least ", error_min_reals);
+		throw_ies_error(string("too few active realizations, cannot continue"));
+	}
+	if (oe.shape().first <= warn_min_reals)
+	{
+		ss.str("");
+		ss << "WARNING: less than " << warn_min_reals << " active realizations...might not be enough";
+		message(0, ss.str());
+	}
 	ph.update(oe, pe);
 	message(0, "initial phi summary");
 	ph.report();
@@ -847,8 +917,18 @@ void IterEnsembleSmoother::solve()
 	ss << "starting solve for iteration: " << iter;
 	performance_log->log_event(ss.str());
 
-	if (oe.shape().first < 2)
-		throw_ies_error(string("less than 2 active realizations...cannot continue"));
+	if (oe.shape().first <= error_min_reals)
+	{
+		message(0, "too few active realizations:", oe.shape().first);
+		message(1, "need at least ", error_min_reals);
+		throw_ies_error(string("too few active realizations, cannot continue"));
+	}
+	if (oe.shape().first <= warn_min_reals)
+	{
+		ss.str("");
+		ss << "WARNING: less than " << warn_min_reals << " active realizations...might not be enough";
+		message(0, ss.str());
+	}
 
 	if ((use_subset) && (subset_size > pe.shape().first))
 	{
