@@ -117,7 +117,7 @@ private:
 	void message(int level, string &_message);
 	
 	template<typename T, typename A>
-	void message(int level, const char* _message, vector<T, A> _extras) { message(int, string(_message), _extras); }
+	void message(int level, const char* _message, vector<T, A> _extras) { message(level, string(_message), _extras); }
 	void message(int level, const char* _message) { message(level, string(_message)); }
 
 	template<typename T>
