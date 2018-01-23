@@ -29,6 +29,12 @@ ies_vars = ["ies_par_csv", "ies_obs_csv", "ies_restart_obs_csv",
 
 exe_path = os.path.join("..","..","..","exe","windows","x64","Release","pestpp-ies.exe")
 
+noptmax = 3
+
+compare_files = ["pest.phi.actual.csv","pest.phi.meas.csv","pest.phi.regul.csv",
+                 "pest.{0}.par.csv".format(noptmax),"pest.{0}.obs.csv".format(noptmax)]
+diff_tol = 1.0e-6
+
 def write_empty_test_matrix():
     test_names = [t.split()[0] for t in tests.split('\n')]
     df = pd.DataFrame(index=test_names, columns=ies_vars)
@@ -36,7 +42,7 @@ def write_empty_test_matrix():
     df.to_csv("ies_test.blank.csv")
 
 
-def setup_test_dir(model_d):
+def setup_suite_dir(model_d):
     base_d = os.path.join(model_d, "template")
     new_d = os.path.join(model_d, "test_template")
     if os.path.exists(new_d):
@@ -47,8 +53,8 @@ def setup_test_dir(model_d):
     #set first par as fixed
     pst.parameter_data.loc[pst.par_names[0],"partrans"] = "fixed"
 
-    #set noptmax = 3
-    pst.control_data.noptmax = 3
+    #set noptmax
+    pst.control_data.noptmax = noptmax
 
     # wipe all pestpp options
     pst.pestpp_options = {}
@@ -132,14 +138,70 @@ def run_suite(model_d):
         pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=10,
                                    master_dir=test_d,verbose=True,slave_root=model_d)
 
+def compare_suite(model_d):
+    base_d = os.path.join(model_d, "baseline_opt")
+    test_ds = [d for d in os.listdir(model_d) if "master_test" in d]
+    errors = []
+    for test_d in test_ds:
+        test_d = os.path.join(model_d, test_d)
+        for compare_file in compare_files:
+            if not os.path.exists(os.path.join(test_d, compare_file)):
+                errors.append("missing compare file '{0}' in test_d '{1}'".format(compare_file, test_d))
+            else:
+                base_file = os.path.join(base_d, "{0}__{1}".
+                                         format(os.path.split(test_d)[-1], compare_file))
+                test_file = os.path.join(test_d, compare_file)
+                try:
+                    base_df = pd.read_csv(base_file)
+                except Exception as e:
+                    errors.append("error loading base_file {0}: {1}".format(base_file, str(e)))
+                    continue
+                try:
+                    test_df = pd.read_csv(test_file)
+                except Exception as e:
+                    errors.append("error loading test_file {0}, {1}: {2}".format(test_d, base_file, str(e)))
+                    continue
+                try:
+                    diff = (test_df - base_df).apply(np.abs)
+                except Exception as e:
+                    errors.append("error differencing base and test for '{0}':{1}".format(base_file, str(e)))
+                max_diff = diff.max().max()
+                if max_diff > diff_tol:
+                    errors.append("max diff greater than diff tol for '{0}':{1}".format(base_file, max_diff))
+    if len(errors) > 0:
+        for e in errors:
+            print("ERROR: ",e)
+        raise Exception("errors in {0}: ".format(model_d)+'\n'.join(errors))
+
+
+def test_10par_xsec():
+    run_suite("ies_10par_xsec")
+    compare_suite("ies_10par_xsec")
 
 def rebase(model_d):
     """reset the "base" for the standard test suite"""
-    run_suite(model_d)
+    #run_suite(model_d)
+    base_d = os.path.join(model_d,"baseline_opt")
+    if os.path.exists(base_d):
+        shutil.rmtree(base_d)
+    os.mkdir(base_d)
 
     #find test dirs
-    test_ds = [d for os.listdir(model_d) if "master_test" in d and os.path.isdir(d)]
-    
+    print(os.listdir(model_d))
+    test_ds = [d for d in os.listdir(model_d) if "master_test" in d]
+    for test_d in test_ds:
+        test_d = os.path.join(model_d,test_d)
+        for compare_file in compare_files:
+            if not os.path.exists(os.path.join(test_d,compare_file)):
+                print("WARNING missing compare file:",test_d,compare_file)
+            else:
+                shutil.copy2(os.path.join(test_d,compare_file),
+                                          os.path.join(base_d,"{0}__{1}".
+                                                       format(os.path.split(test_d)[-1],compare_file)))
+
+
+
+
 
 
 def tenpar_subset_test():
@@ -181,5 +243,7 @@ if __name__ == "__main__":
     #write_empty_test_matrix()
     #setup_test_dir("ies_10par_xsec")
     #run_suite("ies_10par_xsec")
+    #rebase("ies_10par_xsec")
     rebase("ies_10par_xsec")
+    test_10par_xsec()
     #tenpar_subset_test()
