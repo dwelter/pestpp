@@ -212,25 +212,37 @@ void Mat::transpose_ip()
 	}
 }
 
-Mat Mat::inv()
+Mat Mat::inv(bool echo)
+{
+	Logger* log = new Logger();
+	log->set_echo(echo);
+	//inv_ip(log);
+	return inv(log);
+}
+
+
+Mat Mat::inv(Logger* log)
 {
 	if (nrow() != ncol()) throw runtime_error("Mat::inv() error: only symmetric positive definite matrices can be inverted with Mat::inv()");
 	if (mattype == MatType::DIAGONAL)
 	{
-		Eigen::VectorXd diag = matrix.diagonal();
-		diag = 1.0 / diag.array();
+		log->log("inverting diagonal matrix in place");
+		log->log("extracting diagonal");
+		Eigen::VectorXd diag = matrix.diagonal().eval();
+		log->log("inverting diagonal");
+		log->log("building triplets");
 		vector<Eigen::Triplet<double>> triplet_list;
-		
 		for (int i = 0; i != diag.size(); ++i)
 		{
-			triplet_list.push_back(Eigen::Triplet<double>(i, i, diag[i]));
+			triplet_list.push_back(Eigen::Triplet<double>(i, i, 1.0 / diag[i]));
 		}
-		Eigen::SparseMatrix<double> inv_mat(triplet_list.size(),triplet_list.size());
+		Eigen::SparseMatrix<double> inv_mat;
+		inv_mat.conservativeResize(triplet_list.size(), triplet_list.size());
 		inv_mat.setZero();
+		log->log("setting matrix from triplets");
 		inv_mat.setFromTriplets(triplet_list.begin(), triplet_list.end());
 		return Mat(row_names, col_names, inv_mat);
 	}
-	
 	//Eigen::ConjugateGradient<Eigen::SparseMatrix<double>> solver;
 	Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver;
 	solver.compute(matrix);

@@ -21,7 +21,7 @@ public:
 	PhiHandler() { ; }
 	PhiHandler(Pest *_pest_scenario, FileManager *_file_manager, 
 		       ObservationEnsemble *_oe_base, ParameterEnsemble *_pe_base,
-		       Covariance *_parcov_inv, double *_reg_factor);
+		       Covariance *_parcov, double *_reg_factor);
 	void update(ObservationEnsemble &oe, ParameterEnsemble &pe);
 	double get_mean(phiType pt);
 	double get_std(phiType pt);
@@ -51,7 +51,7 @@ private:
 	FileManager* file_manager;
 	ObservationEnsemble* oe_base;
 	ParameterEnsemble* pe_base;
-	Covariance* parcov_inv;
+	Covariance parcov_inv;
 	map<string, double> meas;
 	map<string, double> regul;
 	map<string, double> composite;
@@ -80,7 +80,7 @@ private:
 	PerformanceLog *performance_log;
 	RunManagerAbstract* run_mgr_ptr;
 	PhiHandler ph;
-	Covariance parcov_inv;
+	Covariance parcov;
 	double reg_factor;
 
 	int iter,subset_size;

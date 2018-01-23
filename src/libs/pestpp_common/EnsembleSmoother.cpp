@@ -13,14 +13,15 @@
 
 PhiHandler::PhiHandler(Pest *_pest_scenario, FileManager *_file_manager,
 	ObservationEnsemble *_oe_base, ParameterEnsemble *_pe_base,
-	Covariance *_parcov_inv, double *_reg_factor)	
+	Covariance *_parcov, double *_reg_factor)	
 {
 	pest_scenario = _pest_scenario;
 	file_manager = _file_manager;
 	oe_base = _oe_base;
 	pe_base = _pe_base;
 	reg_factor = _reg_factor;
-	parcov_inv = _parcov_inv;
+	parcov_inv = _parcov->inv();
+	//parcov.inv_ip();
 	oreal_names = oe_base->get_real_names();
 	preal_names = pe_base->get_real_names();
 	prepare_csv(file_manager->open_ofile_ext("phi.actual.csv"),oreal_names);
@@ -250,7 +251,7 @@ map<string, double> PhiHandler::calc_regul(ParameterEnsemble & pe)
 	pe_base->transform_ip(ParameterEnsemble::transStatus::NUM);
 	pe.transform_ip(ParameterEnsemble::transStatus::NUM);
 	Eigen::MatrixXd diff_mat = pe.get_eigen() - pe_base->get_eigen(real_names, vector<string>());
-	Eigen::VectorXd parcov_inv_diag = parcov_inv->e_ptr()->diagonal();
+	Eigen::VectorXd parcov_inv_diag = parcov_inv.e_ptr()->diagonal();
 	Eigen::VectorXd diff;
 	for (int i = 0; i < real_names.size(); i++)
 	{	
@@ -352,7 +353,7 @@ void IterEnsembleSmoother::initialize_pe(Covariance &cov)
 		pe.draw(num_reals, cov);
 		stringstream ss;
 		ss << file_manager.get_base_filename() << ".0.par.csv";
-		message(1, "saving initial parameer ensemble to ", ss.str());
+		message(1, "saving initial parameter ensemble to ", ss.str());
 		pe.to_csv(ss.str());
 	}
 	else
@@ -399,7 +400,7 @@ void IterEnsembleSmoother::initialize_pe(Covariance &cov)
 			throw_ies_error(ss.str());
 		}
 		message(1, "initializing prior parameter covariance matrix from ensemble (using diagonal matrix)");
-		parcov_inv = pe.get_diagonal_cov_matrix();
+		parcov = pe.get_diagonal_cov_matrix();
 	}
 }
 
@@ -411,7 +412,7 @@ void IterEnsembleSmoother::initialize_oe(Covariance &cov)
 	string obs_csv = pest_scenario.get_pestpp_options().get_ies_obs_csv();
 	if (obs_csv.size() == 0)
 	{
-		message(1, "drawing obervation noise realizations: ", num_reals);
+		message(1, "drawing observation noise realizations: ", num_reals);
 		oe.draw(num_reals, cov);
 		stringstream ss;
 		ss << file_manager.get_base_filename() << ".0.obs.csv";
@@ -510,16 +511,24 @@ void IterEnsembleSmoother::sanity_checks()
 	string restart = ppo->get_ies_obs_restart_csv();
 	vector<string> errors;
 	vector<string> warnings;
+	stringstream ss;
 	if ((par_csv.size() == 0) && (restart.size() > 0))
 		errors.push_back("ies_par_csv is empty but ies_restart_obs_csv is not - how can this work?");
 	if (ppo->get_ies_bad_phi() <= 0.0)
 		errors.push_back("ies_bad_phi <= 0.0, really?");
-	/*if (ppo->get_ies_init_lam() > lambda_max)
-		errors.push_back("ies_init_lambda > lambda_max");
-	if (ppo->get_ies_init_lam() < lambda_min)
-		errors.push_back("ies_init_lambda < lambda min");*/
-	if ((ppo->get_ies_num_reals() < 30) && (par_csv.size() == 0))
-		warnings.push_back("num_reals < 30...might need more...");
+	if ((ppo->get_ies_num_reals() < error_min_reals) && (par_csv.size() == 0))
+	{
+		ss.str("");
+		ss << "ies_num_reals < " << error_min_reals << ", this is redic, increaing to " << warn_min_reals;
+		warnings.push_back(ss.str());
+		ppo->set_ies_num_reals(warn_min_reals);
+	}
+	if ((ppo->get_ies_num_reals() < warn_min_reals) && (par_csv.size() == 0))
+	{
+		ss.str("");
+		ss << "ies_num_reals < " << warn_min_reals << ", this is prob too few";
+		warnings.push_back(ss.str());
+	}
 	if (ppo->get_ies_reg_factor() < 0.0)
 		errors.push_back("ies_reg_factor < 0.0 - WRONG!");
 	if (ppo->get_ies_reg_factor() > 1.0)
@@ -528,8 +537,8 @@ void IterEnsembleSmoother::sanity_checks()
 		warnings.push_back("ies_num_reals < 2*ies_subset_size: you not gaining that much using subset here");
 	if ((ppo->get_ies_subset_size() < 100000001) && (ppo->get_ies_lam_mults().size() == 1))
 	{
-		warnings.push_back("only one lambda mult to test, no point in use subset, resetting");
-		ppo->set_ies_subset_size(100000000);
+		warnings.push_back("only one lambda mult to test, no point in using a subset");
+		//ppo->set_ies_subset_size(100000000);
 	}
 	if ((ppo->get_ies_verbose_level() < 0) || (ppo->get_ies_verbose_level() > 2))
 	{
@@ -550,7 +559,7 @@ void IterEnsembleSmoother::sanity_checks()
 			message(1, e);
 		throw_ies_error(string("sanity_check() found some problems - please review rec file"));
 	}
-
+	cout << endl << endl;
 }
 
 void IterEnsembleSmoother::initialize()
@@ -571,7 +580,7 @@ void IterEnsembleSmoother::initialize()
 	lam_mults = pest_scenario.get_pestpp_options().get_ies_lam_mults();
 	if (lam_mults.size() == 0)
 		lam_mults.push_back(1.0);
-	message(1, "using lambda multipliers", lam_mults);
+	message(1, "using lambda multipliers: ", lam_mults);
 	
 	sanity_checks();
 	
@@ -597,7 +606,7 @@ void IterEnsembleSmoother::initialize()
 		if (pest_scenario.get_pestpp_options().get_ies_par_csv().size() == 0)
 		{
 			message(0, "initializing prior parameter covariance matrix from parameter bounds");
-			parcov_inv.from_parameter_bounds(pest_scenario);
+			parcov.from_parameter_bounds(pest_scenario);
 		}
 	}
 	else
@@ -606,22 +615,23 @@ void IterEnsembleSmoother::initialize()
 		string extension = parcov_filename.substr(parcov_filename.size() - 3, 3);
 		pest_utils::upper_ip(extension);
 		if (extension.compare("COV") == 0)
-			parcov_inv.from_ascii(parcov_filename);
+			parcov.from_ascii(parcov_filename);
 		else if ((extension.compare("JCO") == 0) || (extension.compare("JCB") == 0))
-			parcov_inv.from_binary(parcov_filename);
+			parcov.from_binary(parcov_filename);
 		else if (extension.compare("UNC") == 0)
-			parcov_inv.from_uncertainty_file(parcov_filename);
+			parcov.from_uncertainty_file(parcov_filename);
 		else
 			throw_ies_error("unrecognized parcov_filename extension: " + extension);
 	}	
-	if (parcov_inv.e_ptr()->rows() > 0)
-		parcov_inv = parcov_inv.get(act_par_names);
+	if (parcov.e_ptr()->rows() > 0)
+		parcov = parcov.get(act_par_names);
 	
-	initialize_pe(parcov_inv); //not inverted yet..
+	initialize_pe(parcov); //not inverted yet..
 	
-	performance_log->log_event("inverting parcov");
+	//jwhite 23jan2018: not inverting this anymore - pushes parameter values around too much.  Works better without inverting
+	/*performance_log->log_event("inverting parcov");
 	message(1, "inverting prior parameter covariance matrix");
-	//parcov_inv.inv_ip(echo);
+	parcov.inv_ip(echo);*/
 
 
 	//obs ensemble
@@ -833,7 +843,7 @@ void IterEnsembleSmoother::initialize()
 
 
 	performance_log->log_event("calc initial phi");
-	ph = PhiHandler(&pest_scenario, &file_manager, &oe_base, &pe_base, &parcov_inv, &reg_factor);
+	ph = PhiHandler(&pest_scenario, &file_manager, &oe_base, &pe_base, &parcov, &reg_factor);
 	drop_bad_phi(pe, oe);
 	if (oe.shape().first == 0)
 	{
@@ -975,7 +985,7 @@ void IterEnsembleSmoother::solve()
 	if (pest_scenario.get_pestpp_options().get_ies_use_prior_scaling())
 	{
 		cout << "...applying prior par cov scaling to par diff matrix" << endl;
-		par_diff = scale * *parcov_inv.e_ptr() * diff;
+		par_diff = scale * *parcov.e_ptr() * diff;
 	}
 	else
 		par_diff = scale * diff;
@@ -1039,8 +1049,8 @@ void IterEnsembleSmoother::solve()
 			if (verbose_level > 2)
 				save_mat("X1.dat", X1);
 		}
-		scaled_residual.resize(0, 0);
-		Ut.resize(0, 0);
+		//scaled_residual.resize(0, 0);
+		//Ut.resize(0, 0);
 		
 		message(1, "forming X2");
 		Eigen::MatrixXd X2 = ivec * X1;
