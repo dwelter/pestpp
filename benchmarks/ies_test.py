@@ -1,6 +1,7 @@
 import os
 import shutil
 import platform
+import numpy as np
 import pandas as pd
 import pyemu
 
@@ -102,9 +103,9 @@ def setup_test_dir(model_d):
     # shutil.copytree(new_d,pestpp_d)
 
 
-def tenpar_tests():
+def run_suite(model_d):
     df = pd.read_csv("ies_test.csv")
-    df = df.loc[df.text.apply(lambda x : "10par" in x),:]
+    df = df.loc[df.text.apply(lambda x : model_d in x),:]
     df.fillna('',inplace=True)
     print(df)
     model_d = "ies_10par_xsec"
@@ -130,6 +131,16 @@ def tenpar_tests():
                 continue
         pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=10,
                                    master_dir=test_d,verbose=True,slave_root=model_d)
+
+
+def rebase(model_d):
+    """reset the "base" for the standard test suite"""
+    run_suite(model_d)
+
+    #find test dirs
+    test_ds = [d for os.listdir(model_d) if "master_test" in d and os.path.isdir(d)]
+    
+
 
 def tenpar_subset_test():
     """test that using subset gets the same results in the single lambda case"""
@@ -162,9 +173,13 @@ def tenpar_subset_test():
     pyemu.helpers.start_slaves(template_d, exe_path, "pest.pst", num_slaves=10,
                                slave_root=model_d, master_dir=test_d)
     df_sub = pd.read_csv(os.path.join(test_d, "pest.phi.meas.csv"))
+    diff = (df_sub - df_base).apply(np.abs)
+    print(diff.max())
+    assert diff.max().max() == 0.0
 
 if __name__ == "__main__":
-    # write_empty_test_matrix()
+    #write_empty_test_matrix()
     #setup_test_dir("ies_10par_xsec")
-    #tenpar_tests()
-    tenpar_subset_test()
+    #run_suite("ies_10par_xsec")
+    rebase("ies_10par_xsec")
+    #tenpar_subset_test()
