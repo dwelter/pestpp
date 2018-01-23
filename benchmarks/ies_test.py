@@ -60,10 +60,13 @@ def setup_suite_dir(model_d):
     pst.pestpp_options = {}
 
     # write a generic 2D cov
-    cov = pyemu.Cov.from_parameter_data(pst)
-    cov = pyemu.Cov(cov.as_2d, names=cov.row_names)
-    cov.to_ascii(os.path.join(new_d, "prior.cov"))
-
+    if not os.path.exists(os.path.join(new_d,"prior.cov")):
+        cov = pyemu.Cov.from_parameter_data(pst)
+        cov = pyemu.Cov(cov.as_2d, names=cov.row_names)
+        cov.to_ascii(os.path.join(new_d, "prior.cov"))
+        cov.to_binary(os.path.join(new_d, "prior.jcb"))
+    else:
+        cov = pyemu.Cov.from_ascii(os.path.join(new_d,"prior.cov"))
     # draw some ensembles
     num_reals = 100
     pe = pyemu.ParameterEnsemble.from_gaussian_draw(pst, cov=cov, num_reals=num_reals)
@@ -178,6 +181,11 @@ def test_10par_xsec():
     run_suite("ies_10par_xsec")
     compare_suite("ies_10par_xsec")
 
+def test_freyberg():
+    #run_suite("ies_freyberg")
+    compare_suite("ies_freyberg")
+
+
 def rebase(model_d):
     """reset the "base" for the standard test suite"""
     #run_suite(model_d)
@@ -241,9 +249,10 @@ def tenpar_subset_test():
 
 if __name__ == "__main__":
     #write_empty_test_matrix()
-    #setup_test_dir("ies_10par_xsec")
-    #run_suite("ies_10par_xsec")
+    #setup_suite_dir("ies_freyberg")
+    #run_suite("ies_freyberg")
+    #rebase("ies_freyberg")
     #rebase("ies_10par_xsec")
-    rebase("ies_10par_xsec")
-    test_10par_xsec()
+    #test_10par_xsec()
+    test_freyberg()
     #tenpar_subset_test()
