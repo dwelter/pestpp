@@ -335,6 +335,8 @@ public:
 	void set_ies_num_reals(int _ies_num_reals) { ies_num_reals = _ies_num_reals; }
 	const double get_ies_bad_phi() const { return ies_bad_phi; }
 	void set_ies_bad_phi(double _ies_bad_phi) { ies_bad_phi = _ies_bad_phi; }
+	const bool get_ies_include_base() const { return ies_include_base; }
+	void set_ies_include_base(bool _ies_include_base) { ies_include_base = _ies_include_base; }
 
 
 private:
@@ -405,6 +407,7 @@ private:
 	bool ies_use_prior_scaling;
 	int ies_num_reals;
 	double ies_bad_phi;
+	bool ies_include_base;
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);
 ostream& operator<< (ostream &os, const ObservationInfo& val);

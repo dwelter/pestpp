@@ -18,6 +18,8 @@ Ensemble::Ensemble(Pest *_pest_scenario_ptr): pest_scenario_ptr(_pest_scenario_p
 	rand_engine.seed(1123433458);
 }
 
+
+
 void Ensemble::draw(int num_reals, Covariance &cov, Transformable &tran, const vector<string> &draw_names)
 {
 	//draw names should be "active" var_names (nonzero weight obs and not fixed/tied pars)
@@ -510,6 +512,36 @@ void Ensemble::append_other_rows(Ensemble &other)
 		iother++;
 	}
 	real_names = new_real_names;
+}
+
+void Ensemble::append(string real_name, Transformable &trans)
+{
+	stringstream ss;
+	//make sure this real_name isn't ready used
+	if (find(real_names.begin(), real_names.end(), real_name) != real_names.end())
+	{
+		ss << "Ensemble::append() error: real_name '" << real_name << "' already in real_names";
+		throw_ensemble_error(ss.str());
+	}
+	//make sure all var_names are found
+	vector<string> keys = trans.get_keys();
+	set<string> tset(keys.begin(), keys.end());
+	vector<string> missing;
+	for (auto &n : var_names)
+		if (tset.find(n) == tset.end())
+			missing.push_back(n);
+	if (missing.size() > 0)
+	{
+		ss.str("");
+		ss << "Ensemble::append() error: the following var_names not found: ";
+		for (auto &m : missing)
+			ss << m << " , ";
+		throw_ensemble_error(ss.str());
+	}
+	
+	reals.conservativeResize(real_names.size() + 1, var_names.size());
+	reals.row(real_names.size()) = trans.get_data_eigen_vec(var_names);
+	real_names.push_back(real_name);
 }
 
 

@@ -731,6 +731,12 @@ void PestppOptions::parce_line(const string &line)
 		{
 			convert_ip(value, ies_bad_phi);
 		}
+		else if (key == "IES_INCLUDE_BASE")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> ies_include_base;
+		}
 		else {
 
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");

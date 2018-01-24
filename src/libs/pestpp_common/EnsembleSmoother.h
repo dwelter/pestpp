@@ -129,6 +129,8 @@ private:
 
 	void sanity_checks();
 
+	void add_bases();
+
 };
 
 #endif 

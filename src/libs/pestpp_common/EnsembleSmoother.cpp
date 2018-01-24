@@ -334,9 +334,9 @@ IterEnsembleSmoother::IterEnsembleSmoother(Pest &_pest_scenario, FileManager &_f
 
 void IterEnsembleSmoother::throw_ies_error(string &message)
 {
-	file_manager.rec_ofstream() << "IterEnsembleSmoother error: " << message << endl;
 	performance_log->log_event("IterEnsembleSmoother error: " + message);
-	cout << "***" << endl << "IterEnsembleSmoother error: " << message << endl;
+	cout << endl << "   ************   " << endl << "    IterEnsembleSmoother error: " << message << endl << endl;
+	file_manager.rec_ofstream() << endl << "   ************   " << endl << "    IterEnsembleSmoother error: " << message << endl << endl;
 	file_manager.close_file("rec");
 	performance_log->~PerformanceLog();
 	throw runtime_error("IterEnsembleSmoother error: " + message);
@@ -401,6 +401,39 @@ void IterEnsembleSmoother::initialize_pe(Covariance &cov)
 		}
 		message(1, "initializing prior parameter covariance matrix from ensemble (using diagonal matrix)");
 		parcov = pe.get_diagonal_cov_matrix();
+		
+	}
+	
+}
+
+void IterEnsembleSmoother::add_bases()
+{
+	//check that 'base' isn't already in ensemble
+	vector<string> rnames = pe.get_real_names();
+	if (find(rnames.begin(), rnames.end(), "base") != rnames.end())
+	{
+		message(1, "'base' realization already in parameter ensemble, ignoring '++ies_include_base'");
+	}
+	else
+	{
+		message(1, "adding 'base' parameter values to ensemble");
+		Parameters pars = pest_scenario.get_ctl_parameters();
+		pe.get_par_transform().active_ctl2numeric_ip(pars);
+		pe.append("base", pars);
+	}
+	
+	//check that 'base' isn't already in ensemble
+	rnames = oe.get_real_names();
+	if (find(rnames.begin(), rnames.end(), "base") != rnames.end())
+	{		
+		message(1, "'base' realization already in observation ensemble, ignoring '++ies_include_base'");
+	}
+	else
+	{
+			
+		message(1, "adding 'base' observation values to ensemble");
+		Observations obs = pest_scenario.get_ctl_observations();
+		oe.append("base", obs);
 	}
 }
 
@@ -464,6 +497,7 @@ void IterEnsembleSmoother::initialize_oe(Covariance &cov)
 			throw_ies_error(ss.str());
 		}
 	}
+	
 }
 
 template<typename T, typename A>
@@ -593,7 +627,11 @@ void IterEnsembleSmoother::initialize()
 
 	subset_size = pest_scenario.get_pestpp_options().get_ies_subset_size();
 	reg_factor = pest_scenario.get_pestpp_options().get_ies_reg_factor();
-	message(1,"using reg_factor", reg_factor);
+	message(1,"using reg_factor: ", reg_factor);
+	double bad_phi = pest_scenario.get_pestpp_options().get_ies_bad_phi();
+	if (bad_phi < 1.0e+30)
+		message(1, "using bad_phi: ", bad_phi);
+
 	int num_reals = pest_scenario.get_pestpp_options().get_ies_num_reals();
 	
 	stringstream ss;
@@ -648,7 +686,6 @@ void IterEnsembleSmoother::initialize()
 		throw_ies_error(ss.str());
 	}
 
-
 	if (subset_size > pe.shape().first)
 	{
 		use_subset = false;
@@ -659,9 +696,20 @@ void IterEnsembleSmoother::initialize()
 		use_subset = true;
 	}
 	
+	
+
+	//need this here for Am calcs...
+	message(0, "transforming parameter ensembles to numeric");
+	pe.transform_ip(ParameterEnsemble::transStatus::NUM);
+	
+	if (pest_scenario.get_pestpp_options().get_ies_include_base())
+	{
+		add_bases();
+	}
+	
 	oe_org_real_names = oe.get_real_names();
 	pe_org_real_names = pe.get_real_names();
-	
+
 	oe_base = oe; //copy
 	//reorder this for later...
 	oe_base.reorder(vector<string>(), act_obs_names);
@@ -672,11 +720,6 @@ void IterEnsembleSmoother::initialize()
 	
 	obscov.inv_ip(echo);
 	obscov_inv_sqrt = obscov.get_matrix().diagonal().cwiseSqrt().asDiagonal();
-		
-	//need this here for Am calcs...
-	message(0, "transforming parameter ensembles to numeric");
-	pe.transform_ip(ParameterEnsemble::transStatus::NUM);;
-	pe_base.transform_ip(ParameterEnsemble::transStatus::NUM);
 	
 	if (!pest_scenario.get_pestpp_options().get_ies_use_approx()) 
 	{
@@ -887,8 +930,12 @@ void IterEnsembleSmoother::drop_bad_phi(ParameterEnsemble &_pe, ObservationEnsem
 	if (idxs.size() > 0)
 	{
 		message(0, "droppping realizations as bad: ", idxs.size());
-		message(1, "dropped indices: ", idxs);
+		vector<string> par_real_names = pe.get_real_names(), obs_real_names = oe.get_real_names();
+		stringstream ss;
+		for (auto i : idxs)
+			ss << par_real_names[i] << " : " << obs_real_names[i] << " , ";
 
+		message(1, "dropping par:obs realizations: "+ss.str());
 		try
 		{
 			_pe.drop_rows(idxs);
@@ -1506,6 +1553,8 @@ vector<int> IterEnsembleSmoother::run_ensemble(ParameterEnsemble &_pe, Observati
 			ss << par_real_names[i] << ":" << obs_real_names[i] << ',';
 		}
 		performance_log->log_event(ss.str());
+		message(1, "failed realizations: ", failed_real_indices.size());
+		message(1, ss.str());
 		performance_log->log_event("dropping failed realizations");
 		_pe.drop_rows(failed_real_indices);
 		_oe.drop_rows(failed_real_indices);
