@@ -973,7 +973,8 @@ void IterEnsembleSmoother::initialize()
 
 void IterEnsembleSmoother::drop_bad_phi(ParameterEnsemble &_pe, ObservationEnsemble &_oe)
 {
-	assert(_pe.shape().first == _oe.shape().first);
+	//don't use this assert because _pe maybe full size, but _oe might be subset size
+	//assert(_pe.shape().first == _oe.shape().first);
 	vector<int> idxs = ph.get_idxs_greater_than(pest_scenario.get_pestpp_options().get_ies_bad_phi(), _oe);
 	
 	if (idxs.size() > 0)
@@ -1280,6 +1281,9 @@ void IterEnsembleSmoother::solve()
 	{	
 		//for testing...
 		//pest_scenario.get_pestpp_options_ptr()->set_ies_bad_phi(0.0);
+		//if all runs failed...
+		if (oe_lams[i].shape().first == 0)
+			continue;
 		
 		drop_bad_phi(pe_lams[i], oe_lams[i]);
 		if (pe_lams[i].shape().first == 0)
@@ -1303,52 +1307,58 @@ void IterEnsembleSmoother::solve()
 
 	if ((best_idx != -1) && (use_subset) && (subset_size < pe.shape().first))//subset stuff here
 	{
-
+		//need to work out which par and obs en real names to run - some may have failed during subset testing...
 		ObservationEnsemble remaining_oe_lam = oe;//copy
 		ParameterEnsemble remaining_pe_lam = pe_lams[best_idx];
-
-		vector<int> real_idxs;
-		vector<string> temp_idxs,org_pe_idxs,org_oe_idxs;
-		int ireal = 0;
-		for (int i = subset_size; i < pe.shape().first; i++)
-		{
-			real_idxs.push_back(i);
-			ss.str("");
-			ss << ireal;
-			temp_idxs.push_back(ss.str());
-			ireal++;
+		vector<string> pe_keep_names, oe_keep_names;
+		vector<string> pe_names = pe.get_real_names(), oe_names = oe.get_real_names();
+		vector<string> org_pe_idxs,org_oe_idxs;
+		for (int i = subset_size; i <pe.shape().first; i++)
+		{	
+			pe_keep_names.push_back(pe_names[i]);
+			oe_keep_names.push_back(oe_names[i]);
 		}
 		message(0, "running remaining realizations for best lambda:", lam_vals[best_idx]);
 
-		remaining_pe_lam.keep_rows(real_idxs);
-		remaining_oe_lam.keep_rows(real_idxs);
+		//pe_keep_names and oe_keep_names are names of the remaining reals to eval
+		remaining_pe_lam.keep_rows(pe_keep_names);
+		remaining_oe_lam.keep_rows(oe_keep_names);
+		//save these names for later
 		org_pe_idxs = remaining_pe_lam.get_real_names();
 		org_oe_idxs = remaining_oe_lam.get_real_names();
-		remaining_pe_lam.set_real_names(temp_idxs);
-		remaining_oe_lam.set_real_names(temp_idxs);
+		///run
 		vector<int> fails = run_ensemble(remaining_pe_lam, remaining_oe_lam);
+		//if any of the remaining runs failed
+		if (fails.size() == remaining_pe_lam.shape().first)
+			throw_ies_error(string("all remaining realizations failed...something is prob wrong"));
 		if (fails.size() > 0)
 		{
+
 			vector<string> new_pe_idxs, new_oe_idxs;
 			vector<int>::iterator start = fails.begin(), end = fails.end();
+			stringstream ss;
+			ss << "the following par:obs realizations failed during evaluation of the remaining ensemble";
 			for (int i = 0; i < org_pe_idxs.size(); i++)
 				if (find(start,end,i) == end)
 				{
 					new_pe_idxs.push_back(org_pe_idxs[i]);
 					new_oe_idxs.push_back(org_oe_idxs[i]);
 				}
-			remaining_pe_lam.set_real_names(new_pe_idxs);
-			remaining_oe_lam.set_real_names(new_oe_idxs);
+				else
+				{
+					ss << org_pe_idxs[i] << ":" << org_oe_idxs[i] << " , ";
+				}
+			message(1, ss.str());
+			remaining_oe_lam.keep_rows(new_oe_idxs);
+			remaining_pe_lam.keep_rows(new_pe_idxs);
+
 		}
-		else
-		{
-			remaining_pe_lam.set_real_names(org_pe_idxs);
-			remaining_oe_lam.set_real_names(org_oe_idxs);
-			
-		}
-		pe_lams[best_idx].drop_rows(real_idxs); 
+		//drop the remaining runs from the par en then append the remaining par runs (in case some failed)
+		pe_lams[best_idx].drop_rows(pe_keep_names); 
 		pe_lams[best_idx].append_other_rows(remaining_pe_lam);
+		//append the remaining obs en
 		oe_lam_best.append_other_rows(remaining_oe_lam);
+		assert(pe_lams[best_idx].shape().first == oe_lam_best.shape().first);
 		drop_bad_phi(pe_lams[best_idx], oe_lam_best);
 		if (oe_lam_best.shape().first == 0)
 		{
@@ -1478,14 +1488,16 @@ vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<Pa
 	performance_log->log_event("processing runs");
 	vector<int> failed_real_indices;
 	vector<ObservationEnsemble> obs_lams;
-	ObservationEnsemble _oe = oe;//copy
-	if (subset_size < pe_lams[0].shape().first)
-		_oe.keep_rows(subset_idxs);
+	//ObservationEnsemble _oe = oe;//copy
+	//if (subset_size < pe_lams[0].shape().first)
+	//	_oe.keep_rows(subset_idxs);
 	map<int, int> real_run_ids;
 	//for (auto &real_run_ids : real_run_ids_vec)
 	for (int i=0;i<pe_lams.size();i++)
 	{
-		
+		ObservationEnsemble _oe = oe;//copy
+		if (subset_size < pe_lams[0].shape().first)
+			_oe.keep_rows(subset_idxs);
 		real_run_ids = real_run_ids_vec[i];
 		try
 		{
@@ -1501,7 +1513,8 @@ vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<Pa
 		{
 			throw_ies_error(string("error processing runs"));
 		}
-
+		
+		
 		if (failed_real_indices.size() > 0)
 		{
 			stringstream ss;
@@ -1512,19 +1525,22 @@ vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<Pa
 			{
 				ss << par_real_names[i] << ":" << obs_real_names[i] << ',';
 			}
-			performance_log->log_event(ss.str());
+			message(1,ss.str());
 			if (failed_real_indices.size() == _oe.shape().first)
 			{
-				message(0, "WARNING: all realization failed for lambda multiplier :", lam_vals[i]);
+				message(0, "WARNING: all realizations failed for lambda multiplier :", lam_vals[i]);
 				_oe = ObservationEnsemble();
+
 			}
 			else
 			{
 				performance_log->log_event("dropping failed realizations");
 				_oe.drop_rows(failed_real_indices);
+				pe_lams[i].drop_rows(failed_real_indices);
 			}
 			
 		}
+
 		obs_lams.push_back(_oe);
 	}
 	return obs_lams;

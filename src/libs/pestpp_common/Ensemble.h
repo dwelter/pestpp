@@ -57,7 +57,10 @@ public:
 
 	void reorder(vector<string> &_real_names, vector<string> &_var_names);
 	void drop_rows(vector<int> &row_idxs);
+	void drop_rows(vector<string> &drop_names);
 	void keep_rows(vector<int> &row_idxs);
+	void keep_rows(vector<string> &keep_names);
+
 	Pest* get_pest_scenario_ptr() { return pest_scenario_ptr; }
 	Pest get_pest_scenario() { return *pest_scenario_ptr; }
 	void set_pest_scenario(Pest *_pest_scenario) { pest_scenario_ptr = _pest_scenario; }

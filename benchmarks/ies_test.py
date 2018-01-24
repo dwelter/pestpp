@@ -257,7 +257,7 @@ if __name__ == "__main__":
     #rebase("ies_freyberg")
     #rebase("ies_10par_xsec")
     test_10par_xsec()
-    #test_freyberg()
+    test_freyberg()
     #compare_suite("ies_10par_xsec")
     #compare_suite("ies_freyberg")
     # tenpar_subset_test()

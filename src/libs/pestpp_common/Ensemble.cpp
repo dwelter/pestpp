@@ -197,6 +197,21 @@ void Ensemble::drop_rows(vector<int> &row_idxs)
 	real_names = keep_names;
 }
 
+void Ensemble::drop_rows(vector<string> &drop_names)
+{
+	vector<string> keep_names;
+	vector<string>::iterator start = drop_names.begin(), end = drop_names.end();
+	for (auto &n : real_names)
+		if (find(start, end, n) == end)
+			keep_names.push_back(n);
+	if (keep_names.size() == 0)
+		reals = Eigen::MatrixXd();
+	else
+		reals = get_eigen(keep_names, vector<string>());
+	real_names = keep_names;
+
+}
+
 
 void Ensemble::keep_rows(vector<int> &row_idxs)
 {
@@ -206,6 +221,20 @@ void Ensemble::keep_rows(vector<int> &row_idxs)
 	for (int ireal = 0; ireal < reals.rows(); ireal++)
 		if (find(start, end, ireal) != end)
 			keep_names.push_back(real_names[ireal]);
+	reals = get_eigen(keep_names, vector<string>());
+	real_names = keep_names;
+}
+
+void Ensemble::keep_rows(vector<string> &keep_names)
+{
+	//make sure all names are in real_names
+	vector<string>::iterator start = real_names.begin(), end = real_names.end();
+	vector<string> missing;
+	for (auto &n : keep_names)
+		if (find(start, end, n) == end)
+			missing.push_back(n);
+	if (missing.size() > 0)
+		throw_ensemble_error("Ensemble::keep_rows() error: the following real names not found: ", missing);
 	reals = get_eigen(keep_names, vector<string>());
 	real_names = keep_names;
 }
