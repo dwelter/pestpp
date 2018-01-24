@@ -19,6 +19,27 @@ PhiHandler::PhiHandler(Pest *_pest_scenario, FileManager *_file_manager,
 	file_manager = _file_manager;
 	oe_base = _oe_base;
 	pe_base = _pe_base;
+
+	//check for inequality constraints
+	//for (auto &og : pest_scenario.get_ctl_ordered_obs_group_names())
+	string og;
+	ObservationInfo oi = pest_scenario->get_ctl_observation_info();
+	for (auto &oname : pest_scenario->get_ctl_ordered_nz_obs_names())
+	{
+		og = oi.get_group(oname);
+		if ((og.compare(0, 2, "L_")) || (og.compare(0, 4, "LESS")))
+		{
+			lt_obs_names.push_back(oname);
+
+		}
+		else if ((og.compare(0, 2, "G_")) || (og.compare(0, 7, "GREATER")))
+		{
+			gt_obs_names.push_back(oname);
+		}
+	}
+
+
+
 	reg_factor = _reg_factor;
 	parcov_inv = _parcov->inv();
 	//parcov.inv_ip();
@@ -31,6 +52,19 @@ PhiHandler::PhiHandler(Pest *_pest_scenario, FileManager *_file_manager,
 
 }
 
+Eigen::MatrixXd PhiHandler::get_obs_resid(ObservationEnsemble &oe)
+{
+	Eigen::MatrixXd resid = oe.get_eigen(vector<string>(), oe_base->get_var_names()) -
+		oe_base->get_eigen(oe.get_real_names(), vector<string>());
+	return resid;
+}
+
+Eigen::MatrixXd PhiHandler::get_par_resid(ParameterEnsemble &pe)
+{
+	Eigen::MatrixXd resid = pe.get_eigen(vector<string>(), pe_base->get_var_names()) -
+		pe_base->get_eigen(pe.get_real_names(), vector<string>());
+	return resid;
+}
 
 void PhiHandler::update(ObservationEnsemble & oe, ParameterEnsemble & pe)
 {
@@ -229,15 +263,19 @@ map<string, double> PhiHandler::calc_meas(ObservationEnsemble & oe)
 	double phi;
 	string rname;
 
-	Eigen::MatrixXd oe_reals = oe.get_eigen(vector<string>(), oe_base->get_var_names());
-	for (int i = 0; i<oe.shape().first; i++)
+	//Eigen::MatrixXd oe_reals = oe.get_eigen(vector<string>(), oe_base->get_var_names());
+	Eigen::MatrixXd resid = get_obs_resid(oe);
+	assert(oe_real_names.size() == resid.rows());
+	for (int i = 0; i<resid.rows(); i++)
 	{
 		rname = oe_real_names[i];
 		if (find(start, end, rname) == end)
 			continue;
-		oe_base_vec = oe_base->get_real_vector(rname);
+		/*oe_base_vec = oe_base->get_real_vector(rname);
 		oe_vec = oe_reals.row(i);
-		diff = (oe_vec - oe_base_vec).cwiseProduct(q);
+		diff = (oe_vec - oe_base_vec).cwiseProduct(q);*/
+		diff = resid.row(i);
+		diff = diff.cwiseProduct(q);
 		phi = (diff.cwiseProduct(diff)).sum();
 		phi_map[rname] = phi;
 	}
@@ -250,7 +288,9 @@ map<string, double> PhiHandler::calc_regul(ParameterEnsemble & pe)
 	vector<string> real_names = pe.get_real_names();
 	pe_base->transform_ip(ParameterEnsemble::transStatus::NUM);
 	pe.transform_ip(ParameterEnsemble::transStatus::NUM);
-	Eigen::MatrixXd diff_mat = pe.get_eigen() - pe_base->get_eigen(real_names, vector<string>());
+	//Eigen::MatrixXd diff_mat = pe.get_eigen() - pe_base->get_eigen(real_names, vector<string>());
+	Eigen::MatrixXd diff_mat = get_par_resid(pe);
+
 	Eigen::VectorXd parcov_inv_diag = parcov_inv.e_ptr()->diagonal();
 	Eigen::VectorXd diff;
 	for (int i = 0; i < real_names.size(); i++)
@@ -599,9 +639,7 @@ void IterEnsembleSmoother::sanity_checks()
 void IterEnsembleSmoother::initialize()
 {
 	message(0, "initializing");
-
 	
-
 	verbose_level = pest_scenario.get_pestpp_options_ptr()->get_ies_verbose_level();
 	iter = 0;
 	//ofstream &frec = file_manager.rec_ofstream();
@@ -887,6 +925,16 @@ void IterEnsembleSmoother::initialize()
 
 	performance_log->log_event("calc initial phi");
 	ph = PhiHandler(&pest_scenario, &file_manager, &oe_base, &pe_base, &parcov, &reg_factor);
+
+	if (ph.get_lt_obs_names().size() > 0)
+	{
+		message(1, "less_than inequality defined for observations", ph.get_lt_obs_names());
+	}
+	if (ph.get_gt_obs_names().size())
+	{
+		message(1, "greater_than inequality defined for observations", ph.get_gt_obs_names());
+	}
+
 	drop_bad_phi(pe, oe);
 	if (oe.shape().first == 0)
 	{
@@ -904,6 +952,7 @@ void IterEnsembleSmoother::initialize()
 		ss << "WARNING: less than " << warn_min_reals << " active realizations...might not be enough";
 		message(0, ss.str());
 	}
+	performance_log->log_event("calc initial phi");
 	ph.update(oe, pe);
 	message(0, "initial phi summary");
 	ph.report();
@@ -1004,8 +1053,7 @@ void IterEnsembleSmoother::solve()
 	//oe_base var_names should be ordered by act_obs_names, so only reorder real_names
 	//oe should only include active realizations, so only reorder var_names
 	message(1, "calculating residual matrix");
-	Eigen::MatrixXd scaled_residual = obscov_inv_sqrt * (oe.get_eigen(vector<string>(), act_obs_names) - 
-		oe_base.get_eigen(oe.get_real_names(), vector<string>())).transpose();
+	Eigen::MatrixXd scaled_residual = obscov_inv_sqrt * ph.get_obs_resid(oe).transpose();
 	if (verbose_level > 1)
 	{
 		cout << "scaled_residual: " << scaled_residual.rows() << ',' << scaled_residual.cols() << endl;
@@ -1139,8 +1187,7 @@ void IterEnsembleSmoother::solve()
 			performance_log->log_event("calculating parameter correction (full solution)");
 			message(1, "calculating parameter correction (full solution, MAP)");
 			performance_log->log_event("forming scaled par resid");
-			Eigen::MatrixXd scaled_par_resid = pe.get_eigen(vector<string>(), act_par_names) - 
-				pe_base.get_eigen(pe.get_real_names(), vector<string>());
+			Eigen::MatrixXd scaled_par_resid = ph.get_par_resid(pe);
 			scaled_par_resid.transposeInPlace();
 			
 			performance_log->log_event("forming x4");

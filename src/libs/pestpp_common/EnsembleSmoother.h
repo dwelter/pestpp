@@ -32,6 +32,12 @@ public:
 	void write(int iter_num, int total_runs);
 	vector<int> get_idxs_greater_than(double bad_phi, ObservationEnsemble &oe);
 
+	Eigen::MatrixXd get_obs_resid(ObservationEnsemble &oe);
+	Eigen::MatrixXd get_par_resid(ParameterEnsemble &pe);
+
+	vector<string> get_lt_obs_names() { return lt_obs_names; }
+	vector<string> get_gt_obs_names() { return gt_obs_names; }
+
 private:
 	map<string, double> get_summary_stats(phiType pt);
 	string get_summary_string(phiType pt);
@@ -57,7 +63,8 @@ private:
 	map<string, double> composite;
 	map<string, double> actual;
 
-
+	vector<string> lt_obs_names;
+	vector<string> gt_obs_names;
 };
 
 
@@ -131,6 +138,7 @@ private:
 
 	void add_bases();
 
+	Eigen::MatrixXd get_obs_resid();
 };
 
 #endif 
