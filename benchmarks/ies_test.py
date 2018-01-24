@@ -1,3 +1,4 @@
+# TODO: test variance and mean of draws, add chenoliver and test approx and full solution
 import os
 import shutil
 import platform
@@ -27,13 +28,14 @@ ies_vars = ["ies_par_csv", "ies_obs_csv", "ies_restart_obs_csv",
             "ies_use_approx", "ies_use_prior_scaling", "ies_reg_factor",
             "ies_lambda_mults", "ies_init_lambda"]
 
-exe_path = os.path.join("..","..","..","exe","windows","x64","Release","pestpp-ies.exe")
+exe_path = os.path.join("..", "..", "..", "exe", "windows", "x64", "Release", "pestpp-ies.exe")
 
 noptmax = 3
 
-compare_files = ["pest.phi.actual.csv","pest.phi.meas.csv","pest.phi.regul.csv",
-                 "pest.{0}.par.csv".format(noptmax),"pest.{0}.obs.csv".format(noptmax)]
+compare_files = ["pest.phi.actual.csv", "pest.phi.meas.csv", "pest.phi.regul.csv",
+                 "pest.{0}.par.csv".format(noptmax), "pest.{0}.obs.csv".format(noptmax)]
 diff_tol = 1.0e-6
+
 
 def write_empty_test_matrix():
     test_names = [t.split()[0] for t in tests.split('\n')]
@@ -50,58 +52,58 @@ def setup_suite_dir(model_d):
     shutil.copytree(base_d, new_d)
     pst = pyemu.Pst(os.path.join(new_d, "pest.pst"))
 
-    #set first par as fixed
-    pst.parameter_data.loc[pst.par_names[0],"partrans"] = "fixed"
+    # set first par as fixed
+    pst.parameter_data.loc[pst.par_names[0], "partrans"] = "fixed"
 
-    #set noptmax
+    # set noptmax
     pst.control_data.noptmax = noptmax
 
     # wipe all pestpp options
     pst.pestpp_options = {}
 
     # write a generic 2D cov
-    if not os.path.exists(os.path.join(new_d,"prior.cov")):
+    if not os.path.exists(os.path.join(new_d, "prior.cov")):
         cov = pyemu.Cov.from_parameter_data(pst)
         cov = pyemu.Cov(cov.as_2d, names=cov.row_names)
         cov.to_ascii(os.path.join(new_d, "prior.cov"))
         cov.to_binary(os.path.join(new_d, "prior.jcb"))
     else:
-        cov = pyemu.Cov.from_ascii(os.path.join(new_d,"prior.cov"))
+        cov = pyemu.Cov.from_ascii(os.path.join(new_d, "prior.cov"))
     # draw some ensembles
     num_reals = 100
     pe = pyemu.ParameterEnsemble.from_gaussian_draw(pst, cov=cov, num_reals=num_reals)
     pe.to_csv(os.path.join(new_d, "par.csv"))
     pe.to_binary(os.path.join(new_d, "par.jcb"))
-    pe.to_csv(os.path.join(new_d,"sweep_in.csv"))
-    pe.loc[:,pst.adj_par_names].to_csv(os.path.join(new_d,"par_some.csv"))
+    pe.to_csv(os.path.join(new_d, "sweep_in.csv"))
+    pe.loc[:, pst.adj_par_names].to_csv(os.path.join(new_d, "par_some.csv"))
 
     oe = pyemu.ObservationEnsemble.from_id_gaussian_draw(pst, num_reals=num_reals)
     oe.to_csv(os.path.join(new_d, "obs.csv"))
     oe.to_binary(os.path.join(new_d, "obs.jcb"))
 
-    pst.write(os.path.join(new_d,"pest.pst"))
+    pst.write(os.path.join(new_d, "pest.pst"))
     # run sweep
     if os.path.exists("master_sweep"):
         shutil.rmtree("master_sweep")
-    pyemu.helpers.start_slaves(new_d,"sweep","pest.pst",10,master_dir="master_sweep")
+    pyemu.helpers.start_slaves(new_d, "sweep", "pest.pst", 10, master_dir="master_sweep")
 
-    #process sweep output as restart csv and jcb
-    df = pd.read_csv(os.path.join("master_sweep","sweep_out.csv"))
+    # process sweep output as restart csv and jcb
+    df = pd.read_csv(os.path.join("master_sweep", "sweep_out.csv"))
     df.columns = [c.lower() for c in df.columns]
-    df.to_csv(os.path.join(new_d,"restart.csv"))
-    df = df.loc[:,pst.nnz_obs_names]
-    df.loc[:, pst.nnz_obs_names].to_csv(os.path.join(new_d,"restart_some.csv"))
-    df.iloc[:-3,:].to_csv(os.path.join(new_d,"restart_failed.csv"))
+    df.to_csv(os.path.join(new_d, "restart.csv"))
+    df = df.loc[:, pst.nnz_obs_names]
+    df.loc[:, pst.nnz_obs_names].to_csv(os.path.join(new_d, "restart_some.csv"))
+    df.iloc[:-3, :].to_csv(os.path.join(new_d, "restart_failed.csv"))
 
     # run pyemu ies
-    pyemu_d = os.path.join(model_d,"master_pyemu")
+    pyemu_d = os.path.join(model_d, "master_pyemu")
     if os.path.exists(pyemu_d):
         shutil.rmtree(pyemu_d)
-    shutil.copytree(new_d,pyemu_d)
+    shutil.copytree(new_d, pyemu_d)
     bdir = os.getcwd()
     os.chdir(pyemu_d)
-    ies = pyemu.EnsembleSmoother("pest.pst",num_slaves=10,verbose="ies.log",slave_dir=os.path.join("..","template"))
-    ies.initialize(parensemble="par.csv",obsensemble="obs.csv")
+    ies = pyemu.EnsembleSmoother("pest.pst", num_slaves=10, verbose="ies.log", slave_dir=os.path.join("..", "template"))
+    ies.initialize(parensemble="par.csv", obsensemble="obs.csv")
     for i in range(pst.control_data.noptmax):
         ies.update()
     os.chdir(bdir)
@@ -114,23 +116,23 @@ def setup_suite_dir(model_d):
 
 def run_suite(model_d):
     df = pd.read_csv("ies_test.csv")
-    df = df.loc[df.text.apply(lambda x : model_d in x),:]
-    df.fillna('',inplace=True)
+    df = df.loc[df.text.apply(lambda x: model_d in x), :]
+    df.fillna('', inplace=True)
     print(df)
-    model_d = "ies_10par_xsec"
-    template_d = os.path.join(model_d,"test_template")
+    #model_d = "ies_10par_xsec"
+    template_d = os.path.join(model_d, "test_template")
 
-    pst = pyemu.Pst(os.path.join(template_d,"pest.pst"))
+    pst = pyemu.Pst(os.path.join(template_d, "pest.pst"))
 
     for i in range(df.shape[0]):
-        test_vars = df.iloc[i,:].to_dict()
-        test_name = test_vars["text"].split()[0].replace(")",'')
+        test_vars = df.iloc[i, :].to_dict()
+        test_name = test_vars["text"].split()[0].replace(")", '')
         print(test_vars["text"])
         pst.pestpp_options = {}
         for v in ies_vars:
             pst.pestpp_options[v] = test_vars[v]
-        pst.write(os.path.join(template_d,"pest.pst"))
-        test_d = os.path.join(model_d,"master_test_{0}".format(test_name))
+        pst.write(os.path.join(template_d, "pest.pst"))
+        test_d = os.path.join(model_d, "master_test_{0}".format(test_name))
 
         if os.path.exists(test_d):
             try:
@@ -138,8 +140,9 @@ def run_suite(model_d):
             except:
                 print("error removing existing test_d: {0}".format(test_d))
                 continue
-        pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=10,
-                                   master_dir=test_d,verbose=True,slave_root=model_d)
+        pyemu.helpers.start_slaves(template_d, exe_path, "pest.pst", num_slaves=10,
+                                   master_dir=test_d, verbose=True, slave_root=model_d)
+
 
 def compare_suite(model_d):
     base_d = os.path.join(model_d, "baseline_opt")
@@ -155,12 +158,12 @@ def compare_suite(model_d):
                                          format(os.path.split(test_d)[-1], compare_file))
                 test_file = os.path.join(test_d, compare_file)
                 try:
-                    base_df = pd.read_csv(base_file)
+                    base_df = pd.read_csv(base_file,index_col=0)
                 except Exception as e:
                     errors.append("error loading base_file {0}: {1}".format(base_file, str(e)))
                     continue
                 try:
-                    test_df = pd.read_csv(test_file)
+                    test_df = pd.read_csv(test_file,index_col=0)
                 except Exception as e:
                     errors.append("error loading test_file {0}, {1}: {2}".format(test_d, base_file, str(e)))
                     continue
@@ -173,67 +176,63 @@ def compare_suite(model_d):
                     errors.append("max diff greater than diff tol for '{0}':{1}".format(base_file, max_diff))
     if len(errors) > 0:
         for e in errors:
-            print("ERROR: ",e)
-        raise Exception("errors in {0}: ".format(model_d)+'\n'.join(errors))
+            print("ERROR: ", e)
+        raise Exception("errors in {0}: ".format(model_d) + '\n'.join(errors))
 
 
 def test_10par_xsec():
     run_suite("ies_10par_xsec")
     compare_suite("ies_10par_xsec")
 
+
 def test_freyberg():
-    #run_suite("ies_freyberg")
+    run_suite("ies_freyberg")
     compare_suite("ies_freyberg")
 
 
 def rebase(model_d):
     """reset the "base" for the standard test suite"""
-    #run_suite(model_d)
-    base_d = os.path.join(model_d,"baseline_opt")
+    # run_suite(model_d)
+    base_d = os.path.join(model_d, "baseline_opt")
     if os.path.exists(base_d):
         shutil.rmtree(base_d)
     os.mkdir(base_d)
 
-    #find test dirs
+    # find test dirs
     print(os.listdir(model_d))
     test_ds = [d for d in os.listdir(model_d) if "master_test" in d]
     for test_d in test_ds:
-        test_d = os.path.join(model_d,test_d)
+        test_d = os.path.join(model_d, test_d)
         for compare_file in compare_files:
-            if not os.path.exists(os.path.join(test_d,compare_file)):
-                print("WARNING missing compare file:",test_d,compare_file)
+            if not os.path.exists(os.path.join(test_d, compare_file)):
+                print("WARNING missing compare file:", test_d, compare_file)
             else:
-                shutil.copy2(os.path.join(test_d,compare_file),
-                                          os.path.join(base_d,"{0}__{1}".
-                                                       format(os.path.split(test_d)[-1],compare_file)))
-
-
-
-
+                shutil.copy2(os.path.join(test_d, compare_file),
+                             os.path.join(base_d, "{0}__{1}".
+                                          format(os.path.split(test_d)[-1], compare_file)))
 
 
 def tenpar_subset_test():
     """test that using subset gets the same results in the single lambda case"""
     model_d = "ies_10par_xsec"
-    test_d = os.path.join(model_d,"master_subset_test")
-    template_d = os.path.join(model_d,"test_template")
+    test_d = os.path.join(model_d, "master_subset_test")
+    template_d = os.path.join(model_d, "test_template")
     if not os.path.exists(template_d):
         raise Exception("template_d {0} not found".format(template_d))
     if os.path.exists(test_d):
         shutil.rmtree(test_d)
-    #shutil.copytree(base_d,test_d)
-    pst = pyemu.Pst(os.path.join(template_d,"pest.pst"))
+    # shutil.copytree(base_d,test_d)
+    pst = pyemu.Pst(os.path.join(template_d, "pest.pst"))
     pst.control_data.noptmax = 3
 
-
-    #first without subset
+    # first without subset
     pst.pestpp_options = {}
     pst.pestpp_options["ies_num_reals"] = 50
     pst.pestpp_options["ies_lambda_mults"] = "1.0"
-    pst.write(os.path.join(template_d,"pest.pst"))
-    pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=10,
-                               slave_root=model_d,master_dir=test_d)
-    df_base = pd.read_csv(os.path.join(test_d,"pest.phi.meas.csv"))
+    pst.write(os.path.join(template_d, "pest.pst"))
+    pyemu.helpers.start_slaves(template_d, exe_path, "pest.pst", num_slaves=10,
+                               slave_root=model_d, master_dir=test_d)
+    df_base = pd.read_csv(os.path.join(test_d, "pest.phi.meas.csv"),index_col=0)
 
     pst.pestpp_options = {}
     pst.pestpp_options["ies_num_reals"] = 50
@@ -242,17 +241,21 @@ def tenpar_subset_test():
     pst.write(os.path.join(template_d, "pest.pst"))
     pyemu.helpers.start_slaves(template_d, exe_path, "pest.pst", num_slaves=10,
                                slave_root=model_d, master_dir=test_d)
-    df_sub = pd.read_csv(os.path.join(test_d, "pest.phi.meas.csv"))
+    df_sub = pd.read_csv(os.path.join(test_d, "pest.phi.meas.csv"),index_col=0)
     diff = (df_sub - df_base).apply(np.abs)
     print(diff.max())
     assert diff.max().max() == 0.0
 
+
 if __name__ == "__main__":
-    #write_empty_test_matrix()
-    #setup_suite_dir("ies_freyberg")
+    # write_empty_test_matrix()
+    # setup_suite_dir("ies_freyberg")
     #run_suite("ies_freyberg")
-    rebase("ies_freyberg")
-    rebase("ies_10par_xsec")
-    test_10par_xsec()
-    test_freyberg()
-    #tenpar_subset_test()
+    #run_suite("ies_10par_xsec")
+    #rebase("ies_freyberg")
+    #rebase("ies_10par_xsec")
+    #test_10par_xsec()
+    #test_freyberg()
+    #compare_suite("ies_10par_xsec")
+    compare_suite("ies_freyberg")
+    # tenpar_subset_test()
