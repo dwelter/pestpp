@@ -31,9 +31,17 @@ void Ensemble::draw(int num_reals, Covariance &cov, Transformable &tran, const v
 	Eigen::MatrixXd draws(num_reals, draw_names.size());
 	draws.setZero();
 	
+	//make sure the cov is aligned
+	if (cov.get_col_names() != draw_names)
+		cov = cov.get(draw_names);
+
 	//make standard normal draws
 	RedSVD::sample_gaussian(draws);
 	
+	ofstream f("draws.dat");
+	f << draws << endl;
+	f.close();
+
 	//if diagonal cov, then scale by variance
 	if (cov.isdiagonal())
 	{
@@ -48,21 +56,40 @@ void Ensemble::draw(int num_reals, Covariance &cov, Transformable &tran, const v
 	//if not diagonal, eigen decomp of cov then project the standard normal draws
 	else
 	{
+		//jwhite 25jan2018: the RedSVD eig solve was giving weird results so back to Eigen
 		//totally arbitrary hack - use a max of 100 eigen components 
-		int ncomps = std::min<int>(100,draw_names.size());
-		RedSVD::RedSymEigen<Eigen::MatrixXd> eig;
+		//int ncomps = std::min<int>(100,draw_names.size());
+		//RedSVD::RedSymEigen<Eigen::MatrixXd> eig;
 		//symmetric eigen solve...
-		eig.compute(cov.e_ptr()->toDense(),ncomps);
+		//eig.compute(cov.e_ptr()->toDense(),ncomps);
+		/*RedSVD::RedSVD<Eigen::MatrixXd> svd;
+		svd.compute(cov.e_ptr()->toDense(), draw_names.size());
+		*/
 		//tile out the reduced (100 compoents) solution to a full draw_names size
-		Eigen::MatrixXd evec(draw_names.size(), draw_names.size());
+		/*Eigen::MatrixXd evec(draw_names.size(), draw_names.size());
 		evec.setZero();
 		evec.leftCols(ncomps) = eig.eigenvectors();
 		Eigen::VectorXd eval(draw_names.size());
 		eval.setZero();
-		eval.topRows(ncomps) = eig.eigenvalues().cwiseSqrt();
+		eval.topRows(ncomps) = eig.eigenvalues().cwiseSqrt();*/
 
 		//form the projection matrix
-		Eigen::MatrixXd proj = evec * eval.asDiagonal();
+		//Eigen::MatrixXd proj = evec * eval.asDiagonal();
+
+
+		Eigen::EigenSolver<Eigen::MatrixXd> eig(cov.e_ptr()->toDense());		
+		Eigen::MatrixXd evecs = eig.eigenvectors().real();
+		Eigen::MatrixXd evals = eig.eigenvalues().real().cwiseSqrt().asDiagonal();
+		
+		//for debugging
+		/*ofstream f("evals.dat");
+		f << evals << endl;
+		f.close();
+		f.open("evecs.dat");
+		f << evecs << endl;
+		f.close();*/
+		Eigen::MatrixXd proj = evecs * evals;
+		
 		//project each standard normal draw in place
 		for (int i = 0; i < num_reals; i++)
 		{

@@ -248,6 +248,70 @@ def tenpar_subset_test():
     print(diff.max())
     assert diff.max().max() == 0.0
 
+def test_freyberg_full_cov():
+    """test that using subset gets the same results in the single lambda case"""
+    model_d = "ies_freyberg"
+    test_d = os.path.join(model_d, "master_draw_test")
+    template_d = os.path.join(model_d, "test_template")
+    if not os.path.exists(template_d):
+        raise Exception("template_d {0} not found".format(template_d))
+    # if os.path.exists(test_d):
+    #     shutil.rmtree(test_d)
+    # shutil.copytree(template_d,test_d)
+    pst = pyemu.Pst(os.path.join(template_d, "pest.pst"))
+    pst.parameter_data.loc[:,"partrans"] = "log"
+    pst.control_data.noptmax = 0
+    pst.pestpp_options = {}
+    num_reals = 500
+    pst.pestpp_options["parcov_filename"] = "prior.jcb"
+    pst.pestpp_options["ies_num_reals"] = num_reals
+    pst.pestpp_options["ies_include_base"] = "false"
+    pst.write(os.path.join(template_d,"pest.pst"))
+    cov = pyemu.Cov.from_binary(os.path.join(template_d,"prior.jcb"))
+    pe = pyemu.ParameterEnsemble.from_gaussian_draw(pst,cov,num_reals,use_homegrown=True)
+    pe.to_csv(os.path.join(template_d,"pyemu_pe.csv"))
+
+    # pyemu.helpers.start_slaves(template_d, exe_path, "pest.pst", num_slaves=10,
+    #                            slave_root=model_d, master_dir=test_d)
+    df = pd.read_csv(os.path.join(test_d, "pest.0.par.csv"), index_col=0).apply(np.log10)
+    df.columns = [c.lower() for c in df.columns]
+    diff_tol = 0.1
+    pe = pe.apply(np.log10)
+    for c in df.columns:
+        if c not in pe.columns:
+            continue
+
+        m1, m2 = pe.loc[:,c].mean(), df.loc[:,c].mean()
+        s1,s2 =  pe.loc[:,c].std(), df.loc[:,c].std()
+        mdiff = np.abs((m1 - m2))
+        sdiff = np.abs((s1 - s2))
+        print(c,mdiff,sdiff)
+        assert mdiff < diff_tol,"mean fail {0}:{1},{2},{3}".format(c,m1,m2,mdiff)
+        assert sdiff < diff_tol,"std fail {0}:{1},{2},{3}".format(c,s1,s2,sdiff)
+
+    #look for bias
+    diff = df - pe
+    assert diff.mean().mean() < 0.01
+
+def invest():
+    d = os.path.join("ies_freyberg","master_draw_test")
+    df = pd.read_csv(os.path.join(d,"draws.dat"),delim_whitespace=True,header=None)
+    print(df.std().mean(),df.mean().mean())
+
+    df1 = pd.read_csv(os.path.join(d,"pest.0.par.csv"), index_col=0)
+    df2 = pd.read_csv(os.path.join(d,"pyemu_pe.csv"), index_col=0)
+    df1.columns = [c.lower() for c in df1.columns]
+
+    df1 = df1.apply(np.log10)
+    df2 = df2.apply(np.log10)
+
+    for p in df1.columns:
+        print(p)
+        #print(p)
+        #print(df1.loc[:,p])
+        #print(df2.loc[:,p])
+        print(p,df1.loc[:, p].std(), df2.loc[:, p].std())
+        #break
 
 if __name__ == "__main__":
     # write_empty_test_matrix()
@@ -256,8 +320,10 @@ if __name__ == "__main__":
     #run_suite("ies_10par_xsec")
     #rebase("ies_freyberg")
     #rebase("ies_10par_xsec")
-    test_10par_xsec()
-    test_freyberg()
+    #test_10par_xsec()
+    #test_freyberg()
+    test_freyberg_full_cov()
+    #invest()
     #compare_suite("ies_10par_xsec")
     #compare_suite("ies_freyberg")
     # tenpar_subset_test()
