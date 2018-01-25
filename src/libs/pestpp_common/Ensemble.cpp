@@ -18,7 +18,12 @@ Ensemble::Ensemble(Pest *_pest_scenario_ptr): pest_scenario_ptr(_pest_scenario_p
 	rand_engine.seed(1123433458);
 }
 
-
+void Ensemble::reserve(vector<string> _real_names, vector<string> _var_names)
+{
+	reals.resize(_real_names.size(), _var_names.size());
+	var_names = _var_names;
+	real_names = _real_names;
+}
 
 void Ensemble::draw(int num_reals, Covariance &cov, Transformable &tran, const vector<string> &draw_names)
 {
@@ -137,6 +142,14 @@ Covariance Ensemble::get_diagonal_cov_matrix()
 	{
 		//calc variance for this var_name
 		var = (reals.col(j).cwiseProduct(reals.col(j))).sum() / num_reals;
+		//if (var == 0.0)
+		if (var <=1.0e-30)
+		{
+			stringstream ss;
+			ss << "invalid variance for ensemble variable: " << var_names[j] << ": " << var;
+			throw_ensemble_error(ss.str());
+			
+		}
 		triplets.push_back(Eigen::Triplet<double>(j, j, var));
 	}
 
@@ -175,6 +188,24 @@ Eigen::MatrixXd Ensemble::get_eigen_mean_diff(const vector<string> &_real_names,
 	return _reals;
 }
 
+vector<double> Ensemble::get_mean_stl_vector()
+{
+	vector<double> mean_vec;
+	mean_vec.reserve(var_names.size());
+	for (int j = 0; j < reals.cols(); j++)
+	{
+		mean_vec.push_back(reals.col(j).mean());	
+	}
+	return mean_vec;
+
+}
+
+//Ensemble Ensemble::get_mean()
+//{
+//	Ensemble new_en(pest_scenario_ptr);
+//	new_en.app
+//
+//}
 
 void Ensemble::from_eigen_mat(Eigen::MatrixXd _reals, const vector<string> &_real_names, const vector<string> &_var_names)
 {
@@ -570,7 +601,7 @@ void Ensemble::append_other_rows(Ensemble &other)
 	real_names = new_real_names;
 }
 
-void Ensemble::append(string real_name, Transformable &trans)
+void Ensemble::append(string real_name, const Transformable &trans)
 {
 	stringstream ss;
 	//make sure this real_name isn't ready used

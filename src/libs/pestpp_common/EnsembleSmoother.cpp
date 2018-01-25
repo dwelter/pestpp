@@ -561,6 +561,7 @@ void IterEnsembleSmoother::message(int level, string &_message, vector<T, A> _ex
 
 	cout << ss.str() << endl;
 	file_manager.rec_ofstream() <<ss.str() << endl;
+	performance_log->log_event(ss.str());
 
 }
 
@@ -796,6 +797,50 @@ void IterEnsembleSmoother::initialize()
 		}	
 	}
 
+	if (pest_scenario.get_control_info().noptmax == 0)
+	{
+		message(0, "'noptmax'=0, running mean parameter ensemble values and quitting");
+		message(1, "calculating mean parameter values");
+		Parameters pars;
+		vector<double> mv = pe.get_mean_stl_vector();
+		pars.update(pe.get_var_names(), pe.get_mean_stl_vector());
+		ParamTransformSeq pts = pe.get_par_transform();
+		
+		ParameterEnsemble _pe(&pest_scenario);
+		_pe.reserve(vector<string>(), pe.get_var_names());
+		_pe.set_trans_status(pe.get_trans_status());
+		_pe.append("mean",pars);
+		string par_csv = file_manager.get_base_filename() + ".mean.par.csv";
+		message(1, "saving mean parameter values to ",par_csv);
+		_pe.to_csv(par_csv);
+
+		ObservationEnsemble _oe(&pest_scenario);
+		_oe.reserve(vector<string>(), oe.get_var_names());
+		_oe.append("mean", pest_scenario.get_ctl_observations());
+		message(1, "running mean parameter values");
+
+		vector<int> failed_idxs = run_ensemble(_pe, _oe);
+		if (failed_idxs.size() != 0)
+		{
+			message(0, "mean parmeter value run failed...bummer");
+			return;
+		}
+		string obs_csv = file_manager.get_base_filename() + ".mean.obs.csv";
+		message(1, "saving results from mean parameter value run to ", obs_csv);
+		_oe.to_csv(obs_csv);
+
+		return;
+		/*set<int> failed_runs = run_mgr_ptr->get_failed_run_ids();
+		if (failed_runs.find(run_id) != failed_runs.end())
+		{
+			message(1, "mean parmeter value run failed...bummer");
+			return;
+		}*/
+		/*Observations obs;
+		run_mgr_ptr->get_run(run_id, pars, obs);
+		output_file_writer.write_rei()
+		*/
+	}
 
 	string obs_restart_csv = pest_scenario.get_pestpp_options().get_ies_obs_restart_csv();	
 	//no restart

@@ -124,8 +124,8 @@ def run_suite(model_d):
 
     pst = pyemu.Pst(os.path.join(template_d, "pest.pst"))
 
-    #for i in range(df.shape[0]):
-    for i in range(3,4):
+    for i in range(df.shape[0]):
+    #for i in range(3,4):
     
         test_vars = df.iloc[i, :].to_dict()
         test_name = test_vars["text"].split()[0].replace(")", '')
@@ -315,15 +315,15 @@ def invest():
 
 if __name__ == "__main__":
     # write_empty_test_matrix()
-    # setup_suite_dir("ies_freyberg")
-    #run_suite("ies_freyberg")
+    setup_suite_dir("ies_freyberg")
+    run_suite("ies_freyberg")
     #run_suite("ies_10par_xsec")
     #rebase("ies_freyberg")
     #rebase("ies_10par_xsec")
     #test_10par_xsec()
     #test_freyberg()
-    test_freyberg_full_cov()
+    #test_freyberg_full_cov()
     #invest()
     #compare_suite("ies_10par_xsec")
     #compare_suite("ies_freyberg")
-    # tenpar_subset_test()
+    #tenpar_subset_test()

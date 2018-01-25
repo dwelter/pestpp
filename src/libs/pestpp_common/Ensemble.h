@@ -38,7 +38,7 @@ public:
 
 	void add_to_cols(Eigen::MatrixXd &_reals, const vector<string> &_var_names);
 
-	
+	void reserve(vector<string> _real_names, vector<string> _var_names);
 
 	Eigen::VectorXd get_real_vector(int ireal);
 	Eigen::VectorXd get_real_vector(const string &real_name);
@@ -51,8 +51,11 @@ public:
 	Eigen::MatrixXd get_eigen_mean_diff();
 	Eigen::MatrixXd get_eigen_mean_diff(const vector<string> &_real_names, const vector<string> &_var_names);
 	
+	vector<double> get_mean_stl_vector();
+	
 	void append_other_rows(Ensemble &other);
-	void append(string real_name, Transformable &trans);
+	void append(string real_name, const Transformable &trans);
+	
 	Covariance get_diagonal_cov_matrix();
 
 	void reorder(vector<string> &_real_names, vector<string> &_var_names);
@@ -116,6 +119,9 @@ public:
 	void draw(int num_reals, Covariance &cov);
 	Covariance get_diagonal_cov_matrix();
 	//ParameterEnsemble get_mean_diff();
+
+	ParameterEnsemble get_mean();
+
 private:
 	ParamTransformSeq par_transform;
 	transStatus tstat;

@@ -137,8 +137,6 @@ private:
 	void sanity_checks();
 
 	void add_bases();
-
-	Eigen::MatrixXd get_obs_resid();
 };
 
 #endif 
