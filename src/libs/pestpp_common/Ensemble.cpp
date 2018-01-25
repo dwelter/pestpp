@@ -82,19 +82,36 @@ void Ensemble::draw(int num_reals, Covariance &cov, Transformable &tran, const v
 		//Eigen::MatrixXd proj = evec * eval.asDiagonal();
 
 
-		Eigen::EigenSolver<Eigen::MatrixXd> eig(cov.e_ptr()->toDense());		
-		Eigen::MatrixXd evecs = eig.eigenvectors().real();
-		Eigen::MatrixXd evals = eig.eigenvalues().real().cwiseSqrt().asDiagonal();
+		//Eigen::EigenSolver<Eigen::MatrixXd> eig(cov.e_ptr()->toDense());		
+		//Eigen::MatrixXd evecs = eig.eigenvectors().real();
+		//Eigen::MatrixXd evals = eig.eigenvalues().real().cwiseSqrt().asDiagonal();
+		
+		/*RedSVD::RedSVD<Eigen::MatrixXd> svd;
+		svd.compute(cov.e_ptr()->toDense(), draw_names.size());
+		Eigen::MatrixXd evecs = svd.matrixU();
+		Eigen::MatrixXd evals = svd.singularValues().cwiseSqrt().asDiagonal();
+*/
+		RedSVD::RedSVD<Eigen::SparseMatrix<double>> svd;
+		svd.compute(*cov.e_ptr(), draw_names.size());
+		//Eigen::SparseMatrix<double> evecs = svd.matrixU();
+		Eigen::MatrixXd evals = svd.singularValues().cwiseSqrt().asDiagonal();
+
+		Eigen::MatrixXd proj = svd.matrixU() * evals;
 		
 		//for debugging
-		/*ofstream f("evals.dat");
+		ofstream f("evals.dat");
 		f << evals << endl;
 		f.close();
 		f.open("evecs.dat");
-		f << evecs << endl;
-		f.close();*/
-		Eigen::MatrixXd proj = evecs * evals;
+		f << svd.matrixU() << endl;
+		f.close();
+		f.open("proj.dat");
+		f << proj << endl;
+		f.close();
+
+
 		
+
 		//project each standard normal draw in place
 		for (int i = 0; i < num_reals; i++)
 		{

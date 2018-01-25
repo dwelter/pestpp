@@ -132,7 +132,8 @@ def run_suite(model_d):
         print(test_vars["text"])
         pst.pestpp_options = {}
         for v in ies_vars:
-            pst.pestpp_options[v] = test_vars[v]
+            if pd.notnull(test_vars[v]):
+                pst.pestpp_options[v] = test_vars[v]
         pst.write(os.path.join(template_d, "pest.pst"))
         test_d = os.path.join(model_d, "master_test_{0}".format(test_name))
 
@@ -212,6 +213,60 @@ def rebase(model_d):
                 shutil.copy2(os.path.join(test_d, compare_file),
                              os.path.join(base_d, "{0}__{1}".
                                           format(os.path.split(test_d)[-1], compare_file)))
+
+def tenpar_full_cov_test():
+    model_d = "ies_10par_xsec"
+    test_d = os.path.join(model_d, "master_full_cov_test")
+    template_d = os.path.join(model_d, "test_template")
+    if not os.path.exists(template_d):
+        raise Exception("template_d {0} not found".format(template_d))
+    if os.path.exists(test_d):
+        shutil.rmtree(test_d)
+    shutil.copytree(template_d,test_d)
+    pst_name = os.path.join(test_d,"pest.pst")
+    pst = pyemu.Pst(pst_name)
+    par = pst.parameter_data
+    par.loc[:,"partrans"] = "fixed"
+    par.loc[pst.par_names[:2],"partrans"] = "none"
+
+    x = np.zeros((pst.npar_adj,pst.npar_adj)) + 0.25
+    for i in range(pst.npar_adj):
+        x[i,i] = 1.0
+    cov = pyemu.Cov(x,names=pst.adj_par_names)
+    cov.to_ascii(os.path.join(test_d,"prior.cov"))
+    num_reals = 100000
+    pe = pyemu.ParameterEnsemble.from_gaussian_draw(pst,cov,num_reals=num_reals,use_homegrown=True)
+    pe.enforce()
+
+    pst.control_data.noptmax = 0
+    pst.pestpp_options = {}
+    pst.pestpp_options["ies_num_reals"] = num_reals
+    pst.pestpp_options["parcov_filename"] = "prior.cov"
+    pst.write(pst_name)
+    pyemu.helpers.run(exe_path+" pest.pst",cwd=test_d)
+
+    df = pd.read_csv(os.path.join(test_d,"pest.0.par.csv"),index_col=0)
+    df.columns = [c.lower() for c in df.columns]
+
+    p1,p2 = pst.adj_par_names
+    pe_corr = pe.corr().loc[p1,p2]
+    df_corr = df.corr().loc[p1,p2]
+    diff = np.abs((pe_corr - df_corr)/pe_corr)
+    assert diff < 0.01,"{0},{1},{2}".format(pe_corr,df_corr,diff)
+
+    par.loc[pst.adj_par_names,"partrans"] = "log"
+    pe = pyemu.ParameterEnsemble.from_gaussian_draw(pst, cov, num_reals=num_reals, use_homegrown=True)
+    pe.enforce()
+    pst.write(pst_name)
+    pyemu.helpers.run(exe_path + " pest.pst", cwd=test_d)
+    df = pd.read_csv(os.path.join(test_d, "pest.0.par.csv"), index_col=0)
+    df.columns = [c.lower() for c in df.columns]
+
+    p1, p2 = pst.adj_par_names
+    pe_corr = pe.corr().loc[p1, p2]
+    df_corr = df.corr().loc[p1, p2]
+    diff = np.abs((pe_corr - df_corr) / pe_corr)
+    assert diff < 0.05, "{0},{1},{2}".format(pe_corr, df_corr, diff)
 
 
 def tenpar_subset_test():
@@ -315,8 +370,8 @@ def invest():
 
 if __name__ == "__main__":
     # write_empty_test_matrix()
-    setup_suite_dir("ies_freyberg")
-    run_suite("ies_freyberg")
+    #setup_suite_dir("ies_freyberg")
+    #run_suite("ies_freyberg")
     #run_suite("ies_10par_xsec")
     #rebase("ies_freyberg")
     #rebase("ies_10par_xsec")
@@ -327,3 +382,4 @@ if __name__ == "__main__":
     #compare_suite("ies_10par_xsec")
     #compare_suite("ies_freyberg")
     #tenpar_subset_test()
+    tenpar_full_cov_test()
