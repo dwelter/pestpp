@@ -262,5 +262,3 @@ if __name__ == "__main__":
     #test()
     #prep()
     pyemu.helpers.start_slaves("template", "sweep", "pest.pst", num_slaves=6, master_dir=None)
-
-
