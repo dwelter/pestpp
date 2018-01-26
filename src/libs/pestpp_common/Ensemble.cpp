@@ -114,14 +114,22 @@ void Ensemble::draw(int num_reals, Covariance &cov, Transformable &tran, const v
 	reals.setZero(); // zero-weighted obs and fixed/tied pars get zero values here.
 	plog->log_event("filling reals matrix and adding mean values");
 	vector<string>::const_iterator start = draw_names.begin(), end=draw_names.end(), name;
+	set<string> dset(draw_names.begin(), draw_names.end());
+	map<string, int> dmap;
+	for (int i = 0; i < draw_names.size(); i++)
+		dmap[draw_names[i]] = i;
 	for (int j = 0; j < var_names.size(); j++)
 	{
-		int jj;
-		name = find(start, end, var_names[j]);
-		if (name != end)
+		//int jj;
+		//name = find(start, end, var_names[j]);
+		//if (name != end)
+		//{
+		//	jj = name - start;
+		//	reals.col(j) = draws.col(jj).array() + tran.get_rec(var_names[j]);
+		//}
+		if (dset.find(var_names[j]) != dset.end())
 		{
-			jj = name - start;
-			reals.col(j) = draws.col(jj).array() + tran.get_rec(var_names[j]);
+			reals.col(j) = draws.col(dmap[var_names[j]]).array() + tran.get_rec(var_names[j]);
 		}
 	}
 }

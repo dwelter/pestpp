@@ -318,7 +318,55 @@ def test_freyberg_full_cov():
     pst.parameter_data.loc[:,"partrans"] = "log"
     pst.control_data.noptmax = 0
     pst.pestpp_options = {}
-    num_reals = 20000
+    num_reals = 2000
+
+    #diagonal cov
+    #pst.pestpp_options["parcov_filename"] = "prior.jcb"
+    pst.pestpp_options["ies_num_reals"] = num_reals
+    pst.pestpp_options["ies_include_base"] = "false"
+    pst.write(os.path.join(test_d, "pest.pst"))
+    #cov = pyemu.Cov.from_binary(os.path.join(test_d, "prior.jcb"))
+    cov = pyemu.Cov.from_parameter_data(pst)
+
+    pe = pyemu.ParameterEnsemble.from_gaussian_draw(pst, cov, num_reals, use_homegrown=True)
+    pe.to_csv(os.path.join(test_d, "pyemu_pe.csv"))
+
+    # pyemu.helpers.start_slaves(template_d, exe_path, "pest.pst", num_slaves=10,
+    #                            slave_root=model_d, master_dir=test_d)
+    pyemu.helpers.run(exe_path + " pest.pst", cwd=test_d)
+    print("loading df")
+    df = pd.read_csv(os.path.join(test_d, "pest.0.par.csv"), index_col=0).apply(np.log10)
+    df.columns = [c.lower() for c in df.columns]
+    pe = pe.apply(np.log10)
+    pe_corr = pe.corr()
+    df_corr = df.corr()
+
+    for i, p1 in enumerate(pst.adj_par_names):
+        for p2 in pst.adj_par_names[i + 1:]:
+            c1 = pe_corr.loc[p1, p2]
+            c2 = df_corr.loc[p1, p2]
+            print(p1, p2, c1, c2)
+
+    diff_tol = 0.1
+
+    for c in df.columns:
+        if c not in pe.columns:
+            continue
+
+        m1, m2 = pe.loc[:, c].mean(), df.loc[:, c].mean()
+        s1, s2 = pe.loc[:, c].std(), df.loc[:, c].std()
+        mdiff = np.abs((m1 - m2))
+        sdiff = np.abs((s1 - s2))
+        print(c, mdiff, sdiff)
+        assert mdiff < diff_tol, "mean fail {0}:{1},{2},{3}".format(c, m1, m2, mdiff)
+        assert sdiff < diff_tol, "std fail {0}:{1},{2},{3}".format(c, s1, s2, sdiff)
+
+    # look for bias
+    diff = df - pe
+    assert diff.mean().mean() < 0.01
+
+
+    #full cov
     pst.pestpp_options["parcov_filename"] = "prior.jcb"
     pst.pestpp_options["ies_num_reals"] = num_reals
     pst.pestpp_options["ies_include_base"] = "false"
@@ -383,6 +431,25 @@ def invest():
         print(p,df1.loc[:, p].std(), df2.loc[:, p].std())
         #break
 
+def test_synth():
+    model_d = "ies_synth"
+    test_d = os.path.join(model_d,"master")
+    template_d = os.path.join(model_d,"template")
+
+    if os.path.exists(test_d):
+        shutil.rmtree(test_d)
+    #shutil.copytree(template_d,test_d)
+    # print("loading pst")
+    # pst = pyemu.Pst(os.path.join(template_d,"pest.pst"))
+    # pst.pestpp_options = {}
+    # pst.pestpp_options["ies_num_reals"] = 30
+    # pst.control_data.noptmax = 1
+    # print("writing pst")
+    # pst.write(os.path.join(template_d,"pest.pst"))
+    print("starting slaves")
+    pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=6,master_dir=test_d,slave_root=model_d)
+
+
 if __name__ == "__main__":
     # write_empty_test_matrix()
     #setup_suite_dir("ies_freyberg")
@@ -393,6 +460,7 @@ if __name__ == "__main__":
     #test_10par_xsec()
     #test_freyberg()
     test_freyberg_full_cov()
+    #test_synth()
     #invest()
     #compare_suite("ies_10par_xsec")
     #compare_suite("ies_freyberg")

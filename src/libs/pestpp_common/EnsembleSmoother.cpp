@@ -27,17 +27,15 @@ PhiHandler::PhiHandler(Pest *_pest_scenario, FileManager *_file_manager,
 	for (auto &oname : pest_scenario->get_ctl_ordered_nz_obs_names())
 	{
 		og = oi.get_group(oname);
-		if ((og.compare(0, 2, "L_")) || (og.compare(0, 4, "LESS")))
+		if ((og.compare(0, 2, "L_") == 0) || (og.compare(0, 4, "LESS")==0))
 		{
 			lt_obs_names.push_back(oname);
-
 		}
-		else if ((og.compare(0, 2, "G_")) || (og.compare(0, 7, "GREATER")))
+		else if ((og.compare(0, 2, "G_")==0) || (og.compare(0, 7, "GREATER")==0))
 		{
 			gt_obs_names.push_back(oname);
 		}
 	}
-
 
 
 	reg_factor = _reg_factor;
@@ -1093,7 +1091,7 @@ void IterEnsembleSmoother::solve()
 	{
 		ss.str("");
 		ss << "WARNING: less than " << warn_min_reals << " active realizations...might not be enough";
-		message(0, ss.str());
+		message(1, ss.str());
 	}
 
 	if ((use_subset) && (subset_size > pe.shape().first))
