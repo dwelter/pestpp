@@ -9,6 +9,7 @@
 #include "ObjectiveFunc.h"
 #include "RedSVD-h.h"
 #include "covariance.h"
+#include "PerformanceLog.h"
 
 mt19937_64 Ensemble::rand_engine = mt19937_64(1);
 
@@ -25,7 +26,7 @@ void Ensemble::reserve(vector<string> _real_names, vector<string> _var_names)
 	real_names = _real_names;
 }
 
-void Ensemble::draw(int num_reals, Covariance &cov, Transformable &tran, const vector<string> &draw_names)
+void Ensemble::draw(int num_reals, Covariance &cov, Transformable &tran, const vector<string> &draw_names, PerformanceLog *plog, int level)
 {
 	//draw names should be "active" var_names (nonzero weight obs and not fixed/tied pars)
 	//just a quick sanity check...
@@ -41,15 +42,20 @@ void Ensemble::draw(int num_reals, Covariance &cov, Transformable &tran, const v
 		cov = cov.get(draw_names);
 
 	//make standard normal draws
+	plog->log_event("making standard normal draws");
 	RedSVD::sample_gaussian(draws);
+	if (level > 2)
+	{ 
+		ofstream f("standard_normal_draws.dat");
+		f << draws << endl;
+		f.close();
+	}
 	
-	ofstream f("draws.dat");
-	f << draws << endl;
-	f.close();
 
 	//if diagonal cov, then scale by variance
 	if (cov.isdiagonal())
 	{
+		plog->log_event("scaling by variance");
 		Eigen::VectorXd std = cov.e_ptr()->diagonal().cwiseSqrt();
 
 		for (int j = 0; j < draw_names.size(); j++)
@@ -61,24 +67,31 @@ void Ensemble::draw(int num_reals, Covariance &cov, Transformable &tran, const v
 	//if not diagonal, eigen decomp of cov then project the standard normal draws
 	else
 	{
-		
+		int ncomps = draw_names.size();
+		stringstream ss;
+		ss << "SVD of full cov using " << ncomps << " components";
+		plog->log_event(ss.str());
 		RedSVD::RedSVD<Eigen::SparseMatrix<double>> svd;
-		svd.compute(*cov.e_ptr(), draw_names.size());
+		svd.compute(*cov.e_ptr(),ncomps);
 		Eigen::MatrixXd evals = svd.singularValues().cwiseSqrt().asDiagonal();
+		plog->log_event("forming projection matrix");
 		Eigen::MatrixXd proj = svd.matrixU() * evals;
 		
 		//for debugging
-		ofstream f("evals.dat");
-		f << evals << endl;
-		f.close();
-		f.open("evecs.dat");
-		f << svd.matrixU() << endl;
-		f.close();
-		f.open("proj.dat");
-		f << proj << endl;
-		f.close();
-
+		if (level > 2)
+		{
+			ofstream f("cov_eigenvectors.dat");
+			f << evals << endl;
+			f.close();
+			f.open("cov_eigenvalues.dat");
+			f << svd.matrixU() << endl;
+			f.close();
+			f.open("cov_projection_matrix.dat");
+			f << proj << endl;
+			f.close();
+		}
 		//project each standard normal draw in place
+		plog->log_event("projecting realizations");
 		for (int i = 0; i < num_reals; i++)
 		{
 			draws.row(i) = proj * draws.row(i).transpose();
@@ -96,8 +109,10 @@ void Ensemble::draw(int num_reals, Covariance &cov, Transformable &tran, const v
 	}
 	
 	//add the mean values - using the Transformable instance (initial par value or observed value)
+	plog->log_event("resizing reals matrix");
 	reals.resize(num_reals, var_names.size());
 	reals.setZero(); // zero-weighted obs and fixed/tied pars get zero values here.
+	plog->log_event("filling reals matrix and adding mean values");
 	vector<string>::const_iterator start = draw_names.begin(), end=draw_names.end(), name;
 	for (int j = 0; j < var_names.size(); j++)
 	{
@@ -772,14 +787,14 @@ ParameterEnsemble::ParameterEnsemble(Pest *_pest_scenario_ptr):Ensemble(_pest_sc
 	par_transform = pest_scenario_ptr->get_base_par_tran_seq();
 }
 
-void ParameterEnsemble::draw(int num_reals, Covariance &cov)
+void ParameterEnsemble::draw(int num_reals, Covariance &cov, PerformanceLog *plog, int level)
 {
 	///draw a parameter ensemble
 	var_names = pest_scenario_ptr->get_ctl_ordered_adj_par_names(); //only draw for adjustable pars
 	Parameters par = pest_scenario_ptr->get_ctl_parameters();
 	par_transform.active_ctl2numeric_ip(par);//removes fixed/tied pars
 	tstat = transStatus::NUM;
-	Ensemble::draw(num_reals, cov, par, var_names);
+	Ensemble::draw(num_reals, cov, par, var_names, plog, level);
 	enforce_bounds();
 	
 }
@@ -970,12 +985,12 @@ ObservationEnsemble::ObservationEnsemble(Pest *_pest_scenario_ptr): Ensemble(_pe
 {
 }
 
-void ObservationEnsemble::draw(int num_reals, Covariance &cov)
+void ObservationEnsemble::draw(int num_reals, Covariance &cov, PerformanceLog *plog, int level)
 {
 	//draw an obs ensemble using only nz obs names
 	var_names = pest_scenario_ptr->get_ctl_ordered_obs_names();
 	Observations obs = pest_scenario_ptr->get_ctl_observations();
-	Ensemble::draw(num_reals, cov, obs, pest_scenario_ptr->get_ctl_ordered_nz_obs_names());
+	Ensemble::draw(num_reals, cov, obs, pest_scenario_ptr->get_ctl_ordered_nz_obs_names(), plog, level);
 }
 
 void ObservationEnsemble::update_from_obs(int row_idx, Observations &obs)

@@ -390,7 +390,7 @@ void IterEnsembleSmoother::initialize_pe(Covariance &cov)
 	if (par_csv.size() == 0)
 	{
 		message(1, "drawing parameter realizations: ", num_reals);
-		pe.draw(num_reals, cov);
+		pe.draw(num_reals, cov, performance_log, pest_scenario.get_pestpp_options().get_ies_verbose_level());
 		stringstream ss;
 		ss << file_manager.get_base_filename() << ".0.par.csv";
 		message(1, "saving initial parameter ensemble to ", ss.str());
@@ -441,6 +441,21 @@ void IterEnsembleSmoother::initialize_pe(Covariance &cov)
 		}
 		message(1, "initializing prior parameter covariance matrix from ensemble (using diagonal matrix)");
 		parcov = pe.get_diagonal_cov_matrix();
+		if (pest_scenario.get_pestpp_options().get_ies_verbose_level() > 1)
+		{
+			if (pe.shape().first < 10000)
+			{
+				string filename = file_manager.get_base_filename() + ".prior.cov";
+				message(1, "saving emprirical parameter covariance matrix to ASCII file: ", filename);
+				parcov.to_ascii(filename);
+			}
+			else
+			{
+				string filename = file_manager.get_base_filename() + ".prior.jcb";
+				message(1, "saving emprirical parameter covariance matrix to binary file: ",filename);
+				parcov.to_binary(filename);
+			}
+		}
 		
 	}
 	
@@ -486,7 +501,7 @@ void IterEnsembleSmoother::initialize_oe(Covariance &cov)
 	if (obs_csv.size() == 0)
 	{
 		message(1, "drawing observation noise realizations: ", num_reals);
-		oe.draw(num_reals, cov);
+		oe.draw(num_reals, cov, performance_log, pest_scenario.get_pestpp_options().get_ies_verbose_level());
 		stringstream ss;
 		ss << file_manager.get_base_filename() << ".0.obs.csv";
 		message(1, "saving initial observation ensemble to ", ss.str());
@@ -617,8 +632,8 @@ void IterEnsembleSmoother::sanity_checks()
 	}
 	if ((ppo->get_ies_verbose_level() < 0) || (ppo->get_ies_verbose_level() > 2))
 	{
-		warnings.push_back("ies_verbose_level must be between 0 and 2, resetting to 2");
-		ppo->set_ies_verbose_level(2);
+		warnings.push_back("ies_verbose_level must be between 0 and 3, resetting to 3");
+		ppo->set_ies_verbose_level(3);
 	}
 	
 	if (warnings.size() > 0)
@@ -679,7 +694,7 @@ void IterEnsembleSmoother::initialize()
 	
 	if (parcov_filename.size() == 0)
 	{
-		//if a par ensemvble arg wasn't passed, use par bounds, otherwise, construct diagonal parcov from par ensemble later
+		//if a par ensemble arg wasn't passed, use par bounds, otherwise, construct diagonal parcov from par ensemble later
 		if (pest_scenario.get_pestpp_options().get_ies_par_csv().size() == 0)
 		{
 			message(0, "initializing prior parameter covariance matrix from parameter bounds");
@@ -725,6 +740,51 @@ void IterEnsembleSmoother::initialize()
 		throw_ies_error(ss.str());
 	}
 
+	if (pest_scenario.get_control_info().noptmax == 0)
+	{
+		message(0, "'noptmax'=0, running mean parameter ensemble values and quitting");
+		message(1, "calculating mean parameter values");
+		Parameters pars;
+		vector<double> mv = pe.get_mean_stl_vector();
+		pars.update(pe.get_var_names(), pe.get_mean_stl_vector());
+		ParamTransformSeq pts = pe.get_par_transform();
+
+		ParameterEnsemble _pe(&pest_scenario);
+		_pe.reserve(vector<string>(), pe.get_var_names());
+		_pe.set_trans_status(pe.get_trans_status());
+		_pe.append("mean", pars);
+		string par_csv = file_manager.get_base_filename() + ".mean.par.csv";
+		message(1, "saving mean parameter values to ", par_csv);
+		_pe.to_csv(par_csv);
+		pe_base = _pe;
+		pe_base.reorder(vector<string>(), act_par_names);
+		ObservationEnsemble _oe(&pest_scenario);
+		_oe.reserve(vector<string>(), oe.get_var_names());
+		_oe.append("mean", pest_scenario.get_ctl_observations());
+		oe_base = _oe;
+		oe_base.reorder(vector<string>(), act_obs_names);
+		//initialize the phi handler
+		ph = PhiHandler(&pest_scenario, &file_manager, &oe_base, &pe_base, &parcov, &reg_factor);
+
+		message(1, "running mean parameter values");
+
+		vector<int> failed_idxs = run_ensemble(_pe, _oe);
+		if (failed_idxs.size() != 0)
+		{
+			message(0, "mean parmeter value run failed...bummer");
+			return;
+		}
+		string obs_csv = file_manager.get_base_filename() + ".mean.obs.csv";
+		message(1, "saving results from mean parameter value run to ", obs_csv);
+		_oe.to_csv(obs_csv);
+
+		ph.update(_oe, _pe);
+		message(0, "mean parameter phi report:");
+		ph.report();
+
+		return;
+	}
+
 	if (subset_size > pe.shape().first)
 	{
 		use_subset = false;
@@ -735,8 +795,6 @@ void IterEnsembleSmoother::initialize()
 		use_subset = true;
 	}
 	
-	
-
 	//need this here for Am calcs...
 	message(0, "transforming parameter ensembles to numeric");
 	pe.transform_ip(ParameterEnsemble::transStatus::NUM);
@@ -797,50 +855,6 @@ void IterEnsembleSmoother::initialize()
 		}	
 	}
 
-	if (pest_scenario.get_control_info().noptmax == 0)
-	{
-		message(0, "'noptmax'=0, running mean parameter ensemble values and quitting");
-		message(1, "calculating mean parameter values");
-		Parameters pars;
-		vector<double> mv = pe.get_mean_stl_vector();
-		pars.update(pe.get_var_names(), pe.get_mean_stl_vector());
-		ParamTransformSeq pts = pe.get_par_transform();
-		
-		ParameterEnsemble _pe(&pest_scenario);
-		_pe.reserve(vector<string>(), pe.get_var_names());
-		_pe.set_trans_status(pe.get_trans_status());
-		_pe.append("mean",pars);
-		string par_csv = file_manager.get_base_filename() + ".mean.par.csv";
-		message(1, "saving mean parameter values to ",par_csv);
-		_pe.to_csv(par_csv);
-
-		ObservationEnsemble _oe(&pest_scenario);
-		_oe.reserve(vector<string>(), oe.get_var_names());
-		_oe.append("mean", pest_scenario.get_ctl_observations());
-		message(1, "running mean parameter values");
-
-		vector<int> failed_idxs = run_ensemble(_pe, _oe);
-		if (failed_idxs.size() != 0)
-		{
-			message(0, "mean parmeter value run failed...bummer");
-			return;
-		}
-		string obs_csv = file_manager.get_base_filename() + ".mean.obs.csv";
-		message(1, "saving results from mean parameter value run to ", obs_csv);
-		_oe.to_csv(obs_csv);
-
-		return;
-		/*set<int> failed_runs = run_mgr_ptr->get_failed_run_ids();
-		if (failed_runs.find(run_id) != failed_runs.end())
-		{
-			message(1, "mean parmeter value run failed...bummer");
-			return;
-		}*/
-		/*Observations obs;
-		run_mgr_ptr->get_run(run_id, pars, obs);
-		output_file_writer.write_rei()
-		*/
-	}
 
 	string obs_restart_csv = pest_scenario.get_pestpp_options().get_ies_obs_restart_csv();	
 	//no restart
@@ -967,8 +981,8 @@ void IterEnsembleSmoother::initialize()
 		}
 	}
 
-
 	performance_log->log_event("calc initial phi");
+	//initialize the phi handler
 	ph = PhiHandler(&pest_scenario, &file_manager, &oe_base, &pe_base, &parcov, &reg_factor);
 
 	if (ph.get_lt_obs_names().size() > 0)
@@ -1069,13 +1083,13 @@ void IterEnsembleSmoother::solve()
 	ss << "starting solve for iteration: " << iter;
 	performance_log->log_event(ss.str());
 
-	if (oe.shape().first <= error_min_reals)
+	if (pe.shape().first <= error_min_reals)
 	{
 		message(0, "too few active realizations:", oe.shape().first);
 		message(1, "need at least ", error_min_reals);
 		throw_ies_error(string("too few active realizations, cannot continue"));
 	}
-	if (oe.shape().first <= warn_min_reals)
+	if (pe.shape().first <= warn_min_reals)
 	{
 		ss.str("");
 		ss << "WARNING: less than " << warn_min_reals << " active realizations...might not be enough";

@@ -4,6 +4,7 @@ import shutil
 import platform
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 import pyemu
 
 tests = """0) 10par_xsec "standard user mode" - draw reals from par-bounds prior and obs noise from weights
@@ -310,28 +311,40 @@ def test_freyberg_full_cov():
     template_d = os.path.join(model_d, "test_template")
     if not os.path.exists(template_d):
         raise Exception("template_d {0} not found".format(template_d))
-    # if os.path.exists(test_d):
-    #     shutil.rmtree(test_d)
-    # shutil.copytree(template_d,test_d)
-    pst = pyemu.Pst(os.path.join(template_d, "pest.pst"))
+    if os.path.exists(test_d):
+        shutil.rmtree(test_d)
+    shutil.copytree(template_d,test_d)
+    pst = pyemu.Pst(os.path.join(test_d, "pest.pst"))
     pst.parameter_data.loc[:,"partrans"] = "log"
     pst.control_data.noptmax = 0
     pst.pestpp_options = {}
-    num_reals = 500
+    num_reals = 20000
     pst.pestpp_options["parcov_filename"] = "prior.jcb"
     pst.pestpp_options["ies_num_reals"] = num_reals
     pst.pestpp_options["ies_include_base"] = "false"
-    pst.write(os.path.join(template_d,"pest.pst"))
-    cov = pyemu.Cov.from_binary(os.path.join(template_d,"prior.jcb"))
+    pst.write(os.path.join(test_d,"pest.pst"))
+    cov = pyemu.Cov.from_binary(os.path.join(test_d,"prior.jcb"))
+
     pe = pyemu.ParameterEnsemble.from_gaussian_draw(pst,cov,num_reals,use_homegrown=True)
-    pe.to_csv(os.path.join(template_d,"pyemu_pe.csv"))
+    pe.to_csv(os.path.join(test_d,"pyemu_pe.csv"))
 
     # pyemu.helpers.start_slaves(template_d, exe_path, "pest.pst", num_slaves=10,
     #                            slave_root=model_d, master_dir=test_d)
+    pyemu.helpers.run(exe_path+" pest.pst",cwd=test_d)
     df = pd.read_csv(os.path.join(test_d, "pest.0.par.csv"), index_col=0).apply(np.log10)
     df.columns = [c.lower() for c in df.columns]
-    diff_tol = 0.1
     pe = pe.apply(np.log10)
+    pe_corr = pe.corr()
+    df_corr = df.corr()
+
+    for i,p1 in enumerate(pst.adj_par_names):
+        for p2 in pst.adj_par_names[i+1:]:
+            c1 = pe_corr.loc[p1,p2]
+            c2 = df_corr.loc[p1,p2]
+            print(p1,p2,c1,c2)
+
+    diff_tol = 0.1
+
     for c in df.columns:
         if c not in pe.columns:
             continue
@@ -347,6 +360,8 @@ def test_freyberg_full_cov():
     #look for bias
     diff = df - pe
     assert diff.mean().mean() < 0.01
+
+
 
 def invest():
     d = os.path.join("ies_freyberg","master_draw_test")
@@ -377,9 +392,9 @@ if __name__ == "__main__":
     #rebase("ies_10par_xsec")
     #test_10par_xsec()
     #test_freyberg()
-    #test_freyberg_full_cov()
+    test_freyberg_full_cov()
     #invest()
     #compare_suite("ies_10par_xsec")
     #compare_suite("ies_freyberg")
     #tenpar_subset_test()
-    tenpar_full_cov_test()
+    #tenpar_full_cov_test()
