@@ -6,7 +6,7 @@ pcf
    2.000000E+01  -3.000000E+00   3.000000E-01   1.000000E-02        -7       999          lamforgive        noderforgive
    1.000000E+01   1.000000E+01   1.000000E-03         0         0
    1.000000E-01         1   1.100000E+00               noaui          nosenreuse        noboundscale
-         3   1.000000E-02         3         3   1.000000E-02         3   0.000000E+00         1  -1.000000E+00
+        20   1.000000E-02         3         3   1.000000E-02         3   0.000000E+00         1  -1.000000E+00
          0         0         0         0             jcosave          verboserec          jcosaveitn          reisaveitn          parsaveitn        noparsaverun
 * singular value decomposition
          1
@@ -15,7 +15,7 @@ pcf
 * parameter groups
 pargp                   relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller
 * parameter data
-par                    none                   factor                -2.0000000000E+00     -3.0000000000E+00     -1.0000000000E+00      pargp                 1.0000000000E+00      0.0000000000E+00      1
+par                    none                   factor                -2.0000000000E+00     -1.0000000000E+10     1.1000000000E+01       pargp                 1.0000000000E+00      0.0000000000E+00      1
 * observation groups
 obgnme               
 * observation data
@@ -25,7 +25,6 @@ python chenoliver.py
 * model input/output
 par.dat.tpl par.dat
 obs.dat.ins obs.dat
+++parcov_filename(prior.cov)
 ++ies_num_reals(100)
-++ies_lambda_mults(0.01,1.0,100.0)
-++ies_initial_lambda(0.1)
-++ies_subset_size(10)
+++ies_initial_lambda(0.001)

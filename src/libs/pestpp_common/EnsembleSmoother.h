@@ -106,7 +106,9 @@ private:
 	ObservationEnsemble oe, oe_base;
 	//Eigen::MatrixXd prior_pe_diff;
 	Eigen::MatrixXd Am;
-	Eigen::DiagonalMatrix<double,Eigen::Dynamic> obscov_inv_sqrt;
+	Eigen::DiagonalMatrix<double,Eigen::Dynamic> obscov_inv_sqrt, parcov_inv_sqrt;
+
+
 
 
 	//EnsemblePair run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe);

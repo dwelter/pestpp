@@ -722,7 +722,12 @@ void IterEnsembleSmoother::initialize()
 	/*performance_log->log_event("inverting parcov");
 	message(1, "inverting prior parameter covariance matrix");
 	parcov.inv_ip(echo);*/
-
+	
+	if (pest_scenario.get_pestpp_options().get_ies_use_prior_scaling())
+	{
+		message(0, "forming inverse sqrt of prior parameter covariance matrix");
+		parcov_inv_sqrt = parcov.inv(echo).get_matrix().diagonal().cwiseSqrt().asDiagonal();
+	}
 
 	//obs ensemble
 	message(1, "initializing observation noise covariance matrix from observation weights");
@@ -813,8 +818,9 @@ void IterEnsembleSmoother::initialize()
 	//reorder this for later
 	pe_base.reorder(vector<string>(), act_par_names);
 	
-	obscov.inv_ip(echo);
-	obscov_inv_sqrt = obscov.get_matrix().diagonal().cwiseSqrt().asDiagonal();
+	message(0, "forming inverse sqrt obscov");
+	//obscov.inv_ip(echo);
+	obscov_inv_sqrt = obscov.inv().get_matrix().diagonal().cwiseSqrt().asDiagonal();
 	
 	if (!pest_scenario.get_pestpp_options().get_ies_use_approx()) 
 	{
@@ -1138,7 +1144,7 @@ void IterEnsembleSmoother::solve()
 	if (pest_scenario.get_pestpp_options().get_ies_use_prior_scaling())
 	{
 		cout << "...applying prior par cov scaling to par diff matrix" << endl;
-		par_diff = scale * *parcov.e_ptr() * diff;
+		par_diff = scale * parcov_inv_sqrt * diff;
 	}
 	else
 		par_diff = scale * diff;
@@ -1192,8 +1198,8 @@ void IterEnsembleSmoother::solve()
 			if (verbose_level > 2)
 				save_mat("ivec.dat", ivec);
 		}
-		
-		
+
+
 		message(1, "forming X1");
 		Eigen::MatrixXd X1 = Ut * scaled_residual;
 		if (verbose_level > 1)
@@ -1204,7 +1210,7 @@ void IterEnsembleSmoother::solve()
 		}
 		//scaled_residual.resize(0, 0);
 		//Ut.resize(0, 0);
-		
+
 		message(1, "forming X2");
 		Eigen::MatrixXd X2 = ivec * X1;
 		if (verbose_level > 1)
@@ -1226,7 +1232,14 @@ void IterEnsembleSmoother::solve()
 		X2.resize(0, 0);
 
 		message(1, "forming upgrade_1");
-		upgrade_1 = -1.0 * par_diff * X3;
+		if (pest_scenario.get_pestpp_options().get_ies_use_prior_scaling())
+		{
+			upgrade_1 = -1.0 * parcov_inv_sqrt * par_diff * X3;
+		}
+		else
+		{
+			upgrade_1 = -1.0 * par_diff * X3;
+		}
 		upgrade_1.transposeInPlace();
 		if (verbose_level > 1)
 		{
@@ -1245,8 +1258,17 @@ void IterEnsembleSmoother::solve()
 			performance_log->log_event("calculating parameter correction (full solution)");
 			message(1, "calculating parameter correction (full solution, MAP)");
 			performance_log->log_event("forming scaled par resid");
-			Eigen::MatrixXd scaled_par_resid = ph.get_par_resid(pe);
-			scaled_par_resid.transposeInPlace();
+			Eigen::MatrixXd scaled_par_resid;
+			if (pest_scenario.get_pestpp_options().get_ies_use_prior_scaling())
+			{
+				scaled_par_resid = parcov_inv_sqrt *  ph.get_par_resid(pe).transpose();
+			}
+			else
+			{
+				scaled_par_resid = ph.get_par_resid(pe).transpose();
+			}
+
+			//scaled_par_resid.transposeInPlace();
 			
 			performance_log->log_event("forming x4");
 			message(1, "forming X4");
@@ -1302,7 +1324,16 @@ void IterEnsembleSmoother::solve()
 
 			performance_log->log_event("forming upgrade_2");
 			message(1, "forming upgrade_2");
-			Eigen::MatrixXd upgrade_2 = -1.0 * (par_diff * x7);
+			Eigen::MatrixXd upgrade_2;
+			if (pest_scenario.get_pestpp_options().get_ies_use_prior_scaling())
+			{
+				upgrade_2 = -1.0 * parcov_inv_sqrt * par_diff * x7;
+			}
+			else
+			{
+				upgrade_2 = -1.0 * (par_diff * x7);
+			}
+			
 			if (verbose_level > 1)
 			{
 				cout << "upgrade_2: " << upgrade_2.rows() << ',' << upgrade_2.cols() << endl;
