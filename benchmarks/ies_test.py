@@ -449,25 +449,54 @@ def test_synth():
     print("starting slaves")
     pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=6,master_dir=test_d,slave_root=model_d)
 
+def chenoliver_test():
+    model_d = "ies_chenoliver"
+    test_d = os.path.join(model_d,"master")
+    template_d = os.path.join(model_d,"template")
+
+    if os.path.exists(test_d):
+        shutil.rmtree(test_d)
+    shutil.copytree(template_d,test_d)
+    pst = pyemu.Pst(os.path.join(template_d,"pest.pst"))
+    pst.pestpp_options = {}
+    pst.pestpp_options["ies_num_reals"] = 100
+    pst.control_data.noptmax = 0
+    pst.write(os.path.join(test_d,"pest.pst"))
+    pyemu.helpers.run(exe_path+" pest.pst",cwd=test_d)
+    
+    shutil.rmtree(test_d)
+    pst.pestpp_options = {}
+    pst.pestpp_options["ies_num_reals"] = 100
+    pst.pestpp_options["ies_lambda_mults"] = "0.01,1.0,100.0"
+    pst.pestpp_options["ies_initial_lambda"] = 0.1
+    pst.pestpp_options["ies_subset_size"] = 10
+    pst.control_data.noptmax = 3
+    pst.write(os.path.join(template_d,"pest.pst"))
+
+    pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=6,
+        master_dir=test_d,slave_root=model_d,port=4005)
+
+
 
 if __name__ == "__main__":
     # write_empty_test_matrix()
-    setup_suite_dir("ies_freyberg")
-    setup_suite_dir("ies_10par_xsec")
+    # setup_suite_dir("ies_freyberg")
+    # setup_suite_dir("ies_10par_xsec")
 
-    run_suite("ies_freyberg")
-    run_suite("ies_10par_xsec")
-    rebase("ies_freyberg")
-    rebase("ies_10par_xsec")
-    tenpar_subset_test()
-    tenpar_full_cov_test()
-    test_synth()
-    test_10par_xsec()
-    test_freyberg()
-    test_freyberg_full_cov()
+    # run_suite("ies_freyberg")
+    # run_suite("ies_10par_xsec")
+    # rebase("ies_freyberg")
+    # rebase("ies_10par_xsec")
+    # tenpar_subset_test()
+    # tenpar_full_cov_test()
+    # test_synth()
+    # test_10par_xsec()
+    # test_freyberg()
+    # test_freyberg_full_cov()
     
-    #invest()
-    #compare_suite("ies_10par_xsec")
-    #compare_suite("ies_freyberg")
-    tenpar_subset_test()
-    tenpar_full_cov_test()
+    # invest()
+    # compare_suite("ies_10par_xsec")
+    # compare_suite("ies_freyberg")
+    # tenpar_subset_test()
+    # tenpar_full_cov_test()
+    chenoliver_test()
