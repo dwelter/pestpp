@@ -474,11 +474,12 @@ def test_chenoliver():
     pst.write(os.path.join(test_d,"pest.pst"))
     pyemu.helpers.run(exe_path+" pest.pst",cwd=test_d)
     
+    num_reals = 1000
     noptmax = 20
     shutil.rmtree(test_d)
     pst.pestpp_options = {}
     pst.pestpp_options["parcov_filename"] = "prior.cov"
-    pst.pestpp_options["ies_num_reals"] = 100
+    pst.pestpp_options["ies_num_reals"] = num_reals
     #pst.pestpp_options["ies_lambda_mults"] = "0.01,1.0,100.0"
     pst.pestpp_options["ies_initial_lambda"] = 0.001
     #pst.pestpp_options["ies_subset_size"] = 10
@@ -488,27 +489,30 @@ def test_chenoliver():
     pst.write(os.path.join(template_d,"pest.pst"))
     
 
-    pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=6,
+    pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=20,
         master_dir=test_d,slave_root=model_d,port=4005)
-    df_full = pd.read_csv(os.path.join(test_d,"pest.phi.meas.csv"),index_col=0)
+    df_full = pd.read_csv(os.path.join(test_d,"pest.{0}.obs.csv.".format(noptmax)),index_col=0)
 
     shutil.rmtree(test_d)
     pst.pestpp_options = {}
     pst.pestpp_options["parcov_filename"] = "prior.cov"
-    pst.pestpp_options["ies_num_reals"] = 100
+    pst.pestpp_options["ies_num_reals"] = num_reals
     #pst.pestpp_options["ies_lambda_mults"] = "0.01,1.0,100.0"
     pst.pestpp_options["ies_initial_lambda"] = 0.001
     #pst.pestpp_options["ies_subset_size"] = 10
     pst.control_data.noptmax = noptmax
     pst.write(os.path.join(template_d,"pest.pst"))
 
-    pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=6,
+    pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=20,
         master_dir=test_d,slave_root=model_d,port=4005)
-    df_approx = pd.read_csv(os.path.join(test_d,"pest.phi.meas.csv"),index_col=0)
+    df_approx = pd.read_csv(os.path.join(test_d,"pest.{0}.obs.csv.".format(noptmax)),index_col=0)
 
     ax = plt.subplot(111)
-    ax.plot(df_full.loc[:,"mean"],color='b',label="full")
-    ax.plot(df_approx.loc[:,"mean"],color='g',label="approx")
+    #ax.plot(df_full.loc[:,"mean"],color='b',label="full")
+    #ax.plot(df_approx.loc[:,"mean"],color='g',label="approx")
+    df_full.OBS.hist(bins=20,color='b',alpha=0.5, ax=ax)
+    df_approx.OBS.hist(bins=20,color='0.5',alpha=0.5,ax=ax)
+
     plt.savefig(os.path.join(model_d,"full_approx.png"))
     plt.close("all")
 
@@ -516,24 +520,24 @@ def test_chenoliver():
 
 if __name__ == "__main__":
     # write_empty_test_matrix()
-    setup_suite_dir("ies_freyberg")
-    setup_suite_dir("ies_10par_xsec")
+    # setup_suite_dir("ies_freyberg")
+    # setup_suite_dir("ies_10par_xsec")
 
-    run_suite("ies_freyberg")
-    run_suite("ies_10par_xsec")
-    rebase("ies_freyberg")
-    rebase("ies_10par_xsec")
-    tenpar_subset_test()
-    tenpar_full_cov_test()
-    test_freyberg_full_cov()
-    test_synth()
-    test_10par_xsec()
-    test_freyberg()
+    # run_suite("ies_freyberg")
+    # run_suite("ies_10par_xsec")
+    # rebase("ies_freyberg")
+    # rebase("ies_10par_xsec")
+    # tenpar_subset_test()
+    # tenpar_full_cov_test()
+    # test_freyberg_full_cov()
+    # test_synth()
+    # test_10par_xsec()
+    # test_freyberg()
     test_chenoliver()
     
-    # invest()
-    compare_suite("ies_10par_xsec")
-    compare_suite("ies_freyberg")
+    # # invest()
+    # compare_suite("ies_10par_xsec")
+    # compare_suite("ies_freyberg")
     # tenpar_subset_test()
     # tenpar_full_cov_test()
    

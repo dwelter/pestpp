@@ -26,5 +26,7 @@ python chenoliver.py
 par.dat.tpl par.dat
 obs.dat.ins obs.dat
 ++parcov_filename(prior.cov)
-++ies_num_reals(100)
+++ies_num_reals(1000)
 ++ies_initial_lambda(0.001)
+++ies_use_approx(false)
+++ies_use_prior_scaling(true)
