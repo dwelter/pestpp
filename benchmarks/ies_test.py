@@ -489,9 +489,10 @@ def test_chenoliver():
     pst.write(os.path.join(template_d,"pest.pst"))
     
 
-    pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=20,
+    pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=30,
         master_dir=test_d,slave_root=model_d,port=4005)
-    df_full = pd.read_csv(os.path.join(test_d,"pest.{0}.obs.csv.".format(noptmax)),index_col=0)
+    df_full_obs = pd.read_csv(os.path.join(test_d,"pest.{0}.obs.csv.".format(noptmax)),index_col=0)
+    df_full_par = pd.read_csv(os.path.join(test_d,"pest.{0}.par.csv.".format(noptmax)),index_col=0)
 
     shutil.rmtree(test_d)
     pst.pestpp_options = {}
@@ -503,15 +504,19 @@ def test_chenoliver():
     pst.control_data.noptmax = noptmax
     pst.write(os.path.join(template_d,"pest.pst"))
 
-    pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=20,
+    pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=30,
         master_dir=test_d,slave_root=model_d,port=4005)
-    df_approx = pd.read_csv(os.path.join(test_d,"pest.{0}.obs.csv.".format(noptmax)),index_col=0)
+    df_approx_obs = pd.read_csv(os.path.join(test_d,"pest.{0}.obs.csv.".format(noptmax)),index_col=0)
+    df_approx_par = pd.read_csv(os.path.join(test_d,"pest.{0}.par.csv.".format(noptmax)),index_col=0)
 
-    ax = plt.subplot(111)
+    ax = plt.subplot(211)
+    ax2 = plt.subplot(212)
     #ax.plot(df_full.loc[:,"mean"],color='b',label="full")
     #ax.plot(df_approx.loc[:,"mean"],color='g',label="approx")
-    df_full.OBS.hist(bins=20,color='b',alpha=0.5, ax=ax)
-    df_approx.OBS.hist(bins=20,color='0.5',alpha=0.5,ax=ax)
+    df_full_obs.OBS.hist(bins=30,color='b',alpha=0.5, ax=ax)
+    df_approx_obs.OBS.hist(bins=30,color='0.5',alpha=0.5,ax=ax)
+    df_full_par.PAR.hist(bins=30,color='b',alpha=0.5, ax=ax2)
+    df_approx_par.PAR.hist(bins=30,color='0.5',alpha=0.5,ax=ax2)
 
     plt.savefig(os.path.join(model_d,"full_approx.png"))
     plt.close("all")
