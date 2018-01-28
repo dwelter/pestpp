@@ -647,6 +647,13 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_ies_init_lam(-999);
 	pestpp_options.set_ies_use_approx(true);
 	pestpp_options.set_ies_subset_size(100000000);
+	pestpp_options.set_ies_reg_factor(0.0);
+	pestpp_options.set_ies_verbose_level(0);
+	pestpp_options.set_ies_use_prior_scaling(false);
+	pestpp_options.set_ies_num_reals(50);
+	pestpp_options.set_ies_bad_phi(1.0e+30);
+	pestpp_options.set_ies_include_base(true);
+
 	pestpp_options.set_condor_submit_file(string());
 
 	for(vector<string>::const_iterator b=pestpp_input.begin(),e=pestpp_input.end();

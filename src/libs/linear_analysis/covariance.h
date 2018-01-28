@@ -12,8 +12,6 @@
 
 using namespace std;
 
-
-
 class Mat
 {
 public:
@@ -55,9 +53,11 @@ public:
 	void transpose_ip();
 	Mat transpose();
 	Mat T();
-	Mat inv();
+	Mat inv(Logger* log);
+	Mat inv(bool echo=false);
 	void inv_ip(Logger *log);
-	void inv_ip();
+	void inv_ip(bool echo=false);
+	void pseudo_inv_ip(double eigthresh, int maxsing);
 	void SVD();
 
 	Mat identity();
@@ -75,6 +75,8 @@ public:
 
 	int nrow(){ return row_names.size(); }
 	int ncol(){ return col_names.size(); }	
+
+	bool isdiagonal();
 
 
 protected:
@@ -100,7 +102,7 @@ public:
 	Covariance();
 	Covariance(string filename);
 	Covariance(Mat _mat);
-	Covariance(vector<string> _row_names, Eigen::SparseMatrix<double> _matrix);
+	Covariance(vector<string> _row_names, Eigen::SparseMatrix<double> _matrix, Mat::MatType _mattype = Mat::MatType::SPARSE);
 	
 	Covariance get(const vector<string> &other_names);
 	Mat get(vector<string> &other_row_names, vector<string> &other_col_names){ return Mat::get(other_row_names, other_col_names); }
@@ -127,6 +129,7 @@ public:
 	vector<double> standard_normal(default_random_engine gen);
 	void cholesky();
 
+	
 private:
 	Eigen::SparseMatrix<double> lower_cholesky;
 };
