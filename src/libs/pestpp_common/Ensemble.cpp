@@ -69,33 +69,64 @@ void Ensemble::draw(int num_reals, Covariance &cov, Transformable &tran, const v
 	{
 		int ncomps = draw_names.size();
 		stringstream ss;
-		ss << "SVD of full cov using " << ncomps << " components";
+		/*ss << "SVD of full cov using " << ncomps << " components";
 		plog->log_event(ss.str());
 		RedSVD::RedSVD<Eigen::SparseMatrix<double>> svd;
 		svd.compute(*cov.e_ptr(),ncomps);
 		Eigen::MatrixXd evals = svd.singularValues().cwiseSqrt().asDiagonal();
 		plog->log_event("forming projection matrix");
-		Eigen::MatrixXd proj = svd.matrixU() * evals;
-		
-		//for debugging
+		Eigen::MatrixXd proj = svd.matrixU() * evals;*/
+		////for debugging
+		//if (level > 2)
+		//{
+		//	ofstream f("cov_eigenvectors.dat");
+		//	f << evals << endl;
+		//	f.close();
+		//	f.open("cov_eigenvalues.dat");
+		//	f << svd.matrixU() << endl;
+		//	f.close();
+		//	f.open("cov_projection_matrix.dat");
+		//	f << proj << endl;
+		//	f.close();
+		//}
+
+		/*ss << "Cholesky decomposition of full covariance matrix";
+		plog->log_event(ss.str());
+		Eigen::LDLT<Eigen::SparseMatrix<double>> chol(*cov.e_ptr());
+		Eigen::SparseMatrix<double> proj = chol.matrixL() * chol.vectorD();
+		*/
+		/*if (level > 2)
+		{
+			ofstream f("cov_projection_matrix.dat");
+			f << proj << endl;
+			f.close();
+		}*/
+		ss << "Randomized Eigen decomposition of full cov using " << ncomps << " components";
+		plog->log_event(ss.str());
+		RedSVD::RedSymEigen<Eigen::SparseMatrix<double>> eig(*cov.e_ptr(),ncomps);
+		Eigen::MatrixXd proj = (eig.eigenvectors() * eig.eigenvalues().cwiseSqrt().asDiagonal());
+
 		if (level > 2)
 		{
 			ofstream f("cov_eigenvectors.dat");
-			f << evals << endl;
+			f << eig.eigenvectors() << endl;
 			f.close();
 			f.open("cov_eigenvalues.dat");
-			f << svd.matrixU() << endl;
+			f << eig.eigenvalues() << endl;
 			f.close();
 			f.open("cov_projection_matrix.dat");
 			f << proj << endl;
 			f.close();
 		}
+
 		//project each standard normal draw in place
 		plog->log_event("projecting realizations");
-		for (int i = 0; i < num_reals; i++)
+		/*for (int i = 0; i < num_reals; i++)
 		{
 			draws.row(i) = proj * draws.row(i).transpose();
-		}
+		}*/
+		draws = proj * draws.transpose();
+		draws.transposeInPlace();
 	}
 
 	//form some realization names

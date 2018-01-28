@@ -228,6 +228,8 @@ def tenpar_full_cov_test():
     pst = pyemu.Pst(pst_name)
     par = pst.parameter_data
     par.loc[:,"partrans"] = "fixed"
+    par.loc[:,"parubnd"] = 1.0e+10
+    par.loc[:,"parlbnd"] = -1.0e+10
     par.loc[pst.par_names[:2],"partrans"] = "none"
 
     x = np.zeros((pst.npar_adj,pst.npar_adj)) + 0.25
@@ -235,7 +237,7 @@ def tenpar_full_cov_test():
         x[i,i] = 1.0
     cov = pyemu.Cov(x,names=pst.adj_par_names)
     cov.to_ascii(os.path.join(test_d,"prior.cov"))
-    num_reals = 100000
+    num_reals = 10000
     pe = pyemu.ParameterEnsemble.from_gaussian_draw(pst,cov,num_reals=num_reals,use_homegrown=True)
     pe.enforce()
 
@@ -256,6 +258,7 @@ def tenpar_full_cov_test():
     assert diff < 0.05,"{0},{1},{2}".format(pe_corr,df_corr,diff)
 
     par.loc[pst.adj_par_names,"partrans"] = "log"
+    par.loc[:,"parlbnd"] = 1.0e-10
     pe = pyemu.ParameterEnsemble.from_gaussian_draw(pst, cov, num_reals=num_reals, use_homegrown=True)
     pe.enforce()
     pst.write(pst_name)
@@ -264,8 +267,8 @@ def tenpar_full_cov_test():
     df.columns = [c.lower() for c in df.columns]
 
     p1, p2 = pst.adj_par_names
-    pe_corr = pe.corr().loc[p1, p2]
-    df_corr = df.corr().loc[p1, p2]
+    pe_corr = pe.apply(np.log10).corr().loc[p1, p2]
+    df_corr = df.apply(np.log10).corr().loc[p1, p2]
     diff = np.abs((pe_corr - df_corr) / pe_corr)
     assert diff < 0.05, "{0},{1},{2}".format(pe_corr, df_corr, diff)
 
@@ -598,15 +601,14 @@ if __name__ == "__main__":
     # rebase("ies_10par_xsec")
     # tenpar_subset_test()
     # tenpar_full_cov_test()
-    # test_freyberg_full_cov()
+    test_freyberg_full_cov()
     # test_synth()
     # test_10par_xsec()
     # test_freyberg()
-    test_chenoliver()
+    #test_chenoliver()
     
     # # invest()
     # compare_suite("ies_10par_xsec")
     # compare_suite("ies_freyberg")
     # tenpar_subset_test()
     # tenpar_full_cov_test()
-   
