@@ -89,7 +89,7 @@ void Ensemble::set_eigen(Eigen::MatrixXd _reals)
 //	return Mat();
 //}
 
-void Ensemble::reorder(vector<string> &_real_names, vector<string> &_var_names)
+void Ensemble::reorder(const vector<string> &_real_names, const vector<string> &_var_names)
 {
 	reals = get_eigen(_real_names, _var_names);
 	if (_var_names.size() != 0)
@@ -98,9 +98,9 @@ void Ensemble::reorder(vector<string> &_real_names, vector<string> &_var_names)
 		real_names = _real_names;
 }
 
-void Ensemble::drop_rows(vector<int> &row_idxs)
+void Ensemble::drop_rows(const vector<int> &row_idxs)
 {
-	vector<int>::iterator start = row_idxs.begin(), end = row_idxs.end();
+	vector<int>::const_iterator start = row_idxs.begin(), end = row_idxs.end();
 	vector<string> keep_names;
 	for (int ireal = 0; ireal < reals.rows(); ireal++)
 		if (find(start, end, ireal) == end)
@@ -110,9 +110,9 @@ void Ensemble::drop_rows(vector<int> &row_idxs)
 }
 
 
-void Ensemble::keep_rows(vector<int> &row_idxs)
+void Ensemble::keep_rows(const vector<int> &row_idxs)
 {
-	vector<int>::iterator start = row_idxs.begin(), end = row_idxs.end();
+	vector<int>::const_iterator start = row_idxs.begin(), end = row_idxs.end();
 	vector<string> keep_names;
 	for (int ireal = 0; ireal < reals.rows(); ireal++)
 		if (find(start, end, ireal) != end)
@@ -200,7 +200,7 @@ Eigen::MatrixXd Ensemble::get_eigen(vector<string> row_names, vector<string> col
 	
 }
 
-void Ensemble::to_csv(string &file_name)
+void Ensemble::to_csv(string file_name)
 {
 	ofstream csv(file_name);
 	if (!csv.good())
@@ -500,7 +500,7 @@ ParameterEnsemble::ParameterEnsemble(Pest *_pest_scenario_ptr):Ensemble(_pest_sc
 //}
 
 
-map<int,int> ParameterEnsemble::add_runs(RunManagerAbstract *run_mgr_ptr, vector<int> &real_idxs)
+map<int,int> ParameterEnsemble::add_runs(RunManagerAbstract *run_mgr_ptr,const vector<int> &real_idxs)
 {
 	map<int,int> real_run_ids;
 	Parameters pars = get_pest_scenario_ptr()->get_ctl_parameters();
@@ -547,13 +547,13 @@ void ParameterEnsemble::from_eigen_mat(Eigen::MatrixXd mat, const vector<string>
 }
 
 
-void ParameterEnsemble::from_csv(string &file_name)
+void ParameterEnsemble::from_csv(string file_name)
 {
 	from_csv(file_name, pest_scenario_ptr->get_ctl_ordered_par_names());
 }
 
 
-void ParameterEnsemble::from_csv(string &file_name, const vector<string> &ordered_names)
+void ParameterEnsemble::from_csv(string file_name, const vector<string> &ordered_names)
 {
 
 	ifstream csv(file_name);
@@ -626,7 +626,7 @@ void ParameterEnsemble::enforce_bounds()
 
 }
 
-void ParameterEnsemble::to_csv(string &file_name)
+void ParameterEnsemble::to_csv(string file_name)
 {
 	
 	ofstream csv(file_name);
@@ -738,11 +738,11 @@ vector<int> ObservationEnsemble::update_from_runs(map<int,int> &real_run_ids, Ru
 	return failed_real_idxs;
 }
 
-void ObservationEnsemble::from_csv(string &file_name)
+void ObservationEnsemble::from_csv(string file_name)
 {
 	from_csv(file_name, pest_scenario_ptr->get_ctl_ordered_obs_names());
 }
-void ObservationEnsemble::from_csv(string &file_name, const vector<string> &ordered_names)
+void ObservationEnsemble::from_csv(string file_name, const vector<string> &ordered_names)
 {
 	ifstream csv(file_name);
 	if (!csv.good())

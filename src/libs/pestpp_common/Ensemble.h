@@ -26,7 +26,7 @@ public:
 	
 	//Ensemble get(vector<string> &_real_names, vector<string> &_var_names);
 
-	void to_csv(string &file_name);
+	void to_csv(string file_name);
 	void from_eigen_mat(Eigen::MatrixXd mat, const vector<string> &_real_names, const vector<string> &_var_names);
 	pair<int, int> shape() { return pair<int, int>(reals.rows(), reals.cols()); }
 	void throw_ensemble_error(string message);
@@ -52,9 +52,9 @@ public:
 	
 	void append_other_rows(Ensemble &other);
 
-	void reorder(vector<string> &_real_names, vector<string> &_var_names);
-	void drop_rows(vector<int> &row_idxs);
-	void keep_rows(vector<int> &row_idxs);
+	void reorder(const vector<string> &_real_names, const vector<string> &_var_names);
+	void drop_rows(const vector<int> &row_idxs);
+	void keep_rows(const vector<int> &row_idxs);
 	Pest* get_pest_scenario_ptr() { return pest_scenario_ptr; }
 	Pest get_pest_scenario() { return *pest_scenario_ptr; }
 	void set_pest_scenario(Pest *_pest_scenario) { pest_scenario_ptr = _pest_scenario; }
@@ -89,19 +89,19 @@ public:
 	//ParameterEnsemble get_new(const vector<string> &_real_names, const vector<string> &_var_names);
 
 	
-	void from_csv(string &file_name,const vector<string> &ordered_names);
-	void from_csv(string &file_name);
+	void from_csv(string file_name,const vector<string> &ordered_names);
+	void from_csv(string file_name);
 	void from_eigen_mat(Eigen::MatrixXd mat, const vector<string> &_real_names, const vector<string> &_var_names,
 		transStatus _tstat = transStatus::NUM);
 	void enforce_bounds();
-	void to_csv(string &file_name);
+	void to_csv(string file_name);
 	//Pest* get_pest_scenario_ptr() { return &pest_scenario; }
-	const transStatus get_trans_status() const { return tstat; }
+	transStatus get_trans_status() const { return tstat; }
 	void set_trans_status(transStatus _tstat) { tstat = _tstat; }
-	const ParamTransformSeq get_par_transform() const { return par_transform; }
+	ParamTransformSeq get_par_transform() const { return par_transform; }
 	void transform_ip(transStatus to_tstat);
 
-	map<int,int> add_runs(RunManagerAbstract *run_mgr_ptr,vector<int> &real_idxs=vector<int>());
+	map<int,int> add_runs(RunManagerAbstract *run_mgr_ptr,const vector<int> &real_idxs=vector<int>());
 
 	//ParameterEnsemble get_mean_diff();
 private:
@@ -119,8 +119,8 @@ public:
 	ObservationEnsemble() { ; }
 	void update_from_obs(int row_idx, Observations &obs);
 	void update_from_obs(string real_name, Observations &obs);
-	void from_csv(string &file_name, const vector<string> &ordered_names);
-	void from_csv(string &file_name);
+	void from_csv(string file_name, const vector<string> &ordered_names);
+	void from_csv(string file_name);
 	void from_eigen_mat(Eigen::MatrixXd mat, const vector<string> &_real_names, const vector<string> &_var_names);
 	vector<int> update_from_runs(map<int,int> &real_run_ids, RunManagerAbstract *run_mgr_ptr);
 	//ObservationEnsemble get_mean_diff();

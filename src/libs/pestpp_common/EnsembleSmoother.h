@@ -22,8 +22,8 @@ public:
 	void rec_report(ofstream &f_rec);
 	void csv_report(ofstream &csv, const int iter, const vector<string> &names);
 	void update(const map<string, double> &_phi_info);
-	const double get_mean() const { return mean; }
-	const double get_std() const { return std;  }
+	double get_mean() const { return mean; }
+	double get_std() const { return std;  }
 	static void initialize_csv(ofstream &csv, const vector<string> &names);
 
 private:
@@ -42,7 +42,8 @@ public:
 	void initialize();
 	void solve();
 	void finalize();
-	void throw_ies_error(string &message);
+	void throw_ies_error(string message);
+
 
 private:
 	Pest &pest_scenario;
@@ -70,7 +71,7 @@ private:
 
 
 	//EnsemblePair run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe);
-	vector<int> run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe, vector<int> &real_idxs=vector<int>());
+	vector<int> run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe, const vector<int> &real_idxs=vector<int>());
 	vector<ObservationEnsemble> run_lambda_ensembles(vector<ParameterEnsemble> &pe_lams);
 	//map<string, double> get_phi_vec_stats(map<string,PhiComponets> &phi_info);
 	//map<string,PhiComponets> get_phi_info(ObservationEnsemble &_oe);

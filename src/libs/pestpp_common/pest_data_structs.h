@@ -319,11 +319,11 @@ public:
 	void set_ies_obs_restart_csv(string _ies_obs_restart_csv) { ies_obs_restart_csv = _ies_obs_restart_csv; }
 	vector<double> get_ies_lam_mults() { return ies_lam_mults; }
 	void set_ies_lam_mults(vector<double> _ies_lam_mults) { ies_lam_mults = _ies_lam_mults; }
-	const double get_ies_init_lam() const {return ies_init_lam;}
+	double get_ies_init_lam() const {return ies_init_lam;}
 	void set_ies_init_lam(double _ies_init_lam) { ies_init_lam = _ies_init_lam; }
-	const bool get_ies_use_approx() const { return ies_use_approx; }
+	bool get_ies_use_approx() const { return ies_use_approx; }
 	void set_ies_use_approx(bool _ies_use_approx) { ies_use_approx = _ies_use_approx; }
-	const int get_ies_subset_size() const { return ies_subset_size; }
+	int get_ies_subset_size() const { return ies_subset_size; }
 	void set_ies_subset_size(int _ies_subset_size) { ies_subset_size = _ies_subset_size; }
 
 

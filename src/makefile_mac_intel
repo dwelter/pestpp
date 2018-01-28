@@ -42,10 +42,12 @@ all:
 	#make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=$(INCLUDES) LIBS=$(LIBS) ILIBDIR=$(ILIBDIR) LIBLDIR=$(LIBLDIR) LIBS=$(LIBS) -C tests/run_manager_fortran_test -f makefile_linux fortran_test
 	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=$(INCLUDES) LIBS=$(LIBS) ILIBDIR=$(ILIBDIR) LIBLDIR=$(LIBLDIR) LIBS=$(LINKARG) -C utilities/sweep -f makefile_linux sweep
 	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=$(INCLUDES) LFLAGS=$(LFLAGS) LIBS=$(LIBS) ILIBDIR=$(ILIBDIR) LIBLDIR=$(LIBLDIR) LIBS=$(LINKARG) -C programs/pestpp-opt -f makefile_linux pestpp-opt
+	make FC=${FC} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} FFLAGS=${FFLAGS} INCLUDES=$(INCLUDES) LFLAGS=$(LFLAGS) LIBS=$(LIBS) ILIBDIR=$(ILIBDIR) LIBLDIR=$(LIBLDIR) LIBS=$(LINKARG) -C programs/pestpp-ies -f makefile_linux pestpp-ies
 	
 	cp programs/pest++/pestpp $(EXE_DIR)
 	cp programs/gsa/gsa $(EXE_DIR)
 	cp programs/pestpp-opt/pestpp-opt $(EXE_DIR)
+	cp programs/pestpp-ies/pestpp-ies $(EXE_DIR)
 	cp utilities/sweep/sweep $(EXE_DIR)
 
 
@@ -67,3 +69,4 @@ clean:
 	-make -C programs/pest++ -f makefile_linux clean
 	-make -C programs/gsa -f makefile_linux clean
 	-make -C programs/pestpp-opt -f makefile_linux clean
+	-make -C programs/pestpp-ies -f makefile_linux clean

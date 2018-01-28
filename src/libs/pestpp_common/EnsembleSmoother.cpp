@@ -88,7 +88,7 @@ IterEnsembleSmoother::IterEnsembleSmoother(Pest &_pest_scenario, FileManager &_f
 		throw_ies_error("initialize: unable to open phi csv file " + fphi_name);
 }
 
-void IterEnsembleSmoother::throw_ies_error(string &message)
+void IterEnsembleSmoother::throw_ies_error(string message)
 {
 	file_manager.rec_ofstream() << "IterEnsembleSmoother error: " << message << endl;
 	performance_log->log_event("IterEnsembleSmoother error: " + message);
@@ -115,9 +115,11 @@ void IterEnsembleSmoother::initialize()
 
 	performance_log->log_event("processing par csv");
 	stringstream ss;
+	string fname;
 	try
 	{
-		pe.from_csv(pest_scenario.get_pestpp_options().get_ies_par_csv());
+		fname = pest_scenario.get_pestpp_options().get_ies_par_csv();
+		pe.from_csv(fname);
 	}
 	catch (const exception &e)
 	{
@@ -782,7 +784,7 @@ vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<Pa
 }
 
 
-vector<int> IterEnsembleSmoother::run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe, vector<int> &real_idxs)
+vector<int> IterEnsembleSmoother::run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe, const vector<int> &real_idxs)
 {
 	stringstream ss;
 	ss << "queuing " << _pe.shape().first << " runs";
