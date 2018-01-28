@@ -20,7 +20,9 @@ OBJECTS	:= FileManager.o \
            OutputFileWriter.o \
 	   PerformanceLog.o \
            SVDASolver.o \
-           DifferentialEvolution.o
+           DifferentialEvolution.o \
+           Ensemble.o \
+           EnsembleSmoother.o
  
 $(OUT): $(OBJECTS)
 	ar rcs $(OUT) $(OBJECTS)

@@ -370,7 +370,7 @@ IterEnsembleSmoother::IterEnsembleSmoother(Pest &_pest_scenario, FileManager &_f
 	oe.set_pest_scenario(&pest_scenario);
 }
 
-void IterEnsembleSmoother::throw_ies_error(string &message)
+void IterEnsembleSmoother::throw_ies_error(string message)
 {
 	performance_log->log_event("IterEnsembleSmoother error: " + message);
 	cout << endl << "   ************   " << endl << "    IterEnsembleSmoother error: " << message << endl << endl;
@@ -554,6 +554,27 @@ void IterEnsembleSmoother::initialize_oe(Covariance &cov)
 }
 
 template<typename T, typename A>
+void message(int level, const char* _message, vector<T, A> _extras)
+{ 
+	string s(_message);
+	message(level, s, _extras); 
+}
+
+void IterEnsembleSmoother::message(int level, const char* _message)
+{ 
+	string s(_message);
+	message(level, s); 
+}
+
+template<typename T>
+void IterEnsembleSmoother::message(int level, const char* _message, T extra)
+{
+	string s(_message);
+	message(level, s, extra);
+
+}
+
+template<typename T, typename A>
 void IterEnsembleSmoother::message(int level, string &_message, vector<T, A> _extras)
 {
 	stringstream ss;
@@ -588,7 +609,8 @@ void IterEnsembleSmoother::message(int level, string &_message, T extra)
 {
 	stringstream ss;
 	ss << _message << " " << extra;
-	message(level, ss.str());
+	string s = ss.str();
+	message(level, s);
 }
 
 void IterEnsembleSmoother::sanity_checks()
@@ -1013,7 +1035,8 @@ void IterEnsembleSmoother::initialize()
 	{
 		ss.str("");
 		ss << "WARNING: less than " << warn_min_reals << " active realizations...might not be enough";
-		message(0, ss.str());
+		string s = ss.str();
+		message(0, s);
 	}
 	performance_log->log_event("calc initial phi");
 	ph.update(oe, pe);
@@ -1047,8 +1070,8 @@ void IterEnsembleSmoother::drop_bad_phi(ParameterEnsemble &_pe, ObservationEnsem
 		stringstream ss;
 		for (auto i : idxs)
 			ss << par_real_names[i] << " : " << obs_real_names[i] << " , ";
-
-		message(1, "dropping par:obs realizations: "+ss.str());
+		string s = "dropping par:obs realizations: "+ ss.str();
+		message(1, s);
 		try
 		{
 			_pe.drop_rows(idxs);
@@ -1097,7 +1120,8 @@ void IterEnsembleSmoother::solve()
 	{
 		ss.str("");
 		ss << "WARNING: less than " << warn_min_reals << " active realizations...might not be enough";
-		message(1, ss.str());
+		string s = ss.str();
+		message(1, s);
 	}
 
 	if ((use_subset) && (subset_size > pe.shape().first))
@@ -1436,7 +1460,8 @@ void IterEnsembleSmoother::solve()
 				{
 					ss << org_pe_idxs[i] << ":" << org_oe_idxs[i] << " , ";
 				}
-			message(1, ss.str());
+			string s = ss.str();
+			message(1, s);
 			remaining_oe_lam.keep_rows(new_oe_idxs);
 			remaining_pe_lam.keep_rows(new_pe_idxs);
 
@@ -1613,7 +1638,8 @@ vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<Pa
 			{
 				ss << par_real_names[i] << ":" << obs_real_names[i] << ',';
 			}
-			message(1,ss.str());
+			string s = ss.str();
+			message(1,s);
 			if (failed_real_indices.size() == _oe.shape().first)
 			{
 				message(0, "WARNING: all realizations failed for lambda multiplier :", lam_vals[i]);
@@ -1635,7 +1661,7 @@ vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<Pa
 }
 
 
-vector<int> IterEnsembleSmoother::run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe, vector<int> &real_idxs)
+vector<int> IterEnsembleSmoother::run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe, const vector<int> &real_idxs)
 {
 	stringstream ss;
 	ss << "queuing " << _pe.shape().first << " runs";
@@ -1705,7 +1731,8 @@ vector<int> IterEnsembleSmoother::run_ensemble(ParameterEnsemble &_pe, Observati
 		}
 		performance_log->log_event(ss.str());
 		message(1, "failed realizations: ", failed_real_indices.size());
-		message(1, ss.str());
+		string s = ss.str();
+		message(1, s);
 		performance_log->log_event("dropping failed realizations");
 		_pe.drop_rows(failed_real_indices);
 		_oe.drop_rows(failed_real_indices);

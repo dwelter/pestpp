@@ -17,6 +17,7 @@
 class PhiHandler
 {
 public:
+
 	enum phiType { MEAS, COMPOSITE, REGUL, ACTUAL };
 	PhiHandler() { ; }
 	PhiHandler(Pest *_pest_scenario, FileManager *_file_manager, 
@@ -41,7 +42,7 @@ public:
 private:
 	map<string, double> get_summary_stats(phiType pt);
 	string get_summary_string(phiType pt);
-	string PhiHandler::get_summary_header();
+	string get_summary_header();
 	void prepare_csv(ofstream &csv,vector<string> &names);
 	map<string, double> calc_meas(ObservationEnsemble &oe);
 	map<string, double> calc_regul(ParameterEnsemble &pe);
@@ -77,7 +78,8 @@ public:
 	void initialize();
 	void solve();
 	void finalize();
-	void throw_ies_error(string &message);
+	void throw_ies_error(string message);
+
 
 private:
 	int  verbose_level;
@@ -112,7 +114,7 @@ private:
 
 
 	//EnsemblePair run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe);
-	vector<int> run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe, vector<int> &real_idxs=vector<int>());
+	vector<int> run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe, const vector<int> &real_idxs=vector<int>());
 	vector<ObservationEnsemble> run_lambda_ensembles(vector<ParameterEnsemble> &pe_lams, vector<double> &lam_vals);
 	//map<string, double> get_phi_vec_stats(map<string,PhiComponets> &phi_info);
 	//map<string,PhiComponets> get_phi_info(ObservationEnsemble &_oe);
@@ -127,14 +129,14 @@ private:
 	void message(int level, string &_message);
 	
 	template<typename T, typename A>
-	void message(int level, const char* _message, vector<T, A> _extras) { message(level, string(_message), _extras); }
-	void message(int level, const char* _message) { message(level, string(_message)); }
+	void message(int level, const char* _message, vector<T, A> _extras);// { message(level, string(_message), _extras); }
+	void message(int level, const char* _message);// { message(level, string(_message)); }
 
 	template<typename T>
 	void message(int level, string &_message, T extra);
 
 	template<typename T>
-	void message(int level, const char* _message, T extra) { message(level, string(_message), extra); }
+	void message(int level, const char* _message, T extra);
 
 	void sanity_checks();
 

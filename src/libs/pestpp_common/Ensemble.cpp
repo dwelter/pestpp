@@ -236,7 +236,7 @@ void Ensemble::set_eigen(Eigen::MatrixXd _reals)
 }
 
 
-void Ensemble::reorder(vector<string> &_real_names, vector<string> &_var_names)
+void Ensemble::reorder(const vector<string> &_real_names, const vector<string> &_var_names)
 {
 	//reorder inplace
 	reals = get_eigen(_real_names, _var_names);
@@ -246,10 +246,9 @@ void Ensemble::reorder(vector<string> &_real_names, vector<string> &_var_names)
 		real_names = _real_names;
 }
 
-void Ensemble::drop_rows(vector<int> &row_idxs)
+void Ensemble::drop_rows(const vector<int> &row_idxs)
 {
-	//drop realizations by int index position
-	vector<int>::iterator start = row_idxs.begin(), end = row_idxs.end();
+	vector<int>::const_iterator start = row_idxs.begin(), end = row_idxs.end();
 	vector<string> keep_names;
 	for (int ireal = 0; ireal < reals.rows(); ireal++)
 		if (find(start, end, ireal) == end)
@@ -261,10 +260,10 @@ void Ensemble::drop_rows(vector<int> &row_idxs)
 	real_names = keep_names;
 }
 
-void Ensemble::drop_rows(vector<string> &drop_names)
+void Ensemble::drop_rows(const vector<string> &drop_names)
 {
 	vector<string> keep_names;
-	vector<string>::iterator start = drop_names.begin(), end = drop_names.end();
+	vector<string>::const_iterator start = drop_names.begin(), end = drop_names.end();
 	for (auto &n : real_names)
 		if (find(start, end, n) == end)
 			keep_names.push_back(n);
@@ -277,10 +276,9 @@ void Ensemble::drop_rows(vector<string> &drop_names)
 }
 
 
-void Ensemble::keep_rows(vector<int> &row_idxs)
+void Ensemble::keep_rows(const vector<int> &row_idxs)
 {
-	//resize by keeping only some realizations (again by int index)
-	vector<int>::iterator start = row_idxs.begin(), end = row_idxs.end();
+	vector<int>::const_iterator start = row_idxs.begin(), end = row_idxs.end();
 	vector<string> keep_names;
 	for (int ireal = 0; ireal < reals.rows(); ireal++)
 		if (find(start, end, ireal) != end)
@@ -289,10 +287,10 @@ void Ensemble::keep_rows(vector<int> &row_idxs)
 	real_names = keep_names;
 }
 
-void Ensemble::keep_rows(vector<string> &keep_names)
+void Ensemble::keep_rows(const vector<string> &keep_names)
 {
 	//make sure all names are in real_names
-	vector<string>::iterator start = real_names.begin(), end = real_names.end();
+	vector<string>::const_iterator start = real_names.begin(), end = real_names.end();
 	vector<string> missing;
 	for (auto &n : keep_names)
 		if (find(start, end, n) == end)
@@ -403,7 +401,7 @@ Eigen::MatrixXd Ensemble::get_eigen(vector<string> row_names, vector<string> col
 	
 }
 
-void Ensemble::to_csv(string &file_name)
+void Ensemble::to_csv(string file_name)
 {
 	///write the ensemble to a csv file
 	ofstream csv(file_name);
@@ -638,7 +636,7 @@ void Ensemble::append(string real_name, const Transformable &trans)
 }
 
 
-void Ensemble::from_binary(string &file_name, vector<string> &names, bool transposed)
+void Ensemble::from_binary(string file_name, vector<string> &names, bool transposed)
 {
 	//load an ensemble from a binary jco-type file.  if transposed=true, reals is transposed and row/col names are swapped for var/real names.
 	//needed to store observation ensembles in binary since obs names are 20 chars and par names are 12 chars
@@ -814,7 +812,7 @@ void ParameterEnsemble::set_pest_scenario(Pest *_pest_scenario)
 }
 
 
-map<int,int> ParameterEnsemble::add_runs(RunManagerAbstract *run_mgr_ptr, vector<int> &real_idxs)
+map<int,int> ParameterEnsemble::add_runs(RunManagerAbstract *run_mgr_ptr,const vector<int> &real_idxs)
 {
 	//add runs to the run manager using int indices
 	map<int,int> real_run_ids;
@@ -860,7 +858,7 @@ void ParameterEnsemble::from_eigen_mat(Eigen::MatrixXd mat, const vector<string>
 }
 
 
-void ParameterEnsemble::from_binary(string &file_name)
+void ParameterEnsemble::from_binary(string file_name)
 {
 	//overload for ensemble::from_binary - just need to set tstat
 	vector<string> names = pest_scenario_ptr->get_ctl_ordered_par_names();
@@ -868,7 +866,8 @@ void ParameterEnsemble::from_binary(string &file_name)
 	tstat = transStatus::CTL;
 }
 
-void ParameterEnsemble::from_csv(string &file_name)
+
+void ParameterEnsemble::from_csv(string file_name)
 {
 	ifstream csv(file_name);
 	if (!csv.good())
@@ -923,7 +922,7 @@ void ParameterEnsemble::enforce_bounds()
 	}
 }
 
-void ParameterEnsemble::to_csv(string &file_name)
+void ParameterEnsemble::to_csv(string file_name)
 {
 	//write the par ensemble to csv file - transformed back to CTL status
 	vector<string> names = pest_scenario_ptr->get_ctl_ordered_par_names();
@@ -1047,14 +1046,14 @@ vector<int> ObservationEnsemble::update_from_runs(map<int,int> &real_run_ids, Ru
 	return failed_real_idxs;
 }
 
-void ObservationEnsemble::from_binary(string &file_name)
+void ObservationEnsemble::from_binary(string file_name)
 {
 	//load obs en from binary jco-type file
 	vector<string> names = pest_scenario_ptr->get_ctl_ordered_obs_names();
 	Ensemble::from_binary(file_name, names, true);
 }
 
-void ObservationEnsemble::from_csv(string &file_name)
+void ObservationEnsemble::from_csv(string file_name)
 {
 	//load the obs en from a csv file
 	var_names = pest_scenario_ptr->get_ctl_ordered_obs_names();

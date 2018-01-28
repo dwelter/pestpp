@@ -319,23 +319,23 @@ public:
 	void set_ies_obs_restart_csv(string _ies_obs_restart_csv) { ies_obs_restart_csv = _ies_obs_restart_csv; }
 	vector<double> get_ies_lam_mults() const { return ies_lam_mults; }
 	void set_ies_lam_mults(vector<double> _ies_lam_mults) { ies_lam_mults = _ies_lam_mults; }
-	const double get_ies_init_lam() const {return ies_init_lam;}
+	double get_ies_init_lam() const {return ies_init_lam;}
 	void set_ies_init_lam(double _ies_init_lam) { ies_init_lam = _ies_init_lam; }
-	const bool get_ies_use_approx() const { return ies_use_approx; }
+	bool get_ies_use_approx() const { return ies_use_approx; }
 	void set_ies_use_approx(bool _ies_use_approx) { ies_use_approx = _ies_use_approx; }
-	const int get_ies_subset_size() const { return ies_subset_size; }
+	int get_ies_subset_size() const { return ies_subset_size; }
 	void set_ies_subset_size(int _ies_subset_size) { ies_subset_size = _ies_subset_size; }
-	const double get_ies_reg_factor() const { return ies_reg_factor; }
+	double get_ies_reg_factor() const { return ies_reg_factor; }
 	void set_ies_reg_factor(double _ies_reg_factor) { ies_reg_factor = _ies_reg_factor; }
-	const int get_ies_verbose_level() const { return ies_verbose_level; }
+	int get_ies_verbose_level() const { return ies_verbose_level; }
 	void set_ies_verbose_level(int _ies_verbose_level) { ies_verbose_level = _ies_verbose_level; }
-	const bool get_ies_use_prior_scaling() const { return ies_use_prior_scaling; }
+	bool get_ies_use_prior_scaling() const { return ies_use_prior_scaling; }
 	void set_ies_use_prior_scaling(bool _ies_use_prior_scaling) { ies_use_prior_scaling = _ies_use_prior_scaling; }
-	const int get_ies_num_reals() const { return ies_num_reals; }
+	int get_ies_num_reals() const { return ies_num_reals; }
 	void set_ies_num_reals(int _ies_num_reals) { ies_num_reals = _ies_num_reals; }
-	const double get_ies_bad_phi() const { return ies_bad_phi; }
+	double get_ies_bad_phi() const { return ies_bad_phi; }
 	void set_ies_bad_phi(double _ies_bad_phi) { ies_bad_phi = _ies_bad_phi; }
-	const bool get_ies_include_base() const { return ies_include_base; }
+	bool get_ies_include_base() const { return ies_include_base; }
 	void set_ies_include_base(bool _ies_include_base) { ies_include_base = _ies_include_base; }
 
 

@@ -27,7 +27,7 @@ public:
 	
 	//Ensemble get(vector<string> &_real_names, vector<string> &_var_names);
 
-	void to_csv(string &file_name);
+	void to_csv(string file_name);
 	void from_eigen_mat(Eigen::MatrixXd mat, const vector<string> &_real_names, const vector<string> &_var_names);
 	pair<int, int> shape() { return pair<int, int>(reals.rows(), reals.cols()); }
 	void throw_ensemble_error(string message);
@@ -59,11 +59,11 @@ public:
 	
 	Covariance get_diagonal_cov_matrix();
 
-	void reorder(vector<string> &_real_names, vector<string> &_var_names);
-	void drop_rows(vector<int> &row_idxs);
-	void drop_rows(vector<string> &drop_names);
-	void keep_rows(vector<int> &row_idxs);
-	void keep_rows(vector<string> &keep_names);
+	void reorder(const vector<string> &_real_names, const vector<string> &_var_names);
+	void drop_rows(const vector<int> &row_idxs);
+	void drop_rows(const vector<string> &drop_names);
+	void keep_rows(const vector<int> &row_idxs);
+	void keep_rows(const vector<string> &keep_names);
 
 	Pest* get_pest_scenario_ptr() { return pest_scenario_ptr; }
 	Pest get_pest_scenario() { return *pest_scenario_ptr; }
@@ -83,7 +83,7 @@ protected:
 	vector<string> var_names;
 	vector<string> real_names;	
 	void read_csv(int num_reals,ifstream &csv, map<string,int> header_info);
-	void from_binary(string &file_name, vector<string> &names,  bool transposed);
+	void from_binary(string file_name, vector<string> &names,  bool transposed);
 	map<string,int> prepare_csv(const vector<string> &names, ifstream &csv, bool forgive);
 };
 
@@ -101,21 +101,21 @@ public:
 	
 	//ParameterEnsemble get_new(const vector<string> &_real_names, const vector<string> &_var_names);
 
-	
-	//void from_csv(string &file_name,const vector<string> &ordered_names);
-	void from_csv(string &file_name);
-	void from_binary(string &file_name);// { Ensemble::from_binary(file_name, false); }
+	//void from_csv(string file_name,const vector<string> &ordered_names);
+	void from_csv(string file_name);
+	void from_binary(string file_name);
+
 	void from_eigen_mat(Eigen::MatrixXd mat, const vector<string> &_real_names, const vector<string> &_var_names,
 		transStatus _tstat = transStatus::NUM);
 	void enforce_bounds();
-	void to_csv(string &file_name);
+	void to_csv(string file_name);
 	//Pest* get_pest_scenario_ptr() { return &pest_scenario; }
-	const transStatus get_trans_status() const { return tstat; }
+	transStatus get_trans_status() const { return tstat; }
 	void set_trans_status(transStatus _tstat) { tstat = _tstat; }
-	const ParamTransformSeq get_par_transform() const { return par_transform; }
+	ParamTransformSeq get_par_transform() const { return par_transform; }
 	void transform_ip(transStatus to_tstat);
 	void set_pest_scenario(Pest *_pest_scenario);
-	map<int,int> add_runs(RunManagerAbstract *run_mgr_ptr,vector<int> &real_idxs=vector<int>());
+	map<int,int> add_runs(RunManagerAbstract *run_mgr_ptr,const vector<int> &real_idxs=vector<int>());
 
 	void draw(int num_reals, Covariance &cov, PerformanceLog *plog, int level);
 	Covariance get_diagonal_cov_matrix();
@@ -136,9 +136,9 @@ public:
 	void update_from_obs(int row_idx, Observations &obs);
 	void update_from_obs(string real_name, Observations &obs);
 	//void from_csv(string &file_name, const vector<string> &ordered_names);
-	void from_csv(string &file_name);
+	void from_csv(string file_name);
 	void from_eigen_mat(Eigen::MatrixXd mat, const vector<string> &_real_names, const vector<string> &_var_names);
-	void from_binary(string &file_name);// { Ensemble::from_binary(file_name, true); }
+	void from_binary(string file_name);// { Ensemble::from_binary(file_name, true); }
 	vector<int> update_from_runs(map<int,int> &real_run_ids, RunManagerAbstract *run_mgr_ptr);
 	void draw(int num_reals, Covariance &cov, PerformanceLog *plog, int level);
 
