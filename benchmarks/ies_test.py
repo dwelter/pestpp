@@ -466,7 +466,6 @@ def test_chenoliver():
     pst = pyemu.Pst(os.path.join(template_d,"pest.pst"))
     pst.parameter_data.loc[:,"parlbnd"] = -1.0e+10
     pst.parameter_data.loc[:,"parubnd"] = 1.0+10
-
     pst.pestpp_options = {}
     pst.pestpp_options["parcov_filename"] = "prior.cov"
     pst.pestpp_options["ies_num_reals"] = 100
@@ -475,8 +474,13 @@ def test_chenoliver():
     pyemu.helpers.run(exe_path+" pest.pst",cwd=test_d)
     
     num_reals = 1000
-    noptmax = 20
+    noptmax = 10
+    
+
     shutil.rmtree(test_d)
+    
+    pst.observation_data.loc[:,"weight"] = 0.25
+
     pst.pestpp_options = {}
     pst.pestpp_options["parcov_filename"] = "prior.cov"
     pst.pestpp_options["ies_num_reals"] = num_reals
@@ -486,10 +490,11 @@ def test_chenoliver():
     pst.pestpp_options["ies_use_approx"] = "false"
     pst.pestpp_options["ies_use_prior_scaling"] = "true"
     pst.control_data.noptmax = noptmax
+
     pst.write(os.path.join(template_d,"pest.pst"))
     
 
-    pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=30,
+    pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=20,
         master_dir=test_d,slave_root=model_d,port=4005)
     df_full_obs = pd.read_csv(os.path.join(test_d,"pest.{0}.obs.csv.".format(noptmax)),index_col=0)
     df_full_par = pd.read_csv(os.path.join(test_d,"pest.{0}.par.csv.".format(noptmax)),index_col=0)
@@ -501,10 +506,11 @@ def test_chenoliver():
     #pst.pestpp_options["ies_lambda_mults"] = "0.01,1.0,100.0"
     pst.pestpp_options["ies_initial_lambda"] = 0.001
     #pst.pestpp_options["ies_subset_size"] = 10
+    pst.pestpp_options["ies_use_prior_scaling"] = "true"
     pst.control_data.noptmax = noptmax
     pst.write(os.path.join(template_d,"pest.pst"))
 
-    pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=30,
+    pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=20,
         master_dir=test_d,slave_root=model_d,port=4005)
     df_approx_obs = pd.read_csv(os.path.join(test_d,"pest.{0}.obs.csv.".format(noptmax)),index_col=0)
     df_approx_par = pd.read_csv(os.path.join(test_d,"pest.{0}.par.csv.".format(noptmax)),index_col=0)
@@ -517,11 +523,69 @@ def test_chenoliver():
     df_approx_obs.OBS.hist(bins=30,color='0.5',alpha=0.5,ax=ax)
     df_full_par.PAR.hist(bins=30,color='b',alpha=0.5, ax=ax2)
     df_approx_par.PAR.hist(bins=30,color='0.5',alpha=0.5,ax=ax2)
+    ax.set_title("full: {0:15g}, approx: {1:15g}".format(df_full_obs.OBS.mean(),df_approx_obs.OBS.mean()))
+    ax2.set_title("full: {0:15g}, approx: {1:15g}".format(df_full_par.PAR.mean(),df_approx_par.PAR.mean()))
+    plt.tight_layout()
+    plt.savefig(os.path.join(model_d,"full_approx_ov16.png"))
+    plt.close("all")
+    # d = np.abs(df_full_par.PAR.mean() - 5.8)
+    # assert d < 0.05,d
+    # d = np.abs(df_full_par.PAR.mean() - 6.0)
+    # assert d < 0.05,d
 
-    plt.savefig(os.path.join(model_d,"full_approx.png"))
+    pst.observation_data.loc[:,"weight"] = 1.0
+
+    shutil.rmtree(test_d)
+    pst.pestpp_options = {}
+    pst.pestpp_options["parcov_filename"] = "prior.cov"
+    pst.pestpp_options["ies_num_reals"] = num_reals
+    #pst.pestpp_options["ies_lambda_mults"] = "0.01,1.0,100.0"
+    pst.pestpp_options["ies_initial_lambda"] = 0.001
+    #pst.pestpp_options["ies_subset_size"] = 10
+    pst.pestpp_options["ies_use_approx"] = "false"
+    pst.pestpp_options["ies_use_prior_scaling"] = "true"
+    pst.control_data.noptmax = noptmax
+    pst.write(os.path.join(template_d,"pest.pst"))
+
+    pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=25,
+        master_dir=test_d,slave_root=model_d,port=4005)
+    df_full_obs = pd.read_csv(os.path.join(test_d,"pest.{0}.obs.csv.".format(noptmax)),index_col=0)
+    df_full_par = pd.read_csv(os.path.join(test_d,"pest.{0}.par.csv.".format(noptmax)),index_col=0)
+
+    shutil.rmtree(test_d)
+    pst.pestpp_options = {}
+    pst.pestpp_options["parcov_filename"] = "prior.cov"
+    pst.pestpp_options["ies_num_reals"] = num_reals
+    #pst.pestpp_options["ies_lambda_mults"] = "0.01,1.0,100.0"
+    pst.pestpp_options["ies_initial_lambda"] = 0.001
+    pst.pestpp_options["ies_use_prior_scaling"] = "true"
+    #pst.pestpp_options["ies_subset_size"] = 10
+    pst.control_data.noptmax = noptmax
+    pst.write(os.path.join(template_d,"pest.pst"))
+
+    pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=25,
+        master_dir=test_d,slave_root=model_d,port=4005)
+    df_approx_obs = pd.read_csv(os.path.join(test_d,"pest.{0}.obs.csv.".format(noptmax)),index_col=0)
+    df_approx_par = pd.read_csv(os.path.join(test_d,"pest.{0}.par.csv.".format(noptmax)),index_col=0)
+
+    ax = plt.subplot(211)
+    ax2 = plt.subplot(212)
+    #ax.plot(df_full.loc[:,"mean"],color='b',label="full")
+    #ax.plot(df_approx.loc[:,"mean"],color='g',label="approx")
+    df_full_obs.OBS.hist(bins=30,color='b',alpha=0.5, ax=ax)
+    df_approx_obs.OBS.hist(bins=30,color='0.5',alpha=0.5,ax=ax)
+    df_full_par.PAR.hist(bins=30,color='b',alpha=0.5, ax=ax2)
+    df_approx_par.PAR.hist(bins=30,color='0.5',alpha=0.5,ax=ax2)
+    ax.set_title("full: {0:15g}, approx: {1:15g}".format(df_full_obs.OBS.mean(),df_approx_obs.OBS.mean()))
+    ax2.set_title("full: {0:15g}, approx: {1:15g}".format(df_full_par.PAR.mean(),df_approx_par.PAR.mean()))
+    plt.tight_layout()
+    plt.savefig(os.path.join(model_d,"full_approx_ov1.png"))
     plt.close("all")
 
-
+    # d = np.abs(df_full_par.PAR.mean() - 5.99)
+    # assert d < 0.05,d
+    # d = np.abs(df_full_par.PAR.mean() - 6.0)
+    # assert d < 0.05,d
 
 if __name__ == "__main__":
     # write_empty_test_matrix()
