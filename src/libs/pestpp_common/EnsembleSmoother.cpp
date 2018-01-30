@@ -91,6 +91,7 @@ map<string, double>* PhiHandler::get_phi_map(PhiHandler::phiType &pt)
 	case PhiHandler::phiType::REGUL:
 		return &regul;
 	}
+	throw runtime_error("PhiHandler::get_phi_map() didn't find a phi map...");
 }
 
 
@@ -112,7 +113,7 @@ double PhiHandler::get_std(phiType pt)
 	map<string, double>::iterator pi = phi_map->begin(), end = phi_map->end();
 	for (pi; pi != end; ++pi)
 		var = var + (pow(pi->second - mean,2));
-	return sqrt(var/(phi_map->size()));
+	return sqrt(var/(phi_map->size()-1));
 }
 
 double PhiHandler::get_max(phiType pt)
@@ -165,7 +166,6 @@ string PhiHandler::get_summary_string(PhiHandler::phiType pt)
 		typ = "composite";
 		break;
 	}
-
 	ss << setw(15) << typ << setw(15) << stats["mean"] << setw(15) << stats["std"] << setw(15) << stats["min"] << setw(15) << stats["max"] << endl;
 	return ss.str();
 }
@@ -176,7 +176,6 @@ string PhiHandler::get_summary_header()
 	stringstream ss;
 	ss << setw(15) << "phi type" << setw(15) << "mean" << setw(15) << "std" << setw(15) << "min" << setw(15) << "max" << endl;
 	return ss.str();
-
 }
 
 
@@ -199,7 +198,6 @@ void PhiHandler::report()
 	cout << s;
 	f << endl << endl;
 	f.flush();
-
 }
 
 void PhiHandler::write(int iter_num, int total_runs)
@@ -437,21 +435,24 @@ void IterEnsembleSmoother::initialize_pe(Covariance &cov)
 			ss << "unrecognized par csv extension " << par_ext << ", looking for csv, jcb, or jco";
 			throw_ies_error(ss.str());
 		}
-		message(1, "initializing prior parameter covariance matrix from ensemble (using diagonal matrix)");
-		parcov = pe.get_diagonal_cov_matrix();
-		if (pest_scenario.get_pestpp_options().get_ies_verbose_level() > 1)
+		if (pest_scenario.get_pestpp_options().get_ies_use_empirical_prior())
 		{
-			if (pe.shape().first < 10000)
+			message(1, "initializing prior parameter covariance matrix from ensemble (using diagonal matrix)");
+			parcov = pe.get_diagonal_cov_matrix();
+			if (pest_scenario.get_pestpp_options().get_ies_verbose_level() > 1)
 			{
-				string filename = file_manager.get_base_filename() + ".prior.cov";
-				message(1, "saving emprirical parameter covariance matrix to ASCII file: ", filename);
-				parcov.to_ascii(filename);
-			}
-			else
-			{
-				string filename = file_manager.get_base_filename() + ".prior.jcb";
-				message(1, "saving emprirical parameter covariance matrix to binary file: ",filename);
-				parcov.to_binary(filename);
+				if (pe.shape().first < 10000)
+				{
+					string filename = file_manager.get_base_filename() + ".prior.cov";
+					message(1, "saving emprirical parameter covariance matrix to ASCII file: ", filename);
+					parcov.to_ascii(filename);
+				}
+				else
+				{
+					string filename = file_manager.get_base_filename() + ".prior.jcb";
+					message(1, "saving emprirical parameter covariance matrix to binary file: ", filename);
+					parcov.to_binary(filename);
+				}
 			}
 		}
 		
@@ -622,6 +623,11 @@ void IterEnsembleSmoother::sanity_checks()
 	vector<string> errors;
 	vector<string> warnings;
 	stringstream ss;
+	if ((ppo->get_ies_par_csv().size() == 0) && (ppo->get_ies_use_empirical_prior()))
+	{
+		warnings.push_back("no point in using an empirical prior if we are drawing the par ensemble...resetting ies_use_empirical_prior to false");
+		ppo->set_ies_use_empirical_prior(false);
+	}
 	if ((par_csv.size() == 0) && (restart.size() > 0))
 		errors.push_back("ies_par_csv is empty but ies_restart_obs_csv is not - how can this work?");
 	if (ppo->get_ies_bad_phi() <= 0.0)
@@ -656,6 +662,11 @@ void IterEnsembleSmoother::sanity_checks()
 		ppo->set_ies_verbose_level(3);
 	}
 	
+	if (!ppo->get_ies_use_prior_scaling())
+	{
+		warnings.push_back("not using prior scaling - this is really a dev option, you should always use prior scaling...");
+	}
+
 	if (warnings.size() > 0)
 	{
 		message(0, "sanity_check warnings");
@@ -715,7 +726,7 @@ void IterEnsembleSmoother::initialize()
 	if (parcov_filename.size() == 0)
 	{
 		//if a par ensemble arg wasn't passed, use par bounds, otherwise, construct diagonal parcov from par ensemble later
-		if (pest_scenario.get_pestpp_options().get_ies_par_csv().size() == 0)
+		if (!pest_scenario.get_pestpp_options().get_ies_use_empirical_prior())
 		{
 			message(0, "initializing prior parameter covariance matrix from parameter bounds");
 			parcov.from_parameter_bounds(pest_scenario);
@@ -738,13 +749,8 @@ void IterEnsembleSmoother::initialize()
 	if (parcov.e_ptr()->rows() > 0)
 		parcov = parcov.get(act_par_names);
 	
-	initialize_pe(parcov); //not inverted yet..
-	
-	//jwhite 23jan2018: not inverting this anymore - pushes parameter values around too much.  Works better without inverting
-	/*performance_log->log_event("inverting parcov");
-	message(1, "inverting prior parameter covariance matrix");
-	parcov.inv_ip(echo);*/
-	
+	initialize_pe(parcov);
+
 	if (pest_scenario.get_pestpp_options().get_ies_use_prior_scaling())
 	{
 		message(0, "forming inverse sqrt of prior parameter covariance matrix");
@@ -1099,7 +1105,6 @@ void IterEnsembleSmoother::save_mat(string prefix, Eigen::MatrixXd &mat)
 	f.close();
 
 }
-
 
 void IterEnsembleSmoother::solve()
 {

@@ -337,6 +337,8 @@ public:
 	void set_ies_bad_phi(double _ies_bad_phi) { ies_bad_phi = _ies_bad_phi; }
 	bool get_ies_include_base() const { return ies_include_base; }
 	void set_ies_include_base(bool _ies_include_base) { ies_include_base = _ies_include_base; }
+	bool get_ies_use_empirical_prior() const { return ies_use_empirical_prior; }
+	void set_ies_use_empirical_prior(bool _ies_use_empirical_prior) { ies_use_empirical_prior = _ies_use_empirical_prior; }
 
 
 private:
@@ -408,6 +410,7 @@ private:
 	int ies_num_reals;
 	double ies_bad_phi;
 	bool ies_include_base;
+	bool ies_use_empirical_prior;
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);
 ostream& operator<< (ostream &os, const ObservationInfo& val);

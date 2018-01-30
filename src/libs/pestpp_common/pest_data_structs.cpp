@@ -667,16 +667,20 @@ void PestppOptions::parce_line(const string &line)
 		{
 			convert_ip(value, opt_recalc_fosm_every);
 		}
-		else if ((key == "IES_PAR_CSV") || (key == "IES_PARAMETER_CSV"))
+		else if ((key == "IES_PAR_CSV") || (key == "IES_PARAMETER_CSV")||
+			(key == "IES_PAR_en") || (key == "IES_PARAMETER_ENSEMBLE"))
 		{
 			convert_ip(value, ies_par_csv);
 		}
-		else if ((key == "IES_OBS_CSV") || (key == "IES_OBSERVATION_CSV"))
+		else if ((key == "IES_OBS_CSV") || (key == "IES_OBSERVATION_CSV") ||
+			(key == "IES_OBS_EN") || (key == "IES_OBSERVATION_ENSEMBLE"))
 		{
 			convert_ip(value, ies_obs_csv);
 		}
 		else if ((key == "IES_OBS_RESTART_CSV") || (key == "IES_OBSERVATION_RESTART_CSV") 
-			|| (key == "IES_RESTART_OBS_CSV"))
+			|| (key == "IES_RESTART_OBS_CSV") || (key == "IES_OBSERVATION_RESTART_ENSEMBLE") ||
+			(key == "IES_RESTART_OBSERVATION_ENSEMBLE") || (key == "IES_RESTART_OBS_EN") ||
+			(key == "IES_OBS_RESTART_EN"))
 		{
 			convert_ip(value, ies_obs_restart_csv);
 		}
@@ -736,6 +740,12 @@ void PestppOptions::parce_line(const string &line)
 			transform(value.begin(), value.end(), value.begin(), ::tolower);
 			istringstream is(value);
 			is >> boolalpha >> ies_include_base;
+		}
+		else if (key == "IES_USE_EMPIRICAL_PRIOR")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> ies_use_empirical_prior;
 		}
 		else {
 

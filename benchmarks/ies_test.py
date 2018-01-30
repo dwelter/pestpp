@@ -27,7 +27,7 @@ tests = """0) 10par_xsec "standard user mode" - draw reals from par-bounds prior
 ies_vars = ["ies_par_csv", "ies_obs_csv", "ies_restart_obs_csv",
             "ies_bad_phi", "parcov_filename", "ies_num_reals",
             "ies_use_approx", "ies_use_prior_scaling", "ies_reg_factor",
-            "ies_lambda_mults", "ies_init_lambda"]
+            "ies_lambda_mults", "ies_init_lambda","ies_include_base"]
 
 exe_path = os.path.join("..", "..", "..", "exe", "windows", "x64", "Release", "pestpp-ies.exe")
 
@@ -46,6 +46,7 @@ def write_empty_test_matrix():
 
 
 def setup_suite_dir(model_d):
+    pyemu.Ensemble.reseed()
     base_d = os.path.join(model_d, "template")
     new_d = os.path.join(model_d, "test_template")
     if os.path.exists(new_d):
@@ -54,7 +55,7 @@ def setup_suite_dir(model_d):
     pst = pyemu.Pst(os.path.join(new_d, "pest.pst"))
 
     # set first par as fixed
-    pst.parameter_data.loc[pst.par_names[0], "partrans"] = "fixed"
+    #pst.parameter_data.loc[pst.par_names[0], "partrans"] = "fixed"
 
     # set noptmax
     pst.control_data.noptmax = noptmax
@@ -129,12 +130,14 @@ def run_suite(model_d):
     #for i in range(3,4):
     
         test_vars = df.iloc[i, :].to_dict()
+        if test_vars["pyemu_compare"] == 0:
+            continue
         test_name = test_vars["text"].split()[0].replace(")", '')
         print(test_vars["text"])
         pst.pestpp_options = {}
         for v in ies_vars:
             if pd.notnull(test_vars[v]):
-                pst.pestpp_options[v] = test_vars[v]
+                pst.pestpp_options[v] = test_vars[v].replace('"','')
         pst.write(os.path.join(template_d, "pest.pst"))
         test_d = os.path.join(model_d, "master_test_{0}".format(test_name))
 
@@ -146,6 +149,7 @@ def run_suite(model_d):
                 continue
         pyemu.helpers.start_slaves(template_d, exe_path, "pest.pst", num_slaves=10,
                                    master_dir=test_d, verbose=True, slave_root=model_d)
+
 
 
 def compare_suite(model_d):
@@ -182,6 +186,44 @@ def compare_suite(model_d):
         for e in errors:
             print("ERROR: ", e)
         raise Exception("errors in {0}: ".format(model_d) + '\n'.join(errors))
+
+
+def compare_pyemu():
+    df = pd.read_csv("ies_test.csv")
+   # df = df.loc[df.text.apply(lambda x: model_d in x), :]
+    df = df.loc[df.pyemu_compare==1,:]
+    df.fillna('', inplace=True)
+    for i in range(df.shape[0]):
+        args = df.iloc[i,:].to_dict()
+        model_d = args["text"].split()[1]
+        test_d = "master_test_"+args["text"].split()[0].replace(')','')
+        print(model_d)
+        pyemu_d = os.path.join(model_d,"master_pyemu")
+        assert os.path.exists(pyemu_d),pyemu_d
+        test_d = os.path.join(model_d,test_d)
+        assert os.path.exists(test_d),test_d
+        pp_phi_file = os.path.join(test_d,"pest.phi.actual.csv")
+        py_phi_file = os.path.join(pyemu_d,"pest.pst.iobj.actual.csv")
+        try:
+            pp_phi = pd.read_csv(pp_phi_file)
+        except Exception as e:
+            raise Exception("error loading pp_phi {0}: {1}".format(pp_phi_file,str(e)))
+        try:
+            py_phi = pd.read_csv(py_phi_file)
+        except Exception as e:
+            raise Exception("error loading py_phi {0}: {1}".format(py_phi_file, str(e)))
+
+        m_diff = pp_phi.loc[:,"mean"] - py_phi.loc[:,"mean"]
+        print(m_diff)
+        m_diff.dropna(inplace=True)
+        assert m_diff.shape[0] == noptmax + 1
+        assert m_diff.apply(np.abs).max() < 0.01
+        s_diff = pp_phi.loc[:,"standard_deviation"] - py_phi.loc[:,"std"]
+        print(s_diff)
+        s_diff.dropna(inplace=True)
+        assert s_diff.shape[0] == noptmax + 1
+        assert s_diff.apply(np.abs).max() < 0.01
+
 
 
 def test_10par_xsec():
@@ -321,7 +363,7 @@ def test_freyberg_full_cov():
     pst.parameter_data.loc[:,"partrans"] = "log"
     pst.control_data.noptmax = 0
     pst.pestpp_options = {}
-    num_reals = 2000
+    num_reals = 10000
 
     #diagonal cov
     #pst.pestpp_options["parcov_filename"] = "prior.jcb"
@@ -350,7 +392,7 @@ def test_freyberg_full_cov():
             c2 = df_corr.loc[p1, p2]
             print(p1, p2, c1, c2)
 
-    diff_tol = 0.1
+    diff_tol = 0.01
 
     for c in df.columns:
         if c not in pe.columns:
@@ -394,7 +436,7 @@ def test_freyberg_full_cov():
             c2 = df_corr.loc[p1,p2]
             print(p1,p2,c1,c2)
 
-    diff_tol = 0.1
+    diff_tol = 0.01
 
     for c in df.columns:
         if c not in pe.columns:
@@ -590,25 +632,51 @@ def test_chenoliver():
     # d = np.abs(df_full_par.PAR.mean() - 6.0)
     # assert d < 0.05,d
 
+def test_kirishima():
+
+    model_d = "ies_kirishima"
+    test_d = os.path.join(model_d, "master")
+    template_d = os.path.join(model_d, "template")
+
+    if os.path.exists(test_d):
+        shutil.rmtree(test_d)
+    print("loading pst")
+    pst = pyemu.Pst(os.path.join(template_d, "pest.pst"))
+    pst.pestpp_options = {}
+    pst.pestpp_options["ies_num_reals"] = 300
+    pst.pestpp_options["ies_use_approx"] = "true"
+    pst.pestpp_options["ies_use_prior_scaling"] = "true"
+    pst.pestpp_options["ies_subset_size"] = 10
+    pst.pestpp_options["ies_lambda_mults"] = [0.1,1.0,10.0]
+    pst.pestpp_options["ies_initial_lambda"] = 1000.0
+    pst.pestpp_options["ies_bad_phi"] = 80000.0
+    pst.control_data.noptmax = 10
+    print("writing pst")
+    pst.write(os.path.join(template_d, "pest.pst"))
+    print("starting slaves")
+    pyemu.helpers.start_slaves(template_d, exe_path, "pest.pst", num_slaves=10, master_dir=test_d,
+                               slave_root=model_d)
+
 if __name__ == "__main__":
     # write_empty_test_matrix()
-    # setup_suite_dir("ies_freyberg")
-    # setup_suite_dir("ies_10par_xsec")
+    setup_suite_dir("ies_freyberg")
+    setup_suite_dir("ies_10par_xsec")
 
-    # run_suite("ies_freyberg")
-    # run_suite("ies_10par_xsec")
+    run_suite("ies_freyberg")
+    run_suite("ies_10par_xsec")
     # rebase("ies_freyberg")
     # rebase("ies_10par_xsec")
     # tenpar_subset_test()
     # tenpar_full_cov_test()
-    test_freyberg_full_cov()
+    #test_freyberg_full_cov()
     # test_synth()
     # test_10par_xsec()
     # test_freyberg()
     #test_chenoliver()
-    
+    compare_pyemu()
     # # invest()
     # compare_suite("ies_10par_xsec")
     # compare_suite("ies_freyberg")
     # tenpar_subset_test()
     # tenpar_full_cov_test()
+    #test_kirishima()
