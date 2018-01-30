@@ -130,8 +130,8 @@ def run_suite(model_d):
     #for i in range(3,4):
     
         test_vars = df.iloc[i, :].to_dict()
-        if test_vars["pyemu_compare"] == 0:
-            continue
+        # if test_vars["pyemu_compare"] == 0:
+        #     continue
         test_name = test_vars["text"].split()[0].replace(")", '')
         print(test_vars["text"])
         pst.pestpp_options = {}
@@ -657,13 +657,52 @@ def test_kirishima():
     pyemu.helpers.start_slaves(template_d, exe_path, "pest.pst", num_slaves=10, master_dir=test_d,
                                slave_root=model_d)
 
+def test_freyberg_ineq():
+
+    model_d = "ies_freyberg"
+    test_d = os.path.join(model_d, "test_ineq")
+    template_d = os.path.join(model_d, "template")
+
+    if os.path.exists(test_d):
+        shutil.rmtree(test_d)
+    print("loading pst")
+    pst = pyemu.Pst(os.path.join(template_d, "pest.pst"))
+    pst.observation_data.loc[pst.nnz_obs_names[3],"obgnme"] = "less_than"
+    pst.observation_data.loc[pst.nnz_obs_names[3],"weight"] = 100.0
+    pst.pestpp_options = {}
+    pst.pestpp_options["ies_num_reals"] = 100
+    pst.pestpp_options["ies_subset_size"] = 10
+    pst.pestpp_options["ies_lambda_mults"] = [0.1,1.0,10.0]
+    pst.control_data.noptmax = 3
+    print("writing pst")
+    pst.write(os.path.join(template_d, "pest.pst"))
+    print("starting slaves")
+    pyemu.helpers.start_slaves(template_d, exe_path, "pest.pst", num_slaves=10, master_dir=test_d,
+                               slave_root=model_d)
+
+    obs_csvs = [f for f in os.listdir(test_d) if "obs" in f and f.endswith(".csv")]
+    print(obs_csvs)
+    df = pd.read_csv(os.path.join(test_d,obs_csvs[-1]),index_col=0)
+    df.columns = df.columns.map(str.lower)
+    pst = pyemu.Pst(os.path.join(template_d, "pest.pst"))
+
+    axes = [plt.subplot(pst.nnz_obs,1,i+1) for i in range(pst.nnz_obs)]
+    #df.loc[:,pst.nnz_obs_names].hist(bins=10,axes=axes)
+    for i,n in enumerate(pst.nnz_obs_names):
+        v = pst.observation_data.loc[n,"obsval"]
+        ax = axes[i]
+        df.loc[:,n].hist(ax=ax,bins=10)
+        ax.plot([v,v],ax.get_ylim(),"k--",lw=2.0)
+    plt.show()
+
+
 if __name__ == "__main__":
     # write_empty_test_matrix()
-    setup_suite_dir("ies_freyberg")
-    setup_suite_dir("ies_10par_xsec")
+    #setup_suite_dir("ies_freyberg")
+    #setup_suite_dir("ies_10par_xsec")
 
-    run_suite("ies_freyberg")
-    run_suite("ies_10par_xsec")
+    #run_suite("ies_freyberg")
+    #run_suite("ies_10par_xsec")
     # rebase("ies_freyberg")
     # rebase("ies_10par_xsec")
     # tenpar_subset_test()
@@ -673,10 +712,11 @@ if __name__ == "__main__":
     # test_10par_xsec()
     # test_freyberg()
     #test_chenoliver()
-    compare_pyemu()
+    #compare_pyemu()
     # # invest()
     # compare_suite("ies_10par_xsec")
     # compare_suite("ies_freyberg")
     # tenpar_subset_test()
     # tenpar_full_cov_test()
+    test_freyberg_ineq()
     #test_kirishima()

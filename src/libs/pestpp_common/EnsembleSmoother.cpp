@@ -23,10 +23,14 @@ PhiHandler::PhiHandler(Pest *_pest_scenario, FileManager *_file_manager,
 	//check for inequality constraints
 	//for (auto &og : pest_scenario.get_ctl_ordered_obs_group_names())
 	string og;
+	double weight; 
 	ObservationInfo oi = pest_scenario->get_ctl_observation_info();
 	for (auto &oname : pest_scenario->get_ctl_ordered_nz_obs_names())
 	{
 		og = oi.get_group(oname);
+		weight = oi.get_weight(oname);
+		if (weight == 0)
+			continue;
 		if ((og.compare(0, 2, "L_") == 0) || (og.compare(0, 4, "LESS")==0))
 		{
 			lt_obs_names.push_back(oname);
@@ -54,6 +58,7 @@ Eigen::MatrixXd PhiHandler::get_obs_resid(ObservationEnsemble &oe)
 {
 	Eigen::MatrixXd resid = oe.get_eigen(vector<string>(), oe_base->get_var_names()) -
 		oe_base->get_eigen(oe.get_real_names(), vector<string>());
+	apply_ineq_constraints(resid);
 	return resid;
 }
 
@@ -62,6 +67,35 @@ Eigen::MatrixXd PhiHandler::get_par_resid(ParameterEnsemble &pe)
 	Eigen::MatrixXd resid = pe.get_eigen(vector<string>(), pe_base->get_var_names()) -
 		pe_base->get_eigen(pe.get_real_names(), vector<string>());
 	return resid;
+}
+
+Eigen::MatrixXd PhiHandler::get_actual_obs_resid(ObservationEnsemble &oe)
+{
+	vector<string> act_obs_names = pest_scenario->get_ctl_ordered_nz_obs_names();
+	Eigen::MatrixXd resid(oe.shape().first, act_obs_names.size());
+	resid.setZero();
+	Observations obs = pest_scenario->get_ctl_observations();
+	Eigen::MatrixXd oe_vals = oe.get_eigen(vector<string>(), act_obs_names);
+	Eigen::MatrixXd ovals = obs.get_data_eigen_vec(act_obs_names);
+	ovals.transposeInPlace();
+	for (int i = 0; i < resid.rows(); i++)
+		resid.row(i) = oe_vals.row(i) - ovals;
+	apply_ineq_constraints(resid);
+	return resid;
+}
+
+Eigen::VectorXd PhiHandler::get_q_vector()
+{
+	ObservationInfo oinfo = pest_scenario->get_ctl_observation_info();
+	Eigen::VectorXd q;
+	vector<string> act_obs_names = pest_scenario->get_ctl_ordered_nz_obs_names();
+	q.resize(act_obs_names.size());
+	double w;
+	for (int i = 0; i < act_obs_names.size(); i++)
+	{
+		q(i) = oinfo.get_weight(act_obs_names[i]);
+	}
+	return q;
 }
 
 void PhiHandler::update(ObservationEnsemble & oe, ParameterEnsemble & pe)
@@ -247,19 +281,14 @@ vector<int> PhiHandler::get_idxs_greater_than(double bad_phi, ObservationEnsembl
 map<string, double> PhiHandler::calc_meas(ObservationEnsemble & oe)
 {
 	map<string, double> phi_map;
-	ObservationInfo oinfo = pest_scenario->get_ctl_observation_info();
-	Eigen::VectorXd oe_base_vec, oe_vec, q, diff;
+	Eigen::VectorXd oe_base_vec, oe_vec, diff;
+	Eigen::VectorXd q = get_q_vector();
 	vector<string> act_obs_names = pest_scenario->get_ctl_ordered_nz_obs_names();
-	q.resize(act_obs_names.size());
-	double w;
-	for (int i = 0; i < act_obs_names.size(); i++)
-		q(i) = oinfo.get_weight(act_obs_names[i]);
 	vector<string> base_real_names = oe_base->get_real_names(), oe_real_names = oe.get_real_names();
 	vector<string>::iterator start = base_real_names.begin(), end = base_real_names.end();
 	double phi;
 	string rname;
 
-	//Eigen::MatrixXd oe_reals = oe.get_eigen(vector<string>(), oe_base->get_var_names());
 	Eigen::MatrixXd resid = get_obs_resid(oe);
 	assert(oe_real_names.size() == resid.rows());
 	for (int i = 0; i<resid.rows(); i++)
@@ -267,9 +296,6 @@ map<string, double> PhiHandler::calc_meas(ObservationEnsemble & oe)
 		rname = oe_real_names[i];
 		if (find(start, end, rname) == end)
 			continue;
-		/*oe_base_vec = oe_base->get_real_vector(rname);
-		oe_vec = oe_reals.row(i);
-		diff = (oe_vec - oe_base_vec).cwiseProduct(q);*/
 		diff = resid.row(i);
 		diff = diff.cwiseProduct(q);
 		phi = (diff.cwiseProduct(diff)).sum();
@@ -284,7 +310,6 @@ map<string, double> PhiHandler::calc_regul(ParameterEnsemble & pe)
 	vector<string> real_names = pe.get_real_names();
 	pe_base->transform_ip(ParameterEnsemble::transStatus::NUM);
 	pe.transform_ip(ParameterEnsemble::transStatus::NUM);
-	//Eigen::MatrixXd diff_mat = pe.get_eigen() - pe_base->get_eigen(real_names, vector<string>());
 	Eigen::MatrixXd diff_mat = get_par_resid(pe);
 
 	Eigen::VectorXd parcov_inv_diag = parcov_inv.e_ptr()->diagonal();
@@ -299,35 +324,73 @@ map<string, double> PhiHandler::calc_regul(ParameterEnsemble & pe)
 	return phi_map;
 }
 
+
+void PhiHandler::apply_ineq_constraints(Eigen::MatrixXd &resid)
+{
+	vector<string> lt_names = get_lt_obs_names(), gt_names = get_gt_obs_names();
+	vector<string> act_obs_names = pest_scenario->get_ctl_ordered_nz_obs_names();
+	assert(act_obs_names.size() == resid.cols());
+	
+	map<string, double> lt_vals,gt_vals;
+	Observations obs = pest_scenario->get_ctl_observations();
+	for (auto &n : lt_names)
+		lt_vals[n] = obs.get_rec(n);
+	for (auto &n : gt_names)
+		gt_vals[n] = obs.get_rec(n);
+	if ((lt_vals.size() == 0) && (gt_vals.size() == 0))
+		return;
+	map<string, int> idxs;
+	for (int i = 0; i < act_obs_names.size(); i++)
+		idxs[act_obs_names[i]] = i;
+	int idx;
+	double val;
+	Eigen::VectorXd col;
+	
+	for (auto iv : lt_vals)
+	{
+		idx = idxs[iv.first];
+		col = resid.col(idx);
+		val = iv.second;
+		//cout << resid.col(idx) << endl;
+		for (int i = 0; i < resid.rows(); i++)
+			col(i) = (col(i) < 0.0) ? 0.0 : col(i);
+		//cout << resid.col(idx) << endl;
+		resid.col(idx) = col;
+		//cout << resid.col(idx) << endl;
+	}
+
+	for (auto iv : gt_vals)
+	{
+		idx = idxs[iv.first];
+		col = resid.col(idx);
+		val = iv.second;
+		for (int i = 0; i < resid.rows(); i++)
+			col(i) = (col(i) > 0.0) ? 0.0 : col(i);
+		resid.col(idx) = col;
+	}
+}
+
+
 map<string, double> PhiHandler::calc_actual(ObservationEnsemble & oe)
 {
 	map<string, double> phi_map;
-	ObservationInfo oinfo = pest_scenario->get_ctl_observation_info();
-	Observations obs = pest_scenario->get_ctl_observations();
-	Eigen::VectorXd obs_val_vec, oe_vec, q, diff;
-	vector<string> act_obs_names = pest_scenario->get_ctl_ordered_nz_obs_names();
-	q.resize(act_obs_names.size());
-	obs_val_vec.resize(act_obs_names.size());
-	double w;
-	for (int i = 0; i < act_obs_names.size(); i++)
-	{
-		q(i) = oinfo.get_weight(act_obs_names[i]);
-		obs_val_vec(i) = obs[act_obs_names[i]];
-	}
-		
+	Eigen::MatrixXd resid = get_actual_obs_resid(oe);
 	vector<string> base_real_names = oe_base->get_real_names(), oe_real_names = oe.get_real_names();
 	vector<string>::iterator start = base_real_names.begin(), end = base_real_names.end();
 	double phi;
 	string rname;
 
 	Eigen::MatrixXd oe_reals = oe.get_eigen(vector<string>(), oe_base->get_var_names());
+	Eigen::VectorXd diff, q = get_q_vector();
 	for (int i = 0; i<oe.shape().first; i++)
 	{
 		rname = oe_real_names[i];
 		if (find(start, end, rname) == end)
 			continue;
-		oe_vec = oe_reals.row(i);
-		diff = (oe_vec - obs_val_vec).cwiseProduct(q);
+		//diff = (oe_vec - obs_val_vec).cwiseProduct(q);
+		diff = resid.row(i);
+		diff = diff.cwiseProduct(q);
+		phi = (diff.cwiseProduct(diff)).sum();
 		phi = (diff.cwiseProduct(diff)).sum();
 		phi_map[rname] = phi;
 	}
@@ -354,8 +417,6 @@ map<string, double> PhiHandler::calc_composite(map<string, double> &_meas, map<s
 	}
 	return phi_map;
 }	
-
-
 
 
 IterEnsembleSmoother::IterEnsembleSmoother(Pest &_pest_scenario, FileManager &_file_manager,
@@ -662,10 +723,10 @@ void IterEnsembleSmoother::sanity_checks()
 		ppo->set_ies_verbose_level(3);
 	}
 	
-	if (!ppo->get_ies_use_prior_scaling())
+	/*if (!ppo->get_ies_use_prior_scaling())
 	{
 		warnings.push_back("not using prior scaling - this is really a dev option, you should always use prior scaling...");
-	}
+	}*/
 
 	if (warnings.size() > 0)
 	{
@@ -1019,11 +1080,11 @@ void IterEnsembleSmoother::initialize()
 
 	if (ph.get_lt_obs_names().size() > 0)
 	{
-		message(1, "less_than inequality defined for observations", ph.get_lt_obs_names());
+		message(1, "less_than inequality defined for observations: ", ph.get_lt_obs_names());
 	}
 	if (ph.get_gt_obs_names().size())
 	{
-		message(1, "greater_than inequality defined for observations", ph.get_gt_obs_names());
+		message(1, "greater_than inequality defined for observations: ", ph.get_gt_obs_names());
 	}
 
 	drop_bad_phi(pe, oe);
