@@ -147,6 +147,8 @@ double PhiHandler::get_std(phiType pt)
 	map<string, double>::iterator pi = phi_map->begin(), end = phi_map->end();
 	for (pi; pi != end; ++pi)
 		var = var + (pow(pi->second - mean,2));
+	if (var == 0.0)
+		return 0.0;
 	return sqrt(var/(phi_map->size()-1));
 }
 
@@ -955,7 +957,9 @@ void IterEnsembleSmoother::initialize()
 	{
 		performance_log->log_event("running initial ensemble");
 		message(0, "running initial ensemble of size", oe.shape().first);
-		run_ensemble(pe, oe);
+		vector<int> failed = run_ensemble(pe, oe);
+		if (pe.shape().first == 0)
+			throw_ies_error("all realizations failed during initial evaluation");
 		pe.transform_ip(ParameterEnsemble::transStatus::NUM);
 	}
 	else
