@@ -57,6 +57,8 @@ def setup_suite_dir(model_d):
     # set first par as fixed
     #pst.parameter_data.loc[pst.par_names[0], "partrans"] = "fixed"
 
+    pst.observation_data.loc[pst.nnz_obs_names,"weight"] = 1.0
+
     # set noptmax
     pst.control_data.noptmax = noptmax
 
@@ -137,7 +139,10 @@ def run_suite(model_d):
         pst.pestpp_options = {}
         for v in ies_vars:
             if pd.notnull(test_vars[v]):
-                pst.pestpp_options[v] = test_vars[v].replace('"','')
+                try:
+                    pst.pestpp_options[v] = test_vars[v].replace('"','')
+                except:
+                    pst.pestpp_options[v] = test_vars[v]
         pst.write(os.path.join(template_d, "pest.pst"))
         test_d = os.path.join(model_d, "master_test_{0}".format(test_name))
 
@@ -392,7 +397,7 @@ def test_freyberg_full_cov():
             c2 = df_corr.loc[p1, p2]
             print(p1, p2, c1, c2)
 
-    diff_tol = 0.01
+    diff_tol = 0.05
 
     for c in df.columns:
         if c not in pe.columns:
@@ -436,7 +441,7 @@ def test_freyberg_full_cov():
             c2 = df_corr.loc[p1,p2]
             print(p1,p2,c1,c2)
 
-    diff_tol = 0.01
+    diff_tol = 0.05
 
     for c in df.columns:
         if c not in pe.columns:
@@ -675,16 +680,16 @@ def test_freyberg_ineq():
     pst.pestpp_options["ies_lambda_mults"] = [0.1,1.0,10.0]
     pst.control_data.noptmax = 3
     print("writing pst")
-    pst.write(os.path.join(template_d, "pest.pst"))
+    pst.write(os.path.join(template_d, "pest_ineq.pst"))
     print("starting slaves")
-    pyemu.helpers.start_slaves(template_d, exe_path, "pest.pst", num_slaves=10, master_dir=test_d,
+    pyemu.helpers.start_slaves(template_d, exe_path, "pest_ineq.pst", num_slaves=10, master_dir=test_d,
                                slave_root=model_d)
 
     obs_csvs = [f for f in os.listdir(test_d) if "obs" in f and f.endswith(".csv")]
     print(obs_csvs)
     df = pd.read_csv(os.path.join(test_d,obs_csvs[-1]),index_col=0)
     df.columns = df.columns.map(str.lower)
-    pst = pyemu.Pst(os.path.join(template_d, "pest.pst"))
+    pst = pyemu.Pst(os.path.join(template_d, "pest_ineq.pst"))
 
     axes = [plt.subplot(pst.nnz_obs,1,i+1) for i in range(pst.nnz_obs)]
     #df.loc[:,pst.nnz_obs_names].hist(bins=10,axes=axes)
@@ -698,25 +703,25 @@ def test_freyberg_ineq():
 
 if __name__ == "__main__":
     # write_empty_test_matrix()
-    #setup_suite_dir("ies_freyberg")
-    #setup_suite_dir("ies_10par_xsec")
-
-    #run_suite("ies_freyberg")
-    #run_suite("ies_10par_xsec")
+    # setup_suite_dir("ies_freyberg")
+    # setup_suite_dir("ies_10par_xsec")
+    #
+    # run_suite("ies_freyberg")
+    # run_suite("ies_10par_xsec")
     # rebase("ies_freyberg")
     # rebase("ies_10par_xsec")
     # tenpar_subset_test()
     # tenpar_full_cov_test()
     #test_freyberg_full_cov()
-    # test_synth()
-    # test_10par_xsec()
-    # test_freyberg()
-    #test_chenoliver()
-    #compare_pyemu()
+    test_synth()
+    test_10par_xsec()
+    test_freyberg()
+    test_chenoliver()
+    compare_pyemu()
     # # invest()
     # compare_suite("ies_10par_xsec")
     # compare_suite("ies_freyberg")
-    # tenpar_subset_test()
-    # tenpar_full_cov_test()
+    tenpar_subset_test()
+    tenpar_full_cov_test()
     test_freyberg_ineq()
-    #test_kirishima()
+    test_kirishima()
