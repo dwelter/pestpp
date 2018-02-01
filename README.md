@@ -5,15 +5,12 @@ Object Oriented Inverse Modeling Software
 PEST++ can be compiled for PC, MAC, or Linux and has several run managers to support parallelization.  PEST++ implements "on-the-fly" subspace reparameterization, effectively reproducing the SVD-Assist methodology of PEST without any user intervention.  The user simply specifies how frequently a base Jacobian should be recalculated.  PEST++ also includes automatic Bayes linear parameter and forecast uncertainty estimation, which is completed for free at the end of the PEST++ run.  Also included in PEST++ are global sensitivity analysis codes that implement the method of Morris and the method of Sobol.  Both of these codes include a parallel run manager as well and are fully compatible with the PEST model-independent framework.
 
 ## Under Development
-* optimization within the PEST model-independent framework, including chance constraints from Bayes Linear estimation
-* global optimization and inversion with Differential Evolution
-* new ways to enforce regularization as component of the composite objective function and in the linear algebra of the inversion problem
+* iterative Ensemble Smoother for very high-dimensional non-linear inversion and uncertainty estimation
 
-If any of these items are of interest to you, we are looking for contributors!
-
-precompiled binaries are available in the "exes" folder in the repo
+precompiled binaries are available in the "exe" folder.  Windows users should use the ``intel_c_windows`` branch binaries to avoid the dreaded MSVC missing runtime DLL issue
 
 ## Recent Updates
+
 <b> update 09/20/2017</b>: the new optimization under uncertainty tool is ready!  A supporting publication is in the works and should be available soon (a link will be posted once it is accepted).  This new tool uses the same control file/template file/instruction file approach as other PEST(++) applications, so applying this tool to your problem should be seamless.  Optional "++" args for tool are available further done this page.
 
 <b>update 01/25/2017</b>: intel C++ builds are avaiable for mac and for windows.  For mac users, these are statically-linked so they do not require compilers to be installed.  For windows users, the intel build circumvents the "missing VCOMP140.DLL" error.  Note the intel windows builds are currently in the ``intel_c_windows`` branch.
@@ -51,7 +48,7 @@ Welter, D.E., Doherty, J.E., Hunt, R.J., Muffels, C.T., Tonkin, M.J., and Schre√
 * <a ref="http://www.pesthomepage.org">http://www.pesthomepage.org </a>
 * <a ref="http://wi.water.usgs.gov/models/pestplusplus/">http://wi.water.usgs.gov/models/pestplusplus</a>
 * <a ref="http://wi.water.usgs.gov/models/genie/">http://wi.water.usgs.gov/models/genie/ </a>
-* <a ref'"https://github.com/jtwhite79/pyemu">https://github.com/jtwhite79/pyemu </a>
+* <a ref="https://github.com/jtwhite79/pyemu">https://github.com/jtwhite79/pyemu </a>
 
 ## Compiling
 The master branch includes a Visual Studio 2015 project, as well as makefiles for linux and mac.
@@ -64,17 +61,21 @@ Much work has been done to avoid additional external dependencies in PEST++.  As
 
 ## PEST++ arguments
 Here is a (more or less) complete list of ``++`` arguments that can be added to the control file
+* ``++overdue_resched_fac(1.2)``:YAMR only, if a run is more than <``overdue_resched_fac``> X average run time, reschedule it on available resources
+* ``++overdue_giveup_fac(2.0)``:YAMR only, if a run is more than <``overdue_giveup_fac``> X average run time, mark it as failed
 * ``++max_n_super(20)``: maximum number of super parameters to use
 
 * ``++super_eigthres(1.0e-8)`` ratio of max to min singular values used to truncate the singular components when forming the super parameter problem
 
 * ``++n_iter_base(1)``:number of base (full) parameter iterations to complete as part of the on-the-fly combined base-parameter/super-parameter iteration process.  A value of -1 results in calculation of the base jacobian and formation of the super parameter problem without any base parameter upgrades, replicating the behavior of the "svd-assist" methodology of PEST
 
-* ``++n_iter_super(4)``: number of base (full) parameter iterations to complete as part of the on-the-fly combined base-parameter/super-parameter iteration process
+* ``++n_iter_super(4)``: number of super (reduced dimension) parameter iterations to complete as part of the on-the-fly combined base-parameter/super-parameter iteration process
 
 * ``++svd_pack(propack)``: which SVD solver to use.  valid arguments are ``eigen``(jacobi solution), ``propack``(iterative Lanczos solution) and ``redsvd`` (randomized solution).
 
 * ``++lambdas(0.1,1,10,100,1000)``: the values of lambda to test in the upgrade part of the solution process. Note that this base list is augmented with values bracketing the previous iterations best lambda.  However, if a single value is specified, only one lambda will be used.
+
+* ``++lambda_scale_fac(0.9,0.8,0.7,0.5)``: the values to scale each lambda upgrade vector.  This results in a line search along each upgrade vector direction, so that the number of upgrade vectors = len(lambdas) * len(lambda_scale_fac).  To disable, set = 1.0.
 
 * ``++reg_frac(0.1)``: the portion of the composite phi that will be regularization. If this argument is specified, the ``* regularization`` section of the control file is ignored.  For limited testing, values ranging from 0.05 to 0.25 seem to work well.
 
@@ -86,7 +87,12 @@ Here is a (more or less) complete list of ``++`` arguments that can be added to 
 
 * ``++forecasts(fore1,fore2...)``:comma separated list of observations to treat as forecasts in the FOSM-based uncertainty estimation
 
-* ``++iteration_summary(true)``:flag to activate or deactivate writing iteration-based CSV files summarizing parameters (<base_case>.ipar), objective function (<base_case>.iobj) and sensitivities (<base_case>.isen)
+* ``++iteration_summary(true)``:flag to activate or deactivate writing iteration-based CSV files summarizing parameters (<base_case>.ipar), objective function (<base_case>.iobj) and sensitivities (<base_case>.isen), as well as upgrade summary (<base_case>.upg.csv) and a jacobian parameter-to-run_id mapping (<base_case>.rid). 
+* ``++jac_scale(true)``: use PEST-style jacobian scaling. Important, but can be costly because it densifies the normal matrix, making SVD take longer.
+
+* ``++upgrade_augment(true)``: augment the values of lambda to test by including the best lambda from the previous iteration, as well as best lambda * 2.0 and best lambda / 2.0.  If ``true``, then additional lambdas will be included by attempting to extend each upgrade vector along the region of parameter space defined by parameter bounds.  If ``false``, then only the vectors listed in the ``++lambda()`` arg will be tested and no extended upgrade will be included.  
+
+* ``++hotstart_resfile(mycase.res)``: use an exising residual file to restart with an existing jacobian to forego the initial, base run and jump straight to upgrade calculations (++base_jacobian arg required).
 
 * ``++max_run_fail(4)``:maximum number of runs that can fail before the run manager emits an error.
 
@@ -96,14 +102,14 @@ Here is a (more or less) complete list of ``++`` arguments that can be added to 
 
 * ``++parcov_scale_fac(0.01)``: scaling factor to scale the prior parameter covariance matrix by when scaling the normal matrix by the inverse of the prior parameter covariance matrix.  If not specified, no scaling is undertaken; if specified, ``++mat_inv`` must be "jtqj".
 
+* ``++condor_submit_file(pest.sub)``: a HTCondor submit file.  Setting this arg results in use of a specialized version of the YAMR run manager where the ``condor_submit()`` command is issued before the run manager starts, and, once a set of runs are complete, the workers are released and the ``condor_rm()`` command is issued.  This specialized run manager is useful for those sharing an HTCondor pool so that during the upgrade calculation process, all workers are released and during upgrade testing, only the required number workers are queued.  As with all things PEST and PEST++, it is up to the user to make sure the relative paths between the location of the submit file, the control file and the instance of PEST++ are in sync.
+
 ### sweep ``++`` arguments
 ``sweep`` is a utility to run a parametric sweep for a series of parameter values.  Useful for things like monte carlo, design of experiment, etc. Designed to be used with ``pyemu`` and the python pandas library.
 
-* ``++sweep_parameter_csv_file(filename)``: the CSV file that lists the runs to be evaluated. REQUIRED
-* ``++sweep_output_csv_file(filename)``: the output CSV file from the parametric sweep.  If not passed, output is written to "output.csv"
+* ``++sweep_parameter_csv_file(filename)``: the CSV file that lists the runs to be evaluated. "sweep_in.csv" is the default
+* ``++sweep_output_csv_file(filename)``: the output CSV file from the parametric sweep.  If not passed, output is written to "sweep_out.csv"
 * ``++sweep_chunk(500)``: number of runs to batch queue for the run manager.  Each chunk is read, run and written as a single batch
-* ``++sweep_forgive(true)``: a flag to allow the ``sweep_parameter_csv_file`` to only include a subset of parameters listed in the control file.  If ``true``, then parameters not listed in the ``sweep_parrameter_csv_file`` are given the corresponding ``parval1`` value in the control file
-* ``sweep_base_run(true)``: flag to include a "base" run of control file parameter values in the parametric sweep
 
 ### pestpp-opt ``++`` arguments
 ``pestpp-opt`` is a implementation of sequential linear programming under uncertainty for the PEST-style model-independent interface

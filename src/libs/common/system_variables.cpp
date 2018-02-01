@@ -113,8 +113,9 @@ bool OperSys::double_is_invalid(double x)
    return test;
 #endif
 #ifdef OS_LINUX
-   bool test = (std::isnan(x) || std::isinf(x));
-  return test;
+   //bool test = (std::isnan(x) || std::isinf(x));
+  //return test;
+   return true;
 #endif
 }
 

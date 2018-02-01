@@ -6,11 +6,13 @@
 #include <iomanip>
 #include <vector>
 #include <random>
+#include <iterator>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include <Eigen/IterativeLinearSolvers>
 #include <Eigen/SparseCholesky>
 
+#include "SVDPackage.h"
 #include "Pest.h"
 #include "utilities.h"
 #include "covariance.h"
@@ -210,25 +212,37 @@ void Mat::transpose_ip()
 	}
 }
 
-Mat Mat::inv()
+Mat Mat::inv(bool echo)
+{
+	Logger* log = new Logger();
+	log->set_echo(echo);
+	//inv_ip(log);
+	return inv(log);
+}
+
+
+Mat Mat::inv(Logger* log)
 {
 	if (nrow() != ncol()) throw runtime_error("Mat::inv() error: only symmetric positive definite matrices can be inverted with Mat::inv()");
 	if (mattype == MatType::DIAGONAL)
 	{
-		Eigen::VectorXd diag = matrix.diagonal();
-		diag = 1.0 / diag.array();
+		log->log("inverting diagonal matrix in place");
+		log->log("extracting diagonal");
+		Eigen::VectorXd diag = matrix.diagonal().eval();
+		log->log("inverting diagonal");
+		log->log("building triplets");
 		vector<Eigen::Triplet<double>> triplet_list;
-		
 		for (int i = 0; i != diag.size(); ++i)
 		{
-			triplet_list.push_back(Eigen::Triplet<double>(i, i, diag[i]));
+			triplet_list.push_back(Eigen::Triplet<double>(i, i, 1.0 / diag[i]));
 		}
-		Eigen::SparseMatrix<double> inv_mat(triplet_list.size(),triplet_list.size());
+		Eigen::SparseMatrix<double> inv_mat;
+		inv_mat.conservativeResize(triplet_list.size(), triplet_list.size());
 		inv_mat.setZero();
+		log->log("setting matrix from triplets");
 		inv_mat.setFromTriplets(triplet_list.begin(), triplet_list.end());
 		return Mat(row_names, col_names, inv_mat);
 	}
-	
 	//Eigen::ConjugateGradient<Eigen::SparseMatrix<double>> solver;
 	Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver;
 	solver.compute(matrix);
@@ -238,10 +252,22 @@ Mat Mat::inv()
 	return Mat(row_names, col_names, inv_mat);
 }
 
-void Mat::inv_ip()
+void Mat::pseudo_inv_ip(double eigthresh, int maxsing)
+{
+	//Eigen::MatrixXd ivec, upgrade_1, s, V, U, st;
+	Eigen::SparseMatrix<double> Vt, U;
+	Eigen::VectorXd s, st;
+	SVD_REDSVD rsvd(eigthresh,maxsing);
+	//rsvd.set_performance_log(performance_log);
+
+	rsvd.solve_ip(matrix, s, U, Vt, st);
+	matrix = Vt.transpose() * st * U.transpose();
+}
+
+void Mat::inv_ip(bool echo)
 {
 	Logger* log = new Logger();
-	log->set_echo(false);
+	log->set_echo(echo);
 	inv_ip(log);
 	return;
 }
@@ -253,17 +279,17 @@ void Mat::inv_ip(Logger *log)
 	{
 		log->log("inverting diagonal matrix in place");
 		log->log("extracting diagonal");
-		Eigen::VectorXd diag = matrix.diagonal();
+		Eigen::VectorXd diag = matrix.diagonal().eval();
 		log->log("inverting diagonal");
-		diag = 1.0 / diag.array();
-		log->log("buidling triplets");
+		//diag = 1.0 / diag.array();
+		log->log("building triplets");
 		vector<Eigen::Triplet<double>> triplet_list;
 		for (int i = 0; i != diag.size(); ++i)
 		{
-			triplet_list.push_back(Eigen::Triplet<double>(i, i, diag[i]));
+			triplet_list.push_back(Eigen::Triplet<double>(i, i, 1.0/diag[i]));
 		}
-		log->log("resizeing matrix to size " + triplet_list.size());
-		matrix.resize(triplet_list.size(), triplet_list.size());
+		//log->log("resizeing matrix to size " + triplet_list.size());
+		//matrix.conservativeResize(triplet_list.size(),triplet_list.size());
 		matrix.setZero();
 		log->log("setting matrix from triplets");
 		matrix.setFromTriplets(triplet_list.begin(),triplet_list.end());
@@ -593,18 +619,19 @@ Mat Mat::get(const vector<string> &new_row_names, const vector<string> &new_col_
 	if (new_row_names.size() == 0) throw runtime_error("Mat::get() error: new_row_names is empty");
 	if (new_col_names.size() == 0) throw runtime_error("Mat::get() error: new_col_names is empty");
 	vector<string> row_not_found;
-	for (auto &n_row_name : new_row_names)
-	{
-		if (find(row_names.begin(), row_names.end(), n_row_name) == row_names.end())
-			row_not_found.push_back(n_row_name);
-	}
-	vector<string> col_not_found;
-	for (auto &n_col_name : new_col_names)
-	{
-		if (find(col_names.begin(), col_names.end(), n_col_name) == col_names.end())
-			col_not_found.push_back(n_col_name);
-	}
+	
+	set<string> row_set(row_names.begin(), row_names.end());
+	set<string>::iterator end = row_set.end();
+	for (auto &n : new_row_names)
+		if (row_set.find(n) == end)
+			row_not_found.push_back(n);
 
+	vector<string> col_not_found;
+	set<string> col_set(col_names.begin(), col_names.end());
+	end = col_set.end();
+	for (auto &n : new_col_names)
+		if (col_set.find(n) == end)
+			col_not_found.push_back(n);
 	if (row_not_found.size() != 0)
 	{
 		cout << "Mat::get() error: the following row names were not found:" << endl;
@@ -632,7 +659,7 @@ Mat Mat::get(const vector<string> &new_row_names, const vector<string> &new_col_
 	int irow_new;
 	int icol_new;
 
-	unordered_map<string, int> row_name2newindex_map;
+	unordered_map<string, int> row_name2new_index_map;
 	unordered_map<string, int> col_name2new_index_map;
 
 	// Build mapping of parameter names to column number in new matrix to be returned
@@ -646,13 +673,13 @@ Mat Mat::get(const vector<string> &new_row_names, const vector<string> &new_col_
 	irow_new = 0;
 	for (vector<string>::const_iterator b = new_row_names.begin(), e = new_row_names.end();
 		b != e; ++b, ++irow_new) {
-		row_name2newindex_map[(*b)] = irow_new;
+		row_name2new_index_map[(*b)] = irow_new;
 	}
 	
 	unordered_map<string, int>::const_iterator found_col;
 	unordered_map<string, int>::const_iterator found_row;
 	unordered_map<string, int>::const_iterator not_found_col_map = col_name2new_index_map.end();
-	unordered_map<string, int>::const_iterator not_found_row_map = row_name2newindex_map.end();
+	unordered_map<string, int>::const_iterator not_found_row_map = row_name2new_index_map.end();
 
 	const string *row_name;
 	const string *col_name;
@@ -666,7 +693,7 @@ Mat Mat::get(const vector<string> &new_row_names, const vector<string> &new_col_
 			col_name = &col_names[it.col()];
 			row_name = &row_names[it.row()];
 			found_col = col_name2new_index_map.find(*col_name);
-			found_row = row_name2newindex_map.find(*row_name);
+			found_row = row_name2new_index_map.find(*row_name);
 			if (found_col != not_found_col_map && found_row != not_found_row_map)
 			{
 				triplet_list.push_back(Eigen::Triplet<double>(found_row->second, found_col->second, it.value()));
@@ -720,6 +747,12 @@ Mat Mat::extract(const vector<string> &extract_row_names, const string &extract_
 	return extract(extract_row_names, extract_col_names);
 }
 
+bool Mat::isdiagonal()
+{
+	if (mattype == MatType::DIAGONAL)
+		return true;
+	return false;
+}
 
 void Mat::drop_cols(const vector<string> &drop_col_names)
 {
@@ -823,7 +856,7 @@ Covariance::Covariance()
 	mattype = MatType::SPARSE;
 }
 
-Covariance::Covariance(vector<string> _names, Eigen::SparseMatrix<double> _matrix)
+Covariance::Covariance(vector<string> _names, Eigen::SparseMatrix<double> _matrix, Mat::MatType _mattype)
 {	
 	if ((_names.size() != _matrix.rows()) || (_names.size() != _matrix.cols()))
 		throw runtime_error("Covariance::Covariance() error: names.size() does not match matrix dimensions");
@@ -831,7 +864,7 @@ Covariance::Covariance(vector<string> _names, Eigen::SparseMatrix<double> _matri
 	row_names = _names;
 	col_names = _names;
 	icode = 1;
-	mattype = MatType::SPARSE;
+	mattype =_mattype;
 }
 
 Covariance::Covariance(Mat _mat)
@@ -1072,6 +1105,7 @@ void Covariance::from_parameter_bounds(const vector<string> &par_names,const Par
 		{
 			row_names.push_back(par_name);
 			col_names.push_back(par_name);
+			//double temp = pow((upper - lower) / 4.0,2.0);
 			triplet_list.push_back(Eigen::Triplet<double>(i, i, pow((upper - lower) / 4.0, 2.0)));
 			i++;
 		}

@@ -29,6 +29,8 @@
 #include <memory>
 #include <Eigen/Dense>
 #include <utility>
+#include <cmath>
+#include <cfloat>
 #include "Transformable.h"
 #include "pest_error.h"
 #include "utilities.h"
@@ -38,6 +40,7 @@ using std::string;
 using std::map;
 using std::ostream;
 using std::endl;
+using std::isnormal;
 using namespace pest_utils;
 using namespace Eigen;
 
@@ -158,7 +161,7 @@ vector<string> Transformable::get_notnormal_keys()
 	vector<string> not_normal;
 	for (auto &i : items)
 	{
-		if (!std::isnormal(i.second))
+		if (!isnormal(i.second))
 			not_normal.push_back(i.first);
 	}
 	return not_normal;

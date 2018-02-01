@@ -667,15 +667,20 @@ void PestppOptions::parce_line(const string &line)
 		{
 			convert_ip(value, opt_recalc_fosm_every);
 		}
-		else if ((key == "IES_PAR_CSV") || (key == "IES_PARAMETER_CSV"))
+		else if ((key == "IES_PAR_CSV") || (key == "IES_PARAMETER_CSV")||
+			(key == "IES_PAR_en") || (key == "IES_PARAMETER_ENSEMBLE"))
 		{
 			convert_ip(value, ies_par_csv);
 		}
-		else if ((key == "IES_OBS_CSV") || (key == "IES_OBSERVATION_CSV"))
+		else if ((key == "IES_OBS_CSV") || (key == "IES_OBSERVATION_CSV") ||
+			(key == "IES_OBS_EN") || (key == "IES_OBSERVATION_ENSEMBLE"))
 		{
 			convert_ip(value, ies_obs_csv);
 		}
-		else if ((key == "IES_OBS_RESTART_CSV") || (key == "IES_OBSERVATION_RESTART_CSV"))
+		else if ((key == "IES_OBS_RESTART_CSV") || (key == "IES_OBSERVATION_RESTART_CSV") 
+			|| (key == "IES_RESTART_OBS_CSV") || (key == "IES_OBSERVATION_RESTART_ENSEMBLE") ||
+			(key == "IES_RESTART_OBSERVATION_ENSEMBLE") || (key == "IES_RESTART_OBS_EN") ||
+			(key == "IES_OBS_RESTART_EN"))
 		{
 			convert_ip(value, ies_obs_restart_csv);
 		}
@@ -708,7 +713,40 @@ void PestppOptions::parce_line(const string &line)
 		{
 			convert_ip(value, ies_subset_size);
 		}
-
+		else if (key == "IES_REG_FACTOR")
+		{
+			convert_ip(value, ies_reg_factor);
+		}
+		else if (key == "IES_VERBOSE_LEVEL")
+		{
+			convert_ip(value, ies_verbose_level);
+		}
+		else if (key == "IES_USE_PRIOR_SCALING")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> ies_use_prior_scaling;
+		}
+		else if (key == "IES_NUM_REALS")
+		{
+			convert_ip(value, ies_num_reals);
+		}
+		else if (key == "IES_BAD_PHI")
+		{
+			convert_ip(value, ies_bad_phi);
+		}
+		else if (key == "IES_INCLUDE_BASE")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> ies_include_base;
+		}
+		else if (key == "IES_USE_EMPIRICAL_PRIOR")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> ies_use_empirical_prior;
+		}
 		else {
 
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");

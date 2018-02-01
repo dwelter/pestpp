@@ -63,7 +63,8 @@ public:
 		Eigen::SparseMatrix<double>& VT, Eigen::VectorXd &Sigma_trunc, double _eigen_thres);
 	virtual void solve_ip(Eigen::MatrixXd& A, Eigen::MatrixXd &Sigma, Eigen::MatrixXd& U,
 		Eigen::MatrixXd& V, double _eigen_thres, int _max_sing);
-
+	virtual void SVD_REDSVD::solve_ip(Eigen::MatrixXd& A, Eigen::MatrixXd &Sigma, Eigen::MatrixXd& U,
+		Eigen::MatrixXd& V);
 	virtual ~SVD_REDSVD(void) {}
 };
 

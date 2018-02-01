@@ -22,6 +22,7 @@ along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 #include <iomanip>
 #include <fstream>
 #include <algorithm>
+#include <iterator>
 #include "config_os.h"
 #include "Pest.h"
 #include "Transformable.h"
@@ -41,6 +42,8 @@ along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 #include "PerformanceLog.h"
 #include "debug.h"
 #include "logger.h"
+#include "Jacobian.h"
+
 
 using namespace std;
 using namespace pest_utils;
@@ -490,23 +493,6 @@ int main(int argc, char* argv[])
 			throw runtime_error("could not open parameter csv file " + par_csv_file);
 		}
 
-		map<string,int> header_info = prepare_parameter_csv(pest_scenario.get_ctl_parameters(),
-			par_stream, pest_scenario.get_pestpp_options().get_sweep_forgive());
-		
-
-
-		//Initialize OutputFileWriter to handle IO of suplementary files (.par, .par, .svd)
-		//bool save_eign = pest_scenario.get_svd_info().eigwrite > 0;	
-		OutputFileWriter output_file_writer(file_manager, pest_scenario, restart_flag);
-		output_file_writer.set_svd_output_opt(pest_scenario.get_svd_info().eigwrite);
-		if (!restart_flag)
-		{
-			output_file_writer.scenario_report(fout_rec);
-		}
-		if (pest_scenario.get_pestpp_options().get_iter_summary_flag())
-		{
-			output_file_writer.write_par_iter(0, pest_scenario.get_ctl_parameters());
-		}
 		RunManagerAbstract *run_manager_ptr;
 		if (run_manager_type == RunManagerType::YAMR)
 		{
@@ -553,7 +539,46 @@ int main(int argc, char* argv[])
 			run_manager_ptr->initialize(base_trans_seq.ctl2model_cp(cur_ctl_parameters), pest_scenario.get_ctl_observations());
 		}
 
+		map<string, int> header_info;
+
+		string par_ext = par_csv_file.substr(par_csv_file.size() - 3, par_csv_file.size());
+		pest_utils::lower_ip(par_ext);
 		
+		Eigen::MatrixXd jco_mat;
+		bool use_jco = false;
+		if ((par_ext.compare("jcb") == 0) || (par_ext.compare("jco") == 0))
+		{
+			cout << "  ---  binary jco-type file detected for par_csv" << endl;
+			use_jco = true;
+			Jacobian jco(file_manager);
+			jco.read(par_csv_file);	
+			cout << jco.get_matrix_ptr()->rows() << " runs found in binary jco-type file" << endl;		
+			//check that the jco is compatible with the control file
+			vector<string> names = jco.get_base_numeric_par_names();
+			set<string> jset(names.begin(), names.end());
+			set<string> pset(pest_scenario.get_ctl_ordered_par_names().begin(), pest_scenario.get_ctl_ordered_par_names().end());
+			vector<string> missing;
+			set_symmetric_difference(jset.begin(), jset.end(), pset.begin(), pset.end(), back_inserter(missing));
+			if (missing.size() > 0)
+			{
+				stringstream ss;
+				ss << "binary jco file does not have the same parameters as pest control file.  The following parameters are not the same between the two: ";
+				for (auto &m : missing)
+					ss << m << " , ";
+				throw runtime_error(ss.str());
+			}
+			/*for (int i = 0; i < names.size(); i++)
+				header_info[names[i]] = i;*/
+			cout << "  --- converting sparse JCO matrix to dense" << endl;
+			jco_mat = jco.get_matrix(jco.get_sim_obs_names(), pest_scenario.get_ctl_ordered_par_names()).toDense();
+		}
+		
+		else
+		{
+			header_info = prepare_parameter_csv(pest_scenario.get_ctl_parameters(),
+				par_stream, pest_scenario.get_pestpp_options().get_sweep_forgive());
+		}
+
 		// prepare the output file
 		ofstream obs_stream = prep_sweep_output_file(pest_scenario);
 
@@ -573,20 +598,42 @@ int main(int argc, char* argv[])
 			//read some realizations
 			//sweep_pars.clear();
 			cout << "reading par values...";
-			try{
-				performance_log.log_event("starting to read parameter csv file", 1);
-				sweep_par_info = load_parameters_from_csv(header_info, par_stream, chunk);
-				performance_log.log_event("finished reading parameter csv file");
-			}
-			catch (exception &e)
+			if (use_jco)
 			{
-				stringstream ss;
-				ss << "error processing parameter csv file: " << e.what();
-				performance_log.log_event(ss.str());
-				fout_rec << endl << ss.str() << endl;
-				fout_rec.close();
+				//just use the total_runs_done counter as the run id
+				vector<string> par_names = pest_scenario.get_ctl_ordered_par_names();
+				Parameters par;
+				vector<Parameters> pars;
+				vector<int> run_ids;
+				for (int i = 0; i < chunk; i++)
+				{
+					if (total_runs_done + i >= jco_mat.rows())
+						break;
+					par.update_without_clear(par_names, jco_mat.row(total_runs_done + i));
+					pars.push_back(par);
+					run_ids.push_back(total_runs_done + i);
 
-				throw runtime_error(ss.str());
+				}
+				sweep_par_info = pair<vector<int>, vector<Parameters>>(run_ids, pars);
+
+			}
+			else
+			{
+				try {
+					performance_log.log_event("starting to read parameter csv file", 1);
+					sweep_par_info = load_parameters_from_csv(header_info, par_stream, chunk);
+					performance_log.log_event("finished reading parameter csv file");
+				}
+				catch (exception &e)
+				{
+					stringstream ss;
+					ss << "error processing parameter csv file: " << e.what();
+					performance_log.log_event(ss.str());
+					fout_rec << endl << ss.str() << endl;
+					fout_rec.close();
+
+					throw runtime_error(ss.str());
+				}
 			}
 			cout << "done" << endl;
 			// if there are no parameters to run, we are done
