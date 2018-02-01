@@ -244,20 +244,27 @@ void ModelInterface::run(pest_utils::thread_flag* terminate, pest_utils::thread_
 		}
 
 		//check for nans in par vals before continuing
-		vector<string> invalid;
-		for (int i = 0; i != par_name_vec.size(); i++)
-		{
-			if (OperSys::double_is_invalid(par_vals.at(i)))
-				invalid.push_back(par_name_vec.at(i));
-		}
-		if (invalid.size() > 0)
-		{
-			stringstream ss;
-			ss << "internal PEST++ error: invalid parameter values passed to model_interface for the following parameters: ";
-			for (auto &i : invalid)
-				ss << i << '\n';
-			throw PestError(ss.str());
-		}
+		// vector<string> invalid;
+		// vector<double> ivals;
+		// for (int i = 0; i != par_name_vec.size(); i++)
+		// {
+		// 	if (OperSys::double_is_invalid(par_vals.at(i)))
+		// 	{
+		// 		invalid.push_back(par_name_vec.at(i));
+		// 		ivals.push_back(par_vals.at(i));
+		// 	}
+
+		// }
+		// if (invalid.size() > 0)
+		// {
+		// 	stringstream ss;
+		// 	ss << "internal PEST++ error: invalid parameter values passed to model_interface for the following parameters: ";
+		// 	for (auto &i : invalid)
+		// 		ss << i << '\n';
+		// 	for (auto &iv : ivals)
+		// 		ss << iv << "\n";
+		// 	throw PestError(ss.str());
+		// }
 
 		int npar = par_vals.size();
 		try
@@ -412,34 +419,34 @@ void ModelInterface::run(pest_utils::thread_flag* terminate, pest_utils::thread_
 
 		}
 
-		invalid.clear();
-		for (int i = 0; i != par_name_vec.size(); i++)
-		{
-			if (OperSys::double_is_invalid(par_vals.at(i)))
-				invalid.push_back(par_name_vec.at(i));
-		}
-		if (invalid.size() > 0)
-		{
-			stringstream ss;
-			ss << "invalid parameter values read for the following parameters: ";
-			for (auto &i : invalid)
-				ss << i << '\n';
-			throw PestError(ss.str());
-		}
+		// invalid.clear();
+		// for (int i = 0; i != par_name_vec.size(); i++)
+		// {
+		// 	if (OperSys::double_is_invalid(par_vals.at(i)))
+		// 		invalid.push_back(par_name_vec.at(i));
+		// }
+		// if (invalid.size() > 0)
+		// {
+		// 	stringstream ss;
+		// 	ss << "invalid parameter values read for the following parameters: ";
+		// 	for (auto &i : invalid)
+		// 		ss << i << '\n';
+		// 	throw PestError(ss.str());
+		// }
 
-		for (int i = 0; i != obs_name_vec.size(); i++)
-		{
-			if (OperSys::double_is_invalid(obs_vals.at(i)))
-				invalid.push_back(obs_name_vec.at(i));
-		}
-		if (invalid.size() > 0)
-		{
-			stringstream ss;
-			ss << "invalid observation values read for the following observations: ";
-			for (auto &i : invalid)
-				ss << i << '\n';
-			throw PestError(ss.str());
-		}
+		// for (int i = 0; i != obs_name_vec.size(); i++)
+		// {
+		// 	if (OperSys::double_is_invalid(obs_vals.at(i)))
+		// 		invalid.push_back(obs_name_vec.at(i));
+		// }
+		// if (invalid.size() > 0)
+		// {
+		// 	stringstream ss;
+		// 	ss << "invalid observation values read for the following observations: ";
+		// 	for (auto &i : invalid)
+		// 		ss << i << '\n';
+		// 	throw PestError(ss.str());
+		// }
 
 		pars->update(par_name_vec, par_vals);
 		obs->update(obs_name_vec, obs_vals);

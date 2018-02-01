@@ -38,6 +38,7 @@ using std::string;
 using std::map;
 using std::ostream;
 using std::endl;
+using std::isnormal;
 using namespace pest_utils;
 using namespace Eigen;
 
@@ -158,8 +159,9 @@ vector<string> Transformable::get_notnormal_keys()
 	vector<string> not_normal;
 	for (auto &i : items)
 	{
-		if (!std::isnormal(i.second))
-			not_normal.push_back(i.first);
+		if (isnormal(i.second))
+			continue;
+		not_normal.push_back(i.first);
 	}
 	return not_normal;
 }
