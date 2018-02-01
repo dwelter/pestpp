@@ -159,11 +159,11 @@ double &Transformable::operator[](const string &name)
 vector<string> Transformable::get_notnormal_keys()
 {
 	vector<string> not_normal;
-	for (auto &i : items)
-	{
-		if (!isnormal(i.second))
-			not_normal.push_back(i.first);
-	}
+	// for (auto &i : items)
+	// {
+	// 	if (!isnormal(i.second))
+	// 		not_normal.push_back(i.first);
+	// }
 	return not_normal;
 }
 
