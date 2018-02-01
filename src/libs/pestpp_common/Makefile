@@ -25,7 +25,9 @@ OBJECTS := \
     OutputFileWriter \
     PerformanceLog \
     SVDASolver \
-    DifferentialEvolution
+    DifferentialEvolution \
+    Ensemble \
+    EnsembleSmoother
 OBJECTS := $(addsuffix $(OBJ_EXT),$(OBJECTS))
 
 
