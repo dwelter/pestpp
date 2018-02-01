@@ -257,8 +257,8 @@ if __name__ == "__main__":
 
     # process_training_image()
     #run_fieldgen()
-    #setup()
+    setup()
     #run_sweep()
     #test()
-    #prep()
-    pyemu.helpers.start_slaves("template", "sweep", "pest.pst", num_slaves=6, master_dir=None)
+    prep()
+    #pyemu.helpers.start_slaves("template", "sweep", "pest.pst", num_slaves=6, master_dir=None)

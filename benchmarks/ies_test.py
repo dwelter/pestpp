@@ -699,7 +699,7 @@ def test_freyberg_ineq():
 if __name__ == "__main__":
     # write_empty_test_matrix()
     #setup_suite_dir("ies_freyberg")
-    #setup_suite_dir("ies_10par_xsec")
+    setup_suite_dir("ies_10par_xsec")
 
     #run_suite("ies_freyberg")
     #run_suite("ies_10par_xsec")
@@ -718,5 +718,5 @@ if __name__ == "__main__":
     # compare_suite("ies_freyberg")
     # tenpar_subset_test()
     # tenpar_full_cov_test()
-    test_freyberg_ineq()
+    #test_freyberg_ineq()
     #test_kirishima()
