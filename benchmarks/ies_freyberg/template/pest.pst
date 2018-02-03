@@ -3184,9 +3184,9 @@ h02_39_16             -9.9999000000E+02     0.0000000000E+00       forecast
 h02_39_17             -9.9999000000E+02     0.0000000000E+00       forecast             
 h02_39_18             -9.9999000000E+02     0.0000000000E+00       forecast             
 h02_39_19             -9.9999000000E+02     0.0000000000E+00       forecast             
-sw_gw_0               -3.6925880000E+03     0.0000000000E+00       forecast             
-sw_gw_1               -8.7345770000E+02     0.0000000000E+00       forecast             
-sw_gw_2               -5.3759540000E+02     0.0000000000E+00       forecast
+sw_gw_0               -3.6906862E+03        0.0000000000E+00       forecast             
+sw_gw_1               -2.6853938E+03        0.0000000000E+00       forecast             
+sw_gw_2               -1.7059218E+03        0.0000000000E+00       forecast
 * model command line
 python run.py
 * model input/output

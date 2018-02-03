@@ -220,11 +220,11 @@ def make_pst():
 
 
 if __name__ == "__main__":
-    start = datetime.now()
-    prep()
-    run()
+    #start = datetime.now()
+    #prep()
+    #run()
     process()
-    end = datetime.now()
+    #end = datetime.now()
     #print("took: {0}".format(str(end-start)))
     #write_hds_ins()
     #make_pst()
