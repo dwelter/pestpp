@@ -703,8 +703,8 @@ def test_freyberg_ineq():
 
 if __name__ == "__main__":
     # write_empty_test_matrix()
-    #setup_suite_dir("ies_freyberg")
-    setup_suite_dir("ies_10par_xsec")
+    setup_suite_dir("ies_freyberg")
+    #setup_suite_dir("ies_10par_xsec")
 
     #run_suite("ies_freyberg")
     #run_suite("ies_10par_xsec")
@@ -718,11 +718,11 @@ if __name__ == "__main__":
     # tenpar_subset_test()
     # tenpar_full_cov_test()
     #test_freyberg_full_cov()
-    test_synth()
-    test_10par_xsec()
-    test_freyberg()
-    test_chenoliver()
-    compare_pyemu()
+    #test_synth()
+    #test_10par_xsec()
+    #test_freyberg()
+    #test_chenoliver()
+    #compare_pyemu()
     # # invest()
     # compare_suite("ies_10par_xsec")
     # compare_suite("ies_freyberg")
