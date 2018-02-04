@@ -565,7 +565,7 @@ void IterEnsembleSmoother::initialize_oe(Covariance &cov)
 		message(1, "drawing observation noise realizations: ", num_reals);
 		oe.draw(num_reals, cov, performance_log, pest_scenario.get_pestpp_options().get_ies_verbose_level());
 		stringstream ss;
-		ss << file_manager.get_base_filename() << ".0.obs.csv";
+		ss << file_manager.get_base_filename() << ".base.obs.csv";
 		message(1, "saving initial observation ensemble to ", ss.str());
 		oe.to_csv(ss.str());
 	}
@@ -960,6 +960,9 @@ void IterEnsembleSmoother::initialize()
 		vector<int> failed = run_ensemble(pe, oe);
 		if (pe.shape().first == 0)
 			throw_ies_error("all realizations failed during initial evaluation");
+		string obs_csv = file_manager.get_base_filename() + ".0.obs.csv";
+		message(1, "saving results of initial ensemble run to", obs_csv);
+		oe.to_csv(obs_csv);
 		pe.transform_ip(ParameterEnsemble::transStatus::NUM);
 	}
 	else
