@@ -94,8 +94,10 @@ def plot_hk(hk_arr=None, ax=None,vmin=None,vmax=None):
     df = pst.observation_data.loc[pst.observation_data.obgnme=="calhead",:].copy()
     #df.loc[:, "x"] = df.apply(lambda x: m.sr.xcentergrid[x.row - 1, x.col - 1], axis=1)
     #df.loc[:, "y"] = df.apply(lambda x: m.sr.ycentergrid[x.row - 1, x.col - 1], axis=1)
-    df.loc[:,'x'] = df.obsnme.apply(lambda x: int(x[6:8]))
-    df.loc[:, 'y'] = df.obsnme.apply(lambda x: int(x[9:11]))
+    df.loc[:,'i'] = df.obsnme.apply(lambda x: int(x[6:8]))
+    df.loc[:, 'j'] = df.obsnme.apply(lambda x: int(x[9:11]))
+    df.loc[:, "x"] = df.apply(lambda x: m.sr.xcentergrid[x.i, x.j], axis=1)
+    df.loc[:, "y"] = df.apply(lambda x: m.sr.ycentergrid[x.i, x.j], axis=1)
 
     ax.scatter(df.x, df.y, marker='.', color='k', s=20)
     # m.lpf.hk[0].plot(axes=[ax],colorbar=True)
@@ -143,9 +145,12 @@ def plot_phi():
 
             phi_file = [f for f in os.listdir(master_dir) if "phi.actual" in f][0]
             nr = int(master_dir.split('_')[1])
+            ps = master_dir.split('_')[-1]
+
             if nr != num_real:
                 continue
-            ps = master_dir.split('_')[-1]
+            if ps != "nps":
+                continue
             df = pd.read_csv(os.path.join(master_dir,phi_file))
 
             ls = '-'
@@ -197,7 +202,7 @@ def plot_phi():
 
 
 def run_mc():
-    pst.pestpp_options["ies_num_reals"] = 10000
+    pst.pestpp_options["ies_num_reals"] = 100000
     pst.control_data.noptmax = -1
 
     pst_name = "pest_mc.pst"
@@ -228,7 +233,8 @@ def plot_histograms():
         for master_dir in master_dirs:
             nr = int(master_dir.split('_')[1])
             ps = master_dir.split('_')[-1]
-
+            if ps != "nps":
+                continue
             if nr != num_real:
                 continue
             ocsv_pt = [f for f in os.listdir(master_dir) if "obs" in f and noptstr in f][0]
@@ -237,11 +243,11 @@ def plot_histograms():
             df_pt.columns = df_pt.columns.map(str.lower)
             for i,f in enumerate(forecast_names):
                 ax = plt.subplot(gs[i,j])
-                df_mc.loc[keep_reals,f].hist(ax=ax,bins=10,facecolor="0.5",edgecolor="none",alpha=0.5,normed=True)
+                df_mc.loc[keep_reals,f].hist(ax=ax,bins=100,facecolor="0.5",edgecolor="none",alpha=0.5,normed=True)
                 if ps == "ps":
-                    df_pt.loc[:,f].hist(ax=ax,bins=10,facecolor=cd[num_real],alpha=0.5,normed=True)
+                    df_pt.loc[:,f].hist(ax=ax,bins=10,facecolor=cd[num_real],alpha=0.25,normed=True)
                 else:
-                    df_pt.loc[:, f].hist(ax=ax, bins=10, facecolor='none',edgecolor=cd[num_real],hatch='////',normed=True)
+                    df_pt.loc[:, f].hist(ax=ax, bins=10, facecolor='none',alpha=0.25,edgecolor=cd[num_real],hatch='////',normed=True)
 
                 ax.set_yticks([])
                 ax.grid()
@@ -309,14 +315,13 @@ def plot_hk_arrays(real=None):
             pcsv_pt = [f for f in os.listdir(master_dir) if ".par" in f and noptstr in f][0]
             pcsv_pr = pcsv_pt.replace(noptstr,".0.")
 
-
             df_pt = pd.read_csv(os.path.join(master_dir,pcsv_pt),index_col=0)
             df_pr = pd.read_csv(os.path.join(master_dir, pcsv_pr),index_col=0)
             df_pt.columns = df_pt.columns.map(str.lower)
             df_pr.columns = df_pr.columns.map(str.lower)
             df_pr.loc["base",pst.par_names] = pst.parameter_data.parval1
             df_pr.index = [str(i) for i in df_pr.index]
-            print(df_pr.iloc[-1,:])
+            #print(df_pr.iloc[-1,:])
             #real_pr = list(df_pr.index).index("base")
             #real_pt = list(df_pt.index).index("base")
             arr = get_hk_arr(df_pr,real)
@@ -353,9 +358,9 @@ def plot_hk_arrays(real=None):
 if __name__ == "__main__":
     #run()
     #run_pestpp()
-    run_mc()
+    #run_mc()
     #plot_domain()
     #plot_phi()
     #plot_hk_arrays("base")
     #plot_hk_arrays()
-    #plot_histograms()
+    plot_histograms()
