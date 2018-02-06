@@ -751,6 +751,10 @@ void IterEnsembleSmoother::initialize()
 	message(0, "initializing");
 	
 	verbose_level = pest_scenario.get_pestpp_options_ptr()->get_ies_verbose_level();
+	if (pest_scenario.get_n_adj_par() > 1e6)
+	{
+		message(0, "welcome to the 1M par club, great choice!");
+	}
 	iter = 0;
 	//ofstream &frec = file_manager.rec_ofstream();
 	last_best_mean = 1.0E+30;

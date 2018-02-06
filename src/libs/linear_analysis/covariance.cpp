@@ -541,6 +541,10 @@ void Mat::from_binary(const string &filename)
 
 	n_par = -n_par;
 	n_obs_and_pi = -n_obs_and_pi;
+
+	if (n_par > 10000000)
+		throw runtime_error("Mat::from_binary() failed sanity check: npar > 10 mil");
+
 	////read number nonzero elements in jacobian (observations + prior information)
 	in.read((char*)&n_nonzero, sizeof(n_nonzero));
 
