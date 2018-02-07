@@ -525,6 +525,12 @@ void Mat::from_binary(const string &filename)
 {
 	ifstream in;
 	in.open(filename.c_str(), ifstream::binary);
+	if (!in.good())
+	{
+		stringstream ss;
+		ss << "Mat::from_binary() error opening binary file " << filename << " for reading";
+		throw runtime_error(ss.str());
+	}
 
 	int n_par;
 	int n_nonzero;
@@ -547,6 +553,13 @@ void Mat::from_binary(const string &filename)
 
 	////read number nonzero elements in jacobian (observations + prior information)
 	in.read((char*)&n_nonzero, sizeof(n_nonzero));
+
+	if ((n_par == 0) || (n_obs_and_pi == 0) || (n_nonzero == 0))
+	{
+		throw runtime_error("Mat::from_binary() npar, nobs and/or nnz is zero");
+	}
+
+	cout << "reading " << n_nonzero << " elements, " << n_obs_and_pi << " rows, " << n_par << " columns" << endl;
 
 	// record current position in file
 	streampos begin_sen_pos = in.tellg();
