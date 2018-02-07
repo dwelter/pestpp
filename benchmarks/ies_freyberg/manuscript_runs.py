@@ -27,6 +27,11 @@ phi_accept = 13.0
 m = flopy.modflow.Modflow.load("freyberg.nam", model_ws="template", check=False, forgive=False)
 truth = np.loadtxt(os.path.join("template", "hk.truth.ref"))
 
+full_fig = 190.0 / 25.4
+onecol_fig = 90.0 / 25.4
+
+
+
 def run_pestpp():
     pst.control_data.noptmax = noptmax
     pst_name = "pest_base.pst"
@@ -96,10 +101,11 @@ def plot_hk(hk_arr=None, ax=None,vmin=None,vmax=None):
     #df.loc[:, "y"] = df.apply(lambda x: m.sr.ycentergrid[x.row - 1, x.col - 1], axis=1)
     df.loc[:,'i'] = df.obsnme.apply(lambda x: int(x[6:8]))
     df.loc[:, 'j'] = df.obsnme.apply(lambda x: int(x[9:11]))
-    df.loc[:, "x"] = df.apply(lambda x: m.sr.xcentergrid[x.i, x.j], axis=1)
-    df.loc[:, "y"] = df.apply(lambda x: m.sr.ycentergrid[x.i, x.j], axis=1)
+    #df.loc[:, "x"] = list(df.apply(lambda x: m.sr.xcentergrid[x.i, x.j], axis=1))
+    y = list(df.apply(lambda x: m.sr.ycentergrid[x.i, x.j], axis=1))
+    x = list(df.apply(lambda x: m.sr.xcentergrid[x.i, x.j], axis=1))
 
-    ax.scatter(df.x, df.y, marker='.', color='k', s=20)
+    ax.scatter(x, y, marker='.', color='k', s=20)
     # m.lpf.hk[0].plot(axes=[ax],colorbar=True)
 
     # rarr = m.riv.stress_period_data.array["stage"]
@@ -111,7 +117,7 @@ def plot_hk(hk_arr=None, ax=None,vmin=None,vmax=None):
     return c
 
 def plot_domain():
-    fig = plt.figure(figsize=(3.5, 4))
+    fig = plt.figure(figsize=(onecol_fig,onecol_fig * 2.0))
     ax = plt.subplot(111, aspect="equal")
     plot_hk(truth, ax)
     plt.tight_layout()
@@ -122,7 +128,7 @@ def plot_domain():
 def plot_phi():
     #df_mc = pd.read_csv(os.path.join("master_mc","pest_mc.phi.actual.csv"))
     master_dirs = [d for d in os.listdir('.') if "master_" in d and "pestpp" not in d and "mc" not in d]
-    fig = plt.figure(figsize=(4.5,4.5))
+    fig = plt.figure(figsize=(full_fig,full_fig))
     gs = gridspec.GridSpec(3,3)
     ax = plt.subplot(gs[:-1,:])
     ax1 = plt.subplot(gs[-1,0])
@@ -227,7 +233,7 @@ def plot_histograms():
     #for f in forecast_names:
     #    print(df_mc.loc[keep_reals,f])
     #return
-    fig = plt.figure(figsize=(6.5,6.5))
+    fig = plt.figure(figsize=(full_fig,full_fig))
     gs = gridspec.GridSpec(len(forecast_names),3)
     noptstr = ".{0}.".format(noptmax)
     lb = ["A)","B)","C)","D)","E)","F)"]
@@ -301,7 +307,7 @@ def get_hk_arr(df,real=None):
 
 
 def plot_hk_arrays(real=None):
-    fig = plt.figure(figsize=(6.5, 6.5))
+    fig = plt.figure(figsize=(full_fig,full_fig))
     gs = gridspec.GridSpec(2, 3,bottom=0.135)
     master_dirs = [d for d in os.listdir('.') if "master_" in d and "pestpp" not in d and "mc" not in d]
     noptstr = ".{0}.".format(noptmax)
@@ -326,6 +332,7 @@ def plot_hk_arrays(real=None):
             df_pr = pd.read_csv(os.path.join(master_dir, pcsv_pr),index_col=0)
             df_pt.columns = df_pt.columns.map(str.lower)
             df_pr.columns = df_pr.columns.map(str.lower)
+            print(df_pr.columns )
             df_pr.loc["base",pst.par_names] = pst.parameter_data.parval1
             df_pr.index = [str(i) for i in df_pr.index]
             #print(df_pr.iloc[-1,:])
@@ -371,8 +378,8 @@ if __name__ == "__main__":
     #run()
     #run_pestpp()
     #run_mc()
-    #plot_domain()
-    #plot_phi()
+    plot_domain()
+    plot_phi()
     #plot_hk_arrays("base")
-    #plot_hk_arrays()
+    plot_hk_arrays()
     plot_histograms()
