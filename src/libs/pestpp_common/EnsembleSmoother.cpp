@@ -820,8 +820,17 @@ void IterEnsembleSmoother::initialize()
 
 	if (pest_scenario.get_pestpp_options().get_ies_use_prior_scaling())
 	{
-		message(0, "forming inverse sqrt of prior parameter covariance matrix");
-		parcov_inv_sqrt = parcov.inv(echo).get_matrix().diagonal().cwiseSqrt().asDiagonal();
+		message(1, "forming inverse sqrt of prior parameter covariance matrix");
+		
+		if (parcov.isdiagonal())
+			parcov_inv_sqrt = parcov.inv(echo).get_matrix().diagonal().cwiseSqrt().asDiagonal();
+		else
+		{
+			message(1, "first extracting diagonal from prior parameter covariance matrix");
+			Covariance parcov_diag;
+			parcov_diag.from_diagonal(parcov);
+			parcov_inv_sqrt = parcov_diag.inv(echo).get_matrix().diagonal().cwiseSqrt().asDiagonal();
+		}
 	}
 
 	//obs ensemble

@@ -877,6 +877,7 @@ Covariance::Covariance(vector<string> _names, Eigen::SparseMatrix<double> _matri
 {	
 	if ((_names.size() != _matrix.rows()) || (_names.size() != _matrix.cols()))
 		throw runtime_error("Covariance::Covariance() error: names.size() does not match matrix dimensions");
+	Eigen::SparseMatrix<double> test = _matrix;
 	matrix = _matrix;
 	row_names = _names;
 	col_names = _names;
@@ -895,6 +896,23 @@ Covariance::Covariance(Mat _mat)
 	mattype = _mat.get_mattype();
 }
 
+
+void Covariance::from_diagonal(Covariance &other)
+{
+	row_names = other.get_row_names();
+	col_names = other.get_col_names();
+	if (other.get_mattype() == Mat::MatType::DIAGONAL)
+	{		
+		matrix = other.get_matrix();
+	}
+	else
+	{
+		Eigen::MatrixXd temp = other.e_ptr()->diagonal().asDiagonal();
+		Eigen::SparseMatrix<double> temp2 = temp.sparseView();
+		matrix = temp2;
+	}
+
+}
 Covariance Covariance::diagonal(double val)
 {
 	vector<Eigen::Triplet<double>> triplet_list;
