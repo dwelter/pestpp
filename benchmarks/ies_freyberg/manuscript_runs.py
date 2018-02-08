@@ -1,8 +1,11 @@
 import os
 import string
 import shutil
+
+fontsize = 7
+
 import matplotlib
-font = {'size': 8}
+font = {'size': fontsize}
 matplotlib.rc('font', **font)
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
@@ -29,6 +32,7 @@ truth = np.loadtxt(os.path.join("template", "hk.truth.ref"))
 
 full_fig = 190.0 / 25.4
 onecol_fig = 90.0 / 25.4
+onehalf_fig = 140.0 / 25.4
 
 
 
@@ -117,9 +121,11 @@ def plot_hk(hk_arr=None, ax=None,vmin=None,vmax=None):
     return c
 
 def plot_domain():
-    fig = plt.figure(figsize=(onecol_fig,onecol_fig * 2.0))
+    fig = plt.figure(figsize=(onecol_fig,onecol_fig * 1.25))
     ax = plt.subplot(111, aspect="equal")
-    plot_hk(truth, ax)
+    c = plot_hk(truth, ax)
+    cb = plt.colorbar(c)
+    cb.set_label("K ($\\frac{m}{d}$)")
     plt.tight_layout()
     plt.savefig("freyberg_domain.pdf")
     plt.close(fig)
@@ -128,7 +134,7 @@ def plot_domain():
 def plot_phi():
     #df_mc = pd.read_csv(os.path.join("master_mc","pest_mc.phi.actual.csv"))
     master_dirs = [d for d in os.listdir('.') if "master_" in d and "pestpp" not in d and "mc" not in d]
-    fig = plt.figure(figsize=(full_fig,full_fig))
+    fig = plt.figure(figsize=(onehalf_fig,onehalf_fig))
     gs = gridspec.GridSpec(3,3)
     ax = plt.subplot(gs[:-1,:])
     ax1 = plt.subplot(gs[-1,0])
@@ -179,7 +185,7 @@ def plot_phi():
                                     normed=True,edgecolor="none",)
             else:
                 df.iloc[-1, 5:].hist(ax=ad[nr], bins=bins, normed=True,hatch='/////',
-                                     edgecolor=c,facecolor="none")
+                                    edgecolor=c,facecolor="none")
             #df_mc.iloc[0,5:].hist(ax=ad[nr],bins=10,normed=True,facecolor='0.5',edgecolor="none")
 
 
@@ -192,13 +198,13 @@ def plot_phi():
     ax.set_ylabel("objective function ($\phi$)")
     ax.grid()
     ax.legend()
-    ax.set_title('A)',loc="left")
+    ax.set_title('A)',loc="left",fontsize=fontsize)
     mx,mn = -1.0e+10,1.0e+10
-    for a,t in zip([ax1,ax2,ax3],['B)','C)','D)']):
+    for a,t in zip([ax1,ax2,ax3],['B) 30 reals','C) 50 reals','D) 100 reals']):
         a.set_yticks([])
         a.set_xticks(bins[::2])
         a.set_xlabel('$\phi$')
-        a.set_title(t,loc='left')
+        a.set_title(t,loc='left',fontsize=fontsize)
         #a.set_xlim(0,50)
         a.grid()
         xlim = a.get_xlim()
@@ -233,7 +239,7 @@ def plot_histograms():
     #for f in forecast_names:
     #    print(df_mc.loc[keep_reals,f])
     #return
-    fig = plt.figure(figsize=(full_fig,full_fig))
+    fig = plt.figure(figsize=(onehalf_fig,onehalf_fig))
     gs = gridspec.GridSpec(len(forecast_names),3)
     noptstr = ".{0}.".format(noptmax)
     lb = ["A)","B)","C)","D)","E)","F)"]
@@ -263,7 +269,8 @@ def plot_histograms():
                 ax.set_yticks([])
                 ax.grid()
                 #ax.set_title(lb[j + (i*3)]+" {0}, {1} reals".format(f,nr),loc="left")
-                ax.set_title(abet[j+(i+(len(forecast_names)*j))] + ") {0},{1} reals".format(ftitles[i], nr), loc="left")
+                ax.set_title(abet[j+(i+(len(forecast_names)*j))] + ") {0},{1} reals".\
+                             format(ftitles[i], nr), loc="left",fontsize=fontsize)
                 if f.startswith('travel'):
                     ax.set_xlabel("travel time ($d$)")
                 elif f.startswith("c"):
@@ -352,7 +359,8 @@ def plot_hk_arrays(real=None):
                 ax.set_ylabel('')
             ax.set_xticklabels([])
             ax.set_xlabel('')
-            ax.set_title("{0}) prior, {1} reals\nphi:{2}".format(abet[c],num_real,real_phi_pr))
+            ax.set_title("{0}) prior, {1} reals\nphi:{2}".format(abet[c],num_real,real_phi_pr),
+                         fontsize=fontsize)
             c +=1
 
             arr = get_hk_arr(df_pt,real)
@@ -361,7 +369,8 @@ def plot_hk_arrays(real=None):
             if j != 0:
                 ax.set_yticklabels([])
                 ax.set_ylabel('')
-            ax.set_title("{0}) post, {1} reals\nphi:{2}".format(abet[c], num_real,real_phi_pt))
+            ax.set_title("{0}) post, {1} reals\nphi:{2}".format(abet[c], num_real,real_phi_pt),
+                         fontsize=fontsize)
             c+= 1
             #break
     #fig = plt.figure(figsize=(6.5, 6.5))
@@ -380,6 +389,6 @@ if __name__ == "__main__":
     #run_mc()
     plot_domain()
     plot_phi()
-    #plot_hk_arrays("base")
+    plot_hk_arrays("base")
     plot_hk_arrays()
     plot_histograms()
