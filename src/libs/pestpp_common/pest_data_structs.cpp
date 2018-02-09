@@ -747,6 +747,12 @@ void PestppOptions::parce_line(const string &line)
 			istringstream is(value);
 			is >> boolalpha >> ies_use_empirical_prior;
 		}
+		else if (key == "IES_GROUP_DRAWS")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> ies_group_draws;
+		}
 		else {
 
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");
@@ -810,6 +816,15 @@ const ObservationGroupRec* ObservationInfo::get_group_rec_ptr(const string &name
 	return ret_val;
 }
 
+vector<string> ObservationInfo::get_groups()
+{
+	vector<string> ogroups;
+	for (auto &g : groups)
+	{
+		ogroups.push_back(g.first);
+	}
+	return ogroups;
+}
 
 bool ObservationRec::is_regularization() const
 {

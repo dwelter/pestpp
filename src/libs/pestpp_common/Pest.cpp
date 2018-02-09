@@ -654,6 +654,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_ies_bad_phi(1.0e+30);
 	pestpp_options.set_ies_include_base(true);
 	pestpp_options.set_ies_use_empirical_prior(false);
+	pestpp_options.set_ies_group_draws(true);
 
 	pestpp_options.set_condor_submit_file(string());
 

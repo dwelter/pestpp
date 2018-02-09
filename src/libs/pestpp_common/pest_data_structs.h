@@ -183,6 +183,7 @@ public:
 	Observations get_regulatization_obs(const Observations &obs_in);	
 	int get_nnz_obs() const;
 	int get_nnz_obs_and_reg() const;
+	vector<string> get_groups();
 };
 
 class ModelExecInfo {
@@ -339,7 +340,8 @@ public:
 	void set_ies_include_base(bool _ies_include_base) { ies_include_base = _ies_include_base; }
 	bool get_ies_use_empirical_prior() const { return ies_use_empirical_prior; }
 	void set_ies_use_empirical_prior(bool _ies_use_empirical_prior) { ies_use_empirical_prior = _ies_use_empirical_prior; }
-
+	bool get_ies_group_draws() const { return ies_group_draws; }
+	void set_ies_group_draws(bool _ies_group_draws) { ies_group_draws = _ies_group_draws; }
 
 private:
 	int n_iter_base;
@@ -411,6 +413,7 @@ private:
 	double ies_bad_phi;
 	bool ies_include_base;
 	bool ies_use_empirical_prior;
+	bool ies_group_draws;
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);
 ostream& operator<< (ostream &os, const ObservationInfo& val);

@@ -26,12 +26,13 @@ void Ensemble::reserve(vector<string> _real_names, vector<string> _var_names)
 	real_names = _real_names;
 }
 
-void Ensemble::draw(int num_reals, Covariance &cov, Transformable &tran, const vector<string> &draw_names, PerformanceLog *plog, int level)
+void Ensemble::draw(int num_reals, Covariance &cov, Transformable &tran, const vector<string> &draw_names,
+	const map<string,vector<string>> &grouper ,PerformanceLog *plog, int level)
 {
 	//draw names should be "active" var_names (nonzero weight obs and not fixed/tied pars)
 	//just a quick sanity check...
-	if ((draw_names.size() > 50000) && (!cov.isdiagonal()))
-		cout << "  ---  Ensemble::draw() warning: non-diagonal cov used to draw for lots of variables...this might run out of memory..." << endl << endl;
+	//if ((draw_names.size() > 50000) && (!cov.isdiagonal()))
+	//	cout << "  ---  Ensemble::draw() warning: non-diagonal cov used to draw for lots of variables...this might run out of memory..." << endl << endl;
 	
 	//matrix to hold the standard normal draws
 	Eigen::MatrixXd draws(num_reals, draw_names.size());
@@ -67,68 +68,83 @@ void Ensemble::draw(int num_reals, Covariance &cov, Transformable &tran, const v
 	//if not diagonal, eigen decomp of cov then project the standard normal draws
 	else
 	{
-		int ncomps = draw_names.size();
-		stringstream ss;
-		/*ss << "SVD of full cov using " << ncomps << " components";
-		plog->log_event(ss.str());
-		RedSVD::RedSVD<Eigen::SparseMatrix<double>> svd;
-		svd.compute(*cov.e_ptr(),ncomps);
-		Eigen::MatrixXd evals = svd.singularValues().cwiseSqrt().asDiagonal();
-		plog->log_event("forming projection matrix");
-		Eigen::MatrixXd proj = svd.matrixU() * evals;*/
-		////for debugging
-		//if (level > 2)
-		//{
-		//	ofstream f("cov_eigenvectors.dat");
-		//	f << evals << endl;
-		//	f.close();
-		//	f.open("cov_eigenvalues.dat");
-		//	f << svd.matrixU() << endl;
-		//	f.close();
-		//	f.open("cov_projection_matrix.dat");
-		//	f << proj << endl;
-		//	f.close();
-		//}
-
-		/*ss << "Cholesky decomposition of full covariance matrix";
-		plog->log_event(ss.str());
-		Eigen::LDLT<Eigen::SparseMatrix<double>> chol(*cov.e_ptr());
-		Eigen::SparseMatrix<double> proj = chol.matrixL() * chol.vectorD();
-		*/
-		/*if (level > 2)
+		
+		if (grouper.size() > 0)
 		{
-			ofstream f("cov_projection_matrix.dat");
-			f << proj << endl;
-			f.close();
-		}*/
-		ss << "Randomized Eigen decomposition of full cov using " << ncomps << " components";
-		plog->log_event(ss.str());
-		RedSVD::RedSymEigen<Eigen::SparseMatrix<double>> eig(*cov.e_ptr(),ncomps);
-		Eigen::MatrixXd proj = (eig.eigenvectors() * eig.eigenvalues().cwiseSqrt().asDiagonal());
-
-		if (level > 2)
-		{
-			ofstream f("cov_eigenvectors.dat");
-			f << eig.eigenvectors() << endl;
-			f.close();
-			f.open("cov_eigenvalues.dat");
-			f << eig.eigenvalues() << endl;
-			f.close();
-			f.open("cov_projection_matrix.dat");
-			f << proj << endl;
-			f.close();
+			cout << "...drawing by group" << endl;
+			Covariance gcov;
+			stringstream ss;
+			RedSVD::RedSymEigen<Eigen::SparseMatrix<double>> eig;
+			Eigen::MatrixXd proj;
+			map<string, int> idx_map;
+			vector<int> idx;
+			for (int i = 0; i < var_names.size(); i++)
+				idx_map[var_names[i]] = i;
+			for (auto &gi : grouper)
+			{
+				ss.str("");
+				ss << "...processing " << gi.first << " with " << gi.second.size() << " elements" << endl;
+				//cout << ss.str();
+				plog->log_event(ss.str());
+				gcov = cov.get(gi.second);
+				if (level > 2)
+				{
+					gcov.to_ascii(gi.first + "_cov.dat");
+				}
+				ss.str("");
+				ss << "Randomized Eigen decomposition of full cov for " << gi.second.size() << " element matrix" << endl;
+				//cout << ss.str();
+				plog->log_event(ss.str());
+				eig.compute(*gcov.e_ptr(), gi.second.size());
+				proj = (eig.eigenvectors() * eig.eigenvalues().cwiseSqrt().asDiagonal());
+				idx.clear();
+				for (auto n : gi.second)
+					idx.push_back(idx_map[n]);
+				if (idx.size() != idx[idx.size() - 1] - idx[0] + 1)
+					throw_ensemble_error("Ensemble:: draw() error in full cov group draw: idx out of order");
+				//cout << var_names[idx[0]] << "," << var_names[idx.size() - idx[0]] << endl;
+				//cout << idx[0] << ',' << idx[idx.size()-1] << ',' <<  idx.size() << " , " << idx[idx.size()-1] - idx[0] <<  endl;
+				Eigen::MatrixXd block = draws.block(0, idx[0], num_reals - 1,idx.size());
+				//cout << "block " << block.rows() << " , " << block.cols() << endl;
+				//cout << " proj " << proj.rows() << " , " << proj.cols() << endl;
+				plog->log_event("projecting group block");
+				draws.block(0, idx[0], num_reals - 1, idx.size()) = (proj * block.transpose()).transpose();
+				
+			}
 		}
-
-		//project each standard normal draw in place
-		plog->log_event("projecting realizations");
-		/*for (int i = 0; i < num_reals; i++)
+		else
 		{
-			draws.row(i) = proj * draws.row(i).transpose();
-		}*/
-		draws = proj * draws.transpose();
-		draws.transposeInPlace();
-	}
+			int ncomps = draw_names.size();
+			stringstream ss;
+			ss << "Randomized Eigen decomposition of full cov using " << ncomps << " components";
+			plog->log_event(ss.str());
+			RedSVD::RedSymEigen<Eigen::SparseMatrix<double>> eig(*cov.e_ptr(), ncomps);
+			Eigen::MatrixXd proj = (eig.eigenvectors() * eig.eigenvalues().cwiseSqrt().asDiagonal());
 
+			if (level > 2)
+			{
+				ofstream f("cov_eigenvectors.dat");
+				f << eig.eigenvectors() << endl;
+				f.close();
+				f.open("cov_eigenvalues.dat");
+				f << eig.eigenvalues() << endl;
+				f.close();
+				f.open("cov_projection_matrix.dat");
+				f << proj << endl;
+				f.close();
+			}
+
+			//project each standard normal draw in place
+			plog->log_event("projecting realizations");
+			/*for (int i = 0; i < num_reals; i++)
+			{
+				draws.row(i) = proj * draws.row(i).transpose();
+			}*/
+			draws = proj * draws.transpose();
+			draws.transposeInPlace();
+		}
+	}
+	
 	//form some realization names
 	real_names.clear();
 	stringstream ss;
@@ -831,7 +847,27 @@ void ParameterEnsemble::draw(int num_reals, Covariance &cov, PerformanceLog *plo
 	Parameters par = pest_scenario_ptr->get_ctl_parameters();
 	par_transform.active_ctl2numeric_ip(par);//removes fixed/tied pars
 	tstat = transStatus::NUM;
-	Ensemble::draw(num_reals, cov, par, var_names, plog, level);
+	ParameterGroupInfo pgi = pest_scenario_ptr->get_base_group_info();
+	vector<string> group_names = pgi.get_group_names();
+	vector<string> vars_in_group;
+	map<string, vector<string>> grouper;
+	if (pest_scenario_ptr->get_pestpp_options().get_ies_group_draws())
+	{
+		for (auto &group : group_names)
+		{
+			vars_in_group.clear();
+			for (auto name : var_names)
+			{
+				if (pgi.get_group_rec_ptr(name)->name == group)
+					vars_in_group.push_back(name);
+			}
+			if (vars_in_group.size() == 0)
+				continue;
+			grouper[group] = vars_in_group;
+		}
+	}
+	
+	Ensemble::draw(num_reals, cov, par, var_names, grouper, plog, level);
 	enforce_bounds();
 	
 }
@@ -1028,7 +1064,20 @@ void ObservationEnsemble::draw(int num_reals, Covariance &cov, PerformanceLog *p
 	//draw an obs ensemble using only nz obs names
 	var_names = pest_scenario_ptr->get_ctl_ordered_obs_names();
 	Observations obs = pest_scenario_ptr->get_ctl_observations();
-	Ensemble::draw(num_reals, cov, obs, pest_scenario_ptr->get_ctl_ordered_nz_obs_names(), plog, level);
+	ObservationInfo oi = pest_scenario_ptr->get_ctl_observation_info();
+	map<string, vector<string>> grouper;
+	if (pest_scenario_ptr->get_pestpp_options().get_ies_group_draws())
+	{
+		for (auto group : oi.get_groups())
+		{
+			for (auto &oname : var_names)
+			{
+				if (oi.get_group(oname) == group)
+					grouper[group].push_back(oname);
+			}
+		}
+	}
+	Ensemble::draw(num_reals, cov, obs, pest_scenario_ptr->get_ctl_ordered_nz_obs_names(), grouper, plog, level);
 }
 
 void ObservationEnsemble::update_from_obs(int row_idx, Observations &obs)
