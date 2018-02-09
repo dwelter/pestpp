@@ -80,7 +80,7 @@ void Ensemble::draw(int num_reals, Covariance &cov, Transformable &tran, const v
 			vector<int> idx;
 			for (int i = 0; i < var_names.size(); i++)
 				idx_map[var_names[i]] = i;
-			for (auto &gi : grouper)
+			for (auto &gi : grouper) 
 			{
 				ss.str("");
 				ss << "...processing " << gi.first << " with " << gi.second.size() << " elements" << endl;
