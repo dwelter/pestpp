@@ -695,7 +695,8 @@ void Ensemble::from_binary(string file_name, vector<string> &names, bool transpo
 	int n_col;
 	int n_nonzero;
 	int n_row;
-	int i, j, n;
+	int i, j;
+	unsigned int n;
 	double data;
 	char col_name[12];
 	char row_name[20];

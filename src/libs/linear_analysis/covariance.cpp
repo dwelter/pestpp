@@ -535,7 +535,8 @@ void Mat::from_binary(const string &filename)
 	int n_par;
 	int n_nonzero;
 	int n_obs_and_pi;
-	int i, j, n;
+	int i, j;
+	unsigned int n;
 	double data;
 	char col_name[12];
 	char row_name[20];
@@ -594,10 +595,14 @@ void Mat::from_binary(const string &filename)
 	for (int i_rec = 0; i_rec<n_nonzero; ++i_rec)
 	{
 		in.read((char*)&(n), sizeof(n));
-		--n;
+		n = n - 1;
 		in.read((char*)&(data), sizeof(data));
 		j = int(n / (n_obs_and_pi)); // column index
 		i = (n - n_obs_and_pi*j) % n_obs_and_pi;  //row index
+		if ((i >= n_obs_and_pi) || (i < 0))
+			cout << "invalid 'i':" << i << " at " << n << " data:" << data << " j: " << j << endl;
+		if ((j >= n_par) || (j < 0))
+			cout << "invalid 'j':" << j << " at " << n << " data:" << data << " i: " << i << endl;
 		triplet_list.push_back(Eigen::Triplet<double>(i, j, data));
 	}
 	matrix.resize(n_obs_and_pi, n_par);
