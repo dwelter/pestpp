@@ -332,5 +332,9 @@ int main(int argc, char* argv[])
 		//char buf[256];
 		//OperSys::gets_s(buf, sizeof(buf));
 	}
+	catch (...)
+	{
+		cout << "Error condition prevents further execution: " << endl;
+	}
 #endif
 }
