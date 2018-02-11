@@ -15,11 +15,13 @@ import flopy
 import pyemu
 
 nrow,ncol = 40,20
-num_reals = [30, 50, 100]
+#num_reals = [30, 50, 100]
+num_reals = [30]
 noptmax = 10
 pst = pyemu.Pst(os.path.join("template", "pest.pst"))
 pst.observation_data.loc[pst.nnz_obs_names,"weight"] = 0.5
-pst.pestpp_options["parcov_filename"] = "freyberg.prior.jcb"
+
+pst.pestpp_options["parcov_filename"] = "prior.jcb"
 #pst.parameter_data.loc[pst.adj_par_names,"partrans"] = "none"
 #forecast_names = ["sw_gw_1","h01_28_11"]
 forecast_names = ["c001fr35c11_19750101","flx_river_l_19750102","travel_time"]
@@ -46,16 +48,16 @@ def run_pestpp():
 def run():
     for nr in num_reals:
         pst.pestpp_options["ies_num_reals"] = nr
-        pst.pestpp_options["ies_use_prior_scaling"] = "true"
-        pst.pestpp_options["ies_initial_lambda"] = 1000000.0
-        master_dir = "master_{0}_ps".format(nr)
-        if os.path.exists(master_dir):
-            shutil.rmtree(master_dir)
-        pst_name = "pest_{0}_ps.pst".format(nr)
-        pst.control_data.noptmax = noptmax
-        pst.write(os.path.join("template", pst_name))
-        pyemu.helpers.start_slaves("template", "pestpp-ies", pst_name,
-                                   num_slaves=10, master_dir=master_dir)
+        # pst.pestpp_options["ies_use_prior_scaling"] = "true"
+        # pst.pestpp_options["ies_initial_lambda"] = 1000000.0
+        # master_dir = "master_{0}_ps".format(nr)
+        # if os.path.exists(master_dir):
+        #     shutil.rmtree(master_dir)
+        # pst_name = "pest_{0}_ps.pst".format(nr)
+        # pst.control_data.noptmax = noptmax
+        # pst.write(os.path.join("template", pst_name))
+        # pyemu.helpers.start_slaves("template", "pestpp-ies", pst_name,
+        #                            num_slaves=10, master_dir=master_dir)
 
         pst.pestpp_options["ies_use_prior_scaling"] = "false"
         pst.pestpp_options["ies_initial_lambda"] = 1.0
@@ -466,7 +468,7 @@ def plot_hk_arrays_figure():
 
 
 if __name__ == "__main__":
-    #run()
+    run()
     #run_pestpp()
     #run_mc()
     #plot_domain()

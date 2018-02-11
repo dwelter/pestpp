@@ -832,6 +832,9 @@ void IterEnsembleSmoother::initialize()
 			parcov_inv_sqrt = parcov_diag.inv(echo).get_matrix().diagonal().cwiseSqrt().asDiagonal();
 		}
 	}
+	else {
+		message(1, "not using prior parameter covariance matrix scaling");
+	}
 
 	//obs ensemble
 	message(1, "initializing observation noise covariance matrix from observation weights");
@@ -1107,6 +1110,9 @@ void IterEnsembleSmoother::initialize()
 		message(1, "greater_than inequality defined for observations: ", ph.get_gt_obs_names());
 	}
 
+	ph.update(oe, pe);
+	message(0, "pre-drop initial phi summary");
+	ph.report();
 	drop_bad_phi(pe, oe);
 	if (oe.shape().first == 0)
 	{
