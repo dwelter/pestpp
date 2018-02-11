@@ -381,14 +381,97 @@ def plot_hk_arrays(real=None):
     plt.savefig("freyberg_par_{0}.pdf".format(real))
     plt.close(fig)
 
+def plot_hk_arrays_figure():
+    fig = plt.figure(figsize=(full_fig,full_fig*1.25))
+    gs = gridspec.GridSpec(3, 3,bottom=0.135)
+    master_dirs = [d for d in os.listdir('.') if "master_" in d and "pestpp" not in d and "mc" not in d]
+    noptstr = ".{0}.".format(noptmax)
+    vmin = truth.min()
+    vmax = truth.max()
+    abet = string.ascii_uppercase
+    c = 0
+    for j,num_real in enumerate(num_reals):
+        for master_dir in master_dirs:
+            nr = int(master_dir.split('_')[1])
+            ps = master_dir.split('_')[-1]
+            if ps != "nps":
+                continue
+            if nr != num_real:
+                continue
+
+            pcsv_pt = [f for f in os.listdir(master_dir) if ".par" in f and noptstr in f][0]
+            pcsv_pr = pcsv_pt.replace(noptstr,".0.")
+
+            df_phi = pd.read_csv(os.path.join(master_dir,pcsv_pr.replace(".0.par",".phi.actual")))
+            df_pt = pd.read_csv(os.path.join(master_dir,pcsv_pt),index_col=0)
+            df_pr = pd.read_csv(os.path.join(master_dir, pcsv_pr),index_col=0)
+            df_pt.columns = df_pt.columns.map(str.lower)
+            df_pr.columns = df_pr.columns.map(str.lower)
+            print(df_pr.columns )
+            df_pr.loc["base",pst.par_names] = pst.parameter_data.parval1
+            df_pr.index = [str(i) for i in df_pr.index]
+            #print(df_pr.iloc[-1,:])
+            #real_pr = list(df_pr.index).index("base")
+            #real_pt = list(df_pt.index).index("base")
+
+            #if real is None:
+            #    real = df_pt.index[0]
+            real = '0'
+            real_phi_pt = df_phi.iloc[-1, :][real]
+            real_phi_pr = df_phi.iloc[0, :][real]
+
+            arr = get_hk_arr(df_pr,real)
+            ax = plt.subplot(gs[0,j],aspect="equal")
+            plot_hk(arr,ax,vmin=vmin,vmax=vmax)
+            if j != 0:
+                ax.set_yticklabels([])
+                ax.set_ylabel('')
+            ax.set_xticklabels([])
+            ax.set_xlabel('')
+            ax.set_title("{0}) prior, {1} reals, phi:{2}".format(abet[c],num_real,real_phi_pr),
+                         fontsize=fontsize)
+            c +=1
+
+            arr = get_hk_arr(df_pt,real)
+            ax = plt.subplot(gs[1, j],aspect="equal")
+            cb = plot_hk(arr, ax, vmin=vmin, vmax=vmax)
+            if j != 0:
+                ax.set_yticklabels([])
+                ax.set_ylabel('')
+            ax.set_xticklabels([])
+            ax.set_xlabel('')
+            ax.set_title("{0}) post, {1} reals, phi:{2}".format(abet[c], num_real,real_phi_pt),
+                         fontsize=fontsize)
+            c+= 1
+
+            real_phi_pt = df_phi.iloc[-1, :]["base"]
+            arr = get_hk_arr(df_pt, "base")
+            ax = plt.subplot(gs[2, j], aspect="equal")
+            cb = plot_hk(arr, ax, vmin=vmin, vmax=vmax)
+            if j != 0:
+                ax.set_yticklabels([])
+                ax.set_ylabel('')
+            ax.set_title("{0}) post, {1} reals, phi:{2}".format(abet[c], num_real, real_phi_pt),
+                         fontsize=fontsize)
+            c += 1
+
+            #break
+    #fig = plt.figure(figsize=(6.5, 6.5))
+    ax = plt.axes((0.1,0.06,0.8,0.02))
+    cb = plt.colorbar(cb,cax=ax,orientation="horizontal")
+    cb.set_label("K ($\\frac{m}{d}$)",labelpad=0.1)
+    plt.tight_layout()
+    plt.savefig("freyberg_par_{0}.pdf".format(real))
+    plt.close(fig)
 
 
 if __name__ == "__main__":
     #run()
     #run_pestpp()
     #run_mc()
-    plot_domain()
-    plot_phi()
-    plot_hk_arrays("base")
-    plot_hk_arrays()
-    plot_histograms()
+    #plot_domain()
+    #plot_phi()
+    #plot_hk_arrays("base")
+    #plot_hk_arrays()
+    #plot_histograms()
+    plot_hk_arrays_figure()
