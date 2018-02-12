@@ -730,6 +730,7 @@ void PestppOptions::parce_line(const string &line)
 		else if (key == "IES_NUM_REALS")
 		{
 			convert_ip(value, ies_num_reals);
+			ies_num_reals_passed = true;
 		}
 		else if (key == "IES_BAD_PHI")
 		{

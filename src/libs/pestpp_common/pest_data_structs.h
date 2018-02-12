@@ -342,6 +342,8 @@ public:
 	void set_ies_use_empirical_prior(bool _ies_use_empirical_prior) { ies_use_empirical_prior = _ies_use_empirical_prior; }
 	bool get_ies_group_draws() const { return ies_group_draws; }
 	void set_ies_group_draws(bool _ies_group_draws) { ies_group_draws = _ies_group_draws; }
+	bool get_ies_num_reals_passed() const { return ies_num_reals_passed; }
+	void set_ies_num_reals_passed(bool _ies_num_reals_passed) { ies_num_reals_passed = _ies_num_reals_passed; }
 
 private:
 	int n_iter_base;
@@ -414,6 +416,7 @@ private:
 	bool ies_include_base;
 	bool ies_use_empirical_prior;
 	bool ies_group_draws;
+	bool ies_num_reals_passed;
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);
 ostream& operator<< (ostream &os, const ObservationInfo& val);

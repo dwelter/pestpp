@@ -498,6 +498,22 @@ void IterEnsembleSmoother::initialize_pe(Covariance &cov)
 			ss << "unrecognized par csv extension " << par_ext << ", looking for csv, jcb, or jco";
 			throw_ies_error(ss.str());
 		}
+
+		if (pest_scenario.get_pestpp_options().get_ies_num_reals_passed())
+		{
+			int num_reals = pest_scenario.get_pestpp_options().get_ies_num_reals();
+			if (num_reals < pe.shape().first)
+			{
+				message(1,"ies_num_reals arg passed, truncated parameter ensemble to ",num_reals);
+				vector<string> keep_names,real_names=pe.get_real_names();
+				for (int i=0;i<num_reals;i++)
+				{
+					keep_names.push_back(real_names[i]);
+				}
+				pe.keep_rows(keep_names);
+			}
+		}
+
 		if (pest_scenario.get_pestpp_options().get_ies_use_empirical_prior())
 		{
 			message(1, "initializing prior parameter covariance matrix from ensemble (using diagonal matrix)");
@@ -612,6 +628,20 @@ void IterEnsembleSmoother::initialize_oe(Covariance &cov)
 		{
 			ss << "unrecognized obs ensemble extension " << obs_ext << ", looing for csv, jcb, or jco";
 			throw_ies_error(ss.str());
+		}
+		if (pest_scenario.get_pestpp_options().get_ies_num_reals_passed())
+		{
+			int num_reals = pest_scenario.get_pestpp_options().get_ies_num_reals();
+			if (num_reals < oe.shape().first)
+			{
+				message(1,"ies_num_reals arg passed, truncated observation ensemble to ",num_reals);
+				vector<string> keep_names,real_names=oe.get_real_names();
+				for (int i=0;i<num_reals;i++)
+				{
+					keep_names.push_back(real_names[i]);
+				}
+				oe.keep_rows(keep_names);
+			}
 		}
 	}
 	
@@ -1025,6 +1055,22 @@ void IterEnsembleSmoother::initialize()
 			ss << "unrecognized restart obs ensemble extension " << obs_ext << ", looing for csv, jcb, or jco";
 			throw_ies_error(ss.str());
 		}
+
+		if (pest_scenario.get_pestpp_options().get_ies_num_reals_passed())
+		{
+			int num_reals = pest_scenario.get_pestpp_options().get_ies_num_reals();
+			if (num_reals < oe.shape().first)
+			{
+				message(1,"ies_num_reals arg passed, truncated restart obs ensemble to ",num_reals);
+				vector<string> keep_names,real_names=oe.get_real_names();
+				for (int i=0;i<num_reals;i++)
+				{
+					keep_names.push_back(real_names[i]);
+				}
+				oe.keep_rows(keep_names);
+			}
+		}
+
 		//check that restart oe is in sync
 		stringstream ss;
 		vector<string> oe_real_names = oe.get_real_names(),oe_base_real_names = oe_base.get_real_names();
