@@ -549,11 +549,31 @@ void IterEnsembleSmoother::add_bases()
 	}
 	else
 	{
-		if (inpar)
-			throw_ies_error("'base' realization in par ensemble (prob from restart) but not in obs ensemble - no worky");
-		message(1, "adding 'base' observation values to ensemble");
 		Observations obs = pest_scenario.get_ctl_observations();
-		oe.append("base", obs);
+		if (inpar)
+		{
+			vector<string> prnames = pe.get_real_names();
+
+			int idx = find(prnames.begin(), prnames.end(), "base") - prnames.begin();
+			cout << idx << "," << rnames.size() << endl;
+			string oreal = rnames[idx];
+			stringstream ss;
+			ss << "warning: 'base' realization in par ensenmble but not in obs ensemble," << endl;
+			ss << "         replacing realization'" << oreal << "' with 'base'";
+			message(1, ss.str());
+			vector<string> drop;
+			drop.push_back(oreal);
+			oe.drop_rows(drop);
+			oe.append("base", obs);
+			//rnames.insert(rnames.begin() + idx, string("base"));
+			rnames[idx] = "base";
+			oe.reorder(rnames, vector<string>());
+		}
+		else
+		{
+			message(1, "adding 'base' observation values to ensemble");
+			oe.append("base", obs);
+		}
 	}
 }
 
