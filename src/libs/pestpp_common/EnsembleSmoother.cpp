@@ -543,9 +543,11 @@ void IterEnsembleSmoother::add_bases()
 {
 	//check that 'base' isn't already in ensemble
 	vector<string> rnames = pe.get_real_names();
+	bool inpar = false;
 	if (find(rnames.begin(), rnames.end(), "base") != rnames.end())
 	{
 		message(1, "'base' realization already in parameter ensemble, ignoring '++ies_include_base'");
+		inpar = true;
 	}
 	else
 	{
@@ -563,10 +565,31 @@ void IterEnsembleSmoother::add_bases()
 	}
 	else
 	{
-			
-		message(1, "adding 'base' observation values to ensemble");
 		Observations obs = pest_scenario.get_ctl_observations();
-		oe.append("base", obs);
+		if (inpar)
+		{
+			vector<string> prnames = pe.get_real_names();
+
+			int idx = find(prnames.begin(), prnames.end(), "base") - prnames.begin();
+			cout << idx << "," << rnames.size() << endl;
+			string oreal = rnames[idx];
+			stringstream ss;
+			ss << "warning: 'base' realization in par ensenmble but not in obs ensemble," << endl;
+			ss << "         replacing realization'" << oreal << "' with 'base'";
+			message(1, ss.str());
+			vector<string> drop;
+			drop.push_back(oreal);
+			oe.drop_rows(drop);
+			oe.append("base", obs);
+			//rnames.insert(rnames.begin() + idx, string("base"));
+			rnames[idx] = "base";
+			oe.reorder(rnames, vector<string>());
+		}
+		else
+		{
+			message(1, "adding 'base' observation values to ensemble");
+			oe.append("base", obs);
+		}
 	}
 }
 
@@ -574,6 +597,7 @@ void IterEnsembleSmoother::initialize_oe(Covariance &cov)
 {
 	stringstream ss;
 	int num_reals = pe.shape().first;
+
 	performance_log->log_event("load obscov");
 	string obs_csv = pest_scenario.get_pestpp_options().get_ies_obs_csv();
 	if (obs_csv.size() == 0)
@@ -959,43 +983,7 @@ void IterEnsembleSmoother::initialize()
 	//obscov.inv_ip(echo);
 	obscov_inv_sqrt = obscov.inv().get_matrix().diagonal().cwiseSqrt().asDiagonal();
 	
-	if (!pest_scenario.get_pestpp_options().get_ies_use_approx()) 
-	{
-		message(0, "using full (MAP) update solution");
-		performance_log->log_event("calculating 'Am' matrix for full solution");
-		message(1, "forming Am matrix");
-		double scale = (1.0 / (sqrt(double(pe.shape().first - 1))));
-		Eigen::MatrixXd par_diff = scale * pe.get_eigen_mean_diff();
-		par_diff.transposeInPlace();
-		if (verbose_level > 1)
-		{
-			cout << "prior_par_diff: " << par_diff.rows() << ',' << par_diff.cols() << endl;
-			if (verbose_level > 2)
-				save_mat("prior_par_diff.dat", par_diff);
-		}
-		
-		Eigen::MatrixXd ivec, upgrade_1, s, V, U, st;
-		SVD_REDSVD rsvd;
-		rsvd.set_performance_log(performance_log);
-
-		rsvd.solve_ip(par_diff, s, U, V, pest_scenario.get_svd_info().eigthresh, pest_scenario.get_svd_info().maxsing);
-		par_diff.resize(0, 0);
-		Eigen::MatrixXd temp = s.asDiagonal();
-		Eigen::MatrixXd temp2 = temp.inverse();
-		Am = U * temp;
-		if (verbose_level > 1)
-		{
-			cout << "Am:" << Am.rows() << ',' << Am.cols() << endl;
-			if (verbose_level > 2)
-			{
-				save_mat("am.dat", Am);
-				save_mat("am_u.dat", U);
-				save_mat("am_v.dat", V);
-				save_mat("am_s_inv.dat", temp2);
-			}
-		}	
-	}
-
+	
 
 	string obs_restart_csv = pest_scenario.get_pestpp_options().get_ies_obs_restart_csv();	
 	//no restart
@@ -1143,6 +1131,8 @@ void IterEnsembleSmoother::initialize()
 		}
 	}
 
+
+
 	performance_log->log_event("calc initial phi");
 	//initialize the phi handler
 	ph = PhiHandler(&pest_scenario, &file_manager, &oe_base, &pe_base, &parcov, &reg_factor);
@@ -1183,6 +1173,43 @@ void IterEnsembleSmoother::initialize()
 	ph.report();
 	ph.write(0, run_mgr_ptr->get_total_runs());
 	
+	if (!pest_scenario.get_pestpp_options().get_ies_use_approx())
+	{
+		message(0, "using full (MAP) update solution");
+		performance_log->log_event("calculating 'Am' matrix for full solution");
+		message(1, "forming Am matrix");
+		double scale = (1.0 / (sqrt(double(pe.shape().first - 1))));
+		Eigen::MatrixXd par_diff = scale * pe.get_eigen_mean_diff();
+		par_diff.transposeInPlace();
+		if (verbose_level > 1)
+		{
+			cout << "prior_par_diff: " << par_diff.rows() << ',' << par_diff.cols() << endl;
+			if (verbose_level > 2)
+				save_mat("prior_par_diff.dat", par_diff);
+		}
+
+		Eigen::MatrixXd ivec, upgrade_1, s, V, U, st;
+		SVD_REDSVD rsvd;
+		rsvd.set_performance_log(performance_log);
+
+		rsvd.solve_ip(par_diff, s, U, V, pest_scenario.get_svd_info().eigthresh, pest_scenario.get_svd_info().maxsing);
+		par_diff.resize(0, 0);
+		Eigen::MatrixXd temp = s.asDiagonal();
+		Eigen::MatrixXd temp2 = temp.inverse();
+		Am = U * temp;
+		if (verbose_level > 1)
+		{
+			cout << "Am:" << Am.rows() << ',' << Am.cols() << endl;
+			if (verbose_level > 2)
+			{
+				save_mat("am.dat", Am);
+				save_mat("am_u.dat", U);
+				save_mat("am_v.dat", V);
+				save_mat("am_s_inv.dat", temp2);
+			}
+		}
+	}
+
 	last_best_mean = ph.get_mean(PhiHandler::phiType::COMPOSITE);
 	last_best_std = ph.get_std(PhiHandler::phiType::COMPOSITE);
 	last_best_lam = pest_scenario.get_pestpp_options().get_ies_init_lam();

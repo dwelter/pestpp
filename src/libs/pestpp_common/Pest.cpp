@@ -302,6 +302,10 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 		{
 			//skip blank line
 		}
+		else if (line[0] == '#')
+		{
+
+		}
 		else if (line_upper.substr(0,2) == "++")
 		{
 			pestpp_input.push_back(line);
