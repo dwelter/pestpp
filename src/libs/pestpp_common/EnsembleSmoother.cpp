@@ -441,19 +441,21 @@ void IterEnsembleSmoother::throw_ies_error(string message)
 	throw runtime_error("IterEnsembleSmoother error: " + message);
 }
 
-void IterEnsembleSmoother::initialize_pe(Covariance &cov)
+bool IterEnsembleSmoother::initialize_pe(Covariance &cov)
 {
 	stringstream ss;
 	int num_reals = pest_scenario.get_pestpp_options().get_ies_num_reals();
 	string par_csv = pest_scenario.get_pestpp_options().get_ies_par_csv();
+	bool drawn = false;
 	if (par_csv.size() == 0)
 	{
 		message(1, "drawing parameter realizations: ", num_reals);
 		pe.draw(num_reals, cov, performance_log, pest_scenario.get_pestpp_options().get_ies_verbose_level());
-		stringstream ss;
-		ss << file_manager.get_base_filename() << ".0.par.csv";
-		message(1, "saving initial parameter ensemble to ", ss.str());
-		pe.to_csv(ss.str());
+		// stringstream ss;
+		// ss << file_manager.get_base_filename() << ".0.par.csv";
+		// message(1, "saving initial parameter ensemble to ", ss.str());
+		// pe.to_csv(ss.str());
+		drawn = true;
 	}
 	else
 	{
@@ -536,6 +538,7 @@ void IterEnsembleSmoother::initialize_pe(Covariance &cov)
 		}
 		
 	}
+	return drawn;
 	
 }
 
@@ -594,21 +597,23 @@ void IterEnsembleSmoother::add_bases()
 	}
 }
 
-void IterEnsembleSmoother::initialize_oe(Covariance &cov)
+bool IterEnsembleSmoother::initialize_oe(Covariance &cov)
 {
 	stringstream ss;
 	int num_reals = pe.shape().first;
 
 	performance_log->log_event("load obscov");
 	string obs_csv = pest_scenario.get_pestpp_options().get_ies_obs_csv();
+	bool drawn = false;
 	if (obs_csv.size() == 0)
 	{
 		message(1, "drawing observation noise realizations: ", num_reals);
 		oe.draw(num_reals, cov, performance_log, pest_scenario.get_pestpp_options().get_ies_verbose_level());
-		stringstream ss;
-		ss << file_manager.get_base_filename() << ".base.obs.csv";
-		message(1, "saving initial observation ensemble to ", ss.str());
-		oe.to_csv(ss.str());
+		// stringstream ss;
+		// ss << file_manager.get_base_filename() << ".base.obs.csv";
+		// message(1, "saving initial observation ensemble to ", ss.str());
+		// oe.to_csv(ss.str());
+		drawn = true;
 	}
 	else
 	{
@@ -669,6 +674,7 @@ void IterEnsembleSmoother::initialize_oe(Covariance &cov)
 			}
 		}
 	}
+	return drawn;
 	
 }
 
@@ -871,7 +877,7 @@ void IterEnsembleSmoother::initialize()
 	if (parcov.e_ptr()->rows() > 0)
 		parcov = parcov.get(act_par_names);
 	
-	initialize_pe(parcov);
+	bool pe_drawn = initialize_pe(parcov);
 
 	if (pest_scenario.get_pestpp_options().get_ies_use_prior_scaling())
 	{
@@ -896,7 +902,7 @@ void IterEnsembleSmoother::initialize()
 	Covariance obscov;
 	obscov.from_observation_weights(pest_scenario);
 	obscov = obscov.get(act_obs_names);
-	initialize_oe(obscov);
+	bool oe_drawn = initialize_oe(obscov);
 
 	if (pe.shape().first != oe.shape().first)
 	{
@@ -967,8 +973,36 @@ void IterEnsembleSmoother::initialize()
 	if (pest_scenario.get_pestpp_options().get_ies_include_base())
 	{
 		add_bases();
+		// if ((pe_drawn) && (oe_drawn))
+		// {
+		// 	add_bases();
+		// }
+		// else if (!pe_drawn)
+		// {
+		// 	message(1,"parameter ensemble arg passed, not adding 'bases'");	
+		// }
+		// else
+		// {
+		// 	message(1,"observation ensemble arg passed, not adding 'bases");
+		// }
+	}
+
+	if (pe_drawn)
+	{
+		stringstream ss;
+		ss << file_manager.get_base_filename() << ".0.par.csv";
+		message(1, "saving initial parameter ensemble to ", ss.str());
+		pe.to_csv(ss.str());
 	}
 	
+	if (oe_drawn)
+	{
+		stringstream ss;
+		ss << file_manager.get_base_filename() << ".base.obs.csv";
+		message(1, "saving initial observation ensemble to ", ss.str());
+		oe.to_csv(ss.str());
+	}
+
 	oe_org_real_names = oe.get_real_names();
 	pe_org_real_names = pe.get_real_names();
 
