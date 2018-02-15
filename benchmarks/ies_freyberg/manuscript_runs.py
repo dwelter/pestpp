@@ -15,9 +15,9 @@ import flopy
 import pyemu
 
 nrow,ncol = 40,20
-#num_reals = [30, 50, 100]
-num_reals = [30]
-noptmax = 10
+num_reals = [30, 50, 100]
+#num_reals = [30]
+noptmax = 8
 pst = pyemu.Pst(os.path.join("template", "pest.pst"))
 pst.observation_data.loc[pst.nnz_obs_names,"weight"] = 0.5
 
@@ -60,7 +60,9 @@ def run():
         #                            num_slaves=10, master_dir=master_dir)
 
         pst.pestpp_options["ies_use_prior_scaling"] = "false"
+        pst.pestpp_options["ies_group_draws"] = "false"
         pst.pestpp_options["ies_initial_lambda"] = 1.0
+        pst.control_data.noptmax = noptmax
         master_dir = "master_{0}_nps".format(nr)
         if os.path.exists(master_dir):
             shutil.rmtree(master_dir)
@@ -241,7 +243,7 @@ def plot_histograms():
     #for f in forecast_names:
     #    print(df_mc.loc[keep_reals,f])
     #return
-    fig = plt.figure(figsize=(onehalf_fig,onehalf_fig))
+    fig = plt.figure(figsize=(full_fig,onehalf_fig))
     gs = gridspec.GridSpec(len(forecast_names),3)
     noptstr = ".{0}.".format(noptmax)
     lb = ["A)","B)","C)","D)","E)","F)"]
@@ -255,6 +257,7 @@ def plot_histograms():
                 continue
             if nr != num_real:
                 continue
+            print(master_dir,noptstr)
             ocsv_pt = [f for f in os.listdir(master_dir) if "obs" in f and noptstr in f][0]
 
             df_pt = pd.read_csv(os.path.join(master_dir,ocsv_pt))
@@ -384,7 +387,7 @@ def plot_hk_arrays(real=None):
     plt.close(fig)
 
 def plot_hk_arrays_figure():
-    fig = plt.figure(figsize=(full_fig,full_fig*1.25))
+    fig = plt.figure(figsize=(full_fig,full_fig))
     gs = gridspec.GridSpec(3, 3,bottom=0.135)
     master_dirs = [d for d in os.listdir('.') if "master_" in d and "pestpp" not in d and "mc" not in d]
     noptstr = ".{0}.".format(noptmax)
@@ -430,7 +433,7 @@ def plot_hk_arrays_figure():
                 ax.set_ylabel('')
             ax.set_xticklabels([])
             ax.set_xlabel('')
-            ax.set_title("{0}) prior, {1} reals, phi:{2}".format(abet[c],num_real,real_phi_pr),
+            ax.set_title("{0}) prior, {1} reals\nphi:{2:4G}".format(abet[c],num_real,real_phi_pr),
                          fontsize=fontsize)
             c +=1
 
@@ -442,7 +445,7 @@ def plot_hk_arrays_figure():
                 ax.set_ylabel('')
             ax.set_xticklabels([])
             ax.set_xlabel('')
-            ax.set_title("{0}) post, {1} reals, phi:{2}".format(abet[c], num_real,real_phi_pt),
+            ax.set_title("{0}) posterior, {1} reals\nphi:{2:4G}".format(abet[c], num_real, real_phi_pt),
                          fontsize=fontsize)
             c+= 1
 
@@ -453,13 +456,13 @@ def plot_hk_arrays_figure():
             if j != 0:
                 ax.set_yticklabels([])
                 ax.set_ylabel('')
-            ax.set_title("{0}) post, {1} reals, phi:{2}".format(abet[c], num_real, real_phi_pt),
+            ax.set_title("{0}) posterior, {1} reals\nphi:{2:4G}".format(abet[c], num_real, real_phi_pt),
                          fontsize=fontsize)
             c += 1
 
             #break
     #fig = plt.figure(figsize=(6.5, 6.5))
-    ax = plt.axes((0.1,0.06,0.8,0.02))
+    ax = plt.axes((0.25,0.06,0.5,0.02))
     cb = plt.colorbar(cb,cax=ax,orientation="horizontal")
     cb.set_label("K ($\\frac{m}{d}$)",labelpad=0.1)
     plt.tight_layout()
@@ -468,12 +471,12 @@ def plot_hk_arrays_figure():
 
 
 if __name__ == "__main__":
-    run()
+    #run()
     #run_pestpp()
     #run_mc()
     #plot_domain()
     #plot_phi()
     #plot_hk_arrays("base")
     #plot_hk_arrays()
-    #plot_histograms()
+    plot_histograms()
     plot_hk_arrays_figure()
