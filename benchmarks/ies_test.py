@@ -351,6 +351,7 @@ def tenpar_subset_test():
     pst.pestpp_options["ies_num_reals"] = 50
     pst.pestpp_options["ies_lambda_mults"] = "1.0"
     pst.pestpp_options["ies_subset_size"] = 15
+
     pst.write(os.path.join(template_d, "pest.pst"))
     pyemu.helpers.start_slaves(template_d, exe_path, "pest.pst", num_slaves=10,
                                slave_root=model_d, master_dir=test_d)
@@ -371,14 +372,16 @@ def test_freyberg_full_cov():
     shutil.copytree(template_d,test_d)
     pst = pyemu.Pst(os.path.join(test_d, "pest.pst"))
     pst.parameter_data.loc[:,"partrans"] = "log"
+    
     pst.control_data.noptmax = 0
     pst.pestpp_options = {}
-    num_reals = 1000
+    num_reals = 100
 
     #diagonal cov
     #pst.pestpp_options["parcov_filename"] = "prior.jcb"
     pst.pestpp_options["ies_num_reals"] = num_reals
     pst.pestpp_options["ies_include_base"] = "false"
+
     pst.write(os.path.join(test_d, "pest.pst"))
     #cov = pyemu.Cov.from_binary(os.path.join(test_d, "prior.jcb"))
     cov = pyemu.Cov.from_parameter_data(pst)
@@ -388,45 +391,39 @@ def test_freyberg_full_cov():
 
     # pyemu.helpers.start_slaves(template_d, exe_path, "pest.pst", num_slaves=10,
     #                            slave_root=model_d, master_dir=test_d)
-    pyemu.helpers.run(exe_path + " pest.pst", cwd=test_d)
-    print("loading df")
-    df = pd.read_csv(os.path.join(test_d, "pest.0.par.csv"), index_col=0).apply(np.log10)
-    df.columns = [c.lower() for c in df.columns]
-    pe = pe.apply(np.log10)
-    pe_corr = pe.corr()
-    df_corr = df.corr()
+    # pyemu.helpers.run(exe_path + " pest.pst", cwd=test_d)
+    # print("loading df")
+    # df = pd.read_csv(os.path.join(test_d, "pest.0.par.csv"), index_col=0).apply(np.log10)
+    # df.columns = [c.lower() for c in df.columns]
+    # pe = pe.apply(np.log10)
+    # pe_corr = pe.corr()
+    # df_corr = df.corr()
 
-    # for i, p1 in enumerate(pst.adj_par_names):
-    #     for p2 in pst.adj_par_names[i + 1:]:
-    #         c1 = pe_corr.loc[p1, p2]
-    #         c2 = df_corr.loc[p1, p2]
-    #         d = np.abs((c1 - c2)/c1)
-    #         if d > 0.1:
-    #             print(p1, p2, c1, c2)
+    # diff_tol = 0.05
 
-    diff_tol = 0.05
+    # for c in df.columns:
+    #     if c not in pe.columns:
+    #         continue
 
-    for c in df.columns:
-        if c not in pe.columns:
-            continue
+    #     m1, m2 = pe.loc[:, c].mean(), df.loc[:, c].mean()
+    #     s1, s2 = pe.loc[:, c].std(), df.loc[:, c].std()
+    #     mdiff = np.abs((m1 - m2))
+    #     sdiff = np.abs((s1 - s2))
+    #     print(c, mdiff, sdiff)
+    #     assert mdiff < diff_tol, "mean fail {0}:{1},{2},{3}".format(c, m1, m2, mdiff)
+    #     assert sdiff < diff_tol, "std fail {0}:{1},{2},{3}".format(c, s1, s2, sdiff)
 
-        m1, m2 = pe.loc[:, c].mean(), df.loc[:, c].mean()
-        s1, s2 = pe.loc[:, c].std(), df.loc[:, c].std()
-        mdiff = np.abs((m1 - m2))
-        sdiff = np.abs((s1 - s2))
-        print(c, mdiff, sdiff)
-        assert mdiff < diff_tol, "mean fail {0}:{1},{2},{3}".format(c, m1, m2, mdiff)
-        assert sdiff < diff_tol, "std fail {0}:{1},{2},{3}".format(c, s1, s2, sdiff)
-
-    # look for bias
-    diff = df - pe
-    assert diff.mean().mean() < 0.01
+    # # look for bias
+    # diff = df - pe
+    # assert diff.mean().mean() < 0.01
 
 
     #full cov
     pst.pestpp_options["parcov_filename"] = "prior.jcb"
     pst.pestpp_options["ies_num_reals"] = num_reals
     pst.pestpp_options["ies_include_base"] = "false"
+    pst.pestpp_options["ies_group_draws"] = 'true'
+    pst.parameter_data.loc[pst.par_names[0],"pargp"] = "test"
     pst.write(os.path.join(test_d,"pest.pst"))
     cov = pyemu.Cov.from_binary(os.path.join(test_d,"prior.jcb"))
 
@@ -458,7 +455,7 @@ def test_freyberg_full_cov():
         s1,s2 =  pe.loc[:,c].std(), df.loc[:,c].std()
         mdiff = np.abs((m1 - m2))
         sdiff = np.abs((s1 - s2))
-        print(c,mdiff,sdiff)
+        #print(c,mdiff,sdiff)
         assert mdiff < diff_tol,"mean fail {0}:{1},{2},{3}".format(c,m1,m2,mdiff)
         assert sdiff < diff_tol,"std fail {0}:{1},{2},{3}".format(c,s1,s2,sdiff)
 
@@ -718,15 +715,15 @@ if __name__ == "__main__":
     #rebase("ies_10par_xsec")
     # tenpar_subset_test()
     # tenpar_full_cov_test()
-    # test_freyberg_full_cov()
+    test_freyberg_full_cov()
     # test_synth()
     # test_10par_xsec()
     # test_freyberg()
     # test_chenoliver()
     # compare_pyemu()
     # # invest()
-    compare_suite("ies_10par_xsec")
-    compare_suite("ies_freyberg")
+    #compare_suite("ies_10par_xsec")
+    #compare_suite("ies_freyberg")
     # tenpar_subset_test()
     # tenpar_full_cov_test()
     #test_freyberg_ineq()
