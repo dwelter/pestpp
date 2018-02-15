@@ -911,6 +911,38 @@ void IterEnsembleSmoother::initialize()
 		throw_ies_error(ss.str());
 	}
 
+	//need this here for Am calcs...
+	message(0, "transforming parameter ensembles to numeric");
+	pe.transform_ip(ParameterEnsemble::transStatus::NUM);
+
+	if (pest_scenario.get_pestpp_options().get_ies_include_base())
+		add_bases();
+
+	/*if (pe_drawn)
+	{
+		stringstream ss;
+		ss << file_manager.get_base_filename() << ".0.par.csv";
+		message(1, "saving initial parameter ensemble to ", ss.str());
+		pe.to_csv(ss.str());
+	}
+
+	if (oe_drawn)
+	{
+		stringstream ss;
+		ss << file_manager.get_base_filename() << ".base.obs.csv";
+		message(1, "saving initial observation ensemble to ", ss.str());
+		oe.to_csv(ss.str());
+	}*/
+
+	ss.str("");
+	ss << file_manager.get_base_filename() << ".0.par.csv";
+	message(1, "saving initial parameter ensemble to ", ss.str());
+	pe.to_csv(ss.str());
+	ss.str("");
+	ss << file_manager.get_base_filename() << ".base.obs.csv";
+	message(1, "saving initial observation ensemble to ", ss.str());
+	oe.to_csv(ss.str());
+	
 	if (pest_scenario.get_control_info().noptmax == 0)
 	{
 		message(0, "'noptmax'=0, running mean parameter ensemble values and quitting");
@@ -966,42 +998,7 @@ void IterEnsembleSmoother::initialize()
 		use_subset = true;
 	}
 	
-	//need this here for Am calcs...
-	message(0, "transforming parameter ensembles to numeric");
-	pe.transform_ip(ParameterEnsemble::transStatus::NUM);
 	
-	if (pest_scenario.get_pestpp_options().get_ies_include_base())
-	{
-		add_bases();
-		// if ((pe_drawn) && (oe_drawn))
-		// {
-		// 	add_bases();
-		// }
-		// else if (!pe_drawn)
-		// {
-		// 	message(1,"parameter ensemble arg passed, not adding 'bases'");	
-		// }
-		// else
-		// {
-		// 	message(1,"observation ensemble arg passed, not adding 'bases");
-		// }
-	}
-
-	if (pe_drawn)
-	{
-		stringstream ss;
-		ss << file_manager.get_base_filename() << ".0.par.csv";
-		message(1, "saving initial parameter ensemble to ", ss.str());
-		pe.to_csv(ss.str());
-	}
-	
-	if (oe_drawn)
-	{
-		stringstream ss;
-		ss << file_manager.get_base_filename() << ".base.obs.csv";
-		message(1, "saving initial observation ensemble to ", ss.str());
-		oe.to_csv(ss.str());
-	}
 
 	oe_org_real_names = oe.get_real_names();
 	pe_org_real_names = pe.get_real_names();

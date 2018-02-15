@@ -375,7 +375,7 @@ def test_freyberg_full_cov():
     
     pst.control_data.noptmax = 0
     pst.pestpp_options = {}
-    num_reals = 100
+    num_reals = 1000
 
     #diagonal cov
     #pst.pestpp_options["parcov_filename"] = "prior.jcb"
@@ -443,7 +443,7 @@ def test_freyberg_full_cov():
         for p2 in pst.adj_par_names[i+1:]:
             c1 = pe_corr.loc[p1,p2]
             c2 = df_corr.loc[p1,p2]
-            print(p1,p2,c1,c2)
+            #print(p1,p2,c1,c2)
 
     diff_tol = 0.05
 
@@ -713,14 +713,14 @@ if __name__ == "__main__":
     #run_suite("ies_10par_xsec")
     #rebase("ies_freyberg")
     #rebase("ies_10par_xsec")
-    # tenpar_subset_test()
-    # tenpar_full_cov_test()
+    tenpar_subset_test()
+    tenpar_full_cov_test()
     test_freyberg_full_cov()
-    # test_synth()
-    # test_10par_xsec()
-    # test_freyberg()
-    # test_chenoliver()
-    # compare_pyemu()
+    test_synth()
+    test_10par_xsec()
+    test_freyberg()
+    test_chenoliver()
+    compare_pyemu()
     # # invest()
     #compare_suite("ies_10par_xsec")
     #compare_suite("ies_freyberg")
