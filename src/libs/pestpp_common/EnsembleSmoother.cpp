@@ -856,13 +856,13 @@ void IterEnsembleSmoother::initialize()
 		//if a par ensemble arg wasn't passed, use par bounds, otherwise, construct diagonal parcov from par ensemble later
 		if (!pest_scenario.get_pestpp_options().get_ies_use_empirical_prior())
 		{
-			message(0, "initializing prior parameter covariance matrix from parameter bounds");
+			message(1, "initializing prior parameter covariance matrix from parameter bounds");
 			parcov.from_parameter_bounds(pest_scenario);
 		}
 	}
 	else
 	{
-		message(0, "initializing prior parameter covariance matrix from file", parcov_filename);
+		message(1, "initializing prior parameter covariance matrix from file", parcov_filename);
 		string extension = parcov_filename.substr(parcov_filename.size() - 3, 3);
 		pest_utils::upper_ip(extension);
 		if (extension.compare("COV") == 0)
@@ -912,7 +912,7 @@ void IterEnsembleSmoother::initialize()
 	}
 
 	//need this here for Am calcs...
-	message(0, "transforming parameter ensembles to numeric");
+	message(1, "transforming parameter ensembles to numeric");
 	pe.transform_ip(ParameterEnsemble::transStatus::NUM);
 
 	if (pest_scenario.get_pestpp_options().get_ies_include_base())
@@ -1011,7 +1011,7 @@ void IterEnsembleSmoother::initialize()
 	//reorder this for later
 	pe_base.reorder(vector<string>(), act_par_names);
 	
-	message(0, "forming inverse sqrt obscov");
+	message(1, "forming inverse sqrt obscov");
 	//obscov.inv_ip(echo);
 	obscov_inv_sqrt = obscov.inv().get_matrix().diagonal().cwiseSqrt().asDiagonal();
 	
@@ -1022,7 +1022,7 @@ void IterEnsembleSmoother::initialize()
 	if (obs_restart_csv.size() == 0)
 	{
 		performance_log->log_event("running initial ensemble");
-		message(0, "running initial ensemble of size", oe.shape().first);
+		message(1, "running initial ensemble of size", oe.shape().first);
 		vector<int> failed = run_ensemble(pe, oe);
 		if (pe.shape().first == 0)
 			throw_ies_error("all realizations failed during initial evaluation");
@@ -1034,7 +1034,7 @@ void IterEnsembleSmoother::initialize()
 	else
 	{
 		performance_log->log_event("restart IES with existing obs ensemble csv: " + obs_restart_csv);
-		message(0, "restarting with existing obs ensemble", obs_restart_csv);
+		message(1, "restarting with existing obs ensemble", obs_restart_csv);
 		string obs_ext = pest_utils::lower_cp(obs_restart_csv).substr(obs_restart_csv.size() - 3, obs_restart_csv.size());
 		if (obs_ext.compare("csv") == 0)
 		{
@@ -1114,7 +1114,7 @@ void IterEnsembleSmoother::initialize()
 		if (oe.shape().first < oe_base.shape().first) //maybe some runs failed...
 		{		
 			//find which realizations are missing and reorder oe_base, pe and pe_base
-			message(0, "shape mismatch detected with restart obs ensemble...checking for compatibility");
+			message(1, "shape mismatch detected with restart obs ensemble...checking for compatibility");
 			vector<string> pe_real_names;
 			start = oe_base_real_names.begin();
 			end = oe_base_real_names.end();	
@@ -1207,7 +1207,7 @@ void IterEnsembleSmoother::initialize()
 	
 	if (!pest_scenario.get_pestpp_options().get_ies_use_approx())
 	{
-		message(0, "using full (MAP) update solution");
+		message(1, "using full (MAP) update solution");
 		performance_log->log_event("calculating 'Am' matrix for full solution");
 		message(1, "forming Am matrix");
 		double scale = (1.0 / (sqrt(double(pe.shape().first - 1))));
@@ -1251,7 +1251,7 @@ void IterEnsembleSmoother::initialize()
 		last_best_lam = pow(10.0,(floor(log10(x))));
 	}
 	
-	message(0, "current lambda:", last_best_lam);
+	message(1, "current lambda:", last_best_lam);
 	message(0, "initialization complete");
 }
 
