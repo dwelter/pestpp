@@ -578,7 +578,7 @@ void IterEnsembleSmoother::add_bases()
 			string oreal = rnames[idx];
 			stringstream ss;
 			ss << "warning: 'base' realization in par ensenmble but not in obs ensemble," << endl;
-			ss << "         replacing realization'" << oreal << "' with 'base'";
+			ss << "         replacing obs realization '" << oreal << "' with 'base'";
 			string mess = ss.str();
 			message(1, mess);
 			vector<string> drop;
