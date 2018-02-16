@@ -1692,8 +1692,7 @@ void IterEnsembleSmoother::solve()
 		last_best_mean = best_mean;
 
 		pe = pe_lams[best_idx];
-		oe = oe_lam_best;
-		
+		oe = oe_lam_best;		
 		if (best_std < last_best_std * 1.1)
 		{
 			double new_lam = lam_vals[best_idx] * 0.75;
@@ -1733,6 +1732,7 @@ void IterEnsembleSmoother::report_and_save()
 
 	stringstream ss;
 	ss << file_manager.get_base_filename() << "." << iter << ".obs.csv";
+	
 	oe.to_csv(ss.str());
 	frec << "      current obs ensemble saved to " << ss.str() << endl;
 	cout << "      current obs ensemble saved to " << ss.str() << endl;
@@ -1851,7 +1851,6 @@ vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<Pa
 			}
 			
 		}
-
 		obs_lams.push_back(_oe);
 	}
 	return obs_lams;

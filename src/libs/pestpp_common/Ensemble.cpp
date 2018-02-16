@@ -787,6 +787,7 @@ void Ensemble::read_csv(int num_reals,ifstream &csv, map<string,int> header_info
 
 	real_names.clear();
 	reals.resize(num_reals, var_names.size());
+	reals.setZero();
 	int irow = 0;
 	while (getline(csv, line))
 	{
@@ -1087,7 +1088,8 @@ void ObservationEnsemble::update_from_obs(int row_idx, Observations &obs)
 	if (row_idx >= real_names.size())
 		throw_ensemble_error("ObservtionEnsemble.update_from_obs() obs_idx out of range");
 	//Eigen::VectorXd temp = obs.get_data_eigen_vec(var_names);
-	//cout << reals.row(row_idx) << endl << endl;
+	//cout << reals.row(row_idx) << endl << endl;	
+	//cout << temp << endl;
 	reals.row(row_idx) = obs.get_data_eigen_vec(var_names);
 	//cout << reals.row(row_idx) << endl;
 	return;
