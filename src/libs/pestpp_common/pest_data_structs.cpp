@@ -754,6 +754,12 @@ void PestppOptions::parce_line(const string &line)
 			istringstream is(value);
 			is >> boolalpha >> ies_group_draws;
 		}
+		else if (key == "IES_ENFORCE_BOUNDS")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> ies_enforce_bounds;
+		}
 		else {
 
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");

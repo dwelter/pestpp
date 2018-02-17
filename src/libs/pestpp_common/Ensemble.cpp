@@ -870,7 +870,9 @@ void ParameterEnsemble::draw(int num_reals, Covariance &cov, PerformanceLog *plo
 	}
 	
 	Ensemble::draw(num_reals, cov, par, var_names, grouper, plog, level);
-	enforce_bounds();
+	if (pest_scenario_ptr->get_pestpp_options().get_ies_enforce_bounds())
+		enforce_bounds();
+
 	
 }
 

@@ -1565,7 +1565,8 @@ void IterEnsembleSmoother::solve()
 			pe_lam.set_eigen(*pe_lam.get_eigen_ptr() + upgrade_2.transpose());
 		}
 
-		pe_lam.enforce_bounds();
+		if (pest_scenario.get_pestpp_options().get_ies_enforce_bounds())
+			pe_lam.enforce_bounds();
 
 		pe_lams.push_back(pe_lam);
 		lam_vals.push_back(cur_lam);
