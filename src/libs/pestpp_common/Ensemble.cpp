@@ -84,27 +84,29 @@ void Ensemble::draw(int num_reals, Covariance &cov, Transformable &tran, const v
 			{
 				ss.str("");
 				ss << "...processing " << gi.first << " with " << gi.second.size() << " elements" << endl;
-				//cout << ss.str();
+				cout << ss.str();
 				plog->log_event(ss.str());
 				gcov = cov.get(gi.second);
 				if (level > 2)
 				{
 					gcov.to_ascii(gi.first + "_cov.dat");
 				}
-				ss.str("");
-				ss << "Randomized Eigen decomposition of full cov for " << gi.second.size() << " element matrix" << endl;
-				//cout << ss.str();
-				plog->log_event(ss.str());
-				eig.compute(*gcov.e_ptr(), gi.second.size());
-				proj = (eig.eigenvectors() * eig.eigenvalues().cwiseSqrt().asDiagonal());
 				idx.clear();
 				for (auto n : gi.second)
 					idx.push_back(idx_map[n]);
 				if (idx.size() != idx[idx.size() - 1] - idx[0] + 1)
 					throw_ensemble_error("Ensemble:: draw() error in full cov group draw: idx out of order");
+				
 				//cout << var_names[idx[0]] << "," << var_names[idx.size() - idx[0]] << endl;
 				//cout << idx[0] << ',' << idx[idx.size()-1] << ',' <<  idx.size() << " , " << idx[idx.size()-1] - idx[0] <<  endl;
-				Eigen::MatrixXd block = draws.block(0, idx[0], num_reals - 1,idx.size());
+				
+				Eigen::MatrixXd block = draws.block(0, idx[0], num_reals - 1, idx.size());
+				ss.str("");
+				ss << "Randomized Eigen decomposition of full cov for " << gi.second.size() << " element matrix" << endl;
+				plog->log_event(ss.str());
+				eig.compute(*gcov.e_ptr(), gi.second.size());
+				proj = (eig.eigenvectors() * eig.eigenvalues().cwiseSqrt().asDiagonal());
+				
 				//cout << "block " << block.rows() << " , " << block.cols() << endl;
 				//cout << " proj " << proj.rows() << " , " << proj.cols() << endl;
 				plog->log_event("projecting group block");
@@ -851,8 +853,9 @@ void ParameterEnsemble::draw(int num_reals, Covariance &cov, PerformanceLog *plo
 	tstat = transStatus::NUM;
 	ParameterGroupInfo pgi = pest_scenario_ptr->get_base_group_info();
 	vector<string> group_names = pgi.get_group_names();
-	vector<string> vars_in_group;
+	vector<string> vars_in_group,sorted_var_names;
 	map<string, vector<string>> grouper;
+	sorted_var_names.reserve(var_names.size());
 	if (pest_scenario_ptr->get_pestpp_options().get_ies_group_draws())
 	{
 		for (auto &group : group_names)
@@ -865,10 +868,28 @@ void ParameterEnsemble::draw(int num_reals, Covariance &cov, PerformanceLog *plo
 			}
 			if (vars_in_group.size() == 0)
 				continue;
+			sort(vars_in_group.begin(), vars_in_group.end());
+			sorted_var_names.insert(sorted_var_names.end(), vars_in_group.begin(), vars_in_group.end());
+
 			grouper[group] = vars_in_group;
 		}
 	}
-	
+	//check
+	if (var_names.size() != sorted_var_names.size())
+		throw_ensemble_error("sorted par names not equal to org par names");
+	bool same = true;
+	for (int i=0;i<var_names.size();i++)
+		if (var_names[i] != sorted_var_names[i])
+		{
+			same = false;
+			break;
+		}
+	if (!same)
+	{
+		plog->log_event("parameters not grouped by parameter groups, reordering par ensemble");
+		var_names = sorted_var_names;
+	}
+
 	Ensemble::draw(num_reals, cov, par, var_names, grouper, plog, level);
 	if (pest_scenario_ptr->get_pestpp_options().get_ies_enforce_bounds())
 		enforce_bounds();

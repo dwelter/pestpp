@@ -46,7 +46,7 @@ def run_pestpp():
                                num_slaves=10, master_dir="master_pestpp")
 
 def run():
-    for nr in num_reals:
+    for nr in [num_reals[0]]:
         pst.pestpp_options["ies_num_reals"] = nr
         # pst.pestpp_options["ies_use_prior_scaling"] = "true"
         # pst.pestpp_options["ies_initial_lambda"] = 1000000.0
@@ -471,12 +471,12 @@ def plot_hk_arrays_figure():
 
 
 if __name__ == "__main__":
-    #run()
+    run()
     #run_pestpp()
     #run_mc()
     #plot_domain()
     #plot_phi()
     #plot_hk_arrays("base")
     #plot_hk_arrays()
-    plot_histograms()
-    plot_hk_arrays_figure()
+    #plot_histograms()
+    #plot_hk_arrays_figure()
