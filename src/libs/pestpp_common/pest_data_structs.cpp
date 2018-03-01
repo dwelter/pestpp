@@ -668,7 +668,7 @@ void PestppOptions::parce_line(const string &line)
 			convert_ip(value, opt_recalc_fosm_every);
 		}
 		else if ((key == "IES_PAR_CSV") || (key == "IES_PARAMETER_CSV")||
-			(key == "IES_PAR_en") || (key == "IES_PARAMETER_ENSEMBLE"))
+			(key == "IES_PAR_EN") || (key == "IES_PARAMETER_ENSEMBLE"))
 		{
 			convert_ip(value, ies_par_csv);
 		}
@@ -730,6 +730,7 @@ void PestppOptions::parce_line(const string &line)
 		else if (key == "IES_NUM_REALS")
 		{
 			convert_ip(value, ies_num_reals);
+			ies_num_reals_passed = true;
 		}
 		else if (key == "IES_BAD_PHI")
 		{
@@ -746,6 +747,18 @@ void PestppOptions::parce_line(const string &line)
 			transform(value.begin(), value.end(), value.begin(), ::tolower);
 			istringstream is(value);
 			is >> boolalpha >> ies_use_empirical_prior;
+		}
+		else if (key == "IES_GROUP_DRAWS")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> ies_group_draws;
+		}
+		else if (key == "IES_ENFORCE_BOUNDS")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> ies_enforce_bounds;
 		}
 		else {
 
@@ -810,6 +823,15 @@ const ObservationGroupRec* ObservationInfo::get_group_rec_ptr(const string &name
 	return ret_val;
 }
 
+vector<string> ObservationInfo::get_groups()
+{
+	vector<string> ogroups;
+	for (auto &g : groups)
+	{
+		ogroups.push_back(g.first);
+	}
+	return ogroups;
+}
 
 bool ObservationRec::is_regularization() const
 {

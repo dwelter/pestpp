@@ -5,7 +5,9 @@ include $(top_builddir)/global.mak
 SUBDIRS := \
     gsa \
     pest++ \
-    pestpp-pso
+    pestpp-pso \
+    pestpp-ies \
+    pestpp-opt \
 
 # Does not seem to compile
 # SUBDIRS += pestpp-ies

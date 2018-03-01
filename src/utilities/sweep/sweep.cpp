@@ -101,19 +101,19 @@ map<string,int> prepare_parameter_csv(Parameters pars, ifstream &csv, bool forgi
 	return header_info;
 }
 
-pair<vector<int>,vector<Parameters>> load_parameters_from_csv(map<string,int> &header_info, ifstream &csv, int chunk)
+pair<vector<string>,vector<Parameters>> load_parameters_from_csv(map<string,int> &header_info, ifstream &csv, int chunk)
 {
 	//process each parameter value line in the csv file
 	int lcount = 1;
 	//map<int,Parameters> sweep_pars;
-	vector<int> run_ids;
+	vector<string> run_ids;
 	vector<Parameters> sweep_pars;
 	double val;
 	string line;
 	vector<string> tokens,names;
 	vector<double> vals;
 	Parameters pars;
-	int run_id;
+	string run_id;
 	while (getline(csv, line))
 	{
 		strip_ip(line);
@@ -169,7 +169,7 @@ pair<vector<int>,vector<Parameters>> load_parameters_from_csv(map<string,int> &h
 			break;
 	}
 	//csv.close();
-	return pair<vector<int>,vector<Parameters>> (run_ids,sweep_pars);
+	return pair<vector<string>,vector<Parameters>> (run_ids,sweep_pars);
 }
 
 
@@ -197,12 +197,13 @@ ofstream prep_sweep_output_file(Pest &pest_scenario)
 }
 
 
-void process_sweep_runs(ofstream &csv, Pest &pest_scenario, RunManagerAbstract* run_manager_ptr, vector<int> run_ids, vector<int> listed_run_ids, ObjectiveFunc obj_func,int total_runs_done)
+void process_sweep_runs(ofstream &csv, Pest &pest_scenario, RunManagerAbstract* run_manager_ptr, vector<int> run_ids, vector<string> listed_run_ids, ObjectiveFunc obj_func,int total_runs_done)
 {
 	Parameters pars;
 	Observations obs;
 	double fail_val = -1.0E+10;
-	int run_id, listed_run_id;
+	int run_id;
+	string listed_run_id;
 	//for (auto &run_id : run_ids)
 	for (int i = 0;i <run_ids.size();++i)
 	{
@@ -546,6 +547,7 @@ int main(int argc, char* argv[])
 		
 		Eigen::MatrixXd jco_mat;
 		bool use_jco = false;
+		vector<string> jco_col_names;
 		if ((par_ext.compare("jcb") == 0) || (par_ext.compare("jco") == 0))
 		{
 			cout << "  ---  binary jco-type file detected for par_csv" << endl;
@@ -555,6 +557,7 @@ int main(int argc, char* argv[])
 			cout << jco.get_matrix_ptr()->rows() << " runs found in binary jco-type file" << endl;		
 			//check that the jco is compatible with the control file
 			vector<string> names = jco.get_base_numeric_par_names();
+			jco_col_names = jco.get_sim_obs_names();
 			set<string> jset(names.begin(), names.end());
 			set<string> pset(pest_scenario.get_ctl_ordered_par_names().begin(), pest_scenario.get_ctl_ordered_par_names().end());
 			vector<string> missing;
@@ -584,7 +587,7 @@ int main(int argc, char* argv[])
 
 		int chunk = pest_scenario.get_pestpp_options().get_sweep_chunk();
 		vector<int> run_ids;
-		pair<vector<int>,vector<Parameters>> sweep_par_info;
+		pair<vector<string>,vector<Parameters>> sweep_par_info;
 		
 		//if desired, add the base run to the list of runs
 		if (pest_scenario.get_pestpp_options().get_sweep_base_run())
@@ -604,17 +607,18 @@ int main(int argc, char* argv[])
 				vector<string> par_names = pest_scenario.get_ctl_ordered_par_names();
 				Parameters par;
 				vector<Parameters> pars;
-				vector<int> run_ids;
+				vector<string> run_ids;
 				for (int i = 0; i < chunk; i++)
 				{
 					if (total_runs_done + i >= jco_mat.rows())
 						break;
 					par.update_without_clear(par_names, jco_mat.row(total_runs_done + i));
 					pars.push_back(par);
-					run_ids.push_back(total_runs_done + i);
+					//run_ids.push_back(total_runs_done + i);
+					run_ids.push_back(jco_col_names[total_runs_done + 1]);
 
 				}
-				sweep_par_info = pair<vector<int>, vector<Parameters>>(run_ids, pars);
+				sweep_par_info = pair<vector<string>, vector<Parameters>>(run_ids, pars);
 
 			}
 			else

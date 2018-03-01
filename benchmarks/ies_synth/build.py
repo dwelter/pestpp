@@ -11,7 +11,7 @@ num_reals = 30
 # nlay, nrow, ncol = 116, 78, 59
 
 def setup():
-    run_fieldgen()
+    #run_fieldgen()
 
     nper = 1
     perlen = 100.0
@@ -70,6 +70,7 @@ def setup():
     # print(hk.min(), hk.max(), hk.mean(), hk.std())
     # hk = np.loadtxt("hk.dat")
     # vka = hk / 10.0
+    print(os.listdir('.'))
     hk = [np.loadtxt(os.path.join("truth_reals",f)) for f in os.listdir("truth_reals") if "real_" in f]
     vka = 10.**(np.random.normal(-1,0.25,(nlay,nrow,ncol)))
 
@@ -257,8 +258,8 @@ if __name__ == "__main__":
 
     # process_training_image()
     #run_fieldgen()
-    #setup()
+    setup()
     #run_sweep()
     #test()
-    #prep()
-    pyemu.helpers.start_slaves("template", "sweep", "pest.pst", num_slaves=6, master_dir=None)
+    prep()
+    #pyemu.helpers.start_slaves("template", "sweep", "pest.pst", num_slaves=6, master_dir=None)

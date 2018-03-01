@@ -123,8 +123,8 @@ private:
 	//map<string,PhiComponets> get_phi_info(ObservationEnsemble &_oe);
 	void report_and_save();
 	void save_mat(string prefix, Eigen::MatrixXd &mat);
-	void initialize_pe(Covariance &cov);
-	void initialize_oe(Covariance &cov);
+	bool initialize_pe(Covariance &cov);
+	bool initialize_oe(Covariance &cov);
 	void drop_bad_phi(ParameterEnsemble &_pe, ObservationEnsemble &_oe);
 	//void check_ensembles(ObservationEnsemble &oe, ParameterEnsemble &pe);
 	template<typename T, typename A>

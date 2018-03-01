@@ -9,9 +9,24 @@
 # These can be kept in local.mak
 -include $(top_builddir)/local.mak
 
-# Defaults (if unset, or missing local.mak)
+#$(info $$OS is $(OS))
+
+ifeq ($(OS),Windows_NT)
+SYSTEM ?= win
+else
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S), Linux)
 SYSTEM ?= linux
-COMPILER ?= gcc
+endif
+ifeq ($(UNAME_S), Darwin)
+SYSTEM ?= mac
+endif
+endif
+#endif
+
+# Defaults (if unset, or missing local.mak)
+#SYSTEM ?= mac
+COMPILER ?= intel
 
 ifeq ($(SYSTEM),mac)
 # macOS
@@ -57,8 +72,12 @@ OPT_FLAGS	= -O2
 CXXFLAGS	= $(OPT_FLAGS) -std=c++11
 FFLAGS	= $(OPT_FLAGS) -fpp
 FFREE	= -free
+ifeq ($(SYSTEM),mac)
+MKLROOT = /opt/intel/compilers_and_libraries_2018.1.126/mac/mkl
+endif
 endif
 FC	= ifort
+
 ifeq ($(SYSTEM),win)
 EXT_INCLUDES = -I"$(MKLROOT)"\include
 EXT_LIBS = \
@@ -79,14 +98,15 @@ EXT_LIBS = \
     -Wl,--end-group \
     -lifport -lifcore -lpthread -lm -ldl
 else ifeq ($(SYSTEM),mac)
+EXTRADIR = /opt/intel/compilers_and_libraries_2018.1.126/mac/compiler/lib
 EXT_INCLUDES = -I${MKLROOT}/include/intel64/lp64 -I${MKLROOT}/include
 EXT_LIBS = \
-    ${MKLROOT}/lib/libifcore.a \
     ${MKLROOT}/lib/libmkl_lapack95_ilp64.a \
     ${MKLROOT}/lib/libmkl_blas95_ilp64.a \
     ${MKLROOT}/lib/libmkl_intel_ilp64.a \
     ${MKLROOT}/lib/libmkl_sequential.a \
-    ${MKLROOT}/lib/libmkl_core.a
+    ${MKLROOT}/lib/libmkl_core.a \
+    ${EXTRADIR}/libifcore.a
 endif
 else ifeq ($(COMPILER),gcc)
 # GNU Compiler Collection
@@ -120,6 +140,7 @@ PESTPP_INCLUDES := \
     -I $(LIBS_DIR)/run_managers/external \
     -I $(LIBS_DIR)/run_managers/wrappers \
     -I $(LIBS_DIR)/pestpp_common \
+    -I $(LIBS_DIR)/opt \
     -I $(LIBS_DIR)/linear_analysis $(EXT_INCLUDES)
 
 # Be careful with the order of library dependencies
@@ -136,6 +157,7 @@ PESTPP_LIBS := \
     -L$(LIBS_DIR)/propack -lpropack \
     -L$(LIBS_DIR)/linear_analysis -llinear_analysis \
     -L$(LIBS_DIR)/pest_routines -lpest_routines \
+    -L$(LIBS_DIR)/opt -lopt \
      $(EXT_LIBS)
 
 

@@ -1,0 +1,19 @@
+
+                                  MODFLOW-NWT-SWR1 
+    U.S. GEOLOGICAL SURVEY MODULAR FINITE-DIFFERENCE GROUNDWATER-FLOW MODEL
+                             WITH NEWTON FORMULATION
+                             Version 1.1.1, 7/21/2016                        
+                    BASED ON MODFLOW-2005 Version 1.11.0 08/08/2013                       
+
+                    SWR1 Version 1.04.0 07/21/2016                       
+
+ Using NAME file: freyberg.nam 
+ Run start date and time (yyyy/mm/dd hh:mm:ss): 2018/02/04 13:11:46
+
+ Solving:  Stress period:     1    Time step:     1    Groundwater-Flow Eqn.
+ Solving:  Stress period:     2    Time step:     1    Groundwater-Flow Eqn.
+ Solving:  Stress period:     3    Time step:     1    Groundwater-Flow Eqn.
+ Run end date and time (yyyy/mm/dd hh:mm:ss): 2018/02/04 13:11:46
+ Elapsed run time:  0.027 Seconds
+
+  Normal termination of simulation

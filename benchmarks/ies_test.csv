@@ -7,14 +7,14 @@
 2),par.csv,,,,,,,,,,,,,0,2) ies_10par_xsec start with existing par csv and drawing obs en from weights 
 3),par.csv,,restart.csv,,,,,,,,,,,0,3) ies_10par_xsec restart with full simulated obs en
 3a),par.csv,,restart_failed.csv,,,,,,,,,,,0,3a) ies_10par_xsec restart with failed runs in simulated obs en
-3b),par.csv,,restart_failed.csv,100,,,,,,"0.1,1.0,10.0",,10,,0,3b) ies_10par_xsec restart with failed runs and bad phi runs in simulated obs en with multiple lam
-3b),par_some.csv,,restart_some.csv,100,,,,,,"0.1,1.0,10.0",,10,,0,3b) ies_10par_xsec restart with partial par and restart en and bad phi runs in simulated obs en with multiple lam
+3b),par.csv,,restart_failed.csv,1000,,,,,,"0.1,1.0,10.0",,"""10""",,0,3b) ies_10par_xsec restart with failed runs and bad phi runs in simulated obs en with multiple lam
+3b),par_some.csv,,restart_some.csv,1000,,,,,,"0.1,1.0,10.0",,"""10""",,0,3b) ies_10par_xsec restart with partial par and restart en and bad phi runs in simulated obs en with multiple lam
 4),,,,,,,,,0.5,,,,,0,4) ies_10par_xsec reg_factor = 0.5 test
 5),,,,,,,"""false""",,,,,,,0,5)  ies_10par_xsec full solution test with standard draw mode
 5a),,,,,,,"""false""","""true""",,,,,,0,5a) ies_10par_xsec full solution test with empirical parcov
-6),,,,,,,,,,,,,,0,"6) ies_freyberg ""standard user mode"" - draw reals from par-bounds prior and obs noise from weights"
-6a),,,,,,,,,,"0.1,1.0,10.0",,10,,0,6a) ies_freyberg same as 6) but with multple lambda 
-7),,,,,prior.cov,,,,,"0.1,1.0,10.0",,10,,0,7) ies_freyberg draw par en from full parcov supplied in file
-8),par.csv,obs.csv,restart_failed.csv,100,,,"""false""","""true""",,"0.1,1.0,10.0",,10,,0,"8) ies_freyberg full solution with empirical parcov - supplied par csv, obs csv and restart csv with fails, bad phi,MAP solution, prior scaling, lam mults "
-9),par.csv,obs.csv,,,,,,"""false""",,,,,"""false""",1,1) ies_freyberg start with existing par csv and obs csv
-10),par.jcb,obs.jcb,restart.jcb,,,,,,,,,,,0,9) ies_synth restart and upgrade 1.1M par problem
+6),,,,,,,,"""false""",,,,,,0,"6) ies_freyberg ""standard user mode"" - draw reals from par-bounds prior and obs noise from weights"
+6a),,,,,,,,"""false""",,"0.1,1.0,10.0",,"""10""",,0,6a) ies_freyberg same as 6) but with multple lambda 
+7),,,,,prior.cov,,,"""false""",,"0.1,1.0,10.0",,"""10""",,0,7) ies_freyberg draw par en from full parcov supplied in file
+8),par.csv,obs.csv,restart_failed.csv,100000,,,"""false""","""true""",,"0.1,1.0,10.0",,"""10""",,0,"8) ies_freyberg full solution with empirical parcov - supplied par csv, obs csv and restart csv with fails, bad phi,MAP solution, prior scaling, lam mults "
+9),par.csv,obs.csv,,,prior.cov,,,"""false""",,,,,"""false""",1,9) ies_freyberg start with existing par csv and obs csv
+10),par.jcb,obs.jcb,restart.jcb,,,,,,,,,,,0,10) ies_synth restart and upgrade 1.1M par problem

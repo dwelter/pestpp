@@ -525,11 +525,18 @@ void Mat::from_binary(const string &filename)
 {
 	ifstream in;
 	in.open(filename.c_str(), ifstream::binary);
+	if (!in.good())
+	{
+		stringstream ss;
+		ss << "Mat::from_binary() error opening binary file " << filename << " for reading";
+		throw runtime_error(ss.str());
+	}
 
 	int n_par;
 	int n_nonzero;
 	int n_obs_and_pi;
-	int i, j, n;
+	int i, j;
+	unsigned int n;
 	double data;
 	char col_name[12];
 	char row_name[20];
@@ -541,8 +548,19 @@ void Mat::from_binary(const string &filename)
 
 	n_par = -n_par;
 	n_obs_and_pi = -n_obs_and_pi;
+
+	if (n_par > 10000000)
+		throw runtime_error("Mat::from_binary() failed sanity check: npar > 10 mil");
+
 	////read number nonzero elements in jacobian (observations + prior information)
 	in.read((char*)&n_nonzero, sizeof(n_nonzero));
+
+	if ((n_par == 0) || (n_obs_and_pi == 0) || (n_nonzero == 0))
+	{
+		throw runtime_error("Mat::from_binary() npar, nobs and/or nnz is zero");
+	}
+
+	cout << "reading " << n_nonzero << " elements, " << n_obs_and_pi << " rows, " << n_par << " columns" << endl;
 
 	// record current position in file
 	streampos begin_sen_pos = in.tellg();
@@ -577,10 +595,14 @@ void Mat::from_binary(const string &filename)
 	for (int i_rec = 0; i_rec<n_nonzero; ++i_rec)
 	{
 		in.read((char*)&(n), sizeof(n));
-		--n;
+		n = n - 1;
 		in.read((char*)&(data), sizeof(data));
 		j = int(n / (n_obs_and_pi)); // column index
 		i = (n - n_obs_and_pi*j) % n_obs_and_pi;  //row index
+		if ((i >= n_obs_and_pi) || (i < 0))
+			cout << "invalid 'i':" << i << " at " << n << " data:" << data << " j: " << j << endl;
+		if ((j >= n_par) || (j < 0))
+			cout << "invalid 'j':" << j << " at " << n << " data:" << data << " i: " << i << endl;
 		triplet_list.push_back(Eigen::Triplet<double>(i, j, data));
 	}
 	matrix.resize(n_obs_and_pi, n_par);
@@ -860,6 +882,7 @@ Covariance::Covariance(vector<string> _names, Eigen::SparseMatrix<double> _matri
 {	
 	if ((_names.size() != _matrix.rows()) || (_names.size() != _matrix.cols()))
 		throw runtime_error("Covariance::Covariance() error: names.size() does not match matrix dimensions");
+	Eigen::SparseMatrix<double> test = _matrix;
 	matrix = _matrix;
 	row_names = _names;
 	col_names = _names;
@@ -878,6 +901,23 @@ Covariance::Covariance(Mat _mat)
 	mattype = _mat.get_mattype();
 }
 
+
+void Covariance::from_diagonal(Covariance &other)
+{
+	row_names = other.get_row_names();
+	col_names = other.get_col_names();
+	if (other.get_mattype() == Mat::MatType::DIAGONAL)
+	{		
+		matrix = other.get_matrix();
+	}
+	else
+	{
+		Eigen::MatrixXd temp = other.e_ptr()->diagonal().asDiagonal();
+		Eigen::SparseMatrix<double> temp2 = temp.sparseView();
+		matrix = temp2;
+	}
+
+}
 Covariance Covariance::diagonal(double val)
 {
 	vector<Eigen::Triplet<double>> triplet_list;

@@ -110,6 +110,7 @@ public:
 	Covariance extract(vector<string> &extract_names);
 
 	Covariance diagonal(double val);
+	void from_diagonal(Covariance &other);
 
 	void try_from(Pest &pest_scenario, FileManager &file_manager);
 
