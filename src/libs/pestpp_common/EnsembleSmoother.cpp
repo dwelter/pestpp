@@ -232,6 +232,11 @@ void PhiHandler::report()
 	s = get_summary_string(PhiHandler::phiType::ACTUAL);
 	f << s;
 	cout << s;
+	if (*reg_factor == 0.0)
+	{
+		f << "    note reg_factor is zero; regularization phi reported but not used" << endl;
+		cout  << "    note reg_factor is zero; regularization phi reported but not used" << endl;
+	}
 	f << endl << endl;
 	f.flush();
 }

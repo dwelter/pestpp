@@ -887,6 +887,7 @@ void ParameterEnsemble::draw(int num_reals, Covariance &cov, PerformanceLog *plo
 	if (!same)
 	{
 		plog->log_event("parameters not grouped by parameter groups, reordering par ensemble");
+		cout << "parameters not grouped by parameter groups, reordering par ensemble" << endl;
 		var_names = sorted_var_names;
 	}
 
