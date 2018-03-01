@@ -760,6 +760,10 @@ void PestppOptions::parce_line(const string &line)
 			istringstream is(value);
 			is >> boolalpha >> ies_enforce_bounds;
 		}
+		else if (key == "PAR_SIGMA_RANGE")
+		{
+			convert_ip(value, par_sigma_range);
+		}
 		else {
 
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");

@@ -347,6 +347,10 @@ public:
 	bool get_ies_enforce_bounds() const { return ies_enforce_bounds; }
 	void set_ies_enforce_bounds(bool _ies_enforce_bounds) { ies_enforce_bounds = _ies_enforce_bounds; }
 
+	double get_par_sigma_range() const { return par_sigma_range; }
+	void set_par_sigma_range(double _par_sigma_range) { par_sigma_range = _par_sigma_range; }
+
+
 private:
 	int n_iter_base;
 	int n_iter_super;
@@ -420,6 +424,7 @@ private:
 	bool ies_group_draws;
 	bool ies_num_reals_passed;
 	bool ies_enforce_bounds;
+	double par_sigma_range;
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);
 ostream& operator<< (ostream &os, const ObservationInfo& val);

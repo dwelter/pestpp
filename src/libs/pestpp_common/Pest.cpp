@@ -661,7 +661,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_ies_group_draws(true);
 	pestpp_options.set_ies_num_reals_passed(false);
 	pestpp_options.set_ies_enforce_bounds(true);
-
+	pestpp_options.set_par_sigma_range(4.0);
 	pestpp_options.set_condor_submit_file(string());
 
 	for(vector<string>::const_iterator b=pestpp_input.begin(),e=pestpp_input.end();

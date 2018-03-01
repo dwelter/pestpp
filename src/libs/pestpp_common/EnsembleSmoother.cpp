@@ -862,6 +862,7 @@ void IterEnsembleSmoother::initialize()
 		if (!pest_scenario.get_pestpp_options().get_ies_use_empirical_prior())
 		{
 			message(1, "initializing prior parameter covariance matrix from parameter bounds");
+			message(1, "using par_sigma_range (number of standard deviations that par bounds represent):", pest_scenario.get_pestpp_options().get_par_sigma_range());
 			parcov.from_parameter_bounds(pest_scenario);
 		}
 	}

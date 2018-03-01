@@ -1124,7 +1124,7 @@ void Covariance::from_uncertainty_file(const string &filename)
 	col_names = names;
 }
 
-void Covariance::from_parameter_bounds(const vector<string> &par_names,const ParameterInfo &par_info)
+void Covariance::from_parameter_bounds(const vector<string> &par_names,const ParameterInfo &par_info, double sigma_range)
 {
 	vector<Eigen::Triplet<double>> triplet_list;
 	const ParameterRec* par_rec;
@@ -1146,7 +1146,7 @@ void Covariance::from_parameter_bounds(const vector<string> &par_names,const Par
 			row_names.push_back(par_name);
 			col_names.push_back(par_name);
 			//double temp = pow((upper - lower) / 4.0,2.0);
-			triplet_list.push_back(Eigen::Triplet<double>(i, i, pow((upper - lower) / 4.0, 2.0)));
+			triplet_list.push_back(Eigen::Triplet<double>(i, i, pow((upper - lower) / sigma_range, 2.0)));
 			i++;
 		}
 	}
@@ -1166,7 +1166,7 @@ void Covariance::from_parameter_bounds(const vector<string> &par_names,const Par
 
 void Covariance::from_parameter_bounds(Pest &pest_scenario)
 {
-	from_parameter_bounds(pest_scenario.get_ctl_ordered_par_names(), pest_scenario.get_ctl_parameter_info());
+	from_parameter_bounds(pest_scenario.get_ctl_ordered_par_names(), pest_scenario.get_ctl_parameter_info(),pest_scenario.get_pestpp_options().get_par_sigma_range());
 }
 
 void Covariance::from_parameter_bounds(const string &pst_filename)
