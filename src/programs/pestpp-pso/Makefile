@@ -24,10 +24,16 @@ all: $(EXE)
 # Compile readsubs.f90 first, to get psodat.mod used by everything else
 $(filter-out readsubs$(OBJ_EXT),$(OBJECTS)): readsubs$(OBJ_EXT)
 
+ifeq ($(COMPILER),intel)
+LD = $(FC)
+LDFLAGS += -cxxlib
+endif
+
 $(EXE): $(OBJECTS)
 	$(LD) $(LDFLAGS) $^ $(PESTPP_LIBS) -o $@
 
 install: $(EXE)
+	$(MKDIR) $(bindir)
 	$(CP) $< $(bindir)
 
 clean:
