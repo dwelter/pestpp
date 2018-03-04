@@ -54,6 +54,7 @@ public:
 private:
 	int sockfd;
 	int fdmax;
+	int poll_interval_seconds;
 #ifdef _DEBUG
 	static const int max_recv_fails = 100;
 	static const int max_send_fails = 100;

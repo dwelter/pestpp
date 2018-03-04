@@ -17,11 +17,11 @@ import pyemu
 nrow,ncol = 40,20
 num_reals = [30, 50, 100]
 #num_reals = [30]
-noptmax = 8
+noptmax = 20
 pst = pyemu.Pst(os.path.join("template", "pest.pst"))
 pst.observation_data.loc[pst.nnz_obs_names,"weight"] = 0.5
 
-pst.pestpp_options["parcov_filename"] = "prior.jcb"
+#pst.pestpp_options["parcov_filename"] = "prior.jcb"
 #pst.parameter_data.loc[pst.adj_par_names,"partrans"] = "none"
 #forecast_names = ["sw_gw_1","h01_28_11"]
 forecast_names = ["c001fr35c11_19750101","flx_river_l_19750102","travel_time"]
@@ -46,7 +46,8 @@ def run_pestpp():
                                num_slaves=10, master_dir="master_pestpp")
 
 def run():
-    for nr in [num_reals[0]]:
+    #for nr in num_reals:
+    for nr in [13]:
         pst.pestpp_options["ies_num_reals"] = nr
         # pst.pestpp_options["ies_use_prior_scaling"] = "true"
         # pst.pestpp_options["ies_initial_lambda"] = 1000000.0
@@ -62,6 +63,7 @@ def run():
         pst.pestpp_options["ies_use_prior_scaling"] = "false"
         pst.pestpp_options["ies_group_draws"] = "false"
         pst.pestpp_options["ies_initial_lambda"] = 1.0
+        pst.pestpp_options["par_sigma_range"] = 100.0
         pst.control_data.noptmax = noptmax
         master_dir = "master_{0}_nps".format(nr)
         if os.path.exists(master_dir):
@@ -470,8 +472,73 @@ def plot_hk_arrays_figure():
     plt.close(fig)
 
 
+def sigma_range_invest():
+    nr = 13
+    dfs,fore_dfs = {},{}
+    sigma_ranges = [2,4,8,20]
+    for sr in sigma_ranges:
+        pst.pestpp_options = {}
+        pst.pestpp_options["ies_num_reals"] = nr
+
+        pst.pestpp_options["ies_use_prior_scaling"] = "false"
+        pst.pestpp_options["ies_group_draws"] = "false"
+        pst.pestpp_options["ies_initial_lambda"] = 1.0
+        pst.pestpp_options["par_sigma_range"] = sr
+        pst.control_data.noptmax = noptmax
+        master_dir = "test"
+        if os.path.exists(master_dir):
+            shutil.rmtree(master_dir)
+        pst_name = "pest_{0}_nps.pst".format(sr)
+        pst.write(os.path.join("template", pst_name))
+        pyemu.helpers.start_slaves("template", "pestpp-ies", pst_name,
+                                   num_slaves=14, master_dir=master_dir)
+        df = pd.read_csv(os.path.join(master_dir,pst_name.replace(".pst",".phi.actual.csv")),index_col=0)
+        dfs[sr] = df
+        fore_df = pd.read_csv(os.path.join(master_dir, pst_name.replace(".pst", ".{0}.obs.csv".format(noptmax))),
+                              index_col=0)
+        fore_df.columns = fore_df.columns.map(str.lower)
+        fore_df = fore_df.loc[:, forecast_names]
+        fore_dfs[sr] = fore_df
+        #break
+
+
+    fig = plt.figure(figsize=(20,20))
+    ax = plt.subplot(111)
+    colors = ['b','r','g','y','m','c','k','0.5']
+    for i,(sr,df) in enumerate(dfs.items()):
+        c = colors[i]
+
+        for ii,rname in enumerate(df.columns[6:]):
+            if ii == 0:
+                label = sr
+            else:
+                label = None
+            #ax.plot(df.total_runs,df.loc[:,rname].apply(np.log10).values,color=c,lw=0.5,label=label,alpha=0.5)
+            ax.plot(df.total_runs,df.loc[:,"mean"].apply(np.log10).values,color=c,lw=0.5,label=label)
+    ax.legend()
+    plt.savefig("sigmarange.pdf")
+    plt.close(fig)
+
+    #df = pd.DataFrame(fore_dfs)
+
+    std_dfs = {sr:df.std() for sr,df in fore_dfs.items()}
+    std_df = pd.DataFrame(std_dfs)
+    for fore in forecast_names:
+        std_df.loc[fore,:].plot(kind="bar")
+        plt.savefig("sigmarange_{0}.pdf".format(fore))
+        plt.close("all")
+
+    color_dfs = {colors[i]:fore_dfs[sr] for i,(sr) in enumerate(sigma_ranges)}
+    pyemu.plot_utils.ensemble_helper(color_dfs,deter_vals=pst.observation_data.obsval.to_dict())
+
+    # df.plot(kind="bar")
+    # plt.savefig("sigmarange_forestd.pdf")
+    # plt.close("all")
+    print(df)
+
 if __name__ == "__main__":
-    run()
+    #run()
+    sigma_range_invest()
     #run_pestpp()
     #run_mc()
     #plot_domain()
