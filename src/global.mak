@@ -1,16 +1,16 @@
 # Global options for GNU Make to build PEST++ libraries and programs
 #
 # Choose one of each:
-# SYSTEM=linux (default)
-#       =mac
-#       =win
-# COMPILER=gcc (default)
-#         =intel
+# SYSTEM ?= linux (default)
+#        ?= mac
+#        ?= win
+# COMPILER ?= gcc (default)
+#          ?= intel
 # These can be kept in local.mak
 -include $(top_builddir)/local.mak
 
+# Autodetect SYSTEM
 #$(info $$OS is $(OS))
-
 ifeq ($(OS),Windows_NT)
 SYSTEM ?= win
 else
@@ -22,7 +22,6 @@ ifeq ($(UNAME_S), Darwin)
 SYSTEM ?= mac
 endif
 endif
-#endif
 
 # Defaults (if unset, or missing local.mak)
 #SYSTEM ?= mac
@@ -30,13 +29,13 @@ COMPILER ?= intel
 
 ifeq ($(SYSTEM),mac)
 # macOS
-bindir = $(top_builddir)/../exe/mac/
+bindir ?= $(top_builddir)/../exe/mac/
 else ifeq ($(SYSTEM),linux)
 # GNU Linux
-bindir = $(top_builddir)/../exe/linux/
+bindir ?= $(top_builddir)/../exe/linux/
 else ifeq ($(SYSTEM),win)
 # Microsoft Windows
-bindir = $(top_builddir)/../exe/windows/
+bindir ?= $(top_builddir)/../exe/windows/
 else
 $(error SYSTEM not understood: $(SYSTEM). Use one of mac, linux or win.)
 endif
@@ -61,6 +60,7 @@ endif
 ifeq ($(COMPILER),intel)
 # Intel compilers
 ifeq ($(SYSTEM),win)
+# Warning: this build method is not well tested
 CXX	= icl
 OPT_FLAGS	= /nologo /O2
 CXXFLAGS	= $(OPT_FLAGS) /Qstd=c++11 /EHsc
@@ -123,7 +123,8 @@ endif
 
 # Assume linker is the C++ compiler
 LD = $(CXX)
-LDFLAGS += -pthread -static
+LDFLAGS += -pthread
+LDFLAGS += -static
 
 # r=insert with replacement; c=create archive; s=add index
 ARFLAGS := rcs
