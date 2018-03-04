@@ -1,7 +1,9 @@
       subroutine dlansvd(jobu,jobv,m,n,k,kmax,aprod,U,ldu,Sigma,bnd,
      c     V,ldv,tolin,work,lwork,iwork,liwork,doption,ioption,info,
      c     dparm,iparm)
+#ifdef __windows__
       !DEC$ ATTRIBUTES DLLEXPORT::dlansvd
+#endif
 
 
 c     DLANSVD: Compute the leading singular triplets of a large and
