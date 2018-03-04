@@ -873,22 +873,23 @@ void ParameterEnsemble::draw(int num_reals, Covariance &cov, PerformanceLog *plo
 
 			grouper[group] = vars_in_group;
 		}
-	}
-	//check
-	if (var_names.size() != sorted_var_names.size())
-		throw_ensemble_error("sorted par names not equal to org par names");
-	bool same = true;
-	for (int i=0;i<var_names.size();i++)
-		if (var_names[i] != sorted_var_names[i])
+
+		//check
+		if (var_names.size() != sorted_var_names.size())
+			throw_ensemble_error("sorted par names not equal to org par names");
+		bool same = true;
+		for (int i = 0; i < var_names.size(); i++)
+			if (var_names[i] != sorted_var_names[i])
+			{
+				same = false;
+				break;
+			}
+		if (!same)
 		{
-			same = false;
-			break;
+			plog->log_event("parameters not grouped by parameter groups, reordering par ensemble");
+			cout << "parameters not grouped by parameter groups, reordering par ensemble" << endl;
+			var_names = sorted_var_names;
 		}
-	if (!same)
-	{
-		plog->log_event("parameters not grouped by parameter groups, reordering par ensemble");
-		cout << "parameters not grouped by parameter groups, reordering par ensemble" << endl;
-		var_names = sorted_var_names;
 	}
 
 	Ensemble::draw(num_reals, cov, par, var_names, grouper, plog, level);

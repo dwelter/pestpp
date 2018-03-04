@@ -764,6 +764,9 @@ void PestppOptions::parce_line(const string &line)
 		{
 			convert_ip(value, par_sigma_range);
 		}
+		if (key == "YAMR_POLL_INTERVAL") {
+			//doesn't apply here
+		}
 		else {
 
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");

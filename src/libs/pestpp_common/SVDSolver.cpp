@@ -1876,7 +1876,7 @@ void SVDSolver::dynamic_weight_adj(const ModelRun &base_run, const Jacobian &jac
 				base_run_active_ctl_par, freeze_active_ctl_pars, tmp_regul_scheme);
 			mu_vec[0].print(os);
 			os << endl;
-			cout << "    ...solving for optimal weight factor : " << setw(6) << mu_vec[0].mu << "\r" << flush;
+			cout << "    ...solving for optimal weight factor : " << setw(6) << mu_vec[0].mu << endl << flush;
 			//mu_vec[0].print(cout);
 			//cout << endl;
 		}
@@ -1900,7 +1900,7 @@ void SVDSolver::dynamic_weight_adj(const ModelRun &base_run, const Jacobian &jac
 			os << endl;
 			//mu_vec[0].print(cout);
 			//cout << endl;
-			cout << "    ...solving for optimal weight factor : " << setw(6) << mu_vec[3].mu << "\r" << flush;
+			cout << "    ...solving for optimal weight factor : " << setw(6) << mu_vec[3].mu << endl << flush;
 		}
 		if (mu_vec[3].mu >= wfmax) break;
 	}
@@ -1972,7 +1972,7 @@ void SVDSolver::dynamic_weight_adj(const ModelRun &base_run, const Jacobian &jac
 			os << endl;
 			//mu_vec[0].print(cout);
 			//cout << endl;
-			cout << "    ...solving for optimal weight factor : " << setw(6) << min_mu->mu << "\r" << flush;
+			cout << "    ...solving for optimal weight factor : " << setw(6) << min_mu->mu << endl << flush;
 			if (min_mu->error_frac() <= wftol) break;
 		}
 		auto min_mu = std::min_element(mu_vec.begin(), mu_vec.end());
