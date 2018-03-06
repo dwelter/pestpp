@@ -61,13 +61,13 @@ ifeq ($(COMPILER),intel)
 # Intel compilers
 ifeq ($(SYSTEM),win)
 # Warning: this build method is not well tested
-CXX	= icl
+CXX	?= icl
 OPT_FLAGS	= /nologo /O2
 CXXFLAGS	= $(OPT_FLAGS) /Qstd=c++11 /EHsc
 FFLAGS	= $(OPT_FLAGS) /fpp
 FFREE   = /free
 else # mac,linux
-CXX	= icpc
+CXX	?= icpc
 OPT_FLAGS	= -O2
 CXXFLAGS	= $(OPT_FLAGS) -std=c++11
 FFLAGS	= $(OPT_FLAGS) -fpp
@@ -76,7 +76,7 @@ ifeq ($(SYSTEM),mac)
 MKLROOT = /opt/intel/compilers_and_libraries_2018.1.126/mac/mkl
 endif
 endif
-FC	= ifort
+FC	?= ifort
 
 ifeq ($(SYSTEM),win)
 EXT_INCLUDES = -I"$(MKLROOT)"\include
@@ -110,8 +110,8 @@ EXT_LIBS = \
 endif
 else ifeq ($(COMPILER),gcc)
 # GNU Compiler Collection
-CXX	= g++
-FC	= gfortran
+CXX	?= g++
+FC	?= gfortran
 OPT_FLAGS	= -O2 -march=native
 CXXFLAGS	= $(OPT_FLAGS) -std=c++11
 FFLAGS	= $(OPT_FLAGS) -cpp
@@ -124,7 +124,7 @@ endif
 # Assume linker is the C++ compiler
 LD = $(CXX)
 LDFLAGS += -pthread
-LDFLAGS += -static
+#LDFLAGS += -static
 
 # r=insert with replacement; c=create archive; s=add index
 ARFLAGS := rcs
