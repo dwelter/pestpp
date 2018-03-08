@@ -5,6 +5,11 @@ include $(top_builddir)/global.mak
 EXE := fortran_test$(EXE_EXT)
 OBJECTS := run_manager_fortran_test$(OBJ_EXT)
 
+ifeq ($(COMPILER),intel)
+LD = $(FC)
+LDFLAGS += -cxxlib
+endif
+
 
 all: $(EXE)
 

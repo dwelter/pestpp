@@ -2,12 +2,8 @@ sudo: false
 dist: trusty
 language: cpp
 
-os:
-  - linux
-#  - osx
-
-compiler:
-  - gcc
+#compiler:
+#  - gcc
 
 addons:
   apt:
@@ -27,7 +23,8 @@ env:
 
 script:
   - cd src
-  - CXX=g++-5 FC=gfortran-5 COMPILER=gcc make && make install
+  - COMPILER=gcc5 CXX=g++-5 FC=gfortran-5 STATIC=no make
+  - make install
 
 notifications:
   email: false
