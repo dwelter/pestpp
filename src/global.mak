@@ -6,19 +6,20 @@
 #        ?= win
 # COMPILER ?= gcc (default)
 #          ?= intel
+# STATIC ?= -static (default)
+#        ?= no (shared dynamic linking)
 # These can be kept in local.mak
 -include $(top_builddir)/local.mak
 
 # Autodetect SYSTEM
-#$(info $$OS is $(OS))
 ifeq ($(OS),Windows_NT)
 SYSTEM ?= win
 else
 UNAME_S := $(shell uname -s)
-ifeq ($(UNAME_S), Linux)
+ifeq ($(UNAME_S),Linux)
 SYSTEM ?= linux
 endif
-ifeq ($(UNAME_S), Darwin)
+ifeq ($(UNAME_S),Darwin)
 SYSTEM ?= mac
 endif
 endif
@@ -40,19 +41,25 @@ else
 $(error SYSTEM not understood: $(SYSTEM). Use one of mac, linux or win.)
 endif
 
+# Determine static (default '-static') or shared dynamic linking
+STATIC ?= -static
+ifndef STATIC
+STATIC = no
+endif
+
 ifeq ($(SYSTEM),win)
 # Microsoft Windows
-EXE_EXT	= .exe
-OBJ_EXT	= .obj
-LIB_EXT	= .lib
+EXE_EXT = .exe
+OBJ_EXT = .obj
+LIB_EXT = .lib
 CP = copy
 RM = del /Q
 MKDIR = md
 else
 # POSIX (mac, linux)
-OBJ_EXT	= .o
-LIB_PRE	= lib
-LIB_EXT	= .a
+OBJ_EXT = .o
+LIB_PRE = lib
+LIB_EXT = .a
 CP = cp
 MKDIR = mkdir -p
 endif
@@ -61,75 +68,105 @@ ifeq ($(COMPILER),intel)
 # Intel compilers
 ifeq ($(SYSTEM),win)
 # Warning: this build method is not well tested
-CXX	= icl
-OPT_FLAGS	= /nologo /O2
-CXXFLAGS	= $(OPT_FLAGS) /Qstd=c++11 /EHsc
-FFLAGS	= $(OPT_FLAGS) /fpp
+CXX = icl
+OPT_FLAGS = /nologo /O2 /Qmkl:sequential
+CXXFLAGS = $(OPT_FLAGS) /Qstd=c++11 /EHsc
+FFLAGS = $(OPT_FLAGS) /fpp
 FFREE   = /free
 else # mac,linux
-CXX	= icpc
-OPT_FLAGS	= -O2
-CXXFLAGS	= $(OPT_FLAGS) -std=c++11
-FFLAGS	= $(OPT_FLAGS) -fpp
-FFREE	= -free
-ifeq ($(SYSTEM),mac)
-MKLROOT = /opt/intel/compilers_and_libraries_2018.1.126/mac/mkl
+CXX = icpc
+OPT_FLAGS = -O2 -mkl=sequential
+CXXFLAGS = $(OPT_FLAGS) -std=c++11
+FFLAGS = $(OPT_FLAGS) -fpp
+FFREE = -free
 endif
-endif
-FC	= ifort
+FC = ifort
 
 ifeq ($(SYSTEM),win)
 EXT_INCLUDES = -I"$(MKLROOT)"\include
 EXT_LIBS = \
     mkl_blas95_lp64.lib \
-    mkl_lapack95_lp64.lib \
+    mkl_lapack95_lp64.lib
+ifeq ($(STATIC),no)  # dynamic linking
+EXT_LIBS += \
+    mkl_intel_lp64_dll.lib \
+    mkl_sequential_dll.lib \
+    mkl_core_dll.lib
+else  # static linking
+EXT_LIBS += \
     mkl_intel_lp64.lib \
     mkl_sequential.lib \
     mkl_core.lib
+endif
 else ifeq ($(SYSTEM),linux)
 EXT_INCLUDES = -I${MKLROOT}/include/intel64/ilp64 -I${MKLROOT}/include
 EXT_LIBS = \
     ${MKLROOT}/lib/intel64/libmkl_blas95_lp64.a \
-    ${MKLROOT}/lib/intel64/libmkl_lapack95_lp64.a \
+    ${MKLROOT}/lib/intel64/libmkl_lapack95_lp64.a
+ifeq ($(STATIC),no)  # dynamic linking
+EXT_LIBS += \
+    -L${MKLROOT}/lib/intel64 \
+    -lmkl_intel_lp64 -lmkl_sequential -lmkl_core
+else  # static linking
+EXT_LIBS += \
     -Wl,--start-group \
         ${MKLROOT}/lib/intel64/libmkl_intel_lp64.a \
         ${MKLROOT}/lib/intel64/libmkl_sequential.a \
         ${MKLROOT}/lib/intel64/libmkl_core.a \
     -Wl,--end-group \
-    -lifport -lifcore -lpthread -lm -ldl
+    -lifport
+endif
+EXT_LIBS += -lifcore -lpthread -lm -ldl
 else ifeq ($(SYSTEM),mac)
-EXTRADIR = /opt/intel/compilers_and_libraries_2018.1.126/mac/compiler/lib
+MKLROOT ?= /opt/intel/compilers_and_libraries_2018.1.126/mac/mkl
+EXTRADIR = /opt/intel/compilers_and_libraries_2018.1.126/mac/compiler
 EXT_INCLUDES = -I${MKLROOT}/include/intel64/lp64 -I${MKLROOT}/include
 EXT_LIBS = \
     ${MKLROOT}/lib/libmkl_lapack95_ilp64.a \
-    ${MKLROOT}/lib/libmkl_blas95_ilp64.a \
+    ${MKLROOT}/lib/libmkl_blas95_ilp64.a
+ifeq ($(STATIC),no)  # dynamic linking
+EXT_LIBS += \
+    -L${MKLROOT}/lib \
+    -Wl,-rpath,${MKLROOT}/lib \
+    -lmkl_intel_lp64 -lmkl_sequential -lmkl_core
+else  # static linking
+EXT_LIBS += \
     ${MKLROOT}/lib/libmkl_intel_ilp64.a \
     ${MKLROOT}/lib/libmkl_sequential.a \
     ${MKLROOT}/lib/libmkl_core.a \
-    ${EXTRADIR}/libifcore.a
+    ${EXTRADIR}/lib/libifcore.a
 endif
-else ifeq ($(COMPILER),gcc)
-# GNU Compiler Collection
-CXX	= g++
-FC	= gfortran
-OPT_FLAGS	= -O2 -march=native
-CXXFLAGS	= $(OPT_FLAGS) -std=c++11
-FFLAGS	= $(OPT_FLAGS) -cpp
-FFREE	= -ffree-form
-EXT_LIBS	= -lpthread -llapack -lblas -lgfortran -lquadmath
+EXT_LIBS += -lpthread -lm -ldl
+endif # $(SYSTEM)
+else  # $(COMPILER)
+# Assume GNU Compiler Collection
+ifeq ($(COMPILER),gcc)
+CXX = g++
+FC = gfortran
 else
-$(error COMPILER not understood: $(COMPILER). Use one of intel or gcc.)
+CXX ?= g++
+FC ?= gfortran
 endif
+OPT_FLAGS = -O2
+CXXFLAGS = $(OPT_FLAGS) -std=c++11
+FFLAGS = $(OPT_FLAGS) -cpp
+FFREE = -ffree-form
+EXT_LIBS = -lpthread -llapack -lblas -lgfortran -lquadmath
+# else
+# $(error COMPILER not understood: $(COMPILER). Use one of intel or gcc.)
+endif  # $(COMPILER)
 
 # Assume linker is the C++ compiler
 LD = $(CXX)
 LDFLAGS += -pthread
-LDFLAGS += -static
+ifneq ($(STATIC),no)
+LDFLAGS += $(STATIC)
+endif
 
 # r=insert with replacement; c=create archive; s=add index
 ARFLAGS := rcs
 
-LIBS_DIR :=	$(top_builddir)/libs
+LIBS_DIR := $(top_builddir)/libs
 
 PESTPP_INCLUDES := \
     -I $(LIBS_DIR)/Eigen \
@@ -164,22 +201,22 @@ PESTPP_LIBS := \
 
 # Generic pattern rules
 
-%$(OBJ_EXT):	%.cpp
+%$(OBJ_EXT): %.cpp
 	$(CXX) -c $(PESTPP_INCLUDES) $(CXXFLAGS) $(CPPFLAGS) -o $@ $<
 
-%$(OBJ_EXT):	%.f
+%$(OBJ_EXT): %.f
 	$(FC) -c $(FFLAGS) -o $@ $<
 
-%$(OBJ_EXT):	%.for
+%$(OBJ_EXT): %.for
 	$(FC) -c $(FFLAGS) -o $@ $<
 
-%$(OBJ_EXT):	%.f90
+%$(OBJ_EXT): %.f90
 	$(FC) -c $(FFLAGS) -o $@ $<
 
-%$(OBJ_EXT):	%.F
+%$(OBJ_EXT): %.F
 	$(FC) -c $(FFLAGS) $(CPPFLAGS) -o $@ $<
 
-%$(OBJ_EXT):	%.FOR
+%$(OBJ_EXT): %.FOR
 	$(FC) -c $(FFLAGS) $(CPPFLAGS) -o $@ $<
 
 .SUFFIXES: .c .h .cpp .hpp .f .for .F .FOR .mod $(OBJ_EXT) $(LIB_EXT)

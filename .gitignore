@@ -15,8 +15,22 @@
 *.a
 *.lib
 
+# Executables
+/src/programs/gsa/gsa
+/src/programs/pest++/pestpp
+/src/programs/pestpp-ies/pestpp-ies
+/src/programs/pestpp-opt/pestpp-opt
+/src/programs/pestpp-pso/psopp
+/src/utilities/ascii2pbin/ascii2pbin
+/src/utilities/pbin2ascii/pbin2ascii
+/src/utilities/pbin_dump/pbin_dump
+/src/utilities/sweep/sweep
+
 # User files
 /src/local.mak
+
+# Makefile object
+/src/libs/build-stamp
 
 /morris_meth/ipch
 /morris_meth/Debug

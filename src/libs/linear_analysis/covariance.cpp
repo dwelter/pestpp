@@ -1028,6 +1028,10 @@ void Covariance::from_uncertainty_file(const string &filename)
 	
 	while (getline(in, line))
 	{
+		if (line.substr(0, 1).find("#") != string::npos)
+		{
+			continue;
+		}
 		pest_utils::upper_ip(line);
 		//if this is the start of some block
 		if (line.find("START") != string::npos)

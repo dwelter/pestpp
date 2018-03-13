@@ -1,0 +1,30 @@
+sudo: false
+dist: trusty
+language: cpp
+
+#compiler:
+#  - gcc
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-5
+      - gfortran-5
+      - liblapack-dev
+
+git:
+  depth: 1
+
+env:
+  global:
+    - MAKEFLAGS="-j 2"
+
+script:
+  - cd src
+  - COMPILER=gcc5 CXX=g++-5 FC=gfortran-5 STATIC=no make
+  - make install
+
+notifications:
+  email: false
