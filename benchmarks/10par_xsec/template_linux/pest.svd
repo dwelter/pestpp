@@ -7,10 +7,10 @@ FROZEN PARAMETERS-
 
 
 SINGULAR VALUES IN SOLUTION:-
-   8.02063e+017   6.79543e+015
+        179.681        3.85298
 TRUNCATED SINGULAR VALUES:-
-        8.71262        7.74819       0.720354       0.222785   3.78810e-005       0.000000       0.000000
-       0.000000       0.000000
+        0.00000        0.00000        0.00000        0.00000        0.00000        0.00000        0.00000
+        0.00000        0.00000
 
 
 Number of singular values used in solution = 2
@@ -22,12 +22,12 @@ FROZEN PARAMETERS-
 
 
 SINGULAR VALUES IN SOLUTION:-
-   8.26437e+017   7.36144e+015   2.33233e+015   7.36796e+013   3.71292e+013   9.11855e+012
+        1.33837       0.217637    0.000931024    0.000614612
 TRUNCATED SINGULAR VALUES:-
-   5.35695e+010       0.000000       0.000000       0.000000       0.000000
+        0.00000        0.00000        0.00000        0.00000        0.00000        0.00000        0.00000
 
 
-Number of singular values used in solution = 6
+Number of singular values used in solution = 4
 
 
 CURRENT VALUE OF MARQUARDT LAMBDA = 1.00000 --------->
@@ -36,12 +36,12 @@ FROZEN PARAMETERS-
 
 
 SINGULAR VALUES IN SOLUTION:-
-   1.05137e+018   2.20725e+016   8.15442e+015   7.36492e+014   3.71290e+014   8.73638e+013
+        1.37913       0.280728     0.00870372     0.00611449
 TRUNCATED SINGULAR VALUES:-
-   5.17500e+011       0.000000       0.000000       0.000000       0.000000
+        0.00000        0.00000        0.00000        0.00000        0.00000        0.00000        0.00000
 
 
-Number of singular values used in solution = 6
+Number of singular values used in solution = 4
 
 
 CURRENT VALUE OF MARQUARDT LAMBDA = 10.0000 --------->
@@ -50,12 +50,12 @@ FROZEN PARAMETERS-
 
 
 SINGULAR VALUES IN SOLUTION:-
-   3.43699e+018   7.09282e+016   2.83987e+016   7.34256e+015   3.71273e+015   7.87586e+014   4.71666e+012
+        2.00068       0.712058      0.0738502      0.0593263    0.000374619    0.000331343
 TRUNCATED SINGULAR VALUES:-
-       0.000000       0.000000       0.000000       0.000000
+        0.00000        0.00000        0.00000        0.00000        0.00000
 
 
-Number of singular values used in solution = 7
+Number of singular values used in solution = 6
 
 
 CURRENT VALUE OF MARQUARDT LAMBDA = 20.0000 --------->
@@ -64,12 +64,12 @@ FROZEN PARAMETERS-
 
 
 SINGULAR VALUES IN SOLUTION:-
-   6.12687e+018   8.86951e+016   4.82769e+016   1.46381e+016   7.42513e+015   1.54234e+015   9.24661e+012
+        2.97486       0.911711       0.143576       0.117143    0.000743656    0.000661280
 TRUNCATED SINGULAR VALUES:-
-       0.000000       0.000000       0.000000       0.000000
+        0.00000        0.00000        0.00000        0.00000        0.00000
 
 
-Number of singular values used in solution = 7
+Number of singular values used in solution = 6
 
 
 CURRENT VALUE OF MARQUARDT LAMBDA = 40.0000 --------->
@@ -78,9 +78,9 @@ FROZEN PARAMETERS-
 
 
 SINGULAR VALUES IN SOLUTION:-
-   1.15174e+019   1.25966e+017   7.56758e+016   2.90685e+016   1.48490e+016   3.04147e+015   1.82610e+013
+        5.12279        1.11257       0.282690       0.232006     0.00147108     0.00132584    8.38840e-05
 TRUNCATED SINGULAR VALUES:-
-       0.000000       0.000000       0.000000       0.000000
+        0.00000        0.00000        0.00000        0.00000
 
 
 Number of singular values used in solution = 7
@@ -92,9 +92,9 @@ FROZEN PARAMETERS-
 
 
 SINGULAR VALUES IN SOLUTION:-
-   2.76997e+019   2.70733e+017   1.16267e+017   7.05112e+016   3.71133e+016   7.50772e+015   4.52393e+013
+        11.7562        1.52679       0.699854       0.575632     0.00359206     0.00331459    0.000209157
 TRUNCATED SINGULAR VALUES:-
-       0.000000       0.000000       0.000000       0.000000
+        0.00000        0.00000        0.00000        0.00000
 
 
 Number of singular values used in solution = 7
@@ -106,9 +106,9 @@ FROZEN PARAMETERS-
 
 
 SINGULAR VALUES IN SOLUTION:-
-   2.70476e+020   2.55613e+018   7.89930e+017   4.72687e+017   3.70257e+017   7.36129e+016   4.49059e+014
+        111.913        7.11409        6.93694        5.72134      0.0337600      0.0331459     0.00207633
 TRUNCATED SINGULAR VALUES:-
-       0.000000       0.000000       0.000000       0.000000
+        0.00000        0.00000        0.00000        0.00000
 
 
 Number of singular values used in solution = 7
@@ -217,7 +217,7 @@ FROZEN PARAMETERS-
 
 
 SINGULAR VALUES IN SOLUTION:-
-        2.73030       0.426724
+        1.41184       0.731102
 TRUNCATED SINGULAR VALUES:-
 
 
@@ -230,7 +230,7 @@ FROZEN PARAMETERS-
 
 
 SINGULAR VALUES IN SOLUTION:-
-        2.74755       0.434510
+        1.41831       0.735889
 TRUNCATED SINGULAR VALUES:-
 
 
@@ -243,7 +243,7 @@ FROZEN PARAMETERS-
 
 
 SINGULAR VALUES IN SOLUTION:-
-        2.78240       0.449748
+        1.43149       0.745207
 TRUNCATED SINGULAR VALUES:-
 
 
@@ -256,7 +256,7 @@ FROZEN PARAMETERS-
 
 
 SINGULAR VALUES IN SOLUTION:-
-        3.07595       0.556871
+        1.54840       0.808279
 TRUNCATED SINGULAR VALUES:-
 
 
@@ -269,7 +269,7 @@ FROZEN PARAMETERS-
 
 
 SINGULAR VALUES IN SOLUTION:-
-        7.15453       0.985856
+        3.37813        1.00338
 TRUNCATED SINGULAR VALUES:-
 
 
@@ -282,7 +282,7 @@ FROZEN PARAMETERS-
 
 
 SINGULAR VALUES IN SOLUTION:-
-        51.7586        1.45744
+        23.3108        1.31909
 TRUNCATED SINGULAR VALUES:-
 
 
@@ -295,7 +295,7 @@ FROZEN PARAMETERS-
 
 
 SINGULAR VALUES IN SOLUTION:-
-        499.454        4.51892
+        223.069        4.04478
 TRUNCATED SINGULAR VALUES:-
 
 

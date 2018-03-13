@@ -1,623 +1,1101 @@
-PEST++ performance logger started at:  16:28:49
+PEST++ performance logger started at:  2018-03-13 15:33:58
+        ( time = 2018-03-13 15:33:58,  elapsed time = 96us )
   starting to process control file
-          ( time = 16:28:49,  elapsed time = 0us )
+          ( time = 2018-03-13 15:33:58,  elapsed time = 1ms )
   finished processing control file
-          ( time = 16:28:49,  elapsed time = 0us )
+          ( time = 2018-03-13 15:33:58,  elapsed time = 766us )
     starting basic model IO error checking
-            ( time = 16:28:49,  elapsed time = 15ms )
+            ( time = 2018-03-13 15:33:58,  elapsed time = 74us )
     finished basic model IO error checking
-            ( time = 16:28:49,  elapsed time = 4ms )
 
+            ( time = 2018-03-13 15:33:58,  elapsed time = 466us )
 beginning iteration 1
-        ( time = 16:28:49,  elapsed time = 46ms )
+        ( time = 2018-03-13 15:33:58,  elapsed time = 19us )
   commencing to build jacobian parameter sets
-          ( time = 16:28:49,  elapsed time = 1ms )
+          ( time = 2018-03-13 15:33:58,  elapsed time = 278us )
   jacobian parameter sets built, commencing model runs
-          ( time = 16:28:49,  elapsed time = 14ms )
+          ( time = 2018-03-13 15:34:00,  elapsed time = 1sec )
   jacobian runs complete, processing runs
-          ( time = 16:28:50,  elapsed time = 1sec )
+          ( time = 2018-03-13 15:34:00,  elapsed time = 274us )
   processing jacobian runs complete
-          ( time = 16:28:50,  elapsed time = 1ms )
+          ( time = 2018-03-13 15:34:00,  elapsed time = 57us )
   saving jacobian and sen files
-          ( time = 16:28:50,  elapsed time = 0us )
+          ( time = 2018-03-13 15:34:00,  elapsed time = 622us )
   commencing calculation of upgrade vector
-          ( time = 16:28:50,  elapsed time = 5ms )
-  commencing to scale JtQJ matrix
-          ( time = 16:28:50,  elapsed time = 0us )
-  multiplying JtQJ matrix
-          ( time = 16:28:50,  elapsed time = 0us )
-  scaling of  JtQJ matrix complete
-          ( time = 16:28:50,  elapsed time = 0us )
+          ( time = 2018-03-13 15:34:00,  elapsed time = 46us )
+  forming JtQJ matrix
+          ( time = 2018-03-13 15:34:00,  elapsed time = 14us )
   commencing SVD factorization
-          ( time = 16:28:50,  elapsed time = 0us )
+          ( time = 2018-03-13 15:34:00,  elapsed time = 12us )
+  starting REDSVD
+          ( time = 2018-03-13 15:34:00,  elapsed time = 51us )
+  retrieving REDSVD components
+          ( time = 2018-03-13 15:34:00,  elapsed time = 13us )
+  triming REDSVD components to 2elements
+          ( time = 2018-03-13 15:34:00,  elapsed time = 8us )
+  done REDSVD
+          ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
   SVD factorization complete
-          ( time = 16:28:50,  elapsed time = 0us )
+          ( time = 2018-03-13 15:34:00,  elapsed time = 43us )
   commencing linear algebra multiplication to compute ugrade
-          ( time = 16:28:50,  elapsed time = 0us )
+          ( time = 2018-03-13 15:34:00,  elapsed time = 12us )
   Vt info: rows = 2: cols = 11: size = 22: nonzeros = 14
-          ( time = 16:28:50,  elapsed time = 0us )
+          ( time = 2018-03-13 15:34:00,  elapsed time = 9us )
   U info: rows = 11: cols = 2: size = 22: nonzeros = 14
-          ( time = 16:28:50,  elapsed time = 1ms )
-  S info: rows = 11: cols = 11: size = 121: nonzeros = 7
-          ( time = 16:28:50,  elapsed time = 0us )
-  jac info: rows = 20: cols = 11: size = 220: nonzeros = 128
-          ( time = 16:28:50,  elapsed time = 0us )
+          ( time = 2018-03-13 15:34:00,  elapsed time = 38us )
+  jac info: rows = 2: cols = 11: size = 22: nonzeros = 12
+          ( time = 2018-03-13 15:34:00,  elapsed time = 12us )
   linear algebra multiplication to compute ugrade complete
-          ( time = 16:28:50,  elapsed time = 0us )
+          ( time = 2018-03-13 15:34:00,  elapsed time = 25us )
   commencing check of parameter bounds
-          ( time = 16:28:50,  elapsed time = 0us )
+          ( time = 2018-03-13 15:34:00,  elapsed time = 111us )
   beginning upgrade vector calculations, lambda = 0.1
-          ( time = 16:28:50,  elapsed time = 1ms )
+          ( time = 2018-03-13 15:34:00,  elapsed time = 10us )
     commencing calculation of upgrade vector
-            ( time = 16:28:51,  elapsed time = 16ms )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 25us )
+    forming JtQJ matrix
+            ( time = 2018-03-13 15:34:00,  elapsed time = 11us )
     commencing to scale JtQJ matrix
-            ( time = 16:28:51,  elapsed time = 0us )
-    multiplying JtQJ matrix
-            ( time = 16:28:51,  elapsed time = 0us )
-    scaling of  JtQJ matrix complete
-            ( time = 16:28:51,  elapsed time = 0us )
-    commencing SVD factorization
-            ( time = 16:28:51,  elapsed time = 0us )
-    SVD factorization complete
-            ( time = 16:28:51,  elapsed time = 1ms )
-    commencing linear algebra multiplication to compute ugrade
-            ( time = 16:28:51,  elapsed time = 0us )
-    Vt info: rows = 6: cols = 11: size = 66: nonzeros = 42
-            ( time = 16:28:51,  elapsed time = 0us )
-    U info: rows = 11: cols = 6: size = 66: nonzeros = 42
-            ( time = 16:28:51,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:00,  elapsed time = 24us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:00,  elapsed time = 9us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:00,  elapsed time = 7us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:00,  elapsed time = 11us )
     S info: rows = 11: cols = 11: size = 121: nonzeros = 7
-            ( time = 16:28:51,  elapsed time = 0us )
-    jac info: rows = 20: cols = 11: size = 220: nonzeros = 128
-            ( time = 16:28:51,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    JS
+            ( time = 2018-03-13 15:34:00,  elapsed time = 8us )
+    JS.transpose() * q_mat * JS + lambda * S.transpose() * S
+            ( time = 2018-03-13 15:34:00,  elapsed time = 14us )
+    S info: rows = 11: cols = 11: size = 121: nonzeros = 7
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    commencing SVD factorization
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:00,  elapsed time = 25us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:00,  elapsed time = 9us )
+    triming REDSVD components to 4elements
+            ( time = 2018-03-13 15:34:00,  elapsed time = 12us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    SVD factorization complete
+            ( time = 2018-03-13 15:34:00,  elapsed time = 25us )
+    commencing linear algebra multiplication to compute ugrade
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    S info: rows = 11: cols = 11: size = 121: nonzeros = 7Vt info: rows = 4: cols = 11: size = 44: nonzeros = 28
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    U info: rows = 11: cols = 4: size = 44: nonzeros = 28
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    jac info: rows = 2: cols = 11: size = 22: nonzeros = 12
+            ( time = 2018-03-13 15:34:00,  elapsed time = 9us )
     linear algebra multiplication to compute ugrade complete
-            ( time = 16:28:51,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 35us )
     commencing check of parameter bounds
-            ( time = 16:28:51,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 10us )
+    limiting out of bounds pars
+            ( time = 2018-03-13 15:34:00,  elapsed time = 13us )
+    checking for denormal floating point values
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    transforming upgrade pars to model pars
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    writing upgrade vector to csv file
+            ( time = 2018-03-13 15:34:00,  elapsed time = 144us )
   beginning upgrade vector calculations, lambda = 1
-          ( time = 16:28:51,  elapsed time = 0us )
+          ( time = 2018-03-13 15:34:00,  elapsed time = 8us )
     commencing calculation of upgrade vector
-            ( time = 16:28:51,  elapsed time = 8ms )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 23us )
+    forming JtQJ matrix
+            ( time = 2018-03-13 15:34:00,  elapsed time = 10us )
     commencing to scale JtQJ matrix
-            ( time = 16:28:51,  elapsed time = 999us )
-    multiplying JtQJ matrix
-            ( time = 16:28:51,  elapsed time = 0us )
-    scaling of  JtQJ matrix complete
-            ( time = 16:28:51,  elapsed time = 0us )
-    commencing SVD factorization
-            ( time = 16:28:51,  elapsed time = 0us )
-    SVD factorization complete
-            ( time = 16:28:51,  elapsed time = 0us )
-    commencing linear algebra multiplication to compute ugrade
-            ( time = 16:28:51,  elapsed time = 0us )
-    Vt info: rows = 6: cols = 11: size = 66: nonzeros = 42
-            ( time = 16:28:51,  elapsed time = 0us )
-    U info: rows = 11: cols = 6: size = 66: nonzeros = 42
-            ( time = 16:28:51,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:00,  elapsed time = 24us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:00,  elapsed time = 9us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:00,  elapsed time = 7us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:00,  elapsed time = 11us )
     S info: rows = 11: cols = 11: size = 121: nonzeros = 7
-            ( time = 16:28:51,  elapsed time = 0us )
-    jac info: rows = 20: cols = 11: size = 220: nonzeros = 128
-            ( time = 16:28:51,  elapsed time = 1ms )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    JS
+            ( time = 2018-03-13 15:34:00,  elapsed time = 6us )
+    JS.transpose() * q_mat * JS + lambda * S.transpose() * S
+            ( time = 2018-03-13 15:34:00,  elapsed time = 12us )
+    S info: rows = 11: cols = 11: size = 121: nonzeros = 7
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    commencing SVD factorization
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:00,  elapsed time = 24us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:00,  elapsed time = 9us )
+    triming REDSVD components to 4elements
+            ( time = 2018-03-13 15:34:00,  elapsed time = 7us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    SVD factorization complete
+            ( time = 2018-03-13 15:34:00,  elapsed time = 25us )
+    commencing linear algebra multiplication to compute ugrade
+            ( time = 2018-03-13 15:34:00,  elapsed time = 6us )
+    S info: rows = 11: cols = 11: size = 121: nonzeros = 7Vt info: rows = 4: cols = 11: size = 44: nonzeros = 28
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    U info: rows = 11: cols = 4: size = 44: nonzeros = 28
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    jac info: rows = 2: cols = 11: size = 22: nonzeros = 12
+            ( time = 2018-03-13 15:34:00,  elapsed time = 11us )
     linear algebra multiplication to compute ugrade complete
-            ( time = 16:28:51,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 27us )
     commencing check of parameter bounds
-            ( time = 16:28:51,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 13us )
+    limiting out of bounds pars
+            ( time = 2018-03-13 15:34:00,  elapsed time = 18us )
+    checking for denormal floating point values
+            ( time = 2018-03-13 15:34:00,  elapsed time = 16us )
+    transforming upgrade pars to model pars
+            ( time = 2018-03-13 15:34:00,  elapsed time = 9us )
+    writing upgrade vector to csv file
+            ( time = 2018-03-13 15:34:00,  elapsed time = 195us )
   beginning upgrade vector calculations, lambda = 10
-          ( time = 16:28:51,  elapsed time = 0us )
+          ( time = 2018-03-13 15:34:00,  elapsed time = 12us )
     commencing calculation of upgrade vector
-            ( time = 16:28:51,  elapsed time = 7ms )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 29us )
+    forming JtQJ matrix
+            ( time = 2018-03-13 15:34:00,  elapsed time = 15us )
     commencing to scale JtQJ matrix
-            ( time = 16:28:51,  elapsed time = 0us )
-    multiplying JtQJ matrix
-            ( time = 16:28:51,  elapsed time = 999us )
-    scaling of  JtQJ matrix complete
-            ( time = 16:28:51,  elapsed time = 0us )
-    commencing SVD factorization
-            ( time = 16:28:51,  elapsed time = 0us )
-    SVD factorization complete
-            ( time = 16:28:51,  elapsed time = 0us )
-    commencing linear algebra multiplication to compute ugrade
-            ( time = 16:28:51,  elapsed time = 0us )
-    Vt info: rows = 7: cols = 11: size = 77: nonzeros = 49
-            ( time = 16:28:51,  elapsed time = 0us )
-    U info: rows = 11: cols = 7: size = 77: nonzeros = 49
-            ( time = 16:28:51,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:00,  elapsed time = 25us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:00,  elapsed time = 9us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:00,  elapsed time = 8us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:00,  elapsed time = 15us )
     S info: rows = 11: cols = 11: size = 121: nonzeros = 7
-            ( time = 16:28:51,  elapsed time = 0us )
-    jac info: rows = 20: cols = 11: size = 220: nonzeros = 128
-            ( time = 16:28:51,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 6us )
+    JS
+            ( time = 2018-03-13 15:34:00,  elapsed time = 6us )
+    JS.transpose() * q_mat * JS + lambda * S.transpose() * S
+            ( time = 2018-03-13 15:34:00,  elapsed time = 13us )
+    S info: rows = 11: cols = 11: size = 121: nonzeros = 7
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    commencing SVD factorization
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:00,  elapsed time = 30us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:00,  elapsed time = 9us )
+    triming REDSVD components to 6elements
+            ( time = 2018-03-13 15:34:00,  elapsed time = 8us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    SVD factorization complete
+            ( time = 2018-03-13 15:34:00,  elapsed time = 26us )
+    commencing linear algebra multiplication to compute ugrade
+            ( time = 2018-03-13 15:34:00,  elapsed time = 6us )
+    S info: rows = 11: cols = 11: size = 121: nonzeros = 7Vt info: rows = 6: cols = 11: size = 66: nonzeros = 42
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    U info: rows = 11: cols = 6: size = 66: nonzeros = 42
+            ( time = 2018-03-13 15:34:00,  elapsed time = 7us )
+    jac info: rows = 2: cols = 11: size = 22: nonzeros = 12
+            ( time = 2018-03-13 15:34:00,  elapsed time = 14us )
     linear algebra multiplication to compute ugrade complete
-            ( time = 16:28:51,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 28us )
     commencing check of parameter bounds
-            ( time = 16:28:51,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 10us )
+    limiting out of bounds pars
+            ( time = 2018-03-13 15:34:00,  elapsed time = 14us )
+    checking for denormal floating point values
+            ( time = 2018-03-13 15:34:00,  elapsed time = 6us )
+    transforming upgrade pars to model pars
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    writing upgrade vector to csv file
+            ( time = 2018-03-13 15:34:00,  elapsed time = 147us )
   beginning upgrade vector calculations, lambda = 20
-          ( time = 16:28:51,  elapsed time = 0us )
+          ( time = 2018-03-13 15:34:00,  elapsed time = 8us )
     commencing calculation of upgrade vector
-            ( time = 16:28:51,  elapsed time = 9ms )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 23us )
+    forming JtQJ matrix
+            ( time = 2018-03-13 15:34:00,  elapsed time = 10us )
     commencing to scale JtQJ matrix
-            ( time = 16:28:51,  elapsed time = 0us )
-    multiplying JtQJ matrix
-            ( time = 16:28:51,  elapsed time = 0us )
-    scaling of  JtQJ matrix complete
-            ( time = 16:28:51,  elapsed time = 0us )
-    commencing SVD factorization
-            ( time = 16:28:51,  elapsed time = 0us )
-    SVD factorization complete
-            ( time = 16:28:51,  elapsed time = 0us )
-    commencing linear algebra multiplication to compute ugrade
-            ( time = 16:28:51,  elapsed time = 1ms )
-    Vt info: rows = 7: cols = 11: size = 77: nonzeros = 49
-            ( time = 16:28:51,  elapsed time = 0us )
-    U info: rows = 11: cols = 7: size = 77: nonzeros = 49
-            ( time = 16:28:51,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:00,  elapsed time = 24us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:00,  elapsed time = 9us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:00,  elapsed time = 6us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:00,  elapsed time = 14us )
     S info: rows = 11: cols = 11: size = 121: nonzeros = 7
-            ( time = 16:28:51,  elapsed time = 0us )
-    jac info: rows = 20: cols = 11: size = 220: nonzeros = 128
-            ( time = 16:28:51,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    JS
+            ( time = 2018-03-13 15:34:00,  elapsed time = 6us )
+    JS.transpose() * q_mat * JS + lambda * S.transpose() * S
+            ( time = 2018-03-13 15:34:00,  elapsed time = 12us )
+    S info: rows = 11: cols = 11: size = 121: nonzeros = 7
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    commencing SVD factorization
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:00,  elapsed time = 29us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:00,  elapsed time = 9us )
+    triming REDSVD components to 6elements
+            ( time = 2018-03-13 15:34:00,  elapsed time = 7us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    SVD factorization complete
+            ( time = 2018-03-13 15:34:00,  elapsed time = 24us )
+    commencing linear algebra multiplication to compute ugrade
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    S info: rows = 11: cols = 11: size = 121: nonzeros = 7Vt info: rows = 6: cols = 11: size = 66: nonzeros = 42
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    U info: rows = 11: cols = 6: size = 66: nonzeros = 42
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    jac info: rows = 2: cols = 11: size = 22: nonzeros = 12
+            ( time = 2018-03-13 15:34:00,  elapsed time = 8us )
     linear algebra multiplication to compute ugrade complete
-            ( time = 16:28:51,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 18us )
     commencing check of parameter bounds
-            ( time = 16:28:51,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 8us )
+    limiting out of bounds pars
+            ( time = 2018-03-13 15:34:00,  elapsed time = 12us )
+    checking for denormal floating point values
+            ( time = 2018-03-13 15:34:00,  elapsed time = 6us )
+    transforming upgrade pars to model pars
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    writing upgrade vector to csv file
+            ( time = 2018-03-13 15:34:00,  elapsed time = 162us )
   beginning upgrade vector calculations, lambda = 40
-          ( time = 16:28:51,  elapsed time = 0us )
+          ( time = 2018-03-13 15:34:00,  elapsed time = 10us )
     commencing calculation of upgrade vector
-            ( time = 16:28:51,  elapsed time = 10ms )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 22us )
+    forming JtQJ matrix
+            ( time = 2018-03-13 15:34:00,  elapsed time = 10us )
     commencing to scale JtQJ matrix
-            ( time = 16:28:51,  elapsed time = 0us )
-    multiplying JtQJ matrix
-            ( time = 16:28:51,  elapsed time = 0us )
-    scaling of  JtQJ matrix complete
-            ( time = 16:28:51,  elapsed time = 0us )
-    commencing SVD factorization
-            ( time = 16:28:51,  elapsed time = 0us )
-    SVD factorization complete
-            ( time = 16:28:51,  elapsed time = 0us )
-    commencing linear algebra multiplication to compute ugrade
-            ( time = 16:28:51,  elapsed time = 0us )
-    Vt info: rows = 7: cols = 11: size = 77: nonzeros = 49
-            ( time = 16:28:51,  elapsed time = 0us )
-    U info: rows = 11: cols = 7: size = 77: nonzeros = 49
-            ( time = 16:28:51,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:00,  elapsed time = 30us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:00,  elapsed time = 15us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:00,  elapsed time = 8us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:00,  elapsed time = 11us )
     S info: rows = 11: cols = 11: size = 121: nonzeros = 7
-            ( time = 16:28:51,  elapsed time = 0us )
-    jac info: rows = 20: cols = 11: size = 220: nonzeros = 128
-            ( time = 16:28:51,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    JS
+            ( time = 2018-03-13 15:34:00,  elapsed time = 6us )
+    JS.transpose() * q_mat * JS + lambda * S.transpose() * S
+            ( time = 2018-03-13 15:34:00,  elapsed time = 12us )
+    S info: rows = 11: cols = 11: size = 121: nonzeros = 7
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    commencing SVD factorization
+            ( time = 2018-03-13 15:34:00,  elapsed time = 16us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:00,  elapsed time = 35us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:00,  elapsed time = 10us )
+    triming REDSVD components to 7elements
+            ( time = 2018-03-13 15:34:00,  elapsed time = 8us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    SVD factorization complete
+            ( time = 2018-03-13 15:34:00,  elapsed time = 37us )
+    commencing linear algebra multiplication to compute ugrade
+            ( time = 2018-03-13 15:34:00,  elapsed time = 22us )
+    S info: rows = 11: cols = 11: size = 121: nonzeros = 7Vt info: rows = 7: cols = 11: size = 77: nonzeros = 49
+            ( time = 2018-03-13 15:34:00,  elapsed time = 13us )
+    U info: rows = 11: cols = 7: size = 77: nonzeros = 49
+            ( time = 2018-03-13 15:34:00,  elapsed time = 8us )
+    jac info: rows = 2: cols = 11: size = 22: nonzeros = 12
+            ( time = 2018-03-13 15:34:00,  elapsed time = 10us )
     linear algebra multiplication to compute ugrade complete
-            ( time = 16:28:51,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 19us )
     commencing check of parameter bounds
-            ( time = 16:28:51,  elapsed time = 1ms )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 8us )
+    limiting out of bounds pars
+            ( time = 2018-03-13 15:34:00,  elapsed time = 12us )
+    checking for denormal floating point values
+            ( time = 2018-03-13 15:34:00,  elapsed time = 6us )
+    transforming upgrade pars to model pars
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    writing upgrade vector to csv file
+            ( time = 2018-03-13 15:34:00,  elapsed time = 245us )
   beginning upgrade vector calculations, lambda = 100
-          ( time = 16:28:51,  elapsed time = 0us )
+          ( time = 2018-03-13 15:34:00,  elapsed time = 17us )
     commencing calculation of upgrade vector
-            ( time = 16:28:51,  elapsed time = 9ms )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 30us )
+    forming JtQJ matrix
+            ( time = 2018-03-13 15:34:00,  elapsed time = 14us )
     commencing to scale JtQJ matrix
-            ( time = 16:28:51,  elapsed time = 0us )
-    multiplying JtQJ matrix
-            ( time = 16:28:51,  elapsed time = 0us )
-    scaling of  JtQJ matrix complete
-            ( time = 16:28:51,  elapsed time = 0us )
-    commencing SVD factorization
-            ( time = 16:28:51,  elapsed time = 0us )
-    SVD factorization complete
-            ( time = 16:28:51,  elapsed time = 0us )
-    commencing linear algebra multiplication to compute ugrade
-            ( time = 16:28:51,  elapsed time = 0us )
-    Vt info: rows = 7: cols = 11: size = 77: nonzeros = 49
-            ( time = 16:28:51,  elapsed time = 0us )
-    U info: rows = 11: cols = 7: size = 77: nonzeros = 49
-            ( time = 16:28:51,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 8us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:00,  elapsed time = 28us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:00,  elapsed time = 9us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:00,  elapsed time = 7us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:00,  elapsed time = 11us )
     S info: rows = 11: cols = 11: size = 121: nonzeros = 7
-            ( time = 16:28:51,  elapsed time = 1ms )
-    jac info: rows = 20: cols = 11: size = 220: nonzeros = 128
-            ( time = 16:28:51,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    JS
+            ( time = 2018-03-13 15:34:00,  elapsed time = 6us )
+    JS.transpose() * q_mat * JS + lambda * S.transpose() * S
+            ( time = 2018-03-13 15:34:00,  elapsed time = 12us )
+    S info: rows = 11: cols = 11: size = 121: nonzeros = 7
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    commencing SVD factorization
+            ( time = 2018-03-13 15:34:00,  elapsed time = 4us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:00,  elapsed time = 32us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:00,  elapsed time = 9us )
+    triming REDSVD components to 7elements
+            ( time = 2018-03-13 15:34:00,  elapsed time = 8us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    SVD factorization complete
+            ( time = 2018-03-13 15:34:00,  elapsed time = 45us )
+    commencing linear algebra multiplication to compute ugrade
+            ( time = 2018-03-13 15:34:00,  elapsed time = 32us )
+    S info: rows = 11: cols = 11: size = 121: nonzeros = 7Vt info: rows = 7: cols = 11: size = 77: nonzeros = 49
+            ( time = 2018-03-13 15:34:00,  elapsed time = 9us )
+    U info: rows = 11: cols = 7: size = 77: nonzeros = 49
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    jac info: rows = 2: cols = 11: size = 22: nonzeros = 12
+            ( time = 2018-03-13 15:34:00,  elapsed time = 10us )
     linear algebra multiplication to compute ugrade complete
-            ( time = 16:28:51,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 19us )
     commencing check of parameter bounds
-            ( time = 16:28:51,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 8us )
+    limiting out of bounds pars
+            ( time = 2018-03-13 15:34:00,  elapsed time = 13us )
+    checking for denormal floating point values
+            ( time = 2018-03-13 15:34:00,  elapsed time = 6us )
+    transforming upgrade pars to model pars
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    writing upgrade vector to csv file
+            ( time = 2018-03-13 15:34:00,  elapsed time = 294us )
   beginning upgrade vector calculations, lambda = 1000
-          ( time = 16:28:51,  elapsed time = 0us )
+          ( time = 2018-03-13 15:34:00,  elapsed time = 12us )
     commencing calculation of upgrade vector
-            ( time = 16:28:51,  elapsed time = 10ms )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 24us )
+    forming JtQJ matrix
+            ( time = 2018-03-13 15:34:00,  elapsed time = 11us )
     commencing to scale JtQJ matrix
-            ( time = 16:28:51,  elapsed time = 0us )
-    multiplying JtQJ matrix
-            ( time = 16:28:51,  elapsed time = 998us )
-    scaling of  JtQJ matrix complete
-            ( time = 16:28:51,  elapsed time = 0us )
-    commencing SVD factorization
-            ( time = 16:28:51,  elapsed time = 0us )
-    SVD factorization complete
-            ( time = 16:28:51,  elapsed time = 0us )
-    commencing linear algebra multiplication to compute ugrade
-            ( time = 16:28:51,  elapsed time = 0us )
-    Vt info: rows = 7: cols = 11: size = 77: nonzeros = 49
-            ( time = 16:28:51,  elapsed time = 0us )
-    U info: rows = 11: cols = 7: size = 77: nonzeros = 49
-            ( time = 16:28:51,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:00,  elapsed time = 30us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:00,  elapsed time = 10us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:00,  elapsed time = 7us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:00,  elapsed time = 11us )
     S info: rows = 11: cols = 11: size = 121: nonzeros = 7
-            ( time = 16:28:51,  elapsed time = 0us )
-    jac info: rows = 20: cols = 11: size = 220: nonzeros = 128
-            ( time = 16:28:51,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    JS
+            ( time = 2018-03-13 15:34:00,  elapsed time = 6us )
+    JS.transpose() * q_mat * JS + lambda * S.transpose() * S
+            ( time = 2018-03-13 15:34:00,  elapsed time = 12us )
+    S info: rows = 11: cols = 11: size = 121: nonzeros = 7
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    commencing SVD factorization
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:00,  elapsed time = 33us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:00,  elapsed time = 9us )
+    triming REDSVD components to 7elements
+            ( time = 2018-03-13 15:34:00,  elapsed time = 8us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    SVD factorization complete
+            ( time = 2018-03-13 15:34:00,  elapsed time = 35us )
+    commencing linear algebra multiplication to compute ugrade
+            ( time = 2018-03-13 15:34:00,  elapsed time = 6us )
+    S info: rows = 11: cols = 11: size = 121: nonzeros = 7Vt info: rows = 7: cols = 11: size = 77: nonzeros = 49
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    U info: rows = 11: cols = 7: size = 77: nonzeros = 49
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    jac info: rows = 2: cols = 11: size = 22: nonzeros = 12
+            ( time = 2018-03-13 15:34:00,  elapsed time = 9us )
     linear algebra multiplication to compute ugrade complete
-            ( time = 16:28:51,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 23us )
     commencing check of parameter bounds
-            ( time = 16:28:51,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:00,  elapsed time = 9us )
+    limiting out of bounds pars
+            ( time = 2018-03-13 15:34:00,  elapsed time = 12us )
+    checking for denormal floating point values
+            ( time = 2018-03-13 15:34:00,  elapsed time = 6us )
+    transforming upgrade pars to model pars
+            ( time = 2018-03-13 15:34:00,  elapsed time = 5us )
+    writing upgrade vector to csv file
+            ( time = 2018-03-13 15:34:03,  elapsed time = 3sec )
 completed iteration 1
-        ( time = 16:28:51,  elapsed time = 810ms )
 time to complete iteration 1
-        ( elapsed time = 2sec )
+        ( elapsed time = 4sec )
 
+        ( time = 2018-03-13 15:34:03,  elapsed time = 1ms )
 beginning iteration 2
-        ( time = 16:28:51,  elapsed time = 27ms )
+        ( time = 2018-03-13 15:34:03,  elapsed time = 31us )
   commencing to build jacobian parameter sets
-          ( time = 16:28:51,  elapsed time = 0us )
+          ( time = 2018-03-13 15:34:03,  elapsed time = 103us )
   commencing to build jacobian parameter sets
-          ( time = 16:28:51,  elapsed time = 1ms )
+          ( time = 2018-03-13 15:34:03,  elapsed time = 191us )
   jacobian parameter sets built, commencing model runs
-          ( time = 16:28:51,  elapsed time = 19ms )
+          ( time = 2018-03-13 15:34:03,  elapsed time = 303ms )
   jacobian runs complete, processing runs
-          ( time = 16:28:52,  elapsed time = 339ms )
+          ( time = 2018-03-13 15:34:03,  elapsed time = 151us )
   saving jacobian and sen files
-          ( time = 16:28:52,  elapsed time = 1ms )
+          ( time = 2018-03-13 15:34:03,  elapsed time = 268us )
   computing upgrade vectors
-          ( time = 16:28:52,  elapsed time = 6ms )
+          ( time = 2018-03-13 15:34:03,  elapsed time = 184us )
   beginning upgrade vector calculations, lambda = 0.1
-          ( time = 16:28:52,  elapsed time = 1ms )
+          ( time = 2018-03-13 15:34:03,  elapsed time = 67us )
+    forming JtQJ matrix
+            ( time = 2018-03-13 15:34:03,  elapsed time = 15us )
     commencing to scale JtQJ matrix
-            ( time = 16:28:52,  elapsed time = 3ms )
-    multiplying JtQJ matrix
-            ( time = 16:28:52,  elapsed time = 0us )
-    scaling of  JtQJ matrix complete
-            ( time = 16:28:52,  elapsed time = 0us )
-    commencing SVD factorization
-            ( time = 16:28:52,  elapsed time = 0us )
-    SVD factorization complete
-            ( time = 16:28:52,  elapsed time = 0us )
-    commencing linear algebra multiplication to compute ugrade
-            ( time = 16:28:52,  elapsed time = 0us )
-    Vt info: rows = 2: cols = 2: size = 4: nonzeros = 4
-            ( time = 16:28:52,  elapsed time = 0us )
-    U info: rows = 2: cols = 2: size = 4: nonzeros = 4
-            ( time = 16:28:52,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:03,  elapsed time = 10us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:03,  elapsed time = 18us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:03,  elapsed time = 8us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:03,  elapsed time = 7us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:03,  elapsed time = 10us )
     S info: rows = 2: cols = 2: size = 4: nonzeros = 2
-            ( time = 16:28:52,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:03,  elapsed time = 5us )
+    JS
+            ( time = 2018-03-13 15:34:03,  elapsed time = 8us )
+    JS.transpose() * q_mat * JS + lambda * S.transpose() * S
+            ( time = 2018-03-13 15:34:03,  elapsed time = 13us )
+    S info: rows = 2: cols = 2: size = 4: nonzeros = 2
+            ( time = 2018-03-13 15:34:03,  elapsed time = 5us )
+    commencing SVD factorization
+            ( time = 2018-03-13 15:34:03,  elapsed time = 4us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:03,  elapsed time = 9us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:03,  elapsed time = 6us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:03,  elapsed time = 5us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:03,  elapsed time = 5us )
+    SVD factorization complete
+            ( time = 2018-03-13 15:34:03,  elapsed time = 39us )
+    commencing linear algebra multiplication to compute ugrade
+            ( time = 2018-03-13 15:34:03,  elapsed time = 6us )
+    S info: rows = 2: cols = 2: size = 4: nonzeros = 2Vt info: rows = 2: cols = 2: size = 4: nonzeros = 4
+            ( time = 2018-03-13 15:34:03,  elapsed time = 5us )
+    U info: rows = 2: cols = 2: size = 4: nonzeros = 4
+            ( time = 2018-03-13 15:34:03,  elapsed time = 5us )
     jac info: rows = 20: cols = 2: size = 40: nonzeros = 39
-            ( time = 16:28:52,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:03,  elapsed time = 11us )
     linear algebra multiplication to compute ugrade complete
-            ( time = 16:28:52,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:03,  elapsed time = 93us )
   beginning upgrade vector calculations, lambda = 1
-          ( time = 16:28:52,  elapsed time = 0us )
+          ( time = 2018-03-13 15:34:03,  elapsed time = 81us )
+    forming JtQJ matrix
+            ( time = 2018-03-13 15:34:03,  elapsed time = 21us )
     commencing to scale JtQJ matrix
-            ( time = 16:28:52,  elapsed time = 8ms )
-    multiplying JtQJ matrix
-            ( time = 16:28:52,  elapsed time = 0us )
-    scaling of  JtQJ matrix complete
-            ( time = 16:28:52,  elapsed time = 0us )
-    commencing SVD factorization
-            ( time = 16:28:52,  elapsed time = 0us )
-    SVD factorization complete
-            ( time = 16:28:52,  elapsed time = 0us )
-    commencing linear algebra multiplication to compute ugrade
-            ( time = 16:28:52,  elapsed time = 0us )
-    Vt info: rows = 2: cols = 2: size = 4: nonzeros = 4
-            ( time = 16:28:52,  elapsed time = 0us )
-    U info: rows = 2: cols = 2: size = 4: nonzeros = 4
-            ( time = 16:28:52,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:03,  elapsed time = 9us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:03,  elapsed time = 15us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:03,  elapsed time = 23us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:03,  elapsed time = 11us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:03,  elapsed time = 13us )
     S info: rows = 2: cols = 2: size = 4: nonzeros = 2
-            ( time = 16:28:52,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:03,  elapsed time = 8us )
+    JS
+            ( time = 2018-03-13 15:34:03,  elapsed time = 10us )
+    JS.transpose() * q_mat * JS + lambda * S.transpose() * S
+            ( time = 2018-03-13 15:34:03,  elapsed time = 12us )
+    S info: rows = 2: cols = 2: size = 4: nonzeros = 2
+            ( time = 2018-03-13 15:34:03,  elapsed time = 5us )
+    commencing SVD factorization
+            ( time = 2018-03-13 15:34:03,  elapsed time = 4us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:03,  elapsed time = 9us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:03,  elapsed time = 6us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:03,  elapsed time = 5us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:03,  elapsed time = 5us )
+    SVD factorization complete
+            ( time = 2018-03-13 15:34:03,  elapsed time = 41us )
+    commencing linear algebra multiplication to compute ugrade
+            ( time = 2018-03-13 15:34:03,  elapsed time = 18us )
+    S info: rows = 2: cols = 2: size = 4: nonzeros = 2Vt info: rows = 2: cols = 2: size = 4: nonzeros = 4
+            ( time = 2018-03-13 15:34:03,  elapsed time = 9us )
+    U info: rows = 2: cols = 2: size = 4: nonzeros = 4
+            ( time = 2018-03-13 15:34:03,  elapsed time = 12us )
     jac info: rows = 20: cols = 2: size = 40: nonzeros = 39
-            ( time = 16:28:52,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:03,  elapsed time = 10us )
     linear algebra multiplication to compute ugrade complete
-            ( time = 16:28:52,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:03,  elapsed time = 80us )
   beginning upgrade vector calculations, lambda = 10
-          ( time = 16:28:52,  elapsed time = 0us )
+          ( time = 2018-03-13 15:34:03,  elapsed time = 73us )
+    forming JtQJ matrix
+            ( time = 2018-03-13 15:34:03,  elapsed time = 19us )
     commencing to scale JtQJ matrix
-            ( time = 16:28:52,  elapsed time = 8ms )
-    multiplying JtQJ matrix
-            ( time = 16:28:52,  elapsed time = 0us )
-    scaling of  JtQJ matrix complete
-            ( time = 16:28:52,  elapsed time = 0us )
-    commencing SVD factorization
-            ( time = 16:28:52,  elapsed time = 0us )
-    SVD factorization complete
-            ( time = 16:28:52,  elapsed time = 0us )
-    commencing linear algebra multiplication to compute ugrade
-            ( time = 16:28:52,  elapsed time = 0us )
-    Vt info: rows = 2: cols = 2: size = 4: nonzeros = 4
-            ( time = 16:28:52,  elapsed time = 0us )
-    U info: rows = 2: cols = 2: size = 4: nonzeros = 4
-            ( time = 16:28:52,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:03,  elapsed time = 8us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:03,  elapsed time = 16us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:03,  elapsed time = 12us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:03,  elapsed time = 10us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:03,  elapsed time = 14us )
     S info: rows = 2: cols = 2: size = 4: nonzeros = 2
-            ( time = 16:28:52,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:03,  elapsed time = 20us )
+    JS
+            ( time = 2018-03-13 15:34:03,  elapsed time = 13us )
+    JS.transpose() * q_mat * JS + lambda * S.transpose() * S
+            ( time = 2018-03-13 15:34:03,  elapsed time = 18us )
+    S info: rows = 2: cols = 2: size = 4: nonzeros = 2
+            ( time = 2018-03-13 15:34:03,  elapsed time = 8us )
+    commencing SVD factorization
+            ( time = 2018-03-13 15:34:03,  elapsed time = 7us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:03,  elapsed time = 14us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:03,  elapsed time = 12us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:03,  elapsed time = 10us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:03,  elapsed time = 8us )
+    SVD factorization complete
+            ( time = 2018-03-13 15:34:03,  elapsed time = 37us )
+    commencing linear algebra multiplication to compute ugrade
+            ( time = 2018-03-13 15:34:03,  elapsed time = 10us )
+    S info: rows = 2: cols = 2: size = 4: nonzeros = 2Vt info: rows = 2: cols = 2: size = 4: nonzeros = 4
+            ( time = 2018-03-13 15:34:03,  elapsed time = 9us )
+    U info: rows = 2: cols = 2: size = 4: nonzeros = 4
+            ( time = 2018-03-13 15:34:03,  elapsed time = 8us )
     jac info: rows = 20: cols = 2: size = 40: nonzeros = 39
-            ( time = 16:28:52,  elapsed time = 1ms )
+            ( time = 2018-03-13 15:34:03,  elapsed time = 15us )
     linear algebra multiplication to compute ugrade complete
-            ( time = 16:28:52,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:03,  elapsed time = 122us )
   beginning upgrade vector calculations, lambda = 20
-          ( time = 16:28:52,  elapsed time = 0us )
+          ( time = 2018-03-13 15:34:03,  elapsed time = 117us )
+    forming JtQJ matrix
+            ( time = 2018-03-13 15:34:03,  elapsed time = 30us )
     commencing to scale JtQJ matrix
-            ( time = 16:28:52,  elapsed time = 10ms )
-    multiplying JtQJ matrix
-            ( time = 16:28:52,  elapsed time = 0us )
-    scaling of  JtQJ matrix complete
-            ( time = 16:28:52,  elapsed time = 0us )
-    commencing SVD factorization
-            ( time = 16:28:52,  elapsed time = 0us )
-    SVD factorization complete
-            ( time = 16:28:52,  elapsed time = 0us )
-    commencing linear algebra multiplication to compute ugrade
-            ( time = 16:28:52,  elapsed time = 0us )
-    Vt info: rows = 2: cols = 2: size = 4: nonzeros = 4
-            ( time = 16:28:52,  elapsed time = 0us )
-    U info: rows = 2: cols = 2: size = 4: nonzeros = 4
-            ( time = 16:28:52,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:03,  elapsed time = 6us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:03,  elapsed time = 17us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:03,  elapsed time = 14us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:03,  elapsed time = 12us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:03,  elapsed time = 15us )
     S info: rows = 2: cols = 2: size = 4: nonzeros = 2
-            ( time = 16:28:52,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:03,  elapsed time = 8us )
+    JS
+            ( time = 2018-03-13 15:34:03,  elapsed time = 11us )
+    JS.transpose() * q_mat * JS + lambda * S.transpose() * S
+            ( time = 2018-03-13 15:34:03,  elapsed time = 52us )
+    S info: rows = 2: cols = 2: size = 4: nonzeros = 2
+            ( time = 2018-03-13 15:34:03,  elapsed time = 29us )
+    commencing SVD factorization
+            ( time = 2018-03-13 15:34:03,  elapsed time = 9us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:03,  elapsed time = 13us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:03,  elapsed time = 60us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:03,  elapsed time = 15us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:03,  elapsed time = 6us )
+    SVD factorization complete
+            ( time = 2018-03-13 15:34:03,  elapsed time = 38us )
+    commencing linear algebra multiplication to compute ugrade
+            ( time = 2018-03-13 15:34:03,  elapsed time = 6us )
+    S info: rows = 2: cols = 2: size = 4: nonzeros = 2Vt info: rows = 2: cols = 2: size = 4: nonzeros = 4
+            ( time = 2018-03-13 15:34:03,  elapsed time = 5us )
+    U info: rows = 2: cols = 2: size = 4: nonzeros = 4
+            ( time = 2018-03-13 15:34:03,  elapsed time = 5us )
     jac info: rows = 20: cols = 2: size = 40: nonzeros = 39
-            ( time = 16:28:52,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:03,  elapsed time = 11us )
     linear algebra multiplication to compute ugrade complete
-            ( time = 16:28:52,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:03,  elapsed time = 94us )
   beginning upgrade vector calculations, lambda = 40
-          ( time = 16:28:52,  elapsed time = 0us )
+          ( time = 2018-03-13 15:34:03,  elapsed time = 68us )
+    forming JtQJ matrix
+            ( time = 2018-03-13 15:34:03,  elapsed time = 13us )
     commencing to scale JtQJ matrix
-            ( time = 16:28:52,  elapsed time = 9ms )
-    multiplying JtQJ matrix
-            ( time = 16:28:52,  elapsed time = 0us )
-    scaling of  JtQJ matrix complete
-            ( time = 16:28:52,  elapsed time = 0us )
-    commencing SVD factorization
-            ( time = 16:28:52,  elapsed time = 0us )
-    SVD factorization complete
-            ( time = 16:28:52,  elapsed time = 0us )
-    commencing linear algebra multiplication to compute ugrade
-            ( time = 16:28:52,  elapsed time = 0us )
-    Vt info: rows = 2: cols = 2: size = 4: nonzeros = 4
-            ( time = 16:28:52,  elapsed time = 0us )
-    U info: rows = 2: cols = 2: size = 4: nonzeros = 4
-            ( time = 16:28:52,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:03,  elapsed time = 5us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:03,  elapsed time = 11us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:03,  elapsed time = 20us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:03,  elapsed time = 7us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:03,  elapsed time = 9us )
     S info: rows = 2: cols = 2: size = 4: nonzeros = 2
-            ( time = 16:28:52,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:03,  elapsed time = 5us )
+    JS
+            ( time = 2018-03-13 15:34:03,  elapsed time = 7us )
+    JS.transpose() * q_mat * JS + lambda * S.transpose() * S
+            ( time = 2018-03-13 15:34:03,  elapsed time = 11us )
+    S info: rows = 2: cols = 2: size = 4: nonzeros = 2
+            ( time = 2018-03-13 15:34:03,  elapsed time = 5us )
+    commencing SVD factorization
+            ( time = 2018-03-13 15:34:03,  elapsed time = 4us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:03,  elapsed time = 8us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:03,  elapsed time = 6us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:03,  elapsed time = 6us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:03,  elapsed time = 6us )
+    SVD factorization complete
+            ( time = 2018-03-13 15:34:03,  elapsed time = 43us )
+    commencing linear algebra multiplication to compute ugrade
+            ( time = 2018-03-13 15:34:03,  elapsed time = 14us )
+    S info: rows = 2: cols = 2: size = 4: nonzeros = 2Vt info: rows = 2: cols = 2: size = 4: nonzeros = 4
+            ( time = 2018-03-13 15:34:03,  elapsed time = 6us )
+    U info: rows = 2: cols = 2: size = 4: nonzeros = 4
+            ( time = 2018-03-13 15:34:03,  elapsed time = 5us )
     jac info: rows = 20: cols = 2: size = 40: nonzeros = 39
-            ( time = 16:28:52,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:03,  elapsed time = 10us )
     linear algebra multiplication to compute ugrade complete
-            ( time = 16:28:52,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:03,  elapsed time = 80us )
   beginning upgrade vector calculations, lambda = 100
-          ( time = 16:28:52,  elapsed time = 1ms )
+          ( time = 2018-03-13 15:34:03,  elapsed time = 60us )
+    forming JtQJ matrix
+            ( time = 2018-03-13 15:34:03,  elapsed time = 14us )
     commencing to scale JtQJ matrix
-            ( time = 16:28:52,  elapsed time = 7ms )
-    multiplying JtQJ matrix
-            ( time = 16:28:52,  elapsed time = 0us )
-    scaling of  JtQJ matrix complete
-            ( time = 16:28:52,  elapsed time = 0us )
-    commencing SVD factorization
-            ( time = 16:28:52,  elapsed time = 0us )
-    SVD factorization complete
-            ( time = 16:28:52,  elapsed time = 0us )
-    commencing linear algebra multiplication to compute ugrade
-            ( time = 16:28:52,  elapsed time = 1ms )
-    Vt info: rows = 2: cols = 2: size = 4: nonzeros = 4
-            ( time = 16:28:52,  elapsed time = 0us )
-    U info: rows = 2: cols = 2: size = 4: nonzeros = 4
-            ( time = 16:28:52,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:03,  elapsed time = 6us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:03,  elapsed time = 12us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:03,  elapsed time = 7us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:03,  elapsed time = 7us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:03,  elapsed time = 9us )
     S info: rows = 2: cols = 2: size = 4: nonzeros = 2
-            ( time = 16:28:52,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:03,  elapsed time = 5us )
+    JS
+            ( time = 2018-03-13 15:34:03,  elapsed time = 14us )
+    JS.transpose() * q_mat * JS + lambda * S.transpose() * S
+            ( time = 2018-03-13 15:34:03,  elapsed time = 12us )
+    S info: rows = 2: cols = 2: size = 4: nonzeros = 2
+            ( time = 2018-03-13 15:34:03,  elapsed time = 6us )
+    commencing SVD factorization
+            ( time = 2018-03-13 15:34:03,  elapsed time = 6us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:03,  elapsed time = 10us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:03,  elapsed time = 7us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:03,  elapsed time = 7us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:03,  elapsed time = 5us )
+    SVD factorization complete
+            ( time = 2018-03-13 15:34:03,  elapsed time = 42us )
+    commencing linear algebra multiplication to compute ugrade
+            ( time = 2018-03-13 15:34:03,  elapsed time = 19us )
+    S info: rows = 2: cols = 2: size = 4: nonzeros = 2Vt info: rows = 2: cols = 2: size = 4: nonzeros = 4
+            ( time = 2018-03-13 15:34:03,  elapsed time = 7us )
+    U info: rows = 2: cols = 2: size = 4: nonzeros = 4
+            ( time = 2018-03-13 15:34:03,  elapsed time = 6us )
     jac info: rows = 20: cols = 2: size = 40: nonzeros = 39
-            ( time = 16:28:52,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:03,  elapsed time = 14us )
     linear algebra multiplication to compute ugrade complete
-            ( time = 16:28:52,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:03,  elapsed time = 122us )
   beginning upgrade vector calculations, lambda = 1000
-          ( time = 16:28:52,  elapsed time = 0us )
+          ( time = 2018-03-13 15:34:03,  elapsed time = 93us )
+    forming JtQJ matrix
+            ( time = 2018-03-13 15:34:03,  elapsed time = 25us )
     commencing to scale JtQJ matrix
-            ( time = 16:28:52,  elapsed time = 8ms )
-    multiplying JtQJ matrix
-            ( time = 16:28:52,  elapsed time = 0us )
-    scaling of  JtQJ matrix complete
-            ( time = 16:28:52,  elapsed time = 0us )
-    commencing SVD factorization
-            ( time = 16:28:52,  elapsed time = 0us )
-    SVD factorization complete
-            ( time = 16:28:52,  elapsed time = 0us )
-    commencing linear algebra multiplication to compute ugrade
-            ( time = 16:28:52,  elapsed time = 0us )
-    Vt info: rows = 2: cols = 2: size = 4: nonzeros = 4
-            ( time = 16:28:52,  elapsed time = 0us )
-    U info: rows = 2: cols = 2: size = 4: nonzeros = 4
-            ( time = 16:28:52,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:03,  elapsed time = 7us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:03,  elapsed time = 18us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:03,  elapsed time = 9us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:03,  elapsed time = 9us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:03,  elapsed time = 9us )
     S info: rows = 2: cols = 2: size = 4: nonzeros = 2
-            ( time = 16:28:52,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:03,  elapsed time = 5us )
+    JS
+            ( time = 2018-03-13 15:34:03,  elapsed time = 6us )
+    JS.transpose() * q_mat * JS + lambda * S.transpose() * S
+            ( time = 2018-03-13 15:34:03,  elapsed time = 11us )
+    S info: rows = 2: cols = 2: size = 4: nonzeros = 2
+            ( time = 2018-03-13 15:34:03,  elapsed time = 6us )
+    commencing SVD factorization
+            ( time = 2018-03-13 15:34:03,  elapsed time = 4us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:03,  elapsed time = 8us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:03,  elapsed time = 6us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:03,  elapsed time = 5us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:03,  elapsed time = 5us )
+    SVD factorization complete
+            ( time = 2018-03-13 15:34:03,  elapsed time = 33us )
+    commencing linear algebra multiplication to compute ugrade
+            ( time = 2018-03-13 15:34:03,  elapsed time = 6us )
+    S info: rows = 2: cols = 2: size = 4: nonzeros = 2Vt info: rows = 2: cols = 2: size = 4: nonzeros = 4
+            ( time = 2018-03-13 15:34:03,  elapsed time = 5us )
+    U info: rows = 2: cols = 2: size = 4: nonzeros = 4
+            ( time = 2018-03-13 15:34:03,  elapsed time = 5us )
     jac info: rows = 20: cols = 2: size = 40: nonzeros = 39
-            ( time = 16:28:52,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:03,  elapsed time = 10us )
     linear algebra multiplication to compute ugrade complete
-            ( time = 16:28:52,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:04,  elapsed time = 709ms )
   completed iteration 2
-          ( time = 16:28:53,  elapsed time = 812ms )
   time to complete iteration 2
           ( elapsed time = 1sec )
 
+          ( time = 2018-03-13 15:34:04,  elapsed time = 1ms )
 beginning iteration 3
-        ( time = 16:28:53,  elapsed time = 23ms )
+        ( time = 2018-03-13 15:34:04,  elapsed time = 28us )
   commencing to build jacobian parameter sets
-          ( time = 16:28:53,  elapsed time = 0us )
+          ( time = 2018-03-13 15:34:04,  elapsed time = 64us )
   commencing to build jacobian parameter sets
-          ( time = 16:28:53,  elapsed time = 998us )
+          ( time = 2018-03-13 15:34:04,  elapsed time = 100us )
   jacobian parameter sets built, commencing model runs
-          ( time = 16:28:53,  elapsed time = 10ms )
+          ( time = 2018-03-13 15:34:04,  elapsed time = 303ms )
   jacobian runs complete, processing runs
-          ( time = 16:28:53,  elapsed time = 337ms )
+          ( time = 2018-03-13 15:34:04,  elapsed time = 76us )
   saving jacobian and sen files
-          ( time = 16:28:53,  elapsed time = 0us )
+          ( time = 2018-03-13 15:34:04,  elapsed time = 316us )
   computing upgrade vectors
-          ( time = 16:28:53,  elapsed time = 10ms )
+          ( time = 2018-03-13 15:34:04,  elapsed time = 105us )
   beginning upgrade vector calculations, lambda = 0.05
-          ( time = 16:28:53,  elapsed time = 1ms )
+          ( time = 2018-03-13 15:34:04,  elapsed time = 70us )
+    forming JtQJ matrix
+            ( time = 2018-03-13 15:34:04,  elapsed time = 14us )
     commencing to scale JtQJ matrix
-            ( time = 16:28:53,  elapsed time = 6ms )
-    multiplying JtQJ matrix
-            ( time = 16:28:53,  elapsed time = 0us )
-    scaling of  JtQJ matrix complete
-            ( time = 16:28:53,  elapsed time = 0us )
-    commencing SVD factorization
-            ( time = 16:28:53,  elapsed time = 0us )
-    SVD factorization complete
-            ( time = 16:28:53,  elapsed time = 0us )
-    commencing linear algebra multiplication to compute ugrade
-            ( time = 16:28:53,  elapsed time = 0us )
-    Vt info: rows = 2: cols = 2: size = 4: nonzeros = 4
-            ( time = 16:28:53,  elapsed time = 0us )
-    U info: rows = 2: cols = 2: size = 4: nonzeros = 4
-            ( time = 16:28:53,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:04,  elapsed time = 5us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:04,  elapsed time = 16us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:04,  elapsed time = 7us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:04,  elapsed time = 7us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:04,  elapsed time = 9us )
     S info: rows = 2: cols = 2: size = 4: nonzeros = 2
-            ( time = 16:28:53,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    JS
+            ( time = 2018-03-13 15:34:04,  elapsed time = 8us )
+    JS.transpose() * q_mat * JS + lambda * S.transpose() * S
+            ( time = 2018-03-13 15:34:04,  elapsed time = 12us )
+    S info: rows = 2: cols = 2: size = 4: nonzeros = 2
+            ( time = 2018-03-13 15:34:04,  elapsed time = 5us )
+    commencing SVD factorization
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:04,  elapsed time = 8us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:04,  elapsed time = 6us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:04,  elapsed time = 5us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    SVD factorization complete
+            ( time = 2018-03-13 15:34:04,  elapsed time = 34us )
+    commencing linear algebra multiplication to compute ugrade
+            ( time = 2018-03-13 15:34:04,  elapsed time = 5us )
+    S info: rows = 2: cols = 2: size = 4: nonzeros = 2Vt info: rows = 2: cols = 2: size = 4: nonzeros = 4
+            ( time = 2018-03-13 15:34:04,  elapsed time = 5us )
+    U info: rows = 2: cols = 2: size = 4: nonzeros = 4
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
     jac info: rows = 20: cols = 2: size = 40: nonzeros = 39
-            ( time = 16:28:53,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:04,  elapsed time = 10us )
     linear algebra multiplication to compute ugrade complete
-            ( time = 16:28:53,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:04,  elapsed time = 93us )
   beginning upgrade vector calculations, lambda = 0.1
-          ( time = 16:28:53,  elapsed time = 0us )
+          ( time = 2018-03-13 15:34:04,  elapsed time = 55us )
+    forming JtQJ matrix
+            ( time = 2018-03-13 15:34:04,  elapsed time = 11us )
     commencing to scale JtQJ matrix
-            ( time = 16:28:53,  elapsed time = 6ms )
-    multiplying JtQJ matrix
-            ( time = 16:28:53,  elapsed time = 0us )
-    scaling of  JtQJ matrix complete
-            ( time = 16:28:53,  elapsed time = 0us )
-    commencing SVD factorization
-            ( time = 16:28:53,  elapsed time = 0us )
-    SVD factorization complete
-            ( time = 16:28:53,  elapsed time = 0us )
-    commencing linear algebra multiplication to compute ugrade
-            ( time = 16:28:53,  elapsed time = 0us )
-    Vt info: rows = 2: cols = 2: size = 4: nonzeros = 4
-            ( time = 16:28:53,  elapsed time = 0us )
-    U info: rows = 2: cols = 2: size = 4: nonzeros = 4
-            ( time = 16:28:53,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:04,  elapsed time = 8us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:04,  elapsed time = 6us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:04,  elapsed time = 5us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:04,  elapsed time = 7us )
     S info: rows = 2: cols = 2: size = 4: nonzeros = 2
-            ( time = 16:28:53,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    JS
+            ( time = 2018-03-13 15:34:04,  elapsed time = 6us )
+    JS.transpose() * q_mat * JS + lambda * S.transpose() * S
+            ( time = 2018-03-13 15:34:04,  elapsed time = 10us )
+    S info: rows = 2: cols = 2: size = 4: nonzeros = 2
+            ( time = 2018-03-13 15:34:04,  elapsed time = 9us )
+    commencing SVD factorization
+            ( time = 2018-03-13 15:34:04,  elapsed time = 5us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:04,  elapsed time = 8us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:04,  elapsed time = 6us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:04,  elapsed time = 5us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    SVD factorization complete
+            ( time = 2018-03-13 15:34:04,  elapsed time = 31us )
+    commencing linear algebra multiplication to compute ugrade
+            ( time = 2018-03-13 15:34:04,  elapsed time = 5us )
+    S info: rows = 2: cols = 2: size = 4: nonzeros = 2Vt info: rows = 2: cols = 2: size = 4: nonzeros = 4
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    U info: rows = 2: cols = 2: size = 4: nonzeros = 4
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
     jac info: rows = 20: cols = 2: size = 40: nonzeros = 39
-            ( time = 16:28:53,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:04,  elapsed time = 8us )
     linear algebra multiplication to compute ugrade complete
-            ( time = 16:28:53,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:04,  elapsed time = 71us )
   beginning upgrade vector calculations, lambda = 0.2
-          ( time = 16:28:53,  elapsed time = 0us )
+          ( time = 2018-03-13 15:34:04,  elapsed time = 58us )
+    forming JtQJ matrix
+            ( time = 2018-03-13 15:34:04,  elapsed time = 11us )
     commencing to scale JtQJ matrix
-            ( time = 16:28:53,  elapsed time = 8ms )
-    multiplying JtQJ matrix
-            ( time = 16:28:53,  elapsed time = 0us )
-    scaling of  JtQJ matrix complete
-            ( time = 16:28:53,  elapsed time = 0us )
-    commencing SVD factorization
-            ( time = 16:28:53,  elapsed time = 0us )
-    SVD factorization complete
-            ( time = 16:28:53,  elapsed time = 0us )
-    commencing linear algebra multiplication to compute ugrade
-            ( time = 16:28:53,  elapsed time = 0us )
-    Vt info: rows = 2: cols = 2: size = 4: nonzeros = 4
-            ( time = 16:28:53,  elapsed time = 0us )
-    U info: rows = 2: cols = 2: size = 4: nonzeros = 4
-            ( time = 16:28:53,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:04,  elapsed time = 9us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:04,  elapsed time = 6us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:04,  elapsed time = 5us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:04,  elapsed time = 7us )
     S info: rows = 2: cols = 2: size = 4: nonzeros = 2
-            ( time = 16:28:53,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    JS
+            ( time = 2018-03-13 15:34:04,  elapsed time = 6us )
+    JS.transpose() * q_mat * JS + lambda * S.transpose() * S
+            ( time = 2018-03-13 15:34:04,  elapsed time = 10us )
+    S info: rows = 2: cols = 2: size = 4: nonzeros = 2
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    commencing SVD factorization
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:04,  elapsed time = 7us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:04,  elapsed time = 6us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:04,  elapsed time = 5us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    SVD factorization complete
+            ( time = 2018-03-13 15:34:04,  elapsed time = 30us )
+    commencing linear algebra multiplication to compute ugrade
+            ( time = 2018-03-13 15:34:04,  elapsed time = 5us )
+    S info: rows = 2: cols = 2: size = 4: nonzeros = 2Vt info: rows = 2: cols = 2: size = 4: nonzeros = 4
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    U info: rows = 2: cols = 2: size = 4: nonzeros = 4
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
     jac info: rows = 20: cols = 2: size = 40: nonzeros = 39
-            ( time = 16:28:53,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:04,  elapsed time = 8us )
     linear algebra multiplication to compute ugrade complete
-            ( time = 16:28:53,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:04,  elapsed time = 70us )
   beginning upgrade vector calculations, lambda = 1
-          ( time = 16:28:53,  elapsed time = 1ms )
+          ( time = 2018-03-13 15:34:04,  elapsed time = 51us )
+    forming JtQJ matrix
+            ( time = 2018-03-13 15:34:04,  elapsed time = 11us )
     commencing to scale JtQJ matrix
-            ( time = 16:28:53,  elapsed time = 8ms )
-    multiplying JtQJ matrix
-            ( time = 16:28:53,  elapsed time = 1ms )
-    scaling of  JtQJ matrix complete
-            ( time = 16:28:53,  elapsed time = 0us )
-    commencing SVD factorization
-            ( time = 16:28:53,  elapsed time = 0us )
-    SVD factorization complete
-            ( time = 16:28:53,  elapsed time = 0us )
-    commencing linear algebra multiplication to compute ugrade
-            ( time = 16:28:53,  elapsed time = 0us )
-    Vt info: rows = 2: cols = 2: size = 4: nonzeros = 4
-            ( time = 16:28:53,  elapsed time = 0us )
-    U info: rows = 2: cols = 2: size = 4: nonzeros = 4
-            ( time = 16:28:53,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:04,  elapsed time = 5us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:04,  elapsed time = 8us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:04,  elapsed time = 6us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:04,  elapsed time = 9us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:04,  elapsed time = 7us )
     S info: rows = 2: cols = 2: size = 4: nonzeros = 2
-            ( time = 16:28:53,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    JS
+            ( time = 2018-03-13 15:34:04,  elapsed time = 6us )
+    JS.transpose() * q_mat * JS + lambda * S.transpose() * S
+            ( time = 2018-03-13 15:34:04,  elapsed time = 10us )
+    S info: rows = 2: cols = 2: size = 4: nonzeros = 2
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    commencing SVD factorization
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:04,  elapsed time = 7us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:04,  elapsed time = 6us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:04,  elapsed time = 5us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    SVD factorization complete
+            ( time = 2018-03-13 15:34:04,  elapsed time = 30us )
+    commencing linear algebra multiplication to compute ugrade
+            ( time = 2018-03-13 15:34:04,  elapsed time = 5us )
+    S info: rows = 2: cols = 2: size = 4: nonzeros = 2Vt info: rows = 2: cols = 2: size = 4: nonzeros = 4
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    U info: rows = 2: cols = 2: size = 4: nonzeros = 4
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
     jac info: rows = 20: cols = 2: size = 40: nonzeros = 39
-            ( time = 16:28:53,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:04,  elapsed time = 8us )
     linear algebra multiplication to compute ugrade complete
-            ( time = 16:28:53,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:04,  elapsed time = 72us )
   beginning upgrade vector calculations, lambda = 10
-          ( time = 16:28:53,  elapsed time = 0us )
+          ( time = 2018-03-13 15:34:04,  elapsed time = 49us )
+    forming JtQJ matrix
+            ( time = 2018-03-13 15:34:04,  elapsed time = 11us )
     commencing to scale JtQJ matrix
-            ( time = 16:28:53,  elapsed time = 9ms )
-    multiplying JtQJ matrix
-            ( time = 16:28:53,  elapsed time = 0us )
-    scaling of  JtQJ matrix complete
-            ( time = 16:28:53,  elapsed time = 0us )
-    commencing SVD factorization
-            ( time = 16:28:53,  elapsed time = 0us )
-    SVD factorization complete
-            ( time = 16:28:53,  elapsed time = 0us )
-    commencing linear algebra multiplication to compute ugrade
-            ( time = 16:28:53,  elapsed time = 0us )
-    Vt info: rows = 2: cols = 2: size = 4: nonzeros = 4
-            ( time = 16:28:53,  elapsed time = 999us )
-    U info: rows = 2: cols = 2: size = 4: nonzeros = 4
-            ( time = 16:28:53,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:04,  elapsed time = 21us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:04,  elapsed time = 9us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:04,  elapsed time = 5us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:04,  elapsed time = 7us )
     S info: rows = 2: cols = 2: size = 4: nonzeros = 2
-            ( time = 16:28:53,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    JS
+            ( time = 2018-03-13 15:34:04,  elapsed time = 6us )
+    JS.transpose() * q_mat * JS + lambda * S.transpose() * S
+            ( time = 2018-03-13 15:34:04,  elapsed time = 10us )
+    S info: rows = 2: cols = 2: size = 4: nonzeros = 2
+            ( time = 2018-03-13 15:34:04,  elapsed time = 5us )
+    commencing SVD factorization
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:04,  elapsed time = 7us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:04,  elapsed time = 22us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:04,  elapsed time = 5us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    SVD factorization complete
+            ( time = 2018-03-13 15:34:04,  elapsed time = 30us )
+    commencing linear algebra multiplication to compute ugrade
+            ( time = 2018-03-13 15:34:04,  elapsed time = 5us )
+    S info: rows = 2: cols = 2: size = 4: nonzeros = 2Vt info: rows = 2: cols = 2: size = 4: nonzeros = 4
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    U info: rows = 2: cols = 2: size = 4: nonzeros = 4
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
     jac info: rows = 20: cols = 2: size = 40: nonzeros = 39
-            ( time = 16:28:53,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:04,  elapsed time = 8us )
     linear algebra multiplication to compute ugrade complete
-            ( time = 16:28:53,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:04,  elapsed time = 92us )
   beginning upgrade vector calculations, lambda = 100
-          ( time = 16:28:53,  elapsed time = 0us )
+          ( time = 2018-03-13 15:34:04,  elapsed time = 64us )
+    forming JtQJ matrix
+            ( time = 2018-03-13 15:34:04,  elapsed time = 12us )
     commencing to scale JtQJ matrix
-            ( time = 16:28:53,  elapsed time = 8ms )
-    multiplying JtQJ matrix
-            ( time = 16:28:53,  elapsed time = 0us )
-    scaling of  JtQJ matrix complete
-            ( time = 16:28:53,  elapsed time = 0us )
-    commencing SVD factorization
-            ( time = 16:28:53,  elapsed time = 0us )
-    SVD factorization complete
-            ( time = 16:28:53,  elapsed time = 0us )
-    commencing linear algebra multiplication to compute ugrade
-            ( time = 16:28:53,  elapsed time = 0us )
-    Vt info: rows = 2: cols = 2: size = 4: nonzeros = 4
-            ( time = 16:28:53,  elapsed time = 0us )
-    U info: rows = 2: cols = 2: size = 4: nonzeros = 4
-            ( time = 16:28:53,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:04,  elapsed time = 8us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:04,  elapsed time = 6us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:04,  elapsed time = 5us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:04,  elapsed time = 7us )
     S info: rows = 2: cols = 2: size = 4: nonzeros = 2
-            ( time = 16:28:53,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    JS
+            ( time = 2018-03-13 15:34:04,  elapsed time = 6us )
+    JS.transpose() * q_mat * JS + lambda * S.transpose() * S
+            ( time = 2018-03-13 15:34:04,  elapsed time = 10us )
+    S info: rows = 2: cols = 2: size = 4: nonzeros = 2
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    commencing SVD factorization
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:04,  elapsed time = 88us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:04,  elapsed time = 9us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:04,  elapsed time = 5us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    SVD factorization complete
+            ( time = 2018-03-13 15:34:04,  elapsed time = 33us )
+    commencing linear algebra multiplication to compute ugrade
+            ( time = 2018-03-13 15:34:04,  elapsed time = 17us )
+    S info: rows = 2: cols = 2: size = 4: nonzeros = 2Vt info: rows = 2: cols = 2: size = 4: nonzeros = 4
+            ( time = 2018-03-13 15:34:04,  elapsed time = 5us )
+    U info: rows = 2: cols = 2: size = 4: nonzeros = 4
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
     jac info: rows = 20: cols = 2: size = 40: nonzeros = 39
-            ( time = 16:28:53,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:04,  elapsed time = 8us )
     linear algebra multiplication to compute ugrade complete
-            ( time = 16:28:53,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:04,  elapsed time = 97us )
   beginning upgrade vector calculations, lambda = 1000
-          ( time = 16:28:53,  elapsed time = 1ms )
+          ( time = 2018-03-13 15:34:04,  elapsed time = 65us )
+    forming JtQJ matrix
+            ( time = 2018-03-13 15:34:04,  elapsed time = 23us )
     commencing to scale JtQJ matrix
-            ( time = 16:28:53,  elapsed time = 8ms )
-    multiplying JtQJ matrix
-            ( time = 16:28:53,  elapsed time = 0us )
-    scaling of  JtQJ matrix complete
-            ( time = 16:28:53,  elapsed time = 0us )
-    commencing SVD factorization
-            ( time = 16:28:53,  elapsed time = 0us )
-    SVD factorization complete
-            ( time = 16:28:53,  elapsed time = 0us )
-    commencing linear algebra multiplication to compute ugrade
-            ( time = 16:28:53,  elapsed time = 0us )
-    Vt info: rows = 2: cols = 2: size = 4: nonzeros = 4
-            ( time = 16:28:53,  elapsed time = 0us )
-    U info: rows = 2: cols = 2: size = 4: nonzeros = 4
-            ( time = 16:28:53,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:04,  elapsed time = 5us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:04,  elapsed time = 9us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:04,  elapsed time = 6us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:04,  elapsed time = 5us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:04,  elapsed time = 7us )
     S info: rows = 2: cols = 2: size = 4: nonzeros = 2
-            ( time = 16:28:53,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    JS
+            ( time = 2018-03-13 15:34:04,  elapsed time = 6us )
+    JS.transpose() * q_mat * JS + lambda * S.transpose() * S
+            ( time = 2018-03-13 15:34:04,  elapsed time = 9us )
+    S info: rows = 2: cols = 2: size = 4: nonzeros = 2
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    commencing SVD factorization
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    starting REDSVD
+            ( time = 2018-03-13 15:34:04,  elapsed time = 7us )
+    retrieving REDSVD components
+            ( time = 2018-03-13 15:34:04,  elapsed time = 5us )
+    triming REDSVD components to 2elements
+            ( time = 2018-03-13 15:34:04,  elapsed time = 5us )
+    done REDSVD
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
+    SVD factorization complete
+            ( time = 2018-03-13 15:34:04,  elapsed time = 32us )
+    commencing linear algebra multiplication to compute ugrade
+            ( time = 2018-03-13 15:34:04,  elapsed time = 21us )
+    S info: rows = 2: cols = 2: size = 4: nonzeros = 2Vt info: rows = 2: cols = 2: size = 4: nonzeros = 4
+            ( time = 2018-03-13 15:34:04,  elapsed time = 5us )
+    U info: rows = 2: cols = 2: size = 4: nonzeros = 4
+            ( time = 2018-03-13 15:34:04,  elapsed time = 4us )
     jac info: rows = 20: cols = 2: size = 40: nonzeros = 39
-            ( time = 16:28:53,  elapsed time = 0us )
+            ( time = 2018-03-13 15:34:04,  elapsed time = 8us )
     linear algebra multiplication to compute ugrade complete
-            ( time = 16:28:53,  elapsed time = 1ms )
+            ( time = 2018-03-13 15:34:05,  elapsed time = 710ms )
   completed iteration 3
-          ( time = 16:28:54,  elapsed time = 820ms )
   time to complete iteration 3
           ( elapsed time = 1sec )
 
@@ -626,51 +1104,71 @@ beginning iteration 3
 starting linear uncertainty analyses
 -----------------------------------
 
-16:28:54-> starting calc_posterior
-16:28:54->-> starting align
-16:28:54->-> finished align, elapsed time = 0us
-16:28:54-> finished calc_posterior, elapsed time = 0us
-16:28:54-> starting prior_parameter_variance
-16:28:54-> finished prior_parameter_variance, elapsed time = 0us
-16:28:54-> starting prior_parameter_variance
-16:28:54-> finished prior_parameter_variance, elapsed time = 0us
-16:28:54-> starting prior_parameter_variance
-16:28:54-> finished prior_parameter_variance, elapsed time = 0us
-16:28:54-> starting prior_parameter_variance
-16:28:54-> finished prior_parameter_variance, elapsed time = 0us
-16:28:54-> starting prior_parameter_variance
-16:28:54-> finished prior_parameter_variance, elapsed time = 0us
-16:28:54-> starting prior_parameter_variance
-16:28:54-> finished prior_parameter_variance, elapsed time = 0us
-16:28:54-> starting prior_parameter_variance
-16:28:54-> finished prior_parameter_variance, elapsed time = 0us
-16:28:54-> starting prior_parameter_variance
-16:28:54-> finished prior_parameter_variance, elapsed time = 0us
-16:28:54-> starting prior_parameter_variance
-16:28:54-> finished prior_parameter_variance, elapsed time = 0us
-16:28:54-> starting prior_parameter_variance
-16:28:54-> finished prior_parameter_variance, elapsed time = 0us
-16:28:54-> starting prior_parameter_variance
-16:28:54-> finished prior_parameter_variance, elapsed time = 0us
-16:28:54-> starting posterior_parameter_variance
-16:28:54-> finished posterior_parameter_variance, elapsed time = 0us
-16:28:54-> starting posterior_parameter_variance
-16:28:54-> finished posterior_parameter_variance, elapsed time = 0us
-16:28:54-> starting posterior_parameter_variance
-16:28:54-> finished posterior_parameter_variance, elapsed time = 0us
-16:28:54-> starting posterior_parameter_variance
-16:28:54-> finished posterior_parameter_variance, elapsed time = 0us
-16:28:54-> starting posterior_parameter_variance
-16:28:54-> finished posterior_parameter_variance, elapsed time = 0us
-16:28:54-> starting posterior_parameter_variance
-16:28:54-> finished posterior_parameter_variance, elapsed time = 0us
-16:28:54-> starting posterior_parameter_variance
-16:28:54-> finished posterior_parameter_variance, elapsed time = 0us
-16:28:54-> starting posterior_parameter_variance
-16:28:54-> finished posterior_parameter_variance, elapsed time = 0us
-16:28:54-> starting posterior_parameter_variance
-16:28:54-> finished posterior_parameter_variance, elapsed time = 0us
-16:28:54-> starting posterior_parameter_variance
-16:28:54-> finished posterior_parameter_variance, elapsed time = 0us
-16:28:54-> starting posterior_parameter_variance
-16:28:54-> finished posterior_parameter_variance, elapsed time = 0us
+2018-03-13 15:34:05-> starting calc_posterior
+2018-03-13 15:34:05->-> starting align
+2018-03-13 15:34:05->-> finished align, elapsed time = 51us
+2018-03-13 15:34:05->-> starting invert obscov
+2018-03-13 15:34:05->->-> starting inverting diagonal matrix in place
+2018-03-13 15:34:05->->->-> starting extracting diagonal
+2018-03-13 15:34:05->->->->-> starting inverting diagonal
+2018-03-13 15:34:05->->->->->-> starting building triplets
+2018-03-13 15:34:05->->->->->->-> starting setting matrix from triplets
+2018-03-13 15:34:05->->->->->->-> finished invert obscov, elapsed time = 23us
+2018-03-13 15:34:05->->->->->->-> starting form JtQJ
+2018-03-13 15:34:05->->->->->->-> finished form JtQJ, elapsed time = 21us
+2018-03-13 15:34:05->->->->->->-> starting invert parcov
+2018-03-13 15:34:05->->->->->->-> finished invert parcov, elapsed time = 12us
+2018-03-13 15:34:05->->->->->->-> starting form posterior
+2018-03-13 15:34:05->->->->->->-> finished form posterior, elapsed time = 9us
+2018-03-13 15:34:05->->->->->->-> starting invert posterior
+2018-03-13 15:34:05->->->->->->->-> starting inverting non-diagonal matrix in place
+2018-03-13 15:34:05->->->->->->->->-> starting instantiate solver
+2018-03-13 15:34:05->->->->->->->->->-> starting computing inverse
+2018-03-13 15:34:05->->->->->->->->->->-> starting getting identity instance for solution
+2018-03-13 15:34:05->->->->->->->->->->->-> starting solving
+2018-03-13 15:34:05->->->->->->->->->->->-> finished invert posterior, elapsed time = 45us
+2018-03-13 15:34:05->->->->->->->->->->-> finished calc_posterior, elapsed time = 214us
+2018-03-13 15:34:05->->->->->->->->->->-> starting prior_parameter_variance
+2018-03-13 15:34:05->->->->->->->->->->-> finished prior_parameter_variance, elapsed time = 6us
+2018-03-13 15:34:05->->->->->->->->->->-> starting prior_parameter_variance
+2018-03-13 15:34:05->->->->->->->->->->-> finished prior_parameter_variance, elapsed time = 3us
+2018-03-13 15:34:05->->->->->->->->->->-> starting prior_parameter_variance
+2018-03-13 15:34:05->->->->->->->->->->-> finished prior_parameter_variance, elapsed time = 3us
+2018-03-13 15:34:05->->->->->->->->->->-> starting prior_parameter_variance
+2018-03-13 15:34:05->->->->->->->->->->-> finished prior_parameter_variance, elapsed time = 3us
+2018-03-13 15:34:05->->->->->->->->->->-> starting prior_parameter_variance
+2018-03-13 15:34:05->->->->->->->->->->-> finished prior_parameter_variance, elapsed time = 3us
+2018-03-13 15:34:05->->->->->->->->->->-> starting prior_parameter_variance
+2018-03-13 15:34:05->->->->->->->->->->-> finished prior_parameter_variance, elapsed time = 3us
+2018-03-13 15:34:05->->->->->->->->->->-> starting prior_parameter_variance
+2018-03-13 15:34:05->->->->->->->->->->-> finished prior_parameter_variance, elapsed time = 3us
+2018-03-13 15:34:05->->->->->->->->->->-> starting prior_parameter_variance
+2018-03-13 15:34:05->->->->->->->->->->-> finished prior_parameter_variance, elapsed time = 3us
+2018-03-13 15:34:05->->->->->->->->->->-> starting prior_parameter_variance
+2018-03-13 15:34:05->->->->->->->->->->-> finished prior_parameter_variance, elapsed time = 3us
+2018-03-13 15:34:05->->->->->->->->->->-> starting prior_parameter_variance
+2018-03-13 15:34:05->->->->->->->->->->-> finished prior_parameter_variance, elapsed time = 6us
+2018-03-13 15:34:05->->->->->->->->->->-> starting prior_parameter_variance
+2018-03-13 15:34:05->->->->->->->->->->-> finished prior_parameter_variance, elapsed time = 3us
+2018-03-13 15:34:05->->->->->->->->->->-> starting posterior_parameter_variance
+2018-03-13 15:34:05->->->->->->->->->->-> finished posterior_parameter_variance, elapsed time = 3us
+2018-03-13 15:34:05->->->->->->->->->->-> starting posterior_parameter_variance
+2018-03-13 15:34:05->->->->->->->->->->-> finished posterior_parameter_variance, elapsed time = 3us
+2018-03-13 15:34:05->->->->->->->->->->-> starting posterior_parameter_variance
+2018-03-13 15:34:05->->->->->->->->->->-> finished posterior_parameter_variance, elapsed time = 3us
+2018-03-13 15:34:05->->->->->->->->->->-> starting posterior_parameter_variance
+2018-03-13 15:34:05->->->->->->->->->->-> finished posterior_parameter_variance, elapsed time = 3us
+2018-03-13 15:34:05->->->->->->->->->->-> starting posterior_parameter_variance
+2018-03-13 15:34:05->->->->->->->->->->-> finished posterior_parameter_variance, elapsed time = 3us
+2018-03-13 15:34:05->->->->->->->->->->-> starting posterior_parameter_variance
+2018-03-13 15:34:05->->->->->->->->->->-> finished posterior_parameter_variance, elapsed time = 3us
+2018-03-13 15:34:05->->->->->->->->->->-> starting posterior_parameter_variance
+2018-03-13 15:34:05->->->->->->->->->->-> finished posterior_parameter_variance, elapsed time = 3us
+2018-03-13 15:34:05->->->->->->->->->->-> starting posterior_parameter_variance
+2018-03-13 15:34:05->->->->->->->->->->-> finished posterior_parameter_variance, elapsed time = 15us
+2018-03-13 15:34:05->->->->->->->->->->-> starting posterior_parameter_variance
+2018-03-13 15:34:05->->->->->->->->->->-> finished posterior_parameter_variance, elapsed time = 3us
+2018-03-13 15:34:05->->->->->->->->->->-> starting posterior_parameter_variance
+2018-03-13 15:34:05->->->->->->->->->->-> finished posterior_parameter_variance, elapsed time = 3us
+2018-03-13 15:34:05->->->->->->->->->->-> starting posterior_parameter_variance
+2018-03-13 15:34:05->->->->->->->->->->-> finished posterior_parameter_variance, elapsed time = 3us

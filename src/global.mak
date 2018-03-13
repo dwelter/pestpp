@@ -28,6 +28,8 @@ endif
 #SYSTEM ?= mac
 COMPILER ?= intel
 
+MKLROOT ?= /opt/intel/compilers_and_libraries/linux/mkl
+
 ifeq ($(SYSTEM),mac)
 # macOS
 bindir ?= $(top_builddir)/../exe/mac/
