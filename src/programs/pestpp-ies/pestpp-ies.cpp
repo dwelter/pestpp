@@ -74,9 +74,9 @@ int main(int argc, char* argv[])
 			cerr << "    YAMR runner:" << endl;
 			cerr << "        pestpp-ies control_file.pst /H hostname:port " << endl << endl;
 			cerr << "control file pest++ options:" << endl;
-			cerr << "    ++ies_par_csv(pars_file.csv)" << endl;
+			cerr << "    ++ies_par_en(pars_file.csv)" << endl;
 			cerr << "        - csv file with each row as a parameter realization" << endl;
-			cerr << "    ++ies_obs_csv(obs_file.csv)" << endl;
+			cerr << "    ++ies_obs_en(obs_file.csv)" << endl;
 			cerr << "        - csv file with each row as an observation realization" << endl;
 			cerr << "    ++ies_lambda_mults(0.1,1.0,10.0,100.0)" << endl;
 			cerr << "        - different lambda multiplers to test during each ies iter" << endl;
@@ -86,6 +86,7 @@ int main(int argc, char* argv[])
 			cerr << "        - number of realization to eval during lambda testing" << endl;
 			cerr << "    ++ies_use_approx(true)" << endl;
 			cerr << "        - use the 'approximate' upgrade solution" << endl;
+			cerr << " additional options can be found on the pestpp github site" << endl;
 			cerr << "--------------------------------------------------------" << endl;
 			exit(0);
 		}
