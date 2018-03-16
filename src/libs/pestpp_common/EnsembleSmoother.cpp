@@ -506,6 +506,8 @@ bool IterEnsembleSmoother::initialize_pe(Covariance &cov)
 			throw_ies_error(ss.str());
 		}
 
+		pe.transform_ip(ParameterEnsemble::transStatus::NUM);
+
 		if (pest_scenario.get_pestpp_options().get_ies_num_reals_passed())
 		{
 			int num_reals = pest_scenario.get_pestpp_options().get_ies_num_reals();
@@ -520,6 +522,7 @@ bool IterEnsembleSmoother::initialize_pe(Covariance &cov)
 				pe.keep_rows(keep_names);
 			}
 		}
+
 
 		if (pest_scenario.get_pestpp_options().get_ies_use_empirical_prior())
 		{
@@ -828,7 +831,7 @@ void IterEnsembleSmoother::initialize()
 	lambda_max = 1.0E+10;
 	lambda_min = 1.0E-10;
 	warn_min_reals = 30;
-	error_min_reals = 3;
+	error_min_reals = 0;
 	lam_mults = pest_scenario.get_pestpp_options().get_ies_lam_mults();
 	if (lam_mults.size() == 0)
 		lam_mults.push_back(1.0);
@@ -1020,7 +1023,10 @@ void IterEnsembleSmoother::initialize()
 	message(1, "forming inverse sqrt obscov");
 	//obscov.inv_ip(echo);
 	obscov_inv_sqrt = obscov.inv().get_matrix().diagonal().cwiseSqrt().asDiagonal();
-	
+	if (verbose_level > 2)
+	{
+		save_mat("obscov_inv_sqrt.dat", obscov_inv_sqrt.toDenseMatrix());
+	}
 	
 
 	string obs_restart_csv = pest_scenario.get_pestpp_options().get_ies_obs_restart_csv();	
@@ -1349,7 +1355,11 @@ void IterEnsembleSmoother::solve()
 	{
 		cout << "scaled_residual: " << scaled_residual.rows() << ',' << scaled_residual.cols() << endl;
 		if (verbose_level > 2)
-			save_mat("scaled_residual", scaled_residual);
+		{
+			save_mat("scaled_residual.dat", scaled_residual);
+			Eigen::MatrixXd residual = ph.get_obs_resid(oe).transpose();
+			save_mat("residual.dat",residual);
+		}
 	}
 		
 	performance_log->log_event("calculate scaled obs diff");
@@ -1380,7 +1390,10 @@ void IterEnsembleSmoother::solve()
 	{
 		cout << "par_diff:" << par_diff.rows() << ',' << par_diff.cols() << endl;
 		if (verbose_level > 2)
-			save_mat("par_diff.dat", par_diff);
+		{
+			save_mat("scaled_par_diff.dat", par_diff);
+			save_mat("par_diff.dat", diff);
+		}
 	}
 
 	performance_log->log_event("SVD of obs diff");
@@ -1390,6 +1403,11 @@ void IterEnsembleSmoother::solve()
 	SVD_REDSVD rsvd;
 	rsvd.set_performance_log(performance_log);
 	rsvd.solve_ip(obs_diff, s, Ut, V, pest_scenario.get_svd_info().eigthresh, pest_scenario.get_svd_info().maxsing);
+	
+	//SVD_EIGEN esvd;
+	//esvd.set_performance_log(performance_log);
+	//esvd.solve_ip(obs_diff, s, Ut, V, pest_scenario.get_svd_info().eigthresh, pest_scenario.get_svd_info().maxsing);
+
 	Ut.transposeInPlace();
 	obs_diff.resize(0, 0);
 	

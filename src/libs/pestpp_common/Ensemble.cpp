@@ -26,7 +26,7 @@ void Ensemble::reserve(vector<string> _real_names, vector<string> _var_names)
 	real_names = _real_names;
 }
 
-void Ensemble::draw(int num_reals, Covariance &cov, Transformable &tran, const vector<string> &draw_names,
+void Ensemble::draw(int num_reals, Covariance cov, Transformable &tran, const vector<string> &draw_names,
 	const map<string,vector<string>> &grouper ,PerformanceLog *plog, int level)
 {
 	//draw names should be "active" var_names (nonzero weight obs and not fixed/tied pars)
@@ -178,6 +178,8 @@ void Ensemble::draw(int num_reals, Covariance &cov, Transformable &tran, const v
 		//}
 		if (dset.find(var_names[j]) != dset.end())
 		{
+			//Eigen::MatrixXd temp = draws.col(dmap[var_names[j]]);
+			//double dtemp = tran.get_rec(var_names[j]);
 			reals.col(j) = draws.col(dmap[var_names[j]]).array() + tran.get_rec(var_names[j]);
 		}
 	}
@@ -238,7 +240,10 @@ Eigen::MatrixXd Ensemble::get_eigen_mean_diff(const vector<string> &_real_names,
 	for (int j = 0; j < _reals.cols(); j++)
 	{
 		mean = _reals.col(j).mean();
+		//Eigen::MatrixXd temp = _reals.col(j);
 		_reals.col(j) = _reals.col(j) - (Eigen::VectorXd::Ones(s) * mean);
+		//temp = _reals.col(j);
+		//cout << temp << endl;
 	}
 	return _reals;
 }
@@ -856,6 +861,7 @@ void ParameterEnsemble::draw(int num_reals, Covariance &cov, PerformanceLog *plo
 	vector<string> vars_in_group,sorted_var_names;
 	map<string, vector<string>> grouper;
 	sorted_var_names.reserve(var_names.size());
+	bool same = true;
 	if (pest_scenario_ptr->get_pestpp_options().get_ies_group_draws())
 	{
 		for (auto &group : group_names)
@@ -877,7 +883,6 @@ void ParameterEnsemble::draw(int num_reals, Covariance &cov, PerformanceLog *plo
 		//check
 		if (var_names.size() != sorted_var_names.size())
 			throw_ensemble_error("sorted par names not equal to org par names");
-		bool same = true;
 		for (int i = 0; i < var_names.size(); i++)
 			if (var_names[i] != sorted_var_names[i])
 			{
@@ -893,6 +898,11 @@ void ParameterEnsemble::draw(int num_reals, Covariance &cov, PerformanceLog *plo
 	}
 
 	Ensemble::draw(num_reals, cov, par, var_names, grouper, plog, level);
+	if (!same)
+	{
+		
+		reorder(vector<string>(), pest_scenario_ptr->get_ctl_ordered_adj_par_names());
+	}
 	if (pest_scenario_ptr->get_pestpp_options().get_ies_enforce_bounds())
 		enforce_bounds();
 

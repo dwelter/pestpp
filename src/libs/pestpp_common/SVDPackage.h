@@ -49,6 +49,8 @@ public:
 	SVD_EIGEN(int _n_max_sing = 1000, double _eign_thres = 1.0e-7) : SVDPackage("Eigen JacobiSVD", _n_max_sing, _eign_thres)  {}
 	virtual void solve_ip(Eigen::SparseMatrix<double>& A, Eigen::VectorXd &Sigma, Eigen::SparseMatrix<double>& U, Eigen::SparseMatrix<double>& VT, Eigen::VectorXd &Sigma_trunc);
 	virtual void solve_ip(Eigen::SparseMatrix<double>& A, Eigen::VectorXd &Sigma, Eigen::SparseMatrix<double>& U, Eigen::SparseMatrix<double>& VT, Eigen::VectorXd &Sigma_trunc, double _eigen_thres);
+	virtual void solve_ip(Eigen::MatrixXd& A, Eigen::MatrixXd &Sigma, Eigen::MatrixXd& U, Eigen::MatrixXd& VT, double _eigen_thres, double _max_sing);
+
 	virtual ~SVD_EIGEN(void) {}
 };
 
