@@ -689,6 +689,65 @@ void Ensemble::append(string real_name, const Transformable &trans)
 	real_names.push_back(real_name);
 }
 
+void Ensemble::to_binary(string file_name)
+{
+	ofstream fout(file_name, ios::binary);
+	if (!fout.good())
+	{
+		throw runtime_error("error opening file for binary ensemble:" + file_name);
+	}
+	int n_var = var_names.size();
+	int n_real =real_names.size();
+	int n;
+	int tmp;
+	double data;
+	char par_name[12];
+	char obs_name[20];
+
+	// write header
+	tmp = -n_var;
+	fout.write((char*)&tmp, sizeof(tmp));
+	tmp = -n_real;
+	fout.write((char*)&tmp, sizeof(tmp));
+
+	//write number nonzero elements in jacobian (includes prior information)
+	n = reals.size();
+	fout.write((char*)&n, sizeof(n));
+
+	//write matrix
+	n = 0;
+	map<string, double>::const_iterator found_pi_par;
+	map<string, double>::const_iterator not_found_pi_par;
+	//icount = row_idxs + 1 + col_idxs * self.shape[0]
+	for (int irow = 0; irow<n_real; ++irow)
+	{
+		for (int jcol=0;jcol<n_var;++jcol)
+		{
+			n = irow + 1 + (jcol * n_real);
+			data = reals(irow, jcol);
+			fout.write((char*) &(n), sizeof(n));
+			fout.write((char*) &(data), sizeof(data));
+		}
+	}
+	//save parameter names
+	for (vector<string>::const_iterator b = var_names.begin(), e = var_names.end();
+		b != e; ++b) {
+		string l = pest_utils::lower_cp(*b);
+		pest_utils::string_to_fortran_char(l, par_name, 12);
+		fout.write(par_name, 12);
+	}
+
+	//save observation and Prior information names
+	for (vector<string>::const_iterator b = real_names.begin(), e = real_names.end();
+		b != e; ++b) {
+		string l = pest_utils::lower_cp(*b);
+		pest_utils::string_to_fortran_char(l, obs_name, 20);
+		fout.write(obs_name, 20);
+	}
+	//save observation names (part 2 prior information)
+	fout.close();
+}
+
 
 void Ensemble::from_binary(string file_name, vector<string> &names, bool transposed)
 {

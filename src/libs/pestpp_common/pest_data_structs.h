@@ -349,6 +349,8 @@ public:
 
 	double get_par_sigma_range() const { return par_sigma_range; }
 	void set_par_sigma_range(double _par_sigma_range) { par_sigma_range = _par_sigma_range; }
+	bool get_ies_save_binary() const { return ies_save_binary; }
+	void set_ies_save_binary(bool _ies_save_binary) { ies_save_binary = _ies_save_binary; }
 
 
 private:
@@ -425,6 +427,7 @@ private:
 	bool ies_num_reals_passed;
 	bool ies_enforce_bounds;
 	double par_sigma_range;
+	bool ies_save_binary;
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);
 ostream& operator<< (ostream &os, const ObservationInfo& val);
