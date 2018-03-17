@@ -61,7 +61,8 @@ private:
 	FileManager* file_manager;
 	ObservationEnsemble* oe_base;
 	ParameterEnsemble* pe_base;
-	Covariance parcov_inv;
+	//Covariance parcov_inv;
+	Eigen::VectorXd parcov_inv_diag;
 	map<string, double> meas;
 	map<string, double> regul;
 	map<string, double> composite;

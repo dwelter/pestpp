@@ -43,7 +43,12 @@ PhiHandler::PhiHandler(Pest *_pest_scenario, FileManager *_file_manager,
 
 
 	reg_factor = _reg_factor;
-	parcov_inv = _parcov->inv();
+	//Eigen::VectorXd parcov_inv_diag = parcov_inv.e_ptr()->diagonal();
+	parcov_inv_diag = _parcov->e_ptr()->diagonal();
+	for (int i = 0; i < parcov_inv_diag.size(); i++)
+		parcov_inv_diag(i) = 1.0 / parcov_inv_diag(i);
+
+	//parcov_inv = _parcov->inv();
 	//parcov.inv_ip();
 	oreal_names = oe_base->get_real_names();
 	preal_names = pe_base->get_real_names();
@@ -319,7 +324,7 @@ map<string, double> PhiHandler::calc_regul(ParameterEnsemble & pe)
 	pe.transform_ip(ParameterEnsemble::transStatus::NUM);
 	Eigen::MatrixXd diff_mat = get_par_resid(pe);
 
-	Eigen::VectorXd parcov_inv_diag = parcov_inv.e_ptr()->diagonal();
+	
 	Eigen::VectorXd diff;
 	for (int i = 0; i < real_names.size(); i++)
 	{	
