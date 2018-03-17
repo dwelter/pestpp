@@ -535,17 +535,18 @@ bool IterEnsembleSmoother::initialize_pe(Covariance &cov)
 			parcov = pe.get_diagonal_cov_matrix();
 			if (pest_scenario.get_pestpp_options().get_ies_verbose_level() > 1)
 			{
-				if (pe.shape().first < 10000)
-				{
-					string filename = file_manager.get_base_filename() + ".prior.cov";
-					message(1, "saving emprirical parameter covariance matrix to ASCII file: ", filename);
-					parcov.to_ascii(filename);
-				}
-				else
+				
+				if (pest_scenario.get_pestpp_options().get_ies_save_binary())
 				{
 					string filename = file_manager.get_base_filename() + ".prior.jcb";
 					message(1, "saving emprirical parameter covariance matrix to binary file: ", filename);
 					parcov.to_binary(filename);
+				}
+				else
+				{
+					string filename = file_manager.get_base_filename() + ".prior.cov";
+					message(1, "saving emprirical parameter covariance matrix to ASCII file: ", filename);
+					parcov.to_ascii(filename);
 				}
 			}
 		}
@@ -948,14 +949,34 @@ void IterEnsembleSmoother::initialize()
 		oe.to_csv(ss.str());
 	}*/
 
+
+
+
 	ss.str("");
-	ss << file_manager.get_base_filename() << ".0.par.csv";
-	message(1, "saving initial parameter ensemble to ", ss.str());
-	pe.to_csv(ss.str());
+	if (pest_scenario.get_pestpp_options().get_ies_save_binary())
+	{
+		ss << file_manager.get_base_filename() << ".0.par.jcb";
+		pe.to_binary(ss.str());
+	}
+	else
+	{
+		ss << file_manager.get_base_filename() << ".0.par.csv";
+		pe.to_csv(ss.str());
+	}
+	message(1, "saved initial parameter ensemble to ", ss.str());
+	
 	ss.str("");
-	ss << file_manager.get_base_filename() << ".base.obs.csv";
-	message(1, "saving initial observation ensemble to ", ss.str());
-	oe.to_csv(ss.str());
+	if (pest_scenario.get_pestpp_options().get_ies_save_binary())
+	{
+		ss << file_manager.get_base_filename() << ".base.obs.jcb";
+		oe.to_binary(ss.str());
+	}
+	else
+	{
+		ss << file_manager.get_base_filename() << ".base.obs.csv";
+		oe.to_csv(ss.str());
+	}
+	message(1, "saved base observation ensemble (obsval+noise) to ", ss.str());
 	
 	if (pest_scenario.get_control_info().noptmax == 0)
 	{
@@ -1044,9 +1065,23 @@ void IterEnsembleSmoother::initialize()
 		vector<int> failed = run_ensemble(pe, oe);
 		if (pe.shape().first == 0)
 			throw_ies_error("all realizations failed during initial evaluation");
-		string obs_csv = file_manager.get_base_filename() + ".0.obs.csv";
-		message(1, "saving results of initial ensemble run to", obs_csv);
-		oe.to_csv(obs_csv);
+		
+		ss.str("");
+		if (pest_scenario.get_pestpp_options().get_ies_save_binary())
+		{
+			ss << file_manager.get_base_filename() << ".0.obs.jcb";
+			oe.to_binary(ss.str());
+		}
+		else
+		{
+			ss << file_manager.get_base_filename() << ".0.obs.csv";
+			oe.to_csv(ss.str());
+		}
+		message(1, "saving results of initial ensemble run to", ss.str());
+
+		//string obs_csv = file_manager.get_base_filename() + ".0.obs.csv";
+		//message(1, "saving results of initial ensemble run to", obs_csv);
+		//oe.to_csv(obs_csv);
 		pe.transform_ip(ParameterEnsemble::transStatus::NUM);
 	}
 	else
