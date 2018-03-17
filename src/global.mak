@@ -28,7 +28,6 @@ endif
 #SYSTEM ?= mac
 COMPILER ?= intel
 
-MKLROOT ?= /opt/intel/compilers_and_libraries/linux/mkl
 
 ifeq ($(SYSTEM),mac)
 # macOS
@@ -36,6 +35,8 @@ bindir ?= $(top_builddir)/../exe/mac/
 else ifeq ($(SYSTEM),linux)
 # GNU Linux
 bindir ?= $(top_builddir)/../exe/linux/
+MKLROOT ?= /opt/intel/compilers_and_libraries/linux/mkl
+
 else ifeq ($(SYSTEM),win)
 # Microsoft Windows
 bindir ?= $(top_builddir)/../exe/windows/
