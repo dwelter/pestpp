@@ -1025,7 +1025,8 @@ void IterEnsembleSmoother::initialize()
 	obscov_inv_sqrt = obscov.inv().get_matrix().diagonal().cwiseSqrt().asDiagonal();
 	if (verbose_level > 2)
 	{
-		save_mat("obscov_inv_sqrt.dat", obscov_inv_sqrt.toDenseMatrix());
+		Eigen::MatrixXd oc = obscov_inv_sqrt.toDenseMatrix();
+		save_mat("obscov_inv_sqrt.dat", oc);
 	}
 	
 
