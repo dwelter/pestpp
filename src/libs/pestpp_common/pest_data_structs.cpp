@@ -760,6 +760,12 @@ void PestppOptions::parce_line(const string &line)
 			istringstream is(value);
 			is >> boolalpha >> ies_enforce_bounds;
 		}
+		else if (key == "IES_SAVE_BINARY")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> ies_save_binary;
+		}
 		else if (key == "PAR_SIGMA_RANGE")
 		{
 			convert_ip(value, par_sigma_range);

@@ -1756,14 +1756,31 @@ void IterEnsembleSmoother::report_and_save()
 	cout << "   number of model runs:            " << run_mgr_ptr->get_total_runs() << endl;
 
 	stringstream ss;
-	ss << file_manager.get_base_filename() << "." << iter << ".obs.csv";
-	
-	oe.to_csv(ss.str());
+	if (pest_scenario.get_pestpp_options().get_ies_save_binary())
+	{
+		ss << file_manager.get_base_filename() << "." << iter << ".obs.jcb";
+		oe.to_binary(ss.str());
+	}
+	else
+	{
+		ss << file_manager.get_base_filename() << "." << iter << ".obs.csv";
+		oe.to_csv(ss.str());
+	}
 	frec << "      current obs ensemble saved to " << ss.str() << endl;
 	cout << "      current obs ensemble saved to " << ss.str() << endl;
 	ss.str("");
-	ss << file_manager.get_base_filename() << "." << iter << ".par.csv";
-	pe.to_csv(ss.str());
+	if (pest_scenario.get_pestpp_options().get_ies_save_binary())
+	{
+		ss << file_manager.get_base_filename() << "." << iter << ".par.jcb";
+		pe.to_binary(ss.str());
+	}
+	else
+	{
+		ss << file_manager.get_base_filename() << "." << iter << ".par.csv";
+		pe.to_csv(ss.str());
+	}
+	//ss << file_manager.get_base_filename() << "." << iter << ".par.csv";
+	//pe.to_csv(ss.str());
 	frec << "      current par ensemble saved to " << ss.str() << endl;
 	cout << "      current par ensemble saved to " << ss.str() << endl;
 	
