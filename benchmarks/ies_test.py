@@ -34,7 +34,8 @@ exe_path = os.path.join("..", "..", "..", "exe", "windows", "x64", "Release", "p
 noptmax = 3
 
 compare_files = ["pest.phi.actual.csv", "pest.phi.meas.csv", "pest.phi.regul.csv",
-                 "pest.{0}.par.csv".format(noptmax), "pest.{0}.obs.csv".format(noptmax)]
+                 "pest.{0}.par.csv".format(noptmax), "pest.{0}.obs.csv".format(noptmax),
+                 "pest.{0}.par.csv".format(0), "pest.base.obs.csv"]
 diff_tol = 1.0e-6
 
 num_reals = 30
@@ -141,6 +142,8 @@ def run_suite(model_d):
         #     continue
         test_name = test_vars["text"].split()[0].replace(")", '')
         print(test_vars["text"])
+        #if "6" not in test_vars["text"]:
+        #    continue
         pst.pestpp_options = {}
         for v in ies_vars:
             if pd.notnull(test_vars[v]):
@@ -375,7 +378,7 @@ def test_freyberg_full_cov():
     
     pst.control_data.noptmax = 0
     pst.pestpp_options = {}
-    num_reals = 1000
+    num_reals = 5000
 
     #diagonal cov
     #pst.pestpp_options["parcov_filename"] = "prior.jcb"
@@ -647,7 +650,7 @@ def test_synth():
     print("writing pst")
     pst.write(os.path.join(template_d,"pest.pst"))
     print("starting slaves")
-    pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=6,master_dir=test_d,slave_root=model_d)
+    pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=10,master_dir=test_d,slave_root=model_d)
 
 def test_chenoliver():
     model_d = "ies_chenoliver"
@@ -854,25 +857,27 @@ if __name__ == "__main__":
     # write_empty_test_matrix()
     #setup_suite_dir("ies_freyberg")
     #setup_suite_dir("ies_10par_xsec")
-   # run_suite("ies_freyberg")
-    #run_suite("ies_10par_xsec")
+    run_suite("ies_freyberg")
+    run_suite("ies_10par_xsec")
     #rebase("ies_freyberg")
     #rebase("ies_10par_xsec")
     #tenpar_subset_test()
     #tenpar_full_cov_test()
     #test_freyberg_full_cov_reorder()
-    test_freyberg_full_cov_reorder_run()
+    #test_freyberg_full_cov_reorder_run()
     #test_freyberg_full_cov()
     
     #test_synth()
     #test_10par_xsec()
     #test_freyberg()
     #test_chenoliver()
-    #compare_pyemu()
+    compare_pyemu()
+    #tenpar_subset_test()
+    #tenpar_full_cov_test()
+    #test_freyberg_ineq()
+    
     # # invest()
     #compare_suite("ies_10par_xsec")
     #compare_suite("ies_freyberg")
-    # tenpar_subset_test()
-    # tenpar_full_cov_test()
-    #test_freyberg_ineq()
+    
     #test_kirishima()
