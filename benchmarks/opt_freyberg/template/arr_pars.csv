@@ -1,0 +1,5 @@
+,layer,mlt_file,model_file,org_file,suffix,prefix,tpl_file
+0,0,arr_mlt/hk0.dat_gr,./hk_Layer_1.ref,arr_org/hk_Layer_1.ref,_gr,hk0,hk0.dat_gr.tpl
+1,0,arr_mlt/rech0.dat_gr,./rech_0.ref,arr_org/rech_0.ref,_gr,rech0,rech0.dat_gr.tpl
+2,0,arr_mlt/hk1.dat_cn,./hk_Layer_1.ref,arr_org/hk_Layer_1.ref,_cn,hk1,hk1.dat_cn.tpl
+3,0,arr_mlt/rech1.dat_cn,./rech_0.ref,arr_org/rech_0.ref,_cn,rech1,rech1.dat_cn.tpl

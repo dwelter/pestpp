@@ -1,0 +1,50 @@
+        40         0         0      1001         0                              # nsfinit, mxsfbc, icbcsf, ioutobs, ietsfr
+         1   0.50000   1.00000 0.0000010        10   1.00000         0 # isfsolv, wimp, wups, cclosesf, mxitersf, crntsf, iprtxmd
+        19         1          (40E15.6)        -1 #coldsf
+   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00
+        19         1          (40E15.6)        -1 #dispsf
+   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00
+        40                 # nobssf
+         1                          # location of obs as given by position in irch list
+         2                          # location of obs as given by position in irch list
+         3                          # location of obs as given by position in irch list
+         4                          # location of obs as given by position in irch list
+         5                          # location of obs as given by position in irch list
+         6                          # location of obs as given by position in irch list
+         7                          # location of obs as given by position in irch list
+         8                          # location of obs as given by position in irch list
+         9                          # location of obs as given by position in irch list
+        10                          # location of obs as given by position in irch list
+        11                          # location of obs as given by position in irch list
+        12                          # location of obs as given by position in irch list
+        13                          # location of obs as given by position in irch list
+        14                          # location of obs as given by position in irch list
+        15                          # location of obs as given by position in irch list
+        16                          # location of obs as given by position in irch list
+        17                          # location of obs as given by position in irch list
+        18                          # location of obs as given by position in irch list
+        19                          # location of obs as given by position in irch list
+        20                          # location of obs as given by position in irch list
+        21                          # location of obs as given by position in irch list
+        22                          # location of obs as given by position in irch list
+        23                          # location of obs as given by position in irch list
+        24                          # location of obs as given by position in irch list
+        25                          # location of obs as given by position in irch list
+        26                          # location of obs as given by position in irch list
+        27                          # location of obs as given by position in irch list
+        28                          # location of obs as given by position in irch list
+        29                          # location of obs as given by position in irch list
+        30                          # location of obs as given by position in irch list
+        31                          # location of obs as given by position in irch list
+        32                          # location of obs as given by position in irch list
+        33                          # location of obs as given by position in irch list
+        34                          # location of obs as given by position in irch list
+        35                          # location of obs as given by position in irch list
+        36                          # location of obs as given by position in irch list
+        37                          # location of obs as given by position in irch list
+        38                          # location of obs as given by position in irch list
+        39                          # location of obs as given by position in irch list
+        40                          # location of obs as given by position in irch list
+         0       # ntmp - SP     0
+         0       # ntmp - SP     1
+         0       # ntmp - SP     2

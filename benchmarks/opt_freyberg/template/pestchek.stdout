@@ -1,0 +1,11 @@
+ PESTCHEK Version 13.0. Watermark Numerical Computing.
+
+ *** command line error ***
+ PESTCHEK is run using the command:
+
+    pestchek case [/s]
+
+ where
+
+    "case" is a case name (no filename extension), and
+    /s prevents warning messages and template/instruction file checking.
