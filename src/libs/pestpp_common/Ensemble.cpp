@@ -10,6 +10,7 @@
 #include "RedSVD-h.h"
 #include "covariance.h"
 #include "PerformanceLog.h"
+#include "system_variables.h"
 
 mt19937_64 Ensemble::rand_engine = mt19937_64(1);
 
@@ -106,7 +107,18 @@ void Ensemble::draw(int num_reals, Covariance cov, Transformable &tran, const ve
 				plog->log_event(ss.str());
 				eig.compute(*gcov.e_ptr(), gi.second.size());
 				proj = (eig.eigenvectors() * eig.eigenvalues().cwiseSqrt().asDiagonal());
-				
+				if (level > 2)
+				{
+					ofstream f(gi.first + "_evec.dat");
+					f << eig.eigenvectors() << endl;
+					f.close();
+					ofstream ff(gi.first + "_sqrt_evals.dat");
+					ff << eig.eigenvalues().cwiseSqrt() << endl;
+					ff.close();
+					ofstream fff(gi.first+"_proj.dat");
+					fff << proj << endl;
+					fff.close();
+				}
 				//cout << "block " << block.rows() << " , " << block.cols() << endl;
 				//cout << " proj " << proj.rows() << " , " << proj.cols() << endl;
 				plog->log_event("projecting group block");
@@ -147,6 +159,33 @@ void Ensemble::draw(int num_reals, Covariance cov, Transformable &tran, const ve
 		}
 	}
 	
+	//check for invalid values
+	plog->log_event("checking realization for invalid values");
+	bool found_invalid = false;
+	int iv = 0;
+	for (int j = 0; j < draw_names.size(); j++)
+	{
+		iv = 0;
+		for (int i = 0; i < num_reals; i++)
+		{
+			
+		
+			if (OperSys::double_is_invalid(draws(i, j)))
+			{
+				found_invalid = true;
+				iv++;
+			}
+			
+		}
+		if ((level>2) && (iv > 0))
+		{
+			cout << iv+1 << " invalid values found for " << draw_names[j] << endl;
+		}
+	}
+
+	if (found_invalid)
+		throw_ensemble_error("invalid values in realization draws");
+
 	//form some realization names
 	real_names.clear();
 	stringstream ss;
