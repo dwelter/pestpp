@@ -11,25 +11,25 @@ mt_nam = 'freyberg.mt3d.nam'
 mf_exe = "mfnwt"
 mt_exe = "mt3dusgs"
 
-derinc = 0.1
+derinc = 1.0
 
-def setup_models():
+def setup_models(m=None):
     org_model_ws = os.path.join("..","..","..","gw1876","models","Freyberg","Freyberg_Truth")
 
+    if m is None:
+        m = flopy.modflow.Modflow.load(mf_nam,model_ws=org_model_ws,check=False,exe_name=mf_exe)
+        m.dis.nper = 1
+        m.dis.perlen = 3650
+        m.dis.nstp = 1
+        m.dis.tsmult = 1
+        m.dis.steady = True
+        flopy.modflow.ModflowLmt(m,output_file_format="formatted",package_flows=["SFR"])
+        m.change_model_ws("temp",reset_external=True)
+        m.external_path = '.'
+        m.write_input()
+        m.run_model()
 
-    m = flopy.modflow.Modflow.load(mf_nam,model_ws=org_model_ws,check=False,exe_name=mf_exe)
-    m.dis.nper = 1
-    m.dis.perlen = 3650
-    m.dis.nstp = 1
-    m.dis.tsmult = 1
-    m.dis.steady = True
-    flopy.modflow.ModflowLmt(m,output_file_format="formatted",package_flows=["SFR"])
-    m.change_model_ws("temp",reset_external=True)
-    m.external_path = '.'
-    m.write_input()
-    m.run_model()
-
-    mt = flopy.mt3d.Mt3dms("freyberg.mt3d",model_ws="temp",modflowmodel=m,exe_name=mt_exe,external_path='.')
+    mt = flopy.mt3d.Mt3dms("freyberg.mt3d",model_ws=m.model_ws,modflowmodel=m,exe_name=mt_exe,external_path='.')
     flopy.mt3d.Mt3dBtn(mt,MFStyleArr=True,prsity=0.01,sconc=0.0,icbund=m.bas6.ibound.array,perlen=3650)
     flopy.mt3d.Mt3dGcg(mt)
     flopy.mt3d.Mt3dRct(mt,isothm=0,ireact=0,igetsc=0,rc1=0.02)
@@ -50,31 +50,29 @@ def setup_models():
 
     mt.write_input()
     mt.run_model()
+    return mt
 
 
 
 
 def setup_pest():
-    m = flopy.modflow.Modflow.load(mf_nam, model_ws="template", check=False, exe_name=mf_exe)
+    m = flopy.modflow.Modflow.load(mf_nam, model_ws="temp", check=False, exe_name=mf_exe)
 
-    #props = [["upw.hk",0],["rch.rech",0]]
-    props=None
+    props = [["upw.hk",0],["rch.rech",0],["extra.prst",0],["extra.rc11",0]]
     kperk = [[m.nper-1,0]]
     ph = pyemu.helpers.PstFromFlopyModel(mf_nam,org_model_ws="temp",new_model_ws="template",grid_props=props,
-                                         const_props=props,sfr_pars=False,all_wells=False,remove_existing=True,
+                                         const_props=props,sfr_pars=True,all_wells=True,remove_existing=True,
                                          model_exe_name=mf_exe,hds_kperk=kperk,
                                          extra_post_cmds=["{0} {1}".format(mt_exe,mt_nam)])
 
+    pyemu.helpers.run("{0} {1}".format(mf_exe, mf_nam),cwd="template")
 
-    m.external_path = '.'
-    m.run_model()
-
-    mt = flopy.mt3d.Mt3dms.load(mt_nam, model_ws="temp", exe_name=mt_exe)
-    mt.change_model_ws("template")
-    #mt.external_path = '.'
-    mt.write_input()
-    mt.run_model()
-
+    # mt = flopy.mt3d.Mt3dms.load(mt_nam, model_ws="temp", exe_name=mt_exe)
+    # mt.change_model_ws("template", reset_external=True)
+    # mt.external_path = '.'
+    # mt.write_input()
+    # pyemu.helpers.run("{0} {1}".format(mt_exe,mt_nam),cwd="template")
+    mt = setup_models(ph.m)
     df = write_ssm_tpl()
 
     os.chdir("template")
@@ -121,30 +119,49 @@ def setup_pest():
     ph.pst.parameter_groups.loc["kg","inctyp"] = "absolute"
     ph.pst.parameter_groups.loc["kg","derinc"] = derinc
 
+    # sw conc constraint
     obs = ph.pst.observation_data
     obs.loc[:,"weight"] = 0.0
     sw_conc_obs = obs.loc[obs.obgnme=="sfrc","obsnme"]
-
     obs.loc[sw_conc_obs,"obgnme"] = "less_swconc"
-    #obs.loc[sw_conc_obs, "weight"] = 1.0
+
     #only turn on one constraint in the middle of the domain
     obs.loc["sfrc20_1_03650.00","weight"] = 1.0
+
+    # pumping well mass constraint
+    obs.loc["gw_we1c_003650.0","obgnme"] = "greater_well"
+    obs.loc["gw_we1c_003650.0", "weight"] = 1.0
+
+    # constant head mass constraint
+    obs.loc["gw_cohe1c_003650.0","obgnme"] = "greater_ch"
+    obs.loc["gw_cohe1c_003650.0", "weight"] = 1.0
 
     # fix all non dec vars for now
     par = ph.pst.parameter_data
     par.loc[par.pargp!="kg","partrans"] = "fixed"
 
+    # add some pi constraints to make sure all dec vars have at
+    # least one element in the response matrix
     pyemu.helpers.zero_order_tikhonov(pst=ph.pst)
     ph.pst.prior_information.loc[:,"obgnme"] = "greater_bnd"
 
+    par.loc[par.pargp=="kg","parval1"] = par.loc[par.pargp=="kg","parubnd"]
+    pyemu.helpers.zero_order_tikhonov(ph.pst,reset=False)
+    ph.pst.prior_information.loc[:, "obgnme"] = "less_bnd"
+
+    #reset dec vars to lower bounds
+    par.loc[par.pargp == "kg", "parval1"] = par.loc[par.pargp == "kg", "parlbnd"]
+
+    #unfix pars
+    par.loc[par.pargp != "kg", "partrans"] = "log"
+
     ph.pst.pestpp_options = {}
-    ph.pst.pestpp_options["opt_dec_var_groups"] = ["kg"]
+    ph.pst.pestpp_options["opt_dec_var_groups"] = "kg"
     ph.pst.pestpp_options["opt_obj_func"] = 'obj.dat'
     ph.pst.pestpp_options["opt_direction"] = "max"
     ph.pst.pestpp_options["opt_risk"] = 0.5
     ph.pst.write(os.path.join("template","freyberg.pst"))
     pyemu.helpers.run("pestpp freyberg.pst",cwd="template")
-
 
     with open(os.path.join("template","obj.dat"),'w') as f:
         for pname in par.loc[par.pargp=="kg","parnme"]:
@@ -197,9 +214,9 @@ def run_jco():
 def run_pestpp_opt():
     pst_file = os.path.join("template", "freyberg.pst")
     pst = pyemu.Pst(pst_file)
-    pst.control_data.noptmax = 3
+    pst.control_data.noptmax = 10
     pst.write(pst_file)
-    pyemu.helpers.start_slaves("template","pestpp-opt","freyberg.pst",num_slaves=15,master_dir="master_opt",
+    pyemu.helpers.start_slaves("template","pestpp-opt","freyberg.pst",num_slaves=20,master_dir="master_opt",
                                slave_root='.')
 
 def spike_test():
@@ -232,4 +249,4 @@ if __name__ == "__main__":
     #write_ssm_tpl()
     #run_test()
     #spike_test()
-    #run_pestpp_opt()
+    run_pestpp_opt()
