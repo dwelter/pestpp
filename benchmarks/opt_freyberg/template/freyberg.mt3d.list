@@ -39,7 +39,7 @@
  | 3 D | ##                                                                              
   ----- 
  THE TRANSPORT MODEL CONSISTS OF     1 LAYER(S)   40 ROW(S)   20 COLUMN(S)
- NUMBER OF STRESS PERIOD(S) FOR TRANSPORT SIMULATION =    3
+ NUMBER OF STRESS PERIOD(S) FOR TRANSPORT SIMULATION =    1
  NUMBER OF ALL COMPONENTS INCLUDED IN SIMULATION =    1
  NUMBER OF MOBILE COMPONENTS INCLUDED IN SIMULATION =    1
  UNIT FOR TIME IS D   ;  UNIT FOR LENGTH IS M   ;  UNIT FOR MASS IS KG  
@@ -107,19 +107,19 @@
  MAXIMUM LENGTH ALONG THE Y (I) AXIS =   10000.00    
  MAXIMUM LENGTH ALONG THE Z (K) AXIS =   35.20274    
  FMI1 -- FLOW MODEL INTERFACE PACKAGE, VERSION 1, MAY 2016, INPUT READ FROM UNIT 10
- FLOW MODEL IS TRANSIENT
+ FLOW MODEL IS STEADY-STATE
  FLOW MODEL CONTAINS CONSTANT-HEAD CELLS
 
 
  ADV1 -- ADVECTION PACKAGE, VERSION 1, MAY 2016, INPUT READ FROM UNIT 32
- ADVECTION IS SOLVED WITH THE UPSTREAM FINITE DIFFERENCE SCHEME
+ ADVECTION IS SOLVED WITH THE ULTIMATE SCHEME
  COURANT NUMBER ALLOWED IN SOLVING THE ADVECTION TERM = 0.750    
 
 
  ADVECTION SOLUTION OPTIONS
  --------------------------
 
- ADVECTION IS SOLVED WITH THE UPSTREAM FINITE DIFFERENCE SCHEME
+ ADVECTION IS SOLVED WITH THE ULTIMATE SCHEME
  COURANT NUMBER ALLOWED IN SOLVING THE ADVECTION TERM = 0.750    
 
  SSM1 -- SINK & SOURCE MIXING PACKAGE, VERSION 1, MAY 2016, INPUT READ FROM UNIT 34
@@ -195,7 +195,7 @@
                                    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
- LENGTH OF CURRENT STRESS PERIOD =   1.000000    
+ LENGTH OF CURRENT STRESS PERIOD =   3650.000    
  NUMBER OF TIME STEPS FOR CURRENT STRESS PERIOD =    1
  TIME STEP MULTIPLIER USED IN FLOW SOLUTION =   1.000000    
 
@@ -225,7 +225,7 @@
                                                          TIME STEP NO.  001
                                           ================================================
 
- FROM TIME =   0.0000     TO    1.0000    
+ FROM TIME =   0.0000     TO    3650.0    
 
 
                     "THKSAT          " FLOW TERMS FOR TIME STEP  1, STRESS PERIOD  1 READ UNFORMATTED ON UNIT 10
@@ -237,15 +237,12 @@
                     "QYY             " FLOW TERMS FOR TIME STEP  1, STRESS PERIOD  1 READ UNFORMATTED ON UNIT 10
                     --------------------------------------------------------------------------------------------
 
-                    "STO             " FLOW TERMS FOR TIME STEP  1, STRESS PERIOD  1 READ UNFORMATTED ON UNIT 10
-                    --------------------------------------------------------------------------------------------
-
  MAXIMUM STEPSIZE DURING WHICH ANY PARTICLE CANNOT MOVE MORE THAN ONE CELL
- =  612.0    (WHEN MIN. R.F.=1)  AT K=   1, I=  38, J=   6
+ =  61.20    (WHEN MIN. R.F.=1)  AT K=   1, I=  38, J=   6
 
  MAXIMUM STEPSIZE WHICH MEETS STABILITY CRITERION OF THE ADVECTION TERM
  (FOR PURE FINITE-DIFFERENCE OPTION, MIXELM=0) 
- =  359.9    (WHEN MIN. R.F.=1)  AT K=   1, I=   9, J=  16
+ =  35.99    (WHEN MIN. R.F.=1)  AT K=   1, I=   9, J=  16
 
                     "CNH             " FLOW TERMS FOR TIME STEP  1, STRESS PERIOD  1 READ UNFORMATTED ON UNIT 10
                     --------------------------------------------------------------------------------------------
@@ -263,18 +260,288 @@
  TOTAL NUMBER OF POINT SOURCES/SINKS PRESENT IN THE FLOW MODEL =   721
 
  MAXIMUM STEPSIZE WHICH MEETS STABILITY CRITERION OF THE SINK & SOURCE TERM
- =  7996.    (WHEN MIN. R.F.=1)  AT K=   1, I=   4, J=   3
+ =  799.6    (WHEN MIN. R.F.=1)  AT K=   1, I=   4, J=   3
 
 
      1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP     1 IN FLOW TIME STEP     1 STRESS PERIOD     1
       1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP     2 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP     3 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP     4 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP     5 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP     6 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP     7 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP     8 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP     9 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    10 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    11 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    12 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    13 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    14 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    15 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    16 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    17 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    18 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    19 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    20 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    21 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    22 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    23 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    24 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    25 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    26 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    27 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    28 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    29 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    30 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    31 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    32 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    33 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    34 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    35 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    36 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    37 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    38 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    39 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    40 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    41 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    42 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    43 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    44 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    45 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    46 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    47 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    48 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    49 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    50 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    51 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    52 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    53 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    54 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    55 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    56 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    57 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    58 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    59 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    60 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    61 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    62 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    63 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    64 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    65 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    66 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    67 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    68 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    69 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    70 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    71 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    72 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    73 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    74 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    75 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    76 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    77 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    78 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    79 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    80 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    81 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    82 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    83 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    84 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    85 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    86 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    87 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    88 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    89 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    90 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    91 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    92 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    93 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    94 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    95 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    96 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    97 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    98 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP    99 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   100 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   101 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   102 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   103 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   104 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   105 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   106 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   107 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   108 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   109 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   110 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   111 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   112 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   113 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   114 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   115 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   116 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   117 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   118 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   119 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   120 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   121 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   122 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   123 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   124 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   125 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   126 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   127 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   128 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   129 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   130 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   131 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   132 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   133 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   134 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   135 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
+     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   136 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      1 TOTAL ITERATIONS
   MAXIMUM CONCENTRATION CHANGES FOR EACH ITERATION:
   MAX. CHANGE LAYER,ROW,COL MAX. CHANGE LAYER,ROW,COL MAX. CHANGE LAYER,ROW,COL MAX. CHANGE LAYER,ROW,COL MAX. CHANGE LAYER,ROW,COL
  ------------------------------------------------------------------------------------------------------------------------------------
     0.000     (  1,  1,  1)
 
 
-                     STREAM MASS BUDGETS AT END OF TRANSPORT STEP    1, TIME STEP    1, STRESS PERIOD    1 FOR COMPONENT   1
+                     STREAM MASS BUDGETS AT END OF TRANSPORT STEP  136, TIME STEP    1, STRESS PERIOD    1 FOR COMPONENT   1
                      -------------------------------------------------------------------------------------------------------
 
                                          CUMULATIVE MASS [M]                                     MASS FOR THIS TIME STEP [M]
@@ -297,7 +564,7 @@
 
                         NET (IN - OUT) =   0.000000                            NET (IN - OUT) =   0.000000    
                  DISCREPANCY (PERCENT) =   0.000000                     DISCREPANCY (PERCENT) =   0.000000    
-                                              FLOW ERR (QIN-QOUT-DV) =  0.2441406E-03 [L3/T]
+                                              FLOW ERR (QIN-QOUT-DV) =  0.3906250E-02 [L3/T]
 
 
 
@@ -306,305 +573,13 @@
 
 
                                             -------------------------------------------
-                                                      TRANSPORT STEP NO.    1
+                                                      TRANSPORT STEP NO.  136
                                             -------------------------------------------
 
- TOTAL ELAPSED TIME SINCE BEGINNING OF SIMULATION =   1.000000    D   
+ TOTAL ELAPSED TIME SINCE BEGINNING OF SIMULATION =   3650.000    D   
  .....................................................................
 
-                     CUMULATIVE MASS BUDGETS AT END OF TRANSPORT STEP    1, TIME STEP    1, STRESS PERIOD    1
-                     -----------------------------------------------------------------------------------------
-
-                                                             IN                           OUT
-                                                      ----------------             ----------------
-                               CONSTANT CONCENTRATION:    0.000000                    0.000000    
-                                        CONSTANT HEAD:    0.000000                    0.000000    
-                                                WELLS:    0.000000                    0.000000    
-                                             RECHARGE:    0.000000                    0.000000    
-                                               STREAM:    0.000000                    0.000000    
-                               1ST/0TH ORDER REACTION:    0.000000                    0.000000    
-                               MASS STOR (FLOW MODEL):    0.000000                    0.000000    
-                                MASS STORAGE (SOLUTE):    0.000000                    0.000000    
-                            ---------------------------------------------------------------------------
-                                              [TOTAL]:    0.000000     KG             0.000000     KG  
-
-                                                          NET (IN - OUT):    0.000000    
-                                                   DISCREPANCY (PERCENT):    0.000000    
-
-
-                                   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                                                       STRESS PERIOD NO.  002
-                                   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
- LENGTH OF CURRENT STRESS PERIOD =   3650.000    
- NUMBER OF TIME STEPS FOR CURRENT STRESS PERIOD =    1
- TIME STEP MULTIPLIER USED IN FLOW SOLUTION =   1.000000    
-
- ***Type of Transport Simulation is TRANSIENT
-
- USER-SPECIFIED TRANSPORT STEPSIZE =   0.000000    D   
- MAXIMUM NUMBER OF TRANSPORT STEPS ALLOWED  IN ONE FLOW TIME STEP =     50000
- MULTIPLIER FOR SUCCESSIVE TRANSPORT STEPS  [USED IN IMPLICIT SCHEMES] =     1.000
- MAXIMUM TRANSPORT STEP SIZE  [USED IN IMPLICIT SCHEMES] =   0.000000    D   
-
- CONCENTRATION OF RECHARGE FLUXES REUSED FROM LAST STRESS PERIOD
-
- POINT SINKS/SOURCES OF SPECIFIED CONCENTRATION REUSED FROM LAST STRESS PERIOD
-
-
- STREAM BOUNDARY CONDITIONS
- --------------------------
-
-
- NO. OF STREAM SINKS/SOURCES OF SPECIFIED CONCONCENTRATIONS =    0 IN STRESS PERIOD  2
-
-
-                                          ================================================
-                                                         TIME STEP NO.  001
-                                          ================================================
-
- FROM TIME =   1.0000     TO    3651.0    
-
-
-                    "THKSAT          " FLOW TERMS FOR TIME STEP  1, STRESS PERIOD  2 READ UNFORMATTED ON UNIT 10
-                    --------------------------------------------------------------------------------------------
-
-                    "QXX             " FLOW TERMS FOR TIME STEP  1, STRESS PERIOD  2 READ UNFORMATTED ON UNIT 10
-                    --------------------------------------------------------------------------------------------
-
-                    "QYY             " FLOW TERMS FOR TIME STEP  1, STRESS PERIOD  2 READ UNFORMATTED ON UNIT 10
-                    --------------------------------------------------------------------------------------------
-
-                    "STO             " FLOW TERMS FOR TIME STEP  1, STRESS PERIOD  2 READ UNFORMATTED ON UNIT 10
-                    --------------------------------------------------------------------------------------------
-
- MAXIMUM STEPSIZE DURING WHICH ANY PARTICLE CANNOT MOVE MORE THAN ONE CELL
- =  683.4    (WHEN MIN. R.F.=1)  AT K=   1, I=  38, J=   6
-
- MAXIMUM STEPSIZE WHICH MEETS STABILITY CRITERION OF THE ADVECTION TERM
- (FOR PURE FINITE-DIFFERENCE OPTION, MIXELM=0) 
- =  279.9    (WHEN MIN. R.F.=1)  AT K=   1, I=  34, J=  12
-
-                    "CNH             " FLOW TERMS FOR TIME STEP  1, STRESS PERIOD  2 READ UNFORMATTED ON UNIT 10
-                    --------------------------------------------------------------------------------------------
-
-                    "WEL             " FLOW TERMS FOR TIME STEP  1, STRESS PERIOD  2 READ UNFORMATTED ON UNIT 10
-                    --------------------------------------------------------------------------------------------
-
-                    "RCH             " FLOW TERMS FOR TIME STEP  1, STRESS PERIOD  2 READ UNFORMATTED ON UNIT 10
-                    --------------------------------------------------------------------------------------------
-
-                    "SFR FLOWS TR    " FLOW TERMS FOR TIME STEP  1, STRESS PERIOD  2 READ UNFORMATTED ON UNIT 10
-                    --------------------------------------------------------------------------------------------
-
-
- TOTAL NUMBER OF POINT SOURCES/SINKS PRESENT IN THE FLOW MODEL =   721
-
- MAXIMUM STEPSIZE WHICH MEETS STABILITY CRITERION OF THE SINK & SOURCE TERM
- = 0.1295E+05(WHEN MIN. R.F.=1)  AT K=   1, I=   4, J=   3
-
-
-     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP     1 IN FLOW TIME STEP     1 STRESS PERIOD     2
-      1 TOTAL ITERATIONS
-     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP     2 IN FLOW TIME STEP     1 STRESS PERIOD     2
-      1 TOTAL ITERATIONS
-     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP     3 IN FLOW TIME STEP     1 STRESS PERIOD     2
-      1 TOTAL ITERATIONS
-     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP     4 IN FLOW TIME STEP     1 STRESS PERIOD     2
-      1 TOTAL ITERATIONS
-     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP     5 IN FLOW TIME STEP     1 STRESS PERIOD     2
-      1 TOTAL ITERATIONS
-     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP     6 IN FLOW TIME STEP     1 STRESS PERIOD     2
-      1 TOTAL ITERATIONS
-     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP     7 IN FLOW TIME STEP     1 STRESS PERIOD     2
-      1 TOTAL ITERATIONS
-     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP     8 IN FLOW TIME STEP     1 STRESS PERIOD     2
-      1 TOTAL ITERATIONS
-  MAXIMUM CONCENTRATION CHANGES FOR EACH ITERATION:
-  MAX. CHANGE LAYER,ROW,COL MAX. CHANGE LAYER,ROW,COL MAX. CHANGE LAYER,ROW,COL MAX. CHANGE LAYER,ROW,COL MAX. CHANGE LAYER,ROW,COL
- ------------------------------------------------------------------------------------------------------------------------------------
-    0.000     (  1,  1,  1)
-
-
-                     STREAM MASS BUDGETS AT END OF TRANSPORT STEP    8, TIME STEP    1, STRESS PERIOD    2 FOR COMPONENT   1
-                     -------------------------------------------------------------------------------------------------------
-
-                                         CUMULATIVE MASS [M]                                     MASS FOR THIS TIME STEP [M]
-                                         -------------------                                    --------------
-                      STREAM DEPLETION =   0.000000                          STREAM DEPLETION =   0.000000    
-                      INFLOW TO STREAM =   0.000000                          INFLOW TO STREAM =   0.000000    
-                          GW TO STREAM =   0.000000                              GW TO STREAM =   0.000000    
-                         PRECIPITATION =   0.000000                             PRECIPITATION =   0.000000    
-                                RUNOFF =   0.000000                                    RUNOFF =   0.000000    
-                CONSTANT CONCENTRATION =   0.000000                    CONSTANT CONCENTRATION =   0.000000    
-                                         -------------------                                    --------------
-                              TOTAL IN =  0.1000000E-09                              TOTAL IN =  0.1000000E-09
-
-                   STREAM ACCUMULATION =   0.000000                       STREAM ACCUMULATION =   0.000000    
-                        STREAM OUTFLOW =   0.000000                            STREAM OUTFLOW =   0.000000    
-                          STREAM TO GW =   0.000000                              STREAM TO GW =   0.000000    
-                CONSTANT CONCENTRATION =   0.000000                    CONSTANT CONCENTRATION =   0.000000    
-                                         -------------------                                    --------------
-                             TOTAL OUT =   0.000000                                 TOTAL OUT =   0.000000    
-
-                        NET (IN - OUT) =   0.000000                            NET (IN - OUT) =   0.000000    
-                 DISCREPANCY (PERCENT) =   0.000000                     DISCREPANCY (PERCENT) =   0.000000    
-                                              FLOW ERR (QIN-QOUT-DV) =  -27.26562     [L3/T]
-
-
-
-
- >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>FOR COMPONENT NO. 01<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-
-                                            -------------------------------------------
-                                                      TRANSPORT STEP NO.    8
-                                            -------------------------------------------
-
- TOTAL ELAPSED TIME SINCE BEGINNING OF SIMULATION =   3651.000    D   
- .....................................................................
-
-                     CUMULATIVE MASS BUDGETS AT END OF TRANSPORT STEP    8, TIME STEP    1, STRESS PERIOD    2
-                     -----------------------------------------------------------------------------------------
-
-                                                             IN                           OUT
-                                                      ----------------             ----------------
-                               CONSTANT CONCENTRATION:    0.000000                    0.000000    
-                                        CONSTANT HEAD:    0.000000                    0.000000    
-                                                WELLS:    0.000000                    0.000000    
-                                             RECHARGE:    0.000000                    0.000000    
-                                               STREAM:    0.000000                    0.000000    
-                               1ST/0TH ORDER REACTION:    0.000000                    0.000000    
-                               MASS STOR (FLOW MODEL):    0.000000                    0.000000    
-                                MASS STORAGE (SOLUTE):    0.000000                    0.000000    
-                            ---------------------------------------------------------------------------
-                                              [TOTAL]:    0.000000     KG             0.000000     KG  
-
-                                                          NET (IN - OUT):    0.000000    
-                                                   DISCREPANCY (PERCENT):    0.000000    
-
-
-                                   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                                                       STRESS PERIOD NO.  003
-                                   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
- LENGTH OF CURRENT STRESS PERIOD =   1.000000    
- NUMBER OF TIME STEPS FOR CURRENT STRESS PERIOD =    1
- TIME STEP MULTIPLIER USED IN FLOW SOLUTION =   1.000000    
-
- ***Type of Transport Simulation is TRANSIENT
-
- USER-SPECIFIED TRANSPORT STEPSIZE =   0.000000    D   
- MAXIMUM NUMBER OF TRANSPORT STEPS ALLOWED  IN ONE FLOW TIME STEP =     50000
- MULTIPLIER FOR SUCCESSIVE TRANSPORT STEPS  [USED IN IMPLICIT SCHEMES] =     1.000
- MAXIMUM TRANSPORT STEP SIZE  [USED IN IMPLICIT SCHEMES] =   0.000000    D   
-
- CONCENTRATION OF RECHARGE FLUXES REUSED FROM LAST STRESS PERIOD
-
- POINT SINKS/SOURCES OF SPECIFIED CONCENTRATION REUSED FROM LAST STRESS PERIOD
-
-
- STREAM BOUNDARY CONDITIONS
- --------------------------
-
-
- NO. OF STREAM SINKS/SOURCES OF SPECIFIED CONCONCENTRATIONS =    0 IN STRESS PERIOD  3
-
-
-                                          ================================================
-                                                         TIME STEP NO.  001
-                                          ================================================
-
- FROM TIME =   3651.0     TO    3652.0    
-
-
-                    "THKSAT          " FLOW TERMS FOR TIME STEP  1, STRESS PERIOD  3 READ UNFORMATTED ON UNIT 10
-                    --------------------------------------------------------------------------------------------
-
-                    "QXX             " FLOW TERMS FOR TIME STEP  1, STRESS PERIOD  3 READ UNFORMATTED ON UNIT 10
-                    --------------------------------------------------------------------------------------------
-
-                    "QYY             " FLOW TERMS FOR TIME STEP  1, STRESS PERIOD  3 READ UNFORMATTED ON UNIT 10
-                    --------------------------------------------------------------------------------------------
-
-                    "STO             " FLOW TERMS FOR TIME STEP  1, STRESS PERIOD  3 READ UNFORMATTED ON UNIT 10
-                    --------------------------------------------------------------------------------------------
-
- MAXIMUM STEPSIZE DURING WHICH ANY PARTICLE CANNOT MOVE MORE THAN ONE CELL
- =  503.1    (WHEN MIN. R.F.=1)  AT K=   1, I=   8, J=  16
-
- MAXIMUM STEPSIZE WHICH MEETS STABILITY CRITERION OF THE ADVECTION TERM
- (FOR PURE FINITE-DIFFERENCE OPTION, MIXELM=0) 
- =  182.5    (WHEN MIN. R.F.=1)  AT K=   1, I=   9, J=  16
-
-                    "CNH             " FLOW TERMS FOR TIME STEP  1, STRESS PERIOD  3 READ UNFORMATTED ON UNIT 10
-                    --------------------------------------------------------------------------------------------
-
-                    "WEL             " FLOW TERMS FOR TIME STEP  1, STRESS PERIOD  3 READ UNFORMATTED ON UNIT 10
-                    --------------------------------------------------------------------------------------------
-
-                    "RCH             " FLOW TERMS FOR TIME STEP  1, STRESS PERIOD  3 READ UNFORMATTED ON UNIT 10
-                    --------------------------------------------------------------------------------------------
-
-                    "SFR FLOWS TR    " FLOW TERMS FOR TIME STEP  1, STRESS PERIOD  3 READ UNFORMATTED ON UNIT 10
-                    --------------------------------------------------------------------------------------------
-
-
- TOTAL NUMBER OF POINT SOURCES/SINKS PRESENT IN THE FLOW MODEL =   721
-
- MAXIMUM STEPSIZE WHICH MEETS STABILITY CRITERION OF THE SINK & SOURCE TERM
- =  7654.    (WHEN MIN. R.F.=1)  AT K=   1, I=   4, J=   3
-
-
-     1 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP     1 IN FLOW TIME STEP     1 STRESS PERIOD     3
-      1 TOTAL ITERATIONS
-  MAXIMUM CONCENTRATION CHANGES FOR EACH ITERATION:
-  MAX. CHANGE LAYER,ROW,COL MAX. CHANGE LAYER,ROW,COL MAX. CHANGE LAYER,ROW,COL MAX. CHANGE LAYER,ROW,COL MAX. CHANGE LAYER,ROW,COL
- ------------------------------------------------------------------------------------------------------------------------------------
-    0.000     (  1,  1,  1)
-
-
-                     STREAM MASS BUDGETS AT END OF TRANSPORT STEP    1, TIME STEP    1, STRESS PERIOD    3 FOR COMPONENT   1
-                     -------------------------------------------------------------------------------------------------------
-
-                                         CUMULATIVE MASS [M]                                     MASS FOR THIS TIME STEP [M]
-                                         -------------------                                    --------------
-                      STREAM DEPLETION =   0.000000                          STREAM DEPLETION =   0.000000    
-                      INFLOW TO STREAM =   0.000000                          INFLOW TO STREAM =   0.000000    
-                          GW TO STREAM =   0.000000                              GW TO STREAM =   0.000000    
-                         PRECIPITATION =   0.000000                             PRECIPITATION =   0.000000    
-                                RUNOFF =   0.000000                                    RUNOFF =   0.000000    
-                CONSTANT CONCENTRATION =   0.000000                    CONSTANT CONCENTRATION =   0.000000    
-                                         -------------------                                    --------------
-                              TOTAL IN =  0.1000000E-09                              TOTAL IN =  0.1000000E-09
-
-                   STREAM ACCUMULATION =   0.000000                       STREAM ACCUMULATION =   0.000000    
-                        STREAM OUTFLOW =   0.000000                            STREAM OUTFLOW =   0.000000    
-                          STREAM TO GW =   0.000000                              STREAM TO GW =   0.000000    
-                CONSTANT CONCENTRATION =   0.000000                    CONSTANT CONCENTRATION =   0.000000    
-                                         -------------------                                    --------------
-                             TOTAL OUT =   0.000000                                 TOTAL OUT =   0.000000    
-
-                        NET (IN - OUT) =   0.000000                            NET (IN - OUT) =   0.000000    
-                 DISCREPANCY (PERCENT) =   0.000000                     DISCREPANCY (PERCENT) =   0.000000    
-                                              FLOW ERR (QIN-QOUT-DV) =   3505.254     [L3/T]
-
-
-
-
- >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>FOR COMPONENT NO. 01<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-
-                                            -------------------------------------------
-                                                      TRANSPORT STEP NO.    1
-                                            -------------------------------------------
-
- TOTAL ELAPSED TIME SINCE BEGINNING OF SIMULATION =   3652.000    D   
- .....................................................................
-
-                     CUMULATIVE MASS BUDGETS AT END OF TRANSPORT STEP    1, TIME STEP    1, STRESS PERIOD    3
+                     CUMULATIVE MASS BUDGETS AT END OF TRANSPORT STEP  136, TIME STEP    1, STRESS PERIOD    1
                      -----------------------------------------------------------------------------------------
 
                                                              IN                           OUT

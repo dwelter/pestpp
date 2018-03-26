@@ -8,11 +8,3 @@ period 1 step 1
   save head
   save budget
 
-period 2 step 1 
-  save head
-  save budget
-
-period 3 step 1 
-  save head
-  save budget
-

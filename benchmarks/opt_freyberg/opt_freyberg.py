@@ -6,17 +6,23 @@ import matplotlib.pyplot as plt
 import flopy
 import pyemu
 
-mf_nam =  "freyberg.truth.nam"
+mf_nam = "freyberg.truth.nam"
 mt_nam = 'freyberg.mt3d.nam'
 mf_exe = "mfnwt"
 mt_exe = "mt3dusgs"
 
+derinc = 0.1
 
 def setup_models():
     org_model_ws = os.path.join("..","..","..","gw1876","models","Freyberg","Freyberg_Truth")
 
 
     m = flopy.modflow.Modflow.load(mf_nam,model_ws=org_model_ws,check=False,exe_name=mf_exe)
+    m.dis.nper = 1
+    m.dis.perlen = 3650
+    m.dis.nstp = 1
+    m.dis.tsmult = 1
+    m.dis.steady = True
     flopy.modflow.ModflowLmt(m,output_file_format="formatted",package_flows=["SFR"])
     m.change_model_ws("temp",reset_external=True)
     m.external_path = '.'
@@ -24,10 +30,10 @@ def setup_models():
     m.run_model()
 
     mt = flopy.mt3d.Mt3dms("freyberg.mt3d",model_ws="temp",modflowmodel=m,exe_name=mt_exe,external_path='.')
-    flopy.mt3d.Mt3dBtn(mt,MFStyleArr=True,prsity=0.1,sconc=0.0,icbund=m.bas6.ibound.array)
+    flopy.mt3d.Mt3dBtn(mt,MFStyleArr=True,prsity=0.01,sconc=0.0,icbund=m.bas6.ibound.array,perlen=3650)
     flopy.mt3d.Mt3dGcg(mt)
     flopy.mt3d.Mt3dRct(mt,isothm=0,ireact=0,igetsc=0,rc1=0.02)
-    flopy.mt3d.Mt3dAdv(mt,mixelm=0)
+    flopy.mt3d.Mt3dAdv(mt,mixelm=-1)
 
     ib = m.bas6.ibound[0].array
     ssm_cells = []
@@ -49,15 +55,16 @@ def setup_models():
 
 
 def setup_pest():
+    m = flopy.modflow.Modflow.load(mf_nam, model_ws="template", check=False, exe_name=mf_exe)
+
     props = [["upw.hk",0],["rch.rech",0]]
-    kperk = [[2,0]]
+    kperk = [[m.nper-1,0]]
     ph = pyemu.helpers.PstFromFlopyModel(mf_nam,org_model_ws="temp",new_model_ws="template",grid_props=props,
                                          const_props=props,sfr_pars=True,all_wells=True,remove_existing=True,
                                          model_exe_name=mf_exe,hds_kperk=kperk,
                                          extra_post_cmds=["{0} {1}".format(mt_exe,mt_nam)])
 
 
-    m = flopy.modflow.Modflow.load(mf_nam, model_ws="template", check=False, exe_name=mf_exe)
     m.external_path = '.'
     m.run_model()
 
@@ -77,7 +84,8 @@ def setup_pest():
         if col in par.columns:
             par.loc[df.index,col] = df.loc[:,col]
 
-    frun_line, ins_filenames, df = pyemu.gw_utils.setup_mtlist_budget_obs("freyberg.mt3d.list")
+    frun_line, ins_filenames, df = pyemu.gw_utils.setup_mtlist_budget_obs("freyberg.mt3d.list",
+                                                                          start_datetime=None)
     ph.frun_post_lines.append(frun_line)
     for ins_file in ins_filenames:
         ph.pst.add_observations(ins_file,ins_file.replace(".ins",""))
@@ -107,12 +115,36 @@ def setup_pest():
     ph.pst.control_data.noptmax = 0
     ph.pst.rectify_pgroups()
 
-    ph.pst.parameter_groups.loc["kg","inctyp"] = "absolute"
-    ph.pst.parameter_groups.loc["kg","derinc"] = 0.01
+    ph.pst.parameter_data.sort_values(by=["pargp","parnme"],inplace=True)
 
+    ph.pst.parameter_groups.loc["kg","inctyp"] = "absolute"
+    ph.pst.parameter_groups.loc["kg","derinc"] = derinc
+
+    obs = ph.pst.observation_data
+    obs.loc[:,"weight"] = 0.0
+    sw_conc_obs = obs.loc[obs.obgnme=="sfrc","obsnme"]
+
+    obs.loc[sw_conc_obs,"obgnme"] = "less_swconc"
+    #obs.loc[sw_conc_obs, "weight"] = 1.0
+    #only turn on one constraint in the middle of the domain
+    obs.loc["sfrc20_1_03650.00","weight"] = 1.0
+
+    # fix all non dec vars for now
+    par = ph.pst.parameter_data
+    par.loc[par.pargp!="kg","partrans"] = "fixed"
+
+    ph.pst.pestpp_options = {}
+    ph.pst.pestpp_options["opt_dec_var_groups"] = ["kg"]
+    ph.pst.pestpp_options["opt_obj_func"] = 'obj.dat'
+    ph.pst.pestpp_options["opt_direction"] = "max"
+    ph.pst.pestpp_options["opt_risk"] = 0.5
     ph.pst.write(os.path.join("template","freyberg.pst"))
     pyemu.helpers.run("pestpp freyberg.pst",cwd="template")
 
+
+    with open(os.path.join("template","obj.dat"),'w') as f:
+        for pname in par.loc[par.pargp=="kg","parnme"]:
+            f.write("{0} {1}\n".format(pname,1.0))
 
 def write_ssm_tpl():
     ssm = os.path.join("template","freyberg.mt3d.ssm")
@@ -150,7 +182,7 @@ def write_ssm_tpl():
     return df
 
 
-def run_test():
+def run_jco():
     pst = pyemu.Pst(os.path.join("template","freyberg.pst"))
     pst.control_data.noptmax = -1
     pst.write(os.path.join("template","freyberg.pst"))
@@ -158,10 +190,42 @@ def run_test():
     pyemu.helpers.start_slaves("template","pestpp","freyberg.pst",num_slaves=15,slave_root='.',
                                master_dir="resp_master")
 
+def run_pestpp_opt():
+    pst_file = os.path.join("template", "freyberg.pst")
+    pst = pyemu.Pst(pst_file)
+    pst.control_data.noptmax = 3
+    pst.write(pst_file)
+    pyemu.helpers.start_slaves("template","pestpp-opt","freyberg.pst",num_slaves=15,master_dir="master_opt",
+                               slave_root='.')
 
+def spike_test():
+    pst_file = os.path.join("template", "freyberg.pst")
+    pst = pyemu.Pst(pst_file)
+    pst.parameter_data.loc["k_10_00","parval1"] = derinc
+    pst.write(pst_file)
+    pyemu.helpers.run("pestpp {0}".format(os.path.split(pst_file)[-1]),cwd="template")
+    pst = pyemu.Pst(pst_file)
+    pst.res.loc[:,"wr"] = pst.res.residual * pst.res.weight
+    print(pst.res.loc[pst.res.wr>0,:])
+    print(pst.res.loc[pst.nnz_obs_names,:])
+
+    m = flopy.modflow.Modflow.load(mf_nam, model_ws="template", check=False, exe_name=mf_exe)
+
+    obs = pst.observation_data
+    ucn_obs = obs.loc[obs.obsnme.apply(lambda x: x.startswith("ucn")),:]
+    ucn_obs.loc[:,"i"] = ucn_obs.obsnme.apply(lambda x: int(x.split("_")[2]))
+    ucn_obs.loc[:, "j"] = ucn_obs.obsnme.apply(lambda x: int(x.split("_")[3]))
+    arr = np.zeros((m.nrow,m.ncol))
+    arr[ucn_obs.i,ucn_obs.j] = pst.res.loc[ucn_obs.obsnme,"modelled"]
+    arr = np.ma.masked_where(m.bas6.ibound[0].array==0,arr)
+    plt.imshow(arr)
+    plt.show()
 
 
 if __name__ == "__main__":
     #setup_models()
-    #setup_pest()
+    setup_pest()
     #write_ssm_tpl()
+    #run_test()
+    #spike_test()
+    run_pestpp_opt()
