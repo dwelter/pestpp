@@ -1,4 +1,4 @@
- PESTCHEK Version 13.0. Watermark Numerical Computing.
+ PESTCHEK Version 14.2. Watermark Numerical Computing.
 
  *** command line error ***
  PESTCHEK is run using the command:
@@ -8,4 +8,4 @@
  where
 
     "case" is a case name (no filename extension), and
-    /s prevents warning messages and template/instruction file checking.
+    /s stops warnings and template/instruction/cov. matrix file checking.

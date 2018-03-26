@@ -57,10 +57,11 @@ def setup_models():
 def setup_pest():
     m = flopy.modflow.Modflow.load(mf_nam, model_ws="template", check=False, exe_name=mf_exe)
 
-    props = [["upw.hk",0],["rch.rech",0]]
+    #props = [["upw.hk",0],["rch.rech",0]]
+    props=None
     kperk = [[m.nper-1,0]]
     ph = pyemu.helpers.PstFromFlopyModel(mf_nam,org_model_ws="temp",new_model_ws="template",grid_props=props,
-                                         const_props=props,sfr_pars=True,all_wells=True,remove_existing=True,
+                                         const_props=props,sfr_pars=False,all_wells=False,remove_existing=True,
                                          model_exe_name=mf_exe,hds_kperk=kperk,
                                          extra_post_cmds=["{0} {1}".format(mt_exe,mt_nam)])
 
@@ -132,6 +133,9 @@ def setup_pest():
     # fix all non dec vars for now
     par = ph.pst.parameter_data
     par.loc[par.pargp!="kg","partrans"] = "fixed"
+
+    pyemu.helpers.zero_order_tikhonov(pst=ph.pst)
+    ph.pst.prior_information.loc[:,"obgnme"] = "greater_bnd"
 
     ph.pst.pestpp_options = {}
     ph.pst.pestpp_options["opt_dec_var_groups"] = ["kg"]
@@ -228,4 +232,4 @@ if __name__ == "__main__":
     #write_ssm_tpl()
     #run_test()
     #spike_test()
-    run_pestpp_opt()
+    #run_pestpp_opt()

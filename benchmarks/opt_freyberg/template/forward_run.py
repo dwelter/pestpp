@@ -23,10 +23,6 @@ try:
    os.remove('MT3D001.ucn')
 except Exception as e:
    print('error removing tmp file:MT3D001.ucn')
-pyemu.helpers.apply_all_wells()
-pyemu.helpers.apply_array_pars()
-
-pyemu.gw_utils.apply_sfr_seg_parameters()
 pyemu.helpers.run('mfnwt freyberg.truth.nam 1>freyberg.truth.nam.stdout 2>freyberg.truth.nam.stderr')
 pyemu.helpers.run('mt3dusgs freyberg.mt3d.nam')
 

@@ -1234,14 +1234,22 @@ CoinPackedMatrix sequentialLP::jacobian_to_coinpackedmatrix()
 	int elem_count = 0;
 
 	//iterate through the eigen sparse matrix
+	int elems_par;
 	for (int i = 0; i < eig_ord_jco.outerSize(); ++i)
 	{
+		elems_par = 0;
 		for (Eigen::SparseMatrix<double>::InnerIterator it(eig_ord_jco, i); it; ++it)
 		{
 			row_idx[elem_count] = it.row();
 			col_idx[elem_count] = it.col();
 			elems[elem_count] = it.value();
+			elems_par++;
 			elem_count++;
+		}
+		if (elems_par == 0)
+		{
+			cout << "all zero elements for decision variable: " << ctl_ord_dec_var_names[i] << endl;
+
 		}
 	}
 	if (elem_count != eig_ord_jco.nonZeros())
