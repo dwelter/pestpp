@@ -13,9 +13,9 @@ pcf
   10000000    1.000000E-06
 1
 * parameter groups
-grprst0                 relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
 grrc110                 relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
 grhk0                   relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
+grprst0                 relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
 grrech0                 relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
 hcond1                  relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
 wflux_000               relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
@@ -2852,23 +2852,23 @@ wf0003_000             log                    factor                1.0000000000
 wf0004_000             log                    factor                1.0000000000E+00      8.0000000000E-01      1.2000000000E+00       wflux_000             1.0000000000E+00      0.0000000000E+00      1          
 wf0005_000             log                    factor                1.0000000000E+00      8.0000000000E-01      1.2000000000E+00       wflux_000             1.0000000000E+00      0.0000000000E+00      1
 * observation groups
-vol_constan          
-vol_stream_          
-flx_wells            
-flx_storage          
-flx_stream_          
-vol_wells            
-flx_percent          
-hds                  
-flx_total            
-vol_recharg          
-vol_storage          
-flx_in-out           
-flx_recharg          
-vol_total            
 vol_in-out           
-flx_constan          
+flx_storage          
+flx_total            
 vol_percent          
+flx_constan          
+flx_wells            
+vol_wells            
+vol_storage          
+flx_stream_          
+vol_recharg          
+flx_percent          
+vol_constan          
+flx_recharg          
+flx_in-out           
+hds                  
+vol_stream_          
+vol_total            
 * observation data
 flx_constan_19791230  -8.6005180000E+02     1.0000000000E+00       flx_constan          
 flx_in-out_19791230   -2.9966000000E+00     1.0000000000E+00       flx_in-out           

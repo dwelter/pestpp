@@ -15,6 +15,7 @@ new_model_ws = "template"
 
 derinc = 1.0
 
+
 def setup_models(m=None):
     org_model_ws = os.path.join("..","..","..","gw1876","models","Freyberg","Freyberg_Truth")
 
@@ -43,7 +44,7 @@ def setup_models(m=None):
         for j in range(m.ncol):
             if ib[i,j] == 0:
                 continue
-            ssm_cells.append([0,i,j,0.0,15])
+            ssm_cells.append([0,i,j,derinc,15])
     flopy.mt3d.Mt3dSsm(mt,crch=0.0,stress_period_data={0:ssm_cells,1:ssm_cells,2:ssm_cells})
 
     nstrm = np.abs(m.sfr.nstrm)
@@ -153,21 +154,24 @@ def setup_pest():
     obs.loc["gw_cohe1c_003650.0","obgnme"] = "greater_ch"
     obs.loc["gw_cohe1c_003650.0", "weight"] = 1.0
 
-    # fix all non dec vars for now
+    # fix all non dec vars so we can set upper and lower bound constraints
     par = ph.pst.parameter_data
     par.loc[par.pargp!="kg","partrans"] = "fixed"
 
     # add some pi constraints to make sure all dec vars have at
     # least one element in the response matrix
+    # set lower bounds
+    par.loc[par.pargp == "kg", "parval1"] = par.loc[par.pargp == "kg", "parlbnd"]
     pyemu.helpers.zero_order_tikhonov(pst=ph.pst)
     ph.pst.prior_information.loc[:,"obgnme"] = "greater_bnd"
 
+    # set upper bounds
     par.loc[par.pargp=="kg","parval1"] = par.loc[par.pargp=="kg","parubnd"]
     pyemu.helpers.zero_order_tikhonov(ph.pst,reset=False)
     ph.pst.prior_information.loc[:, "obgnme"] = "less_bnd"
 
-    #reset dec vars to lower bounds
-    par.loc[par.pargp == "kg", "parval1"] = par.loc[par.pargp == "kg", "parlbnd"]
+    #set dec vars to background value (derinc)
+    par.loc[par.pargp == "kg", "parval1"] = derinc
 
     #unfix pars
     par.loc[par.pargp != "kg", "partrans"] = "log"
@@ -215,8 +219,8 @@ def write_ssm_tpl():
     df.loc[:,"pargp"] = "kg"
     df.loc[:,"parubnd"] = 10.0
     df.loc[:,"partrans"] = "none"
-    df.loc[:,"parlbnd"] = 0.0
-    df.loc[:,"parval1"] = 0.0
+    df.loc[:,"parlbnd"] = 0.0 #here we let loading decrease...
+    df.loc[:,"parval1"] = derinc
     return df
 
 
@@ -274,11 +278,58 @@ def jco_invest():
     print(fosm_jco.loc[pst.nnz_obs_names,:].sum(axis=1))
 
 
+def restart_test():
+    restart_d = "test"
+    if os.path.exists(restart_d):
+        shutil.rmtree(restart_d)
+    shutil.copytree(new_model_ws, restart_d)
+    for f in os.listdir("_restart_files"):
+        shutil.copy2(os.path.join("_restart_files",f),os.path.join(restart_d,f))
+
+    pst = pyemu.Pst(os.path.join(restart_d,"freyberg.pst"))
+    pst.pestpp_options["base_jacobian"] = "restart.jcb"
+    pst.pestpp_options["hotstart_resfile"] = "restart.rei"
+    pst.pestpp_options["opt_skip_final"] = "true"
+    pst.control_data.noptmax = 1
+    risks = np.arange(0.01,0.55,0.01)
+    phis,infeas = [],[]
+    for risk in risks:
+        pst.pestpp_options["opt_risk"] = risk
+        pst.write(os.path.join(restart_d,"freyberg.pst"))
+        pyemu.helpers.run("pestpp-opt freyberg.pst",cwd=restart_d)
+        inf,phi = scrap_recfile(os.path.join(restart_d,"freyberg.rec"))
+        phis.append(phi)
+        infeas.append(inf)
+
+    df = pd.DataFrame({"risk":risks,"phi":phis,"infeas":infeas})
+    df.loc[df.infeas,"phi"] = np.NaN
+    ax = plt.subplot(111)
+    ax.plot(df.risk,df.phi)
+    ax.set_xlabel("risk")
+    ax.set_ylabel("$\phi$")
+    ax.grid()
+    plt.savefig("risk.pdf")
+
+def scrap_recfile(recfile):
+    infeas = False
+    with open(recfile,'r') as f:
+        for line in f:
+            if "best objective function value" in line:
+                phi = float(line.strip().split(':')[-1])
+                #break
+
+            if "warning: primal solution infeasible" in line:
+                infeas = True
+    return infeas, phi
+
+
 if __name__ == "__main__":
     #setup_models()
     #setup_pest()
     #write_ssm_tpl()
     #run_test()
     #spike_test()
-    run_pestpp_opt()
+    #run_pestpp_opt()
     #jco_invest()
+    restart_test()
+
