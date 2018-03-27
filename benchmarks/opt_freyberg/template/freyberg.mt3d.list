@@ -22,6 +22,36 @@
  OPENING freyberg.mt3d.sft
  FILE TYPE:SFT   UNIT  19
 
+ OPENING ./delr.ref
+ FILE TYPE:DATA   UNIT2001
+
+ OPENING ./delc.ref
+ FILE TYPE:DATA   UNIT2002
+
+ OPENING ./htop.ref
+ FILE TYPE:DATA   UNIT2003
+
+ OPENING ./dz_layer_1.ref
+ FILE TYPE:DATA   UNIT2004
+
+ OPENING ./prsity_layer_1.ref
+ FILE TYPE:DATA   UNIT2005
+
+ OPENING ./icbund_layer_1.ref
+ FILE TYPE:DATA   UNIT2006
+
+ OPENING ./sconc1_layer_1.ref
+ FILE TYPE:DATA   UNIT2007
+
+ OPENING ./rc11_layer_1.ref
+ FILE TYPE:DATA   UNIT2008
+
+ OPENING ./rc21_layer_1.ref
+ FILE TYPE:DATA   UNIT2009
+
+ OPENING ./crch10.ref
+ FILE TYPE:DATA   UNIT2011
+
  OPENING freyberg.mt3d
  FILE TYPE:DATA   UNIT1001
 
@@ -61,26 +91,40 @@
  ------------  ------------
        1            1
 
-                           WIDTH ALONG ROWS (DELR)  READ ON UNIT 31 USING FORMAT: "           (1E15.6) "
-                           -----------------------------------------------------------------------------
 
-                           WIDTH ALONG COLS (DELC)  READ ON UNIT 31 USING FORMAT: "           (1E15.6) "
-                           -----------------------------------------------------------------------------
 
-                           TOP ELEV. OF 1ST LAYER   READ ON UNIT 31 USING FORMAT: "          (20E15.6) "
-                           -----------------------------------------------------------------------------
+           WIDTH ALONG ROWS (DELR) 
+ READING ON UNIT 2001 WITH FORMAT:           (20E15.6) 
 
-                     CELL THICKNESS (DZ)      FOR LAYER  1 READ ON UNIT 31 USING FORMAT: "          (20E15.6) "
-                     ------------------------------------------------------------------------------------------
 
-                     POROSITY                 FOR LAYER  1 READ ON UNIT 31 USING FORMAT: "          (20E15.6) "
-                     ------------------------------------------------------------------------------------------
 
-                     CONCN. BOUNDARY ARRAY    FOR LAYER  1 READ ON UNIT 31 USING FORMAT: "            (20I10) "
-                     ------------------------------------------------------------------------------------------
+           WIDTH ALONG COLS (DELC) 
+ READING ON UNIT 2002 WITH FORMAT:           (40E15.6) 
 
-                     INITIAL CONC.: COMP.  01 FOR LAYER  1 READ ON UNIT 31 USING FORMAT: "          (20E15.6) "
-                     ------------------------------------------------------------------------------------------
+
+
+           TOP ELEV. OF 1ST LAYER  
+ READING ON UNIT 2003 WITH FORMAT:           (20E15.6) 
+
+
+
+           CELL THICKNESS (DZ)      FOR LAYER   1
+ READING ON UNIT 2004 WITH FORMAT:           (20E15.6) 
+
+
+
+           POROSITY                 FOR LAYER   1
+ READING ON UNIT 2005 WITH FORMAT:           (20E15.6) 
+
+
+
+           CONCN. BOUNDARY ARRAY    FOR LAYER   1
+ READING ON UNIT 2006 WITH FORMAT:             (20I10) 
+
+
+
+           INITIAL CONC.: COMP.  01 FOR LAYER   1
+ READING ON UNIT 2007 WITH FORMAT:           (20E15.6) 
 
  VALUE INDICATING INACTIVE CONCENTRATION CELLS =   0.1000000E+31
  MINIMUM SATURATED THICKNESS [THKMIN] ALLOWED =  0.0100000 OF TOTAL CELL THICKNESS
@@ -124,7 +168,7 @@
 
  SSM1 -- SINK & SOURCE MIXING PACKAGE, VERSION 1, MAY 2016, INPUT READ FROM UNIT 34
  HEADER LINE OF THE SSM PACKAGE INPUT FILE:
-  f f f f f f f f f f                                                    
+  t f t f f f f f f f f f f f f f                                        
  MAJOR STRESS COMPONENTS PRESENT IN THE FLOW MODEL:
   o WELL [WEL]
   o RECHARGE [RCH]
@@ -132,7 +176,7 @@
 
  RCT1 -- CHEMICAL REACTION PACKAGE, VERSION 1, MAY 2016, INPUT READ FROM UNIT 36
  NO SORPTION [OR DUAL-DOMAIN MODEL] IS SIMULATED
- NO FIRST-ORDER RATE REACTION IS SIMULATED
+ FIRST-ORDER IRREVERSIBLE REACTION [RADIOACTIVE DECAY OR BIODEGRADATION] IS SIMULATED
  REACTION COEFFICIENTS ASSIGNED CELL-BY-CELL
  INITIAL SORBED/IMMOBILE PHASE CONCENTRATION ASSIGNED BY DEFAULT
 
@@ -140,6 +184,19 @@
  SORPTION AND 1ST/0TH ORDER REACTION PARAMETERS
  ----------------------------------------------
 
+
+
+
+           SOLUTE RXN RATE: COMP 01 FOR LAYER   1
+ READING ON UNIT 2008 WITH FORMAT:           (20E15.6) 
+
+
+
+           SORBED RXN RATE: COMP 01 FOR LAYER   1
+ READING ON UNIT 2009 WITH FORMAT:           (20E15.6) 
+
+ MAXIMUM STEPSIZE WHICH MEETS STABILITY CRITERION OF THE REACTION TERM
+ =  50.00     AT K=   1, I=   1, J=   1
 
  GCG1 -- GENERALIZED CONJUGATE GRADIENT SOLVER PACKAGE, VERSION 1, OCTOBER 2010 INPUT READ FROM UNIT 35
  MAXIMUM OF    1 OUTER ITERATIONS
@@ -161,7 +218,7 @@
  SFT1 -- STREAM TRANSPORT PACKAGE, VERSION 1, MAY 2016, INPUT READ FROM UNIT 19
  NUMBER OF STREAMS =    40
  MAXIMUM NUMBER OF STREAM BOUNDARY CONDITIONS =     0
- STREAM-FLOW OBSERVATION OUTPUT  WILL BE SAVED IN UNIT:***
+ STREAM-FLOW OBSERVATION OUTPUT  WILL BE SAVED IN UNIT:1001
  TRANSIENT SFR FLOW SOLUTION IS USED; MASS WILL BE CONSERVED
  MASS DOES NOT EXIT VIA STREAM ET
 
@@ -183,11 +240,21 @@
  COURANT CONSTRAINT FOR SFR TIME-STEP =   1.0000    
  PRINT OPTION FOR xMD SOLVER =            0
 
-                           STRM INIT CONC COMP# 001 READ ON UNIT 19 USING FORMAT: "          (40E15.6) "
-                           -----------------------------------------------------------------------------
+ OPENING FILE ON UNIT   99:
+ ./coldsf.ref                                                                                                                                                                                            
 
-                           DISP COEF L2/T COMP# 001 READ ON UNIT 19 USING FORMAT: "          (40E15.6) "
-                           -----------------------------------------------------------------------------
+
+
+           STRM INIT CONC COMP# 001
+ READING ON UNIT   99 WITH FORMAT: (40E15.6)           
+
+ OPENING FILE ON UNIT   99:
+ ./dispsf.ref                                                                                                                                                                                            
+
+
+
+           DISP COEF L2/T COMP# 001
+ READING ON UNIT   99 WITH FORMAT: (40E15.6)           
 
 
                                    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -208,8 +275,10 @@
 
  CONCENTRATION OF RECHARGE FLUXES WILL BE READ IN STRESS PERIOD  1
 
-                           RECH. CONC. COMP.  01    READ ON UNIT 34 USING FORMAT: "          (20e15.6) "
-                           -----------------------------------------------------------------------------
+
+
+           RECH. CONC. COMP.  01   
+ READING ON UNIT 2011 WITH FORMAT:           (20e15.6) 
 
        NO    LAYER   ROW   COLUMN   CONCENTRATION       TYPE            COMPONENT
 

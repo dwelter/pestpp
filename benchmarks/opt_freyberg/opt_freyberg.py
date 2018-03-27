@@ -11,6 +11,8 @@ mt_nam = 'freyberg.mt3d.nam'
 mf_exe = "mfnwt"
 mt_exe = "mt3dusgs"
 
+new_model_ws = "template"
+
 derinc = 1.0
 
 def setup_models(m=None):
@@ -32,7 +34,7 @@ def setup_models(m=None):
     mt = flopy.mt3d.Mt3dms("freyberg.mt3d",model_ws=m.model_ws,modflowmodel=m,exe_name=mt_exe,external_path='.')
     flopy.mt3d.Mt3dBtn(mt,MFStyleArr=True,prsity=0.01,sconc=0.0,icbund=m.bas6.ibound.array,perlen=3650)
     flopy.mt3d.Mt3dGcg(mt)
-    flopy.mt3d.Mt3dRct(mt,isothm=0,ireact=0,igetsc=0,rc1=0.02)
+    flopy.mt3d.Mt3dRct(mt,isothm=0,ireact=1,igetsc=0,rc1=0.02)
     flopy.mt3d.Mt3dAdv(mt,mixelm=-1)
 
     ib = m.bas6.ibound[0].array
@@ -60,22 +62,37 @@ def setup_pest():
 
     props = [["upw.hk",0],["rch.rech",0],["extra.prst",0],["extra.rc11",0]]
     kperk = [[m.nper-1,0]]
-    ph = pyemu.helpers.PstFromFlopyModel(mf_nam,org_model_ws="temp",new_model_ws="template",grid_props=props,
+    ph = pyemu.helpers.PstFromFlopyModel(mf_nam,org_model_ws="temp",new_model_ws=new_model_ws,grid_props=props,
                                          const_props=props,sfr_pars=True,all_wells=True,remove_existing=True,
                                          model_exe_name=mf_exe,hds_kperk=kperk,
                                          extra_post_cmds=["{0} {1}".format(mt_exe,mt_nam)])
 
-    pyemu.helpers.run("{0} {1}".format(mf_exe, mf_nam),cwd="template")
+    pyemu.helpers.run("{0} {1}".format(mf_exe, mf_nam),cwd=new_model_ws)
+
+    
 
     # mt = flopy.mt3d.Mt3dms.load(mt_nam, model_ws="temp", exe_name=mt_exe)
-    # mt.change_model_ws("template", reset_external=True)
+    # mt.change_model_ws(new_model_ws, reset_external=True)
     # mt.external_path = '.'
     # mt.write_input()
-    # pyemu.helpers.run("{0} {1}".format(mt_exe,mt_nam),cwd="template")
+    # pyemu.helpers.run("{0} {1}".format(mt_exe,mt_nam),cwd=new_model_ws)
     mt = setup_models(ph.m)
+    
+    [shutil.copy2(os.path.join(new_model_ws, f), os.path.join(new_model_ws, 'arr_org', f)) for f in
+     os.listdir(new_model_ws) if "prsity" in f.lower()]
+
+    [shutil.copy2(os.path.join(new_model_ws, f), os.path.join(new_model_ws, 'arr_org', f)) for f in
+     os.listdir(new_model_ws) if "rc11" in f.lower()]
+
+    # mod arr pars csv for prsity name len issue - 12 chars, seriously?
+    df = pd.read_csv(os.path.join(new_model_ws, "arr_pars.csv"))
+    df.loc[:, "model_file"] = df.model_file.apply(lambda x: x.replace("prst", "prsity"))
+    df.loc[:, "org_file"] = df.org_file.apply(lambda x: x.replace("prst", "prsity"))
+    df.to_csv(os.path.join(new_model_ws,"arr_pars.csv"))
+
     df = write_ssm_tpl()
 
-    os.chdir("template")
+    os.chdir(new_model_ws)
 
     ph.pst.add_parameters("freyberg.mt3d.ssm.tpl","freyberg.mt3d.ssm")
     par = ph.pst.parameter_data
@@ -159,16 +176,16 @@ def setup_pest():
     ph.pst.pestpp_options["opt_dec_var_groups"] = "kg"
     ph.pst.pestpp_options["opt_obj_func"] = 'obj.dat'
     ph.pst.pestpp_options["opt_direction"] = "max"
-    ph.pst.pestpp_options["opt_risk"] = 0.5
-    ph.pst.write(os.path.join("template","freyberg.pst"))
-    pyemu.helpers.run("pestpp freyberg.pst",cwd="template")
+    ph.pst.pestpp_options["opt_risk"] = 0.95
+    ph.pst.write(os.path.join(new_model_ws,"freyberg.pst"))
+    pyemu.helpers.run("pestpp freyberg.pst",cwd=new_model_ws)
 
-    with open(os.path.join("template","obj.dat"),'w') as f:
+    with open(os.path.join(new_model_ws,"obj.dat"),'w') as f:
         for pname in par.loc[par.pargp=="kg","parnme"]:
             f.write("{0} {1}\n".format(pname,1.0))
 
 def write_ssm_tpl():
-    ssm = os.path.join("template","freyberg.mt3d.ssm")
+    ssm = os.path.join(new_model_ws,"freyberg.mt3d.ssm")
     f_in = open(ssm,'r')
     f_tpl = open(ssm+".tpl",'w')
     f_tpl.write("ptf ~\n")
@@ -204,33 +221,37 @@ def write_ssm_tpl():
 
 
 def run_jco():
-    pst = pyemu.Pst(os.path.join("template","freyberg.pst"))
+    pst = pyemu.Pst(os.path.join(new_model_ws,"freyberg.pst"))
     pst.control_data.noptmax = -1
-    pst.write(os.path.join("template","freyberg.pst"))
+    pst.write(os.path.join(new_model_ws,"freyberg.pst"))
 
-    pyemu.helpers.start_slaves("template","pestpp","freyberg.pst",num_slaves=15,slave_root='.',
+    pyemu.helpers.start_slaves(new_model_ws,"pestpp","freyberg.pst",num_slaves=15,slave_root='.',
                                master_dir="resp_master")
 
 def run_pestpp_opt():
-    pst_file = os.path.join("template", "freyberg.pst")
+    pst_file = os.path.join(new_model_ws, "freyberg.pst")
     pst = pyemu.Pst(pst_file)
-    pst.control_data.noptmax = 10
+    pst.control_data.noptmax = 1
     pst.write(pst_file)
-    pyemu.helpers.start_slaves("template","pestpp-opt","freyberg.pst",num_slaves=20,master_dir="master_opt",
+    pyemu.helpers.start_slaves(new_model_ws,"pestpp-opt","freyberg.pst",num_slaves=20,master_dir="master_opt",
                                slave_root='.')
 
 def spike_test():
-    pst_file = os.path.join("template", "freyberg.pst")
+    pst_file = os.path.join(new_model_ws, "freyberg.pst")
     pst = pyemu.Pst(pst_file)
-    pst.parameter_data.loc["k_10_00","parval1"] = derinc
+    #pst.parameter_data.loc["k_10_00","parval1"] = derinc
+    par = pst.parameter_data
+    fosm_pars = par.loc[par.pargp != "kg", "parnme"]
+    par.loc[fosm_pars,"parval1"] = par.loc[fosm_pars,"parubnd"]
+    pst.control_data.noptmax = 0
     pst.write(pst_file)
-    pyemu.helpers.run("pestpp {0}".format(os.path.split(pst_file)[-1]),cwd="template")
+    pyemu.helpers.run("pestpp {0}".format(os.path.split(pst_file)[-1]),cwd=new_model_ws)
     pst = pyemu.Pst(pst_file)
     pst.res.loc[:,"wr"] = pst.res.residual * pst.res.weight
     print(pst.res.loc[pst.res.wr>0,:])
     print(pst.res.loc[pst.nnz_obs_names,:])
 
-    m = flopy.modflow.Modflow.load(mf_nam, model_ws="template", check=False, exe_name=mf_exe)
+    m = flopy.modflow.Modflow.load(mf_nam, model_ws=new_model_ws, check=False, exe_name=mf_exe)
 
     obs = pst.observation_data
     ucn_obs = obs.loc[obs.obsnme.apply(lambda x: x.startswith("ucn")),:]
@@ -243,10 +264,21 @@ def spike_test():
     plt.show()
 
 
+def jco_invest():
+    pst_file = os.path.join("master_opt","freyberg.pst")
+    pst = pyemu.Pst(pst_file)
+    par = pst.parameter_data
+    fosm_pars = par.loc[par.pargp!="kg","parnme"]
+    jco = pyemu.Jco.from_binary(pst_file.replace(".pst",".1.jcb")).to_dataframe()
+    fosm_jco = jco.loc[:,fosm_pars]
+    print(fosm_jco.loc[pst.nnz_obs_names,:].sum(axis=1))
+
+
 if __name__ == "__main__":
     #setup_models()
-    setup_pest()
+    #setup_pest()
     #write_ssm_tpl()
     #run_test()
     #spike_test()
     run_pestpp_opt()
+    #jco_invest()
