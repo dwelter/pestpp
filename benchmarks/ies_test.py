@@ -852,13 +852,64 @@ def test_freyberg_ineq():
         ax.plot([v,v],ax.get_ylim(),"k--",lw=2.0)
     plt.show()
 
+def tenpar_fixed_test():
+    model_d = "ies_10par_xsec"
+    test_d = os.path.join(model_d, "test_fixed")
+    template_d = os.path.join(model_d, "template")
+    pst = pyemu.Pst(os.path.join(template_d,"pest.pst"))
+    pst.control_data.noptmax = 2
+    if os.path.exists(test_d):
+        shutil.rmtree(test_d)
+    shutil.copytree(template_d,test_d)
+    cov = pyemu.Cov.from_parameter_data(pst)
+    pe = pyemu.ParameterEnsemble.from_gaussian_draw(pst=pst,cov=cov,num_reals=10)
+
+    pe.loc[:,"stage"] = np.linspace(0.0,1.0,pe.shape[0])
+    pe.loc[:,"k_01"] = 5.0
+    pe.to_csv(os.path.join(test_d,"par.csv"))
+    pe.to_binary(os.path.join(test_d, "par.jcb"))
+    fixed_pars = ["stage","k_01"]
+    pst.parameter_data.loc[fixed_pars,"partrans"] = "fixed"
+
+    def compare():
+        csvs = [f for f in os.listdir(test_d) if f.endswith(".par.csv")]
+        dfs = [pd.read_csv(os.path.join(test_d,csv),index_col=0) for csv in csvs]
+        for df in dfs:
+            df.columns = df.columns.map(str.lower)
+            df = df.loc[:,fixed_pars]
+            df = df.iloc[:-1,:]
+            df.index = pe.index
+            diff = pe.loc[df.index,fixed_pars] - df
+            assert diff.apply(np.abs).sum().sum() < 0.01
+
+    pst.pestpp_options["ies_par_en"] = "par.csv"
+    pst.write(os.path.join(test_d, "pest.pst"))
+    pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
+    compare()
+    pe.to_binary(os.path.join(test_d,"par.jcb"))
+    pst.pestpp_options["ies_par_en"] = "par.jcb"
+    pst.write(os.path.join(test_d, "pest.pst"))
+    pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
+    compare()
+
+    pst.pestpp_options["ies_par_en"] = "par.jcb"
+    pst.pestpp_options["ies_save_binary"] = 'true'
+    pst.write(os.path.join(test_d, "pest.pst"))
+    pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
+    pe1 = pyemu.ParameterEnsemble.from_binary(pst=pst,filename=os.path.join(test_d,"pest.0.par.jcb")).iloc[:-1,:]
+    pe1.index = pe.index
+    diff = pe - pe1
+    assert diff.apply(np.abs).sum().sum() == 0.0
+
+
+
 
 if __name__ == "__main__":
     # write_empty_test_matrix()
     #setup_suite_dir("ies_freyberg")
     #setup_suite_dir("ies_10par_xsec")
-    run_suite("ies_freyberg")
-    run_suite("ies_10par_xsec")
+    #run_suite("ies_freyberg")
+    #run_suite("ies_10par_xsec")
     #rebase("ies_freyberg")
     #rebase("ies_10par_xsec")
     #tenpar_subset_test()
@@ -871,7 +922,7 @@ if __name__ == "__main__":
     #test_10par_xsec()
     #test_freyberg()
     #test_chenoliver()
-    compare_pyemu()
+    #compare_pyemu()
     #tenpar_subset_test()
     #tenpar_full_cov_test()
     #test_freyberg_ineq()
@@ -881,3 +932,5 @@ if __name__ == "__main__":
     #compare_suite("ies_freyberg")
     
     #test_kirishima()
+
+    tenpar_fixed_test()

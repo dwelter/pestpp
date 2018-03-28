@@ -120,10 +120,15 @@ public:
 
 	void draw(int num_reals, Covariance &cov, PerformanceLog *plog, int level);
 	Covariance get_diagonal_cov_matrix();
+	void to_binary(string filename);
 
 private:
 	ParamTransformSeq par_transform;
 	transStatus tstat;
+	void save_fixed();
+	vector<string> fixed_names;
+	map<pair<string, string>, double> fixed_map;
+	void replace_fixed(string real_name,Parameters &pars);
 };
 
 class ObservationEnsemble : public Ensemble
