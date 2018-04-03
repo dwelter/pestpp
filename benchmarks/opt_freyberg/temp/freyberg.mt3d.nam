@@ -14,5 +14,7 @@ DATA            2004  ./dz_layer_1.ref
 DATA            2005  ./prsity_layer_1.ref
 DATA            2006  ./icbund_layer_1.ref
 DATA            2007  ./sconc1_layer_1.ref
-DATA            2009  ./crch10.ref
+DATA            2008  ./rc11_layer_1.ref
+DATA            2009  ./rc21_layer_1.ref
+DATA            2011  ./crch10.ref
 DATA            1001  freyberg.mt3d

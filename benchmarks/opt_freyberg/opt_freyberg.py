@@ -46,7 +46,9 @@ def setup_models(m=None):
         for j in range(m.ncol):
             if ib[i,j] == 0:
                 continue
-            ssm_cells.append([0,i,j,derinc,15])
+            if j >= 15: #no loading in or across the stream
+                continue
+            ssm_cells.append([0,i,j,max(derinc,float(j+1)/10.0),15])
     flopy.mt3d.Mt3dSsm(mt,crch=0.0,stress_period_data={0:ssm_cells,1:ssm_cells,2:ssm_cells})
 
     nstrm = np.abs(m.sfr.nstrm)
@@ -56,8 +58,6 @@ def setup_models(m=None):
     mt.write_input()
     mt.run_model()
     return mt
-
-
 
 
 def setup_pest():
@@ -163,6 +163,7 @@ def setup_pest():
     # add some pi constraints to make sure all dec vars have at
     # least one element in the response matrix
     # set lower bounds
+    parval1 = par.parval1.copy()
     par.loc[par.pargp == "kg", "parval1"] = par.loc[par.pargp == "kg", "parlbnd"]
     pyemu.helpers.zero_order_tikhonov(pst=ph.pst)
     ph.pst.prior_information.loc[:,"obgnme"] = "greater_bnd"
@@ -173,16 +174,16 @@ def setup_pest():
     ph.pst.prior_information.loc[:, "obgnme"] = "less_bnd"
 
     #set dec vars to background value (derinc)
-    par.loc[par.pargp == "kg", "parval1"] = derinc
+    par.loc[par.pargp == "kg", "parval1"] = parval1
 
     #unfix pars
-    par.loc[par.pargp != "kg", "partrans"] = "log"
+    #par.loc[par.pargp != "kg", "partrans"] = "log"
 
     ph.pst.pestpp_options = {}
     ph.pst.pestpp_options["opt_dec_var_groups"] = "kg"
     ph.pst.pestpp_options["opt_obj_func"] = 'obj.dat'
     ph.pst.pestpp_options["opt_direction"] = "max"
-    ph.pst.pestpp_options["opt_risk"] = 0.95
+    #ph.pst.pestpp_options["opt_risk"] = 0.95
     ph.pst.write(os.path.join(new_model_ws,"freyberg.pst"))
     pyemu.helpers.run("pestpp freyberg.pst",cwd=new_model_ws)
 
@@ -195,7 +196,7 @@ def write_ssm_tpl():
     f_in = open(ssm,'r')
     f_tpl = open(ssm+".tpl",'w')
     f_tpl.write("ptf ~\n")
-    parnme = []
+    parnme,parval1 = [],[]
     while True:
         line = f_in.readline().lower()
         if line == "":
@@ -209,6 +210,7 @@ def write_ssm_tpl():
                     raise Exception()
                 raw = line.strip().split()
                 l,r,c = [int(r) for r in raw[:3]]
+                parval1.append(float(raw[3]))
                 pn = "~k_{0:02d}_{1:02d}~".format(r-1,c-1)
                 line = " {0:9d} {1:9d} {2:9d} {3:9s} {4:9d}\n".format(l,r,c,pn,15)
                 f_tpl.write(line)
@@ -219,10 +221,12 @@ def write_ssm_tpl():
     df.loc[:,'parnme'] = df.tpl_str.apply(lambda x: x.replace("~",""))
     df.index = df.parnme
     df.loc[:,"pargp"] = "kg"
-    df.loc[:,"parubnd"] = 10.0
+    df.loc[:,"parval1"] = parval1
+    df.loc[:,"parubnd"] = df.parval1 * 3.0
     df.loc[:,"partrans"] = "none"
-    df.loc[:,"parlbnd"] = 0.0 #here we let loading decrease...
-    df.loc[:,"parval1"] = derinc
+    df.loc[:,'parlbnd'] = parval1 # loading can't decrease...
+    #df.loc[:,"parlbnd"] = 0.0 #here we let loading decrease...
+    #df.loc[:,"parval1"] = derinc
     df.loc[:,"j"] = df.parnme.apply(lambda x: int(x.split('_')[2]))
 
     return df
@@ -241,7 +245,7 @@ def run_pestpp_opt():
     pst = pyemu.Pst(pst_file)
     pst.control_data.noptmax = 1
     pst.write(pst_file)
-    pyemu.helpers.start_slaves(new_model_ws,"pestpp-opt","freyberg.pst",num_slaves=20,master_dir="master_opt",
+    pyemu.helpers.start_slaves(new_model_ws,"pestpp-opt","freyberg.pst",num_slaves=15,master_dir="master_opt",
                                slave_root='.')
 
 def spike_test():
@@ -510,11 +514,11 @@ if __name__ == "__main__":
     #write_ssm_tpl()
     #run_test()
     #spike_test()
-    #run_pestpp_opt()
+    run_pestpp_opt()
     #jco_invest()
     #run_risk_sweep()
     #plot_loading()
     #plot_risk_sweep()
     #run_risk_sweep_obgnme()
-    run_risk_sweep()
+    #run_risk_sweep()
 
