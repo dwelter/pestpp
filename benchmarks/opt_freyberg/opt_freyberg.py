@@ -13,7 +13,7 @@ mt_exe = "mt3dusgs"
 
 new_model_ws = "template"
 
-derinc = 1.0
+derinc = 100.0
 
 
 
@@ -136,6 +136,9 @@ def setup_pest():
 
     ph.pst.parameter_data.sort_values(by=["pargp","parnme"],inplace=True)
 
+    par = ph.pst.parameter_data
+    par.loc[par.pargp=="grrc110","parval1"] = 0.1
+
     ph.pst.parameter_groups.loc["kg","inctyp"] = "absolute"
     ph.pst.parameter_groups.loc["kg","derinc"] = derinc
 
@@ -147,7 +150,7 @@ def setup_pest():
 
     #only turn on one constraint in the middle of the domain
     obs.loc["sfrc20_1_03650.00","weight"] = 1.0
-    obs.loc["sfrc20_1_03650.00","obsval"] *= 1.2 #20% increase
+    obs.loc["sfrc20_1_03650.00","obsval"] *= 1.0 #20% increase
 
     # concentration constraints at pumping wells
     wel_df = pd.DataFrame.from_records(ph.m.wel.stress_period_data[0])
@@ -155,7 +158,7 @@ def setup_pest():
     wel_df.loc[:,"obsnme"] = wel_df.apply(lambda x: "ucn_{0:02.0f}_{1:03.0f}_{2:03.0f}_000".format(x.k,x.i,x.j),axis=1)
     obs.loc[wel_df.obsnme,"obgnme"] = "less_wlconc"
     obs.loc[wel_df.obsnme,"weight"] = 1.0
-    obs.loc[wel_df.obsnme,"obsval"] *= 1.1 #10% increase
+    obs.loc[wel_df.obsnme,"obsval"] *= 1.0 #10% increase
 
 
     # pumping well mass constraint
@@ -167,7 +170,7 @@ def setup_pest():
     # constant head mass constraint
     obs.loc["gw_cohe1c_003650.0","obgnme"] = "greater_ch"
     obs.loc["gw_cohe1c_003650.0", "weight"] = 1.0
-    obs.loc["gw_cohe1c_003650.0", "obsval"] = 1.5 #50% increase
+    obs.loc["gw_cohe1c_003650.0", "obsval"] *= 1.0 #% increase
 
     # fix all non dec vars so we can set upper and lower bound constraints
     par = ph.pst.parameter_data
@@ -176,18 +179,18 @@ def setup_pest():
     # add some pi constraints to make sure all dec vars have at
     # least one element in the response matrix
     # set lower bounds
-    parval1 = par.parval1.copy()
-    par.loc[par.pargp == "kg", "parval1"] = par.loc[par.pargp == "kg", "parlbnd"]
-    pyemu.helpers.zero_order_tikhonov(pst=ph.pst)
-    ph.pst.prior_information.loc[:,"obgnme"] = "greater_bnd"
+    # parval1 = par.parval1.copy()
+    # par.loc[par.pargp == "kg", "parval1"] = par.loc[par.pargp == "kg", "parlbnd"]
+    # pyemu.helpers.zero_order_tikhonov(pst=ph.pst)
+    # ph.pst.prior_information.loc[:,"obgnme"] = "greater_bnd"
 
     # set upper bounds
-    par.loc[par.pargp=="kg","parval1"] = par.loc[par.pargp=="kg","parubnd"]
-    pyemu.helpers.zero_order_tikhonov(ph.pst,reset=False)
-    ph.pst.prior_information.loc[:, "obgnme"] = "less_bnd"
+    #par.loc[par.pargp=="kg","parval1"] = par.loc[par.pargp=="kg","parubnd"]
+    #pyemu.helpers.zero_order_tikhonov(ph.pst,reset=False)
+    #ph.pst.prior_information.loc[:, "obgnme"] = "less_bnd"
 
     #set dec vars to background value (derinc)
-    par.loc[par.pargp == "kg", "parval1"] = parval1
+    # par.loc[par.pargp == "kg", "parval1"] = parval1
 
     #unfix pars
     #par.loc[par.pargp != "kg", "partrans"] = "log"
@@ -224,6 +227,7 @@ def write_ssm_tpl():
                 raw = line.strip().split()
                 l,r,c = [int(r) for r in raw[:3]]
                 parval1.append(float(raw[3]))
+                #pn = "~k_{0:02d}~".format(c-1)
                 pn = "~k_{0:02d}_{1:02d}~".format(r-1,c-1)
                 line = " {0:9d} {1:9d} {2:9d} {3:9s} {4:9d}\n".format(l,r,c,pn,15)
                 f_tpl.write(line)
@@ -235,12 +239,13 @@ def write_ssm_tpl():
     df.index = df.parnme
     df.loc[:,"pargp"] = "kg"
     df.loc[:,"parval1"] = parval1
-    df.loc[:,"parubnd"] = df.parval1 * 2.0
+    #df.loc[:,"parubnd"] = df.parval1 * 2.0
+    df.loc[:,"parubnd"] = 1000000000.0
     df.loc[:,"partrans"] = "none"
-    #df.loc[:,'parlbnd'] = df.parval1 * 0.9 # loading can't decrease...
-    df.loc[:,"parlbnd"] = 0.0 #here we let loading decrease...
+    df.loc[:,'parlbnd'] = df.parval1 # loading can't decrease...
+    #df.loc[:,"parlbnd"] = 0.0 #here we let loading decrease...
     #df.loc[:,"parval1"] = derinc
-    df.loc[:,"j"] = df.parnme.apply(lambda x: int(x.split('_')[2]))
+    #df.loc[:,"j"] = df.parnme.apply(lambda x: int(x.split('_')[2]))
 
     return df
 
@@ -356,7 +361,6 @@ def run_risk_sweep():
     ax.grid()
     plt.savefig("risk.pdf")
 
-
 def run_risk_sweep_pargp():
     sw_conc_inc = 1.1
     wel_mass_inc = 1.1
@@ -430,7 +434,6 @@ def run_risk_sweep_pargp():
     # ax.grid()
     # plt.savefig("risk.pdf")
 
-
 def run_risk_sweep_obgnme():
     restart_d = "test"
     if os.path.exists(restart_d):
@@ -499,7 +502,6 @@ def scrape_recfile(recfile):
                 infeas = True
     return infeas, phi
 
-
 def plot_risk_sweep():
     dfs = {f.split('.')[0]:pd.read_csv(os.path.join("results",f)) for f in os.listdir("results")}
     ax = plt.subplot(111)
@@ -509,7 +511,6 @@ def plot_risk_sweep():
     ax.grid()
     ax.legend()
     plt.savefig("risk_sweep.pdf")
-
 
 def plot_loading(parfile=None):
     if parfile is not None:
