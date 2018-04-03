@@ -644,14 +644,30 @@ void sequentialLP::initialize_and_check()
 		//find the observations in constraints groups
 		ObservationInfo oinfo = pest_scenario.get_ctl_observation_info();
 		string group;
+		double weight;
 		end = constraint_groups.end();
 		start = constraint_groups.begin();
 		for (auto &obs_name : pest_scenario.get_ctl_ordered_obs_names())
 		{
 			group = oinfo.get_observation_rec_ptr(obs_name)->group;
+			weight = oinfo.get_weight(obs_name);
 			if (find(start, end, group) != end)
-				ctl_ord_obs_constraint_names.push_back(obs_name);
+			{
+				if (weight == 0.0)
+				{
+					cout << "Warning: observation constraint " << obs_name << " has 0.0 weight, skipping" << endl;
+					f_rec << "Warning: observation constraint " << obs_name << " has 0.0 weight, skipping" << endl;
+				}
+				else
+				{
+					ctl_ord_obs_constraint_names.push_back(obs_name);
+				}
+
+			}
 		}
+
+					
+				
 		//look for prior information constraints
 		const PriorInformation* pinfo = pest_scenario.get_prior_info_ptr();
 		PriorInformationRec pi_rec;

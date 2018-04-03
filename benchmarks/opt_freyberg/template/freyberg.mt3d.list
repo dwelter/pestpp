@@ -22,34 +22,34 @@
  OPENING freyberg.mt3d.sft
  FILE TYPE:SFT   UNIT  19
 
- OPENING ./delr.ref
+ OPENING .\delr.ref
  FILE TYPE:DATA   UNIT2001
 
- OPENING ./delc.ref
+ OPENING .\delc.ref
  FILE TYPE:DATA   UNIT2002
 
- OPENING ./htop.ref
+ OPENING .\htop.ref
  FILE TYPE:DATA   UNIT2003
 
- OPENING ./dz_layer_1.ref
+ OPENING .\dz_layer_1.ref
  FILE TYPE:DATA   UNIT2004
 
- OPENING ./prsity_layer_1.ref
+ OPENING .\prsity_layer_1.ref
  FILE TYPE:DATA   UNIT2005
 
- OPENING ./icbund_layer_1.ref
+ OPENING .\icbund_layer_1.ref
  FILE TYPE:DATA   UNIT2006
 
- OPENING ./sconc1_layer_1.ref
+ OPENING .\sconc1_layer_1.ref
  FILE TYPE:DATA   UNIT2007
 
- OPENING ./rc11_layer_1.ref
+ OPENING .\rc11_layer_1.ref
  FILE TYPE:DATA   UNIT2008
 
- OPENING ./rc21_layer_1.ref
+ OPENING .\rc21_layer_1.ref
  FILE TYPE:DATA   UNIT2009
 
- OPENING ./crch10.ref
+ OPENING .\crch10.ref
  FILE TYPE:DATA   UNIT2011
 
  OPENING freyberg.mt3d
@@ -241,7 +241,7 @@
  PRINT OPTION FOR xMD SOLVER =            0
 
  OPENING FILE ON UNIT   99:
- ./coldsf.ref                                                                                                                                                                                            
+ .\coldsf.ref                                                                                                                                                                                            
 
 
 
@@ -249,7 +249,7 @@
  READING ON UNIT   99 WITH FORMAT: (40E15.6)           
 
  OPENING FILE ON UNIT   99:
- ./dispsf.ref                                                                                                                                                                                            
+ .\dispsf.ref                                                                                                                                                                                            
 
 
 
@@ -1132,24 +1132,24 @@
 
                                          CUMULATIVE MASS [M]                                     MASS FOR THIS TIME STEP [M]
                                          -------------------                                    --------------
-                      STREAM DEPLETION =   7.352764                          STREAM DEPLETION =   4.131707    
+                      STREAM DEPLETION =   7.462703                          STREAM DEPLETION =   3.975682    
                       INFLOW TO STREAM =   0.000000                          INFLOW TO STREAM =   0.000000    
                           GW TO STREAM =   13225.56                              GW TO STREAM =   20.78065    
                          PRECIPITATION =   0.000000                             PRECIPITATION =   0.000000    
                                 RUNOFF =   0.000000                                    RUNOFF =   0.000000    
                 CONSTANT CONCENTRATION =   0.000000                    CONSTANT CONCENTRATION =   0.000000    
                                          -------------------                                    --------------
-                              TOTAL IN =   13232.91                                  TOTAL IN =   24.91236    
+                              TOTAL IN =   13233.02                                  TOTAL IN =   24.75633    
 
-                   STREAM ACCUMULATION =   11.80800                       STREAM ACCUMULATION =   0.000000    
-                        STREAM OUTFLOW =   22284.31                            STREAM OUTFLOW =   27.06395    
-                          STREAM TO GW =   1324.439                              STREAM TO GW =   1.218714    
+                   STREAM ACCUMULATION =   11.60368                       STREAM ACCUMULATION =   0.000000    
+                        STREAM OUTFLOW =   22284.61                            STREAM OUTFLOW =   26.93789    
+                          STREAM TO GW =   1324.449                              STREAM TO GW =   1.188752    
                 CONSTANT CONCENTRATION =   0.000000                    CONSTANT CONCENTRATION =   0.000000    
                                          -------------------                                    --------------
-                             TOTAL OUT =   23620.56                                 TOTAL OUT =   28.28266    
+                             TOTAL OUT =   23620.66                                 TOTAL OUT =   28.12664    
 
-                        NET (IN - OUT) =  -10387.65                            NET (IN - OUT) =  -3.370300    
-                 DISCREPANCY (PERCENT) =  -56.37269                     DISCREPANCY (PERCENT) =  -12.67149    
+                        NET (IN - OUT) =  -10387.64                            NET (IN - OUT) =  -3.370302    
+                 DISCREPANCY (PERCENT) =  -56.37234                     DISCREPANCY (PERCENT) =  -12.74627    
                                               FLOW ERR (QIN-QOUT-DV) =  0.3906250E-02 [L3/T]
 
 
@@ -1175,10 +1175,10 @@
                                                 WELLS:    0.000000                   -26199.38    
                                              RECHARGE:    0.000000                    0.000000    
                                          MASS LOADING:    2106056.                    0.000000    
-                                               STREAM:    1324.439                   -13225.56    
+                                               STREAM:    1324.449                   -13225.56    
                                1ST/0TH ORDER REACTION:    0.000000                   -2017900.    
                                MASS STOR (FLOW MODEL):    0.000000                    0.000000    
-                                MASS STORAGE (SOLUTE):    3.276562                   -28012.57    
+                                MASS STORAGE (SOLUTE):    3.341105                   -28012.61    
                             ---------------------------------------------------------------------------
                                               [TOTAL]:    2107384.     KG            -2107373.     KG  
 

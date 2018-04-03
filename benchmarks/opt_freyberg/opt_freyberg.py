@@ -147,14 +147,27 @@ def setup_pest():
 
     #only turn on one constraint in the middle of the domain
     obs.loc["sfrc20_1_03650.00","weight"] = 1.0
+    obs.loc["sfrc20_1_03650.00","obsval"] *= 1.2 #20% increase
+
+    # concentration constraints at pumping wells
+    wel_df = pd.DataFrame.from_records(ph.m.wel.stress_period_data[0])
+    print(wel_df.dtypes)
+    wel_df.loc[:,"obsnme"] = wel_df.apply(lambda x: "ucn_{0:02.0f}_{1:03.0f}_{2:03.0f}_000".format(x.k,x.i,x.j),axis=1)
+    obs.loc[wel_df.obsnme,"obgnme"] = "less_wlconc"
+    obs.loc[wel_df.obsnme,"weight"] = 1.0
+    obs.loc[wel_df.obsnme,"obsval"] *= 1.1 #10% increase
+
 
     # pumping well mass constraint
-    obs.loc["gw_we1c_003650.0","obgnme"] = "greater_well"
-    obs.loc["gw_we1c_003650.0", "weight"] = 1.0
+    #obs.loc["gw_we1c_003650.0","obgnme"] = "greater_well"
+    #obs.loc["gw_we1c_003650.0", "weight"] = 1.0
+    
+
 
     # constant head mass constraint
     obs.loc["gw_cohe1c_003650.0","obgnme"] = "greater_ch"
     obs.loc["gw_cohe1c_003650.0", "weight"] = 1.0
+    obs.loc["gw_cohe1c_003650.0", "obsval"] = 1.5 #50% increase
 
     # fix all non dec vars so we can set upper and lower bound constraints
     par = ph.pst.parameter_data
@@ -222,10 +235,10 @@ def write_ssm_tpl():
     df.index = df.parnme
     df.loc[:,"pargp"] = "kg"
     df.loc[:,"parval1"] = parval1
-    df.loc[:,"parubnd"] = df.parval1 * 3.0
+    df.loc[:,"parubnd"] = df.parval1 * 2.0
     df.loc[:,"partrans"] = "none"
-    df.loc[:,'parlbnd'] = parval1 # loading can't decrease...
-    #df.loc[:,"parlbnd"] = 0.0 #here we let loading decrease...
+    #df.loc[:,'parlbnd'] = df.parval1 * 0.9 # loading can't decrease...
+    df.loc[:,"parlbnd"] = 0.0 #here we let loading decrease...
     #df.loc[:,"parval1"] = derinc
     df.loc[:,"j"] = df.parnme.apply(lambda x: int(x.split('_')[2]))
 
@@ -510,7 +523,7 @@ def plot_loading(parfile=None):
 
 if __name__ == "__main__":
     #setup_models()
-    #setup_pest()
+    setup_pest()
     #write_ssm_tpl()
     #run_test()
     #spike_test()
