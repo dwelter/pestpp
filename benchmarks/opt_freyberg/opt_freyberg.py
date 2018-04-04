@@ -13,7 +13,7 @@ mt_exe = "mt3dusgs"
 
 new_model_ws = "template"
 
-derinc = 1.0
+derinc = 2.0
 
 
 
@@ -49,7 +49,7 @@ def setup_models(m=None):
             #if j >= 15: #no loading in or across the stream
             #    continue
             #ssm_cells.append([0,i,j,max(derinc,float(j+1)/10.0),15])
-            ssm_cells.append([0,i,j,derinc,15])
+            ssm_cells.append([0,i,j,1.0,15])
     flopy.mt3d.Mt3dSsm(mt,crch=0.0,stress_period_data={0:ssm_cells,1:ssm_cells,2:ssm_cells})
 
     nstrm = np.abs(m.sfr.nstrm)
@@ -138,7 +138,7 @@ def setup_pest():
     ph.pst.parameter_data.sort_values(by=["pargp","parnme"],inplace=True)
 
     par = ph.pst.parameter_data
-    par.loc[par.pargp=="grrc110","parval1"] = 1.0
+    par.loc[par.pargp=="grrc110","parval1"] = 2.0
 
     ph.pst.parameter_groups.loc["kg","inctyp"] = "absolute"
     ph.pst.parameter_groups.loc["kg","derinc"] = derinc
@@ -154,12 +154,12 @@ def setup_pest():
     obs.loc["sfrc39_1_03650.00","obsval"] *= 1.1 #% increase
 
     # concentration constraints at pumping wells
-    # wel_df = pd.DataFrame.from_records(ph.m.wel.stress_period_data[0])
-    # print(wel_df.dtypes)
-    # wel_df.loc[:,"obsnme"] = wel_df.apply(lambda x: "ucn_{0:02.0f}_{1:03.0f}_{2:03.0f}_000".format(x.k,x.i,x.j),axis=1)
-    # obs.loc[wel_df.obsnme,"obgnme"] = "less_wlconc"
-    # obs.loc[wel_df.obsnme,"weight"] = 1.0
-    # obs.loc[wel_df.obsnme,"obsval"] = 1.5 #% increase
+    wel_df = pd.DataFrame.from_records(ph.m.wel.stress_period_data[0])
+    print(wel_df.dtypes)
+    wel_df.loc[:,"obsnme"] = wel_df.apply(lambda x: "ucn_{0:02.0f}_{1:03.0f}_{2:03.0f}_000".format(x.k,x.i,x.j),axis=1)
+    obs.loc[wel_df.obsnme,"obgnme"] = "less_wlconc"
+    obs.loc[wel_df.obsnme,"weight"] = 1.0
+    obs.loc[wel_df.obsnme,"obsval"] = 1.2 #% increase
 
 
     # pumping well mass constraint
@@ -169,9 +169,9 @@ def setup_pest():
 
 
     # constant head mass constraint
-    obs.loc["gw_cohe1c_003650.0","obgnme"] = "greater_ch"
-    obs.loc["gw_cohe1c_003650.0", "weight"] = 1.0
-    obs.loc["gw_cohe1c_003650.0", "obsval"] *= 1.0 #% increase
+    # obs.loc["gw_cohe1c_003650.0","obgnme"] = "greater_ch"
+    # obs.loc["gw_cohe1c_003650.0", "weight"] = 1.0
+    # obs.loc["gw_cohe1c_003650.0", "obsval"] *= 1.2 #% increase
 
     # fix all non dec vars so we can set upper and lower bound constraints
     par = ph.pst.parameter_data
@@ -241,9 +241,9 @@ def write_ssm_tpl():
     df.loc[:,"pargp"] = "kg"
     df.loc[:,"parval1"] = parval1
     #df.loc[:,"parubnd"] = df.parval1 * 2.0
-    df.loc[:,"parubnd"] = df.parval1 * 1000.0
+    df.loc[:,"parubnd"] = df.parval1 * 10000000.0
     df.loc[:,"partrans"] = "none"
-    df.loc[:,'parlbnd'] = df.parval1
+    df.loc[:,'parlbnd'] = df.parval1 * 0.9
     #df.loc[:,"parlbnd"] = 0.0 #here we let loading decrease...
     #df.loc[:,"parval1"] = derinc
     #df.loc[:,"j"] = df.parnme.apply(lambda x: int(x.split('_')[2]))
@@ -270,10 +270,10 @@ def run_pestpp_opt():
 def spike_test():
     pst_file = os.path.join(new_model_ws, "freyberg.pst")
     pst = pyemu.Pst(pst_file)
-    #pst.parameter_data.loc["k_10_00","parval1"] = derinc
-    par = pst.parameter_data
-    fosm_pars = par.loc[par.pargp != "kg", "parnme"]
-    par.loc[fosm_pars,"parval1"] = par.loc[fosm_pars,"parubnd"]
+    pst.parameter_data.loc["k_00_00","parval1"] += derinc
+    #par = pst.parameter_data
+    #fosm_pars = par.loc[par.pargp != "kg", "parnme"]
+    #par.loc[fosm_pars,"parval1"] = par.loc[fosm_pars,"parubnd"]
     pst.control_data.noptmax = 0
     pst.write(pst_file)
     pyemu.helpers.run("pestpp {0}".format(os.path.split(pst_file)[-1]),cwd=new_model_ws)

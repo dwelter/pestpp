@@ -196,7 +196,7 @@
  READING ON UNIT 2009 WITH FORMAT:           (20E15.6) 
 
  MAXIMUM STEPSIZE WHICH MEETS STABILITY CRITERION OF THE REACTION TERM
- =  50.00     AT K=   1, I=   1, J=   1
+ =  25.00     AT K=   1, I=   1, J=   1
 
  GCG1 -- GENERALIZED CONJUGATE GRADIENT SOLVER PACKAGE, VERSION 1, OCTOBER 2010 INPUT READ FROM UNIT 35
  MAXIMUM OF  100 OUTER ITERATIONS
@@ -1312,7 +1312,7 @@
   MAXIMUM CONCENTRATION CHANGES FOR EACH ITERATION:
   MAX. CHANGE LAYER,ROW,COL MAX. CHANGE LAYER,ROW,COL MAX. CHANGE LAYER,ROW,COL MAX. CHANGE LAYER,ROW,COL MAX. CHANGE LAYER,ROW,COL
  ------------------------------------------------------------------------------------------------------------------------------------
-   0.1239     (  1,  9, 16)   0.000     (  1,  1,  1)  0.1266E-02 (  1,  9, 16)   0.000     (  1,  1,  1)   0.000     (  1,  1,  1)
+   0.7844E-01 (  1, 34, 12)   0.000     (  1,  1,  1)  0.7006E-03 (  1,  9, 16)   0.000     (  1,  1,  1)   0.000     (  1,  1,  1)
 
 
                      STREAM MASS BUDGETS AT END OF TRANSPORT STEP  136, TIME STEP    1, STRESS PERIOD    1 FOR COMPONENT   1
@@ -1320,24 +1320,24 @@
 
                                          CUMULATIVE MASS [M]                                     MASS FOR THIS TIME STEP [M]
                                          -------------------                                    --------------
-                      STREAM DEPLETION =   21.07604                          STREAM DEPLETION =  0.2071511E-01
+                      STREAM DEPLETION =   20.57278                          STREAM DEPLETION =  0.1826551E-01
                       INFLOW TO STREAM =   0.000000                          INFLOW TO STREAM =   0.000000    
-                          GW TO STREAM =   50574.46                              GW TO STREAM =   78.33912    
+                          GW TO STREAM =   25983.96                              GW TO STREAM =   39.95363    
                          PRECIPITATION =   0.000000                             PRECIPITATION =   0.000000    
                                 RUNOFF =   0.000000                                    RUNOFF =   0.000000    
                 CONSTANT CONCENTRATION =   0.000000                    CONSTANT CONCENTRATION =   0.000000    
                                          -------------------                                    --------------
-                              TOTAL IN =   50595.54                                  TOTAL IN =   78.35983    
+                              TOTAL IN =   26004.53                                  TOTAL IN =   39.97189    
 
-                   STREAM ACCUMULATION =   37.54772                       STREAM ACCUMULATION =  0.2853254E-01
-                        STREAM OUTFLOW =   48212.47                            STREAM OUTFLOW =   74.71021    
-                          STREAM TO GW =   2345.559                              STREAM TO GW =   3.621091    
+                   STREAM ACCUMULATION =   28.95970                       STREAM ACCUMULATION =  0.2360062E-01
+                        STREAM OUTFLOW =   24774.12                            STREAM OUTFLOW =   38.10739    
+                          STREAM TO GW =   1201.476                              STREAM TO GW =   1.840906    
                 CONSTANT CONCENTRATION =   0.000000                    CONSTANT CONCENTRATION =   0.000000    
                                          -------------------                                    --------------
-                             TOTAL OUT =   50595.58                                 TOTAL OUT =   78.35984    
+                             TOTAL OUT =   26004.55                                 TOTAL OUT =   39.97190    
 
-                        NET (IN - OUT) = -0.3906250E-01                        NET (IN - OUT) = -0.7629395E-05
-                 DISCREPANCY (PERCENT) = -0.7720539E-04                 DISCREPANCY (PERCENT) = -0.9736359E-05
+                        NET (IN - OUT) = -0.2148438E-01                        NET (IN - OUT) = -0.7629395E-05
+                 DISCREPANCY (PERCENT) = -0.8261778E-04                 DISCREPANCY (PERCENT) = -0.1908690E-04
                                               FLOW ERR (QIN-QOUT-DV) =  0.3906250E-02 [L3/T]
 
 
@@ -1359,19 +1359,19 @@
                                                              IN                           OUT
                                                       ----------------             ----------------
                                CONSTANT CONCENTRATION:    0.000000                    0.000000    
-                                        CONSTANT HEAD:    0.000000                   -19467.51    
-                                                WELLS:    0.000000                   -27592.58    
+                                        CONSTANT HEAD:    0.000000                   -16466.56    
+                                                WELLS:    0.000000                   -14364.57    
                                              RECHARGE:    0.000000                    0.000000    
                                          MASS LOADING:    2573265.                    0.000000    
-                                               STREAM:    2345.559                   -50574.46    
-                               1ST/0TH ORDER REACTION:    0.000000                   -2444036.    
+                                               STREAM:    1201.476                   -25983.96    
+                               1ST/0TH ORDER REACTION:    0.000000                   -2500189.    
                                MASS STOR (FLOW MODEL):    0.000000                    0.000000    
-                                MASS STORAGE (SOLUTE):    2.990968                   -33926.65    
+                                MASS STORAGE (SOLUTE):    3.435554                   -17448.33    
                             ---------------------------------------------------------------------------
-                                              [TOTAL]:    2575614.     KG            -2575598.     KG  
+                                              [TOTAL]:    2574470.     KG            -2574452.     KG  
 
-                                                          NET (IN - OUT):    16.25000    
-                                                   DISCREPANCY (PERCENT):   0.6309196E-03
+                                                          NET (IN - OUT):    18.00000    
+                                                   DISCREPANCY (PERCENT):   0.6991754E-03
   ----- 
  | M T |
  | 3 D | END OF MODEL OUTPUT

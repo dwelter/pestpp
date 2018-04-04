@@ -1644,7 +1644,8 @@ void IterEnsembleSmoother::solve()
 		}
 		else
 		{
-			ss << file_manager.get_base_filename() << "." << iter << "." << cur_lam << ".lambdapars.jcb";
+			ss << file_manager.get_base_filename() << "." << iter << "." << cur_lam << ".lambdapars.csv";
+			pe_lam.to_csv(ss.str());
 		}
 		frec << "lambda value " << cur_lam << " pars saved to " << ss.str() << endl;
 		
