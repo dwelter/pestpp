@@ -1635,6 +1635,20 @@ void IterEnsembleSmoother::solve()
 
 		pe_lams.push_back(pe_lam);
 		lam_vals.push_back(cur_lam);
+
+		ss.str("");
+		if (pest_scenario.get_pestpp_options().get_ies_save_binary())
+		{
+			ss << file_manager.get_base_filename() << "." << iter << "." << cur_lam << ".lambdapars.jcb";
+			pe_lam.to_binary(ss.str());
+		}
+		else
+		{
+			ss << file_manager.get_base_filename() << "." << iter << "." << cur_lam << ".lambdapars.jcb";
+		}
+		frec << "lambda value " << cur_lam << " pars saved to " << ss.str() << endl;
+		
+		ss.str("");
 		message(0, "finished calcs for lambda:", cur_lam);
 
 	}
@@ -1833,6 +1847,7 @@ void IterEnsembleSmoother::report_and_save()
 
 vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<ParameterEnsemble> &pe_lams, vector<double> &lam_vals)
 {
+	ofstream &frec = file_manager.rec_ofstream();
 	stringstream ss;
 	ss << "queuing " << pe_lams.size() << " ensembles";
 	performance_log->log_event(ss.str());
@@ -1844,8 +1859,21 @@ vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<Pa
 			subset_idxs.push_back(i);
 	}
 	vector<map<int, int>> real_run_ids_vec;
+	//ParameterEnsemble pe_lam;
+	//for (int i=0;i<pe_lams.size();i++)
 	for (auto &pe_lam : pe_lams)
 	{
+		// if (pest_scenario.get_pestpp_options().get_ies_save_binary())
+		// {
+		// 	ss << file_manager.get_base_filename() << "." << iter << "." << i << ".lambdapars.jcb";
+		// 	pe_lam.to_binary(ss.str());
+		// }
+		// else
+		// {
+		// 	ss << file_manager.get_base_filename() << "." << iter << "." << i << ".lambdapars.jcb";
+		// }
+		// frec << " lambda value " << lam_vals[i] << " pars saved to " << ss.str() << endl;
+		// ss.str("");
 		try
 		{
 			real_run_ids_vec.push_back(pe_lam.add_runs(run_mgr_ptr,subset_idxs));
