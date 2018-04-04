@@ -13,7 +13,7 @@ mt_exe = "mt3dusgs"
 
 new_model_ws = "template"
 
-derinc = 100.0
+derinc = 1.0
 
 
 
@@ -36,7 +36,7 @@ def setup_models(m=None):
 
     mt = flopy.mt3d.Mt3dms("freyberg.mt3d",model_ws=m.model_ws,modflowmodel=m,exe_name=mt_exe,external_path='.')
     flopy.mt3d.Mt3dBtn(mt,MFStyleArr=True,prsity=0.01,sconc=0.0,icbund=m.bas6.ibound.array,perlen=3650)
-    flopy.mt3d.Mt3dGcg(mt)
+    flopy.mt3d.Mt3dGcg(mt,mxiter=100)#,cclose=1.0e-7)
     flopy.mt3d.Mt3dRct(mt,isothm=0,ireact=1,igetsc=0,rc1=0.02)
     flopy.mt3d.Mt3dAdv(mt,mixelm=-1)
 
@@ -46,9 +46,10 @@ def setup_models(m=None):
         for j in range(m.ncol):
             if ib[i,j] == 0:
                 continue
-            if j >= 15: #no loading in or across the stream
-                continue
-            ssm_cells.append([0,i,j,max(derinc,float(j+1)/10.0),15])
+            #if j >= 15: #no loading in or across the stream
+            #    continue
+            #ssm_cells.append([0,i,j,max(derinc,float(j+1)/10.0),15])
+            ssm_cells.append([0,i,j,derinc,15])
     flopy.mt3d.Mt3dSsm(mt,crch=0.0,stress_period_data={0:ssm_cells,1:ssm_cells,2:ssm_cells})
 
     nstrm = np.abs(m.sfr.nstrm)
@@ -137,7 +138,7 @@ def setup_pest():
     ph.pst.parameter_data.sort_values(by=["pargp","parnme"],inplace=True)
 
     par = ph.pst.parameter_data
-    par.loc[par.pargp=="grrc110","parval1"] = 0.1
+    par.loc[par.pargp=="grrc110","parval1"] = 1.0
 
     ph.pst.parameter_groups.loc["kg","inctyp"] = "absolute"
     ph.pst.parameter_groups.loc["kg","derinc"] = derinc
@@ -149,16 +150,16 @@ def setup_pest():
     obs.loc[sw_conc_obs,"obgnme"] = "less_swconc"
 
     #only turn on one constraint in the middle of the domain
-    obs.loc["sfrc20_1_03650.00","weight"] = 1.0
-    obs.loc["sfrc20_1_03650.00","obsval"] *= 1.0 #20% increase
+    obs.loc["sfrc39_1_03650.00","weight"] = 1.0
+    obs.loc["sfrc39_1_03650.00","obsval"] *= 1.1 #% increase
 
     # concentration constraints at pumping wells
-    wel_df = pd.DataFrame.from_records(ph.m.wel.stress_period_data[0])
-    print(wel_df.dtypes)
-    wel_df.loc[:,"obsnme"] = wel_df.apply(lambda x: "ucn_{0:02.0f}_{1:03.0f}_{2:03.0f}_000".format(x.k,x.i,x.j),axis=1)
-    obs.loc[wel_df.obsnme,"obgnme"] = "less_wlconc"
-    obs.loc[wel_df.obsnme,"weight"] = 1.0
-    obs.loc[wel_df.obsnme,"obsval"] *= 1.0 #10% increase
+    # wel_df = pd.DataFrame.from_records(ph.m.wel.stress_period_data[0])
+    # print(wel_df.dtypes)
+    # wel_df.loc[:,"obsnme"] = wel_df.apply(lambda x: "ucn_{0:02.0f}_{1:03.0f}_{2:03.0f}_000".format(x.k,x.i,x.j),axis=1)
+    # obs.loc[wel_df.obsnme,"obgnme"] = "less_wlconc"
+    # obs.loc[wel_df.obsnme,"weight"] = 1.0
+    # obs.loc[wel_df.obsnme,"obsval"] = 1.5 #% increase
 
 
     # pumping well mass constraint
@@ -193,7 +194,7 @@ def setup_pest():
     # par.loc[par.pargp == "kg", "parval1"] = parval1
 
     #unfix pars
-    #par.loc[par.pargp != "kg", "partrans"] = "log"
+    par.loc[par.pargp != "kg", "partrans"] = "log"
 
     ph.pst.pestpp_options = {}
     ph.pst.pestpp_options["opt_dec_var_groups"] = "kg"
@@ -227,7 +228,7 @@ def write_ssm_tpl():
                 raw = line.strip().split()
                 l,r,c = [int(r) for r in raw[:3]]
                 parval1.append(float(raw[3]))
-                #pn = "~k_{0:02d}~".format(c-1)
+                #pn = "~k_{0:02d}~".format(r-1)
                 pn = "~k_{0:02d}_{1:02d}~".format(r-1,c-1)
                 line = " {0:9d} {1:9d} {2:9d} {3:9s} {4:9d}\n".format(l,r,c,pn,15)
                 f_tpl.write(line)
@@ -240,9 +241,9 @@ def write_ssm_tpl():
     df.loc[:,"pargp"] = "kg"
     df.loc[:,"parval1"] = parval1
     #df.loc[:,"parubnd"] = df.parval1 * 2.0
-    df.loc[:,"parubnd"] = 1000000000.0
+    df.loc[:,"parubnd"] = df.parval1 * 1000.0
     df.loc[:,"partrans"] = "none"
-    df.loc[:,'parlbnd'] = df.parval1 # loading can't decrease...
+    df.loc[:,'parlbnd'] = df.parval1
     #df.loc[:,"parlbnd"] = 0.0 #here we let loading decrease...
     #df.loc[:,"parval1"] = derinc
     #df.loc[:,"j"] = df.parnme.apply(lambda x: int(x.split('_')[2]))
@@ -523,7 +524,7 @@ def plot_loading(parfile=None):
 
 
 if __name__ == "__main__":
-    #setup_models()
+    setup_models()
     setup_pest()
     #write_ssm_tpl()
     #run_test()
