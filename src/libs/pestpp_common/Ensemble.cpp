@@ -71,7 +71,6 @@ void Ensemble::add_2_cols_ip(Ensemble &other)
 	{
 		reals.col(this_varmap[ovm.first]) += other.get_eigen_ptr()->col(ovm.second);
 	}
-
 }
 
 void Ensemble::draw(int num_reals, Covariance cov, Transformable &tran, const vector<string> &draw_names,

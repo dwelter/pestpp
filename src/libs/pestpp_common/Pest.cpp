@@ -670,6 +670,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_ies_enforce_bounds(true);
 	pestpp_options.set_par_sigma_range(4.0);
 	pestpp_options.set_ies_save_binary(false);
+	pestpp_options.set_ies_localizer("");
 
 	pestpp_options.set_condor_submit_file(string());
 

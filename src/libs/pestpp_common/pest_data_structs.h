@@ -352,6 +352,10 @@ public:
 	bool get_ies_save_binary() const { return ies_save_binary; }
 	void set_ies_save_binary(bool _ies_save_binary) { ies_save_binary = _ies_save_binary; }
 
+	string get_ies_localizer() const { return ies_localizer; }
+	void set_ies_localizer(string _ies_localizer) { ies_localizer = _ies_localizer; }
+
+
 
 private:
 	int n_iter_base;
@@ -428,6 +432,7 @@ private:
 	bool ies_enforce_bounds;
 	double par_sigma_range;
 	bool ies_save_binary;
+	string ies_localizer;
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);
 ostream& operator<< (ostream &os, const ObservationInfo& val);
