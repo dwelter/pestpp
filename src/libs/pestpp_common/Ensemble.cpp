@@ -27,6 +27,53 @@ void Ensemble::reserve(vector<string> _real_names, vector<string> _var_names)
 	real_names = _real_names;
 }
 
+Ensemble Ensemble::zero_like()
+{
+	Eigen::MatrixXd new_reals = Eigen::MatrixXd::Zero(real_names.size(), var_names.size());
+	Ensemble new_en(pest_scenario_ptr);
+	new_en.from_eigen_mat(new_reals, real_names, var_names);
+	return new_en;
+}
+
+void Ensemble::add_2_cols_ip(Ensemble &other)
+{
+	//add values to (a subset of the) columns of reals
+	if (shape().first != other.shape().first)
+		throw_ensemble_error("Ensemble::add_2_cols_ip(): first dimensions don't match");
+	vector<string> other_real_names = other.get_real_names();
+	vector<string> mismatch;
+	for (int i = 0; i < shape().first; i++)
+	{
+		if (other_real_names[i] != real_names[i])
+			mismatch.push_back(real_names[i]);
+
+	}
+	if (mismatch.size() > 0)
+		throw_ensemble_error("the following real_names don't match other", mismatch);
+
+	map<string, int> this_varmap, other_varmap;
+	for (int i = 0; i < var_names.size(); i++)
+		this_varmap[var_names[i]] = i;
+	vector<string> other_var_names = other.get_var_names();
+	
+	vector<string> missing;
+	set<string> svnames(var_names.begin(), var_names.end());
+	set<string>::iterator end = svnames.end();
+	for (int i = 0; i < other_var_names.size(); i++)
+	{
+		if (svnames.find(other_var_names[i]) == end)
+			missing.push_back(other_var_names[i]);
+		other_varmap[other_var_names[i]] = i;
+	}
+	if (missing.size() > 0)
+		throw_ensemble_error("Ensemble::add_2_cols_ip(): the following var names in other were not found", missing);
+	for (auto &ovm : other_varmap)
+	{
+		reals.col(this_varmap[ovm.first]) += other.get_eigen_ptr()->col(ovm.second);
+	}
+
+}
+
 void Ensemble::draw(int num_reals, Covariance cov, Transformable &tran, const vector<string> &draw_names,
 	const map<string,vector<string>> &grouper ,PerformanceLog *plog, int level)
 {
@@ -183,8 +230,7 @@ void Ensemble::draw(int num_reals, Covariance cov, Transformable &tran, const ve
 		}
 	}
 
-	if (found_invalid)
-		throw_ensemble_error("invalid values in realization draws");
+	
 
 	//form some realization names
 	real_names.clear();
@@ -221,6 +267,11 @@ void Ensemble::draw(int num_reals, Covariance cov, Transformable &tran, const ve
 			//double dtemp = tran.get_rec(var_names[j]);
 			reals.col(j) = draws.col(dmap[var_names[j]]).array() + tran.get_rec(var_names[j]);
 		}
+	}
+	if (found_invalid)
+	{
+		to_csv("trouble.csv");
+		throw_ensemble_error("invalid values in realization draws - trouble.csv written");
 	}
 }
 
@@ -639,7 +690,7 @@ map<string,int> Ensemble::prepare_csv(const vector<string> &names, ifstream &csv
 
 }
 
-void Ensemble::add_to_cols(Eigen::MatrixXd &_reals, const vector<string> &_var_names)
+void Ensemble::extend_cols(Eigen::MatrixXd &_reals, const vector<string> &_var_names)
 {
 	//add new columns to reals
 	vector<string>::iterator start = var_names.begin(), end = var_names.end();

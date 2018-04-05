@@ -38,7 +38,9 @@ public:
 
 	const vector<string> get_real_names(vector<int> &indices);
 
-	void add_to_cols(Eigen::MatrixXd &_reals, const vector<string> &_var_names);
+	void extend_cols(Eigen::MatrixXd &_reals, const vector<string> &_var_names);
+	void add_2_cols_ip(Ensemble &other);
+	Ensemble zero_like();
 
 	void reserve(vector<string> _real_names, vector<string> _var_names);
 
