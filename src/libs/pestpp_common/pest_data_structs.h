@@ -355,8 +355,8 @@ public:
 	string get_ies_localizer() const { return ies_localizer; }
 	void set_ies_localizer(string _ies_localizer) { ies_localizer = _ies_localizer; }
 
-
-
+	double get_ies_subset_bad_phi_frac() const { return ies_subset_bad_phi_frac; }
+	void set_ies_subset_bad_phi_frac(double _bad_phi_frac) { ies_subset_bad_phi_frac = _bad_phi_frac; }
 private:
 	int n_iter_base;
 	int n_iter_super;
@@ -433,6 +433,7 @@ private:
 	double par_sigma_range;
 	bool ies_save_binary;
 	string ies_localizer;
+	double ies_subset_bad_phi_frac;
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);
 ostream& operator<< (ostream &os, const ObservationInfo& val);

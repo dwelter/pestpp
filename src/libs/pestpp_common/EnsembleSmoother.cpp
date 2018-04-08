@@ -789,11 +789,11 @@ void IterEnsembleSmoother::sanity_checks()
 		errors.push_back("ies_reg_factor > 1.0 - nope");
 	if ((par_csv.size() == 0) && (ppo->get_ies_subset_size() < 10000000) && (ppo->get_ies_num_reals() < ppo->get_ies_subset_size() * 2))
 		warnings.push_back("ies_num_reals < 2*ies_subset_size: you not gaining that much using subset here");
-	if ((ppo->get_ies_subset_size() < 100000001) && (ppo->get_ies_lam_mults().size() == 1))
-	{
-		warnings.push_back("only one lambda mult to test, no point in using a subset");
-		//ppo->set_ies_subset_size(100000000);
-	}
+	//if ((ppo->get_ies_subset_size() < 100000001) && (ppo->get_ies_lam_mults().size() == 1))
+	//{
+	//	warnings.push_back("only one lambda mult to test, no point in using a subset");
+	//	//ppo->set_ies_subset_size(100000000);
+	//}
 	if ((ppo->get_ies_verbose_level() < 0) || (ppo->get_ies_verbose_level() > 2))
 	{
 		warnings.push_back("ies_verbose_level must be between 0 and 3, resetting to 3");
@@ -858,6 +858,12 @@ void IterEnsembleSmoother::initialize()
 	double bad_phi = pest_scenario.get_pestpp_options().get_ies_bad_phi();
 	if (bad_phi < 1.0e+30)
 		message(1, "using bad_phi: ", bad_phi);
+
+	double subset_bad_frac = pest_scenario.get_pestpp_options().get_ies_subset_bad_phi_frac();
+	if (subset_bad_frac < 100.0)
+	{
+		message(1, "using subset bad phi fraction: ", subset_bad_frac);
+	}
 
 	int num_reals = pest_scenario.get_pestpp_options().get_ies_num_reals();
 	
@@ -1694,9 +1700,20 @@ void IterEnsembleSmoother::solve()
 			best_idx = i;
 		}
 	}
-
-	if ((best_idx != -1) && (use_subset) && (subset_size < pe.shape().first))//subset stuff here
+	if (best_idx == -1)
 	{
+		message(0, "WARNING:  unsuccessful lambda testing, resetting lambda to 10000.0");
+		last_best_lam = 10000.0;
+		return;
+
+	}
+	
+	if ((best_idx != -1) && (use_subset) && (subset_size < pe.shape().first))//subset stuff here
+	{ 
+		double bad_phi_frac = pest_scenario.get_pestpp_options().get_ies_subset_bad_phi_frac();
+		double bad_phi = best_mean * bad_phi_frac;
+		//if (bad_phi >= )
+
 		//need to work out which par and obs en real names to run - some may have failed during subset testing...
 		ObservationEnsemble remaining_oe_lam = oe;//copy
 		ParameterEnsemble remaining_pe_lam = pe_lams[best_idx];
@@ -1756,13 +1773,7 @@ void IterEnsembleSmoother::solve()
 			throw_ies_error(string("all realization dropped after finishing subset runs...something might be wrong..."));
 		}
 	}
-	if (best_idx == -1)
-	{
-		message(0, "WARNING:  unsuccessful lambda testing, resetting lambda to 10000.0");
-		last_best_lam = 10000.0;
-		return;
-
-	}
+	
 	ph.update(oe_lam_best, pe_lams[best_idx]);
 	best_mean = ph.get_mean(PhiHandler::phiType::COMPOSITE);
 	best_std = ph.get_std(PhiHandler::phiType::COMPOSITE);

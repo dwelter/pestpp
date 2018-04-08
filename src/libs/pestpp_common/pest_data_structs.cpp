@@ -777,6 +777,10 @@ void PestppOptions::parce_line(const string &line)
 		{
 			convert_ip(value, ies_localizer);
 		}
+		else if (key == "IES_SUBSET_BAD_PHI_FRAC")
+		{
+			convert_ip(value, ies_subset_bad_phi_frac);
+		}
 		else {
 
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");
