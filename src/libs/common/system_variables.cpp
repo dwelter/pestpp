@@ -118,7 +118,7 @@ bool OperSys::double_is_invalid(double x)
 #endif
 #ifdef OS_LINUX
 #ifdef __INTEL_COMPILER
-  bool test = (isnan(x) || isinf(x));
+  bool test = (::isnan(x) || ::isinf(x));
 #else
   bool test = (std::isnan(x) || !std::isfinite(x));ß
   return test;
