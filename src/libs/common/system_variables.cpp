@@ -116,14 +116,16 @@ bool OperSys::double_is_invalid(double x)
 	bool test = (std::isnan(x) || !std::isfinite(x));
   return test;
 #endif
-#ifdef OS_LINUX
-#ifdef __INTEL_COMPILER
+
+#if defined __INTEL_COMPILER && defined __APPLE__
+  bool test = (isnan(x) || isinf(x));
+#else if defined __INTEL_COMPILER && defined OS_LINUX
   bool test = (::isnan(x) || ::isinf(x));
-#else
+#endif
+#ifdef OS_WIN
   bool test = (std::isnan(x) || !std::isfinite(x));ß
   return test;
-  //return true;
-#endif  
+  //return true;  
 #endif
 	return test;
 }
