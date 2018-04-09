@@ -777,9 +777,17 @@ void PestppOptions::parce_line(const string &line)
 		{
 			convert_ip(value, ies_localizer);
 		}
-		else if (key == "IES_SUBSET_BAD_PHI_FRAC")
+		else if (key == "IES_ACCEPT_PHI_FAC")
 		{
-			convert_ip(value, ies_subset_bad_phi_frac);
+			convert_ip(value, ies_accept_phi_fac);
+		}
+		else if (key == "IES_LAMBDA_INC_FAC")
+		{
+			convert_ip(value, ies_lambda_inc_fac);
+		}
+		else if (key == "IES_LAMBDA_DEC_FAC")
+		{
+			convert_ip(value, ies_lambda_dec_fac);
 		}
 		else {
 

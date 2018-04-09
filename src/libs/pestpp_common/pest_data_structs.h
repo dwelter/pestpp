@@ -351,12 +351,15 @@ public:
 	void set_par_sigma_range(double _par_sigma_range) { par_sigma_range = _par_sigma_range; }
 	bool get_ies_save_binary() const { return ies_save_binary; }
 	void set_ies_save_binary(bool _ies_save_binary) { ies_save_binary = _ies_save_binary; }
-
 	string get_ies_localizer() const { return ies_localizer; }
 	void set_ies_localizer(string _ies_localizer) { ies_localizer = _ies_localizer; }
+	double get_ies_accept_phi_fac() const { return ies_accept_phi_fac; }
+	void set_ies_accept_phi_fac(double _acc_phi_fac) { ies_accept_phi_fac = _acc_phi_fac; }
+	double get_ies_lambda_inc_fac() const { return ies_lambda_inc_fac; }
+	void set_ies_lambda_inc_fac(double _inc_fac) { ies_lambda_inc_fac = _inc_fac; }
+	double get_ies_lambda_dec_fac() const { return ies_lambda_dec_fac; }
+	void set_ies_lambda_dec_fac(double _dec_fac) { ies_lambda_dec_fac = _dec_fac; }
 
-	double get_ies_subset_bad_phi_frac() const { return ies_subset_bad_phi_frac; }
-	void set_ies_subset_bad_phi_frac(double _bad_phi_frac) { ies_subset_bad_phi_frac = _bad_phi_frac; }
 private:
 	int n_iter_base;
 	int n_iter_super;
@@ -433,7 +436,9 @@ private:
 	double par_sigma_range;
 	bool ies_save_binary;
 	string ies_localizer;
-	double ies_subset_bad_phi_frac;
+	double ies_accept_phi_fac;
+	double ies_lambda_inc_fac;
+	double ies_lambda_dec_fac;
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);
 ostream& operator<< (ostream &os, const ObservationInfo& val);

@@ -671,7 +671,9 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_par_sigma_range(4.0);
 	pestpp_options.set_ies_save_binary(false);
 	pestpp_options.set_ies_localizer("");
-	pestpp_options.get_ies_subset_bad_phi_frac(100.0);
+	pestpp_options.set_ies_accept_phi_fac(1.2);
+	pestpp_options.set_ies_lambda_inc_fac(10.0);
+	pestpp_options.set_ies_lambda_dec_fac(0.75);
 
 	pestpp_options.set_condor_submit_file(string());
 

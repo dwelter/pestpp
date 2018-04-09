@@ -755,12 +755,27 @@ void IterEnsembleSmoother::message(int level, string &_message, T extra)
 void IterEnsembleSmoother::sanity_checks()
 {
 	PestppOptions* ppo = pest_scenario.get_pestpp_options_ptr();
-	string par_csv = ppo->get_ies_par_csv();
-	string obs_csv = ppo->get_ies_obs_csv();
-	string restart = ppo->get_ies_obs_restart_csv();
 	vector<string> errors;
 	vector<string> warnings;
 	stringstream ss;
+	string par_csv = ppo->get_ies_par_csv();
+	string obs_csv = ppo->get_ies_obs_csv();
+	string restart = ppo->get_ies_obs_restart_csv();
+	
+	double acc_phi = ppo->get_ies_accept_phi_fac();
+	if (acc_phi < 1.0)
+		errors.push_back("ies_accept_phi_fac < 1.0, not good!");
+	if (acc_phi > 10.0)
+		warnings.push_back("ies_accept_phi_fac > 10.0, this is prob too big, typical values 1.05 to 1.3");
+
+	double lam_inc = ppo->get_ies_lambda_inc_fac();
+	if (lam_inc < 1.0)
+		errors.push_back("ies_lambda_inc_fac < 1.0, nope! how can lambda increase if this is less than 1.0???");
+	
+	double lam_dec = ppo->get_ies_lambda_dec_fac();
+	if (lam_dec > 1.0)
+		errors.push_back("ies_lambda_dec_fac > 1.0, nope!  how can lambda decrease if this is greater than 1.0???");
+	
 	if ((ppo->get_ies_par_csv().size() == 0) && (ppo->get_ies_use_empirical_prior()))
 	{
 		warnings.push_back("no point in using an empirical prior if we are drawing the par ensemble...resetting ies_use_empirical_prior to false");
@@ -834,15 +849,21 @@ void IterEnsembleSmoother::initialize()
 	//ofstream &frec = file_manager.rec_ofstream();
 	last_best_mean = 1.0E+30;
 	last_best_std = 1.0e+30;
-	lambda_max = 1.0E+10;
-	lambda_min = 1.0E-10;
+	lambda_max = 1.0E+30;
+	lambda_min = 1.0E-30;
 	warn_min_reals = 30;
 	error_min_reals = 0;
 	lam_mults = pest_scenario.get_pestpp_options().get_ies_lam_mults();
 	if (lam_mults.size() == 0)
 		lam_mults.push_back(1.0);
 	message(1, "using lambda multipliers: ", lam_mults);
-	
+	double acc_fac = pest_scenario.get_pestpp_options().get_ies_accept_phi_fac();
+	message(1, "acceptable phi factor: ", acc_fac);
+	double inc_fac = pest_scenario.get_pestpp_options().get_ies_lambda_inc_fac();
+	message(1, "lambda increase factor: ", inc_fac);
+	double dec_fac = pest_scenario.get_pestpp_options().get_ies_lambda_dec_fac();
+	message(1, "lambda decrease factor: ", dec_fac);
+
 	sanity_checks();
 	
 	bool echo = false;
@@ -859,11 +880,7 @@ void IterEnsembleSmoother::initialize()
 	if (bad_phi < 1.0e+30)
 		message(1, "using bad_phi: ", bad_phi);
 
-	double subset_bad_frac = pest_scenario.get_pestpp_options().get_ies_subset_bad_phi_frac();
-	if (subset_bad_frac < 100.0)
-	{
-		message(1, "using subset bad phi fraction: ", subset_bad_frac);
-	}
+	
 
 	int num_reals = pest_scenario.get_pestpp_options().get_ies_num_reals();
 	
@@ -1707,12 +1724,27 @@ void IterEnsembleSmoother::solve()
 		return;
 
 	}
-	
+	double acc_fac = pest_scenario.get_pestpp_options().get_ies_accept_phi_fac();
+	double lam_inc = pest_scenario.get_pestpp_options().get_ies_lambda_inc_fac();
+	double lam_dec = pest_scenario.get_pestpp_options().get_ies_lambda_dec_fac();
+
 	if ((best_idx != -1) && (use_subset) && (subset_size < pe.shape().first))//subset stuff here
 	{ 
-		double bad_phi_frac = pest_scenario.get_pestpp_options().get_ies_subset_bad_phi_frac();
-		double bad_phi = best_mean * bad_phi_frac;
-		//if (bad_phi >= )
+		
+		double acc_phi = last_best_mean * acc_fac;
+		if (best_mean > acc_phi)
+		{
+			double new_lam = last_best_lam * lam_inc;
+			new_lam = (new_lam > lambda_max) ? lambda_max : new_lam;
+			last_best_lam = new_lam;
+			ss.str("");
+			ss << "best subset mean phi  (" << best_mean << ") greater than acceptable phi : " << acc_phi;
+			string m = ss.str();
+			message(0, m);
+			message(1, "abandoning current lambda ensembles, increasing lambda to ", new_lam);
+			message(1,"returing to lambda calculations...");
+			return;
+		}
 
 		//need to work out which par and obs en real names to run - some may have failed during subset testing...
 		ObservationEnsemble remaining_oe_lam = oe;//copy
@@ -1777,7 +1809,7 @@ void IterEnsembleSmoother::solve()
 	ph.update(oe_lam_best, pe_lams[best_idx]);
 	best_mean = ph.get_mean(PhiHandler::phiType::COMPOSITE);
 	best_std = ph.get_std(PhiHandler::phiType::COMPOSITE);
-	if (best_mean < last_best_mean * 1.1)
+	if (best_mean < last_best_mean * acc_fac)
 	{
 		message(0,"updating parameter ensemble");
 		performance_log->log_event("updating parameter ensemble");
@@ -1785,9 +1817,9 @@ void IterEnsembleSmoother::solve()
 
 		pe = pe_lams[best_idx];
 		oe = oe_lam_best;		
-		if (best_std < last_best_std * 1.1)
+		if (best_std < last_best_std * acc_fac)
 		{
-			double new_lam = lam_vals[best_idx] * 0.75;
+			double new_lam = lam_vals[best_idx] * lam_dec;
 			new_lam = (new_lam < lambda_min) ? lambda_min : new_lam;
 			message(0, "updating lambda to ", new_lam);
 			last_best_lam = new_lam;
@@ -1803,7 +1835,7 @@ void IterEnsembleSmoother::solve()
 	{
 		message(0, "not updating parameter ensemble");
 		ph.update(oe, pe);
-		double new_lam = last_best_lam * 10.0;
+		double new_lam = last_best_lam * lam_inc;
 		new_lam = (new_lam > lambda_max) ? lambda_max : new_lam;
 		message(0, "incresing lambda to: ", new_lam);
 		last_best_lam = new_lam;
