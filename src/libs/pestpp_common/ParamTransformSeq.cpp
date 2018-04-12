@@ -393,6 +393,19 @@ Parameters ParamTransformSeq::model2ctl_cp(const Parameters &data) const
 	return ret_val;
 }
 
+void ParamTransformSeq::model2active_ctl_ip(Parameters &data) const
+{
+	model2ctl_ip(data);
+	ctl2active_ctl_ip(data);
+}
+
+Parameters ParamTransformSeq::model2active_ctl_cp(const Parameters &data) const
+{
+	Parameters ret_val(data);
+	model2active_ctl_ip(ret_val);
+	return(data);
+}
+
 
 void ParamTransformSeq::numeric2active_ctl_ip(Parameters &data) const
 {
@@ -691,7 +704,7 @@ const TranFixed* ParamTransformSeq::get_fixed_ptr()const
 }
 
 
-const TranLog10 *ParamTransformSeq::get_log10_ptr()
+const TranLog10 *ParamTransformSeq::get_log10_ptr() const
 {
 	const Transformation* ptr=0;
 	const auto iter = find_in_active_ctl2numeric(string("PEST to model log transformation"));

@@ -7,35 +7,12 @@
 
 mt19937_64 DifferentialEvolution::rand_engine = mt19937_64(1);
 
-ParameterInfoDE::ParameterInfoDE(double _lower_bnd, double _upper_bnd,
-	bool _log_transform)
-	: lower_bnd(_lower_bnd), upper_bnd(_upper_bnd), log_transform(_log_transform)
-{
-}
-
-ParameterInfoDE::ParameterInfoDE(const ParameterInfoDE &rhs)
-{
-	*this = rhs;
-}
-ParameterInfoDE& ParameterInfoDE::operator=(const ParameterInfoDE &rhs)
-{
-	lower_bnd = rhs.lower_bnd;
-	upper_bnd = rhs.upper_bnd;
-	log_transform = rhs.log_transform;
-	return *this;
-}
-
-ParameterInfoDE::~ParameterInfoDE()
-{
-
-}
-
 const string DifferentialEvolution::solver_type_name = "differential_evolution";
 
 DifferentialEvolution::DifferentialEvolution(Pest &_pest_scenario,
 	FileManager &_file_manager, ObjectiveFunc *_obj_func_ptr,
 	const ParamTransformSeq &_par_transform, OutputFileWriter &_output_file_writer,
-	PerformanceLog *_performance_log,  unsigned int seed)
+	PerformanceLog *_performance_log, unsigned int seed)
 	: file_manager(_file_manager), obj_func_ptr(_obj_func_ptr), par_transform(_par_transform),
 	output_file_writer(_output_file_writer), performance_log(_performance_log),
 	gen_1(_file_manager.build_filename("de1"))
@@ -43,24 +20,23 @@ DifferentialEvolution::DifferentialEvolution(Pest &_pest_scenario,
 	// initialize random number generator
 	rand_engine.seed(seed);
 
-	par_list = _pest_scenario.get_ctl_ordered_par_names();
-	for (const auto &i : par_list)
+	// DE only works for one to one transformations
+	if (!par_transform.is_one_to_one())
 	{
-		const ParameterRec *p_info = _pest_scenario.get_ctl_parameter_info().get_parameter_rec_ptr(i);
-		if (p_info->tranform_type == ParameterRec::TRAN_TYPE::LOG)
-		{
-			parameter_info[i] = ParameterInfoDE(p_info->lbnd, p_info->ubnd, true);
-		}
-		else if (p_info->tranform_type == ParameterRec::TRAN_TYPE::NONE)
-		{
-			parameter_info[i] = ParameterInfoDE(p_info->lbnd, p_info->ubnd, false);
-		}
-		else
-		{
-			// This is a fixed or tied parameter which will be handled by a transformations
-		}
-
+		throw PestError("Error: Differential Evolution only supports one to one transformations.  Please insure the SVDA transformation is turned off.");
 	}
+
+	par_list = _pest_scenario.get_ctl_ordered_adj_par_names();
+	Parameters inti_pars = _pest_scenario.get_ctl_parameters();
+	for (const auto &i : inti_pars)
+	{
+		const string &p_name = i.first;
+		const ParameterRec *p_info = _pest_scenario.get_ctl_parameter_info().get_parameter_rec_ptr(p_name);
+		max_numeric_pars[p_name] = p_info->ubnd;
+		min_numeric_pars[p_name] = p_info->lbnd;
+	}
+	par_transform.ctl2numeric_ip(max_numeric_pars);
+	par_transform.ctl2numeric_ip(min_numeric_pars);
 }
 
 void DifferentialEvolution::solve(RunManagerAbstract &run_manager,
@@ -123,13 +99,13 @@ void DifferentialEvolution::initialize_population(RunManagerAbstract &run_manage
 	int iter = 0;
 
 	RestartController::write_start_iteration(fout_restart, solver_type_name, iter, iter);
-	Parameters ctl_pars;
+	Parameters numeric_pars;
 	for (int i = 0; i < d; ++i)
 	{
-		ctl_pars.clear();
-		initialize_vector(ctl_pars);
-		par_transform.ctl2model_ip(ctl_pars);
-		run_manager.add_run(ctl_pars);
+		numeric_pars.clear();
+		initialize_vector(numeric_pars);
+		par_transform.numeric2model_ip(numeric_pars);
+		run_manager.add_run(numeric_pars);
 	}
 	RestartController::write_upgrade_runs_built(fout_restart);
 	// make innitial population vector model runs
@@ -165,28 +141,21 @@ void DifferentialEvolution::initialize_population(RunManagerAbstract &run_manage
 
 }
 
-void DifferentialEvolution::initialize_vector(Parameters &ctl_pars)
+void DifferentialEvolution::initialize_vector(Parameters &numeric_pars)
 {
 	std::uniform_real_distribution<double> distribution(0.0, 1.0);
 	
-	for (const auto &i : parameter_info)
+	for (const auto &i : par_list)
 	{
 		double p_val; 
-		const string &p_name = i.first;
+		const string &p_name = i;
+		double p_min = min_numeric_pars[p_name];
+		double p_max = max_numeric_pars[p_name];
 		double rnum = rand_engine();
+
 		// use uniform distribution to initialize parameters
-		if (i.second.log_transform)
-		{
-			double r_num = distribution(rand_engine);
-			p_val = log10(i.second.lower_bnd) + r_num * (log10(i.second.upper_bnd) - log10(i.second.lower_bnd));
-			p_val = pow(10.0, p_val);
-			ctl_pars.insert(p_name, p_val);
-		}
-		else
-		{
-			p_val = i.second.lower_bnd + distribution(rand_engine) * (i.second.upper_bnd - i.second.lower_bnd);
-			ctl_pars.insert(p_name, p_val);
-		}
+		p_val = p_min + distribution(rand_engine) * (p_max - p_min);
+		numeric_pars.insert(p_name, p_val);
 	}
 }
 
@@ -229,10 +198,9 @@ void DifferentialEvolution::mutation(RunManagerAbstract &run_manager, double f, 
 		gen_1.get_parameters(xa_id, xa);
 		gen_1.get_parameters(xb_id, xb);
 		gen_1.get_parameters(xc_id, xb);
-		par_transform.model2ctl_ip(xa);
-		par_transform.model2ctl_ip(xb);
-		par_transform.model2ctl_ip(xc);
-
+		par_transform.model2numeric_ip(xa);
+		par_transform.model2numeric_ip(xb);
+		par_transform.model2numeric_ip(xc);
 		int par_id_chg = uni_par(rand_engine);
 		for (int idx=0; idx<n_par; ++idx)
 		{
@@ -247,8 +215,8 @@ void DifferentialEvolution::mutation(RunManagerAbstract &run_manager, double f, 
 				tmp_f = dither_f_prob(rand_engine);
 			}
 			double c_p = c + tmp_f * (delta);
-			double p_min = parameter_info[ipar].lower_bnd;
-			double p_max = parameter_info[ipar].upper_bnd;
+			double p_min = min_numeric_pars[ipar];
+			double p_max = max_numeric_pars[ipar];
 			// reflect purturbation if parameter is outside it's bounds
 			while (c_p < p_min || c_p > p_max)
 			{
@@ -270,7 +238,7 @@ void DifferentialEvolution::mutation(RunManagerAbstract &run_manager, double f, 
 				x_trial[ipar] = c_p;
 			}
 		}
-		par_transform.ctl2model_ip(x_trial);
+		par_transform.numeric2model_ip(x_trial);
 		run_manager.add_run(x_trial);
 	}
 }

@@ -13,20 +13,6 @@ class Pest;
 class RunManagerAbstract;
 class RestartController;
 
-
-class ParameterInfoDE
-{
-public:
-	ParameterInfoDE(double _lower_bnd = 0, double _upper_bnd = 0, bool _log_transform = false);
-	ParameterInfoDE(const ParameterInfoDE &rhs);
-	ParameterInfoDE& operator=(const ParameterInfoDE &rhs);
-	~ParameterInfoDE();
-public:
-	double lower_bnd;
-	double upper_bnd;
-	bool log_transform;
-};
-
 class DifferentialEvolution
 {
 public:
@@ -42,7 +28,6 @@ private:
 	const static string solver_type_name;
 	FileManager &file_manager;
 	ObjectiveFunc *obj_func_ptr;
-	std::unordered_map<std::string, ParameterInfoDE> parameter_info;
 	const ParameterInfo *ctl_par_info_ptr;
 	const ParameterGroupInfo *par_group_info_ptr;
 	ParamTransformSeq par_transform;
@@ -51,6 +36,8 @@ private:
 	const ObservationInfo *obs_info_ptr;
 	const PriorInformation *prior_info_ptr;
 	std::vector<std::string> par_list;
+	Parameters max_numeric_pars;
+	Parameters min_numeric_pars;
 	RunStorage gen_1;
 	int best_run_idx;
 	int failed_runs_old;
