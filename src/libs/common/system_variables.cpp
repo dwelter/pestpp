@@ -111,7 +111,7 @@ bool OperSys::double_is_invalid(double x)
 #if defined __INTEL_COMPILER && defined __APPLE__
   bool test = (isnan(x) || isinf(x));
 #endif
-#if defined __INTEL_COMPILER && defined OS_LINUX
+#if defined __INTEL_COMPILER && defined OS_LINUX && !defined __APPLE__
   bool test = (::isnan(x) || ::isinf(x));
 #endif
 #if defined OS_WIN
