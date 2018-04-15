@@ -800,8 +800,8 @@ void IterEnsembleSmoother::sanity_checks()
 	}
 	if (ppo->get_ies_reg_factor() < 0.0)
 		errors.push_back("ies_reg_factor < 0.0 - WRONG!");
-	if (ppo->get_ies_reg_factor() > 1.0)
-		errors.push_back("ies_reg_factor > 1.0 - nope");
+	//if (ppo->get_ies_reg_factor() > 1.0)
+	//	errors.push_back("ies_reg_factor > 1.0 - nope");
 	if ((par_csv.size() == 0) && (ppo->get_ies_subset_size() < 10000000) && (ppo->get_ies_num_reals() < ppo->get_ies_subset_size() * 2))
 		warnings.push_back("ies_num_reals < 2*ies_subset_size: you not gaining that much using subset here");
 	//if ((ppo->get_ies_subset_size() < 100000001) && (ppo->get_ies_lam_mults().size() == 1))
