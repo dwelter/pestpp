@@ -809,7 +809,7 @@ void IterEnsembleSmoother::sanity_checks()
 	//	warnings.push_back("only one lambda mult to test, no point in using a subset");
 	//	//ppo->set_ies_subset_size(100000000);
 	//}
-	if ((ppo->get_ies_verbose_level() < 0) || (ppo->get_ies_verbose_level() > 2))
+	if ((ppo->get_ies_verbose_level() < 0) || (ppo->get_ies_verbose_level() > 3))
 	{
 		warnings.push_back("ies_verbose_level must be between 0 and 3, resetting to 3");
 		ppo->set_ies_verbose_level(3);

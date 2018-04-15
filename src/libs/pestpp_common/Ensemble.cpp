@@ -37,54 +37,54 @@ Ensemble Ensemble::zero_like()
 
 void Ensemble::add_2_cols_ip(Ensemble &other)
 {
-	//add values to (a subset of the) columns of reals
-	if (shape().first != other.shape().first)
-		throw_ensemble_error("Ensemble::add_2_cols_ip(): first dimensions don't match");
-	vector<string> other_real_names = other.get_real_names();
-	vector<string> mismatch;
-	for (int i = 0; i < shape().first; i++)
-	{
-		if (other_real_names[i] != real_names[i])
-			mismatch.push_back(real_names[i]);
+//add values to (a subset of the) columns of reals
+if (shape().first != other.shape().first)
+throw_ensemble_error("Ensemble::add_2_cols_ip(): first dimensions don't match");
+vector<string> other_real_names = other.get_real_names();
+vector<string> mismatch;
+for (int i = 0; i < shape().first; i++)
+{
+	if (other_real_names[i] != real_names[i])
+		mismatch.push_back(real_names[i]);
 
-	}
-	if (mismatch.size() > 0)
-		throw_ensemble_error("the following real_names don't match other", mismatch);
+}
+if (mismatch.size() > 0)
+throw_ensemble_error("the following real_names don't match other", mismatch);
 
-	map<string, int> this_varmap, other_varmap;
-	for (int i = 0; i < var_names.size(); i++)
-		this_varmap[var_names[i]] = i;
-	vector<string> other_var_names = other.get_var_names();
-	
-	vector<string> missing;
-	set<string> svnames(var_names.begin(), var_names.end());
-	set<string>::iterator end = svnames.end();
-	for (int i = 0; i < other_var_names.size(); i++)
-	{
-		if (svnames.find(other_var_names[i]) == end)
-			missing.push_back(other_var_names[i]);
-		other_varmap[other_var_names[i]] = i;
-	}
-	if (missing.size() > 0)
-		throw_ensemble_error("Ensemble::add_2_cols_ip(): the following var names in other were not found", missing);
-	for (auto &ovm : other_varmap)
-	{
-		reals.col(this_varmap[ovm.first]) += other.get_eigen_ptr()->col(ovm.second);
-	}
+map<string, int> this_varmap, other_varmap;
+for (int i = 0; i < var_names.size(); i++)
+	this_varmap[var_names[i]] = i;
+vector<string> other_var_names = other.get_var_names();
+
+vector<string> missing;
+set<string> svnames(var_names.begin(), var_names.end());
+set<string>::iterator end = svnames.end();
+for (int i = 0; i < other_var_names.size(); i++)
+{
+	if (svnames.find(other_var_names[i]) == end)
+		missing.push_back(other_var_names[i]);
+	other_varmap[other_var_names[i]] = i;
+}
+if (missing.size() > 0)
+throw_ensemble_error("Ensemble::add_2_cols_ip(): the following var names in other were not found", missing);
+for (auto &ovm : other_varmap)
+{
+	reals.col(this_varmap[ovm.first]) += other.get_eigen_ptr()->col(ovm.second);
+}
 }
 
 void Ensemble::draw(int num_reals, Covariance cov, Transformable &tran, const vector<string> &draw_names,
-	const map<string,vector<string>> &grouper ,PerformanceLog *plog, int level)
+	const map<string, vector<string>> &grouper, PerformanceLog *plog, int level)
 {
 	//draw names should be "active" var_names (nonzero weight obs and not fixed/tied pars)
 	//just a quick sanity check...
 	//if ((draw_names.size() > 50000) && (!cov.isdiagonal()))
 	//	cout << "  ---  Ensemble::draw() warning: non-diagonal cov used to draw for lots of variables...this might run out of memory..." << endl << endl;
-	
+
 	//matrix to hold the standard normal draws
 	Eigen::MatrixXd draws(num_reals, draw_names.size());
 	draws.setZero();
-	
+
 	//make sure the cov is aligned
 	if (cov.get_col_names() != draw_names)
 		cov = cov.get(draw_names);
@@ -93,19 +93,18 @@ void Ensemble::draw(int num_reals, Covariance cov, Transformable &tran, const ve
 	plog->log_event("making standard normal draws");
 	RedSVD::sample_gaussian(draws);
 	if (level > 2)
-	{ 
+	{
 		ofstream f("standard_normal_draws.dat");
 		f << draws << endl;
 		f.close();
 	}
-	
 
-	//if diagonal cov, then scale by variance
+	Eigen::VectorXd std = cov.e_ptr()->diagonal().cwiseSqrt();
+	//if diagonal cov, then scale by std
 	if (cov.isdiagonal())
 	{
-		plog->log_event("scaling by variance");
-		Eigen::VectorXd std = cov.e_ptr()->diagonal().cwiseSqrt();
-
+		plog->log_event("scaling by std");
+		
 		for (int j = 0; j < draw_names.size(); j++)
 		{
 			//cout << var_names[j] << " , " << std(j) << endl;
@@ -115,7 +114,7 @@ void Ensemble::draw(int num_reals, Covariance cov, Transformable &tran, const ve
 	//if not diagonal, eigen decomp of cov then project the standard normal draws
 	else
 	{
-		
+
 		if (grouper.size() > 0)
 		{
 			cout << "...drawing by group" << endl;
@@ -127,12 +126,24 @@ void Ensemble::draw(int num_reals, Covariance cov, Transformable &tran, const ve
 			vector<int> idx;
 			for (int i = 0; i < var_names.size(); i++)
 				idx_map[var_names[i]] = i;
-			for (auto &gi : grouper) 
+			for (auto &gi : grouper)
 			{
 				ss.str("");
 				ss << "...processing " << gi.first << " with " << gi.second.size() << " elements" << endl;
 				cout << ss.str();
 				plog->log_event(ss.str());
+				if (gi.second.size() == 0)
+					throw_ensemble_error("Ensemble::draw(): no elements found for group", gi.second);
+				if (gi.second.size() == 1)
+				{
+					ss.str("");
+					ss << "only one element in group " << gi.first << ", scaling by std";
+					plog->log_event(ss.str());
+					int j = idx_map[gi.second[0]];
+					draws.col(j) *= std(j);
+					continue;
+				}
+
 				gcov = cov.get(gi.second);
 				if (level > 2)
 				{
