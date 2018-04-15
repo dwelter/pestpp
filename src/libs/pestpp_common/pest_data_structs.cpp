@@ -374,6 +374,8 @@ void PestppOptions::parce_line(const string &line)
 	}
 	string tmp_line = line.substr(0, found);
 	strip_ip(tmp_line, "both", "\t\n\r+ ");
+	tmp_line.erase(remove(tmp_line.begin(), tmp_line.end(), '\"'),tmp_line.end());
+	tmp_line.erase(remove(tmp_line.begin(), tmp_line.end(), '\''), tmp_line.end());
 	//upper_ip(tmp_line);
 
 
@@ -478,17 +480,20 @@ void PestppOptions::parce_line(const string &line)
 		else if ((key == "PARCOV") || (key == "PARAMETER_COVARIANCE") 
 			|| (key == "PARCOV_FILENAME"))
 		{
-			convert_ip(org_value, parcov_filename);
+			//convert_ip(org_value, parcov_filename);
+			parcov_filename = org_value;
 		}
 
 		else if ((key == "BASE_JACOBIAN") || (key == "BASE_JACOBIAN_FILENAME"))
 		{
-			convert_ip(org_value, basejac_filename);
+			//convert_ip(org_value, basejac_filename);
+			basejac_filename = org_value;
 		}
 
 		else if (key == "HOTSTART_RESFILE")
 		{
-			convert_ip(org_value, hotstart_resfile);
+			//convert_ip(org_value, hotstart_resfile);
+			hotstart_resfile = org_value;
 		}
 
 		else if (key == "OVERDUE_RESCHED_FAC"){
@@ -499,12 +504,15 @@ void PestppOptions::parce_line(const string &line)
 		}
 		else if (key == "CONDOR_SUBMIT_FILE")
 		{
-			convert_ip(value, condor_submit_file);
+			//convert_ip(value, condor_submit_file);
+			condor_submit_file = org_value;
 		}
 		else if ((key == "SWEEP_PARAMETER_CSV_FILE") || (key == "SWEEP_PAR_CSV"))
-			convert_ip(org_value, sweep_parameter_csv_file);	
+			//convert_ip(org_value, sweep_parameter_csv_file);	
+			sweep_parameter_csv_file = org_value;
 		else if ((key == "SWEEP_OUTPUT_CSV_FILE") || (key == "SWEEP_OBS_CSV"))
-			convert_ip(org_value, sweep_output_csv_file);
+			//convert_ip(org_value, sweep_output_csv_file);
+			sweep_output_csv_file = org_value;
 		else if (key == "SWEEP_CHUNK")
 			convert_ip(value, sweep_chunk);
 		else if (key == "SWEEP_FORGIVE")
@@ -588,7 +596,7 @@ void PestppOptions::parce_line(const string &line)
 		}
 		else if ((key == "OPT_OBJ_FUNC") || (key == "OPT_OBJECTIVE_FUNCTION"))
 		{
-			convert_ip(value,opt_obj_func);
+			convert_ip(value,opt_obj_func); 
 		}
 		else if (key == "OPT_COIN_LOG")
 		{
@@ -670,19 +678,22 @@ void PestppOptions::parce_line(const string &line)
 		else if ((key == "IES_PAR_CSV") || (key == "IES_PARAMETER_CSV")||
 			(key == "IES_PAR_EN") || (key == "IES_PARAMETER_ENSEMBLE"))
 		{
-			convert_ip(value, ies_par_csv);
+			//convert_ip(value, ies_par_csv);
+			ies_par_csv = org_value;
 		}
 		else if ((key == "IES_OBS_CSV") || (key == "IES_OBSERVATION_CSV") ||
 			(key == "IES_OBS_EN") || (key == "IES_OBSERVATION_ENSEMBLE"))
 		{
-			convert_ip(value, ies_obs_csv);
+			//convert_ip(value, ies_obs_csv);
+			ies_obs_csv = org_value;
 		}
 		else if ((key == "IES_OBS_RESTART_CSV") || (key == "IES_OBSERVATION_RESTART_CSV") 
 			|| (key == "IES_RESTART_OBS_CSV") || (key == "IES_OBSERVATION_RESTART_ENSEMBLE") ||
 			(key == "IES_RESTART_OBSERVATION_ENSEMBLE") || (key == "IES_RESTART_OBS_EN") ||
 			(key == "IES_OBS_RESTART_EN"))
 		{
-			convert_ip(value, ies_obs_restart_csv);
+			//convert_ip(value, ies_obs_restart_csv);
+			ies_obs_restart_csv = org_value;
 		}
 
 		else if ((key == "IES_USE_APPROXIMATE_SOLUTION") || (key == "IES_USE_APPROX"))
@@ -775,7 +786,8 @@ void PestppOptions::parce_line(const string &line)
 		}
 		else if (key == "IES_LOCALIZER")
 		{
-			convert_ip(value, ies_localizer);
+			//convert_ip(value, ies_localizer);
+			ies_localizer = org_value;
 		}
 		else if (key == "IES_ACCEPT_PHI_FAC")
 		{
