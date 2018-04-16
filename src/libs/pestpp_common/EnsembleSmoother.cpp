@@ -865,6 +865,20 @@ void IterEnsembleSmoother::initialize()
 	else if ((pest_scenario.get_control_info().pestmode == ControlInfo::PestMode::PARETO))
 	{
 		message(1, "using pestpp-ies 'pareto' mode");
+		string pobs_group = pest_scenario.get_pareto_info().obsgroup;
+		message(1, "pareto obs group: ", pobs_group);
+
+		if (pobs_group.substr(0, 5) == "REGUL")
+		{
+			message(1, "'regul' detected in pareto obs group name");
+			if (pest_scenario.get_pestpp_options().get_ies_reg_factor() == 0.0)
+				throw_ies_error("pareto model problem: pareto obs group is 'regul'-ish but ies_reg_fac is zero");
+		
+		}
+		else
+		{
+
+		}
 		throw_ies_error("pareto model not finished");
 	}
 	lam_mults = pest_scenario.get_pestpp_options().get_ies_lam_mults();

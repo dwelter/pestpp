@@ -71,6 +71,7 @@ public:
     PestppOptions *get_pestpp_options_ptr() { return &pestpp_options; }
 
 	DynamicRegularization* get_regul_scheme_ptr() { return regul_scheme_ptr; }
+	const ParetoInfo &get_pareto_info() const { return pareto_info; }
 	vector<string> get_nonregul_obs() const;	
 	virtual ~Pest();
 private:
