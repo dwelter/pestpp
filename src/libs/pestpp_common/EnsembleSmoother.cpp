@@ -762,6 +762,7 @@ void IterEnsembleSmoother::sanity_checks()
 	string obs_csv = ppo->get_ies_obs_csv();
 	string restart = ppo->get_ies_obs_restart_csv();
 	
+
 	double acc_phi = ppo->get_ies_accept_phi_fac();
 	if (acc_phi < 1.0)
 		errors.push_back("ies_accept_phi_fac < 1.0, not good!");
@@ -853,6 +854,19 @@ void IterEnsembleSmoother::initialize()
 	lambda_min = 1.0E-30;
 	warn_min_reals = 30;
 	error_min_reals = 0;
+	if (pest_scenario.get_control_info().pestmode == ControlInfo::PestMode::REGUL)
+	{
+		message(1, "'pestmode' == 'regularization', in pestpp-ies, this in controlled with the ++ies_reg_fac() argument");
+	}
+	else if (pest_scenario.get_control_info().pestmode == ControlInfo::PestMode::UNKNOWN)
+	{
+		message(1,"unrecognized 'pestmode', using 'estimation'");
+	}
+	else if ((pest_scenario.get_control_info().pestmode == ControlInfo::PestMode::PARETO))
+	{
+		message(1, "using pestpp-ies 'pareto' mode");
+		throw_ies_error("pareto model not finished");
+	}
 	lam_mults = pest_scenario.get_pestpp_options().get_ies_lam_mults();
 	if (lam_mults.size() == 0)
 		lam_mults.push_back(1.0);

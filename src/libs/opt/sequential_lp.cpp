@@ -506,6 +506,14 @@ void sequentialLP::initialize_and_check()
 	ofstream &f_rec = file_mgr_ptr->rec_ofstream();
 	//TODO: handle restart condition
 	
+	if (pest_scenario.get_control_info().pestmode != ControlInfo::PestMode::ESTIMATION)
+	{
+		string mess = "'pestmode' != 'estimation'.  pestpp-opt really only operates in kind-of 'estimation' mode.  ignoring";
+		cout << endl << mess << endl;
+		f_rec << endl << mess << endl;
+	}
+
+
 	if (pest_scenario.get_control_info().noptmax < 1)
 		throw_sequentialLP_error("noptmax must be greater than 0");
 

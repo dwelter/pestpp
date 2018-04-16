@@ -76,6 +76,7 @@ public:
 private:
 	int n_adj_par = 0;
 	ControlInfo control_info;
+	ParetoInfo pareto_info;
 	SVDInfo svd_info;
 	Parameters ctl_parameters;
 	ParameterInfo ctl_parameter_info;

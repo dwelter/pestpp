@@ -31,7 +31,9 @@
 class LaTridiagMatDouble;
 
 class ControlInfo {
+	
 public:
+	enum PestMode { ESTIMATION, REGUL, PARETO, UNKNOWN };
 	double relparmax;
 	double facparmax;
 	double facorig;
@@ -46,9 +48,10 @@ public:
 	int nrelpar;
 	int noptswitch;
 	double splitswh;
+	PestMode pestmode;
 	ControlInfo() : relparmax(0.0), facparmax(0.0), facorig(0.0), phiredswh(0.0), noptmax(0),
 		phiredstp(0.0), nphistp(0), nphinored(0), relparstp(0.0), nrelpar(0), noptswitch(0),
-		splitswh(0.0) {}
+		splitswh(0.0), pestmode(PestMode::ESTIMATION){}
 };
 ostream& operator<< (ostream &os, const ControlInfo& val);
 
@@ -125,10 +128,10 @@ public:
 	double scale;
 	double offset;
 	string group;
-	bool dercom;
+	int dercom;
 	TRAN_TYPE tranform_type;
 	ParameterRec() : chglim(""), lbnd(0.0), ubnd(0.0), init_value(0.0), group(""),
-		dercom(false), tranform_type(TRAN_TYPE::NONE), scale(1.0), offset(0.0){}
+		dercom(1), tranform_type(TRAN_TYPE::NONE), scale(1.0), offset(0.0){}
 	bool is_active() const { return !(tranform_type == TRAN_TYPE::FIXED || tranform_type == TRAN_TYPE::TIED); }
 };
 ostream& operator<< (ostream &os, const ParameterRec& val);
@@ -195,7 +198,14 @@ public:
 	std::vector<std::string> outfile_vec;
 };
 
-
+class ParetoInfo {
+public:
+	double wf_start, wf_fin, wf_inc;
+	string obsgroup;
+	int niter_start, niter_gen, niter_fin;
+	ParetoInfo() : wf_start(1.0), wf_fin(1.0), wf_inc(0.0),
+		obsgroup(""), niter_start(1), niter_gen(1), niter_fin(1) {};
+};
 
 class PestppOptions {
 public:
