@@ -136,18 +136,51 @@ Eigen::VectorXd PhiHandler::get_q_vector()
 	return q;
 }
 
+map<string, double> PhiHandler::get_obs_group_contrib(Eigen::VectorXd &phi_vec)
+{
+	map<string, double> group_phi_map;
+	double sum;
+	for (auto &og : obs_group_idx_map)
+	{
+		sum = 0.0;
+		for (auto i : og.second)
+			sum += phi_vec[i];
+		group_phi_map[og.first] = sum;
+	}
+
+	return group_phi_map;
+}
+
+map<string, double> PhiHandler::get_par_group_contrib(Eigen::VectorXd &phi_vec)
+{
+	map<string, double> group_phi_map;
+	double sum;
+	for (auto &pg : par_group_idx_map)
+	{
+		sum = 0.0;
+		for (auto i : pg.second)
+			sum += phi_vec[i];
+		group_phi_map[pg.first] = sum;
+	}
+	return group_phi_map;
+}
+
 void PhiHandler::update(ObservationEnsemble & oe, ParameterEnsemble & pe)
 {
 	//update the various phi component vectors
 	meas.clear();
-	meas = calc_meas(oe);
+	for (auto &pv : calc_meas(oe))
+		meas[pv.first] = pv.second.sum();
+	
 	regul.clear();
-	regul = calc_regul(pe);
+	for (auto &pv : calc_regul(pe))
+		regul[pv.first] = pv.second.sum();
+	
 	actual.clear();
-	actual = calc_actual(oe);
-	composite.clear();
-	composite = calc_composite(meas,regul);
-
+	for (auto &pv : calc_actual(oe))
+		actual[pv.first] = pv.second.sum();
+ 	composite.clear();
+	composite = calc_composite(meas, regul);
 }
 
 map<string, double>* PhiHandler::get_phi_map(PhiHandler::phiType &pt)
@@ -314,7 +347,9 @@ void PhiHandler::prepare_csv(ofstream & csv,vector<string> &names)
 
 vector<int> PhiHandler::get_idxs_greater_than(double bad_phi, ObservationEnsemble &oe)
 {
-	map<string, double> _meas = calc_meas(oe);
+	map<string, double> _meas;
+	for (auto &pv : calc_meas(oe))
+		_meas[pv.first] = pv.second.sum();
 	vector<int> idxs;
 	vector<string> names = oe.get_real_names();
 	for (int i=0;i<names.size();i++)
@@ -323,9 +358,9 @@ vector<int> PhiHandler::get_idxs_greater_than(double bad_phi, ObservationEnsembl
 	return idxs;
 }
 
-map<string, double> PhiHandler::calc_meas(ObservationEnsemble & oe)
+map<string, Eigen::VectorXd> PhiHandler::calc_meas(ObservationEnsemble & oe)
 {
-	map<string, double> phi_map;
+	map<string, Eigen::VectorXd> phi_map;
 	Eigen::VectorXd oe_base_vec, oe_vec, diff;
 	Eigen::VectorXd q = get_q_vector();
 	vector<string> act_obs_names = pest_scenario->get_ctl_ordered_nz_obs_names();
@@ -344,14 +379,14 @@ map<string, double> PhiHandler::calc_meas(ObservationEnsemble & oe)
 		diff = resid.row(i);
 		diff = diff.cwiseProduct(q);
 		phi = (diff.cwiseProduct(diff)).sum();
-		phi_map[rname] = phi;
+		phi_map[rname] = diff.cwiseProduct(diff);
 	}
 	return phi_map;
 }
 
-map<string, double> PhiHandler::calc_regul(ParameterEnsemble & pe)
+map<string, Eigen::VectorXd> PhiHandler::calc_regul(ParameterEnsemble & pe)
 {	
-	map<string, double> phi_map;
+	map<string, Eigen::VectorXd> phi_map;
 	vector<string> real_names = pe.get_real_names();
 	pe_base->transform_ip(ParameterEnsemble::transStatus::NUM);
 	pe.transform_ip(ParameterEnsemble::transStatus::NUM);
@@ -364,7 +399,7 @@ map<string, double> PhiHandler::calc_regul(ParameterEnsemble & pe)
 		diff = diff_mat.row(i);
 		diff = diff.cwiseProduct(diff);
 		diff = diff.cwiseProduct(parcov_inv_diag);
-		phi_map[real_names[i]] = diff.sum();
+		phi_map[real_names[i]] = diff;
 	}
 	return phi_map;
 }
@@ -416,9 +451,9 @@ void PhiHandler::apply_ineq_constraints(Eigen::MatrixXd &resid)
 }
 
 
-map<string, double> PhiHandler::calc_actual(ObservationEnsemble & oe)
+map<string, Eigen::VectorXd> PhiHandler::calc_actual(ObservationEnsemble & oe)
 {
-	map<string, double> phi_map;
+	map<string, Eigen::VectorXd> phi_map;
 	Eigen::MatrixXd resid = get_actual_obs_resid(oe);
 	vector<string> base_real_names = oe_base->get_real_names(), oe_real_names = oe.get_real_names();
 	vector<string>::iterator start = base_real_names.begin(), end = base_real_names.end();
@@ -435,9 +470,8 @@ map<string, double> PhiHandler::calc_actual(ObservationEnsemble & oe)
 		//diff = (oe_vec - obs_val_vec).cwiseProduct(q);
 		diff = resid.row(i);
 		diff = diff.cwiseProduct(q);
-		phi = (diff.cwiseProduct(diff)).sum();
-		phi = (diff.cwiseProduct(diff)).sum();
-		phi_map[rname] = phi;
+		//phi = (diff.cwiseProduct(diff)).sum();
+		phi_map[rname] = diff.cwiseProduct(diff);
 	}
 	return phi_map;
 }

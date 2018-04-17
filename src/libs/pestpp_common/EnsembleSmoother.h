@@ -47,13 +47,17 @@ private:
 	string get_summary_string(phiType pt);
 	string get_summary_header();
 	void prepare_csv(ofstream &csv,vector<string> &names);
-	map<string, double> calc_meas(ObservationEnsemble &oe);
-	map<string, double> calc_regul(ParameterEnsemble &pe);
-	map<string, double> calc_actual(ObservationEnsemble &oe);
+	void prepare_group_csv(ofstream &csv, vector<string> extra = vector<string>());
+
+	map<string, Eigen::VectorXd> calc_meas(ObservationEnsemble &oe);
+	map<string, Eigen::VectorXd> calc_regul(ParameterEnsemble &pe);
+	map<string, Eigen::VectorXd> calc_actual(ObservationEnsemble &oe);
 	map<string, double> calc_composite(map<string,double> &_meas, map<string,double> &_regul);
 	//map<string, double>* get_phi_map(PhiHandler::phiType &pt);
 	void write_csv(int iter_num, int total_runs,ofstream &csv, phiType pt,
 		           vector<string> &names);
+	void write_group_csv(int iter_num, int total_runs, ofstream &csv, 
+		map<string, double> extra = map<string, double>());
 
 	double *reg_factor;
 	vector<string> oreal_names,preal_names;
@@ -73,8 +77,9 @@ private:
 
 	map<string, vector<int>> obs_group_idx_map;
 	map<string, vector<int>> par_group_idx_map;
-
 	
+	map<string, double> get_obs_group_contrib(Eigen::VectorXd &phi_vec);
+	map<string, double> get_par_group_contrib(Eigen::VectorXd &phi_vec);	
 
 };
 
