@@ -64,11 +64,14 @@ void Pest::check_inputs(ostream &f_rec)
 
 	if (control_info.pestmode == ControlInfo::PestMode::PARETO)
 	{
-		if (find(ctl_ordered_obs_group_names.begin(), ctl_ordered_obs_group_names.end(), pareto_info.obsgroup) == ctl_ordered_obs_group_names.end())
+		bool found_pareto = false, found_other = false;
+		if (pareto_info.obsgroup.substr(0, 5) == "REGUL")
+			found_pareto = true;
+		else if (find(ctl_ordered_obs_group_names.begin(), ctl_ordered_obs_group_names.end(), pareto_info.obsgroup) == ctl_ordered_obs_group_names.end())
 			throw PestError("pareto obsgroup not found: " + pareto_info.obsgroup);
 		//make sure at least one other obs group has a nonzero weight obs in it
 		
-		bool found_pareto = false,found_other=false;
+		
 		for (auto &on : ctl_ordered_obs_names)
 		{
 				if (observation_info.get_group(on) == pareto_info.obsgroup)

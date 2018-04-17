@@ -1000,7 +1000,7 @@ void IterEnsembleSmoother::initialize()
 		{
 
 		}
-		throw_ies_error("pareto mode not finished");
+		//throw_ies_error("pareto mode not finished");
 	}
 	lam_mults = pest_scenario.get_pestpp_options().get_ies_lam_mults();
 	if (lam_mults.size() == 0)
@@ -1527,20 +1527,27 @@ void IterEnsembleSmoother::save_mat(string prefix, Eigen::MatrixXd &mat)
 void IterEnsembleSmoother::adjust_pareto_weight(string &obsgroup, double wfac)
 
 {
-	message(1, "resetting weight for pareto obs group to ", wfac);
-	pest_scenario.get_observation_info_ptr()->reset_group_weights(obsgroup, wfac);
-	Covariance obscov;
-	obscov.from_observation_weights(pest_scenario);
-	obscov = obscov.get(act_obs_names);
-	obscov_inv_sqrt = obscov.inv().get_matrix().diagonal().cwiseSqrt().asDiagonal();
+	if (obsgroup.substr(0, 5) == "REGUL")
+
+	{
+		message(1, "resetting reg fac for pareto to ", wfac);
+		reg_factor = wfac;
+	}
+	else
+	{
+		message(1, "resetting weight for pareto obs group to ", wfac);
+		pest_scenario.get_observation_info_ptr()->reset_group_weights(obsgroup, wfac);
+		Covariance obscov;
+		obscov.from_observation_weights(pest_scenario);
+		obscov = obscov.get(act_obs_names);
+		obscov_inv_sqrt = obscov.inv().get_matrix().diagonal().cwiseSqrt().asDiagonal();
+	}
 }
 
 void IterEnsembleSmoother::pareto_iterate_2_solution()
 {
-	//todo: get group phis from phi hanlder
-	//and write csv file
+	//todo:
 	//get initial obsgroup weight and use wf mults intead of vals
-	//catch reg factor regul obsgroup
 	ParetoInfo pi = pest_scenario.get_pareto_info();
 	stringstream ss;
 
@@ -1557,7 +1564,7 @@ void IterEnsembleSmoother::pareto_iterate_2_solution()
 		solve();
 
 	}
-	double wfac = pi.wf_start * pi.wf_inc;
+	double wfac = pi.wf_start + pi.wf_inc;
 	while (wfac < pi.wf_fin)
 	{
 		message(1, "using pareto wfac", wfac);
@@ -1571,7 +1578,7 @@ void IterEnsembleSmoother::pareto_iterate_2_solution()
 			performance_log->log_event(ss.str());
 			solve();
 		}
-		wfac = wfac * pi.wf_inc;
+		wfac = wfac + pi.wf_inc;
 	}
 	message(1, "final pareto wfac", pi.niter_fin);
 	message(0, "starting final pareto iterations", pi.niter_fin);
@@ -1588,6 +1595,7 @@ void IterEnsembleSmoother::pareto_iterate_2_solution()
 
 	
 }
+
 void IterEnsembleSmoother::iterate_2_solution()
 {
 	stringstream ss;
