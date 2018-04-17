@@ -42,6 +42,39 @@ PhiHandler::PhiHandler(Pest *_pest_scenario, FileManager *_file_manager,
 	}
 
 
+	//build up obs group and par group idx maps for group reporting
+	vector<string> nnz_obs = oe_base->get_var_names();
+	ObservationInfo oinfo = pest_scenario->get_ctl_observation_info();
+	vector<int> idx;
+	for (auto &og : pest_scenario->get_ctl_ordered_obs_group_names())
+	{
+		idx.clear();
+		for (int i = 0; i < nnz_obs.size(); i++)
+		{
+			if (oinfo.get_group(nnz_obs[i]) == og)
+			{
+				idx.push_back(i);
+			}
+		}
+		if (idx.size() > 0)
+			obs_group_idx_map[og] = idx;
+	}
+
+	vector<string> pars = pe_base->get_var_names();
+	ParameterInfo pi = pest_scenario->get_ctl_parameter_info();
+	for (auto &pg : pest_scenario->get_ctl_ordered_par_group_names())
+	{
+		idx.clear();
+		for (int i = 0; i < pars.size(); i++)
+		{
+			if (pi.get_parameter_rec_ptr(pars[i])->group == pg)
+				idx.push_back(i);
+		}
+		if (idx.size() > 0)
+			par_group_idx_map[pg] = idx;
+	}
+
+
 	reg_factor = _reg_factor;
 	//Eigen::VectorXd parcov_inv_diag = parcov_inv.e_ptr()->diagonal();
 	parcov_inv_diag = _parcov->e_ptr()->diagonal();
@@ -879,7 +912,7 @@ void IterEnsembleSmoother::initialize()
 		{
 
 		}
-		throw_ies_error("pareto model not finished");
+		throw_ies_error("pareto mode not finished");
 	}
 	lam_mults = pest_scenario.get_pestpp_options().get_ies_lam_mults();
 	if (lam_mults.size() == 0)

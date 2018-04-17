@@ -70,6 +70,10 @@ private:
 
 	vector<string> lt_obs_names;
 	vector<string> gt_obs_names;
+
+	map<string, vector<int>> obs_group_idx_map;
+	map<string, vector<int>> par_group_idx_map;
+
 	
 
 };
