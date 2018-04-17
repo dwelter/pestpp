@@ -310,11 +310,7 @@ int main(int argc, char* argv[])
 
 		ies.initialize();
 
-		for (int iter = 0; iter < pest_scenario.get_control_info().noptmax; iter++)
-		{
-			ies.solve();
-		}
-
+		ies.iterate_2_solution();
 		ies.finalize();
 
 		

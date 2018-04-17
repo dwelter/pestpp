@@ -69,7 +69,7 @@ public:
 	const  vector<string> &get_outfile_vec();
 	const PestppOptions &get_pestpp_options() const {return pestpp_options;}
     PestppOptions *get_pestpp_options_ptr() { return &pestpp_options; }
-
+	ObservationInfo *get_observation_info_ptr() { return &observation_info; }
 	DynamicRegularization* get_regul_scheme_ptr() { return regul_scheme_ptr; }
 	const ParetoInfo &get_pareto_info() const { return pareto_info; }
 	vector<string> get_nonregul_obs() const;	

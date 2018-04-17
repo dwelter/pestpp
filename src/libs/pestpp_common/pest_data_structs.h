@@ -187,6 +187,8 @@ public:
 	int get_nnz_obs() const;
 	int get_nnz_obs_and_reg() const;
 	vector<string> get_groups();
+	void reset_group_weights(string &group, double val);
+
 };
 
 class ModelExecInfo {

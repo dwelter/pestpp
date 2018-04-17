@@ -871,8 +871,8 @@ void IterEnsembleSmoother::initialize()
 		if (pobs_group.substr(0, 5) == "REGUL")
 		{
 			message(1, "'regul' detected in pareto obs group name");
-			if (pest_scenario.get_pestpp_options().get_ies_reg_factor() == 0.0)
-				throw_ies_error("pareto model problem: pareto obs group is 'regul'-ish but ies_reg_fac is zero");
+			//if (pest_scenario.get_pestpp_options().get_ies_reg_factor() == 0.0)
+			//	throw_ies_error("pareto model problem: pareto obs group is 'regul'-ish but ies_reg_fac is zero");
 		
 		}
 		else
@@ -1402,15 +1402,94 @@ void IterEnsembleSmoother::save_mat(string prefix, Eigen::MatrixXd &mat)
 
 }
 
-void IterEnsembleSmoother::solve()
+
+void IterEnsembleSmoother::adjust_pareto_weight(string &obsgroup, double wfac)
+
 {
-	iter++;
+	message(1, "resetting weight for pareto obs group to ", wfac);
+	pest_scenario.get_observation_info_ptr()->reset_group_weights(obsgroup, wfac);
+	Covariance obscov;
+	obscov.from_observation_weights(pest_scenario);
+	obscov = obscov.get(act_obs_names);
+	obscov_inv_sqrt = obscov.inv().get_matrix().diagonal().cwiseSqrt().asDiagonal();
+}
+
+void IterEnsembleSmoother::pareto_iterate_2_solution()
+{
+	//todo: get group phis from phi hanlder
+	//and write csv file
+	//get initial obsgroup weight and use wf mults intead of vals
+	//catch reg factor regul obsgroup
+	ParetoInfo pi = pest_scenario.get_pareto_info();
+	stringstream ss;
+
+	message(0, "starting pareto analysis");
+	message(1, "initial pareto wfac", pi.wf_start);
+	message(0, "starting initial pareto iterations", pi.niter_start);
+	adjust_pareto_weight(pi.obsgroup, pi.wf_start);
+	for (int i = 0; i < pi.niter_start; i++)
+	{
+		iter++;
+		message(0, "starting solve for iteration:", iter);
+		ss << "starting solve for iteration: " << iter;
+		performance_log->log_event(ss.str());
+		solve();
+
+	}
+	double wfac = pi.wf_start * pi.wf_inc;
+	while (wfac < pi.wf_fin)
+	{
+		message(1, "using pareto wfac", wfac);
+		message(0, "starting pareto iterations", pi.niter_gen);
+		adjust_pareto_weight(pi.obsgroup, wfac);
+		for (int i = 0; i < pi.niter_gen; i++)
+		{
+			iter++;
+			message(0, "starting solve for iteration:", iter);
+			ss << "starting solve for iteration: " << iter;
+			performance_log->log_event(ss.str());
+			solve();
+		}
+		wfac = wfac * pi.wf_inc;
+	}
+	message(1, "final pareto wfac", pi.niter_fin);
+	message(0, "starting final pareto iterations", pi.niter_fin);
+	adjust_pareto_weight(pi.obsgroup, pi.wf_fin);
+	for (int i = 0; i < pi.niter_fin; i++)
+	{
+		iter++;
+		message(0, "starting solve for iteration:", iter);
+		ss << "starting solve for iteration: " << iter;
+		performance_log->log_event(ss.str());
+		solve();
+
+	}
+
+	
+}
+void IterEnsembleSmoother::iterate_2_solution()
+{
 	stringstream ss;
 	ofstream &frec = file_manager.rec_ofstream();
-	message(0, "starting solve for iteration:", iter);
-	ss << "starting solve for iteration: " << iter;
-	performance_log->log_event(ss.str());
+	if (pest_scenario.get_control_info().pestmode == ControlInfo::PestMode::PARETO)
+		pareto_iterate_2_solution();
+	else
+	{
+		for (int iter = 0; iter < pest_scenario.get_control_info().noptmax; iter++)
+		{
+			iter++;
+			message(0, "starting solve for iteration:", iter);
+			ss << "starting solve for iteration: " << iter;
+			performance_log->log_event(ss.str());
+			solve();
+		}
+	}
+}
 
+void IterEnsembleSmoother::solve()
+{
+	stringstream ss;
+	ofstream &frec = file_manager.rec_ofstream();
 	if (pe.shape().first <= error_min_reals)
 	{
 		message(0, "too few active realizations:", oe.shape().first);

@@ -82,7 +82,8 @@ public:
 		OutputFileWriter &_output_file_writer, PerformanceLog *_performance_log,
 		RunManagerAbstract* _run_mgr_ptr);
 	void initialize();
-	void solve();
+	void iterate_2_solution();
+	void pareto_iterate_2_solution();
 	void finalize();
 	void throw_ies_error(string message);
 
@@ -116,8 +117,8 @@ private:
 	Eigen::MatrixXd Am;
 	Eigen::DiagonalMatrix<double,Eigen::Dynamic> obscov_inv_sqrt, parcov_inv_sqrt;
 
-
-
+	void solve();
+	void adjust_pareto_weight(string &obsgroup, double wfac);
 
 	//EnsemblePair run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe);
 	vector<int> run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe, const vector<int> &real_idxs=vector<int>());

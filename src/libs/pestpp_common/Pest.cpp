@@ -71,30 +71,20 @@ void Pest::check_inputs(ostream &f_rec)
 		bool found_pareto = false,found_other=false;
 		for (auto &on : ctl_ordered_obs_names)
 		{
-			if (observation_info.get_weight(on) > 0.0)
-
-			{
 				if (observation_info.get_group(on) == pareto_info.obsgroup)
 					found_pareto = true;
-				else
+				else if (observation_info.get_weight(on) > 0.0)
 					found_other = true;
-				
-			}
-
 		}
 		
 		if (!found_pareto || !found_other)
 		{
 			for (auto &pi : ctl_ordered_pi_names)
 			{
-				if (prior_info.get_pi_rec_ptr(pi).get_weight() > 0.0)
-				{
-					if (prior_info.get_pi_rec_ptr(pi).get_group() == pareto_info.obsgroup)
-						found_pareto = true;
-					else
-						found_other = true;
-					
-				}
+				if (prior_info.get_pi_rec_ptr(pi).get_group() == pareto_info.obsgroup)
+					found_pareto = true;
+				else if (prior_info.get_pi_rec_ptr(pi).get_weight() > 0.0)
+					found_other = true;
 			}
 		}
 		if (!found_pareto)
