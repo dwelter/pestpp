@@ -30,7 +30,7 @@ public:
 	double get_min(phiType pt);
 	map<string, double>* get_phi_map(PhiHandler::phiType &pt);
 	void report();
-	void write(int iter_num, int total_runs);
+	void write(int iter_num, int total_runs, vector<double> group_extra = vector<double>());
 	vector<int> get_idxs_greater_than(double bad_phi, ObservationEnsemble &oe);
 
 	Eigen::MatrixXd get_obs_resid(ObservationEnsemble &oe);
@@ -57,7 +57,7 @@ private:
 	void write_csv(int iter_num, int total_runs,ofstream &csv, phiType pt,
 		           vector<string> &names);
 	void write_group_csv(int iter_num, int total_runs, ofstream &csv, 
-		map<string, double> extra = map<string, double>());
+		vector<double> extra = vector<double>());
 
 	double *reg_factor;
 	vector<string> oreal_names,preal_names;
@@ -77,10 +77,11 @@ private:
 
 	map<string, vector<int>> obs_group_idx_map;
 	map<string, vector<int>> par_group_idx_map;
+	map<string, map<string, double>> obs_group_phi_map, par_group_phi_map;
 	
 	map<string, double> get_obs_group_contrib(Eigen::VectorXd &phi_vec);
 	map<string, double> get_par_group_contrib(Eigen::VectorXd &phi_vec);	
-
+	
 };
 
 

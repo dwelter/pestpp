@@ -89,6 +89,7 @@ PhiHandler::PhiHandler(Pest *_pest_scenario, FileManager *_file_manager,
 	prepare_csv(file_manager->open_ofile_ext("phi.meas.csv"),oreal_names);
 	prepare_csv(file_manager->open_ofile_ext("phi.composite.csv"),oreal_names);
 	prepare_csv(file_manager->open_ofile_ext("phi.regul.csv"),preal_names);
+	prepare_group_csv(file_manager->open_ofile_ext("phi.group.csv"));
 
 }
 
@@ -169,12 +170,19 @@ void PhiHandler::update(ObservationEnsemble & oe, ParameterEnsemble & pe)
 {
 	//update the various phi component vectors
 	meas.clear();
+	obs_group_phi_map.clear();
 	for (auto &pv : calc_meas(oe))
+	{
+		obs_group_phi_map[pv.first] = get_obs_group_contrib(pv.second);
 		meas[pv.first] = pv.second.sum();
+	}
 	
 	regul.clear();
 	for (auto &pv : calc_regul(pe))
+	{
+		par_group_phi_map[pv.first] = get_par_group_contrib(pv.second);
 		regul[pv.first] = pv.second.sum();
+	}
 	
 	actual.clear();
 	for (auto &pv : calc_actual(oe))
@@ -312,12 +320,13 @@ void PhiHandler::report()
 	f.flush();
 }
 
-void PhiHandler::write(int iter_num, int total_runs)
+void PhiHandler::write(int iter_num, int total_runs, vector<double> group_extra)
 {
 	write_csv(iter_num, total_runs, file_manager->get_ofstream("phi.actual.csv"), phiType::ACTUAL,oreal_names);
 	write_csv(iter_num, total_runs, file_manager->get_ofstream("phi.meas.csv"), phiType::MEAS, oreal_names);
 	write_csv(iter_num, total_runs, file_manager->get_ofstream("phi.regul.csv"), phiType::REGUL, preal_names);
 	write_csv(iter_num, total_runs, file_manager->get_ofstream("phi.composite.csv"), phiType::COMPOSITE, oreal_names);
+	write_group_csv(iter_num, total_runs, file_manager->get_ofstream("phi.group.csv"), group_extra);
 }
 
 void PhiHandler::write_csv(int iter_num, int total_runs, ofstream &csv, phiType pt, vector<string> &names)
@@ -341,6 +350,51 @@ void PhiHandler::prepare_csv(ofstream & csv,vector<string> &names)
 {
 	csv << "iteration,total_runs,mean,standard_deviation,min,max";
 	for (auto &name : names)
+		csv << ',' << name;
+	csv << endl;
+}
+
+
+
+void PhiHandler::write_group_csv(int iter_num, int total_runs, ofstream &csv, vector<double> extra)
+{
+	//csv << "iteration,total_runs,realiation";
+	string oreal, preal;
+	for (int ireal = 0; ireal < oreal_names.size(); ireal++)
+	{
+		oreal = oreal_names[ireal];
+		preal = preal_names[ireal];
+		if (obs_group_phi_map.find(oreal) == obs_group_phi_map.end())
+			continue;
+
+		csv << iter_num << ',' << total_runs << ',' << oreal << ',' << preal;
+		for (auto &e : extra)
+			csv << ',' << e;
+
+		for (auto &name : pest_scenario->get_ctl_ordered_obs_group_names())
+			if (obs_group_phi_map[oreal].find(name) == obs_group_phi_map[oreal].end())
+				csv << ',' << 0.0;
+			else
+				csv  << ',' << obs_group_phi_map[oreal][name];
+
+		for (auto &name : pest_scenario->get_ctl_ordered_par_group_names())
+			if (par_group_phi_map[preal].find(name) == par_group_phi_map[preal].end())
+				csv << ',' << 0.0;
+			else
+				csv << ',' << par_group_phi_map[preal][name];
+		csv << endl;;
+		csv.flush();
+	}
+}
+
+void PhiHandler::prepare_group_csv(ofstream &csv, vector<string> extra)
+{
+	csv << "iteration,total_runs,obs_realization,par_realization";
+	for (auto &name : extra)
+		csv << ',' << name;
+	for (auto &name : pest_scenario->get_ctl_ordered_obs_group_names())
+		csv << ',' << name;
+	for (auto &name : pest_scenario->get_ctl_ordered_par_group_names())
 		csv << ',' << name;
 	csv << endl;
 }
