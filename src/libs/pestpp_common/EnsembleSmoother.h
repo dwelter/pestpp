@@ -49,9 +49,9 @@ private:
 	void prepare_csv(ofstream &csv,vector<string> &names);
 	void prepare_group_csv(ofstream &csv, vector<string> extra = vector<string>());
 
-	map<string, Eigen::VectorXd> calc_meas(ObservationEnsemble &oe);
-	map<string, Eigen::VectorXd> calc_regul(ParameterEnsemble &pe);
-	map<string, Eigen::VectorXd> calc_actual(ObservationEnsemble &oe);
+	map<string, Eigen::VectorXd> calc_meas(ObservationEnsemble &oe, Eigen::VectorXd &_q_vec);
+	map<string, Eigen::VectorXd> calc_regul(ParameterEnsemble &pe, double _reg_fac);
+	map<string, Eigen::VectorXd> calc_actual(ObservationEnsemble &oe, Eigen::VectorXd &_q_vec);
 	map<string, double> calc_composite(map<string,double> &_meas, map<string,double> &_regul);
 	//map<string, double>* get_phi_map(PhiHandler::phiType &pt);
 	void write_csv(int iter_num, int total_runs,ofstream &csv, phiType pt,
@@ -60,6 +60,8 @@ private:
 		vector<double> extra = vector<double>());
 
 	double *reg_factor;
+	double org_reg_factor;
+	Eigen::VectorXd org_q_vec;
 	vector<string> oreal_names,preal_names;
 	Pest* pest_scenario;
 	FileManager* file_manager;

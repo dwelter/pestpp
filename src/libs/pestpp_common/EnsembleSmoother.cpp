@@ -76,6 +76,9 @@ PhiHandler::PhiHandler(Pest *_pest_scenario, FileManager *_file_manager,
 
 
 	reg_factor = _reg_factor;
+	//save the org reg factor and org q vector
+	org_reg_factor = *_reg_factor;
+	org_q_vec = get_q_vector();
 	//Eigen::VectorXd parcov_inv_diag = parcov_inv.e_ptr()->diagonal();
 	parcov_inv_diag = _parcov->e_ptr()->diagonal();
 	for (int i = 0; i < parcov_inv_diag.size(); i++)
@@ -171,21 +174,51 @@ void PhiHandler::update(ObservationEnsemble & oe, ParameterEnsemble & pe)
 	//update the various phi component vectors
 	meas.clear();
 	obs_group_phi_map.clear();
-	for (auto &pv : calc_meas(oe))
+	map<string, Eigen::VectorXd> meas_map = calc_meas(oe, get_q_vector());
+	for (auto &pv : meas_map)
 	{
 		obs_group_phi_map[pv.first] = get_obs_group_contrib(pv.second);
 		meas[pv.first] = pv.second.sum();
+		obs_group_phi_map[pv.first] = get_obs_group_contrib(pv.second);
 	}
-	
-	regul.clear();
-	for (auto &pv : calc_regul(pe))
+	/*if (pest_scenario->get_control_info().pestmode == ControlInfo::PestMode::PARETO)
 	{
-		par_group_phi_map[pv.first] = get_par_group_contrib(pv.second);
-		regul[pv.first] = pv.second.sum();
+		meas_map.clear();
+		meas_map = calc_meas(oe, org_q_vec);
+		
+	}
+	for (auto &pv : meas_map)
+	{
+		obs_group_phi_map[pv.first] = get_obs_group_contrib(pv.second);
+	}*/
+
+	regul.clear();
+	map<string, Eigen::VectorXd> reg_map = calc_regul(pe, *reg_factor);
+	//for (auto &pv : calc_regul(pe))
+	string name;
+	//big assumption - if oe is a diff shape, then this 
+	//must be a subset, so just use the first X rows of pe
+	for (int i=0;i<oe.shape().first;i++)
+	{
+		name = preal_names[i];
+		regul[name] = reg_map[name].sum();
+		par_group_phi_map[name] = get_par_group_contrib(reg_map[name]);
+	}
+
+	/*if (pest_scenario->get_control_info().pestmode == ControlInfo::PestMode::PARETO)
+	{
+		reg_map.clear();
+		reg_map = calc_regul(pe, org_reg_factor);
 	}
 	
+	for (int i = 0; i<oe.shape().first; i++)
+	{
+		name = preal_names[i];
+		par_group_phi_map[name] = get_par_group_contrib(reg_map[name]);
+	}
+	*/
 	actual.clear();
-	for (auto &pv : calc_actual(oe))
+	for (auto &pv : calc_actual(oe,get_q_vector()))
 		actual[pv.first] = pv.second.sum();
  	composite.clear();
 	composite = calc_composite(meas, regul);
@@ -402,7 +435,7 @@ void PhiHandler::prepare_group_csv(ofstream &csv, vector<string> extra)
 vector<int> PhiHandler::get_idxs_greater_than(double bad_phi, ObservationEnsemble &oe)
 {
 	map<string, double> _meas;
-	for (auto &pv : calc_meas(oe))
+	for (auto &pv : calc_meas(oe, get_q_vector()))
 		_meas[pv.first] = pv.second.sum();
 	vector<int> idxs;
 	vector<string> names = oe.get_real_names();
@@ -412,11 +445,11 @@ vector<int> PhiHandler::get_idxs_greater_than(double bad_phi, ObservationEnsembl
 	return idxs;
 }
 
-map<string, Eigen::VectorXd> PhiHandler::calc_meas(ObservationEnsemble & oe)
+map<string, Eigen::VectorXd> PhiHandler::calc_meas(ObservationEnsemble & oe, Eigen::VectorXd &q_vec)
 {
 	map<string, Eigen::VectorXd> phi_map;
 	Eigen::VectorXd oe_base_vec, oe_vec, diff;
-	Eigen::VectorXd q = get_q_vector();
+	//Eigen::VectorXd q = get_q_vector();
 	vector<string> act_obs_names = pest_scenario->get_ctl_ordered_nz_obs_names();
 	vector<string> base_real_names = oe_base->get_real_names(), oe_real_names = oe.get_real_names();
 	vector<string>::iterator start = base_real_names.begin(), end = base_real_names.end();
@@ -431,14 +464,14 @@ map<string, Eigen::VectorXd> PhiHandler::calc_meas(ObservationEnsemble & oe)
 		if (find(start, end, rname) == end)
 			continue;
 		diff = resid.row(i);
-		diff = diff.cwiseProduct(q);
+		diff = diff.cwiseProduct(q_vec);
 		phi = (diff.cwiseProduct(diff)).sum();
 		phi_map[rname] = diff.cwiseProduct(diff);
 	}
 	return phi_map;
 }
 
-map<string, Eigen::VectorXd> PhiHandler::calc_regul(ParameterEnsemble & pe)
+map<string, Eigen::VectorXd> PhiHandler::calc_regul(ParameterEnsemble & pe, double _reg_fac)
 {	
 	map<string, Eigen::VectorXd> phi_map;
 	vector<string> real_names = pe.get_real_names();
@@ -453,7 +486,7 @@ map<string, Eigen::VectorXd> PhiHandler::calc_regul(ParameterEnsemble & pe)
 		diff = diff_mat.row(i);
 		diff = diff.cwiseProduct(diff);
 		diff = diff.cwiseProduct(parcov_inv_diag);
-		phi_map[real_names[i]] = diff;
+		phi_map[real_names[i]] = _reg_fac * diff;
 	}
 	return phi_map;
 }
@@ -505,7 +538,7 @@ void PhiHandler::apply_ineq_constraints(Eigen::MatrixXd &resid)
 }
 
 
-map<string, Eigen::VectorXd> PhiHandler::calc_actual(ObservationEnsemble & oe)
+map<string, Eigen::VectorXd> PhiHandler::calc_actual(ObservationEnsemble & oe, Eigen::VectorXd &q_vec)
 {
 	map<string, Eigen::VectorXd> phi_map;
 	Eigen::MatrixXd resid = get_actual_obs_resid(oe);
@@ -515,7 +548,7 @@ map<string, Eigen::VectorXd> PhiHandler::calc_actual(ObservationEnsemble & oe)
 	string rname;
 
 	Eigen::MatrixXd oe_reals = oe.get_eigen(vector<string>(), oe_base->get_var_names());
-	Eigen::VectorXd diff, q = get_q_vector();
+	Eigen::VectorXd diff;
 	for (int i = 0; i<oe.shape().first; i++)
 	{
 		rname = oe_real_names[i];
@@ -523,7 +556,7 @@ map<string, Eigen::VectorXd> PhiHandler::calc_actual(ObservationEnsemble & oe)
 			continue;
 		//diff = (oe_vec - obs_val_vec).cwiseProduct(q);
 		diff = resid.row(i);
-		diff = diff.cwiseProduct(q);
+		diff = diff.cwiseProduct(q_vec);
 		//phi = (diff.cwiseProduct(diff)).sum();
 		phi_map[rname] = diff.cwiseProduct(diff);
 	}
@@ -545,7 +578,7 @@ map<string, double> PhiHandler::calc_composite(map<string, double> &_meas, map<s
 		{
 			mea = _meas[orn];
 			reg = _regul[prn];
-			phi_map[orn] = mea + (reg * *reg_factor);
+			phi_map[orn] = mea + reg;
 		}
 	}
 	return phi_map;
@@ -1550,7 +1583,7 @@ void IterEnsembleSmoother::pareto_iterate_2_solution()
 	//get initial obsgroup weight and use wf mults intead of vals
 	ParetoInfo pi = pest_scenario.get_pareto_info();
 	stringstream ss;
-
+	double init_lam = last_best_lam, init_mean = last_best_mean, init_std = last_best_std;
 	message(0, "starting pareto analysis");
 	message(1, "initial pareto wfac", pi.wf_start);
 	message(0, "starting initial pareto iterations", pi.niter_start);
@@ -1565,8 +1598,29 @@ void IterEnsembleSmoother::pareto_iterate_2_solution()
 
 	}
 	double wfac = pi.wf_start + pi.wf_inc;
-	while (wfac < pi.wf_fin)
+	vector<double> wfacs;
+	wfacs.push_back(pi.wf_start + pi.wf_inc);
+	while (true)
 	{
+		if (pi.wf_inc < 0.0)
+		{
+			if (wfac < pi.wf_fin)
+				break;
+			//wfac = wfac - pi.wf_inc;
+		}
+		else
+		{
+			if (wfac > pi.wf_fin)
+				break;
+			
+		}
+		wfac = wfac + pi.wf_inc;
+		wfacs.push_back(wfac);
+	}
+	//while (wfac < pi.wf_fin)
+	for (auto &wfac : wfacs)
+	{
+		last_best_lam = init_lam, last_best_mean = init_mean, last_best_std = init_std;
 		message(1, "using pareto wfac", wfac);
 		message(0, "starting pareto iterations", pi.niter_gen);
 		adjust_pareto_weight(pi.obsgroup, wfac);
@@ -1578,11 +1632,12 @@ void IterEnsembleSmoother::pareto_iterate_2_solution()
 			performance_log->log_event(ss.str());
 			solve();
 		}
-		wfac = wfac + pi.wf_inc;
+		//wfac = wfac + pi.wf_inc;
 	}
 	message(1, "final pareto wfac", pi.niter_fin);
 	message(0, "starting final pareto iterations", pi.niter_fin);
 	adjust_pareto_weight(pi.obsgroup, pi.wf_fin);
+	last_best_lam = init_lam, last_best_mean = init_mean, last_best_std = init_std;
 	for (int i = 0; i < pi.niter_fin; i++)
 	{
 		iter++;
