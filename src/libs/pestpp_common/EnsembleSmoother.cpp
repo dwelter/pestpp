@@ -317,14 +317,12 @@ string PhiHandler::get_summary_string(PhiHandler::phiType pt)
 	return ss.str();
 }
 
-
 string PhiHandler::get_summary_header()
 {
 	stringstream ss;
 	ss << setw(15) << "phi type" << setw(15) << "mean" << setw(15) << "std" << setw(15) << "min" << setw(15) << "max" << endl;
 	return ss.str();
 }
-
 
 void PhiHandler::report()
 {
@@ -352,13 +350,19 @@ void PhiHandler::report()
 	f.flush();
 }
 
-void PhiHandler::write(int iter_num, int total_runs, vector<double> group_extra)
+void PhiHandler::write(int iter_num, int total_runs, bool write_group)
 {
 	write_csv(iter_num, total_runs, file_manager->get_ofstream("phi.actual.csv"), phiType::ACTUAL,oreal_names);
 	write_csv(iter_num, total_runs, file_manager->get_ofstream("phi.meas.csv"), phiType::MEAS, oreal_names);
 	write_csv(iter_num, total_runs, file_manager->get_ofstream("phi.regul.csv"), phiType::REGUL, preal_names);
 	write_csv(iter_num, total_runs, file_manager->get_ofstream("phi.composite.csv"), phiType::COMPOSITE, oreal_names);
-	write_group_csv(iter_num, total_runs, file_manager->get_ofstream("phi.group.csv"), group_extra);
+	if (write_group)
+		write_group_csv(iter_num, total_runs, file_manager->get_ofstream("phi.group.csv"));
+}
+
+void PhiHandler::write_group(int iter_num, int total_runs, vector<double> extra)
+{
+	write_group_csv(iter_num, total_runs, file_manager->get_ofstream("phi.group.csv"),extra);
 }
 
 void PhiHandler::write_csv(int iter_num, int total_runs, ofstream &csv, phiType pt, vector<string> &names)
@@ -1593,8 +1597,12 @@ void IterEnsembleSmoother::pareto_iterate_2_solution()
 		ss << "starting solve for iteration: " << iter;
 		performance_log->log_event(ss.str());
 		solve();
+		report_and_save();
+		ph.report();
+		ph.write(iter, run_mgr_ptr->get_total_runs(),false);
 
 	}
+	ph.write_group(iter, run_mgr_ptr->get_total_runs(),vector<double>());
 	double wfac = pi.wf_start + pi.wf_inc;
 	vector<double> wfacs;
 	wfacs.push_back(pi.wf_start + pi.wf_inc);
@@ -1629,8 +1637,11 @@ void IterEnsembleSmoother::pareto_iterate_2_solution()
 			ss << "starting solve for iteration: " << iter;
 			performance_log->log_event(ss.str());
 			solve();
+			report_and_save();
+			ph.report();
+			ph.write(iter, run_mgr_ptr->get_total_runs(),false);
 		}
-		//wfac = wfac + pi.wf_inc;
+		ph.write_group(iter, run_mgr_ptr->get_total_runs(), vector<double>());
 	}
 	message(1, "final pareto wfac", pi.niter_fin);
 	message(0, "starting final pareto iterations", pi.niter_fin);
@@ -1643,8 +1654,11 @@ void IterEnsembleSmoother::pareto_iterate_2_solution()
 		ss << "starting solve for iteration: " << iter;
 		performance_log->log_event(ss.str());
 		solve();
-
+		report_and_save();
+		ph.report();
+		ph.write(iter, run_mgr_ptr->get_total_runs(),false);
 	}
+	ph.write_group(iter, run_mgr_ptr->get_total_runs(), vector<double>());
 
 	
 }
@@ -1657,18 +1671,22 @@ void IterEnsembleSmoother::iterate_2_solution()
 		pareto_iterate_2_solution();
 	else
 	{
+		bool accept;
 		for (int i = 0; i < pest_scenario.get_control_info().noptmax; i++)
 		{
 			iter++;
 			message(0, "starting solve for iteration:", iter);
 			ss << "starting solve for iteration: " << iter;
 			performance_log->log_event(ss.str());
-			solve();
+			accept = solve();
+			report_and_save();
+			ph.report();
+			ph.write(iter, run_mgr_ptr->get_total_runs());
 		}
 	}
 }
 
-void IterEnsembleSmoother::solve()
+bool IterEnsembleSmoother::solve()
 {
 	stringstream ss;
 	ofstream &frec = file_manager.rec_ofstream();
@@ -2041,7 +2059,7 @@ void IterEnsembleSmoother::solve()
 	{
 		message(0, "WARNING:  unsuccessful lambda testing, resetting lambda to 10000.0");
 		last_best_lam = 10000.0;
-		return;
+		return false;
 
 	}
 	double acc_fac = pest_scenario.get_pestpp_options().get_ies_accept_phi_fac();
@@ -2063,7 +2081,7 @@ void IterEnsembleSmoother::solve()
 			message(0, m);
 			message(1, "abandoning current lambda ensembles, increasing lambda to ", new_lam);
 			message(1,"returing to lambda calculations...");
-			return;
+			return false;
 		}
 
 		//need to work out which par and obs en real names to run - some may have failed during subset testing...
@@ -2160,7 +2178,8 @@ void IterEnsembleSmoother::solve()
 		message(0, "incresing lambda to: ", new_lam);
 		last_best_lam = new_lam;
 	}
-	report_and_save();
+	//report_and_save();
+	return true;
 }
 
 void IterEnsembleSmoother::report_and_save()
@@ -2203,8 +2222,7 @@ void IterEnsembleSmoother::report_and_save()
 	frec << "      current par ensemble saved to " << ss.str() << endl;
 	cout << "      current par ensemble saved to " << ss.str() << endl;
 	
-	ph.report();
-	ph.write(iter,run_mgr_ptr->get_total_runs());
+	
 	
 }
 

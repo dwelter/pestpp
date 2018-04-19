@@ -30,7 +30,8 @@ public:
 	double get_min(phiType pt);
 	map<string, double>* get_phi_map(PhiHandler::phiType &pt);
 	void report();
-	void write(int iter_num, int total_runs, vector<double> group_extra = vector<double>());
+	void write(int iter_num, int total_runs, bool write_group = true);
+	void write_group(int iter_num, int total_runs, vector<double> extra);
 	vector<int> get_idxs_greater_than(double bad_phi, ObservationEnsemble &oe);
 
 	Eigen::MatrixXd get_obs_resid(ObservationEnsemble &oe);
@@ -129,7 +130,7 @@ private:
 	Eigen::MatrixXd Am;
 	Eigen::DiagonalMatrix<double,Eigen::Dynamic> obscov_inv_sqrt, parcov_inv_sqrt;
 
-	void solve();
+	bool solve();
 	void adjust_pareto_weight(string &obsgroup, double wfac);
 
 	//EnsemblePair run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe);
