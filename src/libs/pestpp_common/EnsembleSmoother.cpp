@@ -177,7 +177,6 @@ void PhiHandler::update(ObservationEnsemble & oe, ParameterEnsemble & pe)
 	map<string, Eigen::VectorXd> meas_map = calc_meas(oe, get_q_vector());
 	for (auto &pv : meas_map)
 	{
-		obs_group_phi_map[pv.first] = get_obs_group_contrib(pv.second);
 		meas[pv.first] = pv.second.sum();
 		obs_group_phi_map[pv.first] = get_obs_group_contrib(pv.second);
 	}
@@ -215,8 +214,8 @@ void PhiHandler::update(ObservationEnsemble & oe, ParameterEnsemble & pe)
 	{
 		name = preal_names[i];
 		par_group_phi_map[name] = get_par_group_contrib(reg_map[name]);
-	}
-	*/
+	}*/
+	
 	actual.clear();
 	for (auto &pv : calc_actual(oe,get_q_vector()))
 		actual[pv.first] = pv.second.sum();
@@ -1780,7 +1779,7 @@ void IterEnsembleSmoother::solve()
 	}
 
 	vector<ParameterEnsemble> pe_lams;
-	vector<double> lam_vals;
+	vector<double> lam_vals, scale_vals;
 	for (auto &lam_mult : lam_mults)
 	{
 		ss.str("");
@@ -1947,18 +1946,29 @@ void IterEnsembleSmoother::solve()
 		if (pest_scenario.get_pestpp_options().get_ies_enforce_bounds())
 			pe_lam.enforce_bounds();
 
-		pe_lams.push_back(pe_lam);
-		lam_vals.push_back(cur_lam);
+		for (auto sf : pest_scenario.get_pestpp_options().get_lambda_scale_vec())
+		{
+
+			ParameterEnsemble pe_lam_scale(pe_lam);
+			pe_lam_scale.set_eigen(*pe_lam_scale.get_eigen_ptr() * sf);
+			if (pest_scenario.get_pestpp_options().get_ies_enforce_bounds())
+				pe_lam_scale.enforce_bounds();
+			pe_lams.push_back(pe_lam_scale);
+			lam_vals.push_back(cur_lam);
+			scale_vals.push_back(sf);
+		}
+		//pe_lams.push_back(pe_lam);
+		//lam_vals.push_back(cur_lam);
 
 		ss.str("");
 		if (pest_scenario.get_pestpp_options().get_ies_save_binary())
 		{
-			ss << file_manager.get_base_filename() << "." << iter << "." << cur_lam << ".lambdapars.jcb";
+			ss << file_manager.get_base_filename() << "." << iter << "." << cur_lam << ".lambda.pars.jcb";
 			pe_lam.to_binary(ss.str());
 		}
 		else
 		{
-			ss << file_manager.get_base_filename() << "." << iter << "." << cur_lam << ".lambdapars.csv";
+			ss << file_manager.get_base_filename() << "." << iter << "." << cur_lam << ".lambda.pars.csv";
 			pe_lam.to_csv(ss.str());
 		}
 		frec << "lambda value " << cur_lam << " pars saved to " << ss.str() << endl;
@@ -1988,14 +1998,14 @@ void IterEnsembleSmoother::solve()
 		//if all runs failed...
 		if (oe_lams[i].shape().first == 0)
 			continue;
-		
+		vector<double> vals({ lam_vals[i],scale_vals[i] });
 		drop_bad_phi(pe_lams[i], oe_lams[i]);
 		if (pe_lams[i].shape().first == 0)
 		{
-			message(1, "all realizations dropped as 'bad' for lambda ", lam_vals[i]);
+			message(1, "all realizations dropped as 'bad' for lambda, scale fac ",vals);
 			continue;
 		}
-		message(0, "phi summary for lambda:", lam_vals[i]);
+		message(0, "phi summary for lambda, sclae fac:", vals);
 		ph.update(oe_lams[i], pe_lams[i]);
 		ph.report();
 		mean = ph.get_mean(PhiHandler::phiType::COMPOSITE);

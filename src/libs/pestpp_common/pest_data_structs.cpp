@@ -352,7 +352,7 @@ PestppOptions::PestppOptions(int _n_iter_base, int _n_iter_super, int _max_n_sup
 	: n_iter_base(_n_iter_base), n_iter_super(_n_iter_super), max_n_super(_max_n_super), super_eigthres(_super_eigthres), 
 	svd_pack(_svd_pack), mat_inv(_mat_inv), auto_norm(_auto_norm), super_relparmax(_super_relparmax),
 	max_run_fail(_max_run_fail), max_super_frz_iter(50), max_reg_iter(50), base_lambda_vec({ 0.1, 1.0, 10.0, 100.0, 1000.0 }),
-	lambda_scale_vec({0.9, 0.8, 0.7, 0.5}),
+	lambda_scale_vec({1.0}),
 	iter_summary_flag(_iter_summary_flag), der_forgive(_der_forgive), overdue_reched_fac(_overdue_reched_fac),
 	overdue_giveup_fac(_overdue_giveup_fac), reg_frac(_reg_frac), global_opt(_global_opt),
 	de_f(_de_f), de_cr(_de_cr), de_npopulation(_de_npopulation), de_max_gen(_de_max_gen), de_dither_f(_de_dither_f)
