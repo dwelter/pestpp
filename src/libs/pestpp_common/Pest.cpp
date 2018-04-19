@@ -741,6 +741,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_ies_accept_phi_fac(1.05);
 	pestpp_options.set_ies_lambda_inc_fac(10.0);
 	pestpp_options.set_ies_lambda_dec_fac(0.75);
+	pestpp_options.set_ies_save_lambda_en(false);
 
 	pestpp_options.set_condor_submit_file(string());
 

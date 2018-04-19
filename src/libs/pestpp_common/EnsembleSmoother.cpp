@@ -1555,7 +1555,6 @@ void IterEnsembleSmoother::save_mat(string prefix, Eigen::MatrixXd &mat)
 
 }
 
-
 void IterEnsembleSmoother::adjust_pareto_weight(string &obsgroup, double wfac)
 
 {
@@ -1658,7 +1657,7 @@ void IterEnsembleSmoother::iterate_2_solution()
 		pareto_iterate_2_solution();
 	else
 	{
-		for (int iter = 0; iter < pest_scenario.get_control_info().noptmax; iter++)
+		for (int i = 0; i < pest_scenario.get_control_info().noptmax; i++)
 		{
 			iter++;
 			message(0, "starting solve for iteration:", iter);
@@ -1848,10 +1847,11 @@ void IterEnsembleSmoother::solve()
 		}
 		X3.resize(0,0);
 
-		ParameterEnsemble pe_lam = pe;
+		/*ParameterEnsemble pe_lam = pe;
 		pe_lam.set_eigen(*pe_lam.get_eigen_ptr() + upgrade_1);
-		upgrade_1.resize(0, 0);
+		upgrade_1.resize(0, 0);*/
 		
+		Eigen::MatrixXd upgrade_2;
 		if ((!pest_scenario.get_pestpp_options().get_ies_use_approx()) && (iter > 1))
 		{
 			performance_log->log_event("calculating parameter correction (full solution)");
@@ -1923,7 +1923,7 @@ void IterEnsembleSmoother::solve()
 
 			performance_log->log_event("forming upgrade_2");
 			message(1, "forming upgrade_2");
-			Eigen::MatrixXd upgrade_2;
+			
 			if (pest_scenario.get_pestpp_options().get_ies_use_prior_scaling())
 			{
 				upgrade_2 = -1.0 * parcov_inv_sqrt * par_diff * x7;
@@ -1940,13 +1940,44 @@ void IterEnsembleSmoother::solve()
 					save_mat("upgrade_2", upgrade_2);
 			}
 
-			pe_lam.set_eigen(*pe_lam.get_eigen_ptr() + upgrade_2.transpose());
+			//pe_lam.set_eigen(*pe_lam.get_eigen_ptr() + upgrade_2.transpose());
 		}
 
-		if (pest_scenario.get_pestpp_options().get_ies_enforce_bounds())
-			pe_lam.enforce_bounds();
-
 		for (auto sf : pest_scenario.get_pestpp_options().get_lambda_scale_vec())
+		{
+
+			ParameterEnsemble pe_lam_scale = pe;
+			if (upgrade_2.rows() > 0)
+				upgrade_1 = upgrade_1 + upgrade_2.transpose();
+			pe_lam_scale.set_eigen(*pe_lam_scale.get_eigen_ptr() + (upgrade_1 * sf));
+			if (pest_scenario.get_pestpp_options().get_ies_enforce_bounds())
+				pe_lam_scale.enforce_bounds();
+			pe_lams.push_back(pe_lam_scale);
+			lam_vals.push_back(cur_lam);
+			scale_vals.push_back(sf);
+			if (!pest_scenario.get_pestpp_options().get_ies_save_lambda_en())
+				continue;
+			ss.str("");
+			ss << file_manager.get_base_filename() << "." << iter << "." << cur_lam << ".lambda" << sf << ".scale.par";
+
+			if (pest_scenario.get_pestpp_options().get_ies_save_binary())
+			{
+				ss << ".jcb";
+				pe_lam_scale.to_binary(ss.str());
+			}
+			else
+			{
+				ss << ".csv";
+				pe_lam_scale.to_csv(ss.str());
+			}
+			frec << "lambda, scale value " << cur_lam << ',' << sf << " pars saved to " << ss.str() << endl;
+
+		}
+
+		/*if (pest_scenario.get_pestpp_options().get_ies_enforce_bounds())
+			pe_lam.enforce_bounds();*/
+
+		/*for (auto sf : pest_scenario.get_pestpp_options().get_lambda_scale_vec())
 		{
 
 			ParameterEnsemble pe_lam_scale(pe_lam);
@@ -1956,22 +1987,10 @@ void IterEnsembleSmoother::solve()
 			pe_lams.push_back(pe_lam_scale);
 			lam_vals.push_back(cur_lam);
 			scale_vals.push_back(sf);
-		}
+		}*/
 		//pe_lams.push_back(pe_lam);
 		//lam_vals.push_back(cur_lam);
 
-		ss.str("");
-		if (pest_scenario.get_pestpp_options().get_ies_save_binary())
-		{
-			ss << file_manager.get_base_filename() << "." << iter << "." << cur_lam << ".lambda.pars.jcb";
-			pe_lam.to_binary(ss.str());
-		}
-		else
-		{
-			ss << file_manager.get_base_filename() << "." << iter << "." << cur_lam << ".lambda.pars.csv";
-			pe_lam.to_csv(ss.str());
-		}
-		frec << "lambda value " << cur_lam << " pars saved to " << ss.str() << endl;
 		
 		ss.str("");
 		message(0, "finished calcs for lambda:", cur_lam);
@@ -2005,7 +2024,7 @@ void IterEnsembleSmoother::solve()
 			message(1, "all realizations dropped as 'bad' for lambda, scale fac ",vals);
 			continue;
 		}
-		message(0, "phi summary for lambda, sclae fac:", vals);
+		message(0, "phi summary for lambda, scale fac:", vals);
 		ph.update(oe_lams[i], pe_lams[i]);
 		ph.report();
 		mean = ph.get_mean(PhiHandler::phiType::COMPOSITE);

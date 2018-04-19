@@ -371,6 +371,8 @@ public:
 	void set_ies_lambda_inc_fac(double _inc_fac) { ies_lambda_inc_fac = _inc_fac; }
 	double get_ies_lambda_dec_fac() const { return ies_lambda_dec_fac; }
 	void set_ies_lambda_dec_fac(double _dec_fac) { ies_lambda_dec_fac = _dec_fac; }
+	bool get_ies_save_lambda_en() const { return ies_save_lambda_en; }
+	void set_ies_save_lambda_en(bool _ies_save_lambda_en) { ies_save_lambda_en = _ies_save_lambda_en; }
 
 private:
 	int n_iter_base;
@@ -451,6 +453,7 @@ private:
 	double ies_accept_phi_fac;
 	double ies_lambda_inc_fac;
 	double ies_lambda_dec_fac;
+	bool ies_save_lambda_en;
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);
 ostream& operator<< (ostream &os, const ObservationInfo& val);

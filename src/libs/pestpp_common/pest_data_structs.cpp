@@ -801,6 +801,10 @@ void PestppOptions::parce_line(const string &line)
 		{
 			convert_ip(value, ies_lambda_dec_fac);
 		}
+		else if (key == "IES_SAVE_LAMBDA_EN")
+		{
+			convert_ip(value, ies_save_lambda_en);
+		}
 		else {
 
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");
