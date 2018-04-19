@@ -1585,7 +1585,9 @@ void IterEnsembleSmoother::pareto_iterate_2_solution()
 	//get initial obsgroup weight and use wf mults intead of vals
 	ParetoInfo pi = pest_scenario.get_pareto_info();
 	stringstream ss;
-	double init_lam = last_best_lam, init_mean = last_best_mean, init_std = last_best_std;
+	//double init_lam = last_best_lam, init_mean = last_best_mean, init_std = last_best_std;
+	double init_lam = last_best_lam, init_mean = 1.0e+30, init_std = 1.0e+30;
+
 	message(0, "starting pareto analysis");
 	message(1, "initial pareto wfac", pi.wf_start);
 	message(0, "starting initial pareto iterations", pi.niter_start);
@@ -1598,6 +1600,9 @@ void IterEnsembleSmoother::pareto_iterate_2_solution()
 		performance_log->log_event(ss.str());
 		solve();
 		report_and_save();
+		ph.update(oe, pe);
+		last_best_mean = ph.get_mean(PhiHandler::phiType::COMPOSITE);
+		last_best_std = ph.get_std(PhiHandler::phiType::COMPOSITE);
 		ph.report();
 		ph.write(iter, run_mgr_ptr->get_total_runs(),false);
 
@@ -1624,6 +1629,8 @@ void IterEnsembleSmoother::pareto_iterate_2_solution()
 		wfacs.push_back(wfac);
 	}
 	//while (wfac < pi.wf_fin)
+	pe = pe_base;
+	oe = oe_base;
 	for (auto &wfac : wfacs)
 	{
 		last_best_lam = init_lam, last_best_mean = init_mean, last_best_std = init_std;
@@ -1638,10 +1645,15 @@ void IterEnsembleSmoother::pareto_iterate_2_solution()
 			performance_log->log_event(ss.str());
 			solve();
 			report_and_save();
+			ph.update(oe, pe);
+			last_best_mean = ph.get_mean(PhiHandler::phiType::COMPOSITE);
+			last_best_std = ph.get_std(PhiHandler::phiType::COMPOSITE);
 			ph.report();
 			ph.write(iter, run_mgr_ptr->get_total_runs(),false);
 		}
 		ph.write_group(iter, run_mgr_ptr->get_total_runs(), vector<double>());
+		pe = pe_base;
+		oe = oe_base;
 	}
 	message(1, "final pareto wfac", pi.niter_fin);
 	message(0, "starting final pareto iterations", pi.niter_fin);
@@ -1655,6 +1667,9 @@ void IterEnsembleSmoother::pareto_iterate_2_solution()
 		performance_log->log_event(ss.str());
 		solve();
 		report_and_save();
+		ph.update(oe,pe);
+		last_best_mean = ph.get_mean(PhiHandler::phiType::COMPOSITE);
+		last_best_std = ph.get_std(PhiHandler::phiType::COMPOSITE);
 		ph.report();
 		ph.write(iter, run_mgr_ptr->get_total_runs(),false);
 	}
@@ -1680,6 +1695,9 @@ void IterEnsembleSmoother::iterate_2_solution()
 			performance_log->log_event(ss.str());
 			accept = solve();
 			report_and_save();
+			ph.update(oe,pe);
+			last_best_mean = ph.get_mean(PhiHandler::phiType::COMPOSITE);
+			last_best_std = ph.get_std(PhiHandler::phiType::COMPOSITE);
 			ph.report();
 			ph.write(iter, run_mgr_ptr->get_total_runs());
 		}
@@ -1802,7 +1820,7 @@ bool IterEnsembleSmoother::solve()
 		ss.str("");
 		double cur_lam = last_best_lam * lam_mult;
 		ss << "starting calcs for lambda" << cur_lam;
-		message(1, "starting lambda calcs for lambda", cur_lam);
+		message(0, "starting lambda calcs for lambda", cur_lam);
 
 		performance_log->log_event(ss.str());
 		performance_log->log_event("form scaled identity matrix");
@@ -2024,8 +2042,8 @@ bool IterEnsembleSmoother::solve()
 	vector<ObservationEnsemble> oe_lams = run_lambda_ensembles(pe_lams, lam_vals);
 		
 	message(0, "evaluting lambda ensembles");
-	message(0, "last mean:", last_best_mean);
-	message(0, "last stdev", last_best_std);
+	message(1, "last mean: ", last_best_mean);
+	message(1, "last stdev: ", last_best_std);
 
 	ObservationEnsemble oe_lam_best;
 	for (int i=0;i<pe_lams.size();i++)
@@ -2095,7 +2113,7 @@ bool IterEnsembleSmoother::solve()
 			pe_keep_names.push_back(pe_names[i]);
 			oe_keep_names.push_back(oe_names[i]);
 		}
-		message(0, "running remaining realizations for best lambda:", lam_vals[best_idx]);
+		message(0, "running remaining realizations for best lambda, scale:", vector<double>({ lam_vals[best_idx],scale_vals[best_idx] }));
 
 		//pe_keep_names and oe_keep_names are names of the remaining reals to eval
 		remaining_pe_lam.keep_rows(pe_keep_names);
