@@ -473,7 +473,7 @@ int main(int argc, char* argv[])
 		fout_rec << "    sweep parameter csv file = " << left << setw(50) << ppopt.get_sweep_parameter_csv_file() << endl;
 		fout_rec << "    sweep output csv file = " << left << setw(50) << ppopt.get_sweep_output_csv_file() << endl;
 		fout_rec << "    sweep chunk size = " << left << setw(10) << ppopt.get_sweep_chunk() << endl;
-		fout_rec << "    sweep base run = " << left << setw(10) << ppopt.get_sweep_base_run() << endl;
+		//fout_rec << "    sweep base run = " << left << setw(10) << ppopt.get_sweep_base_run() << endl;
 		fout_rec << "    sweep forgive failed runs = " << left << setw(10) << ppopt.get_sweep_forgive() << endl;
 
 
@@ -615,7 +615,7 @@ int main(int argc, char* argv[])
 					par.update_without_clear(par_names, jco_mat.row(total_runs_done + i));
 					pars.push_back(par);
 					//run_ids.push_back(total_runs_done + i);
-					run_ids.push_back(jco_col_names[total_runs_done + 1]);
+					run_ids.push_back(jco_col_names[total_runs_done + i]);
 
 				}
 				sweep_par_info = pair<vector<string>, vector<Parameters>>(run_ids, pars);
