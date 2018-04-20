@@ -174,7 +174,8 @@ void PhiHandler::update(ObservationEnsemble & oe, ParameterEnsemble & pe)
 	//update the various phi component vectors
 	meas.clear();
 	obs_group_phi_map.clear();
-	map<string, Eigen::VectorXd> meas_map = calc_meas(oe, get_q_vector());
+	Eigen::VectorXd q = get_q_vector();
+	map<string, Eigen::VectorXd> meas_map = calc_meas(oe, q);
 	for (auto &pv : meas_map)
 	{
 		meas[pv.first] = pv.second.sum();
@@ -217,7 +218,7 @@ void PhiHandler::update(ObservationEnsemble & oe, ParameterEnsemble & pe)
 	}*/
 	
 	actual.clear();
-	for (auto &pv : calc_actual(oe,get_q_vector()))
+	for (auto &pv : calc_actual(oe,q))
 		actual[pv.first] = pv.second.sum();
  	composite.clear();
 	composite = calc_composite(meas, regul);
@@ -438,7 +439,8 @@ void PhiHandler::prepare_group_csv(ofstream &csv, vector<string> extra)
 vector<int> PhiHandler::get_idxs_greater_than(double bad_phi, ObservationEnsemble &oe)
 {
 	map<string, double> _meas;
-	for (auto &pv : calc_meas(oe, get_q_vector()))
+	Eigen::VectorXd q = get_q_vector();
+	for (auto &pv : calc_meas(oe, q))
 		_meas[pv.first] = pv.second.sum();
 	vector<int> idxs;
 	vector<string> names = oe.get_real_names();
