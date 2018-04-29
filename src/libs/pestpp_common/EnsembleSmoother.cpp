@@ -193,7 +193,7 @@ void PhiHandler::update(ObservationEnsemble & oe, ParameterEnsemble & pe)
 	}*/
 
 	regul.clear();
-	map<string, Eigen::VectorXd> reg_map = calc_regul(pe, *reg_factor);
+	map<string, Eigen::VectorXd> reg_map = calc_regul(pe);//, *reg_factor);
 	//for (auto &pv : calc_regul(pe))
 	string name;
 	//big assumption - if oe is a diff shape, then this 
@@ -342,11 +342,19 @@ void PhiHandler::report()
 	s = get_summary_string(PhiHandler::phiType::ACTUAL);
 	f << s;
 	cout << s;
-	if (*reg_factor == 0.0)
+	/*if (*reg_factor == 0.0)
 	{
 		f << "    (note: reg_factor is zero; regularization phi reported but not used)" << endl;
 		cout  << "    (note: reg_factor is zero; regularization phi reported but not used)" << endl;
-	}
+	}*/
+	f << "     current reg_factor: " << *reg_factor << endl;
+	cout << "     current reg_factor: " << *reg_factor << endl;
+	f << "     note: regularization phi reported above does not " << endl;
+	f << "           include the effects of reg_factor, " << endl;
+	f << "           but composite phi does." << endl;
+	cout << "     note: regularization phi reported above does not " << endl;
+	cout << "           include the effects of reg_factor, " << endl;
+	cout << "           but composite phi does." << endl;
 	f << endl << endl;
 	f.flush();
 }
@@ -476,7 +484,7 @@ map<string, Eigen::VectorXd> PhiHandler::calc_meas(ObservationEnsemble & oe, Eig
 	return phi_map;
 }
 
-map<string, Eigen::VectorXd> PhiHandler::calc_regul(ParameterEnsemble & pe, double _reg_fac)
+map<string, Eigen::VectorXd> PhiHandler::calc_regul(ParameterEnsemble & pe)
 {	
 	map<string, Eigen::VectorXd> phi_map;
 	vector<string> real_names = pe.get_real_names();
@@ -491,7 +499,8 @@ map<string, Eigen::VectorXd> PhiHandler::calc_regul(ParameterEnsemble & pe, doub
 		diff = diff_mat.row(i);
 		diff = diff.cwiseProduct(diff);
 		diff = diff.cwiseProduct(parcov_inv_diag);
-		phi_map[real_names[i]] = _reg_fac * diff;
+		//phi_map[real_names[i]] = _reg_fac * diff;
+		phi_map[real_names[i]] = diff;
 	}
 	return phi_map;
 }
@@ -583,7 +592,7 @@ map<string, double> PhiHandler::calc_composite(map<string, double> &_meas, map<s
 		{
 			mea = _meas[orn];
 			reg = _regul[prn];
-			phi_map[orn] = mea + reg;
+			phi_map[orn] = mea + (reg * *reg_factor);
 		}
 	}
 	return phi_map;
@@ -1015,7 +1024,8 @@ void IterEnsembleSmoother::initialize()
 	error_min_reals = 0;
 	if (pest_scenario.get_control_info().pestmode == ControlInfo::PestMode::REGUL)
 	{
-		message(1, "'pestmode' == 'regularization', in pestpp-ies, this in controlled with the ++ies_reg_fac() argument");
+		message(1, "'pestmode' == 'regularization', in pestpp-ies, this in controlled with the ++ies_reg_factor argument");
+		throw_ies_error("'pestmode' == 'regularization', please reset to 'estimation'");
 	}
 	else if (pest_scenario.get_control_info().pestmode == ControlInfo::PestMode::UNKNOWN)
 	{

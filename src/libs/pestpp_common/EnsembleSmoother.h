@@ -51,7 +51,7 @@ private:
 	void prepare_group_csv(ofstream &csv, vector<string> extra = vector<string>());
 
 	map<string, Eigen::VectorXd> calc_meas(ObservationEnsemble &oe, Eigen::VectorXd &_q_vec);
-	map<string, Eigen::VectorXd> calc_regul(ParameterEnsemble &pe, double _reg_fac);
+	map<string, Eigen::VectorXd> calc_regul(ParameterEnsemble &pe);// , double _reg_fac);
 	map<string, Eigen::VectorXd> calc_actual(ObservationEnsemble &oe, Eigen::VectorXd &_q_vec);
 	map<string, double> calc_composite(map<string,double> &_meas, map<string,double> &_regul);
 	//map<string, double>* get_phi_map(PhiHandler::phiType &pt);

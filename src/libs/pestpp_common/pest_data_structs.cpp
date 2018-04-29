@@ -724,7 +724,7 @@ void PestppOptions::parce_line(const string &line)
 		{
 			convert_ip(value, ies_subset_size);
 		}
-		else if (key == "IES_REG_FACTOR")
+		else if  ((key == "IES_REG_FACTOR") || (key == "IES_REG_FAC"))
 		{
 			convert_ip(value, ies_reg_factor);
 		}
