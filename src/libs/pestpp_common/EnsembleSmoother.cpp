@@ -1589,13 +1589,14 @@ void IterEnsembleSmoother::pareto_iterate_2_solution()
 	double init_lam = last_best_lam, init_mean = 1.0e+30, init_std = 1.0e+30;
 
 	message(0, "starting pareto analysis");
-	message(1, "initial pareto wfac", pi.wf_start);
-	message(0, "starting initial pareto iterations", pi.niter_start);
+	message(0, "initial pareto wfac", pi.wf_start);
+	message(1, "starting initial pareto iterations", pi.niter_start);
 	adjust_pareto_weight(pi.obsgroup, pi.wf_start);
+	last_best_lam = init_lam, last_best_mean = init_mean, last_best_std = init_std;
 	for (int i = 0; i < pi.niter_start; i++)
 	{
 		iter++;
-		message(0, "starting solve for iteration:", iter);
+		message(1, "starting solve for iteration:", iter);
 		ss << "starting solve for iteration: " << iter;
 		performance_log->log_event(ss.str());
 		solve();
@@ -1629,12 +1630,12 @@ void IterEnsembleSmoother::pareto_iterate_2_solution()
 		wfacs.push_back(wfac);
 	}
 	//while (wfac < pi.wf_fin)
-	pe = pe_base;
-	oe = oe_base;
+	//pe = pe_base;
+	//oe = oe_base;
 	for (auto &wfac : wfacs)
 	{
 		last_best_lam = init_lam, last_best_mean = init_mean, last_best_std = init_std;
-		message(1, "using pareto wfac", wfac);
+		message(0, "using pareto wfac", wfac);
 		message(0, "starting pareto iterations", pi.niter_gen);
 		adjust_pareto_weight(pi.obsgroup, wfac);
 		for (int i = 0; i < pi.niter_gen; i++)
@@ -1652,13 +1653,15 @@ void IterEnsembleSmoother::pareto_iterate_2_solution()
 			ph.write(iter, run_mgr_ptr->get_total_runs(),false);
 		}
 		ph.write_group(iter, run_mgr_ptr->get_total_runs(), vector<double>());
-		pe = pe_base;
-		oe = oe_base;
+		//pe = pe_base;
+		//oe = oe_base;
 	}
 	message(1, "final pareto wfac", pi.niter_fin);
 	message(0, "starting final pareto iterations", pi.niter_fin);
 	adjust_pareto_weight(pi.obsgroup, pi.wf_fin);
 	last_best_lam = init_lam, last_best_mean = init_mean, last_best_std = init_std;
+	//pe = pe_base;
+	//oe = oe_base;
 	for (int i = 0; i < pi.niter_fin; i++)
 	{
 		iter++;
