@@ -100,7 +100,7 @@ def setup():
     for kper,rarr in m.wel.stress_period_data.data.items():
         rarr["flux"] = (wel_max + wel_min) / 2.0
 
-    ph = pyemu.helpers.PstFromFlopyModel(m, new_model_ws="template", grid_props=grid_props, hds_kperk=hds_kperk,
+    ph = pyemu.helpers.PstFromFlopyModel(m, new_model_ws="template", zone_props=grid_props, grid_props=grid_props, hds_kperk=hds_kperk,
                                          model_exe_name="mfnwt", build_prior=False, remove_existing=True,
                                          bc_props=bc_props)
 
