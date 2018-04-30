@@ -351,12 +351,16 @@ void PhiHandler::report()
 	}*/
 	f << "     current reg_factor: " << *reg_factor << endl;
 	cout << "     current reg_factor: " << *reg_factor << endl;
-	f << "     note: regularization phi reported above does not " << endl;
-	f << "           include the effects of reg_factor, " << endl;
-	f << "           but composite phi does." << endl;
-	cout << "     note: regularization phi reported above does not " << endl;
-	cout << "           include the effects of reg_factor, " << endl;
-	cout << "           but composite phi does." << endl;
+	if (*reg_factor != 0.0)
+	{
+		
+		f << "     note: regularization phi reported above does not " << endl;
+		f << "           include the effects of reg_factor, " << endl;
+		f << "           but composite phi does." << endl;
+		cout << "     note: regularization phi reported above does not " << endl;
+		cout << "           include the effects of reg_factor, " << endl;
+		cout << "           but composite phi does." << endl;
+	}
 	f << endl << endl;
 	f.flush();
 }

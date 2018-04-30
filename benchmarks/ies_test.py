@@ -345,6 +345,7 @@ def tenpar_subset_test():
     pst.pestpp_options = {}
     pst.pestpp_options["ies_num_reals"] = 50
     pst.pestpp_options["ies_lambda_mults"] = "1.0"
+    pst.pestpp_options["ies_accept_phi_fac"] = 100.0
     pst.write(os.path.join(template_d, "pest.pst"))
     pyemu.helpers.start_slaves(template_d, exe_path, "pest.pst", num_slaves=10,
                                slave_root=model_d, master_dir=test_d)
@@ -354,6 +355,7 @@ def tenpar_subset_test():
     pst.pestpp_options["ies_num_reals"] = 50
     pst.pestpp_options["ies_lambda_mults"] = "1.0"
     pst.pestpp_options["ies_subset_size"] = 15
+    pst.pestpp_options["ies_accept_phi_fac"] = 100.0
 
     pst.write(os.path.join(template_d, "pest.pst"))
     pyemu.helpers.start_slaves(template_d, exe_path, "pest.pst", num_slaves=10,
@@ -361,6 +363,8 @@ def tenpar_subset_test():
     df_sub = pd.read_csv(os.path.join(test_d, "pest.phi.meas.csv"),index_col=0)
     diff = (df_sub - df_base).apply(np.abs)
     print(diff.max())
+    print(df_sub.iloc[-1,:])
+    print(df_base.iloc[-1,:])
     assert diff.max().max() == 0.0
 
 def test_freyberg_full_cov():
@@ -912,6 +916,7 @@ if __name__ == "__main__":
     #run_suite("ies_10par_xsec")
     #rebase("ies_freyberg")
     #rebase("ies_10par_xsec")
+
     #tenpar_subset_test()
     #tenpar_full_cov_test()
     #test_freyberg_full_cov_reorder()
@@ -921,11 +926,11 @@ if __name__ == "__main__":
     #test_synth()
     #test_10par_xsec()
     #test_freyberg()
-    #test_chenoliver()
+    test_chenoliver()
     #compare_pyemu()
     #tenpar_subset_test()
     #tenpar_full_cov_test()
-    #test_freyberg_ineq()
+    test_freyberg_ineq()
     
     # # invest()
     #compare_suite("ies_10par_xsec")
@@ -933,4 +938,4 @@ if __name__ == "__main__":
     
     #test_kirishima()
 
-    tenpar_fixed_test()
+    #tenpar_fixed_test()
