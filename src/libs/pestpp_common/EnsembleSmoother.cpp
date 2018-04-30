@@ -200,7 +200,9 @@ void PhiHandler::update(ObservationEnsemble & oe, ParameterEnsemble & pe)
 	//must be a subset, so just use the first X rows of pe
 	for (int i=0;i<oe.shape().first;i++)
 	{
-		name = preal_names[i];
+		//name = preal_names[i];
+		name = pe.get_real_names()[i];
+		//cout << name << endl;
 		regul[name] = reg_map[name].sum();
 		par_group_phi_map[name] = get_par_group_contrib(reg_map[name]);
 	}
@@ -2181,11 +2183,25 @@ bool IterEnsembleSmoother::solve()
 		{
 			throw_ies_error(string("all realization dropped after finishing subset runs...something might be wrong..."));
 		}
+		ph.update(oe_lam_best, pe_lams[best_idx]);
+		best_mean = ph.get_mean(PhiHandler::phiType::COMPOSITE);
+		best_std = ph.get_std(PhiHandler::phiType::COMPOSITE);
+		message(1, "phi summary for entire ensemble using lambda,scale_fac ", vector<double>({ lam_vals[best_idx],scale_vals[best_idx] }));
+		ph.report();
+	}
+	else
+	{ 
+		ph.update(oe_lam_best, pe_lams[best_idx]);
+		best_mean = ph.get_mean(PhiHandler::phiType::COMPOSITE);
+		best_std = ph.get_std(PhiHandler::phiType::COMPOSITE);
 	}
 	
 	ph.update(oe_lam_best, pe_lams[best_idx]);
 	best_mean = ph.get_mean(PhiHandler::phiType::COMPOSITE);
 	best_std = ph.get_std(PhiHandler::phiType::COMPOSITE);
+	message(1, "last best mean phi * acceptable phi factor: ", last_best_mean * acc_fac);
+	message(1, "current best mean phi: ", best_mean);
+
 	if (best_mean < last_best_mean * acc_fac)
 	{
 		message(0,"updating parameter ensemble");
