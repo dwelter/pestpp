@@ -97,6 +97,7 @@ void sequentialLP::initial_report()
 	f_rec << "-->number of iterations of sequential linear programming (noptmax): " << pest_scenario.get_control_info().noptmax << endl;
 	
 	f_rec << "-->objective function sense (direction): " << obj_sense << endl;
+	
 
 	f_rec << "-->number of decision variable: " << num_dec_vars() << endl;
 	f_rec << "-->number of observation constraints: " << num_obs_constraints() << endl;
@@ -134,18 +135,29 @@ void sequentialLP::initial_report()
 	vector<string> missing;
 	f_rec << setw(20) << left << "name" << setw(25) << "obj func coefficient" << endl;
 
+
+	
 	for (auto &name : ctl_ord_dec_var_names)
 	{
 		f_rec << setw(20) << left << name;
 		if (obj_func_coef_map.find(name) != end)
-			f_rec << setw(25) <<obj_func_coef_map.at(name) << endl;
+		{
+			f_rec << setw(25) << obj_func_coef_map.at(name) << endl;
+		}
 		else
 		{
 			f_rec << setw(25) << "not listed" << endl;
 			missing.push_back(name);
 		}	
 	}
-
+	obj_init = 0.0;
+	double dv_val;
+	for (auto &p : ctl_ord_dec_var_names)
+	{
+		obj_init += all_pars_and_dec_vars_initial[p] * obj_func_coef_map[p];
+	}
+	f_rec << endl <<  "  ---  initial objective function value (using initial dec var values): " << obj_init << endl <<endl ;
+	cout << endl <<  "  ---  initial objective function value (using initial dec var values): " << obj_init << endl << endl;
 	if (missing.size() > 0)
 	{
 		f_rec << endl << endl << "WARNING: the following decision variables have '0.0' objective function coef:" << endl;
@@ -157,7 +169,7 @@ void sequentialLP::initial_report()
 			f_rec << "    " << name << endl;
 		}
 	}
-	f_rec << " note: bound and initial value info reported in 'parameter' section" << endl << endl;
+	f_rec << " note: bound and initial value info reported in 'parameter data' section" << endl << endl;
 
 
 	f_rec << endl << "  ---  observation constraints in SLP  ---  " << endl;
@@ -443,15 +455,19 @@ pair<double,double> sequentialLP::postsolve_decision_var_report(Parameters &upgr
 	f_rec << setw(25) << "simplex status" << endl;
 	string name;
 	ClpSimplex::Status status;
-	double obj_coef, cur_val, new_val, upgrade;
+	double obj_coef, cur_val, new_val, upgrade, init_val;
 	double cur_obj=0.0, new_obj=0.0;
+	Parameters actual_pars = upgrade_pars;
 	for (int i = 0; i < num_dec_vars(); ++i)
 	{
 		name = ctl_ord_dec_var_names[i];
 		status = model.getColumnStatus(i);
 		obj_coef = ctl_ord_obj_func_coefs[i];
-		cur_val = all_pars_and_dec_vars[name];
-		new_val = upgrade_pars[name];
+		init_val = all_pars_and_dec_vars_initial[name];
+		cur_val = all_pars_and_dec_vars[name] + init_val;
+		
+		new_val = upgrade_pars[name] + init_val;
+		actual_pars.update_rec(name, new_val);
 		f_rec << setw(20) << left << name;
 		f_rec << setw(15) << right << cur_val;
 		f_rec << setw(15) << new_val;
@@ -466,7 +482,8 @@ pair<double,double> sequentialLP::postsolve_decision_var_report(Parameters &upgr
 	}
 	stringstream ss;
 	ss << slp_iter << ".par";
-	of_wr.write_par(file_mgr_ptr->open_ofile_ext(ss.str()),upgrade_pars,*par_trans.get_offset_ptr(),*par_trans.get_scale_ptr());
+	
+	of_wr.write_par(file_mgr_ptr->open_ofile_ext(ss.str()),actual_pars,*par_trans.get_offset_ptr(),*par_trans.get_scale_ptr());
 	return pair<double,double>(cur_obj,new_obj);
 }
 
@@ -1370,6 +1387,7 @@ void sequentialLP::solve()
 	}
 	f_rec << "  ---  best objective function value: " << obj_best << endl;
 	cout << "  ---  best objective function value: " << obj_best << endl;
+
 	
 	if (!pest_scenario.get_pestpp_options().get_opt_skip_final())
 	{

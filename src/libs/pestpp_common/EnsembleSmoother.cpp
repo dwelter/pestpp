@@ -1024,12 +1024,12 @@ void IterEnsembleSmoother::initialize()
 	error_min_reals = 0;
 	if (pest_scenario.get_control_info().pestmode == ControlInfo::PestMode::REGUL)
 	{
-		message(1, "'pestmode' == 'regularization', in pestpp-ies, this in controlled with the ++ies_reg_factor argument");
-		throw_ies_error("'pestmode' == 'regularization', please reset to 'estimation'");
+		message(1, "WARNING: 'pestmode' == 'regularization', in pestpp-ies, this is controlled with the ++ies_reg_factor argument, resetting to 'estimation'");
+		//throw_ies_error("'pestmode' == 'regularization', please reset to 'estimation'");
 	}
 	else if (pest_scenario.get_control_info().pestmode == ControlInfo::PestMode::UNKNOWN)
 	{
-		message(1,"unrecognized 'pestmode', using 'estimation'");
+		message(1,"WARNING: unrecognized 'pestmode', using 'estimation'");
 	}
 	else if ((pest_scenario.get_control_info().pestmode == ControlInfo::PestMode::PARETO))
 	{
@@ -1050,6 +1050,12 @@ void IterEnsembleSmoother::initialize()
 		}
 		//throw_ies_error("pareto mode not finished");
 	}
+
+	if (pest_scenario.get_ctl_ordered_pi_names().size() > 0)
+	{
+		message(1, "WARNING: prior information equations not supported in pestpp-ies, ignoring...");
+	}
+
 	lam_mults = pest_scenario.get_pestpp_options().get_ies_lam_mults();
 	if (lam_mults.size() == 0)
 		lam_mults.push_back(1.0);

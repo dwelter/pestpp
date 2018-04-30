@@ -41,6 +41,7 @@ private:
 	double risk;
 	double iter_derinc_fac;
 	double obj_best;
+	double obj_init;
 	double probit_val;
 
 	string obj_sense;
