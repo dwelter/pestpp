@@ -2021,7 +2021,7 @@ bool IterEnsembleSmoother::solve()
 			if (!pest_scenario.get_pestpp_options().get_ies_save_lambda_en())
 				continue;
 			ss.str("");
-			ss << file_manager.get_base_filename() << "." << iter << "." << cur_lam << ".lambda" << sf << ".scale.par";
+			ss << file_manager.get_base_filename() << "." << iter << "." << cur_lam << ".lambda." << sf << ".scale.par";
 
 			if (pest_scenario.get_pestpp_options().get_ies_save_binary())
 			{

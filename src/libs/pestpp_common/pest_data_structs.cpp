@@ -801,9 +801,11 @@ void PestppOptions::parce_line(const string &line)
 		{
 			convert_ip(value, ies_lambda_dec_fac);
 		}
-		else if (key == "IES_SAVE_LAMBDA_EN")
+		else if ((key == "IES_SAVE_LAMBDA_EN") || (key == "IES_SAVE_LAMBDA_ENSEMBLES"))
 		{
-			convert_ip(value, ies_save_lambda_en);
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> ies_save_lambda_en;
 		}
 		else {
 
