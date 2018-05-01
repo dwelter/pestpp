@@ -250,6 +250,7 @@ int main(int argc, char* argv[])
 		
 		//Initialize OutputFileWriter to handle IO of suplementary files (.par, .par, .svd)
 		//bool save_eign = pest_scenario.get_svd_info().eigwrite > 0;	
+		pest_scenario.get_pestpp_options_ptr()->set_iter_summary_flag(false);
 		OutputFileWriter output_file_writer(file_manager, pest_scenario, restart_flag);
 		//output_file_writer.scenario_report(fout_rec);
 		output_file_writer.scenario_io_report(fout_rec);

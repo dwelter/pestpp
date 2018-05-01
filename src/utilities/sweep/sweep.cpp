@@ -65,6 +65,11 @@ map<string,int> prepare_parameter_csv(Parameters pars, ifstream &csv, bool forgi
 	strip_ip(line);
 	upper_ip(line);
 	tokenize(line, header_tokens, ",", false);
+
+	for (auto &t : header_tokens)
+	{
+		strip_ip(t);
+	}
 	//cout << tokens << endl;
 	//vector<string> header_tokens = tokens;
 
