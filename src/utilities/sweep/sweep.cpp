@@ -106,7 +106,7 @@ map<string,int> prepare_parameter_csv(Parameters pars, ifstream &csv, bool forgi
 	return header_info;
 }
 
-pair<vector<string>,vector<Parameters>> load_parameters_from_csv(map<string,int> &header_info, ifstream &csv, int chunk)
+pair<vector<string>,vector<Parameters>> load_parameters_from_csv(map<string,int> &header_info, ifstream &csv, int chunk, const Parameters &ctl_pars)
 {
 	//process each parameter value line in the csv file
 	int lcount = 1;
@@ -117,7 +117,7 @@ pair<vector<string>,vector<Parameters>> load_parameters_from_csv(map<string,int>
 	string line;
 	vector<string> tokens,names;
 	vector<double> vals;
-	Parameters pars;
+	Parameters pars = ctl_pars;
 	string run_id;
 	while (getline(csv, line))
 	{
@@ -630,7 +630,7 @@ int main(int argc, char* argv[])
 			{
 				try {
 					performance_log.log_event("starting to read parameter csv file", 1);
-					sweep_par_info = load_parameters_from_csv(header_info, par_stream, chunk);
+					sweep_par_info = load_parameters_from_csv(header_info, par_stream, chunk, pest_scenario.get_ctl_parameters());
 					performance_log.log_event("finished reading parameter csv file");
 				}
 				catch (exception &e)
