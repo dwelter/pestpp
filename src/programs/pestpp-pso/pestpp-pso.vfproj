@@ -34,7 +34,7 @@
 				<Tool Name="VFPreBuildEventTool"/>
 				<Tool Name="VFPostBuildEventTool"/>
 				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration>
-		<Configuration Name="Release|x64" OutputDirectory="$(SolutionDir)\..\exe\windows\$(Platform)\$(Configuration)\">
+		<Configuration Name="Release|x64" OutputDirectory="$(SolutionDir)\..\exe\windows\$(Platform)\$(Configuration)\" TargetName="pestpp-pso">
 				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" Preprocess="preprocessYes" PreprocessorDefinitions="__windows__" ExternalNameInterpretation="extNameLowerCase" ExternalNameUnderscore="true"/>
 				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" AdditionalLibraryDirectories="$(SolutionDir)$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)" SubSystem="subSystemConsole" AdditionalDependencies="common.lib mio.lib ws2_32.lib advapi32.lib pest_routines.lib yamr.lib genie.lib genie_wrapper.lib serial.lib external.lib wrappers.lib abstract_base.lib"/>
 				<Tool Name="VFResourceCompilerTool"/>

@@ -189,10 +189,12 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)\..\exe\windows\$(Platform)\$(Configuration)\</OutDir>
+    <TargetName>pestpp-gsa</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)\..\exe\windows\$(Platform)\$(Configuration)\</OutDir>
     <LinkIncremental>false</LinkIncremental>
+    <TargetName>pestpp-gsa</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
