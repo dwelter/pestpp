@@ -2,7 +2,7 @@
 top_builddir = ../..
 include $(top_builddir)/global.mak
 
-EXE := psopp$(EXE_EXT)
+EXE := pestpp-pso$(EXE_EXT)
 OBJECTS := \
     bestsubs \
     estimation \

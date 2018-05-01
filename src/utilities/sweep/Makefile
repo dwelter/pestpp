@@ -2,7 +2,7 @@
 top_builddir = ../..
 include $(top_builddir)/global.mak
 
-EXE := sweep$(EXE_EXT)
+EXE := pestpp-swp$(EXE_EXT)
 OBJECTS := sweep$(OBJ_EXT)
 
 

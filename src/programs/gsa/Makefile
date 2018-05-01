@@ -2,7 +2,7 @@
 top_builddir = ../..
 include $(top_builddir)/global.mak
 
-EXE := gsa$(EXE_EXT)
+EXE := pestpp-gsa$(EXE_EXT)
 OBJECTS := \
     main \
     GsaAbstractBase \
