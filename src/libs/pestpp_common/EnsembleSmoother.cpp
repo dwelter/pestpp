@@ -1008,7 +1008,7 @@ void IterEnsembleSmoother::sanity_checks()
 			message(1, e);
 		throw_ies_error(string("sanity_check() found some problems - please review rec file"));
 	}
-	cout << endl << endl;
+	//cout << endl << endl;
 }
 
 void IterEnsembleSmoother::initialize()
