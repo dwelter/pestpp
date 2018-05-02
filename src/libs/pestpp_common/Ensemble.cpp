@@ -563,16 +563,16 @@ void Ensemble::to_csv(string file_name)
 	{
 		throw_ensemble_error("Ensemble.to_csv() error opening csv file " + file_name + " for writing");
 	}
-	csv << "real_name" << ',';
+	csv << "real_name";
 	for (auto &vname : var_names)
 		csv << vname << ',';
 	csv << endl;
 	for (int ireal = 0; ireal < reals.rows(); ireal++)
 	{
-		csv << real_names[ireal] << ',';
+		csv << real_names[ireal];
 		for (int ivar=0; ivar < reals.cols(); ivar++)
 		{
-			csv << reals.block(ireal, ivar,1,1) << ',';
+			csv << ',' << reals.block(ireal, ivar,1,1);
 		}
 		csv << endl;
 	}
@@ -1329,9 +1329,9 @@ void ParameterEnsemble::to_csv(string file_name)
 	{
 		throw_ensemble_error("ParameterEnsemble.to_csv() error opening csv file " + file_name + " for writing");
 	}
-	csv << "real_name" << ',';
+	csv << "real_name";
 	for (auto &vname : names)
-		csv << vname << ',';
+		csv << ',' << vname;
 	csv << endl;
 	Parameters pars = pest_scenario_ptr->get_ctl_parameters();
 	vector<double> svec;
@@ -1339,7 +1339,7 @@ void ParameterEnsemble::to_csv(string file_name)
 	svec.resize(reals.cols());
 	for (int ireal = 0; ireal < reals.rows(); ireal++)
 	{
-		csv << real_names[ireal] << ',';
+		csv << real_names[ireal];
 		//evec = reals.row(ireal);
 		//svec.assign(evec.data(), evec.data() + evec.size());
 		pars.update_without_clear(var_names, reals.row(ireal));
@@ -1349,7 +1349,7 @@ void ParameterEnsemble::to_csv(string file_name)
 			par_transform.numeric2ctl_ip(pars);
 		replace_fixed(real_names[ireal],pars);
 		for (auto &name : names)
-			csv << pars[name] << ',';
+			csv << ',' << pars[name];
 		csv << endl;
 	}
 }

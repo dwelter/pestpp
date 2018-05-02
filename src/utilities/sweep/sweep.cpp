@@ -91,6 +91,10 @@ map<string,int> prepare_parameter_csv(Parameters pars, ifstream &csv, bool forgi
 			cout << ss.str() << endl << "continuing anyway..." << endl;
 	}
 
+	if (header_tokens[header_tokens.size() - 1].size() == 0)
+		header_tokens.pop_back();
+
+
 	//build up a list of idxs to use
 	vector<string> ctl_pnames = pars.get_keys();
 	vector<int> header_idxs;
@@ -126,6 +130,9 @@ pair<vector<string>,vector<Parameters>> load_parameters_from_csv(map<string,int>
 		vals.clear();
 		names.clear();
 		tokenize(line, tokens, ",", false);
+		if (tokens[tokens.size() - 1].size() == 0)
+			tokens.pop_back();
+
 		if (tokens.size() != header_info.size()+1) // +1 for run id in first column
 		{
 			stringstream ss;
