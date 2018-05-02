@@ -40,7 +40,6 @@ script:
   - cd ..
 
 after_success:
-  - export PATH="../exe/linux":$PATH"
   - cd benchmarks
   - python travis_tests.py
 

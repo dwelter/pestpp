@@ -19,14 +19,13 @@ par                    none                   factor                -2.000000000
 * observation groups
 obgnme               
 * observation data
-obs                   4.8000000000E+01      2.5000000000E-01       obgnme
+obs                   4.8000000000E+01      1.0000000000E+00       obgnme
 * model command line
 python chenoliver.py
 * model input/output
 par.dat.tpl par.dat
 obs.dat.ins obs.dat
 ++ies_use_prior_scaling(true)
-++ies_initial_lambda(0.001)
-++ies_use_approx(false)
-++parcov_filename(prior.cov)
 ++ies_num_reals(1000)
+++parcov_filename(prior.cov)
+++ies_initial_lambda(0.001)
