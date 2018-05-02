@@ -11,6 +11,8 @@ precompiled binaries are available in the "exe" folder.  Windows users should us
 
 ## Recent Updates
 
+<b> update 2 May 2018 </b>: some refactoring is underway.  ``sweep`` has been renamed ``pestpp-swp`` and ``gsa`` has been renamed ``pestpp-gsa``.  Also, the initial version of the new iterative ensemble smoother is avaiable as ``pestpp-ies``.  The basic ``++`` options needed for fine-grained control of ``pestpp-ies`` are listed below.   
+
 <b> update 09/20/2017</b>: the new optimization under uncertainty tool is ready!  A supporting publication is in the works and should be available soon (a link will be posted once it is accepted).  This new tool uses the same control file/template file/instruction file approach as other PEST(++) applications, so applying this tool to your problem should be seamless.  Optional "++" args for tool are available further done this page.
 
 <b>update 01/25/2017</b>: intel C++ builds are avaiable for mac and for windows.  For mac users, these are statically-linked so they do not require compilers to be installed.  For windows users, the intel build circumvents the "missing VCOMP140.DLL" error.  Note the intel windows builds are currently in the ``intel_c_windows`` branch.
@@ -59,7 +61,7 @@ The benchmarks/ folder contain several test problems of varying problem size whi
 ## Dependencies
 Much work has been done to avoid additional external dependencies in PEST++.  As currently designed, the project is fully self-contained and statically linked.  
 
-## PEST++ arguments
+## pestpp arguments
 Here is a (more or less) complete list of ``++`` arguments that can be added to the control file
 * ``++overdue_resched_fac(1.2)``:YAMR only, if a run is more than <``overdue_resched_fac``> X average run time, reschedule it on available resources
 * ``++overdue_giveup_fac(2.0)``:YAMR only, if a run is more than <``overdue_giveup_fac``> X average run time, mark it as failed
@@ -104,15 +106,16 @@ Here is a (more or less) complete list of ``++`` arguments that can be added to 
 
 * ``++condor_submit_file(pest.sub)``: a HTCondor submit file.  Setting this arg results in use of a specialized version of the YAMR run manager where the ``condor_submit()`` command is issued before the run manager starts, and, once a set of runs are complete, the workers are released and the ``condor_rm()`` command is issued.  This specialized run manager is useful for those sharing an HTCondor pool so that during the upgrade calculation process, all workers are released and during upgrade testing, only the required number workers are queued.  As with all things PEST and PEST++, it is up to the user to make sure the relative paths between the location of the submit file, the control file and the instance of PEST++ are in sync.
 
-### sweep ``++`` arguments
+### pestpp-swp ``++`` arguments
 ``sweep`` is a utility to run a parametric sweep for a series of parameter values.  Useful for things like monte carlo, design of experiment, etc. Designed to be used with ``pyemu`` and the python pandas library.
 
 * ``++sweep_parameter_csv_file(filename)``: the CSV file that lists the runs to be evaluated. "sweep_in.csv" is the default
 * ``++sweep_output_csv_file(filename)``: the output CSV file from the parametric sweep.  If not passed, output is written to "sweep_out.csv"
 * ``++sweep_chunk(500)``: number of runs to batch queue for the run manager.  Each chunk is read, run and written as a single batch
+* ``++sweep_forgive(false)``: a flag to forgive missing parameters in the input csv file.  If ``true``, then missing parameters are filled with the initial parameter value in the control file.
 
 ### pestpp-opt ``++`` arguments
-``pestpp-opt`` is a implementation of sequential linear programming under uncertainty for the PEST-style model-independent interface
+``pestpp-opt`` is an implementation of sequential linear programming under uncertainty for the PEST-style model-independent interface
 
 * ``++opt_dec_var_groups(<group names>)``: comma-separated string identifying which parameter groups are to be treated as decision variables.  If not passed, all adjustable parameters are treated as decision variables
 
@@ -125,6 +128,9 @@ Here is a (more or less) complete list of ``++`` arguments that can be added to 
 * ``++opt_direction(<direction>)``: either "min" or "max", whether to minimize or maximize the objective function. 
 
 * ``++opt_risk(<risk>)``: a float ranging from 0.0 to 1.0 that is the value to use in the FOSM uncertainty estimation for model-based constraints. a value of 0.5 is a "risk neutral" position and no FOSM measures are calculated.  A value of 0.95 will seek a 95% risk averse solution, while a value of 0.05 will seek a 5% risk tolerant solution. See Wagner and Gorelick, 1987, *Optimal groundwater quality management under parameter uncertainty* for more background on chance-constrained linear programming
+
+### pestpp-ies ``++`` arguments
+``pestpp-ies`` is an implementation of the iterative ensemble smoother GLM algorithm of Chen and Oliver 2012. So far, this tool has performed very well across a range of problems.  It functions without any additional ``++`` arguments. However, several ``++`` arguments can be used to fine-tune the function of ``pestpp-ies``.  These are available in ``documentation/input_tbl.pdf``
 
 
 ### USGS disclaimer
