@@ -930,7 +930,7 @@ if __name__ == "__main__":
     #compare_pyemu()
     #tenpar_subset_test()
     #tenpar_full_cov_test()
-    test_freyberg_ineq()
+    #test_freyberg_ineq()
     
     # # invest()
     #compare_suite("ies_10par_xsec")
