@@ -707,7 +707,7 @@ def test_chenoliver():
     
 
     pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=20,
-        master_dir=test_d,slave_root=model_d,port=4005)
+        master_dir=test_d,slave_root=model_d,port=4005,silent_master=True)
     df_full_obs = pd.read_csv(os.path.join(test_d,"pest.{0}.obs.csv".format(noptmax)),index_col=0)
     df_full_par = pd.read_csv(os.path.join(test_d,"pest.{0}.par.csv".format(noptmax)),index_col=0)
 
@@ -723,7 +723,7 @@ def test_chenoliver():
     pst.write(os.path.join(template_d,"pest.pst"))
 
     pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=20,
-        master_dir=test_d,slave_root=model_d,port=4005)
+        master_dir=test_d,slave_root=model_d,port=4005,silent_master=True)
     df_approx_obs = pd.read_csv(os.path.join(test_d,"pest.{0}.obs.csv".format(noptmax)),index_col=0)
     df_approx_par = pd.read_csv(os.path.join(test_d,"pest.{0}.par.csv".format(noptmax)),index_col=0)
 
@@ -760,7 +760,7 @@ def test_chenoliver():
     pst.write(os.path.join(template_d,"pest.pst"))
 
     pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=25,
-        master_dir=test_d,slave_root=model_d,port=4005)
+        master_dir=test_d,slave_root=model_d,port=4005,silent_master=True)
     df_full_obs = pd.read_csv(os.path.join(test_d,"pest.{0}.obs.csv".format(noptmax)),index_col=0)
     df_full_par = pd.read_csv(os.path.join(test_d,"pest.{0}.par.csv".format(noptmax)),index_col=0)
 
@@ -776,7 +776,7 @@ def test_chenoliver():
     pst.write(os.path.join(template_d,"pest.pst"))
 
     pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=25,
-        master_dir=test_d,slave_root=model_d,port=4005)
+        master_dir=test_d,slave_root=model_d,port=4005,silent_master=True)
     df_approx_obs = pd.read_csv(os.path.join(test_d,"pest.{0}.obs.csv".format(noptmax)),index_col=0)
     df_approx_par = pd.read_csv(os.path.join(test_d,"pest.{0}.par.csv".format(noptmax)),index_col=0)
 
