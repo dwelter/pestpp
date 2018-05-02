@@ -271,7 +271,7 @@ int main(int argc, char* argv[])
 		cout << endl << endl;
 		cout << "             sweep.exe - a parameteric sweep utility" << endl;
 		cout << "                     for PEST(++) datasets " << endl << endl;
-		cout << "                 by the PEST++ developement team" << endl << endl << endl;
+		cout << "                 by the PEST++ development team" << endl << endl << endl;
 		// build commandline
 		string commandline = "";
 		for (int i = 0; i < argc; ++i)
