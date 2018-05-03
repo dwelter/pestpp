@@ -41,6 +41,7 @@ private:
 	double risk;
 	double iter_derinc_fac;
 	double obj_best;
+	double obj_init;
 	double probit_val;
 
 	string obj_sense;
@@ -151,7 +152,7 @@ private:
 	void postsolve_constraint_report(Observations &upgrade_obs, Parameters &upgrade_pars);
 	
 	//check that all constraints and dec vars are satified
-	pair<vector<string>, vector<string>> postsolve_check(Observations &upgrade_obs, Parameters &upgrade_pars);
+	pair < map < string, double > , map<string,double >> postsolve_check(Observations &upgrade_obs, Parameters &upgrade_pars);
 
 	//prepare for LP solution, including filling response matrix
 	void iter_presolve();

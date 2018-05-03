@@ -352,7 +352,7 @@ PestppOptions::PestppOptions(int _n_iter_base, int _n_iter_super, int _max_n_sup
 	: n_iter_base(_n_iter_base), n_iter_super(_n_iter_super), max_n_super(_max_n_super), super_eigthres(_super_eigthres), 
 	svd_pack(_svd_pack), mat_inv(_mat_inv), auto_norm(_auto_norm), super_relparmax(_super_relparmax),
 	max_run_fail(_max_run_fail), max_super_frz_iter(50), max_reg_iter(50), base_lambda_vec({ 0.1, 1.0, 10.0, 100.0, 1000.0 }),
-	lambda_scale_vec({0.9, 0.8, 0.7, 0.5}),
+	lambda_scale_vec({1.0}),
 	iter_summary_flag(_iter_summary_flag), der_forgive(_der_forgive), overdue_reched_fac(_overdue_reched_fac),
 	overdue_giveup_fac(_overdue_giveup_fac), reg_frac(_reg_frac), global_opt(_global_opt),
 	de_f(_de_f), de_cr(_de_cr), de_npopulation(_de_npopulation), de_max_gen(_de_max_gen), de_dither_f(_de_dither_f)
@@ -374,6 +374,8 @@ void PestppOptions::parce_line(const string &line)
 	}
 	string tmp_line = line.substr(0, found);
 	strip_ip(tmp_line, "both", "\t\n\r+ ");
+	tmp_line.erase(remove(tmp_line.begin(), tmp_line.end(), '\"'),tmp_line.end());
+	tmp_line.erase(remove(tmp_line.begin(), tmp_line.end(), '\''), tmp_line.end());
 	//upper_ip(tmp_line);
 
 
@@ -478,17 +480,20 @@ void PestppOptions::parce_line(const string &line)
 		else if ((key == "PARCOV") || (key == "PARAMETER_COVARIANCE") 
 			|| (key == "PARCOV_FILENAME"))
 		{
-			convert_ip(org_value, parcov_filename);
+			//convert_ip(org_value, parcov_filename);
+			parcov_filename = org_value;
 		}
 
 		else if ((key == "BASE_JACOBIAN") || (key == "BASE_JACOBIAN_FILENAME"))
 		{
-			convert_ip(org_value, basejac_filename);
+			//convert_ip(org_value, basejac_filename);
+			basejac_filename = org_value;
 		}
 
 		else if (key == "HOTSTART_RESFILE")
 		{
-			convert_ip(org_value, hotstart_resfile);
+			//convert_ip(org_value, hotstart_resfile);
+			hotstart_resfile = org_value;
 		}
 
 		else if (key == "OVERDUE_RESCHED_FAC"){
@@ -499,12 +504,15 @@ void PestppOptions::parce_line(const string &line)
 		}
 		else if (key == "CONDOR_SUBMIT_FILE")
 		{
-			convert_ip(value, condor_submit_file);
+			//convert_ip(value, condor_submit_file);
+			condor_submit_file = org_value;
 		}
 		else if ((key == "SWEEP_PARAMETER_CSV_FILE") || (key == "SWEEP_PAR_CSV"))
-			convert_ip(org_value, sweep_parameter_csv_file);	
+			//convert_ip(org_value, sweep_parameter_csv_file);	
+			sweep_parameter_csv_file = org_value;
 		else if ((key == "SWEEP_OUTPUT_CSV_FILE") || (key == "SWEEP_OBS_CSV"))
-			convert_ip(org_value, sweep_output_csv_file);
+			//convert_ip(org_value, sweep_output_csv_file);
+			sweep_output_csv_file = org_value;
 		else if (key == "SWEEP_CHUNK")
 			convert_ip(value, sweep_chunk);
 		else if (key == "SWEEP_FORGIVE")
@@ -588,7 +596,7 @@ void PestppOptions::parce_line(const string &line)
 		}
 		else if ((key == "OPT_OBJ_FUNC") || (key == "OPT_OBJECTIVE_FUNCTION"))
 		{
-			convert_ip(value,opt_obj_func);
+			convert_ip(value,opt_obj_func); 
 		}
 		else if (key == "OPT_COIN_LOG")
 		{
@@ -667,17 +675,25 @@ void PestppOptions::parce_line(const string &line)
 		{
 			convert_ip(value, opt_recalc_fosm_every);
 		}
-		else if ((key == "IES_PAR_CSV") || (key == "IES_PARAMETER_CSV"))
+		else if ((key == "IES_PAR_CSV") || (key == "IES_PARAMETER_CSV")||
+			(key == "IES_PAR_EN") || (key == "IES_PARAMETER_ENSEMBLE"))
 		{
-			convert_ip(value, ies_par_csv);
+			//convert_ip(value, ies_par_csv);
+			ies_par_csv = org_value;
 		}
-		else if ((key == "IES_OBS_CSV") || (key == "IES_OBSERVATION_CSV"))
+		else if ((key == "IES_OBS_CSV") || (key == "IES_OBSERVATION_CSV") ||
+			(key == "IES_OBS_EN") || (key == "IES_OBSERVATION_ENSEMBLE"))
 		{
-			convert_ip(value, ies_obs_csv);
+			//convert_ip(value, ies_obs_csv);
+			ies_obs_csv = org_value;
 		}
-		else if ((key == "IES_OBS_RESTART_CSV") || (key == "IES_OBSERVATION_RESTART_CSV"))
+		else if ((key == "IES_OBS_RESTART_CSV") || (key == "IES_OBSERVATION_RESTART_CSV") 
+			|| (key == "IES_RESTART_OBS_CSV") || (key == "IES_OBSERVATION_RESTART_ENSEMBLE") ||
+			(key == "IES_RESTART_OBSERVATION_ENSEMBLE") || (key == "IES_RESTART_OBS_EN") ||
+			(key == "IES_OBS_RESTART_EN"))
 		{
-			convert_ip(value, ies_obs_restart_csv);
+			//convert_ip(value, ies_obs_restart_csv);
+			ies_obs_restart_csv = org_value;
 		}
 
 		else if ((key == "IES_USE_APPROXIMATE_SOLUTION") || (key == "IES_USE_APPROX"))
@@ -708,7 +724,89 @@ void PestppOptions::parce_line(const string &line)
 		{
 			convert_ip(value, ies_subset_size);
 		}
-
+		else if  ((key == "IES_REG_FACTOR") || (key == "IES_REG_FAC"))
+		{
+			convert_ip(value, ies_reg_factor);
+		}
+		else if (key == "IES_VERBOSE_LEVEL")
+		{
+			convert_ip(value, ies_verbose_level);
+		}
+		else if (key == "IES_USE_PRIOR_SCALING")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> ies_use_prior_scaling;
+		}
+		else if (key == "IES_NUM_REALS")
+		{
+			convert_ip(value, ies_num_reals);
+			ies_num_reals_passed = true;
+		}
+		else if (key == "IES_BAD_PHI")
+		{
+			convert_ip(value, ies_bad_phi);
+		}
+		else if (key == "IES_INCLUDE_BASE")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> ies_include_base;
+		}
+		else if (key == "IES_USE_EMPIRICAL_PRIOR")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> ies_use_empirical_prior;
+		}
+		else if (key == "IES_GROUP_DRAWS")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> ies_group_draws;
+		}
+		else if (key == "IES_ENFORCE_BOUNDS")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> ies_enforce_bounds;
+		}
+		else if (key == "IES_SAVE_BINARY")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> ies_save_binary;
+		}
+		else if (key == "PAR_SIGMA_RANGE")
+		{
+			convert_ip(value, par_sigma_range);
+		}
+		else if (key == "YAMR_POLL_INTERVAL") {
+			//doesn't apply here
+		}
+		else if (key == "IES_LOCALIZER")
+		{
+			//convert_ip(value, ies_localizer);
+			ies_localizer = org_value;
+		}
+		else if (key == "IES_ACCEPT_PHI_FAC")
+		{
+			convert_ip(value, ies_accept_phi_fac);
+		}
+		else if (key == "IES_LAMBDA_INC_FAC")
+		{
+			convert_ip(value, ies_lambda_inc_fac);
+		}
+		else if (key == "IES_LAMBDA_DEC_FAC")
+		{
+			convert_ip(value, ies_lambda_dec_fac);
+		}
+		else if ((key == "IES_SAVE_LAMBDA_EN") || (key == "IES_SAVE_LAMBDA_ENSEMBLES"))
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> ies_save_lambda_en;
+		}
 		else {
 
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");
@@ -748,6 +846,19 @@ bool ObservationGroupRec::is_regularization(const string &grp_name)
 
 }
 
+void ObservationInfo::reset_group_weights(string &group, double val)
+{
+	for (auto &o : observations)
+	{
+		if (o.second.group == group)
+		{
+			o.second.weight = val;
+		}
+	}
+
+}
+
+
 const ObservationRec* ObservationInfo::get_observation_rec_ptr(const string &name) const
 {
 	const ObservationRec *ret_val = 0;
@@ -772,6 +883,15 @@ const ObservationGroupRec* ObservationInfo::get_group_rec_ptr(const string &name
 	return ret_val;
 }
 
+vector<string> ObservationInfo::get_groups()
+{
+	vector<string> ogroups;
+	for (auto &g : groups)
+	{
+		ogroups.push_back(g.first);
+	}
+	return ogroups;
+}
 
 bool ObservationRec::is_regularization() const
 {

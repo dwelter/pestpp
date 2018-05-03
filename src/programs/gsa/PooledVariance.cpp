@@ -8,7 +8,7 @@ PooledVariance::PooledVariance()
 }
 void PooledVariance::process_pva_file(std::ifstream &fin)
 {
-	regex r("regex\"\[^\"]+\"", regex_constants::icase);
+	regex r("regex\"[^\"]+\"", regex_constants::icase);
 	string line;
 	while (getline(fin, line))
 	{  

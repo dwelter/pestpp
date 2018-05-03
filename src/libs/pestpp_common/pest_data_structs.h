@@ -31,7 +31,9 @@
 class LaTridiagMatDouble;
 
 class ControlInfo {
+	
 public:
+	enum PestMode { ESTIMATION, REGUL, PARETO, UNKNOWN };
 	double relparmax;
 	double facparmax;
 	double facorig;
@@ -46,9 +48,10 @@ public:
 	int nrelpar;
 	int noptswitch;
 	double splitswh;
+	PestMode pestmode;
 	ControlInfo() : relparmax(0.0), facparmax(0.0), facorig(0.0), phiredswh(0.0), noptmax(0),
 		phiredstp(0.0), nphistp(0), nphinored(0), relparstp(0.0), nrelpar(0), noptswitch(0),
-		splitswh(0.0) {}
+		splitswh(0.0), pestmode(PestMode::ESTIMATION){}
 };
 ostream& operator<< (ostream &os, const ControlInfo& val);
 
@@ -125,10 +128,10 @@ public:
 	double scale;
 	double offset;
 	string group;
-	bool dercom;
+	int dercom;
 	TRAN_TYPE tranform_type;
 	ParameterRec() : chglim(""), lbnd(0.0), ubnd(0.0), init_value(0.0), group(""),
-		dercom(false), tranform_type(TRAN_TYPE::NONE), scale(1.0), offset(0.0){}
+		dercom(1), tranform_type(TRAN_TYPE::NONE), scale(1.0), offset(0.0){}
 	bool is_active() const { return !(tranform_type == TRAN_TYPE::FIXED || tranform_type == TRAN_TYPE::TIED); }
 };
 ostream& operator<< (ostream &os, const ParameterRec& val);
@@ -183,6 +186,9 @@ public:
 	Observations get_regulatization_obs(const Observations &obs_in);	
 	int get_nnz_obs() const;
 	int get_nnz_obs_and_reg() const;
+	vector<string> get_groups();
+	void reset_group_weights(string &group, double val);
+
 };
 
 class ModelExecInfo {
@@ -194,7 +200,14 @@ public:
 	std::vector<std::string> outfile_vec;
 };
 
-
+class ParetoInfo {
+public:
+	double wf_start, wf_fin, wf_inc;
+	string obsgroup;
+	int niter_start, niter_gen, niter_fin;
+	ParetoInfo() : wf_start(1.0), wf_fin(1.0), wf_inc(0.0),
+		obsgroup(""), niter_start(1), niter_gen(1), niter_fin(1) {};
+};
 
 class PestppOptions {
 public:
@@ -317,15 +330,49 @@ public:
 	void set_ies_obs_csv(string _ies_obs_csv) { ies_obs_csv = _ies_obs_csv; }
 	string get_ies_obs_restart_csv() const { return ies_obs_restart_csv; }
 	void set_ies_obs_restart_csv(string _ies_obs_restart_csv) { ies_obs_restart_csv = _ies_obs_restart_csv; }
-	vector<double> get_ies_lam_mults() { return ies_lam_mults; }
+	vector<double> get_ies_lam_mults() const { return ies_lam_mults; }
 	void set_ies_lam_mults(vector<double> _ies_lam_mults) { ies_lam_mults = _ies_lam_mults; }
-	const double get_ies_init_lam() const {return ies_init_lam;}
+	double get_ies_init_lam() const {return ies_init_lam;}
 	void set_ies_init_lam(double _ies_init_lam) { ies_init_lam = _ies_init_lam; }
-	const bool get_ies_use_approx() const { return ies_use_approx; }
+	bool get_ies_use_approx() const { return ies_use_approx; }
 	void set_ies_use_approx(bool _ies_use_approx) { ies_use_approx = _ies_use_approx; }
-	const int get_ies_subset_size() const { return ies_subset_size; }
+	int get_ies_subset_size() const { return ies_subset_size; }
 	void set_ies_subset_size(int _ies_subset_size) { ies_subset_size = _ies_subset_size; }
+	double get_ies_reg_factor() const { return ies_reg_factor; }
+	void set_ies_reg_factor(double _ies_reg_factor) { ies_reg_factor = _ies_reg_factor; }
+	int get_ies_verbose_level() const { return ies_verbose_level; }
+	void set_ies_verbose_level(int _ies_verbose_level) { ies_verbose_level = _ies_verbose_level; }
+	bool get_ies_use_prior_scaling() const { return ies_use_prior_scaling; }
+	void set_ies_use_prior_scaling(bool _ies_use_prior_scaling) { ies_use_prior_scaling = _ies_use_prior_scaling; }
+	int get_ies_num_reals() const { return ies_num_reals; }
+	void set_ies_num_reals(int _ies_num_reals) { ies_num_reals = _ies_num_reals; }
+	double get_ies_bad_phi() const { return ies_bad_phi; }
+	void set_ies_bad_phi(double _ies_bad_phi) { ies_bad_phi = _ies_bad_phi; }
+	bool get_ies_include_base() const { return ies_include_base; }
+	void set_ies_include_base(bool _ies_include_base) { ies_include_base = _ies_include_base; }
+	bool get_ies_use_empirical_prior() const { return ies_use_empirical_prior; }
+	void set_ies_use_empirical_prior(bool _ies_use_empirical_prior) { ies_use_empirical_prior = _ies_use_empirical_prior; }
+	bool get_ies_group_draws() const { return ies_group_draws; }
+	void set_ies_group_draws(bool _ies_group_draws) { ies_group_draws = _ies_group_draws; }
+	bool get_ies_num_reals_passed() const { return ies_num_reals_passed; }
+	void set_ies_num_reals_passed(bool _ies_num_reals_passed) { ies_num_reals_passed = _ies_num_reals_passed; }
+	bool get_ies_enforce_bounds() const { return ies_enforce_bounds; }
+	void set_ies_enforce_bounds(bool _ies_enforce_bounds) { ies_enforce_bounds = _ies_enforce_bounds; }
 
+	double get_par_sigma_range() const { return par_sigma_range; }
+	void set_par_sigma_range(double _par_sigma_range) { par_sigma_range = _par_sigma_range; }
+	bool get_ies_save_binary() const { return ies_save_binary; }
+	void set_ies_save_binary(bool _ies_save_binary) { ies_save_binary = _ies_save_binary; }
+	string get_ies_localizer() const { return ies_localizer; }
+	void set_ies_localizer(string _ies_localizer) { ies_localizer = _ies_localizer; }
+	double get_ies_accept_phi_fac() const { return ies_accept_phi_fac; }
+	void set_ies_accept_phi_fac(double _acc_phi_fac) { ies_accept_phi_fac = _acc_phi_fac; }
+	double get_ies_lambda_inc_fac() const { return ies_lambda_inc_fac; }
+	void set_ies_lambda_inc_fac(double _inc_fac) { ies_lambda_inc_fac = _inc_fac; }
+	double get_ies_lambda_dec_fac() const { return ies_lambda_dec_fac; }
+	void set_ies_lambda_dec_fac(double _dec_fac) { ies_lambda_dec_fac = _dec_fac; }
+	bool get_ies_save_lambda_en() const { return ies_save_lambda_en; }
+	void set_ies_save_lambda_en(bool _ies_save_lambda_en) { ies_save_lambda_en = _ies_save_lambda_en; }
 
 private:
 	int n_iter_base;
@@ -389,7 +436,24 @@ private:
 	string ies_obs_restart_csv;
 	double ies_init_lam;
 	bool ies_use_approx;
+	double ies_reg_factor;
 	vector<double> ies_lam_mults;
+	int ies_verbose_level;
+	bool ies_use_prior_scaling;
+	int ies_num_reals;
+	double ies_bad_phi;
+	bool ies_include_base;
+	bool ies_use_empirical_prior;
+	bool ies_group_draws;
+	bool ies_num_reals_passed;
+	bool ies_enforce_bounds;
+	double par_sigma_range;
+	bool ies_save_binary;
+	string ies_localizer;
+	double ies_accept_phi_fac;
+	double ies_lambda_inc_fac;
+	double ies_lambda_dec_fac;
+	bool ies_save_lambda_en;
 };
 ostream& operator<< (ostream &os, const PestppOptions& val);
 ostream& operator<< (ostream &os, const ObservationInfo& val);

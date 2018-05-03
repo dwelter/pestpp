@@ -108,15 +108,17 @@ char* OperSys::gets_s(char *str, size_t len)
 
 bool OperSys::double_is_invalid(double x)
 {
-#ifdef OS_WIN
-   bool test = (_isnan(x)!=0 || _finite(x) == 0);
-   return test;
+	bool test = false;
+#if defined __INTEL_COMPILER && defined __APPLE__
+    test = (isnan(x) || isinf(x));
 #endif
-#ifdef OS_LINUX
-   //bool test = (std::isnan(x) || std::isinf(x));
-  //return test;
-   return true;
+#if defined __INTEL_COMPILER && defined OS_LINUX && !defined __APPLE__
+     test = (::isnan(x) || ::isinf(x));
 #endif
+#if defined OS_WIN
+     test = (std::isnan(x) || !std::isfinite(x));
+#endif
+	return test;
 }
 
 

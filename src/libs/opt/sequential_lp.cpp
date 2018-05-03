@@ -97,6 +97,7 @@ void sequentialLP::initial_report()
 	f_rec << "-->number of iterations of sequential linear programming (noptmax): " << pest_scenario.get_control_info().noptmax << endl;
 	
 	f_rec << "-->objective function sense (direction): " << obj_sense << endl;
+	
 
 	f_rec << "-->number of decision variable: " << num_dec_vars() << endl;
 	f_rec << "-->number of observation constraints: " << num_obs_constraints() << endl;
@@ -134,18 +135,29 @@ void sequentialLP::initial_report()
 	vector<string> missing;
 	f_rec << setw(20) << left << "name" << setw(25) << "obj func coefficient" << endl;
 
+
+	
 	for (auto &name : ctl_ord_dec_var_names)
 	{
 		f_rec << setw(20) << left << name;
 		if (obj_func_coef_map.find(name) != end)
-			f_rec << setw(25) <<obj_func_coef_map.at(name) << endl;
+		{
+			f_rec << setw(25) << obj_func_coef_map.at(name) << endl;
+		}
 		else
 		{
 			f_rec << setw(25) << "not listed" << endl;
 			missing.push_back(name);
 		}	
 	}
-
+	obj_init = 0.0;
+	double dv_val;
+	for (auto &p : ctl_ord_dec_var_names)
+	{
+		obj_init += all_pars_and_dec_vars_initial[p] * obj_func_coef_map[p];
+	}
+	f_rec << endl <<  "  ---  initial objective function value (using initial dec var values): " << obj_init << endl <<endl ;
+	cout << endl <<  "  ---  initial objective function value (using initial dec var values): " << obj_init << endl << endl;
 	if (missing.size() > 0)
 	{
 		f_rec << endl << endl << "WARNING: the following decision variables have '0.0' objective function coef:" << endl;
@@ -157,7 +169,7 @@ void sequentialLP::initial_report()
 			f_rec << "    " << name << endl;
 		}
 	}
-	f_rec << " note: bound and initial value info reported in 'parameter' section" << endl << endl;
+	f_rec << " note: bound and initial value info reported in 'parameter data' section" << endl << endl;
 
 
 	f_rec << endl << "  ---  observation constraints in SLP  ---  " << endl;
@@ -371,10 +383,10 @@ void sequentialLP::postsolve_constraint_report(Observations &upgrade_obs,Paramet
 	return;
 }
 
-pair<vector<string>, vector<string>> sequentialLP::postsolve_check(Observations &upgrade_obs, Parameters &upgrade_pars)
+pair<map<string,double>, map<string,double>> sequentialLP::postsolve_check(Observations &upgrade_obs, Parameters &upgrade_pars)
 {
-	vector<string> invalid_constraints;
-	vector<string> invalid_dec_vars;
+	map<string,double> invalid_constraints;
+	map<string,double> invalid_dec_vars;
 
 	double sim_val, obs_val, scaled_diff;
 	double opt_tol = pest_scenario.get_pestpp_options().get_opt_iter_tol();
@@ -391,11 +403,11 @@ pair<vector<string>, vector<string>> sequentialLP::postsolve_check(Observations 
 		scaled_diff = abs((obs_val - sim_val) / obs_val);
 		//check for invalid obs constraints (e.g. satified)
 		if ((constraint_sense_map[name] == ConstraintSense::less_than) && (sim_val > obs_val) && (scaled_diff > opt_tol))
-			invalid_constraints.push_back(name);
+			invalid_constraints[name] = sim_val - obs_val;
 		else if ((constraint_sense_map[name] == ConstraintSense::greater_than) && (sim_val < obs_val) && (scaled_diff > opt_tol))
-			invalid_constraints.push_back(name);
+			invalid_constraints[name] = obs_val - sim_val;
 		else if ((constraint_sense_map[name] == ConstraintSense::equal_to) && (sim_val != obs_val) && (scaled_diff > opt_tol))
-			invalid_constraints.push_back(name);
+			invalid_constraints[name] = abs(sim_val - obs_val);
 	}
 
 	//report prior information constraints
@@ -411,11 +423,11 @@ pair<vector<string>, vector<string>> sequentialLP::postsolve_check(Observations 
 			obs_val = pi_rec.get_obs_value();
 			scaled_diff = abs((obs_val - sim_val) / obs_val);
 			if ((constraint_sense_map[name] == ConstraintSense::less_than) && (sim_val > obs_val) && (scaled_diff > opt_tol))
-				invalid_constraints.push_back(name);
+				invalid_constraints[name] = sim_val - obs_val;
 			else if ((constraint_sense_map[name] == ConstraintSense::greater_than) && (sim_val < obs_val) && (scaled_diff > opt_tol))
-				invalid_constraints.push_back(name);
+				invalid_constraints[name] = obs_val - sim_val;
 			else if ((constraint_sense_map[name] == ConstraintSense::equal_to) && (sim_val != obs_val) && (scaled_diff > opt_tol))
-				invalid_constraints.push_back(name);
+				invalid_constraints[name] = abs(sim_val - obs_val);
 		}
 	}
 
@@ -424,12 +436,13 @@ pair<vector<string>, vector<string>> sequentialLP::postsolve_check(Observations 
 	for (auto &name : ctl_ord_dec_var_names)
 	{
 		sim_val = upgrade_pars[name];
-		if ((sim_val > ubnd[name]) || (sim_val < lbnd[name]))
-			invalid_dec_vars.push_back(name);
+		if (sim_val > ubnd[name])
+			invalid_dec_vars[name] = sim_val - ubnd[name];
+		else if (sim_val < lbnd[name])
+			invalid_dec_vars[name] = lbnd[name] - sim_val;
 	}
 
-	return pair<vector<string>,vector<string>>(invalid_dec_vars,invalid_constraints);
-
+	return pair<map<string,double>,map<string,double>>(invalid_dec_vars,invalid_constraints);
 }
 
 pair<double,double> sequentialLP::postsolve_decision_var_report(Parameters &upgrade_pars)
@@ -442,15 +455,19 @@ pair<double,double> sequentialLP::postsolve_decision_var_report(Parameters &upgr
 	f_rec << setw(25) << "simplex status" << endl;
 	string name;
 	ClpSimplex::Status status;
-	double obj_coef, cur_val, new_val, upgrade;
+	double obj_coef, cur_val, new_val, upgrade, init_val;
 	double cur_obj=0.0, new_obj=0.0;
+	Parameters actual_pars = upgrade_pars;
 	for (int i = 0; i < num_dec_vars(); ++i)
 	{
 		name = ctl_ord_dec_var_names[i];
 		status = model.getColumnStatus(i);
 		obj_coef = ctl_ord_obj_func_coefs[i];
-		cur_val = all_pars_and_dec_vars[name];
-		new_val = upgrade_pars[name];
+		init_val = all_pars_and_dec_vars_initial[name];
+		cur_val = all_pars_and_dec_vars[name] + init_val;
+		
+		new_val = upgrade_pars[name] + init_val;
+		actual_pars.update_rec(name, new_val);
 		f_rec << setw(20) << left << name;
 		f_rec << setw(15) << right << cur_val;
 		f_rec << setw(15) << new_val;
@@ -465,7 +482,8 @@ pair<double,double> sequentialLP::postsolve_decision_var_report(Parameters &upgr
 	}
 	stringstream ss;
 	ss << slp_iter << ".par";
-	of_wr.write_par(file_mgr_ptr->open_ofile_ext(ss.str()),upgrade_pars,*par_trans.get_offset_ptr(),*par_trans.get_scale_ptr());
+	
+	of_wr.write_par(file_mgr_ptr->open_ofile_ext(ss.str()),actual_pars,*par_trans.get_offset_ptr(),*par_trans.get_scale_ptr());
 	return pair<double,double>(cur_obj,new_obj);
 }
 
@@ -505,6 +523,14 @@ void sequentialLP::initialize_and_check()
 	ofstream &f_rec = file_mgr_ptr->rec_ofstream();
 	//TODO: handle restart condition
 	
+	if (pest_scenario.get_control_info().pestmode != ControlInfo::PestMode::ESTIMATION)
+	{
+		string mess = "'pestmode' != 'estimation'.  pestpp-opt really only operates in kind-of 'estimation' mode.  ignoring";
+		cout << endl << mess << endl;
+		f_rec << endl << mess << endl;
+	}
+
+
 	if (pest_scenario.get_control_info().noptmax < 1)
 		throw_sequentialLP_error("noptmax must be greater than 0");
 
@@ -644,14 +670,30 @@ void sequentialLP::initialize_and_check()
 		//find the observations in constraints groups
 		ObservationInfo oinfo = pest_scenario.get_ctl_observation_info();
 		string group;
+		double weight;
 		end = constraint_groups.end();
 		start = constraint_groups.begin();
 		for (auto &obs_name : pest_scenario.get_ctl_ordered_obs_names())
 		{
 			group = oinfo.get_observation_rec_ptr(obs_name)->group;
+			weight = oinfo.get_weight(obs_name);
 			if (find(start, end, group) != end)
-				ctl_ord_obs_constraint_names.push_back(obs_name);
+			{
+				if (weight == 0.0)
+				{
+					cout << "Warning: observation constraint " << obs_name << " has 0.0 weight, skipping" << endl;
+					f_rec << "Warning: observation constraint " << obs_name << " has 0.0 weight, skipping" << endl;
+				}
+				else
+				{
+					ctl_ord_obs_constraint_names.push_back(obs_name);
+				}
+
+			}
 		}
+
+					
+				
 		//look for prior information constraints
 		const PriorInformation* pinfo = pest_scenario.get_prior_info_ptr();
 		PriorInformationRec pi_rec;
@@ -839,7 +881,7 @@ void sequentialLP::initialize_and_check()
 	    probit_val = get_probit();
 
 
-		//make sure there is at least one none-decision var adjustable parameter		
+		//make sure there is at least one non-decision var adjustable parameter		
 		vector<string>::iterator start = ctl_ord_dec_var_names.begin();
 		vector<string>::iterator end = ctl_ord_dec_var_names.end();
 		for (auto &name : pest_scenario.get_ctl_ordered_par_names())
@@ -982,23 +1024,44 @@ void sequentialLP::calc_chance_constraint_offsets()
 		// WRT the required constraint value
 		if (constraint_sense_map[name] == ConstraintSense::less_than)
 		{
-			new_constraint_val = old_constraint_val + pt_offset;
+			
 			//if the old val was in bounds and fosm is out
 			/*if ((old_constraint_val <= required_val) && (new_constraint_val > required_val))
 				out_of_bounds[name] = abs(new_constraint_val - required_val);*/
-			post_constraint_offset[name] = pt_offset;
-			prior_constraint_offset[name] = pr_offset;
+			/*if (old_constraint_val < 0.0)
+			{
+				new_constraint_val = old_constraint_val - pt_offset;
+				post_constraint_offset[name] = -pt_offset;
+				prior_constraint_offset[name] = -pr_offset;
+			}
+			else
+			{*/
+				new_constraint_val = old_constraint_val + pt_offset;
+				post_constraint_offset[name] = pt_offset;
+				prior_constraint_offset[name] = pr_offset;
+			//}
+			
 		}
 		//if greater_than constraint, the substract from the sim value to move 
 		//negative WRT the required constraint value
 		else if (constraint_sense_map[name] == ConstraintSense::greater_than)
 		{
-			new_constraint_val = old_constraint_val - pt_offset;
+			
 			//if the old val was inbounds and fosm is out
 			/*if ((old_constraint_val >= required_val) && (new_constraint_val < required_val))
 				out_of_bounds[name] = abs(new_constraint_val - required_val);*/
-			post_constraint_offset[name] = -pt_offset;
-			prior_constraint_offset[name] = -pr_offset;
+			/*if (old_constraint_val < 0.0)
+			{ 
+				new_constraint_val = old_constraint_val + pt_offset;
+				post_constraint_offset[name] = pt_offset;
+				prior_constraint_offset[name] = pr_offset;
+			}
+			else
+			{*/
+				new_constraint_val = old_constraint_val - pt_offset;
+				post_constraint_offset[name] = -pt_offset;
+				prior_constraint_offset[name] = -pr_offset;
+			//}
 		}
 		
 		else
@@ -1063,9 +1126,9 @@ void sequentialLP::build_constraint_bound_arrays()
 			constraint_lb[i+noc] = residual;
 		}
 	}
-
 	return;
 }
+
 
 void sequentialLP::build_obj_func_coef_array()
 {	
@@ -1234,14 +1297,22 @@ CoinPackedMatrix sequentialLP::jacobian_to_coinpackedmatrix()
 	int elem_count = 0;
 
 	//iterate through the eigen sparse matrix
+	int elems_par;
 	for (int i = 0; i < eig_ord_jco.outerSize(); ++i)
 	{
+		elems_par = 0;
 		for (Eigen::SparseMatrix<double>::InnerIterator it(eig_ord_jco, i); it; ++it)
 		{
 			row_idx[elem_count] = it.row();
 			col_idx[elem_count] = it.col();
 			elems[elem_count] = it.value();
+			elems_par++;
 			elem_count++;
+		}
+		if (elems_par == 0)
+		{
+			cout << "all zero elements for decision variable: " << ctl_ord_dec_var_names[i] << endl;
+
 		}
 	}
 	if (elem_count != eig_ord_jco.nonZeros())
@@ -1316,10 +1387,12 @@ void sequentialLP::solve()
 	}
 	f_rec << "  ---  best objective function value: " << obj_best << endl;
 	cout << "  ---  best objective function value: " << obj_best << endl;
-	f_rec << "  ---  running model one last time with best decision variables  ---  " << endl;
-	cout << "  ---  running model one last time with best decision variables  ---  " << endl;
+
+	
 	if (!pest_scenario.get_pestpp_options().get_opt_skip_final())
 	{
+		f_rec << "  ---  running model one last time with best decision variables  ---  " << endl;
+		cout << "  ---  running model one last time with best decision variables  ---  " << endl;
 		bool success = make_upgrade_run(all_pars_and_dec_vars_best, constraints_sim);
 		if (!success)
 		{
@@ -1413,7 +1486,7 @@ void sequentialLP::iter_postsolve()
 	}
 	max_abs_constraint_change /= max(max_abs_constraint_val,1.0);
 
-	pair<vector<string>, vector<string>> invalid_vars_const = postsolve_check(upgrade_obs, upgrade_pars);
+	pair<map<string,double>, map<string,double>> invalid_vars_const = postsolve_check(upgrade_obs, upgrade_pars);
 
 	//convergence check
 	double opt_iter_tol = pest_scenario.get_pestpp_options().get_opt_iter_tol();
@@ -1428,16 +1501,16 @@ void sequentialLP::iter_postsolve()
 	if (invalid_vars_const.first.size() > 0)
 	{
 		valid = false;
-		f_rec << "-->the following decision variables are out of bounds:" << endl;
+		f_rec << "-->the following decision variables are out of bounds (distance shown):" << endl;
 		for (auto &name : invalid_vars_const.first)
-			f_rec << "-->   " << name << endl;
+			f_rec << "-->   " << name.first << setw(15) << name.second << endl;
 	}
 	if (invalid_vars_const.second.size() > 0)
 	{
 		valid = false;
-		f_rec << "-->the following constraints are not satisfied:" << endl;
+		f_rec << "-->the following constraints are not satisfied (distance shown):" << endl;
 		for (auto &name : invalid_vars_const.second)
-			f_rec << "-->   " << name << endl;
+			f_rec << "-->   " << name.first << setw(15) << name.second << endl;
 	}
 
 	//if three or more iters have passed, start testing the last three 

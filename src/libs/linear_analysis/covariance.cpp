@@ -6,11 +6,13 @@
 #include <iomanip>
 #include <vector>
 #include <random>
+#include <iterator>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include <Eigen/IterativeLinearSolvers>
 #include <Eigen/SparseCholesky>
 
+#include "SVDPackage.h"
 #include "Pest.h"
 #include "utilities.h"
 #include "covariance.h"
@@ -210,25 +212,37 @@ void Mat::transpose_ip()
 	}
 }
 
-Mat Mat::inv()
+Mat Mat::inv(bool echo)
+{
+	Logger* log = new Logger();
+	log->set_echo(echo);
+	//inv_ip(log);
+	return inv(log);
+}
+
+
+Mat Mat::inv(Logger* log)
 {
 	if (nrow() != ncol()) throw runtime_error("Mat::inv() error: only symmetric positive definite matrices can be inverted with Mat::inv()");
 	if (mattype == MatType::DIAGONAL)
 	{
-		Eigen::VectorXd diag = matrix.diagonal();
-		diag = 1.0 / diag.array();
+		log->log("inverting diagonal matrix in place");
+		log->log("extracting diagonal");
+		Eigen::VectorXd diag = matrix.diagonal().eval();
+		log->log("inverting diagonal");
+		log->log("building triplets");
 		vector<Eigen::Triplet<double>> triplet_list;
-		
 		for (int i = 0; i != diag.size(); ++i)
 		{
-			triplet_list.push_back(Eigen::Triplet<double>(i, i, diag[i]));
+			triplet_list.push_back(Eigen::Triplet<double>(i, i, 1.0 / diag[i]));
 		}
-		Eigen::SparseMatrix<double> inv_mat(triplet_list.size(),triplet_list.size());
+		Eigen::SparseMatrix<double> inv_mat;
+		inv_mat.conservativeResize(triplet_list.size(), triplet_list.size());
 		inv_mat.setZero();
+		log->log("setting matrix from triplets");
 		inv_mat.setFromTriplets(triplet_list.begin(), triplet_list.end());
 		return Mat(row_names, col_names, inv_mat);
 	}
-	
 	//Eigen::ConjugateGradient<Eigen::SparseMatrix<double>> solver;
 	Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver;
 	solver.compute(matrix);
@@ -238,10 +252,22 @@ Mat Mat::inv()
 	return Mat(row_names, col_names, inv_mat);
 }
 
-void Mat::inv_ip()
+void Mat::pseudo_inv_ip(double eigthresh, int maxsing)
+{
+	//Eigen::MatrixXd ivec, upgrade_1, s, V, U, st;
+	Eigen::SparseMatrix<double> Vt, U;
+	Eigen::VectorXd s, st;
+	SVD_REDSVD rsvd(eigthresh,maxsing);
+	//rsvd.set_performance_log(performance_log);
+
+	rsvd.solve_ip(matrix, s, U, Vt, st);
+	matrix = Vt.transpose() * st * U.transpose();
+}
+
+void Mat::inv_ip(bool echo)
 {
 	Logger* log = new Logger();
-	log->set_echo(false);
+	log->set_echo(echo);
 	inv_ip(log);
 	return;
 }
@@ -253,17 +279,17 @@ void Mat::inv_ip(Logger *log)
 	{
 		log->log("inverting diagonal matrix in place");
 		log->log("extracting diagonal");
-		Eigen::VectorXd diag = matrix.diagonal();
+		Eigen::VectorXd diag = matrix.diagonal().eval();
 		log->log("inverting diagonal");
-		diag = 1.0 / diag.array();
-		log->log("buidling triplets");
+		//diag = 1.0 / diag.array();
+		log->log("building triplets");
 		vector<Eigen::Triplet<double>> triplet_list;
 		for (int i = 0; i != diag.size(); ++i)
 		{
-			triplet_list.push_back(Eigen::Triplet<double>(i, i, diag[i]));
+			triplet_list.push_back(Eigen::Triplet<double>(i, i, 1.0/diag[i]));
 		}
-		log->log("resizeing matrix to size " + triplet_list.size());
-		matrix.resize(triplet_list.size(), triplet_list.size());
+		//log->log("resizeing matrix to size " + triplet_list.size());
+		//matrix.conservativeResize(triplet_list.size(),triplet_list.size());
 		matrix.setZero();
 		log->log("setting matrix from triplets");
 		matrix.setFromTriplets(triplet_list.begin(),triplet_list.end());
@@ -492,18 +518,77 @@ vector<string> Mat::read_namelist(ifstream &in, int &nitems)
 
 void Mat::to_binary(const string &filename)
 {
+	ofstream jout(filename, ios::out | ios::binary);
+	int n_par = col_names.size();
+	int n_obs_and_pi = row_names.size();
+	int n;
+	int tmp;
+	double data;
+	char par_name[12];
+	char obs_name[20];
 
+	// write header
+	tmp = -n_par;
+	jout.write((char*)&tmp, sizeof(tmp));
+	tmp = -n_obs_and_pi;
+	jout.write((char*)&tmp, sizeof(tmp));
+
+	//write number nonzero elements in jacobian (includes prior information)
+	n = matrix.nonZeros();
+	jout.write((char*)&n, sizeof(n));
+
+	//write matrix
+	n = 0;
+	map<string, double>::const_iterator found_pi_par;
+	map<string, double>::const_iterator not_found_pi_par;
+
+	Eigen::SparseMatrix<double> matrix_T(matrix);
+	matrix_T.transpose();
+	for (int icol = 0; icol<matrix.outerSize(); ++icol)
+	{
+		for (Eigen::SparseMatrix<double>::InnerIterator it(matrix_T, icol); it; ++it)
+		{
+			data = it.value();
+			n = it.row() + 1 + it.col() * matrix_T.rows();
+			jout.write((char*) &(n), sizeof(n));
+			jout.write((char*) &(data), sizeof(data));
+		}
+	}
+	//save parameter names
+	for (vector<string>::const_iterator b = col_names.begin(), e = col_names.end();
+		b != e; ++b) {
+		string l = pest_utils::lower_cp(*b);
+		pest_utils::string_to_fortran_char(l, par_name, 12);
+		jout.write(par_name, 12);
+	}
+
+	//save observation and Prior information names
+	for (vector<string>::const_iterator b = row_names.begin(), e = row_names.end();
+		b != e; ++b) {
+		string l = pest_utils::lower_cp(*b);
+		pest_utils::string_to_fortran_char(l, obs_name, 20);
+		jout.write(obs_name, 20);
+	}
+	//save observation names (part 2 prior information)
+	jout.close();
 }
 
 void Mat::from_binary(const string &filename)
 {
 	ifstream in;
 	in.open(filename.c_str(), ifstream::binary);
+	if (!in.good())
+	{
+		stringstream ss;
+		ss << "Mat::from_binary() error opening binary file " << filename << " for reading";
+		throw runtime_error(ss.str());
+	}
 
 	int n_par;
 	int n_nonzero;
 	int n_obs_and_pi;
-	int i, j, n;
+	int i, j;
+	unsigned int n;
 	double data;
 	char col_name[12];
 	char row_name[20];
@@ -515,8 +600,19 @@ void Mat::from_binary(const string &filename)
 
 	n_par = -n_par;
 	n_obs_and_pi = -n_obs_and_pi;
+
+	if (n_par > 10000000)
+		throw runtime_error("Mat::from_binary() failed sanity check: npar > 10 mil");
+
 	////read number nonzero elements in jacobian (observations + prior information)
 	in.read((char*)&n_nonzero, sizeof(n_nonzero));
+
+	if ((n_par == 0) || (n_obs_and_pi == 0) || (n_nonzero == 0))
+	{
+		throw runtime_error("Mat::from_binary() npar, nobs and/or nnz is zero");
+	}
+
+	cout << "reading " << n_nonzero << " elements, " << n_obs_and_pi << " rows, " << n_par << " columns" << endl;
 
 	// record current position in file
 	streampos begin_sen_pos = in.tellg();
@@ -551,10 +647,14 @@ void Mat::from_binary(const string &filename)
 	for (int i_rec = 0; i_rec<n_nonzero; ++i_rec)
 	{
 		in.read((char*)&(n), sizeof(n));
-		--n;
+		n = n - 1;
 		in.read((char*)&(data), sizeof(data));
 		j = int(n / (n_obs_and_pi)); // column index
 		i = (n - n_obs_and_pi*j) % n_obs_and_pi;  //row index
+		if ((i >= n_obs_and_pi) || (i < 0))
+			cout << "invalid 'i':" << i << " at " << n << " data:" << data << " j: " << j << endl;
+		if ((j >= n_par) || (j < 0))
+			cout << "invalid 'j':" << j << " at " << n << " data:" << data << " i: " << i << endl;
 		triplet_list.push_back(Eigen::Triplet<double>(i, j, data));
 	}
 	matrix.resize(n_obs_and_pi, n_par);
@@ -593,18 +693,19 @@ Mat Mat::get(const vector<string> &new_row_names, const vector<string> &new_col_
 	if (new_row_names.size() == 0) throw runtime_error("Mat::get() error: new_row_names is empty");
 	if (new_col_names.size() == 0) throw runtime_error("Mat::get() error: new_col_names is empty");
 	vector<string> row_not_found;
-	for (auto &n_row_name : new_row_names)
-	{
-		if (find(row_names.begin(), row_names.end(), n_row_name) == row_names.end())
-			row_not_found.push_back(n_row_name);
-	}
-	vector<string> col_not_found;
-	for (auto &n_col_name : new_col_names)
-	{
-		if (find(col_names.begin(), col_names.end(), n_col_name) == col_names.end())
-			col_not_found.push_back(n_col_name);
-	}
+	
+	set<string> row_set(row_names.begin(), row_names.end());
+	set<string>::iterator end = row_set.end();
+	for (auto &n : new_row_names)
+		if (row_set.find(n) == end)
+			row_not_found.push_back(n);
 
+	vector<string> col_not_found;
+	set<string> col_set(col_names.begin(), col_names.end());
+	end = col_set.end();
+	for (auto &n : new_col_names)
+		if (col_set.find(n) == end)
+			col_not_found.push_back(n);
 	if (row_not_found.size() != 0)
 	{
 		cout << "Mat::get() error: the following row names were not found:" << endl;
@@ -632,7 +733,7 @@ Mat Mat::get(const vector<string> &new_row_names, const vector<string> &new_col_
 	int irow_new;
 	int icol_new;
 
-	unordered_map<string, int> row_name2newindex_map;
+	unordered_map<string, int> row_name2new_index_map;
 	unordered_map<string, int> col_name2new_index_map;
 
 	// Build mapping of parameter names to column number in new matrix to be returned
@@ -646,13 +747,13 @@ Mat Mat::get(const vector<string> &new_row_names, const vector<string> &new_col_
 	irow_new = 0;
 	for (vector<string>::const_iterator b = new_row_names.begin(), e = new_row_names.end();
 		b != e; ++b, ++irow_new) {
-		row_name2newindex_map[(*b)] = irow_new;
+		row_name2new_index_map[(*b)] = irow_new;
 	}
 	
 	unordered_map<string, int>::const_iterator found_col;
 	unordered_map<string, int>::const_iterator found_row;
 	unordered_map<string, int>::const_iterator not_found_col_map = col_name2new_index_map.end();
-	unordered_map<string, int>::const_iterator not_found_row_map = row_name2newindex_map.end();
+	unordered_map<string, int>::const_iterator not_found_row_map = row_name2new_index_map.end();
 
 	const string *row_name;
 	const string *col_name;
@@ -666,7 +767,7 @@ Mat Mat::get(const vector<string> &new_row_names, const vector<string> &new_col_
 			col_name = &col_names[it.col()];
 			row_name = &row_names[it.row()];
 			found_col = col_name2new_index_map.find(*col_name);
-			found_row = row_name2newindex_map.find(*row_name);
+			found_row = row_name2new_index_map.find(*row_name);
 			if (found_col != not_found_col_map && found_row != not_found_row_map)
 			{
 				triplet_list.push_back(Eigen::Triplet<double>(found_row->second, found_col->second, it.value()));
@@ -720,6 +821,12 @@ Mat Mat::extract(const vector<string> &extract_row_names, const string &extract_
 	return extract(extract_row_names, extract_col_names);
 }
 
+bool Mat::isdiagonal()
+{
+	if (mattype == MatType::DIAGONAL)
+		return true;
+	return false;
+}
 
 void Mat::drop_cols(const vector<string> &drop_col_names)
 {
@@ -823,15 +930,16 @@ Covariance::Covariance()
 	mattype = MatType::SPARSE;
 }
 
-Covariance::Covariance(vector<string> _names, Eigen::SparseMatrix<double> _matrix)
+Covariance::Covariance(vector<string> _names, Eigen::SparseMatrix<double> _matrix, Mat::MatType _mattype)
 {	
 	if ((_names.size() != _matrix.rows()) || (_names.size() != _matrix.cols()))
 		throw runtime_error("Covariance::Covariance() error: names.size() does not match matrix dimensions");
+	Eigen::SparseMatrix<double> test = _matrix;
 	matrix = _matrix;
 	row_names = _names;
 	col_names = _names;
 	icode = 1;
-	mattype = MatType::SPARSE;
+	mattype =_mattype;
 }
 
 Covariance::Covariance(Mat _mat)
@@ -845,6 +953,23 @@ Covariance::Covariance(Mat _mat)
 	mattype = _mat.get_mattype();
 }
 
+
+void Covariance::from_diagonal(Covariance &other)
+{
+	row_names = other.get_row_names();
+	col_names = other.get_col_names();
+	if (other.get_mattype() == Mat::MatType::DIAGONAL)
+	{		
+		matrix = other.get_matrix();
+	}
+	else
+	{
+		Eigen::MatrixXd temp = other.e_ptr()->diagonal().asDiagonal();
+		Eigen::SparseMatrix<double> temp2 = temp.sparseView();
+		matrix = temp2;
+	}
+
+}
 Covariance Covariance::diagonal(double val)
 {
 	vector<Eigen::Triplet<double>> triplet_list;
@@ -955,6 +1080,10 @@ void Covariance::from_uncertainty_file(const string &filename)
 	
 	while (getline(in, line))
 	{
+		if (line.substr(0, 1).find("#") != string::npos)
+		{
+			continue;
+		}
 		pest_utils::upper_ip(line);
 		//if this is the start of some block
 		if (line.find("START") != string::npos)
@@ -1051,7 +1180,7 @@ void Covariance::from_uncertainty_file(const string &filename)
 	col_names = names;
 }
 
-void Covariance::from_parameter_bounds(const vector<string> &par_names,const ParameterInfo &par_info)
+void Covariance::from_parameter_bounds(const vector<string> &par_names,const ParameterInfo &par_info, double sigma_range)
 {
 	vector<Eigen::Triplet<double>> triplet_list;
 	const ParameterRec* par_rec;
@@ -1072,7 +1201,8 @@ void Covariance::from_parameter_bounds(const vector<string> &par_names,const Par
 		{
 			row_names.push_back(par_name);
 			col_names.push_back(par_name);
-			triplet_list.push_back(Eigen::Triplet<double>(i, i, pow((upper - lower) / 4.0, 2.0)));
+			//double temp = pow((upper - lower) / 4.0,2.0);
+			triplet_list.push_back(Eigen::Triplet<double>(i, i, pow((upper - lower) / sigma_range, 2.0)));
 			i++;
 		}
 	}
@@ -1092,7 +1222,7 @@ void Covariance::from_parameter_bounds(const vector<string> &par_names,const Par
 
 void Covariance::from_parameter_bounds(Pest &pest_scenario)
 {
-	from_parameter_bounds(pest_scenario.get_ctl_ordered_par_names(), pest_scenario.get_ctl_parameter_info());
+	from_parameter_bounds(pest_scenario.get_ctl_ordered_par_names(), pest_scenario.get_ctl_parameter_info(),pest_scenario.get_pestpp_options().get_par_sigma_range());
 }
 
 void Covariance::from_parameter_bounds(const string &pst_filename)

@@ -274,7 +274,7 @@ int main(int argc, char* argv[])
 			cerr << "Error prococessing control file: " << filename << endl << endl;
 			cerr << e.what() << endl << endl;
 			throw(e);
-		}
+	 	}
 		pest_scenario.check_inputs(fout_rec);
 
 		//if base jco arg read from control file, reset restart controller

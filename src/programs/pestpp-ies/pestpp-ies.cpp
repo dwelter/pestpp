@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
 		cout << endl << endl;
 		cout << "             pestpp-ies.exe - a GLM iterative ensemble smoother" << endl;
 		cout << "                     for PEST(++) datasets " << endl << endl;
-		cout << "                 by the PEST++ developement team" << endl << endl << endl;
+		cout << "                 by the PEST++ development team" << endl << endl << endl;
 		// build commandline
 		string commandline = "";
 		for (int i = 0; i < argc; ++i)
@@ -74,9 +74,9 @@ int main(int argc, char* argv[])
 			cerr << "    PANTHER worker:" << endl;
 			cerr << "        pestpp-ies control_file.pst /H hostname:port " << endl << endl;
 			cerr << "control file pest++ options:" << endl;
-			cerr << "    ++ies_par_csv(pars_file.csv)" << endl;
+			cerr << "    ++ies_par_en(pars_file.csv)" << endl;
 			cerr << "        - csv file with each row as a parameter realization" << endl;
-			cerr << "    ++ies_obs_csv(obs_file.csv)" << endl;
+			cerr << "    ++ies_obs_en(obs_file.csv)" << endl;
 			cerr << "        - csv file with each row as an observation realization" << endl;
 			cerr << "    ++ies_lambda_mults(0.1,1.0,10.0,100.0)" << endl;
 			cerr << "        - different lambda multiplers to test during each ies iter" << endl;
@@ -86,6 +86,7 @@ int main(int argc, char* argv[])
 			cerr << "        - number of realization to eval during lambda testing" << endl;
 			cerr << "    ++ies_use_approx(true)" << endl;
 			cerr << "        - use the 'approximate' upgrade solution" << endl;
+			cerr << " additional options can be found on the pestpp github site" << endl;
 			cerr << "--------------------------------------------------------" << endl;
 			exit(0);
 		}
@@ -249,6 +250,7 @@ int main(int argc, char* argv[])
 		
 		//Initialize OutputFileWriter to handle IO of suplementary files (.par, .par, .svd)
 		//bool save_eign = pest_scenario.get_svd_info().eigwrite > 0;	
+		pest_scenario.get_pestpp_options_ptr()->set_iter_summary_flag(false);
 		OutputFileWriter output_file_writer(file_manager, pest_scenario, restart_flag);
 		//output_file_writer.scenario_report(fout_rec);
 		output_file_writer.scenario_io_report(fout_rec);
@@ -309,11 +311,7 @@ int main(int argc, char* argv[])
 
 		ies.initialize();
 
-		for (int iter = 0; iter < pest_scenario.get_control_info().noptmax; iter++)
-		{
-			ies.solve();
-		}
-
+		ies.iterate_2_solution();
 		ies.finalize();
 
 		
@@ -331,6 +329,10 @@ int main(int argc, char* argv[])
 		//cout << "press enter to continue" << endl;
 		//char buf[256];
 		//OperSys::gets_s(buf, sizeof(buf));
+	}
+	catch (...)
+	{
+		cout << "Error condition prevents further execution: " << endl;
 	}
 #endif
 }

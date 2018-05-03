@@ -245,6 +245,7 @@ void ModelInterface::run(pest_utils::thread_flag* terminate, pest_utils::thread_
 
 		//check for nans in par vals before continuing
 		// vector<string> invalid;
+
 		// vector<double> ivals;
 		// for (int i = 0; i != par_name_vec.size(); i++)
 		// {
@@ -254,6 +255,11 @@ void ModelInterface::run(pest_utils::thread_flag* terminate, pest_utils::thread_
 		// 		ivals.push_back(par_vals.at(i));
 		// 	}
 
+
+		// for (int i = 0; i != par_name_vec.size(); i++)
+		// {
+		// 	if (OperSys::double_is_invalid(par_vals.at(i)))
+		// 		invalid.push_back(par_name_vec.at(i));
 		// }
 		// if (invalid.size() > 0)
 		// {

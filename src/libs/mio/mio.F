@@ -125,12 +125,14 @@ subroutine mio_initialise(ifail,numin,numout,npar,nobs)
       end if
       allocate(tempfile(numin),modinfile(numin),pardel(numin),stat=ierr)
       if(ierr.ne.0)then
+        write(*,*) 'numin',numin
         write(amessage,20) trim(errsub)
         ifail=1
         return
       end if
       allocate(insfile(numout),modoutfile(numout),mrkdel(numout),stat=ierr)
       if(ierr.ne.0)then
+        write(*,*) 'numout',numout
         write(amessage,20) trim(errsub)
 20      format(a,' cannot allocate sufficient memory to store model interface filenames.')
         ifail=1

@@ -12,8 +12,6 @@
 
 using namespace std;
 
-
-
 class Mat
 {
 public:
@@ -55,9 +53,11 @@ public:
 	void transpose_ip();
 	Mat transpose();
 	Mat T();
-	Mat inv();
+	Mat inv(Logger* log);
+	Mat inv(bool echo=false);
 	void inv_ip(Logger *log);
-	void inv_ip();
+	void inv_ip(bool echo=false);
+	void pseudo_inv_ip(double eigthresh, int maxsing);
 	void SVD();
 
 	Mat identity();
@@ -75,6 +75,8 @@ public:
 
 	int nrow(){ return row_names.size(); }
 	int ncol(){ return col_names.size(); }	
+
+	bool isdiagonal();
 
 
 protected:
@@ -100,7 +102,7 @@ public:
 	Covariance();
 	Covariance(string filename);
 	Covariance(Mat _mat);
-	Covariance(vector<string> _row_names, Eigen::SparseMatrix<double> _matrix);
+	Covariance(vector<string> _row_names, Eigen::SparseMatrix<double> _matrix, Mat::MatType _mattype = Mat::MatType::SPARSE);
 	
 	Covariance get(const vector<string> &other_names);
 	Mat get(vector<string> &other_row_names, vector<string> &other_col_names){ return Mat::get(other_row_names, other_col_names); }
@@ -108,12 +110,13 @@ public:
 	Covariance extract(vector<string> &extract_names);
 
 	Covariance diagonal(double val);
+	void from_diagonal(Covariance &other);
 
 	void try_from(Pest &pest_scenario, FileManager &file_manager);
 
 	void from_uncertainty_file(const string &filename);
 	void from_parameter_bounds(Pest &pest_scenario);
-	void from_parameter_bounds(const vector<string> &par_names, const ParameterInfo &par_info);
+	void from_parameter_bounds(const vector<string> &par_names, const ParameterInfo &par_info, double sigma_range=4.0);
 
 	void from_observation_weights(Pest &pest_scenario);
 	void from_observation_weights(vector<string> obs_names, ObservationInfo obs_info,
@@ -127,6 +130,7 @@ public:
 	vector<double> standard_normal(default_random_engine gen);
 	void cholesky();
 
+	
 private:
 	Eigen::SparseMatrix<double> lower_cholesky;
 };
