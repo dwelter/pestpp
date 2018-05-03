@@ -57,6 +57,13 @@ void print(std::set<std::string> val, std::ostream &os, int indent)
 namespace pest_utils
 {
 
+
+double get_duration_sec(std::chrono::system_clock::time_point start_time)
+{
+	chrono::system_clock::duration dt = chrono::system_clock::now() - start_time;
+	return (double)std::chrono::duration_cast<std::chrono::milliseconds>(dt).count() / 1000.0;
+}
+
 template < class ContainerT >
 void tokenize(const std::string& str, ContainerT& tokens, const std::string& delimiters, const bool trimEmpty)
 {

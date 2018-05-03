@@ -11,9 +11,9 @@ subroutine instantrm(port)
   
 ! specifications:
 !----------------------------------------------------------------------------------------  
-  external rmif_create_yamr
+  external rmif_create_panther
   
-  integer::rmif_create_yamr,err
+  integer::rmif_create_panther,err
   
   character(len=20),intent(in)::port
   character(len=20)::storfile,rmi_info_file
@@ -24,13 +24,13 @@ subroutine instantrm(port)
   storfile      = 'tmp_run_data.bin    '
   rmi_info_file = 'run_manager_info.txt'
   !
-  err = rmif_create_yamr(storfile, 20,         &
+  err = rmif_create_panther(storfile, 20,         &
                          port,     20,         &
                          rmi_info_file, 20,  1,&
                          1.00d+02, 1.00d+02)
   !
   if (err /= 0) then
-    write(*,'(A,I0)')'YAMR failed to instantiate --> err = ',err
+    write(*,'(A,I0)')'PANTHER failed to instantiate --> err = ',err
     stop
   end if
   
@@ -73,7 +73,7 @@ subroutine initialrm(re)
   end if
   !
   if (err /= 0) then
-    write(*,'(A,I0)')'YAMR failed to initialize --> err = ',err
+    write(*,'(A,I0)')'PANTHER failed to initialize --> err = ',err
     stop
   end if
   

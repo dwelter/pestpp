@@ -19,6 +19,7 @@
 #include "Transformable.h"
 #include "network_package.h"
 #include <thread>
+#include <chrono>
 
 
 
@@ -31,6 +32,8 @@ namespace pest_utils
 {
 
 	enum CASE_CONV{NO_CONV, TO_UPPER, TO_LOWER};
+
+	double get_duration_sec(std::chrono::system_clock::time_point start_time);
 
    /* @brief Sign of a number
  

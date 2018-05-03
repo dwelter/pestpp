@@ -8,6 +8,11 @@
 #include <set>
 #include <random>
 #include "Transformable.h"
+#include "FileManager.h"
+#include "ObjectiveFunc.h"
+#include "OutputFileWriter.h"
+#include "PerformanceLog.h"
+#include "RunStorage.h"
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 
@@ -23,16 +28,12 @@ public:
 	enum class PARAM_DIST{ normal, uniform };
 	static const double MISSING_DATA;
 	static mt19937_64 rand_engine;
-	GsaAbstractBase(ParamTransformSeq *base_partran_seq_ptr,
-		const std::vector<std::string> &par_name_vec, const Parameters &_fixed_ctl_pars,
-		const Parameters &_lower_bnd, const Parameters &_upper_bnd,
-		const std::vector<std::string> &_obs_name_vec, FileManager *_file_manager_ptr,
-		PARAM_DIST _par_dist = PARAM_DIST::normal);
+	GsaAbstractBase(Pest &_pest_scenario,
+		FileManager &_file_manager, ObjectiveFunc *_obj_func_ptr,
+		const ParamTransformSeq &_par_transform, PARAM_DIST _par_dist, unsigned int seed);
 	virtual void assemble_runs(RunManagerAbstract &run_manager) = 0;
 	virtual void calc_sen(RunManagerAbstract &run_manager, ModelRun model_run) = 0;
 	static std::map<std::string, std::string>  process_gsa_file(std::ifstream &fin, FileManager &file_manager);
-	virtual std::string log_name(const string &name) const;
-	virtual bool is_log_trans_par(const string &name) const;
 	std::vector<double> calc_interval_midpoints(int n_interval, double min, double max);
 	double ltqnorm(double p);
 	static void set_seed(unsigned int _seed) { rand_engine.seed(_seed); }
@@ -42,15 +43,16 @@ protected:
 	PARAM_DIST par_dist;
 	std::vector<std::string> adj_par_name_vec;
 	std::vector<std::string> obs_name_vec;
-	Parameters fixed_ctl_pars;
-	Parameters lower_bnd;
-	Parameters upper_bnd;
-	std::set<std::string> log_trans_pars;
-	ParamTransformSeq *base_partran_seq_ptr;
+	ParamTransformSeq gsa_parm_tran_seq;
+	const ParamTransformSeq *base_partran_seq_ptr;
 	FileManager *file_manager_ptr;
+	ObjectiveFunc *obj_func_ptr;
 	static void parce_line(const std::string &line, std::map<std::string, std::string> &arg_map);
 	map<string, double> calc_parameter_norm_std_dev();
 	map<string, double> calc_parameter_unif_std_dev();
+	Parameters max_numeric_pars;
+	Parameters min_numeric_pars;
+	unsigned int seed;
 };
 
 std::ostream& operator<< (std::ostream& out, const std::vector<double> &rhs);

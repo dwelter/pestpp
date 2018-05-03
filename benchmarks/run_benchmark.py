@@ -180,30 +180,31 @@ if __name__ == "__main__":
     f_log = open('benchmark_log.txt', 'wt')
     if sys.platform == 'win32':
        exe_cmd_pp = r'..\..\..\exe\windows\x64\Release\pestpp.exe'
-       exe_cmd_gsa = r'..\..\..\exe\windows\x64\Release\gsa.exe'
+       exe_cmd_gsa = r'..\..\..\exe\windows\x64\Release\pestpp-gsa.exe'
        exe_cmd_opt = r'..\..\..\exe\windows\x64\Release\pestpp-opt.exe'
+       exe_cmd_wrk = r'..\..\..\exe\windows\x64\Release\pestpp-wrk.exe'
 
        #exe_cmd_pp = r'..\..\..\exe\windows\Win32\Release\pest++_32.exe'
        #exe_cmd_gsa = r'..\..\..\exe\windows\Win32\Release\gsa_32.exe'
        # run PEST++ benchmarks
        bm_list = [
-        [r'.\3pg', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
-        [r'.\10par_xsec', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
-        [r'.\morris_1991', 'template', exe_cmd_gsa, 'pest', exe_cmd_gsa, 4, 'mio'],
-        [r'.\ackley', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 10, 'iobj'],
-        [r'.\box', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 10, 'iobj'],
-        [r'.\kirishima', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 20, 'iobj'],
+        [r'.\3pg', 'template', exe_cmd_pp, 'pest', exe_cmd_wrk, 4, 'iobj'],
+        [r'.\10par_xsec', 'template', exe_cmd_pp, 'pest', exe_cmd_wrk, 4, 'iobj'],
+        [r'.\morris_1991', 'template', exe_cmd_gsa, 'pest', exe_cmd_wrk, 4, 'mio'],
+        [r'.\ackley', 'template', exe_cmd_pp, 'pest', exe_cmd_wrk, 10, 'iobj'],
+        [r'.\box', 'template', exe_cmd_pp, 'pest', exe_cmd_wrk, 10, 'iobj'],
+        [r'.\kirishima', 'template', exe_cmd_pp, 'pest', exe_cmd_wrk, 20, 'iobj'],
 
-        [r'.\ishigami', 'template', exe_cmd_gsa, 'pest', exe_cmd_gsa, 10, 'sbl'],
-        [r'.\opt_dewater_chance','template',exe_cmd_opt,"dewater_pest.base",exe_cmd_opt,1,'1.par'],
-        [r'.\opt_dewater_chance', 'template', exe_cmd_opt, "dewater_pest.fosm", exe_cmd_opt, 1, '1.par'],
-        [r'.\opt_supply2_chance', 'template', exe_cmd_opt, "supply2_pest.base", exe_cmd_opt, 4, 'par'],
-        [r'.\opt_supply2_chance', 'template', exe_cmd_opt, "supply2_pest.fosm", exe_cmd_opt, 4, 'par'],
-        [r'.\opt_seawater_chance', 'template', exe_cmd_opt, "seawater_pest", exe_cmd_opt, 4, 'par']
+        [r'.\ishigami', 'template', exe_cmd_gsa, 'pest', exe_cmd_wrk, 10, 'sbl'],
+        [r'.\opt_dewater_chance','template',exe_cmd_opt,"dewater_pest.base",exe_cmd_wrk,1,'1.par'],
+        [r'.\opt_dewater_chance', 'template', exe_cmd_opt, "dewater_pest.fosm", exe_cmd_wrk, 1, '1.par'],
+        [r'.\opt_supply2_chance', 'template', exe_cmd_opt, "supply2_pest.base", exe_cmd_wrk, 4, 'par'],
+        [r'.\opt_supply2_chance', 'template', exe_cmd_opt, "supply2_pest.fosm", exe_cmd_wrk, 4, 'par'],
+        [r'.\opt_seawater_chance', 'template', exe_cmd_opt, "seawater_pest", exe_cmd_wrk, 4, 'par']
 
-           #[r'.\ames', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
-        #[r'.\tidal', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
-        #[r'.\hendry', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj']
+           #[r'.\ames', 'template', exe_cmd_pp, 'pest', exe_cmd_wrk, 4, 'iobj'],
+        #[r'.\tidal', 'template', exe_cmd_pp, 'pest', exe_cmd_wrk, 4, 'iobj'],
+        #[r'.\hendry', 'template', exe_cmd_pp, 'pest', exe_cmd_wrk, 4, 'iobj']
         ]
     elif sys.platform == 'linux' or  sys.platform == 'linux2':
        exe_cmd_pp = r'../../../exe/linux/pestpp'

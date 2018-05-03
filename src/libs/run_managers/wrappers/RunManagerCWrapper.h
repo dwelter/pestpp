@@ -21,7 +21,7 @@ RunManager* rmic_create_serial(char **comline, int comline_array_len,
 #ifdef OS_WIN
 extern __declspec(dllexport)
 #endif
-RunManager* rmic_create_yamr(char *storfile,
+RunManager* rmic_create_panther(char *storfile,
 	char *port,
 	char *info_filename,
 	int n_max_fail,
@@ -59,6 +59,13 @@ int rmic_add_run(RunManager *run_manager_ptr, double *parameter_data, int npar, 
 extern __declspec(dllexport)
 #endif
 int rmic_run(RunManager *run_manager_ptr);
+
+
+#ifdef OS_WIN
+extern __declspec(dllexport)
+#endif
+int rmic_run_until(RunManager *run_manager_ptr, int condition, int n_nops , double sec, int * return_cond);
+
 
 #ifdef OS_WIN
 extern __declspec(dllexport)

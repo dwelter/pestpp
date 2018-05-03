@@ -1,6 +1,6 @@
 !========================================================================================
 !==== This code is the main driver for conducting basic Particle Swarm Optimization  ====
-!==== for parameter estimation within the PEST suite, using the YAMR run manager.    ====
+!==== for parameter estimation within the PEST suite, using the PANTE\THER run manager.====
 !====    by Adam Siade                                                               ====
 !========================================================================================
 !========================================================================================
@@ -13,7 +13,7 @@ program particleswarmopt
 ! specifications:
 !----------------------------------------------------------------------------------------
 !---------------------------------------------------------------------------------------- 
-! external routines for run management via YAMR
+! external routines for run management via PANTHER
 !----------------------------------------------------------------------------------------
   external rmif_delete
   integer rmif_delete

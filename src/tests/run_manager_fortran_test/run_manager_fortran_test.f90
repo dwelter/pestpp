@@ -19,8 +19,8 @@
      
     external rmif_create_serial
     integer rmif_create_serial
-    external rmif_create_yamr
-    integer rmif_create_yamr
+    external rmif_create_panther
+    integer rmif_create_panther
     external rmif_create_genie
     integer rmif_create_genie
     external rmif_initialize
@@ -31,6 +31,8 @@
     integer rmif_add_run
     external rmif_run
     integer rmif_run
+    external rmif_run_until
+    integer rmif_run_until
     external rmif_get_run
     integer rmif_get_run
     external rmif_get_num_failed_runs
@@ -69,6 +71,10 @@
     integer failed_run_ids(100)
     integer n_total_runs
     
+    integer run_input_flag
+    integer run_output_flag
+    integer run_until_no_ops
+    DOUBLE PRECISION run_until_time_sec
     
     ! Body of run_manager_fortran_test
     data comline   /'storage1_win.exe  '/
@@ -77,13 +83,11 @@
     data ins       /'output.ins          '/
     data out       /'output.dat          '/
     data storfile  /'tmp_run_data.bin    '/
-    !YAMR parameters
+    !PANTHER parameters
     data rmi_info_file  /'run_manager_info.txt'/
     !serial run manager parameters
     data rundir    /'.\                  '/
-    !genie run manager parameters
-    data genie_host      /'localhost:4005      '/
-    data genie_tag           /'rmif test           '/
+
     
     data p_names   /'recharge            ',&
                     'cond                ',&
@@ -109,48 +113,12 @@
     data pars / 0.1, .005, .05/
     data bad_pars / 0.1, -9e9, .05/
     
-    ! instantiate run manager
-    itype = -1
-    do while (itype < 1)
-        write(*,*) "Select a run manager"
-        write(*,*) "  1 - serial run manager"
-        write(*,*) "  2 - YAMR run manager"
-        write(*,*) "  3- GENIE run manager"
-        write(*,*) ""
-        read(*,*) itype
-        if (itype == 1) then
-             write(*,*) 'please enter model run directory: '
-             read(*,*) rundir
-             err = rmif_create_serial(comline, 20, 1,&
-                        tpl, 20, 1,&
-                        inp, 20, 1,&
-                        ins, 20, 1,&
-                        out, 20, 1,&
-                        storfile, 20,&
-                        rundir, 80, 3)
-        else if (itype == 2) then
-            write(*,*) 'please enter port:'
-            read(*,*) port
-            err = rmif_create_yamr(storfile, 20,&
-                        port, 20,&
-                        rmi_info_file, 20, 2, 1.15, 100.0)
-        else if (itype == 3) then
-            write(*,*) 'please enter GMAN socket:'
-            read(*,*) genie_host
-            write(*,*) 'please enter GENIE id tag:'
-            read(*,*) genie_tag
-            err = rmif_create_genie(comline, 20, 1,&
-                        tpl, 20, 1,&
-                        inp, 20, 1,&
-                        ins, 20, 1,&
-                        out, 20, 1,&
-                        storfile, 20,&
-                        genie_host, 20,&
-                        genie_tag, 80 )
-        else
-                itype = -1
-        end if
-    end do 
+    ! instantiate PANTHER run manager
+    write(*,*) 'please enter port:'
+    read(*,*) port
+    err = rmif_create_panther(storfile, 20,&
+            port, 20,&
+            rmi_info_file, 20, 2, 1.15, 100.0)
             
     
     
@@ -169,8 +137,27 @@
     
     ! perform mdoel runs
     write(*,*) 'Performing model runs...'
-    err = rmif_run()
+    ! set flag to return after 15sec
+    run_input_flag = 2
+    run_until_no_ops = 0
+    run_until_time_sec = .05
+    run_output_flag = -1
+    !run_input_flag parameter is used specifiy when the run_until function should return
+    !  run_input_flag = 0  -> return after all runs are complete
+    !  run_input_flag = 1  -> return after "run_until_no_ops" consecutive loops in the internal run manager code have not had any tcp/ip action
+    !  run_input_flag = 2  -> return after "run_until_time_sec" seconds
+    !  run_input_flag = 3 ->  return after "run_until_no_ops" consecutive loops in the internal run manager code have not had any tcp/ip action 
+    !                         or "run_until_time_sec" seconds.  Which ever comes first
     
+    ! run_output_flag returns the reason the call to rmif_run_until is returning
+    !  run_output_flag = 0 -> all runs are complete
+    !  run_output_flag = 1 -> "run_until_no_ops" was active and this condition was satifisfied
+    !  run_output_flag = 2 -> run_until_time_sec" was active and this condition occured
+    do while (run_output_flag /= 0)
+        err = rmif_run_until(run_input_flag, run_until_no_ops, run_until_time_sec, run_output_flag)
+        write(*,*) 'Doing useful stuff while program runs'
+        write(*,*) ''
+    end do
     ! get number of failed model runs
     err = rmif_get_num_failed_runs(nfail)
     write(*,*) 'Number of failed runs: ', nfail

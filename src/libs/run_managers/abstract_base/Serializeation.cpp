@@ -122,7 +122,7 @@ vector<int8_t> Serialization::serialize(const Parameters &pars, const Observatio
 	 return serialize(tr_vec);
 }
 
-vector<int8_t> Serialization::serialize(const Parameters &pars, const vector<string> &par_names_vec, const Observations &obs, const vector<string> &obs_names_vec)
+vector<int8_t> Serialization::serialize(const Parameters &pars, const vector<string> &par_names_vec, const Observations &obs, const vector<string> &obs_names_vec, double run_time)
 {
 
 	assert(pars.size() == par_names_vec.size());
@@ -132,14 +132,18 @@ vector<int8_t> Serialization::serialize(const Parameters &pars, const vector<str
 	size_t nobs = obs_names_vec.size();
 	size_t par_buf_sz = npar * sizeof(double);
 	size_t obs_buf_sz = nobs * sizeof(double);
-	serial_data.resize(par_buf_sz + obs_buf_sz, Parameters::no_data);
+	size_t run_time_sz = sizeof(double);
+	serial_data.resize(par_buf_sz + obs_buf_sz + run_time_sz, Parameters::no_data);
 
 	int8_t *buf = &serial_data[0];
 	vector<double> par_data = pars.get_data_vec(par_names_vec);
 	w_memcpy_s(buf, par_buf_sz, &par_data[0], par_data.size() * sizeof(double));
 
 	vector<double> obs_data = obs.get_data_vec(obs_names_vec);
+	
 	w_memcpy_s(buf+par_buf_sz, obs_buf_sz, &obs_data[0], obs_data.size() * sizeof(double));
+	w_memcpy_s(buf + par_buf_sz + obs_buf_sz, run_time_sz, &run_time, sizeof(double));
+
 	return serial_data;
 }
 
@@ -265,12 +269,12 @@ unsigned long Serialization::unserialize(const vector<int8_t> &ser_data, Transfo
 	return total_bytes_read;
 }
 
-unsigned long Serialization::unserialize(const vector<int8_t> &ser_data, Parameters &pars, const vector<string> &par_names, Observations &obs, const vector<string> &obs_names)
+unsigned long Serialization::unserialize(const vector<int8_t> &ser_data, Parameters &pars, const vector<string> &par_names, Observations &obs, const vector<string> &obs_names, double &run_time)
 {
 	unsigned long bytes_read = 0;
 
 	bytes_read = unserialize(ser_data, pars, par_names, 0);
 	bytes_read += unserialize(ser_data, obs, obs_names, bytes_read);
-
+	w_memcpy_s(&run_time, sizeof(double), ser_data.data() + bytes_read, sizeof(double));
 	return bytes_read;
 }

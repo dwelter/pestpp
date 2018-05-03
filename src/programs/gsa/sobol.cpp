@@ -18,45 +18,28 @@ using namespace std;
 using namespace Eigen;
 
 
-Sobol::Sobol(const vector<string> &_adj_par_name_vec, const Parameters &_fixed__ctl_pars,
-	const Parameters &_lower_bnd, const Parameters &_upper_bnd, int _n_sample,
-	ParamTransformSeq *base_partran_seq_ptr,
-	const std::vector<std::string> &_obs_name_vec, FileManager *_file_manager_ptr, PARAM_DIST _par_dist)
-	: GsaAbstractBase(base_partran_seq_ptr, _adj_par_name_vec, 
-	_fixed__ctl_pars, _lower_bnd, _upper_bnd, _obs_name_vec, _file_manager_ptr, _par_dist), n_sample(_n_sample)
+Sobol::Sobol(Pest &_pest_scenario,
+	FileManager &_file_manager, ObjectiveFunc *_obj_func_ptr,
+	const ParamTransformSeq &_par_transform,
+	int _n_sample, PARAM_DIST _par_dist, unsigned int _seed)
+	: GsaAbstractBase(_pest_scenario, _file_manager, _obj_func_ptr, _par_transform,
+		_par_dist, _seed), n_sample(_n_sample)
 	{
 	}
 
-VectorXd Sobol::gen_rand_vec(long nsample, double min, double max, bool log_transform)
+VectorXd Sobol::gen_rand_vec(long nsample, double min, double max)
 {
 	VectorXd v(nsample);
 	long v_len = v.size();
 
-	if (par_dist == PARAM_DIST::uniform && log_transform)
-	{
-
-		std::uniform_real_distribution<double> distribution(log10(min), log10(max));
-		for (long i = 0; i < v_len; ++i)
-		{
-			v[i] = pow(10.0, distribution(rand_engine));
-		}
-	}
-	else if (par_dist == PARAM_DIST::normal)
+	
+	if (par_dist == PARAM_DIST::normal)
 	{
 		std::normal_distribution<> distribution((max + min) / 2.0, (max - min) / 4.0);
 		for (long i = 0; i < v_len; ++i)
 		{
 			v[i] = distribution(rand_engine);
 			while (v[i] < min || v[i] > max) v[i] = distribution(rand_engine);
-		}
-	}
-	else if (par_dist == PARAM_DIST::normal && log_transform)
-	{
-		std::normal_distribution<> distribution((log(max) + log(min)) / 2.0, (log(max) - log(min)) / 4.0);
-		for (long i = 0; i < v_len; ++i)
-		{
-			v[i] = pow(10.0, distribution(rand_engine));
-			while (v[i] < min || v[i] > max) v[i] = pow(10.0, distribution(rand_engine));
 		}
 	}
 	else
@@ -67,7 +50,7 @@ VectorXd Sobol::gen_rand_vec(long nsample, double min, double max, bool log_tran
 			v[i] = distribution(rand_engine);
 		}
 	}
-  return v;
+	return v;
 }
 
 void Sobol::gen_m1_m2()
@@ -83,11 +66,10 @@ void Sobol::gen_m1_m2()
 	for (int i=0; i<npar; ++i)
 	{
 		string &p_name = adj_par_name_vec[i];
-		par_min = lower_bnd[p_name];
-		par_max = upper_bnd[p_name];
-		bool log_trans = is_log_trans_par(p_name);
-		v1 = gen_rand_vec(n_sample, par_min, par_max, log_trans);
-		v2 = gen_rand_vec(n_sample, par_min, par_max, log_trans);
+		par_min = min_numeric_pars[p_name];
+		par_max = max_numeric_pars[p_name];
+		v1 = gen_rand_vec(n_sample, par_min, par_max);
+		v2 = gen_rand_vec(n_sample, par_min, par_max);
 		m1.col(i) = v1;
 		m2.col(i) = v2;
 	}
@@ -109,8 +91,7 @@ void Sobol::add_model_runs(RunManagerAbstract &run_manager, const MatrixXd &n)
 	{
 		VectorXd tmp_vec =  n.row(i);
 		Parameters tmp_pars(adj_par_name_vec, tmp_vec);
-		tmp_pars.insert(fixed_ctl_pars.begin(), fixed_ctl_pars.end());
-		base_partran_seq_ptr->ctl2model_ip(tmp_pars);
+		base_partran_seq_ptr->numeric2model_ip(tmp_pars);
 		run_manager.add_run(tmp_pars);
 	}
 }

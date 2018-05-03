@@ -27,12 +27,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="RunManagerYAMR.h" />
-    <ClInclude Include="YamrSlave.h" />
+    <ClInclude Include="PantherSlave.h" />
+    <ClInclude Include="RunManagerPanther.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="RunManagerYAMR.cpp" />
-    <ClCompile Include="YamrSlave.cpp" />
+    <ClCompile Include="PantherSlave.cpp" />
+    <ClCompile Include="RunManagerPanther.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{AA6E1EC6-2E3D-42EE-B997-2F40814DD2C9}</ProjectGuid>

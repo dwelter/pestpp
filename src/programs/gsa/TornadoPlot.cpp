@@ -24,8 +24,8 @@ TornadoPlot::TornadoPlot(const vector<string> &_adj_par_name_vec, const Paramete
 	ParamTransformSeq *_base_partran_seq_ptr, const std::vector<std::string> &_obs_name_vec, 
 	FileManager *file_manager_ptr, const ObservationInfo *_obs_info_ptr,
 	bool _calc_obs_sen)
-	: GsaAbstractBase(_base_partran_seq_ptr, _adj_par_name_vec, _fixed_pars, _lower_bnd, _upper_bnd,
-	_obs_name_vec, file_manager_ptr), init_pars(_init_pars), obs_info_ptr(_obs_info_ptr), calc_obs_sen(_calc_obs_sen)
+	//: GsaAbstractBase(_base_partran_seq_ptr, _adj_par_name_vec, _fixed_pars, _lower_bnd, _upper_bnd,
+	//_obs_name_vec, file_manager_ptr), init_pars(_init_pars), obs_info_ptr(_obs_info_ptr), calc_obs_sen(_calc_obs_sen)
 {
 	log_trans_pars = _log_trans_pars;
 }

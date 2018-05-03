@@ -24,6 +24,8 @@
 #include <set>
 #include "RunStorage.h"
 #include <Eigen/Dense>
+#include <chrono>
+
 
 class ModelExecInfo;
 class Parameters;
@@ -33,6 +35,7 @@ class Observations;
 class RunManagerAbstract
 {
 public:
+	enum class RUN_UNTIL_COND { NORMAL, NO_OPS, TIME, NO_OPS_OR_TIME };
 	RunManagerAbstract(const std::vector<std::string> _comline_vec,
 		const std::vector<std::string> _tplfile_vec, const std::vector<std::string> _inpfile_vec,
 		const std::vector<std::string> _insfile_vec, const std::vector<std::string> _outfile_vec,
@@ -47,6 +50,7 @@ public:
 	virtual int add_run(const Eigen::VectorXd &model_pars, const std::string &info_txt="", double info_valuee=RunStorage::no_data);
 	virtual void update_run(int run_id, const Parameters &pars, const Observations &obs);
 	virtual void run() = 0;
+	virtual RunManagerAbstract::RUN_UNTIL_COND run_until(RUN_UNTIL_COND condition, int n_nops = 0, double sec = 0.0);
 	virtual const std::vector<std::string> &get_par_name_vec() const;
 	virtual const std::vector<std::string> &get_obs_name_vec() const;
 	virtual void get_info(int run_id, int &run_status, std::string &info_txt, double &info_value);
@@ -77,7 +81,7 @@ public:
 protected:
 	int total_runs;
 	int max_n_failure; // maximium number of times to retry a failed model run
-	int cur_group_id;  // used in some of the derived classes (ie YAMR)
+	int cur_group_id;  // used in some of the derived classes (ie PANTHER)
 	RunStorage file_stor;
 	std::vector<std::string> comline_vec;
 	std::vector<std::string> tplfile_vec;

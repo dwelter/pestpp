@@ -23,7 +23,7 @@ subroutine psoest(basnam)
   end subroutine readrst
   end interface
 !---------------------------------------------------------------------------------------- 
-! external routines for run management via YAMR
+! external routines for run management via PANTHER
 !----------------------------------------------------------------------------------------
   external rmif_run
   integer rmif_run

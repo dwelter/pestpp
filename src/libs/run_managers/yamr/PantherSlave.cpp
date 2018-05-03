@@ -1,4 +1,4 @@
-#include "YamrSlave.h"
+#include "PantherSlave.h"
 #include "utilities.h"
 #include "Serialization.h"
 #include "system_variables.h"
@@ -13,12 +13,12 @@ using namespace pest_utils;
 
 int  linpack_wrap(void);
 
-YAMRSlave::YAMRSlave() :mi()
+PANTHERSlave::PANTHERSlave() :mi()
 {
 
 }
 
-void YAMRSlave::init_network(const string &host, const string &port)
+void PANTHERSlave::init_network(const string &host, const string &port)
 {
 	w_init();
 
@@ -58,14 +58,14 @@ void YAMRSlave::init_network(const string &host, const string &port)
 }
 
 
-YAMRSlave::~YAMRSlave()
+PANTHERSlave::~PANTHERSlave()
 {
 	w_close(sockfd);
 	w_cleanup();
 }
 
 
-void YAMRSlave::process_ctl_file(const string &ctl_filename)
+void PANTHERSlave::process_ctl_file(const string &ctl_filename)
 {
 	ifstream fin;
 	long lnum;
@@ -87,7 +87,7 @@ void YAMRSlave::process_ctl_file(const string &ctl_filename)
 	fin.open(ctl_filename);
 	if (!fin)
 	{
-		throw runtime_error("YAMR Slave unable to open pest control file: " + ctl_filename);
+		throw runtime_error("PANTHER worker unable to open pest control file: " + ctl_filename);
 	}
 	try {
 		for (lnum = 1, sec_begin_lnum = 1; getline(fin, line); ++lnum)
@@ -154,7 +154,7 @@ void YAMRSlave::process_ctl_file(const string &ctl_filename)
 
 
 
-void YAMRSlave::process_yamr_ctl_file(const string &ctl_filename)
+void PANTHERSlave::process_panther_ctl_file(const string &ctl_filename)
 {
 	ifstream fin;
 	long lnum;
@@ -164,9 +164,6 @@ void YAMRSlave::process_yamr_ctl_file(const string &ctl_filename)
 	string line;
 	string line_upper;
 	vector<string> tokens;
-
-	int num_par;
-	int num_tpl_file;
 
 	comline_vec.clear();
 	tplfile_vec.clear();
@@ -226,7 +223,7 @@ void YAMRSlave::process_yamr_ctl_file(const string &ctl_filename)
 }
 
 
-int YAMRSlave::recv_message(NetPackage &net_pack, struct timeval *tv)
+int PANTHERSlave::recv_message(NetPackage &net_pack, struct timeval *tv)
 {
 	fd_set read_fds;
 	int err = -1;
@@ -296,7 +293,7 @@ int YAMRSlave::recv_message(NetPackage &net_pack, struct timeval *tv)
 	//          2  no message recieved
 }
 
-int YAMRSlave::recv_message(NetPackage &net_pack, long  timeout_seconds, long  timeout_microsecs)
+int PANTHERSlave::recv_message(NetPackage &net_pack, long  timeout_seconds, long  timeout_microsecs)
 {
 	int err = -1;
 	int result = 0;
@@ -308,7 +305,7 @@ int YAMRSlave::recv_message(NetPackage &net_pack, long  timeout_seconds, long  t
 }
 
 
-int YAMRSlave::send_message(NetPackage &net_pack, const void *data, unsigned long data_len)
+int PANTHERSlave::send_message(NetPackage &net_pack, const void *data, unsigned long data_len)
 {
 	int err;
 	int n;
@@ -325,7 +322,7 @@ int YAMRSlave::send_message(NetPackage &net_pack, const void *data, unsigned lon
 }
 
 
-NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, NetPackage &net_pack)
+NetPackage::PackType PANTHERSlave::run_model(Parameters &pars, Observations &obs, NetPackage &net_pack)
 {
 	NetPackage::PackType final_run_status = NetPackage::PackType::RUN_FAILED;
 	bool done = false;
@@ -352,7 +349,7 @@ NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, N
 		}
 		
 		vector<double> obs_vec;		
-		thread run_thread(&YAMRSlave::run_async, this, &f_terminate, &f_finished, &shared_execptions,
+		thread run_thread(&PANTHERSlave::run_async, this, &f_terminate, &f_finished, &shared_execptions,
 		   &pars, &obs);
 		pest_utils::thread_RAII raii(run_thread);
 		
@@ -447,14 +444,14 @@ NetPackage::PackType YAMRSlave::run_model(Parameters &pars, Observations &obs, N
 }
 
 
-void YAMRSlave::run_async(pest_utils::thread_flag* terminate, pest_utils::thread_flag* finished, pest_utils::thread_exceptions *shared_execptions,
+void PANTHERSlave::run_async(pest_utils::thread_flag* terminate, pest_utils::thread_flag* finished, pest_utils::thread_exceptions *shared_execptions,
 	Parameters* pars, Observations* obs)
 {
 	mi.run(terminate,finished,shared_execptions, pars, obs);
 }
 
 
-void YAMRSlave::check_io()
+void PANTHERSlave::check_io()
 {
 	vector<string> inaccessible_files;
 	for (auto &file : insfile_vec)
@@ -475,7 +472,7 @@ void YAMRSlave::check_io()
 	}
 }
 
-void YAMRSlave::start(const string &host, const string &port)
+void PANTHERSlave::start(const string &host, const string &port)
 {
 	NetPackage net_pack;
 	Observations obs;
@@ -556,14 +553,16 @@ void YAMRSlave::start(const string &host, const string &port)
 			cout << "received parameters (group id = " << group_id << ", run id = " << run_id << ")" << endl;
 			cout << "starting model run..." << endl;
 
+			std::chrono::system_clock::time_point start_time = chrono::system_clock::now();
 			NetPackage::PackType final_run_status = run_model(pars, obs, net_pack);
 			if (final_run_status == NetPackage::PackType::RUN_FINISHED)
 			{
+				double run_time = pest_utils::get_duration_sec(start_time);
 				//send model results back
 				cout << "run complete" << endl;
 				cout << "sending results to master (group id = " << group_id << ", run id = " << run_id << ")..." << endl;
 				cout << "results sent" << endl << endl;
-				serialized_data = Serialization::serialize(pars, par_name_vec, obs, obs_name_vec);
+				serialized_data = Serialization::serialize(pars, par_name_vec, obs, obs_name_vec, run_time);
 				net_pack.reset(NetPackage::PackType::RUN_FINISHED, group_id, run_id, "");
 				err = send_message(net_pack, serialized_data.data(), serialized_data.size());
 				if (err != 1)

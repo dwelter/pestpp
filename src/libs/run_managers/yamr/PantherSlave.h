@@ -17,8 +17,8 @@
     along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
 
-#ifndef YAMRSLAVE_H_
-#define YAMRSLAVE_H_
+#ifndef PANTHERSLAVE_H_
+#define PANTHERSLAVE_H_
 
 #include "network_wrapper.h"
 #include <iostream>
@@ -32,12 +32,12 @@
 #include "Transformable.h"
 #include "model_interface.h"
 
-class YAMRSlave{
+class PANTHERSlave{
 public:
-	YAMRSlave();
+	PANTHERSlave();
 	void init_network(const std::string &host, const std::string &port);
 	void start(const std::string &host, const std::string &port);
-	~YAMRSlave();
+	~PANTHERSlave();
 	void run();
 	int recv_message(NetPackage &net_pack, struct timeval *tv=NULL);
 	int recv_message(NetPackage &net_pack, long  timeout_seconds, long  timeout_microsecs = 0);
@@ -50,10 +50,11 @@ public:
 	//void listener(pest_utils::thread_flag* terminate, pest_utils::thread_flag* finished);
 	void listener();
 	void process_ctl_file(const string &ctl_filename);
-	void process_yamr_ctl_file(const string &ctl_filename);
+	void process_panther_ctl_file(const string &ctl_filename);
 private:
 	int sockfd;
 	int fdmax;
+	double run_time;
 #ifdef _DEBUG
 	static const int max_recv_fails = 100;
 	static const int max_send_fails = 100;
@@ -79,4 +80,4 @@ private:
 
 };
 
-#endif /* YAMRSLAVE_H_ */
+#endif /* PANTHERSLAVE_H_ */

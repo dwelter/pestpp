@@ -3,6 +3,7 @@
 #include "GsaAbstractBase.h"
 #include "utilities.h"
 #include "FileManager.h"
+#include "ParamTransformSeq.h"
 
 using namespace std;
 using namespace pest_utils;
@@ -10,16 +11,40 @@ using namespace pest_utils;
 const double GsaAbstractBase::MISSING_DATA = -9999e50;
 mt19937_64 GsaAbstractBase::rand_engine = mt19937_64(1);
 
-GsaAbstractBase::GsaAbstractBase(ParamTransformSeq *_base_partran_seq_ptr,
-		const vector<string> &_adj_par_name_vec, const Parameters &_fixed_ctl_pars,
-		const Parameters &_lower_bnd, const Parameters &_upper_bnd,
-		const std::vector<std::string> &_obs_name_vec, FileManager *_file_manager_ptr, 
-		PARAM_DIST _par_dist)
-		: base_partran_seq_ptr(_base_partran_seq_ptr), 
-		  adj_par_name_vec(_adj_par_name_vec), fixed_ctl_pars(_fixed_ctl_pars),
-		  lower_bnd(_lower_bnd), upper_bnd(_upper_bnd), obs_name_vec(_obs_name_vec),
-		  file_manager_ptr(_file_manager_ptr), par_dist(_par_dist)
+GsaAbstractBase::GsaAbstractBase(Pest &_pest_scenario,
+		FileManager &_file_manager, ObjectiveFunc *_obj_func_ptr,
+		const ParamTransformSeq &_par_transform, PARAM_DIST _par_dist, unsigned int _seed)
+	: file_manager_ptr(&_file_manager), obj_func_ptr(_obj_func_ptr), base_partran_seq_ptr(0),
+	par_dist(_par_dist), seed(_seed)
 {
+//	// GSA metods only support one to one transformations
+//	if (!_par_transform.is_one_to_one())
+//	{
+//		throw PestError("Error: GSA methods only support one to one transformations.  Please insure the SVDA transformation is turned off.");
+//	}
+
+	//copy transformations and delete all active_ctl to numeric transformation except the log trans
+	gsa_parm_tran_seq.deep_copy(_par_transform);
+	gsa_parm_tran_seq.clear_tranSeq_active_ctl2numeric();
+	gsa_parm_tran_seq.push_back_active_ctl2numeric(_par_transform.get_log10_ptr()->clone());
+	base_partran_seq_ptr = &gsa_parm_tran_seq;
+	Parameters inti_pars = _pest_scenario.get_ctl_parameters();
+	for (const auto &i : inti_pars)
+	{
+		const string &p_name = i.first;
+		const ParameterRec *p_info = _pest_scenario.get_ctl_parameter_info().get_parameter_rec_ptr(p_name);
+		max_numeric_pars[p_name] = p_info->ubnd;
+		min_numeric_pars[p_name] = p_info->lbnd;
+	}
+	base_partran_seq_ptr->ctl2numeric_ip(max_numeric_pars);
+	base_partran_seq_ptr->ctl2numeric_ip(min_numeric_pars);
+	for (const auto i : _pest_scenario.get_ctl_ordered_adj_par_names())
+	{
+		if (max_numeric_pars.find(i) != max_numeric_pars.end())
+		{
+			adj_par_name_vec.push_back(i);
+		}
+	}
 }
 
 
@@ -63,16 +88,9 @@ map<string, double> GsaAbstractBase::calc_parameter_norm_std_dev()
 	map<string, double> std_dev_map;
 	for (const auto &ipar : adj_par_name_vec)
 	{
-		double lower = lower_bnd.get_rec(ipar);
-		double upper = upper_bnd.get_rec(ipar);
-		if (!is_log_trans_par(ipar))
-		{
-			std_dev_map[ipar] = (upper - lower) / 4.0;
-		}
-		else
-		{
-			std_dev_map[log_name(ipar)] = (log10(upper) - log10(lower)) / 4.0;
-		}
+		double lower = min_numeric_pars[ipar];
+		double upper = max_numeric_pars[ipar];
+		std_dev_map[ipar] = (upper - lower) / 4.0;
 	}
 	return std_dev_map;
 }
@@ -82,16 +100,9 @@ map<string, double> GsaAbstractBase::calc_parameter_unif_std_dev()
 	map<string, double> std_dev_map;
 	for (const auto &ipar : adj_par_name_vec)
 	{
-		double lower = lower_bnd.get_rec(ipar);
-		double upper = upper_bnd.get_rec(ipar);
-		if (!is_log_trans_par(ipar))
-		{
-			std_dev_map[ipar] = (upper - lower) / sqrt(12.0);
-		}
-		else
-		{
-			std_dev_map[log_name(ipar)] = (log10(upper) - log10(lower)) / sqrt(12.0);
-		}
+		double lower = min_numeric_pars[ipar];
+		double upper = max_numeric_pars[ipar];
+		std_dev_map[ipar] = (upper - lower) / sqrt(12.0);
 	}
 	return std_dev_map;
 }
@@ -140,22 +151,6 @@ void GsaAbstractBase::parce_line(const string &line, map<string, string> &arg_ma
 		}
 		arg_map[key] = value;
 	}
-}
-
-string GsaAbstractBase::log_name(const string &name) const
-{
-	string log_name(name);
-	if (is_log_trans_par(name))
-	{
-		log_name = "log(" + name + ")";
-	}
-	return log_name;
-}
-
-bool GsaAbstractBase::is_log_trans_par(const string &name) const
-{
-	bool ret_val = (log_trans_pars.find(name) != log_trans_pars.end()) ? true : false;
-	return ret_val;
 }
 
 

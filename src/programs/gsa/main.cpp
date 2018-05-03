@@ -17,7 +17,7 @@
 	along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
 
-#include "RunManagerYAMR.h" //needs to be first because it includes winsock2.h
+#include "RunManagerPanther.h" //needs to be first because it includes winsock2.h
 #include <iostream>
 #include <fstream>
 #include <Eigen/Dense>
@@ -25,7 +25,7 @@
 #include "config_os.h"
 #include "MorrisMethod.h"
 #include "sobol.h"
-#include "TornadoPlot.h"
+//#include "TornadoPlot.h"
 #include "Pest.h"
 #include "Transformable.h"
 #include "Transformation.h"
@@ -37,7 +37,7 @@
 #include "RunManagerGenie.h"
 #include "RunManagerSerial.h"
 #include "OutputFileWriter.h"
-#include "YamrSlave.h"
+#include "PantherSlave.h"
 #include "Serialization.h"
 #include "system_variables.h"
 
@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
 	}
 
 	string complete_path;
-	enum class RunManagerType {SERIAL, YAMR, GENIE};
+	enum class RunManagerType {SERIAL, PANTHER, GENIE};
 
 	if (argc >=2) {
 		complete_path = argv[1];
@@ -82,9 +82,9 @@ int main(int argc, char* argv[])
 		cerr << "usage:" << endl << endl;
 		cerr << "    serial run manager:" << endl;
 		cerr << "        gsa pest_ctl_file.pst" << endl << endl;
-		cerr << "    YAMR master:" << endl;
+		cerr << "    PANTHER master:" << endl;
 		cerr << "        gsa control_file.pst /H :port" << endl; 
-		cerr << "    YAMR runner:" << endl;
+		cerr << "    PANTHER worker:" << endl;
 		cerr << "        gsa control_file.pst /H hostname:port " << endl << endl;
 		cerr << "    GENIE:" << endl;
 		cerr << "        gsa control_file.pst /G hostname:port" << endl;
@@ -100,7 +100,7 @@ int main(int argc, char* argv[])
 	//by default use the serial run manager.  This will be changed later if another
 	//run manger is specified on the command line.
 	RunManagerType run_manager_type = RunManagerType::SERIAL;
-	//Check for YAMR Slave
+	//Check for PANTHER worker
 	vector<string>::const_iterator it_find, it_find_next;
 	string next_item;
 	string socket_str = "";
@@ -113,7 +113,7 @@ int main(int argc, char* argv[])
 	}
 	if (it_find != cmd_arg_vec.end() && !next_item.empty() && next_item[0] != ':')
 	{
-		// This is a YAMR Slave, start PEST++ as a YAMR Slave
+		// This is a PANTHER worker, start PEST++ as a PANTHER worker
 		vector<string> sock_parts;
 		vector<string>::const_iterator it_find_yamr_ctl;
 		string file_ext = get_filename_ext(filename);
@@ -122,17 +122,17 @@ int main(int argc, char* argv[])
 		{
 			if (sock_parts.size() != 2)
 			{
-				cerr << "YAMR slave requires the master be specified as /H hostname:port" << endl << endl;
+				cerr << "PANTHER worker requires the master be specified as /H hostname:port" << endl << endl;
 				throw(PestCommandlineError(commandline));
 			}
-			YAMRSlave yam_slave;
+			PANTHERSlave yam_slave;
 			string ctl_file = "";
 			try {
 				string ctl_file;
 				if (upper_cp(file_ext) == "YMR")
 				{
 					ctl_file = file_manager.build_filename("ymr");
-					yam_slave.process_yamr_ctl_file(ctl_file);
+					yam_slave.process_panther_ctl_file(ctl_file);
 				}
 				else
 				{
@@ -158,11 +158,11 @@ int main(int argc, char* argv[])
 		cout << endl << "Simulation Complete..." << endl;
 		exit(0);
 	}
-	//Check for YAMR Master
+	//Check for PANTHER master
 	else if (it_find != cmd_arg_vec.end())
 	{
-		// using YAMR run manager
-		run_manager_type = RunManagerType::YAMR;
+		// using PANTHER run manager
+		run_manager_type = RunManagerType::PANTHER;
 		socket_str = next_item;
 	}
 
@@ -208,13 +208,13 @@ int main(int argc, char* argv[])
 	
 
 	RunManagerAbstract *run_manager_ptr;
-	if (run_manager_type == RunManagerType::YAMR)
+	if (run_manager_type == RunManagerType::PANTHER)
 	{
 		string port = argv[3];
 		strip_ip(port);
 		strip_ip(port, "front", ":");
 		const ModelExecInfo &exi = pest_scenario.get_model_exec_info();
-		run_manager_ptr = new RunManagerYAMR (
+		run_manager_ptr = new RunManagerPanther (
 			file_manager.build_filename("rns"), port,
 			file_manager.open_ofile_ext("rmr"),
 			pest_scenario.get_pestpp_options().get_max_run_fail(),
@@ -291,25 +291,6 @@ int main(int argc, char* argv[])
 	ParamTransformSeq base_partran_seq(pest_scenario.get_base_par_tran_seq());
 	Parameters ctl_par = pest_scenario.get_ctl_parameters();
 
-	// Get the lower and upper bounds of the parameters
-	//remove fixed parameters from ctl_par
-	vector<string> adj_par_name_vec;
-	Parameters fixed_pars;
-	for (auto &i : pest_scenario.get_ctl_ordered_par_names())
-	{
-		if(pest_scenario.get_ctl_parameter_info().get_parameter_rec_ptr(i)->tranform_type != ParameterRec::TRAN_TYPE::FIXED)
-		{
-			adj_par_name_vec.push_back(i);
-		}
-		else
-		{
-			fixed_pars.insert(i, pest_scenario.get_ctl_parameter_info().get_parameter_rec_ptr(i)->init_value);
-		}
-	}
-
-	Parameters lower_bnd = pest_scenario.get_ctl_parameter_info().get_low_bnd(ctl_par.get_keys());
-	Parameters upper_bnd = pest_scenario.get_ctl_parameter_info().get_up_bnd(ctl_par.get_keys());
-
 
 	//Build Transformation with ctl_2_numberic
 	ObjectiveFunc obj_func(&(pest_scenario.get_ctl_observations()), &(pest_scenario.get_ctl_observation_info()), &(pest_scenario.get_prior_info()));
@@ -361,36 +342,36 @@ int main(int argc, char* argv[])
 
 		if (default_delta) morris_delta = morris_p / (2.0 * (morris_p - 1));
 
-		MorrisMethod *m_ptr = new MorrisMethod(adj_par_name_vec, fixed_pars, lower_bnd, upper_bnd, log_trans_pars,
-			morris_p, morris_r, &base_partran_seq, pest_scenario.get_ctl_ordered_obs_names(), &file_manager, 
-			&(pest_scenario.get_ctl_observation_info()), calc_pooled_obs, morris_delta, calc_morris_obs_sen);
+		MorrisMethod *m_ptr = new MorrisMethod(pest_scenario, file_manager, &obj_func,
+			base_partran_seq, morris_p, morris_r, morris_delta, calc_pooled_obs,
+			calc_morris_obs_sen, GsaAbstractBase::PARAM_DIST::uniform, 1.0);
 		gsa_method = m_ptr;
 		m_ptr->process_pooled_var_file();
 	}
-	else if (method != gsa_opt_map.end() && method->second == "TORNADO")
-	{
-		bool calc_obs_sen = true;
-	
-		auto morris_obs_sen_it = gsa_opt_map.find("TORNADO_OBS_SEN");
-		if (morris_obs_sen_it != gsa_opt_map.end())
-		{
-			string obs_sen_flag = morris_obs_sen_it->second;
-			upper_ip(obs_sen_flag);
-			if (obs_sen_flag == "FALSE") calc_obs_sen = false;
-		}
-	//	TornadoPlot(const std::vector<std::string> &_adj_par_name_vec, const Parameters &_fixed_ctl_pars, const Parameters &_init_pars,
-		///	const Parameters &lower_bnd,
-			//const Parameters &upper_bnd, const set<string> &_log_trans_pars,
-			//ParamTransformSeq *base_partran_seq,
-			//const std::vector<std::string> &_obs_name_vec, FileManager *_file_manager_ptr,
-			//const ObservationInfo *_obs_info_ptr, bool _calc_obs_sen);
-		Parameters init_par = pest_scenario.get_ctl_parameter_info().get_init_value(ctl_par.get_keys());
-		TornadoPlot *t_ptr = new TornadoPlot(adj_par_name_vec, fixed_pars, init_par,
-			lower_bnd, upper_bnd, log_trans_pars,
-			&base_partran_seq, pest_scenario.get_ctl_ordered_obs_names(), &file_manager,
-			&(pest_scenario.get_ctl_observation_info()), calc_obs_sen);
-		gsa_method = t_ptr;
-	}
+	//else if (method != gsa_opt_map.end() && method->second == "TORNADO")
+	//{
+	//	bool calc_obs_sen = true;
+	//
+	//	auto morris_obs_sen_it = gsa_opt_map.find("TORNADO_OBS_SEN");
+	//	if (morris_obs_sen_it != gsa_opt_map.end())
+	//	{
+	//		string obs_sen_flag = morris_obs_sen_it->second;
+	//		upper_ip(obs_sen_flag);
+	//		if (obs_sen_flag == "FALSE") calc_obs_sen = false;
+	//	}
+	////	TornadoPlot(const std::vector<std::string> &_adj_par_name_vec, const Parameters &_fixed_ctl_pars, const Parameters &_init_pars,
+	//	///	const Parameters &lower_bnd,
+	//		//const Parameters &upper_bnd, const set<string> &_log_trans_pars,
+	//		//ParamTransformSeq *base_partran_seq,
+	//		//const std::vector<std::string> &_obs_name_vec, FileManager *_file_manager_ptr,
+	//		//const ObservationInfo *_obs_info_ptr, bool _calc_obs_sen);
+	//	Parameters init_par = pest_scenario.get_ctl_parameter_info().get_init_value(ctl_par.get_keys());
+	//	TornadoPlot *t_ptr = new TornadoPlot(adj_par_name_vec, fixed_pars, init_par,
+	//		lower_bnd, upper_bnd, log_trans_pars,
+	//		&base_partran_seq, pest_scenario.get_ctl_ordered_obs_names(), &file_manager,
+	//		&(pest_scenario.get_ctl_observation_info()), calc_obs_sen);
+	//	gsa_method = t_ptr;
+	//}
 	else if (method != gsa_opt_map.end() && method->second == "SOBOL")
 	{
 		GsaAbstractBase::PARAM_DIST par_dist = GsaAbstractBase::PARAM_DIST::uniform;
@@ -416,8 +397,8 @@ int main(int argc, char* argv[])
 			}
 		}
 
-		gsa_method = new Sobol(adj_par_name_vec, fixed_pars, lower_bnd, upper_bnd, n_sample, 
-			&base_partran_seq, pest_scenario.get_ctl_ordered_obs_names(), &file_manager, par_dist);
+		gsa_method = new Sobol(pest_scenario, file_manager, &obj_func,
+			base_partran_seq, n_sample, par_dist, 1.0);
 	}
 	else
 	{

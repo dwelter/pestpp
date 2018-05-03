@@ -16,15 +16,15 @@ class ModelRun;
 class Sobol : public GsaAbstractBase
 {
 public:
-	Sobol(const std::vector<std::string> &_adj_par_name_vec, const Parameters &_fixed__ctl_pars,
-		const Parameters &_lower_bnd, const Parameters &_upper_bnd, int n_sample,
-		ParamTransformSeq *base_partran_seq,
-		const std::vector<std::string> &_obs_name_vec, FileManager *_file_manager_ptr, PARAM_DIST dist);
+	Sobol(Pest &_pest_scenario,
+		FileManager &_file_manager, ObjectiveFunc *_obj_func_ptr,
+		const ParamTransformSeq &_par_transform,
+		int _n_sample, PARAM_DIST _par_dist, unsigned int _seed);
 	void assemble_runs(RunManagerAbstract &run_manager);
 	void calc_sen(RunManagerAbstract &run_manager, ModelRun model_run);
 	void calc_sen_single(RunManagerAbstract &run_manager, ModelRun model_run, std::ofstream &fout_sbl, const std::string &obs_name);
 private:
-	VectorXd gen_rand_vec(long nsample, double min, double max, bool log_transform=false);
+	VectorXd gen_rand_vec(long nsample, double min, double max);
 	void gen_m1_m2();
 	MatrixXd gen_N_matrix(const MatrixXd &m1, const MatrixXd &m2, const vector<int> &idx_vec);
 	void add_model_runs(RunManagerAbstract &run_manager, const MatrixXd &n);

@@ -1,7 +1,7 @@
 #include <algorithm>
 #include "RunManagerCWrapper.h"
 #include "utilities.h"
-#include "RunManagerYAMR.h"
+#include "RunManagerPanther.h"
 #include "RunManagerSerial.h"
 #include "RunManagerGenie.h"
 #include "pest_error.h"
@@ -36,7 +36,7 @@ RunManager* rmic_create_serial(char **comline, int comline_array_len,
 }
 
 
-RunManager* rmic_create_yamr(
+RunManager* rmic_create_panther(
 	char *storfile,
 	char *port,
 	char *info_filename,
@@ -46,7 +46,7 @@ RunManager* rmic_create_yamr(
 {
 	RunManager *run_manager_ptr = nullptr;
 	fout_run_manager_log_file.open(info_filename);
-	run_manager_ptr = new RunManagerYAMR(storfile, port, 
+	run_manager_ptr = new RunManagerPanther(storfile, port, 
 		fout_run_manager_log_file, n_max_fail, overdue_reched_fac, overdue_giveup_fac);
 	return run_manager_ptr;
 }
@@ -129,6 +129,24 @@ int rmic_run(RunManager *run_manager_ptr)
 	}
 	return err;
 }
+
+int rmic_run_until_(RunManager *run_manager_ptr, int *condition, int no_ops, double time_sec, int *return_cond)
+{
+	int err = 0;
+	RunManagerAbstract::RUN_UNTIL_COND enum_input_cond;
+	RunManagerAbstract::RUN_UNTIL_COND enum_return_cond;
+	enum_input_cond = static_cast<RunManagerAbstract::RUN_UNTIL_COND>(*condition);
+	try {
+		enum_return_cond = run_manager_ptr->run_until(enum_input_cond, no_ops, time_sec);
+	}
+	catch (...)
+	{
+		err = 1;
+	}
+	*return_cond = static_cast<int>(enum_return_cond);
+	return err;
+}
+
 
 int rmic_get_run(RunManager *run_manager_ptr, int run_id, double *parameter_data, int npar, double *obs_data, int nobs)
 {

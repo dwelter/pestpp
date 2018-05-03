@@ -41,13 +41,13 @@ private:
 class MorrisMethod : public GsaAbstractBase
 {
 public:
-	MorrisMethod(const std::vector<std::string> &_adj_par_name_vec, const Parameters &_fixed_ctl_pars, const Parameters &lower_bnd,
-		const Parameters &upper_bnd, const set<string> &_log_trans_pars, int _p, int _r, 
-		ParamTransformSeq *base_partran_seq,
-		const std::vector<std::string> &_obs_name_vec, FileManager *_file_manager_ptr,
-		const ObservationInfo *_obs_info_ptr, bool _calc_pooled_obs, double _delta, bool _calc_morris_obs_sen);
+	MorrisMethod(Pest &_pest_scenario,
+		FileManager &_file_manager, ObjectiveFunc *_obj_func_ptr,
+		const ParamTransformSeq &_par_transform,
+		int _p, int _r, double _delta, bool _calc_pooled_obs,
+		bool _calc_morris_obs_sen, PARAM_DIST _par_dist, unsigned int _seed);
 	void process_pooled_var_file();
-	void initialize(const set<string> &_log_trans_pars, int _p, int _r, double _delta);
+	void initialize(int _p, int _r, double _delta);
 	void assemble_runs(RunManagerAbstract &run_manager);
 	void calc_sen(RunManagerAbstract &run_manager, ModelRun model_run);
 	void calc_morris_obs(std::ostream &, MorrisObsSenFile &morris_sen_file);
@@ -65,7 +65,7 @@ private:
 	static MatrixXd create_P_mat(int k);
 		MatrixXd create_P_star_mat(int k);
 	VectorXd create_x_vec(int k);
-	Parameters get_ctl_parameters(int row);
+	Parameters get_numeric_parameters(int row);
 	static int rand_plus_minus_1(void);
 	MorrisObsSenFile obs_sen_file;
 	const ObservationInfo *obs_info_ptr;

@@ -52,6 +52,7 @@ using namespace std;
 class Transformation {
 public:
 	Transformation(const string &_name="unnamed Transformation") : name(_name) {}
+	Transformation(const Transformation &rhs) : name(rhs.name) {}
 	virtual ~Transformation(){};
 	 /** Perform a forward transformation on the dataset stored in data.  The
 	 dataset contained in data is changed in place.
@@ -82,7 +83,7 @@ public:
 	virtual bool is_one_to_one() const {return false;}
 	/** Returns a pointer to a copy of current instance of this class
 	 */
-	virtual Transformation* clone() = 0;
+	virtual Transformation* clone() const= 0;
 protected:
 	string name;
 };
@@ -96,6 +97,7 @@ protected:
 class TranMapBase: public Transformation {
 public:
 	TranMapBase(const string &_name="unnamed TranMapBase"): Transformation(_name){};
+	TranMapBase(const TranMapBase &rhs) : Transformation(rhs), items(rhs.items) {}
 	virtual ~TranMapBase(){};
 	virtual void forward(Transformable &data)=0;
 	virtual void reverse(Transformable &data)=0;
@@ -115,7 +117,7 @@ public:
 	pair<bool, double> get_value(const string &name) const;
 	virtual void print(ostream &os) const;
 	virtual bool is_one_to_one() const {return false;}
-	virtual TranMapBase* clone() = 0;
+	virtual TranMapBase* clone() const = 0;
 
 protected:
 	map<string, double> items;
@@ -130,6 +132,7 @@ protected:
 class TranSetBase: public Transformation {
 public:
 	TranSetBase(const string &_name="unnamed TranSetBase"): Transformation(_name){};
+	TranSetBase(const TranSetBase &rhs) : Transformation(rhs), items(rhs.items) {}
 	virtual void forward(Transformable &data) = 0;
 	virtual void reverse(Transformable &data) = 0;
 	void insert(const string &data_name);
@@ -137,7 +140,7 @@ public:
 	virtual ~TranSetBase(){}
 	virtual void print(ostream &os) const;
 	virtual bool is_one_to_one() const {return false;}
-	virtual TranSetBase* clone() = 0;
+	virtual TranSetBase* clone() const = 0;
 	virtual const set<string>& get_items() const {return items;}
 protected:
 	set<string> items;
@@ -153,6 +156,7 @@ protected:
 class TranOffset: public TranMapBase {
 public:
 	TranOffset(const string &_name="unnamed TranOffset"): TranMapBase(_name){};
+	TranOffset(const TranOffset &rhs) : TranMapBase(rhs) {}
 	virtual void forward(Transformable &data);
 	virtual void reverse(Transformable &data);
 	virtual void jacobian_forward(Jacobian &jac);
@@ -162,7 +166,7 @@ public:
 	virtual ~TranOffset(){};
 	virtual void print(ostream &os) const;
 	virtual bool is_one_to_one() const {return true;}
-	virtual TranOffset* clone() {return new TranOffset(*this);}
+	virtual TranOffset* clone() const {return new TranOffset(*this);}
 private:
 };
 
@@ -175,6 +179,7 @@ private:
 class TranScale: public TranMapBase {
 public:
 	TranScale(const string &_name="unnamed TranScale"): TranMapBase(_name){};
+	TranScale(const TranScale &rhs) : TranMapBase(rhs) {}
 	virtual void forward(Transformable &data);
 	virtual void reverse(Transformable &data);
 	virtual void jacobian_forward(Jacobian &jac);
@@ -184,7 +189,7 @@ public:
 	virtual ~TranScale(){};
 	virtual void print(ostream &os) const;
 	virtual bool is_one_to_one() const {return true;}
-	virtual TranScale* clone() {return new TranScale(*this);}
+	virtual TranScale* clone() const {return new TranScale(*this);}
 private:
 };
 
@@ -198,6 +203,7 @@ private:
 class TranLog10: public TranSetBase {
 public:
 	TranLog10(const string &_name="unnamed TranLog10"): TranSetBase(_name){};
+	TranLog10(const TranLog10 &rhs) : TranSetBase(rhs) {}
 	virtual void forward(Transformable &data);
 	virtual void reverse(Transformable &data);
 	virtual void jacobian_forward(Jacobian &jac);
@@ -207,7 +213,7 @@ public:
 	virtual ~TranLog10(){};
 	virtual void print(ostream &os) const;
 	virtual bool is_one_to_one() const {return true;}
-	virtual TranLog10* clone() {return new TranLog10(*this);}
+	virtual TranLog10* clone() const {return new TranLog10(*this);}
 };
 
 /**
@@ -219,6 +225,7 @@ public:
 class TranFixed: public TranMapBase {
 public:
 	TranFixed(const string &_name="unknown TranFixed"): TranMapBase(_name){};
+	TranFixed(const TranFixed &rhs) : TranMapBase(rhs) {}
 	virtual void forward(Transformable &data);
 	virtual void reverse(Transformable &data);
 	virtual void jacobian_forward(Jacobian &jac);
@@ -228,17 +235,18 @@ public:
 	virtual ~TranFixed(){};
 	virtual void print(ostream &os) const;
 	virtual bool is_one_to_one() const {return true;}
-	virtual TranFixed* clone() {return new TranFixed(*this);}
+	virtual TranFixed* clone() const {return new TranFixed(*this);}
 private:
 };
 
 class TranFrozen: public TranFixed {
 public:
 	TranFrozen(const string &_name="unknown TranFrozen"): TranFixed(_name){};
+	TranFrozen(const TranFrozen &rhs) : TranFixed(rhs) {}
 	virtual ~TranFrozen(){};
 	virtual void print(ostream &os) const;
 	virtual bool is_one_to_one() const {return true;}
-	virtual TranFrozen* clone() {return new TranFrozen(*this);}
+	virtual TranFrozen* clone() const {return new TranFrozen(*this);}
 private:
 };
 
@@ -255,6 +263,7 @@ class TranTied: public Transformation {
 public:
 	typedef pair<string, double> pair_string_double;
 	TranTied(const string &_name="unknown TranTied"): Transformation(_name){};
+	TranTied(const TranTied &rhs) : Transformation(rhs), items(rhs.items) {}
 	void insert(const string &item_name, const pair<string, double> &item_value);
 	virtual void forward(Transformable &data);
 	virtual void reverse(Transformable &data);
@@ -265,7 +274,7 @@ public:
 	virtual ~TranTied(){};
 	virtual void print(ostream &os) const;
 	virtual bool is_one_to_one() const {return true;}
-	virtual TranTied* clone() {return new TranTied(*this);}
+	virtual TranTied* clone() const {return new TranTied(*this);}
 protected:
 	map<string, pair_string_double> items;
 };
@@ -280,6 +289,7 @@ protected:
 class TranSVD: public Transformation {
 public:
 	TranSVD(int _max_sing, double _eign_thresh, const string &_name = "unnamed TranSVD");
+	TranSVD(const TranSVD &rhs);
 	void set_SVD_pack_propack();
 	void update_reset_frozen_pars(const Jacobian &jacobian, const QSqrtMatrix &Q_sqrt, const Parameters &base_numeric_pars,
 		int maxsing, double eigthresh, const vector<string> &par_names, const vector<string> &obs_names,
@@ -298,7 +308,7 @@ public:
 	virtual ~TranSVD();
 	virtual void print(ostream &os) const;
 	virtual bool is_one_to_one() const {return false;}
-	virtual TranSVD* clone() {return new TranSVD(*this);}
+	virtual TranSVD* clone() const {return new TranSVD(*this);}
 	ParameterGroupInfo build_par_group_info(const ParameterGroupInfo &base_pg_info);
 	Parameters map_basepar_to_super(const Parameters &base_pars);
 	const Eigen::SparseMatrix<double>& get_vt() const;
@@ -330,6 +340,7 @@ public:
 		~NormData(){};
 	};
 	TranNormalize(const string &_name="unknown TranNormalize"): Transformation(_name){};
+	TranNormalize(const TranNormalize &rhs) : Transformation(rhs), items(rhs.items) {}
 	void insert(const string &item_name, double _offset, double _scale);
 	virtual void forward(Transformable &data);
 	virtual void reverse(Transformable &data);
@@ -340,7 +351,7 @@ public:
 	virtual ~TranNormalize(){};
 	virtual void print(ostream &os) const;
 	virtual bool is_one_to_one() const {return true;}
-	virtual TranNormalize* clone() {return new TranNormalize(*this);}
+	virtual TranNormalize* clone() const {return new TranNormalize(*this);}
 protected:
 	map<string, NormData> items;
 };

@@ -18,7 +18,7 @@
 */
 
 #include "network_wrapper.h"
-#include "RunManagerYAMR.h"
+#include "RunManagerPanther.h"
 #include <chrono>
 #include <ctime>
 #include <iomanip>
@@ -44,11 +44,11 @@
 using namespace std;
 using namespace pest_utils;
 
-const int RunManagerYAMR::BACKLOG = 10;
-const int RunManagerYAMR::MAX_FAILED_PINGS = 60;
-const int RunManagerYAMR::N_PINGS_UNRESPONSIVE = 3;
-const int RunManagerYAMR::PING_INTERVAL_SECS = 5;
-const int RunManagerYAMR::MAX_CONCURRENT_RUNS_LOWER_LIMIT = 3;
+const int RunManagerPanther::BACKLOG = 10;
+const int RunManagerPanther::MAX_FAILED_PINGS = 60;
+const int RunManagerPanther::N_PINGS_UNRESPONSIVE = 3;
+const int RunManagerPanther::PING_INTERVAL_SECS = 5;
+const int RunManagerPanther::MAX_CONCURRENT_RUNS_LOWER_LIMIT = 3;
 
 SlaveInfoRec::SlaveInfoRec(int _socket_fd)
 {
@@ -256,12 +256,12 @@ int SlaveInfoRec::seconds_since_last_ping_time() const
 }
 
 
-RunManagerYAMR::RunManagerYAMR(const string &stor_filename, const string &_port, ofstream &_f_rmr, int _max_n_failure,
+RunManagerPanther::RunManagerPanther(const string &stor_filename, const string &_port, ofstream &_f_rmr, int _max_n_failure,
 	double _overdue_reched_fac, double _overdue_giveup_fac)
 	: RunManagerAbstract(vector<string>(), vector<string>(), vector<string>(),
 	vector<string>(), vector<string>(), stor_filename, _max_n_failure),
 	overdue_reched_fac(_overdue_reched_fac), overdue_giveup_fac(_overdue_giveup_fac),
-	port(_port), f_rmr(_f_rmr)
+	port(_port), f_rmr(_f_rmr), n_no_ops(0)
 {
 	max_concurrent_runs = max(MAX_CONCURRENT_RUNS_LOWER_LIMIT, _max_n_failure);
 	w_init();
@@ -277,7 +277,7 @@ RunManagerYAMR::RunManagerYAMR(const string &stor_filename, const string &_port,
 	hints.ai_flags = AI_PASSIVE;
 
 	status = w_getaddrinfo(NULL, port.c_str(), &hints, &servinfo);
-	cout << "          starting YAMR (Yet Another run ManageR)..." << endl << endl;
+	cout << "          starting PANTHER master..." << endl << endl;
 	w_print_servinfo(servinfo, cout);
 	cout << endl;
 	//make socket, bind and listen
@@ -290,8 +290,8 @@ RunManagerYAMR::RunManagerYAMR(const string &stor_filename, const string &_port,
 	}
 	else {
 		f_rmr << endl;
-		cout << "YAMR Master listening on socket: " << w_get_addrinfo_string(connect_addr) << endl;
-		f_rmr << "YAMR Master listening on socket:" << w_get_addrinfo_string(connect_addr) << endl;
+		cout << "PANTHER master listening on socket: " << w_get_addrinfo_string(connect_addr) << endl;
+		f_rmr << "PANTHER master listening on socket:" << w_get_addrinfo_string(connect_addr) << endl;
 	}
 	w_listen(listener, BACKLOG);
 	//free servinfo
@@ -302,7 +302,7 @@ RunManagerYAMR::RunManagerYAMR(const string &stor_filename, const string &_port,
 	return;
 }
 
-int RunManagerYAMR::get_n_concurrent(int run_id)
+int RunManagerPanther::get_n_concurrent(int run_id)
 {
 	auto range_pair = active_runid_to_iterset_map.equal_range(run_id);
 	int n = 0;
@@ -316,7 +316,7 @@ int RunManagerYAMR::get_n_concurrent(int run_id)
 	return n;
 }
 
-list<SlaveInfoRec>::iterator RunManagerYAMR::get_active_run_iter(int socket)
+list<SlaveInfoRec>::iterator RunManagerPanther::get_active_run_iter(int socket)
 {
 	auto iter = socket_to_iter_map.find(socket);
 
@@ -331,13 +331,13 @@ list<SlaveInfoRec>::iterator RunManagerYAMR::get_active_run_iter(int socket)
 }
 
 
-void RunManagerYAMR::initialize(const Parameters &model_pars, const Observations &obs, const string &_filename)
+void RunManagerPanther::initialize(const Parameters &model_pars, const Observations &obs, const string &_filename)
 {
 	RunManagerAbstract::initialize(model_pars, obs, _filename);
 	cur_group_id = NetPackage::get_new_group_id();
 }
 
-void RunManagerYAMR::initialize_restart(const std::string &_filename)
+void RunManagerPanther::initialize_restart(const std::string &_filename)
 {
 	file_stor.init_restart(_filename);
 	free_memory();
@@ -348,14 +348,14 @@ void RunManagerYAMR::initialize_restart(const std::string &_filename)
 	}
 }
 
-void RunManagerYAMR::reinitialize(const std::string &_filename)
+void RunManagerPanther::reinitialize(const std::string &_filename)
 {
 	free_memory();
 	RunManagerAbstract::reinitialize(_filename);
 	cur_group_id = NetPackage::get_new_group_id();
 }
 
-void  RunManagerYAMR::free_memory()
+void  RunManagerPanther::free_memory()
 {
 	waiting_runs.clear();
 	model_runs_done = 0;
@@ -363,28 +363,28 @@ void  RunManagerYAMR::free_memory()
 	active_runid_to_iterset_map.clear();
 }
 
-int RunManagerYAMR::add_run(const Parameters &model_pars, const string &info_txt, double info_value)
+int RunManagerPanther::add_run(const Parameters &model_pars, const string &info_txt, double info_value)
 {
 	int run_id = file_stor.add_run(model_pars, info_txt, info_value);
 	waiting_runs.push_back(run_id);
 	return run_id;
 }
 
-int RunManagerYAMR::add_run(const std::vector<double> &model_pars, const string &info_txt, double info_value)
+int RunManagerPanther::add_run(const std::vector<double> &model_pars, const string &info_txt, double info_value)
 {
 	int run_id = file_stor.add_run(model_pars, info_txt, info_value);
 	waiting_runs.push_back(run_id);
 	return run_id;
 }
 
-int RunManagerYAMR::add_run(const Eigen::VectorXd &model_pars, const string &info_txt, double info_value)
+int RunManagerPanther::add_run(const Eigen::VectorXd &model_pars, const string &info_txt, double info_value)
 {
 	int run_id = file_stor.add_run(model_pars, info_txt, info_value);
 	waiting_runs.push_back(run_id);
 	return run_id;
 }
 
-void RunManagerYAMR::update_run(int run_id, const Parameters &pars, const Observations &obs)
+void RunManagerPanther::update_run(int run_id, const Parameters &pars, const Observations &obs)
 {
 
 	file_stor.update_run(run_id, pars, obs);
@@ -404,10 +404,17 @@ void RunManagerYAMR::update_run(int run_id, const Parameters &pars, const Observ
 	kill_runs(run_id, false, "run not required");
 }
 
-void RunManagerYAMR::run()
+void RunManagerPanther::run()
 {
+	run_until(RUN_UNTIL_COND::NORMAL);
+}
+
+RunManagerAbstract::RUN_UNTIL_COND RunManagerPanther::run_until(RUN_UNTIL_COND condition, int max_no_ops, double max_time_sec)
+{
+	RUN_UNTIL_COND terminate_reason = RUN_UNTIL_COND::NORMAL;
 	stringstream message;
 	NetPackage net_pack;
+
 	model_runs_done = 0;
 	model_runs_failed = 0;
 	model_runs_timed_out = 0;
@@ -424,11 +431,14 @@ void RunManagerYAMR::run()
 	cout << endl;
 	f_rmr << endl;
 
-	cout << "YAMR progress" << endl;
+	cout << "PANTHER progress" << endl;
 	cout << "   runs(C = completed | F = failed | T = timed out)" << endl;
 	cout << "   slaves(R = running | W = waiting | U = unavailable)" << endl;
 	cout << "------------------------------------------------------------------------------" << endl;
-	while (!all_runs_complete())
+
+	std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
+	double run_time_sec = 0.0;
+	while (!all_runs_complete() && terminate_reason == RUN_UNTIL_COND::NORMAL)
 	{
 		echo();
 		init_slaves();
@@ -436,43 +446,71 @@ void RunManagerYAMR::run()
 		schedule_runs();
 		echo();
 		// get and process incomming messages
-		listen();	
-		//
-		ping();
-	}
-	echo();
-	total_runs += model_runs_done;
-	//kill any remaining active runs
-	kill_all_active_runs();
-	echo();
-	cout << endl << endl;
-	message.str("");
-	message << "   " << model_runs_done << " runs complete :  " << get_num_failed_runs() << " runs failed";
-	cout << message.str() << endl << endl;
-	f_rmr << endl << "---------------------" << endl << message.str() << endl << endl;
+		if (listen() == false)
+		{
+			++n_no_ops;
+		}
+		else
+		{
+			n_no_ops = 0;
+		}
+		if (ping())
+		{
+			n_no_ops = 0;
+		}
 
-	//Removed because it was preventing the restart from functioning properly 
-	//if (model_runs_done == 0)
-	//	throw PestError("no runs completed successfully");
-	
-	if (init_sim.size() == 0)
-	{
-		vector<double> pars;
-		int status = file_stor.get_run(0, pars, init_sim);
+		if ((condition == RUN_UNTIL_COND::NO_OPS || condition == RUN_UNTIL_COND::NO_OPS_OR_TIME) && n_no_ops >= max_no_ops)
+		{
+			terminate_reason = RUN_UNTIL_COND::NO_OPS;
+		}
+
+		if ((condition == RUN_UNTIL_COND::TIME || condition == RUN_UNTIL_COND::NO_OPS_OR_TIME) && get_duration_sec(start_time) >= max_time_sec)
+		{
+			terminate_reason = RUN_UNTIL_COND::TIME;
+		}
+
 	}
+	if (terminate_reason == RUN_UNTIL_COND::NORMAL)
+	{
+		echo();
+		total_runs += model_runs_done;
+		//kill any remaining active runs
+		kill_all_active_runs();
+		echo();
+		cout << endl << endl;
+		message.str("");
+		message << "   " << model_runs_done << " runs complete :  " << get_num_failed_runs() << " runs failed";
+		cout << message.str() << endl << endl;
+		f_rmr << endl << "---------------------" << endl << message.str() << endl << endl;
+
+		//Removed because it was preventing the restart from functioning properly 
+		//if (model_runs_done == 0)
+		//	throw PestError("no runs completed successfully");
+
+		if (init_sim.size() == 0)
+		{
+			vector<double> pars;
+			int status = file_stor.get_run(0, pars, init_sim);
+		}
+	}
+	return terminate_reason;
 }
 
-
-void RunManagerYAMR::ping()
+bool RunManagerPanther::ping()
 {
+	bool ping_sent = false;
 	for (auto &i : socket_to_iter_map)
 	{
-		
-		ping(i.first);
+
+		if (ping(i.first))
+			ping_sent = true;
 	}
+	return ping_sent;
 }
-void RunManagerYAMR::ping(int i_sock)
+
+bool RunManagerPanther::ping(int i_sock)
 {
+	bool ping_sent = false;
 	list<SlaveInfoRec>::iterator slave_info_iter = socket_to_iter_map.at(i_sock);
 	SlaveInfoRec::State state = slave_info_iter->get_state();
 	if (state != SlaveInfoRec::State::WAITING
@@ -481,9 +519,8 @@ void RunManagerYAMR::ping(int i_sock)
 		&& state != SlaveInfoRec::State::KILLED
 		&& state != SlaveInfoRec::State::KILLED_FAILED)
 	{
-		return;
+		return ping_sent;
 	}
-
 
 	string sock_hostname = slave_info_iter->get_hostname();
 	fd_set read_fds = master;
@@ -494,9 +531,10 @@ void RunManagerYAMR::ping(int i_sock)
 		report("failed to receive ping response from slave: " + sock_hostname + "$" + slave_info_iter->get_work_dir(), false);
 		if (fails >= MAX_FAILED_PINGS)
 		{
+			ping_sent = true;
 			report("max failed ping communications since last successful run for slave:" + sock_hostname + "$" + slave_info_iter->get_work_dir() + "  -> terminating", false);
 			close_slave(i_sock);
-			return;
+			return ping_sent;
 		}
 	}
 	//check if it is time to ping again...
@@ -504,6 +542,7 @@ void RunManagerYAMR::ping(int i_sock)
 	double ping_time = max(double(PING_INTERVAL_SECS), slave_info_iter->get_runtime_sec());
 	if (duration >= ping_time)
 	{
+		ping_sent = true;
 		const char* data = "\0";
 		NetPackage net_pack(NetPackage::PackType::PING, 0, 0, "");
 		int err = net_pack.send(i_sock, data, 0);
@@ -515,7 +554,7 @@ void RunManagerYAMR::ping(int i_sock)
 			{
 				report("max failed ping communications since last successful run for slave:" + sock_hostname + "$" + slave_info_iter->get_work_dir() + "  -> terminating", true);
 				close_slave(i_sock);
-				return;
+				return ping_sent;
 			}
 		}
 		else slave_info_iter->set_ping(true);
@@ -523,11 +562,13 @@ void RunManagerYAMR::ping(int i_sock)
 		report("ping sent to slave:" + sock_hostname + "$" + slave_info_iter->get_work_dir(), false);
 #endif
 	}
+	return ping_sent;
 }
 
 
-void RunManagerYAMR::listen()
+bool RunManagerPanther::listen()
 {
+	bool got_message = false;
 	struct sockaddr_storage remote_addr;
 	fd_set read_fds; // temp file descriptor list for select()
 	socklen_t addr_len;
@@ -537,11 +578,14 @@ void RunManagerYAMR::listen()
 	read_fds = master; // copy it
 	if (w_select(fdmax+1, &read_fds, NULL, NULL, &tv) == -1) 
 	{
-		return;
+		// there are no slaves available.  W need to keep listening until at least one appears
+		got_message = true;
+		return got_message;
 	}
 	// run through the existing connections looking for data to read
 	for(int i = 0; i <= fdmax; i++) {
 		if (FD_ISSET(i, &read_fds)) { // we got one!!
+			got_message = true;
 			if (i == listener)  // handle new connections
 			{
 				int newfd;
@@ -562,9 +606,10 @@ void RunManagerYAMR::listen()
 			} // END handle data from client
 		} // END got new incoming connection	
 	} // END looping through file descriptors
+	return got_message;
 }
 
-void RunManagerYAMR::close_slaves()
+void RunManagerPanther::close_slaves()
 {
 	/*for (int i = 0; i <= fdmax; i++) 
 	{
@@ -585,13 +630,13 @@ void RunManagerYAMR::close_slaves()
 	}
 }
 
-void RunManagerYAMR::close_slave(int i_sock)
+void RunManagerPanther::close_slave(int i_sock)
 {
 	list<SlaveInfoRec>::iterator slave_info_iter = socket_to_iter_map.at(i_sock);
 	close_slave(slave_info_iter);
 }
 
-void RunManagerYAMR::close_slave(list<SlaveInfoRec>::iterator slave_info_iter)
+void RunManagerPanther::close_slave(list<SlaveInfoRec>::iterator slave_info_iter)
 {
 	int i_sock = slave_info_iter->get_socket_fd();
 	int run_id = slave_info_iter->get_run_id();
@@ -619,7 +664,7 @@ void RunManagerYAMR::close_slave(list<SlaveInfoRec>::iterator slave_info_iter)
 }
 
 
-void RunManagerYAMR::schedule_runs()
+void RunManagerPanther::schedule_runs()
 {
 	NetPackage net_pack;
 
@@ -639,105 +684,108 @@ void RunManagerYAMR::schedule_runs()
 		}
 	}
 
-	//check for overdue runs
-	try
+	//check for overdue runs if there are no runs waiting to be processed
+	if (n_no_ops > 0)
 	{
-		double duration, avg_runtime;
-		double global_avg_runtime = get_global_runtime_minute();
-		bool should_schedule = false;
-
-		list<SlaveInfoRec>::iterator it_slave, iter_e;
-		for (it_slave = slave_info_set.begin(), iter_e = slave_info_set.end();
-			it_slave != iter_e; ++it_slave)
+		try
 		{
-			SlaveInfoRec::State state = it_slave->get_state();
-			if (state == SlaveInfoRec::State::ACTIVE)
+			double duration, avg_runtime;
+			double global_avg_runtime = get_global_runtime_minute();
+			bool should_schedule = false;
+
+			list<SlaveInfoRec>::iterator it_slave, iter_e;
+			for (it_slave = slave_info_set.begin(), iter_e = slave_info_set.end();
+				it_slave != iter_e; ++it_slave)
 			{
-				should_schedule = false;
-				int run_id = it_slave->get_run_id();
-				int act_sock_id = it_slave->get_socket_fd();
-				int n_concur = get_n_concurrent(run_id);
-
-				duration = it_slave->get_duration_minute();
-				avg_runtime = it_slave->get_runtime_minute();
-				if (avg_runtime <= 0) avg_runtime = global_avg_runtime;
-				if (avg_runtime <= 0) avg_runtime = 1.0E+10;
-				vector<int> overdue_kill_runs_vec = get_overdue_runs_over_kill_threshold(run_id);
-				
-				if (failure_map.count(run_id) + overdue_kill_runs_vec.size() >= max_n_failure)
+				SlaveInfoRec::State state = it_slave->get_state();
+				if (state == SlaveInfoRec::State::ACTIVE)
 				{
-					// kill the overdue runs
-					kill_runs(run_id, true, "overdue");
 					should_schedule = false;
-					model_runs_timed_out += overdue_kill_runs_vec.size();
-				}
-				else if (overdue_kill_runs_vec.size() >= max_concurrent_runs)
-				{
-					// kill the overdue runs
-					kill_runs(run_id, true, "overdue");
-					// reschedule runs as we still haven't reach the max failure threshold
-					// and there are not concurrent runs for this id becuse we just killed all of them
-					should_schedule = true;
-					model_runs_timed_out += overdue_kill_runs_vec.size();
-				}
-				else if (duration > avg_runtime*overdue_giveup_fac  && free_slave_list.empty())
-				{
-					// If there are no free slaves kill the overdue ones
-					// This is necessary to keep runs with smae numbers of slaves behaving
-					kill_run(it_slave, "overdue");
-					update_run_failed(run_id, it_slave->get_socket_fd());
-					
-					if (failure_map.count(run_id) + overdue_kill_runs_vec.size() < max_n_failure)
-					{
-						should_schedule = true;
-					}
-					model_runs_timed_out += 1;
-				}
-				else if (duration > avg_runtime*overdue_reched_fac)
-				{
-					//check how many concurrent runs are going	
-					if (n_concur < max_concurrent_runs) should_schedule = true;
-					else should_schedule = false;
-				}
+					int run_id = it_slave->get_run_id();
+					int act_sock_id = it_slave->get_socket_fd();
+					int n_concur = get_n_concurrent(run_id);
 
-				if ((!free_slave_list.empty()) && should_schedule)
-				{
-					string host_name = it_slave->get_hostname();
-					stringstream ss;
-					ss << "rescheduling overdue run " << run_id << " (" << duration << "|" <<
-						avg_runtime << " minutes) on: " << host_name << "$" <<
-						it_slave->get_work_dir();
-					report(ss.str(), false);
-					int success = schedule_run(run_id, free_slave_list, n_responsive_slaves);
+					duration = it_slave->get_duration_minute();
+					avg_runtime = it_slave->get_runtime_minute();
+					if (avg_runtime <= 0) avg_runtime = global_avg_runtime;
+					if (avg_runtime <= 0) avg_runtime = 1.0E+10;
+					vector<int> overdue_kill_runs_vec = get_overdue_runs_over_kill_threshold(run_id);
+
+					if (failure_map.count(run_id) + overdue_kill_runs_vec.size() >= max_n_failure)
+					{
+						// kill the overdue runs
+						kill_runs(run_id, true, "overdue");
+						should_schedule = false;
+						model_runs_timed_out += overdue_kill_runs_vec.size();
+					}
+					else if (overdue_kill_runs_vec.size() >= max_concurrent_runs)
+					{
+						// kill the overdue runs
+						kill_runs(run_id, true, "overdue");
+						// reschedule runs as we still haven't reach the max failure threshold
+						// and there are not concurrent runs for this id becuse we just killed all of them
+						should_schedule = true;
+						model_runs_timed_out += overdue_kill_runs_vec.size();
+					}
+					else if (duration > avg_runtime*overdue_giveup_fac  && free_slave_list.empty())
+					{
+						// If there are no free slaves kill the overdue ones
+						// This is necessary to keep runs with small numbers of slaves behaving
+						kill_run(it_slave, "overdue");
+						update_run_failed(run_id, it_slave->get_socket_fd());
+
+						if (failure_map.count(run_id) + overdue_kill_runs_vec.size() < max_n_failure)
+						{
+							should_schedule = true;
+						}
+						model_runs_timed_out += 1;
+					}
+					else if (duration > avg_runtime*overdue_reched_fac)
+					{
+						//check how many concurrent runs are going	
+						if (n_concur < max_concurrent_runs) should_schedule = true;
+						else should_schedule = false;
+					}
+
+					if ((!free_slave_list.empty()) && should_schedule)
+					{
+						string host_name = it_slave->get_hostname();
+						stringstream ss;
+						ss << "rescheduling overdue run " << run_id << " (" << duration << "|" <<
+							avg_runtime << " minutes) on: " << host_name << "$" <<
+							it_slave->get_work_dir();
+						report(ss.str(), false);
+						int success = schedule_run(run_id, free_slave_list, n_responsive_slaves);
+						n_concur = get_n_concurrent(run_id);
+						if (success >= 0)
+						{
+							stringstream ss;
+							ss << n_concur << " concurrent runs for run id = " << run_id;
+							report(ss.str(), false);
+						}
+						else
+						{
+							stringstream ss;
+							ss << "failed to schedule concurrent run for run id = " << run_id;
+							report(ss.str(), false);
+						}
+					}
 					n_concur = get_n_concurrent(run_id);
-					if (success >= 0)
+					if (n_concur == 0 && should_schedule)
 					{
-						stringstream ss;
-						ss << n_concur << " concurrent runs for run id = " << run_id;
-						report(ss.str(), false);
+						waiting_runs.push_front(run_id);
 					}
-					else
-					{
-						stringstream ss;
-						ss << "failed to schedule concurrent run for run id = " << run_id;
-						report(ss.str(), false);
-					}
-				}
-				n_concur = get_n_concurrent(run_id);
-				if (n_concur == 0 && should_schedule)
-				{
-					waiting_runs.push_front(run_id);
 				}
 			}
 		}
-	}
-	catch (exception &e)
-	{
-		cout << "exception trying to find overdue runs: " << endl << e.what() << endl;
+		catch (exception &e)
+		{
+			cout << "exception trying to find overdue runs: " << endl << e.what() << endl;
+		}
 	}
 }
 
-int RunManagerYAMR::schedule_run(int run_id, std::list<list<SlaveInfoRec>::iterator> &free_slave_list, int n_responsive_slaves)
+int RunManagerPanther::schedule_run(int run_id, std::list<list<SlaveInfoRec>::iterator> &free_slave_list, int n_responsive_slaves)
 {
 	int scheduled = -1;
 	auto it_slave = free_slave_list.end(); // iterator to current socket
@@ -814,7 +862,7 @@ int RunManagerYAMR::schedule_run(int run_id, std::list<list<SlaveInfoRec>::itera
 
 
 
-void RunManagerYAMR::echo()
+void RunManagerPanther::echo()
 {
 	map<string, int> stats_map = get_slave_stats();
 	cout << get_time_string_short() << " runs("
@@ -826,7 +874,7 @@ void RunManagerYAMR::echo()
 		<< "| U=" << setw(4) << left << stats_map["unavailable"] << ")\r" << flush;
 }
 
-string RunManagerYAMR::get_time_string()
+string RunManagerPanther::get_time_string()
 {
 	time_t rawtime;
 	struct tm * timeinfo;
@@ -839,7 +887,7 @@ string RunManagerYAMR::get_time_string()
 	return t_str;
 }
 
-string RunManagerYAMR::get_time_string_short()
+string RunManagerPanther::get_time_string_short()
 {
 	time_t rawtime;
 	struct tm * timeinfo;
@@ -853,14 +901,14 @@ string RunManagerYAMR::get_time_string_short()
 }
 
 
-void RunManagerYAMR::report(std::string message,bool to_cout)
+void RunManagerPanther::report(std::string message,bool to_cout)
 {
 	string t_str = get_time_string();
 	f_rmr << t_str << "->" << message << endl;
 	if (to_cout) cout << endl << t_str << "->" << message << endl;
 }
 
-void RunManagerYAMR::process_message(int i_sock)
+void RunManagerPanther::process_message(int i_sock)
 {	
 	NetPackage net_pack;
 	int err;
@@ -1016,7 +1064,7 @@ void RunManagerYAMR::process_message(int i_sock)
 	}
 }
 
-bool RunManagerYAMR::process_model_run(int sock_id, NetPackage &net_pack)
+bool RunManagerPanther::process_model_run(int sock_id, NetPackage &net_pack)
 {
 	list<SlaveInfoRec>::iterator slave_info_iter = socket_to_iter_map.at(sock_id);
 	bool use_run = false;
@@ -1027,7 +1075,8 @@ bool RunManagerYAMR::process_model_run(int sock_id, NetPackage &net_pack)
 	{
 		Parameters pars;
 		Observations obs;
-		Serialization::unserialize(net_pack.get_data(), pars, get_par_name_vec(), obs, get_obs_name_vec());
+		double run_time = 0;
+		Serialization::unserialize(net_pack.get_data(), pars, get_par_name_vec(), obs, get_obs_name_vec(), run_time);
 		file_stor.update_run(run_id, pars, obs);
 		slave_info_iter->set_state(SlaveInfoRec::State::COMPLETE);
 		//slave_info_iter->set_state(SlaveInfoRec::State::WAITING);
@@ -1042,7 +1091,7 @@ bool RunManagerYAMR::process_model_run(int sock_id, NetPackage &net_pack)
 	return use_run;
 }
 
-void RunManagerYAMR::kill_run(list<SlaveInfoRec>::iterator slave_info_iter, const string &reason)
+void RunManagerPanther::kill_run(list<SlaveInfoRec>::iterator slave_info_iter, const string &reason)
 {
 	int socket_id = slave_info_iter->get_socket_fd();
 	SlaveInfoRec::State state = slave_info_iter->get_state();
@@ -1073,7 +1122,7 @@ void RunManagerYAMR::kill_run(list<SlaveInfoRec>::iterator slave_info_iter, cons
 }
 
 
-void RunManagerYAMR::kill_runs(int run_id, bool update_failure_map, const string &reason)
+void RunManagerPanther::kill_runs(int run_id, bool update_failure_map, const string &reason)
 {
 	auto range_pair = active_runid_to_iterset_map.equal_range(run_id);
 	//runs with this id are not needed so kill them
@@ -1092,7 +1141,7 @@ void RunManagerYAMR::kill_runs(int run_id, bool update_failure_map, const string
 }
 
 
-void RunManagerYAMR::kill_all_active_runs()
+void RunManagerPanther::kill_all_active_runs()
 {
 	list<list<SlaveInfoRec>::iterator> iter_list;
 	list<SlaveInfoRec>::iterator iter_b, iter_e;
@@ -1116,7 +1165,7 @@ void RunManagerYAMR::kill_all_active_runs()
 	}
 }
 
- void RunManagerYAMR::init_slaves()
+ void RunManagerPanther::init_slaves()
  {
 	 for (auto &i_slv : slave_info_set)
 	 {
@@ -1171,7 +1220,7 @@ void RunManagerYAMR::kill_all_active_runs()
 	}
  }
 
- vector<int> RunManagerYAMR::get_overdue_runs_over_kill_threshold(int run_id)
+ vector<int> RunManagerPanther::get_overdue_runs_over_kill_threshold(int run_id)
  {
 	 vector<int> sock_id_vec;
 	 auto range_pair = active_runid_to_iterset_map.equal_range(run_id);
@@ -1194,7 +1243,7 @@ void RunManagerYAMR::kill_all_active_runs()
 	 return sock_id_vec;
  }
 
- bool RunManagerYAMR::all_runs_complete()
+ bool RunManagerPanther::all_runs_complete()
  {
 	 // check for run in the waitng queue
 	 if (!waiting_runs.empty())
@@ -1213,7 +1262,7 @@ void RunManagerYAMR::kill_all_active_runs()
  }
 
 
- list<SlaveInfoRec>::iterator RunManagerYAMR::add_slave(int sock_id)
+ list<SlaveInfoRec>::iterator RunManagerPanther::add_slave(int sock_id)
  {
 	 stringstream ss;
 	 ss << "new connection from: " << w_getnameinfo_string(sock_id);
@@ -1230,7 +1279,7 @@ void RunManagerYAMR::kill_all_active_runs()
 	return iter;
  }
 
- double RunManagerYAMR::get_global_runtime_minute() const
+ double RunManagerPanther::get_global_runtime_minute() const
  {
 	 double global_runtime = 0;
 	 double temp = 0;
@@ -1249,7 +1298,7 @@ void RunManagerYAMR::kill_all_active_runs()
 	 return global_runtime / (double)count;
  }
 
- void RunManagerYAMR::unschedule_run(list<SlaveInfoRec>::iterator slave_info_iter)
+ void RunManagerPanther::unschedule_run(list<SlaveInfoRec>::iterator slave_info_iter)
  {
 	 int run_id = slave_info_iter->get_run_id();
 	 auto range_pair = active_runid_to_iterset_map.equal_range(run_id);
@@ -1268,7 +1317,7 @@ void RunManagerYAMR::kill_all_active_runs()
 	 }
  }
  
- list<list<SlaveInfoRec>::iterator> RunManagerYAMR::get_free_slave_list()
+ list<list<SlaveInfoRec>::iterator> RunManagerPanther::get_free_slave_list()
  {
 	 list<list<SlaveInfoRec>::iterator> iter_list;
 	 list<SlaveInfoRec>::iterator iter_b, iter_e;
@@ -1284,7 +1333,7 @@ void RunManagerYAMR::kill_all_active_runs()
 	 return iter_list;
  }
 
- map<string, int> RunManagerYAMR::get_slave_stats()
+ map<string, int> RunManagerPanther::get_slave_stats()
  {
 	 map<string, int> stats_map;
 	 list<SlaveInfoRec>::iterator iter_b, iter_e;
@@ -1315,7 +1364,7 @@ void RunManagerYAMR::kill_all_active_runs()
 	 return stats_map;
  }
 
- int RunManagerYAMR::get_n_unique_failures()
+ int RunManagerPanther::get_n_unique_failures()
  {
 	 set<int> run_id_set;
 	 for (const auto &i_fail : failure_map)
@@ -1325,7 +1374,7 @@ void RunManagerYAMR::kill_all_active_runs()
 	 return run_id_set.size();
  }
 
- int RunManagerYAMR::get_n_responsive_slaves()
+ int RunManagerPanther::get_n_responsive_slaves()
  {
 	 int n = 0;
 	 for (const auto &i : slave_info_set)
@@ -1336,19 +1385,19 @@ void RunManagerYAMR::kill_all_active_runs()
  }
 
 
- void RunManagerYAMR::update_run_failed(int run_id, int socket_fd)
+ void RunManagerPanther::update_run_failed(int run_id, int socket_fd)
  {
 	 file_stor.update_run_failed(run_id);
 	 failure_map.insert(make_pair(run_id, socket_fd));
  }
 
- void RunManagerYAMR::update_run_failed(int run_id)
+ void RunManagerPanther::update_run_failed(int run_id)
  {
-	 // must call void RunManagerYAMR::update_run_failed(int run_id, int socket_fd) instead
-	 throw(PestError("Error: Unsuppoerted function call  RunManagerYAMR::update_run_failed(int run_id)"  ));
+	 // must call void RunManagerPANTHER::update_run_failed(int run_id, int socket_fd) instead
+	 throw(PestError("Error: Unsuppoerted function call  RunManagerPANTHER::update_run_failed(int run_id)"  ));
  }
 
-RunManagerYAMR::~RunManagerYAMR(void)
+RunManagerPanther::~RunManagerPanther(void)
 {
 	//close sockets and cleanup
 	int err;
@@ -1371,7 +1420,7 @@ RunManagerYAMR::~RunManagerYAMR(void)
 
 RunManagerYAMRCondor::RunManagerYAMRCondor(const std::string & stor_filename, 
 	const std::string & port, std::ofstream & _f_rmr, int _max_n_failure, 
-	double overdue_reched_fac, double overdue_giveup_fac, string _condor_submit_file): RunManagerYAMR(stor_filename,
+	double overdue_reched_fac, double overdue_giveup_fac, string _condor_submit_file): RunManagerPanther(stor_filename,
 		port,_f_rmr,_max_n_failure,overdue_reched_fac,overdue_giveup_fac)
 {
 	submit_file = _condor_submit_file;
@@ -1382,7 +1431,7 @@ void RunManagerYAMRCondor::run()
 {
 	int cluster = submit();
 	cout << " on condor cluster " << cluster << endl;
-	RunManagerYAMR::run();
+	RunManagerPanther::run();
 	cleanup(cluster);
 	
 }
@@ -1466,7 +1515,7 @@ int RunManagerYAMRCondor::submit()
 
 void RunManagerYAMRCondor::cleanup(int cluster)
 {
-	RunManagerYAMR::close_slaves();
+	RunManagerPanther::close_slaves();
 	stringstream ss;
 	ss << "condor_rm " << cluster << " 1>cr_temp.stdout 2>cr_temp.stderr";
 	system(ss.str().c_str());
@@ -1475,7 +1524,7 @@ void RunManagerYAMRCondor::cleanup(int cluster)
 	ss << "condor_rm " << cluster << " -forcex 1>cr_temp.stdout 2>cr_temp.stderr";
 	w_sleep(2000);
 	system(ss.str().c_str());
-	RunManagerYAMR::close_slaves();
+	RunManagerPanther::close_slaves();
 	cout << "   all slaves freed " << endl << endl;
 }
 

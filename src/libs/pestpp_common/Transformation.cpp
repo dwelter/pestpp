@@ -561,6 +561,22 @@ TranSVD::TranSVD(int _max_sing, double _eign_thresh, const string &_name) : Tran
 	tran_svd_pack = new SVD_EIGEN(_max_sing, _eign_thresh);
 }
 
+
+TranSVD::TranSVD(const TranSVD &rhs) 
+	: Transformation(rhs), base_parameter_names(rhs.base_parameter_names),
+	super_parameter_names(rhs.super_parameter_names),
+	obs_names(rhs.obs_names),
+	SqrtQ_J(rhs.SqrtQ_J),
+	Sigma(rhs.Sigma),
+	U(rhs.U),
+	Vt(rhs.Vt),
+	init_base_numeric_parameters(rhs.init_base_numeric_parameters),
+	frozen_derivative_parameters(rhs.frozen_derivative_parameters)
+{
+	tran_svd_pack = rhs.tran_svd_pack->clone();
+}
+
+
 void TranSVD::set_SVD_pack_propack()
 {
 	int max_sing = tran_svd_pack->get_max_sing();

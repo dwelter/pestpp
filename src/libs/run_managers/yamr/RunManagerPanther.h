@@ -16,8 +16,8 @@
 	You should have received a copy of the GNU General Public License
 	along with PEST++.  If not, see<http://www.gnu.org/licenses/>.
 */
-#ifndef RUNMANAGERYAMR_H
-#define RUNMANAGERYAMR_H
+#ifndef RUNMANAGERPANTHER_H
+#define RUNMANAGERPANTHER_H
 #include "network_wrapper.h"
 #include <string>
 #include <set>
@@ -88,10 +88,10 @@ public:
 	};
 };
 
-class RunManagerYAMR : public RunManagerAbstract
+class RunManagerPanther : public RunManagerAbstract
 {
 public:
-	RunManagerYAMR(const std::string &stor_filename, const std::string &port, std::ofstream &_f_rmr, int _max_n_failure,
+	RunManagerPanther(const std::string &stor_filename, const std::string &port, std::ofstream &_f_rmr, int _max_n_failure,
 		double overdue_reched_fac, double overdue_giveup_fac);
 	virtual void initialize(const Parameters &model_pars, const Observations &obs, const std::string &_filename = std::string(""));
 	virtual void initialize_restart(const std::string &_filename);
@@ -102,7 +102,8 @@ public:
 	virtual int add_run(const Eigen::VectorXd &model_pars, const std::string &info_txt="", double info_valuee=RunStorage::no_data);
 	virtual void update_run(int run_id, const Parameters &pars, const Observations &obs);
 	virtual void run();
-	~RunManagerYAMR(void); 
+	virtual RunManagerAbstract::RUN_UNTIL_COND run_until(RUN_UNTIL_COND condition, int n_nops = 0, double sec = 0.0);
+	~RunManagerPanther(void); 
 	int get_n_waiting_runs() { return waiting_runs.size(); }
 	void close_slaves();
 
@@ -117,6 +118,7 @@ private:
 	double overdue_reched_fac;
 	double overdue_giveup_fac;
 	int max_concurrent_runs;
+	int n_no_ops;  //number of consecutive times tcp/ip has looked for slave communciations and not found any 
 	int listener;
 	int fdmax;
 	int model_runs_done;
@@ -138,15 +140,15 @@ private:
 	void close_slave(list<SlaveInfoRec>::iterator slave_info_iter);
 	
 	std::ofstream &f_rmr;
-	void listen();
+	bool listen();
 	bool process_model_run(int sock_id, NetPackage &net_pack);
 	void process_message(int i);
 	void schedule_runs();
 	void init_slaves();
 	list<SlaveInfoRec>::iterator add_slave(int sock_id);
 	void erase_slave(int sock_id);
-	void ping(int i_sock);
-	void ping();
+	bool ping(int i_sock);
+	bool ping();
 	void report(std::string message,bool to_cout);	
 	string get_time_string();
 	string get_time_string_short();
@@ -164,7 +166,7 @@ private:
 	map<string, int> get_slave_stats();
 };
 
-class RunManagerYAMRCondor : public RunManagerYAMR
+class RunManagerYAMRCondor : public RunManagerPanther
 {
 public:
 	RunManagerYAMRCondor(const std::string &stor_filename, const std::string &port, std::ofstream &_f_rmr, int _max_n_failure,
@@ -183,4 +185,4 @@ private:
 
 };
 
-#endif /* RUNMANAGERYAMR_H */
+#endif /* RUNMANAGERPANTHER_H */

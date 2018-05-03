@@ -1,7 +1,7 @@
 // pestpp-ies.cpp : Defines the entry point for the console application.
 //
 
-#include "RunManagerYAMR.h" //needs to be first because it includes winsock2.h
+#include "RunManagerPanther.h" //needs to be first because it includes winsock2.h
 //#include <vld.h> // Memory Leak Detection using "Visual Leak Detector"
 #include <iostream>
 #include <iomanip>
@@ -18,7 +18,7 @@
 #include "FileManager.h"
 #include "RunManagerSerial.h"
 #include "OutputFileWriter.h"
-#include "YamrSlave.h"
+#include "PantherSlave.h"
 #include "Serialization.h"
 #include "system_variables.h"
 #include "pest_error.h"
@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
 		}
 
 		string complete_path;
-		enum class RunManagerType { SERIAL, YAMR, GENIE, EXTERNAL };
+		enum class RunManagerType { SERIAL, PANTHER, GENIE, EXTERNAL };
 
 		if (argc >= 2) {
 			complete_path = argv[1];
@@ -69,9 +69,9 @@ int main(int argc, char* argv[])
 			cerr << "usage:" << endl << endl;
 			cerr << "    serial run manager:" << endl;
 			cerr << "        pestpp-ies control_file.pst" << endl << endl;
-			cerr << "    YAMR master:" << endl;
+			cerr << "    PANTHER master:" << endl;
 			cerr << "        pestpp-ies control_file.pst /H :port" << endl << endl;
-			cerr << "    YAMR runner:" << endl;
+			cerr << "    PANTHER worker:" << endl;
 			cerr << "        pestpp-ies control_file.pst /H hostname:port " << endl << endl;
 			cerr << "control file pest++ options:" << endl;
 			cerr << "    ++ies_par_csv(pars_file.csv)" << endl;
@@ -109,7 +109,7 @@ int main(int argc, char* argv[])
 		{
 			throw runtime_error("External run manager not supported by pestpp-ies");
 		}
-		//Check for YAMR Slave
+		//Check for PANTHER worker
 		it_find = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/h");
 		next_item.clear();
 		if (it_find != cmd_arg_vec.end() && it_find + 1 != cmd_arg_vec.end())
@@ -119,7 +119,7 @@ int main(int argc, char* argv[])
 		}
 		if (it_find != cmd_arg_vec.end() && !next_item.empty() && next_item[0] != ':')
 		{
-			// This is a YAMR Slave, start PEST++ as a YAMR Slave
+			// This is a PANTHER worker, start PEST++ as a PANTHER worker
 			vector<string> sock_parts;
 			vector<string>::const_iterator it_find_yamr_ctl;
 			string file_ext = get_filename_ext(filename);
@@ -128,17 +128,17 @@ int main(int argc, char* argv[])
 			{
 				if (sock_parts.size() != 2)
 				{
-					cerr << "YAMR slave requires the master be specified as /H hostname:port" << endl << endl;
+					cerr << "PANTHER worker requires the master be specified as /H hostname:port" << endl << endl;
 					throw(PestCommandlineError(commandline));
 				}
-				YAMRSlave yam_slave;
+				PANTHERSlave yam_slave;
 				string ctl_file = "";
 				try {
 					string ctl_file;
 					if (upper_cp(file_ext) == "YMR")
 					{
 						ctl_file = file_manager.build_filename("ymr");
-						yam_slave.process_yamr_ctl_file(ctl_file);
+						yam_slave.process_panther_ctl_file(ctl_file);
 					}
 					else
 					{
@@ -164,11 +164,11 @@ int main(int argc, char* argv[])
 			cout << endl << "Simulation Complete..." << endl;
 			exit(0);
 		}
-		//Check for YAMR Master
+		//Check for PANTHER master
 		else if (it_find != cmd_arg_vec.end())
 		{
-			// using YAMR run manager
-			run_manager_type = RunManagerType::YAMR;
+			// using PANTHER run manager
+			run_manager_type = RunManagerType::PANTHER;
 			socket_str = next_item;
 		}
 
@@ -260,13 +260,13 @@ int main(int argc, char* argv[])
 
 
 		RunManagerAbstract *run_manager_ptr;
-		if (run_manager_type == RunManagerType::YAMR)
+		if (run_manager_type == RunManagerType::PANTHER)
 		{
 			string port = socket_str;
 			strip_ip(port);
 			strip_ip(port, "front", ":");
 			const ModelExecInfo &exi = pest_scenario.get_model_exec_info();
-			run_manager_ptr = new RunManagerYAMR(
+			run_manager_ptr = new RunManagerPanther(
 				file_manager.build_filename("rns"), port,
 				file_manager.open_ofile_ext("rmr"),
 				pest_scenario.get_pestpp_options().get_max_run_fail(),

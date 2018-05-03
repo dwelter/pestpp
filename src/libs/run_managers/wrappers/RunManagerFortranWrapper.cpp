@@ -1,6 +1,6 @@
 #include "RunManagerFortranWrapper.h"
 #include "utilities.h"
-#include "RunManagerYAMR.h"
+#include "RunManagerPanther.h"
 #include "RunManagerSerial.h"
 #include "RunManagerGenie.h"
 #include "pest_error.h"
@@ -44,7 +44,7 @@ int rmif_create_serial_(char *f_comline, int  *comline_str_len, int *comline_arr
 }
 
 
-int rmif_create_yamr_(
+int rmif_create_panther_(
 	char *f_storfile, int *storfile_len,
 	char *f_port, int *f_port_len,
 	char *f_info_filename, int *info_filename_len, int *n_max_fail,
@@ -56,7 +56,7 @@ int rmif_create_yamr_(
 		string port =  fortran_str_2_string(f_port, *f_port_len);
 		string info_filename =  fortran_str_2_string(f_info_filename, *info_filename_len);
 		fout_run_manager_log_file.open(info_filename);
-		_run_manager_ptr_ = new RunManagerYAMR(storfile, 
+		_run_manager_ptr_ = new RunManagerPanther(storfile, 
 			port, fout_run_manager_log_file, *n_max_fail, *overdue_reched_fac, *overdue_giveup_fac);
 	}
 	catch(...)
@@ -182,6 +182,22 @@ int rmif_run_()
 	return err;
 }
 
+int rmif_run_until_(int *condition, int *no_ops, double *time_sec, int *return_cond)
+{
+	int err = 0;
+	RunManagerAbstract::RUN_UNTIL_COND enum_input_cond;
+	RunManagerAbstract::RUN_UNTIL_COND enum_return_cond;
+	enum_input_cond = static_cast<RunManagerAbstract::RUN_UNTIL_COND>(*condition);
+	try {
+		enum_return_cond = _run_manager_ptr_->run_until(enum_input_cond, *no_ops, *time_sec);
+	}
+	catch (...)
+	{
+		err = 1;
+	}
+	*return_cond = static_cast<int>(enum_return_cond);
+	return err;
+}
 int rmif_get_run_(int *run_id, double *parameter_data, int *npar, double *obs_data, int *nobs)
 {
 	int err = 1;

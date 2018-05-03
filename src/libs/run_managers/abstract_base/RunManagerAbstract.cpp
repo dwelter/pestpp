@@ -289,3 +289,9 @@ bool RunManagerAbstract::get_observations_vec(int run_id, vector<double> &data_v
  {
 	 return file_stor;
  }
+
+ RunManagerAbstract::RUN_UNTIL_COND RunManagerAbstract::run_until(RUN_UNTIL_COND condition, int n_nops, double sec)
+ {
+	 run();
+	 return RUN_UNTIL_COND::NORMAL;
+ }
