@@ -46,7 +46,7 @@ const std::string OperSys::DIR_SEP = "/";
 const std::string OperSys::COMMAND_LINE_APPEND = " & ";
 #endif
 
-const int OperSys::thread_sleep_milli_secs=100;
+const int OperSys::thread_sleep_milli_secs=1000;
 
 using namespace std;
 

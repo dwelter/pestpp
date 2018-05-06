@@ -335,6 +335,10 @@ void ModelInterface::run(pest_utils::thread_flag* terminate, pest_utils::thread_
 					std::cout << "received terminate signal" << std::endl;
 					//try to kill the process
 					bool success = (CloseHandle(job) != 0);
+
+					//a few seconds for shitty windows to cleanup
+					std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+					
 					//bool success = TerminateProcess(pi.hProcess, 0);
 					if (!success)
 					{
@@ -342,6 +346,7 @@ void ModelInterface::run(pest_utils::thread_flag* terminate, pest_utils::thread_
 						throw std::runtime_error("unable to terminate process for command: " + cmd_string);
 					}
 					term_break = true;
+					
 					break;
 				}
 			}
