@@ -398,6 +398,7 @@ NetPackage::PackType PANTHERSlave::run_model(Parameters &pars, Observations &obs
 		
 		while (true)
 		{
+
 			if (shared_execptions.size() > 0)
 			{
 				cout << "exception raised by run thread " << std::endl;
@@ -483,6 +484,9 @@ NetPackage::PackType PANTHERSlave::run_model(Parameters &pars, Observations &obs
 		cerr << "   Aborting model run" << endl;
 		NetPackage::PackType::RUN_FAILED;
 	}
+
+	//sleep here just to give the os a chance to cleanup any remaining file handles
+	w_sleep(poll_interval_seconds * 1000);
 	return final_run_status;
 }
 
