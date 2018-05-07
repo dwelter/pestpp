@@ -565,7 +565,7 @@ void Ensemble::to_csv(string file_name)
 	}
 	csv << "real_name";
 	for (auto &vname : var_names)
-		csv << vname << ',';
+		csv << ',' << vname;
 	csv << endl;
 	for (int ireal = 0; ireal < reals.rows(); ireal++)
 	{
