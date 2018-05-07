@@ -470,7 +470,10 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 				convert_ip(tokens[6], pi.group);
 				convert_ip(tokens[7], scale);
 				convert_ip(tokens[8], offset);
-				convert_ip(tokens[9], pi.dercom);
+				if (control_info.numcom > 1)
+					convert_ip(tokens[9], pi.dercom);
+				else
+					pi.dercom = 1;
 				pi.scale = scale;
 				pi.offset = offset;
 				// add parameters to model parameter and paramter_info datasets
