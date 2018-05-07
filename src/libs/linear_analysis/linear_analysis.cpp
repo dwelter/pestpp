@@ -468,6 +468,7 @@ linear_analysis::linear_analysis(Mat* _jacobian, Pest* pest_scenario, Mat* _obsc
 		catch (exception &e)
 		{
 			log->warning("unable to load parcov from file: " + parcov_filename + ", reverting to parameter bounds " + e.what());
+			cout << "WARNING: unable to load parcov from file : " << parcov_filename << ", reverting to parameter bounds" << endl;
 		}
 	}
 	if (!parcov_success)

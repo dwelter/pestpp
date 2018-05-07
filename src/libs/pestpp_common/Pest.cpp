@@ -62,6 +62,39 @@ void Pest::check_inputs(ostream &f_rec)
 		svd_info.maxsing = min(numeric_pars.size(), observation_values.size());
 	}
 
+	if (control_info.pestmode == ControlInfo::PestMode::PARETO)
+	{
+		bool found_pareto = false, found_other = false;
+		if (pareto_info.obsgroup.substr(0, 5) == "REGUL")
+			found_pareto = true;
+		else if (find(ctl_ordered_obs_group_names.begin(), ctl_ordered_obs_group_names.end(), pareto_info.obsgroup) == ctl_ordered_obs_group_names.end())
+			throw PestError("pareto obsgroup not found: " + pareto_info.obsgroup);
+		//make sure at least one other obs group has a nonzero weight obs in it
+		
+		
+		for (auto &on : ctl_ordered_obs_names)
+		{
+				if (observation_info.get_group(on) == pareto_info.obsgroup)
+					found_pareto = true;
+				else if (observation_info.get_weight(on) > 0.0)
+					found_other = true;
+		}
+		
+		if (!found_pareto || !found_other)
+		{
+			for (auto &pi : ctl_ordered_pi_names)
+			{
+				if (prior_info.get_pi_rec_ptr(pi).get_group() == pareto_info.obsgroup)
+					found_pareto = true;
+				else if (prior_info.get_pi_rec_ptr(pi).get_weight() > 0.0)
+					found_other = true;
+			}
+		}
+		if (!found_pareto)
+			throw PestError("no non-zero weighted obs found in pareto obsgroup: " + pareto_info.obsgroup);
+		if (!found_other)
+			throw PestError("no non-zero weighted obs found outside of pareto obsgroup");
+	}
 
 	vector<string> par_warnings;
 	vector<string> par_problems;
@@ -81,6 +114,11 @@ void Pest::check_inputs(ostream &f_rec)
 			par_problems.push_back(pname + " is greater than upper bound");
 		else if (prec->init_value == prec->ubnd)
 			par_warnings.push_back(pname + " is at upper bound");
+		if (prec->dercom > 1)
+		{
+			par_warnings.push_back(pname + " has 'dercom' > 1, pestpp suite doesn't support 'dercom' > 1, ignoring");		
+		}
+
 	}
 	bool err = false;
 
@@ -259,6 +297,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	int lnum;
 	int num_par;
 	int num_tpl_file;
+	int dercom;
 	int i_tpl_ins = 0;
 	double phimlim;
 	double phimaccept;
@@ -271,7 +310,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	bool use_dynamic_reg = false;
 	bool reg_adj_grp_weights = false;
 	vector<string> pestpp_input;
-
+	vector<string> other_lines;
 	regul_scheme_ptr = new DynamicRegularization(use_dynamic_reg);
 
 	TranTied *t_tied = new TranTied("PEST to model tied transformation");
@@ -302,6 +341,10 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 		{
 			//skip blank line
 		}
+		else if (line[0] == '#')
+		{
+
+		}
 		else if (line_upper.substr(0,2) == "++")
 		{
 			pestpp_input.push_back(line);
@@ -319,8 +362,15 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 				if (tokens[1] == "REGULARIZATION" || tokens[1] == "REGULARISATION")
 				{
 					use_dynamic_reg = true;
+					control_info.pestmode = ControlInfo::PestMode::REGUL;
+
 				}
+				else if (tokens[1] == "ESTIMATION")
+					control_info.pestmode = ControlInfo::PestMode::ESTIMATION;
+				else if (tokens[1] == "PARETO")
+					control_info.pestmode = ControlInfo::PestMode::PARETO;
 			}
+
 
 			if (sec_lnum == 2)
 			{
@@ -420,6 +470,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 				convert_ip(tokens[6], pi.group);
 				convert_ip(tokens[7], scale);
 				convert_ip(tokens[8], offset);
+				convert_ip(tokens[9], pi.dercom);
 				pi.scale = scale;
 				pi.offset = offset;
 				// add parameters to model parameter and paramter_info datasets
@@ -476,6 +527,13 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 		else if (section == "OBSERVATION GROUPS")
 		{
 			string name = tokens[0];
+			if (tokens.size() > 1)
+			{
+				stringstream ss;
+				ss << "observation covariance matrix detected for group '" << tokens[0] << "' - these are not supported...yet!";
+				string s = ss.str();
+				throw PestError(s);
+			}	
 			ObservationGroupRec group_rec;
 			observation_info.groups[name] = group_rec;
 			vector<string>::iterator is = find(ctl_ordered_obs_group_names.begin(), ctl_ordered_obs_group_names.end(), name);
@@ -582,6 +640,26 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 					phimaccept, fracphim, wfmin, wfmax, wffac, wftol, wfinit);
 			}
 		}
+		else if (section == "PARETO")
+		{
+			if (sec_lnum == 1)
+			{
+				convert_ip(tokens[0], pareto_info.obsgroup);
+			}
+			else if (sec_lnum == 2)
+			{
+				convert_ip(tokens[0], pareto_info.wf_start);
+				convert_ip(tokens[1], pareto_info.wf_fin);
+				convert_ip(tokens[2], pareto_info.wf_inc);
+			}
+			else if (sec_lnum == 3)
+			{
+				convert_ip(tokens[0], pareto_info.niter_start);
+				convert_ip(tokens[1], pareto_info.niter_gen);
+				convert_ip(tokens[2], pareto_info.niter_fin);
+			}
+
+		}
 	}
 
 	// write out last prior information record
@@ -647,6 +725,24 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_ies_init_lam(-999);
 	pestpp_options.set_ies_use_approx(true);
 	pestpp_options.set_ies_subset_size(100000000);
+	pestpp_options.set_ies_reg_factor(0.0);
+	pestpp_options.set_ies_verbose_level(0);
+	pestpp_options.set_ies_use_prior_scaling(false);
+	pestpp_options.set_ies_num_reals(50);
+	pestpp_options.set_ies_bad_phi(1.0e+30);
+	pestpp_options.set_ies_include_base(true);
+	pestpp_options.set_ies_use_empirical_prior(false);
+	pestpp_options.set_ies_group_draws(true);
+	pestpp_options.set_ies_num_reals_passed(false);
+	pestpp_options.set_ies_enforce_bounds(true);
+	pestpp_options.set_par_sigma_range(4.0);
+	pestpp_options.set_ies_save_binary(false);
+	pestpp_options.set_ies_localizer("");
+	pestpp_options.set_ies_accept_phi_fac(1.05);
+	pestpp_options.set_ies_lambda_inc_fac(10.0);
+	pestpp_options.set_ies_lambda_dec_fac(0.75);
+	pestpp_options.set_ies_save_lambda_en(false);
+
 	pestpp_options.set_condor_submit_file(string());
 
 	for(vector<string>::const_iterator b=pestpp_input.begin(),e=pestpp_input.end();

@@ -29,6 +29,8 @@
 #include <memory>
 #include <Eigen/Dense>
 #include <utility>
+#include <cmath>
+#include <cfloat>
 #include "Transformable.h"
 #include "pest_error.h"
 #include "utilities.h"

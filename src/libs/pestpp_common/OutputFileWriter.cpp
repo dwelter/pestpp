@@ -224,10 +224,19 @@ void OutputFileWriter::write_obj_iter(int iter, int nruns, PhiData const &phi_da
 
 void OutputFileWriter::scenario_report(std::ostream &os)
 {
-	string mode = "estimation";
-	if (pest_scenario.get_regul_scheme_ptr()->get_use_dynamic_reg())
+	string mode;// = "estimation";
+	/*if (pest_scenario.get_regul_scheme_ptr()->get_use_dynamic_reg())
 	{
 		mode = "regularization (with a \"z\")";
+	}*/
+	switch (pest_scenario.get_control_info().pestmode)
+	{
+	case ControlInfo::PestMode::ESTIMATION: mode = "estimation";
+		
+	case ControlInfo::PestMode::REGUL: mode = "regularization";
+	case ControlInfo::PestMode::PARETO: mode = "pareto";
+	case ControlInfo::PestMode::UNKNOWN: mode = "unknown";
+	default: mode = "WTF";
 	}
 	os << endl << "PEST++ run mode:- " << endl << "   " << mode << endl << endl;
 

@@ -435,28 +435,29 @@ int main(int argc, char* argv[])
 		//	exit(1);
 		//}
 
-
-		//Define model Run for Base Parameters (uses base parameter tranformations)
-		ModelRun cur_run(&obj_func, pest_scenario.get_ctl_observations());
-
-		cur_run.set_ctl_parameters(cur_ctl_parameters);
-		//If this is a restart we need to get the latest ctl parameters
-		if (restart_ctl.get_restart_option() != RestartController::RestartOption::NONE)
+		else
 		{
-			Parameters restart_pars = restart_ctl.get_restart_parameters(file_manager.build_filename("parb"), file_manager.build_filename("par"));
-			if (restart_pars.size() > 0)
+			//Define model Run for Base Parameters (uses base parameter tranformations)
+			ModelRun cur_run(&obj_func, pest_scenario.get_ctl_observations());
+
+			cur_run.set_ctl_parameters(cur_ctl_parameters);
+			//If this is a restart we need to get the latest ctl parameters
+			if (restart_ctl.get_restart_option() != RestartController::RestartOption::NONE)
 			{
-				cur_run.set_ctl_parameters(restart_pars);
+				Parameters restart_pars = restart_ctl.get_restart_parameters(file_manager.build_filename("parb"), file_manager.build_filename("par"));
+				if (restart_pars.size() > 0)
+				{
+					cur_run.set_ctl_parameters(restart_pars);
+				}
 			}
+			if (!restart_flag || save_restart_rec_header)
+			{
+				fout_rec << "   -----    Starting Optimization Iterations    ----    " << endl << endl;
+			}
+			sequentialLP slp(pest_scenario, run_manager_ptr, parcov, &file_manager, output_file_writer);
+			slp.solve();
+			fout_rec << "Number of forward model runs performed during optimiztion: " << run_manager_ptr->get_total_runs() << endl;
 		}
-		if (!restart_flag || save_restart_rec_header)
-		{
-			fout_rec << "   -----    Starting Optimization Iterations    ----    " << endl << endl;
-		}
-		sequentialLP slp(pest_scenario, run_manager_ptr,parcov, &file_manager, output_file_writer);
-		slp.solve();
-		fout_rec << "Number of forward model runs performed during optimiztion: " << run_manager_ptr->get_total_runs() << endl;
-
 		// clean up
 		//fout_rec.close();
 		delete run_manager_ptr;

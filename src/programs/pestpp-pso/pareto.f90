@@ -5,7 +5,7 @@ subroutine psopareto(basnam)
 !========================================================================================
 !========================================================================================
   use psodat
-#ifdef __windows__ 
+#ifdef __INTEL_COMPILER
   use ifport
 #endif  
 
@@ -61,9 +61,9 @@ subroutine psopareto(basnam)
   !
 ! remove all repository output files from previous runs
 #ifdef __windows__  
-  ierr = system('del *.rep')
+!  ierr = system('del *.rep')
 #else
-  call system('rm ./*.rep')
+!  ierr = system('rm ./*.rep')
 #endif  
   !
 ! restart from previous run if requested

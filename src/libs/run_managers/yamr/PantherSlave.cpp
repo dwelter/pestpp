@@ -8,6 +8,7 @@
 #include <thread>
 #include "system_variables.h"
 #include "utilities.h"
+#include <regex>
 
 using namespace pest_utils;
 
@@ -39,14 +40,18 @@ void PANTHERSlave::init_network(const string &host, const string &port)
 	w_print_servinfo(servinfo, cout);
 	cout << endl;
 	// connect
+	cout << "YAMR Slave will poll for master connection every " << poll_interval_seconds << " seconds" << endl;
 	addrinfo* connect_addr = nullptr;
 	while  (connect_addr == nullptr)
 	{
+		
 		connect_addr = w_connect_first_avl(servinfo, sockfd);
 		if (connect_addr == nullptr) {
 			cerr << endl;
 			cerr << "failed to connect to master" << endl;
+			w_sleep(poll_interval_seconds * 1000);
 		}
+		
 	}
 	cout << "connection to master succeeded on socket: " << w_get_addrinfo_string(connect_addr) << endl << endl;
 	freeaddrinfo(servinfo);
@@ -84,6 +89,7 @@ void PANTHERSlave::process_ctl_file(const string &ctl_filename)
 	inpfile_vec.clear();
 	insfile_vec.clear();
 	outfile_vec.clear();
+	std::vector<std::string> pestpp_lines;
 	fin.open(ctl_filename);
 	if (!fin)
 	{
@@ -103,6 +109,7 @@ void PANTHERSlave::process_ctl_file(const string &ctl_filename)
 			}
 			else if (line_upper.substr(0, 2) == "++")
 			{
+				pestpp_lines.push_back(line);
 			}
 
 			else if (line_upper[0] == '*')
@@ -150,6 +157,37 @@ void PANTHERSlave::process_ctl_file(const string &ctl_filename)
 		e.raise();
 	}
 	fin.close();
+
+	poll_interval_seconds = 1;
+	for (auto &line : pestpp_lines)
+	{
+		string key;
+		string value;
+		regex lambda_reg("(\\w+)(?:\\s*\\()([^\\)]+)(?:\\))");
+		const std::sregex_iterator end_reg;
+		//regex lambda_reg("((\\w+\\s*\\([^\\)]+\\))+?)");
+		cmatch mr;
+
+		size_t found = line.find_first_of("#");
+		if (found == string::npos) {
+			found = line.length();
+		}
+		string tmp_line = line.substr(0, found);
+		strip_ip(tmp_line, "both", "\t\n\r+ ");
+		//upper_ip(tmp_line);
+
+		for (std::sregex_iterator i(tmp_line.begin(), tmp_line.end(), lambda_reg); i != end_reg; ++i)
+		{
+			string key = (*i)[1];
+			string org_value = (*i)[2];
+			upper_ip(key);
+			string value = upper_cp(org_value);
+			if (key == "YAMR_POLL_INTERVAL") {
+				convert_ip(value, poll_interval_seconds);
+				
+			}
+		}
+	}
 }
 
 
@@ -170,6 +208,7 @@ void PANTHERSlave::process_panther_ctl_file(const string &ctl_filename)
 	inpfile_vec.clear();
 	insfile_vec.clear();
 	outfile_vec.clear();
+	std::vector<std::string> pestpp_lines;
 	fin.open(ctl_filename);
 	try {
 		for (lnum = 1, sec_begin_lnum = 1; getline(fin, line); ++lnum)
@@ -185,6 +224,7 @@ void PANTHERSlave::process_panther_ctl_file(const string &ctl_filename)
 			}
 			else if (line_upper.substr(0, 2) == "++")
 			{
+				pestpp_lines.push_back(line);
 			}
 
 			else if (line_upper[0] == '*')
@@ -220,6 +260,9 @@ void PANTHERSlave::process_panther_ctl_file(const string &ctl_filename)
 		e.raise();
 	}
 	fin.close();
+	
+
+
 }
 
 

@@ -1,0 +1,47 @@
+sudo: false
+dist: trusty
+language: cpp
+
+#compiler:
+#  - gcc
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-5
+      - gfortran-5
+      - liblapack-dev
+
+git:
+  depth: 1
+
+env:
+  global:
+    - MAKEFLAGS="-j 2"
+
+before_script:
+  - wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - conda update --yes conda
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - conda install --yes python=$TRAVIS_PYTHON_VERSION pip numpy scipy pandas matplotlib
+  - pip install git+https://github.com/modflowpy/flopy.git@develop
+  - pip install git+https://github.com/jtwhite79/pyemu.git@develop
+  - export PYTHONPATH=$PYTHONPATH:.
+
+script:
+  - cd src
+  - COMPILER=gcc5 CXX=g++-5 FC=gfortran-5 STATIC=no make
+  - make install
+  - cd ..
+
+after_success:
+  - cd benchmarks
+  - python travis_tests.py
+
+notifications:
+  email: false

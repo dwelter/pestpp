@@ -1,0 +1,12 @@
+
+PESTCHEK Version 14.2. Watermark Numerical Computing.
+
+*** command line error ***
+PESTCHEK is run using the command:
+
+   pestchek case [/s]
+
+where
+
+   "case" is a case name (no filename extension), and
+   /s stops warnings and template/instruction/cov. matrix file checking.

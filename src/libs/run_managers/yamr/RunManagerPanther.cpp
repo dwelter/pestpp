@@ -48,7 +48,8 @@ const int RunManagerPanther::BACKLOG = 10;
 const int RunManagerPanther::MAX_FAILED_PINGS = 60;
 const int RunManagerPanther::N_PINGS_UNRESPONSIVE = 3;
 const int RunManagerPanther::PING_INTERVAL_SECS = 5;
-const int RunManagerPanther::MAX_CONCURRENT_RUNS_LOWER_LIMIT = 3;
+const int RunManagerPanther::MAX_CONCURRENT_RUNS_LOWER_LIMIT = 1;
+
 
 SlaveInfoRec::SlaveInfoRec(int _socket_fd)
 {

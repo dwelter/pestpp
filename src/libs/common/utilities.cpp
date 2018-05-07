@@ -383,6 +383,7 @@ map<string, double> read_twocol_ascii_to_map(string filename, int header_lines, 
 	while (getline(fin, line))
 	{
 		strip_ip(line);
+		upper_ip(line);
 		if ((line.size() == 0) || (line.at(0) == '#'))
 			continue;
 		tokens.clear();

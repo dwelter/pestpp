@@ -1,6 +1,6 @@
                                   MODFLOW-2005     
       U.S. GEOLOGICAL SURVEY MODULAR FINITE-DIFFERENCE GROUND-WATER FLOW MODEL
-                            VERSION 1.10.00 3/6/2013
+                            VERSION 1.12.00 2/3/2017
 
  LIST FILE: 10par_xsec.list
                          UNIT    2
@@ -91,8 +91,8 @@
 
  STRESS PERIOD     LENGTH       TIME STEPS     MULTIPLIER FOR DELT    SS FLAG
  ----------------------------------------------------------------------------
-        1        1.0000000          1                    1.000         SS
-        2        1.0000000          1                    1.000         SS
+        1         1.000000          1                    1.000         SS
+        2         1.000000          1                    1.000         SS
 
  STEADY-STATE SIMULATION
 
@@ -193,14 +193,14 @@
                             STEADY-STATE DAMPING PARAMETER =    0.10000E+01
                                TRANSIENT DAMPING PARAMETER =    0.10000E+01
 1
-                            STRESS PERIOD NO.    1, LENGTH =  1.0000000    
+                            STRESS PERIOD NO.    1, LENGTH =   1.000000    
                             -----------------------------------------------
 
                               NUMBER OF TIME STEPS =     1
 
                                MULTIPLIER FOR DELT =     1.000
 
-                            INITIAL TIME STEP SIZE =  1.0000000    
+                            INITIAL TIME STEP SIZE =   1.000000    
 
  WELL NO.  LAYER   ROW   COL   STRESS RATE         
  --------------------------------------------------
@@ -249,23 +249,23 @@
          TIME SUMMARY AT END OF TIME STEP    1 IN STRESS PERIOD    1
                     SECONDS     MINUTES      HOURS       DAYS        YEARS
                     -----------------------------------------------------------
-   TIME STEP LENGTH  86400.      1440.0      24.000     1.00000     2.73785E-03
- STRESS PERIOD TIME  86400.      1440.0      24.000     1.00000     2.73785E-03
-         TOTAL TIME  86400.      1440.0      24.000     1.00000     2.73785E-03
+   TIME STEP LENGTH  86400.      1440.0      24.000      1.0000     2.73785E-03
+ STRESS PERIOD TIME  86400.      1440.0      24.000      1.0000     2.73785E-03
+         TOTAL TIME  86400.      1440.0      24.000      1.0000     2.73785E-03
 1
 1
-                            STRESS PERIOD NO.    2, LENGTH =  1.0000000    
+                            STRESS PERIOD NO.    2, LENGTH =   1.000000    
                             -----------------------------------------------
 
                               NUMBER OF TIME STEPS =     1
 
                                MULTIPLIER FOR DELT =     1.000
 
-                            INITIAL TIME STEP SIZE =  1.0000000    
+                            INITIAL TIME STEP SIZE =   1.000000    
 
  WELL NO.  LAYER   ROW   COL   STRESS RATE         
  --------------------------------------------------
-      1      1      1     10      1.0000    
+      1      1      1     10       1.000    
 
       1 WELL 
  
@@ -310,11 +310,11 @@
          TIME SUMMARY AT END OF TIME STEP    1 IN STRESS PERIOD    2
                     SECONDS     MINUTES      HOURS       DAYS        YEARS
                     -----------------------------------------------------------
-   TIME STEP LENGTH  86400.      1440.0      24.000     1.00000     2.73785E-03
- STRESS PERIOD TIME  86400.      1440.0      24.000     1.00000     2.73785E-03
+   TIME STEP LENGTH  86400.      1440.0      24.000      1.0000     2.73785E-03
+ STRESS PERIOD TIME  86400.      1440.0      24.000      1.0000     2.73785E-03
          TOTAL TIME 1.72800E+05  2880.0      48.000      2.0000     5.47570E-03
 1
 
- Run end date and time (yyyy/mm/dd hh:mm:ss): 2017/07/19 13:22:47
- Elapsed run time:  0.016 Seconds
+ Run end date and time (yyyy/mm/dd hh:mm:ss): 2018/01/14 20:42:55
+ Elapsed run time:  0.036 Seconds
 
