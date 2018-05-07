@@ -164,6 +164,11 @@ bool  RunManagerAbstract::get_run(int run_id, double *pars, size_t npars, double
 	return get_run(run_id, pars, npars, obs, nobs, info_txt, info_value);
 }
 
+void  RunManagerAbstract::cancel_run(int run_id)
+{
+	file_stor.cancel_run(run_id);
+}
+
 
 void  RunManagerAbstract::free_memory()
 {
@@ -173,7 +178,7 @@ bool RunManagerAbstract::n_run_failures_exceeded(int id)
 {
 	bool ret_val;
 	int istatus = file_stor.get_run_status(id);
-	if (istatus<= -max_n_failure  &&  istatus > -100)
+	if (istatus<= -max_n_failure  &&  istatus > RunStorage::RUN_CANCEL_VALUE)
 	 {
 		 ret_val = true;
 	 }

@@ -359,6 +359,8 @@ void  RunManagerPanther::free_memory()
 {
 	waiting_runs.clear();
 	model_runs_done = 0;
+	model_runs_failed = 0;
+	model_runs_timed_out = 0;
 	failure_map.clear();
 	active_runid_to_iterset_map.clear();
 }
@@ -404,6 +406,27 @@ void RunManagerPanther::update_run(int run_id, const Parameters &pars, const Obs
 	kill_runs(run_id, false, "run not required");
 }
 
+void RunManagerPanther::cancel_run(int run_id)
+{
+
+	file_stor.cancel_run(run_id);
+	// erase any wating runs with this id
+	for (auto it_run = waiting_runs.begin(); it_run != waiting_runs.end();)
+	{
+		if (*it_run == run_id)
+		{
+			it_run = waiting_runs.erase(it_run);
+		}
+		else
+		{
+			++it_run;
+		}
+	}
+	// kill any active runs with this id
+	kill_runs(run_id, false, "run canceled");
+}
+
+
 void RunManagerPanther::run()
 {
 	run_until(RUN_UNTIL_COND::NORMAL);
@@ -415,11 +438,6 @@ RunManagerAbstract::RUN_UNTIL_COND RunManagerPanther::run_until(RUN_UNTIL_COND c
 	stringstream message;
 	NetPackage net_pack;
 
-	model_runs_done = 0;
-	model_runs_failed = 0;
-	model_runs_timed_out = 0;
-	failure_map.clear();
-	active_runid_to_iterset_map.clear();
 	int num_runs = waiting_runs.size();
 	cout << "    running model " << num_runs << " times" << endl;
 	f_rmr << "running model " << num_runs << " times" << endl;
@@ -482,7 +500,7 @@ RunManagerAbstract::RUN_UNTIL_COND RunManagerPanther::run_until(RUN_UNTIL_COND c
 		message << "   " << model_runs_done << " runs complete :  " << get_num_failed_runs() << " runs failed";
 		cout << message.str() << endl << endl;
 		f_rmr << endl << "---------------------" << endl << message.str() << endl << endl;
-
+		cout << endl << endl;
 		//Removed because it was preventing the restart from functioning properly 
 		//if (model_runs_done == 0)
 		//	throw PestError("no runs completed successfully");

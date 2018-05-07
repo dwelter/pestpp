@@ -392,7 +392,7 @@ void RunStorage::update_run(int run_id, const Observations &obs)
 
 void RunStorage::update_run(int run_id, const vector<char> serial_data)
 {
-	//set run status flage to complete
+	//set run status flag to complete
 	std::int8_t r_status = 1;
 	check_rec_size(serial_data);
 	check_rec_id(run_id);
@@ -575,6 +575,21 @@ int RunStorage::get_run(int run_id, double *pars, size_t npars, double *obs, siz
 	string info_txt;
 	double info_value;
 	return get_run(run_id, pars, npars, obs, nobs, info_txt, info_value);
+}
+
+
+void RunStorage::cancel_run(int run_id)
+{
+	std::int8_t r_status = get_run_status_native(run_id);
+	if (r_status < 1)
+	{
+		r_status = RUN_CANCEL_VALUE;
+		check_rec_id(run_id);
+		//update run status flag
+		buf_stream.seekp(get_stream_pos(run_id), ios_base::beg);
+		buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+		buf_stream.flush();
+	}
 }
 
 vector<char> RunStorage::get_serial_pars(int run_id)

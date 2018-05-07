@@ -48,6 +48,8 @@ int RMIF_RUN();
 
 int RMIF_RUN_UNTIL(int *condition, int *no_ops, double *time_sec, int *return_cond);
 
+int RMIF_CANCEL_RUN(int *run_id);
+
 int RMIF_GET_RUN(int *run_id, double *parameter_data, int *npar, double *obs_data, int *nobs);
 
 int RMIF_GET_RUN_WITH_INFO(int *run_id, double *parameter_data, int *npar, double *obs_data, int *nobs,

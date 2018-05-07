@@ -198,6 +198,20 @@ int rmif_run_until_(int *condition, int *no_ops, double *time_sec, int *return_c
 	*return_cond = static_cast<int>(enum_return_cond);
 	return err;
 }
+
+int rmif_cancel_run_(int *run_id)
+{
+	int err = 0;
+	try {
+		_run_manager_ptr_->cancel_run(*run_id);
+	}
+	catch (...)
+	{
+		err = 1;
+	}
+	return err;
+}
+
 int rmif_get_run_(int *run_id, double *parameter_data, int *npar, double *obs_data, int *nobs)
 {
 	int err = 1;

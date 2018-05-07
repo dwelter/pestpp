@@ -41,8 +41,8 @@ class RunStorage {
 	//   The following structure is repeated nruns times (ie once for each model run)
 	//        run_status (flag indicating status of mode run)                         int_8_t
 	//              run_status=0   this run has not yet been completed
-	//			    run_status=-100   run was canceled
-	//				run_status<0 and >-100  run completed and failed.  This is the number of times it failed
+	//			    run_status= RUN_CANCEL_VALUE(-900)   run was canceled
+	//				run_status<0 and > RUN_CANCEL_VALUE(-900)  run completed and failed.  This is the number of times it failed
 	//				run_status=1   run and been sucessfully completed
 	//       info_txt  (description of model run)                                     char*41
 	//       info_value (variable used to store an important value.  The varaible     double
@@ -51,6 +51,7 @@ class RunStorage {
 	//       observationn_values( observations results produced by the model run)     double*number of observations
 
 public:
+	static const int RUN_CANCEL_VALUE = -900;
 	static const double no_data;
 	RunStorage(const std::string &_filename);
 	void reset(const std::vector<std::string> &par_names, const std::vector<std::string> &obs_names, const std::string &_filename = std::string(""));
@@ -78,6 +79,7 @@ public:
 	int get_run(int run_id, std::vector<double> &pars_vec, std::vector<double> &obs_vec,
 		    std::string &info_txt, double &info_value);
 	int get_run(int run_id, std::vector<double> &pars_vec, std::vector<double> &obs_vec);
+	void cancel_run(int run_id);
 	int get_parameters(int run_id, Parameters &pars);
 	std::vector<char> get_serial_pars(int run_id);
 	int get_observations_vec(int run_id, std::vector<double> &data_vec);

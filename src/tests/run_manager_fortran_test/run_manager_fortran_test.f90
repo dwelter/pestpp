@@ -33,6 +33,8 @@
     integer rmif_run
     external rmif_run_until
     integer rmif_run_until
+    external rmif_cancel_run
+    integer rmif_cancel_run
     external rmif_get_run
     integer rmif_get_run
     external rmif_get_num_failed_runs
@@ -74,6 +76,7 @@
     integer run_input_flag
     integer run_output_flag
     integer run_until_no_ops
+    integer run_id
     DOUBLE PRECISION run_until_time_sec
     
     ! Body of run_manager_fortran_test
@@ -155,8 +158,11 @@
     !  run_output_flag = 2 -> run_until_time_sec" was active and this condition occured
     do while (run_output_flag /= 0)
         err = rmif_run_until(run_input_flag, run_until_no_ops, run_until_time_sec, run_output_flag)
-        write(*,*) 'Doing useful stuff while program runs'
-        write(*,*) ''
+        !write(*,*) 'Doing useful stuff while program runs'
+        !write(*,*) ''
+       ! cancel the last run
+       run_id = nruns - 1
+       err = rmif_cancel_run(run_id)
     end do
     ! get number of failed model runs
     err = rmif_get_num_failed_runs(nfail)
@@ -191,18 +197,18 @@
     write(*,*) ''
     write(*,*) 'Total number of successful model runs:', n_total_runs
     
-    ! reinitialize run manager and make another set of runs
-    err = rmif_reinitialize()
-    err = rmif_add_run(pars, npar, irun)
-    pars(1) = pars(1) + pars(1) * 0.2
-    err = rmif_add_run(pars, npar, irun)
-    err = rmif_run()
-    
-    err = rmif_get_run(0, pars,npar, obs, nobs)
-    
-    err = rmif_get_num_total_runs(n_total_runs)
-    write(*,*) ''
-    write(*,*) 'Total number of successful model runs:', n_total_runs
+    !! reinitialize run manager and make another set of runs
+    !err = rmif_reinitialize()
+    !err = rmif_add_run(pars, npar, irun)
+    !pars(1) = pars(1) + pars(1) * 0.2
+    !err = rmif_add_run(pars, npar, irun)
+    !err = rmif_run()
+    !
+    !err = rmif_get_run(0, pars,npar, obs, nobs)
+    !
+    !err = rmif_get_num_total_runs(n_total_runs)
+    !write(*,*) ''
+    !write(*,*) 'Total number of successful model runs:', n_total_runs
     
     !clean up
     err = rmif_delete()

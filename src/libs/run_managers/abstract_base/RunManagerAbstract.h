@@ -61,6 +61,7 @@ public:
 	virtual bool get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs);
 	virtual bool get_run(int run_id, std::vector<double> &pars_vec, std::vector<double> &obs_vec, std::string &info_txt, double &info_value);
 	virtual bool get_run(int run_id, std::vector<double> &pars_vec, std::vector<double> &obs_vec);
+	virtual void cancel_run(int run_id);
 	virtual const std::set<int> get_failed_run_ids();
 	virtual bool get_model_parameters(int run_num, Parameters &pars);
 	virtual bool get_observations_vec(int run_id, std::vector<double> &data_vec);
