@@ -188,6 +188,7 @@ public:
 	int get_nnz_obs_and_reg() const;
 	vector<string> get_groups();
 	void reset_group_weights(string &group, double val);
+	void scale_group_weights(string &group, double scale_val);
 
 };
 

@@ -119,6 +119,7 @@ private:
 	int warn_min_reals, error_min_reals;
 	vector<double> lam_mults;
 	map<string, double> pareto_obs;
+	map<string, double> pareto_weights;
 	//string fphi_name;
 	//ofstream fphi;
 	vector<string> oe_org_real_names, pe_org_real_names;

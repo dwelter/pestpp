@@ -859,6 +859,18 @@ void ObservationInfo::reset_group_weights(string &group, double val)
 }
 
 
+void ObservationInfo::scale_group_weights(string &group, double scale_val)
+{
+	for (auto &o : observations)
+	{
+		if (o.second.group == group)
+		{
+			o.second.weight *= scale_val;
+		}
+	}
+
+}
+
 const ObservationRec* ObservationInfo::get_observation_rec_ptr(const string &name) const
 {
 	const ObservationRec *ret_val = 0;
