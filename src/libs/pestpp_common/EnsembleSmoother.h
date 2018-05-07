@@ -118,7 +118,7 @@ private:
 	double lambda_max, lambda_min;
 	int warn_min_reals, error_min_reals;
 	vector<double> lam_mults;
-
+	map<string, double> pareto_obs;
 	//string fphi_name;
 	//ofstream fphi;
 	vector<string> oe_org_real_names, pe_org_real_names;
@@ -135,7 +135,7 @@ private:
 
 	//EnsemblePair run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe);
 	vector<int> run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe, const vector<int> &real_idxs=vector<int>());
-	vector<ObservationEnsemble> run_lambda_ensembles(vector<ParameterEnsemble> &pe_lams, vector<double> &lam_vals);
+	vector<ObservationEnsemble> run_lambda_ensembles(vector<ParameterEnsemble> &pe_lams, vector<double> &lam_vals, vector<double> &scale_vals);
 	//map<string, double> get_phi_vec_stats(map<string,PhiComponets> &phi_info);
 	//map<string,PhiComponets> get_phi_info(ObservationEnsemble &_oe);
 	void report_and_save();
