@@ -258,11 +258,11 @@ int SlaveInfoRec::seconds_since_last_ping_time() const
 
 
 RunManagerPanther::RunManagerPanther(const string &stor_filename, const string &_port, ofstream &_f_rmr, int _max_n_failure,
-	double _overdue_reched_fac, double _overdue_giveup_fac)
+	double _overdue_reched_fac, double _overdue_giveup_fac, double _overdue_giveup_minutes)
 	: RunManagerAbstract(vector<string>(), vector<string>(), vector<string>(),
 	vector<string>(), vector<string>(), stor_filename, _max_n_failure),
 	overdue_reched_fac(_overdue_reched_fac), overdue_giveup_fac(_overdue_giveup_fac),
-	port(_port), f_rmr(_f_rmr), n_no_ops(0)
+	port(_port), f_rmr(_f_rmr), n_no_ops(0), overdue_giveup_minutes(_overdue_giveup_minutes)
 {
 	max_concurrent_runs = max(MAX_CONCURRENT_RUNS_LOWER_LIMIT, _max_n_failure);
 	w_init();
@@ -728,7 +728,8 @@ void RunManagerPanther::schedule_runs()
 						should_schedule = true;
 						model_runs_timed_out += overdue_kill_runs_vec.size();
 					}
-					else if (duration > avg_runtime*overdue_giveup_fac  && free_slave_list.empty())
+					else if (((duration > overdue_giveup_minutes) || (duration > avg_runtime*overdue_giveup_fac)) 
+						&& free_slave_list.empty())
 					{
 						// If there are no free slaves kill the overdue ones
 						// This is necessary to keep runs with small numbers of slaves behaving
@@ -1235,7 +1236,7 @@ void RunManagerPanther::kill_all_active_runs()
 			 if (avg_runtime <= 0) avg_runtime = get_global_runtime_minute();;
 			 if (avg_runtime <= 0) avg_runtime = 1.0E+10;
 			 duration = i->second->get_duration_minute();
-			 if (duration >= avg_runtime*overdue_giveup_fac)
+			 if ((duration > overdue_giveup_minutes) || (duration >= avg_runtime*overdue_giveup_fac))
 			 {
 				 sock_id_vec.push_back(i->second->get_socket_fd());
 			 }
@@ -1421,8 +1422,8 @@ RunManagerPanther::~RunManagerPanther(void)
 
 RunManagerYAMRCondor::RunManagerYAMRCondor(const std::string & stor_filename, 
 	const std::string & port, std::ofstream & _f_rmr, int _max_n_failure, 
-	double overdue_reched_fac, double overdue_giveup_fac, string _condor_submit_file): RunManagerPanther(stor_filename,
-		port,_f_rmr,_max_n_failure,overdue_reched_fac,overdue_giveup_fac)
+	double overdue_reched_fac, double overdue_giveup_fac, double overdue_giveup_minutes, string _condor_submit_file): RunManagerPanther(stor_filename,
+		port,_f_rmr,_max_n_failure,overdue_reched_fac,overdue_giveup_fac, overdue_giveup_minutes)
 {
 	submit_file = _condor_submit_file;
 	parse_submit_file();

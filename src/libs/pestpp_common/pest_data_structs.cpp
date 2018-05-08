@@ -502,6 +502,10 @@ void PestppOptions::parce_line(const string &line)
 		else if (key == "OVERDUE_GIVEUP_FAC"){
 			convert_ip(value, overdue_giveup_fac);
 		}
+		else if (key == "OVERDUE_GIVEUP_MINUTES")
+		{
+			convert_ip(value, overdue_giveup_minutes);
+		}
 		else if (key == "CONDOR_SUBMIT_FILE")
 		{
 			//convert_ip(value, condor_submit_file);

@@ -314,6 +314,7 @@ int main(int argc, char* argv[])
 					pest_scenario.get_pestpp_options().get_max_run_fail(),
 					pest_scenario.get_pestpp_options().get_overdue_reched_fac(),
 					pest_scenario.get_pestpp_options().get_overdue_giveup_fac(),
+					pest_scenario.get_pestpp_options().get_overdue_giveup_minutes(),
 					csf);
 			}
 			else
@@ -323,7 +324,8 @@ int main(int argc, char* argv[])
 					file_manager.open_ofile_ext("rmr"),
 					pest_scenario.get_pestpp_options().get_max_run_fail(),
 					pest_scenario.get_pestpp_options().get_overdue_reched_fac(),
-					pest_scenario.get_pestpp_options().get_overdue_giveup_fac());
+					pest_scenario.get_pestpp_options().get_overdue_giveup_fac(),
+					pest_scenario.get_pestpp_options().get_overdue_giveup_minutes());
 			}
 		}
 		else if (run_manager_type == RunManagerType::GENIE)
