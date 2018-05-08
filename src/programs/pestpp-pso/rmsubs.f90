@@ -27,7 +27,7 @@ subroutine instantrm(port)
   err = rmif_create_panther(storfile, 20,         &
                          port,     20,         &
                          rmi_info_file, 20,  1,&
-                         1.00d+02, 1.00d+02)
+                         1.00d+02, 1.00d+02, 1.00d+30)
   !
   if (err /= 0) then
     write(*,'(A,I0)')'PANTHER failed to instantiate --> err = ',err

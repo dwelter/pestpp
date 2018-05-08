@@ -113,7 +113,19 @@ ofstream &FileManager::open_ofile_absolute(const string &tag, const string &file
 	}
 	if (!f_new.good())
 	{
-		throw PestFileError(filename);
+		try
+		{
+			f_new.close();
+			string fname = filename;
+		    std:remove(filename.c_str());
+			f_new.open(filename);
+		}
+		catch (...)
+		{
+			throw PestFileError(filename);
+		}
+		if (!f_new.good())
+			throw PestFileError(filename);
 	}
 	return f_new;
 }

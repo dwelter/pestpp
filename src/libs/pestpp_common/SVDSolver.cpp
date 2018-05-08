@@ -887,11 +887,9 @@ ModelRun SVDSolver::iteration_reuse_jac(RunManagerAbstract &run_manager, Termina
 	if (!res_filename.empty())
 	{
 		stringstream message;
-
 		message << "  reading  residual file " << res_filename << " for hot-start...";
 		cout << message.str();
 		file_manager.rec_ofstream() << message.str();
-
 		Observations temp_obs = new_base_run.get_obs_template();
 		string rfile = res_filename;
 		read_res(rfile, temp_obs);

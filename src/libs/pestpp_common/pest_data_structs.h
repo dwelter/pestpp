@@ -188,6 +188,7 @@ public:
 	int get_nnz_obs_and_reg() const;
 	vector<string> get_groups();
 	void reset_group_weights(string &group, double val);
+	void scale_group_weights(string &group, double scale_val);
 
 };
 
@@ -373,6 +374,8 @@ public:
 	void set_ies_lambda_dec_fac(double _dec_fac) { ies_lambda_dec_fac = _dec_fac; }
 	bool get_ies_save_lambda_en() const { return ies_save_lambda_en; }
 	void set_ies_save_lambda_en(bool _ies_save_lambda_en) { ies_save_lambda_en = _ies_save_lambda_en; }
+	double get_overdue_giveup_minutes() const { return overdue_giveup_minutes; }
+	void set_overdue_giveup_minutes(double overdue_minutes) { overdue_giveup_minutes = overdue_minutes; }
 
 private:
 	int n_iter_base;
@@ -396,6 +399,7 @@ private:
 	string basejac_filename;
 	double overdue_reched_fac;
 	double overdue_giveup_fac;
+	double overdue_giveup_minutes;
 	string condor_submit_file;
 	double reg_frac;
 

@@ -245,8 +245,9 @@ int main(int argc, char* argv[])
 		}
 
 		ofstream &fout_rec = file_manager.rec_ofstream();
-		PerformanceLog performance_log(file_manager.open_ofile_ext("pfm"));
-
+		//PerformanceLog performance_log(file_manager.open_ofile_ext("pfm"));
+	    PerformanceLog performance_log(file_manager.open_ofile_ext("plog"));
+		
 		if (!restart_flag || save_restart_rec_header)
 		{
 			fout_rec << "             PEST++ Version " << version << endl << endl;
@@ -314,6 +315,7 @@ int main(int argc, char* argv[])
 					pest_scenario.get_pestpp_options().get_max_run_fail(),
 					pest_scenario.get_pestpp_options().get_overdue_reched_fac(),
 					pest_scenario.get_pestpp_options().get_overdue_giveup_fac(),
+					pest_scenario.get_pestpp_options().get_overdue_giveup_minutes(),
 					csf);
 			}
 			else
@@ -323,7 +325,8 @@ int main(int argc, char* argv[])
 					file_manager.open_ofile_ext("rmr"),
 					pest_scenario.get_pestpp_options().get_max_run_fail(),
 					pest_scenario.get_pestpp_options().get_overdue_reched_fac(),
-					pest_scenario.get_pestpp_options().get_overdue_giveup_fac());
+					pest_scenario.get_pestpp_options().get_overdue_giveup_fac(),
+					pest_scenario.get_pestpp_options().get_overdue_giveup_minutes());
 			}
 		}
 		else if (run_manager_type == RunManagerType::GENIE)
@@ -720,7 +723,8 @@ int main(int argc, char* argv[])
 				fout_rec << "WARNING: PEST++ 'autonorm' option != 0.0. This can greatly effect the outcome " << endl;
 				fout_rec << "         of the following analyses, which depend heavily on the Jacobian" << endl;
 			}
-			ofstream &pfm = file_manager.get_ofstream("pfm");
+			//ofstream &pfm = file_manager.get_ofstream("pfm");
+			ofstream &pfm = performance_log.fout;
 			pfm << endl << endl << "-----------------------------------" << endl;
 			pfm << "starting linear uncertainty analyses" << endl;
 			pfm << "-----------------------------------" << endl << endl;

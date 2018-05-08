@@ -48,7 +48,8 @@ int rmif_create_panther_(
 	char *f_storfile, int *storfile_len,
 	char *f_port, int *f_port_len,
 	char *f_info_filename, int *info_filename_len, int *n_max_fail,
-	double *overdue_reched_fac, double *overdue_giveup_fac)
+	double *overdue_reched_fac, double *overdue_giveup_fac,
+	double *overdue_giveup_minutes)
 {
 	int err = 0;
 	try {
@@ -57,7 +58,8 @@ int rmif_create_panther_(
 		string info_filename =  fortran_str_2_string(f_info_filename, *info_filename_len);
 		fout_run_manager_log_file.open(info_filename);
 		_run_manager_ptr_ = new RunManagerPanther(storfile, 
-			port, fout_run_manager_log_file, *n_max_fail, *overdue_reched_fac, *overdue_giveup_fac);
+			port, fout_run_manager_log_file, *n_max_fail, *overdue_reched_fac, *overdue_giveup_fac,
+			*overdue_giveup_minutes);
 	}
 	catch(...)
 	{

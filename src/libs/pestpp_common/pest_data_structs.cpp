@@ -502,6 +502,10 @@ void PestppOptions::parce_line(const string &line)
 		else if (key == "OVERDUE_GIVEUP_FAC"){
 			convert_ip(value, overdue_giveup_fac);
 		}
+		else if (key == "OVERDUE_GIVEUP_MINUTES")
+		{
+			convert_ip(value, overdue_giveup_minutes);
+		}
 		else if (key == "CONDOR_SUBMIT_FILE")
 		{
 			//convert_ip(value, condor_submit_file);
@@ -858,6 +862,18 @@ void ObservationInfo::reset_group_weights(string &group, double val)
 
 }
 
+
+void ObservationInfo::scale_group_weights(string &group, double scale_val)
+{
+	for (auto &o : observations)
+	{
+		if (o.second.group == group)
+		{
+			o.second.weight *= scale_val;
+		}
+	}
+
+}
 
 const ObservationRec* ObservationInfo::get_observation_rec_ptr(const string &name) const
 {

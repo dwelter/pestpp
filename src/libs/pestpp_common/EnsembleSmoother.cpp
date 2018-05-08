@@ -113,7 +113,8 @@ Eigen::MatrixXd PhiHandler::get_par_resid(ParameterEnsemble &pe)
 
 Eigen::MatrixXd PhiHandler::get_actual_obs_resid(ObservationEnsemble &oe)
 {
-	vector<string> act_obs_names = pest_scenario->get_ctl_ordered_nz_obs_names();
+	//vector<string> act_obs_names = pest_scenario->get_ctl_ordered_nz_obs_names();
+	vector<string> act_obs_names = oe_base->get_var_names();
 	Eigen::MatrixXd resid(oe.shape().first, act_obs_names.size());
 	resid.setZero();
 	Observations obs = pest_scenario->get_ctl_observations();
@@ -130,7 +131,8 @@ Eigen::VectorXd PhiHandler::get_q_vector()
 {
 	ObservationInfo oinfo = pest_scenario->get_ctl_observation_info();
 	Eigen::VectorXd q;
-	vector<string> act_obs_names = pest_scenario->get_ctl_ordered_nz_obs_names();
+	//vector<string> act_obs_names = pest_scenario->get_ctl_ordered_nz_obs_names();
+	vector<string> act_obs_names = oe_base->get_var_names();
 	q.resize(act_obs_names.size());
 	double w;
 	for (int i = 0; i < act_obs_names.size(); i++)
@@ -179,7 +181,7 @@ void PhiHandler::update(ObservationEnsemble & oe, ParameterEnsemble & pe)
 	for (auto &pv : meas_map)
 	{
 		meas[pv.first] = pv.second.sum();
-		obs_group_phi_map[pv.first] = get_obs_group_contrib(pv.second);
+		
 	}
 	/*if (pest_scenario->get_control_info().pestmode == ControlInfo::PestMode::PARETO)
 	{
@@ -220,8 +222,11 @@ void PhiHandler::update(ObservationEnsemble & oe, ParameterEnsemble & pe)
 	}*/
 	
 	actual.clear();
-	for (auto &pv : calc_actual(oe,q))
+	for (auto &pv : calc_actual(oe, q))
+	{
 		actual[pv.first] = pv.second.sum();
+		obs_group_phi_map[pv.first] = get_obs_group_contrib(pv.second);
+	}
  	composite.clear();
 	composite = calc_composite(meas, regul);
 }
@@ -514,9 +519,10 @@ map<string, Eigen::VectorXd> PhiHandler::calc_regul(ParameterEnsemble & pe)
 
 void PhiHandler::apply_ineq_constraints(Eigen::MatrixXd &resid)
 {
+	vector<string> names = oe_base->get_var_names();
 	vector<string> lt_names = get_lt_obs_names(), gt_names = get_gt_obs_names();
 	vector<string> act_obs_names = pest_scenario->get_ctl_ordered_nz_obs_names();
-	assert(act_obs_names.size() == resid.cols());
+	assert(names.size() == resid.cols());
 	
 	map<string, double> lt_vals,gt_vals;
 	Observations obs = pest_scenario->get_ctl_observations();
@@ -527,8 +533,10 @@ void PhiHandler::apply_ineq_constraints(Eigen::MatrixXd &resid)
 	if ((lt_vals.size() == 0) && (gt_vals.size() == 0))
 		return;
 	map<string, int> idxs;
-	for (int i = 0; i < act_obs_names.size(); i++)
-		idxs[act_obs_names[i]] = i;
+	//for (int i = 0; i < act_obs_names.size(); i++)
+	//	idxs[act_obs_names[i]] = i;
+	for (int i = 0; i < names.size(); i++)
+		idxs[names[i]] = i;
 	int idx;
 	double val;
 	Eigen::VectorXd col;
@@ -1028,6 +1036,10 @@ void IterEnsembleSmoother::initialize()
 	lambda_min = 1.0E-30;
 	warn_min_reals = 30;
 	error_min_reals = 0;
+
+	act_obs_names = pest_scenario.get_ctl_ordered_nz_obs_names();
+	act_par_names = pest_scenario.get_ctl_ordered_adj_par_names();
+
 	if (pest_scenario.get_control_info().pestmode == ControlInfo::PestMode::REGUL)
 	{
 		message(1, "WARNING: 'pestmode' == 'regularization', in pestpp-ies, this is controlled with the ++ies_reg_factor argument, resetting to 'estimation'");
@@ -1052,6 +1064,29 @@ void IterEnsembleSmoother::initialize()
 		}
 		else
 		{
+			
+			ObservationInfo *oi = pest_scenario.get_observation_info_ptr();
+			Observations obs = pest_scenario.get_ctl_observations();
+			vector<string> zero;
+			for (auto &oname : pest_scenario.get_ctl_ordered_obs_names())
+				if (oi->get_group(oname) == pobs_group)
+				{
+					if (oi->get_weight(oname) == 0.0)
+						zero.push_back(oname);
+					pareto_obs[oname] = obs[oname];
+					pareto_weights[oname] = oi->get_weight(oname);
+				}
+
+			if (pareto_obs.size() == 0)
+				throw_ies_error("no observations found for pareto obs group");
+			
+			
+			if (zero.size() > 0)
+			{
+				message(0, "error: the following pareto obs have zero weight:", zero);
+				throw_ies_error("atleast one pareto obs has zero weight");
+			}
+
 
 		}
 		//throw_ies_error("pareto mode not finished");
@@ -1079,8 +1114,7 @@ void IterEnsembleSmoother::initialize()
 	if (verbose_level > 1)
 		echo = true;
 
-	act_obs_names = pest_scenario.get_ctl_ordered_nz_obs_names();
-	act_par_names = pest_scenario.get_ctl_ordered_adj_par_names();
+	
 
 	subset_size = pest_scenario.get_pestpp_options().get_ies_subset_size();
 	reg_factor = pest_scenario.get_pestpp_options().get_ies_reg_factor();
@@ -1158,6 +1192,27 @@ void IterEnsembleSmoother::initialize()
 		throw_ies_error(ss.str());
 	}
 
+	//if pareto mode, reset the stochastic obs vals for the pareto obs to the value in the control file
+	if (pest_scenario.get_control_info().pestmode == ControlInfo::PestMode::PARETO)
+	{
+		string oname;
+		vector<string> oe_names = oe.get_var_names();
+		double val;
+		Eigen::VectorXd col;
+		Eigen::MatrixXd oe_reals = *oe.get_eigen_ptr();
+		for (int i = 0; i < oe.shape().second; i++)
+		{
+			if (pareto_obs.find(oe_names[i]) != pareto_obs.end())
+			{
+				val = pareto_obs[oe_names[i]];
+				col = Eigen::VectorXd::Zero(oe.shape().first);
+				col.setConstant(val);
+				oe_reals.col(i) = col;
+			}
+		}
+		oe.set_eigen(oe_reals);
+	}
+	
 	//need this here for Am calcs...
 	message(1, "transforming parameter ensembles to numeric");
 	pe.transform_ip(ParameterEnsemble::transStatus::NUM);
@@ -1448,8 +1503,6 @@ void IterEnsembleSmoother::initialize()
 		}
 	}
 
-
-
 	performance_log->log_event("calc initial phi");
 	//initialize the phi handler
 	ph = PhiHandler(&pest_scenario, &file_manager, &oe_base, &pe_base, &parcov, &reg_factor);
@@ -1594,12 +1647,25 @@ void IterEnsembleSmoother::adjust_pareto_weight(string &obsgroup, double wfac)
 	}
 	else
 	{
-		message(1, "resetting weight for pareto obs group to ", wfac);
-		pest_scenario.get_observation_info_ptr()->reset_group_weights(obsgroup, wfac);
+		message(1, "applying weight factor for pareto obs group of ", wfac);
+
+		//pest_scenario.get_observation_info_ptr()->scale_group_weights(obsgroup, wfac);
+		ObservationInfo *oi = pest_scenario.get_observation_info_ptr();
+		double val;
+		for (auto &pw : pareto_weights)
+		{
+			val = wfac * pw.second;
+			oi->set_weight(pw.first, val);
+		}
+			
+
 		Covariance obscov;
 		obscov.from_observation_weights(pest_scenario);
 		obscov = obscov.get(act_obs_names);
+		cout << obscov_inv_sqrt.diagonal() << endl;
 		obscov_inv_sqrt = obscov.inv().get_matrix().diagonal().cwiseSqrt().asDiagonal();
+	    cout << obscov_inv_sqrt.diagonal() << endl;
+		cout << endl;
 	}
 }
 
@@ -2066,7 +2132,7 @@ bool IterEnsembleSmoother::solve()
 	double mean, std;
 	
 	message(0, "running lambda ensembles");
-	vector<ObservationEnsemble> oe_lams = run_lambda_ensembles(pe_lams, lam_vals);
+	vector<ObservationEnsemble> oe_lams = run_lambda_ensembles(pe_lams, lam_vals,scale_vals);
 		
 	message(0, "evaluting lambda ensembles");
 	message(1, "last mean: ", last_best_mean);
@@ -2151,7 +2217,7 @@ bool IterEnsembleSmoother::solve()
 		///run
 		vector<int> fails = run_ensemble(remaining_pe_lam, remaining_oe_lam);
 		//if any of the remaining runs failed
-		if (fails.size() == remaining_pe_lam.shape().first)
+		if (fails.size() ==org_pe_idxs.size())
 			throw_ies_error(string("all remaining realizations failed...something is prob wrong"));
 		if (fails.size() > 0)
 		{
@@ -2286,7 +2352,7 @@ void IterEnsembleSmoother::report_and_save()
 }
 
 
-vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<ParameterEnsemble> &pe_lams, vector<double> &lam_vals)
+vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<ParameterEnsemble> &pe_lams, vector<double> &lam_vals, vector<double> &scale_vals)
 {
 	ofstream &frec = file_manager.rec_ofstream();
 	stringstream ss;
@@ -2358,6 +2424,7 @@ vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<Pa
 	for (int i=0;i<pe_lams.size();i++)
 	{
 		ObservationEnsemble _oe = oe;//copy
+		vector<double> rep_vals{ lam_vals[i],scale_vals[i] };
 		if (subset_size < pe_lams[0].shape().first)
 			_oe.keep_rows(subset_idxs);
 		real_run_ids = real_run_ids_vec[i];
@@ -2368,21 +2435,25 @@ vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<Pa
 		catch (const exception &e)
 		{
 			stringstream ss;
-			ss << "error processing runs: " << e.what();
+			ss << "error processing runs for lambda,scale: " << lam_vals[i] << ',' << scale_vals[i] << ': ' << e.what();
 			throw_ies_error(ss.str());
 		}
 		catch (...)
 		{
-			throw_ies_error(string("error processing runs"));
+			stringstream ss;
+			ss << "error processing runs for lambda,scale: " << lam_vals[i] << ',' << scale_vals[i];
+			throw_ies_error(ss.str());
 		}
 		
+		//for testing
+		//failed_real_indices.push_back(real_run_ids.size()-1);
 		
 		if (failed_real_indices.size() > 0)
 		{
 			stringstream ss;
 			vector<string> par_real_names = pe.get_real_names();
 			vector<string> obs_real_names = oe.get_real_names();
-			ss << "the following par:obs realization runs failed: ";
+			ss << "the following par:obs realization runs failed for lambda,scale " << lam_vals[i] << ',' << scale_vals[i] << "-->";
 			for (auto &i : failed_real_indices)
 			{
 				ss << par_real_names[i] << ":" << obs_real_names[i] << ',';
@@ -2391,7 +2462,7 @@ vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<Pa
 			message(1,s);
 			if (failed_real_indices.size() == _oe.shape().first)
 			{
-				message(0, "WARNING: all realizations failed for lambda multiplier :", lam_vals[i]);
+				message(0, "WARNING: all realizations failed for lambda, scale :", rep_vals);
 				_oe = ObservationEnsemble();
 
 			}
@@ -2466,7 +2537,9 @@ vector<int> IterEnsembleSmoother::run_ensemble(ParameterEnsemble &_pe, Observati
 	{
 		throw_ies_error(string("error processing runs"));
 	}
-
+	//for testing
+	//failed_real_indices.push_back(0);
+	
 	if (failed_real_indices.size() > 0)
 	{
 		stringstream ss;

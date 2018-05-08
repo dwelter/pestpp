@@ -470,7 +470,10 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 				convert_ip(tokens[6], pi.group);
 				convert_ip(tokens[7], scale);
 				convert_ip(tokens[8], offset);
-				convert_ip(tokens[9], pi.dercom);
+				if (control_info.numcom > 1)
+					convert_ip(tokens[9], pi.dercom);
+				else
+					pi.dercom = 1;
 				pi.scale = scale;
 				pi.offset = offset;
 				// add parameters to model parameter and paramter_info datasets
@@ -744,6 +747,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_ies_save_lambda_en(false);
 
 	pestpp_options.set_condor_submit_file(string());
+	pestpp_options.set_overdue_giveup_minutes(1.0e+30);
 
 	for(vector<string>::const_iterator b=pestpp_input.begin(),e=pestpp_input.end();
 		b!=e; ++b) {
