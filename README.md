@@ -63,8 +63,14 @@ Much work has been done to avoid additional external dependencies in PEST++.  As
 
 ## pestpp arguments
 Here is a (more or less) complete list of ``++`` arguments that can be added to the control file
-* ``++overdue_resched_fac(1.2)``:YAMR only, if a run is more than <``overdue_resched_fac``> X average run time, reschedule it on available resources
-* ``++overdue_giveup_fac(2.0)``:YAMR only, if a run is more than <``overdue_giveup_fac``> X average run time, mark it as failed
+* ``++overdue_resched_fac(1.2)``:YAMR only, if a model run time is more than <``overdue_resched_fac``> X average run time, reschedule it on available resources
+
+* ``++overdue_giveup_fac(2.0)``:YAMR only, if a model run time is more than <``overdue_giveup_fac``> X average run time, mark it as failed
+
+* ``++overdue_giveup_minutes(1.0e+30)``: YAMR only, if a model run time is more than <``overdue_giveup_minutes``>, mark it as failed
+
+* ``++yamr_poll_interval(1.0)``: YAMR only, how frequently in seconds the YAMR slave will poll for a connection to the master.  This time is also used as a timeout once a run has been terminated to give the OS a few cycles to cleanup open file handles.
+
 * ``++max_n_super(20)``: maximum number of super parameters to use
 
 * ``++super_eigthres(1.0e-8)`` ratio of max to min singular values used to truncate the singular components when forming the super parameter problem
