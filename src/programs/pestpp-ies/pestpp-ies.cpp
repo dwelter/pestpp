@@ -226,7 +226,13 @@ int main(int argc, char* argv[])
 
 		// create pest run and process control file to initialize it
 		Pest pest_scenario;
-		pest_scenario.set_defaults();
+		PestppOptions *ppo = pest_scenario.get_pestpp_options_ptr();
+		ppo->set_max_run_fail(1);
+		ppo->set_lambda_scale_vec(vector<double>{0.5, 0.75, 1.0, 1.1});
+		ppo->set_ies_lam_mults(vector<double>{0.1, 0.5, 1.0, 2.0, 5.0});
+
+		ppo->set_ies_subset_size(5);
+		
 
 		try {
 			performance_log.log_event("starting to process control file", 1);

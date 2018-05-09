@@ -237,6 +237,7 @@ public:
 	int get_max_reg_iter()const { return max_reg_iter; }
 	const vector<double>& get_base_lambda_vec() const { return base_lambda_vec; }
 	const vector<double>& get_lambda_scale_vec() const { return lambda_scale_vec; }
+	void set_lambda_scale_vec(vector<double> sv) {lambda_scale_vec = sv; }
 	bool get_iter_summary_flag() const { return iter_summary_flag; }
 	bool get_der_forgive() const { return der_forgive; }
 	GLOBAL_OPT get_global_opt() const { return global_opt; }
