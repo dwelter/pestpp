@@ -1,10 +1,10 @@
 # Global options for GNU Make to build PEST++ libraries and programs
 #
 # Choose one of each:
-# SYSTEM ?= linux (default)
+#SYSTEM ?= linux (default)
 #        ?= mac
 #        ?= win
-# COMPILER ?= gcc (default)
+#COMPILER ?= gcc (default)
 #          ?= intel
 # STATIC ?= -static (default)
 #        ?= no (shared dynamic linking)
@@ -26,7 +26,7 @@ endif
 
 # Defaults (if unset, or missing local.mak)
 #SYSTEM ?= mac
-COMPILER ?= intel
+COMPILER ?= gcc
 
 
 ifeq ($(SYSTEM),mac)
