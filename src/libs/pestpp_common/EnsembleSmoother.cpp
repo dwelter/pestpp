@@ -1101,6 +1101,8 @@ void IterEnsembleSmoother::initialize()
 	if (lam_mults.size() == 0)
 		lam_mults.push_back(1.0);
 	message(1, "using lambda multipliers: ", lam_mults);
+	vector<double> scale_facs = pest_scenario.get_pestpp_options().get_lambda_scale_vec();
+	message(1, "usnig lambda scaling factors: ", scale_facs);
 	double acc_fac = pest_scenario.get_pestpp_options().get_ies_accept_phi_fac();
 	message(1, "acceptable phi factor: ", acc_fac);
 	double inc_fac = pest_scenario.get_pestpp_options().get_ies_lambda_inc_fac();
@@ -1220,25 +1222,6 @@ void IterEnsembleSmoother::initialize()
 	if (pest_scenario.get_pestpp_options().get_ies_include_base())
 		add_bases();
 
-	/*if (pe_drawn)
-	{
-		stringstream ss;
-		ss << file_manager.get_base_filename() << ".0.par.csv";
-		message(1, "saving initial parameter ensemble to ", ss.str());
-		pe.to_csv(ss.str());
-	}
-
-	if (oe_drawn)
-	{
-		stringstream ss;
-		ss << file_manager.get_base_filename() << ".base.obs.csv";
-		message(1, "saving initial observation ensemble to ", ss.str());
-		oe.to_csv(ss.str());
-	}*/
-
-
-
-
 	ss.str("");
 	if (pest_scenario.get_pestpp_options().get_ies_save_binary())
 	{
@@ -1320,8 +1303,6 @@ void IterEnsembleSmoother::initialize()
 		use_subset = true;
 	}
 	
-	
-
 	oe_org_real_names = oe.get_real_names();
 	pe_org_real_names = pe.get_real_names();
 
@@ -1509,11 +1490,11 @@ void IterEnsembleSmoother::initialize()
 
 	if (ph.get_lt_obs_names().size() > 0)
 	{
-		message(1, "less_than inequality defined for observations: ", ph.get_lt_obs_names());
+		message(1, "less_than inequality defined for observations: ", ph.get_lt_obs_names().size());
 	}
 	if (ph.get_gt_obs_names().size())
 	{
-		message(1, "greater_than inequality defined for observations: ", ph.get_gt_obs_names());
+		message(1, "greater_than inequality defined for observations: ", ph.get_gt_obs_names().size());
 	}
 
 	ph.update(oe, pe);

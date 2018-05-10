@@ -6,7 +6,7 @@ pcf
    1.000000E-01  -4.000000E+00   3.000000E-01   3.000000E-02        10       999          lamforgive        noderforgive
    5.000000E+00   5.000000E+00   1.000000E-03         0         0
    1.000000E-01         1   1.100000E+00               noaui          nosenreuse        noboundscale
-         6   5.000000E-03         4         4   5.000000E-03         4   0.000000E+00         1  -1.000000E+00
+         0   5.000000E-03         4         4   5.000000E-03         4   0.000000E+00         1  -1.000000E+00
          1         1         1         0             jcosave          verboserec          jcosaveitn          reisaveitn          parsaveitn        noparsaverun
 * singular value decomposition
          1
@@ -50,12 +50,8 @@ h02_08                4.3000000000E+00      0.0000000000E+00       head
 h02_09                4.7000000000E+00      0.0000000000E+00       head                 
 h02_10                5.1000000000E+00      0.0000000000E+00       head
 * model command line
-model.bat
+mf2005 10par_xsec.nam
 * model input/output
-misc\k.tpl model\ref_cal\hk_Layer_1.ref
-misc\strt_Layer_1.tpl model\ref_cal\strt_Layer_1.ref
-misc\head.ins model\10par_xsec.hds
-++N_ITER_BASE(1)
-++N_ITER_SUPER(4)
-++SUPER_EIGTHRES(1.0e-8)
-++MAX_N_SUPER(10)
+hk_Layer_1.ref.tpl hk_Layer_1.ref
+strt_Layer_1.ref.tpl strt_Layer_1.ref
+10par_xsec.hds.ins 10par_xsec.hds
