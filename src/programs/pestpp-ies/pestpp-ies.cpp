@@ -226,14 +226,7 @@ int main(int argc, char* argv[])
 
 		// create pest run and process control file to initialize it
 		Pest pest_scenario;
-		PestppOptions *ppo = pest_scenario.get_pestpp_options_ptr();
-		ppo->set_max_run_fail(1);
-		ppo->set_lambda_scale_vec(vector<double>{0.5, 0.75, 1.0, 1.1});
-		ppo->set_ies_lam_mults(vector<double>{0.1, 0.5, 1.0, 2.0, 5.0});
-
-		ppo->set_ies_subset_size(5);
 		
-
 		try {
 			performance_log.log_event("starting to process control file", 1);
 			pest_scenario.process_ctl_file(file_manager.open_ifile_ext("pst"), file_manager.build_filename("pst"));
@@ -251,7 +244,6 @@ int main(int argc, char* argv[])
 		}
 		pest_scenario.check_inputs(fout_rec);
 
-		PestppOptions ppopt = pest_scenario.get_pestpp_options();
 
 		
 		//Initialize OutputFileWriter to handle IO of suplementary files (.par, .par, .svd)
@@ -265,7 +257,11 @@ int main(int argc, char* argv[])
 		output_file_writer.scenario_obs_report(fout_rec);
 		//fout_rec << "    pestpp-ies parameter csv file = " << left << setw(50) << ppopt.get_ies_par_csv() << endl;
 		//fout_rec << "    pestpp-ies observation csv file = " << left << setw(50) << ppopt.get_ies_obs_csv() << endl;
-
+		
+		PestppOptions *ppo = pest_scenario.get_pestpp_options_ptr();
+		set<string> pp_args = ppo->get_passed_args();
+		if (pp_args.find("MAX_RUN_FAIL") == pp_args.end())
+			ppo->set_max_run_fail(1);
 
 		RunManagerAbstract *run_manager_ptr;
 		if (run_manager_type == RunManagerType::PANTHER)

@@ -727,7 +727,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_ies_lam_mults(vector<double>());
 	pestpp_options.set_ies_init_lam(-999);
 	pestpp_options.set_ies_use_approx(true);
-	pestpp_options.set_ies_subset_size(100000000);
+	pestpp_options.set_ies_subset_size(5);
 	pestpp_options.set_ies_reg_factor(0.0);
 	pestpp_options.set_ies_verbose_level(0);
 	pestpp_options.set_ies_use_prior_scaling(false);
@@ -736,7 +736,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_ies_include_base(true);
 	pestpp_options.set_ies_use_empirical_prior(false);
 	pestpp_options.set_ies_group_draws(true);
-	pestpp_options.set_ies_num_reals_passed(false);
+	//pestpp_options.set_ies_num_reals_passed(false);
 	pestpp_options.set_ies_enforce_bounds(true);
 	pestpp_options.set_par_sigma_range(4.0);
 	pestpp_options.set_ies_save_binary(false);

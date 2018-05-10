@@ -695,7 +695,7 @@ bool IterEnsembleSmoother::initialize_pe(Covariance &cov)
 
 		pe.transform_ip(ParameterEnsemble::transStatus::NUM);
 
-		if (pest_scenario.get_pestpp_options().get_ies_num_reals_passed())
+		if (pp_args.find("IES_NUM_REALS") != pp_args.end())
 		{
 			int num_reals = pest_scenario.get_pestpp_options().get_ies_num_reals();
 			if (num_reals < pe.shape().first)
@@ -855,7 +855,7 @@ bool IterEnsembleSmoother::initialize_oe(Covariance &cov)
 			ss << "unrecognized obs ensemble extension " << obs_ext << ", looing for csv, jcb, or jco";
 			throw_ies_error(ss.str());
 		}
-		if (pest_scenario.get_pestpp_options().get_ies_num_reals_passed())
+		if (pp_args.find("IES_NUM_REALS") != pp_args.end())
 		{
 			int num_reals = pest_scenario.get_pestpp_options().get_ies_num_reals();
 			if (num_reals < oe.shape().first)
@@ -1022,7 +1022,20 @@ void IterEnsembleSmoother::sanity_checks()
 void IterEnsembleSmoother::initialize()
 {
 	message(0, "initializing");
+	pp_args = pest_scenario.get_pestpp_options().get_passed_args();
+
+
+	//set some defaults
+	PestppOptions *ppo = pest_scenario.get_pestpp_options_ptr();
 	
+	if (pp_args.find("IES_LAMBDA_MULTS") == pp_args.end())
+		ppo->set_ies_lam_mults(vector<double>{0.1, 0.5, 1.0, 2.0, 5.0});
+	if (pp_args.find("IES_SUBSET_SIZE") == pp_args.end())
+		ppo->set_ies_subset_size(4);
+	if (pp_args.find("LAMBDA_SCALE_FAC") == pp_args.end())
+		ppo->set_lambda_scale_vec(vector<double>{0.5, 0.75, 0.95, 1.0, 1.1});
+
+
 	verbose_level = pest_scenario.get_pestpp_options_ptr()->get_ies_verbose_level();
 	if (pest_scenario.get_n_adj_par() > 1e6)
 	{
@@ -1034,8 +1047,8 @@ void IterEnsembleSmoother::initialize()
 	last_best_std = 1.0e+30;
 	lambda_max = 1.0E+30;
 	lambda_min = 1.0E-30;
-	warn_min_reals = 30;
-	error_min_reals = 0;
+	warn_min_reals = 10;
+	error_min_reals = 2;
 
 	act_obs_names = pest_scenario.get_ctl_ordered_nz_obs_names();
 	act_par_names = pest_scenario.get_ctl_ordered_adj_par_names();
@@ -1109,6 +1122,7 @@ void IterEnsembleSmoother::initialize()
 	message(1, "lambda increase factor: ", inc_fac);
 	double dec_fac = pest_scenario.get_pestpp_options().get_ies_lambda_dec_fac();
 	message(1, "lambda decrease factor: ", dec_fac);
+	message(1, "max run fail: ", ppo->get_max_run_fail());
 
 	sanity_checks();
 	
@@ -1396,8 +1410,8 @@ void IterEnsembleSmoother::initialize()
 			ss << "unrecognized restart obs ensemble extension " << obs_ext << ", looing for csv, jcb, or jco";
 			throw_ies_error(ss.str());
 		}
-
-		if (pest_scenario.get_pestpp_options().get_ies_num_reals_passed())
+		
+		if (pp_args.find("IES_NUM_REALS") != pp_args.end())
 		{
 			int num_reals = pest_scenario.get_pestpp_options().get_ies_num_reals();
 			if (num_reals < oe.shape().first)

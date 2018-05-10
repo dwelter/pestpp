@@ -112,6 +112,8 @@ private:
 	Covariance parcov;
 	double reg_factor;
 
+	set<string> pp_args;
+
 	int iter,subset_size;
 	bool use_subset;
 	double last_best_lam, last_best_mean,last_best_std;
