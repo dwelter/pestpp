@@ -385,9 +385,11 @@ void PestppOptions::parce_line(const string &line)
 		string org_value = (*i)[2];
 		upper_ip(key);
 		string value = upper_cp(org_value);
+		passed_args.insert(key);
 
 		if (key=="MAX_N_SUPER"){
 			convert_ip(value, max_n_super); 
+		
 		}
 		else if (key=="SUPER_EIGTHRES"){
 			convert_ip(value, super_eigthres); 
@@ -745,7 +747,7 @@ void PestppOptions::parce_line(const string &line)
 		else if (key == "IES_NUM_REALS")
 		{
 			convert_ip(value, ies_num_reals);
-			ies_num_reals_passed = true;
+			//ies_num_reals_passed = true;
 		}
 		else if (key == "IES_BAD_PHI")
 		{
