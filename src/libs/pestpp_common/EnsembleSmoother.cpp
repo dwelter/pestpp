@@ -1201,6 +1201,26 @@ void IterEnsembleSmoother::initialize()
 	obscov = obscov.get(act_obs_names);
 	bool oe_drawn = initialize_oe(obscov);
 
+	try
+	{
+		pe.check_for_dups();
+	}
+	catch (const exception &e)
+	{
+		string message = e.what();
+		throw_ies_error("error in parameter ensemble: " + message);
+	}
+
+	try
+	{
+		oe.check_for_dups();
+	}
+	catch (const exception &e)
+	{
+		string message = e.what();
+		throw_ies_error("error in observation ensemble: " + message);
+	}
+
 	if (pe.shape().first != oe.shape().first)
 	{
 		ss.str("");

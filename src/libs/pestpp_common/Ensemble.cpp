@@ -20,6 +20,32 @@ Ensemble::Ensemble(Pest *_pest_scenario_ptr): pest_scenario_ptr(_pest_scenario_p
 	rand_engine.seed(1123433458);
 }
 
+void Ensemble::check_for_dups()
+{
+	vector<string> dups;
+	set<string> names;
+	for (auto &n : var_names)
+	{
+		if (names.find(n) != names.end())
+			dups.push_back(n);
+		names.insert(n);
+	}
+
+	names.clear();
+	for (auto &n : real_names)
+	{
+		if (names.find(n) != names.end())
+			dups.push_back(n);
+		names.insert(n);
+	}
+	 
+	if (dups.size() > 0)
+	{
+		throw_ensemble_error("duplicate var/real names in ensemble: ", dups);
+	}
+
+}
+
 void Ensemble::reserve(vector<string> _real_names, vector<string> _var_names)
 {
 	reals.resize(_real_names.size(), _var_names.size());
