@@ -22,7 +22,7 @@ public:
 	PhiHandler() { ; }
 	PhiHandler(Pest *_pest_scenario, FileManager *_file_manager, 
 		       ObservationEnsemble *_oe_base, ParameterEnsemble *_pe_base,
-		       Covariance *_parcov, double *_reg_factor);
+		       Covariance *_parcov, double *_reg_factor, ObservationEnsemble *_weights);
 	void update(ObservationEnsemble &oe, ParameterEnsemble &pe);
 	double get_mean(phiType pt);
 	double get_std(phiType pt);
@@ -68,6 +68,7 @@ private:
 	FileManager* file_manager;
 	ObservationEnsemble* oe_base;
 	ParameterEnsemble* pe_base;
+	ObservationEnsemble *weights;
 	//Covariance parcov_inv;
 	Eigen::VectorXd parcov_inv_diag;
 	map<string, double> meas;
@@ -128,7 +129,7 @@ private:
 	vector<string> act_obs_names, act_par_names;
 
 	ParameterEnsemble pe, pe_base;
-	ObservationEnsemble oe, oe_base;
+	ObservationEnsemble oe, oe_base, weights;
 	//Eigen::MatrixXd prior_pe_diff;
 	Eigen::MatrixXd Am;
 	Eigen::DiagonalMatrix<double,Eigen::Dynamic> obscov_inv_sqrt, parcov_inv_sqrt;
@@ -145,6 +146,8 @@ private:
 	void save_mat(string prefix, Eigen::MatrixXd &mat);
 	bool initialize_pe(Covariance &cov);
 	bool initialize_oe(Covariance &cov);
+	void initialize_restart_oe();
+	void initialize_weights();
 	void drop_bad_phi(ParameterEnsemble &_pe, ObservationEnsemble &_oe);
 	//void check_ensembles(ObservationEnsemble &oe, ParameterEnsemble &pe);
 	template<typename T, typename A>

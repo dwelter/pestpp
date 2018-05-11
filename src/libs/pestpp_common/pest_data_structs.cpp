@@ -813,6 +813,10 @@ void PestppOptions::parce_line(const string &line)
 			istringstream is(value);
 			is >> boolalpha >> ies_save_lambda_en;
 		}
+		else if (key == "IES_WEIGHT_CSV")
+		{
+			ies_weight_csv = org_value;
+		}
 		else {
 
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");

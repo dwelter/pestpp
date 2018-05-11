@@ -13,12 +13,13 @@
 
 PhiHandler::PhiHandler(Pest *_pest_scenario, FileManager *_file_manager,
 	ObservationEnsemble *_oe_base, ParameterEnsemble *_pe_base,
-	Covariance *_parcov, double *_reg_factor)	
+	Covariance *_parcov, double *_reg_factor, ObservationEnsemble *_weights)	
 {
 	pest_scenario = _pest_scenario;
 	file_manager = _file_manager;
 	oe_base = _oe_base;
 	pe_base = _pe_base;
+	weights = _weights;
 
 	//check for inequality constraints
 	//for (auto &og : pest_scenario.get_ctl_ordered_obs_group_names())
@@ -488,7 +489,10 @@ map<string, Eigen::VectorXd> PhiHandler::calc_meas(ObservationEnsemble & oe, Eig
 		if (find(start, end, rname) == end)
 			continue;
 		diff = resid.row(i);
-		diff = diff.cwiseProduct(q_vec);
+		if (weights->shape().first == 0)
+			diff = diff.cwiseProduct(q_vec);
+		else
+			diff = diff.cwiseProduct(weights->get_eigen_ptr()->row(i));
 		phi = (diff.cwiseProduct(diff)).sum();
 		phi_map[rname] = diff.cwiseProduct(diff);
 	}
@@ -1019,6 +1023,228 @@ void IterEnsembleSmoother::sanity_checks()
 	//cout << endl << endl;
 }
 
+void IterEnsembleSmoother::initialize_restart_oe()
+{
+	stringstream ss;
+	string obs_restart_csv = pest_scenario.get_pestpp_options().get_ies_obs_restart_csv();
+	performance_log->log_event("restart IES with existing obs ensemble: " + obs_restart_csv);
+	message(1, "restarting with existing obs ensemble", obs_restart_csv);
+	string obs_ext = pest_utils::lower_cp(obs_restart_csv).substr(obs_restart_csv.size() - 3, obs_restart_csv.size());
+	if (obs_ext.compare("csv") == 0)
+	{
+		message(1, "loading restart obs ensemble from csv file", obs_restart_csv);
+		try
+		{
+			oe.from_csv(obs_restart_csv);
+		}
+		catch (const exception &e)
+		{
+			ss << "error processing restart obs csv: " << e.what();
+			throw_ies_error(ss.str());
+		}
+		catch (...)
+		{
+			throw_ies_error(string("error processing restart obs csv"));
+		}
+	}
+	else if ((obs_ext.compare("jcb") == 0) || (obs_ext.compare("jco") == 0))
+	{
+		message(1, "loading restart obs ensemble from binary file", obs_restart_csv);
+		try
+		{
+			oe.from_binary(obs_restart_csv);
+		}
+		catch (const exception &e)
+		{
+			ss << "error processing restart obs binary file: " << e.what();
+			throw_ies_error(ss.str());
+		}
+		catch (...)
+		{
+			throw_ies_error(string("error processing restart obs binary file"));
+		}
+	}
+	else
+	{
+		ss << "unrecognized restart obs ensemble extension " << obs_ext << ", looing for csv, jcb, or jco";
+		throw_ies_error(ss.str());
+	}
+
+	if (pp_args.find("IES_NUM_REALS") != pp_args.end())
+	{
+		int num_reals = pest_scenario.get_pestpp_options().get_ies_num_reals();
+		if (num_reals < oe.shape().first)
+		{
+			message(1, "ies_num_reals arg passed, truncated restart obs ensemble to ", num_reals);
+			vector<string> keep_names, real_names = oe.get_real_names();
+			for (int i = 0; i<num_reals; i++)
+			{
+				keep_names.push_back(real_names[i]);
+			}
+			oe.keep_rows(keep_names);
+		}
+	}
+
+	//check that restart oe is in sync
+	vector<string> oe_real_names = oe.get_real_names(), oe_base_real_names = oe_base.get_real_names();
+	vector<string>::const_iterator start, end;
+	vector<string> missing;
+	start = oe_base_real_names.begin();
+	end = oe_base_real_names.end();
+	for (auto &rname : oe_real_names)
+		if (find(start, end, rname) == end)
+			missing.push_back(rname);
+	if (missing.size() > 0)
+	{
+		ss << "the following realization names were not found in the restart obs csv:";
+		for (auto &m : missing)
+			ss << m << ",";
+		throw_ies_error(ss.str());
+
+	}
+
+
+	if (oe.shape().first < oe_base.shape().first) //maybe some runs failed...
+	{
+		//find which realizations are missing and reorder oe_base, pe and pe_base
+		message(1, "shape mismatch detected with restart obs ensemble...checking for compatibility");
+		vector<string> pe_real_names;
+		start = oe_base_real_names.begin();
+		end = oe_base_real_names.end();
+		vector<string>::const_iterator it;
+		int iit;
+		for (int i = 0; i < oe.shape().first; i++)
+		{
+			it = find(start, end, oe_real_names[i]);
+			if (it != end)
+			{
+				iit = it - start;
+				pe_real_names.push_back(pe_org_real_names[iit]);
+			}
+		}
+		try
+		{
+			oe_base.reorder(oe_real_names, vector<string>());
+		}
+		catch (exception &e)
+		{
+			ss << "error reordering oe_base with restart oe:" << e.what();
+			throw_ies_error(ss.str());
+		}
+		catch (...)
+		{
+			throw_ies_error(string("error reordering oe_base with restart oe"));
+		}
+		try
+		{
+			pe.reorder(pe_real_names, vector<string>());
+		}
+		catch (exception &e)
+		{
+			ss << "error reordering pe with restart oe:" << e.what();
+			throw_ies_error(ss.str());
+		}
+		catch (...)
+		{
+			throw_ies_error(string("error reordering pe with restart oe"));
+		}
+	}
+	else if (oe.shape().first > oe_base.shape().first) //something is wrong
+	{
+		ss << "restart oe has too many rows: " << oe.shape().first << " compared to oe_base: " << oe_base.shape().first;
+		throw_ies_error(ss.str());
+	}
+}
+
+
+void IterEnsembleSmoother::initialize_weights()
+{
+	string weights_csv = pest_scenario.get_pestpp_options().get_ies_weight_csv();
+	//message(1, "loading weights ensemble from ", weights_csv);
+
+	stringstream ss;
+	string obs_ext = pest_utils::lower_cp(weights_csv).substr(weights_csv.size() - 3, weights_csv.size());
+	if (obs_ext.compare("csv") == 0)
+	{
+		message(1, "loading weights ensemble from csv file", weights_csv);
+		try
+		{
+			weights.from_csv(weights_csv);
+		}
+		catch (const exception &e)
+		{
+			ss << "error processing weights csv: " << e.what();
+			throw_ies_error(ss.str());
+		}
+		catch (...)
+		{
+			throw_ies_error(string("error processing weights csv"));
+		}
+	}
+	else if ((obs_ext.compare("jcb") == 0) || (obs_ext.compare("jco") == 0))
+	{
+		message(1, "loading weights ensemble from binary file", weights_csv);
+		try
+		{
+			weights.from_binary(weights_csv);
+		}
+		catch (const exception &e)
+		{
+			ss << "error processing weights binary file: " << e.what();
+			throw_ies_error(ss.str());
+		}
+		catch (...)
+		{
+			throw_ies_error(string("error processing weights binary file"));
+		}
+	}
+	else
+	{
+		ss << "unrecognized weights ensemble extension " << obs_ext << ", looking for csv, jcb, or jco";
+		throw_ies_error(ss.str());
+	}
+
+	if (pp_args.find("IES_NUM_REALS") != pp_args.end())
+	{
+		int num_reals = pest_scenario.get_pestpp_options().get_ies_num_reals();
+		if (num_reals < oe.shape().first)
+		{
+			message(1, "ies_num_reals arg passed, truncated weights ensemble to ", num_reals);
+			vector<string> keep_names, real_names = weights.get_real_names();
+			for (int i = 0; i<num_reals; i++)
+			{
+				keep_names.push_back(real_names[i]);
+			}
+			weights.keep_rows(keep_names);
+		}
+	}
+
+	//check that restart oe is in sync
+	vector<string> oe_real_names = weights.get_real_names(), oe_base_real_names = oe_base.get_real_names();
+	vector<string>::const_iterator start, end;
+	vector<string> missing;
+	start = oe_base_real_names.begin();
+	end = oe_base_real_names.end();
+	for (auto &rname : oe_real_names)
+		if (find(start, end, rname) == end)
+			missing.push_back(rname);
+	if (missing.size() > 0)
+	{
+		ss << "the following realization names were not found in the weight csv:";
+		for (auto &m : missing)
+			ss << m << ",";
+		throw_ies_error(ss.str());
+
+	}
+
+
+	if (weights.shape().first > oe_base.shape().first) //something is wrong
+	{
+		ss << "weight ensemble has too many rows: " << weights.shape().first << " compared to oe_base: " << oe_base.shape().first;
+		throw_ies_error(ss.str());
+	}
+}
+
 void IterEnsembleSmoother::initialize()
 {
 	message(0, "initializing");
@@ -1228,6 +1454,11 @@ void IterEnsembleSmoother::initialize()
 		throw_ies_error(ss.str());
 	}
 
+	if (ppo->get_ies_weight_csv().size() > 0)
+	{
+		initialize_weights();
+	}
+
 	//if pareto mode, reset the stochastic obs vals for the pareto obs to the value in the control file
 	if (pest_scenario.get_control_info().pestmode == ControlInfo::PestMode::PARETO)
 	{
@@ -1306,7 +1537,7 @@ void IterEnsembleSmoother::initialize()
 		oe_base = _oe;
 		oe_base.reorder(vector<string>(), act_obs_names);
 		//initialize the phi handler
-		ph = PhiHandler(&pest_scenario, &file_manager, &oe_base, &pe_base, &parcov, &reg_factor);
+		ph = PhiHandler(&pest_scenario, &file_manager, &oe_base, &pe_base, &parcov, &reg_factor, &weights);
 
 		message(1, "running mean parameter values");
 
@@ -1388,139 +1619,14 @@ void IterEnsembleSmoother::initialize()
 	}
 	else
 	{
-		performance_log->log_event("restart IES with existing obs ensemble csv: " + obs_restart_csv);
-		message(1, "restarting with existing obs ensemble", obs_restart_csv);
-		string obs_ext = pest_utils::lower_cp(obs_restart_csv).substr(obs_restart_csv.size() - 3, obs_restart_csv.size());
-		if (obs_ext.compare("csv") == 0)
-		{
-			message(1, "loading restart obs ensemble from csv file", obs_restart_csv);
-			try
-			{
-				oe.from_csv(obs_restart_csv);
-			}
-			catch (const exception &e)
-			{
-				ss << "error processing restart obs csv: " << e.what();
-				throw_ies_error(ss.str());
-			}
-			catch (...)
-			{
-				throw_ies_error(string("error processing restart obs csv"));
-			}
-		}
-		else if ((obs_ext.compare("jcb") == 0) || (obs_ext.compare("jco") == 0))
-		{
-			message(1, "loading restart obs ensemble from binary file", obs_restart_csv);
-			try
-			{
-				oe.from_binary(obs_restart_csv);
-			}
-			catch (const exception &e)
-			{
-				ss << "error processing restart obs binary file: " << e.what();
-				throw_ies_error(ss.str());
-			}
-			catch (...)
-			{
-				throw_ies_error(string("error processing restart obs binary file"));
-			}
-		}
-		else
-		{
-			ss << "unrecognized restart obs ensemble extension " << obs_ext << ", looing for csv, jcb, or jco";
-			throw_ies_error(ss.str());
-		}
-		
-		if (pp_args.find("IES_NUM_REALS") != pp_args.end())
-		{
-			int num_reals = pest_scenario.get_pestpp_options().get_ies_num_reals();
-			if (num_reals < oe.shape().first)
-			{
-				message(1,"ies_num_reals arg passed, truncated restart obs ensemble to ",num_reals);
-				vector<string> keep_names,real_names=oe.get_real_names();
-				for (int i=0;i<num_reals;i++)
-				{
-					keep_names.push_back(real_names[i]);
-				}
-				oe.keep_rows(keep_names);
-			}
-		}
-
-		//check that restart oe is in sync
-		stringstream ss;
-		vector<string> oe_real_names = oe.get_real_names(),oe_base_real_names = oe_base.get_real_names();
-		vector<string>::const_iterator start, end;
-		vector<string> missing;
-		start = oe_base_real_names.begin();
-		end = oe_base_real_names.end();
-		for (auto &rname : oe_real_names)
-			if (find(start, end, rname) == end)
-				missing.push_back(rname);
-		if (missing.size() > 0)
-		{
-			ss << "the following realization names were not found in the restart obs csv:";
-			for (auto &m : missing)
-				ss << m << ",";
-			throw_ies_error(ss.str());
-
-		}
-
-
-		if (oe.shape().first < oe_base.shape().first) //maybe some runs failed...
-		{		
-			//find which realizations are missing and reorder oe_base, pe and pe_base
-			message(1, "shape mismatch detected with restart obs ensemble...checking for compatibility");
-			vector<string> pe_real_names;
-			start = oe_base_real_names.begin();
-			end = oe_base_real_names.end();	
-			vector<string>::const_iterator it;
-			int iit;
-			for (int i = 0; i < oe.shape().first; i++)
-			{
-				it = find(start, end, oe_real_names[i]);
-				if (it != end)
-				{
-					iit = it - start;
-					pe_real_names.push_back(pe_org_real_names[iit]);
-				}
-			}
-			try
-			{
-				oe_base.reorder(oe_real_names, vector<string>());
-			}
-			catch (exception &e)
-			{
-				ss << "error reordering oe_base with restart oe:" << e.what();
-				throw_ies_error(ss.str());
-			}
-			catch (...)
-			{
-				throw_ies_error(string("error reordering oe_base with restart oe"));
-			}
-			try
-			{
-				pe.reorder(pe_real_names, vector<string>());
-			}
-			catch (exception &e)
-			{
-				ss << "error reordering pe with restart oe:" << e.what();
-				throw_ies_error(ss.str());
-			}
-			catch (...)
-			{
-				throw_ies_error(string("error reordering pe with restart oe"));
-			}
-		}
-		else if (oe.shape().first > oe_base.shape().first) //something is wrong
-		{
-			ss << "restart oe has too many rows: " << oe.shape().first << " compared to oe_base: " << oe_base.shape().first;
-			throw_ies_error(ss.str());
-		}
+		initialize_restart_oe();
 	}
+
+
 
 	performance_log->log_event("calc initial phi");
 	//initialize the phi handler
-	ph = PhiHandler(&pest_scenario, &file_manager, &oe_base, &pe_base, &parcov, &reg_factor);
+	ph = PhiHandler(&pest_scenario, &file_manager, &oe_base, &pe_base, &parcov, &reg_factor, &weights);
 
 	if (ph.get_lt_obs_names().size() > 0)
 	{

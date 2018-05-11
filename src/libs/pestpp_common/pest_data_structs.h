@@ -375,11 +375,18 @@ public:
 	void set_ies_lambda_dec_fac(double _dec_fac) { ies_lambda_dec_fac = _dec_fac; }
 	bool get_ies_save_lambda_en() const { return ies_save_lambda_en; }
 	void set_ies_save_lambda_en(bool _ies_save_lambda_en) { ies_save_lambda_en = _ies_save_lambda_en; }
+	string get_ies_weight_csv() const { return ies_weight_csv; }
+	void set_ies_weight_csv(string _ies_weight_csv) { ies_weight_csv = _ies_weight_csv; }
+
+
 	double get_overdue_giveup_minutes() const { return overdue_giveup_minutes; }
 	void set_overdue_giveup_minutes(double overdue_minutes) { overdue_giveup_minutes = overdue_minutes; }
 
+
 	set<string> get_passed_args() const { return passed_args; }
 	
+
+
 private:
 	int n_iter_base;
 	int n_iter_super;
@@ -462,7 +469,9 @@ private:
 	double ies_lambda_dec_fac;
 	bool ies_save_lambda_en;
 	set<string> passed_args;
+	string ies_weight_csv;
 };
+
 ostream& operator<< (ostream &os, const PestppOptions& val);
 ostream& operator<< (ostream &os, const ObservationInfo& val);
 #endif  /* PEST_DATAS_STRUCTS_H_ */
