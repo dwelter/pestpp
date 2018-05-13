@@ -37,7 +37,7 @@ public:
 	Eigen::MatrixXd get_obs_resid(ObservationEnsemble &oe);
 	Eigen::MatrixXd get_par_resid(ParameterEnsemble &pe);
 	Eigen::MatrixXd get_actual_obs_resid(ObservationEnsemble &oe);
-	Eigen::VectorXd get_q_vector();
+	Eigen::VectorXd get_q_vector(vector<string> &act_obs_names=vector<string>());
 	vector<string> get_lt_obs_names() { return lt_obs_names; }
 	vector<string> get_gt_obs_names() { return gt_obs_names; }
 

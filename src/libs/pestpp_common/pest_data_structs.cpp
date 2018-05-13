@@ -813,7 +813,7 @@ void PestppOptions::parce_line(const string &line)
 			istringstream is(value);
 			is >> boolalpha >> ies_save_lambda_en;
 		}
-		else if (key == "IES_WEIGHT_CSV")
+		else if ((key == "IES_WEIGHST_EN") || (key == "IES_WEIGHTS_ENSEMBLE"))
 		{
 			ies_weight_csv = org_value;
 		}

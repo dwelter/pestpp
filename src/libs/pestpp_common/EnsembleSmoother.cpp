@@ -128,12 +128,13 @@ Eigen::MatrixXd PhiHandler::get_actual_obs_resid(ObservationEnsemble &oe)
 	return resid;
 }
 
-Eigen::VectorXd PhiHandler::get_q_vector()
+Eigen::VectorXd PhiHandler::get_q_vector(vector<string> &act_obs_names)
 {
 	ObservationInfo oinfo = pest_scenario->get_ctl_observation_info();
 	Eigen::VectorXd q;
 	//vector<string> act_obs_names = pest_scenario->get_ctl_ordered_nz_obs_names();
-	vector<string> act_obs_names = oe_base->get_var_names();
+	if (act_obs_names.size() == 0)
+		act_obs_names = oe_base->get_var_names();
 	q.resize(act_obs_names.size());
 	double w;
 	for (int i = 0; i < act_obs_names.size(); i++)
@@ -473,11 +474,15 @@ vector<int> PhiHandler::get_idxs_greater_than(double bad_phi, ObservationEnsembl
 map<string, Eigen::VectorXd> PhiHandler::calc_meas(ObservationEnsemble & oe, Eigen::VectorXd &q_vec)
 {
 	map<string, Eigen::VectorXd> phi_map;
-	Eigen::VectorXd oe_base_vec, oe_vec, diff;
+	Eigen::VectorXd oe_base_vec, oe_vec, diff,w_vec;
 	//Eigen::VectorXd q = get_q_vector();
 	vector<string> act_obs_names = pest_scenario->get_ctl_ordered_nz_obs_names();
 	vector<string> base_real_names = oe_base->get_real_names(), oe_real_names = oe.get_real_names();
 	vector<string>::iterator start = base_real_names.begin(), end = base_real_names.end();
+
+	Eigen::MatrixXd w_mat;
+	if (weights->shape().first > 0)
+		w_mat = weights->get_eigen(vector<string>(), oe_base->get_var_names());
 	double phi;
 	string rname;
 
@@ -489,10 +494,14 @@ map<string, Eigen::VectorXd> PhiHandler::calc_meas(ObservationEnsemble & oe, Eig
 		if (find(start, end, rname) == end)
 			continue;
 		diff = resid.row(i);
+		
 		if (weights->shape().first == 0)
 			diff = diff.cwiseProduct(q_vec);
 		else
-			diff = diff.cwiseProduct(weights->get_eigen_ptr()->row(i));
+		{
+			w_vec = w_mat.row(i);
+			diff = diff.cwiseProduct(w_vec);
+		}
 		phi = (diff.cwiseProduct(diff)).sum();
 		phi_map[rname] = diff.cwiseProduct(diff);
 	}
@@ -625,6 +634,7 @@ IterEnsembleSmoother::IterEnsembleSmoother(Pest &_pest_scenario, FileManager &_f
 {
 	pe.set_pest_scenario(&pest_scenario);
 	oe.set_pest_scenario(&pest_scenario);
+	weights.set_pest_scenario(&pest_scenario);
 }
 
 void IterEnsembleSmoother::throw_ies_error(string message)
@@ -793,6 +803,58 @@ void IterEnsembleSmoother::add_bases()
 		{
 			message(1, "adding 'base' observation values to ensemble");
 			oe.append("base", obs);
+		}
+	}
+
+	//check that 'base' isn't already in ensemble
+	rnames = weights.get_real_names();
+	if (rnames.size() == 0)
+		return;
+	if (find(rnames.begin(), rnames.end(), "base") != rnames.end())
+	{
+		message(1, "'base' realization already in weights ensemble, ignoring '++ies_include_base'");
+	}
+	else
+	{
+		//Observations obs = pest_scenario.get_ctl_observations();
+		ObservationInfo oinfo = pest_scenario.get_ctl_observation_info();
+		Eigen::VectorXd q;
+		//vector<string> act_obs_names = pest_scenario->get_ctl_ordered_nz_obs_names();
+		vector<string> vnames = weights.get_var_names();
+		q.resize(vnames.size());
+		double w;
+		for (int i = 0; i < vnames.size(); i++)
+		{
+			q(i) = oinfo.get_weight(vnames[i]);
+		}
+		
+		Observations wobs(vnames, q);
+		if (inpar)
+		{
+			vector<string> prnames = pe.get_real_names();
+
+			int idx = find(prnames.begin(), prnames.end(), "base") - prnames.begin();
+			//cout << idx << "," << rnames.size() << endl;
+			string oreal = rnames[idx];
+			stringstream ss;
+			ss << "warning: 'base' realization in par ensenmble but not in weights ensemble," << endl;
+			ss << "         replacing weights realization '" << oreal << "' with 'base'";
+			string mess = ss.str();
+			message(1, mess);
+			vector<string> drop;
+			drop.push_back(oreal);
+			weights.drop_rows(drop);
+			weights.append("base", wobs);
+			//rnames.insert(rnames.begin() + idx, string("base"));
+			rnames[idx] = "base";
+			weights.reorder(rnames, vector<string>());
+		}
+		else
+		{
+			message(1, "adding 'base' weight values to weights");
+			
+			
+			weights.append("base", wobs);
 		}
 	}
 }
@@ -1220,12 +1282,12 @@ void IterEnsembleSmoother::initialize_weights()
 	}
 
 	//check that restart oe is in sync
-	vector<string> oe_real_names = weights.get_real_names(), oe_base_real_names = oe_base.get_real_names();
+	vector<string> weights_real_names = weights.get_real_names(), oe_real_names = oe.get_real_names();
 	vector<string>::const_iterator start, end;
 	vector<string> missing;
-	start = oe_base_real_names.begin();
-	end = oe_base_real_names.end();
-	for (auto &rname : oe_real_names)
+	start = oe_real_names.begin();
+	end = oe_real_names.end();
+	for (auto &rname : weights_real_names)
 		if (find(start, end, rname) == end)
 			missing.push_back(rname);
 	if (missing.size() > 0)
@@ -1238,12 +1300,29 @@ void IterEnsembleSmoother::initialize_weights()
 	}
 
 
-	if (weights.shape().first > oe_base.shape().first) //something is wrong
+	if (weights.shape().first > oe.shape().first) //something is wrong
 	{
-		ss << "weight ensemble has too many rows: " << weights.shape().first << " compared to oe_base: " << oe_base.shape().first;
+		ss << "weight ensemble has too many rows: " << weights.shape().first << " compared to oe: " << oe.shape().first;
 		throw_ies_error(ss.str());
 	}
+	vector<string> weights_names = weights.get_var_names();
+	set<string> weights_set(weights_names.begin(), weights_names.end());
+	for (auto &name : oe.get_var_names())
+	{
+		if (weights_set.find(name) == weights_set.end())
+			missing.push_back(name);
+	}
+
+	if (missing.size() > 0)
+	{
+		ss << "weights ensemble is missing the following observations: ";
+		for (auto m : missing)
+			ss << ',' << m;
+		throw_ies_error(ss.str());
+	}
+
 }
+
 
 void IterEnsembleSmoother::initialize()
 {
@@ -1538,7 +1617,14 @@ void IterEnsembleSmoother::initialize()
 		oe_base.reorder(vector<string>(), act_obs_names);
 		//initialize the phi handler
 		ph = PhiHandler(&pest_scenario, &file_manager, &oe_base, &pe_base, &parcov, &reg_factor, &weights);
-
+		if (ph.get_lt_obs_names().size() > 0)
+		{
+			message(1, "less_than inequality defined for observations: ", ph.get_lt_obs_names().size());
+		}
+		if (ph.get_gt_obs_names().size())
+		{
+			message(1, "greater_than inequality defined for observations: ", ph.get_gt_obs_names().size());
+		}
 		message(1, "running mean parameter values");
 
 		vector<int> failed_idxs = run_ensemble(_pe, _oe);
