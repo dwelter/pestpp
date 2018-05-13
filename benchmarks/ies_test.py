@@ -946,7 +946,6 @@ def tenpar_weights_test():
     df_act = pd.read_csv(os.path.join(test_d,"pest.phi.actual.csv"))
     df_meas = pd.read_csv(os.path.join(test_d,"pest.phi.meas.csv"))
 
-
     pst.pestpp_options["ies_weights_ensemble"] = "weights.csv"
     pst.write(os.path.join(test_d,"pest.pst"))
     pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
@@ -962,11 +961,20 @@ def tenpar_weights_test():
 
 def tenpar_weight_pareto_test():
 
-
+    model_d = "ies_10par_xsec"
+    test_d = os.path.join(model_d, "test_weight_pareto")
+    template_d = os.path.join(model_d, "template")
+    pst = pyemu.Pst(os.path.join(template_d,"pest.pst"))
+    
+    #if os.path.exists(test_d):
+    #   shutil.rmtree(test_d)
+    #shutil.copytree(template_d,test_d)
 
     dfs = []
-    weights = np.linspace(0.0,5.0,20)
+    
 
+    dfs = []
+    weights = np.linspace(0.0,10.0,20)
     for weight in weights:
         obs = pst.observation_data.weight.copy()
         obs.loc["h01_06"] = weight
@@ -980,11 +988,40 @@ def tenpar_weight_pareto_test():
 
     df = pd.concat(dfs,axis=1).T
     df.index = np.arange(df.shape[0])
-    df.to_csv(os.path.join(test_d,"weights.csv"))
+    df.to_csv(os.path.join(template_d,"weights.csv"))
     pst.control_data.noptmax = 3
     pst.pestpp_options["ies_weights_ensemble"] = "weights.csv"
     pst.pestpp_options["ies_num_reals"] = df.shape[0]
-    pst.write(os.path.join(test_d,"pest.pst"))
+    pst.pestpp_options["ies_lambda_mults"] = 1.0
+    pst.pestpp_options["lambda_scale_fac"] = 1.0
+    obs = pst.observation_data
+    obs.loc[pst.nnz_obs_names,"obsval"] = obs.loc[pst.nnz_obs_names,"obsval"].mean()
+
+    pst.write(os.path.join(template_d,"pest_pareto.pst"))
+    #pyemu.os_utils.start_slaves(template_d,exe_path,"pest_pareto.pst",num_slaves=40,
+    #                            slave_root=model_d,master_dir=test_d)
+    print(df.shape)
+    obs = pst.observation_data
+    df_init = pd.read_csv(os.path.join(test_d,"pest_pareto.0.obs.csv".format(pst.control_data.noptmax)))
+    df = pd.read_csv(os.path.join(test_d,"pest_pareto.{0}.obs.csv".format(pst.control_data.noptmax)))
+    df_phi = pd.read_csv(os.path.join(test_d,"pest_pareto.phi.meas.csv"))
+    print(df_phi.columns,df_init.index)
+    df_phi = df_phi.loc[:,[str(v) for v in df_init.index.values]]
+    fig = plt.figure(figsize=(10,10))
+    ax = plt.subplot(221)
+    ax2 = plt.subplot(223)
+    ax3 = plt.subplot(224)
+    ax2.scatter(((df_init.H01_04-obs.loc["h01_04","obsval"])**2),
+        ((df_init.H01_06-obs.loc["h01_06","obsval"])**2),s=4, color='0.5')
+    ax2.scatter(((df.H01_04-obs.loc["h01_04","obsval"])**2),
+        ((df.H01_06-obs.loc["h01_06","obsval"])**2),s=4, color='b')
+    ax.scatter(df_phi.iloc[0,:],((df_init.H01_06-obs.loc["h01_06","obsval"])**2),s=4, color='0.5')
+    ax.scatter(df_phi.iloc[-1,:],((df.H01_06-obs.loc["h01_06","obsval"])**2),s=4, color='b')
+    ax3.scatter(df_phi.iloc[0,:],((df_init.H01_04-obs.loc["h01_04","obsval"])**2),s=4, color='0.5')
+    ax3.scatter(df_phi.iloc[-1,:],((df.H01_04-obs.loc["h01_04","obsval"])**2),s=4, color='b')
+    
+    plt.show()
+
 
 if __name__ == "__main__":
     # write_empty_test_matrix()
@@ -1005,7 +1042,7 @@ if __name__ == "__main__":
     #test_10par_xsec()
     #test_freyberg()
     #test_chenoliver()
-    tenpar_weights_test()
+    tenpar_weight_pareto_test()
     #compare_pyemu()
     #tenpar_subset_test()
     #tenpar_full_cov_test()
