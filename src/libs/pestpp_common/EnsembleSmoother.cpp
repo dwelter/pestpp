@@ -128,13 +128,13 @@ Eigen::MatrixXd PhiHandler::get_actual_obs_resid(ObservationEnsemble &oe)
 	return resid;
 }
 
-Eigen::VectorXd PhiHandler::get_q_vector(vector<string> &act_obs_names)
+Eigen::VectorXd PhiHandler::get_q_vector()
 {
 	ObservationInfo oinfo = pest_scenario->get_ctl_observation_info();
 	Eigen::VectorXd q;
-	//vector<string> act_obs_names = pest_scenario->get_ctl_ordered_nz_obs_names();
-	if (act_obs_names.size() == 0)
-		act_obs_names = oe_base->get_var_names();
+	vector<string> act_obs_names = pest_scenario->get_ctl_ordered_nz_obs_names();
+	/*if (act_obs_names.size() == 0)
+		act_obs_names = oe_base->get_var_names();*/
 	q.resize(act_obs_names.size());
 	double w;
 	for (int i = 0; i < act_obs_names.size(); i++)
@@ -2642,7 +2642,7 @@ vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<Pa
 		catch (const exception &e)
 		{
 			stringstream ss;
-			ss << "error processing runs for lambda,scale: " << lam_vals[i] << ',' << scale_vals[i] << ': ' << e.what();
+			ss << "error processing runs for lambda,scale: " << lam_vals[i] << ',' << scale_vals[i] << ':' << e.what();
 			throw_ies_error(ss.str());
 		}
 		catch (...)
