@@ -535,7 +535,8 @@ void PestppOptions::parce_line(const string &line)
 		}
 		else if (key == "REG_FRAC")
 		{
-			convert_ip(value, reg_frac);
+			//convert_ip(value, reg_frac);
+			throw runtime_error("'++reg_frac' has been deprecated - please use * regularization and PHIMLIM");
 		}
 		/*else if (key == "USE_PARCOV_SCALING")
 		{

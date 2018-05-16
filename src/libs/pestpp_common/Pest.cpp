@@ -694,6 +694,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_super_eigthres(svd_info.eigthresh);
 	pestpp_options.set_max_n_super(ctl_parameters.size());
 	pestpp_options.set_max_super_frz_iter(5);
+	pestpp_options.set_max_n_super(n_adj_par);
 	pestpp_options.set_max_reg_iter(20);
 	pestpp_options.set_uncert_flag(true);
 	pestpp_options.set_prediction_names(vector<string>());
