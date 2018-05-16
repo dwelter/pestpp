@@ -123,6 +123,8 @@ private:
 	vector<double> best_mean_phis;
 	double best_phi_yet;
 
+	int consec_bad_lambda_cycles;
+
 	double lambda_max, lambda_min;
 	int warn_min_reals, error_min_reals;
 	vector<double> lam_mults;

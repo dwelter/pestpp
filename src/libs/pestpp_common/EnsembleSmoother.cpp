@@ -132,7 +132,9 @@ Eigen::VectorXd PhiHandler::get_q_vector()
 {
 	ObservationInfo oinfo = pest_scenario->get_ctl_observation_info();
 	Eigen::VectorXd q;
-	vector<string> act_obs_names = pest_scenario->get_ctl_ordered_nz_obs_names();
+	//vector<string> act_obs_names = pest_scenario->get_ctl_ordered_nz_obs_names();
+	vector<string> act_obs_names = oe_base->get_var_names();
+
 	/*if (act_obs_names.size() == 0)
 		act_obs_names = oe_base->get_var_names();*/
 	q.resize(act_obs_names.size());
@@ -1354,6 +1356,7 @@ void IterEnsembleSmoother::initialize()
 	lambda_min = 1.0E-30;
 	warn_min_reals = 10;
 	error_min_reals = 2;
+	consec_bad_lambda_cycles = 0;
 
 	act_obs_names = pest_scenario.get_ctl_ordered_nz_obs_names();
 	act_par_names = pest_scenario.get_ctl_ordered_adj_par_names();
@@ -2001,61 +2004,71 @@ void IterEnsembleSmoother::iterate_2_solution()
 			ph.report();
 			ph.write(iter, run_mgr_ptr->get_total_runs());
 			if (accept)
-				best_mean_phis.push_back(last_best_mean);
-			//if (should_terminate())
-			//	break;
+				consec_bad_lambda_cycles = 0;
+			else
+				consec_bad_lambda_cycles++;
+			
+			if (should_terminate())
+				break;
 		}
 	}
 }
 
 bool IterEnsembleSmoother::should_terminate()
 {
+	//todo: use ies accept fac here?
 	double phiredstp = pest_scenario.get_control_info().phiredstp;
 	int nphistp = pest_scenario.get_control_info().nphistp;
 	int nphinored = pest_scenario.get_control_info().nphinored;
-
-	if (best_mean_phis.size() == 0)
-		return false;
-	vector<double>::iterator idx = min_element(best_mean_phis.begin(), best_mean_phis.end());
-	best_phi_yet = best_mean_phis[idx - best_mean_phis.begin()];
-	bool satisfied = false;
+	bool phiredstp_sat = false, nphinored_sat = false, consec_sat = false;
 	double phi, ratio;
-	if (best_mean_phis.size() >= nphistp)
-	{
-		for (int i = nphistp; i > 0; i--)
-		{
-			phi = best_mean_phis[i];
-			ratio = (phi - best_phi_yet) / phi;
-			if (ratio > phiredstp)
-			{
-				satisfied = true;
-				break;
-			}
-		}
-		if (!satisfied)
-		{
-			message(0, "nphistp-phiredstp criteria satisfied");
-			return true;
-		}
-	}
+	int count = 0;
+	//best_mean_phis = vector<double>{ 1.0,0.8,0.81,0.755,1.1,0.75,0.75,1.2 };
 
-	if (best_mean_phis.size() > nphinored)
+	
+
+	/*if ((!consec_sat )&& (best_mean_phis.size() == 0))
+		return false;*/
+	vector<double>::iterator idx = min_element(best_mean_phis.begin(), best_mean_phis.end());
+	int nphired = (best_mean_phis.end() - idx) - 1;
+	best_phi_yet = best_mean_phis[idx - best_mean_phis.begin()];// *pest_scenario.get_pestpp_options().get_ies_accept_phi_fac();
+	message(0, "phi-based termination criteria check");
+	message(1, "phiredstp: ", phiredstp);
+	message(1, "nphistp: ", nphistp);
+	message(1, "nphinored (also used for consecutive bad lamdba cycles): ", nphinored);
+	message(1, "best mean phi sequence: ", best_mean_phis);
+	message(1, "best phi yet: ", best_phi_yet);
+	message(1, "number of consecutive bad lambda testing cycles: ", consec_bad_lambda_cycles);
+	if (consec_bad_lambda_cycles >= nphinored)
 	{
-		for (int i = nphinored; i > 0; i--)
-		{
-			phi = best_mean_phis[i];
+		message(1, "number of consecutive bad lambda testing cycles > nphinored");
+		consec_sat = true;
+	}
 			
-			if (phi < best_phi_yet)
-			{
-				satisfied = true;
-				break;
-			}
-		}
-		if (!satisfied)
-		{
-			message(0, "nphinored criteria satisfied");
-			return true;
-		}
+	for (auto &phi : best_mean_phis)
+	{
+		ratio = (phi - best_phi_yet) / phi;
+		if (ratio <= phiredstp)
+			count++;
+	}
+	message(1, "number of iterations satisfying phiredstp criteria: ", count);
+	if (count >= nphistp)
+	{
+		message(1, "number iterations satisfying phiredstp criteria > nphistp");
+		phiredstp_sat = true;
+	}
+	
+	message(1, "number of iterations since best yet mean phi: ", nphired);
+	if (nphired >= nphinored)
+	{
+		message(1, "number of iterations since best yet mean phi > nphinored");
+		nphinored_sat = true;
+	}
+	
+	if ((nphinored_sat) || (phiredstp_sat) || (consec_sat))
+	{
+		message(1, "phi-based termination criteria satisfied, all done");
+		return true;
 	}
 	return false;
 }
@@ -2440,7 +2453,9 @@ bool IterEnsembleSmoother::solve()
 	double lam_inc = pest_scenario.get_pestpp_options().get_ies_lambda_inc_fac();
 	double lam_dec = pest_scenario.get_pestpp_options().get_ies_lambda_dec_fac();
 
-	if ((best_idx != -1) && (use_subset) && (subset_size < pe.shape().first))//subset stuff here
+	
+	//subset stuff here
+	if ((best_idx != -1) && (use_subset) && (subset_size < pe.shape().first))
 	{ 
 		
 		double acc_phi = last_best_mean * acc_fac;
@@ -2534,6 +2549,9 @@ bool IterEnsembleSmoother::solve()
 	best_std = ph.get_std(PhiHandler::phiType::COMPOSITE);
 	message(1, "last best mean phi * acceptable phi factor: ", last_best_mean * acc_fac);
 	message(1, "current best mean phi: ", best_mean);
+
+	//track this here for phi-based termination check
+	best_mean_phis.push_back(best_mean);
 
 	if (best_mean < last_best_mean * acc_fac)
 	{
