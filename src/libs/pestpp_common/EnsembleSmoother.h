@@ -100,7 +100,7 @@ public:
 	void pareto_iterate_2_solution();
 	void finalize();
 	void throw_ies_error(string message);
-
+	bool should_terminate();
 
 private:
 	int  verbose_level;
@@ -112,12 +112,17 @@ private:
 	PhiHandler ph;
 	Covariance parcov;
 	double reg_factor;
+	
 
 	set<string> pp_args;
 
 	int iter,subset_size;
 	bool use_subset;
+
 	double last_best_lam, last_best_mean,last_best_std;
+	vector<double> best_mean_phis;
+	double best_phi_yet;
+
 	double lambda_max, lambda_min;
 	int warn_min_reals, error_min_reals;
 	vector<double> lam_mults;

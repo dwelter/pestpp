@@ -2000,8 +2000,64 @@ void IterEnsembleSmoother::iterate_2_solution()
 			last_best_std = ph.get_std(PhiHandler::phiType::COMPOSITE);
 			ph.report();
 			ph.write(iter, run_mgr_ptr->get_total_runs());
+			if (accept)
+				best_mean_phis.push_back(last_best_mean);
+			//if (should_terminate())
+			//	break;
 		}
 	}
+}
+
+bool IterEnsembleSmoother::should_terminate()
+{
+	double phiredstp = pest_scenario.get_control_info().phiredstp;
+	int nphistp = pest_scenario.get_control_info().nphistp;
+	int nphinored = pest_scenario.get_control_info().nphinored;
+
+	if (best_mean_phis.size() == 0)
+		return false;
+	vector<double>::iterator idx = min_element(best_mean_phis.begin(), best_mean_phis.end());
+	best_phi_yet = best_mean_phis[idx - best_mean_phis.begin()];
+	bool satisfied = false;
+	double phi, ratio;
+	if (best_mean_phis.size() >= nphistp)
+	{
+		for (int i = nphistp; i > 0; i--)
+		{
+			phi = best_mean_phis[i];
+			ratio = (phi - best_phi_yet) / phi;
+			if (ratio > phiredstp)
+			{
+				satisfied = true;
+				break;
+			}
+		}
+		if (!satisfied)
+		{
+			message(0, "nphistp-phiredstp criteria satisfied");
+			return true;
+		}
+	}
+
+	if (best_mean_phis.size() > nphinored)
+	{
+		for (int i = nphinored; i > 0; i--)
+		{
+			phi = best_mean_phis[i];
+			
+			if (phi < best_phi_yet)
+			{
+				satisfied = true;
+				break;
+			}
+		}
+		if (!satisfied)
+		{
+			message(0, "nphinored criteria satisfied");
+			return true;
+		}
+	}
+	return false;
 }
 
 bool IterEnsembleSmoother::solve()
