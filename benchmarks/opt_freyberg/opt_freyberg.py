@@ -16,8 +16,6 @@ new_model_ws = "template"
 derinc = 2.0
 
 
-
-
 def setup_models(m=None):
     org_model_ws = os.path.join("..","..","..","gw1876","models","Freyberg","Freyberg_Truth")
 
@@ -37,7 +35,7 @@ def setup_models(m=None):
     mt = flopy.mt3d.Mt3dms("freyberg.mt3d",model_ws=m.model_ws,modflowmodel=m,exe_name=mt_exe,external_path='.')
     flopy.mt3d.Mt3dBtn(mt,MFStyleArr=True,prsity=0.01,sconc=0.0,icbund=m.bas6.ibound.array,perlen=3650)
     flopy.mt3d.Mt3dGcg(mt,mxiter=100)#,cclose=1.0e-7)
-    flopy.mt3d.Mt3dRct(mt,isothm=0,ireact=1,igetsc=0,rc1=0.02)
+    #flopy.mt3d.Mt3dRct(mt,isothm=0,ireact=1,igetsc=0,rc1=0.02)
     flopy.mt3d.Mt3dAdv(mt,mixelm=-1)
 
     ib = m.bas6.ibound[0].array
@@ -67,7 +65,7 @@ def setup_pest():
     props = [["upw.hk",0],["rch.rech",0],["extra.prst",0],["extra.rc11",0]]
     kperk = [[m.nper-1,0]]
     ph = pyemu.helpers.PstFromFlopyModel(mf_nam,org_model_ws="temp",new_model_ws=new_model_ws,grid_props=props,
-                                         const_props=props,sfr_pars=True,all_wells=True,remove_existing=True,
+                                         const_props=props,sfr_pars=True,remove_existing=True,
                                          model_exe_name=mf_exe,hds_kperk=kperk,
                                          extra_post_cmds=["{0} {1}".format(mt_exe,mt_nam)])
 
@@ -138,7 +136,7 @@ def setup_pest():
     ph.pst.parameter_data.sort_values(by=["pargp","parnme"],inplace=True)
 
     par = ph.pst.parameter_data
-    par.loc[par.pargp=="grrc110","parval1"] = 2.0
+    #par.loc[par.pargp=="grrc110","parval1"] = 2.0
 
     ph.pst.parameter_groups.loc["kg","inctyp"] = "absolute"
     ph.pst.parameter_groups.loc["kg","derinc"] = derinc
@@ -150,8 +148,8 @@ def setup_pest():
     obs.loc[sw_conc_obs,"obgnme"] = "less_swconc"
 
     #only turn on one constraint in the middle of the domain
-    obs.loc["sfrc39_1_03650.00","weight"] = 1.0
-    obs.loc["sfrc39_1_03650.00","obsval"] *= 1.1 #% increase
+    obs.loc["sfrc30_1_03650.00","weight"] = 1.0
+    obs.loc["sfrc30_1_03650.00","obsval"] *= 1.5 #% increase
 
     # concentration constraints at pumping wells
     wel_df = pd.DataFrame.from_records(ph.m.wel.stress_period_data[0])
@@ -159,7 +157,7 @@ def setup_pest():
     wel_df.loc[:,"obsnme"] = wel_df.apply(lambda x: "ucn_{0:02.0f}_{1:03.0f}_{2:03.0f}_000".format(x.k,x.i,x.j),axis=1)
     obs.loc[wel_df.obsnme,"obgnme"] = "less_wlconc"
     obs.loc[wel_df.obsnme,"weight"] = 1.0
-    obs.loc[wel_df.obsnme,"obsval"] = 1.2 #% increase
+    obs.loc[wel_df.obsnme,"obsval"] *= 1.5 #% increase
 
 
     # pumping well mass constraint
@@ -180,18 +178,19 @@ def setup_pest():
     # add some pi constraints to make sure all dec vars have at
     # least one element in the response matrix
     # set lower bounds
-    # parval1 = par.parval1.copy()
-    # par.loc[par.pargp == "kg", "parval1"] = par.loc[par.pargp == "kg", "parlbnd"]
-    # pyemu.helpers.zero_order_tikhonov(pst=ph.pst)
-    # ph.pst.prior_information.loc[:,"obgnme"] = "greater_bnd"
+    parval1 = par.parval1.copy()
+    par.loc[par.pargp == "kg", "parval1"] = par.loc[par.pargp == "kg", "parlbnd"]
+    pyemu.helpers.zero_order_tikhonov(pst=ph.pst)
+    ph.pst.prior_information.loc[:,"obgnme"] = "greater_bnd"
 
     # set upper bounds
-    #par.loc[par.pargp=="kg","parval1"] = par.loc[par.pargp=="kg","parubnd"]
-    #pyemu.helpers.zero_order_tikhonov(ph.pst,reset=False)
-    #ph.pst.prior_information.loc[:, "obgnme"] = "less_bnd"
+    par.loc[par.pargp=="kg","parval1"] = par.loc[par.pargp=="kg","parubnd"]
+    pyemu.helpers.zero_order_tikhonov(ph.pst,reset=False)
+    ph.pst.prior_information.loc[:, "obgnme"] = "less_bnd"
+
 
     #set dec vars to background value (derinc)
-    # par.loc[par.pargp == "kg", "parval1"] = parval1
+    par.loc[par.pargp == "kg", "parval1"] = parval1
 
     #unfix pars
     par.loc[par.pargp != "kg", "partrans"] = "log"
@@ -228,8 +227,8 @@ def write_ssm_tpl():
                 raw = line.strip().split()
                 l,r,c = [int(r) for r in raw[:3]]
                 parval1.append(float(raw[3]))
-                #pn = "~k_{0:02d}~".format(r-1)
-                pn = "~k_{0:02d}_{1:02d}~".format(r-1,c-1)
+                pn = "~k_{0:02d}~".format(r-1)
+                #pn = "~k_{0:02d}_{1:02d}~".format(r-1,c-1)
                 line = " {0:9d} {1:9d} {2:9d} {3:9s} {4:9d}\n".format(l,r,c,pn,15)
                 f_tpl.write(line)
                 parnme.append(pn)
@@ -270,7 +269,7 @@ def run_pestpp_opt():
 def spike_test():
     pst_file = os.path.join(new_model_ws, "freyberg.pst")
     pst = pyemu.Pst(pst_file)
-    pst.parameter_data.loc["k_00_00","parval1"] += derinc
+    pst.parameter_data.loc["k_00","parval1"] += derinc
     #par = pst.parameter_data
     #fosm_pars = par.loc[par.pargp != "kg", "parnme"]
     #par.loc[fosm_pars,"parval1"] = par.loc[fosm_pars,"parubnd"]
@@ -288,10 +287,29 @@ def spike_test():
     ucn_obs = obs.loc[obs.obsnme.apply(lambda x: x.startswith("ucn")),:]
     ucn_obs.loc[:,"i"] = ucn_obs.obsnme.apply(lambda x: int(x.split("_")[2]))
     ucn_obs.loc[:, "j"] = ucn_obs.obsnme.apply(lambda x: int(x.split("_")[3]))
-    arr = np.zeros((m.nrow,m.ncol))
-    arr[ucn_obs.i,ucn_obs.j] = pst.res.loc[ucn_obs.obsnme,"modelled"]
-    arr = np.ma.masked_where(m.bas6.ibound[0].array==0,arr)
-    plt.imshow(arr)
+
+    fig = plt.figure(figsize=(30,10))
+    ax1 = plt.subplot(131)
+    arr = np.zeros((m.nrow, m.ncol))
+    arr[ucn_obs.i, ucn_obs.j] = pst.res.loc[ucn_obs.obsnme, "measured"]
+    arr = np.ma.masked_where(m.bas6.ibound[0].array == 0, arr)
+    cb = ax1.imshow(arr)
+    plt.colorbar(cb)
+
+    ax2 = plt.subplot(132)
+    arr = np.zeros((m.nrow, m.ncol))
+    arr[ucn_obs.i, ucn_obs.j] = pst.res.loc[ucn_obs.obsnme, "modelled"]
+    arr = np.ma.masked_where(m.bas6.ibound[0].array == 0, arr)
+    cb = ax2.imshow(arr)
+    plt.colorbar(cb)
+
+    ax3 = plt.subplot(133)
+    arr = np.zeros((m.nrow, m.ncol))
+    arr[ucn_obs.i, ucn_obs.j] = pst.res.loc[ucn_obs.obsnme, "residual"]
+    arr = np.ma.masked_where(m.bas6.ibound[0].array == 0, arr)
+    cb = ax3.imshow(arr)
+    plt.colorbar(cb)
+
     plt.show()
 
 
@@ -301,9 +319,13 @@ def jco_invest():
     par = pst.parameter_data
     fosm_pars = par.loc[par.pargp!="kg","parnme"]
     jco = pyemu.Jco.from_binary(pst_file.replace(".pst",".1.jcb")).to_dataframe()
-    fosm_jco = jco.loc[:,fosm_pars]
-    print(fosm_jco.loc[pst.nnz_obs_names,:].sum(axis=1))
+    #print(jco.columns)
+    #jco = jco.loc[:,jco.columns.map(lambda x: "kg" in x)]
+    #fosm_jco = jco.loc[:,fosm_pars]
+    #print(fosm_jco.loc[pst.nnz_obs_names,:])
+    for oname in pst.nnz_obs_names:
 
+        print(oname,"\n",jco.loc[oname,:])
 
 def run_risk_sweep():
     sw_conc_inc = 1.5
@@ -524,11 +546,12 @@ def plot_loading(parfile=None):
 
 
 if __name__ == "__main__":
-    setup_models()
-    setup_pest()
     #write_ssm_tpl()
     #run_test()
+    setup_models()
+    setup_pest()
     #spike_test()
+
     run_pestpp_opt()
     #jco_invest()
     #run_risk_sweep()

@@ -23,7 +23,6 @@ try:
    os.remove('MT3D001.ucn')
 except Exception as e:
    print('error removing tmp file:MT3D001.ucn')
-pyemu.helpers.apply_all_wells()
 pyemu.helpers.apply_array_pars()
 
 pyemu.gw_utils.apply_sfr_seg_parameters()
