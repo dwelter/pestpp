@@ -132,6 +132,7 @@ public:
 	Observations() : Transformable(){}
 	Observations(const Observations &copyin) : Transformable(copyin) {}
 	Observations(const Observations &copyin, const vector<string> &copy_names) : Transformable(copyin, copy_names){} 
+	Observations(const vector<string> &copyin, const Eigen::VectorXd &copy_vec) : Transformable(copyin, copy_vec) {}
 	template <class NameIterator>
 	Observations get_subset(NameIterator first, NameIterator last)const;
 	virtual ~Observations(){}

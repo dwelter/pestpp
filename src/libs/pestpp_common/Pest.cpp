@@ -694,6 +694,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_super_eigthres(svd_info.eigthresh);
 	pestpp_options.set_max_n_super(ctl_parameters.size());
 	pestpp_options.set_max_super_frz_iter(5);
+	pestpp_options.set_max_n_super(n_adj_par);
 	pestpp_options.set_max_reg_iter(20);
 	pestpp_options.set_uncert_flag(true);
 	pestpp_options.set_prediction_names(vector<string>());
@@ -745,6 +746,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_ies_lambda_inc_fac(10.0);
 	pestpp_options.set_ies_lambda_dec_fac(0.75);
 	pestpp_options.set_ies_save_lambda_en(false);
+	pestpp_options.set_ies_weight_csv("");
 
 	pestpp_options.set_condor_submit_file(string());
 	pestpp_options.set_overdue_giveup_minutes(1.0e+30);

@@ -535,7 +535,8 @@ void PestppOptions::parce_line(const string &line)
 		}
 		else if (key == "REG_FRAC")
 		{
-			convert_ip(value, reg_frac);
+			//convert_ip(value, reg_frac);
+			throw runtime_error("'++reg_frac' has been deprecated - please use * regularization and PHIMLIM");
 		}
 		/*else if (key == "USE_PARCOV_SCALING")
 		{
@@ -812,6 +813,10 @@ void PestppOptions::parce_line(const string &line)
 			transform(value.begin(), value.end(), value.begin(), ::tolower);
 			istringstream is(value);
 			is >> boolalpha >> ies_save_lambda_en;
+		}
+		else if ((key == "IES_WEIGHST_EN") || (key == "IES_WEIGHTS_ENSEMBLE"))
+		{
+			ies_weight_csv = org_value;
 		}
 		else {
 
