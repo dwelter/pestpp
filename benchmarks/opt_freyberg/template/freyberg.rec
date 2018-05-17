@@ -13,10 +13,10 @@ PEST++ run mode:-
    WTF
 
 Case dimensions:- 
-    Number of parameters = 2864
-    Number of adjustable parameters = 2864
+    Number of parameters = 2825
+    Number of adjustable parameters = 2825
     Number of observations = 1572
-    Number of prior estimates = 80
+    Number of prior estimates = 2
 
 PEST Control Information
     relparmax = 10
@@ -33,7 +33,7 @@ PEST Control Information
 PEST++ Options
     n_iter_base = 1                   
     n_iter_super = 0                   
-    max_n_super = 2864                
+    max_n_super = 2825                
     super eigthres = 1e-06               
     svd pack = 2                   
     auto norm = -999                
@@ -107,13 +107,13 @@ Model interface files:-
 
 Parameter group information
 NAME            INCREMENT TYPE     DERIVATIVE INCREMENT    INCREMENT LOWER BOUND  FORCE CENTRAL     INCREMENT MULTIPLIER
-grprst0               RELATIVE                     0.01                        0         SWITCH                        2
-grhk0                 RELATIVE                     0.01                        0         SWITCH                        2
 grrech0               RELATIVE                     0.01                        0         SWITCH                        2
+grhk0                 RELATIVE                     0.01                        0         SWITCH                        2
 grrc110               RELATIVE                     0.01                        0         SWITCH                        2
-kg                    ABSOLUTE                        2                        0         SWITCH                        2
+grprst0               RELATIVE                     0.01                        0         SWITCH                        2
 hcond1                RELATIVE                     0.01                        0         SWITCH                        2
 cn                    RELATIVE                     0.01                        0         SWITCH                        2
+kg                    ABSOLUTE                        1                        0         SWITCH                        2
 
 
 
@@ -2943,46 +2943,7 @@ hcond1_0037    log                     FACTOR              1           0.01     
 hcond1_0038    log                     FACTOR              1           0.01            100         hcond1              1              0                   1
 hcond1_0039    log                     FACTOR              1           0.01            100         hcond1              1              0                   1
 hcond1_0040    log                     FACTOR              1           0.01            100         hcond1              1              0                   1
-k_00           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_01           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_02           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_03           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_04           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_05           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_06           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_07           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_08           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_09           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_10           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_11           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_12           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_13           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_14           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_15           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_16           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_17           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_18           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_19           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_20           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_21           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_22           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_23           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_24           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_25           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_26           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_27           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_28           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_29           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_30           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_31           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_32           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_33           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_34           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_35           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_36           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_37           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_38           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
-k_39           none                    FACTOR              1            0.9          1e+07             kg              1              0                   1
+k_all          none                    FACTOR              1              0          1e+07             kg              1              0                   1
 
 
 
@@ -4564,46 +4525,8 @@ ucn_00_039_014_000                   0.118025                 ucn               
 
 
 Prior information
-K_00   + 1 * K_00 = 1e+07   1e-07   LESS_BND
-K_01   + 1 * K_01 = 1e+07   1e-07   LESS_BND
-K_02   + 1 * K_02 = 1e+07   1e-07   LESS_BND
-K_03   + 1 * K_03 = 1e+07   1e-07   LESS_BND
-K_04   + 1 * K_04 = 1e+07   1e-07   LESS_BND
-K_05   + 1 * K_05 = 1e+07   1e-07   LESS_BND
-K_06   + 1 * K_06 = 1e+07   1e-07   LESS_BND
-K_07   + 1 * K_07 = 1e+07   1e-07   LESS_BND
-K_08   + 1 * K_08 = 1e+07   1e-07   LESS_BND
-K_09   + 1 * K_09 = 1e+07   1e-07   LESS_BND
-K_10   + 1 * K_10 = 1e+07   1e-07   LESS_BND
-K_11   + 1 * K_11 = 1e+07   1e-07   LESS_BND
-K_12   + 1 * K_12 = 1e+07   1e-07   LESS_BND
-K_13   + 1 * K_13 = 1e+07   1e-07   LESS_BND
-K_14   + 1 * K_14 = 1e+07   1e-07   LESS_BND
-K_15   + 1 * K_15 = 1e+07   1e-07   LESS_BND
-K_16   + 1 * K_16 = 1e+07   1e-07   LESS_BND
-K_17   + 1 * K_17 = 1e+07   1e-07   LESS_BND
-K_18   + 1 * K_18 = 1e+07   1e-07   LESS_BND
-K_19   + 1 * K_19 = 1e+07   1e-07   LESS_BND
-K_20   + 1 * K_20 = 1e+07   1e-07   LESS_BND
-K_21   + 1 * K_21 = 1e+07   1e-07   LESS_BND
-K_22   + 1 * K_22 = 1e+07   1e-07   LESS_BND
-K_23   + 1 * K_23 = 1e+07   1e-07   LESS_BND
-K_24   + 1 * K_24 = 1e+07   1e-07   LESS_BND
-K_25   + 1 * K_25 = 1e+07   1e-07   LESS_BND
-K_26   + 1 * K_26 = 1e+07   1e-07   LESS_BND
-K_27   + 1 * K_27 = 1e+07   1e-07   LESS_BND
-K_28   + 1 * K_28 = 1e+07   1e-07   LESS_BND
-K_29   + 1 * K_29 = 1e+07   1e-07   LESS_BND
-K_30   + 1 * K_30 = 1e+07   1e-07   LESS_BND
-K_31   + 1 * K_31 = 1e+07   1e-07   LESS_BND
-K_32   + 1 * K_32 = 1e+07   1e-07   LESS_BND
-K_33   + 1 * K_33 = 1e+07   1e-07   LESS_BND
-K_34   + 1 * K_34 = 1e+07   1e-07   LESS_BND
-K_35   + 1 * K_35 = 1e+07   1e-07   LESS_BND
-K_36   + 1 * K_36 = 1e+07   1e-07   LESS_BND
-K_37   + 1 * K_37 = 1e+07   1e-07   LESS_BND
-K_38   + 1 * K_38 = 1e+07   1e-07   LESS_BND
-K_39   + 1 * K_39 = 1e+07   1e-07   LESS_BND
+K_ALL   + 1 * K_ALL = 1e+07   1e-07   LESS_BND
+K_ALL_L   + 1 * K_ALL = 0   1e-07   GREATER_BND
 
 
 
@@ -7455,46 +7378,7 @@ FINAL OPTIMISATION RESULTS
     hcond1_0038              1
     hcond1_0039              1
     hcond1_0040              1
-    k_00                     1
-    k_01                     1
-    k_02                     1
-    k_03                     1
-    k_04                     1
-    k_05                     1
-    k_06                     1
-    k_07                     1
-    k_08                     1
-    k_09                     1
-    k_10                     1
-    k_11                     1
-    k_12                     1
-    k_13                     1
-    k_14                     1
-    k_15                     1
-    k_16                     1
-    k_17                     1
-    k_18                     1
-    k_19                     1
-    k_20                     1
-    k_21                     1
-    k_22                     1
-    k_23                     1
-    k_24                     1
-    k_25                     1
-    k_26                     1
-    k_27                     1
-    k_28                     1
-    k_29                     1
-    k_30                     1
-    k_31                     1
-    k_32                     1
-    k_33                     1
-    k_34                     1
-    k_35                     1
-    k_36                     1
-    k_37                     1
-    k_38                     1
-    k_39                     1
+    k_all                    1
 
 
   Observations with optimal model-simulated equivalents and residuals
@@ -9073,56 +8957,57 @@ FINAL OPTIMISATION RESULTS
    ucn_00_039_014_000          ucn             0.118025             0.118025         -4.30000e-10              0.00000
 
 Final composite objective function 
-  Final phi                                           Total : 40.0205
-  Contribution to phi from observation group    "sw_stac1c" : 0.00000
-  Contribution to phi from observation group  "sw_sttogw1c" : 0.00000
-  Contribution to phi from observation group   "flx_in-out" : 0.00000
-  Contribution to phi from observation group  "gw_mastso1c" : 0.00000
-  Contribution to phi from observation group   "vol_in-out" : 0.00000
-  Contribution to phi from observation group      "gw_re1c" : 0.00000
-  Contribution to phi from observation group          "hds" : 0.00000
-  Contribution to phi from observation group    "flx_wells" : 0.00000
-  Contribution to phi from observation group  "sw_intost1f" : 0.00000
-  Contribution to phi from observation group      "sw_pr1f" : 0.00000
-  Contribution to phi from observation group      "sw_pr1c" : 0.00000
-  Contribution to phi from observation group    "vol_wells" : 0.00000
-  Contribution to phi from observation group  "vol_constan" : 0.00000
-  Contribution to phi from observation group  "less_wlconc" : 0.0175693
-  Contribution to phi from observation group  "vol_stream_" : 0.00000
-  Contribution to phi from observation group    "sw_coco1c" : 0.00000
-  Contribution to phi from observation group  "less_swconc" : 0.00289856
-  Contribution to phi from observation group    "sw_stde1c" : 0.00000
-  Contribution to phi from observation group    "flx_total" : 0.00000
-  Contribution to phi from observation group    "sw_stde1f" : 0.00000
-  Contribution to phi from observation group         "gwcn" : 0.00000
-  Contribution to phi from observation group    "sw_coco1f" : 0.00000
-  Contribution to phi from observation group  "gw_mastfl1c" : 0.00000
-  Contribution to phi from observation group  "sw_gwtost1c" : 0.00000
-  Contribution to phi from observation group    "gw_malo1c" : 0.00000
-  Contribution to phi from observation group      "sw_st1c" : 0.00000
-  Contribution to phi from observation group  "flx_constan" : 0.00000
-  Contribution to phi from observation group  "flx_stream_" : 0.00000
+  Final phi                                           Total : 1.02047
+  Contribution to phi from observation group      "sw_ru1f" : 0.00000
   Contribution to phi from observation group  "vol_recharg" : 0.00000
+  Contribution to phi from observation group         "gwcn" : 0.00000
+  Contribution to phi from observation group  "sw_gwtost1f" : 0.00000
+  Contribution to phi from observation group  "sw_sttogw1f" : 0.00000
   Contribution to phi from observation group      "gw_st1c" : 0.00000
-  Contribution to phi from observation group  "flx_percent" : 0.00000
+  Contribution to phi from observation group  "flx_constan" : 0.00000
+  Contribution to phi from observation group    "sw_coco1c" : 0.00000
+  Contribution to phi from observation group  "gw_mastfl1c" : 0.00000
+  Contribution to phi from observation group  "gw_mastso1c" : 0.00000
+  Contribution to phi from observation group      "sw_st1f" : 0.00000
   Contribution to phi from observation group    "gw_coco1c" : 0.00000
   Contribution to phi from observation group          "ucn" : 0.00000
   Contribution to phi from observation group    "sw_stac1f" : 0.00000
-  Contribution to phi from observation group      "sw_ru1f" : 0.00000
   Contribution to phi from observation group    "gw_cohe1c" : 0.00000
-  Contribution to phi from observation group         "swgw" : 0.00000
-  Contribution to phi from observation group      "sw_ru1c" : 0.00000
-  Contribution to phi from observation group  "sw_gwtost1f" : 0.00000
-  Contribution to phi from observation group  "flx_storage" : 0.00000
-  Contribution to phi from observation group  "vol_storage" : 0.00000
-  Contribution to phi from observation group    "vol_total" : 0.00000
-  Contribution to phi from observation group  "vol_percent" : 0.00000
-  Contribution to phi from observation group  "sw_sttogw1f" : 0.00000
-  Contribution to phi from observation group      "sw_st1f" : 0.00000
-  Contribution to phi from observation group  "flx_recharg" : 0.00000
-  Contribution to phi from observation group  "sw_intost1c" : 0.00000
+  Contribution to phi from observation group      "sw_pr1f" : 0.00000
+  Contribution to phi from observation group  "less_wlconc" : 0.0175693
+  Contribution to phi from observation group    "flx_wells" : 0.00000
+  Contribution to phi from observation group  "less_swconc" : 0.00289856
+  Contribution to phi from observation group  "sw_gwtost1c" : 0.00000
   Contribution to phi from observation group      "gw_we1c" : 0.00000
-  Contribution to phi from observation group     "less_bnd" : 40.0000
+  Contribution to phi from observation group    "vol_wells" : 0.00000
+  Contribution to phi from observation group    "sw_stac1c" : 0.00000
+  Contribution to phi from observation group         "swgw" : 0.00000
+  Contribution to phi from observation group      "sw_st1c" : 0.00000
+  Contribution to phi from observation group    "sw_coco1f" : 0.00000
+  Contribution to phi from observation group  "flx_storage" : 0.00000
+  Contribution to phi from observation group   "flx_in-out" : 0.00000
+  Contribution to phi from observation group  "sw_intost1f" : 0.00000
+  Contribution to phi from observation group          "hds" : 0.00000
+  Contribution to phi from observation group   "vol_in-out" : 0.00000
+  Contribution to phi from observation group      "sw_ru1c" : 0.00000
+  Contribution to phi from observation group  "flx_stream_" : 0.00000
+  Contribution to phi from observation group    "sw_stde1c" : 0.00000
+  Contribution to phi from observation group    "vol_total" : 0.00000
+  Contribution to phi from observation group  "vol_constan" : 0.00000
+  Contribution to phi from observation group  "sw_sttogw1c" : 0.00000
+  Contribution to phi from observation group  "vol_stream_" : 0.00000
+  Contribution to phi from observation group  "sw_intost1c" : 0.00000
+  Contribution to phi from observation group  "flx_recharg" : 0.00000
+  Contribution to phi from observation group    "sw_stde1f" : 0.00000
+  Contribution to phi from observation group      "sw_pr1c" : 0.00000
+  Contribution to phi from observation group  "vol_storage" : 0.00000
+  Contribution to phi from observation group    "gw_malo1c" : 0.00000
+  Contribution to phi from observation group  "flx_percent" : 0.00000
+  Contribution to phi from observation group  "vol_percent" : 0.00000
+  Contribution to phi from observation group    "flx_total" : 0.00000
+  Contribution to phi from observation group      "gw_re1c" : 0.00000
+  Contribution to phi from observation group     "less_bnd" : 1.00000
+  Contribution to phi from observation group  "greater_bnd" : 1.00000e-14
 
 
 Number of forward model runs performed during optimiztion: 1

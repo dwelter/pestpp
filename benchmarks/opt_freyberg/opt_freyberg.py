@@ -13,7 +13,7 @@ mt_exe = "mt3dusgs"
 
 new_model_ws = "template"
 
-derinc = 2.0
+derinc = 1.0
 
 
 def setup_models(m=None):
@@ -47,7 +47,7 @@ def setup_models(m=None):
             #if j >= 15: #no loading in or across the stream
             #    continue
             #ssm_cells.append([0,i,j,max(derinc,float(j+1)/10.0),15])
-            ssm_cells.append([0,i,j,1.0,15])
+            ssm_cells.append([0,i,j,derinc,15])
     flopy.mt3d.Mt3dSsm(mt,crch=0.0,stress_period_data={0:ssm_cells,1:ssm_cells,2:ssm_cells})
 
     nstrm = np.abs(m.sfr.nstrm)
@@ -181,12 +181,16 @@ def setup_pest():
     parval1 = par.parval1.copy()
     par.loc[par.pargp == "kg", "parval1"] = par.loc[par.pargp == "kg", "parlbnd"]
     pyemu.helpers.zero_order_tikhonov(pst=ph.pst)
-    ph.pst.prior_information.loc[:,"obgnme"] = "greater_bnd"
+
+    ph.pst.prior_information.loc[:,"pilbl"] += "_l"
+    l_const = ph.pst.prior_information.pilbl.copy()
+    #ph.pst.prior_information.loc[:,"obgnme"] = "greater_bnd"
 
     # set upper bounds
     par.loc[par.pargp=="kg","parval1"] = par.loc[par.pargp=="kg","parubnd"]
     pyemu.helpers.zero_order_tikhonov(ph.pst,reset=False)
     ph.pst.prior_information.loc[:, "obgnme"] = "less_bnd"
+    ph.pst.prior_information.loc[l_const,"obgnme"] = "greater_bnd"
 
 
     #set dec vars to background value (derinc)
@@ -227,7 +231,8 @@ def write_ssm_tpl():
                 raw = line.strip().split()
                 l,r,c = [int(r) for r in raw[:3]]
                 parval1.append(float(raw[3]))
-                pn = "~k_{0:02d}~".format(r-1)
+                pn = "~k_all~"
+                #pn = "~k_{0:02d}~".format(r-1)
                 #pn = "~k_{0:02d}_{1:02d}~".format(r-1,c-1)
                 line = " {0:9d} {1:9d} {2:9d} {3:9s} {4:9d}\n".format(l,r,c,pn,15)
                 f_tpl.write(line)
@@ -242,8 +247,8 @@ def write_ssm_tpl():
     #df.loc[:,"parubnd"] = df.parval1 * 2.0
     df.loc[:,"parubnd"] = df.parval1 * 10000000.0
     df.loc[:,"partrans"] = "none"
-    df.loc[:,'parlbnd'] = df.parval1 * 0.9
-    #df.loc[:,"parlbnd"] = 0.0 #here we let loading decrease...
+    #df.loc[:,'parlbnd'] = df.parval1 * 0.9
+    df.loc[:,"parlbnd"] = 0.0 #here we let loading decrease...
     #df.loc[:,"parval1"] = derinc
     #df.loc[:,"j"] = df.parnme.apply(lambda x: int(x.split('_')[2]))
 
