@@ -147,6 +147,7 @@ void Ensemble::draw(int num_reals, Covariance cov, Transformable &tran, const ve
 			Covariance gcov;
 			stringstream ss;
 			RedSVD::RedSymEigen<Eigen::SparseMatrix<double>> eig;
+			
 			Eigen::MatrixXd proj;
 			map<string, int> idx_map;
 			vector<int> idx;
@@ -189,14 +190,24 @@ void Ensemble::draw(int num_reals, Covariance cov, Transformable &tran, const ve
 				ss << "Randomized Eigen decomposition of full cov for " << gi.second.size() << " element matrix" << endl;
 				plog->log_event(ss.str());
 				eig.compute(*gcov.e_ptr(), gi.second.size());
+				//RedSVD::RedSVD<Eigen::SparseMatrix<double>> svd;
+				//svd.compute(*gcov.e_ptr(),gcov.get_col_names().size());// , gi.second.size());
+				//cout << svd.singularValues() << endl;
+				//Eigen::JacobiSVD<Eigen::MatrixXd> svd(gcov.e_ptr()->toDense(), Eigen::ComputeFullU);
+				//svd.computeU();
+				
 				proj = (eig.eigenvectors() * eig.eigenvalues().cwiseSqrt().asDiagonal());
+				//proj = (svd.matrixU() * svd.singularValues().asDiagonal());
+				
 				if (level > 2)
 				{
 					ofstream f(gi.first + "_evec.dat");
 					f << eig.eigenvectors() << endl;
+					//f << svd.matrixU() << endl;
 					f.close();
 					ofstream ff(gi.first + "_sqrt_evals.dat");
 					ff << eig.eigenvalues().cwiseSqrt() << endl;
+					//ff << svd.singularValues() << endl;
 					ff.close();
 					ofstream fff(gi.first+"_proj.dat");
 					fff << proj << endl;

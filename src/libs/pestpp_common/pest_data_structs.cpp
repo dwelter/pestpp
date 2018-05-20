@@ -761,7 +761,7 @@ void PestppOptions::parce_line(const string &line)
 		{
 			convert_ip(value, ies_bad_phi);
 		}
-		else if (key == "IES_INCLUDE_BASE")
+		else if ((key == "IES_INCLUDE_BASE") || (key == "IES_ADD_BASE"))
 		{
 			transform(value.begin(), value.end(), value.begin(), ::tolower);
 			istringstream is(value);

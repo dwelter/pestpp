@@ -1504,7 +1504,8 @@ void IterEnsembleSmoother::initialize()
 	if (verbose_level > 1)
 		echo = true;
 
-	
+	initialize_parcov();
+	initialize_obscov();
 
 	subset_size = pest_scenario.get_pestpp_options().get_ies_subset_size();
 	reg_factor = pest_scenario.get_pestpp_options().get_ies_reg_factor();

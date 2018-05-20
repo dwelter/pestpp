@@ -683,11 +683,10 @@ def test_chenoliver():
     pst.pestpp_options["ies_num_reals"] = 100
     pst.control_data.noptmax = 0
     pst.write(os.path.join(test_d,"pest.pst"))
-    print('next test')
-    pyemu.os_utils.run(exe_path+" pest.pst",cwd=test_d)
+    pyemu.helpers.run(exe_path+" pest.pst",cwd=test_d)
     
     num_reals = 1000
-    noptmax = 3
+    noptmax = 10
     
 
     shutil.rmtree(test_d)
@@ -706,8 +705,8 @@ def test_chenoliver():
 
     pst.write(os.path.join(template_d,"pest.pst"))
     
-    print('next test')
-    pyemu.os_utils.start_slaves(template_d,exe_path,"pest.pst",num_slaves=20,
+
+    pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=20,
         master_dir=test_d,slave_root=model_d,port=4005,silent_master=True)
     df_full_obs = pd.read_csv(os.path.join(test_d,"pest.{0}.obs.csv".format(noptmax)),index_col=0)
     df_full_par = pd.read_csv(os.path.join(test_d,"pest.{0}.par.csv".format(noptmax)),index_col=0)
@@ -722,7 +721,7 @@ def test_chenoliver():
     pst.pestpp_options["ies_use_prior_scaling"] = "true"
     pst.control_data.noptmax = noptmax
     pst.write(os.path.join(template_d,"pest.pst"))
-    print('next test')
+
     pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=20,
         master_dir=test_d,slave_root=model_d,port=4005,silent_master=True)
     df_approx_obs = pd.read_csv(os.path.join(test_d,"pest.{0}.obs.csv".format(noptmax)),index_col=0)
@@ -759,8 +758,8 @@ def test_chenoliver():
     pst.pestpp_options["ies_use_prior_scaling"] = "true"
     pst.control_data.noptmax = noptmax
     pst.write(os.path.join(template_d,"pest.pst"))
-    print('next test')
-    pyemu.os_utils.start_slaves(template_d,exe_path,"pest.pst",num_slaves=25,
+
+    pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=25,
         master_dir=test_d,slave_root=model_d,port=4005,silent_master=True)
     df_full_obs = pd.read_csv(os.path.join(test_d,"pest.{0}.obs.csv".format(noptmax)),index_col=0)
     df_full_par = pd.read_csv(os.path.join(test_d,"pest.{0}.par.csv".format(noptmax)),index_col=0)
@@ -775,8 +774,8 @@ def test_chenoliver():
     #pst.pestpp_options["ies_subset_size"] = 10
     pst.control_data.noptmax = noptmax
     pst.write(os.path.join(template_d,"pest.pst"))
-    print('next test')
-    pyemu.os_utils.start_slaves(template_d,exe_path,"pest.pst",num_slaves=25,
+
+    pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=25,
         master_dir=test_d,slave_root=model_d,port=4005,silent_master=True)
     df_approx_obs = pd.read_csv(os.path.join(test_d,"pest.{0}.obs.csv".format(noptmax)),index_col=0)
     df_approx_par = pd.read_csv(os.path.join(test_d,"pest.{0}.par.csv".format(noptmax)),index_col=0)
@@ -1062,13 +1061,13 @@ if __name__ == "__main__":
     #tenpar_full_cov_test()
     #test_freyberg_full_cov_reorder()
     #test_freyberg_full_cov_reorder_run()
-    #test_freyberg_full_cov()
+    test_freyberg_full_cov()
     
     #test_synth()
     #test_10par_xsec()
     #test_freyberg()
     #test_chenoliver()
-    tenpar_weight_pareto_test()
+    #tenpar_weight_pareto_test()
     #compare_pyemu()
     #tenpar_subset_test()
     #tenpar_full_cov_test()
