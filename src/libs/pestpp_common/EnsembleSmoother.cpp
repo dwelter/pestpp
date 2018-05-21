@@ -1325,6 +1325,72 @@ void IterEnsembleSmoother::initialize_weights()
 
 }
 
+void IterEnsembleSmoother::initialize_parcov()
+{
+	stringstream ss;
+	performance_log->log_event("initializing parcov");
+	string parcov_filename = pest_scenario.get_pestpp_options().get_parcov_filename();
+
+	if (parcov_filename.size() == 0)
+	{
+		//if a par ensemble arg wasn't passed, use par bounds, otherwise, construct diagonal parcov from par ensemble later
+		if (!pest_scenario.get_pestpp_options().get_ies_use_empirical_prior())
+		{
+			message(1, "initializing prior parameter covariance matrix from parameter bounds");
+			message(1, "using par_sigma_range (number of standard deviations that par bounds represent):", pest_scenario.get_pestpp_options().get_par_sigma_range());
+			parcov.from_parameter_bounds(pest_scenario);
+		}
+	}
+	else
+	{
+		message(1, "initializing prior parameter covariance matrix from file", parcov_filename);
+		string extension = parcov_filename.substr(parcov_filename.size() - 3, 3);
+		pest_utils::upper_ip(extension);
+		if (extension.compare("COV") == 0)
+			parcov.from_ascii(parcov_filename);
+		else if ((extension.compare("JCO") == 0) || (extension.compare("JCB") == 0))
+			parcov.from_binary(parcov_filename);
+		else if (extension.compare("UNC") == 0)
+			parcov.from_uncertainty_file(parcov_filename);
+		else
+			throw_ies_error("unrecognized parcov_filename extension: " + extension);
+	}
+	if (parcov.e_ptr()->rows() > 0)
+		parcov = parcov.get(act_par_names);
+
+}
+
+
+void IterEnsembleSmoother::initialize_obscov()
+{
+	//obs ensemble
+	message(1, "initializing observation noise covariance matrix");
+	string obscov_filename = pest_scenario.get_pestpp_options().get_obscov_filename();
+	if (obscov_filename.size() == 0)
+	{
+		message(1, "initializing obseravtion noise covariance matrix from observation weights");
+		obscov.from_observation_weights(pest_scenario);	
+	}
+	else
+	{
+		message(1, "initializing observation noise covariance matrix from file", obscov_filename);
+		string extension = obscov_filename.substr(obscov_filename.size() - 3, 3);
+		pest_utils::upper_ip(extension);
+		if (extension.compare("COV") == 0)
+			parcov.from_ascii(obscov_filename);
+		else if ((extension.compare("JCO") == 0) || (extension.compare("JCB") == 0))
+			parcov.from_binary(obscov_filename);
+		else if (extension.compare("UNC") == 0)
+			parcov.from_uncertainty_file(obscov_filename);
+		else
+			throw_ies_error("unrecognized obscov_filename extension: " + extension);
+	}
+	obscov = obscov.get(act_obs_names);
+
+
+
+}
+
 
 void IterEnsembleSmoother::initialize()
 {
@@ -1344,7 +1410,7 @@ void IterEnsembleSmoother::initialize()
 
 
 	verbose_level = pest_scenario.get_pestpp_options_ptr()->get_ies_verbose_level();
-	if (pest_scenario.get_n_adj_par() > 1e6)
+	if (pest_scenario.get_n_adj_par() >= 1e6)
 	{
 		message(0, "welcome to the 1M par club, great choice!");
 	}
@@ -1438,7 +1504,8 @@ void IterEnsembleSmoother::initialize()
 	if (verbose_level > 1)
 		echo = true;
 
-	
+	initialize_parcov();
+	initialize_obscov();
 
 	subset_size = pest_scenario.get_pestpp_options().get_ies_subset_size();
 	reg_factor = pest_scenario.get_pestpp_options().get_ies_reg_factor();
@@ -1452,35 +1519,6 @@ void IterEnsembleSmoother::initialize()
 	int num_reals = pest_scenario.get_pestpp_options().get_ies_num_reals();
 	
 	stringstream ss;
-	performance_log->log_event("load parcov");
-	string parcov_filename = pest_scenario.get_pestpp_options().get_parcov_filename();
-	
-	if (parcov_filename.size() == 0)
-	{
-		//if a par ensemble arg wasn't passed, use par bounds, otherwise, construct diagonal parcov from par ensemble later
-		if (!pest_scenario.get_pestpp_options().get_ies_use_empirical_prior())
-		{
-			message(1, "initializing prior parameter covariance matrix from parameter bounds");
-			message(1, "using par_sigma_range (number of standard deviations that par bounds represent):", pest_scenario.get_pestpp_options().get_par_sigma_range());
-			parcov.from_parameter_bounds(pest_scenario);
-		}
-	}
-	else
-	{
-		message(1, "initializing prior parameter covariance matrix from file", parcov_filename);
-		string extension = parcov_filename.substr(parcov_filename.size() - 3, 3);
-		pest_utils::upper_ip(extension);
-		if (extension.compare("COV") == 0)
-			parcov.from_ascii(parcov_filename);
-		else if ((extension.compare("JCO") == 0) || (extension.compare("JCB") == 0))
-			parcov.from_binary(parcov_filename);
-		else if (extension.compare("UNC") == 0)
-			parcov.from_uncertainty_file(parcov_filename);
-		else
-			throw_ies_error("unrecognized parcov_filename extension: " + extension);
-	}	
-	if (parcov.e_ptr()->rows() > 0)
-		parcov = parcov.get(act_par_names);
 	
 	bool pe_drawn = initialize_pe(parcov);
 
@@ -1502,11 +1540,6 @@ void IterEnsembleSmoother::initialize()
 		message(1, "not using prior parameter covariance matrix scaling");
 	}
 
-	//obs ensemble
-	message(1, "initializing observation noise covariance matrix from observation weights");
-	Covariance obscov;
-	obscov.from_observation_weights(pest_scenario);
-	obscov = obscov.get(act_obs_names);
 	bool oe_drawn = initialize_oe(obscov);
 
 	try

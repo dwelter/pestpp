@@ -110,7 +110,7 @@ private:
 	PerformanceLog *performance_log;
 	RunManagerAbstract* run_mgr_ptr;
 	PhiHandler ph;
-	Covariance parcov;
+	Covariance parcov, obscov;
 	double reg_factor;
 	
 
@@ -155,6 +155,8 @@ private:
 	bool initialize_oe(Covariance &cov);
 	void initialize_restart_oe();
 	void initialize_weights();
+	void initialize_parcov();
+	void initialize_obscov();
 	void drop_bad_phi(ParameterEnsemble &_pe, ObservationEnsemble &_oe);
 	//void check_ensembles(ObservationEnsemble &oe, ParameterEnsemble &pe);
 	template<typename T, typename A>

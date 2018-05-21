@@ -486,6 +486,13 @@ void PestppOptions::parce_line(const string &line)
 			parcov_filename = org_value;
 		}
 
+		else if ((key == "OBSCOV") || (key == "OBSERVATION_COVARIANCE")
+			|| (key == "OBSCOV_FILENAME"))
+		{
+			//convert_ip(org_value, parcov_filename);
+			obscov_filename = org_value;
+		}
+
 		else if ((key == "BASE_JACOBIAN") || (key == "BASE_JACOBIAN_FILENAME"))
 		{
 			//convert_ip(org_value, basejac_filename);
@@ -754,7 +761,7 @@ void PestppOptions::parce_line(const string &line)
 		{
 			convert_ip(value, ies_bad_phi);
 		}
-		else if (key == "IES_INCLUDE_BASE")
+		else if ((key == "IES_INCLUDE_BASE") || (key == "IES_ADD_BASE"))
 		{
 			transform(value.begin(), value.end(), value.begin(), ::tolower);
 			istringstream is(value);

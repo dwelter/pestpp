@@ -265,6 +265,8 @@ public:
 	vector<string> get_prediction_names()const { return prediction_names; }
 	void set_parcov_filename(string _filename) { parcov_filename = _filename; }
 	string get_parcov_filename()const { return parcov_filename; }
+	void set_obscov_filename(string _filename) { obscov_filename = _filename; }
+	string get_obscov_filename()const { return obscov_filename; }
 	void set_basejac_filename(string _filename) { basejac_filename = _filename; }
 	string get_basejac_filename()const { return basejac_filename; }
 	double get_overdue_reched_fac()const { return overdue_reched_fac; }
@@ -406,6 +408,7 @@ private:
 	bool uncert;
 	vector<string> prediction_names;
 	string parcov_filename;
+	string obscov_filename;
 	string basejac_filename;
 	double overdue_reched_fac;
 	double overdue_giveup_fac;
