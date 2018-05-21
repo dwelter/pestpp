@@ -868,6 +868,11 @@ def test_chenoliver():
     # d = np.abs(df_full_par.PAR.mean() - 6.0)
     # assert d < 0.05,d
 
+
+
+
+
+
 def test_kirishima():
 
     model_d = "ies_kirishima"
@@ -1117,6 +1122,43 @@ def tenpar_weight_pareto_test():
     plt.show()
 
 
+def rosenbrock_function():
+    par_df = pd.read_csv("par.dat",delim_whitespace=True,index_col=0)
+    tot = 0.0
+    for i in range(par_df.shape[0]-1):
+        tot += 100.0*(par_df.iloc[i+1] - par_df.iloc[i]**2)**2 + (1 - par_df.iloc[i])**2
+    with open("obs.dat",'w') as f:
+        f.write("obs {0:20.8E}".format(tot))
+
+def setup_rosenbrock():
+
+    npar = 2
+    test_d = "ies_rosenbrock"
+    if not os.path.exists(test_d):
+        os.mkdir(test_d)
+
+    template_d = os.path.join(test_d,"template")
+    if os.path.exists(template_d):
+        shutil.rmtree(template_d)
+    os.mkdir(template_d)
+
+    with open(os.path.join(template_d,"par.dat.tpl"),'w') as f:
+        f.write("ptf ~\n")
+        for i in range(npar):
+            f.write("par{0:04d}  ~   par{0:04d}   ~\n")
+    with open(os.path.join(template_d,"obs.dat.ins"),'w') as f:
+        f.write("pif ~\n")
+        f.write("l1 w !obs1!\n")
+
+    bd = os.getcwd()
+
+
+
+
+
+
+
+
 if __name__ == "__main__":
     # write_empty_test_matrix()
     #setup_suite_dir("ies_freyberg")
@@ -1150,3 +1192,5 @@ if __name__ == "__main__":
     #test_kirishima()
 
     #tenpar_fixed_test()
+
+    setup_rosenbrock()
