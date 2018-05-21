@@ -177,7 +177,7 @@ void Ensemble::draw(int num_reals, Covariance cov, Transformable &tran, const ve
 					gcov.to_ascii(gi.first + "_cov.dat");
 				}
 				
-				
+				idx.clear();
 				for (auto n : gi.second)
 					idx.push_back(idx_map[n]);
 				if (idx.size() != idx[idx.size() - 1] - idx[0] + 1)

@@ -289,10 +289,10 @@ def tenpar_narrow_range_test():
     pst_name = os.path.join(test_d, "pest.pst")
     pst = pyemu.Pst(pst_name)
     par = pst.parameter_data
-    par.loc[:, "partrans"] = "fixed"
+    #par.loc[:, "partrans"] = "fixed"
     par.loc[:, "parubnd"] = 1.0e+10 #par.parval1 * 1.0001
     par.loc[:, "parlbnd"] = 1.0e-10 #par.parval1 * 0.9999
-    par.loc[pst.par_names[:2], "partrans"] = "none"
+    #par.loc[pst.par_names[:2], "partrans"] = "none"
     #par.loc[pst.par_names[0],"pargp"] = "stage"
 
     x = np.zeros((pst.npar_adj, pst.npar_adj)) + 1.0e-11
