@@ -2431,7 +2431,7 @@ bool IterEnsembleSmoother::solve()
 
 		
 		ss.str("");
-		message(0, "finished calcs for lambda:", cur_lam);
+		message(1, "finished calcs for lambda:", cur_lam);
 
 	}
 	//return;
@@ -2457,7 +2457,7 @@ bool IterEnsembleSmoother::solve()
 			continue;
 		vector<double> vals({ lam_vals[i],scale_vals[i] });
 		drop_bad_phi(pe_lams[i], oe_lams[i]);
-		if (pe_lams[i].shape().first == 0)
+		if (oe_lams[i].shape().first == 0)
 		{
 			message(1, "all realizations dropped as 'bad' for lambda, scale fac ",vals);
 			continue;

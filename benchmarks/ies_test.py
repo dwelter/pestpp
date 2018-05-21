@@ -100,7 +100,7 @@ def setup_suite_dir(model_d):
     # run sweep
     if os.path.exists("master_sweep"):
         shutil.rmtree("master_sweep")
-    pyemu.helpers.start_slaves(new_d, "sweep", "pest.pst", 10, master_dir="master_sweep")
+    pyemu.helpers.start_slaves(new_d, "pestpp-swp", "pest.pst", 10, master_dir="master_sweep")
 
     # process sweep output as restart csv and jcb
     df = pd.read_csv(os.path.join("master_sweep", "sweep_out.csv"))
@@ -418,18 +418,19 @@ def tenpar_subset_test():
 
     # first without subset
     pst.pestpp_options = {}
-    pst.pestpp_options["ies_num_reals"] = 50
+    pst.pestpp_options["ies_num_reals"] = 20
     pst.pestpp_options["ies_lambda_mults"] = "1.0"
     pst.pestpp_options["ies_accept_phi_fac"] = 100.0
+    pst.pestpp_options["ies_subset_size"] = 21
     pst.write(os.path.join(template_d, "pest.pst"))
     pyemu.helpers.start_slaves(template_d, exe_path, "pest.pst", num_slaves=10,
                                slave_root=model_d, master_dir=test_d)
     df_base = pd.read_csv(os.path.join(test_d, "pest.phi.meas.csv"),index_col=0)
 
     pst.pestpp_options = {}
-    pst.pestpp_options["ies_num_reals"] = 50
+    pst.pestpp_options["ies_num_reals"] = 20
     pst.pestpp_options["ies_lambda_mults"] = "1.0"
-    pst.pestpp_options["ies_subset_size"] = 15
+    pst.pestpp_options["ies_subset_size"] = 5
     pst.pestpp_options["ies_accept_phi_fac"] = 100.0
 
     pst.write(os.path.join(template_d, "pest.pst"))
@@ -437,6 +438,7 @@ def tenpar_subset_test():
                                slave_root=model_d, master_dir=test_d)
     df_sub = pd.read_csv(os.path.join(test_d, "pest.phi.meas.csv"),index_col=0)
     diff = (df_sub - df_base).apply(np.abs)
+    diff = diff.iloc[:,6:]
     print(diff.max())
     print(df_sub.iloc[-1,:])
     print(df_base.iloc[-1,:])
@@ -754,8 +756,8 @@ def test_chenoliver():
     pst.write(os.path.join(test_d,"pest.pst"))
     pyemu.helpers.run(exe_path+" pest.pst",cwd=test_d)
     
-    num_reals = 1000
-    noptmax = 10
+    num_reals = 500
+    noptmax = 4
     
 
     shutil.rmtree(test_d)
@@ -1161,12 +1163,14 @@ def setup_rosenbrock():
 
 if __name__ == "__main__":
     # write_empty_test_matrix()
-    #setup_suite_dir("ies_freyberg")
-    #setup_suite_dir("ies_10par_xsec")
-    #run_suite("ies_freyberg")
-    #run_suite("ies_10par_xsec")
-    #rebase("ies_freyberg")
-    #rebase("ies_10par_xsec")
+    # setup_suite_dir("ies_freyberg")
+    # setup_suite_dir("ies_10par_xsec")
+    # run_suite("ies_freyberg")
+    # run_suite("ies_10par_xsec")
+    # rebase("ies_freyberg")
+    # rebase("ies_10par_xsec")
+    # compare_suite("ies_10par_xsec")
+    # compare_suite("ies_freyberg")
 
     #tenpar_subset_test()
     #tenpar_full_cov_test()
@@ -1178,12 +1182,10 @@ if __name__ == "__main__":
     #test_10par_xsec()
     #test_freyberg()
     #test_chenoliver()
-    #tenpar_weight_pareto_test()
+    tenpar_weight_pareto_test()
     #compare_pyemu()
-    #tenpar_subset_test()
-    #tenpar_full_cov_test()
     tenpar_narrow_range_test()
-    #test_freyberg_ineq()
+    test_freyberg_ineq()
     
     # # invest()
     #compare_suite("ies_10par_xsec")
@@ -1191,6 +1193,6 @@ if __name__ == "__main__":
     
     #test_kirishima()
 
-    #tenpar_fixed_test()
+    tenpar_fixed_test()
 
-    setup_rosenbrock()
+    #setup_rosenbrock()
