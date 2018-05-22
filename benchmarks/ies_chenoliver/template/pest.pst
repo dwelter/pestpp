@@ -6,7 +6,7 @@ pcf
    2.000000E+01  -3.000000E+00   3.000000E-01   1.000000E-02        -7       999          lamforgive        noderforgive
    1.000000E+01   1.000000E+01   1.000000E-03         0         0
    1.000000E-01         1   1.100000E+00               noaui          nosenreuse        noboundscale
-         1   1.000000E-02         3         3   1.000000E-02         3   0.000000E+00         1  -1.000000E+00
+         4   1.000000E-02         3         3   1.000000E-02         3   0.000000E+00         1  -1.000000E+00
          0         0         0         0             jcosave          verboserec          jcosaveitn          reisaveitn          parsaveitn        noparsaverun
 * singular value decomposition
          1
@@ -25,7 +25,7 @@ python chenoliver.py
 * model input/output
 par.dat.tpl par.dat
 obs.dat.ins obs.dat
-++ies_use_prior_scaling(true)
-++ies_num_reals(1000)
 ++parcov_filename(prior.cov)
+++ies_num_reals(500)
 ++ies_initial_lambda(0.001)
+++ies_use_prior_scaling(true)
