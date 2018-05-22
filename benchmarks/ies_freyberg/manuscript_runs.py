@@ -17,8 +17,14 @@ import pyemu
 nrow,ncol = 40,20
 num_reals = [30, 50, 100]
 #num_reals = [30]
-noptmax = 20
+noptmax = 10
 pst = pyemu.Pst(os.path.join("template", "pest.pst"))
+pst.pestpp_options = {}
+pst.pestpp_options["parcov"] = "prior.jcb"
+pst.pestpp_options["ies_lambda_mults"] = [0.1,1.0,10.0]
+pst.pestpp_options["lambda_scale_fac"] = 1.0
+pst.pestpp_options["ies_subset_size"] = 10
+pst.pestpp_options["ies_initial_lambda"] = 1.0
 pst.observation_data.loc[pst.nnz_obs_names,"weight"] = 0.5
 
 #pst.pestpp_options["parcov_filename"] = "prior.jcb"
@@ -46,8 +52,8 @@ def run_pestpp():
                                num_slaves=10, master_dir="master_pestpp")
 
 def run():
-    #for nr in num_reals:
-    for nr in [13]:
+    for nr in num_reals:
+    #for nr in [13]:
         pst.pestpp_options["ies_num_reals"] = nr
         # pst.pestpp_options["ies_use_prior_scaling"] = "true"
         # pst.pestpp_options["ies_initial_lambda"] = 1000000.0
@@ -60,10 +66,10 @@ def run():
         # pyemu.helpers.start_slaves("template", "pestpp-ies", pst_name,
         #                            num_slaves=10, master_dir=master_dir)
 
-        pst.pestpp_options["ies_use_prior_scaling"] = "false"
-        pst.pestpp_options["ies_group_draws"] = "false"
-        pst.pestpp_options["ies_initial_lambda"] = 1.0
-        pst.pestpp_options["par_sigma_range"] = 100.0
+        # pst.pestpp_options["ies_use_prior_scaling"] = "false"
+        # pst.pestpp_options["ies_group_draws"] = "false"
+        # pst.pestpp_options["ies_initial_lambda"] = 1.0
+        # pst.pestpp_options["par_sigma_range"] = 100.0
         pst.control_data.noptmax = noptmax
         master_dir = "master_{0}_nps".format(nr)
         if os.path.exists(master_dir):
@@ -180,7 +186,8 @@ def plot_phi():
             c = cd[nr]
             mean = df.loc[:,"mean"]
             std = df.loc[:,"standard_deviation"]
-            ax.plot(df.total_runs,mean,ls=ls,color=c,lw=1.0,marker='.',ms=4,label=label)
+            #ax.plot(df.total_runs,mean,ls=ls,color=c,lw=1.0,marker='.',ms=4,label=label)
+            ax.semilogy(df.total_runs, mean, ls=ls, color=c, lw=1.0, marker='.', ms=4, label=label)
             #ax.fill_between(df.total_runs,mean-std,mean+std,facecolor=c,
             #                alpha=0.1,hatch='/////')
             #[ax.plot(df.total_runs,df.iloc[:,i],ls=ls,color=c,lw=0.05,label='') for i in range(6,df.shape[1])]
@@ -197,11 +204,11 @@ def plot_phi():
 
     #ax.set_xlim(0,ax.get_xlim()[1])
     #ax.set_xlim(0,pst.npar_adj)
-    ax.set_xlim(0, 500)
+    #ax.set_xlim(0, 1000)
 
-    ax.set_ylim(0, 10000)
+    #ax.set_ylim(0, 10000)
     ax.set_xlabel("model runs")
-    ax.set_ylabel("objective function ($\phi$)")
+    ax.set_ylabel("objective function ($log_{10}\phi$)")
     ax.grid()
     ax.legend()
     ax.set_title('A)',loc="left",fontsize=fontsize)
@@ -238,7 +245,7 @@ def plot_histograms():
     master_dirs = [d for d in os.listdir('.') if "master_" in d and "pestpp" not in d and "mc" not in d]
     df_mc_phi = pd.read_csv(os.path.join("master_mc", "pest_mc.phi.actual.csv")).iloc[:,6:].transpose()
     #print(df_mc_phi)
-    keep_reals = [int(k) for k in list(df_mc_phi[(df_mc_phi.values < phi_accept)].index)]
+    keep_reals = [int(k) for k in list(df_mc_phi[(df_mc_phi.values < 21)].index)]
     print(len(keep_reals))
     df_mc = pd.read_csv(os.path.join("master_mc","pest_mc.0.obs.csv"))
     df_mc.columns = df_mc.columns.map(str.lower)
@@ -260,8 +267,8 @@ def plot_histograms():
             if nr != num_real:
                 continue
             print(master_dir,noptstr)
-            ocsv_pt = [f for f in os.listdir(master_dir) if "obs" in f and noptstr in f][0]
-
+            ocsv_pt = [f for f in os.listdir(master_dir) if "obs.csv" in f and not "base" in f][-1]
+            print(ocsv_pt)
             df_pt = pd.read_csv(os.path.join(master_dir,ocsv_pt))
             df_pt.columns = df_pt.columns.map(str.lower)
             for i,f in enumerate(forecast_names):
@@ -284,18 +291,22 @@ def plot_histograms():
                     ax.set_xlabel("gw level (m)",labelpad=0.1)
                 else:
                     ax.set_xlabel("sw-gw exchange ($\\frac{m^3}{d}$)",labelpad=0.1)
-                ylim = ax.get_ylim()
-                v = pst.observation_data.loc[f,"obsval"]
-                ax.plot([v,v],ylim,'k',lw=2.0)
-                ax.set_ylim(ylim)
+                #ylim = ax.get_ylim()
+                #v = pst.observation_data.loc[f,"obsval"]
+                #ax.plot([v,v],ylim,'k',lw=2.0)
+                #ax.set_ylim(ylim)
                 axes[f].append(ax)
 
     for f, axs in axes.items():
         mn,mx = 1.0e+10,-1.0e10
         for ax in axs:
-            n,x = ax.get_xlim()
+            n,x = ax.get_ylim()
             mn = min(mn,n)
             mx = max(mx,x)
+        for ax in axs:
+            ax.set_ylim(mn,mx)
+            v = pst.observation_data.loc[f, "obsval"]
+            ax.plot([v, v], [mn,mx], 'k', lw=2.0)
 
         # for f,ax in zip(forecast_names,axs):
         #     mc = df_mc.loc[keep_reals,f]
@@ -305,6 +316,7 @@ def plot_histograms():
     plt.tight_layout()
     plt.savefig("freyberg_hist.pdf")
     plt.close(fig)
+
 
 def get_hk_arr(df,real=None):
     if real is None:
@@ -406,10 +418,12 @@ def plot_hk_arrays_figure():
             if nr != num_real:
                 continue
 
-            pcsv_pt = [f for f in os.listdir(master_dir) if ".par" in f and noptstr in f][0]
-            pcsv_pr = pcsv_pt.replace(noptstr,".0.")
+            #pcsv_pt = [f for f in os.listdir(master_dir) if ".par" in f and noptstr in f][0]
+            pcsv_pt = [f for f in os.listdir(master_dir) if ".par.csv" in f][-1]
+            pcsv_pr = [f for f in os.listdir(master_dir) if ".par.csv" in f][0]
 
             df_phi = pd.read_csv(os.path.join(master_dir,pcsv_pr.replace(".0.par",".phi.actual")))
+            print(df_phi.columns)
             df_pt = pd.read_csv(os.path.join(master_dir,pcsv_pt),index_col=0)
             df_pr = pd.read_csv(os.path.join(master_dir, pcsv_pr),index_col=0)
             df_pt.columns = df_pt.columns.map(str.lower)
@@ -424,6 +438,7 @@ def plot_hk_arrays_figure():
             #if real is None:
             #    real = df_pt.index[0]
             real = '0'
+            #print(df_phi.columns)
             real_phi_pt = df_phi.iloc[-1, :][real]
             real_phi_pr = df_phi.iloc[0, :][real]
 
@@ -538,12 +553,12 @@ def sigma_range_invest():
 
 if __name__ == "__main__":
     #run()
-    sigma_range_invest()
+    #sigma_range_invest()
     #run_pestpp()
     #run_mc()
     #plot_domain()
     #plot_phi()
     #plot_hk_arrays("base")
     #plot_hk_arrays()
-    #plot_histograms()
+    plot_histograms()
     #plot_hk_arrays_figure()
