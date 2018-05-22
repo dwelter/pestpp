@@ -2181,7 +2181,8 @@ Global
 		{878F397B-8278-400B-9088-3B104893E93C}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{878F397B-8278-400B-9088-3B104893E93C}.Release|Win32.ActiveCfg = Release|Win32
 		{878F397B-8278-400B-9088-3B104893E93C}.Release|Win32.Build.0 = Release|Win32
-		{878F397B-8278-400B-9088-3B104893E93C}.Release|x64.ActiveCfg = Release|Win32
+		{878F397B-8278-400B-9088-3B104893E93C}.Release|x64.ActiveCfg = Release|x64
+		{878F397B-8278-400B-9088-3B104893E93C}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
