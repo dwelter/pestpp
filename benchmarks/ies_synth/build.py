@@ -5,7 +5,7 @@ import pandas as pd
 import flopy
 import pyemu
 
-nlay, nrow, ncol = 6, 250, 250
+nlay, nrow, ncol = 10, 300, 300
 num_reals = 30
 
 # nlay, nrow, ncol = 116, 78, 59
@@ -71,7 +71,8 @@ def setup():
     # hk = np.loadtxt("hk.dat")
     # vka = hk / 10.0
     print(os.listdir('.'))
-    hk = [np.loadtxt(os.path.join("truth_reals",f)) for f in os.listdir("truth_reals") if "real_" in f]
+    #hk = [np.loadtxt(os.path.join("truth_reals",f)) for f in os.listdir("truth_reals") if "real_" in f]
+    hk = 5.0
     vka = 10.**(np.random.normal(-1,0.25,(nlay,nrow,ncol)))
 
     flopy.modflow.ModflowUpw(m, hk=hk, vka=vka, ss=0.001, sy=0.1, ipakcb=50)
@@ -117,16 +118,16 @@ def setup():
     ph.pst.pestpp_options["sweep_par_csv"] = "par.jcb"
     ph.pst.write(os.path.join("template", "pest.pst"))
 
-    parcov = pyemu.Cov.from_parameter_data(ph.pst)
-    pe = pyemu.ParameterEnsemble.from_gaussian_draw(ph.pst, parcov, num_reals=num_reals)
-    # pe.to_csv(os.path.join("template","par.csv"))
-    pe.to_binary(os.path.join("template", "par.jcb"))
+    # parcov = pyemu.Cov.from_parameter_data(ph.pst)
+    # pe = pyemu.ParameterEnsemble.from_gaussian_draw(ph.pst, parcov, num_reals=num_reals)
+    # # pe.to_csv(os.path.join("template","par.csv"))
+    # pe.to_binary(os.path.join("template", "par.jcb"))
 
-    oe = pyemu.ObservationEnsemble.from_id_gaussian_draw(ph.pst, num_reals=num_reals)
-    oe.to_binary(os.path.join("template", "obs.jcb"))
+    # oe = pyemu.ObservationEnsemble.from_id_gaussian_draw(ph.pst, num_reals=num_reals)
+    # oe.to_binary(os.path.join("template", "obs.jcb"))
 
-    oe = pyemu.ObservationEnsemble.from_id_gaussian_draw(ph.pst, num_reals=num_reals)
-    oe.to_binary(os.path.join("template", "restart_obs.jcb"))
+    # oe = pyemu.ObservationEnsemble.from_id_gaussian_draw(ph.pst, num_reals=num_reals)
+    # oe.to_binary(os.path.join("template", "restart_obs.jcb"))
 
     pyemu.helpers.run("pestpp pest.pst", cwd="template")
 
@@ -258,7 +259,7 @@ if __name__ == "__main__":
 
     # process_training_image()
     #run_fieldgen()
-    setup()
+    #setup()
     #run_sweep()
     #test()
     prep()
