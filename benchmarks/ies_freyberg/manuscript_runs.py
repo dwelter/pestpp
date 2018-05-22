@@ -538,12 +538,12 @@ def sigma_range_invest():
 
 if __name__ == "__main__":
     #run()
-    sigma_range_invest()
+    #sigma_range_invest()
     #run_pestpp()
     #run_mc()
     #plot_domain()
     #plot_phi()
     #plot_hk_arrays("base")
     #plot_hk_arrays()
-    #plot_histograms()
+    plot_histograms()
     #plot_hk_arrays_figure()

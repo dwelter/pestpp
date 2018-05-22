@@ -776,17 +776,22 @@ void Ensemble::append_other_rows(Ensemble &other)
 	if (other.shape().second != shape().second)
 		throw_ensemble_error("append_other_rows(): different number of var_names in other");
 	vector<string> probs;
-	vector<string>::iterator start = var_names.begin(), end = var_names.end();
+	set<string> vnames(var_names.begin(), var_names.end());
+	//vector<string>::iterator start = var_names.begin(), end = var_names.end();
+	set<string>::iterator end = vnames.end();
 	for (auto &vname : other.get_var_names())
-		if (find(start, end, vname) == end)
+		//if (find(start, end, vname) == end)
+		if (vnames.find(vname) == end)
 			probs.push_back(vname);
 	if (probs.size() > 0)
 		throw_ensemble_error("append_other_rows(): the following other::var_names not in this::var_names: ", probs);
-	start = real_names.begin();
-	end = real_names.end();
+	//start = real_names.begin();
+	//end = real_names.end();
+	set<string> rnames(real_names.begin(), real_names.end());
+	end = rnames.end();
 	for (auto &rname : other.get_real_names())
-
-		if (find(start, end, rname) != end)
+		//if (find(start, end, rname) != end)
+		if (rnames.find(rname) == end)
 			probs.push_back(rname);
 	if (probs.size() > 0)
 		throw_ensemble_error("append_other_rows(): the following other::real_names are also in this::real_names: ", probs);

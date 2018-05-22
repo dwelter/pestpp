@@ -321,7 +321,7 @@ def tenpar_narrow_range_test():
 
     df = pd.read_csv(os.path.join(test_d, "pest.0.par.csv"), index_col=0)
     df.columns = [c.lower() for c in df.columns]
-    p1, p2 = pst.adj_par_names
+    p1, p2 = pst.adj_par_names[:2]
     v1,v2 = pe.loc[:,p1].var(),df.loc[:,p1].var()
     diff = np.abs(100 * ((v1 - v2) / v1))
     print(v1,v2,diff)
@@ -339,7 +339,7 @@ def tenpar_narrow_range_test():
 
     df = pd.read_csv(os.path.join(test_d, "pest.0.par.csv"), index_col=0)
     df.columns = [c.lower() for c in df.columns]
-    p1, p2 = pst.adj_par_names
+    p1, p2 = pst.adj_par_names[:2]
     v1, v2 = pe.loc[:, p1].var(), df.loc[:, p1].var()
     diff = np.abs(100 * ((v1 - v2) / v1))
     print(v1, v2, diff)
@@ -724,14 +724,17 @@ def test_synth():
     print("loading pst")
     pst = pyemu.Pst(os.path.join(template_d,"pest.pst"))
     pst.pestpp_options = {}
-    pst.pestpp_options["ies_num_reals"] = num_reals
     pst.pestpp_options["ies_use_approx"] = "false"
     pst.pestpp_options["ies_use_prior_scaling"] = "true"
-    pst.control_data.noptmax = 1
+    pst.pestpp_options["ies_lambda_mults"] = [0.1,1.0]
+    pst.pestpp_options["lambda_scale_fac"] = [0.9,1.1]
+    pst.pestpp_options["ies_num_reals"] = 30
+    pst.pestpp_options["ies_save_binary"] = True
+    pst.control_data.noptmax = 2
     print("writing pst")
     pst.write(os.path.join(template_d,"pest.pst"))
     print("starting slaves")
-    pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=10,master_dir=test_d,slave_root=model_d)
+    pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=15,master_dir=test_d,slave_root=model_d)
 
 def test_chenoliver():
     model_d = "ies_chenoliver"
@@ -948,12 +951,12 @@ def tenpar_fixed_test():
         shutil.rmtree(test_d)
     shutil.copytree(template_d,test_d)
     cov = pyemu.Cov.from_parameter_data(pst)
-    pe = pyemu.ParameterEnsemble.from_gaussian_draw(pst=pst,cov=cov,num_reals=10)
+    pe = pyemu.ParameterEnsemble.from_gaussian_draw(pst=pst,cov=cov,num_reals=50)
 
     pe.loc[:,"stage"] = np.linspace(0.0,1.0,pe.shape[0])
     pe.loc[:,"k_01"] = 5.0
-    pe.to_csv(os.path.join(test_d,"par.csv"))
-    pe.to_binary(os.path.join(test_d, "par.jcb"))
+    pe.to_csv(os.path.join(template_d,"par.csv"))
+    pe.to_binary(os.path.join(template_d, "par.jcb"))
     fixed_pars = ["stage","k_01"]
     pst.parameter_data.loc[fixed_pars,"partrans"] = "fixed"
 
@@ -966,22 +969,28 @@ def tenpar_fixed_test():
             df = df.iloc[:-1,:]
             df.index = pe.index
             diff = pe.loc[df.index,fixed_pars] - df
-            assert diff.apply(np.abs).sum().sum() < 0.01
+            assert diff.apply(np.abs).sum().sum() < 0.01, diff
 
     pst.pestpp_options["ies_par_en"] = "par.csv"
-    pst.write(os.path.join(test_d, "pest.pst"))
-    pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
+    pst.write(os.path.join(template_d, "pest.pst"))
+    #pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
+    pyemu.helpers.start_slaves(template_d, exe_path, "pest.pst", num_slaves=20, master_dir=test_d,
+                               slave_root=model_d)
     compare()
-    pe.to_binary(os.path.join(test_d,"par.jcb"))
+    pe.to_binary(os.path.join(template_d,"par.jcb"))
     pst.pestpp_options["ies_par_en"] = "par.jcb"
-    pst.write(os.path.join(test_d, "pest.pst"))
-    pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
+    pst.write(os.path.join(template_d, "pest.pst"))
+    #pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
+    pyemu.helpers.start_slaves(template_d, exe_path, "pest.pst", num_slaves=20, master_dir=test_d,
+                               slave_root=model_d)
     compare()
 
     pst.pestpp_options["ies_par_en"] = "par.jcb"
     pst.pestpp_options["ies_save_binary"] = 'true'
-    pst.write(os.path.join(test_d, "pest.pst"))
-    pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
+    pst.write(os.path.join(template_d, "pest.pst"))
+    #pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
+    pyemu.helpers.start_slaves(template_d, exe_path, "pest.pst", num_slaves=20, master_dir=test_d,
+                               slave_root=model_d)
     pe1 = pyemu.ParameterEnsemble.from_binary(pst=pst,filename=os.path.join(test_d,"pest.0.par.jcb")).iloc[:-1,:]
     pe1.index = pe.index
     diff = pe - pe1
@@ -1178,14 +1187,14 @@ if __name__ == "__main__":
     #test_freyberg_full_cov_reorder_run()
     #test_freyberg_full_cov()
     
-    #test_synth()
+    test_synth()
     #test_10par_xsec()
     #test_freyberg()
     #test_chenoliver()
-    tenpar_weight_pareto_test()
+    #tenpar_weight_pareto_test()
     #compare_pyemu()
-    tenpar_narrow_range_test()
-    test_freyberg_ineq()
+    # tenpar_narrow_range_test()
+    #test_freyberg_ineq()
     
     # # invest()
     #compare_suite("ies_10par_xsec")
@@ -1193,6 +1202,6 @@ if __name__ == "__main__":
     
     #test_kirishima()
 
-    tenpar_fixed_test()
+    #tenpar_fixed_test()
 
     #setup_rosenbrock()

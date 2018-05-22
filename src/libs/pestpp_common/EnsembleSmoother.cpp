@@ -2554,6 +2554,7 @@ bool IterEnsembleSmoother::solve()
 
 		}
 		//drop the remaining runs from the par en then append the remaining par runs (in case some failed)
+		performance_log->log_event("assembling ensembles");
 		pe_lams[best_idx].drop_rows(pe_keep_names); 
 		pe_lams[best_idx].append_other_rows(remaining_pe_lam);
 		//append the remaining obs en
@@ -2564,6 +2565,7 @@ bool IterEnsembleSmoother::solve()
 		{
 			throw_ies_error(string("all realization dropped after finishing subset runs...something might be wrong..."));
 		}
+		performance_log->log_event("updating phi");
 		ph.update(oe_lam_best, pe_lams[best_idx]);
 		best_mean = ph.get_mean(PhiHandler::phiType::COMPOSITE);
 		best_std = ph.get_std(PhiHandler::phiType::COMPOSITE);
