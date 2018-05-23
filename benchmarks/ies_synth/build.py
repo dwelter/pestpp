@@ -71,8 +71,8 @@ def setup():
     # hk = np.loadtxt("hk.dat")
     # vka = hk / 10.0
     print(os.listdir('.'))
-    #hk = [np.loadtxt(os.path.join("truth_reals",f)) for f in os.listdir("truth_reals") if "real_" in f]
-    hk = 5.0
+    hk = [np.loadtxt(os.path.join("truth_reals",f)) for f in os.listdir("truth_reals") if "real_" in f]
+    #hk = 5.0
     vka = 10.**(np.random.normal(-1,0.25,(nlay,nrow,ncol)))
 
     flopy.modflow.ModflowUpw(m, hk=hk, vka=vka, ss=0.001, sy=0.1, ipakcb=50)
@@ -137,6 +137,14 @@ def prep():
         shutil.rmtree("master")
     shutil.copytree("template", "master")
     pst = pyemu.Pst(os.path.join("master", "pest.pst"))
+    pst.pestpp_options = {}
+    pst.pestpp_options["ies_num_reals"] = 10
+    pst.pestpp_options["ies_save_binary"] = True
+    pst.pestpp_options["ies_lambda_mults"] = [0.1,1.0]
+    pst.pestpp_options["lambda_scale_fac"] = [0.9,1.0]
+    pst.pestpp_options["ies_subset_size"] = 3
+    pst.pestpp_options["par_sigma_range"] = 20
+
     pst.pestpp_options["ies_parameter_csv"] = "par.jcb"
     pst.pestpp_options["ies_observation_csv"] = "obs.jcb"
     pst.pestpp_options["ies_obs_restart_csv"] = "restart_obs.jcb"

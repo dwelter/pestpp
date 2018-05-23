@@ -61,7 +61,7 @@ vector<double> sequentialLP::get_constraint_residual_vec()
 	if (use_chance)
 		return get_constraint_residual_vec(constraints_fosm);
 	else
-		return get_constraint_residual_vec(constraints_sim_initial);
+		return get_constraint_residual_vec(constraints_sim);
 }
 
 vector<double> sequentialLP::get_constraint_residual_vec(Observations &sim_vals)
@@ -464,9 +464,9 @@ pair<double,double> sequentialLP::postsolve_decision_var_report(Parameters &upgr
 		status = model.getColumnStatus(i);
 		obj_coef = ctl_ord_obj_func_coefs[i];
 		init_val = all_pars_and_dec_vars_initial[name];
-		cur_val = all_pars_and_dec_vars[name] + init_val;
+		cur_val = all_pars_and_dec_vars[name];
 		
-		new_val = upgrade_pars[name] + init_val;
+		new_val = upgrade_pars[name];
 		actual_pars.update_rec(name, new_val);
 		f_rec << setw(20) << left << name;
 		f_rec << setw(15) << right << cur_val;
@@ -618,7 +618,7 @@ void sequentialLP::initialize_and_check()
 	//	throw_sequentialLP_error("the following decision variables have non-zero initial values", problem_vars);
 
 	//set the decision var lower and upper bound arrays
-	dec_var_lb = new double[num_dec_vars()];
+	/*dec_var_lb = new double[num_dec_vars()];
 	dec_var_ub = new double[num_dec_vars()];
 	Parameters parlbnd = pest_scenario.get_ctl_parameter_info().get_low_bnd(ctl_ord_dec_var_names);
 	Parameters parubnd = pest_scenario.get_ctl_parameter_info().get_up_bnd(ctl_ord_dec_var_names);
@@ -626,7 +626,7 @@ void sequentialLP::initialize_and_check()
 	{
 		dec_var_lb[i] = parlbnd.get_rec(ctl_ord_dec_var_names[i]);
 		dec_var_ub[i] = parubnd.get_rec(ctl_ord_dec_var_names[i]);
-	}
+	}*/
 
 
 
@@ -957,50 +957,51 @@ void sequentialLP::initialize_and_check()
 void sequentialLP::calc_chance_constraint_offsets()
 {
 	ofstream & f_rec = file_mgr_ptr->rec_ofstream();
-	if ((slp_iter != 1) && ((slp_iter+1) % pest_scenario.get_pestpp_options().get_opt_recalc_fosm_every() != 0))
+	/*if ((slp_iter != 1) && ((slp_iter+1) % pest_scenario.get_pestpp_options().get_opt_recalc_fosm_every() != 0))
 	{
 		
 		f_rec << endl << "  ---  reusing fosm offsets from previous iteration  ---  " << endl;
 		cout << endl << "  ---  reusing fosm offsets from previous iteration  ---  " << endl;
 		return;
-	}
+	}*/
 	cout << "  ---  calculating FOSM-based chance constraint components  ---  " << endl;
 	f_rec << "  ---  calculating FOSM-based chance constraint components  ---  " << endl;
 	prior_constraint_offset.clear();
 	prior_constraint_stdev.clear();
 	post_constraint_offset.clear();
 	post_constraint_stdev.clear();
-	//the rows of the fosm jacobian include nonzero weight obs (for schur comp) 
-	//plus the names of the names of constraints, which get treated as forecasts
-	vector<string> fosm_row_names(nz_obs_names);
-	fosm_row_names.insert(fosm_row_names.end(), ctl_ord_obs_constraint_names.begin(), ctl_ord_obs_constraint_names.end());
-	
-	//extract the part of the full jco we need for fosm
-	Eigen::SparseMatrix<double> fosm_mat = jco.get_matrix(fosm_row_names, adj_par_names);
-		
-	Mat fosm_jco(fosm_row_names,adj_par_names,fosm_mat);
-	
-	//create a linear object
-	Logger logger(file_mgr_ptr->get_ofstream("pfm"), false);
-	linear_analysis la(&fosm_jco, &pest_scenario, &obscov,&logger);
-	
-	//set the prior parameter covariance matrix
-	la.set_parcov(&parcov);
-	
-	//set the predictions (the constraints)
-	la.set_predictions(ctl_ord_obs_constraint_names);
-	
-	//get the prior and posterior variance of the constraints
-	map<string, double> prior_const_var = la.prior_prediction_variance();
-	map<string, double> post_const_var;
-	
-	//if at least one nz obs was found, then use schur complment, otherwise,
-	//just use the prior constraint uncertainty
-	if (num_nz_obs() > 0)
-		post_const_var = la.posterior_prediction_variance();
-	else
-		post_const_var = prior_const_var;
-	
+	if (slp_iter == 1)
+	{
+		//the rows of the fosm jacobian include nonzero weight obs (for schur comp) 
+		//plus the names of the names of constraints, which get treated as forecasts
+		vector<string> fosm_row_names(nz_obs_names);
+		fosm_row_names.insert(fosm_row_names.end(), ctl_ord_obs_constraint_names.begin(), ctl_ord_obs_constraint_names.end());
+
+		//extract the part of the full jco we need for fosm
+		Eigen::SparseMatrix<double> fosm_mat = jco.get_matrix(fosm_row_names, adj_par_names);
+
+		Mat fosm_jco(fosm_row_names, adj_par_names, fosm_mat);
+
+		//create a linear object
+		Logger logger(file_mgr_ptr->get_ofstream("pfm"), false);
+		linear_analysis la(&fosm_jco, &pest_scenario, &obscov, &logger);
+
+		//set the prior parameter covariance matrix
+		la.set_parcov(&parcov);
+
+		//set the predictions (the constraints)
+		la.set_predictions(ctl_ord_obs_constraint_names);
+
+		//get the prior and posterior variance of the constraints
+		prior_const_var = la.prior_prediction_variance();
+
+		//if at least one nz obs was found, then use schur complment, otherwise,
+		//just use the prior constraint uncertainty
+		if (num_nz_obs() > 0)
+			post_const_var = la.posterior_prediction_variance();
+		else
+			post_const_var = prior_const_var;
+	}
 	//work out the offset for each constraint
 	//and set the values in the constraints_fosm Obseravtions
 	double new_constraint_val, old_constraint_val, required_val;
@@ -1016,8 +1017,8 @@ void sequentialLP::calc_chance_constraint_offsets()
 		pr_offset = probit_val * prior_constraint_stdev[name];
 		pt_offset = probit_val * post_constraint_stdev[name];
 		//important: using the initial simulated constraint values 
-		//old_constraint_val = constraints_sim[name];
-		old_constraint_val = constraints_sim_initial[name];
+		old_constraint_val = constraints_sim[name];
+		//old_constraint_val = constraints_sim_initial[name];
 		required_val = constraints_obs[name];
 
 		//if less_than constraint, then add to the sim value, to move positive
@@ -1174,6 +1175,20 @@ void sequentialLP::iter_infeasible_report()
 	return;
 }
 
+void sequentialLP::build_dec_var_bounds()
+{
+	//set the decision var lower and upper bound arrays
+	dec_var_lb = new double[num_dec_vars()];
+	dec_var_ub = new double[num_dec_vars()];
+	Parameters parlbnd = pest_scenario.get_ctl_parameter_info().get_low_bnd(ctl_ord_dec_var_names);
+	Parameters parubnd = pest_scenario.get_ctl_parameter_info().get_up_bnd(ctl_ord_dec_var_names);
+	for (int i = 0; i < num_dec_vars(); ++i)
+	{
+		dec_var_lb[i] = parlbnd.get_rec(ctl_ord_dec_var_names[i]) - all_pars_and_dec_vars.get_rec(ctl_ord_dec_var_names[i]);
+		dec_var_ub[i] = parubnd.get_rec(ctl_ord_dec_var_names[i]) - all_pars_and_dec_vars.get_rec(ctl_ord_dec_var_names[i]);
+	}
+}
+
 void sequentialLP::iter_solve()
 {
 	
@@ -1182,6 +1197,8 @@ void sequentialLP::iter_solve()
 	//convert Jacobian_1to1 to CoinPackedMatrix
 	cout << "  ---  forming LP model  --- " << endl;
 	CoinPackedMatrix matrix = jacobian_to_coinpackedmatrix();
+
+	build_dec_var_bounds();
 
 	//load the linear simplex model
 	model.loadProblem(matrix, dec_var_lb, dec_var_ub, ctl_ord_obj_func_coefs, constraint_lb, constraint_ub);
@@ -1428,7 +1445,7 @@ void sequentialLP::iter_postsolve()
 		name = ctl_ord_dec_var_names[i];
 		val = all_pars_and_dec_vars[name];
 		diff = abs(dec_var_vals[i] - all_pars_and_dec_vars[name]);
-		upgrade_pars.update_rec(name,dec_var_vals[i]);
+		upgrade_pars.update_rec(name,dec_var_vals[i] + val);
 		
 		max_abs_dec_var_change = (diff > max_abs_dec_var_change) ? diff : max_abs_dec_var_change;
 		max_abs_dec_var_val = (abs(val) > max_abs_dec_var_val) ? val : max_abs_dec_var_val;

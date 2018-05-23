@@ -791,7 +791,7 @@ void Ensemble::append_other_rows(Ensemble &other)
 	end = rnames.end();
 	for (auto &rname : other.get_real_names())
 		//if (find(start, end, rname) != end)
-		if (rnames.find(rname) == end)
+		if (rnames.find(rname) != end)
 			probs.push_back(rname);
 	if (probs.size() > 0)
 		throw_ensemble_error("append_other_rows(): the following other::real_names are also in this::real_names: ", probs);

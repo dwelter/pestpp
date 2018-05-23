@@ -13,10 +13,10 @@ pcf
   10000000    1.000000E-06
 1
 * parameter groups
-grhk0                   relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
-grrc110                 relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
 grprst0                 relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
+grrc110                 relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
 grrech0                 relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
+grhk0                   relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
 hcond1                  relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
 cn                      relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller
 * parameter data
@@ -2865,7 +2865,7 @@ vol_wells
 * observation data
 flx_constan_19791230  -8.6005180000E+02     1.0000000000E+00       flx_constan          
 flx_in-out_19791230   -2.9966000000E+00     1.0000000000E+00       flx_in-out           
-flx_percent_19791230  -5.0000001000E-02     1.0000000000E+00       flx_percent          
+flx_percent_19791230  -5.0000000000E-02     1.0000000000E+00       flx_percent          
 flx_recharg_19791230  6.0048000000E+03      1.0000000000E+00       flx_recharg          
 flx_storage_19791230  0.0000000000E+00      1.0000000000E+00       flx_storage          
 flx_stream__19791230  -3.2426250000E+03     1.0000000000E+00       flx_stream_          
@@ -3578,7 +3578,7 @@ hds_00_039_013_000    1.2000000000E+01      1.0000000000E+00       hds
 hds_00_039_014_000    1.1399999619E+01      1.0000000000E+00       hds                  
 vol_constan_19791230  -3.1391890000E+06     1.0000000000E+00       vol_constan          
 vol_in-out_19791230   -1.0938000000E+04     1.0000000000E+00       vol_in-out           
-vol_percent_19791230  -5.0000001000E-02     1.0000000000E+00       vol_percent          
+vol_percent_19791230  -5.0000000000E-02     1.0000000000E+00       vol_percent          
 vol_recharg_19791230  2.1917520000E+07      1.0000000000E+00       vol_recharg          
 vol_storage_19791230  0.0000000000E+00      1.0000000000E+00       vol_storage          
 vol_stream__19791230  -1.1835579000E+07     1.0000000000E+00       vol_stream_          

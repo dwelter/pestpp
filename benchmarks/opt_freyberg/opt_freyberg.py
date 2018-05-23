@@ -35,7 +35,7 @@ def setup_models(m=None):
     mt = flopy.mt3d.Mt3dms("freyberg.mt3d",model_ws=m.model_ws,modflowmodel=m,exe_name=mt_exe,external_path='.')
     flopy.mt3d.Mt3dBtn(mt,MFStyleArr=True,prsity=0.01,sconc=0.0,icbund=m.bas6.ibound.array,perlen=3650)
     flopy.mt3d.Mt3dGcg(mt,mxiter=100)#,cclose=1.0e-7)
-    #flopy.mt3d.Mt3dRct(mt,isothm=0,ireact=1,igetsc=0,rc1=0.02)
+    flopy.mt3d.Mt3dRct(mt,isothm=0,ireact=1,igetsc=0,rc1=0.001)
     flopy.mt3d.Mt3dAdv(mt,mixelm=-1)
 
     ib = m.bas6.ibound[0].array
@@ -149,7 +149,7 @@ def setup_pest():
 
     #only turn on one constraint in the middle of the domain
     obs.loc["sfrc30_1_03650.00","weight"] = 1.0
-    obs.loc["sfrc30_1_03650.00","obsval"] *= 1.5 #% increase
+    obs.loc["sfrc30_1_03650.00","obsval"] *= 1.2 #% increase
 
     # concentration constraints at pumping wells
     wel_df = pd.DataFrame.from_records(ph.m.wel.stress_period_data[0])
@@ -157,7 +157,7 @@ def setup_pest():
     wel_df.loc[:,"obsnme"] = wel_df.apply(lambda x: "ucn_{0:02.0f}_{1:03.0f}_{2:03.0f}_000".format(x.k,x.i,x.j),axis=1)
     obs.loc[wel_df.obsnme,"obgnme"] = "less_wlconc"
     obs.loc[wel_df.obsnme,"weight"] = 1.0
-    obs.loc[wel_df.obsnme,"obsval"] *= 1.5 #% increase
+    obs.loc[wel_df.obsnme,"obsval"] *= 1.2 #% increase
 
 
     # pumping well mass constraint
@@ -231,8 +231,8 @@ def write_ssm_tpl():
                 raw = line.strip().split()
                 l,r,c = [int(r) for r in raw[:3]]
                 parval1.append(float(raw[3]))
-                pn = "~k_all~"
-                #pn = "~k_{0:02d}~".format(r-1)
+                #pn = "~k_all~"
+                pn = "~k_{0:02d}~".format(r-1)
                 #pn = "~k_{0:02d}_{1:02d}~".format(r-1,c-1)
                 line = " {0:9d} {1:9d} {2:9d} {3:9s} {4:9d}\n".format(l,r,c,pn,15)
                 f_tpl.write(line)
@@ -244,8 +244,8 @@ def write_ssm_tpl():
     df.index = df.parnme
     df.loc[:,"pargp"] = "kg"
     df.loc[:,"parval1"] = parval1
-    #df.loc[:,"parubnd"] = df.parval1 * 2.0
-    df.loc[:,"parubnd"] = df.parval1 * 10000000.0
+    df.loc[:,"parubnd"] = 10.0
+    #df.loc[:,"parubnd"] = df.parval1 * 10000000.0
     df.loc[:,"partrans"] = "none"
     #df.loc[:,'parlbnd'] = df.parval1 * 0.9
     df.loc[:,"parlbnd"] = 0.0 #here we let loading decrease...
@@ -263,13 +263,18 @@ def run_jco():
     pyemu.helpers.start_slaves(new_model_ws,"pestpp","freyberg.pst",num_slaves=15,slave_root='.',
                                master_dir="resp_master")
 
+
+def start_slaves():
+    pyemu.helpers.start_slaves(new_model_ws,"pestpp-opt","freyberg.pst",num_slaves=15,master_dir=None,
+                               slave_root='.',port=4005)
+
 def run_pestpp_opt():
     pst_file = os.path.join(new_model_ws, "freyberg.pst")
     pst = pyemu.Pst(pst_file)
     pst.control_data.noptmax = 1
     pst.write(pst_file)
     pyemu.helpers.start_slaves(new_model_ws,"pestpp-opt","freyberg.pst",num_slaves=15,master_dir="master_opt",
-                               slave_root='.')
+                               slave_root='.',port=4005)
 
 def spike_test():
     pst_file = os.path.join(new_model_ws, "freyberg.pst")
@@ -553,11 +558,11 @@ def plot_loading(parfile=None):
 if __name__ == "__main__":
     #write_ssm_tpl()
     #run_test()
-    setup_models()
-    setup_pest()
+    #setup_models()
+    #setup_pest()
     #spike_test()
-
-    run_pestpp_opt()
+    start_slaves()
+    #run_pestpp_opt()
     #jco_invest()
     #run_risk_sweep()
     #plot_loading()

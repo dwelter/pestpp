@@ -2506,6 +2506,14 @@ bool IterEnsembleSmoother::solve()
 			return false;
 		}
 
+
+		//release the memory of the unneeded pe_lams
+		for (int i = 0; i < pe_lams.size(); i++)
+		{
+			if (i == best_idx)
+				continue;
+			pe_lams[i] = ParameterEnsemble();
+		}
 		//need to work out which par and obs en real names to run - some may have failed during subset testing...
 		ObservationEnsemble remaining_oe_lam = oe;//copy
 		ParameterEnsemble remaining_pe_lam = pe_lams[best_idx];

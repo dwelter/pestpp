@@ -1,7 +1,7 @@
 obsnme,obsnme,obsval,obgnme
 flx_constan_19791230,flx_constan_19791230,-860.0518,flx_constan
 flx_in-out_19791230,flx_in-out_19791230,-2.9966,flx_in-out
-flx_percent_19791230,flx_percent_19791230,-0.050000000999999995,flx_percent
+flx_percent_19791230,flx_percent_19791230,-0.05,flx_percent
 flx_recharg_19791230,flx_recharg_19791230,6004.8,flx_recharg
 flx_storage_19791230,flx_storage_19791230,0.0,flx_storage
 flx_stream__19791230,flx_stream__19791230,-3242.625,flx_stream_
@@ -9,7 +9,7 @@ flx_total_19791230,flx_total_19791230,-2.996582,flx_total
 flx_wells_19791230,flx_wells_19791230,-1905.12,flx_wells
 vol_constan_19791230,vol_constan_19791230,-3139189.0,vol_constan
 vol_in-out_19791230,vol_in-out_19791230,-10938.0,vol_in-out
-vol_percent_19791230,vol_percent_19791230,-0.050000000999999995,vol_percent
+vol_percent_19791230,vol_percent_19791230,-0.05,vol_percent
 vol_recharg_19791230,vol_recharg_19791230,21917520.0,vol_recharg
 vol_storage_19791230,vol_storage_19791230,0.0,vol_storage
 vol_stream__19791230,vol_stream__19791230,-11835579.0,vol_stream_
