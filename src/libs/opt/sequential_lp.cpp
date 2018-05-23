@@ -484,6 +484,8 @@ pair<double,double> sequentialLP::postsolve_decision_var_report(Parameters &upgr
 	ss << slp_iter << ".par";
 	
 	of_wr.write_par(file_mgr_ptr->open_ofile_ext(ss.str()),actual_pars,*par_trans.get_offset_ptr(),*par_trans.get_scale_ptr());
+	of_wr.write_par(file_mgr_ptr->open_ofile_ext("par"), actual_pars, *par_trans.get_offset_ptr(), *par_trans.get_scale_ptr());
+
 	return pair<double,double>(cur_obj,new_obj);
 }
 

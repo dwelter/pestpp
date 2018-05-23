@@ -5,7 +5,7 @@ import pandas as pd
 import flopy
 import pyemu
 
-nlay, nrow, ncol = 10, 300, 300
+nlay, nrow, ncol = 15, 400, 400
 num_reals = 30
 
 # nlay, nrow, ncol = 116, 78, 59
@@ -266,8 +266,8 @@ def test():
 if __name__ == "__main__":
 
     # process_training_image()
-    #run_fieldgen()
-    #setup()
+    run_fieldgen()
+    setup()
     #run_sweep()
     #test()
     prep()

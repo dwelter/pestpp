@@ -1686,7 +1686,7 @@ void IterEnsembleSmoother::initialize()
 	}
 	else
 	{
-		message(0, "using subset in lambda testing, only first ", subset_size);
+		message(1, "using subset in lambda testing, only first ", subset_size);
 		use_subset = true;
 	}
 	

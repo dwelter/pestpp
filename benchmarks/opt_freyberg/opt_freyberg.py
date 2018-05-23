@@ -232,8 +232,8 @@ def write_ssm_tpl():
                 l,r,c = [int(r) for r in raw[:3]]
                 parval1.append(float(raw[3]))
                 #pn = "~k_all~"
-                pn = "~k_{0:02d}~".format(r-1)
-                #pn = "~k_{0:02d}_{1:02d}~".format(r-1,c-1)
+                #pn = "~k_{0:02d}~".format(r-1)
+                pn = "~k_{0:02d}_{1:02d}~".format(r-1,c-1)
                 line = " {0:9d} {1:9d} {2:9d} {3:9s} {4:9d}\n".format(l,r,c,pn,15)
                 f_tpl.write(line)
                 parnme.append(pn)
@@ -546,13 +546,42 @@ def plot_risk_sweep():
     plt.savefig("risk_sweep.pdf")
 
 def plot_loading(parfile=None):
+    pst = pyemu.Pst(os.path.join("template","freyberg.pst"))
+    m = flopy.modflow.Modflow.load("freyberg.truth.nam",model_ws="template",load_only=[],check=False)
+    print(pst.nnz_obs_names)
+    nz_obs = pst.observation_data.loc[pst.nnz_obs_names,:]
+    nz_obs = nz_obs.loc[nz_obs.obsnme.apply(lambda x: x.startswith("ucn")),:]
+    nz_obs.loc[:,"i"] = nz_obs.obsnme.apply(lambda x: int(x.split('_')[2]))
+    nz_obs.loc[:,"j"] = nz_obs.obsnme.apply(lambda x: int(x.split('_')[3]))
+    nz_obs.loc[:,"x"] = nz_obs.apply(lambda x: m.sr.xcentergrid[x.i,x.j],axis=1)
+
+    nz_obs.loc[:,"y"] = nz_obs.apply(lambda x: m.sr.ycentergrid[x.i,x.j],axis=1)
+    seg_i = int([o for o in pst.nnz_obs_names if o.startswith("sfr")][0].split('_')[0][-2:])
+    print(nz_obs)
+    #print(seg_j)
+    seg_j = 16
+    seg_x,seg_y = m.sr.xcentergrid[seg_i,seg_j],m.sr.ycentergrid[seg_i,seg_j]
     if parfile is not None:
         df = pyemu.pst_utils.read_parfile(parfile)
     else:
-        df = pyemu.pst_utils.read_parfile(os.path.join("master_opt","freyberg.par"))
+        df = pyemu.pst_utils.read_parfile(os.path.join("master_opt","freyberg.{0}.par".format(pst.control_data.noptmax)))
 
     df = df.loc[df.parnme.apply(lambda x: x.startswith("k_")),:]
-    print(df)
+    #print(df)
+    df.loc[:,"i"] = df.parnme.apply(lambda x: int(x.split('_')[1]))
+    df.loc[:,"j"] = df.parnme.apply(lambda x: int(x.split('_')[2]))
+    arr = np.zeros((40,20)) - 1
+    arr[df.i,df.j] = df.parval1
+    arr = np.ma.masked_where(arr<0,arr)
+    ax = plt.subplot(111)
+
+    cb = ax.imshow(arr,extent=m.sr.get_extent())
+    c = plt.colorbar(cb)
+    c.set_label("N loading")
+    ax.scatter(nz_obs.x,nz_obs.y,marker='x',color='r')
+    ax.scatter([seg_x],[seg_y],marker='^',color='r')
+    plt.show()
+
 
 
 if __name__ == "__main__":
@@ -561,11 +590,11 @@ if __name__ == "__main__":
     #setup_models()
     #setup_pest()
     #spike_test()
-    start_slaves()
+    #start_slaves()
     #run_pestpp_opt()
     #jco_invest()
     #run_risk_sweep()
-    #plot_loading()
+    plot_loading()
     #plot_risk_sweep()
     #run_risk_sweep_obgnme()
     #run_risk_sweep()
