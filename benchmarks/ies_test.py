@@ -1043,6 +1043,29 @@ def tenpar_weights_test():
     assert df_meas.loc[0,"mean"] == df_meas1.loc[0,"mean"]
 
 
+def tenpar_tight_tol_test():
+    model_d = "ies_10par_xsec"
+    test_d = os.path.join(model_d, "test_tighttol")
+    template_d = os.path.join(model_d, "template")
+    pst = pyemu.Pst(os.path.join(template_d,"pest.pst"))
+    
+    if os.path.exists(test_d):
+        shutil.rmtree(test_d)
+    shutil.copytree(template_d,test_d)
+
+    
+    pst.control_data.noptmax = 3
+    #pst.pestpp_options["ies_weights_ensemble"] = "weights.csv"
+    pst.pestpp_options = {}
+    pst.pestpp_options["ies_num_reals"] = 10
+    pst.pestpp_options["ies_lambda_mults"] = 0.00000001
+    pst.pestpp_options["lambda_scale_fac"] = 10.0
+    pst.pestpp_options["ies_initial_lambda"] = 0.000001
+    pst.pestpp_options["ies_accept_phi_fac"] = 1.0
+
+    pst.write(os.path.join(test_d,"pest.pst"))
+    pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
+    
 
 def tenpar_weight_pareto_test():
 
@@ -1186,8 +1209,8 @@ if __name__ == "__main__":
     #test_freyberg_full_cov_reorder()
     #test_freyberg_full_cov_reorder_run()
     #test_freyberg_full_cov()
-    
-    test_synth()
+    tenpar_tight_tol_test()
+    #test_synth()
     #test_10par_xsec()
     #test_freyberg()
     #test_chenoliver()

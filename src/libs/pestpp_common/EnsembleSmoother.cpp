@@ -2056,21 +2056,25 @@ bool IterEnsembleSmoother::should_terminate()
 	bool phiredstp_sat = false, nphinored_sat = false, consec_sat = false;
 	double phi, ratio;
 	int count = 0;
+	int nphired = 0;
 	//best_mean_phis = vector<double>{ 1.0,0.8,0.81,0.755,1.1,0.75,0.75,1.2 };
 
 	
 
 	/*if ((!consec_sat )&& (best_mean_phis.size() == 0))
 		return false;*/
-	vector<double>::iterator idx = min_element(best_mean_phis.begin(), best_mean_phis.end());
-	int nphired = (best_mean_phis.end() - idx) - 1;
-	best_phi_yet = best_mean_phis[idx - best_mean_phis.begin()];// *pest_scenario.get_pestpp_options().get_ies_accept_phi_fac();
 	message(0, "phi-based termination criteria check");
 	message(1, "phiredstp: ", phiredstp);
 	message(1, "nphistp: ", nphistp);
 	message(1, "nphinored (also used for consecutive bad lamdba cycles): ", nphinored);
-	message(1, "best mean phi sequence: ", best_mean_phis);
-	message(1, "best phi yet: ", best_phi_yet);
+	if (best_mean_phis.size() > 0)
+	{
+		vector<double>::iterator idx = min_element(best_mean_phis.begin(), best_mean_phis.end());
+		nphired = (best_mean_phis.end() - idx) - 1;
+		best_phi_yet = best_mean_phis[idx - best_mean_phis.begin()];// *pest_scenario.get_pestpp_options().get_ies_accept_phi_fac();
+		message(1, "best mean phi sequence: ", best_mean_phis);
+		message(1, "best phi yet: ", best_phi_yet);
+	}
 	message(1, "number of consecutive bad lambda testing cycles: ", consec_bad_lambda_cycles);
 	if (consec_bad_lambda_cycles >= nphinored)
 	{
