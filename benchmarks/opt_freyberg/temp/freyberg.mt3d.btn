@@ -3,7 +3,7 @@
  MODFLOWSTYLEARRAYS
          1        40        20         1         1         1
 D   M   KG  
-T F T T T 
+T F T F T 
  1
       2001         1          (20E15.6)        -1 #delr
       2002         1          (40E15.6)        -1 #delc

@@ -35,7 +35,7 @@ def setup_models(m=None):
     mt = flopy.mt3d.Mt3dms("freyberg.mt3d",model_ws=m.model_ws,modflowmodel=m,exe_name=mt_exe,external_path='.')
     flopy.mt3d.Mt3dBtn(mt,MFStyleArr=True,prsity=0.01,sconc=0.0,icbund=m.bas6.ibound.array,perlen=3650)
     flopy.mt3d.Mt3dGcg(mt,mxiter=100)#,cclose=1.0e-7)
-    flopy.mt3d.Mt3dRct(mt,isothm=0,ireact=1,igetsc=0,rc1=0.001)
+    #flopy.mt3d.Mt3dRct(mt,isothm=0,ireact=1,igetsc=0,rc1=0.001)
     flopy.mt3d.Mt3dAdv(mt,mixelm=-1)
 
     ib = m.bas6.ibound[0].array
@@ -244,7 +244,7 @@ def write_ssm_tpl():
     df.index = df.parnme
     df.loc[:,"pargp"] = "kg"
     df.loc[:,"parval1"] = parval1
-    df.loc[:,"parubnd"] = 10.0
+    df.loc[:,"parubnd"] = 100.0
     #df.loc[:,"parubnd"] = df.parval1 * 10000000.0
     df.loc[:,"partrans"] = "none"
     #df.loc[:,'parlbnd'] = df.parval1 * 0.9
@@ -271,7 +271,7 @@ def start_slaves():
 def run_pestpp_opt():
     pst_file = os.path.join(new_model_ws, "freyberg.pst")
     pst = pyemu.Pst(pst_file)
-    pst.control_data.noptmax = 1
+    pst.control_data.noptmax = 2
     pst.write(pst_file)
     pyemu.helpers.start_slaves(new_model_ws,"pestpp-opt","freyberg.pst",num_slaves=15,master_dir="master_opt",
                                slave_root='.',port=4005)
@@ -545,7 +545,7 @@ def plot_risk_sweep():
     ax.legend()
     plt.savefig("risk_sweep.pdf")
 
-def plot_loading(parfile=None):
+def plot_loading():
     pst = pyemu.Pst(os.path.join("template","freyberg.pst"))
     m = flopy.modflow.Modflow.load("freyberg.truth.nam",model_ws="template",load_only=[],check=False)
     print(pst.nnz_obs_names)
@@ -561,37 +561,45 @@ def plot_loading(parfile=None):
     #print(seg_j)
     seg_j = 16
     seg_x,seg_y = m.sr.xcentergrid[seg_i,seg_j],m.sr.ycentergrid[seg_i,seg_j]
-    if parfile is not None:
-        df = pyemu.pst_utils.read_parfile(parfile)
-    else:
-        df = pyemu.pst_utils.read_parfile(os.path.join("master_opt","freyberg.{0}.par".format(pst.control_data.noptmax)))
+    dfs = [] 
+    mx,mn = -1.0e+10,1.0e+10
+    for i in range(pst.control_data.noptmax):
+        par_file = os.path.join("master_opt","freyberg.{0}.par".format(i+1))
+        if not os.path.exists(par_file):
+            break
+        df = pyemu.pst_utils.read_parfile(par_file)
 
-    df = df.loc[df.parnme.apply(lambda x: x.startswith("k_")),:]
-    #print(df)
-    df.loc[:,"i"] = df.parnme.apply(lambda x: int(x.split('_')[1]))
-    df.loc[:,"j"] = df.parnme.apply(lambda x: int(x.split('_')[2]))
-    arr = np.zeros((40,20)) - 1
-    arr[df.i,df.j] = df.parval1
-    arr = np.ma.masked_where(arr<0,arr)
-    ax = plt.subplot(111)
+        df = df.loc[df.parnme.apply(lambda x: x.startswith("k_")),:]
+        #print(df)
+        df.loc[:,"i"] = df.parnme.apply(lambda x: int(x.split('_')[1]))
+        df.loc[:,"j"] = df.parnme.apply(lambda x: int(x.split('_')[2]))
+        df.loc[df.parval1<0,"parval1"] = 0.0
+        mx = max(mx,df.parval1.max())
+        mn = min(mn,df.parval1.min())
+        dfs.append(df)
+    for df in dfs:
+        arr = np.zeros((40,20)) - 1
+        arr[df.i,df.j] = df.parval1
+        arr = np.ma.masked_where(arr<0,arr)
+        ax = plt.subplot(111)
 
-    cb = ax.imshow(arr,extent=m.sr.get_extent())
-    c = plt.colorbar(cb)
-    c.set_label("N loading")
-    ax.scatter(nz_obs.x,nz_obs.y,marker='x',color='r')
-    ax.scatter([seg_x],[seg_y],marker='^',color='r')
-    plt.show()
+        cb = ax.imshow(arr,extent=m.sr.get_extent(),vmin=mn,vmax=mx)
+        c = plt.colorbar(cb)
+        c.set_label("N loading")
+        ax.scatter(nz_obs.x,nz_obs.y,marker='x',color='r')
+        ax.scatter([seg_x],[seg_y],marker='^',color='r')
+        plt.show()
 
 
 
 if __name__ == "__main__":
     #write_ssm_tpl()
     #run_test()
-    #setup_models()
-    #setup_pest()
+    setup_models()
+    setup_pest()
     #spike_test()
     #start_slaves()
-    #run_pestpp_opt()
+    run_pestpp_opt()
     #jco_invest()
     #run_risk_sweep()
     plot_loading()

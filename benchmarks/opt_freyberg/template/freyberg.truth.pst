@@ -13,10 +13,10 @@ pcf
   10000000    1.000000E-06
 1
 * parameter groups
-grhk0                   relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
 grrech0                 relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
-grprst0                 relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
 grrc110                 relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
+grhk0                   relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
+grprst0                 relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
 hcond1                  relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
 cn                      relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller
 * parameter data
@@ -2846,29 +2846,29 @@ rech0038016            log                    factor                1.0000000000
 rech1_cn               log                    factor                1.0000000000E+00      9.0000000000E-01      1.1000000000E+00       cn                    1.0000000000E+00      0.0000000000E+00      1
 * observation groups
 flx_constan          
-flx_in-out           
-flx_percent          
-flx_recharg          
-flx_storage          
-flx_stream_          
-flx_total            
-flx_wells            
-hds                  
-vol_constan          
-vol_in-out           
-vol_percent          
-vol_recharg          
-vol_storage          
-vol_stream_          
 vol_total            
+vol_in-out           
+flx_total            
+vol_percent          
+vol_storage          
+vol_constan          
 vol_wells            
+hds                  
+flx_storage          
+flx_wells            
+flx_recharg          
+flx_percent          
+vol_stream_          
+flx_in-out           
+vol_recharg          
+flx_stream_          
 * observation data
 flx_constan_19791230  -8.6005180000E+02     1.0000000000E+00       flx_constan          
 flx_in-out_19791230   -2.9966000000E+00     1.0000000000E+00       flx_in-out           
 flx_percent_19791230  -5.0000000000E-02     1.0000000000E+00       flx_percent          
 flx_recharg_19791230  6.0048000000E+03      1.0000000000E+00       flx_recharg          
 flx_storage_19791230  0.0000000000E+00      1.0000000000E+00       flx_storage          
-flx_stream__19791230  -3.2426250000E+03     1.0000000000E+00       flx_stream_          
+flx_stream__19791230  -3.2426240000E+03     1.0000000000E+00       flx_stream_          
 flx_total_19791230    -2.9965820000E+00     1.0000000000E+00       flx_total            
 flx_wells_19791230    -1.9051200000E+03     1.0000000000E+00       flx_wells            
 hds_00_000_000_000    3.0512041092E+01      1.0000000000E+00       hds                  
@@ -3366,7 +3366,7 @@ hds_00_027_005_000    2.6209877014E+01      1.0000000000E+00       hds
 hds_00_027_006_000    2.5824285507E+01      1.0000000000E+00       hds                  
 hds_00_027_007_000    2.5238304138E+01      1.0000000000E+00       hds                  
 hds_00_027_008_000    2.4579788208E+01      1.0000000000E+00       hds                  
-hds_00_027_009_000    2.3913843155E+01      1.0000000000E+00       hds                  
+hds_00_027_009_000    2.3913841248E+01      1.0000000000E+00       hds                  
 hds_00_027_010_000    2.3020765305E+01      1.0000000000E+00       hds                  
 hds_00_027_011_000    2.2184965134E+01      1.0000000000E+00       hds                  
 hds_00_027_012_000    2.1474790573E+01      1.0000000000E+00       hds                  
@@ -3577,24 +3577,24 @@ hds_00_039_012_000    1.2500000000E+01      1.0000000000E+00       hds
 hds_00_039_013_000    1.2000000000E+01      1.0000000000E+00       hds                  
 hds_00_039_014_000    1.1399999619E+01      1.0000000000E+00       hds                  
 vol_constan_19791230  -3.1391890000E+06     1.0000000000E+00       vol_constan          
-vol_in-out_19791230   -1.0938000000E+04     1.0000000000E+00       vol_in-out           
+vol_in-out_19791230   -1.0936000000E+04     1.0000000000E+00       vol_in-out           
 vol_percent_19791230  -5.0000000000E-02     1.0000000000E+00       vol_percent          
 vol_recharg_19791230  2.1917520000E+07      1.0000000000E+00       vol_recharg          
 vol_storage_19791230  0.0000000000E+00      1.0000000000E+00       vol_storage          
 vol_stream__19791230  -1.1835579000E+07     1.0000000000E+00       vol_stream_          
-vol_total_19791230    -1.0938000000E+04     1.0000000000E+00       vol_total            
+vol_total_19791230    -1.0936000000E+04     1.0000000000E+00       vol_total            
 vol_wells_19791230    -6.9536880000E+06     1.0000000000E+00       vol_wells
 * model command line
 python forward_run.py
 * model input/output
-hk0.dat_gr.tpl arr_mlt\hk0.dat_gr
-rech0.dat_gr.tpl arr_mlt\rech0.dat_gr
-prst0.dat_gr.tpl arr_mlt\prst0.dat_gr
-rc110.dat_gr.tpl arr_mlt\rc110.dat_gr
-hk1.dat_cn.tpl arr_mlt\hk1.dat_cn
-rech1.dat_cn.tpl arr_mlt\rech1.dat_cn
-prst1.dat_cn.tpl arr_mlt\prst1.dat_cn
-rc111.dat_cn.tpl arr_mlt\rc111.dat_cn
+hk0.dat_gr.tpl arr_mlt/hk0.dat_gr
+rech0.dat_gr.tpl arr_mlt/rech0.dat_gr
+prst0.dat_gr.tpl arr_mlt/prst0.dat_gr
+rc110.dat_gr.tpl arr_mlt/rc110.dat_gr
+hk1.dat_cn.tpl arr_mlt/hk1.dat_cn
+rech1.dat_cn.tpl arr_mlt/rech1.dat_cn
+prst1.dat_cn.tpl arr_mlt/prst1.dat_cn
+rc111.dat_cn.tpl arr_mlt/rc111.dat_cn
 sfr_seg_pars.dat.tpl sfr_seg_pars.dat
 flux.dat.ins flux.dat
 freyberg.hds.dat.ins freyberg.hds.dat
