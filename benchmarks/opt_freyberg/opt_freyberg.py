@@ -15,6 +15,8 @@ new_model_ws = "template"
 
 derinc = 1.0
 
+phi_factor = 365. * 40.
+
 
 def setup_models(m=None):
     org_model_ws = os.path.join("..","..","..","gw1876","models","Freyberg","Freyberg_Truth")
@@ -35,7 +37,7 @@ def setup_models(m=None):
     mt = flopy.mt3d.Mt3dms("freyberg.mt3d",model_ws=m.model_ws,modflowmodel=m,exe_name=mt_exe,external_path='.')
     flopy.mt3d.Mt3dBtn(mt,MFStyleArr=True,prsity=0.01,sconc=0.0,icbund=m.bas6.ibound.array,perlen=3650)
     flopy.mt3d.Mt3dGcg(mt,mxiter=100)#,cclose=1.0e-7)
-    #flopy.mt3d.Mt3dRct(mt,isothm=0,ireact=1,igetsc=0,rc1=0.001)
+    flopy.mt3d.Mt3dRct(mt,isothm=0,ireact=1,igetsc=0,rc1=0.001)
     flopy.mt3d.Mt3dAdv(mt,mixelm=-1)
 
     ib = m.bas6.ibound[0].array
@@ -130,6 +132,7 @@ def setup_pest():
     os.chdir("..")
 
     ph.write_forward_run()
+    ph.pst.pestpp_options["parcov"] = "freyberg.truth.pst.prior.cov"
     ph.pst.control_data.noptmax = 0
     ph.pst.rectify_pgroups()
 
@@ -254,6 +257,28 @@ def write_ssm_tpl():
 
     return df
 
+def plot_risk_sweep_pargp():
+    r_d = "results_pargp1"
+    files = os.listdir(r_d)
+    fig = plt.figure(figsize=(6,6))
+    ax = plt.subplot(111)
+    colors=['g','m','c','b','r','y',"maroon","indigo","brown",'darkred',"olivedrab","coral"]
+    for i,f in enumerate(files):
+        if "base" in f:
+            c = 'k'
+            lw = 3
+            ls = '--'
+        else:
+            c = colors[i]
+            lw = 1.0
+            ls = '-'
+        df = pd.read_csv(os.path.join(r_d,f),index_col=0)
+        df.loc[df.infeas==True,"phi"] = np.NaN
+        ax.plot(df.risk,df.phi.values,color=c,lw=lw,ls=ls,alpha=0.5,label=f.split('.')[0])
+    ax.legend()
+    plt.show()
+
+
 
 def run_jco():
     pst = pyemu.Pst(os.path.join(new_model_ws,"freyberg.pst"))
@@ -271,9 +296,9 @@ def start_slaves():
 def run_pestpp_opt():
     pst_file = os.path.join(new_model_ws, "freyberg.pst")
     pst = pyemu.Pst(pst_file)
-    pst.control_data.noptmax = 3
+    pst.control_data.noptmax = 1
     pst.write(pst_file)
-    pyemu.helpers.start_slaves(new_model_ws,"pestpp-opt","freyberg.pst",num_slaves=15,master_dir="master_opt",
+    pyemu.helpers.start_slaves(new_model_ws,"pestpp-opt","freyberg.pst",num_slaves=15,master_dir="master",
                                slave_root='.',port=4005)
 
 def spike_test():
@@ -324,27 +349,29 @@ def spike_test():
 
 
 def jco_invest():
-    pst_file = os.path.join("master_opt","freyberg.pst")
+    pst_file = os.path.join("_restart_files","restart.pst")
     pst = pyemu.Pst(pst_file)
     par = pst.parameter_data
     fosm_pars = par.loc[par.pargp!="kg","parnme"]
-    jco = pyemu.Jco.from_binary(pst_file.replace(".pst",".1.jcb")).to_dataframe()
+    jco = pyemu.Jco.from_binary(pst_file.replace(".pst",".jcb")).to_dataframe()
+    rc_pars = par.loc[par.pargp.apply(lambda x: "rc1" in x),"parnme"]
+    print(rc_pars)
+    print(jco.loc[:,rc_pars])
     #print(jco.columns)
     #jco = jco.loc[:,jco.columns.map(lambda x: "kg" in x)]
     #fosm_jco = jco.loc[:,fosm_pars]
     #print(fosm_jco.loc[pst.nnz_obs_names,:])
-    for oname in pst.nnz_obs_names:
-
-        print(oname,"\n",jco.loc[oname,:])
-
 
 def prep_for_risk_sweep():
     d = "test"
+    if os.path.exists(d):
+        shutil.rmtree(d)
+    shutil.copytree(new_model_ws,d)
     pst_file = os.path.join(new_model_ws, "freyberg.pst")
     pst = pyemu.Pst(pst_file)
     pst.control_data.noptmax = -1
-    pst.write(os.path.join(d,"restart.pst"))
-    pyemu.helpers.start_slaves(new_model_ws,"pestpp","freyberg.pst",num_slaves=25,master_dir=d,
+    pst.write(os.path.join(new_model_ws,"restart.pst"))
+    pyemu.helpers.start_slaves(new_model_ws,"pestpp","restart.pst",num_slaves=25,master_dir=d,
                                slave_root='.',port=4005)
     r_d = "_restart_files"
     if os.path.exists(r_d):
@@ -356,7 +383,7 @@ def prep_for_risk_sweep():
 
 def run_risk_sweep():
 
-    results_d = "results_test"
+    results_d = "sweep_results"
     if os.path.exists(results_d):
         shutil.rmtree(results_d)
     os.mkdir(results_d)
@@ -371,13 +398,6 @@ def run_risk_sweep():
     pst.pestpp_options["base_jacobian"] = "restart.jcb"
     pst.pestpp_options["hotstart_resfile"] = "restart.rei"
     pst.pestpp_options["opt_skip_final"] = "true"
-
-    # for inc,nme in zip([sw_conc_inc,wel_mass_inc,chd_mass_inc],
-    #                    [sw_conc_const,wel_mass_const,chd_mass_const]):
-    #     pst.observation_data.loc[nme,"obsval"] *= inc
-
-    obs = pst.observation_data
-    obs.loc[sw_conc_const,"obsval"] *= sw_conc_inc
 
     pst.control_data.noptmax = 1
     risks = np.arange(0.01, 1.0, 0.01)
@@ -396,87 +416,73 @@ def run_risk_sweep():
         infeas.append(inf)
 
     df = pd.DataFrame({"risk": risks, "phi": phis, "infeas": infeas})
+    df.loc[:,"phi"] *= phi_factor
     df.to_csv(os.path.join(results_d, "base.csv"))
     df.loc[df.infeas,"phi"] = np.NaN
     ax = plt.subplot(111)
     ax.plot(df.risk,df.phi)
     ax.set_xlabel("risk")
-    ax.set_ylabel("$\phi$")
+    ax.set_ylabel("$\phi (\\$) $")
     ax.grid()
     plt.savefig("risk.pdf")
 
-def run_risk_sweep_pargp():
-    sw_conc_inc = 1.1
-    wel_mass_inc = 1.1
-    chd_mass_inc = 1.1
-    results_d = "results_test"
-    restart_d = "test"
-    if os.path.exists(restart_d):
-        shutil.rmtree(restart_d)
-    shutil.copytree(new_model_ws, restart_d)
-    for f in os.listdir("_restart_files"):
-        shutil.copy2(os.path.join("_restart_files",f),os.path.join(restart_d,f))
 
-    pst = pyemu.Pst(os.path.join(new_model_ws,"freyberg.pst"))
+def run_risk_sweep_pargp():
+
+    results_d = "results_pargp1"
+    if os.path.exists(results_d):
+        shutil.rmtree(results_d)
+    os.mkdir(results_d)
+    
+    pst = pyemu.Pst(os.path.join(new_model_ws, "freyberg.pst"))
     pst.pestpp_options["base_jacobian"] = "restart.jcb"
     pst.pestpp_options["hotstart_resfile"] = "restart.rei"
     pst.pestpp_options["opt_skip_final"] = "true"
-
+    par = pst.parameter_data
+    cn_pars = par.loc[par.pargp=="cn","parnme"]
+    par.loc[cn_pars,"pargp"] = cn_pars.apply(lambda x:x.split('_')[0]+"_mean")
+    par_base = pst.parameter_data.copy()
     pst.control_data.noptmax = 1
-    risks = np.arange(0.01,1.0,0.01)
-
-    if os.path.exists("results"):
-        shutil.rmtree("results")
-    os.mkdir("results")
-
-    phis, infeas = [], []
-    for risk in risks:
-        pst.pestpp_options["opt_risk"] = risk
-        pst.write(os.path.join(restart_d, "freyberg.pst"))
-        pyemu.helpers.run("pestpp-opt freyberg.pst", cwd=restart_d)
-        inf, phi = scrape_recfile(os.path.join(restart_d, "freyberg.rec"))
-        phis.append(phi)
-        infeas.append(inf)
-
-    df = pd.DataFrame({"risk": risks, "phi": phis, "infeas": infeas})
-    df.to_csv(os.path.join("results", "base.csv"))
-
-    jco = pyemu.Jco.from_binary(os.path.join(restart_d,"restart.jcb"))
-    for pargp in pst.par_groups:
-        if pargp == "kg":
-            continue
-        pst = pyemu.Pst(os.path.join(new_model_ws, "freyberg.pst"))
-        pst.pestpp_options["base_jacobian"] = "restart_pargp.jcb"
-        pst.pestpp_options["hotstart_resfile"] = "restart.rei"
-        pst.pestpp_options["opt_skip_final"] = "true"
-        pst.control_data.noptmax = 1
-        par = pst.parameter_data
-        par.loc[par.pargp==pargp,"partrans"] = "fixed"
-        jco_pargp = jco.get(col_names=pst.adj_par_names)
-        jco_pargp.to_binary(os.path.join(restart_d,"restart_pargp.jcb"))
-
-        phis,infeas = [],[]
+    risks = np.arange(0.1, 1.1, 0.1)
+    
+    def run(name, pst):
+        d = "test"
+        if os.path.exists(d):
+            shutil.rmtree(d)
+        shutil.copytree(new_model_ws, d)
+        for f in os.listdir("_restart_files"):
+            shutil.copy2(os.path.join("_restart_files", f), os.path.join(d, f))
+        phis, infeas = [], []
         for risk in risks:
             pst.pestpp_options["opt_risk"] = risk
-            pst.write(os.path.join(restart_d,"freyberg.pst"))
-            pyemu.helpers.run("pestpp-opt freyberg.pst",cwd=restart_d)
-            inf,phi = scrape_recfile(os.path.join(restart_d,"freyberg.rec"))
+            pst.write(os.path.join(d, "freyberg.pst"))
+            pyemu.helpers.run("pestpp-opt freyberg.pst", cwd=d)
+            inf, phi = scrape_recfile(os.path.join(d, "freyberg.rec"))
             phis.append(phi)
             infeas.append(inf)
 
+        df = pd.DataFrame({"risk": risks, "phi": phis, "infeas": infeas})
+        df.to_csv(os.path.join(results_d, "{0}.csv".format(name)))
+
+    run("base",pst)
+
+    # for pargp in pst.par_groups:
+    #     if pargp == "kg":
+    #         continue
+    #     par = par_base.copy()
+    #     par.loc[par.pargp==pargp,"partrans"] = "fixed"
+    #     pst.parameter_data = par
+    #     run(pargp,pst)
+    for prefix in ["hk","rc","rech","prst"]:
+        par = par_base.copy()
+        par.loc[par.pargp.apply(lambda x:prefix in x),"partrans"] = "fixed"
+
+        pst.parameter_data = par
+        #print(pst.parameter_data.loc[pst.parameter_data.partrans == "fixed", :])
+        run(prefix,pst)
 
 
-        df = pd.DataFrame({"risk":risks,"phi":phis,"infeas":infeas})
-        df.to_csv(os.path.join("results","{0}.csv".format(pargp)))
-        #break
 
-    # df.loc[df.infeas,"phi"] = np.NaN
-    # ax = plt.subplot(111)
-    # ax.plot(df.risk,df.phi)
-    # ax.set_xlabel("risk")
-    # ax.set_ylabel("$\phi$")
-    # ax.grid()
-    # plt.savefig("risk.pdf")
 
 def run_risk_sweep_obgnme():
     restart_d = "test"
@@ -575,7 +581,7 @@ def plot_loading():
     dfs = [] 
     mx,mn = -1.0e+10,1.0e+10
     for i in range(pst.control_data.noptmax):
-        par_file = os.path.join("master_opt","freyberg.{0}.par".format(i+1))
+        par_file = os.path.join("master","freyberg.{0}.par".format(i+1))
         if not os.path.exists(par_file):
             break
         df = pyemu.pst_utils.read_parfile(par_file)
@@ -606,15 +612,18 @@ def plot_loading():
 if __name__ == "__main__":
     #write_ssm_tpl()
     #run_test()
-    #setup_models()
-    #setup_pest()
+    setup_models()
+    setup_pest()
     #spike_test()
     #start_slaves()
+    run_pestpp_opt()
+    
     prep_for_risk_sweep()
-    #run_pestpp_opt()
     #jco_invest()
-    run_risk_sweep()
-    plot_loading()
+    #run_risk_sweep()
+    run_risk_sweep_pargp()
+    plot_risk_sweep_pargp()
+    #plot_loading()
     #plot_risk_sweep()
     #run_risk_sweep_obgnme()
     #run_risk_sweep()

@@ -1,4 +1,4 @@
- MODEL OUTPUTS AT END OF OPTIMISATION ITERATION NO. 0:-
+ MODEL OUTPUTS AT END OF OPTIMISATION ITERATION NO. -1:-
 
 
  Name                 Group        Measured             Modelled             Residual             Weight              

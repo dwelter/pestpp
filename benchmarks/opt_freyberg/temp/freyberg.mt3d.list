@@ -10,6 +10,9 @@
  OPENING freyberg.mt3d.gcg
  FILE TYPE:GCG   UNIT  35
 
+ OPENING freyberg.mt3d.rct
+ FILE TYPE:RCT   UNIT  36
+
  OPENING freyberg.mt3d.adv
  FILE TYPE:ADV   UNIT  32
 
@@ -40,8 +43,14 @@
  OPENING .\sconc1_layer_1.ref
  FILE TYPE:DATA   UNIT2007
 
- OPENING .\crch10.ref
+ OPENING .\rc11_layer_1.ref
+ FILE TYPE:DATA   UNIT2008
+
+ OPENING .\rc21_layer_1.ref
  FILE TYPE:DATA   UNIT2009
+
+ OPENING .\crch10.ref
+ FILE TYPE:DATA   UNIT2011
 
  OPENING freyberg.mt3d
  FILE TYPE:DATA   UNIT1001
@@ -67,6 +76,7 @@
  OPTIONAL PACKAGES INCLUDED IN CURRENT SIMULATION:
   o ADV   ON UNIT 32
   o SSM   ON UNIT 34
+  o RCT   ON UNIT 36
   o GCG   ON UNIT 35
   o SFT   ON UNIT 19
 
@@ -164,6 +174,30 @@
   o RECHARGE [RCH]
  MAXIMUM NUMBER OF POINT SINKS/SOURCES =     816
 
+ RCT1 -- CHEMICAL REACTION PACKAGE, VERSION 1, MAY 2016, INPUT READ FROM UNIT 36
+ NO SORPTION [OR DUAL-DOMAIN MODEL] IS SIMULATED
+ FIRST-ORDER IRREVERSIBLE REACTION [RADIOACTIVE DECAY OR BIODEGRADATION] IS SIMULATED
+ REACTION COEFFICIENTS ASSIGNED CELL-BY-CELL
+ INITIAL SORBED/IMMOBILE PHASE CONCENTRATION ASSIGNED BY DEFAULT
+
+
+ SORPTION AND 1ST/0TH ORDER REACTION PARAMETERS
+ ----------------------------------------------
+
+
+
+
+           SOLUTE RXN RATE: COMP 01 FOR LAYER   1
+ READING ON UNIT 2008 WITH FORMAT:           (20E15.6) 
+
+
+
+           SORBED RXN RATE: COMP 01 FOR LAYER   1
+ READING ON UNIT 2009 WITH FORMAT:           (20E15.6) 
+
+ MAXIMUM STEPSIZE WHICH MEETS STABILITY CRITERION OF THE REACTION TERM
+ = 1000.0     AT K=   1, I=   1, J=   1
+
  GCG1 -- GENERALIZED CONJUGATE GRADIENT SOLVER PACKAGE, VERSION 1, OCTOBER 2010 INPUT READ FROM UNIT 35
  MAXIMUM OF  100 OUTER ITERATIONS
         AND   50 INNER ITERATIONS ALLOWED FOR CLOSURE
@@ -244,7 +278,7 @@
 
 
            RECH. CONC. COMP.  01   
- READING ON UNIT 2009 WITH FORMAT:           (20E15.6) 
+ READING ON UNIT 2011 WITH FORMAT:           (20E15.6) 
 
        NO    LAYER   ROW   COLUMN   CONCENTRATION       TYPE            COMPONENT
        1       1       1       1       1.000000         MASS LOADING        1
@@ -1278,7 +1312,7 @@
   MAXIMUM CONCENTRATION CHANGES FOR EACH ITERATION:
   MAX. CHANGE LAYER,ROW,COL MAX. CHANGE LAYER,ROW,COL MAX. CHANGE LAYER,ROW,COL MAX. CHANGE LAYER,ROW,COL MAX. CHANGE LAYER,ROW,COL
  ------------------------------------------------------------------------------------------------------------------------------------
-   0.1772     (  1,  9, 16)   0.000     (  1,  1,  1)  0.1892E-02 (  1,  9, 16)   0.000     (  1,  1,  1)   0.000     (  1,  1,  1)
+   0.1566     (  1,  9, 16)   0.000     (  1,  1,  1)  0.1650E-02 (  1,  9, 16)   0.000     (  1,  1,  1)   0.000     (  1,  1,  1)
 
 
                      STREAM MASS BUDGETS AT END OF TRANSPORT STEP  136, TIME STEP    1, STRESS PERIOD    1 FOR COMPONENT   1
@@ -1286,24 +1320,24 @@
 
                                          CUMULATIVE MASS [M]                                     MASS FOR THIS TIME STEP [M]
                                          -------------------                                    --------------
-                      STREAM DEPLETION =  0.1928493                          STREAM DEPLETION =  0.1838650    
+                      STREAM DEPLETION =   1.446662                          STREAM DEPLETION =  0.2443236E-01
                       INFLOW TO STREAM =   0.000000                          INFLOW TO STREAM =   0.000000    
-                          GW TO STREAM =   931222.5                              GW TO STREAM =   2049.384    
+                          GW TO STREAM =   504525.5                              GW TO STREAM =   917.0619    
                          PRECIPITATION =   0.000000                             PRECIPITATION =   0.000000    
                                 RUNOFF =   0.000000                                    RUNOFF =   0.000000    
                 CONSTANT CONCENTRATION =   0.000000                    CONSTANT CONCENTRATION =   0.000000    
                                          -------------------                                    --------------
-                              TOTAL IN =   931222.7                                  TOTAL IN =   2049.568    
+                              TOTAL IN =   504526.9                                  TOTAL IN =   917.0863    
 
-                   STREAM ACCUMULATION =   447.8941                       STREAM ACCUMULATION =  0.1119863E-01
-                        STREAM OUTFLOW =   884056.5                            STREAM OUTFLOW =   1945.030    
-                          STREAM TO GW =   46718.26                              STREAM TO GW =   104.5264    
+                   STREAM ACCUMULATION =   198.5325                       STREAM ACCUMULATION =  0.4854043E-01
+                        STREAM OUTFLOW =   479844.3                            STREAM OUTFLOW =   872.2393    
+                          STREAM TO GW =   24484.09                              STREAM TO GW =   44.79844    
                 CONSTANT CONCENTRATION =   0.000000                    CONSTANT CONCENTRATION =   0.000000    
                                          -------------------                                    --------------
-                             TOTAL OUT =   931222.6                                 TOTAL OUT =   2049.567    
+                             TOTAL OUT =   504526.9                                 TOTAL OUT =   917.0863    
 
-                        NET (IN - OUT) =  0.6250000E-01                        NET (IN - OUT) =  0.2441406E-03
-                 DISCREPANCY (PERCENT) =  0.6711607E-05                 DISCREPANCY (PERCENT) =  0.1191181E-04
+                        NET (IN - OUT) =   0.000000                            NET (IN - OUT) =   0.000000    
+                 DISCREPANCY (PERCENT) =   0.000000                     DISCREPANCY (PERCENT) =   0.000000    
                                               FLOW ERR (QIN-QOUT-DV) =  0.3906250E-02 [L3/T]
 
 
@@ -1325,18 +1359,19 @@
                                                              IN                           OUT
                                                       ----------------             ----------------
                                CONSTANT CONCENTRATION:    0.000000                    0.000000    
-                                        CONSTANT HEAD:    0.000000                   -280270.3    
-                                                WELLS:    0.000000                   -519151.2    
+                                        CONSTANT HEAD:    0.000000                   -162772.7    
+                                                WELLS:    0.000000                   -276263.5    
                                              RECHARGE:    0.000000                    0.000000    
                                          MASS LOADING:    2573265.                    0.000000    
-                                               STREAM:    46718.26                   -931222.5    
+                                               STREAM:    24484.09                   -504525.5    
+                               1ST/0TH ORDER REACTION:    0.000000                   -1249747.    
                                MASS STOR (FLOW MODEL):    0.000000                    0.000000    
-                                MASS STORAGE (SOLUTE):    12.60420                   -889335.1    
+                                MASS STORAGE (SOLUTE):    17.60776                   -404440.1    
                             ---------------------------------------------------------------------------
-                                              [TOTAL]:    2619996.     KG            -2619979.     KG  
+                                              [TOTAL]:    2597767.     KG            -2597749.     KG  
 
-                                                          NET (IN - OUT):    17.00000    
-                                                   DISCREPANCY (PERCENT):   0.6488581E-03
+                                                          NET (IN - OUT):    17.75000    
+                                                   DISCREPANCY (PERCENT):   0.6832815E-03
   ----- 
  | M T |
  | 3 D | END OF MODEL OUTPUT
