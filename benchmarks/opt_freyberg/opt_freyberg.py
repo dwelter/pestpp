@@ -271,7 +271,7 @@ def start_slaves():
 def run_pestpp_opt():
     pst_file = os.path.join(new_model_ws, "freyberg.pst")
     pst = pyemu.Pst(pst_file)
-    pst.control_data.noptmax = 2
+    pst.control_data.noptmax = 3
     pst.write(pst_file)
     pyemu.helpers.start_slaves(new_model_ws,"pestpp-opt","freyberg.pst",num_slaves=15,master_dir="master_opt",
                                slave_root='.',port=4005)
@@ -337,13 +337,24 @@ def jco_invest():
 
         print(oname,"\n",jco.loc[oname,:])
 
+
+def prep_for_risk_sweep():
+    d = "test"
+    pst_file = os.path.join(new_model_ws, "freyberg.pst")
+    pst = pyemu.Pst(pst_file)
+    pst.control_data.noptmax = -1
+    pst.write(os.path.join(d,"restart.pst"))
+    pyemu.helpers.start_slaves(new_model_ws,"pestpp","freyberg.pst",num_slaves=25,master_dir=d,
+                               slave_root='.',port=4005)
+    r_d = "_restart_files"
+    if os.path.exists(r_d):
+        shutil.rmtree(r_d)
+    os.mkdir(r_d)
+    files = ["restart.rei","restart.jcb"]
+    for f in files:
+        shutil.copy2(os.path.join(d,f),os.path.join(r_d,f))
+
 def run_risk_sweep():
-    sw_conc_inc = 1.5
-    wel_mass_inc = 1.5
-    chd_mass_inc = 1.5
-    sw_conc_const = "sfrc20_1_03650.00"
-    wel_mass_const = "gw_we1c_003650.0"
-    chd_mass_const = "gw_cohe1c_003650.0"
 
     results_d = "results_test"
     if os.path.exists(results_d):
@@ -595,13 +606,14 @@ def plot_loading():
 if __name__ == "__main__":
     #write_ssm_tpl()
     #run_test()
-    setup_models()
-    setup_pest()
+    #setup_models()
+    #setup_pest()
     #spike_test()
     #start_slaves()
-    run_pestpp_opt()
+    prep_for_risk_sweep()
+    #run_pestpp_opt()
     #jco_invest()
-    #run_risk_sweep()
+    run_risk_sweep()
     plot_loading()
     #plot_risk_sweep()
     #run_risk_sweep_obgnme()

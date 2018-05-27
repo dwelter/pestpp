@@ -889,18 +889,19 @@ def test_kirishima():
     print("loading pst")
     pst = pyemu.Pst(os.path.join(template_d, "pest.pst"))
     pst.pestpp_options = {}
-    pst.pestpp_options["ies_num_reals"] = 300
-    pst.pestpp_options["ies_use_approx"] = "true"
-    pst.pestpp_options["ies_use_prior_scaling"] = "true"
-    pst.pestpp_options["ies_subset_size"] = 10
-    pst.pestpp_options["ies_lambda_mults"] = [0.1,1.0,10.0]
-    pst.pestpp_options["ies_initial_lambda"] = 1000.0
-    pst.pestpp_options["ies_bad_phi"] = 80000.0
+    #pst.pestpp_options["ies_num_reals"] = 300
+    #pst.pestpp_options["ies_use_approx"] = "true"
+    #pst.pestpp_options["ies_use_prior_scaling"] = "true"
+    #pst.pestpp_options["ies_subset_size"] = 10
+    #pst.pestpp_options["ies_lambda_mults"] = [0.1,1.0,10.0]
+
+    #pst.pestpp_options["ies_initial_lambda"] = 1000.0
+    #pst.pestpp_options["ies_bad_phi"] = 80000.0
     pst.control_data.noptmax = 10
     print("writing pst")
     pst.write(os.path.join(template_d, "pest.pst"))
     print("starting slaves")
-    pyemu.helpers.start_slaves(template_d, exe_path, "pest.pst", num_slaves=10, master_dir=test_d,
+    pyemu.helpers.start_slaves(template_d, exe_path, "pest.pst", num_slaves=15, master_dir=test_d,
                                slave_root=model_d)
 
 def test_freyberg_ineq():
@@ -1209,7 +1210,7 @@ if __name__ == "__main__":
     #test_freyberg_full_cov_reorder()
     #test_freyberg_full_cov_reorder_run()
     #test_freyberg_full_cov()
-    tenpar_tight_tol_test()
+    #tenpar_tight_tol_test()
     #test_synth()
     #test_10par_xsec()
     #test_freyberg()
@@ -1223,7 +1224,7 @@ if __name__ == "__main__":
     #compare_suite("ies_10par_xsec")
     #compare_suite("ies_freyberg")
     
-    #test_kirishima()
+    test_kirishima()
 
     #tenpar_fixed_test()
 

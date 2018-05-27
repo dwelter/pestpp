@@ -5,7 +5,7 @@ import pandas as pd
 import flopy
 import pyemu
 
-nlay, nrow, ncol = 15, 400, 400
+nlay, nrow, ncol = 20, 500, 500
 num_reals = 30
 
 # nlay, nrow, ncol = 116, 78, 59
