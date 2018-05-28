@@ -2,6 +2,7 @@ import os
 import shutil
 import numpy as np
 import pandas as pd
+import matplotlib.ticker as ticker
 import matplotlib.pyplot as plt
 import flopy
 import pyemu
@@ -274,9 +275,16 @@ def plot_risk_sweep_pargp():
             ls = '-'
         df = pd.read_csv(os.path.join(r_d,f),index_col=0)
         df.loc[df.infeas==True,"phi"] = np.NaN
+        df.loc[:,"phi"] *= phi_factor
         ax.plot(df.risk,df.phi.values,color=c,lw=lw,ls=ls,alpha=0.5,label=f.split('.')[0])
     ax.legend()
+    ax.grid()
+    ax.set_ylabel("$\\phi (\\$)$")
+    ax.set_xlabel("risk")
+    ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%1.1e'))
+    plt.savefig("risk_pargp.pdf")
     plt.show()
+
 
 
 
@@ -612,16 +620,16 @@ def plot_loading():
 if __name__ == "__main__":
     #write_ssm_tpl()
     #run_test()
-    setup_models()
-    setup_pest()
+    #setup_models()
+    #setup_pest()
     #spike_test()
     #start_slaves()
-    run_pestpp_opt()
+    #run_pestpp_opt()
     
-    prep_for_risk_sweep()
+    #prep_for_risk_sweep()
     #jco_invest()
     #run_risk_sweep()
-    run_risk_sweep_pargp()
+    #run_risk_sweep_pargp()
     plot_risk_sweep_pargp()
     #plot_loading()
     #plot_risk_sweep()

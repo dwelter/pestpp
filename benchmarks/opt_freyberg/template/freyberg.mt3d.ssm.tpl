@@ -2,7 +2,7 @@ ptf ~
  t f t f f f f f f f f f f f f f
        816
          1
-      2009         1          (20e15.6)        -1 #crch11
+      2011         1          (20e15.6)        -1 #crch11
        705         0 # stress period 1
          1         1         1 ~k_00_00~        15
          1         1         2 ~k_00_01~        15
