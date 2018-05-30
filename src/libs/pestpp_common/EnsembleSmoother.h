@@ -141,7 +141,8 @@ private:
 	Eigen::MatrixXd Am;
 	Eigen::DiagonalMatrix<double,Eigen::Dynamic> obscov_inv_sqrt, parcov_inv_sqrt;
 
-	bool solve();
+	bool solve_old();
+	bool solve_new();
 	void adjust_pareto_weight(string &obsgroup, double wfac);
 
 	ParameterEnsemble calc_upgrade(vector<string> &obs_names, vector<string> &par_names,double lamb, int num_reals);

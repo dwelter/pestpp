@@ -1160,12 +1160,22 @@ void ParameterEnsemble::from_eigen_mat(Eigen::MatrixXd mat, const vector<string>
 {
 	//create a par ensemble from components
 	vector<string> missing;
+	/*
 	vector<string>::const_iterator start = _var_names.begin();
-	vector<string>::const_iterator end = _var_names.end();
+	vector<string>::const_iterator end = _var_names.end();*/
 
-	for (auto &name : pest_scenario_ptr->get_ctl_ordered_par_names())
+	vector<string> vnames = pest_scenario_ptr->get_ctl_ordered_par_names();
+	set<string> vset(vnames.begin(), vnames.end());
+	set<string>::iterator end = vset.end();
+
+	/*for (auto &name : pest_scenario_ptr->get_ctl_ordered_par_names())
 		if (find(start, end, name) == end)
+			missing.push_back(name);*/
+	for (auto &name : _var_names)
+	{
+		if (vset.find(name) == end)
 			missing.push_back(name);
+	}
 	if (missing.size() > 0)
 		throw_ensemble_error("ParameterEnsemble.from_eigen_mat() the following par names not found: ", missing);
 	Ensemble::from_eigen_mat(mat, _real_names, _var_names);
