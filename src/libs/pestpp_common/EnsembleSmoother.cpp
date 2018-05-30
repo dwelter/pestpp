@@ -2110,6 +2110,258 @@ bool IterEnsembleSmoother::should_terminate()
 	return false;
 }
 
+ParameterEnsemble IterEnsembleSmoother::calc_upgrade(vector<string> &obs_names, vector<string> &par_names,double cur_lam, int num_reals)
+{
+	stringstream ss;
+	double scale = (1.0 / (sqrt(double(oe.shape().first - 1))));
+
+	performance_log->log_event("calculate residual matrix");
+	//oe_base var_names should be ordered by act_obs_names, so only reorder real_names
+	//oe should only include active realizations, so only reorder var_names
+	message(1, "calculating residual matrix");
+	Eigen::MatrixXd scaled_residual = obscov_inv_sqrt * ph.get_obs_resid(oe).transpose();
+	if (verbose_level > 1)
+	{
+		cout << "scaled_residual: " << scaled_residual.rows() << ',' << scaled_residual.cols() << endl;
+		if (verbose_level > 2)
+		{
+			save_mat("scaled_residual.dat", scaled_residual);
+			Eigen::MatrixXd residual = ph.get_obs_resid(oe).transpose();
+			save_mat("residual.dat", residual);
+		}
+	}
+
+	performance_log->log_event("calculate scaled obs diff");
+	message(1, "calculating obs diff matrix");
+	Eigen::MatrixXd diff = oe.get_eigen_mean_diff(vector<string>(), act_obs_names).transpose();
+	Eigen::MatrixXd obs_diff = scale * (obscov_inv_sqrt * diff);
+	if (verbose_level > 1)
+	{
+		cout << "obs_diff: " << obs_diff.rows() << ',' << obs_diff.cols() << endl;
+		if (verbose_level > 2)
+			save_mat("obs_diff.dat", obs_diff);
+	}
+
+	performance_log->log_event("calculate scaled par diff");
+	message(1, "calculating par diff matrix");
+	pe.transform_ip(ParameterEnsemble::transStatus::NUM);
+	diff = pe.get_eigen_mean_diff(vector<string>(), act_par_names).transpose();
+	Eigen::MatrixXd par_diff;
+	if (pest_scenario.get_pestpp_options().get_ies_use_prior_scaling())
+	{
+		cout << "...applying prior par cov scaling to par diff matrix" << endl;
+		par_diff = scale * parcov_inv_sqrt * diff;
+	}
+	else
+		par_diff = scale * diff;
+
+	if (verbose_level > 1)
+	{
+		cout << "par_diff:" << par_diff.rows() << ',' << par_diff.cols() << endl;
+		if (verbose_level > 2)
+		{
+			save_mat("scaled_par_diff.dat", par_diff);
+			save_mat("par_diff.dat", diff);
+		}
+	}
+	performance_log->log_event("SVD of obs diff");
+	message(1, "calculating SVD of obs diff matrix");
+	Eigen::MatrixXd ivec, upgrade_1, s, V, Ut;
+
+	
+	SVD_REDSVD rsvd;
+	rsvd.set_performance_log(performance_log);
+	rsvd.solve_ip(obs_diff, s, Ut, V, pest_scenario.get_svd_info().eigthresh, pest_scenario.get_svd_info().maxsing);
+
+	//SVD_EIGEN esvd;
+	//esvd.set_performance_log(performance_log);
+	//esvd.solve_ip(obs_diff, s, Ut, V, pest_scenario.get_svd_info().eigthresh, pest_scenario.get_svd_info().maxsing);
+
+	Ut.transposeInPlace();
+	obs_diff.resize(0, 0);
+
+	Eigen::MatrixXd s2 = s.cwiseProduct(s);
+	if (verbose_level > 1)
+	{
+		cout << "s2: " << s2.rows() << ',' << s2.cols() << endl;
+		cout << "Ut: " << Ut.rows() << ',' << Ut.cols() << endl;
+		cout << "V:" << V.rows() << ',' << V.cols() << endl;
+		if (verbose_level > 2)
+		{
+			save_mat("ut.dat", Ut);
+			save_mat("s2.dat", s2);
+		}
+	}
+
+	vector<ParameterEnsemble> pe_lams;
+	vector<double> lam_vals, scale_vals;
+	
+	ss.str("");
+	ss << "starting calcs for lambda" << cur_lam;
+	message(0, "starting lambda calcs for lambda", cur_lam);
+
+	performance_log->log_event(ss.str());
+	performance_log->log_event("form scaled identity matrix");
+	message(1, "calculating scaled identity matrix");
+	ivec = ((Eigen::VectorXd::Ones(s2.size()) * (cur_lam + 1.0)) + s2).asDiagonal().inverse();
+	if (verbose_level > 1)
+	{
+		cout << "ivec:" << ivec.rows() << ',' << ivec.cols() << endl;
+		if (verbose_level > 2)
+			save_mat("ivec.dat", ivec);
+	}
+
+
+	message(1, "forming X1");
+	Eigen::MatrixXd X1 = Ut * scaled_residual;
+	if (verbose_level > 1)
+	{
+		cout << "X1: " << X1.rows() << ',' << X1.cols() << endl;
+		if (verbose_level > 2)
+			save_mat("X1.dat", X1);
+	}
+	//scaled_residual.resize(0, 0);
+	//Ut.resize(0, 0);
+
+	message(1, "forming X2");
+	Eigen::MatrixXd X2 = ivec * X1;
+	if (verbose_level > 1)
+	{
+		cout << "X2: " << X2.rows() << ',' << X2.cols() << endl;
+		if (verbose_level > 2)
+			save_mat("X2.dat", X2);
+	}
+	X1.resize(0, 0);
+
+	message(1, "forming X3");
+	Eigen::MatrixXd X3 = V * s.asDiagonal() * X2;
+	if (verbose_level > 1)
+	{
+		cout << "X3: " << X3.rows() << ',' << X3.cols() << endl;
+		if (verbose_level > 2)
+			save_mat("X3.dat", X3);
+	}
+	X2.resize(0, 0);
+
+	message(1, "forming upgrade_1");
+	if (pest_scenario.get_pestpp_options().get_ies_use_prior_scaling())
+	{
+		upgrade_1 = -1.0 * parcov_inv_sqrt * par_diff * X3;
+	}
+	else
+	{
+		upgrade_1 = -1.0 * par_diff * X3;
+	}
+	upgrade_1.transposeInPlace();
+	if (verbose_level > 1)
+	{
+		cout << "upgrade_1:" << upgrade_1.rows() << ',' << upgrade_1.cols() << endl;
+		if (verbose_level > 2)
+			save_mat("upgrade_1.dat", upgrade_1);
+	}
+	X3.resize(0, 0);
+
+	/*ParameterEnsemble pe_lam = pe;
+	pe_lam.set_eigen(*pe_lam.get_eigen_ptr() + upgrade_1);
+	upgrade_1.resize(0, 0);*/
+
+	Eigen::MatrixXd upgrade_2;
+	if ((!pest_scenario.get_pestpp_options().get_ies_use_approx()) && (iter > 1))
+	{
+		performance_log->log_event("calculating parameter correction (full solution)");
+		message(1, "calculating parameter correction (full solution, MAP)");
+		performance_log->log_event("forming scaled par resid");
+		Eigen::MatrixXd scaled_par_resid;
+		if (pest_scenario.get_pestpp_options().get_ies_use_prior_scaling())
+		{
+			scaled_par_resid = parcov_inv_sqrt * ph.get_par_resid(pe).transpose();
+		}
+		else
+		{
+			scaled_par_resid = ph.get_par_resid(pe).transpose();
+		}
+
+		//scaled_par_resid.transposeInPlace();
+
+		performance_log->log_event("forming x4");
+		message(1, "forming X4");
+		if (verbose_level > 1)
+		{
+			cout << "scaled_par_resid: " << scaled_par_resid.rows() << ',' << scaled_par_resid.cols() << endl;
+			if (verbose_level > 2)
+				save_mat("scaled_par_resid.dat", scaled_par_resid);
+		}
+		Eigen::MatrixXd x4 = Am.transpose() * scaled_par_resid;
+		if (verbose_level > 1)
+		{
+			cout << "x4: " << x4.rows() << ',' << x4.cols() << endl;
+			if (verbose_level > 2)
+				save_mat("x4.dat", x4);
+		}
+
+		performance_log->log_event("forming x5");
+		message(1, "forming X5");
+		Eigen::MatrixXd x5 = Am * x4;
+		if (verbose_level > 1)
+		{
+			cout << "x5: " << x5.rows() << ',' << x5.cols() << endl;
+			if (verbose_level > 2)
+				save_mat("x5.dat", x5);
+		}
+
+		message(1, "forming X6");
+		performance_log->log_event("forming x6");
+		Eigen::MatrixXd x6 = par_diff.transpose() * x5;
+		if (verbose_level > 1)
+		{
+			cout << "x6: " << x6.rows() << ',' << x6.cols() << endl;
+			if (verbose_level > 2)
+				save_mat("x6.dat", x6);
+		}
+
+		message(1, "forming X7");
+		performance_log->log_event("forming x7");
+		if (verbose_level > 1)
+		{
+			cout << "V: " << V.rows() << ',' << V.cols() << endl;
+			if (verbose_level > 2)
+				save_mat("V.dat", V);
+		}
+		Eigen::MatrixXd x7 = V * ivec *V.transpose() * x6;
+		if (verbose_level > 1)
+		{
+			cout << "x7: " << x7.rows() << ',' << x7.cols() << endl;
+			if (verbose_level > 2)
+				save_mat("x7.dat", x7);
+		}
+
+		performance_log->log_event("forming upgrade_2");
+		message(1, "forming upgrade_2");
+
+		if (pest_scenario.get_pestpp_options().get_ies_use_prior_scaling())
+		{
+			upgrade_2 = -1.0 * parcov_inv_sqrt * par_diff * x7;
+		}
+		else
+		{
+			upgrade_2 = -1.0 * (par_diff * x7);
+		}
+
+		if (verbose_level > 1)
+		{
+			cout << "upgrade_2: " << upgrade_2.rows() << ',' << upgrade_2.cols() << endl;
+			if (verbose_level > 2)
+				save_mat("upgrade_2", upgrade_2);
+		}
+		upgrade_1 = upgrade_1 + upgrade_2.transpose();
+		//pe_lam.set_eigen(*pe_lam.get_eigen_ptr() + upgrade_2.transpose());
+
+	}
+	ParameterEnsemble upgrade_pe(&pest_scenario);
+	upgrade_pe.from_eigen_mat(upgrade_1,pe.get_real_names(), par_names);
+	return upgrade_pe;
+}
+
 bool IterEnsembleSmoother::solve()
 {
 	stringstream ss;
