@@ -108,10 +108,10 @@ Model interface files:-
 Parameter group information
 NAME            INCREMENT TYPE     DERIVATIVE INCREMENT    INCREMENT LOWER BOUND  FORCE CENTRAL     INCREMENT MULTIPLIER
 kg                    ABSOLUTE                        1                        0         SWITCH                        2
-grrc110               RELATIVE                     0.01                        0         SWITCH                        2
 grhk0                 RELATIVE                     0.01                        0         SWITCH                        2
-grprst0               RELATIVE                     0.01                        0         SWITCH                        2
 grrech0               RELATIVE                     0.01                        0         SWITCH                        2
+grprst0               RELATIVE                     0.01                        0         SWITCH                        2
+grrc110               RELATIVE                     0.01                        0         SWITCH                        2
 hcond1                RELATIVE                     0.01                        0         SWITCH                        2
 cn                    RELATIVE                     0.01                        0         SWITCH                        2
 

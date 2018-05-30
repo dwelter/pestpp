@@ -144,6 +144,9 @@ private:
 	bool solve();
 	void adjust_pareto_weight(string &obsgroup, double wfac);
 
+	ParameterEnsemble calc_upgrade(vector<string> &obs_names, vector<string> &par_names, Eigen::MatrixXd &full_obs_diff,
+		Eigen::MatrixXd &full_par_diff, double lamb, int num_reals);
+
 	//EnsemblePair run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe);
 	vector<int> run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe, const vector<int> &real_idxs=vector<int>());
 	vector<ObservationEnsemble> run_lambda_ensembles(vector<ParameterEnsemble> &pe_lams, vector<double> &lam_vals, vector<double> &scale_vals);
