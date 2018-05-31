@@ -166,7 +166,19 @@ bool Localizer::initialize(PerformanceLog *performance_log)
 	}
 
 	//populate the localizer map
-
+	vector<string> vobs, vpar;
+	
+	for (auto &idx : idx_map)
+	{
+		vobs = obs_map[idx.first];
+		vpar.clear();
+		for (auto &i : idx.second)
+		{
+			vpar.insert(vpar.end(), par_map[i].begin(), par_map[i].end());
+		}
+		pair<vector<string>, vector<string>> p(vobs,vpar);
+		localizer_map.push_back(p);
+	}
 
 	cout << "done" << endl;
 }
