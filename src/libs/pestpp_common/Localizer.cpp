@@ -39,8 +39,8 @@ bool Localizer::initialize(PerformanceLog *performance_log)
 	}
 
 
-	//error checking...
-	vector<string> names = pest_scenario_ptr->get_ctl_ordered_par_names();
+	//error checking and building up container of names
+	vector<string> names = pest_scenario_ptr->get_ctl_ordered_adj_par_names();
 	set<string> par_names(names.begin(), names.end());
 	names = pest_scenario_ptr->get_ctl_ordered_obs_names();
 	set<string> obs_names(names.begin(), names.end());
@@ -132,7 +132,7 @@ bool Localizer::initialize(PerformanceLog *performance_log)
 	}
 	if (missing.size() > 0)
 	{
-		ss << " the following cols in " << filename << " were not found in the parameter names or parameter group names: ";
+		ss << " the following cols in " << filename << " were not found in the active parameter names or parameter group names: ";
 		for (auto &m : missing)
 			ss << m << ',';
 		performance_log->log_event("error:" + ss.str());

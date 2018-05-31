@@ -2409,9 +2409,16 @@ bool IterEnsembleSmoother::solve_new()
 		double cur_lam = last_best_lam * lam_mult;
 		ss << "starting calcs for lambda" << cur_lam;
 		message(0, "starting lambda calcs for lambda", cur_lam);
-
-		
-		ParameterEnsemble pe_upgrade = calc_upgrade(act_obs_names, act_par_names, cur_lam, pe.shape().first);
+		ParameterEnsemble pe_upgrade = pe.zeros_like();
+		if (use_localizer)
+		{
+			for (auto local_pair : localizer.get_localizer_map())
+			{
+				pe_upgrade.add_2_cols_ip(calc_upgrade(local_pair.first, local_pair.second, cur_lam, pe.shape().first));
+			}
+		}
+		else
+			ParameterEnsemble pe_upgrade = calc_upgrade(act_obs_names, act_par_names, cur_lam, pe.shape().first);
 
 		for (auto sf : pest_scenario.get_pestpp_options().get_lambda_scale_vec())
 		{

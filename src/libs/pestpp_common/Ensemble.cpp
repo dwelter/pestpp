@@ -63,40 +63,40 @@ Ensemble Ensemble::zero_like()
 
 void Ensemble::add_2_cols_ip(Ensemble &other)
 {
-//add values to (a subset of the) columns of reals
-if (shape().first != other.shape().first)
-throw_ensemble_error("Ensemble::add_2_cols_ip(): first dimensions don't match");
-vector<string> other_real_names = other.get_real_names();
-vector<string> mismatch;
-for (int i = 0; i < shape().first; i++)
-{
-	if (other_real_names[i] != real_names[i])
-		mismatch.push_back(real_names[i]);
+	//add values to (a subset of the) columns of reals
+	if (shape().first != other.shape().first)
+	throw_ensemble_error("Ensemble::add_2_cols_ip(): first dimensions don't match");
+	vector<string> other_real_names = other.get_real_names();
+	vector<string> mismatch;
+	for (int i = 0; i < shape().first; i++)
+	{
+		if (other_real_names[i] != real_names[i])
+			mismatch.push_back(real_names[i]);
 
-}
-if (mismatch.size() > 0)
-throw_ensemble_error("the following real_names don't match other", mismatch);
+	}
+	if (mismatch.size() > 0)
+	throw_ensemble_error("the following real_names don't match other", mismatch);
 
-map<string, int> this_varmap, other_varmap;
-for (int i = 0; i < var_names.size(); i++)
-	this_varmap[var_names[i]] = i;
-vector<string> other_var_names = other.get_var_names();
+	map<string, int> this_varmap, other_varmap;
+	for (int i = 0; i < var_names.size(); i++)
+		this_varmap[var_names[i]] = i;
+	vector<string> other_var_names = other.get_var_names();
 
-vector<string> missing;
-set<string> svnames(var_names.begin(), var_names.end());
-set<string>::iterator end = svnames.end();
-for (int i = 0; i < other_var_names.size(); i++)
-{
-	if (svnames.find(other_var_names[i]) == end)
-		missing.push_back(other_var_names[i]);
-	other_varmap[other_var_names[i]] = i;
-}
-if (missing.size() > 0)
-throw_ensemble_error("Ensemble::add_2_cols_ip(): the following var names in other were not found", missing);
-for (auto &ovm : other_varmap)
-{
-	reals.col(this_varmap[ovm.first]) += other.get_eigen_ptr()->col(ovm.second);
-}
+	vector<string> missing;
+	set<string> svnames(var_names.begin(), var_names.end());
+	set<string>::iterator end = svnames.end();
+	for (int i = 0; i < other_var_names.size(); i++)
+	{
+		if (svnames.find(other_var_names[i]) == end)
+			missing.push_back(other_var_names[i]);
+		other_varmap[other_var_names[i]] = i;
+	}
+	if (missing.size() > 0)
+	throw_ensemble_error("Ensemble::add_2_cols_ip(): the following var names in other were not found", missing);
+	for (auto &ovm : other_varmap)
+	{
+		reals.col(this_varmap[ovm.first]) += other.get_eigen_ptr()->col(ovm.second);
+	}
 }
 
 void Ensemble::draw(int num_reals, Covariance cov, Transformable &tran, const vector<string> &draw_names,
@@ -1124,6 +1124,17 @@ void ParameterEnsemble::set_pest_scenario(Pest *_pest_scenario)
 	par_transform = pest_scenario_ptr->get_base_par_tran_seq();
 }
 
+
+ParameterEnsemble ParameterEnsemble::zeros_like()
+{
+	
+	Eigen::MatrixXd new_reals = Eigen::MatrixXd::Zero(real_names.size(), var_names.size());
+	ParameterEnsemble new_en(pest_scenario_ptr);
+	new_en.from_eigen_mat(new_reals, real_names, var_names);
+	return new_en;
+	
+
+}
 
 map<int,int> ParameterEnsemble::add_runs(RunManagerAbstract *run_mgr_ptr,const vector<int> &real_idxs)
 {
