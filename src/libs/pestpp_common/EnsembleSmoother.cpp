@@ -2029,7 +2029,7 @@ void IterEnsembleSmoother::iterate_2_solution()
 			message(0, "starting solve for iteration:", iter);
 			ss << "starting solve for iteration: " << iter;
 			performance_log->log_event(ss.str());
-			accept = solve_old();
+			accept = solve_new();
 			report_and_save();
 			ph.update(oe,pe);
 			last_best_mean = ph.get_mean(PhiHandler::phiType::COMPOSITE);
