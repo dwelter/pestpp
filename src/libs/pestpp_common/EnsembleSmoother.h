@@ -13,7 +13,9 @@
 #include "covariance.h"
 #include "RunManagerAbstract.h"
 #include "ObjectiveFunc.h"
- 
+#include "Localizer.h" 
+
+
 class PhiHandler
 {
 public:
@@ -113,6 +115,8 @@ private:
 	Covariance parcov, obscov;
 	double reg_factor;
 	
+	bool use_localizer;
+	Localizer localizer;
 
 	set<string> pp_args;
 

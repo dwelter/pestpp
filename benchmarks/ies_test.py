@@ -1190,7 +1190,35 @@ def setup_rosenbrock():
 
 
 
+def tenpar_localizer_test():
+    model_d = "ies_10par_xsec"
+    test_d = os.path.join(model_d, "master_localizer_test")
+    template_d = os.path.join(model_d, "test_template")
+    if not os.path.exists(template_d):
+        raise Exception("template_d {0} not found".format(template_d))
+    if os.path.exists(test_d):
+        shutil.rmtree(test_d)
+    shutil.copytree(template_d, test_d)
+    pst_name = os.path.join(test_d, "pest.pst")
+    pst = pyemu.Pst(pst_name)
+    
+    mat = pyemu.Matrix.from_names(pst.nnz_obs_names,pst.adj_par_names).to_dataframe()
+    mat.loc[:,:] = 0.0
+    mat.iloc[0,:] = 1
+    mat = pyemu.Matrix.from_dataframe(mat)
+    mat.to_ascii(os.path.join(test_d,"localizer.mat"))
 
+    
+    pst.pestpp_options = {}
+    pst.pestpp_options["ies_num_reals"] = 5
+    pst.pestpp_options["ies_localizer"] = "localizer.mat"
+    
+    
+    pst.pestpp_options["ies_verbose_level"] = 3
+    pst.write(pst_name)
+    #pyemu.helpers.run(exe_path + " pest.pst", cwd=test_d)
+
+    
 
 
 
@@ -1219,12 +1247,12 @@ if __name__ == "__main__":
     #compare_pyemu()
     # tenpar_narrow_range_test()
     #test_freyberg_ineq()
-    
+    tenpar_localizer_test()
     # # invest()
     #compare_suite("ies_10par_xsec")
     #compare_suite("ies_freyberg")
     
-    test_kirishima()
+    #test_kirishima()
 
     #tenpar_fixed_test()
 

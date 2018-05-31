@@ -637,6 +637,7 @@ IterEnsembleSmoother::IterEnsembleSmoother(Pest &_pest_scenario, FileManager &_f
 	pe.set_pest_scenario(&pest_scenario);
 	oe.set_pest_scenario(&pest_scenario);
 	weights.set_pest_scenario(&pest_scenario);
+	localizer.set_pest_scenario(&pest_scenario);
 }
 
 void IterEnsembleSmoother::throw_ies_error(string message)
@@ -1412,8 +1413,9 @@ void IterEnsembleSmoother::initialize()
 	verbose_level = pest_scenario.get_pestpp_options_ptr()->get_ies_verbose_level();
 	if (pest_scenario.get_n_adj_par() >= 1e6)
 	{
-		message(0, "welcome to the 1M par club, great choice!");
+		message(0, "You are a god among mere mortals!");
 	}
+	use_localizer = localizer.initialize(performance_log);
 	iter = 0;
 	//ofstream &frec = file_manager.rec_ofstream();
 	last_best_mean = 1.0E+30;
