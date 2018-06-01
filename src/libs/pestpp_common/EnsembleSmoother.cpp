@@ -2052,7 +2052,7 @@ void IterEnsembleSmoother::iterate_2_solution()
 			message(0, "starting solve for iteration:", iter);
 			ss << "starting solve for iteration: " << iter;
 			performance_log->log_event(ss.str());
-			accept = solve_old();
+			accept = solve_new();
 			report_and_save();
 			ph.update(oe,pe);
 			last_best_mean = ph.get_mean(PhiHandler::phiType::COMPOSITE);
@@ -2454,7 +2454,7 @@ bool IterEnsembleSmoother::solve_new()
 			}
 		}
 		else
-			ParameterEnsemble pe_upgrade = calc_upgrade(act_obs_names, act_par_names, cur_lam, pe.shape().first);
+			pe_upgrade = calc_upgrade(act_obs_names, act_par_names, cur_lam, pe.shape().first);
 
 		for (auto sf : pest_scenario.get_pestpp_options().get_lambda_scale_vec())
 		{
