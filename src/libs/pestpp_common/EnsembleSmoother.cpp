@@ -1875,10 +1875,16 @@ void IterEnsembleSmoother::save_mat(string prefix, Eigen::MatrixXd &mat)
 {
 	stringstream ss;
 	ss << iter << '.' << prefix;
-	ofstream &f = file_manager.open_ofile_ext(ss.str());
-	f << mat << endl;
-	f.close();
-
+	try
+	{	
+		ofstream &f = file_manager.open_ofile_ext(ss.str());
+		f << mat << endl;
+		f.close();
+	}
+	catch (...)
+	{
+		message(1, "error savin matrix", ss.str());
+	}
 }
 
 void IterEnsembleSmoother::adjust_pareto_weight(string &obsgroup, double wfac)
