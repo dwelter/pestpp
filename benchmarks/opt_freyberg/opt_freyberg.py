@@ -379,7 +379,7 @@ def prep_for_risk_sweep():
     pst = pyemu.Pst(pst_file)
     pst.control_data.noptmax = -1
     pst.write(os.path.join(new_model_ws,"restart.pst"))
-    pyemu.helpers.start_slaves(new_model_ws,"pestpp","restart.pst",num_slaves=25,master_dir=d,
+    pyemu.helpers.start_slaves(new_model_ws,"pestpp","restart.pst",num_slaves=15,master_dir=d,
                                slave_root='.',port=4005)
     r_d = "_restart_files"
     if os.path.exists(r_d):
@@ -493,60 +493,61 @@ def run_risk_sweep_pargp():
 
 
 def run_risk_sweep_obgnme():
-    restart_d = "test"
-    if os.path.exists(restart_d):
-        shutil.rmtree(restart_d)
-    shutil.copytree(new_model_ws, restart_d)
-    for f in os.listdir("_restart_files"):
-        shutil.copy2(os.path.join("_restart_files", f), os.path.join(restart_d, f))
 
+    results_d = "results_obgnme"
+    if os.path.exists(results_d):
+        shutil.rmtree(results_d)
+    os.mkdir(results_d)
+    
     pst = pyemu.Pst(os.path.join(new_model_ws, "freyberg.pst"))
     pst.pestpp_options["base_jacobian"] = "restart.jcb"
     pst.pestpp_options["hotstart_resfile"] = "restart.rei"
     pst.pestpp_options["opt_skip_final"] = "true"
-
     pst.control_data.noptmax = 1
-    risks = np.arange(0.01, 1.0, 0.01)
-
-    if os.path.exists("results_obs"):
-        shutil.rmtree("results_obs")
-    os.mkdir("results_obs")
-
-    phis, infeas = [], []
-    for risk in risks:
-        pst.pestpp_options["opt_risk"] = risk
-        pst.write(os.path.join(restart_d, "freyberg.pst"))
-        pyemu.helpers.run("pestpp-opt freyberg.pst", cwd=restart_d)
-        inf, phi = scrape_recfile(os.path.join(restart_d, "freyberg.rec"))
-        phis.append(phi)
-        infeas.append(inf)
-
-    df = pd.DataFrame({"risk": risks, "phi": phis, "infeas": infeas})
-    df.to_csv(os.path.join("results_obs", "base.csv"))
-
-    jco = pyemu.Jco.from_binary(os.path.join(restart_d, "restart.jcb"))
-    for gp in pst.obs_groups:
-        if gp.startswith("less") or gp.startswith("great"):
-            continue
-        pst = pyemu.Pst(os.path.join(new_model_ws, "freyberg.pst"))
-        pst.pestpp_options["base_jacobian"] = "restart.jcb"
-        pst.pestpp_options["hotstart_resfile"] = "restart.rei"
-        pst.pestpp_options["opt_skip_final"] = "true"
-        pst.control_data.noptmax = 1
-        obs = pst.observation_data
-        obs.loc[obs.obgnme==gp,"weight"] = 1.0
-
+    risks = np.arange(0.1, 1.1, 0.1)
+    
+    def run(name, pst):
+        d = "test"
+        if os.path.exists(d):
+            shutil.rmtree(d)
+        shutil.copytree(new_model_ws, d)
+        for f in os.listdir("_restart_files"):
+            shutil.copy2(os.path.join("_restart_files", f), os.path.join(d, f))
         phis, infeas = [], []
         for risk in risks:
             pst.pestpp_options["opt_risk"] = risk
-            pst.write(os.path.join(restart_d, "freyberg.pst"))
-            pyemu.helpers.run("pestpp-opt freyberg.pst", cwd=restart_d)
-            inf, phi = scrape_recfile(os.path.join(restart_d, "freyberg.rec"))
+            pst.write(os.path.join(d, "freyberg.pst"))
+            pyemu.helpers.run("pestpp-opt freyberg.pst", cwd=d)
+            inf, phi = scrape_recfile(os.path.join(d, "freyberg.rec"))
             phis.append(phi)
             infeas.append(inf)
 
         df = pd.DataFrame({"risk": risks, "phi": phis, "infeas": infeas})
-        df.to_csv(os.path.join("results_obs", "{0}.csv".format(pargp)))
+        df.to_csv(os.path.join(results_d, "{0}.csv".format(name)))
+
+    run("base",pst)
+
+    # for pargp in pst.par_groups:
+    #     if pargp == "kg":
+    #         continue
+    #     par = par_base.copy()
+    #     par.loc[par.pargp==pargp,"partrans"] = "fixed"
+    #     pst.parameter_data = par
+    #     run(pargp,pst)
+
+    for obgnme in pst.obs_groups:
+        if "less_" in obgnme:
+            continue
+        print()
+        continue
+        obs = obs_base.copy()
+        obs.loc[obs.obgnme==obgnme,"weight"] = 1.0
+
+        pst.observation_data = obs
+        #print(pst.parameter_data.loc[pst.parameter_data.partrans == "fixed", :])
+        run(prefix,pst)
+
+
 
 def scrape_recfile(recfile):
     infeas = False
@@ -620,19 +621,19 @@ def plot_loading():
 if __name__ == "__main__":
     #write_ssm_tpl()
     #run_test()
-    #setup_models()
-    #setup_pest()
+    setup_models()
+    setup_pest()
     #spike_test()
     #start_slaves()
     #run_pestpp_opt()
     
-    #prep_for_risk_sweep()
+    prep_for_risk_sweep()
     #jco_invest()
     #run_risk_sweep()
     #run_risk_sweep_pargp()
-    plot_risk_sweep_pargp()
+    #plot_risk_sweep_pargp()
     #plot_loading()
     #plot_risk_sweep()
-    #run_risk_sweep_obgnme()
+    run_risk_sweep_obgnme()
     #run_risk_sweep()
 

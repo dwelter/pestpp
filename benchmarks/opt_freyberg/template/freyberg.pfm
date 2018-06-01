@@ -1,9 +1,9 @@
-PEST++ performance logger started at:  11:39:52
-        ( time = 11:39:52,  elapsed time = 1ms )
+PEST++ performance logger started at:  2018-05-30 16:05:50
+        ( time = 2018-05-30 16:05:50,  elapsed time = 2ms )
   starting to process control file
-          ( time = 11:39:52,  elapsed time = 78ms )
+          ( time = 2018-05-30 16:05:50,  elapsed time = 67ms )
   finished processing control file
-          ( time = 11:39:52,  elapsed time = 64ms )
+          ( time = 2018-05-30 16:05:50,  elapsed time = 32ms )
     starting basic model IO error checking
-            ( time = 11:39:52,  elapsed time = 21ms )
+            ( time = 2018-05-30 16:05:50,  elapsed time = 506us )
     finished basic model IO error checking

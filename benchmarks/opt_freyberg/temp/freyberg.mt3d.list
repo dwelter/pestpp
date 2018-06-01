@@ -22,34 +22,34 @@
  OPENING freyberg.mt3d.sft
  FILE TYPE:SFT   UNIT  19
 
- OPENING .\delr.ref
+ OPENING ./delr.ref
  FILE TYPE:DATA   UNIT2001
 
- OPENING .\delc.ref
+ OPENING ./delc.ref
  FILE TYPE:DATA   UNIT2002
 
- OPENING .\htop.ref
+ OPENING ./htop.ref
  FILE TYPE:DATA   UNIT2003
 
- OPENING .\dz_layer_1.ref
+ OPENING ./dz_layer_1.ref
  FILE TYPE:DATA   UNIT2004
 
- OPENING .\prsity_layer_1.ref
+ OPENING ./prsity_layer_1.ref
  FILE TYPE:DATA   UNIT2005
 
- OPENING .\icbund_layer_1.ref
+ OPENING ./icbund_layer_1.ref
  FILE TYPE:DATA   UNIT2006
 
- OPENING .\sconc1_layer_1.ref
+ OPENING ./sconc1_layer_1.ref
  FILE TYPE:DATA   UNIT2007
 
- OPENING .\rc11_layer_1.ref
+ OPENING ./rc11_layer_1.ref
  FILE TYPE:DATA   UNIT2008
 
- OPENING .\rc21_layer_1.ref
+ OPENING ./rc21_layer_1.ref
  FILE TYPE:DATA   UNIT2009
 
- OPENING .\crch10.ref
+ OPENING ./crch10.ref
  FILE TYPE:DATA   UNIT2011
 
  OPENING freyberg.mt3d
@@ -241,7 +241,7 @@
  PRINT OPTION FOR xMD SOLVER =            0
 
  OPENING FILE ON UNIT   99:
- .\coldsf.ref                                                                                                                                                                                            
+ ./coldsf.ref                                                                                                                                                                                            
 
 
 
@@ -249,7 +249,7 @@
  READING ON UNIT   99 WITH FORMAT: (40E15.6)           
 
  OPENING FILE ON UNIT   99:
- .\dispsf.ref                                                                                                                                                                                            
+ ./dispsf.ref                                                                                                                                                                                            
 
 
 
@@ -1312,7 +1312,7 @@
   MAXIMUM CONCENTRATION CHANGES FOR EACH ITERATION:
   MAX. CHANGE LAYER,ROW,COL MAX. CHANGE LAYER,ROW,COL MAX. CHANGE LAYER,ROW,COL MAX. CHANGE LAYER,ROW,COL MAX. CHANGE LAYER,ROW,COL
  ------------------------------------------------------------------------------------------------------------------------------------
-   0.1566     (  1,  9, 16)   0.000     (  1,  1,  1)  0.1650E-02 (  1,  9, 16)   0.000     (  1,  1,  1)   0.000     (  1,  1,  1)
+   0.1566     (  1,  9, 16)   0.000     (  1,  1,  1)  0.1600E-02 (  1,  9, 16)   0.000     (  1,  1,  1)   0.000     (  1,  1,  1)
 
 
                      STREAM MASS BUDGETS AT END OF TRANSPORT STEP  136, TIME STEP    1, STRESS PERIOD    1 FOR COMPONENT   1
@@ -1320,24 +1320,24 @@
 
                                          CUMULATIVE MASS [M]                                     MASS FOR THIS TIME STEP [M]
                                          -------------------                                    --------------
-                      STREAM DEPLETION =   1.446662                          STREAM DEPLETION =  0.2443236E-01
+                      STREAM DEPLETION =  0.4128987                          STREAM DEPLETION =  0.1666914E-01
                       INFLOW TO STREAM =   0.000000                          INFLOW TO STREAM =   0.000000    
-                          GW TO STREAM =   504525.5                              GW TO STREAM =   917.0619    
+                          GW TO STREAM =   504525.6                              GW TO STREAM =   917.0620    
                          PRECIPITATION =   0.000000                             PRECIPITATION =   0.000000    
                                 RUNOFF =   0.000000                                    RUNOFF =   0.000000    
                 CONSTANT CONCENTRATION =   0.000000                    CONSTANT CONCENTRATION =   0.000000    
                                          -------------------                                    --------------
-                              TOTAL IN =   504526.9                                  TOTAL IN =   917.0863    
+                              TOTAL IN =   504526.0                                  TOTAL IN =   917.0786    
 
-                   STREAM ACCUMULATION =   198.5325                       STREAM ACCUMULATION =  0.4854043E-01
-                        STREAM OUTFLOW =   479844.3                            STREAM OUTFLOW =   872.2393    
-                          STREAM TO GW =   24484.09                              STREAM TO GW =   44.79844    
+                   STREAM ACCUMULATION =   208.6951                       STREAM ACCUMULATION =  0.4084266E-01
+                        STREAM OUTFLOW =   479834.0                            STREAM OUTFLOW =   872.2379    
+                          STREAM TO GW =   24483.22                              STREAM TO GW =   44.79988    
                 CONSTANT CONCENTRATION =   0.000000                    CONSTANT CONCENTRATION =   0.000000    
                                          -------------------                                    --------------
-                             TOTAL OUT =   504526.9                                 TOTAL OUT =   917.0863    
+                             TOTAL OUT =   504525.9                                 TOTAL OUT =   917.0786    
 
-                        NET (IN - OUT) =   0.000000                            NET (IN - OUT) =   0.000000    
-                 DISCREPANCY (PERCENT) =   0.000000                     DISCREPANCY (PERCENT) =   0.000000    
+                        NET (IN - OUT) =  0.6250000E-01                        NET (IN - OUT) =   0.000000    
+                 DISCREPANCY (PERCENT) =  0.1238787E-04                 DISCREPANCY (PERCENT) =   0.000000    
                                               FLOW ERR (QIN-QOUT-DV) =  0.3906250E-02 [L3/T]
 
 
@@ -1360,18 +1360,18 @@
                                                       ----------------             ----------------
                                CONSTANT CONCENTRATION:    0.000000                    0.000000    
                                         CONSTANT HEAD:    0.000000                   -162772.7    
-                                                WELLS:    0.000000                   -276263.5    
+                                                WELLS:    0.000000                   -276262.7    
                                              RECHARGE:    0.000000                    0.000000    
                                          MASS LOADING:    2573265.                    0.000000    
-                                               STREAM:    24484.09                   -504525.5    
+                                               STREAM:    24483.22                   -504525.6    
                                1ST/0TH ORDER REACTION:    0.000000                   -1249747.    
                                MASS STOR (FLOW MODEL):    0.000000                    0.000000    
-                                MASS STORAGE (SOLUTE):    17.60776                   -404440.1    
+                                MASS STORAGE (SOLUTE):    17.60767                   -404440.2    
                             ---------------------------------------------------------------------------
-                                              [TOTAL]:    2597767.     KG            -2597749.     KG  
+                                              [TOTAL]:    2597766.     KG            -2597748.     KG  
 
-                                                          NET (IN - OUT):    17.75000    
-                                                   DISCREPANCY (PERCENT):   0.6832815E-03
+                                                          NET (IN - OUT):    17.50000    
+                                                   DISCREPANCY (PERCENT):   0.6736580E-03
   ----- 
  | M T |
  | 3 D | END OF MODEL OUTPUT
