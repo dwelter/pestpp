@@ -37,7 +37,10 @@ public:
 	vector<int> get_idxs_greater_than(double bad_phi, ObservationEnsemble &oe);
 
 	Eigen::MatrixXd get_obs_resid(ObservationEnsemble &oe);
+	Eigen::MatrixXd get_obs_resid_subset(ObservationEnsemble &oe);
+
 	Eigen::MatrixXd get_par_resid(ParameterEnsemble &pe);
+	Eigen::MatrixXd get_par_resid_subset(ParameterEnsemble &pe);
 	Eigen::MatrixXd get_actual_obs_resid(ObservationEnsemble &oe);
 	Eigen::VectorXd get_q_vector();
 	vector<string> get_lt_obs_names() { return lt_obs_names; }
