@@ -1198,24 +1198,41 @@ def tenpar_localizer_test():
         raise Exception("template_d {0} not found".format(template_d))
     if os.path.exists(test_d):
         shutil.rmtree(test_d)
-    shutil.copytree(template_d, test_d)
-    pst_name = os.path.join(test_d, "pest.pst")
+    #shutil.copytree(template_d, test_d)
+    pst_name = os.path.join(template_d, "pest.pst")
     pst = pyemu.Pst(pst_name)
     
     mat = pyemu.Matrix.from_names(pst.nnz_obs_names,pst.adj_par_names).to_dataframe()
-    mat.loc[:,:] = 0.0
-    mat.iloc[0,:] = 1
+    mat.loc[:,:] = 1.0
+    #mat.iloc[0,:] = 1
     mat = pyemu.Matrix.from_dataframe(mat)
-    mat.to_ascii(os.path.join(test_d,"localizer.mat"))
+    mat.to_ascii(os.path.join(template_d,"localizer.mat"))
 
-    
     pst.pestpp_options = {}
-    pst.pestpp_options["ies_num_reals"] = 5
+    pst.pestpp_options["ies_num_reals"] = 19
     pst.pestpp_options["ies_localizer"] = "localizer.mat"
     
     
-    pst.pestpp_options["ies_verbose_level"] = 3
+    #pst.pestpp_options["ies_verbose_level"] = 3
+    pst_name = os.path.join(template_d,"pest_local.pst")
     pst.write(pst_name)
+    pyemu.helpers.start_slaves(template_d, exe_path, "pest_local.pst", num_slaves=20,
+                                   master_dir=test_d, verbose=True, slave_root=model_d)
+    phi_df1 = pd.read_csv(os.path.join(test_d,"pest_local.phi.actual.csv"))
+
+    pst.pestpp_options = {"ies_num_reals":19}
+    pst.write(pst_name)
+    pyemu.helpers.start_slaves(template_d, exe_path, "pest_local.pst", num_slaves=20,
+                                   master_dir=test_d, verbose=True, slave_root=model_d)
+    phi_df2 = pd.read_csv(os.path.join(test_d,"pest_local.phi.actual.csv"))
+
+    plt.plot(phi_df1.total_runs,phi_df1.loc[:,"mean"], label="local")
+    plt.plot(phi_df2.total_runs,phi_df2.loc[:,"mean"], label="full")
+    plt.legend()
+    plt.savefig("local_test.pdf")
+
+
+
     #pyemu.helpers.run(exe_path + " pest.pst", cwd=test_d)
 
     
