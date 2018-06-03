@@ -1,2 +1,6 @@
 datetime constant_concentration_1_cum constant_concentration_1_flx gw_to_stream_1_cum gw_to_stream_1_flx inflow_to_stream_1_cum inflow_to_stream_1_flx precipitation_1_cum precipitation_1_flx runoff_1_cum runoff_1_flx stream_accumulation_1_cum stream_accumulation_1_flx stream_depletion_1_cum stream_depletion_1_flx stream_to_gw_1_cum stream_to_gw_1_flx streamflow_1_cum streamflow_1_flx
+<<<<<<< HEAD
 19791230 0.0 0.0 504525.5 917.0619 0.0 0.0 0.0 0.0 0.0 0.0 -198.5325 -0.04854043 1.446662 0.02443236 -24484.09 -44.79844 -479844.3 -872.2393
+=======
+19791230 0.0 0.0 504525.6 917.062 0.0 0.0 0.0 0.0 0.0 0.0 -208.6951 -0.04084266 0.4128987 0.01666914 -24483.22 -44.79988 -479834.0 -872.2379
+>>>>>>> 05bc855777f090731cdeb881eea6be2f631aaa6f

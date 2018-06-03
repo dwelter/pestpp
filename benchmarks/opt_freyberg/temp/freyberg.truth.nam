@@ -3,15 +3,15 @@
 LIST               2  freyberg.list
 DIS               11  freyberg.dis 
 BAS6              13  freyberg.bas 
-HYD               36  freyberg.hyd 
-UPW               31  freyberg.truth.upw 
 NWT               32  freyberg.nwt 
 RCH               19  freyberg.truth.rch 
-WEL               20  freyberg.truth.wel 
+HYD               36  freyberg.hyd 
 OC                14  freyberg.oc 
 SFR               18  freyberg.sfr 
+WEL               20  freyberg.truth.wel 
+UPW               31  freyberg.truth.upw 
 LMT6              30  freyberg.truth.lmt6 
 DATA(BINARY)     536  freyberg.hyd.bin REPLACE
-DATA(BINARY)      53  freyberg.cbc REPLACE
 DATA(BINARY)      51  freyberg.hds REPLACE
 DATA              60  freyberg.sfo
+DATA(BINARY)      53  freyberg.cbc REPLACE
