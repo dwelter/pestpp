@@ -721,6 +721,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_opt_iter_tol(0.001);
 	pestpp_options.set_opt_recalc_fosm_every(1);
 	pestpp_options.set_opt_iter_derinc_fac(1.0);
+	pestpp_options.set_opt_include_bnd_pi(true);
 	pestpp_options.set_hotstart_resfile(string());
 	pestpp_options.set_upgrade_bounds("ROBUST");
 	pestpp_options.set_ies_par_csv("");

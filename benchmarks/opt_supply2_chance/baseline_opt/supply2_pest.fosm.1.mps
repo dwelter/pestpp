@@ -37,19 +37,49 @@ ROWS
  G  PI_CONST22
  L  PI_CONST23
  G  PI_CONST24
+ G  _LB_IM10
+ L  _UB_IM10
+ G  _LB_IM11
+ L  _UB_IM11
+ G  _LB_IM12
+ L  _UB_IM12
+ G  _LB_IM9
+ L  _UB_IM9
+ G  _LB_Q1
+ L  _UB_Q1
+ G  _LB_Q2A
+ L  _UB_Q2A
+ G  _LB_Q2B
+ L  _UB_Q2B
+ G  _LB_Q2C
+ L  _UB_Q2C
+ G  _LB_Q2D
+ L  _UB_Q2D
+ G  _LB_Q4A
+ L  _UB_Q4A
+ G  _LB_Q4B
+ L  _UB_Q4B
 COLUMNS
     IM10 OBJROW  -0.1092    
     IM10 PI_CONST19 1.          
     IM10 PI_CONST20 1.          
+    IM10 _LB_IM10 1.          
+    IM10 _UB_IM10 1.          
     IM11 OBJROW -0.01092    
     IM11 PI_CONST21 1.          
     IM11 PI_CONST22 1.          
+    IM11 _LB_IM11 1.          
+    IM11 _UB_IM11 1.          
     IM12 OBJROW  -0.1092    
     IM12 PI_CONST23 1.          
     IM12 PI_CONST24 1.          
+    IM12 _LB_IM12 1.          
+    IM12 _UB_IM12 1.          
     IM9 OBJROW  -0.1104    
     IM9 PI_CONST17 1.          
     IM9 PI_CONST18 1.          
+    IM9 _LB_IM9 1.          
+    IM9 _UB_IM9 1.          
     Q1 OBJROW 1.095       
     Q1 S1R14_09 0.574       
     Q1 S1R14_10 0.574       
@@ -87,6 +117,8 @@ COLUMNS
     Q1 PI_CONST22 1.          
     Q1 PI_CONST23 1.          
     Q1 PI_CONST24 1.          
+    Q1 _LB_Q1 1.          
+    Q1 _UB_Q1 1.          
     Q2A OBJROW 0.276       
     Q2A S1R14_09 0.252       
     Q2A S1R14_10 0.012       
@@ -100,6 +132,8 @@ COLUMNS
     Q2A PI_CONST10 1.          
     Q2A PI_CONST17 1.          
     Q2A PI_CONST18 1.          
+    Q2A _LB_Q2A 1.          
+    Q2A _UB_Q2A 1.          
     Q2B OBJROW 0.273       
     Q2B S1R14_10 0.252       
     Q2B S1R14_11 0.012       
@@ -113,6 +147,8 @@ COLUMNS
     Q2B PI_CONST12 1.          
     Q2B PI_CONST19 1.          
     Q2B PI_CONST20 1.          
+    Q2B _LB_Q2B 1.          
+    Q2B _UB_Q2B 1.          
     Q2C OBJROW 0.273       
     Q2C S1R14_11 0.254       
     Q2C S1R14_12 0.012       
@@ -127,6 +163,8 @@ COLUMNS
     Q2C PI_CONST14 1.          
     Q2C PI_CONST21 1.          
     Q2C PI_CONST22 1.          
+    Q2C _LB_Q2C 1.          
+    Q2C _UB_Q2C 1.          
     Q2D OBJROW 0.273       
     Q2D S1R14_09 0.012       
     Q2D S1R14_12 0.254       
@@ -140,6 +178,8 @@ COLUMNS
     Q2D PI_CONST16 1.          
     Q2D PI_CONST23 1.          
     Q2D PI_CONST24 1.          
+    Q2D _LB_Q2D 1.          
+    Q2D _UB_Q2D 1.          
     Q4A OBJROW 0.273       
     Q4A S1R14_10 0.002       
     Q4A S1R21_11 0.002       
@@ -152,6 +192,8 @@ COLUMNS
     Q4A PI_CONST12 1.          
     Q4A PI_CONST19 1.          
     Q4A PI_CONST20 1.          
+    Q4A _LB_Q4A 1.          
+    Q4A _UB_Q4A 1.          
     Q4B OBJROW 0.273       
     Q4B S1R14_12 0.002       
     Q4B S1R21_12 0.024       
@@ -164,6 +206,8 @@ COLUMNS
     Q4B PI_CONST16 1.          
     Q4B PI_CONST23 1.          
     Q4B PI_CONST24 1.          
+    Q4B _LB_Q4B 1.          
+    Q4B _UB_Q4B 1.          
 RHS
     RHS S1R14_09 13576.77669 
     RHS S1R14_10 13773.86091 
@@ -201,6 +245,17 @@ RHS
     RHS PI_CONST22 45000.      
     RHS PI_CONST23 80000.      
     RHS PI_CONST24 45000.      
+    RHS _UB_IM10 1000000.    
+    RHS _UB_IM11 1000000.    
+    RHS _UB_IM12 1000000.    
+    RHS _UB_IM9 1000000.    
+    RHS _UB_Q1 50000.      
+    RHS _UB_Q2A 50000.      
+    RHS _UB_Q2B 50000.      
+    RHS _UB_Q2C 50000.      
+    RHS _UB_Q2D 50000.      
+    RHS _UB_Q4A 50000.      
+    RHS _UB_Q4B 50000.      
 BOUNDS
  UP BOUND IM10 1000000.    
  UP BOUND IM11 1000000.    

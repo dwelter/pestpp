@@ -103,6 +103,8 @@ def compare_par(file1,file2):
 
     except EnvironmentError as e:
         err_txt += e.strerror
+    except Exception as e:
+        err_txt += str(e)
     return err_txt
 
     
@@ -196,11 +198,11 @@ if __name__ == "__main__":
         [r'.\kirishima', 'template', exe_cmd_pp, 'pest', exe_cmd_wrk, 20, 'iobj'],
 
         [r'.\ishigami', 'template', exe_cmd_gsa, 'pest', exe_cmd_wrk, 10, 'sbl'],
-        [r'.\opt_dewater_chance','template',exe_cmd_opt,"dewater_pest.base",exe_cmd_wrk,1,'1.par'],
-        [r'.\opt_dewater_chance', 'template', exe_cmd_opt, "dewater_pest.fosm", exe_cmd_wrk, 1, '1.par'],
-        [r'.\opt_supply2_chance', 'template', exe_cmd_opt, "supply2_pest.base", exe_cmd_wrk, 4, 'par'],
-        [r'.\opt_supply2_chance', 'template', exe_cmd_opt, "supply2_pest.fosm", exe_cmd_wrk, 4, 'par'],
-        [r'.\opt_seawater_chance', 'template', exe_cmd_opt, "seawater_pest", exe_cmd_wrk, 4, 'par']
+        [r'.\opt_dewater_chance','template',exe_cmd_opt,"dewater_pest.base",exe_cmd_opt,1,'par'],
+        [r'.\opt_dewater_chance', 'template', exe_cmd_opt, "dewater_pest.fosm", exe_cmd_opt, 1, '1.par'],
+        [r'.\opt_supply2_chance', 'template', exe_cmd_opt, "supply2_pest.base", exe_cmd_opt, 4, '1.par'],
+        [r'.\opt_supply2_chance', 'template', exe_cmd_opt, "supply2_pest.fosm", exe_cmd_opt, 4, '1.par'],
+        [r'.\opt_seawater_chance', 'template', exe_cmd_opt, "seawater_pest", exe_cmd_opt, 4, '1.par']
 
            #[r'.\ames', 'template', exe_cmd_pp, 'pest', exe_cmd_wrk, 4, 'iobj'],
         #[r'.\tidal', 'template', exe_cmd_pp, 'pest', exe_cmd_wrk, 4, 'iobj'],

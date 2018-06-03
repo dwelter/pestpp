@@ -689,6 +689,13 @@ void PestppOptions::parce_line(const string &line)
 		{
 			convert_ip(value, opt_recalc_fosm_every);
 		}
+		else if (key == "OPT_INCLUDE_BND_PI")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> opt_include_bnd_pi;
+		}
+
 		else if ((key == "IES_PAR_CSV") || (key == "IES_PARAMETER_CSV")||
 			(key == "IES_PAR_EN") || (key == "IES_PARAMETER_ENSEMBLE"))
 		{

@@ -175,33 +175,34 @@ def setup_pest():
     # obs.loc["gw_cohe1c_003650.0", "weight"] = 1.0
     # obs.loc["gw_cohe1c_003650.0", "obsval"] *= 1.2 #% increase
 
+    # pestpp-opt does this internally now...
     # fix all non dec vars so we can set upper and lower bound constraints
-    par = ph.pst.parameter_data
-    par.loc[par.pargp!="kg","partrans"] = "fixed"
+    # par = ph.pst.parameter_data
+    # par.loc[par.pargp!="kg","partrans"] = "fixed"
 
-    # add some pi constraints to make sure all dec vars have at
-    # least one element in the response matrix
-    # set lower bounds
-    parval1 = par.parval1.copy()
-    par.loc[par.pargp == "kg", "parval1"] = par.loc[par.pargp == "kg", "parlbnd"]
-    pyemu.helpers.zero_order_tikhonov(pst=ph.pst)
+    # # add some pi constraints to make sure all dec vars have at
+    # # least one element in the response matrix
+    # # set lower bounds
+    # parval1 = par.parval1.copy()
+    # par.loc[par.pargp == "kg", "parval1"] = par.loc[par.pargp == "kg", "parlbnd"]
+    # pyemu.helpers.zero_order_tikhonov(pst=ph.pst)
 
-    ph.pst.prior_information.loc[:,"pilbl"] += "_l"
-    l_const = ph.pst.prior_information.pilbl.copy()
-    #ph.pst.prior_information.loc[:,"obgnme"] = "greater_bnd"
+    # ph.pst.prior_information.loc[:,"pilbl"] += "_l"
+    # l_const = ph.pst.prior_information.pilbl.copy()
+    # #ph.pst.prior_information.loc[:,"obgnme"] = "greater_bnd"
 
-    # set upper bounds
-    par.loc[par.pargp=="kg","parval1"] = par.loc[par.pargp=="kg","parubnd"]
-    pyemu.helpers.zero_order_tikhonov(ph.pst,reset=False)
-    ph.pst.prior_information.loc[:, "obgnme"] = "less_bnd"
-    ph.pst.prior_information.loc[l_const,"obgnme"] = "greater_bnd"
+    # # set upper bounds
+    # par.loc[par.pargp=="kg","parval1"] = par.loc[par.pargp=="kg","parubnd"]
+    # pyemu.helpers.zero_order_tikhonov(ph.pst,reset=False)
+    # ph.pst.prior_information.loc[:, "obgnme"] = "less_bnd"
+    # ph.pst.prior_information.loc[l_const,"obgnme"] = "greater_bnd"
 
 
     #set dec vars to background value (derinc)
-    par.loc[par.pargp == "kg", "parval1"] = parval1
+    #par.loc[par.pargp == "kg", "parval1"] = parval1
 
     #unfix pars
-    par.loc[par.pargp != "kg", "partrans"] = "log"
+    #par.loc[par.pargp != "kg", "partrans"] = "log"
 
     ph.pst.pestpp_options = {}
     ph.pst.pestpp_options["opt_dec_var_groups"] = "kg"
@@ -630,8 +631,8 @@ if __name__ == "__main__":
     #jco_invest()
     #run_risk_sweep()
     #run_risk_sweep_pargp()
-    plot_risk_sweep_pargp()
-    #plot_loading()
+    #plot_risk_sweep_pargp()
+    plot_loading()
     #plot_risk_sweep()
     #run_risk_sweep_obgnme()
     #run_risk_sweep()

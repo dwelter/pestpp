@@ -375,6 +375,7 @@ void sequentialLP::postsolve_constraint_report(Observations &upgrade_obs,Paramet
 	ss << slp_iter << ".rei";
 	of_wr.write_opt_constraint_rei(file_mgr_ptr->open_ofile_ext(ss.str()), slp_iter, upgrade_pars, 
 		pest_scenario.get_ctl_observations(), upgrade_obs);
+	file_mgr_ptr->close_file(ss.str());
 	if (use_chance)
 	{
 		f_rec << "  ---  note: residual file " << ss.str() << " reports the simulated" << endl;
@@ -484,8 +485,9 @@ pair<double,double> sequentialLP::postsolve_decision_var_report(Parameters &upgr
 	ss << slp_iter << ".par";
 	
 	of_wr.write_par(file_mgr_ptr->open_ofile_ext(ss.str()),actual_pars,*par_trans.get_offset_ptr(),*par_trans.get_scale_ptr());
+	file_mgr_ptr->close_file(ss.str());
 	of_wr.write_par(file_mgr_ptr->open_ofile_ext("par"), actual_pars, *par_trans.get_offset_ptr(), *par_trans.get_scale_ptr());
-
+	file_mgr_ptr->close_file("par");
 	return pair<double,double>(cur_obj,new_obj);
 }
 
@@ -607,6 +609,33 @@ void sequentialLP::initialize_and_check()
 			problem_trans.push_back(name);
 	if (problem_trans.size() > 0)
 		throw_sequentialLP_error("the following decision variables don't have 'none' type parameter transformation: ", problem_trans);
+
+	if (pest_scenario.get_pestpp_options().get_opt_include_bnd_pi())
+	{
+		PriorInformation *pi_ptr = pest_scenario.get_prior_info_ptr();
+		ParameterInfo par_info = pest_scenario.get_ctl_parameter_info();
+		stringstream ss;
+		string s;
+		for (auto &dname : ctl_ord_dec_var_names)
+		{
+			ss.str("");
+			ss << "_lb_" << dname << " 1.0 * " << dname << " = " << par_info.get_parameter_rec_ptr(dname)->lbnd << " 1.0 greater_pi";
+			pi_ptr->AddRecord(pest_utils::upper_cp(ss.str()));
+			ss.str("");
+			ss << "_LB_" << pest_utils::upper_cp(dname);
+			pest_scenario.get_ctl_ordered_pi_names_ptr()->push_back(ss.str());
+			ss.str("");
+			ss << "_ub_" << dname << " 1.0 * " << dname << " = " << par_info.get_parameter_rec_ptr(dname)->ubnd << " 1.0 less_pi";
+			pi_ptr->AddRecord(pest_utils::upper_cp(ss.str()));
+			ss.str("");
+			ss << "_UB_" << pest_utils::upper_cp(dname);
+			pest_scenario.get_ctl_ordered_pi_names_ptr()->push_back(ss.str());
+			ss.str("");
+
+		}
+		pest_scenario.get_ctl_ordered_obs_group_names_ptr()->push_back("GREATER_PI");
+		pest_scenario.get_ctl_ordered_obs_group_names_ptr()->push_back("LESS_PI");
+	}
 
 	//make sure all decision variables have an initial value of zero
 	//jwhite 10june2017 - don't need this.  GWM accounts for base pumping in streamflow constraints
@@ -1420,9 +1449,11 @@ void sequentialLP::solve()
 		//write 'best' rei
 		of_wr.write_opt_constraint_rei(file_mgr_ptr->open_ofile_ext("res"), slp_iter, all_pars_and_dec_vars_best,
 			pest_scenario.get_ctl_observations(), constraints_sim);
+		file_mgr_ptr->close_file("res");
 		//write 'best' parameters file
-		of_wr.write_par(file_mgr_ptr->open_ofile_ext("par"), all_pars_and_dec_vars_best,
+		/*of_wr.write_par(file_mgr_ptr->open_ofile_ext("par"), all_pars_and_dec_vars_best,
 			*par_trans.get_offset_ptr(), *par_trans.get_scale_ptr());
+		file_mgr_ptr->close_file("par");*/
 	}
 }
 

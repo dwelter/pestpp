@@ -326,6 +326,9 @@ public:
 	void set_opt_recalc_fosm_every(int _every) { opt_recalc_fosm_every = _every; }
 	double get_opt_iter_derinc_fac() const { return opt_iter_derinc_fac; }
 	void set_opt_iter_derinc_fac(double _opt_iter_derinc_fac) { opt_iter_derinc_fac = _opt_iter_derinc_fac; }
+	bool get_opt_include_bnd_pi()const { return opt_include_bnd_pi; }
+	void set_opt_include_bnd_pi(bool _include_bnd_pi) { opt_include_bnd_pi = _include_bnd_pi; }
+
 
 
 	string get_ies_par_csv()const { return ies_par_csv; }
@@ -446,6 +449,7 @@ private:
 	double opt_iter_tol;
 	int opt_recalc_fosm_every;
 	double opt_iter_derinc_fac;
+	bool opt_include_bnd_pi;
 
 	int ies_subset_size;
 	string ies_par_csv;
