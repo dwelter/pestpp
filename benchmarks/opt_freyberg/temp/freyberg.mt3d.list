@@ -1012,11 +1012,11 @@
                     --------------------------------------------------------------------------------------------
 
  MAXIMUM STEPSIZE DURING WHICH ANY PARTICLE CANNOT MOVE MORE THAN ONE CELL
- =  61.20    (WHEN MIN. R.F.=1)  AT K=   1, I=  38, J=   6
+ =  58.63    (WHEN MIN. R.F.=1)  AT K=   1, I=  38, J=   6
 
  MAXIMUM STEPSIZE WHICH MEETS STABILITY CRITERION OF THE ADVECTION TERM
  (FOR PURE FINITE-DIFFERENCE OPTION, MIXELM=0) 
- =  35.99    (WHEN MIN. R.F.=1)  AT K=   1, I=   9, J=  16
+ =  26.85    (WHEN MIN. R.F.=1)  AT K=   1, I=   9, J=  16
 
                     "CNH             " FLOW TERMS FOR TIME STEP  1, STRESS PERIOD  1 READ UNFORMATTED ON UNIT 10
                     --------------------------------------------------------------------------------------------
@@ -1034,7 +1034,7 @@
  TOTAL NUMBER OF POINT SOURCES/SINKS PRESENT IN THE FLOW MODEL =   721
 
  MAXIMUM STEPSIZE WHICH MEETS STABILITY CRITERION OF THE SINK & SOURCE TERM
- =  799.6    (WHEN MIN. R.F.=1)  AT K=   1, I=   4, J=   3
+ =  814.9    (WHEN MIN. R.F.=1)  AT K=   1, I=   4, J=   3
 
 
      3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP     1 IN FLOW TIME STEP     1 STRESS PERIOD     1
@@ -1309,36 +1309,128 @@
       5 TOTAL ITERATIONS
      3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   136 IN FLOW TIME STEP     1 STRESS PERIOD     1
       5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   137 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   138 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   139 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   140 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   141 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   142 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   143 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   144 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   145 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   146 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   147 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   148 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   149 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   150 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   151 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   152 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   153 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   154 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   155 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   156 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   157 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   158 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   159 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   160 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   161 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   162 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   163 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   164 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   165 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   166 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   167 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   168 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   169 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   170 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   171 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   172 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   173 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   174 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   175 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   176 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   177 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   178 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   179 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   180 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   181 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
+     3 CALLS TO GCG PACKAGE FOR TRANSPORT TIME STEP   182 IN FLOW TIME STEP     1 STRESS PERIOD     1
+      5 TOTAL ITERATIONS
   MAXIMUM CONCENTRATION CHANGES FOR EACH ITERATION:
   MAX. CHANGE LAYER,ROW,COL MAX. CHANGE LAYER,ROW,COL MAX. CHANGE LAYER,ROW,COL MAX. CHANGE LAYER,ROW,COL MAX. CHANGE LAYER,ROW,COL
  ------------------------------------------------------------------------------------------------------------------------------------
-   0.1566     (  1,  9, 16)   0.000     (  1,  1,  1)  0.1600E-02 (  1,  9, 16)   0.000     (  1,  1,  1)   0.000     (  1,  1,  1)
+   0.2043     (  1,  9, 16)   0.000     (  1,  1,  1)  0.2650E-03 (  1,  9, 17)   0.000     (  1,  1,  1)   0.000     (  1,  1,  1)
 
 
-                     STREAM MASS BUDGETS AT END OF TRANSPORT STEP  136, TIME STEP    1, STRESS PERIOD    1 FOR COMPONENT   1
+                     STREAM MASS BUDGETS AT END OF TRANSPORT STEP  182, TIME STEP    1, STRESS PERIOD    1 FOR COMPONENT   1
                      -------------------------------------------------------------------------------------------------------
 
                                          CUMULATIVE MASS [M]                                     MASS FOR THIS TIME STEP [M]
                                          -------------------                                    --------------
-                      STREAM DEPLETION =  0.4128987                          STREAM DEPLETION =  0.1666914E-01
+                      STREAM DEPLETION =  0.9916844E-01                      STREAM DEPLETION =  0.1056922E-01
                       INFLOW TO STREAM =   0.000000                          INFLOW TO STREAM =   0.000000    
-                          GW TO STREAM =   504525.6                              GW TO STREAM =   917.0620    
+                          GW TO STREAM =   481031.0                              GW TO STREAM =   830.5248    
                          PRECIPITATION =   0.000000                             PRECIPITATION =   0.000000    
                                 RUNOFF =   0.000000                                    RUNOFF =   0.000000    
                 CONSTANT CONCENTRATION =   0.000000                    CONSTANT CONCENTRATION =   0.000000    
                                          -------------------                                    --------------
-                              TOTAL IN =   504526.0                                  TOTAL IN =   917.0786    
+                              TOTAL IN =   481031.1                                  TOTAL IN =   830.5353    
 
-                   STREAM ACCUMULATION =   208.6951                       STREAM ACCUMULATION =  0.4084266E-01
-                        STREAM OUTFLOW =   479834.0                            STREAM OUTFLOW =   872.2379    
-                          STREAM TO GW =   24483.22                              STREAM TO GW =   44.79988    
+                   STREAM ACCUMULATION =   208.5909                       STREAM ACCUMULATION =  0.9360710E-02
+                        STREAM OUTFLOW =   477469.6                            STREAM OUTFLOW =   824.7014    
+                          STREAM TO GW =   3352.876                              STREAM TO GW =   5.824564    
                 CONSTANT CONCENTRATION =   0.000000                    CONSTANT CONCENTRATION =   0.000000    
                                          -------------------                                    --------------
-                             TOTAL OUT =   504525.9                                 TOTAL OUT =   917.0786    
+                             TOTAL OUT =   481031.1                                 TOTAL OUT =   830.5353    
 
-                        NET (IN - OUT) =  0.6250000E-01                        NET (IN - OUT) =   0.000000    
-                 DISCREPANCY (PERCENT) =  0.1238787E-04                 DISCREPANCY (PERCENT) =   0.000000    
-                                              FLOW ERR (QIN-QOUT-DV) =  0.3906250E-02 [L3/T]
+                        NET (IN - OUT) =  0.3125000E-01                        NET (IN - OUT) =   0.000000    
+                 DISCREPANCY (PERCENT) =  0.6496461E-05                 DISCREPANCY (PERCENT) =   0.000000    
+                                              FLOW ERR (QIN-QOUT-DV) = -0.1953125E-02 [L3/T]
 
 
 
@@ -1347,31 +1439,31 @@
 
 
                                             -------------------------------------------
-                                                      TRANSPORT STEP NO.  136
+                                                      TRANSPORT STEP NO.  182
                                             -------------------------------------------
 
  TOTAL ELAPSED TIME SINCE BEGINNING OF SIMULATION =   3650.000    D   
  .....................................................................
 
-                     CUMULATIVE MASS BUDGETS AT END OF TRANSPORT STEP  136, TIME STEP    1, STRESS PERIOD    1
+                     CUMULATIVE MASS BUDGETS AT END OF TRANSPORT STEP  182, TIME STEP    1, STRESS PERIOD    1
                      -----------------------------------------------------------------------------------------
 
                                                              IN                           OUT
                                                       ----------------             ----------------
                                CONSTANT CONCENTRATION:    0.000000                    0.000000    
-                                        CONSTANT HEAD:    0.000000                   -162772.7    
-                                                WELLS:    0.000000                   -276262.7    
+                                        CONSTANT HEAD:    0.000000                   -168837.8    
+                                                WELLS:    0.000000                   -273386.5    
                                              RECHARGE:    0.000000                    0.000000    
-                                         MASS LOADING:    2573265.                    0.000000    
-                                               STREAM:    24483.22                   -504525.6    
-                               1ST/0TH ORDER REACTION:    0.000000                   -1249747.    
+                                         MASS LOADING:    2573262.                    0.000000    
+                                               STREAM:    3352.876                   -481031.0    
+                               1ST/0TH ORDER REACTION:    0.000000                   -1248601.    
                                MASS STOR (FLOW MODEL):    0.000000                    0.000000    
-                                MASS STORAGE (SOLUTE):    17.60767                   -404440.2    
+                                MASS STORAGE (SOLUTE):    11.93639                   -404760.1    
                             ---------------------------------------------------------------------------
-                                              [TOTAL]:    2597766.     KG            -2597748.     KG  
+                                              [TOTAL]:    2576627.     KG            -2576616.     KG  
 
-                                                          NET (IN - OUT):    17.50000    
-                                                   DISCREPANCY (PERCENT):   0.6736580E-03
+                                                          NET (IN - OUT):    10.50000    
+                                                   DISCREPANCY (PERCENT):   0.4075103E-03
   ----- 
  | M T |
  | 3 D | END OF MODEL OUTPUT

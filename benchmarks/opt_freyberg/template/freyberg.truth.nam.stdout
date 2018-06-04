@@ -8,18 +8,10 @@
                     SWR1 Version 1.04.0 09/15/2016                       
 
  Using NAME file: freyberg.truth.nam 
-<<<<<<< HEAD
- Run start date and time (yyyy/mm/dd hh:mm:ss): 2018/06/03 19:47:27
+ Run start date and time (yyyy/mm/dd hh:mm:ss): 2018/06/04 22:08:01
 
  Solving:  Stress period:     1    Time step:     1    Groundwater-Flow Eqn.
- Run end date and time (yyyy/mm/dd hh:mm:ss): 2018/06/03 19:47:27
- Elapsed run time:  0.055 Seconds
-=======
- Run start date and time (yyyy/mm/dd hh:mm:ss): 2018/05/30 16:05:51
-
- Solving:  Stress period:     1    Time step:     1    Groundwater-Flow Eqn.
- Run end date and time (yyyy/mm/dd hh:mm:ss): 2018/05/30 16:05:51
- Elapsed run time:  0.024 Seconds
->>>>>>> 05bc855777f090731cdeb881eea6be2f631aaa6f
+ Run end date and time (yyyy/mm/dd hh:mm:ss): 2018/06/04 22:08:01
+ Elapsed run time:  0.032 Seconds
 
   Normal termination of simulation

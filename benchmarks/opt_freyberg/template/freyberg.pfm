@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-PEST++ performance logger started at:  19:47:25
-        ( time = 19:47:25,  elapsed time = 1ms )
+PEST++ performance logger started at:  2018-06-04 22:08:00
+        ( time = 2018-06-04 22:08:00,  elapsed time = 660us )
   starting to process control file
-          ( time = 19:47:25,  elapsed time = 62ms )
+          ( time = 2018-06-04 22:08:00,  elapsed time = 54ms )
   finished processing control file
-          ( time = 19:47:25,  elapsed time = 76ms )
+          ( time = 2018-06-04 22:08:00,  elapsed time = 24ms )
     starting basic model IO error checking
-            ( time = 19:47:25,  elapsed time = 24ms )
-=======
-PEST++ performance logger started at:  2018-05-30 16:05:50
-        ( time = 2018-05-30 16:05:50,  elapsed time = 2ms )
-  starting to process control file
-          ( time = 2018-05-30 16:05:50,  elapsed time = 67ms )
-  finished processing control file
-          ( time = 2018-05-30 16:05:50,  elapsed time = 32ms )
-    starting basic model IO error checking
-            ( time = 2018-05-30 16:05:50,  elapsed time = 506us )
->>>>>>> 05bc855777f090731cdeb881eea6be2f631aaa6f
+            ( time = 2018-06-04 22:08:00,  elapsed time = 516us )
     finished basic model IO error checking

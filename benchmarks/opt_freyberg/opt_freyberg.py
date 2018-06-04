@@ -29,6 +29,7 @@ def setup_models(m=None):
         m.dis.nstp = 1
         m.dis.tsmult = 1
         m.dis.steady = True
+        m.sfr.reach_data['j'] += 1
         flopy.modflow.ModflowLmt(m,output_file_format="formatted",package_flows=["SFR"])
         m.change_model_ws("temp",reset_external=True)
         m.external_path = '.'
@@ -372,24 +373,28 @@ def jco_invest():
     #print(fosm_jco.loc[pst.nnz_obs_names,:])
 
 def prep_for_risk_sweep():
-    d = "test"
-    if os.path.exists(d):
-        shutil.rmtree(d)
-    shutil.copytree(new_model_ws,d)
-    pst_file = os.path.join(new_model_ws, "freyberg.pst")
-    pst = pyemu.Pst(pst_file)
-    pst.control_data.noptmax = -1
-    pst.write(os.path.join(new_model_ws,"restart.pst"))
-    pyemu.helpers.start_slaves(new_model_ws,"pestpp","restart.pst",num_slaves=15,master_dir=d,
-                               slave_root='.',port=4005)
     r_d = "_restart_files"
     if os.path.exists(r_d):
         shutil.rmtree(r_d)
     os.mkdir(r_d)
-    files = ["restart.rei","restart.jcb"]
-    for f in files:
-        shutil.copy2(os.path.join(d,f),os.path.join(r_d,f))
-
+    d = "test"
+    if os.path.exists(d):
+        shutil.rmtree(d)
+    shutil.copytree(new_model_ws,d)
+    
+    pst_file = os.path.join(new_model_ws, "freyberg.pst")
+    pst = pyemu.Pst(pst_file)
+    pst.control_data.noptmax = 0
+    pst.write(os.path.join(d,"restart.pst"))
+    pyemu.os_utils.run("pestpp restart.pst",cwd=d)
+    shutil.copy2(os.path.join(d,"restart.rei"),os.path.join(r_d,"restart.rei"))
+    pst.control_data.noptmax = 1
+    pst.pestpp_options["opt_risk"] = 0.1
+    pst.write(os.path.join(new_model_ws,"restart.pst"))
+    pyemu.helpers.start_slaves(new_model_ws,"pestpp-opt","restart.pst",num_slaves=25,master_dir=d,
+                               slave_root='.',port=4005)
+    shutil.copy2(os.path.join(d,"restart.1.jcb"),os.path.join(r_d,"restart.jcb"))
+    
 def run_risk_sweep():
 
     results_d = "sweep_results"
@@ -409,7 +414,7 @@ def run_risk_sweep():
     pst.pestpp_options["opt_skip_final"] = "true"
 
     pst.control_data.noptmax = 1
-    risks = np.arange(0.01, 1.0, 0.01)
+    risks = np.arange(0.01, 1.01, 0.01)
 
     if os.path.exists("results"):
         shutil.rmtree("results")
@@ -586,7 +591,7 @@ def plot_loading():
     seg_i = int([o for o in pst.nnz_obs_names if o.startswith("sfr")][0].split('_')[0][-2:])
     print(nz_obs)
     #print(seg_j)
-    seg_j = 16
+    seg_j = 15
     seg_x,seg_y = m.sr.xcentergrid[seg_i,seg_j],m.sr.ycentergrid[seg_i,seg_j]
     dfs = [] 
     mx,mn = -1.0e+10,1.0e+10
@@ -618,24 +623,135 @@ def plot_loading():
         plt.show()
 
 
+def constraint_testing():
+    m = flopy.modflow.Modflow.load("freyberg.truth.nam",model_ws="template",load_only=["wel"],check=False)
+    try:
+        os.remove(os.path.join("master","freyberg.1.par"))
+    except:
+        pass
+    pst = pyemu.Pst(os.path.join("template","freyberg.pst"))
+    par = pst.parameter_data
+    par.loc[par.pargp=="kg","parubnd"] = 2.0
+    par.loc[par.pargp=="kg","parlbnd"] = 0.0
+    par.loc[par.pargp=="kg","parval1"] = 1.0
+    
+    pst.pestpp_options["base_jacobian"] = "restart.jcb"
+    pst.pestpp_options["hotstart_resfile"] = "restart.rei"
+    pst.pestpp_options["opt_skip_final"] = True
+    # sw conc constraint
+    obs = pst.observation_data
+    obs.loc[:,"weight"] = 0.0
+    sw_conc_obs = obs.loc[obs.obgnme=="sfrc","obsnme"]
+    obs.loc[sw_conc_obs,"obgnme"] = "less_swconc"
+
+    #only turn on one constraint in the middle of the domain
+    obs.loc["sfrc30_1_03650.00","weight"] = 1.0
+    obs.loc["sfrc30_1_03650.00","obsval"] *= 1.0 #% increase
+
+    #total SW N mass leaving the model
+    obs.loc["sw_st1c_003650.0","weight"] = 1.0
+    obs.loc["sw_st1c_003650.0","obsval"] *= 1.0
+    obs.loc["sw_st1c_003650.0","obgnme"] = "less_mass"
+
+    # concentration constraints at pumping wells
+    wel_df = pd.DataFrame.from_records(m.wel.stress_period_data[0])
+    print(wel_df.dtypes)
+    wel_df.loc[:,"obsnme"] = wel_df.apply(lambda x: "ucn_{0:02.0f}_{1:03.0f}_{2:03.0f}_000".format(x.k,x.i,x.j),axis=1)
+    obs.loc[wel_df.obsnme,"obgnme"] = "less_wlconc"
+    obs.loc[wel_df.obsnme,"weight"] = 1.0
+    obs.loc[wel_df.obsnme,"obsval"] *= 1.0 #% increase
+
+
+    pst.write(os.path.join("master","freyberg.pst"))
+    pyemu.os_utils.run("pestpp-opt freyberg.pst",cwd="master")
+    plot_loading()
+
+
+def bounds_testing():
+    m = flopy.modflow.Modflow.load("freyberg.truth.nam",model_ws="template",load_only=[],check=False)
+    
+    files = os.listdir("_restart_files")
+    for f in files:
+        shutil.copy2(os.path.join("_restart_files",f),os.path.join("master",f))
+    pst = pyemu.Pst(os.path.join("master","freyberg.pst"))
+    pst.pestpp_options["base_jacobian"] = "restart.jcb"
+    pst.pestpp_options["hotstart_resfile"] = "restart.rei"
+    pst.pestpp_options["opt_skip_final"] = True
+    nz_obs = pst.observation_data.loc[pst.nnz_obs_names,:]
+    nz_obs = nz_obs.loc[nz_obs.obsnme.apply(lambda x: x.startswith("ucn")),:]
+    nz_obs.loc[:,"i"] = nz_obs.obsnme.apply(lambda x: int(x.split('_')[2]))
+    nz_obs.loc[:,"j"] = nz_obs.obsnme.apply(lambda x: int(x.split('_')[3]))
+    nz_obs.loc[:,"x"] = nz_obs.apply(lambda x: m.sr.xcentergrid[x.i,x.j],axis=1)
+
+    nz_obs.loc[:,"y"] = nz_obs.apply(lambda x: m.sr.ycentergrid[x.i,x.j],axis=1)
+    seg_i = int([o for o in pst.nnz_obs_names if o.startswith("sfr")][0].split('_')[0][-2:])
+    print(nz_obs)
+    #print(seg_j)
+    seg_j = 16
+    seg_x,seg_y = m.sr.xcentergrid[seg_i,seg_j],m.sr.ycentergrid[seg_i,seg_j]
+    par_file = os.path.join("master","freyberg.1.par")
+    
+    print(pst.nnz_obs_names)
+    mn = derinc
+    mx = derinc * 1.5
+    infs,phis = [],[]
+    for i,ub in enumerate(np.linspace(mn,mx,100)):
+        
+        print(pst.par_groups)
+        par = pst.parameter_data
+        par.loc[par.pargp=="kg","parubnd"] = ub
+        par.loc[par.pargp=="kg","parlbnd"] = 1.0
+
+        pst.write(os.path.join("master","freyberg.pst"))
+        pyemu.os_utils.run("pestpp-opt freyberg.pst",cwd="master")
+        inf, phi = scrape_recfile(os.path.join("master", "freyberg.rec"))
+        infs.append(inf)
+        phis.append(phi)  
+        df = pyemu.pst_utils.read_parfile(par_file)
+
+        df = df.loc[df.parnme.apply(lambda x: x.startswith("k_")),:]
+        #print(df)
+        df.loc[:,"i"] = df.parnme.apply(lambda x: int(x.split('_')[1]))
+        df.loc[:,"j"] = df.parnme.apply(lambda x: int(x.split('_')[2]))
+        df.loc[df.parval1<0,"parval1"] = 0.0
+        #mx = max(mx,df.parval1.max())
+        #mn = min(mn,df.parval1.min())
+        arr = np.zeros((40,20)) - 1
+        arr[df.i,df.j] = df.parval1
+        arr = np.ma.masked_where(arr<0,arr)
+        ax = plt.subplot(111)
+
+        cb = ax.imshow(arr,extent=m.sr.get_extent())#,vmin=mn,vmax=mx)
+        c = plt.colorbar(cb)
+        c.set_label("N loading")
+        ax.scatter(nz_obs.x,nz_obs.y,marker='x',color='r')
+        ax.scatter([seg_x],[seg_y],marker='^',color='r')
+        ax.set_title("phi:{0:15.3G}, ub:{1:15.3G}".format(phi,ub))
+        plt.savefig(os.path.join("master","load_{0:03d}.png".format(i)))
+        plt.close("all")
+    df = pd.DataFrame({"phi":phis,"inf":infs})
+    #df.loc[df.inf==False,:] = np.NaN
+    df.phi.plot()
+    plt.show()
 
 if __name__ == "__main__":
     #write_ssm_tpl()
     #run_test()
-    setup_models()
-    setup_pest()
+    #setup_models()
+    #setup_pest()
     #spike_test()
     #start_slaves()
     #run_pestpp_opt()
     
-    prep_for_risk_sweep()
+    #prep_for_risk_sweep()
     #jco_invest()
-    #run_risk_sweep()
+    run_risk_sweep()
     #run_risk_sweep_pargp()
     #plot_risk_sweep_pargp()
-
-    plot_loading()
+    #bounds_test()
+    #plot_loading()
     #plot_risk_sweep()
-    run_risk_sweep_obgnme()
+    #run_risk_sweep_obgnme()
     #run_risk_sweep()
+    #constraint_testing()
 
