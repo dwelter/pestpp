@@ -1758,10 +1758,22 @@ void sequentialLP::iter_presolve()
 		}
 
 		jco.make_runs(*run_mgr_ptr);
+		set<int> failed = run_mgr_ptr->get_failed_run_ids();
+
+		//process the remaining responses
+		success = jco.process_runs(par_trans, pest_scenario.get_base_group_info(), *run_mgr_ptr, *null_prior, false);
+		if (!success)
+			throw_sequentialLP_error("error processing response matrix runs ", jco.get_failed_parameter_names());
+
+		stringstream ss;
+		ss << slp_iter << ".jcb";
+		string rspmat_file = file_mgr_ptr->build_filename(ss.str());
+		f_rec << endl << "saving iteration " << slp_iter << " reponse matrix to file: " << rspmat_file << endl;
+		jco.save(ss.str());
 
 		//check for failed runs
 		//TODO: something better than just dying
-		set<int> failed = run_mgr_ptr->get_failed_run_ids();
+		
 		if (failed.size() > 0)
 			throw_sequentialLP_error("failed runs when filling decision var response matrix...cannot continue ");
 
@@ -1776,16 +1788,7 @@ void sequentialLP::iter_presolve()
 		}
 		//par_trans.model2ctl_ip(temp_pars);
 
-		//process the remaining responses
-		success = jco.process_runs(par_trans, pest_scenario.get_base_group_info(), *run_mgr_ptr, *null_prior, false);
-		if (!success)
-			throw_sequentialLP_error("error processing response matrix runs ", jco.get_failed_parameter_names());
-
-		stringstream ss;
-		ss << slp_iter << ".jcb";
-		string rspmat_file = file_mgr_ptr->build_filename(ss.str());
-		f_rec << endl << "saving iteration " << slp_iter << " reponse matrix to file: " << rspmat_file << endl;
-		jco.save(ss.str());
+		
 	}
 	//if this is the first time through, set the initial constraint simulated values
 	if (slp_iter == 1)
@@ -1802,6 +1805,11 @@ void sequentialLP::iter_presolve()
 
 	//build the objective function
 	build_obj_func_coef_array();
+
+	stringstream ss;
+	ss << "jcb." << slp_iter << ".rei";
+	of_wr.write_opt_constraint_rei(file_mgr_ptr->open_ofile_ext(ss.str()), slp_iter, pest_scenario.get_ctl_parameters(),
+		pest_scenario.get_ctl_observations(), constraints_sim);
 
 	return;
 }
