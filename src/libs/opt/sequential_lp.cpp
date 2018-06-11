@@ -133,41 +133,14 @@ void sequentialLP::initial_report()
 	f_rec << endl << endl << "  ---  decision variables active in SLP  ---  " << endl;
 	map<string, double>::iterator end = obj_func_coef_map.end();
 	vector<string> missing;
-	f_rec << setw(20) << left << "name" << setw(25) << "obj func coefficient" << endl;
-
-
-	
-	for (auto &name : ctl_ord_dec_var_names)
+	if (obj_func_coef_map.size() == 0)
+		f_rec << "objective function coefficients defined by observation: " << pest_scenario.get_pestpp_options().get_opt_obj_func() << endl;
+	else
 	{
-		f_rec << setw(20) << left << name;
-		if (obj_func_coef_map.find(name) != end)
-		{
-			f_rec << setw(25) << obj_func_coef_map.at(name) << endl;
-		}
-		else
-		{
-			f_rec << setw(25) << "not listed" << endl;
-			missing.push_back(name);
-		}	
-	}
-	obj_init = 0.0;
-	double dv_val;
-	for (auto &p : ctl_ord_dec_var_names)
-	{
-		obj_init += all_pars_and_dec_vars_initial[p] * obj_func_coef_map[p];
-	}
-	f_rec << endl <<  "  ---  initial objective function value (using initial dec var values): " << obj_init << endl <<endl ;
-	cout << endl <<  "  ---  initial objective function value (using initial dec var values): " << obj_init << endl << endl;
-	if (missing.size() > 0)
-	{
-		f_rec << endl << endl << "WARNING: the following decision variables have '0.0' objective function coef:" << endl;
-		cout << endl << endl << "WARNING: the following decision variables have '0.0' objective function coef:" << endl;
+		obj_init = obj_func_report();
+		f_rec << endl << "  ---  objective function value (using initial dec var values): " << obj_init << endl << endl;
+		cout << endl << "  ---  objective function value (using initial dec var values): " << obj_init << endl << endl;
 
-		for (auto &name : missing)
-		{
-			f_rec << "    " << name << endl;
-			f_rec << "    " << name << endl;
-		}
 	}
 	f_rec << " note: bound and initial value info reported in 'parameter data' section" << endl << endl;
 
@@ -228,6 +201,46 @@ void sequentialLP::initial_report()
 		}
 	}
 	return;
+}
+
+
+double sequentialLP::obj_func_report()
+{
+	vector<string> missing;
+	ofstream &f_rec = file_mgr_ptr->rec_ofstream();
+	map<string, double>::iterator end = obj_func_coef_map.end();
+	f_rec << setw(20) << left << "name" << setw(25) << "obj func coefficient" << endl;
+	for (auto &name : ctl_ord_dec_var_names)
+	{
+		f_rec << setw(20) << left << name;
+		if (obj_func_coef_map.find(name) != end)
+		{
+			f_rec << setw(25) << obj_func_coef_map.at(name) << endl;
+		}
+		else
+		{
+			f_rec << setw(25) << "not listed" << endl;
+			missing.push_back(name);
+		}
+	}
+	double obj = 0.0;
+	for (auto &p : ctl_ord_dec_var_names)
+	{
+		obj += all_pars_and_dec_vars_initial[p] * obj_func_coef_map[p];
+	}
+	if (missing.size() > 0)
+	{
+		f_rec << endl << endl << "WARNING: the following decision variables have '0.0' objective function coef:" << endl;
+		cout << endl << endl << "WARNING: the following decision variables have '0.0' objective function coef:" << endl;
+
+		for (auto &name : missing)
+		{
+			f_rec << "    " << name << endl;
+			f_rec << "    " << name << endl;
+		}
+	}
+	return obj;
+
 }
 
 void sequentialLP::presolve_fosm_report()
@@ -844,19 +857,25 @@ void sequentialLP::initialize_and_check()
 	obj_func_str = pest_scenario.get_pestpp_options().get_opt_obj_func();
 	obj_sense = (pest_scenario.get_pestpp_options().get_opt_direction() == 1) ? "minimize" : "maximize";
 
-	if (obj_func_str.size() == 0)
+	
+
+	//check if the obj_str is an observation
+	use_obj_obs = false;
+	if (pest_scenario.get_ctl_observations().find(obj_func_str) != pest_scenario.get_ctl_observations().end())
 	{
-		f_rec << " warning: no ++opt_objective_function-->forming a generic objective function (1.0 coef for each decision var)" << endl;
-		for (auto &name : ctl_ord_dec_var_names)
-			obj_func_coef_map[name] = 1.0;
+		use_obj_obs = true;
+		obj_obs = obj_func_str;
 	}
+	
 	else
 	{
-		//check if the obj_str is an observation
-		if (pest_scenario.get_ctl_observations().find(obj_func_str) != pest_scenario.get_ctl_observations().end())
+		if (obj_func_str.size() == 0)
 		{
-			throw_sequentialLP_error("observation-based objective function not implemented");
+			f_rec << " warning: no ++opt_objective_function-->forming a generic objective function (1.0 coef for each decision var)" << endl;
+			for (auto &name : ctl_ord_dec_var_names)
+				obj_func_coef_map[name] = 1.0;
 		}
+
 		//or if it is a prior info equation
 		else if (pest_scenario.get_prior_info().find(obj_func_str) != pest_scenario.get_prior_info().end())
 		{
@@ -872,17 +891,17 @@ void sequentialLP::initialize_and_check()
 			else
 				obj_func_coef_map = pest_utils::read_twocol_ascii_to_map(obj_func_str);
 		}
+
+
+		//check that all obj_coefs are decsision vars
+		vector<string> missing_vars;
+		for (auto &coef : obj_func_coef_map)
+			if (find(ctl_ord_dec_var_names.begin(), ctl_ord_dec_var_names.end(), coef.first) == ctl_ord_dec_var_names.end())
+				missing_vars.push_back(coef.first);
+		if (missing_vars.size() > 0)
+			throw_sequentialLP_error("the following objective function components are not decision variables: ", missing_vars);
+
 	}
-
-	//check that all obj_coefs are decsision vars
-	vector<string> missing_vars;
-	for (auto &coef : obj_func_coef_map)
-		if (find(ctl_ord_dec_var_names.begin(), ctl_ord_dec_var_names.end(), coef.first) == ctl_ord_dec_var_names.end())
-			missing_vars.push_back(coef.first);
-	if (missing_vars.size() > 0)
-		throw_sequentialLP_error("the following objective function components are not decision variables: ", missing_vars);
-
-	
 
 
 
@@ -1793,6 +1812,26 @@ void sequentialLP::iter_presolve()
 	//if this is the first time through, set the initial constraint simulated values
 	if (slp_iter == 1)
 		constraints_sim_initial = Observations(constraints_sim);
+
+	if (use_obj_obs)
+	{
+		obj_func_coef_map.clear();
+		vector<string> onames = jco.get_sim_obs_names();
+		vector<string> pnames = jco.get_base_numeric_par_names();
+		set<string> sdecvar(ctl_ord_dec_var_names.begin(), ctl_ord_dec_var_names.end());
+
+		int idx = find(onames.begin(), onames.end(), obj_obs) - onames.begin();
+		if (idx >= onames.size())
+			throw runtime_error("obj function obs not found in jco row names, #sad");
+		Eigen::VectorXd vec = Eigen::VectorXd(jco.get_matrix_ptr()->row(idx));
+		for (int i = 0; i < vec.size(); i++)
+		{
+			if (sdecvar.find(pnames[i]) == sdecvar.end())
+				continue;
+			obj_func_coef_map[pnames[i]] = vec[i];
+		}
+		
+	}
 
 	//set/update the constraint bound arrays
 	build_constraint_bound_arrays();
