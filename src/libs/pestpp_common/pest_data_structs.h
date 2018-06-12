@@ -328,6 +328,8 @@ public:
 	void set_opt_iter_derinc_fac(double _opt_iter_derinc_fac) { opt_iter_derinc_fac = _opt_iter_derinc_fac; }
 	bool get_opt_include_bnd_pi()const { return opt_include_bnd_pi; }
 	void set_opt_include_bnd_pi(bool _include_bnd_pi) { opt_include_bnd_pi = _include_bnd_pi; }
+	bool get_opt_std_weights()const { return opt_std_weights; }
+	void set_opt_std_weights(bool _opt_std_weights) { opt_std_weights = _opt_std_weights; }
 
 
 
@@ -450,6 +452,7 @@ private:
 	int opt_recalc_fosm_every;
 	double opt_iter_derinc_fac;
 	bool opt_include_bnd_pi;
+	bool opt_std_weights;
 
 	int ies_subset_size;
 	string ies_par_csv;

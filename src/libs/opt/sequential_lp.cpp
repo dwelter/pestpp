@@ -18,7 +18,15 @@ sequentialLP::sequentialLP(Pest &_pest_scenario, RunManagerAbstract* _run_mgr_pt
 	Covariance &_parcov, FileManager* _file_mgr, OutputFileWriter _of_wr) : pest_scenario(_pest_scenario), run_mgr_ptr(_run_mgr_ptr),
 	parcov(_parcov), file_mgr_ptr(_file_mgr),jco(*_file_mgr,_of_wr), of_wr(_of_wr)
 {
-	initialize_and_check();
+	try
+	{
+		initialize_and_check();
+	}
+	catch (const runtime_error& error)
+	{
+		cout << "error initializing sequentialLP process: " << error.what() << endl;
+		exit(1);
+	}
 }
 
 sequentialLP::~sequentialLP()
@@ -137,6 +145,7 @@ void sequentialLP::initial_report()
 		f_rec << "objective function coefficients defined by observation: " << pest_scenario.get_pestpp_options().get_opt_obj_func() << endl;
 	else
 	{
+		f_rec << "  ---  objective function coefficients  ---  " << endl;
 		obj_init = obj_func_report();
 		f_rec << endl << "  ---  objective function value (using initial dec var values): " << obj_init << endl << endl;
 		cout << endl << "  ---  objective function value (using initial dec var values): " << obj_init << endl << endl;
@@ -849,6 +858,121 @@ void sequentialLP::initialize_and_check()
 	
 
 
+	
+
+
+	//------------------------------------------
+	//  ---  chance constratints and fosm  ---  
+	//------------------------------------------
+	risk = pest_scenario.get_pestpp_options().get_opt_risk();
+	if (risk != 0.5)
+	{
+		use_chance = true;
+		std_weights = pest_scenario.get_pestpp_options().get_opt_std_weights();
+
+		//make sure risk value is valid
+		if ((risk > 1.0) || (risk < 0.0))
+			throw_sequentialLP_error("++opt_risk parameter must between 0.0 and 1.0");
+
+		//reset risk extreme risk values
+		if (risk > 0.999)
+		{
+			f_rec << endl << "  ---  note: resetting risk value of " << risk << " to a practical value of " << 0.999 << endl << endl;
+			risk = 0.999;
+		}
+		if (risk < 0.001)
+		{
+			f_rec << endl << "  ---  note: resetting risk value of " << risk << " to a practical value of " << 0.001 << endl << endl;
+			risk = 0.001;
+		}
+
+	    probit_val = get_probit();
+
+		if (std_weights)
+		{
+			double std, var;
+			cout << "++opt_std_weights = True, using weights as chance constraint uncertainty" << endl;
+			f_rec << "++opt_std_weights = True, using the following weights as prior and posterior chance constraint uncertainty: " << endl;
+			f_rec << setw(25) << "model-based constraint" << setw(15) << "std (weight)" << setw(15) << "variance" << endl;
+			for (auto &cname : ctl_ord_obs_constraint_names)
+			{
+				std = pest_scenario.get_observation_info_ptr()->get_weight(cname);
+				var = std * std;
+				f_rec << setw(25) << cname << setw(15) << std << setw(15) << var << endl;
+				prior_const_var[cname] = var;
+				post_const_var[cname] = var;
+
+
+			}
+		}
+		else
+		{
+			//make sure there is at least one non-decision var adjustable parameter		
+			vector<string>::iterator start = ctl_ord_dec_var_names.begin();
+			vector<string>::iterator end = ctl_ord_dec_var_names.end();
+			for (auto &name : pest_scenario.get_ctl_ordered_par_names())
+			{
+				//if this parameter is not a decision var
+				if (find(start, end, name) == end)
+				{
+					ParameterRec::TRAN_TYPE tt = pest_scenario.get_ctl_parameter_info().get_parameter_rec_ptr(name)->tranform_type;
+					if ((tt == ParameterRec::TRAN_TYPE::LOG) || (tt == ParameterRec::TRAN_TYPE::NONE))
+						adj_par_names.push_back(name);
+				}
+			}
+			if (num_adj_pars() == 0)
+				throw_sequentialLP_error("++opt_risk != 0.5, but no adjustable parameters found in control file");
+
+			//look for non-zero weighted obs
+			start = ctl_ord_obs_constraint_names.begin();
+			end = ctl_ord_obs_constraint_names.end();
+			for (auto &name : pest_scenario.get_ctl_ordered_obs_names())
+			{
+				if (find(start, end, name) == end)
+				{
+					if (pest_scenario.get_ctl_observation_info().get_observation_rec_ptr(name)->weight > 0.0)
+						nz_obs_names.push_back(name);
+				}
+			}
+
+
+			string parcov_filename = pest_scenario.get_pestpp_options().get_parcov_filename();
+			//build the adjustable parameter parcov
+			//from filename
+
+			if (parcov_filename.size() > 0)
+			{
+				//throw_sequentialLP_error("parcov from filename not implemented");
+				Covariance temp_parcov;
+				temp_parcov.from_ascii(parcov_filename);
+				//check that all adj par names in temp_parcov
+				vector<string> temp_names = temp_parcov.get_col_names();
+				start = temp_names.begin();
+				end = temp_names.end();
+				vector<string> missing;
+				for (auto &name : adj_par_names)
+					if (find(start, end, name) == end)
+						missing.push_back(name);
+				if (missing.size() > 0)
+					throw_sequentialLP_error("the following adjustable parameters were not found in the ++parcov_filename covaraince matrix: ", missing);
+
+				parcov = temp_parcov.get(adj_par_names);
+
+			}
+			//from parameter bounds
+			else
+			{
+				parcov.from_parameter_bounds(adj_par_names, pest_scenario.get_ctl_parameter_info());
+			}
+
+			//build the nz_obs obs_cov
+			if (num_nz_obs() != 0)
+				obscov.from_observation_weights(nz_obs_names, pest_scenario.get_ctl_observation_info(), vector<string>(), null_prior);
+		}
+	}
+	else use_chance = false;
+	
+
 	//--------------------------------
 	//  ---  objective function  ---  
 	//--------------------------------
@@ -857,7 +981,6 @@ void sequentialLP::initialize_and_check()
 	obj_func_str = pest_scenario.get_pestpp_options().get_opt_obj_func();
 	obj_sense = (pest_scenario.get_pestpp_options().get_opt_direction() == 1) ? "minimize" : "maximize";
 
-	
 
 	//check if the obj_str is an observation
 	use_obj_obs = false;
@@ -865,8 +988,21 @@ void sequentialLP::initialize_and_check()
 	{
 		use_obj_obs = true;
 		obj_obs = obj_func_str;
+		//check
+		set<string> names(ctl_ord_obs_constraint_names.begin(), ctl_ord_obs_constraint_names.end());
+		if (names.find(obj_obs) != names.end())
+		{
+			throw runtime_error("objective function obs is a constraint, #sad");
+		}
+		names.clear();
+		names.insert(nz_obs_names.begin(),nz_obs_names.end());
+		if (names.find(obj_obs) != names.end())
+		{
+			throw runtime_error("objective function obs has non-zero weight and chance constraints are active");
+		}
+
 	}
-	
+
 	else
 	{
 		if (obj_func_str.size() == 0)
@@ -904,98 +1040,6 @@ void sequentialLP::initialize_and_check()
 	}
 
 
-
-	//------------------------------------------
-	//  ---  chance constratints and fosm  ---  
-	//------------------------------------------
-	risk = pest_scenario.get_pestpp_options().get_opt_risk();
-	if (risk != 0.5)
-	{
-		use_chance = true;
-		//make sure risk value is valid
-		if ((risk > 1.0) || (risk < 0.0))
-			throw_sequentialLP_error("++opt_risk parameter must between 0.0 and 1.0");
-
-		//reset risk extreme risk values
-		if (risk > 0.999)
-		{
-			f_rec << endl << "  ---  note: resetting risk value of " << risk << " to a practical value of " << 0.999 << endl << endl;
-			risk = 0.999;
-		}
-		if (risk < 0.001)
-		{
-			f_rec << endl << "  ---  note: resetting risk value of " << risk << " to a practical value of " << 0.001 << endl << endl;
-			risk = 0.001;
-		}
-
-	    probit_val = get_probit();
-
-
-		//make sure there is at least one non-decision var adjustable parameter		
-		vector<string>::iterator start = ctl_ord_dec_var_names.begin();
-		vector<string>::iterator end = ctl_ord_dec_var_names.end();
-		for (auto &name : pest_scenario.get_ctl_ordered_par_names())
-		{
-			//if this parameter is not a decision var
-			if (find(start, end, name) == end)
-			{
-				ParameterRec::TRAN_TYPE tt = pest_scenario.get_ctl_parameter_info().get_parameter_rec_ptr(name)->tranform_type;
-				if ((tt == ParameterRec::TRAN_TYPE::LOG) || (tt == ParameterRec::TRAN_TYPE::NONE))
-					adj_par_names.push_back(name);
-			}
-		}
-		if (num_adj_pars() == 0)
-			throw_sequentialLP_error("++opt_risk != 0.5, but no adjustable parameters found in control file");
-
-		//look for non-zero weighted obs
-		start = ctl_ord_obs_constraint_names.begin();
-		end = ctl_ord_obs_constraint_names.end();
-		for (auto &name : pest_scenario.get_ctl_ordered_obs_names())
-		{
-			if (find(start, end, name) == end)
-			{
-				if (pest_scenario.get_ctl_observation_info().get_observation_rec_ptr(name)->weight > 0.0)
-					nz_obs_names.push_back(name);
-			}
-		}
-
-		
-		string parcov_filename = pest_scenario.get_pestpp_options().get_parcov_filename();
-		//build the adjustable parameter parcov
-		//from filename
-
-		if (parcov_filename.size() > 0)
-		{
-			//throw_sequentialLP_error("parcov from filename not implemented");
-			Covariance temp_parcov;
-			temp_parcov.from_ascii(parcov_filename);
-			//check that all adj par names in temp_parcov
-			vector<string> temp_names = temp_parcov.get_col_names();
-			start = temp_names.begin();
-			end = temp_names.end();
-			vector<string> missing;
-			for (auto &name : adj_par_names)
-				if (find(start, end, name) == end)
-					missing.push_back(name);
-			if (missing.size() > 0)
-				throw_sequentialLP_error("the following adjustable parameters were not found in the ++parcov_filename covaraince matrix: ", missing);
-
-			parcov = temp_parcov.get(adj_par_names);
-
-		}
-		//from parameter bounds
-		else
-		{
-			parcov.from_parameter_bounds(adj_par_names,pest_scenario.get_ctl_parameter_info());
-		}
-
-		//build the nz_obs obs_cov
-		if (num_nz_obs() != 0)
-			obscov.from_observation_weights(nz_obs_names, pest_scenario.get_ctl_observation_info(), vector<string>(), null_prior);
-		
-	}
-	else use_chance = false;
-	
 	jco.set_base_numeric_pars(all_pars_and_dec_vars);
 	jco.set_base_sim_obs(pest_scenario.get_ctl_observations());
 	if (pest_scenario.get_pestpp_options().get_opt_coin_log())
@@ -1020,7 +1064,7 @@ void sequentialLP::calc_chance_constraint_offsets()
 	prior_constraint_stdev.clear();
 	post_constraint_offset.clear();
 	post_constraint_stdev.clear();
-	if (slp_iter == 1)
+	if ((!std_weights) && ((slp_iter == 1) || ((slp_iter + 1) % pest_scenario.get_pestpp_options().get_opt_recalc_fosm_every() == 0)))
 	{
 		//the rows of the fosm jacobian include nonzero weight obs (for schur comp) 
 		//plus the names of the names of constraints, which get treated as forecasts
@@ -1649,9 +1693,10 @@ void sequentialLP::iter_presolve()
 	{
 		jco.read(basejac_filename);
 		//check to make sure decision vars and constraints are found
-		vector<string> names = jco.get_base_numeric_par_names();
-		vector<string>::iterator start = names.begin();
-		vector<string>::iterator end = names.end();
+		vector<string> temp = jco.get_base_numeric_par_names();
+		set<string> names(temp.begin(),temp.end());
+		set<string>::iterator start = names.begin();
+		set<string>::iterator end = names.end();
 		vector<string>::iterator ext_start = ctl_ord_ext_var_names.begin();
 		vector<string>::iterator ext_end = ctl_ord_ext_var_names.end();
 
@@ -1671,7 +1716,8 @@ void sequentialLP::iter_presolve()
 
 
 		names.clear();
-		names = jco.get_sim_obs_names();
+		temp = jco.get_sim_obs_names();
+		names.insert(temp.begin(),temp.end());
 		start = names.begin();
 		end = names.end();
 		for (auto &name : ctl_ord_obs_constraint_names)
@@ -1723,7 +1769,7 @@ void sequentialLP::iter_presolve()
 			if (find(ctl_ord_ext_var_names.begin(), ctl_ord_ext_var_names.end(), name) == ctl_ord_ext_var_names.end())
 				names_to_run.push_back(name);
 
-		if ((slp_iter == 1) || ((slp_iter+1) % pest_scenario.get_pestpp_options().get_opt_recalc_fosm_every() == 0))
+		if ((!std_weights) && ((slp_iter == 1) || ((slp_iter+1) % pest_scenario.get_pestpp_options().get_opt_recalc_fosm_every() == 0)))
 		{
 			names_to_run.insert(names_to_run.end(), adj_par_names.begin(), adj_par_names.end());
 		}
@@ -1829,6 +1875,14 @@ void sequentialLP::iter_presolve()
 			if (sdecvar.find(pnames[i]) == sdecvar.end())
 				continue;
 			obj_func_coef_map[pnames[i]] = vec[i];
+		}
+		f_rec << "  ---  objective function coefficients for iteration " << slp_iter << "  ---  " << endl;
+		double obj = obj_func_report();
+		if (slp_iter == 1)
+		{
+			obj_init = obj;
+			f_rec << endl << "  ---  objective function value (using initial dec var values): " << obj_init << endl << endl;
+			cout << endl << "  ---  objective function value (using initial dec var values): " << obj_init << endl << endl;
 		}
 		
 	}

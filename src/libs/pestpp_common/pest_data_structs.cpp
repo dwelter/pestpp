@@ -625,6 +625,13 @@ void PestppOptions::parce_line(const string &line)
 			is >> boolalpha >> opt_skip_final;
 		}
 
+		else if (key == "OPT_STD_WEIGHTS")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> opt_std_weights;
+		}
+
 		else if ((key == "OPT_DEC_VAR_GROUPS") || (key == "OPT_DECISION_VARIABLE_GROUPS"))
 		{
 			opt_dec_var_groups.clear();

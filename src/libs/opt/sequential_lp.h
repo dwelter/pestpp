@@ -31,6 +31,7 @@ private:
 	bool terminate;
 	bool super_secret_option;
 	bool use_obj_obs;
+	bool std_weights;
 	string obj_obs;
 	int slp_iter;
 	
