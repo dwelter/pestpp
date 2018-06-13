@@ -94,6 +94,8 @@ Here is a (more or less) complete list of ``++`` arguments that can be added to 
 
 * ``++upgrade_augment(true)``: augment the values of lambda to test by including the best lambda from the previous iteration, as well as best lambda * 2.0 and best lambda / 2.0.  If ``true``, then additional lambdas will be included by attempting to extend each upgrade vector along the region of parameter space defined by parameter bounds.  If ``false``, then only the vectors listed in the ``++lambda()`` arg will be tested and no extended upgrade will be included.  
 
+* ``++upgrade_bounds(true)``: use additional tricks and upgrades to deal with upgrades that are going out bounds.  If ``true``, can result in substantial phi improvement, but in some cases can produce NaNs in the upgrade vectors.
+
 * ``++hotstart_resfile(mycase.res)``: use an exising residual file to restart with an existing jacobian to forego the initial, base run and jump straight to upgrade calculations (++base_jacobian arg required).
 
 * ``++max_run_fail(4)``:maximum number of runs that can fail before the run manager emits an error.
@@ -128,6 +130,10 @@ Here is a (more or less) complete list of ``++`` arguments that can be added to 
 * ``++opt_direction(<direction>)``: either "min" or "max", whether to minimize or maximize the objective function. 
 
 * ``++opt_risk(<risk>)``: a float ranging from 0.0 to 1.0 that is the value to use in the FOSM uncertainty estimation for model-based constraints. a value of 0.5 is a "risk neutral" position and no FOSM measures are calculated.  A value of 0.95 will seek a 95% risk averse solution, while a value of 0.05 will seek a 5% risk tolerant solution. See Wagner and Gorelick, 1987, *Optimal groundwater quality management under parameter uncertainty* for more background on chance-constrained linear programming
+
+* ``++opt_skip_final(true)``: a flag to skip the final model run using optimal decision variable values.  If ``true`` and ``++base_jacobian()`` and ``++hotstart_resfile()`` are set and (lot of "ands") ``noptmax``=0, then this causes no model runs to happen, pestpp-opt simply solves the chance constrainted LP problem, report optimal decision variables and phi, then exits.
+
+* ``++opt_std_weights(false)``:a flag to treat model-based constraints (listed in the ``* observation data`` section) as standard deviations for chance constraints.  This can result in substantial time savings since the FOSM calculation process can be skipped.  This can also be used to specific empirical constraint uncertainty (e.g. from ensemble methods)
 
 ### pestpp-ies ``++`` arguments
 ``pestpp-ies`` is an implementation of the iterative ensemble smoother GLM algorithm of Chen and Oliver 2012. So far, this tool has performed very well across a range of problems.  It functions without any additional ``++`` arguments. However, several ``++`` arguments can be used to fine-tune the function of ``pestpp-ies``.  These are available in ``documentation/input_tbl.pdf``
