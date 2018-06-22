@@ -1196,7 +1196,7 @@ def setup_rosenbrock():
 
 if __name__ == "__main__":
     # write_empty_test_matrix()
-    # setup_suite_dir("ies_freyberg")
+    setup_suite_dir("ies_freyberg")
     # setup_suite_dir("ies_10par_xsec")
     # run_suite("ies_freyberg")
     # run_suite("ies_10par_xsec")
@@ -1224,7 +1224,7 @@ if __name__ == "__main__":
     #compare_suite("ies_10par_xsec")
     #compare_suite("ies_freyberg")
     
-    test_kirishima()
+    #test_kirishima()
 
     #tenpar_fixed_test()
 
