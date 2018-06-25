@@ -42,7 +42,7 @@ bool Localizer::initialize(PerformanceLog *performance_log)
 	//error checking and building up container of names
 	vector<string> names = pest_scenario_ptr->get_ctl_ordered_adj_par_names();
 	set<string> par_names(names.begin(), names.end());
-	names = pest_scenario_ptr->get_ctl_ordered_obs_names();
+	names = pest_scenario_ptr->get_ctl_ordered_nz_obs_names();
 	set<string> obs_names(names.begin(), names.end());
 
 	map<string, vector<string>> pargp_map;
@@ -97,7 +97,7 @@ bool Localizer::initialize(PerformanceLog *performance_log)
 	}
 	if (missing.size() > 0)
 	{
-		ss << " the following rows in " << filename << " were not found in the observation names or observation group names: ";
+		ss << " the following rows in " << filename << " were not found in the non-zero-weight observation names or observation group names: ";
 		for (auto &m : missing)
 			ss << m << ',';
 		performance_log->log_event("error:" + ss.str());
