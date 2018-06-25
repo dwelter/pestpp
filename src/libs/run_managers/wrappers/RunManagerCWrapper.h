@@ -60,18 +60,25 @@ extern __declspec(dllexport)
 #endif
 int rmic_run(RunManager *run_manager_ptr);
 
-
 #ifdef OS_WIN
 extern __declspec(dllexport)
 #endif
 int rmic_run_until(RunManager *run_manager_ptr, int condition, int n_nops , double sec, int * return_cond);
 
+#ifdef OS_WIN
+extern __declspec(dllexport)
+#endif
+int rmic_cancel_run(RunManager *run_manager_ptr, int run_id);
+
+#ifdef OS_WIN
+extern __declspec(dllexport)
+#endif
+int rmic_get_run_status_info(RunManager *run_manager_ptr, int run_id, int *run_status, double *max_runtime, int *n_concurrent_runs);
 
 #ifdef OS_WIN
 extern __declspec(dllexport)
 #endif
 int rmic_get_run(RunManager *run_manager_ptr, int run_id, double *parameter_data, int npar, double *obs_data, int nobs);
-
 
 #ifdef OS_WIN
 extern __declspec(dllexport)

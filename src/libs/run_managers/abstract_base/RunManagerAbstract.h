@@ -55,6 +55,7 @@ public:
 	virtual const std::vector<std::string> &get_obs_name_vec() const;
 	virtual void get_info(int run_id, int &run_status, std::string &info_txt, double &info_value);
 	virtual bool run_finished(int run_id);
+	virtual void get_run_status_info(int run_id, int &run_status, double &max_runtime, int &n_concurrent_runs);
 	virtual bool get_run(int run_id, Parameters &pars, Observations &obs, bool clear_old=true);
 	virtual bool get_run(int run_id, Parameters &pars, Observations &obs, std::string &info_txt, double &info_value, bool clear_old=true);
 	virtual bool get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs, std::string &info_txt, double &info_value);

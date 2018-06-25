@@ -130,12 +130,12 @@ int rmic_run(RunManager *run_manager_ptr)
 	return err;
 }
 
-int rmic_run_until_(RunManager *run_manager_ptr, int *condition, int no_ops, double time_sec, int *return_cond)
+int rmic_run_until_(RunManager *run_manager_ptr, int condition, int no_ops, double time_sec, int *return_cond)
 {
 	int err = 0;
 	RunManagerAbstract::RUN_UNTIL_COND enum_input_cond;
 	RunManagerAbstract::RUN_UNTIL_COND enum_return_cond;
-	enum_input_cond = static_cast<RunManagerAbstract::RUN_UNTIL_COND>(*condition);
+	enum_input_cond = static_cast<RunManagerAbstract::RUN_UNTIL_COND>(condition);
 	try {
 		enum_return_cond = run_manager_ptr->run_until(enum_input_cond, no_ops, time_sec);
 	}
@@ -147,6 +147,31 @@ int rmic_run_until_(RunManager *run_manager_ptr, int *condition, int no_ops, dou
 	return err;
 }
 
+int rmic_cancel_run(RunManager *run_manager_ptr, int run_id)
+{
+	int err = 0;
+	try {
+		run_manager_ptr->cancel_run(run_id);
+	}
+	catch (...)
+	{
+		err = 1;
+	}
+	return err;
+}
+
+int rmic_get_run_status_info(RunManager *run_manager_ptr, int run_id, int *run_status, double *max_runtime, int *n_concurrent_runs)
+{
+	int err = 0;
+	try {
+		run_manager_ptr->cancel_run(run_id);
+	}
+	catch (...)
+	{
+		err = 1;
+	}
+	return err;
+}
 
 int rmic_get_run(RunManager *run_manager_ptr, int run_id, double *parameter_data, int npar, double *obs_data, int nobs)
 {

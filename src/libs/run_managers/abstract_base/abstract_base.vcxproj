@@ -147,9 +147,6 @@
     <ClInclude Include="RunStorage.h" />
     <ClInclude Include="Serialization.h" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="makefile_linux" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

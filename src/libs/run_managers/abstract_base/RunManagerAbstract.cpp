@@ -116,6 +116,16 @@ void RunManagerAbstract::update_run(int run_id, const Parameters &pars, const Ob
 	  file_stor.get_info(run_id, run_status, info_txt, info_value);
  }
 
+ void RunManagerAbstract::get_run_status_info(int run_id, int &run_status, double &max_runtime, int &n_concurrent_runs)
+ {
+	 string info_txt;
+	 double info_value;
+	 file_stor.get_info(run_id, run_status, info_txt, info_value);
+	 max_runtime = 0;
+	 n_concurrent_runs = 0;
+ }
+
+
 bool RunManagerAbstract::get_run(int run_id, Parameters &pars, Observations &obs, string &info_txt, double &info_value, bool clear_old)
 {
 	bool success = false;

@@ -43,7 +43,8 @@
     integer rmif_get_failed_run_ids
     external rmif_get_num_total_runs
     integer rmif_get_num_total_runs
-    
+    external rmif_get_run_status_info
+    integer rmif_get_run_status_info
     
     external rmif_delete
     integer rmif_delete
@@ -77,7 +78,10 @@
     integer run_output_flag
     integer run_until_no_ops
     integer run_id
+    integer n_concurrent
+    integer istatus
     DOUBLE PRECISION run_until_time_sec
+    DOUBLE PRECISION runtime
     
     ! Body of run_manager_fortran_test
     data comline   /'storage1_win.exe  '/
@@ -125,7 +129,7 @@
             
     
     
-    nruns = 4
+    nruns = 10
     npar = 3
     nobs = 16
     ! intitialize run manager - allocate memory initialize parameter and observation names
@@ -158,6 +162,13 @@
     !  run_output_flag = 2 -> run_until_time_sec" was active and this condition occured
     do while (run_output_flag /= 0)
         err = rmif_run_until(run_input_flag, run_until_no_ops, run_until_time_sec, run_output_flag)
+        ! check and print status of model runs
+        write(*,*) '  ------------------- Status of Model Runs -------------------'
+        do irun = 0, nruns-1
+            err = rmif_get_run_status_info(irun, istatus, runtime, n_concurrent)
+            write(*,*) '    run_id: ', irun, '  istatus: ', istatus, '  runtime: ', runtime, ' num concurrent runs: ', n_concurrent
+        end do
+         write(*,*) '  ------------------------------------------------------------'
         !write(*,*) 'Doing useful stuff while program runs'
         !write(*,*) ''
        ! cancel the last run

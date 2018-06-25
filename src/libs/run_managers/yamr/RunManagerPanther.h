@@ -101,6 +101,7 @@ public:
 	virtual int add_run(const std::vector<double> &model_pars, const std::string &info_txt="", double info_valuee=RunStorage::no_data);
 	virtual int add_run(const Eigen::VectorXd &model_pars, const std::string &info_txt="", double info_valuee=RunStorage::no_data);
 	virtual void update_run(int run_id, const Parameters &pars, const Observations &obs);
+	virtual void get_run_status_info(int run_id, int &run_status, double &max_runtime, int &n_concurrent_runs);
 	void cancel_run(int run_id);
 	virtual void run();
 	virtual RunManagerAbstract::RUN_UNTIL_COND run_until(RUN_UNTIL_COND condition, int n_nops = 0, double sec = 0.0);
@@ -147,7 +148,6 @@ private:
 	void schedule_runs();
 	void init_slaves();
 	list<SlaveInfoRec>::iterator add_slave(int sock_id);
-	void erase_slave(int sock_id);
 	bool ping(int i_sock);
 	bool ping();
 	void report(std::string message,bool to_cout);	

@@ -129,33 +129,28 @@ int main(int argc, char* argv[])
 			{
 				if (sock_parts.size() != 2)
 				{
-					cerr << "PANTHER worker requires the master be specified as /H hostname:port" << endl << endl;
+					cerr << "PANTHER slave requires the master be specified as /H hostname:port" << endl << endl;
 					throw(PestCommandlineError(commandline));
 				}
-				PANTHERSlave yam_slave;
+				PANTHERSlave panther_slave;
 				string ctl_file = "";
 				try {
 					string ctl_file;
-					if (upper_cp(file_ext) == "YMR")
+					if (upper_cp(file_ext) == "")
 					{
-						ctl_file = file_manager.build_filename("ymr");
-						yam_slave.process_panther_ctl_file(ctl_file);
+						file_ext = "pst";
 					}
-					else
-					{
-						// process traditional PEST control file
-						ctl_file = file_manager.build_filename("pst");
-						yam_slave.process_ctl_file(ctl_file);
-					}
+					ctl_file = file_manager.build_filename(file_ext);
+					panther_slave.process_ctl_file(ctl_file);
 				}
 				catch (PestError e)
 				{
-					cerr << "Error prococessing control file: " << ctl_file << endl << endl;
+					cerr << "Error prococessing PANTHER control file: " << ctl_file << endl << endl;
 					cerr << e.what() << endl << endl;
 					throw(e);
 				}
 
-				yam_slave.start(sock_parts[0], sock_parts[1]);
+				panther_slave.start(sock_parts[0], sock_parts[1]);
 			}
 			catch (PestError &perr)
 			{

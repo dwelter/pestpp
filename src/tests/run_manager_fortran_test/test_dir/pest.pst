@@ -45,8 +45,8 @@ head16     100.000      3.3  obsgroup1
 * model command line
 storage1_win.exe
 * model input/output
-misc\input.tpl   input.dat
-misc\output.ins  output.dat
+input.tpl   input.dat
+output.ins  output.dat
 * prior information
 pri_1 1.0 * log(cond) =  0.0 0.5 regul
 pri_2 1.0 * log(scoeff) = -0.7 0.8 regul

@@ -50,7 +50,6 @@ public:
 	//void listener(pest_utils::thread_flag* terminate, pest_utils::thread_flag* finished);
 	void listener();
 	void process_ctl_file(const string &ctl_filename);
-	void process_panther_ctl_file(const string &ctl_filename);
 private:
 	int sockfd;
 	int fdmax;

@@ -248,10 +248,21 @@ int rmif_get_run_with_info_(int *run_id, double *parameter_data, int *npar, doub
 		err = 1;
 	}
 	return err;
-
 }
 
-
+int rmif_get_run_status_info_(int *run_id, int *run_status, double *max_runtime, int* n_concurrent_runs)
+{
+	int err = 1;
+	try {
+		_run_manager_ptr_->get_run_status_info(*run_id, *run_status, *max_runtime, *n_concurrent_runs);
+		err = 0;
+	}
+	catch (PestIndexError ex) {
+		cerr << ex.what() << endl;
+		err = 1;
+	}
+	return err;
+}
 
 int rmif_delete_()
 {

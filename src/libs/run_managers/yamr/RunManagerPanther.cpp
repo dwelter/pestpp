@@ -427,6 +427,23 @@ void RunManagerPanther::cancel_run(int run_id)
 	kill_runs(run_id, false, "run canceled");
 }
 
+void RunManagerPanther::get_run_status_info(int run_id, int &run_status, double &max_runtime, int &n_concurrent_runs)
+{
+	RunManagerAbstract::get_run_status_info(run_id, run_status, max_runtime, n_concurrent_runs);
+
+	auto range_pair = active_runid_to_iterset_map.equal_range(run_id);
+	n_concurrent_runs = 0;
+	max_runtime = 0;
+	double i_runtime = 0;
+	for (auto &i = range_pair.first; i != range_pair.second; ++i)
+	{
+		if (i->second->get_state() == SlaveInfoRec::State::ACTIVE)
+		{
+			++n_concurrent_runs;
+			max_runtime = max(i->second->get_runtime_sec(), max_runtime);
+		}
+	}
+}
 
 void RunManagerPanther::run()
 {
