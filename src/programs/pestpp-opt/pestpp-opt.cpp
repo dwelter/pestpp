@@ -318,7 +318,26 @@ int main(int argc, char* argv[])
 		{
 			performance_log.log_event("starting basic model IO error checking", 1);
 			cout << "checking model IO files...";
-			pest_scenario.check_io();
+			if ((pest_scenario.get_pestpp_options().get_opt_skip_final()) &&
+				(pest_scenario.get_pestpp_options().get_basejac_filename().size()) > 0 &&
+				(pest_scenario.get_pestpp_options().get_hotstart_resfile().size()) > 0 &&
+				(pest_scenario.get_control_info().noptmax == 1))
+			{
+				try
+				{
+					pest_scenario.check_io();
+				}
+				catch (...)
+				{
+					cout << "error checking I/O files...continuing" << endl;
+				}
+
+			}
+			else
+			{
+				pest_scenario.check_io();
+			}
+
 			performance_log.log_event("finished basic model IO error checking");
 			cout << "done" << endl;
 			const ModelExecInfo &exi = pest_scenario.get_model_exec_info();

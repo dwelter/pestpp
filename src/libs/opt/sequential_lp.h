@@ -30,6 +30,9 @@ private:
 	bool use_chance;
 	bool terminate;
 	bool super_secret_option;
+	bool use_obj_obs;
+	bool std_weights;
+	string obj_obs;
 	int slp_iter;
 	
 	double* dec_var_lb;
@@ -189,6 +192,8 @@ private:
 
 	//calc FOSM-based chance constraint offsets
 	void calc_chance_constraint_offsets();
+
+	double obj_func_report();
 };
 
 

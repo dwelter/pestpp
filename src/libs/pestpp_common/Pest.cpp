@@ -231,9 +231,9 @@ void Pest::check_io()
 		string missing;
 		for (auto &file : inaccessible_files)
 			missing += file + " , ";
-
-		//throw PestError("Could not access the following model interface files: "+missing);
-		cout << "WARNING: could not access the following model interface files: " << missing << endl;
+		cout << "Could not access the following model interface files: " << missing;
+		throw PestError("Could not access the following model interface files: "+missing);
+		//cout << "WARNING: could not access the following model interface files: " << missing << endl;
 		
 	}
 }
@@ -713,6 +713,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_opt_obj_func("");
 	pestpp_options.set_opt_coin_log(true);
 	pestpp_options.set_opt_skip_final(false);
+	pestpp_options.set_opt_std_weights(false);
 	pestpp_options.set_opt_dec_var_groups(vector<string>());
 	pestpp_options.set_opt_ext_var_groups(vector<string>());
 	pestpp_options.set_opt_constraint_groups(vector<string>());
@@ -721,6 +722,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_opt_iter_tol(0.001);
 	pestpp_options.set_opt_recalc_fosm_every(1);
 	pestpp_options.set_opt_iter_derinc_fac(1.0);
+	pestpp_options.set_opt_include_bnd_pi(true);
 	pestpp_options.set_hotstart_resfile(string());
 	pestpp_options.set_upgrade_bounds("ROBUST");
 	pestpp_options.set_ies_par_csv("");

@@ -1241,7 +1241,7 @@ def tenpar_localizer_test():
 
 if __name__ == "__main__":
     # write_empty_test_matrix()
-    # setup_suite_dir("ies_freyberg")
+    setup_suite_dir("ies_freyberg")
     # setup_suite_dir("ies_10par_xsec")
     # run_suite("ies_freyberg")
     # run_suite("ies_10par_xsec")

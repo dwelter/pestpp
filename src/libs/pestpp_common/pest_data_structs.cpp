@@ -625,6 +625,13 @@ void PestppOptions::parce_line(const string &line)
 			is >> boolalpha >> opt_skip_final;
 		}
 
+		else if (key == "OPT_STD_WEIGHTS")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> opt_std_weights;
+		}
+
 		else if ((key == "OPT_DEC_VAR_GROUPS") || (key == "OPT_DECISION_VARIABLE_GROUPS"))
 		{
 			opt_dec_var_groups.clear();
@@ -689,6 +696,13 @@ void PestppOptions::parce_line(const string &line)
 		{
 			convert_ip(value, opt_recalc_fosm_every);
 		}
+		else if (key == "OPT_INCLUDE_BND_PI")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> opt_include_bnd_pi;
+		}
+
 		else if ((key == "IES_PAR_CSV") || (key == "IES_PARAMETER_CSV")||
 			(key == "IES_PAR_EN") || (key == "IES_PARAMETER_ENSEMBLE"))
 		{
