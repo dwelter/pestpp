@@ -46,20 +46,26 @@ bool Localizer::initialize(PerformanceLog *performance_log)
 	set<string> obs_names(names.begin(), names.end());
 
 	map<string, vector<string>> pargp_map;
+	ParameterGroupInfo *pi = pest_scenario_ptr->get_base_group_info_ptr();
+
 	for (auto &pg : pest_scenario_ptr->get_ctl_ordered_par_group_names())
 	{
+		
 		names.clear();
 		for (auto &p : par_names)
-			names.push_back(pest_scenario_ptr->get_base_group_info_ptr()->get_group_name(p));
+			if (pi->get_group_name(p) == pg)
+				names.push_back(p);
 		pargp_map[pg] = names;
 	}
 
 	map<string, vector<string>> obgnme_map;
 	for (auto &og : pest_scenario_ptr->get_ctl_ordered_obs_group_names())
 	{
+		ObservationInfo *oi = pest_scenario_ptr->get_observation_info_ptr();
 		names.clear();
 		for (auto &o : obs_names)
-			names.push_back(pest_scenario_ptr->get_observation_info_ptr()->get_group(o));
+			if (oi->get_group(o) == og)
+				names.push_back(o);
 		obgnme_map[og] = names;
 	}
 

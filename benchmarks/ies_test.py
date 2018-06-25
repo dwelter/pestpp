@@ -1202,28 +1202,35 @@ def tenpar_localizer_test():
     pst_name = os.path.join(template_d, "pest.pst")
     pst = pyemu.Pst(pst_name)
     
-    mat = pyemu.Matrix.from_names(pst.nnz_obs_names,pst.adj_par_names).to_dataframe()
+    #mat = pyemu.Matrix.from_names(pst.nnz_obs_names,pst.adj_par_names).to_dataframe()
+    mat = pyemu.Matrix.from_names(["head"],pst.adj_par_names).to_dataframe()
     mat.loc[:,:] = 1.0
     #mat.iloc[0,:] = 1
     mat = pyemu.Matrix.from_dataframe(mat)
     mat.to_ascii(os.path.join(template_d,"localizer.mat"))
 
     pst.pestpp_options = {}
-    pst.pestpp_options["ies_num_reals"] = 19
+    pst.pestpp_options["ies_num_reals"] = 10
     pst.pestpp_options["ies_localizer"] = "localizer.mat"
+    pst.pestpp_options["ies_lambda_mults"] = 1.0
+    pst.pestpp_options["lambda_scale_fac"] = 1.0
+    pst.pestpp_options["ies_subset_size"] = 11
+    pst.control_data.noptmax = 1
     
     
     #pst.pestpp_options["ies_verbose_level"] = 3
     pst_name = os.path.join(template_d,"pest_local.pst")
     pst.write(pst_name)
-    pyemu.helpers.start_slaves(template_d, exe_path, "pest_local.pst", num_slaves=20,
-                                   master_dir=test_d, verbose=True, slave_root=model_d)
+    pyemu.helpers.start_slaves(template_d, exe_path, "pest_local.pst", num_slaves=11,
+                                   master_dir=test_d, verbose=True, slave_root=model_d,
+                                   port=4020)
     phi_df1 = pd.read_csv(os.path.join(test_d,"pest_local.phi.actual.csv"))
 
-    pst.pestpp_options = {"ies_num_reals":19}
+    pst.pestpp_options.pop("ies_localizer")
     pst.write(pst_name)
-    pyemu.helpers.start_slaves(template_d, exe_path, "pest_local.pst", num_slaves=20,
-                                   master_dir=test_d, verbose=True, slave_root=model_d)
+    pyemu.helpers.start_slaves(template_d, exe_path, "pest_local.pst", num_slaves=11,
+                                   master_dir=test_d, verbose=True, slave_root=model_d,
+                                   port=4020)
     phi_df2 = pd.read_csv(os.path.join(test_d,"pest_local.phi.actual.csv"))
 
     plt.plot(phi_df1.total_runs,phi_df1.loc[:,"mean"], label="local")
@@ -1241,7 +1248,7 @@ def tenpar_localizer_test():
 
 if __name__ == "__main__":
     # write_empty_test_matrix()
-    setup_suite_dir("ies_freyberg")
+    #setup_suite_dir("ies_freyberg")
     # setup_suite_dir("ies_10par_xsec")
     # run_suite("ies_freyberg")
     # run_suite("ies_10par_xsec")
