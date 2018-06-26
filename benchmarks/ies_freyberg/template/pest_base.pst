@@ -1,12 +1,12 @@
 pcf
 * control data
              restart      regularization
-      2412       767         5      2412        27         0
+      2412       767         5      2412        28         0
          5         4              single               point         1         0         0          noobsreref
    2.000000E+01  -3.000000E+00   3.000000E-01   1.000000E-02        -7       999          lamforgive        noderforgive
    1.000000E+01   1.000000E+01   1.000000E-03         0         0
    1.000000E-01         1   1.100000E+00               noaui          nosenreuse        noboundscale
-        10   1.000000E-02         3         3   1.000000E-02         3   0.000000E+00         1  -1.000000E+00
+         1   1.000000E-02         3         3   1.000000E-02         3   0.000000E+00         1  -1.000000E+00
          0         0         0         0             jcosave          verboserec          jcosaveitn          reisaveitn          parsaveitn        noparsaverun
 * singular value decomposition
          1
@@ -2445,6 +2445,7 @@ flx_wells
 foreflux             
 forehead             
 foretrav             
+less_than            
 pothead              
 vol_constan          
 vol_in-out           
@@ -2463,7 +2464,7 @@ regulw1
 c001cr03c10_19700102  2.2331451351E+01      5.0000000000E-01       calhead              
 c001cr03c16_19700102  1.8526869090E+01      5.0000000000E-01       calhead              
 c001cr04c09_19700102  2.4412637313E+01      5.0000000000E-01       calhead              
-c001cr10c02_19700102  2.7985834435E+01      5.0000000000E-01       calhead              
+c001cr10c02_19700102  2.7985834435E+01      1.0000000000E+02       less_than            
 c001cr14c11_19700102  2.1070508653E+01      5.0000000000E-01       calhead              
 c001cr16c17_19700102  1.5468175997E+01      5.0000000000E-01       calhead              
 c001cr22c11_19700102  2.0485881529E+01      5.0000000000E-01       calhead              
@@ -5656,15 +5657,11 @@ w1_r34_c12            1.0 * log(w1_r34_c12) = 0.000000E+00  1.6609640474E+00    
 1e-10 1.05e-10 0.1 nomemsave 
 1.0 1.0e-10 1.0e10 linreg continue 
 1.3 1.0e-2 1 1.5 1.5 0.5 
-++forecasts(c001fr03c10_19750101,c001fr03c16_19750101,c001fr04c09_19750101,c001fr10c02_19750101,c001fr14c11_19750101,c001fr16c17_19750101,c001fr22c11_19750101,c001fr23c16_19750101,c001fr25c05_19750101,c001fr27c07_19750101,c001fr30c16_19750101,c001fr34c08_19750101,c001fr35c11_19750101,flx_river_l_19750102,travel_time)
+++ies_num_reals(10)
+++ies_subset_size(3)
+++ies_lambda_mults(1.0)
 ++lambda_scale_fac(1.0)
-++upgrade_augment(false)
-++lambdas(0.1,1.0,10.0)
-++n_iter_base(-1)
-++n_iter_super(3)
-++ies_lambda_mults(0.1,1.0,10.0)
-++ies_subset_size(10)
-++parcov_filename(freyberg.prior.jcb)
-++ies_num_reals(100)
-++ies_use_prior_scaling(false)
-++ies_initial_lambda(1.0)
+++ies_include_base(False)
+++ies_par_en(par.csv)
+++ies_localizer(localizer.mat)
+++ies_verbose_level(3)
