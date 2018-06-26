@@ -1461,7 +1461,7 @@ def freyberg_localizer_test1():
 
 def freyberg_localizer_test2():
     model_d = "ies_freyberg"
-    test_d = os.path.join(model_d, "test_local1")
+    test_d = os.path.join(model_d, "test_local2")
     template_d = os.path.join(model_d, "template")
 
     if os.path.exists(test_d):
@@ -1486,13 +1486,13 @@ def freyberg_localizer_test2():
     pst.pestpp_options = {}
     pst.pestpp_options["ies_num_reals"] = 10
     pst.pestpp_options["ies_subset_size"] = 3
-    pst.pestpp_options["ies_lambda_mults"] = 1.0
-    pst.pestpp_options["lambda_scale_fac"] = 1.0
+    #pst.pestpp_options["ies_lambda_mults"] = 1.0
+    #pst.pestpp_options["lambda_scale_fac"] = 1.0
     pst.pestpp_options["ies_include_base"] = False
     pst.pestpp_options["ies_par_en"] = "par.csv"
     pst.pestpp_options["ies_localizer"] = "localizer.mat"
-    pst.pestpp_options["ies_verbose_level"] = 6
-    pst.control_data.noptmax = 3
+    pst.pestpp_options["ies_verbose_level"] = 3
+    pst.control_data.noptmax = 6
     print("writing pst")
     pst.write(os.path.join(template_d, "pest_local.pst"))
     print("starting slaves")
@@ -1516,6 +1516,103 @@ def freyberg_localizer_test2():
     plt.plot(phi_df2.total_runs, phi_df2.loc[:, "mean"], label="full")
     plt.legend()
     plt.savefig(os.path.join(test_d, "local_test.pdf"))
+
+
+
+def freyberg_localizer_test3():
+    model_d = "ies_freyberg"
+    test_d = os.path.join(model_d, "test_local3")
+    template_d = os.path.join(model_d, "template")
+
+    if os.path.exists(test_d):
+        shutil.rmtree(test_d)
+    print("loading pst")
+    pst = pyemu.Pst(os.path.join(template_d, "pest.pst"))
+    par = pst.parameter_data
+    mat = pyemu.Matrix.from_names(pst.nnz_obs_names, pst.par_groups).to_dataframe()
+    mat.loc[:, :] = 1.0
+    #future_pars = par.loc[par.pargp.apply(lambda x: x in ["w1", "r1"]), "parnme"]
+    mat.loc[:, ["w1","r1"]] = 0.0
+    mat = pyemu.Matrix.from_dataframe(mat)
+    mat.to_ascii(os.path.join(template_d, "localizer.mat"))
+
+    cov = pyemu.Cov.from_parameter_data(pst)
+    pe = pyemu.ParameterEnsemble.from_gaussian_draw(pst=pst, cov=cov, num_reals=10)
+    pe.enforce()
+    pe.to_csv(os.path.join(template_d, "par.csv"))
+
+    pst.observation_data.loc[pst.nnz_obs_names[3], "obgnme"] = "less_than"
+    pst.observation_data.loc[pst.nnz_obs_names[3], "weight"] = 100.0
+    pst.pestpp_options = {}
+    pst.pestpp_options["ies_num_reals"] = 10
+    pst.pestpp_options["ies_subset_size"] = 3
+    #pst.pestpp_options["ies_lambda_mults"] = 1.0
+    #pst.pestpp_options["lambda_scale_fac"] = 1.0
+    pst.pestpp_options["ies_include_base"] = False
+    pst.pestpp_options["ies_par_en"] = "par.csv"
+    pst.pestpp_options["ies_localizer"] = "localizer.mat"
+    pst.pestpp_options["ies_verbose_level"] = 3
+    pst.control_data.noptmax = 6
+    print("writing pst")
+    pst.write(os.path.join(template_d, "pest_local.pst"))
+    print("starting slaves")
+    pyemu.helpers.start_slaves(template_d, exe_path, "pest_local.pst", num_slaves=11, master_dir=test_d,
+                               slave_root=model_d, port=4020)
+    par_df1 = pd.read_csv(os.path.join(test_d, "pest_local.{0}.par.csv".format(pst.control_data.noptmax)), index_col=0)
+    par_df1.index = pe.index
+    par_df1.columns = par_df1.columns.str.lower()
+    phi_df1 = pd.read_csv(os.path.join(test_d, "pest_local.phi.composite.csv"))
+
+    pst.pestpp_options.pop("ies_localizer")
+    pst.write(os.path.join(template_d, "pest_base.pst"))
+    print("starting slaves")
+    pyemu.helpers.start_slaves(template_d, exe_path, "pest_base.pst", num_slaves=11, master_dir=test_d+"_base",
+                               slave_root=model_d, port=4020)
+    par_df2 = pd.read_csv(os.path.join(test_d+"_base", "pest_base.{0}.par.csv".format(pst.control_data.noptmax)), index_col=0)
+    par_df2.index = pe.index
+    par_df2.columns = par_df2.columns.str.lower()
+    phi_df2 = pd.read_csv(os.path.join(test_d, "pest_local.phi.composite.csv"))
+    plt.plot(phi_df1.total_runs, phi_df1.loc[:, "mean"], label="local")
+    plt.plot(phi_df2.total_runs, phi_df2.loc[:, "mean"], label="full")
+    plt.legend()
+    plt.savefig(os.path.join(test_d, "local_test.pdf"))
+
+def compare_freyberg_local3():
+    df_l = pd.read_csv(os.path.join("ies_freyberg","test_local3","pest_local.6.par.csv"))
+    df_f = pd.read_csv(os.path.join("ies_freyberg","test_local3_base","pest_base.6.par.csv"))
+
+    pst = pyemu.Pst(os.path.join("ies_freyberg","template","pest.pst"))
+    df_l.columns = df_l.columns.str.lower()
+    df_f.columns = df_f.columns.str.lower()
+    groups = ["w1","r1"]
+    par = pst.parameter_data
+    # pars = par.loc[par.pargp.apply(lambda x: x in groups)]
+    # df_l = df_l.loc[:,pars]
+    # df_f = df_f.loc[:,pars]
+    for group,title in zip(groups,["future pumping","future recharge"]):
+        fig = plt.figure(figsize=(10,10))
+        ax1,ax2 = plt.subplot(211), plt.subplot(212)
+        fig.suptitle(title+ " parameters with (blue) and w/o (green) localization")
+        ax1.set_title("mean")
+        ax2.set_title("standard deviation")
+
+        for ax in zip(groups,[ax1,ax2]):
+            pars = par.loc[par.pargp==group,"parnme"]
+            df_lg = df_l.loc[:, pars]
+            df_fg = df_f.loc[:, pars]
+            mn_l, st_l = df_lg.mean(),df_lg.std()
+            mn_f, st_f = df_fg.mean(), df_fg.std()
+
+            print(mn_l,mn_f)
+            print(st_l,st_f)
+            mn_l.hist(ax=ax1,facecolor='b',alpha=0.5,normed=True)
+            mn_f.hist(ax=ax1,facecolor='g',alpha=0.5,normed=True)
+            st_l.hist(ax=ax2, facecolor='b', alpha=0.5,normed=True)
+            st_f.hist(ax=ax2, facecolor='g', alpha=0.5,normed=True)
+        ax2.set_yticklabels([])
+        ax1.set_yticklabels([])
+
+        plt.show()
 
 
 if __name__ == "__main__":
@@ -1545,7 +1642,9 @@ if __name__ == "__main__":
     #test_freyberg_ineq()
     #tenpar_localizer_test1()
     #tenpar_localizer_test3()
-    freyberg_localizer_test2()
+    #freyberg_localizer_test2()
+    #freyberg_localizer_test3()
+    compare_freyberg_local3()
     # # invest()
     #compare_suite("ies_10par_xsec")
     #compare_suite("ies_freyberg")
