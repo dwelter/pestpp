@@ -100,7 +100,7 @@ def setup_suite_dir(model_d):
     # run sweep
     if os.path.exists("master_sweep"):
         shutil.rmtree("master_sweep")
-    pyemu.helpers.start_slaves(new_d, "pestpp-swp", "pest.pst", 10, master_dir="master_sweep")
+    pyemu.helpers.start_slaves(new_d, "pestpp-swp", "pest.pst", 10, master_dir="master_sweep",port=4020)
 
     # process sweep output as restart csv and jcb
     df = pd.read_csv(os.path.join("master_sweep", "sweep_out.csv"))
@@ -167,7 +167,8 @@ def run_suite(model_d):
                 print("error removing existing test_d: {0}".format(test_d))
                 continue
         pyemu.helpers.start_slaves(template_d, exe_path, "pest.pst", num_slaves=10,
-                                   master_dir=test_d, verbose=True, slave_root=model_d)
+                                   master_dir=test_d, verbose=True, slave_root=model_d,
+                                   port=4020)
 
 
 def compare_suite(model_d):
@@ -424,7 +425,7 @@ def tenpar_subset_test():
     pst.pestpp_options["ies_subset_size"] = 21
     pst.write(os.path.join(template_d, "pest.pst"))
     pyemu.helpers.start_slaves(template_d, exe_path, "pest.pst", num_slaves=10,
-                               slave_root=model_d, master_dir=test_d)
+                               slave_root=model_d, master_dir=test_d,port=4020)
     df_base = pd.read_csv(os.path.join(test_d, "pest.phi.meas.csv"),index_col=0)
 
     pst.pestpp_options = {}
@@ -435,7 +436,7 @@ def tenpar_subset_test():
 
     pst.write(os.path.join(template_d, "pest.pst"))
     pyemu.helpers.start_slaves(template_d, exe_path, "pest.pst", num_slaves=10,
-                               slave_root=model_d, master_dir=test_d)
+                               slave_root=model_d, master_dir=test_d,port=4020)
     df_sub = pd.read_csv(os.path.join(test_d, "pest.phi.meas.csv"),index_col=0)
     diff = (df_sub - df_base).apply(np.abs)
     diff = diff.iloc[:,6:]
@@ -690,8 +691,7 @@ def test_freyberg_full_cov_reorder_run():
     #pe.to_csv(os.path.join(test_d, "pyemu_pe.csv"))
 
     pyemu.helpers.start_slaves(template_d, exe_path, "pest.pst", num_slaves=10,
-                                slave_root
-                                =model_d, master_dir=test_d)
+                                slave_root=model_d, master_dir=test_d,port=4020)
     
 
 def invest():
@@ -734,7 +734,8 @@ def test_synth():
     print("writing pst")
     pst.write(os.path.join(template_d,"pest.pst"))
     print("starting slaves")
-    pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=15,master_dir=test_d,slave_root=model_d)
+    pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=15,
+        master_dir=test_d,slave_root=model_d,port=4020)
 
 def test_chenoliver():
     model_d = "ies_chenoliver"
@@ -781,7 +782,7 @@ def test_chenoliver():
     
 
     pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=20,
-        master_dir=test_d,slave_root=model_d,port=4005,silent_master=True)
+        master_dir=test_d,slave_root=model_d,port=4020,silent_master=True)
     df_full_obs = pd.read_csv(os.path.join(test_d,"pest.{0}.obs.csv".format(noptmax)),index_col=0)
     df_full_par = pd.read_csv(os.path.join(test_d,"pest.{0}.par.csv".format(noptmax)),index_col=0)
 
@@ -797,7 +798,7 @@ def test_chenoliver():
     pst.write(os.path.join(template_d,"pest.pst"))
 
     pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=20,
-        master_dir=test_d,slave_root=model_d,port=4005,silent_master=True)
+        master_dir=test_d,slave_root=model_d,port=4020,silent_master=True)
     df_approx_obs = pd.read_csv(os.path.join(test_d,"pest.{0}.obs.csv".format(noptmax)),index_col=0)
     df_approx_par = pd.read_csv(os.path.join(test_d,"pest.{0}.par.csv".format(noptmax)),index_col=0)
 
@@ -834,7 +835,7 @@ def test_chenoliver():
     pst.write(os.path.join(template_d,"pest.pst"))
 
     pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=25,
-        master_dir=test_d,slave_root=model_d,port=4005,silent_master=True)
+        master_dir=test_d,slave_root=model_d,port=4020,silent_master=True)
     df_full_obs = pd.read_csv(os.path.join(test_d,"pest.{0}.obs.csv".format(noptmax)),index_col=0)
     df_full_par = pd.read_csv(os.path.join(test_d,"pest.{0}.par.csv".format(noptmax)),index_col=0)
 
@@ -850,7 +851,7 @@ def test_chenoliver():
     pst.write(os.path.join(template_d,"pest.pst"))
 
     pyemu.helpers.start_slaves(template_d,exe_path,"pest.pst",num_slaves=25,
-        master_dir=test_d,slave_root=model_d,port=4005,silent_master=True)
+        master_dir=test_d,slave_root=model_d,port=4020,silent_master=True)
     df_approx_obs = pd.read_csv(os.path.join(test_d,"pest.{0}.obs.csv".format(noptmax)),index_col=0)
     df_approx_par = pd.read_csv(os.path.join(test_d,"pest.{0}.par.csv".format(noptmax)),index_col=0)
 
@@ -902,7 +903,7 @@ def test_kirishima():
     pst.write(os.path.join(template_d, "pest.pst"))
     print("starting slaves")
     pyemu.helpers.start_slaves(template_d, exe_path, "pest.pst", num_slaves=15, master_dir=test_d,
-                               slave_root=model_d)
+                               slave_root=model_d,port=4020)
 
 def test_freyberg_ineq():
 
@@ -925,7 +926,7 @@ def test_freyberg_ineq():
     pst.write(os.path.join(template_d, "pest_ineq.pst"))
     print("starting slaves")
     pyemu.helpers.start_slaves(template_d, exe_path, "pest_ineq.pst", num_slaves=10, master_dir=test_d,
-                               slave_root=model_d)
+                               slave_root=model_d,port=4020)
 
     obs_csvs = [f for f in os.listdir(test_d) if "obs" in f and f.endswith(".csv")]
     print(obs_csvs)
@@ -940,7 +941,7 @@ def test_freyberg_ineq():
         ax = axes[i]
         df.loc[:,n].hist(ax=ax,bins=10)
         ax.plot([v,v],ax.get_ylim(),"k--",lw=2.0)
-    plt.show()
+    #plt.show()
 
 def tenpar_fixed_test():
     model_d = "ies_10par_xsec"
@@ -976,14 +977,14 @@ def tenpar_fixed_test():
     pst.write(os.path.join(template_d, "pest.pst"))
     #pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
     pyemu.helpers.start_slaves(template_d, exe_path, "pest.pst", num_slaves=20, master_dir=test_d,
-                               slave_root=model_d)
+                               slave_root=model_d,port=4020)
     compare()
     pe.to_binary(os.path.join(template_d,"par.jcb"))
     pst.pestpp_options["ies_par_en"] = "par.jcb"
     pst.write(os.path.join(template_d, "pest.pst"))
     #pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
     pyemu.helpers.start_slaves(template_d, exe_path, "pest.pst", num_slaves=20, master_dir=test_d,
-                               slave_root=model_d)
+                               slave_root=model_d,port=4020)
     compare()
 
     pst.pestpp_options["ies_par_en"] = "par.jcb"
@@ -991,7 +992,7 @@ def tenpar_fixed_test():
     pst.write(os.path.join(template_d, "pest.pst"))
     #pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
     pyemu.helpers.start_slaves(template_d, exe_path, "pest.pst", num_slaves=20, master_dir=test_d,
-                               slave_root=model_d)
+                               slave_root=model_d,port=4020)
     pe1 = pyemu.ParameterEnsemble.from_binary(pst=pst,filename=os.path.join(test_d,"pest.0.par.jcb")).iloc[:-1,:]
     pe1.index = pe.index
     diff = pe - pe1
@@ -1112,6 +1113,7 @@ def tenpar_weight_pareto_test():
     pst.pestpp_options["ies_obs_en"] = "obs.csv"
     pst.pestpp_options["ies_num_reals"] = df.shape[0]
     pst.pestpp_options["ies_subset_size"] = df.shape[0]
+    pst.pestpp_options["ies_save_binary"]= False
     #pst.pestpp_options["ies_lambda_mults"] = 1.0
     #pst.pestpp_options["lambda_scale_fac"] = 1.0
     obs = pst.observation_data
@@ -1121,7 +1123,7 @@ def tenpar_weight_pareto_test():
 
     pst.write(os.path.join(template_d,"pest_pareto.pst"))
     pyemu.os_utils.start_slaves(template_d,exe_path,"pest_pareto.pst",num_slaves=40,
-                                slave_root=model_d,master_dir=test_d)
+                                slave_root=model_d,master_dir=test_d,port=4020)
     obs = pst.observation_data
     df_init = pd.read_csv(os.path.join(test_d,"pest_pareto.0.obs.csv".format(pst.control_data.noptmax)))
     df = pd.read_csv(os.path.join(test_d,"pest_pareto.{0}.obs.csv".format(pst.control_data.noptmax)))
@@ -1147,14 +1149,14 @@ def tenpar_weight_pareto_test():
     # ax3.scatter(df_phi.iloc[0, :], df_init.H01_04, s=4, color='0.5')
     # ax3.scatter(df_phi.iloc[-1, :], df.H01_04, s=4, color='b')
 
-    fig = plt.figure(figsize=(10, 10))
-    ax = plt.subplot(221)
-    ax.scatter(df_phi.iloc[0, :], df_init.H02_08, s=4, color='0.5')
-    ax.scatter(df_phi.iloc[-1, :], df.H02_08, s=4, color='b')
+    # fig = plt.figure(figsize=(10, 10))
+    # ax = plt.subplot(221)
+    # ax.scatter(df_phi.iloc[0, :], df_init.H02_08, s=4, color='0.5')
+    # ax.scatter(df_phi.iloc[-1, :], df.H02_08, s=4, color='b')
     # ax.scatter(df_phi.iloc[0, :], (df_init.H02_08-obs.obsval["h02_08"])**2, s=4, color='0.5')
     # ax.scatter(df_phi.iloc[-1, :], (df.H02_08-obs.obsval["h02_08"])**2, s=4, color='b')
 
-    plt.show()
+    #plt.show()
 
 
 def rosenbrock_function():
@@ -1196,7 +1198,7 @@ def setup_rosenbrock():
 
 if __name__ == "__main__":
     # write_empty_test_matrix()
-    setup_suite_dir("ies_freyberg")
+    #setup_suite_dir("ies_freyberg")
     # setup_suite_dir("ies_10par_xsec")
     # run_suite("ies_freyberg")
     # run_suite("ies_10par_xsec")
@@ -1217,7 +1219,7 @@ if __name__ == "__main__":
     #test_chenoliver()
     #tenpar_weight_pareto_test()
     #compare_pyemu()
-    # tenpar_narrow_range_test()
+    #tenpar_narrow_range_test()
     #test_freyberg_ineq()
     
     # # invest()
@@ -1226,6 +1228,6 @@ if __name__ == "__main__":
     
     #test_kirishima()
 
-    #tenpar_fixed_test()
+    tenpar_fixed_test()
 
     #setup_rosenbrock()
