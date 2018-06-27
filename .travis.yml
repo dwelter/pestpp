@@ -49,4 +49,4 @@ script:
 #   - python travis_tests.py
 
 notifications:
-  email: false
+  email: true
