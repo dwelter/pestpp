@@ -41,7 +41,7 @@ script:
 
 after_success:
   - cd benchmarks
-  - export PATH="$TRAVIS_BUILD_DIR/benchmarks/test_bin:$PATH"
+  - export PATH="./test_bin:../test_bin:../../test_bin:$PATH"
   - python travis_tests.py
 
 notifications:
