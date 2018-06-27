@@ -19,7 +19,7 @@ git:
 
 env:
   global:
-    - MAKEFLAGS="-j 2"
+    - MAKEFLAGS="-j 10"
 
 before_script:
   - wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
@@ -37,7 +37,7 @@ script:
   - cd src
   - COMPILER=gcc5 CXX=g++-5 FC=gfortran-5 STATIC=no make
   - make clean
-  - make install
+  - make -j 10 install
   - cd ..
   - cd benchmarks
   - export PATH="./test_bin:../test_bin:../../test_bin:$PATH"
