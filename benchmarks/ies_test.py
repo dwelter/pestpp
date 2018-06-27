@@ -59,8 +59,13 @@ def setup_suite_dir(model_d):
     if os.path.exists(new_d):
         shutil.rmtree(new_d)
     shutil.copytree(base_d, new_d)
+    print(platform.platform().lower())
+    if "linux" in platform.platform().lower() and "10par" in model_d:
+        print("travis_prep")
+        prep_for_travis(model_d)
     pst = pyemu.Pst(os.path.join(new_d, "pest.pst"))
-
+    print(pst.model_command)
+    
     # set first par as fixed
     #pst.parameter_data.loc[pst.par_names[0], "partrans"] = "fixed"
 
@@ -100,7 +105,8 @@ def setup_suite_dir(model_d):
     # run sweep
     if os.path.exists("master_sweep"):
         shutil.rmtree("master_sweep")
-    pyemu.helpers.start_slaves(new_d, "pestpp-swp", "pest.pst", 10, master_dir="master_sweep")
+    pyemu.helpers.start_slaves(new_d, "pestpp-swp", "pest.pst", 10, master_dir="master_sweep",
+                                slave_root=".",local=False)
 
     # process sweep output as restart csv and jcb
     df = pd.read_csv(os.path.join("master_sweep", "sweep_out.csv"))
@@ -111,17 +117,17 @@ def setup_suite_dir(model_d):
     df.iloc[:-3, :].to_csv(os.path.join(new_d, "restart_failed.csv"))
 
     # run pyemu ies
-    pyemu_d = os.path.join(model_d, "master_pyemu")
-    if os.path.exists(pyemu_d):
-        shutil.rmtree(pyemu_d)
-    shutil.copytree(new_d, pyemu_d)
-    bdir = os.getcwd()
-    os.chdir(pyemu_d)
-    ies = pyemu.EnsembleSmoother("pest.pst", num_slaves=10, verbose="ies.log", slave_dir=os.path.join("..", "template"))
-    ies.initialize(parensemble="par.csv", obsensemble="obs.csv")
-    for i in range(pst.control_data.noptmax):
-        ies.update()
-    os.chdir(bdir)
+    # pyemu_d = os.path.join(model_d, "master_pyemu")
+    # if os.path.exists(pyemu_d):
+    #     shutil.rmtree(pyemu_d)
+    # shutil.copytree(new_d, pyemu_d)
+    # bdir = os.getcwd()
+    # os.chdir(pyemu_d)
+    # ies = pyemu.EnsembleSmoother("pest.pst", num_slaves=10, verbose="ies.log", slave_dir=os.path.join("..", "template"))
+    # ies.initialize(parensemble="par.csv", obsensemble="obs.csv")
+    # for i in range(pst.control_data.noptmax):
+    #     ies.update()
+    # os.chdir(bdir)
 
     # pestpp_d = os.path.join(model_d,"master")
     # if os.path.exists(pestpp_d):
@@ -129,7 +135,7 @@ def setup_suite_dir(model_d):
     # shutil.copytree(new_d,pestpp_d)
 
 
-def run_suite(model_d):
+def run_suite(model_d,silent_master=False):
     df = pd.read_csv("ies_test.csv")
     df = df.loc[df.text.apply(lambda x: model_d in x), :]
     df.fillna('', inplace=True)
@@ -167,7 +173,8 @@ def run_suite(model_d):
                 print("error removing existing test_d: {0}".format(test_d))
                 continue
         pyemu.helpers.start_slaves(template_d, exe_path, "pest.pst", num_slaves=10,
-                                   master_dir=test_d, verbose=True, slave_root=model_d)
+                                   master_dir=test_d, verbose=True, slave_root=model_d,
+                                   silent_master=silent_master)
 
 
 def compare_suite(model_d):
@@ -245,8 +252,8 @@ def compare_pyemu():
 
 
 
-def test_10par_xsec():
-    run_suite("ies_10par_xsec")
+def test_10par_xsec(silent_master=False):
+    run_suite("ies_10par_xsec",silent_master=silent_master)
     compare_suite("ies_10par_xsec")
 
 
@@ -1189,20 +1196,35 @@ def setup_rosenbrock():
 
 
 
-
-
+def prep_for_travis(model_d):
+    assert os.path.exists(os.path.join(model_d,"test_template"))
+    s_d = "test_bin"
+    d_d = os.path.join(model_d,"test_template")
+    # if os.path.exists(d_d):
+    #     shutil.rmtree(d_d)
+    # shutil.copytree(s_d,d_d)
+    for f in os.listdir(s_d):
+        if os.path.exists(os.path.join(d_d,f)):
+            os.remove(os.path.join(d_d,f))
+        shutil.copy2(os.path.join(s_d,f),os.path.join(d_d,f))
+    pst_file = os.path.join(model_d,"test_template","pest.pst")
+    pst = pyemu.Pst(pst_file)
+    pst.model_command = "./" + pst.model_command[0]
+    print(pst.model_command)
+    pst.write(pst_file)
 
 
 
 if __name__ == "__main__":
     # write_empty_test_matrix()
-    setup_suite_dir("ies_freyberg")
+    #prep_10par_for_travis("ies_10par_xsec")
+    #setup_suite_dir("ies_10par_xsec")
     # setup_suite_dir("ies_10par_xsec")
     # run_suite("ies_freyberg")
-    # run_suite("ies_10par_xsec")
+    #run_suite("ies_10par_xsec")
     # rebase("ies_freyberg")
-    # rebase("ies_10par_xsec")
-    # compare_suite("ies_10par_xsec")
+    #rebase("ies_10par_xsec")
+    compare_suite("ies_10par_xsec")
     # compare_suite("ies_freyberg")
 
     #tenpar_subset_test()
@@ -1212,7 +1234,7 @@ if __name__ == "__main__":
     #test_freyberg_full_cov()
     #tenpar_tight_tol_test()
     #test_synth()
-    #test_10par_xsec()
+    test_10par_xsec(silent_master=False)
     #test_freyberg()
     #test_chenoliver()
     #tenpar_weight_pareto_test()
