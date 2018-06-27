@@ -821,7 +821,7 @@ if __name__ == "__main__":
     #start_slaves()
     #run_pestpp_opt()
     
-    #prep_for_risk_sweep()
+    prep_for_risk_sweep()
     #jco_invest()
     #run_risk_sweep()
     #run_risk_sweep_pargp()
