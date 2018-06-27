@@ -38,11 +38,14 @@ script:
   - COMPILER=gcc5 CXX=g++-5 FC=gfortran-5 STATIC=no make
   - make install
   - cd ..
-
-after_success:
   - cd benchmarks
   - export PATH="./test_bin:../test_bin:../../test_bin:$PATH"
   - python travis_tests.py
+
+# after_success:
+#   - cd benchmarks
+#   - export PATH="./test_bin:../test_bin:../../test_bin:$PATH"
+#   - python travis_tests.py
 
 notifications:
   email: false
