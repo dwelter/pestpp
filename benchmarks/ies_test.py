@@ -766,7 +766,7 @@ def test_chenoliver():
     pst.write(os.path.join(test_d,"pest.pst"))
     pyemu.helpers.run(exe_path+" pest.pst",cwd=test_d)
     
-    num_reals = 500
+    num_reals = 100
     noptmax = 4
     
 
