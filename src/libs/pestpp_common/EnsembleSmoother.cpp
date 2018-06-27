@@ -1412,7 +1412,7 @@ void IterEnsembleSmoother::initialize()
 {
 	message(0, "initializing");
 	pp_args = pest_scenario.get_pestpp_options().get_passed_args();
-
+	stringstream ss;
 
 	//set some defaults
 	PestppOptions *ppo = pest_scenario.get_pestpp_options_ptr();
@@ -1430,7 +1430,15 @@ void IterEnsembleSmoother::initialize()
 	{
 		message(0, "You are a god among mere mortals!");
 	}
+
 	use_localizer = localizer.initialize(performance_log);
+	if (use_localizer)
+	{
+		ss.str("");
+		ss << "using localized solution with " << localizer.get_localizer_map().size() << " sequential upgrade steps";
+		message(1, ss.str());
+		ss.str("");
+	}
 	iter = 0;
 	//ofstream &frec = file_manager.rec_ofstream();
 	last_best_mean = 1.0E+30;
@@ -1535,7 +1543,7 @@ void IterEnsembleSmoother::initialize()
 
 	int num_reals = pest_scenario.get_pestpp_options().get_ies_num_reals();
 	
-	stringstream ss;
+	
 	
 	bool pe_drawn = initialize_pe(parcov);
 
@@ -1895,10 +1903,11 @@ void IterEnsembleSmoother::save_mat(string prefix, Eigen::MatrixXd &mat)
 		ofstream &f = file_manager.open_ofile_ext(ss.str());
 		f << mat << endl;
 		f.close();
+		file_manager.close_file(ss.str());
 	}
 	catch (...)
 	{
-		message(1, "error savin matrix", ss.str());
+		message(1, "error saving matrix", ss.str());
 	}
 }
 
@@ -2236,14 +2245,14 @@ ParameterEnsemble IterEnsembleSmoother::calc_upgrade(vector<string> &obs_names, 
 		}
 	}
 
-	vector<ParameterEnsemble> pe_lams;
-	vector<double> lam_vals, scale_vals;
+	//vector<ParameterEnsemble> pe_lams;
+	//vector<double> lam_vals, scale_vals;
 	
-	ss.str("");
+	/*ss.str("");
 	ss << "starting calcs for lambda" << cur_lam;
-	message(0, "starting lambda calcs for lambda", cur_lam);
+	message(0, "starting lambda calcs for lambda", cur_lam);\
+	performance_log->log_event(ss.str());*/
 
-	performance_log->log_event(ss.str());
 	performance_log->log_event("form scaled identity matrix");
 	message(1, "calculating scaled identity matrix");
 	ivec = ((Eigen::VectorXd::Ones(s2.size()) * (cur_lam + 1.0)) + s2).asDiagonal().inverse();
@@ -2448,9 +2457,16 @@ bool IterEnsembleSmoother::solve_new()
 		ParameterEnsemble pe_upgrade = pe.zeros_like();
 		if (use_localizer)
 		{
+			int i = 0;
+			int lsize = localizer.get_localizer_map().size();
+
 			for (auto local_pair : localizer.get_localizer_map())
 			{
+				ss.str("");
+				ss << "localized upgrade part " << i + 1 << " of " << lsize;
+				message(1, ss.str());
 				pe_upgrade.add_2_cols_ip(calc_upgrade(local_pair.first, local_pair.second, cur_lam, pe.shape().first));
+				i++;
 			}
 		}
 		else

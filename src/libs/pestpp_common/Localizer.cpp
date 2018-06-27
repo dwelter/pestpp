@@ -186,5 +186,5 @@ bool Localizer::initialize(PerformanceLog *performance_log)
 		localizer_map.push_back(p);
 	}
 
-	cout << "done" << endl;
+	//cout << "done" << endl;
 }

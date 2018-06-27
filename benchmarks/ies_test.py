@@ -1553,7 +1553,7 @@ def freyberg_localizer_test3():
     pst.pestpp_options["ies_include_base"] = False
     pst.pestpp_options["ies_par_en"] = "par.csv"
     pst.pestpp_options["ies_localizer"] = "localizer.mat"
-    pst.pestpp_options["ies_verbose_level"] = 3
+    pst.pestpp_options["ies_verbose_level"] = 1
     pst.control_data.noptmax = 6
     print("writing pst")
     pst.write(os.path.join(template_d, "pest_local.pst"))
@@ -1645,14 +1645,14 @@ if __name__ == "__main__":
     #tenpar_localizer_test1()
     #tenpar_localizer_test3()
     #freyberg_localizer_test2()
-    #freyberg_localizer_test3()
-    compare_freyberg_local3()
+    freyberg_localizer_test3()
+    #compare_freyberg_local3()
     # # invest()
     #compare_suite("ies_10par_xsec")
     #compare_suite("ies_freyberg")
     
     #test_kirishima()
 
-    tenpar_fixed_test()
+    #tenpar_fixed_test()
 
     #setup_rosenbrock()
