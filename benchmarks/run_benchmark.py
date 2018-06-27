@@ -190,11 +190,11 @@ if __name__ == "__main__":
        #exe_cmd_gsa = r'..\..\..\exe\windows\Win32\Release\gsa_32.exe'
        # run PEST++ benchmarks
        bm_list = [
-        #[r'.\3pg', 'template', exe_cmd_pp, 'pest', exe_cmd_wrk, 4, 'iobj'],
-        #[r'.\10par_xsec', 'template', exe_cmd_pp, 'pest', exe_cmd_wrk, 4, 'iobj'],
-        #[r'.\morris_1991', 'template', exe_cmd_gsa, 'pest', exe_cmd_wrk, 4, 'mio'],
-        #[r'.\ackley', 'template', exe_cmd_pp, 'pest', exe_cmd_wrk, 10, 'iobj'],
-        #[r'.\box', 'template', exe_cmd_pp, 'pest', exe_cmd_wrk, 10, 'iobj'],
+        [r'.\3pg', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
+        [r'.\10par_xsec', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 4, 'iobj'],
+        [r'.\morris_1991', 'template', exe_cmd_gsa, 'pest', exe_cmd_gsa, 4, 'mio'],
+        [r'.\ackley', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 10, 'iobj'],
+        [r'.\box', 'template', exe_cmd_pp, 'pest', exe_cmd_pp, 10, 'iobj'],
         #[r'.\kirishima', 'template', exe_cmd_pp, 'pest', exe_cmd_wrk, 20, 'iobj'],
 
         #[r'.\ishigami', 'template', exe_cmd_gsa, 'pest', exe_cmd_wrk, 10, 'sbl'],
