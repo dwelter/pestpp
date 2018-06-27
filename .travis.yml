@@ -35,9 +35,9 @@ before_script:
 
 script:
   - cd src
-  - COMPILER=gcc5 CXX=g++-5 FC=gfortran-5 STATIC=no make
+  - rm -r ../exe/linux/
   - make clean
-  - make -j 10 install
+  - COMPILER=gcc5 CXX=g++-5 FC=gfortran-5 STATIC=no make -j 10 install
   - cd ..
   - cd benchmarks
   - export PATH="./test_bin:../test_bin:../../test_bin:$PATH"
