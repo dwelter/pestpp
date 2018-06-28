@@ -1347,32 +1347,36 @@ void IterEnsembleSmoother::initialize_parcov()
 	performance_log->log_event("initializing parcov");
 	string parcov_filename = pest_scenario.get_pestpp_options().get_parcov_filename();
 
-	if (parcov_filename.size() == 0)
-	{
-		//if a par ensemble arg wasn't passed, use par bounds, otherwise, construct diagonal parcov from par ensemble later
-		if (!pest_scenario.get_pestpp_options().get_ies_use_empirical_prior())
-		{
-			message(1, "initializing prior parameter covariance matrix from parameter bounds");
-			message(1, "using par_sigma_range (number of standard deviations that par bounds represent):", pest_scenario.get_pestpp_options().get_par_sigma_range());
-			parcov.from_parameter_bounds(pest_scenario);
-		}
-	}
-	else
-	{
-		message(1, "initializing prior parameter covariance matrix from file", parcov_filename);
-		string extension = parcov_filename.substr(parcov_filename.size() - 3, 3);
-		pest_utils::upper_ip(extension);
-		if (extension.compare("COV") == 0)
-			parcov.from_ascii(parcov_filename);
-		else if ((extension.compare("JCO") == 0) || (extension.compare("JCB") == 0))
-			parcov.from_binary(parcov_filename);
-		else if (extension.compare("UNC") == 0)
-			parcov.from_uncertainty_file(parcov_filename);
-		else
-			throw_ies_error("unrecognized parcov_filename extension: " + extension);
-	}
-	if (parcov.e_ptr()->rows() > 0)
-		parcov = parcov.get(act_par_names);
+	//if (parcov_filename.size() == 0)
+	//{
+	//	//if a par ensemble arg wasn't passed, use par bounds, otherwise, construct diagonal parcov from par ensemble later
+	//	if (!pest_scenario.get_pestpp_options().get_ies_use_empirical_prior())
+	//	{
+	//		message(1, "initializing prior parameter covariance matrix from parameter bounds");
+	//		message(1, "using par_sigma_range (number of standard deviations that par bounds represent):", pest_scenario.get_pestpp_options().get_par_sigma_range());
+	//		parcov.from_parameter_bounds(pest_scenario);
+	//	}
+	//}
+	//else
+	//{
+	//	message(1, "initializing prior parameter covariance matrix from file", parcov_filename);
+	//	string extension = parcov_filename.substr(parcov_filename.size() - 3, 3);
+	//	pest_utils::upper_ip(extension);
+	//	if (extension.compare("COV") == 0)
+	//		parcov.from_ascii(parcov_filename);
+	//	else if ((extension.compare("JCO") == 0) || (extension.compare("JCB") == 0))
+	//		parcov.from_binary(parcov_filename);
+	//	else if (extension.compare("UNC") == 0)
+	//		parcov.from_uncertainty_file(parcov_filename);
+	//	else
+	//		throw_ies_error("unrecognized parcov_filename extension: " + extension);
+	//}
+	if (!pest_scenario.get_pestpp_options().get_ies_use_empirical_prior())
+		return;
+	string how = parcov.try_from(parcov_filename, pest_scenario, file_manager);
+	message(1, "parcov loaded ", how);
+	//if (parcov.e_ptr()->rows() > 0)
+	parcov = parcov.get(act_par_names);
 
 }
 
@@ -1382,7 +1386,7 @@ void IterEnsembleSmoother::initialize_obscov()
 	//obs ensemble
 	message(1, "initializing observation noise covariance matrix");
 	string obscov_filename = pest_scenario.get_pestpp_options().get_obscov_filename();
-	if (obscov_filename.size() == 0)
+	/*if (obscov_filename.size() == 0)
 	{
 		message(1, "initializing obseravtion noise covariance matrix from observation weights");
 		obscov.from_observation_weights(pest_scenario);	
@@ -1393,14 +1397,16 @@ void IterEnsembleSmoother::initialize_obscov()
 		string extension = obscov_filename.substr(obscov_filename.size() - 3, 3);
 		pest_utils::upper_ip(extension);
 		if (extension.compare("COV") == 0)
-			parcov.from_ascii(obscov_filename);
+			obscov.from_ascii(obscov_filename);
 		else if ((extension.compare("JCO") == 0) || (extension.compare("JCB") == 0))
-			parcov.from_binary(obscov_filename);
+			obscov.from_binary(obscov_filename);
 		else if (extension.compare("UNC") == 0)
-			parcov.from_uncertainty_file(obscov_filename);
+			obscov.from_uncertainty_file(obscov_filename);
 		else
 			throw_ies_error("unrecognized obscov_filename extension: " + extension);
-	}
+	}*/
+	string how = obscov.try_from(obscov_filename, pest_scenario, file_manager, false);
+	message(1, "obscov loaded ", how);
 	obscov = obscov.get(act_obs_names);
 
 

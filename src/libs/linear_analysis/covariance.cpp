@@ -358,6 +358,10 @@ ostream& operator<< (ostream &os, Mat mat)
 //-----------------------------------------
 //Mat IO
 //-----------------------------------------
+
+
+
+
 void Mat::to_ascii(const string &filename)
 {
 	ofstream out(filename);
@@ -385,6 +389,106 @@ void Mat::to_ascii(const string &filename)
 			out << name << endl;
 	}
 	out.close();
+}
+
+void Mat::from_file(const string &filename)
+{
+	stringstream ss;
+	if (filename.size() == 0)
+		throw runtime_error("Mat::from_file() error: filename empty");
+	string ext = filename.substr(filename.size() - 3, 3);
+	pest_utils::upper_ip(ext);
+	if ((ext == "JCB") || (ext == "JCO"))
+	{
+		from_binary(filename);
+	}
+	else if (ext == "MAT")
+	{
+		from_ascii(filename);
+	}
+	else if (ext == "CSV")
+	{
+		from_csv(filename);
+	}
+	else
+	{
+		ss << "Mat::from_file() erroro: unrecognnized localizer '" << ext << "', should be JCB, JCO, MAT or CSV";
+		throw runtime_error(ss.str());
+	}
+
+}
+
+void Mat::from_csv(const string &filename)
+{
+	ifstream csv(filename);
+	if (!csv.good())
+		throw runtime_error("Mat::from_csv() error: cannot open " + filename + " \
+												to read csv matrix");
+
+
+	//process the header
+	//any missing header labels will be marked to ignore those columns later
+	string line;
+	if (!getline(csv, line))
+		throw runtime_error("error reading header (first) line from csv file :");
+	pest_utils::strip_ip(line);
+	pest_utils::upper_ip(line);
+	pest_utils::tokenize(line, col_names, ",", false);
+	col_names.erase(col_names.begin()); //drop the index label
+	vector<Eigen::Triplet<double>> triplet_list;
+	double val;
+
+	//read a csv file to an Ensmeble
+	int lcount = 0, irow = 0;
+	//vector<vector<double>> vectors;
+	vector<string> tokens;
+	string row_name;
+
+	while (getline(csv, line))
+	{
+		pest_utils::strip_ip(line);
+		tokens.clear();
+		pest_utils::tokenize(line, tokens, ",", false);
+		if (tokens[tokens.size() - 1].size() == 0)
+			tokens.pop_back();
+
+		try
+		{
+			pest_utils::convert_ip(tokens[0], row_name);
+		}
+		catch (exception &e)
+		{
+			stringstream ss;
+			ss << "error converting token '" << tokens[0] << "' to <int> run_id on line " << lcount << ": " << line << endl << e.what();
+			throw runtime_error(ss.str());
+		}
+		tokens.erase(tokens.begin()); //drop the row name
+		if (tokens.size() != col_names.size())
+		{
+			stringstream ss;
+			ss << "Matrix.from_csv() error: wrong number of entries on line " << lcount << " , expecting " << col_names.size() << ", found " << tokens.size() << endl;
+			throw runtime_error(ss.str());
+		}
+		row_names.push_back(row_name);
+		for (int j = 0; j < col_names.size(); j++)
+		{
+			try
+			{
+				val = pest_utils::convert_cp<double>(tokens[j]);
+			}
+			catch (exception &e)
+			{
+				stringstream ss;
+				ss << "error converting token '" << tokens[j] << "' to double for " << col_names[j] << " on line " << lcount << " : " << e.what();
+				throw runtime_error(ss.str());
+			}
+			if (val != 0.0)
+				triplet_list.push_back(Eigen::Triplet<double>(irow, j, val));
+		}
+	
+	lcount++;
+	irow++;
+	}
 }
 
 void Mat::from_ascii(const string &filename)
@@ -981,46 +1085,59 @@ Covariance Covariance::diagonal(double val)
 	return Covariance(*rn_ptr(), i);
 }
 
-void Covariance::try_from(Pest &pest_scenario, FileManager &file_manager)
+string Covariance::try_from(const string &cov_fname, Pest &pest_scenario, FileManager &file_manager, bool is_parcov)
 {
-	const string parcov_fname = pest_scenario.get_pestpp_options().get_parcov_filename();
-	if (parcov_fname.empty())
+	stringstream how;
+	stringstream ss;
+	//const string cov_fname = pest_scenario.get_pestpp_options().get_parcov_filename();
+	if (!cov_fname.empty())
 	{
-		this->from_parameter_bounds(pest_scenario);
-	}
-	else
-	{
-		try {
-			this->from_ascii(parcov_fname);
-		}
-		catch (exception &e)
+		string ext = cov_fname.substr(cov_fname.size() - 3, 3);
+		if (ext == "UNC")
 		{
-			ofstream &f_rec = file_manager.get_ofstream("rec");
-			string message1 = e.what();
-			//cout << "    unable to read ASCII matrix format from file " << parcov_fname;
-			//cout << endl <<"    ..trying to read uncertainty file..." << endl;
-
-			f_rec << "    unable to read ASCII matrix format from file " << parcov_fname;
-			f_rec << endl << " error message:" << message1 << endl;
-			f_rec << endl << "    ..trying to read uncertainty file..." << endl;
-
-			try {
-				this->from_uncertainty_file(parcov_fname);
+			try
+			{
+				from_uncertainty_file(cov_fname);
+				how << "from unc file " << cov_fname;
 			}
 			catch (exception &e)
 			{
-				cout << "    unable to read uncertainty format or ASCII format from file " << parcov_fname;
-				cout << endl << "    reverting to parameter bounds for scaling matrix" << parcov_fname;
-				cout << "    see .rec file for more info. " << endl;
-				f_rec << "    unable to read uncertainy format from file " << parcov_fname;
-				f_rec << endl << "    reverting to parameter bounds for scaling matrix" << endl;
-				f_rec << endl << " error message:" << e.what() << endl;
-				this->from_parameter_bounds(pest_scenario);
+				ss << "Cov::try_from() error reading uncertainty file " << cov_fname << " :" << e.what();
+				throw runtime_error(ss.str());
 			}
 		}
-		//check that the parcov matrix has the right parameter names
-		vector<string> missing;
-		vector<string> parcov_names = this->get_row_names();
+		else
+		{
+			try
+			{
+				Mat::from_file(cov_fname);
+				how << " from file " << cov_fname;
+			}
+			catch (exception &e)
+			{
+				ss << "Cov:try_from() error reading from file " << cov_fname << " :" << e.what();
+				throw runtime_error(ss.str());
+			}
+		}
+	}
+	else
+	{	
+		if (is_parcov)
+		{
+			from_parameter_bounds(pest_scenario);
+			how << "from parameter bounds, using par_sigma_range " << pest_scenario.get_pestpp_options().get_par_sigma_range();
+		}
+		else
+		{
+			from_observation_weights(pest_scenario);
+			how << "from observation weights";
+		}
+		}
+	//check that the parcov matrix has the right parameter names
+	vector<string> missing;
+	if ((is_parcov) && (cov_fname.size() > 0))
+	{
+		set<string> parcov_names(row_names.begin(), row_names.end());
 		const ParameterRec *prec;
 		for (auto &pname : pest_scenario.get_ctl_ordered_par_names())
 		{
@@ -1028,7 +1145,7 @@ void Covariance::try_from(Pest &pest_scenario, FileManager &file_manager)
 			if ((prec->tranform_type == ParameterRec::TRAN_TYPE::LOG) ||
 				(prec->tranform_type == ParameterRec::TRAN_TYPE::NONE))
 			{
-				if (std::find(parcov_names.begin(), parcov_names.end(), pname) == parcov_names.end())
+				if (parcov_names.find(pname) == parcov_names.end())
 				{
 					missing.push_back(pname);
 				}
@@ -1042,6 +1159,32 @@ void Covariance::try_from(Pest &pest_scenario, FileManager &file_manager)
 			throw PestError("parcov missing parameters: " + ss.str());
 		}
 	}
+	if ((!is_parcov) && (cov_fname.size() > 0))
+	{
+		double weight;
+		set<string> cov_names(row_names.begin(), row_names.end());
+
+		for (auto &oname : pest_scenario.get_ctl_ordered_par_names())
+		{
+			weight = pest_scenario.get_ctl_observation_info().get_weight(oname);
+			if (weight == 0.0)
+				continue;
+			if (cov_names.find(oname) == cov_names.end())
+			{
+				missing.push_back(oname);
+			}
+			
+		}
+		if (missing.size() > 0)
+		{
+			stringstream ss;
+			for (auto &pname : missing)
+				ss << ',' << pname;
+			throw PestError("parcov missing parameters: " + ss.str());
+		}
+	}
+	
+	return how.str();
 }
 
 

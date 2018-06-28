@@ -19,7 +19,7 @@ bool Localizer::initialize(PerformanceLog *performance_log)
 	string filename = pest_scenario_ptr->get_pestpp_options().get_ies_localizer();
 	if (filename.size() == 0)
 		return false;
-	string ext = filename.substr(filename.size() - 3, 3);
+	/*string ext = filename.substr(filename.size() - 3, 3);
 	pest_utils::upper_ip(ext);
 	if ((ext == "JCB") || (ext == "JCO"))
 	{
@@ -31,12 +31,18 @@ bool Localizer::initialize(PerformanceLog *performance_log)
 		performance_log->log_event("loading localizer from binary file");
 		mat.from_ascii(filename);
 	}
+	else if (ext == "CSV")
+	{
+		performance_log->log_event("loading localizer from csv file");
+		mat.from_csv(filename);
+	}
 	else
 	{
 		ss << "unrecognnized localizer extension '" << ext << "', should be JCB, JCO, or MAT";
 		performance_log->log_event("error: "+ss.str());
 		throw runtime_error(ss.str());
-	}
+	}*/
+	mat.from_file(filename);
 
 
 	//error checking and building up container of names
