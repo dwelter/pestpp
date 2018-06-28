@@ -475,7 +475,7 @@ int main(int argc, char* argv[])
 				fout_rec << "   -----    Starting Optimization Iterations    ----    " << endl << endl;
 			}
 			Covariance parcov;
-			parcov.try_from(pest_scenario.get_pestpp_options().get_parcov_filename(), pest_scenario, file_manager);
+			parcov.try_from(pest_scenario, file_manager);
 			sequentialLP slp(pest_scenario, run_manager_ptr, parcov, &file_manager, output_file_writer);
 			slp.solve();
 			fout_rec << "Number of forward model runs performed during optimiztion: " << run_manager_ptr->get_total_runs() << endl;

@@ -1085,11 +1085,16 @@ Covariance Covariance::diagonal(double val)
 	return Covariance(*rn_ptr(), i);
 }
 
-string Covariance::try_from(const string &cov_fname, Pest &pest_scenario, FileManager &file_manager, bool is_parcov)
+string Covariance::try_from(Pest &pest_scenario, FileManager &file_manager, bool is_parcov)
 {
 	stringstream how;
 	stringstream ss;
-	//const string cov_fname = pest_scenario.get_pestpp_options().get_parcov_filename();
+	string cov_fname;
+	if (is_parcov)
+		cov_fname = pest_scenario.get_pestpp_options().get_parcov_filename();
+	else
+		cov_fname = pest_scenario.get_pestpp_options().get_obscov_filename();
+
 	if (!cov_fname.empty())
 	{
 		string ext = cov_fname.substr(cov_fname.size() - 3, 3);

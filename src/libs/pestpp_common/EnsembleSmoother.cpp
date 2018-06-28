@@ -1373,7 +1373,7 @@ void IterEnsembleSmoother::initialize_parcov()
 	//}
 	if (!pest_scenario.get_pestpp_options().get_ies_use_empirical_prior())
 		return;
-	string how = parcov.try_from(parcov_filename, pest_scenario, file_manager);
+	string how = parcov.try_from(pest_scenario, file_manager);
 	message(1, "parcov loaded ", how);
 	//if (parcov.e_ptr()->rows() > 0)
 	parcov = parcov.get(act_par_names);
@@ -1405,7 +1405,7 @@ void IterEnsembleSmoother::initialize_obscov()
 		else
 			throw_ies_error("unrecognized obscov_filename extension: " + extension);
 	}*/
-	string how = obscov.try_from(obscov_filename, pest_scenario, file_manager, false);
+	string how = obscov.try_from(pest_scenario, file_manager, false);
 	message(1, "obscov loaded ", how);
 	obscov = obscov.get(act_obs_names);
 
