@@ -65,6 +65,7 @@ Much work has been done to avoid additional external dependencies in PEST++.  As
 Here is a (more or less) complete list of ``++`` arguments that can be added to the control file
 * ``++overdue_resched_fac(1.2)``:YAMR only, if a run is more than <``overdue_resched_fac``> X average run time, reschedule it on available resources
 * ``++overdue_giveup_fac(2.0)``:YAMR only, if a run is more than <``overdue_giveup_fac``> X average run time, mark it as failed
+* ``++yamr_poll_interval(1.0)``: YAMR only, number of seconds to timeout for workers between attempts to try to connect to the master
 * ``++max_n_super(20)``: maximum number of super parameters to use
 
 * ``++super_eigthres(1.0e-8)`` ratio of max to min singular values used to truncate the singular components when forming the super parameter problem
@@ -93,6 +94,8 @@ Here is a (more or less) complete list of ``++`` arguments that can be added to 
 * ``++jac_scale(true)``: use PEST-style jacobian scaling. Important, but can be costly because it densifies the normal matrix, making SVD take longer.
 
 * ``++upgrade_augment(true)``: augment the values of lambda to test by including the best lambda from the previous iteration, as well as best lambda * 2.0 and best lambda / 2.0.  If ``true``, then additional lambdas will be included by attempting to extend each upgrade vector along the region of parameter space defined by parameter bounds.  If ``false``, then only the vectors listed in the ``++lambda()`` arg will be tested and no extended upgrade will be included.  
+
+* ``upgrade_bounds(robust)``: how to handle parameters going out of bounds during upgrades.  If ``robust``,then additional SVD solutions will be required but can result in greater phi reduction.  Choices are ``cheap`` or ``robust``.
 
 * ``++hotstart_resfile(mycase.res)``: use an exising residual file to restart with an existing jacobian to forego the initial, base run and jump straight to upgrade calculations (++base_jacobian arg required).
 
