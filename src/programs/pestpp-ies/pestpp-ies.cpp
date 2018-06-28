@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
 		}
 
 		string complete_path;
-		enum class RunManagerType { SERIAL, PANTHER, GENIE, EXTERNAL };
+		enum class RunManagerType { SERIAL, PANTHER, EXTERNAL };
 
 		if (argc >= 2) {
 			complete_path = argv[1];
@@ -175,11 +175,6 @@ int main(int argc, char* argv[])
 			next_item = *(it_find + 1);
 			strip_ip(next_item);
 
-		}
-		//Check for GENIE Master
-		if (it_find != cmd_arg_vec.end())
-		{
-			throw runtime_error("GENIE not supported by pestpp-ies");
 		}
 
 		RestartController restart_ctl;

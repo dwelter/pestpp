@@ -34,7 +34,6 @@
 #include "pest_error.h"
 #include "ModelRunPP.h"
 #include "FileManager.h"
-#include "RunManagerGenie.h"
 #include "RunManagerSerial.h"
 #include "OutputFileWriter.h"
 #include "PantherSlave.h"
@@ -72,7 +71,7 @@ int main(int argc, char* argv[])
 	}
 
 	string complete_path;
-	enum class RunManagerType {SERIAL, PANTHER, GENIE};
+	enum class RunManagerType {SERIAL, PANTHER};
 
 	if (argc >=2) {
 		complete_path = argv[1];
@@ -86,8 +85,6 @@ int main(int argc, char* argv[])
 		cerr << "        gsa control_file.pst /H :port" << endl; 
 		cerr << "    PANTHER worker:" << endl;
 		cerr << "        gsa control_file.pst /H hostname:port " << endl << endl;
-		cerr << "    GENIE:" << endl;
-		cerr << "        gsa control_file.pst /G hostname:port" << endl;
 		cerr << "--------------------------------------------------------" << endl;
 		exit(0);
 	}
@@ -169,14 +166,6 @@ int main(int argc, char* argv[])
 		strip_ip(next_item);
 
 	}
-	//Check for GENIE Master
-	if (it_find != cmd_arg_vec.end())
-	{
-		//Using GENIE run manager
-		run_manager_type = RunManagerType::GENIE;
-		socket_str = next_item;
-	}
-
 	ofstream &fout_rec = file_manager.open_ofile_ext("rec");
 	fout_rec << "             GSA++ Version " << version << endl << endl;
 	fout_rec << "                 by Dave Welter" << endl;
@@ -215,15 +204,6 @@ int main(int argc, char* argv[])
 			pest_scenario.get_pestpp_options().get_max_run_fail(),
 			pest_scenario.get_pestpp_options().get_overdue_reched_fac(),
 			pest_scenario.get_pestpp_options().get_overdue_giveup_fac());
-	}
-	else if (run_manager_type == RunManagerType::GENIE)
-	{
-		string socket_str = argv[3];
-		strip_ip(socket_str);
-		const ModelExecInfo &exi = pest_scenario.get_model_exec_info();
-		run_manager_ptr = new RunManagerGenie(exi.comline_vec,
-		exi.tplfile_vec, exi.inpfile_vec, exi.insfile_vec, exi.outfile_vec,
-		file_manager.build_filename("rns"), socket_str);
 	}
 	else
 	{

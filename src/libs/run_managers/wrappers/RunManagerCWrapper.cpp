@@ -3,7 +3,6 @@
 #include "utilities.h"
 #include "RunManagerPanther.h"
 #include "RunManagerSerial.h"
-#include "RunManagerGenie.h"
 #include "pest_error.h"
 
 typedef class RunManagerAbstract RunManagerAbstract;
@@ -36,36 +35,16 @@ RunManager* rmic_create_serial(char **comline, int comline_array_len,
 }
 
 
-RunManager* rmic_create_panther(
-	char *storfile,
+RunManager* rmic_create_panther(char *storfile,
 	char *port,
 	char *info_filename,
 	int n_max_fail,
-	double overdue_reched_fac,
-	double overdue_giveup_fac)
+	double overdue_reched_fac, double overdue_giveup_fac)
 {
 	RunManager *run_manager_ptr = nullptr;
 	fout_run_manager_log_file.open(info_filename);
 	run_manager_ptr = new RunManagerPanther(storfile, port, 
 		fout_run_manager_log_file, n_max_fail, overdue_reched_fac, overdue_giveup_fac);
-	return run_manager_ptr;
-}
-
-RunManager* rmic_create_genie(char **comline, int comline_array_len,
-	char **tpl, int tpl_array_len,
-	char **inp, int inp_array_len,
-	char **ins, int ins_array_len,
-	char **out, int out_array_len,
-	char *storfile,
-	char *genie_tag)
-{
-	RunManager *run_manager_ptr = nullptr;
-	vector<string> comline_vec(comline, comline+comline_array_len);
-	vector<string> tpl_vec(tpl, tpl+tpl_array_len);
-	vector<string> inp_vec(inp, inp+inp_array_len);
-	vector<string> ins_vec(ins, ins+ins_array_len);
-	vector<string> out_vec(out, out+out_array_len);
-	run_manager_ptr = new RunManagerGenie(comline_vec, tpl_vec, inp_vec, ins_vec, out_vec, storfile, genie_tag);
 	return run_manager_ptr;
 }
 
@@ -130,7 +109,7 @@ int rmic_run(RunManager *run_manager_ptr)
 	return err;
 }
 
-int rmic_run_until_(RunManager *run_manager_ptr, int condition, int no_ops, double time_sec, int *return_cond)
+int rmic_run_until(RunManager *run_manager_ptr, int condition, int no_ops, double time_sec, int *return_cond)
 {
 	int err = 0;
 	RunManagerAbstract::RUN_UNTIL_COND enum_input_cond;
@@ -164,7 +143,7 @@ int rmic_get_run_status_info(RunManager *run_manager_ptr, int run_id, int *run_s
 {
 	int err = 0;
 	try {
-		run_manager_ptr->cancel_run(run_id);
+		run_manager_ptr->get_run_status_info(run_id, *run_status, *max_runtime, *n_concurrent_runs);
 	}
 	catch (...)
 	{

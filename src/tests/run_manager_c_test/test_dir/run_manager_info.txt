@@ -1,0 +1,83 @@
+
+PANTHER master listening on socket:0.0.0.0:4015 (IPv4)
+running model 10 times
+
+    waiting for slaves to appear...
+
+
+running model 10 times
+
+    waiting for slaves to appear...
+
+
+06/28/18 15:53:30->new connection from: anole:53348
+06/28/18 15:53:30->initializing new slave connection from: anole:53348; number of slaves: 1; working dir: C:\Users\Dave\Documents\GitHub\pestpp_test\src\tests\run_manager_c_test\worker_1
+running model 10 times
+
+running model 10 times
+
+06/28/18 15:53:37->new slave ready: anole:53348
+06/28/18 15:53:37->Sending run 0 to: anole$C:\Users\Dave\Documents\GitHub\pestpp_test\src\tests\run_manager_c_test\worker_1  (group id = -1, run id = 0, concurrent runs = 1)
+running model 9 times
+
+running model 9 times
+
+06/28/18 15:53:43->ping sent to slave:anole$C:\Users\Dave\Documents\GitHub\pestpp_test\src\tests\run_manager_c_test\worker_1
+running model 9 times
+
+running model 9 times
+
+running model 9 times
+
+06/28/18 15:53:51->ping sent to slave:anole$C:\Users\Dave\Documents\GitHub\pestpp_test\src\tests\run_manager_c_test\worker_1
+running model 9 times
+
+06/28/18 15:53:58->ping received from slaveanole$C:\Users\Dave\Documents\GitHub\pestpp_test\src\tests\run_manager_c_test\worker_1
+06/28/18 15:53:58->ping sent to slave:anole$C:\Users\Dave\Documents\GitHub\pestpp_test\src\tests\run_manager_c_test\worker_1
+06/28/18 15:53:58->ping received from slaveanole$C:\Users\Dave\Documents\GitHub\pestpp_test\src\tests\run_manager_c_test\worker_1
+06/28/18 15:53:58->Run 0 failed on slave:anole$C:\Users\Dave\Documents\GitHub\pestpp_test\src\tests\run_manager_c_test\worker_1  (group id = -1, run id = 0, concurrent = 1) 
+06/28/18 15:53:58->Sending run 0 to: anole$C:\Users\Dave\Documents\GitHub\pestpp_test\src\tests\run_manager_c_test\worker_1  (group id = -1, run id = 0, concurrent runs = 1)
+06/28/18 15:53:58->ping received from slaveanole$C:\Users\Dave\Documents\GitHub\pestpp_test\src\tests\run_manager_c_test\worker_1
+06/28/18 15:53:58->Run 0 failed on slave:anole$C:\Users\Dave\Documents\GitHub\pestpp_test\src\tests\run_manager_c_test\worker_1  (group id = -1, run id = 0, concurrent = 1) 
+running model 9 times
+
+06/28/18 15:54:00->Sending run 1 to: anole$C:\Users\Dave\Documents\GitHub\pestpp_test\src\tests\run_manager_c_test\worker_1  (group id = -1, run id = 1, concurrent runs = 1)
+06/28/18 15:54:00->run 1 received from: anole$C:\Users\Dave\Documents\GitHub\pestpp_test\src\tests\run_manager_c_test\worker_1  (run time = 0.00518333 min, group id = -1, run id = 1 concurrent = 1)
+running model 8 times
+
+06/28/18 15:54:01->Sending run 2 to: anole$C:\Users\Dave\Documents\GitHub\pestpp_test\src\tests\run_manager_c_test\worker_1  (group id = -1, run id = 2, concurrent runs = 1)
+06/28/18 15:54:02->run 2 received from: anole$C:\Users\Dave\Documents\GitHub\pestpp_test\src\tests\run_manager_c_test\worker_1  (run time = 0.00516667 min, group id = -1, run id = 2 concurrent = 1)
+running model 7 times
+
+06/28/18 15:54:03->Sending run 3 to: anole$C:\Users\Dave\Documents\GitHub\pestpp_test\src\tests\run_manager_c_test\worker_1  (group id = -1, run id = 3, concurrent runs = 1)
+06/28/18 15:54:03->run 3 received from: anole$C:\Users\Dave\Documents\GitHub\pestpp_test\src\tests\run_manager_c_test\worker_1  (run time = 0.00518333 min, group id = -1, run id = 3 concurrent = 1)
+running model 6 times
+
+06/28/18 15:54:04->Sending run 4 to: anole$C:\Users\Dave\Documents\GitHub\pestpp_test\src\tests\run_manager_c_test\worker_1  (group id = -1, run id = 4, concurrent runs = 1)
+06/28/18 15:54:04->run 4 received from: anole$C:\Users\Dave\Documents\GitHub\pestpp_test\src\tests\run_manager_c_test\worker_1  (run time = 0.00523333 min, group id = -1, run id = 4 concurrent = 1)
+running model 5 times
+
+06/28/18 15:54:05->Sending run 5 to: anole$C:\Users\Dave\Documents\GitHub\pestpp_test\src\tests\run_manager_c_test\worker_1  (group id = -1, run id = 5, concurrent runs = 1)
+06/28/18 15:54:05->run 5 received from: anole$C:\Users\Dave\Documents\GitHub\pestpp_test\src\tests\run_manager_c_test\worker_1  (run time = 0.0052 min, group id = -1, run id = 5 concurrent = 1)
+running model 4 times
+
+06/28/18 15:54:06->Sending run 6 to: anole$C:\Users\Dave\Documents\GitHub\pestpp_test\src\tests\run_manager_c_test\worker_1  (group id = -1, run id = 6, concurrent runs = 1)
+06/28/18 15:54:07->run 6 received from: anole$C:\Users\Dave\Documents\GitHub\pestpp_test\src\tests\run_manager_c_test\worker_1  (run time = 0.00521667 min, group id = -1, run id = 6 concurrent = 1)
+running model 3 times
+
+06/28/18 15:54:07->Sending run 7 to: anole$C:\Users\Dave\Documents\GitHub\pestpp_test\src\tests\run_manager_c_test\worker_1  (group id = -1, run id = 7, concurrent runs = 1)
+06/28/18 15:54:08->run 7 received from: anole$C:\Users\Dave\Documents\GitHub\pestpp_test\src\tests\run_manager_c_test\worker_1  (run time = 0.0052 min, group id = -1, run id = 7 concurrent = 1)
+running model 2 times
+
+06/28/18 15:54:08->Sending run 8 to: anole$C:\Users\Dave\Documents\GitHub\pestpp_test\src\tests\run_manager_c_test\worker_1  (group id = -1, run id = 8, concurrent runs = 1)
+06/28/18 15:54:09->run 8 received from: anole$C:\Users\Dave\Documents\GitHub\pestpp_test\src\tests\run_manager_c_test\worker_1  (run time = 0.0052 min, group id = -1, run id = 8 concurrent = 1)
+running model 1 times
+
+06/28/18 15:54:09->Sending run 9 to: anole$C:\Users\Dave\Documents\GitHub\pestpp_test\src\tests\run_manager_c_test\worker_1  (group id = -1, run id = 9, concurrent runs = 1)
+06/28/18 15:54:09->run 9 received from: anole$C:\Users\Dave\Documents\GitHub\pestpp_test\src\tests\run_manager_c_test\worker_1  (run time = 0.00518333 min, group id = -1, run id = 9 concurrent = 1)
+running model 0 times
+
+
+---------------------
+   9 runs complete :  1 runs failed
+

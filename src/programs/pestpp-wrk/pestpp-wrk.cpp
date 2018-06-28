@@ -74,7 +74,7 @@ int main(int argc, char* argv[])
 		}
 
 		string complete_path;
-		enum class RunManagerType { SERIAL, PANTHER, GENIE, EXTERNAL };
+		enum class RunManagerType { SERIAL, PANTHER, EXTERNAL };
 
 		if (argc >= 2) {
 			complete_path = argv[1];

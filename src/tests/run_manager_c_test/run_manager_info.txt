@@ -1,0 +1,42 @@
+
+PANTHER master listening on socket:0.0.0.0:4015 (IPv4)
+running model 10 times
+
+    waiting for slaves to appear...
+
+
+running model 1 times
+
+    waiting for slaves to appear...
+
+
+running model 1 times
+
+    waiting for slaves to appear...
+
+
+running model 1 times
+
+    waiting for slaves to appear...
+
+
+running model 1 times
+
+    waiting for slaves to appear...
+
+
+running model 1 times
+
+    waiting for slaves to appear...
+
+
+running model 1 times
+
+    waiting for slaves to appear...
+
+
+running model 1 times
+
+    waiting for slaves to appear...
+
+

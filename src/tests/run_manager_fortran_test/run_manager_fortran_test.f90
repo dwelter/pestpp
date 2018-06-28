@@ -21,8 +21,6 @@
     integer rmif_create_serial
     external rmif_create_panther
     integer rmif_create_panther
-    external rmif_create_genie
-    integer rmif_create_genie
     external rmif_initialize
     integer rmif_initialize
     external rmif_reinitialize
@@ -58,8 +56,6 @@
     character*20 port
     character*20 rmi_info_file
     character*80 rundir
-    character*20 genie_host
-    character*80 genie_tag
     character*20 p_names(3)
     character*50 o_names(16)
     character buf
@@ -142,7 +138,7 @@
         err = rmif_add_run(pars, npar, irun)
     end do
     
-    ! perform mdoel runs
+    ! perform model runs
     write(*,*) 'Performing model runs...'
     ! set flag to return after 15sec
     run_input_flag = 2
@@ -159,7 +155,7 @@
     ! run_output_flag returns the reason the call to rmif_run_until is returning
     !  run_output_flag = 0 -> all runs are complete
     !  run_output_flag = 1 -> "run_until_no_ops" was active and this condition was satifisfied
-    !  run_output_flag = 2 -> run_until_time_sec" was active and this condition occured
+    !  run_output_flag = 2 -> "run_until_time_sec" was active and this condition occured
     do while (run_output_flag /= 0)
         err = rmif_run_until(run_input_flag, run_until_no_ops, run_until_time_sec, run_output_flag)
         ! check and print status of model runs
