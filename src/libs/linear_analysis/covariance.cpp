@@ -489,6 +489,9 @@ void Mat::from_csv(const string &filename)
 	lcount++;
 	irow++;
 	}
+	matrix.resize(row_names.size(), col_names.size());
+	matrix.setFromTriplets(triplet_list.begin(), triplet_list.end());
+	
 }
 
 void Mat::from_ascii(const string &filename)

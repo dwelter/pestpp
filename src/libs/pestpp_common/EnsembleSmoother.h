@@ -145,10 +145,10 @@ private:
 	ParameterEnsemble pe, pe_base;
 	ObservationEnsemble oe, oe_base, weights;
 	//Eigen::MatrixXd prior_pe_diff;
-	Eigen::MatrixXd Am;
+	//Eigen::MatrixXd Am;
 	Eigen::DiagonalMatrix<double,Eigen::Dynamic> obscov_inv_sqrt, parcov_inv_sqrt;
 
-	bool solve_old();
+	//bool solve_old();
 	bool solve_new();
 	void adjust_pareto_weight(string &obsgroup, double wfac);
 
@@ -186,6 +186,8 @@ private:
 	void sanity_checks();
 
 	void add_bases();
+
+	Eigen::MatrixXd get_Am(const vector<string> &real_names, const vector<string> &par_names);
 };
 
 #endif 
