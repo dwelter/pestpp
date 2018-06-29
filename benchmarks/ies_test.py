@@ -1617,6 +1617,56 @@ def compare_freyberg_local3():
         plt.show()
 
 
+def csv_tests():
+    model_d = "ies_10par_xsec"
+    test_d = os.path.join(model_d, "master_csv_test1")
+    template_d = os.path.join(model_d, "test_template")
+    if not os.path.exists(template_d):
+        raise Exception("template_d {0} not found".format(template_d))
+    if os.path.exists(test_d):
+        shutil.rmtree(test_d)
+    # shutil.copytree(template_d, test_d)
+    pst_name = os.path.join(template_d, "pest.pst")
+    pst = pyemu.Pst(pst_name)
+
+    # mat = pyemu.Matrix.from_names(pst.nnz_obs_names,pst.adj_par_names).to_dataframe()
+    mat = pyemu.Matrix.from_names(["head"], pst.adj_par_names).to_dataframe()
+    mat.loc[:, :] = 1.0
+    mat.to_csv(os.path.join(template_d,"localizer.csv"))
+    mat = pyemu.Matrix.from_dataframe(mat)
+    mat.to_ascii(os.path.join(template_d, "localizer.mat"))
+    cov = pyemu.Cov.from_parameter_data(pst)
+    cov.to_dataframe().to_csv(os.path.join(template_d,"prior.csv"))
+    pst.pestpp_options = {}
+    pst.pestpp_options["ies_num_reals"] = 10
+    pst.pestpp_options["ies_localizer"] = "localizer.csv"
+    pst.pestpp_options["ies_lambda_mults"] = 1.0
+    pst.pestpp_options["lambda_scale_fac"] = 1.0
+    pst.pestpp_options["ies_subset_size"] = 11
+    pst.pestpp_options["parcov_filename"] = "prior.csv"
+    pst.control_data.noptmax = 3
+
+    pst_name = os.path.join(template_d, "pest_local.pst")
+    pst.write(pst_name)
+    pyemu.helpers.start_slaves(template_d, exe_path, "pest_local.pst", num_slaves=11,
+                               master_dir=test_d, verbose=True, slave_root=model_d,
+                               port=4019)
+    # phi_df1 = pd.read_csv(os.path.join(test_d, "pest_local.phi.actual.csv"))
+    #
+    # pst.pestpp_options.pop("ies_localizer")
+    # pst.write(pst_name)
+    # pyemu.helpers.start_slaves(template_d, exe_path, "pest_local.pst", num_slaves=11,
+    #                            master_dir=test_d, verbose=True, slave_root=model_d,
+    #                            port=4020)
+    # phi_df2 = pd.read_csv(os.path.join(test_d, "pest_local.phi.actual.csv"))
+    # diff = phi_df1 - phi_df2
+    # print(diff.max().max())
+    # assert diff.max().max() == 0
+    # plt.plot(phi_df1.total_runs, phi_df1.loc[:, "mean"], label="local")
+    # plt.plot(phi_df2.total_runs, phi_df2.loc[:, "mean"], label="full")
+    # plt.legend()
+    # plt.savefig(os.path.join(test_d, "local_test.pdf"))
+
 if __name__ == "__main__":
     # write_empty_test_matrix()
     #setup_suite_dir("ies_freyberg")
@@ -1643,9 +1693,10 @@ if __name__ == "__main__":
     #tenpar_narrow_range_test()
     #test_freyberg_ineq()
     #tenpar_localizer_test1()
+    csv_tests()
     #tenpar_localizer_test3()
     #freyberg_localizer_test2()
-    freyberg_localizer_test3()
+   # freyberg_localizer_test3()
     #compare_freyberg_local3()
     # # invest()
     #compare_suite("ies_10par_xsec")

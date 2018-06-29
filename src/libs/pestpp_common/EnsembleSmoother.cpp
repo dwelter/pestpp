@@ -1371,7 +1371,7 @@ void IterEnsembleSmoother::initialize_parcov()
 	//	else
 	//		throw_ies_error("unrecognized parcov_filename extension: " + extension);
 	//}
-	if (!pest_scenario.get_pestpp_options().get_ies_use_empirical_prior())
+	if (pest_scenario.get_pestpp_options().get_ies_use_empirical_prior())
 		return;
 	string how = parcov.try_from(pest_scenario, file_manager);
 	message(1, "parcov loaded ", how);

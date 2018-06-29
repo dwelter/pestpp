@@ -469,7 +469,7 @@ void Mat::from_csv(const string &filename)
 			ss << "Matrix.from_csv() error: wrong number of entries on line " << lcount << " , expecting " << col_names.size() << ", found " << tokens.size() << endl;
 			throw runtime_error(ss.str());
 		}
-		row_names.push_back(row_name);
+		row_names.push_back(pest_utils::upper_cp(row_name));
 		for (int j = 0; j < col_names.size(); j++)
 		{
 			try
