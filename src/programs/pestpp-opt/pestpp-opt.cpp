@@ -121,7 +121,7 @@ int main(int argc, char* argv[])
 			{
 				if (sock_parts.size() != 2)
 				{
-					cerr << "PANTHER slave requires the master be specified as /H hostname:port" << endl << endl;
+					cerr << "PANTHER worker requires the master be specified as /H hostname:port" << endl << endl;
 					throw(PestCommandlineError(commandline));
 				}
 				PANTHERSlave panther_slave;

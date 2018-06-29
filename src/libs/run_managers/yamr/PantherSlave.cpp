@@ -40,7 +40,7 @@ void PANTHERSlave::init_network(const string &host, const string &port)
 	w_print_servinfo(servinfo, cout);
 	cout << endl;
 	// connect
-	cout << "YAMR Slave will poll for master connection every " << poll_interval_seconds << " seconds" << endl;
+	cout << "PANTHER worker will poll for master connection every " << poll_interval_seconds << " seconds" << endl;
 	addrinfo* connect_addr = nullptr;
 	while  (connect_addr == nullptr)
 	{

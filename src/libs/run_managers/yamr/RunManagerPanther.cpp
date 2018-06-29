@@ -461,15 +461,15 @@ RunManagerAbstract::RUN_UNTIL_COND RunManagerPanther::run_until(RUN_UNTIL_COND c
 	f_rmr << "running model " << num_runs << " times" << endl;
 	if (slave_info_set.size() == 0) // first entry is the listener, slave apears after this
 	{
-		cout << endl << "      waiting for slaves to appear..." << endl << endl;
-		f_rmr << endl << "    waiting for slaves to appear..." << endl << endl;
+		cout << endl << "      waiting for workers to appear..." << endl << endl;
+		f_rmr << endl << "    waiting for workers to appear..." << endl << endl;
 	}
 	cout << endl;
 	f_rmr << endl;
 
 	cout << "PANTHER progress" << endl;
 	cout << "   runs(C = completed | F = failed | T = timed out)" << endl;
-	cout << "   slaves(R = running | W = waiting | U = unavailable)" << endl;
+	cout << "   workers(R = running | W = waiting | U = unavailable)" << endl;
 	cout << "------------------------------------------------------------------------------" << endl;
 
 	std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
@@ -564,11 +564,11 @@ bool RunManagerPanther::ping(int i_sock)
 	if ((!FD_ISSET(i_sock, &read_fds)) && slave_info_iter->get_ping())
 	{
 		int fails = slave_info_iter->add_failed_ping();
-		report("failed to receive ping response from slave: " + sock_hostname + "$" + slave_info_iter->get_work_dir(), false);
+		report("failed to receive ping response from worker: " + sock_hostname + "$" + slave_info_iter->get_work_dir(), false);
 		if (fails >= MAX_FAILED_PINGS)
 		{
 			ping_sent = true;
-			report("max failed ping communications since last successful run for slave:" + sock_hostname + "$" + slave_info_iter->get_work_dir() + "  -> terminating", false);
+			report("max failed ping communications since last successful run for worker:" + sock_hostname + "$" + slave_info_iter->get_work_dir() + "  -> terminating", false);
 			close_slave(i_sock);
 			return ping_sent;
 		}
@@ -585,17 +585,17 @@ bool RunManagerPanther::ping(int i_sock)
 		if (err <= 0)
 		{
 			int fails = slave_info_iter->add_failed_ping();
-			report("failed to send ping request to slave:" + sock_hostname + "$" + slave_info_iter->get_work_dir(), false);
+			report("failed to send ping request to worker:" + sock_hostname + "$" + slave_info_iter->get_work_dir(), false);
 			if (fails >= MAX_FAILED_PINGS)
 			{
-				report("max failed ping communications since last successful run for slave:" + sock_hostname + "$" + slave_info_iter->get_work_dir() + "  -> terminating", true);
+				report("max failed ping communications since last successful run for worker:" + sock_hostname + "$" + slave_info_iter->get_work_dir() + "  -> terminating", true);
 				close_slave(i_sock);
 				return ping_sent;
 			}
 		}
 		else slave_info_iter->set_ping(true);
 #ifdef _DEBUG
-		report("ping sent to slave:" + sock_hostname + "$" + slave_info_iter->get_work_dir(), false);
+		report("ping sent to worker:" + sock_hostname + "$" + slave_info_iter->get_work_dir(), false);
 #endif
 	}
 	return ping_sent;
@@ -695,7 +695,7 @@ void RunManagerPanther::close_slave(list<SlaveInfoRec>::iterator slave_info_iter
 	socket_to_iter_map.erase(i_sock);
 
 	stringstream ss;
-	ss << "closed connection to slave: " << socket_name << "; number of slaves: " << socket_to_iter_map.size();
+	ss << "closed connection to worker: " << socket_name << "; number of slaves: " << socket_to_iter_map.size();
 	report(ss.str(), false);
 }
 
@@ -904,7 +904,7 @@ void RunManagerPanther::echo()
 	cout << get_time_string_short() << " runs("
 		<< "C=" << setw(5) << left << model_runs_done
 		<< "| F=" << setw(5) << left << model_runs_failed
-		<< "| T=" << setw(5) << left << model_runs_timed_out << "): slaves("
+		<< "| T=" << setw(5) << left << model_runs_timed_out << "): workers("
 		<< "R=" << setw(4) << left << stats_map["run"]
 		<< "| W=" << setw(4) << left << stats_map["wait"]
 		<< "| U=" << setw(4) << left << stats_map["unavailable"] << ")\r" << flush;
@@ -957,19 +957,19 @@ void RunManagerPanther::process_message(int i_sock)
 	if(( err=net_pack.recv(i_sock)) <=0) // error or lost connection
 	{
 		if (err  == -2) {
-			report("received corrupt message from slave: " + host_name + "$" + slave_info_iter->get_work_dir() + " - terminating slave", false);
+			report("received corrupt message from worker: " + host_name + "$" + slave_info_iter->get_work_dir() + " - terminating worker", false);
 		}
 		else if (err < 0) {
-			report("receive failed from slave: " + host_name + "$" + slave_info_iter->get_work_dir() + " - terminating slave", false);
+			report("receive failed from worker: " + host_name + "$" + slave_info_iter->get_work_dir() + " - terminating worker", false);
 		}
 		else {
-			report("lost connection to slave: " + host_name + "$" + slave_info_iter->get_work_dir(), false);
+			report("lost connection to worker: " + host_name + "$" + slave_info_iter->get_work_dir(), false);
 		}
 		close_slave(i_sock);
 	}
 	else if (net_pack.get_type() == NetPackage::PackType::CORRUPT_MESG)
 	{
-		report("Slave reporting corrupt message: " + host_name + "$" + slave_info_iter->get_work_dir() + " - terminating slave", false);
+		report("Worker reporting corrupt message: " + host_name + "$" + slave_info_iter->get_work_dir() + " - terminating worker", false);
 		close_slave(i_sock);
 	}
 	else if (net_pack.get_type() == NetPackage::PackType::RUNDIR)
@@ -979,14 +979,14 @@ void RunManagerPanther::process_message(int i_sock)
 		{
 			string work_dir = NetPackage::extract_string(net_pack.get_data(), 0, net_pack.get_data().size());
 			stringstream ss;
-			ss << "initializing new slave connection from: " << socket_name << "; number of slaves: " << socket_to_iter_map.size() << "; working dir: " << work_dir;
+			ss << "initializing new worker connection from: " << socket_name << "; number of workers: " << socket_to_iter_map.size() << "; working dir: " << work_dir;
 			report(ss.str(), false);
 			slave_info_iter->set_work_dir(work_dir);
 			slave_info_iter->set_state(SlaveInfoRec::State::CWD_RCV);
 		}
 		else
 		{
-			report("received corrupt run directory from slave: " + host_name + " - terminating slave", false);
+			report("received corrupt run directory from worker: " + host_name + " - terminating worker", false);
 			close_slave(i_sock);
 		}
 	}
@@ -995,7 +995,7 @@ void RunManagerPanther::process_message(int i_sock)
 		slave_info_iter->end_linpack();
 		slave_info_iter->set_state(SlaveInfoRec::State::LINPACK_RCV);
 		stringstream ss;
-		ss << "new slave ready: " << socket_name;
+		ss << "new worker ready: " << socket_name;
 		report(ss.str(), false);
 	}
 	else if (net_pack.get_type() == NetPackage::PackType::READY)
@@ -1055,7 +1055,7 @@ void RunManagerPanther::process_message(int i_sock)
 		
 		if (!run_finished(run_id))
 		{
-			ss << "Run " << run_id << " failed on slave:" << host_name << "$" << slave_info_iter->get_work_dir() << "  (group id = " << group_id << ", run id = " << run_id << ", concurrent = " << n_concur << ") ";
+			ss << "Run " << run_id << " failed on worker:" << host_name << "$" << slave_info_iter->get_work_dir() << "  (group id = " << group_id << ", run id = " << run_id << ", concurrent = " << n_concur << ") ";
 			report(ss.str(), false);
 			model_runs_failed++;
 			update_run_failed(run_id, i_sock);
@@ -1077,24 +1077,24 @@ void RunManagerPanther::process_message(int i_sock)
 		auto it = get_active_run_iter(i_sock);
 		unschedule_run(it);
 		stringstream ss;
-		ss << "Run " << run_id << " killed on slave: " << host_name << "$" << slave_info_iter->get_work_dir() << ", run id = " << run_id << " concurrent = " << n_concur;
+		ss << "Run " << run_id << " killed on worker: " << host_name << "$" << slave_info_iter->get_work_dir() << ", run id = " << run_id << " concurrent = " << n_concur;
 		report(ss.str(), false);
 	}
 	else if (net_pack.get_type() == NetPackage::PackType::PING)
 	{
 #ifdef _DEBUG
-		report("ping received from slave" + host_name + "$" + slave_info_iter->get_work_dir(), false);
+		report("ping received from worker" + host_name + "$" + slave_info_iter->get_work_dir(), false);
 #endif
 	}
 	else if (net_pack.get_type() == NetPackage::PackType::IO_ERROR)
 	{
 		//string err(net_pack.get_data().begin(),net_pack.get_data().end());		
-		report("error in model IO files on slave: " + host_name + "$" + slave_info_iter->get_work_dir() + "-terminating slave. ", true);
+		report("error in model IO files on worker: " + host_name + "$" + slave_info_iter->get_work_dir() + "-terminating worker. ", true);
 		close_slave(i_sock);
 	}
 	else
 	{
-		report("received unsupported message from slave: ", false);
+		report("received unsupported message from worker: ", false);
 		net_pack.print_header(f_rmr);
 		//save results from model run
 	}
@@ -1139,7 +1139,7 @@ void RunManagerPanther::kill_run(list<SlaveInfoRec>::iterator slave_info_iter, c
 		//schedule run to be killed
 		string host_name = slave_info_iter->get_hostname();
 		stringstream ss;
-		ss << "sending kill request; reason: " << reason << "; run id:" << run_id << "; slave: " << host_name << "$" << slave_info_iter->get_work_dir();
+		ss << "sending kill request; reason: " << reason << "; run id:" << run_id << "; worker: " << host_name << "$" << slave_info_iter->get_work_dir();
 		report(ss.str(), false);
 		NetPackage net_pack(NetPackage::PackType::REQ_KILL, 0, 0, "");
 		char data = '\0';
@@ -1150,7 +1150,7 @@ void RunManagerPanther::kill_run(list<SlaveInfoRec>::iterator slave_info_iter, c
 		}
 		else
 		{
-			report("error sending kill request to slave:" + host_name + "$" +
+			report("error sending kill request to worker:" + host_name + "$" +
 				slave_info_iter->get_work_dir(), true);
 			slave_info_iter->set_state(SlaveInfoRec::State::KILLED_FAILED);
 		}
@@ -1561,7 +1561,7 @@ void RunManagerYAMRCondor::cleanup(int cluster)
 	w_sleep(2000);
 	system(ss.str().c_str());
 	RunManagerPanther::close_slaves();
-	cout << "   all slaves freed " << endl << endl;
+	cout << "   all workers freed " << endl << endl;
 }
 
 void RunManagerYAMRCondor::parse_submit_file()
