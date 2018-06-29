@@ -1644,8 +1644,9 @@ def csv_tests():
     pst.pestpp_options["lambda_scale_fac"] = 1.0
     pst.pestpp_options["ies_subset_size"] = 11
     pst.pestpp_options["parcov_filename"] = "prior.csv"
+    pst.pestpp_options["ies_use_prior_scaling"] = True
+    pst.pestpp_options["ies_use_approx"] = False
     pst.control_data.noptmax = 3
-
     pst_name = os.path.join(template_d, "pest_local.pst")
     pst.write(pst_name)
     pyemu.helpers.start_slaves(template_d, exe_path, "pest_local.pst", num_slaves=11,

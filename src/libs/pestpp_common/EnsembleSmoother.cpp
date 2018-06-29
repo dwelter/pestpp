@@ -2143,7 +2143,16 @@ ParameterEnsemble IterEnsembleSmoother::calc_upgrade(vector<string> &obs_names, 
 	ParameterEnsemble pe_upgrade = pe;
 	pe_upgrade.reorder(vector<string>(), par_names);
 
-	Eigen::MatrixXd parcov_inv = parcov.get(par_names).inv().e_ptr()->toDense();
+	Eigen::DiagonalMatrix<double, Eigen::Dynamic> parcov_inv;// = parcov.get(par_names).inv().e_ptr()->toDense().cwiseSqrt().asDiagonal();
+	if (parcov.isdiagonal())
+		parcov_inv = parcov.get(par_names).inv().get_matrix().diagonal().cwiseSqrt().asDiagonal();
+	else
+	{
+		message(1, "first extracting diagonal from prior parameter covariance matrix");
+		Covariance parcov_diag;
+		parcov_diag.from_diagonal(parcov.get(par_names));
+		parcov_inv = parcov_diag.inv().get_matrix().diagonal().cwiseSqrt().asDiagonal();
+	}
 
 
 	double scale = (1.0 / (sqrt(double(oe_upgrade.shape().first - 1))));
