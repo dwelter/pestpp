@@ -1561,13 +1561,16 @@ void sequentialLP::iter_postsolve()
 
 	Observations upgrade_obs = constraints_sim;
 	if (!super_secret_option)
-		bool success = make_upgrade_run(upgrade_pars,upgrade_obs);
+	{
+		bool success = make_upgrade_run(upgrade_pars, upgrade_obs);
 
-	f_rec << "  ---  processing results for iteration " << slp_iter << " LP solution  ---  " << endl << endl;
+		f_rec << "  ---  processing results for iteration " << slp_iter << " LP solution  ---  " << endl << endl;
+		postsolve_constraint_report(upgrade_obs, upgrade_pars);
+	}
 	double obj_val = model.getObjValue();
 	
 	pair<double,double> cur_new_obj = postsolve_decision_var_report(upgrade_pars);
-	postsolve_constraint_report(upgrade_obs,upgrade_pars);
+	
 	
 	f_rec << endl << endl <<  "  ---  iteration " << slp_iter << " objective function value: " << setw(15) << cur_new_obj.second << "  ---  " << endl << endl;
 	cout << endl << endl << "  ---  iteration " << slp_iter << " objective function value: " << setw(15) << cur_new_obj.second << "  ---  " << endl << endl;
@@ -1609,6 +1612,13 @@ void sequentialLP::iter_postsolve()
 	max_abs_constraint_change /= max(max_abs_constraint_val,1.0);
 
 	pair<map<string,double>, map<string,double>> invalid_vars_const = postsolve_check(upgrade_obs, upgrade_pars);
+
+	if (super_secret_option)
+	{
+		f_rec << "super secret option active...done" << endl;
+		return;
+	}
+
 
 	//convergence check
 	double opt_iter_tol = pest_scenario.get_pestpp_options().get_opt_iter_tol();
