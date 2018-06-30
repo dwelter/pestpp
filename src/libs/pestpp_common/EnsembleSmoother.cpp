@@ -2679,6 +2679,11 @@ void IterEnsembleSmoother::report_and_save()
 	
 }
 
+map<int,int> IterEnsembleSmoother::get_subset_idx_map()
+{
+	map<int,int> subset_idx_map;
+	return subset_idx_map;
+}
 
 vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<ParameterEnsemble> &pe_lams, vector<double> &lam_vals, vector<double> &scale_vals)
 {

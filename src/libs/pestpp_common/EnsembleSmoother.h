@@ -176,6 +176,8 @@ private:
 	void sanity_checks();
 
 	void add_bases();
+
+	map<int,int> get_subset_idx_map();
 };
 
 #endif 
