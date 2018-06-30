@@ -959,20 +959,20 @@ bool IterEnsembleSmoother::initialize_oe(Covariance &cov)
 }
 
 template<typename T, typename A>
-void IterEnsembleSmoother::message(int level, const char* _message, vector<T, A> _extras)
+void IterEnsembleSmoother::message(int level, char* _message, vector<T, A> _extras)
 { 
 	string s(_message);
 	message(level, s, _extras); 
 }
 
-void IterEnsembleSmoother::message(int level, const char* _message)
+void IterEnsembleSmoother::message(int level, char* _message)
 { 
 	string s(_message);
 	message(level, s); 
 }
 
 template<typename T>
-void IterEnsembleSmoother::message(int level, const char* _message, T extra)
+void IterEnsembleSmoother::message(int level, char* _message, T extra)
 {
 	string s(_message);
 	message(level, s, extra);
@@ -980,7 +980,7 @@ void IterEnsembleSmoother::message(int level, const char* _message, T extra)
 }
 
 template<typename T, typename A>
-void IterEnsembleSmoother::message(int level, string &_message, vector<T, A> _extras)
+void IterEnsembleSmoother::message(int level, string _message, vector<T, A> _extras)
 {
 	stringstream ss;
 	if (level == 0)
@@ -1004,13 +1004,13 @@ void IterEnsembleSmoother::message(int level, string &_message, vector<T, A> _ex
 
 }
 
-void IterEnsembleSmoother::message(int level, string &_message)
+void IterEnsembleSmoother::message(int level, string _message)
 {
 	message(level, _message, vector<string>());
 }
 
 template<typename T>
-void IterEnsembleSmoother::message(int level, string &_message, T extra)
+void IterEnsembleSmoother::message(int level, string _message, T extra)
 {
 	stringstream ss;
 	ss << _message << " " << extra;
@@ -2465,7 +2465,8 @@ bool IterEnsembleSmoother::solve_new()
 				ss.str("");
 				ss << "localized upgrade part " << i + 1 << " of " << lsize;
 				message(1, ss.str());
-				pe_upgrade.add_2_cols_ip(calc_upgrade(local_pair.first, local_pair.second, cur_lam, pe.shape().first));
+				ParameterEnsemble pe_local = calc_upgrade(local_pair.first, local_pair.second, cur_lam, pe.shape().first);
+				pe_upgrade.add_2_cols_ip(pe_local);
 				i++;
 			}
 		}

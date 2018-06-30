@@ -50,19 +50,19 @@ h02_08                4.3000000000E+00      0.0000000000E+00       head
 h02_09                4.7000000000E+00      0.0000000000E+00       head                 
 h02_10                5.1000000000E+00      0.0000000000E+00       head
 * model command line
-./mfnwt 10par_xsec.nam
+mfnwt 10par_xsec.nam
 * model input/output
 hk_Layer_1.ref.tpl hk_Layer_1.ref
 strt_Layer_1.ref.tpl strt_Layer_1.ref
 10par_xsec.hds.ins 10par_xsec.hds
-++ies_par_csv()
-++ies_obs_csv()
+++ies_par_csv(par.csv)
+++ies_obs_csv(obs.csv)
 ++ies_restart_obs_csv()
 ++ies_bad_phi()
-++parcov_filename()
+++parcov_filename(prior.cov)
 ++ies_num_reals()
-++ies_use_approx(false)
-++ies_use_prior_scaling(true)
+++ies_use_approx()
+++ies_use_prior_scaling()
 ++ies_reg_factor()
 ++ies_lambda_mults()
 ++ies_init_lambda()
