@@ -402,7 +402,7 @@ void Mat::from_file(const string &filename)
 	{
 		from_binary(filename);
 	}
-	else if (ext == "MAT")
+	else if ((ext == "MAT") || (ext == "COV"))
 	{
 		from_ascii(filename);
 	}
