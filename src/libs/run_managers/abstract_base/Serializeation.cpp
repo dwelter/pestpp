@@ -50,6 +50,15 @@ unsigned long Serialization::unserialize(const vector<int8_t> &buf, int64_t &dat
 }
 
 
+unsigned long Serialization::unserialize(const vector<int8_t> &buf, int8_t &data, unsigned long start_loc)
+{
+	assert(buf.size() - start_loc >= sizeof(data));
+	w_memcpy_s(&data, sizeof(data), &buf[start_loc], sizeof(data));
+	unsigned bytes_read = sizeof(data);
+	return bytes_read;
+}
+
+
 vector<int8_t> Serialization::serialize(const Transformable &tr_data)
 {
 	vector<int8_t> buf;
@@ -221,6 +230,33 @@ unsigned long Serialization::unserialize(const std::vector<int8_t> &ser_data, st
 		++i_tr;
 		total_bytes_read += bytes_read;
 	}
+	return total_bytes_read;
+}
+
+unsigned long Serialization::unserialize(const std::vector<int8_t> &ser_data, int &model_exe_index, Parameters &items, const std::vector<std::string> &names_vec, unsigned long start_loc)
+{
+	unsigned long total_bytes_read = 0;
+	std::int8_t r_model_exe_index;
+
+	size_t vec_size = (ser_data.size() - start_loc - sizeof(r_model_exe_index)) / sizeof(double);
+	assert(vec_size >= names_vec.size());
+
+	total_bytes_read = unserialize(ser_data, r_model_exe_index);
+	model_exe_index = r_model_exe_index;
+
+	items.clear();
+	double *value = 0;
+	size_t iloc = start_loc + total_bytes_read;
+
+	size_t n_read = 0;
+	size_t n_val = names_vec.size();
+	for (n_read = 0; n_read<n_val; ++n_read)
+	{
+		value = (double*)&ser_data[iloc];
+		items.insert(names_vec[n_read], *value);
+		iloc += sizeof(double);
+	}
+	total_bytes_read += n_read * sizeof(double);
 	return total_bytes_read;
 }
 

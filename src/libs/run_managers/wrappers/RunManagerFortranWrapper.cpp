@@ -65,12 +65,12 @@ int rmif_create_panther_(
 	return err;
 }
 
-int rmif_add_run_(double *parameter_data, int *npar, int *id)
+int rmif_add_run_(double *parameter_data, int *npar, int *model_exe_index, int *id)
 {
 	int err = 0;
 	try {
 		vector<double> data(parameter_data, parameter_data+*npar);
-		*id = _run_manager_ptr_->add_run(data);
+		*id = _run_manager_ptr_->add_run(data, *model_exe_index);
 	}
 	catch(...)
 	{
@@ -79,14 +79,14 @@ int rmif_add_run_(double *parameter_data, int *npar, int *id)
 	return err;
 }
 
-int rmif_add_run_with_info_(double *parameter_data, int *npar, int *id,
+int rmif_add_run_with_info_(double *parameter_data, int *npar, int *model_exe_index, int *id,
 	char *f_info_txt, int  *info_txt_len, double *info_value)
 {
 	int err = 0;
 	try {
 		string info_txt = fortran_str_2_string(f_info_txt, *info_txt_len);
 		vector<double> data(parameter_data, parameter_data + *npar);
-		*id = _run_manager_ptr_->add_run(data, info_txt, *info_value);
+		*id = _run_manager_ptr_->add_run(data, *model_exe_index, info_txt, *info_value);
 	}
 	catch (...)
 	{

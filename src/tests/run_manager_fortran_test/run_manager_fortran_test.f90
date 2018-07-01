@@ -44,6 +44,8 @@
     external rmif_get_run_status_info
     integer rmif_get_run_status_info
     
+    external rmif_initialize_restart
+    integer rmif_initialize_restart
     external rmif_delete
     integer rmif_delete
     
@@ -65,7 +67,7 @@
     integer nruns, npar, nobs
     integer itype
     integer err
-    integer ipar, iobs, irun
+    integer ipar, iobs, irun, iirun
     integer nfail
     integer failed_run_ids(100)
     integer n_total_runs
@@ -76,6 +78,7 @@
     integer run_id
     integer n_concurrent
     integer istatus
+    integer i
     DOUBLE PRECISION run_until_time_sec
     DOUBLE PRECISION runtime
     
@@ -125,19 +128,20 @@
             
     
     
-    nruns = 10
+    nruns = 5
     npar = 3
     nobs = 16
     ! intitialize run manager - allocate memory initialize parameter and observation names
     err = rmif_initialize(p_names, 20, npar, o_names, 50, nobs)
     
     ! add model runs to the queue
-    err = rmif_add_run(bad_pars, npar, irun)
-    do irun = 1, nruns - 1
+    err = rmif_add_run(bad_pars, npar, 1, irun)
+    ! run should fail becasue modex exe index in invalid
+    err = rmif_add_run(pars, npar, 4, irun)
+    do iirun = 1, nruns - 1
         pars(1) = pars(1) + pars(1) * 0.2
-        err = rmif_add_run(pars, npar, irun)
+        err = rmif_add_run(pars, npar, 1, irun)
     end do
-    
     ! perform model runs
     write(*,*) 'Performing model runs...'
     ! set flag to return after 15sec
@@ -156,10 +160,12 @@
     !  run_output_flag = 0 -> all runs are complete
     !  run_output_flag = 1 -> "run_until_no_ops" was active and this condition was satifisfied
     !  run_output_flag = 2 -> "run_until_time_sec" was active and this condition occured
-    do while (run_output_flag /= 0)
+    i = 0
+    do while (i < 4)
+        i = i + 1
         err = rmif_run_until(run_input_flag, run_until_no_ops, run_until_time_sec, run_output_flag)
         ! check and print status of model runs
-        write(*,*) '  ------------------- Status of Model Runs -------------------'
+        write(*,*) '  ------------------- Status of Model Runs ----------------- '
         do irun = 0, nruns-1
             err = rmif_get_run_status_info(irun, istatus, runtime, n_concurrent)
             write(*,*) '    run_id: ', irun, '  istatus: ', istatus, '  runtime: ', runtime, ' num concurrent runs: ', n_concurrent
@@ -204,11 +210,28 @@
     write(*,*) ''
     write(*,*) 'Total number of successful model runs:', n_total_runs
     
+    
+    err = rmif_delete()
+    ! restart run manager
+     err = rmif_create_panther(storfile, 20,&
+            port, 20,&
+            rmi_info_file, 20, 2, 1.15, 100.0)
+    err = rmif_initialize_restart(storfile, 20)
+    err = rmif_run()
+    ! check and print status of model runs
+        write(*,*) '  ------------------- Status of Model Runs ----------------- '
+        do irun = 0, nruns-1
+            err = rmif_get_run_status_info(irun, istatus, runtime, n_concurrent)
+            write(*,*) '    run_id: ', irun, '  istatus: ', istatus, '  runtime: ', runtime, ' num concurrent runs: ', n_concurrent
+        end do
+    
+    
     !! reinitialize run manager and make another set of runs
     !err = rmif_reinitialize()
-    !err = rmif_add_run(pars, npar, irun)
+    !err = rmif_add_run(pars, npar, 1, irun)
+
     !pars(1) = pars(1) + pars(1) * 0.2
-    !err = rmif_add_run(pars, npar, irun)
+    !err = rmif_add_run(pars, npar, 1, irun)
     !err = rmif_run()
     !
     !err = rmif_get_run(0, pars,npar, obs, nobs)

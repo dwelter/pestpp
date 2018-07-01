@@ -415,7 +415,7 @@ int main(int argc, char* argv[])
 			Parameters init_model_pars = base_trans_seq.ctl2model_cp(cur_ctl_parameters);
 			optimum_run.set_ctl_parameters(init_model_pars);
 			run_manager_ptr->reinitialize();
-			run_manager_ptr->add_run(init_model_pars);
+			run_manager_ptr->add_run(init_model_pars, 1);
 			try
 			{
 				run_manager_ptr->run();

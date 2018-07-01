@@ -366,23 +366,23 @@ void  RunManagerPanther::free_memory()
 	active_runid_to_iterset_map.clear();
 }
 
-int RunManagerPanther::add_run(const Parameters &model_pars, const string &info_txt, double info_value)
+int RunManagerPanther::add_run(const Parameters &model_pars, int model_exe_index, const string &info_txt, double info_value)
 {
-	int run_id = file_stor.add_run(model_pars, info_txt, info_value);
+	int run_id = file_stor.add_run(model_pars, model_exe_index, info_txt, info_value);
 	waiting_runs.push_back(run_id);
 	return run_id;
 }
 
-int RunManagerPanther::add_run(const std::vector<double> &model_pars, const string &info_txt, double info_value)
+int RunManagerPanther::add_run(const std::vector<double> &model_pars, int model_exe_index, const string &info_txt, double info_value)
 {
-	int run_id = file_stor.add_run(model_pars, info_txt, info_value);
+	int run_id = file_stor.add_run(model_pars, model_exe_index, info_txt, info_value);
 	waiting_runs.push_back(run_id);
 	return run_id;
 }
 
-int RunManagerPanther::add_run(const Eigen::VectorXd &model_pars, const string &info_txt, double info_value)
+int RunManagerPanther::add_run(const Eigen::VectorXd &model_pars, int model_exe_index, const string &info_txt, double info_value)
 {
-	int run_id = file_stor.add_run(model_pars, info_txt, info_value);
+	int run_id = file_stor.add_run(model_pars, model_exe_index, info_txt, info_value);
 	waiting_runs.push_back(run_id);
 	return run_id;
 }
@@ -430,7 +430,6 @@ void RunManagerPanther::cancel_run(int run_id)
 void RunManagerPanther::get_run_status_info(int run_id, int &run_status, double &max_runtime, int &n_concurrent_runs)
 {
 	RunManagerAbstract::get_run_status_info(run_id, run_status, max_runtime, n_concurrent_runs);
-
 	auto range_pair = active_runid_to_iterset_map.equal_range(run_id);
 	n_concurrent_runs = 0;
 	max_runtime = 0;
@@ -455,7 +454,6 @@ RunManagerAbstract::RUN_UNTIL_COND RunManagerPanther::run_until(RUN_UNTIL_COND c
 	RUN_UNTIL_COND terminate_reason = RUN_UNTIL_COND::NORMAL;
 	stringstream message;
 	NetPackage net_pack;
-
 	int num_runs = waiting_runs.size();
 	cout << "    running model " << num_runs << " times" << endl;
 	f_rmr << "running model " << num_runs << " times" << endl;
@@ -478,6 +476,7 @@ RunManagerAbstract::RUN_UNTIL_COND RunManagerPanther::run_until(RUN_UNTIL_COND c
 	{
 		echo();
 		init_slaves();
+
 		//schedule runs on available nodes
 		schedule_runs();
 		echo();
@@ -703,7 +702,7 @@ void RunManagerPanther::close_slave(list<SlaveInfoRec>::iterator slave_info_iter
 void RunManagerPanther::schedule_runs()
 {
 	NetPackage net_pack;
-
+	//DEWTEMP
 	std::list<list<SlaveInfoRec>::iterator> free_slave_list = get_free_slave_list();
 	int n_responsive_slaves = get_n_responsive_slaves();
 	//first try to schedule waiting runs
@@ -719,7 +718,6 @@ void RunManagerPanther::schedule_runs()
 			++it_run;
 		}
 	}
-
 	//check for overdue runs if there are no runs waiting to be processed
 	if (n_no_ops > 0)
 	{
@@ -873,8 +871,8 @@ int RunManagerPanther::schedule_run(int run_id, std::list<list<SlaveInfoRec>::it
 	if (it_slave != free_slave_list.end())
 	{
 		int socket_fd = (*it_slave)->get_socket_fd();
-		vector<char> data = file_stor.get_serial_pars(run_id);
-		string host_name = (*it_slave)->get_hostname();
+		vector<char> data = file_stor.get_model_exe_index_and_serial_pars(run_id);
+        string host_name = (*it_slave)->get_hostname();
 		NetPackage net_pack(NetPackage::PackType::START_RUN, cur_group_id, run_id, "");
 		int err = net_pack.send(socket_fd, &data[0], data.size());
 		if (err > 0)

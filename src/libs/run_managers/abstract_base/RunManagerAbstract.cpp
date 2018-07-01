@@ -67,21 +67,21 @@ void RunManagerAbstract::initialize_restart(const std::string &_filename)
 	file_stor.init_restart(_filename);
 }
 
-int RunManagerAbstract::add_run(const vector<double> &model_pars, const string &info_txt, double info_value)
+int RunManagerAbstract::add_run(const vector<double> &model_pars, int model_exe_index, const string &info_txt, double info_value)
 {
-	int run_id = file_stor.add_run(model_pars, info_txt, info_value);
+	int run_id = file_stor.add_run(model_pars, model_exe_index, info_txt, info_value);
 	return run_id;
 }
 
-int RunManagerAbstract::add_run(const Parameters &model_pars, const string &info_txt, double info_value)
+int RunManagerAbstract::add_run(const Parameters &model_pars, int model_exe_index, const string &info_txt, double info_value)
 {
-	int run_id = file_stor.add_run(model_pars, info_txt, info_value);
+	int run_id = file_stor.add_run(model_pars, model_exe_index, info_txt, info_value);
 	return run_id;
 }
 
-int RunManagerAbstract::add_run(const Eigen::VectorXd &model_pars, const string &info_txt, double info_value)
+int RunManagerAbstract::add_run(const Eigen::VectorXd &model_pars, int model_exe_index, const string &info_txt, double info_value)
 {
-	int run_id = file_stor.add_run(model_pars, info_txt, info_value);
+	int run_id = file_stor.add_run(model_pars, model_exe_index, info_txt, info_value);
 	return run_id;
 }
 
@@ -103,24 +103,26 @@ void RunManagerAbstract::update_run(int run_id, const Parameters &pars, const Ob
 
  bool RunManagerAbstract::run_finished(int run_id)
  {
+	 int model_exe_index;
 	 int run_status;
 	 string info_txt;
 	 double info_value;
-	 get_info(run_id, run_status, info_txt, info_value);
+	 get_info(run_id, run_status, model_exe_index, info_txt, info_value);
 	 bool run_finished = (run_status > 0) ? true : false;
 	 return run_finished;
  }
 
- void RunManagerAbstract::get_info(int run_id, int &run_status, std::string &info_txt, double &info_value)
+ void RunManagerAbstract::get_info(int run_id, int &run_status, int & model_exe_index, std::string &info_txt, double &info_value)
  {
-	  file_stor.get_info(run_id, run_status, info_txt, info_value);
+	  file_stor.get_info(run_id, run_status, model_exe_index, info_txt, info_value);
  }
 
  void RunManagerAbstract::get_run_status_info(int run_id, int &run_status, double &max_runtime, int &n_concurrent_runs)
  {
+	 int model_exe_index;
 	 string info_txt;
 	 double info_value;
-	 file_stor.get_info(run_id, run_status, info_txt, info_value);
+	 file_stor.get_info(run_id, run_status, model_exe_index, info_txt, info_value);
 	 max_runtime = 0;
 	 n_concurrent_runs = 0;
  }

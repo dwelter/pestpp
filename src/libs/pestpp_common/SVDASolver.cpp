@@ -188,7 +188,7 @@ ModelRun SVDASolver::update_run(RunManagerAbstract &run_manager, ModelRun &base_
 	}
 
 	run_manager.reinitialize(file_manager.build_filename("rnr"));
-	int run_id = run_manager.add_run(par_transform.ctl2model_cp(new_base_run.get_ctl_pars()));
+	int run_id = run_manager.add_run(par_transform.ctl2model_cp(new_base_run.get_ctl_pars()), 1);
 
 	run_manager.run();
 	Parameters tmp_pars;
@@ -406,7 +406,7 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 
 		// Save base run as first model run so it is eassily accessible
 		Parameters base_model_pars = par_transform.ctl2model_cp(base_run.get_ctl_pars());
-		int run_id = run_manager.add_run(base_model_pars, "base_run");
+		int run_id = run_manager.add_run(base_model_pars, 1, "base_run");
 		run_manager.update_run(run_id, base_model_pars, base_run.get_obs());
 
 		//Marquardt Lambda Update Vector
@@ -462,7 +462,7 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 
 			//transform new_pars to model parameters
 			par_transform.active_ctl2model_ip(new_pars);
-			int run_id = run_manager.add_run(new_pars, "upgrade_nrm", i_lambda);
+			int run_id = run_manager.add_run(new_pars, 1, "upgrade_nrm", i_lambda);
 			output_file_writer.write_upgrade(termination_ctl.get_iteration_number(), 1, i_lambda, 1.0, new_pars);
 			save_frozen_pars(fout_frz, frzn_pars, run_id);
 			performance_log->add_indent(-1);

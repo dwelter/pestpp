@@ -164,7 +164,7 @@ ModelInterface::~ModelInterface()
 	
 }
 
-void ModelInterface::run(Parameters* pars, Observations* obs)
+void ModelInterface::run(Parameters* pars, Observations* obs, int model_exe_index)
 {	
 	
 	pest_utils::thread_flag terminate(false);
@@ -173,7 +173,7 @@ void ModelInterface::run(Parameters* pars, Observations* obs)
 	
 	
 
-	run(&terminate, &finished, &shared_exceptions, pars, obs);
+	run(&terminate, &finished, &shared_exceptions, pars, obs, model_exe_index);
 	if (shared_exceptions.size() > 0)
 	{
 		finalize();
@@ -184,7 +184,7 @@ void ModelInterface::run(Parameters* pars, Observations* obs)
 
 
 void ModelInterface::run(pest_utils::thread_flag* terminate, pest_utils::thread_flag* finished, pest_utils::thread_exceptions *shared_execptions,
-						Parameters* pars, Observations* obs)
+						Parameters* pars, Observations* obs, int model_exe_index)
 {
 	
 	
@@ -293,7 +293,15 @@ void ModelInterface::run(pest_utils::thread_flag* terminate, pest_utils::thread_
 		{
 			throw PestError("could not assign job limit flag to job object");
 		}
-		for (auto &cmd_string : comline_vec)
+
+		if (model_exe_index<1 || model_exe_index > comline_vec.size())
+		{
+			stringstream err_str;
+			err_str << "invalid model executable index; index = " << model_exe_index;
+			throw PestError(err_str.str());
+		}
+
+		string cmd_string = comline_vec[model_exe_index - 1];
 		{
 			//start the command
 			PROCESS_INFORMATION pi;
@@ -339,8 +347,6 @@ void ModelInterface::run(pest_utils::thread_flag* terminate, pest_utils::thread_
 					break;
 				}
 			}
-			//jump out of the for loop if terminated
-			if (term_break) break;
 		}
 
 

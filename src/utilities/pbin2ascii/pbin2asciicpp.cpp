@@ -157,6 +157,7 @@ int main(int argc, char* argv[])
 	std::cout << "processing " << n_runs << " runs" << endl;
 
 	int status = 0;
+	int model_exe_index = 0;
 	string info_text;
 	double info_value;
 	vector<double> pars_vec;
@@ -168,7 +169,7 @@ int main(int argc, char* argv[])
 	{
 		obs_vec.clear();
 		pars_vec.clear();
-		rs.get_info(i, status, info_text, info_value);
+		rs.get_info(i, status, model_exe_index, info_text, info_value);
 		if (status == 0)
 		{
 			rs.get_run(i, pars_vec, obs_vec);

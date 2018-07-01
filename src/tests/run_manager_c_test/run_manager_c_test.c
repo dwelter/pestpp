@@ -11,7 +11,7 @@ main()
 	/* PANTHER parameters */
 	char rmi_info_file[21] = "run_manager_info.txt";
 
-	int nruns = 10;
+	int nruns = 5;
 	int npar = 3;
 	int nobs = 16;
 	char **p_names = (char*[]) { "recharge", "cond", "scoeff" };
@@ -21,6 +21,7 @@ main()
 	double pars[3] = { 0.1, .005, .05 };
 	double bad_pars[3] = { 0.1, -9.0e9, .05 };
 
+	double obs[16];
 	int err = 0;
 	/* instantiate PANTHER run manager */
 	printf("please enter port:\n");
@@ -33,13 +34,25 @@ main()
 
 	/* add model runs to the queue */
 	int run_id = -999;
-	err = rmic_add_run(run_mng, bad_pars, npar, &run_id);
-
-	for (int i = 0; i < nruns - 1; ++i)
+	err = rmic_add_run(run_mng, bad_pars, npar, 1, &run_id);
+	/* Invalid model exe index - this run should fail*/
+	err = rmic_add_run(run_mng, pars, npar, 4, &run_id);
+	for (int i = 0; i < nruns - 2; ++i)
 	{
 		pars[0] = pars[0] * 0.2;
-		err = rmic_add_run(run_mng, pars, npar, &run_id);
+		err = rmic_add_run(run_mng, pars, npar, 1, &run_id);
 	}
+
+	printf("  ------------------- Status of Model Runs -------------------\n");
+	for (int irun = 0; irun < nruns; ++irun)
+	{
+		int status;
+		double runtime;
+		int n_concurrent;
+		err = rmic_get_run_status_info(run_mng, irun, &status, &runtime, &n_concurrent);
+		printf("    run_id = %d;   status = %d;   runtime = %f; concurrent = %d\n", irun, status, runtime, n_concurrent);
+	}
+	printf("  ------------------------------------------------------------ \n");
 
 	/* perform model runs */
 	printf("Performing model runs...\n");
@@ -66,7 +79,7 @@ main()
 		err = rmic_run_until(run_mng, run_input_flag, run_until_no_ops, run_until_time_sec, &run_output_flag);
 		/* check and print status of model runs */
 		printf("  ------------------- Status of Model Runs -------------------\n");
-		for (int irun = 1; irun < nruns; ++irun)
+		for (int irun = 0; irun < nruns; ++irun)
 		{
 			int status;
 			double runtime;
@@ -80,4 +93,26 @@ main()
 		run_id = nruns - 1;
 		err = rmic_cancel_run(run_mng, run_id); /* ony gets canceled on the first call*/
 	}
+	/* read results */
+	for (int irun = 0; irun < nruns; ++irun)
+	{
+		err = rmic_get_run(run_mng, irun, pars, npar, obs, nobs);
+		printf("\n\nResults for model run %d\n", irun);
+		printf("Parameter Values:\n");
+		for (int ipar = 0; ipar < npar; ++ipar)
+		{
+			printf("    %20s = %20f\n", p_names[ipar], pars[ipar]);
+		}
+		if (err == 0)
+		{
+			printf("Observation Values:\n");
+			for (int iobs = 0; iobs < nobs; ++iobs)
+				printf("    %20s = %20f\n", o_names[iobs], obs[iobs]);
+		}
+		else
+		{
+			printf("run failed...\n");
+		}
+	}
+
 }

@@ -72,8 +72,8 @@ void RunStorage::reset(const vector<string> &_par_names, const vector<string> &_
 	run_par_byte_size = par_names.size() * sizeof(double);
 	run_data_byte_size = run_par_byte_size + obs_names.size() * sizeof(double);
 	//compute the amount of memeory required to store a single model run
-	// run_byte_size = size of run_status + size of info_txt + size of info_value  + size of parameter and observation data
-	run_byte_size =  sizeof(std::int8_t) + 41*sizeof(char) * sizeof(double) + run_data_byte_size;
+	// run_byte_size = size of run_status + size of model_exe_index + size of info_value  + size of parameter and observation data
+	run_byte_size =  2 * sizeof(std::int8_t) + 41*sizeof(char) * sizeof(double) + run_data_byte_size;
 	std::int64_t  run_size_64 = run_byte_size;
 	beg_run0 = 4 * sizeof(std::int64_t) + serial_pnames.size() + serial_onames.size();
 	std::int64_t n_runs_64=0;
@@ -143,6 +143,7 @@ void RunStorage::init_restart(const std::string &_filename)
 
 	//check buffer to see if a write was improperly terminated
 	std::int8_t r_status = 0;
+	std::int8_t r_model_exe_index = 0;
 	std::int8_t buf_status = 0;
 	std::int32_t buf_run_id = 0;
 
@@ -153,6 +154,7 @@ void RunStorage::init_restart(const std::string &_filename)
 	{
 		buf_stream.read(reinterpret_cast<char*>(&buf_run_id), sizeof(buf_run_id));
 		buf_stream.read(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+		buf_stream.read(reinterpret_cast<char*>(&r_model_exe_index), sizeof(r_model_exe_index));
 		check_rec_id(buf_run_id);
 		size_t n_par = par_names.size();
 		size_t n_obs = obs_names.size();
@@ -165,6 +167,7 @@ void RunStorage::init_restart(const std::string &_filename)
 		//write data
 		buf_stream.seekp(get_stream_pos(buf_run_id), ios_base::beg);
 		buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+		buf_stream.write(reinterpret_cast<char*>(&r_model_exe_index), sizeof(r_model_exe_index));
 		//skip over info_txt and info_value fields
 		buf_stream.seekp(sizeof(char)*info_txt_length + sizeof(double), ios_base::cur);
 		buf_stream.write(reinterpret_cast<char*>(pars_vec.data()), pars_vec.size() * sizeof(double));
@@ -231,15 +234,17 @@ streamoff RunStorage::get_stream_pos(int run_id)
 	return pos;
 }
 
- int RunStorage::add_run(const vector<double> &model_pars, const string &info_txt, double info_value)
+ int RunStorage::add_run(const vector<double> &model_pars, int model_exe_index, const string &info_txt, double info_value)
  {
 	std::int8_t r_status = 0;
+	std::int8_t r_model_exe_index = model_exe_index;
 	int run_id = increment_nruns() - 1;
 	vector<char> info_txt_buf;
 	info_txt_buf.resize(info_txt_length, '\0');
 	copy_n(info_txt.begin(), min(info_txt.size(), size_t(info_txt_length)-1) , info_txt_buf.begin());
 	buf_stream.seekp(get_stream_pos(run_id), ios_base::beg);
 	buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	buf_stream.write(reinterpret_cast<char*>(&r_model_exe_index), sizeof(r_model_exe_index));
 	buf_stream.write(reinterpret_cast<char*>(info_txt_buf.data()), sizeof(char)*info_txt_buf.size());
 	buf_stream.write(reinterpret_cast<char*>(&info_value), sizeof(double));
 	buf_stream.write(reinterpret_cast<const char*>(&model_pars[0]), model_pars.size()*sizeof(double));
@@ -252,15 +257,17 @@ streamoff RunStorage::get_stream_pos(int run_id)
 	return run_id;
  }
 
- int RunStorage::add_run(const Eigen::VectorXd &model_pars, const string &info_txt, double info_value)
+ int RunStorage::add_run(const Eigen::VectorXd &model_pars, int model_exe_index, const string &info_txt, double info_value)
  {
 	std::int8_t r_status = 0;
+	std::int8_t r_model_exe_index = model_exe_index;
 	int run_id = increment_nruns() - 1;
 	vector<char> info_txt_buf;
 	info_txt_buf.resize(info_txt_length, '\0');
 	copy_n(info_txt.begin(), min(info_txt.size(), size_t(info_txt_length)-1) , info_txt_buf.begin());
 	buf_stream.seekp(get_stream_pos(run_id), ios_base::beg);
 	buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	buf_stream.write(reinterpret_cast<char*>(&r_model_exe_index), sizeof(r_model_exe_index));
 	buf_stream.write(reinterpret_cast<char*>(info_txt_buf.data()), sizeof(char)*info_txt_buf.size());
 	buf_stream.write(reinterpret_cast<char*>(&info_value), sizeof(double));
 	buf_stream.write(reinterpret_cast<const char*>(&model_pars(0)), model_pars.size()*sizeof(model_pars(0)));
@@ -274,10 +281,10 @@ streamoff RunStorage::get_stream_pos(int run_id)
  }
 
 
-int RunStorage::add_run(const Parameters &pars, const string &info_txt, double info_value)
+int RunStorage::add_run(const Parameters &pars, int model_exe_index, const string &info_txt, double info_value)
 {
 	vector<double> data(pars.get_data_vec(par_names));
-	int run_id = add_run(data, info_txt, info_value);
+	int run_id = add_run(data, model_exe_index, info_txt, info_value);
 	return run_id;
 }
 
@@ -317,6 +324,7 @@ void RunStorage::update_run(int run_id, const Parameters &pars, const Observatio
 {
 	//set run status flage to complete
 	std::int8_t r_status = 1;
+	std::int8_t r_model_exe_index = get_run_model_exe_index_native(run_id);
 	check_rec_id(run_id);
 	vector<double> par_data(pars.get_data_vec(par_names));
 	vector<double> obs_data(obs.get_data_vec(obs_names));
@@ -328,6 +336,7 @@ void RunStorage::update_run(int run_id, const Parameters &pars, const Observatio
 	buf_stream.write(reinterpret_cast<char*>(&buf_status), sizeof(buf_status));
 	buf_stream.write(reinterpret_cast<char*>(&buf_run_id), sizeof(buf_run_id));
 	buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	buf_stream.write(reinterpret_cast<char*>(&r_model_exe_index), sizeof(r_model_exe_index));
 	buf_stream.write(reinterpret_cast<char*>(par_data.data()), par_data.size() * sizeof(double));
 	buf_stream.write(reinterpret_cast<char*>(obs_data.data()), obs_data.size() * sizeof(double));
 	buf_status = 1;
@@ -337,6 +346,7 @@ void RunStorage::update_run(int run_id, const Parameters &pars, const Observatio
 	//write data
 	buf_stream.seekp(get_stream_pos(run_id), ios_base::beg);
 	buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	buf_stream.seekp(sizeof(r_model_exe_index), ios_base::cur);
 	//skip over info_txt and info_value fields
 	buf_stream.seekp(sizeof(char)*info_txt_length+sizeof(double), ios_base::cur);
 	buf_stream.write(reinterpret_cast<char*>(par_data.data()), par_data.size() * sizeof(double));
@@ -354,6 +364,7 @@ void RunStorage::update_run(int run_id, const Observations &obs)
 {
 	//set run status flage to complete
 	std::int8_t r_status = 1;
+	std::int8_t r_model_exe_index = get_run_model_exe_index_native(run_id);
 	check_rec_id(run_id);
 	vector<double> obs_data(obs.get_data_vec(obs_names));
 	size_t n_pars = par_names.size();
@@ -366,6 +377,8 @@ void RunStorage::update_run(int run_id, const Observations &obs)
 	buf_stream.write(reinterpret_cast<char*>(&buf_status), sizeof(buf_status));
 	buf_stream.write(reinterpret_cast<char*>(&buf_run_id), sizeof(buf_run_id));
 	buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	buf_stream.write(reinterpret_cast<char*>(&r_model_exe_index), sizeof(r_model_exe_index));
+
 	//skip over parameter section
 	buf_stream.seekp(n_pars * sizeof(double), ios_base::cur);
 	buf_stream.write(reinterpret_cast<char*>(obs_data.data()), obs_data.size() * sizeof(double));
@@ -377,6 +390,7 @@ void RunStorage::update_run(int run_id, const Observations &obs)
 	//write data to main part of file
 	buf_stream.seekp(get_stream_pos(run_id), ios_base::beg);
 	buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	buf_stream.seekg(sizeof(r_model_exe_index), ios_base::cur);
 	//skip over info_txt and info_value fields
 	buf_stream.seekp(sizeof(char)*info_txt_length + sizeof(double), ios_base::cur);
 	//skip over parameter section
@@ -394,6 +408,7 @@ void RunStorage::update_run(int run_id, const vector<char> serial_data)
 {
 	//set run status flag to complete
 	std::int8_t r_status = 1;
+	std::int8_t r_model_exe_index = get_run_model_exe_index_native(run_id);
 	check_rec_size(serial_data);
 	check_rec_id(run_id);
 	//write data to buffer at end of file and set buffer flag to 2
@@ -404,6 +419,7 @@ void RunStorage::update_run(int run_id, const vector<char> serial_data)
 	buf_stream.write(reinterpret_cast<char*>(&buf_status), sizeof(buf_status));
 	buf_stream.write(reinterpret_cast<char*>(&buf_run_id), sizeof(buf_run_id));
 	buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	buf_stream.write(reinterpret_cast<char*>(&r_model_exe_index), sizeof(r_model_exe_index));
 	buf_stream.write(serial_data.data(), serial_data.size());
 	buf_status = 2;
 	buf_stream.seekp(get_stream_pos(end_of_runs), ios_base::beg);
@@ -412,6 +428,7 @@ void RunStorage::update_run(int run_id, const vector<char> serial_data)
 	//write data
 	buf_stream.seekp(get_stream_pos(run_id), ios_base::beg);
 	buf_stream.write(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	buf_stream.seekp(sizeof(r_model_exe_index), ios_base::cur);
 	//skip over info_txt and info_value fields
 	buf_stream.seekp(sizeof(char)*info_txt_length+sizeof(double), ios_base::cur);
 	buf_stream.write(serial_data.data(), serial_data.size());
@@ -463,18 +480,40 @@ int RunStorage::get_run_status(int run_id)
 	return status;
 }
 
-void RunStorage::get_info(int run_id, int &run_status, string &info_txt, double &info_value)
+std::int8_t RunStorage::get_run_model_exe_index_native(int run_id)
 {
 	std::int8_t  r_status;
+	std::int8_t  r_model_exe_index;
+
+	check_rec_id(run_id);
+	buf_stream.seekg(get_stream_pos(run_id), ios_base::beg);
+	buf_stream.seekg(sizeof(r_status), ios_base::cur);
+	buf_stream.read(reinterpret_cast<char*>(&r_model_exe_index), sizeof(r_model_exe_index));
+	return r_model_exe_index;
+}
+
+int RunStorage::get_run_model_exe_index(int run_id)
+{
+	int model_exe_index = get_run_model_exe_index_native(run_id);
+	return model_exe_index;
+}
+
+void RunStorage::get_info(int run_id, int &run_status, int&  model_exe_index, string &info_txt, double &info_value)
+{
+	std::int8_t  r_status;
+	std::int8_t  r_model_exe_index;
 	vector<char> info_txt_buf;
 	info_txt_buf.resize(info_txt_length, '\0');
 
+	check_rec_id(run_id);
 	buf_stream.seekg(get_stream_pos(run_id), ios_base::beg);
 	buf_stream.read(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	buf_stream.read(reinterpret_cast<char*>(&r_model_exe_index), sizeof(r_model_exe_index));
 	buf_stream.read(reinterpret_cast<char*>(&info_txt_buf[0]), sizeof(char)*info_txt_length);
 	buf_stream.read(reinterpret_cast<char*>(&info_value), sizeof(double));
 
 	run_status = r_status;
+	model_exe_index = r_model_exe_index;
 	info_txt = info_txt_buf.data();
 }
 
@@ -507,6 +546,7 @@ int RunStorage::get_run(int run_id, Parameters &pars, Observations &obs, bool cl
 int RunStorage::get_run(int run_id, double *pars, size_t npars, double *obs, size_t nobs, string &info_txt, double &info_value)
 {
 	std::int8_t r_status;
+	std::int8_t r_model_exe_index;
 	vector<char> info_txt_buf;
 	info_txt_buf.resize(info_txt_length, '\0');
 
@@ -529,6 +569,7 @@ int RunStorage::get_run(int run_id, double *pars, size_t npars, double *obs, siz
 	o_size = min(o_size, nobs);
 	buf_stream.seekg(get_stream_pos(run_id), ios_base::beg);
 	buf_stream.read(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	buf_stream.read(reinterpret_cast<char*>(&r_model_exe_index), sizeof(r_model_exe_index));
 	buf_stream.read(reinterpret_cast<char*>(&info_txt_buf[0]), sizeof(char)*info_txt_length);
 	buf_stream.read(reinterpret_cast<char*>(&info_value), sizeof(double));
 	buf_stream.read(reinterpret_cast<char*>(pars), p_size * sizeof(double));
@@ -541,6 +582,7 @@ int RunStorage::get_run(int run_id, double *pars, size_t npars, double *obs, siz
 int RunStorage::get_run(int run_id, vector<double> &pars_vec, vector<double> &obs_vec, string &info_txt, double &info_value)
 {
 	std::int8_t  r_status;
+	std::int8_t r_model_exe_index;
 	vector<char> info_txt_buf;
 	info_txt_buf.resize(info_txt_length, '\0');
 
@@ -554,6 +596,7 @@ int RunStorage::get_run(int run_id, vector<double> &pars_vec, vector<double> &ob
 	
 	buf_stream.seekg(get_stream_pos(run_id), ios_base::beg);
 	buf_stream.read(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	buf_stream.read(reinterpret_cast<char*>(&r_model_exe_index), sizeof(r_model_exe_index));
 	buf_stream.read(reinterpret_cast<char*>(&info_txt_buf[0]), sizeof(char)*info_txt_length);
 	buf_stream.read(reinterpret_cast<char*>(&info_value), sizeof(double));
 	buf_stream.read(reinterpret_cast<char*>(&pars_vec[0]), n_par * sizeof(double));
@@ -592,22 +635,27 @@ void RunStorage::cancel_run(int run_id)
 	}
 }
 
-vector<char> RunStorage::get_serial_pars(int run_id)
+vector<char> RunStorage::get_model_exe_index_and_serial_pars(int run_id)
 {
 	check_rec_id(run_id);
 	std::int8_t r_status;
-
+	std::int8_t r_model_exe_index;
 	vector<char> serial_data;
-	serial_data.resize(run_par_byte_size);
+
+	check_rec_id(run_id);
+	serial_data.resize(sizeof(r_model_exe_index) + run_par_byte_size);
 	buf_stream.seekg(get_stream_pos(run_id), ios_base::beg);
-	buf_stream.seekg(sizeof(r_status)+sizeof(char)*info_txt_length+sizeof(double), ios_base::cur);
-	buf_stream.read(serial_data.data(), serial_data.size());
+	buf_stream.seekg(sizeof(r_status), ios_base::cur);
+	buf_stream.read(serial_data.data(), sizeof(r_model_exe_index));
+	buf_stream.seekg(sizeof(char)*info_txt_length + sizeof(double), ios_base::cur);
+	buf_stream.read(serial_data.data()+ sizeof(r_model_exe_index), run_par_byte_size);
 	return serial_data;
 }
 
 int  RunStorage::get_parameters(int run_id, Parameters &pars)
 {
 	std::int8_t r_status;
+	std::int8_t r_model_exe_index;
 	vector<char> info_txt_buf;
 	info_txt_buf.resize(info_txt_length, '\0');
 	double info_value;
@@ -619,6 +667,7 @@ int  RunStorage::get_parameters(int run_id, Parameters &pars)
 	par_data.resize(n_par);
 	buf_stream.seekg(get_stream_pos(run_id), ios_base::beg);
 	buf_stream.read(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	buf_stream.read(reinterpret_cast<char*>(&r_model_exe_index), sizeof(r_model_exe_index));
 	buf_stream.read(reinterpret_cast<char*>(&info_txt_buf[0]), sizeof(char)*info_txt_length);
 	buf_stream.read(reinterpret_cast<char*>(&info_value), sizeof(double));
 
@@ -632,6 +681,7 @@ int  RunStorage::get_parameters(int run_id, Parameters &pars)
 int  RunStorage::get_observations(int run_id, Observations &obs)
 {
 	std::int8_t r_status;
+	std::int8_t r_model_exe_index;
 	vector<char> info_txt_buf;
 	info_txt_buf.resize(info_txt_length, '\0');
 	double info_value;
@@ -644,6 +694,7 @@ int  RunStorage::get_observations(int run_id, Observations &obs)
 	obs_data.resize(n_obs);
 	buf_stream.seekg(get_stream_pos(run_id), ios_base::beg);
 	buf_stream.read(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	buf_stream.read(reinterpret_cast<char*>(&r_model_exe_index), sizeof(r_model_exe_index));
 	buf_stream.read(reinterpret_cast<char*>(&info_txt_buf[0]), sizeof(char)*info_txt_length);
 	buf_stream.read(reinterpret_cast<char*>(&info_value), sizeof(double));
 	buf_stream.seekg(n_par*sizeof(double), ios_base::cur);
@@ -657,6 +708,7 @@ int  RunStorage::get_observations(int run_id, Observations &obs)
 int  RunStorage::get_observations_vec(int run_id, vector<double> &obs_data)
 {
 	std::int8_t r_status;
+	std::int8_t r_model_exe_index;
 	vector<char> info_txt_buf;
 	info_txt_buf.resize(info_txt_length, '\0');
 	double info_value;
@@ -668,6 +720,7 @@ int  RunStorage::get_observations_vec(int run_id, vector<double> &obs_data)
 	obs_data.resize(n_obs);
 	buf_stream.seekg(get_stream_pos(run_id), ios_base::beg);
 	buf_stream.read(reinterpret_cast<char*>(&r_status), sizeof(r_status));
+	buf_stream.read(reinterpret_cast<char*>(&r_model_exe_index), sizeof(r_model_exe_index));
 	buf_stream.read(reinterpret_cast<char*>(&info_txt_buf[0]), sizeof(char)*info_txt_length);
 	buf_stream.read(reinterpret_cast<char*>(&info_value), sizeof(double));
 	buf_stream.seekg(n_par*sizeof(double), ios_base::cur);
@@ -709,12 +762,13 @@ void RunStorage::print_run_summary(std::ostream &fout)
 	int nruns = get_nruns();
 	fout << "nruns = " << nruns << endl;
 	int status;
+	int model_exe_index;
 	string info_text;
 	double info_value;
 	for (int irun = 0; irun < nruns; ++irun)
 	{
-		get_info(irun, status, info_text, info_value);
-		fout << "run_id=" << irun << "  :status=" << status << "  :info_text=" << info_text << "  :info_value=" << info_value << endl;
+		get_info(irun, status, model_exe_index, info_text, info_value);
+		fout << "run_id=" << irun << "  :status=" << status << irun << "  :model_exe_index=" << model_exe_index << "  :info_text=" << info_text << "  :info_value=" << info_value << endl;
 	}
 
 }

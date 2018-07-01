@@ -80,12 +80,12 @@ int rmic_reinitialize(RunManager *run_manager_ptr)
 }
 
 
-int rmic_add_run(RunManager *run_manager_ptr, double *parameter_data, int npar, int *id)
+int rmic_add_run(RunManager *run_manager_ptr, double *parameter_data, int npar, int model_exe_index, int *id)
 {
 	int err = 0;
 	try {
 		vector<double> data(parameter_data, parameter_data+npar);
-		*id = run_manager_ptr->add_run(data);
+		*id = run_manager_ptr->add_run(data, model_exe_index);
 	}
 	catch(...)
 	{

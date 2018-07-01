@@ -1559,7 +1559,7 @@ bool sequentialLP::make_upgrade_run(Parameters &upgrade_pars, Observations &upgr
 {
 	
 	cout << "  ---  running the model once with optimal decision variables  ---  " << endl;
-	int run_id = run_mgr_ptr->add_run(par_trans.ctl2model_cp(upgrade_pars));
+	int run_id = run_mgr_ptr->add_run(par_trans.ctl2model_cp(upgrade_pars), 1);
 	run_mgr_ptr->run();
 	bool success = run_mgr_ptr->get_run(run_id, upgrade_pars, upgrade_obs);
 	if (success)
@@ -1635,7 +1635,7 @@ void sequentialLP::iter_presolve()
 		{
 			//make the intial base run
 			cout << "  ---  running the model once with initial decision variables  ---  " << endl;
-			int run_id = run_mgr_ptr->add_run(par_trans.ctl2model_cp(all_pars_and_dec_vars));
+			int run_id = run_mgr_ptr->add_run(par_trans.ctl2model_cp(all_pars_and_dec_vars), 1);
 			run_mgr_ptr->run();
 			Parameters pars;
 			bool success = run_mgr_ptr->get_run(run_id, pars, constraints_sim);

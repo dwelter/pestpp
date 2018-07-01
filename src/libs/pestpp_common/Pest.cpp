@@ -288,7 +288,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	string line_upper;
 	string section("");
 	vector<string> tokens;
-	int sec_begin_lnum, sec_lnum;
+	int sec_lnum;
 	double value;
 	string name;
 	string *trans_type;
@@ -330,13 +330,24 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	try {
 #endif
 	prior_info_string = "";
-	for(lnum=1, sec_begin_lnum=1; getline(fin, line); ++ lnum)
+	for(lnum=1, sec_lnum=0; getline(fin, line); ++ lnum)
 	{
 		strip_ip(line);
 		line_upper = upper_cp(line);
+		// everything after the first "#" is a comment so delete it
+		size_t found = line.find_first_of("#");
+		if (found != string::npos)
+		{
+			line_upper.erase(found);
+		}
 		tokens.clear();
 		tokenize(line_upper, tokens);
-		sec_lnum = lnum - sec_begin_lnum;
+		// don't count empty lines and, commnemt line and PEST++ lines in section line count
+		if (!tokens.empty() && line_upper.substr(0, 2) != "++")
+		{
+			++sec_lnum;
+		}
+
 		if (tokens.empty())
 		{
 			//skip blank line
@@ -353,7 +364,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 		else if (line_upper[0] == '*')
 		{
 			section = upper_cp(strip_cp(line_upper, "both", " *\t\n"));
-			sec_begin_lnum = lnum;
+			sec_lnum = 0;
 		}
 		else if (section == "CONTROL DATA")
 		{

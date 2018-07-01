@@ -105,7 +105,7 @@ void DifferentialEvolution::initialize_population(RunManagerAbstract &run_manage
 		numeric_pars.clear();
 		initialize_vector(numeric_pars);
 		par_transform.numeric2model_ip(numeric_pars);
-		run_manager.add_run(numeric_pars);
+		run_manager.add_run(numeric_pars, 1);
 	}
 	RestartController::write_upgrade_runs_built(fout_restart);
 	// make innitial population vector model runs
@@ -239,7 +239,7 @@ void DifferentialEvolution::mutation(RunManagerAbstract &run_manager, double f, 
 			}
 		}
 		par_transform.numeric2model_ip(x_trial);
-		run_manager.add_run(x_trial);
+		run_manager.add_run(x_trial, 1);
 	}
 }
 

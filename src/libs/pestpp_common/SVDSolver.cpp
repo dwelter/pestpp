@@ -909,7 +909,7 @@ ModelRun SVDSolver::iteration_reuse_jac(RunManagerAbstract &run_manager, Termina
 		cout << endl << endl;
 		cout << "  running the model once with the current parameters... " << endl;
 		run_manager.reinitialize(file_manager.build_filename("rnr"));
-		int run_id = run_manager.add_run(par_transform.ctl2model_cp(new_base_run.get_ctl_pars()));
+		int run_id = run_manager.add_run(par_transform.ctl2model_cp(new_base_run.get_ctl_pars()), 1);
 		run_manager.run();
 		Parameters tmp_pars;
 		Observations tmp_obs;
@@ -1072,7 +1072,7 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 		run_manager.reinitialize(file_manager.build_filename("rnu"));
 		// Save base run as first model run so it is eassily accessible
 		Parameters base_model_pars = par_transform.ctl2model_cp(base_run.get_ctl_pars());
-		int run_id = run_manager.add_run(base_model_pars, "base_run");
+		int run_id = run_manager.add_run(base_model_pars, 1, "base_run");
 		run_manager.update_run(run_id, base_model_pars, base_run.get_obs());
 		//Marquardt Lambda Update Vector
 		vector<double> lambda_vec = base_lambda_vec;
@@ -1126,7 +1126,7 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 			Parameters new_par_model = par_transform.active_ctl2model_cp(new_pars);
 			performance_log->log_event("writing upgrade vector to csv file");
 			output_file_writer.write_upgrade(termination_ctl.get_iteration_number(), 0, i_lambda, 1.0, new_pars);
-			int run_id = run_manager.add_run(new_par_model, "normal", i_lambda);
+			int run_id = run_manager.add_run(new_par_model, 1, "normal", i_lambda);
 			save_frozen_pars(fout_frz, frozen_active_ctl_pars, run_id);
 
 			//Add Scaled Upgrade Vectors
@@ -1145,7 +1145,7 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 
 				stringstream ss;
 				ss << "scale(" << std::fixed << std::setprecision(2) << i_scale << ")";
-				int run_id = run_manager.add_run(scaled_pars, ss.str(), i_lambda);
+				int run_id = run_manager.add_run(scaled_pars, 1, ss.str(), i_lambda);
 				fout_rec << "   ...calculating scaled lambda vector-scale factor: " << i_scale << endl;
 				save_frozen_pars(fout_frz, frozen_active_ctl_pars, run_id);
 			}
@@ -1159,7 +1159,7 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 					new_pars, mar_mat, false);
 
 				Parameters new_par_model = par_transform.active_ctl2model_cp(new_pars);
-				int run_id = run_manager.add_run(new_par_model, "extended", i_lambda);
+				int run_id = run_manager.add_run(new_par_model, 1, "extended", i_lambda);
 				save_frozen_pars(fout_frz, frozen_active_ctl_pars, run_id);
 			}
 			performance_log->add_indent(-1);

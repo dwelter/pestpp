@@ -75,7 +75,6 @@ void PANTHERSlave::process_ctl_file(const string &ctl_filename)
 	ifstream fin;
 	bool control_data_read = false;
 	long lnum;
-	long sec_begin_lnum;
 	long sec_lnum;
 	string section("");
 	string line;
@@ -97,13 +96,23 @@ void PANTHERSlave::process_ctl_file(const string &ctl_filename)
 		throw runtime_error("PANTHER worker unable to open pest control file: " + ctl_filename);
 	}
 	try {
-		for (lnum = 1, sec_begin_lnum = 1; getline(fin, line); ++lnum)
+		for (lnum = 1, sec_lnum = 0; getline(fin, line); ++lnum)
 		{
 			strip_ip(line);
 			line_upper = upper_cp(line);
+			// everything after the first "#" is a comment so delete it
+			size_t found = line.find_first_of("#");
+			if (found != string::npos)
+			{
+				line_upper.erase(found);
+			}
 			tokens.clear();
 			tokenize(line_upper, tokens);
-			sec_lnum = lnum - sec_begin_lnum;
+			// don't count empty lines and, commnemt line and PEST++ lines in section line count
+			if (!tokens.empty() && line_upper.substr(0, 2) != "++")
+			{
+				++sec_lnum;
+			}
 			if (tokens.empty())
 			{
 				//skip blank line
@@ -116,7 +125,7 @@ void PANTHERSlave::process_ctl_file(const string &ctl_filename)
 			else if (line_upper[0] == '*')
 			{
 				section = upper_cp(strip_cp(line_upper, "both", " *\t\n"));
-				sec_begin_lnum = lnum;
+				sec_lnum = 0;
 			}
 			else if (section == "CONTROL DATA")
 			{
@@ -312,7 +321,7 @@ int PANTHERSlave::send_message(NetPackage &net_pack, const void *data, unsigned 
 }
 
 
-NetPackage::PackType PANTHERSlave::run_model(Parameters &pars, Observations &obs, NetPackage &net_pack)
+NetPackage::PackType PANTHERSlave::run_model(int model_exe_index, Parameters &pars, Observations &obs, NetPackage &net_pack)
 {
 	NetPackage::PackType final_run_status = NetPackage::PackType::RUN_FAILED;
 	bool done = false;
@@ -338,9 +347,9 @@ NetPackage::PackType PANTHERSlave::run_model(Parameters &pars, Observations &obs
 			par_values.push_back(i.second);
 		}
 		
-		vector<double> obs_vec;		
+		vector<double> obs_vec;	
 		thread run_thread(&PANTHERSlave::run_async, this, &f_terminate, &f_finished, &shared_execptions,
-		   &pars, &obs);
+		   &pars, &obs, model_exe_index);
 		pest_utils::thread_RAII raii(run_thread);
 		
 		while (true)
@@ -435,9 +444,9 @@ NetPackage::PackType PANTHERSlave::run_model(Parameters &pars, Observations &obs
 
 
 void PANTHERSlave::run_async(pest_utils::thread_flag* terminate, pest_utils::thread_flag* finished, pest_utils::thread_exceptions *shared_execptions,
-	Parameters* pars, Observations* obs)
+	Parameters* pars, Observations* obs, int model_exe_index)
 {
-	mi.run(terminate,finished,shared_execptions, pars, obs);
+	mi.run(terminate,finished,shared_execptions, pars, obs, model_exe_index);
 }
 
 
@@ -536,7 +545,8 @@ void PANTHERSlave::start(const string &host, const string &port)
 		}
 		else if(net_pack.get_type() == NetPackage::PackType::START_RUN)
 		{
-			Serialization::unserialize(net_pack.get_data(), pars, par_name_vec);
+			int model_exe_index = 0;
+			Serialization::unserialize(net_pack.get_data(), model_exe_index, pars, par_name_vec);
 			// run model
 			int group_id = net_pack.get_group_id();
 			int run_id = net_pack.get_run_id();
@@ -544,7 +554,7 @@ void PANTHERSlave::start(const string &host, const string &port)
 			cout << "starting model run..." << endl;
 
 			std::chrono::system_clock::time_point start_time = chrono::system_clock::now();
-			NetPackage::PackType final_run_status = run_model(pars, obs, net_pack);
+			NetPackage::PackType final_run_status = run_model(model_exe_index, pars, obs, net_pack);
 			if (final_run_status == NetPackage::PackType::RUN_FINISHED)
 			{
 				double run_time = pest_utils::get_duration_sec(start_time);

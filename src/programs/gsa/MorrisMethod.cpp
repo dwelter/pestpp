@@ -276,7 +276,7 @@ void MorrisMethod::assemble_runs(RunManagerAbstract &run_manager)
 			{
 				par_name = adj_par_name_vec[i-1];
 			}
-			run_id = run_manager.add_run(pars, par_name, Parameters::no_data);
+			run_id = run_manager.add_run(pars, 1, par_name, Parameters::no_data);
 		}
 	}
 }

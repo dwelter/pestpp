@@ -42,7 +42,7 @@ public:
 	int recv_message(NetPackage &net_pack, struct timeval *tv=NULL);
 	int recv_message(NetPackage &net_pack, long  timeout_seconds, long  timeout_microsecs = 0);
 	int send_message(NetPackage &net_pack, const void *data=NULL, unsigned long data_len=0);
-	NetPackage::PackType run_model(Parameters &pars, Observations &obs, NetPackage &net_pack);
+	NetPackage::PackType run_model(int model_exe_index, Parameters &pars, Observations &obs, NetPackage &net_pack);
 	//int run_model(Parameters &pars, Observations &obs);
 	std::string tpl_err_msg(int i);
 	std::string ins_err_msg(int i);
@@ -76,7 +76,7 @@ private:
 	ModelInterface mi;
 	void run_async(pest_utils::thread_flag* terminate, pest_utils::thread_flag* finished,
 		pest_utils::thread_exceptions *shared_execptions,
-		Parameters* pars, Observations* obs);
+		Parameters* pars, Observations* obs, int model_exe_index);
 
 };
 

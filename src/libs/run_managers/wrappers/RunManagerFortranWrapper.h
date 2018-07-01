@@ -15,9 +15,9 @@ int RMIF_CREATE_PANTHER(char *f_comline, int  *comline_str_len, int *comline_arr
 	char *f_info_filename, int *info_filename_len, int *n_max_fail,
 	double *overdue_reched_fac, double *overdue_giveup_fac);
 
-int RMIF_ADD_RUN(double *parameter_data, int *npar, int *id);
+int RMIF_ADD_RUN(double *parameter_data, int *npar, int *model_exe_index, int *id);
 
-int RMIF_ADD_RUN_WITH_INFO(double *parameter_data, int *npar, int *id,
+int RMIF_ADD_RUN_WITH_INFO(double *parameter_data, int *npar, int *model_exe_index, int *id,
 	char *f_info_txt, int  *info_txt_len, double *info_value);
 
 int RMIF_INITIALIZE(char *f_pname, int  *pname_str_len, int *pname_array_len,

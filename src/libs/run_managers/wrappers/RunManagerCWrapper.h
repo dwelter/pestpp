@@ -44,7 +44,7 @@ extern "C"
 #ifdef OS_WIN
 	extern __declspec(dllexport)
 #endif
-		int rmic_add_run(RunManager *run_manager_ptr, double *parameter_data, int npar, int *id);
+		int rmic_add_run(RunManager *run_manager_ptr, double *parameter_data, int npar, int model_exe_index, int *id);
 
 #ifdef OS_WIN
 	extern __declspec(dllexport)

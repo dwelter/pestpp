@@ -1,5 +1,6 @@
 pcf
 * control data
+# this is a comment
 restart  regularization
     3    16     3     2     4
     1     1 single point 1 0 0
@@ -8,7 +9,7 @@ restart  regularization
   0.1
    20 0.01     3     3  0.01     3
     1     1     1
-* singular value decomposition
+* singular value decomposition # this is a comment
 1
 2 1.0E-7 
 1

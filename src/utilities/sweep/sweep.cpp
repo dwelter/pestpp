@@ -657,7 +657,7 @@ int main(int argc, char* argv[])
 			for (auto &par : sweep_par_info.second)
 			{
 				//Parameters temp = base_trans_seq.active_ctl2model_cp(par);
-		        run_ids.push_back(run_manager_ptr->add_run(base_trans_seq.active_ctl2model_cp(par)));
+		        run_ids.push_back(run_manager_ptr->add_run(base_trans_seq.active_ctl2model_cp(par), 1));
 		
 			}
 

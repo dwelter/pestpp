@@ -92,7 +92,7 @@ void Sobol::add_model_runs(RunManagerAbstract &run_manager, const MatrixXd &n)
 		VectorXd tmp_vec =  n.row(i);
 		Parameters tmp_pars(adj_par_name_vec, tmp_vec);
 		base_partran_seq_ptr->numeric2model_ip(tmp_pars);
-		run_manager.add_run(tmp_pars);
+		run_manager.add_run(tmp_pars, 1);
 	}
 }
 

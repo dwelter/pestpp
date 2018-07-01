@@ -69,6 +69,7 @@ int main(int argc, char* argv[])
 		fout << "  " << name << endl;
 	}
 	int status = 0;
+	int model_exe_index = 0;
 	string info_text;
 	double info_value;
 	vector<double> pars_vec;
@@ -78,7 +79,7 @@ int main(int argc, char* argv[])
 	for (int i = 0; i < n_runs; ++i)
 	{
 		fout << "run_id = " << i << endl;
-		rs.get_info(i, status, info_text, info_value);
+		rs.get_info(i, status, model_exe_index, info_text, info_value);
 		fout << "status = " << status << endl;
 		fout << "info text = " << info_text << endl;
 		fout << "info value = " << info_value << endl;

@@ -169,6 +169,7 @@ int main(int argc, char* argv[])
 
 	// Finished with initial error checking.  Start the main program 
 	int status = 0;
+	int model_exe_index = 0;
 	string info_text;
 	double info_value;
 	vector<double> pars_vec;
@@ -181,7 +182,7 @@ int main(int argc, char* argv[])
 	//set the status of all outstanding runs to failed
 	for (int id = 0; id < n_runs; ++id)
 	{
-		rs.get_info(id, status, info_text, info_value);
+		rs.get_info(id, status, model_exe_index, info_text, info_value);
 		if (status == 0)
 		{
 			rs.update_run_failed(id);

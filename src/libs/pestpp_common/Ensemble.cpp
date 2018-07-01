@@ -1100,7 +1100,7 @@ map<int,int> ParameterEnsemble::add_runs(RunManagerAbstract *run_mgr_ptr,const v
 		else if (tstat == ParameterEnsemble::transStatus::NUM)
 			par_transform.numeric2model_ip(pars);
 		replace_fixed(rname, pars);
-		run_id = run_mgr_ptr->add_run(pars);
+		run_id = run_mgr_ptr->add_run(pars, 1);
 		real_run_ids[find(real_names.begin(), real_names.end(), rname) - real_names.begin()]  = run_id;
 	}
 	return real_run_ids;

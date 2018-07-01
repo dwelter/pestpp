@@ -67,11 +67,12 @@ void RunManagerSerial::run()
 				Observations obs;
 				vector<double> par_values;
 				Parameters pars;
+				int model_exe_index = 1;
 				file_stor.get_parameters(i_run, pars);
 				obs_vec.resize(obs_name_vec.size(), RunStorage::no_data);
 				obs.clear();
 				obs.insert(obs_name_vec, obs_vec);
-				mi.run(&pars, &obs);			
+				mi.run(&pars, &obs, model_exe_index);
 				std::cout << string(message.str().size(), '\b');
 				message.str("");
 				message << "(" << success_runs << "/" << nruns << " runs complete)";

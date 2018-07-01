@@ -218,7 +218,7 @@ bool Jacobian::build_runs(Parameters &ctl_pars, Observations &ctl_obs, vector<st
 	debug_msg("Jacobian::build_runs method: begin");
 	// add base run
 	Parameters model_pars = par_transform.ctl2model_cp(ctl_pars);
-	int run_id = run_manager.add_run(model_pars, "", 0);
+	int run_id = run_manager.add_run(model_pars, 1, "", 0);
 
 	if (!calc_init_obs) {
 		const Observations &observations = ctl_obs;
@@ -245,7 +245,7 @@ bool Jacobian::build_runs(Parameters &ctl_pars, Observations &ctl_obs, vector<st
 			{
 				numeric_parameters.update_rec(ipar_name, ipar_val);
 				Parameters model_parameters = par_transform.numeric2model_cp(numeric_parameters);
-				run_manager.add_run(model_parameters, ipar_name, ipar_val);
+				run_manager.add_run(model_parameters, 1, ipar_name, ipar_val);
 			}
 		}
 		else
@@ -317,12 +317,13 @@ bool Jacobian::process_runs(ParamTransformSeq &par_transform,
 	int run_status_next;
 	double par_value_next;
 	double cur_numeric_par_value;
+	int model_exe_index = 0;
 	list<JacobianRun> run_list;
 	base_numeric_par_names.clear();
 	for(; i_run<nruns; ++i_run)
 	{
 		run_list.push_back(JacobianRun());
-				run_manager. get_info(i_run, r_status, cur_par_name, cur_numeric_par_value);
+				run_manager. get_info(i_run, r_status, model_exe_index, cur_par_name, cur_numeric_par_value);
 		run_manager.get_model_parameters(i_run,  run_list.back().ctl_pars);
 			bool success = run_manager.get_observations_vec(i_run, run_list.back().obs_vec);
 		if (success)
@@ -338,7 +339,7 @@ bool Jacobian::process_runs(ParamTransformSeq &par_transform,
 		// read information associated with the next model run;
 		if (i_run+1<nruns)
 		{
-			run_manager.get_info(i_run+1, run_status_next, par_name_next, par_value_next);
+			run_manager.get_info(i_run+1, run_status_next, model_exe_index, par_name_next, par_value_next);
 		}
 
 		if (i_run + 1 >= nruns || (cur_par_name != par_name_next))
