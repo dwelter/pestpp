@@ -2150,7 +2150,8 @@ ParameterEnsemble IterEnsembleSmoother::calc_upgrade(vector<string> &obs_names, 
 	{
 		message(1, "first extracting diagonal from prior parameter covariance matrix");
 		Covariance parcov_diag;
-		parcov_diag.from_diagonal(parcov.get(par_names));
+		Covariance parcov_local = parcov.get(par_names);
+		parcov_diag.from_diagonal(parcov_local);
 		parcov_inv = parcov_diag.inv().get_matrix().diagonal().cwiseSqrt().asDiagonal();
 	}
 
