@@ -28,7 +28,7 @@ tests = """0) 10par_xsec "standard user mode" - draw reals from par-bounds prior
 ies_vars = ["ies_par_csv", "ies_obs_csv", "ies_restart_obs_csv",
             "ies_bad_phi", "parcov_filename", "ies_num_reals",
             "ies_use_approx", "ies_use_prior_scaling", "ies_reg_factor",
-            "ies_lambda_mults", "ies_init_lambda","ies_include_base","ies_subset_size"]
+            "ies_lambda_mults", "ies_initial_lambda","ies_include_base","ies_subset_size"]
 
 if "windows" in platform.platform().lower():
     exe_path = os.path.join("..", "..", "..", "exe", "windows", "x64", "Release", "pestpp-ies.exe")
@@ -1215,29 +1215,29 @@ if __name__ == "__main__":
     # write_empty_test_matrix()
 
     #prep_10par_for_travis("ies_10par_xsec")
-    # setup_suite_dir("ies_10par_xsec")
-    # setup_suite_dir("ies_10par_xsec")
-    # run_suite("ies_freyberg")
-    # run_suite("ies_10par_xsec")
-    # rebase("ies_freyberg")
-    # rebase("ies_10par_xsec")
-    # compare_suite("ies_10par_xsec")
-    # compare_suite("ies_freyberg")
+    setup_suite_dir("ies_10par_xsec")
+    setup_suite_dir("ies_10par_xsec")
+    run_suite("ies_freyberg")
+    run_suite("ies_10par_xsec")
+    rebase("ies_freyberg")
+    rebase("ies_10par_xsec")
+    compare_suite("ies_10par_xsec")
+    compare_suite("ies_freyberg")
 
-    # tenpar_subset_test()
-    # tenpar_full_cov_test()
-    # test_freyberg_full_cov_reorder()
-    # test_freyberg_full_cov_reorder_run()
-    # test_freyberg_full_cov()
-    # tenpar_tight_tol_test()
+    tenpar_subset_test()
+    tenpar_full_cov_test()
+    test_freyberg_full_cov_reorder()
+    test_freyberg_full_cov_reorder_run()
+    test_freyberg_full_cov()
+    tenpar_tight_tol_test()
     #test_synth()
-    #test_10par_xsec(silent_master=False)
-    # test_freyberg()
+    test_10par_xsec(silent_master=False)
+    test_freyberg()
     test_chenoliver()
-    # tenpar_weight_pareto_test()
-    # compare_pyemu()
-    # tenpar_narrow_range_test()
-    # test_freyberg_ineq()
+    tenpar_weight_pareto_test()
+    compare_pyemu()
+    tenpar_narrow_range_test()
+    test_freyberg_ineq()
     
     # # invest()
     #compare_suite("ies_10par_xsec")
@@ -1245,6 +1245,6 @@ if __name__ == "__main__":
     
     #test_kirishima()
 
-    # tenpar_fixed_test()
+    tenpar_fixed_test()
 
     #setup_rosenbrock()
