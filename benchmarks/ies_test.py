@@ -80,13 +80,13 @@ def setup_suite_dir(model_d):
     # write a generic 2D cov
     if os.path.exists(os.path.join(new_d,"prior.jcb")):
         cov = pyemu.Cov.from_binary(os.path.join(new_d,"prior.jcb"))
-        cov.to_ascii(os.path.join(new_d,"prior.cov"))
+        #cov.to_ascii(os.path.join(new_d,"prior.cov"))
     elif os.path.exists(os.path.join(new_d, "prior.cov")):
         cov = pyemu.Cov.from_ascii(os.path.join(new_d, "prior.cov"))
     else:
         cov = pyemu.Cov.from_parameter_data(pst)
         cov = pyemu.Cov(cov.as_2d, names=cov.row_names)
-        cov.to_ascii(os.path.join(new_d, "prior.cov"))
+        #cov.to_ascii(os.path.join(new_d, "prior.cov"))
         cov.to_binary(os.path.join(new_d, "prior.jcb"))
 
     # draw some ensembles
