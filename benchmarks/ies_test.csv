@@ -1,4 +1,4 @@
-,ies_par_csv,ies_obs_csv,ies_restart_obs_csv,ies_bad_phi,parcov_filename,ies_num_reals,ies_use_approx,ies_use_prior_scaling,ies_reg_factor,ies_lambda_mults,ies_init_lambda,ies_subset_size,ies_include_base,lambda_scale_fac,pyemu_compare,text
+,ies_par_csv,ies_obs_csv,ies_restart_obs_csv,ies_bad_phi,parcov_filename,ies_num_reals,ies_use_approx,ies_use_prior_scaling,ies_reg_factor,ies_lambda_mults,ies_initial_lambda,ies_subset_size,ies_include_base,lambda_scale_fac,pyemu_compare,text
 0),,,,,,"""20""",,,,,,,,,0,"0) ies_10par_xsec ""standard user mode"" - draw reals from par-bounds prior and obs noise from weights"
 0a),,,,,,"""20""",,,,"0.1,1.0,10.0",,,,,0,0a) ies_10par_xsec same as 0) but with multple lambda 
 1),par.csv,obs.csv,,,,"""20""",,"""false""",,,,,"""false""",,1,1) ies_10par_xsec start with existing par csv and obs csv

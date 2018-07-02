@@ -106,7 +106,7 @@ def setup_suite_dir(model_d):
     if os.path.exists("master_sweep"):
         shutil.rmtree("master_sweep")
         pyemu.os_utils.start_slaves(new_d, "pestpp-swp", "pest.pst", 10, master_dir="master_sweep",
-                                slave_root=".",local=False,port=4020)
+                                slave_root=".",local=True,port=4020)
 
     # process sweep output as restart csv and jcb
     df = pd.read_csv(os.path.join("master_sweep", "sweep_out.csv"))
@@ -821,10 +821,10 @@ def test_chenoliver():
     plt.tight_layout()
     plt.savefig(os.path.join(model_d,"full_approx_ov16.png"))
     plt.close("all")
-    # d = np.abs(df_full_par.PAR.mean() - 5.8)
-    # assert d < 0.05,d
-    # d = np.abs(df_full_par.PAR.mean() - 6.0)
-    # assert d < 0.05,d
+    d = np.abs(df_full_par.PAR.mean() - 5.8)
+    assert d < 0.05,d
+    d = np.abs(df_approx_par.PAR.mean() - 6.0)
+    assert d < 0.05,d
 
     pst.observation_data.loc[:,"weight"] = 1.0
 
@@ -875,15 +875,10 @@ def test_chenoliver():
     plt.savefig(os.path.join(model_d,"full_approx_ov1.png"))
     plt.close("all")
 
-    # d = np.abs(df_full_par.PAR.mean() - 5.99)
-    # assert d < 0.05,d
-    # d = np.abs(df_full_par.PAR.mean() - 6.0)
-    # assert d < 0.05,d
-
-
-
-
-
+    d = np.abs(df_full_par.PAR.mean() - 5.99)
+    assert d < 0.05,d
+    d = np.abs(df_approx_par.PAR.mean() - 6.0)
+    assert d < 0.05,d
 
 def test_kirishima():
 
@@ -1220,29 +1215,29 @@ if __name__ == "__main__":
     # write_empty_test_matrix()
 
     #prep_10par_for_travis("ies_10par_xsec")
-    #setup_suite_dir("ies_10par_xsec")
+    # setup_suite_dir("ies_10par_xsec")
     # setup_suite_dir("ies_10par_xsec")
     # run_suite("ies_freyberg")
-    #run_suite("ies_10par_xsec")
+    # run_suite("ies_10par_xsec")
     # rebase("ies_freyberg")
-    #rebase("ies_10par_xsec")
-    compare_suite("ies_10par_xsec")
+    # rebase("ies_10par_xsec")
+    # compare_suite("ies_10par_xsec")
     # compare_suite("ies_freyberg")
 
-    #tenpar_subset_test()
-    #tenpar_full_cov_test()
-    #test_freyberg_full_cov_reorder()
-    #test_freyberg_full_cov_reorder_run()
-    #test_freyberg_full_cov()
-    #tenpar_tight_tol_test()
+    # tenpar_subset_test()
+    # tenpar_full_cov_test()
+    # test_freyberg_full_cov_reorder()
+    # test_freyberg_full_cov_reorder_run()
+    # test_freyberg_full_cov()
+    # tenpar_tight_tol_test()
     #test_synth()
-    test_10par_xsec(silent_master=False)
-    #test_freyberg()
-    #test_chenoliver()
-    #tenpar_weight_pareto_test()
-    #compare_pyemu()
-    #tenpar_narrow_range_test()
-    #test_freyberg_ineq()
+    #test_10par_xsec(silent_master=False)
+    # test_freyberg()
+    test_chenoliver()
+    # tenpar_weight_pareto_test()
+    # compare_pyemu()
+    # tenpar_narrow_range_test()
+    # test_freyberg_ineq()
     
     # # invest()
     #compare_suite("ies_10par_xsec")
@@ -1250,6 +1245,6 @@ if __name__ == "__main__":
     
     #test_kirishima()
 
-    tenpar_fixed_test()
+    # tenpar_fixed_test()
 
     #setup_rosenbrock()
