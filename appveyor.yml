@@ -1,12 +1,48 @@
-skip_commits:
- message: /^((?!build).)*$/
-after_build:
-- exe\windows\x64\Release\pest++.exe
+nvironment:
+  
+  matrix:
+    - PYTHON_VERSION: "3.6"
+      CONDA_INSTALL_LOCN: "C:\\Miniconda36-x64"
 
-build: off
- #parallel: true
 
-test: off
-#
+platform:
+    - x64
 
-deploy: off
+build: false
+
+cache:
+  - '%LOCALAPPDATA%\pip\Cache'
+  - '%USERPROFILE%\.cache\pyemu'
+
+init:
+  - echo %PYTHON_VERSION% %CONDA_INSTALL_LOCN%
+
+install:
+  - set PATH=%CONDA_INSTALL_LOCN%;%CONDA_INSTALL_LOCN%\scripts;%PATH%;
+  - set PYTHONUNBUFFERED=1
+  # for msinttypes and newer stuff
+  - conda config --set always_yes true
+  - conda update conda
+  - conda update --all
+  - conda config --set show_channel_urls yes
+  - conda config --prepend channels conda-forge
+  - conda info -a
+
+  - conda install --yes python=%PYTHON_VERSION% pip numpy scipy pandas nose matplotlib jupyter notebook cartopy
+  - pip install coveralls
+  - pip install pyshp
+  - pip install nose-timer
+  - pip install git+https://github.com/modflowpy/flopy.git@develop
+  - pip install git+https://github.com/jtwhite79/pyemu.git@develop
+  # Show the installed packages + versions
+  - conda list
+
+test_script:
+  - cd benchmarks
+  - nosetests -v --with-id --nocapture --with-timer -w ies_tests.py
+  - cd ..
+
+after_test:
+ - echo "done"
+matrix:
+  fast_finish: true
