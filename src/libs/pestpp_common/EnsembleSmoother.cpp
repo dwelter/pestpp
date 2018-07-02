@@ -2731,7 +2731,7 @@ void IterEnsembleSmoother::set_subset_idx(int size)
 	{
 		//sidx needs to be index of realization, not realization number
 		vector<pair<double, int>> phis;
-		vector<int> sidx;
+		//vector<int> sidx;
 		int step;
 		PhiHandler::phiType pt = PhiHandler::phiType::COMPOSITE;
 		map<string, double>* phi_map = ph.get_phi_map(pt);
@@ -2756,15 +2756,15 @@ void IterEnsembleSmoother::set_subset_idx(int size)
 		for (i = 0; i < nreal_subset; ++i)
 		{
 			//add higher phis first
-			if ((sidx.size() < nreal_subset) && (find(sidx.begin(), sidx.end(), phis[mid + i * step].second) == sidx.end()))
+			if ((subset_idxs.size() < nreal_subset) && (find(subset_idxs.begin(), subset_idxs.end(), phis[mid + i * step].second) == subset_idxs.end()))
 			{
 				// slopy but otherwise hard to ensure nsubsets and good spread
-				sidx.push_back(phis[mid + i * step].second);
+				subset_idxs.push_back(phis[mid + i * step].second);
 			}
-			if ((sidx.size() < nreal_subset) && (find(sidx.begin(), sidx.end(), phis[mid - i * step].second) == sidx.end()))
+			if ((subset_idxs.size() < nreal_subset) && (find(subset_idxs.begin(), subset_idxs.end(), phis[mid - i * step].second) == subset_idxs.end()))
 			{
 				// slopy but otherwise hard to ensure nsubsets and good spread
-				sidx.push_back(phis[mid - i * step].second);
+				subset_idxs.push_back(phis[mid - i * step].second);
 			}
 		}
 	}
@@ -2859,7 +2859,11 @@ vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<Pa
 			int ireal = 0;
 			map<int, int> temp;
 			for (auto &rri : real_run_ids)
+			{
 				temp[ireal] = rri.second;
+				ireal++;
+			}
+
 			real_run_ids = temp;
 		}
 		
