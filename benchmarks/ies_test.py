@@ -1214,6 +1214,21 @@ def prep_for_travis(model_d):
     print(pst.model_command)
     pst.write(pst_file)
 
+def tenpar_subset_how_test():
+    model_d = "ies_10par_xsec"
+    test_d = os.path.join(model_d, "test_subset_how")
+    template_d = os.path.join(model_d, "template")
+    pst = pyemu.Pst(os.path.join(template_d, "pest.pst"))
+
+    if os.path.exists(test_d):
+        shutil.rmtree(test_d)
+    #shutil.copytree(template_d, test_d)
+    pst.pestpp_options = {}
+    pst.control_data.noptmax = 1
+    pst.write(os.path.join(template_d,"pest_restart.pst"))
+    pyemu.os_utils.start_slaves(template_d, exe_path, "pest_restart.pst", num_slaves=10,
+                                slave_root=model_d, master_dir=test_d, port=4020)
+
 
 
 if __name__ == "__main__":
@@ -1226,7 +1241,7 @@ if __name__ == "__main__":
     #run_suite("ies_10par_xsec")
     # rebase("ies_freyberg")
     #rebase("ies_10par_xsec")
-    compare_suite("ies_10par_xsec")
+    #compare_suite("ies_10par_xsec")
     # compare_suite("ies_freyberg")
 
     #tenpar_subset_test()
@@ -1236,7 +1251,7 @@ if __name__ == "__main__":
     #test_freyberg_full_cov()
     #tenpar_tight_tol_test()
     #test_synth()
-    test_10par_xsec(silent_master=False)
+    #test_10par_xsec(silent_master=False)
     #test_freyberg()
     #test_chenoliver()
     #tenpar_weight_pareto_test()
@@ -1250,6 +1265,8 @@ if __name__ == "__main__":
     
     #test_kirishima()
 
-    tenpar_fixed_test()
+   # tenpar_fixed_test()
+
+    tenpar_subset_how_test()
 
     #setup_rosenbrock()

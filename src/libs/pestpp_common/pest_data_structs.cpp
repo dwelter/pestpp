@@ -839,7 +839,7 @@ void PestppOptions::parce_line(const string &line)
 		{
 			ies_weight_csv = org_value;
 		}
-		else if (key == "IES_SUBSET)_HOW")
+		else if (key == "IES_SUBSET_HOW")
 		{
 			convert_ip(value,ies_subset_how);
 		}

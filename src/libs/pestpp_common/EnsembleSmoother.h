@@ -134,6 +134,7 @@ private:
 	//ofstream fphi;
 	vector<string> oe_org_real_names, pe_org_real_names;
 	vector<string> act_obs_names, act_par_names;
+	vector<int> subset_idxs;
 
 	ParameterEnsemble pe, pe_base;
 	ObservationEnsemble oe, oe_base, weights;
@@ -177,7 +178,8 @@ private:
 
 	void add_bases();
 
-	map<int,int> get_subset_idx_map();
+	//map<int,int> get_subset_idx_map();
+	void set_subset_idx(int size);
 };
 
 #endif 
