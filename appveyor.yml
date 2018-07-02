@@ -1,4 +1,4 @@
-nvironment:
+environment:
   
   matrix:
     - PYTHON_VERSION: "3.6"
