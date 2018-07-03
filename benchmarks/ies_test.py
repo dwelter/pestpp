@@ -105,10 +105,10 @@ def setup_suite_dir(model_d):
 
     pst.write(os.path.join(new_d, "pest.pst"))
     # run sweep
-    if not os.path.exists("master_sweep"):
+    if os.path.exists("master_sweep"):
         shutil.rmtree("master_sweep")
-        pyemu.os_utils.start_slaves(new_d, "pestpp-swp", "pest.pst", 10, master_dir="master_sweep",
-                                slave_root=".",local=local,port=4020)
+    pyemu.os_utils.start_slaves(new_d, "pestpp-swp", "pest.pst", 10, master_dir="master_sweep",
+                            slave_root=".",local=local,port=4020)
 
     # process sweep output as restart csv and jcb
     df = pd.read_csv(os.path.join("master_sweep", "sweep_out.csv"))
