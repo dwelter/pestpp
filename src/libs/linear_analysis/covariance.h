@@ -50,6 +50,12 @@ public:
 	void to_binary(const string &filename);
 	void from_binary(const string &filename);
 
+	void from_csv(const string &filename);
+	//void to_csv(const string filename);
+
+	void from_file(const string &filename);
+
+
 	void transpose_ip();
 	Mat transpose();
 	Mat T();
@@ -112,8 +118,7 @@ public:
 	Covariance diagonal(double val);
 	void from_diagonal(Covariance &other);
 
-	void try_from(Pest &pest_scenario, FileManager &file_manager);
-
+	string try_from(Pest &pest_scenario, FileManager &file_manager,bool is_parcov=true);
 	void from_uncertainty_file(const string &filename);
 	void from_parameter_bounds(Pest &pest_scenario);
 	void from_parameter_bounds(const vector<string> &par_names, const ParameterInfo &par_info, double sigma_range=4.0);

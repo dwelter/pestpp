@@ -370,6 +370,18 @@ def run_pestpp_opt():
     pyemu.helpers.start_slaves(new_model_ws,"pestpp-opt","freyberg.pst",num_slaves=15,master_dir="master",
                                slave_root='.',port=4005)
 
+def run_pestpp_gsa():
+    pst_file = os.path.join(new_model_ws, "freyberg.pst")
+    pst = pyemu.Pst(pst_file)
+    pst.control_data.noptmax = 1
+    par = pst.parameter_data
+    par.loc[par.pargp!="kg","partrans"] = "fixed"
+    print(pst.npar_adj)
+    pst.write(os.path.join(new_model_ws,"freyberg_gsa.pst"))
+    pyemu.helpers.start_slaves(new_model_ws,"pestpp-gsa","freyberg_gsa.pst",num_slaves=15,master_dir="master",
+                               slave_root='.',port=4005)
+
+
 def spike_test():
     pst_file = os.path.join(new_model_ws, "freyberg.pst")
     pst = pyemu.Pst(pst_file)
@@ -803,8 +815,8 @@ if __name__ == "__main__":
     #setup_truth()
     #write_ssm_tpl()
     #run_test()
-    #setup_models()
-    #setup_pest()
+    setup_models()
+    setup_pest()
     #spike_test()
     #start_slaves()
     #run_pestpp_opt()

@@ -936,34 +936,43 @@ void sequentialLP::initialize_and_check()
 			}
 
 
-			string parcov_filename = pest_scenario.get_pestpp_options().get_parcov_filename();
-			//build the adjustable parameter parcov
-			//from filename
+			//string parcov_filename = pest_scenario.get_pestpp_options().get_parcov_filename();
+			////build the adjustable parameter parcov
+			////from filename
 
-			if (parcov_filename.size() > 0)
+			//if (parcov_filename.size() > 0)
+			//{
+			//	//throw_sequentialLP_error("parcov from filename not implemented");
+			//	Covariance temp_parcov ;
+			//	temp_parcov.from_ascii(parcov_filename);
+			//	//check that all adj par names in temp_parcov
+			//	vector<string> temp_names = temp_parcov.get_col_names();
+			//	start = temp_names.begin();
+			//	end = temp_names.end();
+			//	vector<string> missing;
+			//	for (auto &name : adj_par_names)
+			//		if (find(start, end, name) == end)
+			//			missing.push_back(name);
+			//	if (missing.size() > 0)
+			//		throw_sequentialLP_error("the following adjustable parameters were not found in the ++parcov_filename covaraince matrix: ", missing);
+
+			//	parcov = temp_parcov.get(adj_par_names);
+
+			//}
+			////from parameter bounds
+			//else
+			//{
+			//	parcov.from_parameter_bounds(adj_par_names, pest_scenario.get_ctl_parameter_info());
+			//}
+			vector<string> drop;
+			set<string> sadj(adj_par_names.begin(), adj_par_names.end());
+			for (auto &n : parcov.get_row_names())
 			{
-				//throw_sequentialLP_error("parcov from filename not implemented");
-				Covariance temp_parcov;
-				temp_parcov.from_ascii(parcov_filename);
-				//check that all adj par names in temp_parcov
-				vector<string> temp_names = temp_parcov.get_col_names();
-				start = temp_names.begin();
-				end = temp_names.end();
-				vector<string> missing;
-				for (auto &name : adj_par_names)
-					if (find(start, end, name) == end)
-						missing.push_back(name);
-				if (missing.size() > 0)
-					throw_sequentialLP_error("the following adjustable parameters were not found in the ++parcov_filename covaraince matrix: ", missing);
-
-				parcov = temp_parcov.get(adj_par_names);
-
+				if (sadj.find(n) == sadj.end())
+					drop.push_back(n);
 			}
-			//from parameter bounds
-			else
-			{
-				parcov.from_parameter_bounds(adj_par_names, pest_scenario.get_ctl_parameter_info());
-			}
+			parcov.drop(drop);
+
 
 			//build the nz_obs obs_cov
 			if (num_nz_obs() != 0)

@@ -34,6 +34,7 @@
     <ClInclude Include="FileManager.h" />
     <ClInclude Include="Jacobian.h" />
     <ClInclude Include="Jacobian_1to1.h" />
+    <ClInclude Include="Localizer.h" />
     <ClInclude Include="ModelRunPP.h" />
     <ClInclude Include="ObjectiveFunc.h" />
     <ClInclude Include="OutputFileWriter.h" />
@@ -62,6 +63,7 @@
     <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="Jacobian.cpp" />
     <ClCompile Include="Jacobian_1to1.cpp" />
+    <ClCompile Include="Localizer.cpp" />
     <ClCompile Include="ModelRunPP.cpp" />
     <ClCompile Include="ObjectiveFunc.cpp" />
     <ClCompile Include="OutputFileWriter.cpp" />

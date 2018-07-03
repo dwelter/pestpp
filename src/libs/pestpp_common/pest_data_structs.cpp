@@ -382,7 +382,7 @@ void PestppOptions::parce_line(const string &line)
 	for (std::sregex_iterator i(tmp_line.begin(), tmp_line.end(), lambda_reg); i != end_reg; ++i)
 	{
 		string key = (*i)[1];
-		string org_value = (*i)[2];
+		string org_value = strip_cp((*i)[2]);
 		upper_ip(key);
 		string value = upper_cp(org_value);
 		passed_args.insert(key);

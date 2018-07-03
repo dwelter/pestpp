@@ -27,7 +27,8 @@ OBJECTS := \
     SVDASolver \
     DifferentialEvolution \
     Ensemble \
-    EnsembleSmoother
+    EnsembleSmoother \
+    Localizer
 OBJECTS := $(addsuffix $(OBJ_EXT),$(OBJECTS))
 
 

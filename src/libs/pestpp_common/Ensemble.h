@@ -103,7 +103,7 @@ public:
 	*/
 	ParameterEnsemble(Pest *_pest_scenario_ptr);
 	ParameterEnsemble() { ; }
-	
+	ParameterEnsemble zeros_like();
 	//ParameterEnsemble get_new(const vector<string> &_real_names, const vector<string> &_var_names);
 
 	//void from_csv(string file_name,const vector<string> &ordered_names);
