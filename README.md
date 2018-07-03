@@ -184,6 +184,8 @@ Here is a (more or less) complete list of ``++`` arguments that can be added to 
 
 * ``lambda_scale_fac(<lambda_scale_fac>)``: line search lambda scaling factors.  Each lambda parameter upgrade ensemble is scaled by each ``lambda_scale_fac``.  Default is [0.5,0.75,0.9,1.0,1.1].  
 
+* ``ies_subset_how(<subset_how>)``: choice for how the subset is selected.  Choices are "first" (use the first ``subset_size`` realizations),"last" (use the last ``subset_size`` realizations),"random" (randomly select ``subset_size`` realizations each iteration),"phi_based" (chose ``subset_size`` realizations spread across the composite phi from the last iteration). Default is "first".  
+
 
 ### USGS disclaimer
 
