@@ -105,7 +105,7 @@ def setup_suite_dir(model_d):
 
     pst.write(os.path.join(new_d, "pest.pst"))
     # run sweep
-    if os.path.exists("master_sweep"):
+    if not os.path.exists("master_sweep"):
         shutil.rmtree("master_sweep")
         pyemu.os_utils.start_slaves(new_d, "pestpp-swp", "pest.pst", 10, master_dir="master_sweep",
                                 slave_root=".",local=local,port=4020)
@@ -1290,7 +1290,7 @@ if __name__ == "__main__":
     # write_empty_test_matrix()
 
     # prep_10par_for_travis("ies_10par_xsec")
-    # setup_suite_dir("ies_10par_xsec")
+    setup_suite_dir("ies_10par_xsec")
     # setup_suite_dir("ies_10par_xsec")
     # run_suite("ies_freyberg")
     # run_suite("ies_10par_xsec")
@@ -1310,7 +1310,7 @@ if __name__ == "__main__":
     #test_synth()
     # test_10par_xsec(silent_master=False)
     # test_freyberg()
-    test_chenoliver()
+    #test_chenoliver()
     # tenpar_weight_pareto_test()
     # tenpar_narrow_range_test()
     # test_freyberg_ineq()
