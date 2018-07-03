@@ -620,7 +620,9 @@ def test_freyberg_full_cov_reorder():
     pst.pestpp_options["ies_num_reals"] = num_reals
     pst.pestpp_options["ies_include_base"] = "false"
     pst.pestpp_options["ies_group_draws"] = 'true'
+    pst.pestpp_options["ies_enforce_bounds"] = False
     pst.parameter_data.loc[pst.par_names[0],"pargp"] = "test"
+
     pst.write(os.path.join(test_d,"pest.pst"))
     cov = pyemu.Cov.from_binary(os.path.join(test_d,"prior.jcb"))
 
@@ -1214,37 +1216,37 @@ def prep_for_travis(model_d):
 if __name__ == "__main__":
     # write_empty_test_matrix()
 
-    #prep_10par_for_travis("ies_10par_xsec")
-    setup_suite_dir("ies_10par_xsec")
-    setup_suite_dir("ies_10par_xsec")
-    run_suite("ies_freyberg")
-    run_suite("ies_10par_xsec")
-    rebase("ies_freyberg")
-    rebase("ies_10par_xsec")
-    compare_suite("ies_10par_xsec")
-    compare_suite("ies_freyberg")
+    # prep_10par_for_travis("ies_10par_xsec")
+    # setup_suite_dir("ies_10par_xsec")
+    # setup_suite_dir("ies_10par_xsec")
+    # run_suite("ies_freyberg")
+    # run_suite("ies_10par_xsec")
+    # rebase("ies_freyberg")
+    # rebase("ies_10par_xsec")
+    # compare_suite("ies_10par_xsec")
+    # compare_suite("ies_freyberg")
 
-    tenpar_subset_test()
-    tenpar_full_cov_test()
-    test_freyberg_full_cov_reorder()
-    test_freyberg_full_cov_reorder_run()
-    test_freyberg_full_cov()
-    tenpar_tight_tol_test()
+    # tenpar_subset_test()
+    # tenpar_full_cov_test()
+    # test_freyberg_full_cov_reorder()
+    # test_freyberg_full_cov_reorder_run()
+    # test_freyberg_full_cov()
+    # tenpar_tight_tol_test()
     #test_synth()
-    test_10par_xsec(silent_master=False)
-    test_freyberg()
-    test_chenoliver()
-    tenpar_weight_pareto_test()
-    compare_pyemu()
-    tenpar_narrow_range_test()
-    test_freyberg_ineq()
-    
+    # test_10par_xsec(silent_master=False)
+    # test_freyberg()
+    # test_chenoliver()
+    # tenpar_weight_pareto_test()
+    # tenpar_narrow_range_test()
+    # test_freyberg_ineq()
+    # tenpar_fixed_test()
+    #
     # # invest()
     #compare_suite("ies_10par_xsec")
     #compare_suite("ies_freyberg")
     
     #test_kirishima()
 
-    tenpar_fixed_test()
+
 
     #setup_rosenbrock()
