@@ -65,7 +65,6 @@ Much work has been done to avoid additional external dependencies in PEST++.  As
 Here is a (more or less) complete list of ``++`` arguments that can be added to the control file
 * ``++overdue_resched_fac(1.2)``:YAMR only, if a run is more than <``overdue_resched_fac``> X average run time, reschedule it on available resources
 * ``++overdue_giveup_fac(2.0)``:YAMR only, if a run is more than <``overdue_giveup_fac``> X average run time, mark it as failed
-* ``++yamr_poll_interval(1.0)``: YAMR only, number of seconds to timeout for workers between attempts to try to connect to the master
 * ``++max_n_super(20)``: maximum number of super parameters to use
 
 * ``++super_eigthres(1.0e-8)`` ratio of max to min singular values used to truncate the singular components when forming the super parameter problem
@@ -95,7 +94,7 @@ Here is a (more or less) complete list of ``++`` arguments that can be added to 
 
 * ``++upgrade_augment(true)``: augment the values of lambda to test by including the best lambda from the previous iteration, as well as best lambda * 2.0 and best lambda / 2.0.  If ``true``, then additional lambdas will be included by attempting to extend each upgrade vector along the region of parameter space defined by parameter bounds.  If ``false``, then only the vectors listed in the ``++lambda()`` arg will be tested and no extended upgrade will be included.  
 
-* ``upgrade_bounds(robust)``: how to handle parameters going out of bounds during upgrades.  If ``robust``,then additional SVD solutions will be required but can result in greater phi reduction.  Choices are ``cheap`` or ``robust``.
+* ``++upgrade_bounds(true)``: use additional tricks and upgrades to deal with upgrades that are going out bounds.  If ``true``, can result in substantial phi improvement, but in some cases can produce NaNs in the upgrade vectors.
 
 * ``++hotstart_resfile(mycase.res)``: use an exising residual file to restart with an existing jacobian to forego the initial, base run and jump straight to upgrade calculations (++base_jacobian arg required).
 
@@ -132,8 +131,58 @@ Here is a (more or less) complete list of ``++`` arguments that can be added to 
 
 * ``++opt_risk(<risk>)``: a float ranging from 0.0 to 1.0 that is the value to use in the FOSM uncertainty estimation for model-based constraints. a value of 0.5 is a "risk neutral" position and no FOSM measures are calculated.  A value of 0.95 will seek a 95% risk averse solution, while a value of 0.05 will seek a 5% risk tolerant solution. See Wagner and Gorelick, 1987, *Optimal groundwater quality management under parameter uncertainty* for more background on chance-constrained linear programming
 
+* ``++opt_skip_final(<skip_final>)``: a flag to skip the final model run using optimal decision variable values.  If ``true`` and ``++base_jacobian()`` and ``++hotstart_resfile()`` are set and (lot of "ands") ``noptmax``=0, then this causes no model runs to happen, pestpp-opt simply solves the chance constrainted LP problem, report optimal decision variables and phi, then exits.  Default is ``false``.
+
+* ``++opt_std_weights(<std_weights>)``:a flag to treat model-based constraints (listed in the ``* observation data`` section) as standard deviations for chance constraints.  This can result in substantial time savings since the FOSM calculation process can be skipped.  This can also be used to specific empirical constraint uncertainty (e.g. from ensemble methods).  Default is ``false``.
+
 ### pestpp-ies ``++`` arguments
-``pestpp-ies`` is an implementation of the iterative ensemble smoother GLM algorithm of Chen and Oliver 2012. So far, this tool has performed very well across a range of problems.  It functions without any additional ``++`` arguments. However, several ``++`` arguments can be used to fine-tune the function of ``pestpp-ies``.  These are available in ``documentation/input_tbl.pdf``
+``pestpp-ies`` is an implementation of the iterative ensemble smoother GLM algorithm of Chen and Oliver 2012. So far, this tool has performed very well across a range of problems.  It functions without any additional ``++`` arguments. However, several ``++`` arguments can be used to fine-tune the function of ``pestpp-ies``.  
+
+* ``++ies_parameter_ensemble(<par_en>)``: file containing parameter ensemble.  File extension is used to determine file type: ``.csv`` and ``.jcb`` are supported.  If not passed, a parameter ensemble is generated from prior parameter distribution
+
+* ``++ies_observation_ensemble(<obs_en>)``: file containing observation noise ensemble (obs vals + noise realizatons). File extension is used to determine file type: ``.csv`` and ``.jcb`` are supported. If not passed, an observation ensemble is generated using observation weights
+
+* ``ies_restart_obs_en(<restart_obs_en>)``: file containting a restart observation ensemble (simulated outputs from a previous pestpp-ies run or from pestpp-swp).  File extension is used to determine file type: ``.csv`` and ``.jcb`` are supported.
+
+* ``ies_num_reals(<num_reals>)``: number of realizations to use.  If ``par_en``, ``obs_en`` and/or ``restart_obs_en`` are passed and are larger than ``num_reals``, then only the first ``num_reals`` realizations are used. Default is 50.  
+
+* ``ies_bad_phi(<bad_phi>)``: realizations yielding a phi greater than ``bad_phi`` are dropped from ``par_en`` and ``obs_en``.  Default is 1.0e+30
+
+* ``ies_lambda_mults(<lambda_mults>)``: lambda multiplers to test during upgrade calculations.  Default is [0.1,0.5,1.0,2.0,5.0].
+
+* ``ies_initial_lambda(<init_lambda>)``: initial lambda value to use with ``lambda_mults`` to get lambda values for testing during the first iteration.  If not passed, ``init_lambda`` is derived from the initial mean phi.  
+
+* ``ies_subset_size(<subset_size>)``: the number of realizations to test for each upgrade parameter ensemble.  The total number of upgrade testing runs is ``len(lambda_mults)`` * ``len(lambda_scale_fac)`` * ``subset_size``.  Default is 5, meaning only the first 5 realizations are evaluated during testing; if a successful (subset) upgrade ensemble is found, the remaining ``num_reals`` - ``subset_size`` realizations are evaluated.
+
+* ``ies_reg_factor(<reg_factor>)``: fraction of zeroth-order Tikhonov regularization penalty to add to the measurement phi to form composite phi.  Default is 0.0
+
+* ``ies_use_approx(<use_approx>)``: flag to use the approximate upgrade solution process.  Default is ``true``.
+
+* ``ies_use_prior_scaling(<use_prior_scaling>)``: flag to scale various quantities by the prior parameter covariance matrix during upgrade calculations.  Default is ``false``.
+
+* ``ies_use_empirical_prior(<use_empirical_prior>)``: flag to calculate prior parameter covariance matrix from the parameter ensemble.  Requires passing of ``par_en``.  Default is ``false``.
+
+* ``ies_verbose_level(<verbose_level>)``: integer to control how much pestpp-ies writes.  Can be 0, 1, 2, or 3.  Default is 1.
+
+* ``ies_add_bases(<add_bases>)``: flag to add initial parameter values to ``par_en`` and add actual observation values (no noise) to ``obs_en``.  This results in an approximation to the minimum error variance parameter set being carried through the pestpp-ies analysis.  If ``true``, results in ``num_reals`` + 1 realizations.  Default is ``true``.
+
+* ``ies_enforce_bounds(enforce_bounds>)``: flag to enforce parameter bounds during upgrade calculations.  Default is ``true``.
+
+* ``ies_save_binary(<save_binary>)``: flag to save iteration parameter and observation ensembles to pest-compatible (jacobian format) binary files.  Default is ``false``
+
+* ``ies_accept_phi_fac(<accept_phi_fac>)``: tolerance for accepting the results for a (subset) ensemble evaluation. If the resulting mean phi * ``accept_phi_fac`` is greater than the best mean phi from the last iteration, then the upgrade is rejected.  Default is 1.05 (5% tolerance).
+
+* ``ies_lambda_inc_fac(<lambda_inc_fac>)``: factor increase current lambda by if current upgrade testing was not successful.  Default is 10.0
+
+* ``ies_lambda_dec_fac(<lambda_dec_fac>)``: factor to decrease current lambd by if current upgrade testing was successful.  Default is 0.75.
+
+* ``ies_save_lambda_en(<save_lambda_en>)``: flag to save lambda testing parameter ensembles.  Can be use for finding parameters vectors that are causing run failures.  Default is ``false``.
+
+* ``parcov_filename(<parcov_filename>)``: (repeated argument for pestpp and pestpp-opt).  Name of existing prior parameter covariance matrix.  Can be ASCII (``.mat`` or ``.cov``), binary (``.jco`` or ``.jcb``) or an uncertainty file (``.unc``).  If not passed, the prior parameter covariance matrix is constructed from parameter bounds (or from the parameter ensemble if ``use_empirical_prior`` is passed).  
+
+* ``par_sigma_range(<par_sigma_range>)``: the number of standard deviations implied by parameter bounds.  Used to construct prior parameter covariance matrix from parameter bounds.  Default is 4.0.
+
+* ``lambda_scale_fac(<lambda_scale_fac>)``: line search lambda scaling factors.  Each lambda parameter upgrade ensemble is scaled by each ``lambda_scale_fac``.  Default is [0.5,0.75,0.9,1.0,1.1].  
 
 
 ### USGS disclaimer
