@@ -1188,8 +1188,8 @@ void ParameterEnsemble::from_csv(string file_name)
 	ifstream csv(file_name);
 	if (!csv.good())
 		throw runtime_error("error opening parameter csv " + file_name + " for reading"); 
-	//var_names = pest_scenario_ptr->get_ctl_ordered_adj_par_names();
-	var_names = pest_scenario_ptr->get_ctl_ordered_par_names();
+	var_names = pest_scenario_ptr->get_ctl_ordered_adj_par_names();
+	//var_names = pest_scenario_ptr->get_ctl_ordered_par_names();
 	map<string,int>header_info = prepare_csv(var_names, csv, false);
 	//blast through the file to get number of reals
 	string line;

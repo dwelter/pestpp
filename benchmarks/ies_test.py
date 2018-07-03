@@ -174,7 +174,7 @@ def run_suite(model_d,silent_master=False):
             except:
                 print("error removing existing test_d: {0}".format(test_d))
                 continue
-        pyemu.os_utils.start_slaves(template_d, exe_path, "pest.pst", num_slaves=10,
+        pyemu.os_utils.start_slaves(template_d, exe_path, "pest.pst", num_slaves=15,
                                    master_dir=test_d, verbose=True, slave_root=model_d,
                                    silent_master=silent_master,port=4020)
 
@@ -309,7 +309,7 @@ def tenpar_narrow_range_test():
         x[i, i] = 5.0e-10
     cov = pyemu.Cov(x, names=pst.adj_par_names)
     cov.to_ascii(os.path.join(test_d, "prior.cov"))
-    num_reals = 5000
+    num_reals = 50000
     pe = pyemu.ParameterEnsemble.from_gaussian_draw(pst, cov, num_reals=num_reals, use_homegrown=True)
     #pe.enforce()
     #pe.to_csv(os.path.join(test_d,"pyemu_draws.csv"))
@@ -432,7 +432,7 @@ def tenpar_subset_test():
     pst.pestpp_options["ies_accept_phi_fac"] = 100.0
     pst.pestpp_options["ies_subset_size"] = 21
     pst.write(os.path.join(template_d, "pest.pst"))
-    pyemu.os_utils.start_slaves(template_d, exe_path, "pest.pst", num_slaves=10,
+    pyemu.os_utils.start_slaves(template_d, exe_path, "pest.pst", num_slaves=15,
                                slave_root=model_d, master_dir=test_d,port=4020)
     df_base = pd.read_csv(os.path.join(test_d, "pest.phi.meas.csv"),index_col=0)
 
@@ -443,7 +443,7 @@ def tenpar_subset_test():
     pst.pestpp_options["ies_accept_phi_fac"] = 100.0
 
     pst.write(os.path.join(template_d, "pest.pst"))
-    pyemu.os_utils.start_slaves(template_d, exe_path, "pest.pst", num_slaves=10,
+    pyemu.os_utils.start_slaves(template_d, exe_path, "pest.pst", num_slaves=15,
                                slave_root=model_d, master_dir=test_d,port=4020)
     df_sub = pd.read_csv(os.path.join(test_d, "pest.phi.meas.csv"),index_col=0)
     diff = (df_sub - df_base).apply(np.abs)
@@ -700,7 +700,7 @@ def test_freyberg_full_cov_reorder_run():
     #pe = pyemu.ParameterEnsemble.from_gaussian_draw(pst, cov, num_reals, use_homegrown=True)
     #pe.to_csv(os.path.join(test_d, "pyemu_pe.csv"))
 
-    pyemu.os_utils.start_slaves(template_d, exe_path, "pest.pst", num_slaves=10,
+    pyemu.os_utils.start_slaves(template_d, exe_path, "pest.pst", num_slaves=15,
                                 slave_root=model_d, master_dir=test_d,port=4020)
     
 
@@ -1291,46 +1291,29 @@ if __name__ == "__main__":
 
     # prep_10par_for_travis("ies_10par_xsec")
     # setup_suite_dir("ies_10par_xsec")
-    # setup_suite_dir("ies_10par_xsec")
+    # setup_suite_dir("ies_freyberg")
     # run_suite("ies_freyberg")
     # run_suite("ies_10par_xsec")
     # rebase("ies_freyberg")
     # rebase("ies_10par_xsec")
     # compare_suite("ies_10par_xsec")
-    #rebase("ies_10par_xsec")
-    #compare_suite("ies_10par_xsec")
     # compare_suite("ies_freyberg")
-
+    #
     # tenpar_subset_test()
     # tenpar_full_cov_test()
     # test_freyberg_full_cov_reorder()
     # test_freyberg_full_cov_reorder_run()
     # test_freyberg_full_cov()
     # tenpar_tight_tol_test()
-    #test_synth()
+    # test_synth()
     # test_10par_xsec(silent_master=False)
     # test_freyberg()
-    test_chenoliver()
+    # test_chenoliver()
     # tenpar_weight_pareto_test()
-    # tenpar_narrow_range_test()
+    tenpar_narrow_range_test()
     # test_freyberg_ineq()
     # tenpar_fixed_test()
+    # tenpar_fixed_test()
     #
-    #test_10par_xsec(silent_master=False)
-    #test_freyberg()
-    #test_chenoliver()
-    #tenpar_weight_pareto_test()
-    #compare_pyemu()
-    #tenpar_narrow_range_test()
-    #test_freyberg_ineq()
-    
-    # # invest()
-    #compare_suite("ies_10par_xsec")
-    #compare_suite("ies_freyberg")
-    
-    #test_kirishima()
-
-   # tenpar_fixed_test()
-
-    tenpar_subset_how_test()
+    # tenpar_subset_how_test()
     #setup_rosenbrock()
