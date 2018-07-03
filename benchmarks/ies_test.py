@@ -108,11 +108,7 @@ def setup_suite_dir(model_d):
     if os.path.exists("master_sweep"):
         shutil.rmtree("master_sweep")
     pyemu.os_utils.start_slaves(new_d, "pestpp-swp", "pest.pst", 10, master_dir="master_sweep",
-<<<<<<< HEAD
                             slave_root=".",local=local,port=4020)
-=======
-                            slave_root=".",local=True,port=4020)
->>>>>>> origin/localization
 
     # process sweep output as restart csv and jcb
     df = pd.read_csv(os.path.join("master_sweep", "sweep_out.csv"))
