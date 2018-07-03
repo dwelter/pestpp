@@ -60,9 +60,11 @@ def setup_suite_dir(model_d):
         shutil.rmtree(new_d)
     shutil.copytree(base_d, new_d)
     print(platform.platform().lower())
+    local=True
     if "linux" in platform.platform().lower() and "10par" in model_d:
         print("travis_prep")
         prep_for_travis(model_d)
+        local=False
     pst = pyemu.Pst(os.path.join(new_d, "pest.pst"))
     print(pst.model_command)
     
@@ -106,7 +108,7 @@ def setup_suite_dir(model_d):
     if os.path.exists("master_sweep"):
         shutil.rmtree("master_sweep")
         pyemu.os_utils.start_slaves(new_d, "pestpp-swp", "pest.pst", 10, master_dir="master_sweep",
-                                slave_root=".",local=True,port=4020)
+                                slave_root=".",local=local,port=4020)
 
     # process sweep output as restart csv and jcb
     df = pd.read_csv(os.path.join("master_sweep", "sweep_out.csv"))
