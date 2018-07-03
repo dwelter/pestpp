@@ -13,7 +13,9 @@
 #include "covariance.h"
 #include "RunManagerAbstract.h"
 #include "ObjectiveFunc.h"
- 
+#include "Localizer.h" 
+
+
 class PhiHandler
 {
 public:
@@ -35,7 +37,10 @@ public:
 	vector<int> get_idxs_greater_than(double bad_phi, ObservationEnsemble &oe);
 
 	Eigen::MatrixXd get_obs_resid(ObservationEnsemble &oe);
+	Eigen::MatrixXd get_obs_resid_subset(ObservationEnsemble &oe);
+
 	Eigen::MatrixXd get_par_resid(ParameterEnsemble &pe);
+	Eigen::MatrixXd get_par_resid_subset(ParameterEnsemble &pe);
 	Eigen::MatrixXd get_actual_obs_resid(ObservationEnsemble &oe);
 	Eigen::VectorXd get_q_vector();
 	vector<string> get_lt_obs_names() { return lt_obs_names; }
@@ -113,6 +118,8 @@ private:
 	Covariance parcov, obscov;
 	double reg_factor;
 	
+	bool use_localizer;
+	Localizer localizer;
 
 	set<string> pp_args;
 
@@ -139,11 +146,14 @@ private:
 	ParameterEnsemble pe, pe_base;
 	ObservationEnsemble oe, oe_base, weights;
 	//Eigen::MatrixXd prior_pe_diff;
-	Eigen::MatrixXd Am;
+	//Eigen::MatrixXd Am;
 	Eigen::DiagonalMatrix<double,Eigen::Dynamic> obscov_inv_sqrt, parcov_inv_sqrt;
 
-	bool solve();
+	//bool solve_old();
+	bool solve_new();
 	void adjust_pareto_weight(string &obsgroup, double wfac);
+
+	ParameterEnsemble calc_upgrade(vector<string> &obs_names, vector<string> &par_names,double lamb, int num_reals);
 
 	//EnsemblePair run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe);
 	vector<int> run_ensemble(ParameterEnsemble &_pe, ObservationEnsemble &_oe, const vector<int> &real_idxs=vector<int>());
@@ -161,25 +171,28 @@ private:
 	void drop_bad_phi(ParameterEnsemble &_pe, ObservationEnsemble &_oe);
 	//void check_ensembles(ObservationEnsemble &oe, ParameterEnsemble &pe);
 	template<typename T, typename A>
-	void message(int level, string &_message, vector<T, A> _extras);
-	void message(int level, string &_message);
+	void message(int level, string _message, vector<T, A> _extras);
+	void message(int level, string _message);
 	
 	template<typename T, typename A>
-	void message(int level, const char* _message, vector<T, A> _extras);// { message(level, string(_message), _extras); }
-	void message(int level, const char* _message);// { message(level, string(_message)); }
+	void message(int level, char* _message, vector<T, A> _extras);// { message(level, string(_message), _extras); }
+	void message(int level, char* _message);// { message(level, string(_message)); }
 
 	template<typename T>
-	void message(int level, string &_message, T extra);
+	void message(int level, string _message, T extra);
 
 	template<typename T>
-	void message(int level, const char* _message, T extra);
+	void message(int level, char* _message, T extra);
 
 	void sanity_checks();
 
 	void add_bases();
 
+
 	//map<int,int> get_subset_idx_map();
 	void set_subset_idx(int size);
+	Eigen::MatrixXd get_Am(const vector<string> &real_names, const vector<string> &par_names);
+
 };
 
 #endif 

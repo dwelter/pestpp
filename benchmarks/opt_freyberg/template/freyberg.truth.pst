@@ -1,7 +1,7 @@
 pcf
 * control data
              restart          estimation
-      4912      2163         9         0        17         0
+      4912      2163        15         0        17         0
         15         3              single               point         1         0         0          noobsreref
    2.000000E+01  -3.000000E+00   3.000000E-01   1.000000E-02        -7       999          lamforgive        noderforgive
    1.000000E+01   1.000000E+01   1.000000E-03         0         0
@@ -13,15 +13,21 @@ pcf
   10000000    1.000000E-06
 1
 * parameter groups
-grrech1                 relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
-grrc110                 relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
-grhk0                   relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
-grrech0                 relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
 grsc10                  relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
+grrc110                 relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
+grrech1                 relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
 grprst0                 relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
+grrech0                 relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
+grhk0                   relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
 grrech2                 relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
 hcond1                  relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
-cn                      relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller
+rech4_cn                relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
+hk1_cn                  relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
+sc11_cn                 relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
+rc111_cn                relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
+prst1_cn                relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
+rech5_cn                relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller              
+rech3_cn                relative              1.0000000000E-02       0.0  switch                2.0000000000E+00       parabolic             1.0000000000E-05      5.0000000000E-01       smaller
 * parameter data
 hcond1_0001            log                    factor                1.0000000000E+00      1.0000000000E-02      1.0000000000E+02       hcond1                1.0000000000E+00      0.0000000000E+00      1          
 hcond1_0002            log                    factor                1.0000000000E+00      1.0000000000E-02      1.0000000000E+02       hcond1                1.0000000000E+00      0.0000000000E+00      1          
@@ -758,7 +764,7 @@ hk0038013              log                    factor                1.0000000000
 hk0038014              log                    factor                1.0000000000E+00      1.0000000000E-02      1.0000000000E+02       grhk0                 1.0000000000E+00      0.0000000000E+00      1          
 hk0038015              log                    factor                1.0000000000E+00      1.0000000000E-02      1.0000000000E+02       grhk0                 1.0000000000E+00      0.0000000000E+00      1          
 hk0038016              log                    factor                1.0000000000E+00      1.0000000000E-02      1.0000000000E+02       grhk0                 1.0000000000E+00      0.0000000000E+00      1          
-hk1_cn                 log                    factor                1.0000000000E+00      1.0000000000E-02      1.0000000000E+02       cn                    1.0000000000E+00      0.0000000000E+00      1          
+hk1_cn                 log                    factor                1.0000000000E+00      1.0000000000E-02      1.0000000000E+02       hk1_cn                1.0000000000E+00      0.0000000000E+00      1          
 prst0000000            log                    factor                1.0000000000E+00      1.0000000000E-01      1.0000000000E+01       grprst0               1.0000000000E+00      0.0000000000E+00      1          
 prst0000001            log                    factor                1.0000000000E+00      1.0000000000E-01      1.0000000000E+01       grprst0               1.0000000000E+00      0.0000000000E+00      1          
 prst0000002            log                    factor                1.0000000000E+00      1.0000000000E-01      1.0000000000E+01       grprst0               1.0000000000E+00      0.0000000000E+00      1          
@@ -1454,7 +1460,7 @@ prst0038013            log                    factor                1.0000000000
 prst0038014            log                    factor                1.0000000000E+00      1.0000000000E-01      1.0000000000E+01       grprst0               1.0000000000E+00      0.0000000000E+00      1          
 prst0038015            log                    factor                1.0000000000E+00      1.0000000000E-01      1.0000000000E+01       grprst0               1.0000000000E+00      0.0000000000E+00      1          
 prst0038016            log                    factor                1.0000000000E+00      1.0000000000E-01      1.0000000000E+01       grprst0               1.0000000000E+00      0.0000000000E+00      1          
-prst1_cn               log                    factor                1.0000000000E+00      1.0000000000E-01      1.0000000000E+01       cn                    1.0000000000E+00      0.0000000000E+00      1          
+prst1_cn               log                    factor                1.0000000000E+00      1.0000000000E-01      1.0000000000E+01       prst1_cn              1.0000000000E+00      0.0000000000E+00      1          
 rc110000000            log                    factor                1.0000000000E+00      1.0000000000E-01      1.0000000000E+01       grrc110               1.0000000000E+00      0.0000000000E+00      1          
 rc110000001            log                    factor                1.0000000000E+00      1.0000000000E-01      1.0000000000E+01       grrc110               1.0000000000E+00      0.0000000000E+00      1          
 rc110000002            log                    factor                1.0000000000E+00      1.0000000000E-01      1.0000000000E+01       grrc110               1.0000000000E+00      0.0000000000E+00      1          
@@ -2150,7 +2156,7 @@ rc110038013            log                    factor                1.0000000000
 rc110038014            log                    factor                1.0000000000E+00      1.0000000000E-01      1.0000000000E+01       grrc110               1.0000000000E+00      0.0000000000E+00      1          
 rc110038015            log                    factor                1.0000000000E+00      1.0000000000E-01      1.0000000000E+01       grrc110               1.0000000000E+00      0.0000000000E+00      1          
 rc110038016            log                    factor                1.0000000000E+00      1.0000000000E-01      1.0000000000E+01       grrc110               1.0000000000E+00      0.0000000000E+00      1          
-rc111_cn               log                    factor                1.0000000000E+00      1.0000000000E-01      1.0000000000E+01       cn                    1.0000000000E+00      0.0000000000E+00      1          
+rc111_cn               log                    factor                1.0000000000E+00      1.0000000000E-01      1.0000000000E+01       rc111_cn              1.0000000000E+00      0.0000000000E+00      1          
 rech0000000            log                    factor                1.0000000000E+00      9.0000000000E-01      1.1000000000E+00       grrech0               1.0000000000E+00      0.0000000000E+00      1          
 rech0000001            log                    factor                1.0000000000E+00      9.0000000000E-01      1.1000000000E+00       grrech0               1.0000000000E+00      0.0000000000E+00      1          
 rech0000002            log                    factor                1.0000000000E+00      9.0000000000E-01      1.1000000000E+00       grrech0               1.0000000000E+00      0.0000000000E+00      1          
@@ -4236,9 +4242,9 @@ rech2038013            log                    factor                1.0000000000
 rech2038014            log                    factor                1.0000000000E+00      9.0000000000E-01      1.1000000000E+00       grrech2               1.0000000000E+00      0.0000000000E+00      1          
 rech2038015            log                    factor                1.0000000000E+00      9.0000000000E-01      1.1000000000E+00       grrech2               1.0000000000E+00      0.0000000000E+00      1          
 rech2038016            log                    factor                1.0000000000E+00      9.0000000000E-01      1.1000000000E+00       grrech2               1.0000000000E+00      0.0000000000E+00      1          
-rech3_cn               log                    factor                1.0000000000E+00      9.0000000000E-01      1.1000000000E+00       cn                    1.0000000000E+00      0.0000000000E+00      1          
-rech4_cn               log                    factor                1.0000000000E+00      9.0000000000E-01      1.1000000000E+00       cn                    1.0000000000E+00      0.0000000000E+00      1          
-rech5_cn               log                    factor                1.0000000000E+00      9.0000000000E-01      1.1000000000E+00       cn                    1.0000000000E+00      0.0000000000E+00      1          
+rech3_cn               log                    factor                1.0000000000E+00      9.0000000000E-01      1.1000000000E+00       rech3_cn              1.0000000000E+00      0.0000000000E+00      1          
+rech4_cn               log                    factor                1.0000000000E+00      9.0000000000E-01      1.1000000000E+00       rech4_cn              1.0000000000E+00      0.0000000000E+00      1          
+rech5_cn               log                    factor                1.0000000000E+00      9.0000000000E-01      1.1000000000E+00       rech5_cn              1.0000000000E+00      0.0000000000E+00      1          
 sc10000000             log                    factor                1.0000000000E+00      1.0000000000E-01      1.0000000000E+01       grsc10                1.0000000000E+00      0.0000000000E+00      1          
 sc10000001             log                    factor                1.0000000000E+00      1.0000000000E-01      1.0000000000E+01       grsc10                1.0000000000E+00      0.0000000000E+00      1          
 sc10000002             log                    factor                1.0000000000E+00      1.0000000000E-01      1.0000000000E+01       grsc10                1.0000000000E+00      0.0000000000E+00      1          
@@ -4934,31 +4940,31 @@ sc10038013             log                    factor                1.0000000000
 sc10038014             log                    factor                1.0000000000E+00      1.0000000000E-01      1.0000000000E+01       grsc10                1.0000000000E+00      0.0000000000E+00      1          
 sc10038015             log                    factor                1.0000000000E+00      1.0000000000E-01      1.0000000000E+01       grsc10                1.0000000000E+00      0.0000000000E+00      1          
 sc10038016             log                    factor                1.0000000000E+00      1.0000000000E-01      1.0000000000E+01       grsc10                1.0000000000E+00      0.0000000000E+00      1          
-sc11_cn                log                    factor                1.0000000000E+00      1.0000000000E-01      1.0000000000E+01       cn                    1.0000000000E+00      0.0000000000E+00      1
+sc11_cn                log                    factor                1.0000000000E+00      1.0000000000E-01      1.0000000000E+01       sc11_cn               1.0000000000E+00      0.0000000000E+00      1
 * observation groups
-vol_constan          
-hds                  
-flx_stream_          
-vol_wells            
-flx_total            
-flx_percent          
-flx_wells            
 flx_constan          
-vol_percent          
-vol_recharg          
-vol_in-out           
-vol_storage          
-vol_total            
-vol_stream_          
 flx_in-out           
+flx_percent          
 flx_recharg          
 flx_storage          
+flx_stream_          
+flx_total            
+flx_wells            
+hds                  
+vol_constan          
+vol_in-out           
+vol_percent          
+vol_recharg          
+vol_storage          
+vol_stream_          
+vol_total            
+vol_wells            
 * observation data
 flx_constan_19791230  -9.0234060000E+02     1.0000000000E+00       flx_constan          
 flx_constan_19891227  -7.7543870000E+02     1.0000000000E+00       flx_constan          
 flx_constan_19991225  -7.0460300000E+02     1.0000000000E+00       flx_constan          
-flx_in-out_19791230   -3.3354000000E+00     1.0000000000E+00       flx_in-out           
-flx_in-out_19891227   8.2280000000E-01      1.0000000000E+00       flx_in-out           
+flx_in-out_19791230   -3.3359000000E+00     1.0000000000E+00       flx_in-out           
+flx_in-out_19891227   8.2320000000E-01      1.0000000000E+00       flx_in-out           
 flx_in-out_19991225   -6.7920000000E-01     1.0000000000E+00       flx_in-out           
 flx_percent_19791230  -6.0000000000E-02     1.0000000000E+00       flx_percent          
 flx_percent_19891227  2.0000000000E-02      1.0000000000E+00       flx_percent          
@@ -4972,8 +4978,8 @@ flx_storage_19991225  1.1430100000E+03      1.0000000000E+00       flx_storage
 flx_stream__19791230  -3.2006750000E+03     1.0000000000E+00       flx_stream_          
 flx_stream__19891227  -1.9741440000E+03     1.0000000000E+00       flx_stream_          
 flx_stream__19991225  -1.5326870000E+03     1.0000000000E+00       flx_stream_          
-flx_total_19791230    -3.3354490000E+00     1.0000000000E+00       flx_total            
-flx_total_19891227    8.2275390000E-01      1.0000000000E+00       flx_total            
+flx_total_19791230    -3.3359380000E+00     1.0000000000E+00       flx_total            
+flx_total_19891227    8.2324220000E-01      1.0000000000E+00       flx_total            
 flx_total_19991225    -6.7919920000E-01     1.0000000000E+00       flx_total            
 flx_wells_19791230    -1.9051200000E+03     1.0000000000E+00       flx_wells            
 flx_wells_19891227    -2.3814000000E+03     1.0000000000E+00       flx_wells            
@@ -5112,7 +5118,7 @@ hds_00_002_003_001    2.9526485443E+01      1.0000000000E+00       hds
 hds_00_002_003_002    2.8956771851E+01      1.0000000000E+00       hds                  
 hds_00_002_004_000    2.9959480286E+01      1.0000000000E+00       hds                  
 hds_00_002_004_001    2.9255126953E+01      1.0000000000E+00       hds                  
-hds_00_002_004_002    2.8696977615E+01      1.0000000000E+00       hds                  
+hds_00_002_004_002    2.8696979523E+01      1.0000000000E+00       hds                  
 hds_00_002_005_000    2.9601808548E+01      1.0000000000E+00       hds                  
 hds_00_002_005_001    2.8906774521E+01      1.0000000000E+00       hds                  
 hds_00_002_005_002    2.8363777161E+01      1.0000000000E+00       hds                  
@@ -6285,7 +6291,7 @@ hds_00_024_008_001    2.4565868378E+01      1.0000000000E+00       hds
 hds_00_024_008_002    2.3995943069E+01      1.0000000000E+00       hds                  
 hds_00_024_009_000    2.4671216965E+01      1.0000000000E+00       hds                  
 hds_00_024_009_001    2.3920734406E+01      1.0000000000E+00       hds                  
-hds_00_024_009_002    2.3377626419E+01      1.0000000000E+00       hds                  
+hds_00_024_009_002    2.3377628326E+01      1.0000000000E+00       hds                  
 hds_00_024_010_000    2.4075035095E+01      1.0000000000E+00       hds                  
 hds_00_024_010_001    2.3367389679E+01      1.0000000000E+00       hds                  
 hds_00_024_010_002    2.2865650177E+01      1.0000000000E+00       hds                  
@@ -6443,7 +6449,7 @@ hds_00_027_001_000    2.7670837402E+01      1.0000000000E+00       hds
 hds_00_027_001_001    2.6902858734E+01      1.0000000000E+00       hds                  
 hds_00_027_001_002    2.6256792068E+01      1.0000000000E+00       hds                  
 hds_00_027_002_000    2.7501317978E+01      1.0000000000E+00       hds                  
-hds_00_027_002_001    2.6729028702E+01      1.0000000000E+00       hds                  
+hds_00_027_002_001    2.6729030609E+01      1.0000000000E+00       hds                  
 hds_00_027_002_002    2.6083736420E+01      1.0000000000E+00       hds                  
 hds_00_027_003_000    2.7251737595E+01      1.0000000000E+00       hds                  
 hds_00_027_003_001    2.6473535538E+01      1.0000000000E+00       hds                  
@@ -6634,7 +6640,7 @@ hds_00_030_004_002    2.4726232529E+01      1.0000000000E+00       hds
 hds_00_030_005_000    2.5896062851E+01      1.0000000000E+00       hds                  
 hds_00_030_005_001    2.5124711990E+01      1.0000000000E+00       hds                  
 hds_00_030_005_002    2.4502477646E+01      1.0000000000E+00       hds                  
-hds_00_030_006_000    2.5500486374E+01      1.0000000000E+00       hds                  
+hds_00_030_006_000    2.5500488281E+01      1.0000000000E+00       hds                  
 hds_00_030_006_001    2.4729387283E+01      1.0000000000E+00       hds                  
 hds_00_030_006_002    2.4110801697E+01      1.0000000000E+00       hds                  
 hds_00_030_007_000    2.4668230057E+01      1.0000000000E+00       hds                  
@@ -6784,7 +6790,7 @@ hds_00_032_015_002    1.7570861816E+01      1.0000000000E+00       hds
 hds_00_032_016_000    1.7227680206E+01      1.0000000000E+00       hds                  
 hds_00_032_016_001    1.7123720169E+01      1.0000000000E+00       hds                  
 hds_00_032_016_002    1.7081253052E+01      1.0000000000E+00       hds                  
-hds_00_032_017_000    1.7705196381E+01      1.0000000000E+00       hds                  
+hds_00_032_017_000    1.7705198288E+01      1.0000000000E+00       hds                  
 hds_00_032_017_001    1.7474958420E+01      1.0000000000E+00       hds                  
 hds_00_032_017_002    1.7395095825E+01      1.0000000000E+00       hds                  
 hds_00_032_018_000    1.7976428986E+01      1.0000000000E+00       hds                  
@@ -7096,7 +7102,7 @@ hds_00_039_014_002    1.1399999619E+01      1.0000000000E+00       hds
 vol_constan_19791230  -3.2935430000E+06     1.0000000000E+00       vol_constan          
 vol_constan_19891227  -6.1238940000E+06     1.0000000000E+00       vol_constan          
 vol_constan_19991225  -8.6956950000E+06     1.0000000000E+00       vol_constan          
-vol_in-out_19791230   -1.2172000000E+04     1.0000000000E+00       vol_in-out           
+vol_in-out_19791230   -1.2174000000E+04     1.0000000000E+00       vol_in-out           
 vol_in-out_19891227   -9.1680000000E+03     1.0000000000E+00       vol_in-out           
 vol_in-out_19991225   -1.1648000000E+04     1.0000000000E+00       vol_in-out           
 vol_percent_19791230  -6.0000000000E-02     1.0000000000E+00       vol_percent          
@@ -7111,7 +7117,7 @@ vol_storage_19991225  1.0219329000E+07      1.0000000000E+00       vol_storage
 vol_stream__19791230  -1.1682462000E+07     1.0000000000E+00       vol_stream_          
 vol_stream__19891227  -1.8888088000E+07     1.0000000000E+00       vol_stream_          
 vol_stream__19991225  -2.4482396000E+07     1.0000000000E+00       vol_stream_          
-vol_total_19791230    -1.2172000000E+04     1.0000000000E+00       vol_total            
+vol_total_19791230    -1.2174000000E+04     1.0000000000E+00       vol_total            
 vol_total_19891227    -9.1680000000E+03     1.0000000000E+00       vol_total            
 vol_total_19991225    -1.1648000000E+04     1.0000000000E+00       vol_total            
 vol_wells_19791230    -6.9536880000E+06     1.0000000000E+00       vol_wells            
@@ -7120,20 +7126,20 @@ vol_wells_19991225    -2.4337908000E+07     1.0000000000E+00       vol_wells
 * model command line
 python forward_run.py
 * model input/output
-hk0.dat_gr.tpl arr_mlt/hk0.dat_gr
-rech0.dat_gr.tpl arr_mlt/rech0.dat_gr
-rech1.dat_gr.tpl arr_mlt/rech1.dat_gr
-rech2.dat_gr.tpl arr_mlt/rech2.dat_gr
-prst0.dat_gr.tpl arr_mlt/prst0.dat_gr
-rc110.dat_gr.tpl arr_mlt/rc110.dat_gr
-sc10.dat_gr.tpl arr_mlt/sc10.dat_gr
-hk1.dat_cn.tpl arr_mlt/hk1.dat_cn
-rech3.dat_cn.tpl arr_mlt/rech3.dat_cn
-rech4.dat_cn.tpl arr_mlt/rech4.dat_cn
-rech5.dat_cn.tpl arr_mlt/rech5.dat_cn
-prst1.dat_cn.tpl arr_mlt/prst1.dat_cn
-rc111.dat_cn.tpl arr_mlt/rc111.dat_cn
-sc11.dat_cn.tpl arr_mlt/sc11.dat_cn
+hk0.dat_gr.tpl arr_mlt\hk0.dat_gr
+rech0.dat_gr.tpl arr_mlt\rech0.dat_gr
+rech1.dat_gr.tpl arr_mlt\rech1.dat_gr
+rech2.dat_gr.tpl arr_mlt\rech2.dat_gr
+prst0.dat_gr.tpl arr_mlt\prst0.dat_gr
+rc110.dat_gr.tpl arr_mlt\rc110.dat_gr
+sc10.dat_gr.tpl arr_mlt\sc10.dat_gr
+hk1.dat_cn.tpl arr_mlt\hk1.dat_cn
+rech3.dat_cn.tpl arr_mlt\rech3.dat_cn
+rech4.dat_cn.tpl arr_mlt\rech4.dat_cn
+rech5.dat_cn.tpl arr_mlt\rech5.dat_cn
+prst1.dat_cn.tpl arr_mlt\prst1.dat_cn
+rc111.dat_cn.tpl arr_mlt\rc111.dat_cn
+sc11.dat_cn.tpl arr_mlt\sc11.dat_cn
 sfr_seg_pars.dat.tpl sfr_seg_pars.dat
 flux.dat.ins flux.dat
 freyberg.hds.dat.ins freyberg.hds.dat
