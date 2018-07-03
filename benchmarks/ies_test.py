@@ -1240,7 +1240,7 @@ if __name__ == "__main__":
     #test_synth()
     # test_10par_xsec(silent_master=False)
     # test_freyberg()
-    # test_chenoliver()
+    test_chenoliver()
     # tenpar_weight_pareto_test()
     # tenpar_narrow_range_test()
     # test_freyberg_ineq()
