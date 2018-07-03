@@ -1060,6 +1060,15 @@ void IterEnsembleSmoother::sanity_checks()
 	//	warnings.push_back("only one lambda mult to test, no point in using a subset");
 	//	//ppo->set_ies_subset_size(100000000);
 	//}
+
+	string how = pest_scenario.get_pestpp_options().get_ies_subset_how();
+	if ((how != "FIRST") && (how != "LAST") && (how != "RANDOM") && (how != "PHI_BASED"))
+	{
+		ss.str("");
+		ss << "'subset_how' is '" << how << "' but should be 'FIRST','LAST','RANDOM','PHI_BASED'";
+		errors.push_back(ss.str());
+	}
+
 	if ((ppo->get_ies_verbose_level() < 0) || (ppo->get_ies_verbose_level() > 3))
 	{
 		warnings.push_back("ies_verbose_level must be between 0 and 3, resetting to 3");
@@ -1497,7 +1506,8 @@ void IterEnsembleSmoother::initialize()
 	double dec_fac = pest_scenario.get_pestpp_options().get_ies_lambda_dec_fac();
 	message(1, "lambda decrease factor: ", dec_fac);
 	message(1, "max run fail: ", ppo->get_max_run_fail());
-
+	string how = pest_scenario.get_pestpp_options().get_ies_subset_how();
+	message(1, "subset how: ", how);
 	sanity_checks();
 	
 	bool echo = false;
@@ -2524,11 +2534,21 @@ bool IterEnsembleSmoother::solve()
 		vector<string> pe_keep_names, oe_keep_names;
 		vector<string> pe_names = pe.get_real_names(), oe_names = oe.get_real_names();
 		vector<string> org_pe_idxs,org_oe_idxs;
-		for (int i = subset_size; i <pe.shape().first; i++)
+		
+		/*for (int i = subset_size; i <pe.shape().first; i++)
 		{	
 			pe_keep_names.push_back(pe_names[i]);
 			oe_keep_names.push_back(oe_names[i]);
-		}
+		}*/
+		set<string> ssub;
+		for (auto &i : subset_idxs)
+			ssub.emplace(pe_names[i]);
+		for (int i=0;i<pe_names.size();i++)
+			if (ssub.find(pe_names[i]) == ssub.end())
+			{
+				pe_keep_names.push_back(pe_names[i]);
+				oe_keep_names.push_back(oe_names[i]);
+			}
 		message(0, "running remaining realizations for best lambda, scale:", vector<double>({ lam_vals[best_idx],scale_vals[best_idx] }));
 
 		//pe_keep_names and oe_keep_names are names of the remaining reals to eval
@@ -2680,6 +2700,84 @@ void IterEnsembleSmoother::report_and_save()
 }
 
 
+void IterEnsembleSmoother::set_subset_idx(int size)
+{
+	//map<int,int> subset_idx_map;
+	subset_idxs.clear();
+	int nreal_subset = pest_scenario.get_pestpp_options().get_ies_subset_size();
+	if ((!use_subset) || (nreal_subset >= size))
+		return;
+	//int size = pe.shape().first;
+	string how = pest_scenario.get_pestpp_options().get_ies_subset_how();
+	if (how == "FIRST")
+	{
+		for (int i = 0; i < nreal_subset; i++)
+			subset_idxs.push_back(i);
+	}
+	else if (how == "LAST")
+	{
+		
+		for (int i = size - nreal_subset; i < size; i++)
+			subset_idxs.push_back(i);
+	}
+	
+	else if (how == "RANDOM")
+	{
+		std::uniform_int_distribution<int> uni(0, size);
+		for (int i = 0; i < nreal_subset; i++)
+			subset_idxs.push_back(uni(Ensemble::rand_engine));
+	}
+	else if (how == "PHI_BASED")
+	{
+		//sidx needs to be index of realization, not realization number
+		vector<pair<double, int>> phis;
+		//vector<int> sidx;
+		int step;
+		PhiHandler::phiType pt = PhiHandler::phiType::COMPOSITE;
+		map<string, double>* phi_map = ph.get_phi_map(pt);
+		map<string, double>::iterator pi = phi_map->begin(), end = phi_map->end();
+
+		int i = 0;
+		for (pi; pi != end; ++pi)
+		{
+			phis.push_back(make_pair(pi->second, i)); //phival,idx?
+			++i;
+		}
+		sort(phis.begin(), phis.end());
+
+		//include idx for lowest and highest phi reals
+		subset_idxs.push_back(phis[0].second);
+		subset_idxs.push_back(phis[phis.size() - 1].second);//can't get .back() to work with vector<pair<>>
+
+													 //start near middle, work out
+													 //start with mid, moving up and down gives more than enough
+		int mid = phis.size() / 2;
+		step = phis.size() / nreal_subset;
+		for (i = 0; i < nreal_subset; ++i)
+		{
+			//add higher phis first
+			if ((subset_idxs.size() < nreal_subset) && (find(subset_idxs.begin(), subset_idxs.end(), phis[mid + i * step].second) == subset_idxs.end()))
+			{
+				// slopy but otherwise hard to ensure nsubsets and good spread
+				subset_idxs.push_back(phis[mid + i * step].second);
+			}
+			if ((subset_idxs.size() < nreal_subset) && (find(subset_idxs.begin(), subset_idxs.end(), phis[mid - i * step].second) == subset_idxs.end()))
+			{
+				// slopy but otherwise hard to ensure nsubsets and good spread
+				subset_idxs.push_back(phis[mid - i * step].second);
+			}
+		}
+	}
+	else
+	{
+		//throw runtime_error("unkonwn 'subset_how'");
+		throw_ies_error("unknown 'subset_how'");
+	}
+	message(1,"subset idxs:",subset_idxs);
+	return;
+	//return subset_idx_map;
+}
+
 vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<ParameterEnsemble> &pe_lams, vector<double> &lam_vals, vector<double> &scale_vals)
 {
 	ofstream &frec = file_manager.rec_ofstream();
@@ -2687,12 +2785,13 @@ vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<Pa
 	ss << "queuing " << pe_lams.size() << " ensembles";
 	performance_log->log_event(ss.str());
 	run_mgr_ptr->reinitialize();
-	vector<int> subset_idxs;
+	/*vector<int> subset_idxs;
 	if ((use_subset) && (subset_size < pe_lams[0].shape().first))
 	{
 		for (int i = 0; i < subset_size; i++)
 			subset_idxs.push_back(i);
-	}
+	}*/
+	set_subset_idx(pe_lams[0].shape().first);
 	vector<map<int, int>> real_run_ids_vec;
 	//ParameterEnsemble pe_lam;
 	//for (int i=0;i<pe_lams.size();i++)
@@ -2753,9 +2852,22 @@ vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<Pa
 	{
 		ObservationEnsemble _oe = oe;//copy
 		vector<double> rep_vals{ lam_vals[i],scale_vals[i] };
-		if (subset_size < pe_lams[0].shape().first)
-			_oe.keep_rows(subset_idxs);
 		real_run_ids = real_run_ids_vec[i];
+		//if using subset, reset the real_idx in real_run_ids to be just simple counter
+		if (subset_size < pe_lams[0].shape().first)
+		{
+			_oe.keep_rows(subset_idxs);
+			int ireal = 0;
+			map<int, int> temp;
+			for (auto &rri : real_run_ids)
+			{
+				temp[ireal] = rri.second;
+				ireal++;
+			}
+
+			real_run_ids = temp;
+		}
+		
 		try
 		{
 			failed_real_indices = _oe.update_from_runs(real_run_ids, run_mgr_ptr);

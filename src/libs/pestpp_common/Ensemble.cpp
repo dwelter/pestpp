@@ -1509,15 +1509,21 @@ vector<int> ObservationEnsemble::update_from_runs(map<int,int> &real_run_ids, Ru
 	Parameters pars = pest_scenario_ptr->get_ctl_parameters();
 	Observations obs = pest_scenario_ptr->get_ctl_observations();
 	string real_name;
+	int ireal = 0;
 	for (auto &real_run_id : real_run_ids)
 	{
 		if (failed_runs.find(real_run_id.second) != failed_runs.end())
+		{
 			failed_real_idxs.push_back(real_run_id.first);
+			//failed_real_idxs.push_back(ireal);
+		}
+
 		else
 		{
 			run_mgr_ptr->get_run(real_run_id.second, pars, obs);
 			//real_name = real_names[real_run_id.first];
 			update_from_obs(real_run_id.first, obs);
+			//update_from_obs(ireal, obs);
 		}
 	}
 	return failed_real_idxs;

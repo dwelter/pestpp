@@ -384,6 +384,8 @@ public:
 	void set_ies_save_lambda_en(bool _ies_save_lambda_en) { ies_save_lambda_en = _ies_save_lambda_en; }
 	string get_ies_weight_csv() const { return ies_weight_csv; }
 	void set_ies_weight_csv(string _ies_weight_csv) { ies_weight_csv = _ies_weight_csv; }
+	string get_ies_subset_how() const { return ies_subset_how; }
+	void set_ies_subset_how(string _ies_subset_how) { ies_subset_how = _ies_subset_how; }
 
 
 	double get_overdue_giveup_minutes() const { return overdue_giveup_minutes; }
@@ -480,6 +482,7 @@ private:
 	bool ies_save_lambda_en;
 	set<string> passed_args;
 	string ies_weight_csv;
+	string ies_subset_how;
 };
 
 ostream& operator<< (ostream &os, const PestppOptions& val);

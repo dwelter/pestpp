@@ -1216,6 +1216,74 @@ def prep_for_travis(model_d):
     print(pst.model_command)
     pst.write(pst_file)
 
+def tenpar_subset_how_test():
+    model_d = "ies_10par_xsec"
+    test_d = os.path.join(model_d, "test_subset_how")
+    template_d = os.path.join(model_d, "template")
+    pst = pyemu.Pst(os.path.join(template_d, "pest.pst"))
+    num_reals = 10
+    if os.path.exists(test_d):
+        shutil.rmtree(test_d)
+    shutil.copytree(template_d, test_d)
+    pst.pestpp_options = {"ies_num_reals":num_reals}
+    pst.control_data.noptmax = -1
+    pst.write(os.path.join(template_d,"pest_restart.pst"))
+    #pyemu.os_utils.start_slaves(template_d, exe_path, "pest_restart.pst", num_slaves=10,
+    #                            slave_root=model_d, master_dir=test_d, port=4020)
+    pyemu.os_utils.run("{0} {1}".format(exe_path, "pest_restart.pst"), cwd=test_d)
+    pst.pestpp_options["ies_par_en"] = "pest_restart.0.par.csv"
+    pst.pestpp_options["ies_lambda_mults"] = 1.0
+    pst.pestpp_options["lambda_scale_fac"] = 1.0
+    pst.pestpp_options["ies_num_reals"] = num_reals
+    pst.pestpp_options["ies_restart_obs_en"] = "pest_restart.0.obs.csv"
+    pst.control_data.noptmax = 1
+    means = []
+    for how in ["first","last","random","phi_based"]:
+        pst.pestpp_options["ies_subset_how"] = how
+        pst_file = "pest_{0}.pst".format(how)
+        pst.write(os.path.join(test_d,pst_file))
+        pyemu.os_utils.run("{0} {1}".format(exe_path,pst_file),cwd=test_d)
+        df = pd.read_csv(os.path.join(test_d,pst_file.replace(".pst",".phi.composite.csv")))
+        means.append(df.iloc[-1].loc["mean"])
+
+    means = np.array(means)
+    print(means.mean(),means)
+    assert means.mean() == means[0]
+
+    means = []
+    pst.pestpp_options["ies_subset_size"] = 1
+    for how in ["first", "last", "random", "phi_based"]:
+        pst.pestpp_options["ies_subset_how"] = how
+        pst_file = "pest_{0}.pst".format(how)
+        pst.write(os.path.join(test_d, pst_file))
+        pyemu.os_utils.run("{0} {1}".format(exe_path, pst_file), cwd=test_d)
+        df = pd.read_csv(os.path.join(test_d, pst_file.replace(".pst", ".phi.composite.csv")))
+        means.append(df.iloc[-1].loc["mean"])
+
+    means = np.array(means)
+    print(means.mean(), means)
+    assert means.mean() == means[0]
+
+    means = []
+    pst.pestpp_options["ies_subset_size"] = num_reals
+    for how in ["first", "last", "random", "phi_based"]:
+        pst.pestpp_options["ies_subset_how"] = how
+        pst_file = "pest_{0}.pst".format(how)
+        pst.write(os.path.join(test_d, pst_file))
+        pyemu.os_utils.run("{0} {1}".format(exe_path, pst_file), cwd=test_d)
+        df = pd.read_csv(os.path.join(test_d, pst_file.replace(".pst", ".phi.composite.csv")))
+        means.append(df.iloc[-1].loc["mean"])
+
+    means = np.array(means)
+    print(means.mean(), means)
+    assert means.mean() == means[0]
+
+    #for how,df in obs_dfs.items():
+
+
+
+
+
 
 
 if __name__ == "__main__":
@@ -1229,6 +1297,8 @@ if __name__ == "__main__":
     # rebase("ies_freyberg")
     # rebase("ies_10par_xsec")
     # compare_suite("ies_10par_xsec")
+    #rebase("ies_10par_xsec")
+    #compare_suite("ies_10par_xsec")
     # compare_suite("ies_freyberg")
 
     # tenpar_subset_test()
@@ -1246,12 +1316,21 @@ if __name__ == "__main__":
     # test_freyberg_ineq()
     # tenpar_fixed_test()
     #
+    #test_10par_xsec(silent_master=False)
+    #test_freyberg()
+    #test_chenoliver()
+    #tenpar_weight_pareto_test()
+    #compare_pyemu()
+    #tenpar_narrow_range_test()
+    #test_freyberg_ineq()
+    
     # # invest()
     #compare_suite("ies_10par_xsec")
     #compare_suite("ies_freyberg")
     
     #test_kirishima()
 
+   # tenpar_fixed_test()
 
-
+    tenpar_subset_how_test()
     #setup_rosenbrock()
