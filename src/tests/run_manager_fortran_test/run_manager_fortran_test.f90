@@ -21,6 +21,8 @@
     integer rmif_create_serial
     external rmif_create_panther
     integer rmif_create_panther
+    external rmif_err_msg
+    integer rmif_err_msg
     external rmif_initialize
     integer rmif_initialize
     external rmif_reinitialize
@@ -49,6 +51,7 @@
     external rmif_delete
     integer rmif_delete
     
+    character*100 err_msg
     character*20 comline(1)
     character*20 tpl(1)
     character*20 inp(1)
@@ -142,6 +145,13 @@
         pars(1) = pars(1) + pars(1) * 0.2
         err = rmif_add_run(pars, npar, 1, irun)
     end do
+    ! show how to catch error and retrieve the associated error message
+    ! 50 is not a valid model run id so the follow call should fail
+    err = rmif_get_run_status_info(50, istatus, runtime, n_concurrent)
+    if (err.ne.0) then
+        err = rmif_err_msg(err_msg, 100)
+        write(*,*) err_msg
+    end if
     ! perform model runs
     write(*,*) 'Performing model runs...'
     ! set flag to return after 15sec
@@ -213,6 +223,9 @@
     
     err = rmif_delete()
     ! restart run manager
+    ! it is also necesary to resart the slave as they were shut down with the
+    ! previous call to rmif_delete
+    !
      err = rmif_create_panther(storfile, 20,&
             port, 20,&
             rmi_info_file, 20, 2, 1.15, 100.0)
@@ -226,19 +239,19 @@
         end do
     
     
-    !! reinitialize run manager and make another set of runs
-    !err = rmif_reinitialize()
-    !err = rmif_add_run(pars, npar, 1, irun)
+    ! reinitialize run manager, but don't shut it down to make another set of runs
+    err = rmif_reinitialize()
+    err = rmif_add_run(pars, npar, 1, irun)
 
-    !pars(1) = pars(1) + pars(1) * 0.2
-    !err = rmif_add_run(pars, npar, 1, irun)
-    !err = rmif_run()
-    !
-    !err = rmif_get_run(0, pars,npar, obs, nobs)
-    !
-    !err = rmif_get_num_total_runs(n_total_runs)
-    !write(*,*) ''
-    !write(*,*) 'Total number of successful model runs:', n_total_runs
+    pars(1) = pars(1) + pars(1) * 0.2
+    err = rmif_add_run(pars, npar, 1, irun)
+    err = rmif_run()
+    
+    err = rmif_get_run(0, pars,npar, obs, nobs)
+    
+    err = rmif_get_num_total_runs(n_total_runs)
+    write(*,*) ''
+    write(*,*) 'Total number of successful model runs:', n_total_runs
     
     !clean up
     err = rmif_delete()
