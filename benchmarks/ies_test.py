@@ -1790,11 +1790,11 @@ if __name__ == "__main__":
     # tenpar_localizer_test1()
     # csv_tests()
     #tenpar_localizer_test3()
-    freyberg_localizer_test1()
+    #freyberg_localizer_test1()
     #freyberg_localizer_test2()
     #freyberg_localizer_test3()
 
-
+   # tenpar_subset_how_fail_test()
 
     #compare_freyberg_local3()
     # # invest()

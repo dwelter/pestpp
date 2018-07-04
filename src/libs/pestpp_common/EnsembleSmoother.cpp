@@ -3459,17 +3459,23 @@ vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<Pa
 		}
 		
 		//for testing
-		//failed_real_indices.push_back(real_run_ids.size()-1);
+		failed_real_indices.push_back(real_run_ids.size()-1);
 		
 		if (failed_real_indices.size() > 0)
 		{
 			stringstream ss;
 			vector<string> par_real_names = pe.get_real_names();
 			vector<string> obs_real_names = oe.get_real_names();
+			vector<string> failed_par_names, failed_obs_names;
+			string oname, pname;
 			ss << "the following par:obs realization runs failed for lambda,scale " << lam_vals[i] << ',' << scale_vals[i] << "-->";
 			for (auto &i : failed_real_indices)
 			{
-				ss << par_real_names[i] << ":" << obs_real_names[i] << ',';
+				pname = par_real_names[subset_idxs[i]];
+				oname = obs_real_names[subset_idxs[i]];
+				failed_par_names.push_back(pname);
+				failed_obs_names.push_back(oname);
+				ss << pname << ":" << oname << ',';
 			}
 			string s = ss.str();
 			message(1,s);
@@ -3482,8 +3488,10 @@ vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<Pa
 			else
 			{
 				performance_log->log_event("dropping failed realizations");
-				_oe.drop_rows(failed_real_indices);
-				pe_lams[i].drop_rows(failed_real_indices);
+				//_oe.drop_rows(failed_real_indices);
+				//pe_lams[i].drop_rows(failed_real_indices);
+				_oe.drop_rows(failed_obs_names);
+				pe_lams[i].drop_rows(failed_par_names);
 			}
 			
 		}
