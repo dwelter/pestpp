@@ -1864,19 +1864,45 @@ void IterEnsembleSmoother::drop_bad_phi(ParameterEnsemble &_pe, ObservationEnsem
 	//assert(_pe.shape().first == _oe.shape().first);
 	vector<int> idxs = ph.get_idxs_greater_than(pest_scenario.get_pestpp_options().get_ies_bad_phi(), _oe);
 	
+	//for testing
+	//idxs.push_back(0);
+
 	if (idxs.size() > 0)
 	{
+
 		message(0, "droppping realizations as bad: ", idxs.size());
-		vector<string> par_real_names = pe.get_real_names(), obs_real_names = oe.get_real_names();
+
+		vector<string> par_real_names = _pe.get_real_names(), obs_real_names = _oe.get_real_names();
 		stringstream ss;
+		string pname;
+		int pidx;
+		vector<string> full_onames;
+		// if a subset drop, then use the full oe index, otherwise, just use _oe index
+		if (_oe.shape().first != _pe.shape().first)
+		{
+			full_onames = oe.get_real_names();
+		}
+		else
+		{
+			full_onames = _oe.get_real_names();
+		}
+		vector<string> pdrop, odrop;
 		for (auto i : idxs)
-			ss << par_real_names[i] << " : " << obs_real_names[i] << " , ";
+		{
+			//find the index of this i in the full set of obs names - for the case of randomized subsets
+			pidx = find(full_onames.begin(), full_onames.end(), obs_real_names[i]) - full_onames.begin();
+			pname = par_real_names[pidx];
+			ss << pname << " : " << obs_real_names[i] << " , ";
+			pdrop.push_back(pname);
+			odrop.push_back(obs_real_names[i]);
+		}
+
 		string s = "dropping par:obs realizations: "+ ss.str();
 		message(1, s);
 		try
 		{
-			_pe.drop_rows(idxs);
-			_oe.drop_rows(idxs);
+			_pe.drop_rows(pdrop);
+			_oe.drop_rows(odrop);
 		}
 		catch (const exception &e)
 		{
@@ -2533,9 +2559,6 @@ bool IterEnsembleSmoother::solve_new()
 	ObservationEnsemble oe_lam_best;
 	for (int i = 0; i<pe_lams.size(); i++)
 	{
-		//for testing...
-		//pest_scenario.get_pestpp_options_ptr()->set_ies_bad_phi(0.0);
-		//if all runs failed...
 		if (oe_lams[i].shape().first == 0)
 			continue;
 		vector<double> vals({ lam_vals[i],scale_vals[i] });
@@ -2623,6 +2646,10 @@ bool IterEnsembleSmoother::solve_new()
 		org_oe_idxs = remaining_oe_lam.get_real_names();
 		///run
 		vector<int> fails = run_ensemble(remaining_pe_lam, remaining_oe_lam);
+
+		//for testing
+		//fails.push_back(0);
+
 		//if any of the remaining runs failed
 		if (fails.size() == org_pe_idxs.size())
 			throw_ies_error(string("all remaining realizations failed...something is prob wrong"));
@@ -3466,10 +3493,16 @@ vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<Pa
 			stringstream ss;
 			vector<string> par_real_names = pe.get_real_names();
 			vector<string> obs_real_names = oe.get_real_names();
+			vector<string> failed_par_names, failed_obs_names;
+			string oname, pname;
 			ss << "the following par:obs realization runs failed for lambda,scale " << lam_vals[i] << ',' << scale_vals[i] << "-->";
 			for (auto &i : failed_real_indices)
 			{
-				ss << par_real_names[i] << ":" << obs_real_names[i] << ',';
+				pname = par_real_names[subset_idxs[i]];
+				oname = obs_real_names[subset_idxs[i]];
+				failed_par_names.push_back(pname);
+				failed_obs_names.push_back(oname);
+				ss << pname << ":" << oname << ',';
 			}
 			string s = ss.str();
 			message(1,s);
@@ -3482,8 +3515,10 @@ vector<ObservationEnsemble> IterEnsembleSmoother::run_lambda_ensembles(vector<Pa
 			else
 			{
 				performance_log->log_event("dropping failed realizations");
-				_oe.drop_rows(failed_real_indices);
-				pe_lams[i].drop_rows(failed_real_indices);
+				//_oe.drop_rows(failed_real_indices);
+				//pe_lams[i].drop_rows(failed_real_indices);
+				_oe.drop_rows(failed_obs_names);
+				pe_lams[i].drop_rows(failed_par_names);
 			}
 			
 		}
