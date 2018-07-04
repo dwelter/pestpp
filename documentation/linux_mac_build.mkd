@@ -1,0 +1,64 @@
+﻿Instructions for Compiling PEST++ on Linux and MacOS
+====================================================
+
+Last updated : 12/10/2015
+
+Introduction
+------------
+The Windows version of PEST++ supports the serial, YAMR and GENIE run managers,
+however GENIE is not available under Linux so the Linux version of PEST++
+only supports the serial and YAMR run managers.  The PEST++ input instructions
+located at [`http://www.inversemodeler.org/downloads/pest++_input.pdf']
+provides a quick summary of the run mangers as well as the command line
+arguments necessary to invoke them. 
+
+Dependencies:
+
+1. gcc, g++ and gfortran 6.2.0 or newer:  PEST++ relies on some newer features
+   of C++11 standard which are only supported in these newer releases.
+
+2. blas
+
+3. lapack
+
+
+Instructions to build PEST++ on Linux
+-------------------------------------
+1. In the ./src directory execute the following command to delete any files
+   associated with a previous build:
+
+      make  -f  makefile_linux clean
+
+2. Build PEST++ in the ./src directory using the following command:
+
+      make  -f  makefile_linux
+
+This creates the PEST++ executables:
+
+      ./programs/pestpp-pso/psopp
+      ./programs/gsa/gsa
+      ./programs/pest++/pestpp
+
+
+Instructions to build PEST++ on MacOS
+-------------------------------------
+Building PEST++ on mac is very similar to building on Linux: GCC 5 or greater
+with associated GFORTRAN.  However, since mac discourages static linking,
+a slightly different makefile (makefile_macports) is needed.  
+
+The easiest way to get going on a mac is to use macports
+(https://www.macports.org/)  to install GCC 5:
+
+    >>> sudo port install gcc5 +gfortran
+
+This will get everything you need.  Then it is as simple as:
+
+    >>> make –f makefile_macports clean
+    >>> make –f makefile_macports
+
+This will clean and then build PEST++ and yield an app named pestpp.  The key
+to 'makefile_macports' is pointing to the location of the GCC (and GFORTRAN)
+libraries.  For GCC5 on MAC OSX 10.10.4, the libraries are located in
+/opt/local/lib/gcc5.  If this is different on your machine, you will need to
+replace all the occurrences of /opt/local/lib/gcc5 with the correct location of
+the GCC libraries.  
