@@ -73,6 +73,8 @@ public:
 	void set_pest_scenario(Pest *_pest_scenario) { pest_scenario_ptr = _pest_scenario; }
 	void set_real_names(vector<string> &_real_names);
 
+	void check_for_dups();
+
 	void draw(int num_reals, Covariance cov, Transformable &tran, const vector<string> &draw_names, const map<string,vector<string>> &grouper, PerformanceLog *plog, int level);
 	~Ensemble();
 protected:
@@ -101,7 +103,7 @@ public:
 	*/
 	ParameterEnsemble(Pest *_pest_scenario_ptr);
 	ParameterEnsemble() { ; }
-	
+	ParameterEnsemble zeros_like();
 	//ParameterEnsemble get_new(const vector<string> &_real_names, const vector<string> &_var_names);
 
 	//void from_csv(string file_name,const vector<string> &ordered_names);

@@ -188,6 +188,7 @@ public:
 	int get_nnz_obs_and_reg() const;
 	vector<string> get_groups();
 	void reset_group_weights(string &group, double val);
+	void scale_group_weights(string &group, double scale_val);
 
 };
 
@@ -236,6 +237,7 @@ public:
 	int get_max_reg_iter()const { return max_reg_iter; }
 	const vector<double>& get_base_lambda_vec() const { return base_lambda_vec; }
 	const vector<double>& get_lambda_scale_vec() const { return lambda_scale_vec; }
+	void set_lambda_scale_vec(vector<double> sv) {lambda_scale_vec = sv; }
 	bool get_iter_summary_flag() const { return iter_summary_flag; }
 	bool get_der_forgive() const { return der_forgive; }
 	GLOBAL_OPT get_global_opt() const { return global_opt; }
@@ -263,6 +265,8 @@ public:
 	vector<string> get_prediction_names()const { return prediction_names; }
 	void set_parcov_filename(string _filename) { parcov_filename = _filename; }
 	string get_parcov_filename()const { return parcov_filename; }
+	void set_obscov_filename(string _filename) { obscov_filename = _filename; }
+	string get_obscov_filename()const { return obscov_filename; }
 	void set_basejac_filename(string _filename) { basejac_filename = _filename; }
 	string get_basejac_filename()const { return basejac_filename; }
 	double get_overdue_reched_fac()const { return overdue_reched_fac; }
@@ -322,6 +326,11 @@ public:
 	void set_opt_recalc_fosm_every(int _every) { opt_recalc_fosm_every = _every; }
 	double get_opt_iter_derinc_fac() const { return opt_iter_derinc_fac; }
 	void set_opt_iter_derinc_fac(double _opt_iter_derinc_fac) { opt_iter_derinc_fac = _opt_iter_derinc_fac; }
+	bool get_opt_include_bnd_pi()const { return opt_include_bnd_pi; }
+	void set_opt_include_bnd_pi(bool _include_bnd_pi) { opt_include_bnd_pi = _include_bnd_pi; }
+	bool get_opt_std_weights()const { return opt_std_weights; }
+	void set_opt_std_weights(bool _opt_std_weights) { opt_std_weights = _opt_std_weights; }
+
 
 
 	string get_ies_par_csv()const { return ies_par_csv; }
@@ -354,8 +363,8 @@ public:
 	void set_ies_use_empirical_prior(bool _ies_use_empirical_prior) { ies_use_empirical_prior = _ies_use_empirical_prior; }
 	bool get_ies_group_draws() const { return ies_group_draws; }
 	void set_ies_group_draws(bool _ies_group_draws) { ies_group_draws = _ies_group_draws; }
-	bool get_ies_num_reals_passed() const { return ies_num_reals_passed; }
-	void set_ies_num_reals_passed(bool _ies_num_reals_passed) { ies_num_reals_passed = _ies_num_reals_passed; }
+	//bool get_ies_num_reals_passed() const { return ies_num_reals_passed; }
+	//void set_ies_num_reals_passed(bool _ies_num_reals_passed) { ies_num_reals_passed = _ies_num_reals_passed; }
 	bool get_ies_enforce_bounds() const { return ies_enforce_bounds; }
 	void set_ies_enforce_bounds(bool _ies_enforce_bounds) { ies_enforce_bounds = _ies_enforce_bounds; }
 
@@ -373,6 +382,19 @@ public:
 	void set_ies_lambda_dec_fac(double _dec_fac) { ies_lambda_dec_fac = _dec_fac; }
 	bool get_ies_save_lambda_en() const { return ies_save_lambda_en; }
 	void set_ies_save_lambda_en(bool _ies_save_lambda_en) { ies_save_lambda_en = _ies_save_lambda_en; }
+	string get_ies_weight_csv() const { return ies_weight_csv; }
+	void set_ies_weight_csv(string _ies_weight_csv) { ies_weight_csv = _ies_weight_csv; }
+	string get_ies_subset_how() const { return ies_subset_how; }
+	void set_ies_subset_how(string _ies_subset_how) { ies_subset_how = _ies_subset_how; }
+
+
+	double get_overdue_giveup_minutes() const { return overdue_giveup_minutes; }
+	void set_overdue_giveup_minutes(double overdue_minutes) { overdue_giveup_minutes = overdue_minutes; }
+
+
+	set<string> get_passed_args() const { return passed_args; }
+	
+
 
 private:
 	int n_iter_base;
@@ -393,9 +415,11 @@ private:
 	bool uncert;
 	vector<string> prediction_names;
 	string parcov_filename;
+	string obscov_filename;
 	string basejac_filename;
 	double overdue_reched_fac;
 	double overdue_giveup_fac;
+	double overdue_giveup_minutes;
 	string condor_submit_file;
 	double reg_frac;
 
@@ -429,6 +453,8 @@ private:
 	double opt_iter_tol;
 	int opt_recalc_fosm_every;
 	double opt_iter_derinc_fac;
+	bool opt_include_bnd_pi;
+	bool opt_std_weights;
 
 	int ies_subset_size;
 	string ies_par_csv;
@@ -445,7 +471,7 @@ private:
 	bool ies_include_base;
 	bool ies_use_empirical_prior;
 	bool ies_group_draws;
-	bool ies_num_reals_passed;
+	//bool ies_num_reals_passed;
 	bool ies_enforce_bounds;
 	double par_sigma_range;
 	bool ies_save_binary;
@@ -454,7 +480,11 @@ private:
 	double ies_lambda_inc_fac;
 	double ies_lambda_dec_fac;
 	bool ies_save_lambda_en;
+	set<string> passed_args;
+	string ies_weight_csv;
+	string ies_subset_how;
 };
+
 ostream& operator<< (ostream &os, const PestppOptions& val);
 ostream& operator<< (ostream &os, const ObservationInfo& val);
 #endif  /* PEST_DATAS_STRUCTS_H_ */

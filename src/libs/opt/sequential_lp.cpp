@@ -18,7 +18,15 @@ sequentialLP::sequentialLP(Pest &_pest_scenario, RunManagerAbstract* _run_mgr_pt
 	Covariance &_parcov, FileManager* _file_mgr, OutputFileWriter _of_wr) : pest_scenario(_pest_scenario), run_mgr_ptr(_run_mgr_ptr),
 	parcov(_parcov), file_mgr_ptr(_file_mgr),jco(*_file_mgr,_of_wr), of_wr(_of_wr)
 {
-	initialize_and_check();
+	try
+	{
+		initialize_and_check();
+	}
+	catch (const runtime_error& error)
+	{
+		cout << "error initializing sequentialLP process: " << error.what() << endl;
+		exit(1);
+	}
 }
 
 sequentialLP::~sequentialLP()
@@ -61,7 +69,7 @@ vector<double> sequentialLP::get_constraint_residual_vec()
 	if (use_chance)
 		return get_constraint_residual_vec(constraints_fosm);
 	else
-		return get_constraint_residual_vec(constraints_sim_initial);
+		return get_constraint_residual_vec(constraints_sim);
 }
 
 vector<double> sequentialLP::get_constraint_residual_vec(Observations &sim_vals)
@@ -133,41 +141,15 @@ void sequentialLP::initial_report()
 	f_rec << endl << endl << "  ---  decision variables active in SLP  ---  " << endl;
 	map<string, double>::iterator end = obj_func_coef_map.end();
 	vector<string> missing;
-	f_rec << setw(20) << left << "name" << setw(25) << "obj func coefficient" << endl;
-
-
-	
-	for (auto &name : ctl_ord_dec_var_names)
+	if (obj_func_coef_map.size() == 0)
+		f_rec << "objective function coefficients defined by observation: " << pest_scenario.get_pestpp_options().get_opt_obj_func() << endl;
+	else
 	{
-		f_rec << setw(20) << left << name;
-		if (obj_func_coef_map.find(name) != end)
-		{
-			f_rec << setw(25) << obj_func_coef_map.at(name) << endl;
-		}
-		else
-		{
-			f_rec << setw(25) << "not listed" << endl;
-			missing.push_back(name);
-		}	
-	}
-	obj_init = 0.0;
-	double dv_val;
-	for (auto &p : ctl_ord_dec_var_names)
-	{
-		obj_init += all_pars_and_dec_vars_initial[p] * obj_func_coef_map[p];
-	}
-	f_rec << endl <<  "  ---  initial objective function value (using initial dec var values): " << obj_init << endl <<endl ;
-	cout << endl <<  "  ---  initial objective function value (using initial dec var values): " << obj_init << endl << endl;
-	if (missing.size() > 0)
-	{
-		f_rec << endl << endl << "WARNING: the following decision variables have '0.0' objective function coef:" << endl;
-		cout << endl << endl << "WARNING: the following decision variables have '0.0' objective function coef:" << endl;
+		f_rec << "  ---  objective function coefficients  ---  " << endl;
+		obj_init = obj_func_report();
+		f_rec << endl << "  ---  objective function value (using initial dec var values): " << obj_init << endl << endl;
+		cout << endl << "  ---  objective function value (using initial dec var values): " << obj_init << endl << endl;
 
-		for (auto &name : missing)
-		{
-			f_rec << "    " << name << endl;
-			f_rec << "    " << name << endl;
-		}
 	}
 	f_rec << " note: bound and initial value info reported in 'parameter data' section" << endl << endl;
 
@@ -228,6 +210,46 @@ void sequentialLP::initial_report()
 		}
 	}
 	return;
+}
+
+
+double sequentialLP::obj_func_report()
+{
+	vector<string> missing;
+	ofstream &f_rec = file_mgr_ptr->rec_ofstream();
+	map<string, double>::iterator end = obj_func_coef_map.end();
+	f_rec << setw(20) << left << "name" << setw(25) << "obj func coefficient" << endl;
+	for (auto &name : ctl_ord_dec_var_names)
+	{
+		f_rec << setw(20) << left << name;
+		if (obj_func_coef_map.find(name) != end)
+		{
+			f_rec << setw(25) << obj_func_coef_map.at(name) << endl;
+		}
+		else
+		{
+			f_rec << setw(25) << "not listed" << endl;
+			missing.push_back(name);
+		}
+	}
+	double obj = 0.0;
+	for (auto &p : ctl_ord_dec_var_names)
+	{
+		obj += all_pars_and_dec_vars_initial[p] * obj_func_coef_map[p];
+	}
+	if (missing.size() > 0)
+	{
+		f_rec << endl << endl << "WARNING: the following decision variables have '0.0' objective function coef:" << endl;
+		cout << endl << endl << "WARNING: the following decision variables have '0.0' objective function coef:" << endl;
+
+		for (auto &name : missing)
+		{
+			f_rec << "    " << name << endl;
+			f_rec << "    " << name << endl;
+		}
+	}
+	return obj;
+
 }
 
 void sequentialLP::presolve_fosm_report()
@@ -375,6 +397,7 @@ void sequentialLP::postsolve_constraint_report(Observations &upgrade_obs,Paramet
 	ss << slp_iter << ".rei";
 	of_wr.write_opt_constraint_rei(file_mgr_ptr->open_ofile_ext(ss.str()), slp_iter, upgrade_pars, 
 		pest_scenario.get_ctl_observations(), upgrade_obs);
+	file_mgr_ptr->close_file(ss.str());
 	if (use_chance)
 	{
 		f_rec << "  ---  note: residual file " << ss.str() << " reports the simulated" << endl;
@@ -464,9 +487,9 @@ pair<double,double> sequentialLP::postsolve_decision_var_report(Parameters &upgr
 		status = model.getColumnStatus(i);
 		obj_coef = ctl_ord_obj_func_coefs[i];
 		init_val = all_pars_and_dec_vars_initial[name];
-		cur_val = all_pars_and_dec_vars[name] + init_val;
+		cur_val = all_pars_and_dec_vars[name];
 		
-		new_val = upgrade_pars[name] + init_val;
+		new_val = upgrade_pars[name];
 		actual_pars.update_rec(name, new_val);
 		f_rec << setw(20) << left << name;
 		f_rec << setw(15) << right << cur_val;
@@ -484,6 +507,9 @@ pair<double,double> sequentialLP::postsolve_decision_var_report(Parameters &upgr
 	ss << slp_iter << ".par";
 	
 	of_wr.write_par(file_mgr_ptr->open_ofile_ext(ss.str()),actual_pars,*par_trans.get_offset_ptr(),*par_trans.get_scale_ptr());
+	file_mgr_ptr->close_file(ss.str());
+	of_wr.write_par(file_mgr_ptr->open_ofile_ext("par"), actual_pars, *par_trans.get_offset_ptr(), *par_trans.get_scale_ptr());
+	file_mgr_ptr->close_file("par");
 	return pair<double,double>(cur_obj,new_obj);
 }
 
@@ -606,6 +632,33 @@ void sequentialLP::initialize_and_check()
 	if (problem_trans.size() > 0)
 		throw_sequentialLP_error("the following decision variables don't have 'none' type parameter transformation: ", problem_trans);
 
+	if (pest_scenario.get_pestpp_options().get_opt_include_bnd_pi())
+	{
+		PriorInformation *pi_ptr = pest_scenario.get_prior_info_ptr();
+		ParameterInfo par_info = pest_scenario.get_ctl_parameter_info();
+		stringstream ss;
+		string s;
+		for (auto &dname : ctl_ord_dec_var_names)
+		{
+			ss.str("");
+			ss << "_lb_" << dname << " 1.0 * " << dname << " = " << par_info.get_parameter_rec_ptr(dname)->lbnd << " 1.0 greater_pi";
+			pi_ptr->AddRecord(pest_utils::upper_cp(ss.str()));
+			ss.str("");
+			ss << "_LB_" << pest_utils::upper_cp(dname);
+			pest_scenario.get_ctl_ordered_pi_names_ptr()->push_back(ss.str());
+			ss.str("");
+			ss << "_ub_" << dname << " 1.0 * " << dname << " = " << par_info.get_parameter_rec_ptr(dname)->ubnd << " 1.0 less_pi";
+			pi_ptr->AddRecord(pest_utils::upper_cp(ss.str()));
+			ss.str("");
+			ss << "_UB_" << pest_utils::upper_cp(dname);
+			pest_scenario.get_ctl_ordered_pi_names_ptr()->push_back(ss.str());
+			ss.str("");
+
+		}
+		pest_scenario.get_ctl_ordered_obs_group_names_ptr()->push_back("GREATER_PI");
+		pest_scenario.get_ctl_ordered_obs_group_names_ptr()->push_back("LESS_PI");
+	}
+
 	//make sure all decision variables have an initial value of zero
 	//jwhite 10june2017 - don't need this.  GWM accounts for base pumping in streamflow constraints
 	//but here we leave it up to the user to make sure stream flow depletion constraints are 
@@ -618,7 +671,7 @@ void sequentialLP::initialize_and_check()
 	//	throw_sequentialLP_error("the following decision variables have non-zero initial values", problem_vars);
 
 	//set the decision var lower and upper bound arrays
-	dec_var_lb = new double[num_dec_vars()];
+	/*dec_var_lb = new double[num_dec_vars()];
 	dec_var_ub = new double[num_dec_vars()];
 	Parameters parlbnd = pest_scenario.get_ctl_parameter_info().get_low_bnd(ctl_ord_dec_var_names);
 	Parameters parubnd = pest_scenario.get_ctl_parameter_info().get_up_bnd(ctl_ord_dec_var_names);
@@ -626,7 +679,7 @@ void sequentialLP::initialize_and_check()
 	{
 		dec_var_lb[i] = parlbnd.get_rec(ctl_ord_dec_var_names[i]);
 		dec_var_ub[i] = parubnd.get_rec(ctl_ord_dec_var_names[i]);
-	}
+	}*/
 
 
 
@@ -805,54 +858,7 @@ void sequentialLP::initialize_and_check()
 	
 
 
-	//--------------------------------
-	//  ---  objective function  ---  
-	//--------------------------------
-
-	//initialize the objective function
-	obj_func_str = pest_scenario.get_pestpp_options().get_opt_obj_func();
-	obj_sense = (pest_scenario.get_pestpp_options().get_opt_direction() == 1) ? "minimize" : "maximize";
-
-	if (obj_func_str.size() == 0)
-	{
-		f_rec << " warning: no ++opt_objective_function-->forming a generic objective function (1.0 coef for each decision var)" << endl;
-		for (auto &name : ctl_ord_dec_var_names)
-			obj_func_coef_map[name] = 1.0;
-	}
-	else
-	{
-		//check if the obj_str is an observation
-		if (pest_scenario.get_ctl_observations().find(obj_func_str) != pest_scenario.get_ctl_observations().end())
-		{
-			throw_sequentialLP_error("observation-based objective function not implemented");
-		}
-		//or if it is a prior info equation
-		else if (pest_scenario.get_prior_info().find(obj_func_str) != pest_scenario.get_prior_info().end())
-		{
-			obj_func_coef_map = pest_scenario.get_prior_info().get_pi_rec_ptr(obj_func_str).get_atom_factors();
-			//throw_sequentialLP_error("prior-information-based objective function not implemented");
-		}
-		else
-		{
-			//check if this obj_str is a filename
-			ifstream if_obj(obj_func_str);
-			if (!if_obj.good())
-				throw_sequentialLP_error("unrecognized ++opt_objective_function arg: " + obj_func_str);
-			else
-				obj_func_coef_map = pest_utils::read_twocol_ascii_to_map(obj_func_str);
-		}
-	}
-
-	//check that all obj_coefs are decsision vars
-	vector<string> missing_vars;
-	for (auto &coef : obj_func_coef_map)
-		if (find(ctl_ord_dec_var_names.begin(), ctl_ord_dec_var_names.end(), coef.first) == ctl_ord_dec_var_names.end())
-			missing_vars.push_back(coef.first);
-	if (missing_vars.size() > 0)
-		throw_sequentialLP_error("the following objective function components are not decision variables: ", missing_vars);
-
 	
-
 
 
 	//------------------------------------------
@@ -862,6 +868,8 @@ void sequentialLP::initialize_and_check()
 	if (risk != 0.5)
 	{
 		use_chance = true;
+		std_weights = pest_scenario.get_pestpp_options().get_opt_std_weights();
+
 		//make sure risk value is valid
 		if ((risk > 1.0) || (risk < 0.0))
 			throw_sequentialLP_error("++opt_risk parameter must between 0.0 and 1.0");
@@ -880,72 +888,167 @@ void sequentialLP::initialize_and_check()
 
 	    probit_val = get_probit();
 
-
-		//make sure there is at least one non-decision var adjustable parameter		
-		vector<string>::iterator start = ctl_ord_dec_var_names.begin();
-		vector<string>::iterator end = ctl_ord_dec_var_names.end();
-		for (auto &name : pest_scenario.get_ctl_ordered_par_names())
+		if (std_weights)
 		{
-			//if this parameter is not a decision var
-			if (find(start, end, name) == end)
+			double std, var;
+			cout << "++opt_std_weights = True, using weights as chance constraint uncertainty" << endl;
+			f_rec << "++opt_std_weights = True, using the following weights as prior and posterior chance constraint uncertainty: " << endl;
+			f_rec << setw(25) << "model-based constraint" << setw(15) << "std (weight)" << setw(15) << "variance" << endl;
+			for (auto &cname : ctl_ord_obs_constraint_names)
 			{
-				ParameterRec::TRAN_TYPE tt = pest_scenario.get_ctl_parameter_info().get_parameter_rec_ptr(name)->tranform_type;
-				if ((tt == ParameterRec::TRAN_TYPE::LOG) || (tt == ParameterRec::TRAN_TYPE::NONE))
-					adj_par_names.push_back(name);
+				std = pest_scenario.get_observation_info_ptr()->get_weight(cname);
+				var = std * std;
+				f_rec << setw(25) << cname << setw(15) << std << setw(15) << var << endl;
+				prior_const_var[cname] = var;
+				post_const_var[cname] = var;
+
+
 			}
 		}
-		if (num_adj_pars() == 0)
-			throw_sequentialLP_error("++opt_risk != 0.5, but no adjustable parameters found in control file");
-
-		//look for non-zero weighted obs
-		start = ctl_ord_obs_constraint_names.begin();
-		end = ctl_ord_obs_constraint_names.end();
-		for (auto &name : pest_scenario.get_ctl_ordered_obs_names())
-		{
-			if (find(start, end, name) == end)
-			{
-				if (pest_scenario.get_ctl_observation_info().get_observation_rec_ptr(name)->weight > 0.0)
-					nz_obs_names.push_back(name);
-			}
-		}
-
-		
-		string parcov_filename = pest_scenario.get_pestpp_options().get_parcov_filename();
-		//build the adjustable parameter parcov
-		//from filename
-
-		if (parcov_filename.size() > 0)
-		{
-			//throw_sequentialLP_error("parcov from filename not implemented");
-			Covariance temp_parcov;
-			temp_parcov.from_ascii(parcov_filename);
-			//check that all adj par names in temp_parcov
-			vector<string> temp_names = temp_parcov.get_col_names();
-			start = temp_names.begin();
-			end = temp_names.end();
-			vector<string> missing;
-			for (auto &name : adj_par_names)
-				if (find(start, end, name) == end)
-					missing.push_back(name);
-			if (missing.size() > 0)
-				throw_sequentialLP_error("the following adjustable parameters were not found in the ++parcov_filename covaraince matrix: ", missing);
-
-			parcov = temp_parcov.get(adj_par_names);
-
-		}
-		//from parameter bounds
 		else
 		{
-			parcov.from_parameter_bounds(adj_par_names,pest_scenario.get_ctl_parameter_info());
-		}
+			//make sure there is at least one non-decision var adjustable parameter		
+			vector<string>::iterator start = ctl_ord_dec_var_names.begin();
+			vector<string>::iterator end = ctl_ord_dec_var_names.end();
+			for (auto &name : pest_scenario.get_ctl_ordered_par_names())
+			{
+				//if this parameter is not a decision var
+				if (find(start, end, name) == end)
+				{
+					ParameterRec::TRAN_TYPE tt = pest_scenario.get_ctl_parameter_info().get_parameter_rec_ptr(name)->tranform_type;
+					if ((tt == ParameterRec::TRAN_TYPE::LOG) || (tt == ParameterRec::TRAN_TYPE::NONE))
+						adj_par_names.push_back(name);
+				}
+			}
+			if (num_adj_pars() == 0)
+				throw_sequentialLP_error("++opt_risk != 0.5, but no adjustable parameters found in control file");
 
-		//build the nz_obs obs_cov
-		if (num_nz_obs() != 0)
-			obscov.from_observation_weights(nz_obs_names, pest_scenario.get_ctl_observation_info(), vector<string>(), null_prior);
-		
+			//look for non-zero weighted obs
+			start = ctl_ord_obs_constraint_names.begin();
+			end = ctl_ord_obs_constraint_names.end();
+			for (auto &name : pest_scenario.get_ctl_ordered_obs_names())
+			{
+				if (find(start, end, name) == end)
+				{
+					if (pest_scenario.get_ctl_observation_info().get_observation_rec_ptr(name)->weight > 0.0)
+						nz_obs_names.push_back(name);
+				}
+			}
+
+
+			//string parcov_filename = pest_scenario.get_pestpp_options().get_parcov_filename();
+			////build the adjustable parameter parcov
+			////from filename
+
+			//if (parcov_filename.size() > 0)
+			//{
+			//	//throw_sequentialLP_error("parcov from filename not implemented");
+			//	Covariance temp_parcov ;
+			//	temp_parcov.from_ascii(parcov_filename);
+			//	//check that all adj par names in temp_parcov
+			//	vector<string> temp_names = temp_parcov.get_col_names();
+			//	start = temp_names.begin();
+			//	end = temp_names.end();
+			//	vector<string> missing;
+			//	for (auto &name : adj_par_names)
+			//		if (find(start, end, name) == end)
+			//			missing.push_back(name);
+			//	if (missing.size() > 0)
+			//		throw_sequentialLP_error("the following adjustable parameters were not found in the ++parcov_filename covaraince matrix: ", missing);
+
+			//	parcov = temp_parcov.get(adj_par_names);
+
+			//}
+			////from parameter bounds
+			//else
+			//{
+			//	parcov.from_parameter_bounds(adj_par_names, pest_scenario.get_ctl_parameter_info());
+			//}
+			vector<string> drop;
+			set<string> sadj(adj_par_names.begin(), adj_par_names.end());
+			for (auto &n : parcov.get_row_names())
+			{
+				if (sadj.find(n) == sadj.end())
+					drop.push_back(n);
+			}
+			parcov.drop(drop);
+
+
+			//build the nz_obs obs_cov
+			if (num_nz_obs() != 0)
+				obscov.from_observation_weights(nz_obs_names, pest_scenario.get_ctl_observation_info(), vector<string>(), null_prior);
+		}
 	}
 	else use_chance = false;
 	
+
+	//--------------------------------
+	//  ---  objective function  ---  
+	//--------------------------------
+
+	//initialize the objective function
+	obj_func_str = pest_scenario.get_pestpp_options().get_opt_obj_func();
+	obj_sense = (pest_scenario.get_pestpp_options().get_opt_direction() == 1) ? "minimize" : "maximize";
+
+
+	//check if the obj_str is an observation
+	use_obj_obs = false;
+	if (pest_scenario.get_ctl_observations().find(obj_func_str) != pest_scenario.get_ctl_observations().end())
+	{
+		use_obj_obs = true;
+		obj_obs = obj_func_str;
+		//check
+		set<string> names(ctl_ord_obs_constraint_names.begin(), ctl_ord_obs_constraint_names.end());
+		if (names.find(obj_obs) != names.end())
+		{
+			throw runtime_error("objective function obs is a constraint, #sad");
+		}
+		names.clear();
+		names.insert(nz_obs_names.begin(),nz_obs_names.end());
+		if (names.find(obj_obs) != names.end())
+		{
+			throw runtime_error("objective function obs has non-zero weight and chance constraints are active");
+		}
+
+	}
+
+	else
+	{
+		if (obj_func_str.size() == 0)
+		{
+			f_rec << " warning: no ++opt_objective_function-->forming a generic objective function (1.0 coef for each decision var)" << endl;
+			for (auto &name : ctl_ord_dec_var_names)
+				obj_func_coef_map[name] = 1.0;
+		}
+
+		//or if it is a prior info equation
+		else if (pest_scenario.get_prior_info().find(obj_func_str) != pest_scenario.get_prior_info().end())
+		{
+			obj_func_coef_map = pest_scenario.get_prior_info().get_pi_rec_ptr(obj_func_str).get_atom_factors();
+			//throw_sequentialLP_error("prior-information-based objective function not implemented");
+		}
+		else
+		{
+			//check if this obj_str is a filename
+			ifstream if_obj(obj_func_str);
+			if (!if_obj.good())
+				throw_sequentialLP_error("unrecognized ++opt_objective_function arg: " + obj_func_str);
+			else
+				obj_func_coef_map = pest_utils::read_twocol_ascii_to_map(obj_func_str);
+		}
+
+
+		//check that all obj_coefs are decsision vars
+		vector<string> missing_vars;
+		for (auto &coef : obj_func_coef_map)
+			if (find(ctl_ord_dec_var_names.begin(), ctl_ord_dec_var_names.end(), coef.first) == ctl_ord_dec_var_names.end())
+				missing_vars.push_back(coef.first);
+		if (missing_vars.size() > 0)
+			throw_sequentialLP_error("the following objective function components are not decision variables: ", missing_vars);
+
+	}
+
+
 	jco.set_base_numeric_pars(all_pars_and_dec_vars);
 	jco.set_base_sim_obs(pest_scenario.get_ctl_observations());
 	if (pest_scenario.get_pestpp_options().get_opt_coin_log())
@@ -957,50 +1060,51 @@ void sequentialLP::initialize_and_check()
 void sequentialLP::calc_chance_constraint_offsets()
 {
 	ofstream & f_rec = file_mgr_ptr->rec_ofstream();
-	if ((slp_iter != 1) && ((slp_iter+1) % pest_scenario.get_pestpp_options().get_opt_recalc_fosm_every() != 0))
+	/*if ((slp_iter != 1) && ((slp_iter+1) % pest_scenario.get_pestpp_options().get_opt_recalc_fosm_every() != 0))
 	{
 		
 		f_rec << endl << "  ---  reusing fosm offsets from previous iteration  ---  " << endl;
 		cout << endl << "  ---  reusing fosm offsets from previous iteration  ---  " << endl;
 		return;
-	}
+	}*/
 	cout << "  ---  calculating FOSM-based chance constraint components  ---  " << endl;
 	f_rec << "  ---  calculating FOSM-based chance constraint components  ---  " << endl;
 	prior_constraint_offset.clear();
 	prior_constraint_stdev.clear();
 	post_constraint_offset.clear();
 	post_constraint_stdev.clear();
-	//the rows of the fosm jacobian include nonzero weight obs (for schur comp) 
-	//plus the names of the names of constraints, which get treated as forecasts
-	vector<string> fosm_row_names(nz_obs_names);
-	fosm_row_names.insert(fosm_row_names.end(), ctl_ord_obs_constraint_names.begin(), ctl_ord_obs_constraint_names.end());
-	
-	//extract the part of the full jco we need for fosm
-	Eigen::SparseMatrix<double> fosm_mat = jco.get_matrix(fosm_row_names, adj_par_names);
-		
-	Mat fosm_jco(fosm_row_names,adj_par_names,fosm_mat);
-	
-	//create a linear object
-	Logger logger(file_mgr_ptr->get_ofstream("pfm"), false);
-	linear_analysis la(&fosm_jco, &pest_scenario, &obscov,&logger);
-	
-	//set the prior parameter covariance matrix
-	la.set_parcov(&parcov);
-	
-	//set the predictions (the constraints)
-	la.set_predictions(ctl_ord_obs_constraint_names);
-	
-	//get the prior and posterior variance of the constraints
-	map<string, double> prior_const_var = la.prior_prediction_variance();
-	map<string, double> post_const_var;
-	
-	//if at least one nz obs was found, then use schur complment, otherwise,
-	//just use the prior constraint uncertainty
-	if (num_nz_obs() > 0)
-		post_const_var = la.posterior_prediction_variance();
-	else
-		post_const_var = prior_const_var;
-	
+	if ((!std_weights) && ((slp_iter == 1) || ((slp_iter + 1) % pest_scenario.get_pestpp_options().get_opt_recalc_fosm_every() == 0)))
+	{
+		//the rows of the fosm jacobian include nonzero weight obs (for schur comp) 
+		//plus the names of the names of constraints, which get treated as forecasts
+		vector<string> fosm_row_names(nz_obs_names);
+		fosm_row_names.insert(fosm_row_names.end(), ctl_ord_obs_constraint_names.begin(), ctl_ord_obs_constraint_names.end());
+
+		//extract the part of the full jco we need for fosm
+		Eigen::SparseMatrix<double> fosm_mat = jco.get_matrix(fosm_row_names, adj_par_names);
+
+		Mat fosm_jco(fosm_row_names, adj_par_names, fosm_mat);
+
+		//create a linear object
+		Logger logger(file_mgr_ptr->get_ofstream("pfm"), false);
+		linear_analysis la(&fosm_jco, &pest_scenario, &obscov, &logger);
+
+		//set the prior parameter covariance matrix
+		la.set_parcov(&parcov);
+
+		//set the predictions (the constraints)
+		la.set_predictions(ctl_ord_obs_constraint_names);
+
+		//get the prior and posterior variance of the constraints
+		prior_const_var = la.prior_prediction_variance();
+
+		//if at least one nz obs was found, then use schur complment, otherwise,
+		//just use the prior constraint uncertainty
+		if (num_nz_obs() > 0)
+			post_const_var = la.posterior_prediction_variance();
+		else
+			post_const_var = prior_const_var;
+	}
 	//work out the offset for each constraint
 	//and set the values in the constraints_fosm Obseravtions
 	double new_constraint_val, old_constraint_val, required_val;
@@ -1016,8 +1120,8 @@ void sequentialLP::calc_chance_constraint_offsets()
 		pr_offset = probit_val * prior_constraint_stdev[name];
 		pt_offset = probit_val * post_constraint_stdev[name];
 		//important: using the initial simulated constraint values 
-		//old_constraint_val = constraints_sim[name];
-		old_constraint_val = constraints_sim_initial[name];
+		old_constraint_val = constraints_sim[name];
+		//old_constraint_val = constraints_sim_initial[name];
 		required_val = constraints_obs[name];
 
 		//if less_than constraint, then add to the sim value, to move positive
@@ -1174,6 +1278,20 @@ void sequentialLP::iter_infeasible_report()
 	return;
 }
 
+void sequentialLP::build_dec_var_bounds()
+{
+	//set the decision var lower and upper bound arrays
+	dec_var_lb = new double[num_dec_vars()];
+	dec_var_ub = new double[num_dec_vars()];
+	Parameters parlbnd = pest_scenario.get_ctl_parameter_info().get_low_bnd(ctl_ord_dec_var_names);
+	Parameters parubnd = pest_scenario.get_ctl_parameter_info().get_up_bnd(ctl_ord_dec_var_names);
+	for (int i = 0; i < num_dec_vars(); ++i)
+	{
+		dec_var_lb[i] = parlbnd.get_rec(ctl_ord_dec_var_names[i]) - all_pars_and_dec_vars.get_rec(ctl_ord_dec_var_names[i]);
+		dec_var_ub[i] = parubnd.get_rec(ctl_ord_dec_var_names[i]) - all_pars_and_dec_vars.get_rec(ctl_ord_dec_var_names[i]);
+	}
+}
+
 void sequentialLP::iter_solve()
 {
 	
@@ -1182,6 +1300,8 @@ void sequentialLP::iter_solve()
 	//convert Jacobian_1to1 to CoinPackedMatrix
 	cout << "  ---  forming LP model  --- " << endl;
 	CoinPackedMatrix matrix = jacobian_to_coinpackedmatrix();
+
+	build_dec_var_bounds();
 
 	//load the linear simplex model
 	model.loadProblem(matrix, dec_var_lb, dec_var_ub, ctl_ord_obj_func_coefs, constraint_lb, constraint_ub);
@@ -1401,9 +1521,11 @@ void sequentialLP::solve()
 		//write 'best' rei
 		of_wr.write_opt_constraint_rei(file_mgr_ptr->open_ofile_ext("res"), slp_iter, all_pars_and_dec_vars_best,
 			pest_scenario.get_ctl_observations(), constraints_sim);
+		file_mgr_ptr->close_file("res");
 		//write 'best' parameters file
-		of_wr.write_par(file_mgr_ptr->open_ofile_ext("par"), all_pars_and_dec_vars_best,
+		/*of_wr.write_par(file_mgr_ptr->open_ofile_ext("par"), all_pars_and_dec_vars_best,
 			*par_trans.get_offset_ptr(), *par_trans.get_scale_ptr());
+		file_mgr_ptr->close_file("par");*/
 	}
 }
 
@@ -1428,7 +1550,7 @@ void sequentialLP::iter_postsolve()
 		name = ctl_ord_dec_var_names[i];
 		val = all_pars_and_dec_vars[name];
 		diff = abs(dec_var_vals[i] - all_pars_and_dec_vars[name]);
-		upgrade_pars.update_rec(name,dec_var_vals[i]);
+		upgrade_pars.update_rec(name,dec_var_vals[i] + val);
 		
 		max_abs_dec_var_change = (diff > max_abs_dec_var_change) ? diff : max_abs_dec_var_change;
 		max_abs_dec_var_val = (abs(val) > max_abs_dec_var_val) ? val : max_abs_dec_var_val;
@@ -1439,13 +1561,16 @@ void sequentialLP::iter_postsolve()
 
 	Observations upgrade_obs = constraints_sim;
 	if (!super_secret_option)
-		bool success = make_upgrade_run(upgrade_pars,upgrade_obs);
+	{
+		bool success = make_upgrade_run(upgrade_pars, upgrade_obs);
 
-	f_rec << "  ---  processing results for iteration " << slp_iter << " LP solution  ---  " << endl << endl;
+		f_rec << "  ---  processing results for iteration " << slp_iter << " LP solution  ---  " << endl << endl;
+		postsolve_constraint_report(upgrade_obs, upgrade_pars);
+	}
 	double obj_val = model.getObjValue();
 	
 	pair<double,double> cur_new_obj = postsolve_decision_var_report(upgrade_pars);
-	postsolve_constraint_report(upgrade_obs,upgrade_pars);
+	
 	
 	f_rec << endl << endl <<  "  ---  iteration " << slp_iter << " objective function value: " << setw(15) << cur_new_obj.second << "  ---  " << endl << endl;
 	cout << endl << endl << "  ---  iteration " << slp_iter << " objective function value: " << setw(15) << cur_new_obj.second << "  ---  " << endl << endl;
@@ -1487,6 +1612,13 @@ void sequentialLP::iter_postsolve()
 	max_abs_constraint_change /= max(max_abs_constraint_val,1.0);
 
 	pair<map<string,double>, map<string,double>> invalid_vars_const = postsolve_check(upgrade_obs, upgrade_pars);
+
+	if (super_secret_option)
+	{
+		f_rec << "super secret option active...done" << endl;
+		return;
+	}
+
 
 	//convergence check
 	double opt_iter_tol = pest_scenario.get_pestpp_options().get_opt_iter_tol();
@@ -1580,9 +1712,10 @@ void sequentialLP::iter_presolve()
 	{
 		jco.read(basejac_filename);
 		//check to make sure decision vars and constraints are found
-		vector<string> names = jco.get_base_numeric_par_names();
-		vector<string>::iterator start = names.begin();
-		vector<string>::iterator end = names.end();
+		vector<string> temp = jco.get_base_numeric_par_names();
+		set<string> names(temp.begin(),temp.end());
+		set<string>::iterator start = names.begin();
+		set<string>::iterator end = names.end();
 		vector<string>::iterator ext_start = ctl_ord_ext_var_names.begin();
 		vector<string>::iterator ext_end = ctl_ord_ext_var_names.end();
 
@@ -1602,7 +1735,8 @@ void sequentialLP::iter_presolve()
 
 
 		names.clear();
-		names = jco.get_sim_obs_names();
+		temp = jco.get_sim_obs_names();
+		names.insert(temp.begin(),temp.end());
 		start = names.begin();
 		end = names.end();
 		for (auto &name : ctl_ord_obs_constraint_names)
@@ -1654,7 +1788,7 @@ void sequentialLP::iter_presolve()
 			if (find(ctl_ord_ext_var_names.begin(), ctl_ord_ext_var_names.end(), name) == ctl_ord_ext_var_names.end())
 				names_to_run.push_back(name);
 
-		if ((slp_iter == 1) || ((slp_iter+1) % pest_scenario.get_pestpp_options().get_opt_recalc_fosm_every() == 0))
+		if ((!std_weights) && ((slp_iter == 1) || ((slp_iter+1) % pest_scenario.get_pestpp_options().get_opt_recalc_fosm_every() == 0)))
 		{
 			names_to_run.insert(names_to_run.end(), adj_par_names.begin(), adj_par_names.end());
 		}
@@ -1708,10 +1842,22 @@ void sequentialLP::iter_presolve()
 		}
 
 		jco.make_runs(*run_mgr_ptr);
+		set<int> failed = run_mgr_ptr->get_failed_run_ids();
+
+		//process the remaining responses
+		success = jco.process_runs(par_trans, pest_scenario.get_base_group_info(), *run_mgr_ptr, *null_prior, false);
+		if (!success)
+			throw_sequentialLP_error("error processing response matrix runs ", jco.get_failed_parameter_names());
+
+		stringstream ss;
+		ss << slp_iter << ".jcb";
+		string rspmat_file = file_mgr_ptr->build_filename(ss.str());
+		f_rec << endl << "saving iteration " << slp_iter << " reponse matrix to file: " << rspmat_file << endl;
+		jco.save(ss.str());
 
 		//check for failed runs
 		//TODO: something better than just dying
-		set<int> failed = run_mgr_ptr->get_failed_run_ids();
+		
 		if (failed.size() > 0)
 			throw_sequentialLP_error("failed runs when filling decision var response matrix...cannot continue ");
 
@@ -1726,20 +1872,39 @@ void sequentialLP::iter_presolve()
 		}
 		//par_trans.model2ctl_ip(temp_pars);
 
-		//process the remaining responses
-		success = jco.process_runs(par_trans, pest_scenario.get_base_group_info(), *run_mgr_ptr, *null_prior, false);
-		if (!success)
-			throw_sequentialLP_error("error processing response matrix runs ", jco.get_failed_parameter_names());
-
-		stringstream ss;
-		ss << slp_iter << ".jcb";
-		string rspmat_file = file_mgr_ptr->build_filename(ss.str());
-		f_rec << endl << "saving iteration " << slp_iter << " reponse matrix to file: " << rspmat_file << endl;
-		jco.save(ss.str());
+		
 	}
 	//if this is the first time through, set the initial constraint simulated values
 	if (slp_iter == 1)
 		constraints_sim_initial = Observations(constraints_sim);
+
+	if (use_obj_obs)
+	{
+		obj_func_coef_map.clear();
+		vector<string> onames = jco.get_sim_obs_names();
+		vector<string> pnames = jco.get_base_numeric_par_names();
+		set<string> sdecvar(ctl_ord_dec_var_names.begin(), ctl_ord_dec_var_names.end());
+
+		int idx = find(onames.begin(), onames.end(), obj_obs) - onames.begin();
+		if (idx >= onames.size())
+			throw runtime_error("obj function obs not found in jco row names, #sad");
+		Eigen::VectorXd vec = Eigen::VectorXd(jco.get_matrix_ptr()->row(idx));
+		for (int i = 0; i < vec.size(); i++)
+		{
+			if (sdecvar.find(pnames[i]) == sdecvar.end())
+				continue;
+			obj_func_coef_map[pnames[i]] = vec[i];
+		}
+		f_rec << "  ---  objective function coefficients for iteration " << slp_iter << "  ---  " << endl;
+		double obj = obj_func_report();
+		if (slp_iter == 1)
+		{
+			obj_init = obj;
+			f_rec << endl << "  ---  objective function value (using initial dec var values): " << obj_init << endl << endl;
+			cout << endl << "  ---  objective function value (using initial dec var values): " << obj_init << endl << endl;
+		}
+		
+	}
 
 	//set/update the constraint bound arrays
 	build_constraint_bound_arrays();
@@ -1752,6 +1917,11 @@ void sequentialLP::iter_presolve()
 
 	//build the objective function
 	build_obj_func_coef_array();
+
+	stringstream ss;
+	ss << "jcb." << slp_iter << ".rei";
+	of_wr.write_opt_constraint_rei(file_mgr_ptr->open_ofile_ext(ss.str()), slp_iter, pest_scenario.get_ctl_parameters(),
+		pest_scenario.get_ctl_observations(), constraints_sim);
 
 	return;
 }

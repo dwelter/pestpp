@@ -294,7 +294,8 @@ int main(int argc, char* argv[])
 				file_manager.open_ofile_ext("rmr"),
 				pest_scenario.get_pestpp_options().get_max_run_fail(),
 				pest_scenario.get_pestpp_options().get_overdue_reched_fac(),
-				pest_scenario.get_pestpp_options().get_overdue_giveup_fac());
+				pest_scenario.get_pestpp_options().get_overdue_giveup_fac(),
+				pest_scenario.get_pestpp_options().get_overdue_giveup_minutes());
 		}
 		else if (run_manager_type == RunManagerType::GENIE)
 		{
@@ -317,7 +318,26 @@ int main(int argc, char* argv[])
 		{
 			performance_log.log_event("starting basic model IO error checking", 1);
 			cout << "checking model IO files...";
-			pest_scenario.check_io();
+			if ((pest_scenario.get_pestpp_options().get_opt_skip_final()) &&
+				(pest_scenario.get_pestpp_options().get_basejac_filename().size()) > 0 &&
+				(pest_scenario.get_pestpp_options().get_hotstart_resfile().size()) > 0 &&
+				(pest_scenario.get_control_info().noptmax == 1))
+			{
+				try
+				{
+					pest_scenario.check_io();
+				}
+				catch (...)
+				{
+					cout << "error checking I/O files...continuing" << endl;
+				}
+
+			}
+			else
+			{
+				pest_scenario.check_io();
+			}
+
 			performance_log.log_event("finished basic model IO error checking");
 			cout << "done" << endl;
 			const ModelExecInfo &exi = pest_scenario.get_model_exec_info();
@@ -328,13 +348,13 @@ int main(int argc, char* argv[])
 		}
 
 		//setup the parcov, if needed
-		Covariance parcov;
+		//Covariance parcov;
 		//if (pest_scenario.get_pestpp_options().get_use_parcov_scaling())
-		double parcov_scale_fac = pest_scenario.get_pestpp_options().get_parcov_scale_fac();
+		/*double parcov_scale_fac = pest_scenario.get_pestpp_options().get_parcov_scale_fac();
 		if (parcov_scale_fac > 0.0)
 		{
 			parcov.try_from(pest_scenario, file_manager);
-		}
+		}*/
 		const ParamTransformSeq &base_trans_seq = pest_scenario.get_base_par_tran_seq();
 
 		ObjectiveFunc obj_func(&(pest_scenario.get_ctl_observations()), &(pest_scenario.get_ctl_observation_info()), &(pest_scenario.get_prior_info()));
@@ -454,6 +474,8 @@ int main(int argc, char* argv[])
 			{
 				fout_rec << "   -----    Starting Optimization Iterations    ----    " << endl << endl;
 			}
+			Covariance parcov;
+			parcov.try_from(pest_scenario, file_manager);
 			sequentialLP slp(pest_scenario, run_manager_ptr, parcov, &file_manager, output_file_writer);
 			slp.solve();
 			fout_rec << "Number of forward model runs performed during optimiztion: " << run_manager_ptr->get_total_runs() << endl;

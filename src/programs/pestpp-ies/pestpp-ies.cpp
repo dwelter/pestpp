@@ -226,8 +226,7 @@ int main(int argc, char* argv[])
 
 		// create pest run and process control file to initialize it
 		Pest pest_scenario;
-		pest_scenario.set_defaults();
-
+		
 		try {
 			performance_log.log_event("starting to process control file", 1);
 			pest_scenario.process_ctl_file(file_manager.open_ifile_ext("pst"), file_manager.build_filename("pst"));
@@ -245,7 +244,6 @@ int main(int argc, char* argv[])
 		}
 		pest_scenario.check_inputs(fout_rec);
 
-		PestppOptions ppopt = pest_scenario.get_pestpp_options();
 
 		
 		//Initialize OutputFileWriter to handle IO of suplementary files (.par, .par, .svd)
@@ -259,7 +257,11 @@ int main(int argc, char* argv[])
 		output_file_writer.scenario_obs_report(fout_rec);
 		//fout_rec << "    pestpp-ies parameter csv file = " << left << setw(50) << ppopt.get_ies_par_csv() << endl;
 		//fout_rec << "    pestpp-ies observation csv file = " << left << setw(50) << ppopt.get_ies_obs_csv() << endl;
-
+		
+		PestppOptions *ppo = pest_scenario.get_pestpp_options_ptr();
+		set<string> pp_args = ppo->get_passed_args();
+		if (pp_args.find("MAX_RUN_FAIL") == pp_args.end())
+			ppo->set_max_run_fail(1);
 
 		RunManagerAbstract *run_manager_ptr;
 		if (run_manager_type == RunManagerType::PANTHER)
@@ -273,7 +275,8 @@ int main(int argc, char* argv[])
 				file_manager.open_ofile_ext("rmr"),
 				pest_scenario.get_pestpp_options().get_max_run_fail(),
 				pest_scenario.get_pestpp_options().get_overdue_reched_fac(),
-				pest_scenario.get_pestpp_options().get_overdue_giveup_fac());
+				pest_scenario.get_pestpp_options().get_overdue_giveup_fac(),
+				pest_scenario.get_pestpp_options().get_overdue_giveup_minutes());
 		}
 		else
 		{

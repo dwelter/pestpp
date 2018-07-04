@@ -20,6 +20,32 @@ Ensemble::Ensemble(Pest *_pest_scenario_ptr): pest_scenario_ptr(_pest_scenario_p
 	rand_engine.seed(1123433458);
 }
 
+void Ensemble::check_for_dups()
+{
+	vector<string> dups;
+	set<string> names;
+	for (auto &n : var_names)
+	{
+		if (names.find(n) != names.end())
+			dups.push_back(n);
+		names.insert(n);
+	}
+
+	names.clear();
+	for (auto &n : real_names)
+	{
+		if (names.find(n) != names.end())
+			dups.push_back(n);
+		names.insert(n);
+	}
+	 
+	if (dups.size() > 0)
+	{
+		throw_ensemble_error("duplicate var/real names in ensemble: ", dups);
+	}
+
+}
+
 void Ensemble::reserve(vector<string> _real_names, vector<string> _var_names)
 {
 	reals.resize(_real_names.size(), _var_names.size());
@@ -37,40 +63,40 @@ Ensemble Ensemble::zero_like()
 
 void Ensemble::add_2_cols_ip(Ensemble &other)
 {
-//add values to (a subset of the) columns of reals
-if (shape().first != other.shape().first)
-throw_ensemble_error("Ensemble::add_2_cols_ip(): first dimensions don't match");
-vector<string> other_real_names = other.get_real_names();
-vector<string> mismatch;
-for (int i = 0; i < shape().first; i++)
-{
-	if (other_real_names[i] != real_names[i])
-		mismatch.push_back(real_names[i]);
+	//add values to (a subset of the) columns of reals
+	if (shape().first != other.shape().first)
+	throw_ensemble_error("Ensemble::add_2_cols_ip(): first dimensions don't match");
+	vector<string> other_real_names = other.get_real_names();
+	vector<string> mismatch;
+	for (int i = 0; i < shape().first; i++)
+	{
+		if (other_real_names[i] != real_names[i])
+			mismatch.push_back(real_names[i]);
 
-}
-if (mismatch.size() > 0)
-throw_ensemble_error("the following real_names don't match other", mismatch);
+	}
+	if (mismatch.size() > 0)
+	throw_ensemble_error("the following real_names don't match other", mismatch);
 
-map<string, int> this_varmap, other_varmap;
-for (int i = 0; i < var_names.size(); i++)
-	this_varmap[var_names[i]] = i;
-vector<string> other_var_names = other.get_var_names();
+	map<string, int> this_varmap, other_varmap;
+	for (int i = 0; i < var_names.size(); i++)
+		this_varmap[var_names[i]] = i;
+	vector<string> other_var_names = other.get_var_names();
 
-vector<string> missing;
-set<string> svnames(var_names.begin(), var_names.end());
-set<string>::iterator end = svnames.end();
-for (int i = 0; i < other_var_names.size(); i++)
-{
-	if (svnames.find(other_var_names[i]) == end)
-		missing.push_back(other_var_names[i]);
-	other_varmap[other_var_names[i]] = i;
-}
-if (missing.size() > 0)
-throw_ensemble_error("Ensemble::add_2_cols_ip(): the following var names in other were not found", missing);
-for (auto &ovm : other_varmap)
-{
-	reals.col(this_varmap[ovm.first]) += other.get_eigen_ptr()->col(ovm.second);
-}
+	vector<string> missing;
+	set<string> svnames(var_names.begin(), var_names.end());
+	set<string>::iterator end = svnames.end();
+	for (int i = 0; i < other_var_names.size(); i++)
+	{
+		if (svnames.find(other_var_names[i]) == end)
+			missing.push_back(other_var_names[i]);
+		other_varmap[other_var_names[i]] = i;
+	}
+	if (missing.size() > 0)
+	throw_ensemble_error("Ensemble::add_2_cols_ip(): the following var names in other were not found", missing);
+	for (auto &ovm : other_varmap)
+	{
+		reals.col(this_varmap[ovm.first]) += other.get_eigen_ptr()->col(ovm.second);
+	}
 }
 
 void Ensemble::draw(int num_reals, Covariance cov, Transformable &tran, const vector<string> &draw_names,
@@ -121,6 +147,7 @@ void Ensemble::draw(int num_reals, Covariance cov, Transformable &tran, const ve
 			Covariance gcov;
 			stringstream ss;
 			RedSVD::RedSymEigen<Eigen::SparseMatrix<double>> eig;
+			
 			Eigen::MatrixXd proj;
 			map<string, int> idx_map;
 			vector<int> idx;
@@ -149,6 +176,7 @@ void Ensemble::draw(int num_reals, Covariance cov, Transformable &tran, const ve
 				{
 					gcov.to_ascii(gi.first + "_cov.dat");
 				}
+				
 				idx.clear();
 				for (auto n : gi.second)
 					idx.push_back(idx_map[n]);
@@ -158,19 +186,33 @@ void Ensemble::draw(int num_reals, Covariance cov, Transformable &tran, const ve
 				//cout << var_names[idx[0]] << "," << var_names[idx.size() - idx[0]] << endl;
 				//cout << idx[0] << ',' << idx[idx.size()-1] << ',' <<  idx.size() << " , " << idx[idx.size()-1] - idx[0] <<  endl;
 				
-				Eigen::MatrixXd block = draws.block(0, idx[0], num_reals - 1, idx.size());
+				double fac = gcov.e_ptr()->diagonal().minCoeff();
+				ss.str("");
+				ss << "min variance for group " << gi.first << ": " << fac;
+				plog->log_event(ss.str());
+				Eigen::MatrixXd block = draws.block(0, idx[0], num_reals, idx.size());
 				ss.str("");
 				ss << "Randomized Eigen decomposition of full cov for " << gi.second.size() << " element matrix" << endl;
 				plog->log_event(ss.str());
-				eig.compute(*gcov.e_ptr(), gi.second.size());
-				proj = (eig.eigenvectors() * eig.eigenvalues().cwiseSqrt().asDiagonal());
+				eig.compute(*gcov.e_ptr() * (1.0/fac), gi.second.size());
+				//RedSVD::RedSVD<Eigen::SparseMatrix<double>> svd;
+				//svd.compute(*gcov.e_ptr(),gcov.get_col_names().size());// , gi.second.size());
+				//cout << svd.singularValues() << endl;
+				//Eigen::JacobiSVD<Eigen::MatrixXd> svd(gcov.e_ptr()->toDense(), Eigen::ComputeFullU);
+				//svd.computeU();
+				
+				proj = (eig.eigenvectors() * (fac *eig.eigenvalues()).cwiseSqrt().asDiagonal());
+				//proj = (svd.matrixU() * svd.singularValues().asDiagonal());
+				
 				if (level > 2)
 				{
 					ofstream f(gi.first + "_evec.dat");
 					f << eig.eigenvectors() << endl;
+					//f << svd.matrixU() << endl;
 					f.close();
 					ofstream ff(gi.first + "_sqrt_evals.dat");
-					ff << eig.eigenvalues().cwiseSqrt() << endl;
+					ff << (fac * eig.eigenvalues()).cwiseSqrt() << endl;
+					//ff << svd.singularValues() << endl;
 					ff.close();
 					ofstream fff(gi.first+"_proj.dat");
 					fff << proj << endl;
@@ -179,7 +221,7 @@ void Ensemble::draw(int num_reals, Covariance cov, Transformable &tran, const ve
 				//cout << "block " << block.rows() << " , " << block.cols() << endl;
 				//cout << " proj " << proj.rows() << " , " << proj.cols() << endl;
 				plog->log_event("projecting group block");
-				draws.block(0, idx[0], num_reals - 1, idx.size()) = (proj * block.transpose()).transpose();
+				draws.block(0, idx[0], num_reals, idx.size()) = (proj * block.transpose()).transpose();
 				
 			}
 		}
@@ -189,16 +231,19 @@ void Ensemble::draw(int num_reals, Covariance cov, Transformable &tran, const ve
 			stringstream ss;
 			ss << "Randomized Eigen decomposition of full cov using " << ncomps << " components";
 			plog->log_event(ss.str());
-			RedSVD::RedSymEigen<Eigen::SparseMatrix<double>> eig(*cov.e_ptr(), ncomps);
-			Eigen::MatrixXd proj = (eig.eigenvectors() * eig.eigenvalues().cwiseSqrt().asDiagonal());
+			double fac = cov.e_ptr()->diagonal().minCoeff();
+			ss.str("");
+			ss << "min variance: " << fac;
+			RedSVD::RedSymEigen<Eigen::SparseMatrix<double>> eig(*cov.e_ptr() * (1.0/fac), ncomps);
+			Eigen::MatrixXd proj = (eig.eigenvectors() * (fac * eig.eigenvalues()).cwiseSqrt().asDiagonal());
 
 			if (level > 2)
 			{
 				ofstream f("cov_eigenvectors.dat");
 				f << eig.eigenvectors() << endl;
 				f.close();
-				f.open("cov_eigenvalues.dat");
-				f << eig.eigenvalues() << endl;
+				f.open("cov_sqrt_evals.dat");
+				f << (fac * eig.eigenvalues()).cwiseSqrt() << endl;
 				f.close();
 				f.open("cov_projection_matrix.dat");
 				f << proj << endl;
@@ -565,7 +610,7 @@ void Ensemble::to_csv(string file_name)
 	}
 	csv << "real_name";
 	for (auto &vname : var_names)
-		csv << vname << ',';
+		csv << ',' << vname;
 	csv << endl;
 	for (int ireal = 0; ireal < reals.rows(); ireal++)
 	{
@@ -731,17 +776,22 @@ void Ensemble::append_other_rows(Ensemble &other)
 	if (other.shape().second != shape().second)
 		throw_ensemble_error("append_other_rows(): different number of var_names in other");
 	vector<string> probs;
-	vector<string>::iterator start = var_names.begin(), end = var_names.end();
+	set<string> vnames(var_names.begin(), var_names.end());
+	//vector<string>::iterator start = var_names.begin(), end = var_names.end();
+	set<string>::iterator end = vnames.end();
 	for (auto &vname : other.get_var_names())
-		if (find(start, end, vname) == end)
+		//if (find(start, end, vname) == end)
+		if (vnames.find(vname) == end)
 			probs.push_back(vname);
 	if (probs.size() > 0)
 		throw_ensemble_error("append_other_rows(): the following other::var_names not in this::var_names: ", probs);
-	start = real_names.begin();
-	end = real_names.end();
+	//start = real_names.begin();
+	//end = real_names.end();
+	set<string> rnames(real_names.begin(), real_names.end());
+	end = rnames.end();
 	for (auto &rname : other.get_real_names())
-
-		if (find(start, end, rname) != end)
+		//if (find(start, end, rname) != end)
+		if (rnames.find(rname) != end)
 			probs.push_back(rname);
 	if (probs.size() > 0)
 		throw_ensemble_error("append_other_rows(): the following other::real_names are also in this::real_names: ", probs);
@@ -1075,6 +1125,17 @@ void ParameterEnsemble::set_pest_scenario(Pest *_pest_scenario)
 }
 
 
+ParameterEnsemble ParameterEnsemble::zeros_like()
+{
+	
+	Eigen::MatrixXd new_reals = Eigen::MatrixXd::Zero(real_names.size(), var_names.size());
+	ParameterEnsemble new_en(pest_scenario_ptr);
+	new_en.from_eigen_mat(new_reals, real_names, var_names);
+	return new_en;
+	
+
+}
+
 map<int,int> ParameterEnsemble::add_runs(RunManagerAbstract *run_mgr_ptr,const vector<int> &real_idxs)
 {
 	//add runs to the run manager using int indices
@@ -1110,12 +1171,22 @@ void ParameterEnsemble::from_eigen_mat(Eigen::MatrixXd mat, const vector<string>
 {
 	//create a par ensemble from components
 	vector<string> missing;
+	/*
 	vector<string>::const_iterator start = _var_names.begin();
-	vector<string>::const_iterator end = _var_names.end();
+	vector<string>::const_iterator end = _var_names.end();*/
 
-	for (auto &name : pest_scenario_ptr->get_ctl_ordered_par_names())
+	vector<string> vnames = pest_scenario_ptr->get_ctl_ordered_par_names();
+	set<string> vset(vnames.begin(), vnames.end());
+	set<string>::iterator end = vset.end();
+
+	/*for (auto &name : pest_scenario_ptr->get_ctl_ordered_par_names())
 		if (find(start, end, name) == end)
+			missing.push_back(name);*/
+	for (auto &name : _var_names)
+	{
+		if (vset.find(name) == end)
 			missing.push_back(name);
+	}
 	if (missing.size() > 0)
 		throw_ensemble_error("ParameterEnsemble.from_eigen_mat() the following par names not found: ", missing);
 	Ensemble::from_eigen_mat(mat, _real_names, _var_names);
@@ -1138,8 +1209,8 @@ void ParameterEnsemble::from_csv(string file_name)
 	ifstream csv(file_name);
 	if (!csv.good())
 		throw runtime_error("error opening parameter csv " + file_name + " for reading"); 
-	//var_names = pest_scenario_ptr->get_ctl_ordered_adj_par_names();
-	var_names = pest_scenario_ptr->get_ctl_ordered_par_names();
+	var_names = pest_scenario_ptr->get_ctl_ordered_adj_par_names();
+	//var_names = pest_scenario_ptr->get_ctl_ordered_par_names();
 	map<string,int>header_info = prepare_csv(var_names, csv, false);
 	//blast through the file to get number of reals
 	string line;
@@ -1459,15 +1530,21 @@ vector<int> ObservationEnsemble::update_from_runs(map<int,int> &real_run_ids, Ru
 	Parameters pars = pest_scenario_ptr->get_ctl_parameters();
 	Observations obs = pest_scenario_ptr->get_ctl_observations();
 	string real_name;
+	int ireal = 0;
 	for (auto &real_run_id : real_run_ids)
 	{
 		if (failed_runs.find(real_run_id.second) != failed_runs.end())
+		{
 			failed_real_idxs.push_back(real_run_id.first);
+			//failed_real_idxs.push_back(ireal);
+		}
+
 		else
 		{
 			run_mgr_ptr->get_run(real_run_id.second, pars, obs);
 			//real_name = real_names[real_run_id.first];
 			update_from_obs(real_run_id.first, obs);
+			//update_from_obs(ireal, obs);
 		}
 	}
 	return failed_real_idxs;

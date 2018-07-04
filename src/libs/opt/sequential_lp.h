@@ -30,6 +30,9 @@ private:
 	bool use_chance;
 	bool terminate;
 	bool super_secret_option;
+	bool use_obj_obs;
+	bool std_weights;
+	string obj_obs;
 	int slp_iter;
 	
 	double* dec_var_lb;
@@ -84,6 +87,8 @@ private:
 	map<string, double> post_constraint_stdev;
 	map<string, double> prior_constraint_offset;
 	map<string, double> post_constraint_offset;
+	map<string, double> prior_const_var;
+	map<string, double> post_const_var;
 	//map<string, map<string, double>> pi_constraint_factors;
 	//map<string, double> pi_constraint_rhs;
 
@@ -120,6 +125,8 @@ private:
 	int num_constraints() { return num_obs_constraints() + num_pi_constraints(); }
 	int num_adj_pars() { return adj_par_names.size(); }
 	int num_nz_obs() { return nz_obs_names.size(); }
+
+	void build_dec_var_bounds();
 
 	//get the interpolated probit value 
 	double get_probit();
@@ -185,6 +192,8 @@ private:
 
 	//calc FOSM-based chance constraint offsets
 	void calc_chance_constraint_offsets();
+
+	double obj_func_report();
 };
 
 

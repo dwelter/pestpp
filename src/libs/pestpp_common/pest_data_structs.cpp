@@ -382,12 +382,14 @@ void PestppOptions::parce_line(const string &line)
 	for (std::sregex_iterator i(tmp_line.begin(), tmp_line.end(), lambda_reg); i != end_reg; ++i)
 	{
 		string key = (*i)[1];
-		string org_value = (*i)[2];
+		string org_value = strip_cp((*i)[2]);
 		upper_ip(key);
 		string value = upper_cp(org_value);
+		passed_args.insert(key);
 
 		if (key=="MAX_N_SUPER"){
 			convert_ip(value, max_n_super); 
+		
 		}
 		else if (key=="SUPER_EIGTHRES"){
 			convert_ip(value, super_eigthres); 
@@ -484,6 +486,13 @@ void PestppOptions::parce_line(const string &line)
 			parcov_filename = org_value;
 		}
 
+		else if ((key == "OBSCOV") || (key == "OBSERVATION_COVARIANCE")
+			|| (key == "OBSCOV_FILENAME"))
+		{
+			//convert_ip(org_value, parcov_filename);
+			obscov_filename = org_value;
+		}
+
 		else if ((key == "BASE_JACOBIAN") || (key == "BASE_JACOBIAN_FILENAME"))
 		{
 			//convert_ip(org_value, basejac_filename);
@@ -501,6 +510,10 @@ void PestppOptions::parce_line(const string &line)
 		}
 		else if (key == "OVERDUE_GIVEUP_FAC"){
 			convert_ip(value, overdue_giveup_fac);
+		}
+		else if (key == "OVERDUE_GIVEUP_MINUTES")
+		{
+			convert_ip(value, overdue_giveup_minutes);
 		}
 		else if (key == "CONDOR_SUBMIT_FILE")
 		{
@@ -529,7 +542,8 @@ void PestppOptions::parce_line(const string &line)
 		}
 		else if (key == "REG_FRAC")
 		{
-			convert_ip(value, reg_frac);
+			//convert_ip(value, reg_frac);
+			throw runtime_error("'++reg_frac' has been deprecated - please use * regularization and PHIMLIM");
 		}
 		/*else if (key == "USE_PARCOV_SCALING")
 		{
@@ -611,6 +625,13 @@ void PestppOptions::parce_line(const string &line)
 			is >> boolalpha >> opt_skip_final;
 		}
 
+		else if (key == "OPT_STD_WEIGHTS")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> opt_std_weights;
+		}
+
 		else if ((key == "OPT_DEC_VAR_GROUPS") || (key == "OPT_DECISION_VARIABLE_GROUPS"))
 		{
 			opt_dec_var_groups.clear();
@@ -675,6 +696,13 @@ void PestppOptions::parce_line(const string &line)
 		{
 			convert_ip(value, opt_recalc_fosm_every);
 		}
+		else if (key == "OPT_INCLUDE_BND_PI")
+		{
+			transform(value.begin(), value.end(), value.begin(), ::tolower);
+			istringstream is(value);
+			is >> boolalpha >> opt_include_bnd_pi;
+		}
+
 		else if ((key == "IES_PAR_CSV") || (key == "IES_PARAMETER_CSV")||
 			(key == "IES_PAR_EN") || (key == "IES_PARAMETER_ENSEMBLE"))
 		{
@@ -741,13 +769,13 @@ void PestppOptions::parce_line(const string &line)
 		else if (key == "IES_NUM_REALS")
 		{
 			convert_ip(value, ies_num_reals);
-			ies_num_reals_passed = true;
+			//ies_num_reals_passed = true;
 		}
 		else if (key == "IES_BAD_PHI")
 		{
 			convert_ip(value, ies_bad_phi);
 		}
-		else if (key == "IES_INCLUDE_BASE")
+		else if ((key == "IES_INCLUDE_BASE") || (key == "IES_ADD_BASE"))
 		{
 			transform(value.begin(), value.end(), value.begin(), ::tolower);
 			istringstream is(value);
@@ -807,6 +835,14 @@ void PestppOptions::parce_line(const string &line)
 			istringstream is(value);
 			is >> boolalpha >> ies_save_lambda_en;
 		}
+		else if ((key == "IES_WEIGHST_EN") || (key == "IES_WEIGHTS_ENSEMBLE"))
+		{
+			ies_weight_csv = org_value;
+		}
+		else if (key == "IES_SUBSET_HOW")
+		{
+			convert_ip(value,ies_subset_how);
+		}
 		else {
 
 			throw PestParsingError(line, "Invalid key word \"" + key +"\"");
@@ -858,6 +894,18 @@ void ObservationInfo::reset_group_weights(string &group, double val)
 
 }
 
+
+void ObservationInfo::scale_group_weights(string &group, double scale_val)
+{
+	for (auto &o : observations)
+	{
+		if (o.second.group == group)
+		{
+			o.second.weight *= scale_val;
+		}
+	}
+
+}
 
 const ObservationRec* ObservationInfo::get_observation_rec_ptr(const string &name) const
 {

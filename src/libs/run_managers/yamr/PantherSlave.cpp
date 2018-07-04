@@ -203,6 +203,8 @@ void PANTHERSlave::process_panther_ctl_file(const string &ctl_filename)
 	string line_upper;
 	vector<string> tokens;
 
+	int i_tpl_ins = 0, n_tpl_file = 0;
+
 	comline_vec.clear();
 	tplfile_vec.clear();
 	inpfile_vec.clear();
@@ -249,6 +251,29 @@ void PANTHERSlave::process_panther_ctl_file(const string &ctl_filename)
 				tokenize(line, tokens_case_sen);
 				insfile_vec.push_back(tokens_case_sen[0]);
 				outfile_vec.push_back(tokens_case_sen[1]);
+			}
+			else if (section == "MODEL INPUT/OUTPUT")
+			{
+				vector<string> tokens_case_sen;
+				tokenize(line, tokens_case_sen);
+				if (i_tpl_ins < n_tpl_file)
+				{
+					tplfile_vec.push_back(tokens_case_sen[0]);
+					inpfile_vec.push_back(tokens_case_sen[1]);
+				}
+				else
+				{
+					insfile_vec.push_back(tokens_case_sen[0]);
+					outfile_vec.push_back(tokens_case_sen[1]);
+				}
+				++i_tpl_ins;
+			}
+			else if (section == "CONTROL DATA")
+			{
+				if (sec_lnum == 3)
+				{
+					convert_ip(tokens[0], n_tpl_file);
+				}
 			}
 		}
 	}
@@ -398,6 +423,7 @@ NetPackage::PackType PANTHERSlave::run_model(Parameters &pars, Observations &obs
 		
 		while (true)
 		{
+
 			if (shared_execptions.size() > 0)
 			{
 				cout << "exception raised by run thread " << std::endl;
@@ -483,6 +509,9 @@ NetPackage::PackType PANTHERSlave::run_model(Parameters &pars, Observations &obs
 		cerr << "   Aborting model run" << endl;
 		NetPackage::PackType::RUN_FAILED;
 	}
+
+	//sleep here just to give the os a chance to cleanup any remaining file handles
+	w_sleep(poll_interval_seconds * 1000);
 	return final_run_status;
 }
 

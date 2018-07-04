@@ -1,0 +1,55 @@
+
+PANTHER master listening on socket:0.0.0.0:4005 (IPv4)
+running model 8 times
+
+    waiting for slaves to appear...
+
+
+06/03/18 20:50:02->new connection from: empty.corp.gns.cri.nz:52717
+06/03/18 20:50:02->initializing new slave connection from: empty.corp.gns.cri.nz:52717; number of slaves: 1; working dir: C:\Dev\pestpp\benchmarks\opt_supply2_chance\slave_2
+06/03/18 20:50:03->new connection from: empty.corp.gns.cri.nz:52718
+06/03/18 20:50:03->initializing new slave connection from: empty.corp.gns.cri.nz:52718; number of slaves: 2; working dir: C:\Dev\pestpp\benchmarks\opt_supply2_chance\slave_1
+06/03/18 20:50:03->new connection from: empty.corp.gns.cri.nz:52719
+06/03/18 20:50:03->initializing new slave connection from: empty.corp.gns.cri.nz:52719; number of slaves: 3; working dir: C:\Dev\pestpp\benchmarks\opt_supply2_chance\slave_3
+06/03/18 20:50:03->new connection from: empty.corp.gns.cri.nz:52720
+06/03/18 20:50:03->initializing new slave connection from: empty.corp.gns.cri.nz:52720; number of slaves: 4; working dir: C:\Dev\pestpp\benchmarks\opt_supply2_chance\slave_4
+06/03/18 20:50:03->new slave ready: empty.corp.gns.cri.nz:52719
+06/03/18 20:50:03->Sending run 0 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\opt_supply2_chance\slave_3  (group id = 2, run id = 0, concurrent runs = 1)
+06/03/18 20:50:03->new slave ready: empty.corp.gns.cri.nz:52717
+06/03/18 20:50:03->Sending run 1 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\opt_supply2_chance\slave_2  (group id = 2, run id = 1, concurrent runs = 1)
+06/03/18 20:50:03->new slave ready: empty.corp.gns.cri.nz:52718
+06/03/18 20:50:03->Sending run 2 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\opt_supply2_chance\slave_1  (group id = 2, run id = 2, concurrent runs = 1)
+06/03/18 20:50:04->new slave ready: empty.corp.gns.cri.nz:52720
+06/03/18 20:50:04->Sending run 3 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\opt_supply2_chance\slave_4  (group id = 2, run id = 3, concurrent runs = 1)
+06/03/18 20:50:06->run 0 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\opt_supply2_chance\slave_3  (run time = 0.0404 min, group id = 2, run id = 0 concurrent = 1)
+06/03/18 20:50:06->Sending run 4 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\opt_supply2_chance\slave_3  (group id = 2, run id = 4, concurrent runs = 1)
+06/03/18 20:50:06->run 1 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\opt_supply2_chance\slave_2  (run time = 0.0403833 min, group id = 2, run id = 1 concurrent = 1)
+06/03/18 20:50:06->Sending run 5 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\opt_supply2_chance\slave_2  (group id = 2, run id = 5, concurrent runs = 1)
+06/03/18 20:50:06->run 2 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\opt_supply2_chance\slave_1  (run time = 0.0404 min, group id = 2, run id = 2 concurrent = 1)
+06/03/18 20:50:06->Sending run 6 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\opt_supply2_chance\slave_1  (group id = 2, run id = 6, concurrent runs = 1)
+06/03/18 20:50:06->run 3 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\opt_supply2_chance\slave_4  (run time = 0.0387167 min, group id = 2, run id = 3 concurrent = 1)
+06/03/18 20:50:06->Sending run 7 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\opt_supply2_chance\slave_4  (group id = 2, run id = 7, concurrent runs = 1)
+06/03/18 20:50:08->run 4 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\opt_supply2_chance\slave_3  (run time = 0.0402167 min, group id = 2, run id = 4 concurrent = 1)
+06/03/18 20:50:08->run 5 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\opt_supply2_chance\slave_2  (run time = 0.0402 min, group id = 2, run id = 5 concurrent = 1)
+06/03/18 20:50:08->run 6 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\opt_supply2_chance\slave_1  (run time = 0.0402167 min, group id = 2, run id = 6 concurrent = 1)
+06/03/18 20:50:08->run 7 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\opt_supply2_chance\slave_4  (run time = 0.0385333 min, group id = 2, run id = 7 concurrent = 1)
+
+---------------------
+   8 runs complete :  0 runs failed
+
+running model 1 times
+
+06/03/18 20:50:09->Sending run 8 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\opt_supply2_chance\slave_2  (group id = 2, run id = 8, concurrent runs = 1)
+06/03/18 20:50:11->run 8 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\opt_supply2_chance\slave_2  (run time = 0.03845 min, group id = 2, run id = 8 concurrent = 1)
+
+---------------------
+   1 runs complete :  0 runs failed
+
+running model 1 times
+
+06/03/18 20:50:11->Sending run 9 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\opt_supply2_chance\slave_1  (group id = 2, run id = 9, concurrent runs = 1)
+06/03/18 20:50:13->run 9 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\opt_supply2_chance\slave_1  (run time = 0.0393 min, group id = 2, run id = 9 concurrent = 1)
+
+---------------------
+   1 runs complete :  0 runs failed
+

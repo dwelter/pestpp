@@ -314,6 +314,7 @@ int main(int argc, char* argv[])
 					pest_scenario.get_pestpp_options().get_max_run_fail(),
 					pest_scenario.get_pestpp_options().get_overdue_reched_fac(),
 					pest_scenario.get_pestpp_options().get_overdue_giveup_fac(),
+					pest_scenario.get_pestpp_options().get_overdue_giveup_minutes(),
 					csf);
 			}
 			else
@@ -323,7 +324,8 @@ int main(int argc, char* argv[])
 					file_manager.open_ofile_ext("rmr"),
 					pest_scenario.get_pestpp_options().get_max_run_fail(),
 					pest_scenario.get_pestpp_options().get_overdue_reched_fac(),
-					pest_scenario.get_pestpp_options().get_overdue_giveup_fac());
+					pest_scenario.get_pestpp_options().get_overdue_giveup_fac(),
+					pest_scenario.get_pestpp_options().get_overdue_giveup_minutes());
 			}
 		}
 		else if (run_manager_type == RunManagerType::GENIE)
@@ -468,6 +470,9 @@ int main(int argc, char* argv[])
 					*(optimum_run.get_obj_func_ptr()->get_obs_ptr()),
 					optimum_run.get_obs(), *(optimum_run.get_obj_func_ptr()),
 					optimum_run.get_ctl_pars());
+				PhiData pd = optimum_run.get_obj_func_ptr()->phi_report(optimum_run.get_obs(), optimum_run.get_ctl_pars(),
+					*(pest_scenario.get_regul_scheme_ptr()));
+				output_file_writer.write_obj_iter(0, run_manager_ptr->get_nruns(), pd);
 				file_manager.close_file("rei");
 				run_manager_ptr->free_memory();
 			}

@@ -1,2 +1,4 @@
 datetime constant_concentration_1_cum constant_concentration_1_flx gw_to_stream_1_cum gw_to_stream_1_flx inflow_to_stream_1_cum inflow_to_stream_1_flx precipitation_1_cum precipitation_1_flx runoff_1_cum runoff_1_flx stream_accumulation_1_cum stream_accumulation_1_flx stream_depletion_1_cum stream_depletion_1_flx stream_to_gw_1_cum stream_to_gw_1_flx streamflow_1_cum streamflow_1_flx
-19790030 0.0 0.0 25983.96 39.95363 0.0 0.0 0.0 0.0 0.0 0.0 -28.9597 -0.02360062 20.57278 0.01826551 -1201.476 -1.840906 -24774.12 -38.10739
+19791230 0.0 0.0 2390856.0 862.6296 0.0 0.0 0.0 0.0 0.0 0.0 -30574.43 -13.23544 30372.37 18.57164 -17203.29 -6.218173 -2373451.0 -861.7476
+19891227 0.0 0.0 2840498.0 1924.559 0.0 0.0 0.0 0.0 0.0 0.0 -31100.74 -0.10109 30865.56 0.05935758 -47046.71 -129.1506 -2793217.0 -1795.366
+19991225 0.0 0.0 3205081.0 919.2371 0.0 0.0 0.0 0.0 0.0 0.0 -31115.29 -0.0138986 30875.59 0.00389022 -75622.59 -72.39887 -3129219.0 -846.8283
