@@ -1352,8 +1352,8 @@ def tenpar_subset_how_test():
     pst.pestpp_options = {"ies_num_reals":num_reals}
     pst.control_data.noptmax = -1
     pst.write(os.path.join(template_d,"pest_restart.pst"))
-    #pyemu.os_utils.start_slaves(template_d, exe_path, "pest_restart.pst", num_slaves=10,
-    #                            slave_root=model_d, master_dir=test_d, port=4020)
+    pyemu.os_utils.start_slaves(template_d, exe_path, "pest_restart.pst", num_slaves=10,
+                                slave_root=model_d, master_dir=test_d, port=4020)
     pyemu.os_utils.run("{0} {1}".format(exe_path, "pest_restart.pst"), cwd=test_d)
     pst.pestpp_options["ies_par_en"] = "pest_restart.0.par.csv"
     pst.pestpp_options["ies_lambda_mults"] = 1.0
@@ -1375,7 +1375,7 @@ def tenpar_subset_how_test():
     assert means.mean() == means[0]
 
     means = []
-    pst.pestpp_options["ies_subset_size"] = 1
+    pst.pestpp_options["ies_subset_size"] = 2
     for how in ["first", "last", "random", "phi_based"]:
         pst.pestpp_options["ies_subset_how"] = how
         pst_file = "pest_{0}.pst".format(how)
@@ -1761,38 +1761,38 @@ if __name__ == "__main__":
     # write_empty_test_matrix()
 
     #prep_10par_for_travis("ies_10par_xsec")
-    setup_suite_dir("ies_10par_xsec")
-    setup_suite_dir("ies_freyberg")
+    # setup_suite_dir("ies_10par_xsec")
+    # setup_suite_dir("ies_freyberg")
     
-    run_suite("ies_10par_xsec")
-    run_suite("ies_freyberg")
-    rebase("ies_freyberg")
-    rebase("ies_10par_xsec")
-    compare_suite("ies_10par_xsec")
-    compare_suite("ies_freyberg")
+    # run_suite("ies_10par_xsec")
+    # run_suite("ies_freyberg")
+    # rebase("ies_freyberg")
+    # rebase("ies_10par_xsec")
+    # compare_suite("ies_10par_xsec")
+    # compare_suite("ies_freyberg")
     
     # full list of tests
-    tenpar_subset_test()
-    tenpar_full_cov_test()
-    test_freyberg_full_cov_reorder()
-    test_freyberg_full_cov_reorder_run()
-    test_freyberg_full_cov()
+    # tenpar_subset_test()
+    # tenpar_full_cov_test()
+    # test_freyberg_full_cov_reorder()
+    # test_freyberg_full_cov_reorder_run()
+    # test_freyberg_full_cov()
 
-    tenpar_tight_tol_test()
+    # tenpar_tight_tol_test()
     #test_10par_xsec(silent_master=False)
     #test_freyberg()
-    test_chenoliver()
-    tenpar_weight_pareto_test()
-    tenpar_narrow_range_test()
-    test_freyberg_ineq()
-    tenpar_fixed_test()
+    # test_chenoliver()
+    # tenpar_weight_pareto_test()
+    # tenpar_narrow_range_test()
+    # test_freyberg_ineq()
+    # tenpar_fixed_test()
     tenpar_subset_how_test()
-    tenpar_localizer_test1()
-    csv_tests()
-    tenpar_localizer_test3()
-    freyberg_localizer_test1()
-    freyberg_localizer_test2()
-    freyberg_localizer_test3()
+    # tenpar_localizer_test1()
+    # csv_tests()
+    # tenpar_localizer_test3()
+    # freyberg_localizer_test1()
+    # freyberg_localizer_test2()
+    # freyberg_localizer_test3()
 
    # tenpar_subset_how_fail_test()
 
