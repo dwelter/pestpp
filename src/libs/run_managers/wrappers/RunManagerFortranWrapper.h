@@ -7,10 +7,12 @@ extern "C"
 {
 int RMIF_CREATE_SERIAL(char *f_comline, int  *comline_str_len, int *comline_array_len,
 	char *f_storfile, int *storfile_len,
+	char *f_tpl, int  *tpl_str_len, int *tpl_array_len,
+	char *f_inp, int  *inp_str_len, int *inp_array_len,
+	char *f_ins, int  *ins_str_len, int *ins_array_len,
 	char *f_rundir, int *rundir_len, int *n_max_fail);
 
-int RMIF_CREATE_PANTHER(char *f_comline, int  *comline_str_len, int *comline_array_len,
-	char *f_storfile, int *storfile_len,
+int RMIF_CREATE_PANTHER(char *f_storfile, int *storfile_len,
 	char *f_port, int *f_port_len,
 	char *f_info_filename, int *info_filename_len, int *n_max_fail,
 	double *overdue_reched_fac, double *overdue_giveup_fac);
@@ -41,7 +43,7 @@ int RMIF_GET_RUN_WITH_INFO(int *run_id, double *parameter_data, int *npar, doubl
 	char *f_info_txt, int  *info_txt_len, double *info_value);
 
 
-int RMIF_GET_RUN_NFO(int run_id, int *run_status, int *model_exe_index, char *f_info_txt, int  *info_txt_len, double *info_value);
+int RMIF_GET_RUN_INFO(int run_id, int *run_status, int *model_exe_index, char *f_info_txt, int  *info_txt_len, double *info_value);
 
 int RMIF_GET_RUN_STATUS_INFO(int *run_id, int* run_status, double *max_runtime, int *n_concurrent_runs);
 
