@@ -730,6 +730,11 @@ bool IterEnsembleSmoother::initialize_pe(Covariance &cov)
 		if (pp_args.find("IES_NUM_REALS") != pp_args.end())
 		{
 			int num_reals = pest_scenario.get_pestpp_options().get_ies_num_reals();
+			if (pest_scenario.get_pestpp_options().get_ies_include_base())
+			{
+				message(1, "Note: increasing num_reals by 1 to account for 'base' realization in existing par ensemble");
+				num_reals++;
+			}
 			if (num_reals < pe.shape().first)
 			{
 				message(1,"ies_num_reals arg passed, truncated parameter ensemble to ",num_reals);
@@ -942,6 +947,11 @@ bool IterEnsembleSmoother::initialize_oe(Covariance &cov)
 		if (pp_args.find("IES_NUM_REALS") != pp_args.end())
 		{
 			int num_reals = pest_scenario.get_pestpp_options().get_ies_num_reals();
+			if (pest_scenario.get_pestpp_options().get_ies_include_base())
+			{
+				message(1, "Note: increasing num_reals by 1 to account for 'base' realization in existing obs ensemble");
+				num_reals++;
+			}
 			if (num_reals < oe.shape().first)
 			{
 				message(1,"ies_num_reals arg passed, truncated observation ensemble to ",num_reals);
@@ -1162,6 +1172,11 @@ void IterEnsembleSmoother::initialize_restart_oe()
 	if (pp_args.find("IES_NUM_REALS") != pp_args.end())
 	{
 		int num_reals = pest_scenario.get_pestpp_options().get_ies_num_reals();
+		if (pest_scenario.get_pestpp_options().get_ies_include_base())
+		{
+			message(1, "Note: increasing num_reals by 1 to account for 'base' realization in existing obs restart ensemble");
+			num_reals++;
+		}
 		if (num_reals < oe.shape().first)
 		{
 			message(1, "ies_num_reals arg passed, truncated restart obs ensemble to ", num_reals);
@@ -1485,7 +1500,7 @@ void IterEnsembleSmoother::initialize()
 		lam_mults.push_back(1.0);
 	message(1, "using lambda multipliers: ", lam_mults);
 	vector<double> scale_facs = pest_scenario.get_pestpp_options().get_lambda_scale_vec();
-	message(1, "usnig lambda scaling factors: ", scale_facs);
+	message(1, "using lambda scaling factors: ", scale_facs);
 	double acc_fac = pest_scenario.get_pestpp_options().get_ies_accept_phi_fac();
 	message(1, "acceptable phi factor: ", acc_fac);
 	double inc_fac = pest_scenario.get_pestpp_options().get_ies_lambda_inc_fac();
@@ -1514,9 +1529,7 @@ void IterEnsembleSmoother::initialize()
 	
 
 	int num_reals = pest_scenario.get_pestpp_options().get_ies_num_reals();
-	
-	
-	
+
 	bool pe_drawn = initialize_pe(parcov);
 
 	if (pest_scenario.get_pestpp_options().get_ies_use_prior_scaling())

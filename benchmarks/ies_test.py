@@ -146,7 +146,7 @@ def run_suite(model_d,silent_master=False):
     template_d = os.path.join(model_d, "test_template")
 
     pst = pyemu.Pst(os.path.join(template_d, "pest.pst"))
-
+    errors = []
     for i in range(df.shape[0]):
 
     #for i in range(3,4):
@@ -158,26 +158,30 @@ def run_suite(model_d,silent_master=False):
         print(test_vars["text"])
         #if "6" not in test_vars["text"]:
         #    continue
-        pst.pestpp_options = {}
-        for v in ies_vars:
-            if pd.notnull(test_vars[v]):
+        try:
+            pst.pestpp_options = {}
+            for v in ies_vars:
+                if pd.notnull(test_vars[v]):
+                    try:
+                        pst.pestpp_options[v] = test_vars[v].replace('"','')
+                    except:
+                        pst.pestpp_options[v] = test_vars[v]
+            pst.write(os.path.join(template_d, "pest.pst"))
+            test_d = os.path.join(model_d, "master_test_{0}".format(test_name))
+
+            if os.path.exists(test_d):
                 try:
-                    pst.pestpp_options[v] = test_vars[v].replace('"','')
+                    shutil.rmtree(test_d)
                 except:
-                    pst.pestpp_options[v] = test_vars[v]
-        pst.write(os.path.join(template_d, "pest.pst"))
-        test_d = os.path.join(model_d, "master_test_{0}".format(test_name))
-
-        if os.path.exists(test_d):
-            try:
-                shutil.rmtree(test_d)
-            except:
-                print("error removing existing test_d: {0}".format(test_d))
-                continue
-        pyemu.os_utils.start_slaves(template_d, exe_path, "pest.pst", num_slaves=15,
-                                   master_dir=test_d, verbose=True, slave_root=model_d,
-                                   silent_master=silent_master,port=4020)
-
+                    print("error removing existing test_d: {0}".format(test_d))
+                    continue
+            pyemu.os_utils.start_slaves(template_d, exe_path, "pest.pst", num_slaves=15,
+                                       master_dir=test_d, verbose=True, slave_root=model_d,
+                                       silent_master=silent_master,port=4020)
+        except Exception as e:
+            errors.append("error:"+test_vars["text"]+" "+str(e))
+    if len(errors) > 0:
+        raise Exception("\n".join(errors))
 
 def compare_suite(model_d):
     base_d = os.path.join(model_d, "baseline_opt")
@@ -574,7 +578,7 @@ def test_freyberg_full_cov_reorder():
 
     pst.control_data.noptmax = 0
     pst.pestpp_options = {}
-    num_reals = 1000
+    num_reals = 5000
 
     #diagonal cov
     #pst.pestpp_options["parcov_filename"] = "prior.jcb"
@@ -965,7 +969,7 @@ def tenpar_fixed_test():
 
     pe.loc[:,"stage"] = np.linspace(0.0,1.0,pe.shape[0])
     pe.loc[:,"k_01"] = 5.0
-    pe.to_csv(os.path.join(template_d,"par.csv"))
+    pe.to_csv(os.path.join(template_d,"par_fixed.csv"))
     pe.to_binary(os.path.join(template_d, "par.jcb"))
     fixed_pars = ["stage","k_01"]
     pst.parameter_data.loc[fixed_pars,"partrans"] = "fixed"
@@ -981,21 +985,21 @@ def tenpar_fixed_test():
             diff = pe.loc[df.index,fixed_pars] - df
             assert diff.apply(np.abs).sum().sum() < 0.01, diff
 
-    pst.pestpp_options["ies_par_en"] = "par.csv"
+    pst.pestpp_options["ies_par_en"] = "par_fixed.csv"
     pst.write(os.path.join(template_d, "pest.pst"))
     #pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
     pyemu.os_utils.start_slaves(template_d, exe_path, "pest.pst", num_slaves=20, master_dir=test_d,
                                slave_root=model_d,port=4020)
     compare()
-    pe.to_binary(os.path.join(template_d,"par.jcb"))
-    pst.pestpp_options["ies_par_en"] = "par.jcb"
+    pe.to_binary(os.path.join(template_d,"par_fixed.jcb"))
+    pst.pestpp_options["ies_par_en"] = "par_fixed.jcb"
     pst.write(os.path.join(template_d, "pest.pst"))
     #pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
     pyemu.os_utils.start_slaves(template_d, exe_path, "pest.pst", num_slaves=20, master_dir=test_d,
                                slave_root=model_d,port=4020)
     compare()
 
-    pst.pestpp_options["ies_par_en"] = "par.jcb"
+    pst.pestpp_options["ies_par_en"] = "par_fixed.jcb"
     pst.pestpp_options["ies_save_binary"] = 'true'
     pst.write(os.path.join(template_d, "pest.pst"))
     #pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
@@ -1262,7 +1266,7 @@ def tenpar_localizer_test2():
     cov = pyemu.Cov.from_parameter_data(pst)
     pe = pyemu.ParameterEnsemble.from_gaussian_draw(pst=pst,cov=cov,num_reals=10)
     pe.enforce()
-    pe.to_csv(os.path.join(template_d,"par.csv"))
+    pe.to_csv(os.path.join(template_d,"par_local.csv"))
 
     #mat = pyemu.Matrix.from_names(pst.nnz_obs_names,pst.adj_par_names).to_dataframe()
     use_pars = pst.adj_par_names[0:2]
@@ -1282,7 +1286,7 @@ def tenpar_localizer_test2():
     pst.pestpp_options["ies_lambda_mults"] = 1.0
     pst.pestpp_options["lambda_scale_fac"] = 1.0
     pst.pestpp_options["ies_subset_size"] = 11
-    pst.pestpp_options["ies_par_en"] = "par.csv"
+    pst.pestpp_options["ies_par_en"] = "par_local.csv"
     pst.pestpp_options["ies_include_base"] = False
     pst.control_data.noptmax = 3
     
@@ -1339,6 +1343,36 @@ def prep_for_travis(model_d):
     print(pst.model_command)
     pst.write(pst_file)
 
+def tenpar_incr_num_reals_test():
+    model_d = "ies_10par_xsec"
+    test_d = os.path.join(model_d, "test_incr_num_reals1")
+    template_d = os.path.join(model_d, "template")
+    pst = pyemu.Pst(os.path.join(template_d, "pest.pst"))
+    num_reals = 10
+    if os.path.exists(test_d):
+        shutil.rmtree(test_d)
+    shutil.copytree(template_d, test_d)
+    pst.pestpp_options = {"ies_num_reals":num_reals}
+    pst.pestpp_options["ies_lambda_mults"] = 1.0
+    pst.pestpp_options["lambda_scale_fac"] = 1.0
+    pst.pestpp_options["ies_num_reals"] = num_reals
+    pst.pestpp_options["ies_include_base"] = True
+    pst.write(os.path.join(test_d,"pest_restart.pst"))
+    pyemu.os_utils.run("{0} {1}".format(exe_path, "pest_restart.pst"), cwd=test_d)
+
+    pst.pestpp_options["ies_par_en"] = "pest_restart.2.par.csv"
+    pst.pestpp_options["ies_obs_en"] = "pest_restart.base.obs.csv"
+    pst.pestpp_options["ies_restart_obs_en"] = "pest_restart.2.obs.csv"
+    #pst.pestpp_options["ies_num_reals"] += 1
+    pst.control_data.noptmax = 2
+    pst.write(os.path.join(test_d,"pest.pst"))
+    pyemu.os_utils.run("{0} {1}".format(exe_path, "pest.pst"), cwd=test_d)
+
+    df1 = pd.read_csv(os.path.join(test_d,"pest_restart.2.par.csv"),index_col=0)
+    df2 = pd.read_csv(os.path.join(test_d,"pest.0.par.csv"),index_col=0)
+    diff = df1.loc["base",:] - df2.loc["base",:]
+    print(diff)
+    print(diff.max())
 
 def tenpar_subset_how_test():
     model_d = "ies_10par_xsec"
@@ -1406,6 +1440,7 @@ def tenpar_subset_how_test():
 
 
 def tenpar_localizer_test3():
+    plt.close("all")
     model_d = "ies_10par_xsec"
     test_d = os.path.join(model_d, "master_localizer_test3")
     template_d = os.path.join(model_d, "test_template")
@@ -1420,7 +1455,7 @@ def tenpar_localizer_test3():
     cov = pyemu.Cov.from_parameter_data(pst)
     pe = pyemu.ParameterEnsemble.from_gaussian_draw(pst=pst, cov=cov, num_reals=10)
     pe.enforce()
-    pe.to_csv(os.path.join(template_d, "par.csv"))
+    pe.to_csv(os.path.join(template_d, "par_local.csv"))
 
     mat = pyemu.Matrix.from_names(pst.nnz_obs_names,pst.adj_par_names).to_dataframe()
     use_pars = pst.adj_par_names[0:2]
@@ -1438,9 +1473,9 @@ def tenpar_localizer_test3():
     pst.pestpp_options["ies_lambda_mults"] = 1.0
     pst.pestpp_options["lambda_scale_fac"] = 1.0
     pst.pestpp_options["ies_subset_size"] = 11
-    pst.pestpp_options["ies_par_en"] = "par.csv"
+    pst.pestpp_options["ies_par_en"] = "par_local.csv"
     pst.pestpp_options["ies_include_base"] = False
-    pst.pestpp_options["ies_accept_phi_fac"] = 1.01
+    pst.pestpp_options["ies_accept_phi_fac"] = 1.0
     pst.control_data.nphistp = 10
     pst.control_data.nphinored = 10
     pst.control_data.noptmax = 10
@@ -1504,7 +1539,7 @@ def freyberg_localizer_test1():
     cov = pyemu.Cov.from_parameter_data(pst)
     pe = pyemu.ParameterEnsemble.from_gaussian_draw(pst=pst,cov=cov,num_reals=10)
     pe.enforce()
-    pe.to_csv(os.path.join(template_d,"par.csv"))
+    pe.to_csv(os.path.join(template_d,"par_local.csv"))
    
     
     pst.observation_data.loc[pst.nnz_obs_names[3],"obgnme"] = "less_than"
@@ -1515,7 +1550,7 @@ def freyberg_localizer_test1():
     pst.pestpp_options["ies_lambda_mults"] = 1.0
     pst.pestpp_options["lambda_scale_fac"] = 1.0
     pst.pestpp_options["ies_include_base"] = False
-    pst.pestpp_options["ies_par_en"] = "par.csv"
+    pst.pestpp_options["ies_par_en"] = "par_local.csv"
     pst.pestpp_options["ies_localizer"] = "localizer.mat"
     pst.pestpp_options["ies_verbose_level"] = 3
     pst.control_data.noptmax = 3
@@ -1569,7 +1604,7 @@ def freyberg_localizer_test2():
     cov = pyemu.Cov.from_parameter_data(pst)
     pe = pyemu.ParameterEnsemble.from_gaussian_draw(pst=pst, cov=cov, num_reals=10)
     pe.enforce()
-    pe.to_csv(os.path.join(template_d, "par.csv"))
+    pe.to_csv(os.path.join(template_d, "par_local.csv"))
 
     pst.observation_data.loc[pst.nnz_obs_names[3], "obgnme"] = "less_than"
     pst.observation_data.loc[pst.nnz_obs_names[3], "weight"] = 100.0
@@ -1579,7 +1614,7 @@ def freyberg_localizer_test2():
     #pst.pestpp_options["ies_lambda_mults"] = 1.0
     #pst.pestpp_options["lambda_scale_fac"] = 1.0
     pst.pestpp_options["ies_include_base"] = False
-    pst.pestpp_options["ies_par_en"] = "par.csv"
+    pst.pestpp_options["ies_par_en"] = "par_local.csv"
     pst.pestpp_options["ies_localizer"] = "localizer.mat"
     pst.pestpp_options["ies_verbose_level"] = 3
     pst.control_data.nphistp = 10
@@ -1630,7 +1665,7 @@ def freyberg_localizer_test3():
     cov = pyemu.Cov.from_parameter_data(pst)
     pe = pyemu.ParameterEnsemble.from_gaussian_draw(pst=pst, cov=cov, num_reals=10)
     pe.enforce()
-    pe.to_csv(os.path.join(template_d, "par.csv"))
+    pe.to_csv(os.path.join(template_d, "par_local.csv"))
 
     pst.observation_data.loc[pst.nnz_obs_names[3], "obgnme"] = "less_than"
     pst.observation_data.loc[pst.nnz_obs_names[3], "weight"] = 100.0
@@ -1640,7 +1675,7 @@ def freyberg_localizer_test3():
     #pst.pestpp_options["ies_lambda_mults"] = 1.0
     #pst.pestpp_options["lambda_scale_fac"] = 1.0
     pst.pestpp_options["ies_include_base"] = False
-    pst.pestpp_options["ies_par_en"] = "par.csv"
+    pst.pestpp_options["ies_par_en"] = "par_local.csv"
     pst.pestpp_options["ies_localizer"] = "localizer.mat"
     pst.pestpp_options["ies_verbose_level"] = 1
     pst.control_data.noptmax = 6
@@ -1761,38 +1796,40 @@ if __name__ == "__main__":
     # write_empty_test_matrix()
 
     #prep_10par_for_travis("ies_10par_xsec")
-    setup_suite_dir("ies_10par_xsec")
-    setup_suite_dir("ies_freyberg")
+    #setup_suite_dir("ies_10par_xsec")
+    #setup_suite_dir("ies_freyberg")
     
-    run_suite("ies_10par_xsec")
-    run_suite("ies_freyberg")
-    rebase("ies_freyberg")
-    rebase("ies_10par_xsec")
-    compare_suite("ies_10par_xsec")
-    compare_suite("ies_freyberg")
+    #run_suite("ies_10par_xsec")
+    #run_suite("ies_freyberg")
+    # rebase("ies_freyberg")
+    # rebase("ies_10par_xsec")
+    # compare_suite("ies_10par_xsec")
+    # compare_suite("ies_freyberg")
     
-    # full list of tests
-    tenpar_subset_test()
-    tenpar_full_cov_test()
-    test_freyberg_full_cov_reorder()
-    test_freyberg_full_cov_reorder_run()
-    test_freyberg_full_cov()
-
-    tenpar_tight_tol_test()
     #test_10par_xsec(silent_master=False)
-    #test_freyberg()
-    test_chenoliver()
-    tenpar_weight_pareto_test()
-    tenpar_narrow_range_test()
-    test_freyberg_ineq()
-    tenpar_fixed_test()
-    tenpar_subset_how_test()
-    tenpar_localizer_test1()
-    csv_tests()
-    tenpar_localizer_test3()
+    #test_freyberg()        
+
+    #full list of tests
+    #tenpar_subset_test()
+    #tenpar_full_cov_test()
+    # test_freyberg_full_cov_reorder()
+    # test_freyberg_full_cov_reorder_run()
+    # test_freyberg_full_cov()
+    # tenpar_tight_tol_test()
+    # test_chenoliver()
+    # tenpar_weight_pareto_test()
+    # tenpar_narrow_range_test()
+    # test_freyberg_ineq()
+    # tenpar_fixed_test()
+    # tenpar_subset_how_test()
+    # tenpar_localizer_test1()
+    # csv_tests()
+    #tenpar_localizer_test3()
     freyberg_localizer_test1()
     freyberg_localizer_test2()
     freyberg_localizer_test3()
+    tenpar_incr_num_reals_test()
+
 
    # tenpar_subset_how_fail_test()
 

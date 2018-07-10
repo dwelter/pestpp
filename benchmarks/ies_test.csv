@@ -7,8 +7,8 @@
 2),par.csv,,,,,"""20""",,,,,,,,,0,2) ies_10par_xsec start with existing par csv and drawing obs en from weights 
 3),par.csv,,restart.csv,,,"""20""",,,,,,,,,0,3) ies_10par_xsec restart with full simulated obs en
 3a),par.csv,,restart_failed.csv,,,"""20""",,,,,,,,,0,3a) ies_10par_xsec restart with failed runs in simulated obs en
-3b),par.csv,,restart_failed.csv,1000,,"""20""",,,,"0.1,1.0,10.0",,"""10""",,,0,3b) ies_10par_xsec restart with failed runs and bad phi runs in simulated obs en with multiple lam
-3b),par_some.csv,,restart_some.csv,1000,,"""20""",,,,"0.1,1.0,10.0",,"""10""",,,0,3b) ies_10par_xsec restart with partial par and restart en and bad phi runs in simulated obs en with multiple lam
+3b1),par.csv,,restart_failed.csv,1000,,"""20""",,,,"0.1,1.0,10.0",,"""10""",,,0,3b) ies_10par_xsec restart with failed runs and bad phi runs in simulated obs en with multiple lam
+3c),par_some.csv,,restart_some.csv,1000,,"""20""",,,,"0.1,1.0,10.0",,"""10""",,,0,3b) ies_10par_xsec restart with partial par and restart en and bad phi runs in simulated obs en with multiple lam
 4),,,,,,"""20""",,,0.5,,,,,,0,4) ies_10par_xsec reg_factor = 0.5 test
 5),,,,,,"""20""","""false""",,,,,,,,0,5)  ies_10par_xsec full solution test with standard draw mode
 5a),,,,,,"""20""","""false""","""true""",,,1000,,,,0,5a) ies_10par_xsec full solution test with empirical parcov
