@@ -3333,6 +3333,7 @@ void IterEnsembleSmoother::set_subset_idx(int size)
 		vector<pair<double, int>> phis;
 		//vector<int> sidx;
 		int step;
+		int idx;
 		PhiHandler::phiType pt = PhiHandler::phiType::COMPOSITE;
 		map<string, double>* phi_map = ph.get_phi_map(pt);
 		map<string, double>::iterator pi = phi_map->begin(), end = phi_map->end();
@@ -3349,22 +3350,20 @@ void IterEnsembleSmoother::set_subset_idx(int size)
 		subset_idxs.push_back(phis[0].second);
 		subset_idxs.push_back(phis[phis.size() - 1].second);//can't get .back() to work with vector<pair<>>
 
-													 //start near middle, work out
-													 //start with mid, moving up and down gives more than enough
-		int mid = phis.size() / 2;
-		step = phis.size() / nreal_subset;
-		for (i = 0; i < nreal_subset; ++i)
+		step = (phis.size()-1) / nreal_subset;
+		//cout << step << endl;
+		//cout << (phis.size() - 1) << endl;
+		for (i = 1; i < nreal_subset; ++i)
 		{
 			//add higher phis first
-			if ((subset_idxs.size() < nreal_subset) && (find(subset_idxs.begin(), subset_idxs.end(), phis[mid + i * step].second) == subset_idxs.end()))
+			idx = phis.size() - (i * step);
+			if ((subset_idxs.size() < nreal_subset) && (find(subset_idxs.begin(), subset_idxs.end(), phis[idx].second) == subset_idxs.end()))
 			{
-				// slopy but otherwise hard to ensure nsubsets and good spread
-				subset_idxs.push_back(phis[mid + i * step].second);
-			}
-			if ((subset_idxs.size() < nreal_subset) && (find(subset_idxs.begin(), subset_idxs.end(), phis[mid - i * step].second) == subset_idxs.end()))
-			{
-				// slopy but otherwise hard to ensure nsubsets and good spread
-				subset_idxs.push_back(phis[mid - i * step].second);
+				subset_idxs.push_back(phis[idx].second);
+				//cout << i << endl;
+				//cout << idx << endl;
+				//cout << phis[idx].first << endl;
+				//cout << phis[idx].second << endl;
 			}
 		}
 	}
