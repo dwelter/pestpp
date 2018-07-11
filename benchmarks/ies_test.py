@@ -955,22 +955,52 @@ def test_freyberg_ineq():
         ax.plot([v,v],ax.get_ylim(),"k--",lw=2.0)
     #plt.show()
 
+
+def tenpar_fixed_test2():
+    model_d = "ies_10par_xsec"
+    test_d = os.path.join(model_d, "test_fixed21")
+    template_d = os.path.join(model_d, "template")
+    pst = pyemu.Pst(os.path.join(template_d,"pest.pst"))
+    pst.control_data.noptmax = 1
+    if os.path.exists(test_d):
+        shutil.rmtree(test_d)
+    shutil.copytree(template_d,test_d)
+    pst.parameter_data.loc[:,"partrans"] = "log"
+    pst.parameter_data.loc["k_01","partrans"] = "fixed"
+    cov = pyemu.Cov.from_parameter_data(pst)
+    pe = pyemu.ParameterEnsemble.from_gaussian_draw(pst=pst,cov=cov,num_reals=10)
+    pe = pe.loc[:,pst.adj_par_names]
+    pe.loc[:,"stage"] = np.linspace(0.0,1.0,pe.shape[0])
+    pe.to_csv(os.path.join(template_d,"par_fixed.csv"))
+    fixed_pars = ["stage","k_01"]
+    pst.parameter_data.loc[fixed_pars,"partrans"] = "fixed"
+    pst.pestpp_options["ies_par_en"] = "par_fixed.csv"
+    pst.pestpp_options["ies_lambda_mults"] = 1.0
+    pst.pestpp_options["lambda_scale_fac"] = 1.0
+    pst.pestpp_options["ies_save_binary"] = False
+    pst.write(os.path.join(template_d, "pest_fixed.pst"))
+    # pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
+    pyemu.os_utils.start_slaves(template_d, exe_path, "pest_fixed.pst", num_slaves=5, master_dir=test_d,
+                                slave_root=model_d, port=4020)
+
+
 def tenpar_fixed_test():
     model_d = "ies_10par_xsec"
     test_d = os.path.join(model_d, "test_fixed")
     template_d = os.path.join(model_d, "template")
     pst = pyemu.Pst(os.path.join(template_d,"pest.pst"))
-    pst.control_data.noptmax = 2
+    pst.parameter_data.loc[:, "partrans"] = "log"
+    pst.control_data.noptmax = 1
     if os.path.exists(test_d):
         shutil.rmtree(test_d)
     shutil.copytree(template_d,test_d)
     cov = pyemu.Cov.from_parameter_data(pst)
-    pe = pyemu.ParameterEnsemble.from_gaussian_draw(pst=pst,cov=cov,num_reals=50)
+    pe = pyemu.ParameterEnsemble.from_gaussian_draw(pst=pst,cov=cov,num_reals=10)
 
     pe.loc[:,"stage"] = np.linspace(0.0,1.0,pe.shape[0])
     pe.loc[:,"k_01"] = 5.0
     pe.to_csv(os.path.join(template_d,"par_fixed.csv"))
-    pe.to_binary(os.path.join(template_d, "par.jcb"))
+    pe.to_binary(os.path.join(template_d, "par_fixed.jcb"))
     fixed_pars = ["stage","k_01"]
     pst.parameter_data.loc[fixed_pars,"partrans"] = "fixed"
 
@@ -986,16 +1016,19 @@ def tenpar_fixed_test():
             assert diff.apply(np.abs).sum().sum() < 0.01, diff
 
     pst.pestpp_options["ies_par_en"] = "par_fixed.csv"
-    pst.write(os.path.join(template_d, "pest.pst"))
+    pst.pestpp_options["ies_lambda_mults"] = 1.0
+    pst.pestpp_options["lambda_scale_fac"] = 1.0
+    pst.pestpp_options["ies_save_binary"] = False
+    pst.write(os.path.join(template_d, "pest_fixed.pst"))
     #pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
-    pyemu.os_utils.start_slaves(template_d, exe_path, "pest.pst", num_slaves=20, master_dir=test_d,
+    pyemu.os_utils.start_slaves(template_d, exe_path, "pest_fixed.pst", num_slaves=5, master_dir=test_d,
                                slave_root=model_d,port=4020)
     compare()
     pe.to_binary(os.path.join(template_d,"par_fixed.jcb"))
     pst.pestpp_options["ies_par_en"] = "par_fixed.jcb"
     pst.write(os.path.join(template_d, "pest.pst"))
     #pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
-    pyemu.os_utils.start_slaves(template_d, exe_path, "pest.pst", num_slaves=20, master_dir=test_d,
+    pyemu.os_utils.start_slaves(template_d, exe_path, "pest_fixed.pst", num_slaves=5, master_dir=test_d,
                                slave_root=model_d,port=4020)
     compare()
 
@@ -1003,7 +1036,7 @@ def tenpar_fixed_test():
     pst.pestpp_options["ies_save_binary"] = 'true'
     pst.write(os.path.join(template_d, "pest.pst"))
     #pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
-    pyemu.os_utils.start_slaves(template_d, exe_path, "pest.pst", num_slaves=20, master_dir=test_d,
+    pyemu.os_utils.start_slaves(template_d, exe_path, "pest_fixed.pst", num_slaves=20, master_dir=test_d,
                                slave_root=model_d,port=4020)
     pe1 = pyemu.ParameterEnsemble.from_binary(pst=pst,filename=os.path.join(test_d,"pest.0.par.jcb")).iloc[:-1,:]
     pe1.index = pe.index
@@ -1442,7 +1475,7 @@ def tenpar_subset_how_test():
 def tenpar_localizer_test3():
     plt.close("all")
     model_d = "ies_10par_xsec"
-    test_d = os.path.join(model_d, "master_localizer_test3")
+    test_d = os.path.join(model_d, "master_localizer_test31")
     template_d = os.path.join(model_d, "test_template")
     if not os.path.exists(template_d):
         raise Exception("template_d {0} not found".format(template_d))
@@ -1456,6 +1489,11 @@ def tenpar_localizer_test3():
     pe = pyemu.ParameterEnsemble.from_gaussian_draw(pst=pst, cov=cov, num_reals=10)
     pe.enforce()
     pe.to_csv(os.path.join(template_d, "par_local.csv"))
+
+    cov = pyemu.Cov.from_observation_data(pst)
+    oe = pyemu.ObservationEnsemble.from_id_gaussian_draw(pst=pst, num_reals=10)
+    oe.to_csv(os.path.join(template_d, "obs_local.csv"))
+
 
     mat = pyemu.Matrix.from_names(pst.nnz_obs_names,pst.adj_par_names).to_dataframe()
     use_pars = pst.adj_par_names[0:2]
@@ -1475,7 +1513,8 @@ def tenpar_localizer_test3():
     pst.pestpp_options["ies_subset_size"] = 11
     pst.pestpp_options["ies_par_en"] = "par_local.csv"
     pst.pestpp_options["ies_include_base"] = False
-    pst.pestpp_options["ies_accept_phi_fac"] = 1.0
+    pst.pestpp_options["ies_accept_phi_fac"] = 1.1
+    pst.pestpp_options["ies_obs_en"] = "obs_local.csv"
     pst.control_data.nphistp = 10
     pst.control_data.nphinored = 10
     pst.control_data.noptmax = 10
@@ -1513,9 +1552,9 @@ def tenpar_localizer_test3():
         diff = par_df1.loc[:, par] - pe.loc[:, par]
         print(diff.sum())
         #assert diff.sum() == 0.0
-    diff = phi_df1.loc[:,"mean"] - phi_df2.loc[:,"mean"]
+    diff = np.abs(phi_df1.loc[:,"mean"] - phi_df2.loc[:,"mean"])
     print(diff.max().max())
-    assert np.abs(diff.max().max()) < 0.2
+    assert diff.max().max() < 0.2
   
 
 def freyberg_localizer_test1():
@@ -1821,14 +1860,15 @@ if __name__ == "__main__":
     # tenpar_narrow_range_test()
     # test_freyberg_ineq()
     # tenpar_fixed_test()
+    tenpar_fixed_test2()
     # tenpar_subset_how_test()
     # tenpar_localizer_test1()
     # csv_tests()
-    #tenpar_localizer_test3()
-    freyberg_localizer_test1()
-    freyberg_localizer_test2()
-    freyberg_localizer_test3()
-    tenpar_incr_num_reals_test()
+    # tenpar_localizer_test3()
+    # freyberg_localizer_test1()
+    # freyberg_localizer_test2()
+    # freyberg_localizer_test3()
+    # tenpar_incr_num_reals_test()
 
 
    # tenpar_subset_how_fail_test()
