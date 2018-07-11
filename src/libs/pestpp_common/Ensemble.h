@@ -130,6 +130,7 @@ private:
 	ParamTransformSeq par_transform;
 	transStatus tstat;
 	void save_fixed();
+	void fill_fixed(const map<string, int> &header_info);
 	vector<string> fixed_names;
 	map<pair<string, string>, double> fixed_map;
 	void replace_fixed(string real_name,Parameters &pars);

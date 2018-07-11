@@ -1209,9 +1209,9 @@ void ParameterEnsemble::from_csv(string file_name)
 	ifstream csv(file_name);
 	if (!csv.good())
 		throw runtime_error("error opening parameter csv " + file_name + " for reading"); 
-	var_names = pest_scenario_ptr->get_ctl_ordered_adj_par_names();
-	//var_names = pest_scenario_ptr->get_ctl_ordered_par_names();
-	map<string,int>header_info = prepare_csv(var_names, csv, false);
+	//var_names = pest_scenario_ptr->get_ctl_ordered_adj_par_names();
+	var_names = pest_scenario_ptr->get_ctl_ordered_par_names();
+	map<string,int>header_info = prepare_csv(var_names, csv, true);
 	//blast through the file to get number of reals
 	string line;
 	int num_reals = 0;
@@ -1224,10 +1224,45 @@ void ParameterEnsemble::from_csv(string file_name)
 		throw runtime_error("error re-opening parameter csv " + file_name + " for reading");
 	getline(csv, line);
 	Ensemble::read_csv(num_reals, csv, header_info);
-
+	fill_fixed(header_info);
 	save_fixed();
 	
 	tstat = transStatus::CTL;
+
+}
+
+void ParameterEnsemble::fill_fixed(const map<string, int> &header_info)
+{
+	ParameterInfo pi = pest_scenario_ptr->get_ctl_parameter_info();
+	ParameterRec::TRAN_TYPE ft = ParameterRec::TRAN_TYPE::FIXED;
+	for (auto &name : var_names)
+	{
+		if (pi.get_parameter_rec_ptr(name)->tranform_type == ft)
+		{
+			fixed_names.push_back(name);
+		}
+	}
+	if (fixed_names.size() == 0)
+		return;
+	map<string, int> var_map;
+	for (int i = 0; i < var_names.size(); i++)
+		var_map[var_names[i]] = i;
+
+	Parameters pars = pest_scenario_ptr->get_ctl_parameters();
+	int c = 0;
+	for (auto &fname : fixed_names)
+	{
+		if (header_info.find(fname) == header_info.end())
+		{
+			Eigen::VectorXd vec(reals.rows());
+			vec.setOnes();
+			reals.col(var_map[fname]) = reals.col(var_map[fname]) + (pars[fname] * vec);
+			c++;
+		}
+	}
+	if (c > 0)
+		cout << "filled " << c << " fixed pars not listed in user-supplied par csv with `parval1` values from control file" << endl;
+
 
 }
 

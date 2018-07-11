@@ -55,8 +55,10 @@ mfnwt 10par_xsec.nam
 hk_Layer_1.ref.tpl hk_Layer_1.ref
 strt_Layer_1.ref.tpl strt_Layer_1.ref
 10par_xsec.hds.ins 10par_xsec.hds
-++ies_par_en(par.jcb)
+++ies_par_en(par_fixed.jcb)
 ++ies_save_binary(False)
+++ies_lambda_mults(1.0)
+++lambda_scale_fac(1.0)
 ++ies_weights_ensemble(weights.csv)
 ++ies_obs_en(obs.csv)
 ++ies_num_reals(50)
