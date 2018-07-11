@@ -1260,7 +1260,8 @@ void ParameterEnsemble::fill_fixed(const map<string, int> &header_info)
 			c++;
 		}
 	}
-	cout << "filled " << c << " fixed pars not listed in user-supplied par csv with `parval1` values from control file" << endl;
+	if (c > 0)
+		cout << "filled " << c << " fixed pars not listed in user-supplied par csv with `parval1` values from control file" << endl;
 
 
 }

@@ -930,8 +930,8 @@ def test_freyberg_ineq():
     pst.observation_data.loc[pst.nnz_obs_names[3],"obgnme"] = "less_than"
     pst.observation_data.loc[pst.nnz_obs_names[3],"weight"] = 100.0
     pst.pestpp_options = {}
-    pst.pestpp_options["ies_num_reals"] = 100
-    pst.pestpp_options["ies_subset_size"] = 10
+    pst.pestpp_options["ies_num_reals"] = 30
+    pst.pestpp_options["ies_subset_size"] = 4
     pst.pestpp_options["ies_lambda_mults"] = [0.1,1.0,10.0]
     pst.control_data.noptmax = 3
     print("writing pst")
@@ -978,10 +978,20 @@ def tenpar_fixed_test2():
     pst.pestpp_options["ies_lambda_mults"] = 1.0
     pst.pestpp_options["lambda_scale_fac"] = 1.0
     pst.pestpp_options["ies_save_binary"] = False
+
     pst.write(os.path.join(template_d, "pest_fixed.pst"))
     # pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
     pyemu.os_utils.start_slaves(template_d, exe_path, "pest_fixed.pst", num_slaves=5, master_dir=test_d,
                                 slave_root=model_d, port=4020)
+    df = pd.read_csv(os.path.join(test_d,"pest_fixed.{0}.par.csv".format(pst.control_data.noptmax)),index_col=0)
+    df.columns = df.columns.map(str.lower)
+    df = df.iloc[:-1, :]
+    df.index = pe.index
+    print(df.loc[:,"k_01"])
+    print(df.loc[:,"stage"] - pe.loc[:,"stage"])
+    assert df.loc[:,"k_01"].mean() == pst.parameter_data.loc["k_01","parval1"]
+    assert np.abs(df.loc[:,"stage"] - pe.loc[:,"stage"]).max() < 1.0e-5
+
 
 
 def tenpar_fixed_test():
@@ -1034,11 +1044,11 @@ def tenpar_fixed_test():
 
     pst.pestpp_options["ies_par_en"] = "par_fixed.jcb"
     pst.pestpp_options["ies_save_binary"] = 'true'
-    pst.write(os.path.join(template_d, "pest.pst"))
+    pst.write(os.path.join(template_d, "pest_fixed.pst"))
     #pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
     pyemu.os_utils.start_slaves(template_d, exe_path, "pest_fixed.pst", num_slaves=20, master_dir=test_d,
                                slave_root=model_d,port=4020)
-    pe1 = pyemu.ParameterEnsemble.from_binary(pst=pst,filename=os.path.join(test_d,"pest.0.par.jcb")).iloc[:-1,:]
+    pe1 = pyemu.ParameterEnsemble.from_binary(pst=pst,filename=os.path.join(test_d,"pest_fixed.0.par.jcb")).iloc[:-1,:]
     pe1.index = pe.index
     diff = pe - pe1
     assert diff.apply(np.abs).sum().sum() == 0.0
@@ -1114,7 +1124,7 @@ def tenpar_tight_tol_test():
     pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
     
 
-def tenpar_weight_pareto_test():
+def tenpar_weight_pareto():
 
     model_d = "ies_10par_xsec"
     test_d = os.path.join(model_d, "test_weight_pareto")
@@ -1385,6 +1395,7 @@ def tenpar_incr_num_reals_test():
     if os.path.exists(test_d):
         shutil.rmtree(test_d)
     shutil.copytree(template_d, test_d)
+    pst.control_data.noptmax = 2
     pst.pestpp_options = {"ies_num_reals":num_reals}
     pst.pestpp_options["ies_lambda_mults"] = 1.0
     pst.pestpp_options["lambda_scale_fac"] = 1.0
@@ -1475,7 +1486,7 @@ def tenpar_subset_how_test():
 def tenpar_localizer_test3():
     plt.close("all")
     model_d = "ies_10par_xsec"
-    test_d = os.path.join(model_d, "master_localizer_test31")
+    test_d = os.path.join(model_d, "master_localizer_test3a")
     template_d = os.path.join(model_d, "test_template")
     if not os.path.exists(template_d):
         raise Exception("template_d {0} not found".format(template_d))
@@ -1849,26 +1860,26 @@ if __name__ == "__main__":
     #test_freyberg()        
 
     #full list of tests
-    #tenpar_subset_test()
-    #tenpar_full_cov_test()
+    # tenpar_subset_test()
+    # tenpar_full_cov_test()
     # test_freyberg_full_cov_reorder()
     # test_freyberg_full_cov_reorder_run()
     # test_freyberg_full_cov()
     # tenpar_tight_tol_test()
     # test_chenoliver()
-    # tenpar_weight_pareto_test()
+    #tenpar_weight_pareto()
     # tenpar_narrow_range_test()
     # test_freyberg_ineq()
-    # tenpar_fixed_test()
-    tenpar_fixed_test2()
-    # tenpar_subset_how_test()
-    # tenpar_localizer_test1()
-    # csv_tests()
+    #tenpar_fixed_test()
+    #tenpar_fixed_test2()
+    #tenpar_subset_how_test()
+    #tenpar_localizer_test1()
+    #csv_tests()
     # tenpar_localizer_test3()
     # freyberg_localizer_test1()
     # freyberg_localizer_test2()
     # freyberg_localizer_test3()
-    # tenpar_incr_num_reals_test()
+    tenpar_incr_num_reals_test()
 
 
    # tenpar_subset_how_fail_test()
