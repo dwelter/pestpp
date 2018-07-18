@@ -229,6 +229,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="fortran_wrappers.cpp" />
+    <ClCompile Include="hmacsha2.cpp" />
     <ClCompile Include="network_package.cpp" />
     <ClCompile Include="network_wrapper.cpp" />
     <ClCompile Include="pest_error.cpp" />
@@ -239,9 +240,11 @@
   <ItemGroup>
     <ClInclude Include="config_os.h" />
     <ClInclude Include="csv.h" />
+    <ClInclude Include="hmacsha2.h" />
     <ClInclude Include="network_package.h" />
     <ClInclude Include="network_wrapper.h" />
     <ClInclude Include="pest_error.h" />
+    <ClInclude Include="picosha2.h" />
     <ClInclude Include="system_variables.h" />
     <ClInclude Include="Transformable.h" />
     <ClInclude Include="utilities.h" />
