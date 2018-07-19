@@ -62,8 +62,8 @@ def setup_suite_dir(model_d):
     print(platform.platform().lower())
     local=True
     if "linux" in platform.platform().lower() and "10par" in model_d:
-        print("travis_prep")
-        prep_for_travis(model_d)
+        #print("travis_prep")
+        #prep_for_travis(model_d)
         local=False
     pst = pyemu.Pst(os.path.join(new_d, "pest.pst"))
     print(pst.model_command)
@@ -1855,7 +1855,7 @@ if __name__ == "__main__":
     # write_empty_test_matrix()
 
     #prep_10par_for_travis("ies_10par_xsec")
-    #setup_suite_dir("ies_10par_xsec")
+    setup_suite_dir("ies_10par_xsec")
     #setup_suite_dir("ies_freyberg")
     
     #run_suite("ies_10par_xsec")
