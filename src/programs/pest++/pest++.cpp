@@ -685,7 +685,19 @@ int main(int argc, char* argv[])
 		//linear analysis stuff
 		if ((pest_scenario.get_control_info().noptmax != 0) && 
 			(pest_scenario.get_pestpp_options().get_uncert_flag()))
+
 		{
+			cout << endl << endl << endl;
+			if (pest_scenario.get_pestpp_options().get_auto_norm() > 0.0)
+			{
+				fout_rec << "WARNING: PEST++ 'autonorm' option != 0.0. This can greatly effect the outcome " << endl;
+				fout_rec << "         of the following analyses, which depend heavily on the Jacobian." << endl;
+				fout_rec << "         skipping FOSM calculations" << endl;
+				cout << "WARNING: PEST++ 'autonorm' option != 0.0. This can greatly effect the outcome " << endl;
+				cout << "         of the following analyses, which depend heavily on the Jacobian." << endl;
+				cout << "         skipping FOSM calculations" << endl;
+				return 0;
+			}
 			cout << endl << endl << endl;
 			cout << "  ---  starting uncertainty analysis calculations  ---  " << endl << endl << endl;
 			cout << "  uncertainty estimates calculated using Schur's " << endl;
@@ -720,11 +732,7 @@ int main(int argc, char* argv[])
 			fout_rec << "      where <matrix_file_name> can be an ASCII PEST-compatible matrix file (.mat) or" << endl;
 			fout_rec << "      a PEST-compatible uncertainty file (.unc)." << endl << endl;
 
-			if (pest_scenario.get_pestpp_options().get_auto_norm() > 0.0)
-			{
-				fout_rec << "WARNING: PEST++ 'autonorm' option != 0.0. This can greatly effect the outcome " << endl;
-				fout_rec << "         of the following analyses, which depend heavily on the Jacobian" << endl;
-			}
+			
 			ofstream &pfm = file_manager.get_ofstream("pfm");
 			pfm << endl << endl << "-----------------------------------" << endl;
 			pfm << "starting linear uncertainty analyses" << endl;
@@ -788,6 +796,7 @@ int main(int argc, char* argv[])
 				 
 			//write a parameter prior and posterior summary to the rec file
 			const ParamTransformSeq trans = pest_scenario.get_base_par_tran_seq();
+			Parameters pars = pest_scenario.get_ctl_parameters();
 			string parsum_filename = file_manager.get_base_filename() + ".par.usum.csv";
 			la.write_par_credible_range(fout_rec, parsum_filename, pest_scenario.get_ctl_parameter_info(), 
 				trans.active_ctl2numeric_cp(pest_scenario.get_ctl_parameters()), 
