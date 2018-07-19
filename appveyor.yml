@@ -6,7 +6,8 @@ environment:
 
 platform:
     - x64
-
+clone_depth: 1
+shallow_clone: true
 build: false
 
 cache:
