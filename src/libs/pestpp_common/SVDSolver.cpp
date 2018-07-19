@@ -883,7 +883,8 @@ ModelRun SVDSolver::iteration_reuse_jac(RunManagerAbstract &run_manager, Termina
 	cout << "  reading previously computed jacobian:  " << jac_filename << endl;
 	file_manager.get_ofstream("rec") << "  reading previously computed jacobian:  " << jac_filename << endl;
 	jacobian.read(jac_filename);
-
+	//todo: make sure the jco has the right pars and obs
+	
 	if (!res_filename.empty())
 	{
 		stringstream message;
