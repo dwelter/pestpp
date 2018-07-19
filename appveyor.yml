@@ -39,7 +39,7 @@ install:
 
 test_script:
   - cd benchmarks
-  - nosetests -v --with-id --nocapture --with-timer -w autotests ies_tests:test_chenoliver
+  - nosetests -v --with-id --nocapture --with-timer ies_tests:test_chenoliver
   - cd ..
 
 after_test:
