@@ -92,5 +92,8 @@ def scrap_rec(rec_file):
 				break
 	return unc
 
+def basic_run_test():
+	pass
+
 if __name__ == "__main__":
 	std_weights_test()
