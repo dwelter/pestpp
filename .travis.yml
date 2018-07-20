@@ -44,7 +44,7 @@ after_success:
   - export PYTHONPATH=$PYTHONPATH:.
   - #cd benchmarks
   - export PATH="./test_bin/linux:../test_bin/linux:../../test_bin/linux:$PATH"
-  - nosetests -v -w ./benchmarks travis_test.py
+  - nosetests -v -w ./benchmarks travis_tests.py
 
 
 notifications:
