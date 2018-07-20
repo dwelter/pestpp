@@ -92,8 +92,18 @@ def scrap_rec(rec_file):
 				break
 	return unc
 
-def basic_run_test():
-	pass
+def run_supply2_test():
+	slave_d = os.path.join("opt_supply2_chance")
+	pyemu.os_utils.start_slaves(os.path.join(slave_d,"template"),exe_path,"supply2_pest.base.pst",
+		master_dir=os.path.join(slave_d,"master"),slave_root=slave_d,num_slaves=10,verbose=True)
+
+	opt = None
+	with open(os.path.join(slave_d,"master","supply2_pest.base.rec"),'r') as f:
+		for line in f:
+			if "iteration 1 objective function value:" in line:
+				opt = float(line.strip().split()[-2])
+	assert opt is not None
 
 if __name__ == "__main__":
-	std_weights_test()
+	#std_weights_test()
+	run_supply2_test()
