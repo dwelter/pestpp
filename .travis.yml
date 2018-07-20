@@ -38,7 +38,7 @@ after_success:
   - conda update --yes conda
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
-  - conda install --yes python=$TRAVIS_PYTHON_VERSION pip numpy scipy pandas matplotlib
+  - conda install --yes python=$TRAVIS_PYTHON_VERSION pip numpy scipy pandas matplotlib nose
   - pip install git+https://github.com/modflowpy/flopy.git@develop
   - pip install git+https://github.com/jtwhite79/pyemu.git@develop
   - export PYTHONPATH=$PYTHONPATH:.
