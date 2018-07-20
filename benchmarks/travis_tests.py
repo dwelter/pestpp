@@ -2,7 +2,16 @@ import ies_test
 ies_test.setup_suite_dir("ies_freyberg")
 ies_test.setup_suite_dir("ies_10par_xsec")
 # ies_test.run_suite("ies_10par_xsec")
-#
+
+# test_freyberg_full_cov_reorder()
+# test_freyberg_full_cov_reorder_run()
+# test_freyberg_full_cov_reorder_run()
+# test_freyberg_full_cov()
+# test_freyberg_ineq()
+# freyberg_localizer_test1()
+# freyberg_localizer_test2()
+# freyberg_localizer_test3()
+
 # ies_test.tenpar_subset_test()
 # ies_test.tenpar_subset_test()
 # ies_test.tenpar_full_cov_test()
