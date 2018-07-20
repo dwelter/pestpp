@@ -14,9 +14,9 @@ else:
 
 def std_weights_test():
 	d = os.path.join("opt_dewater_chance","test_std_weights2")
-	# if os.path.exists(d):
-	# 	shutil.rmtree(d)
-	# shutil.copytree(os.path.join("opt_dewater_chance","template"),d)
+	if os.path.exists(d):
+		shutil.rmtree(d)
+	shutil.copytree(os.path.join("opt_dewater_chance","template"),d)
 	pst_file = os.path.join(d,"dewater_pest.base.pst")
 	jco_file = os.path.join(d,"dewater_pest.full.jcb")
 	pst = pyemu.Pst(pst_file)

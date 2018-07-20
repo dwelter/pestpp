@@ -1237,7 +1237,7 @@ h19_27                5.0000000000E+01      0.0000000000E+00       junk
 h19_28                5.0000000000E+01      0.0000000000E+00       greater_than_1               
 h19_29                5.0000000000E+01      0.0000000000E+00       greater
 * model command line
-mf2005 dewater_pest.nam
+mfnwt dewater_pest.nam
 * model input/output
 WEL_0000.dat.tpl WEL_0000.dat
 transmissivity_layer_1.ref.tpl transmissivity_layer_1.ref
