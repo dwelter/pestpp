@@ -169,6 +169,7 @@ def run_suite(model_d,silent_master=False):
                         pst.pestpp_options[v] = test_vars[v].replace('"','')
                     except:
                         pst.pestpp_options[v] = test_vars[v]
+            pst.pestpp_options["ies_num_reals"] = 15
             pst.write(os.path.join(template_d, "pest.pst"))
             test_d = os.path.join(model_d, "master_test_{0}".format(test_name))
 
