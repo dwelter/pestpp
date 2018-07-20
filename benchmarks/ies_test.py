@@ -1855,8 +1855,8 @@ if __name__ == "__main__":
     # write_empty_test_matrix()
 
     #prep_10par_for_travis("ies_10par_xsec")
-    setup_suite_dir("ies_10par_xsec")
-    #setup_suite_dir("ies_freyberg")
+    #setup_suite_dir("ies_10par_xsec")
+    setup_suite_dir("ies_freyberg")
     
     #run_suite("ies_10par_xsec")
     #run_suite("ies_freyberg")
