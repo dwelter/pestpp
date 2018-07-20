@@ -1,6 +1,8 @@
 # PEST++
 Object Oriented Inverse Modeling Software
 <br><br><br>
+[![Travis Status](https://travis-ci.org/dwelter/pestpp.svg?branch=develop)](https://travis-ci.org/dwelter/pestpp)
+[![Build status](https://ci.appveyor.com/api/projects/status/6tktqgy67d47wkjf?svg=true)](https://ci.appveyor.com/project/jtwhite79/pestpp)
 ## Overview
 The PEST++ software suite includes several stand-alone tools for model-independent (non-intrusive) computer model parameter estimation and uncertainty analysis.  Codes include:
 
