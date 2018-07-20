@@ -108,10 +108,10 @@ def setup_suite_dir(model_d):
     m_d = os.path.join(model_d,"master_sweep")
     if os.path.exists(m_d):
         shutil.rmtree(m_d)
-    #pyemu.os_utils.start_slaves(new_d, exe_path.replace("-ies","-swp"), "pest.pst", 10, master_dir=os.path.join(model_d,"master_sweep"),
-    #                        slave_root=model_d,local=local,port=4020)
-    shutil.copytree(new_d,m_d)
-    pyemu.os_utils.run("{0} pest.pst".format(exe_path.replace("-ies","-swp")),cwd=m_d)
+    pyemu.os_utils.start_slaves(new_d, exe_path.replace("-ies","-swp"), "pest.pst", 10, master_dir=os.path.join(model_d,"master_sweep"),
+                           slave_root=model_d,local=local,port=4020)
+    #shutil.copytree(new_d,m_d)
+    #pyemu.os_utils.run("{0} pest.pst".format(exe_path.replace("-ies","-swp")),cwd=m_d)
 
     # process sweep output as restart csv and jcb
     df = pd.read_csv(os.path.join(model_d,"master_sweep", "sweep_out.csv"))
@@ -688,9 +688,9 @@ def test_freyberg_full_cov_reorder_run():
     par.loc[:,"partrans"] = "log"
     #par.loc[pst.par_names[:5],"pargp"] = pst.par_groups[-1]
 
-    pst.control_data.noptmax = 10
+    pst.control_data.noptmax = 3
     pst.pestpp_options = {}
-    num_reals = 100
+    num_reals = 30
 
     #diagonal cov
     #pst.pestpp_options["parcov_filename"] = "prior.jcb"
@@ -778,7 +778,7 @@ def test_chenoliver():
     pst.write(os.path.join(test_d,"pest.pst"))
     pyemu.helpers.run(exe_path+" pest.pst",cwd=test_d)
     
-    num_reals = 100
+    num_reals = 30
     noptmax = 6
     
 
@@ -934,7 +934,7 @@ def test_freyberg_ineq():
     pst.observation_data.loc[pst.nnz_obs_names[3],"obgnme"] = "less_than"
     pst.observation_data.loc[pst.nnz_obs_names[3],"weight"] = 100.0
     pst.pestpp_options = {}
-    pst.pestpp_options["ies_num_reals"] = 30
+    pst.pestpp_options["ies_num_reals"] = 10
     pst.pestpp_options["ies_subset_size"] = 4
     pst.pestpp_options["ies_lambda_mults"] = [0.1,1.0,10.0]
     pst.control_data.noptmax = 3
@@ -1055,7 +1055,7 @@ def tenpar_fixed_test():
     pe1 = pyemu.ParameterEnsemble.from_binary(pst=pst,filename=os.path.join(test_d,"pest_fixed.0.par.jcb")).iloc[:-1,:]
     pe1.index = pe.index
     diff = pe - pe1
-    assert diff.apply(np.abs).sum().sum() == 0.0
+    assert np.abs(diff.apply(np.abs).sum().sum()) < 1.0e-6,diff
 
 
 def tenpar_weights_test():
@@ -1578,7 +1578,7 @@ def tenpar_localizer_test3():
         #assert diff.sum() == 0.0
     diff = np.abs(phi_df1.loc[:,"mean"] - phi_df2.loc[:,"mean"])
     print(diff.max().max())
-    assert diff.max().max() < 0.2
+    assert diff.max().max() < 0.5
   
 
 def freyberg_localizer_test1():
@@ -1745,7 +1745,7 @@ def freyberg_localizer_test3():
     print("writing pst")
     pst.write(os.path.join(template_d, "pest_local.pst"))
     print("starting slaves")
-    pyemu.helpers.start_slaves(template_d, exe_path, "pest_local.pst", num_slaves=11, master_dir=test_d,
+    pyemu.helpers.start_slaves(template_d, exe_path, "pest_local.pst", num_slaves=25, master_dir=test_d,
                                slave_root=model_d, port=4020)
     par_df1 = pd.read_csv(os.path.join(test_d, "pest_local.{0}.par.csv".format(pst.control_data.noptmax)), index_col=0)
     par_df1.index = pe.index
@@ -1860,7 +1860,7 @@ if __name__ == "__main__":
 
     #prep_10par_for_travis("ies_10par_xsec")
     #setup_suite_dir("ies_10par_xsec")
-    setup_suite_dir("ies_freyberg")
+    #setup_suite_dir("ies_freyberg")
     
     #run_suite("ies_10par_xsec")
     #run_suite("ies_freyberg")
@@ -1873,7 +1873,7 @@ if __name__ == "__main__":
 
     # full list of tests
     # tenpar_subset_test()
-    tenpar_full_cov_test()
+    #tenpar_full_cov_test()
     # test_freyberg_full_cov_reorder()
     # test_freyberg_full_cov_reorder_run()
     # test_freyberg_full_cov_reorder_run()
@@ -1883,11 +1883,11 @@ if __name__ == "__main__":
     # tenpar_narrow_range_test()
     # test_freyberg_ineq()
     # tenpar_fixed_test()
-    # tenpar_fixed_test2()
+    #tenpar_fixed_test2()
     # tenpar_subset_how_test()
     # tenpar_localizer_test1()
-    #tenpar_localizer_test2()
-    #tenpar_localizer_test3()
+    # tenpar_localizer_test2()
+    tenpar_localizer_test3()
     freyberg_localizer_test1()
     freyberg_localizer_test2()
     freyberg_localizer_test3()
