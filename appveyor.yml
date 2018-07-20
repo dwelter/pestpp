@@ -38,10 +38,10 @@ install:
   - conda list
 
 test_script:
-  - cd benchmarks
+  - #cd benchmarks
   - set PATH=..\..\..\test_bin\win;%PATH;
-  - nosetests -v --with-id --nocapture --with-timer ies_test:test_chenoliver
-  - cd ..
+  - nosetests -v --with-id --nocapture --with-timer -w benchmarks ies_test:test_chenoliver
+  - #cd ..
 
 after_test:
  - echo "done"
