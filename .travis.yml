@@ -30,8 +30,6 @@ script:
   - make clean
   - COMPILER=gcc5 CXX=g++-5 FC=gfortran-5 STATIC=no make -j 20 install
   - cd ..
-  - 
-after_success:
   - wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
@@ -44,8 +42,7 @@ after_success:
   - export PYTHONPATH=$PYTHONPATH:.
   - #cd benchmarks
   - export PATH="./test_bin/linux:../test_bin/linux:../../test_bin/linux:$PATH"
-  - nosetests -v -w ./benchmarks travis_tests.py
-
+  - nosetests -v -w ./benchmarks travis_tests.py  
 
 notifications:
   email: true

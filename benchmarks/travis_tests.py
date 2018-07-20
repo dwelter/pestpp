@@ -2,7 +2,7 @@ import ies_test
 import opt_test
 
 opt_test.std_weights_test()
-ot_test.run_supply2_test()
+opt_test.run_supply2_test()
 
 ies_test.setup_suite_dir("ies_freyberg")
 ies_test.setup_suite_dir("ies_10par_xsec")
