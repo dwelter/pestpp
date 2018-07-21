@@ -978,6 +978,7 @@ def tenpar_fixed_test2():
     pst.pestpp_options["ies_lambda_mults"] = 1.0
     pst.pestpp_options["lambda_scale_fac"] = 1.0
     pst.pestpp_options["ies_save_binary"] = False
+    pst.pestpp_options["ies_include_base"] = False
 
     pst.write(os.path.join(template_d, "pest_fixed.pst"))
     # pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
@@ -985,8 +986,8 @@ def tenpar_fixed_test2():
                                 slave_root=model_d, port=4020)
     df = pd.read_csv(os.path.join(test_d,"pest_fixed.{0}.par.csv".format(pst.control_data.noptmax)),index_col=0)
     df.columns = df.columns.map(str.lower)
-    df = df.iloc[:-1, :]
-    df.index = pe.index
+    #df = df.iloc[:-1, :]
+    #df.index = pe.index
     print(df.loc[:,"k_01"])
     print(df.loc[:,"stage"] - pe.loc[:,"stage"])
     assert df.loc[:,"k_01"].mean() == pst.parameter_data.loc["k_01","parval1"]
@@ -1020,8 +1021,8 @@ def tenpar_fixed_test():
         for df in dfs:
             df.columns = df.columns.map(str.lower)
             df = df.loc[:,fixed_pars]
-            df = df.iloc[:-1,:]
-            df.index = pe.index
+            #df = df.iloc[:-1,:]
+            #df.index = pe.index
             diff = pe.loc[df.index,fixed_pars] - df
             assert diff.apply(np.abs).sum().sum() < 0.01, diff
 
@@ -1029,6 +1030,7 @@ def tenpar_fixed_test():
     pst.pestpp_options["ies_lambda_mults"] = 1.0
     pst.pestpp_options["lambda_scale_fac"] = 1.0
     pst.pestpp_options["ies_save_binary"] = False
+    pst.pestpp_options["ies_include_base"] = False
     pst.write(os.path.join(template_d, "pest_fixed.pst"))
     #pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
     pyemu.os_utils.start_slaves(template_d, exe_path, "pest_fixed.pst", num_slaves=5, master_dir=test_d,
@@ -1048,8 +1050,8 @@ def tenpar_fixed_test():
     #pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
     pyemu.os_utils.start_slaves(template_d, exe_path, "pest_fixed.pst", num_slaves=20, master_dir=test_d,
                                slave_root=model_d,port=4020)
-    pe1 = pyemu.ParameterEnsemble.from_binary(pst=pst,filename=os.path.join(test_d,"pest_fixed.0.par.jcb")).iloc[:-1,:]
-    pe1.index = pe.index
+    pe1 = pyemu.ParameterEnsemble.from_binary(pst=pst,filename=os.path.join(test_d,"pest_fixed.0.par.jcb"))
+    #pe1.index = pe.index
     diff = pe - pe1
     assert diff.apply(np.abs).sum().sum() == 0.0
 
@@ -1619,11 +1621,11 @@ def freyberg_localizer_test1():
     pyemu.helpers.start_slaves(template_d, exe_path, "pest_base.pst", num_slaves=11, master_dir=test_d,
                                slave_root=model_d,port=4020)
     par_df = pd.read_csv(os.path.join(test_d,"pest_base.{0}.par.csv".format(pst.control_data.noptmax)),index_col=0)
-    par_df.index = pe.index
+    #par_df.index = pe.index
     par_df.columns = par_df.columns.str.lower()
 
     par_df_org = pd.read_csv(os.path.join(test_d, "pest_base.0.par.csv"), index_col=0)
-    par_df_org.index = pe.index
+    #par_df_org.index = pe.index
     par_df_org.columns = par_df_org.columns.str.lower()
 
     broke = []
@@ -1685,7 +1687,7 @@ def freyberg_localizer_test2():
     pyemu.helpers.start_slaves(template_d, exe_path, "pest_local.pst", num_slaves=11, master_dir=test_d,
                                slave_root=model_d, port=4020)
     par_df1 = pd.read_csv(os.path.join(test_d, "pest_local.{0}.par.csv".format(pst.control_data.noptmax)), index_col=0)
-    par_df1.index = pe.index
+    #par_df1.index = pe.index
     par_df1.columns = par_df1.columns.str.lower()
     phi_df1 = pd.read_csv(os.path.join(test_d, "pest_local.phi.composite.csv"))
 
@@ -1695,7 +1697,7 @@ def freyberg_localizer_test2():
     pyemu.helpers.start_slaves(template_d, exe_path, "pest_base.pst", num_slaves=11, master_dir=test_d+"_base",
                                slave_root=model_d, port=4020)
     par_df2 = pd.read_csv(os.path.join(test_d+"_base", "pest_base.{0}.par.csv".format(pst.control_data.noptmax)), index_col=0)
-    par_df2.index = pe.index
+    #par_df2.index = pe.index
     par_df2.columns = par_df2.columns.str.lower()
     phi_df2 = pd.read_csv(os.path.join(test_d, "pest_local.phi.composite.csv"))
     plt.plot(phi_df1.total_runs, phi_df1.loc[:, "mean"], label="local")
@@ -1744,7 +1746,7 @@ def freyberg_localizer_test3():
     pyemu.helpers.start_slaves(template_d, exe_path, "pest_local.pst", num_slaves=11, master_dir=test_d,
                                slave_root=model_d, port=4020)
     par_df1 = pd.read_csv(os.path.join(test_d, "pest_local.{0}.par.csv".format(pst.control_data.noptmax)), index_col=0)
-    par_df1.index = pe.index
+    #par_df1.index = pe.index
     par_df1.columns = par_df1.columns.str.lower()
     phi_df1 = pd.read_csv(os.path.join(test_d, "pest_local.phi.composite.csv"))
 
@@ -1754,7 +1756,7 @@ def freyberg_localizer_test3():
     pyemu.helpers.start_slaves(template_d, exe_path, "pest_base.pst", num_slaves=11, master_dir=test_d+"_base",
                                slave_root=model_d, port=4020)
     par_df2 = pd.read_csv(os.path.join(test_d+"_base", "pest_base.{0}.par.csv".format(pst.control_data.noptmax)), index_col=0)
-    par_df2.index = pe.index
+    #par_df2.index = pe.index
     par_df2.columns = par_df2.columns.str.lower()
     phi_df2 = pd.read_csv(os.path.join(test_d, "pest_local.phi.composite.csv"))
     plt.plot(phi_df1.total_runs, phi_df1.loc[:, "mean"], label="local")
@@ -1855,15 +1857,15 @@ if __name__ == "__main__":
     # write_empty_test_matrix()
 
     #prep_10par_for_travis("ies_10par_xsec")
-    #setup_suite_dir("ies_10par_xsec")
-    #setup_suite_dir("ies_freyberg")
-    
-    #run_suite("ies_10par_xsec")
-    #run_suite("ies_freyberg")
-    #rebase("ies_freyberg")
-    #rebase("ies_10par_xsec")
-    #compare_suite("ies_10par_xsec")
-    #compare_suite("ies_freyberg")
+    # setup_suite_dir("ies_10par_xsec")
+    # setup_suite_dir("ies_freyberg")
+    #
+    # run_suite("ies_10par_xsec")
+    # run_suite("ies_freyberg")
+    # rebase("ies_freyberg")
+    # rebase("ies_10par_xsec")
+    # compare_suite("ies_10par_xsec")
+    # compare_suite("ies_freyberg")
     # test_10par_xsec(silent_master=False)
     # test_freyberg()
 
@@ -1882,8 +1884,8 @@ if __name__ == "__main__":
     # tenpar_fixed_test2()
     # tenpar_subset_how_test()
     # tenpar_localizer_test1()
-    #tenpar_localizer_test2()
-    #tenpar_localizer_test3()
+    # tenpar_localizer_test2()
+    # tenpar_localizer_test3()
     freyberg_localizer_test1()
     freyberg_localizer_test2()
     freyberg_localizer_test3()
