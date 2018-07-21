@@ -1,0 +1,2 @@
+iteration,model_runs_completed,total_phi,measurement_phi,regularization_phi,calflux,calhead,flx_constan,flx_in-out,flx_percent,flx_recharg,flx_river_l,flx_storage,flx_total,flx_wells,foreflux,forehead,foretrav,pothead,vol_constan,vol_in-out,vol_percent,vol_recharg,vol_river_l,vol_storage,vol_total,vol_wells,regulhk,regulr0,regulr1,regulw0,regulw1
+0,1,1421.86,1421.86,2.54818e-08,1408.64,13.224,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3.76021e-15,1.34079e-10,2.53477e-08,0,0
