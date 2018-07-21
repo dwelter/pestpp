@@ -750,7 +750,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 	pestpp_options.set_ies_lambda_dec_fac(0.75);
 	pestpp_options.set_ies_save_lambda_en(false);
 	pestpp_options.set_ies_weight_csv("");
-	pestpp_options.set_ies_subset_how("FIRST");
+	pestpp_options.set_ies_subset_how("PHI_BASED");
 	pestpp_options.set_condor_submit_file(string());
 	pestpp_options.set_overdue_giveup_minutes(1.0e+30);
 
