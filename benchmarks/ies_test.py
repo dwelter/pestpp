@@ -699,6 +699,8 @@ def test_freyberg_full_cov_reorder_run():
     pst.pestpp_options["ies_num_reals"] = num_reals
     pst.pestpp_options["ies_include_base"] = "true"
     pst.pestpp_options["ies_group_draws"] = 'true'
+    pst.pestpp_options["ies_lambda_mults"] = [0.9,1.1]
+    pst.pestpp_options["lambda_scale_fac"] = 1.0
    # pst.parameter_data.loc[pst.par_names[0],"pargp"] = "test"
     
     pst.write(os.path.join(template_d, "pest.pst"))
@@ -1874,7 +1876,7 @@ if __name__ == "__main__":
     # full list of tests
     # tenpar_subset_test()
     #tenpar_full_cov_test()
-    # test_freyberg_full_cov_reorder()
+    test_freyberg_full_cov_reorder()
     test_freyberg_full_cov_reorder_run()
     # test_freyberg_full_cov_reorder_run()
     # test_freyberg_full_cov()
