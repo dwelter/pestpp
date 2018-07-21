@@ -708,7 +708,7 @@ def test_freyberg_full_cov_reorder_run():
     #pe = pyemu.ParameterEnsemble.from_gaussian_draw(pst, cov, num_reals, use_homegrown=True)
     #pe.to_csv(os.path.join(test_d, "pyemu_pe.csv"))
 
-    pyemu.os_utils.start_slaves(template_d, exe_path, "pest.pst", num_slaves=15,
+    pyemu.os_utils.start_slaves(template_d, exe_path, "pest.pst", num_slaves=25,
                                 slave_root=model_d, master_dir=test_d,port=4020)
     
 
@@ -1050,7 +1050,7 @@ def tenpar_fixed_test():
     pst.pestpp_options["ies_save_binary"] = 'true'
     pst.write(os.path.join(template_d, "pest_fixed.pst"))
     #pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
-    pyemu.os_utils.start_slaves(template_d, exe_path, "pest_fixed.pst", num_slaves=20, master_dir=test_d,
+    pyemu.os_utils.start_slaves(template_d, exe_path, "pest_fixed.pst", num_slaves=5, master_dir=test_d,
                                slave_root=model_d,port=4020)
     pe1 = pyemu.ParameterEnsemble.from_binary(pst=pst,filename=os.path.join(test_d,"pest_fixed.0.par.jcb")).iloc[:-1,:]
     pe1.index = pe.index
@@ -1735,8 +1735,8 @@ def freyberg_localizer_test3():
     pst.pestpp_options = {}
     pst.pestpp_options["ies_num_reals"] = 10
     pst.pestpp_options["ies_subset_size"] = 3
-    #pst.pestpp_options["ies_lambda_mults"] = 1.0
-    #pst.pestpp_options["lambda_scale_fac"] = 1.0
+    pst.pestpp_options["ies_lambda_mults"] = 1.0
+    pst.pestpp_options["lambda_scale_fac"] = 1.0
     pst.pestpp_options["ies_include_base"] = False
     pst.pestpp_options["ies_par_en"] = "par_local.csv"
     pst.pestpp_options["ies_localizer"] = "localizer.mat"
@@ -1745,7 +1745,7 @@ def freyberg_localizer_test3():
     print("writing pst")
     pst.write(os.path.join(template_d, "pest_local.pst"))
     print("starting slaves")
-    pyemu.helpers.start_slaves(template_d, exe_path, "pest_local.pst", num_slaves=25, master_dir=test_d,
+    pyemu.helpers.start_slaves(template_d, exe_path, "pest_local.pst", num_slaves=15, master_dir=test_d,
                                slave_root=model_d, port=4020)
     par_df1 = pd.read_csv(os.path.join(test_d, "pest_local.{0}.par.csv".format(pst.control_data.noptmax)), index_col=0)
     par_df1.index = pe.index
@@ -1755,7 +1755,7 @@ def freyberg_localizer_test3():
     pst.pestpp_options.pop("ies_localizer")
     pst.write(os.path.join(template_d, "pest_base.pst"))
     print("starting slaves")
-    pyemu.helpers.start_slaves(template_d, exe_path, "pest_base.pst", num_slaves=11, master_dir=test_d+"_base",
+    pyemu.helpers.start_slaves(template_d, exe_path, "pest_base.pst", num_slaves=15, master_dir=test_d+"_base",
                                slave_root=model_d, port=4020)
     par_df2 = pd.read_csv(os.path.join(test_d+"_base", "pest_base.{0}.par.csv".format(pst.control_data.noptmax)), index_col=0)
     par_df2.index = pe.index
@@ -1875,21 +1875,21 @@ if __name__ == "__main__":
     # tenpar_subset_test()
     #tenpar_full_cov_test()
     # test_freyberg_full_cov_reorder()
-    # test_freyberg_full_cov_reorder_run()
+    test_freyberg_full_cov_reorder_run()
     # test_freyberg_full_cov_reorder_run()
     # test_freyberg_full_cov()
     # tenpar_tight_tol_test()
     # test_chenoliver()
     # tenpar_narrow_range_test()
-    # test_freyberg_ineq()
+    test_freyberg_ineq()
     # tenpar_fixed_test()
     #tenpar_fixed_test2()
     # tenpar_subset_how_test()
     # tenpar_localizer_test1()
     # tenpar_localizer_test2()
     tenpar_localizer_test3()
-    freyberg_localizer_test1()
-    freyberg_localizer_test2()
+    #freyberg_localizer_test1()
+    #freyberg_localizer_test2()
     freyberg_localizer_test3()
 
     # csv_tests()
