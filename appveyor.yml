@@ -8,8 +8,12 @@ platform:
     - x64
 clone_depth: 1
 shallow_clone: true
-build: true
 
+# Do not build on tags (GitHub and BitBucket)
+skip_tags: false
+
+# Start builds on tags only (GitHub and BitBucket)
+skip_non_tags: false
 
 cache:
   - '%LOCALAPPDATA%\pip\Cache'
@@ -38,6 +42,9 @@ install:
   # Show the installed packages + versions
   - conda list
 
+build: 
+  - echo build
+
 test_script:
   - #cd benchmarks
   - set PATH=..\..\..\test_bin\win;..\..\test_bin\win;%PATH%;
@@ -63,6 +70,6 @@ test_script:
   - #cd ..
 
 after_test:
- - echo "done"
+ - echo done
 matrix:
   fast_finish: true
