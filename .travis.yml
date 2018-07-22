@@ -44,7 +44,7 @@ script:
   - export PATH="./test_bin/linux:../test_bin/linux:../../test_bin/linux:$PATH"
   - #nosetests -v -w ./benchmarks travis_tests.py 
   - nosetests -v -w benchmarks travis_tests.py
-  - nosetests -v -w benchmarks ies_test:test_chenoliver
+  - nosetests -v -w benchmarks ies_test.py.test_chenoliver
   - nosetests -v -w benchmarks opt_test:opt_test.std_weights_test
   - nosetests -v -w benchmarks opt_test:opt_test.run_supply2_test
   - nosetests -v -w benchmarks ies_test:ies_test.test_freyberg_full_cov_reorder
