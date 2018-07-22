@@ -40,7 +40,9 @@ install:
 test_script:
   - #cd benchmarks
   - set PATH=..\..\..\test_bin\win;%PATH%;
-  - nosetests -v --with-id --nocapture --with-timer -w benchmarks ies_test:test_chenoliver
+  - #nosetests -v --with-id --nocapture --with-timer -w benchmarks ies_test:test_chenoliver
+  - nosetests -v --with-id --nocapture --with-timer -w benchmarks travis_tests.py
+  
   - #cd ..
 
 after_test:
