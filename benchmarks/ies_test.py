@@ -781,7 +781,7 @@ def test_chenoliver():
     pyemu.helpers.run(exe_path+" pest.pst",cwd=test_d)
     
     num_reals = 30
-    noptmax = 6
+    noptmax = 3
     
 
     shutil.rmtree(test_d)
@@ -897,7 +897,7 @@ def test_chenoliver():
     print("{0},{1}".format(d,df_approx_par.PAR.mean()))
     #assert d < 0.05,"{0},{1}".format(d,df_approx_par.PAR.mean())
 
-def test_kirishima():
+def eval_kirishima():
 
     model_d = "ies_kirishima"
     test_d = os.path.join(model_d, "master")
@@ -1585,7 +1585,7 @@ def tenpar_localizer_test3():
     assert diff.max().max() < 0.5
   
 
-def freyberg_localizer_test1():
+def freyberg_localizer_eval1():
 
     model_d = "ies_freyberg"
     test_d = os.path.join(model_d, "test_local1")
@@ -1651,7 +1651,7 @@ def freyberg_localizer_test1():
         raise Exception("future pars too diff:{0}".format(','.join(broke)))
 
 
-def freyberg_localizer_test2():
+def freyberg_localizer_eval2():
     model_d = "ies_freyberg"
     test_d = os.path.join(model_d, "test_local2")
     template_d = os.path.join(model_d, "template")
@@ -1883,17 +1883,17 @@ if __name__ == "__main__":
     # test_freyberg_full_cov_reorder_run()
     # test_freyberg_full_cov()
     # tenpar_tight_tol_test()
-    # test_chenoliver()
+    test_chenoliver()
     # tenpar_narrow_range_test()
     test_freyberg_ineq()
     # tenpar_fixed_test()
     #tenpar_fixed_test2()
-    # tenpar_subset_how_test()
+    tenpar_subset_how_test()
     # tenpar_localizer_test1()
     # tenpar_localizer_test2()
     # tenpar_localizer_test3()
-    freyberg_localizer_test1()
-    freyberg_localizer_test2()
+    freyberg_localizer_eval1()
+    freyberg_localizer_eval2()
     freyberg_localizer_test3()
 
     # csv_tests()
