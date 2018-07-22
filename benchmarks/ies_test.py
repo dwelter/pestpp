@@ -262,12 +262,12 @@ def compare_pyemu():
 
 
 
-def test_10par_xsec(silent_master=False):
+def eval_10par_xsec(silent_master=False):
     run_suite("ies_10par_xsec",silent_master=silent_master)
     compare_suite("ies_10par_xsec")
 
 
-def test_freyberg():
+def eval_freyberg():
     run_suite("ies_freyberg")
     compare_suite("ies_freyberg")
 
@@ -734,7 +734,7 @@ def invest():
         print(p,df1.loc[:, p].std(), df2.loc[:, p].std())
         #break
 
-def test_synth():
+def eval_synth():
     model_d = "ies_synth"
     test_d = os.path.join(model_d,"master")
     template_d = os.path.join(model_d,"template")
