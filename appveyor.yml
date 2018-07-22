@@ -49,23 +49,23 @@ test_script:
   - #cd benchmarks
   - set PATH=..\..\..\test_bin\win;..\..\test_bin\win;%PATH%;
   - nosetests -v -w benchmarks travis_tests.py
-  - nosetests -v -w benchmarks ies_test.py.test_chenoliver
-  - nosetests -v -w benchmarks opt_test.py.std_weights_test
-  - nosetests -v -w benchmarks opt_test.py.run_supply2_test
-  - nosetests -v -w benchmarks ies_test.py.test_freyberg_full_cov_reorder
-  - nosetests -v -w benchmarks ies_test.py.test_freyberg_full_cov_reorder_run
-  - nosetests -v -w benchmarks ies_test.py.test_freyberg_full_cov
-  - nosetests -v -w benchmarks ies_test.py.test_freyberg_ineq
-  - nosetests -v -w benchmarks ies_test.py.freyberg_localizer_test3
-  - nosetests -v -w benchmarks ies_test.py.tenpar_subset_test
-  - nosetests -v -w benchmarks ies_test.py.tenpar_full_cov_test
-  - nosetests -v -w benchmarks ies_test.py.tenpar_tight_tol_test
-  - nosetests -v -w benchmarks ies_test.py.tenpar_narrow_range_test
-  - nosetests -v -w benchmarks ies_test.py.tenpar_fixed_test
-  - nosetests -v -w benchmarks ies_test.py.tenpar_fixed_test2
-  - nosetests -v -w benchmarks ies_test.py.tenpar_subset_how_test
-  - nosetests -v -w benchmarks ies_test.py.tenpar_localizer_test3
-  - nosetests -v -w benchmarks ies_test.py.test_chenoliver 
+  - nosetests -v -w benchmarks ies_test.test_chenoliver
+  - nosetests -v -w benchmarks opt_test.std_weights_test
+  - nosetests -v -w benchmarks opt_test.run_supply2_test
+  - nosetests -v -w benchmarks ies_test.test_freyberg_full_cov_reorder
+  - nosetests -v -w benchmarks ies_test.test_freyberg_full_cov_reorder_run
+  - nosetests -v -w benchmarks ies_test.test_freyberg_full_cov
+  - nosetests -v -w benchmarks ies_test.test_freyberg_ineq
+  - nosetests -v -w benchmarks ies_test.freyberg_localizer_test3
+  - nosetests -v -w benchmarks ies_test.tenpar_subset_test
+  - nosetests -v -w benchmarks ies_test.tenpar_full_cov_test
+  - nosetests -v -w benchmarks ies_test.tenpar_tight_tol_test
+  - nosetests -v -w benchmarks ies_test.tenpar_narrow_range_test
+  - nosetests -v -w benchmarks ies_test.tenpar_fixed_test
+  - nosetests -v -w benchmarks ies_test.tenpar_fixed_test2
+  - nosetests -v -w benchmarks ies_test.tenpar_subset_how_test
+  - nosetests -v -w benchmarks ies_test.tenpar_localizer_test3
+  - nosetests -v -w benchmarks ies_test.test_chenoliver 
   - #cd ..
 
 after_test:
