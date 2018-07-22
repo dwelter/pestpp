@@ -42,8 +42,7 @@ install:
   # Show the installed packages + versions
   - conda list
 
-build: 
-  - echo build
+build: false
 
 test_script:
   - #cd benchmarks
