@@ -55,16 +55,16 @@ mfnwt 10par_xsec.nam
 hk_Layer_1.ref.tpl hk_Layer_1.ref
 strt_Layer_1.ref.tpl strt_Layer_1.ref
 10par_xsec.hds.ins 10par_xsec.hds
-++ies_par_csv(par.csv)
+++ies_par_csv(par_some.csv)
 ++ies_obs_csv()
-++ies_restart_obs_csv(restart_failed.csv)
-++ies_bad_phi()
+++ies_restart_obs_csv(restart_some.csv)
+++ies_bad_phi(1000.0)
 ++parcov_filename()
-++ies_num_reals(15)
+++ies_num_reals(30)
 ++ies_use_approx()
 ++ies_use_prior_scaling()
 ++ies_reg_factor()
-++ies_lambda_mults()
+++ies_lambda_mults(0.1,1.0,10.0)
 ++ies_initial_lambda()
 ++ies_include_base()
-++ies_subset_size()
+++ies_subset_size(10)

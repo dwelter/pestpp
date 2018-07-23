@@ -809,7 +809,7 @@ void IterEnsembleSmoother::add_bases()
 			vector<string> prnames = pe.get_real_names();
 
 			int idx = find(prnames.begin(), prnames.end(), "base") - prnames.begin();
-			cout << idx << "," << rnames.size() << endl;
+			//cout << idx << "," << rnames.size() << endl;
 			string oreal = rnames[idx];
 			stringstream ss;
 			ss << "warning: 'base' realization in par ensenmble but not in obs ensemble," << endl;

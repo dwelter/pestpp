@@ -118,7 +118,8 @@ def setup_suite_dir(model_d):
     #pyemu.os_utils.run("{0} pest.pst".format(exe_path.replace("-ies","-swp")),cwd=m_d)
 
     # process sweep output as restart csv and jcb
-    df = pd.read_csv(os.path.join(model_d,"master_sweep", "sweep_out.csv"))
+    df = pd.read_csv(os.path.join(model_d,"master_sweep", "sweep_out.csv"),index_col=0)
+    df.index = df.input_run_id
     df.columns = [c.lower() for c in df.columns]
     df.to_csv(os.path.join(new_d, "restart.csv"))
     df = df.loc[:, pst.nnz_obs_names]
@@ -173,7 +174,8 @@ def run_suite(model_d,silent_master=False):
                         pst.pestpp_options[v] = test_vars[v].replace('"','')
                     except:
                         pst.pestpp_options[v] = test_vars[v]
-            pst.pestpp_options["ies_num_reals"] = 15
+
+            pst.pestpp_options["ies_num_reals"] = 30
             pst.write(os.path.join(template_d, "pest.pst"))
             test_d = os.path.join(model_d, "master_test_{0}".format(test_name))
 
@@ -1872,7 +1874,7 @@ if __name__ == "__main__":
     #prep_10par_for_travis("ies_10par_xsec")
     setup_suite_dir("ies_10par_xsec")
     setup_suite_dir("ies_freyberg")
-
+    run_suite("ies_10par_xsec")
     run_suite("ies_freyberg")
     rebase("ies_freyberg")
     rebase("ies_10par_xsec")
