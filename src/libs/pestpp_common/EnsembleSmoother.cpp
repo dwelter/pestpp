@@ -3331,27 +3331,50 @@ void IterEnsembleSmoother::set_subset_idx(int size)
 	{
 
 		subset_idxs.push_back(bidx - pe_names.begin());
-		nreal_subset--;
 	}
 	//int size = pe.shape().first;
 	string how = pest_scenario.get_pestpp_options().get_ies_subset_how();
 	if (how == "FIRST")
 	{
-		for (int i = 0; i < nreal_subset; i++)
+		for (int i = 0; i < size; i++)
+		{
+			if (find(subset_idxs.begin(), subset_idxs.end(), i) != subset_idxs.end())
+				continue;
 			subset_idxs.push_back(i);
+			if (subset_idxs.size() >= nreal_subset)
+				break;
+		}
+			
 	}
 	else if (how == "LAST")
 	{
 		
-		for (int i = size - nreal_subset; i < size; i++)
+		for (int i = size-1; i >= 0; i--)
+		{
+			if (find(subset_idxs.begin(), subset_idxs.end(), i) != subset_idxs.end())
+				continue;
 			subset_idxs.push_back(i);
+			if (subset_idxs.size() >= nreal_subset)
+				break;
+		}
+			
 	}
 	
 	else if (how == "RANDOM")
 	{
 		std::uniform_int_distribution<int> uni(0, size);
+		int idx;
 		for (int i = 0; i < nreal_subset; i++)
-			subset_idxs.push_back(uni(Ensemble::rand_engine));
+		{
+			idx = uni(Ensemble::rand_engine);
+			if (find(subset_idxs.begin(), subset_idxs.end(), idx) != subset_idxs.end())
+				continue;
+			subset_idxs.push_back(idx);
+			if (subset_idxs.size() >= nreal_subset)
+				break;
+
+		}
+			
 	}
 	else if (how == "PHI_BASED")
 	{
@@ -3400,8 +3423,8 @@ void IterEnsembleSmoother::set_subset_idx(int size)
 	}
 	stringstream ss;
 	for (auto i : subset_idxs)
-		ss << i << "/" << pe_names[i];
-	message(1,"subset idx/pe real name: ",subset_idxs);
+		ss << i << ":" << pe_names[i] << ", ";
+	message(1,"subset idx:pe real name: ",ss.str());
 	return;
 	//return subset_idx_map;
 }
