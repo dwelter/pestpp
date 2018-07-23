@@ -1871,11 +1871,8 @@ if __name__ == "__main__":
 
     #prep_10par_for_travis("ies_10par_xsec")
     setup_suite_dir("ies_10par_xsec")
-    #tenpar_include_base_test()
-    #setup_suite_dir("ies_freyberg")
-    #
-    run_suite("ies_10par_xsec")
-    exit()
+    setup_suite_dir("ies_freyberg")
+
     run_suite("ies_freyberg")
     rebase("ies_freyberg")
     rebase("ies_10par_xsec")

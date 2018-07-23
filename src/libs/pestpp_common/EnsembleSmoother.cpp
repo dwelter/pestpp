@@ -730,11 +730,11 @@ bool IterEnsembleSmoother::initialize_pe(Covariance &cov)
 		if (pp_args.find("IES_NUM_REALS") != pp_args.end())
 		{
 			int num_reals = pest_scenario.get_pestpp_options().get_ies_num_reals();
-			if (pest_scenario.get_pestpp_options().get_ies_include_base())
+			/*if (pest_scenario.get_pestpp_options().get_ies_include_base())
 			{
 				message(1, "Note: increasing num_reals by 1 to account for 'base' realization in existing par ensemble");
 				num_reals++;
-			}
+			}*/
 			if (num_reals < pe.shape().first)
 			{
 				message(1,"ies_num_reals arg passed, truncated parameter ensemble to ",num_reals);
@@ -951,11 +951,11 @@ bool IterEnsembleSmoother::initialize_oe(Covariance &cov)
 		if (pp_args.find("IES_NUM_REALS") != pp_args.end())
 		{
 			int num_reals = pest_scenario.get_pestpp_options().get_ies_num_reals();
-			if (pest_scenario.get_pestpp_options().get_ies_include_base())
+			/*if (pest_scenario.get_pestpp_options().get_ies_include_base())
 			{
 				message(1, "Note: increasing num_reals by 1 to account for 'base' realization in existing obs ensemble");
 				num_reals++;
-			}
+			}*/
 			if (num_reals < oe.shape().first)
 			{
 				message(1,"ies_num_reals arg passed, truncated observation ensemble to ",num_reals);
@@ -1176,11 +1176,11 @@ void IterEnsembleSmoother::initialize_restart_oe()
 	if (pp_args.find("IES_NUM_REALS") != pp_args.end())
 	{
 		int num_reals = pest_scenario.get_pestpp_options().get_ies_num_reals();
-		if (pest_scenario.get_pestpp_options().get_ies_include_base())
+		/*if (pest_scenario.get_pestpp_options().get_ies_include_base())
 		{
 			message(1, "Note: increasing num_reals by 1 to account for 'base' realization in existing obs restart ensemble");
 			num_reals++;
-		}
+		}*/
 		if (num_reals < oe.shape().first)
 		{
 			message(1, "ies_num_reals arg passed, truncated restart obs ensemble to ", num_reals);

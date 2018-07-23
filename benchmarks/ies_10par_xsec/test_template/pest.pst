@@ -56,10 +56,10 @@ hk_Layer_1.ref.tpl hk_Layer_1.ref
 strt_Layer_1.ref.tpl strt_Layer_1.ref
 10par_xsec.hds.ins 10par_xsec.hds
 ++ies_par_csv(par.csv)
-++ies_obs_csv(obs.csv)
-++ies_restart_obs_csv()
+++ies_obs_csv()
+++ies_restart_obs_csv(restart_failed.csv)
 ++ies_bad_phi()
-++parcov_filename(prior.jcb)
+++parcov_filename()
 ++ies_num_reals(15)
 ++ies_use_approx()
 ++ies_use_prior_scaling()
