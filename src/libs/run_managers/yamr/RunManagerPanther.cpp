@@ -303,6 +303,19 @@ RunManagerPanther::RunManagerPanther(const string &stor_filename, const string &
 	return;
 }
 
+
+std::string RunManagerPanther::get_security_key()
+{
+	return security_key;
+}
+
+
+void RunManagerPanther::set_security_key(const std::string &new_security_key)
+{
+	security_key = new_security_key;
+}
+
+
 int RunManagerPanther::get_n_concurrent(int run_id)
 {
 	auto range_pair = active_runid_to_iterset_map.equal_range(run_id);

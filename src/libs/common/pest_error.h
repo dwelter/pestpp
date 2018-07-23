@@ -130,5 +130,20 @@ private:
 	string str;
 };
 
+class PestNotImplementedError : public PestError {
+public:
+	PestNotImplementedError(const string &_str, const string &_message = "")
+		: PestError(_message), str(_str) {
+		message = string("Not implemented: \"") + _str + "\"" + message;
+	}
+	virtual ~PestNotImplementedError() throw () {};
+	virtual const char* what() const throw()
+	{
+		return message.c_str();
+	}
+private:
+	string str;
+};
+
 
 #endif /* PEST_ERROR_H_ */

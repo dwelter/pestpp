@@ -108,9 +108,12 @@ public:
 	~RunManagerPanther(void); 
 	int get_n_waiting_runs() { return waiting_runs.size(); }
 	void close_slaves();
+	std::string get_security_key();
+	void set_security_key(const std::string &security_key);
 
 private:
 	std::string port;
+	std::string security_key;
 	static const int BACKLOG;
 	static const int MAX_FAILED_PINGS;
 	static const int N_PINGS_UNRESPONSIVE;
