@@ -3398,7 +3398,10 @@ void IterEnsembleSmoother::set_subset_idx(int size)
 		//throw runtime_error("unkonwn 'subset_how'");
 		throw_ies_error("unknown 'subset_how'");
 	}
-	message(1,"subset idxs:",subset_idxs);
+	stringstream ss;
+	for (auto i : subset_idxs)
+		ss << i << "/" << pe_names[i];
+	message(1,"subset idx/pe real name: ",subset_idxs);
 	return;
 	//return subset_idx_map;
 }
