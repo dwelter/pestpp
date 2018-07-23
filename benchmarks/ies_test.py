@@ -109,7 +109,7 @@ def setup_suite_dir(model_d):
 
     pst.write(os.path.join(new_d, "pest.pst"))
     # run sweep
-    m_d = os.path.join(model_d,"master_sweep")
+    m_d = os.path.join(model_d,"master_sweep1")
     if os.path.exists(m_d):
         shutil.rmtree(m_d)
     pyemu.os_utils.start_slaves(new_d, exe_path.replace("-ies","-swp"), "pest.pst", 10, master_dir=os.path.join(model_d,"master_sweep"),
