@@ -5656,7 +5656,3 @@ w1_r34_c12            1.0 * log(w1_r34_c12) = 0.000000E+00  1.6609640474E+00    
 1e-10 1.05e-10 0.1 nomemsave 
 1.0 1.0e-10 1.0e10 linreg continue 
 1.3 1.0e-2 1 1.5 1.5 0.5 
-++parcov_filename(prior.jcb)
-++ies_num_reals(30)
-++ies_include_base(true)
-++ies_group_draws(true)

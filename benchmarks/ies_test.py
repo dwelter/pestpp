@@ -92,14 +92,18 @@ def setup_suite_dir(model_d):
         cov.to_binary(os.path.join(new_d, "prior.jcb"))
 
     # draw some ensembles
+    idx = [i for i in range(num_reals)]
+    idx[-1] = "base"
     pe = pyemu.ParameterEnsemble.from_gaussian_draw(pst, cov=cov, num_reals=num_reals,
                                                     use_homegrown=True,group_chunks=True)
+    pe.index = idx
     pe.to_csv(os.path.join(new_d, "par.csv"))
     pe.to_binary(os.path.join(new_d, "par.jcb"))
     pe.to_csv(os.path.join(new_d, "sweep_in.csv"))
     pe.loc[:, pst.adj_par_names].to_csv(os.path.join(new_d, "par_some.csv"))
 
     oe = pyemu.ObservationEnsemble.from_id_gaussian_draw(pst, num_reals=num_reals)
+    oe.index = idx
     oe.to_csv(os.path.join(new_d, "obs.csv"))
     oe.to_binary(os.path.join(new_d, "obs.jcb"))
 
@@ -1868,9 +1872,10 @@ if __name__ == "__main__":
     #prep_10par_for_travis("ies_10par_xsec")
     setup_suite_dir("ies_10par_xsec")
     #tenpar_include_base_test()
-    setup_suite_dir("ies_freyberg")
+    #setup_suite_dir("ies_freyberg")
     #
     run_suite("ies_10par_xsec")
+    exit()
     run_suite("ies_freyberg")
     rebase("ies_freyberg")
     rebase("ies_10par_xsec")
