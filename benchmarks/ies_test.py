@@ -43,7 +43,7 @@ compare_files = ["pest.phi.actual.csv", "pest.phi.meas.csv", "pest.phi.regul.csv
                  "pest.{0}.par.csv".format(noptmax), "pest.{0}.obs.csv".format(noptmax),
                  "pest.{0}.par.csv".format(0), "pest.base.obs.csv"]
 diff_tol = 1.0e-6
-
+port = 4019
 num_reals = 30
 def write_empty_test_matrix():
     test_names = [t.split()[0] for t in tests.split('\n')]
@@ -92,29 +92,34 @@ def setup_suite_dir(model_d):
         cov.to_binary(os.path.join(new_d, "prior.jcb"))
 
     # draw some ensembles
+    idx = [i for i in range(num_reals)]
+    idx[-1] = "base"
     pe = pyemu.ParameterEnsemble.from_gaussian_draw(pst, cov=cov, num_reals=num_reals,
                                                     use_homegrown=True,group_chunks=True)
+    pe.index = idx
     pe.to_csv(os.path.join(new_d, "par.csv"))
     pe.to_binary(os.path.join(new_d, "par.jcb"))
     pe.to_csv(os.path.join(new_d, "sweep_in.csv"))
     pe.loc[:, pst.adj_par_names].to_csv(os.path.join(new_d, "par_some.csv"))
 
     oe = pyemu.ObservationEnsemble.from_id_gaussian_draw(pst, num_reals=num_reals)
+    oe.index = idx
     oe.to_csv(os.path.join(new_d, "obs.csv"))
     oe.to_binary(os.path.join(new_d, "obs.jcb"))
 
     pst.write(os.path.join(new_d, "pest.pst"))
     # run sweep
-    m_d = os.path.join(model_d,"master_sweep")
+    m_d = os.path.join(model_d,"master_sweep1")
     if os.path.exists(m_d):
         shutil.rmtree(m_d)
     pyemu.os_utils.start_slaves(new_d, exe_path.replace("-ies","-swp"), "pest.pst", 10, master_dir=os.path.join(model_d,"master_sweep"),
-                           slave_root=model_d,local=local,port=4020)
+                           slave_root=model_d,local=local,port=port)
     #shutil.copytree(new_d,m_d)
     #pyemu.os_utils.run("{0} pest.pst".format(exe_path.replace("-ies","-swp")),cwd=m_d)
 
     # process sweep output as restart csv and jcb
-    df = pd.read_csv(os.path.join(model_d,"master_sweep", "sweep_out.csv"))
+    df = pd.read_csv(os.path.join(model_d,"master_sweep", "sweep_out.csv"),index_col=0)
+    df.index = df.input_run_id
     df.columns = [c.lower() for c in df.columns]
     df.to_csv(os.path.join(new_d, "restart.csv"))
     df = df.loc[:, pst.nnz_obs_names]
@@ -169,7 +174,8 @@ def run_suite(model_d,silent_master=False):
                         pst.pestpp_options[v] = test_vars[v].replace('"','')
                     except:
                         pst.pestpp_options[v] = test_vars[v]
-            pst.pestpp_options["ies_num_reals"] = 15
+
+            pst.pestpp_options["ies_num_reals"] = 30
             pst.write(os.path.join(template_d, "pest.pst"))
             test_d = os.path.join(model_d, "master_test_{0}".format(test_name))
 
@@ -181,7 +187,7 @@ def run_suite(model_d,silent_master=False):
                     continue
             pyemu.os_utils.start_slaves(template_d, exe_path, "pest.pst", num_slaves=15,
                                        master_dir=test_d, verbose=True, slave_root=model_d,
-                                       silent_master=silent_master,port=4020)
+                                       silent_master=silent_master,port=port)
         except Exception as e:
             errors.append("error:"+test_vars["text"]+" "+str(e))
     if len(errors) > 0:
@@ -441,7 +447,7 @@ def tenpar_subset_test():
     pst.pestpp_options["ies_subset_size"] = 21
     pst.write(os.path.join(template_d, "pest.pst"))
     pyemu.os_utils.start_slaves(template_d, exe_path, "pest.pst", num_slaves=15,
-                               slave_root=model_d, master_dir=test_d,port=4020)
+                               slave_root=model_d, master_dir=test_d,port=port)
     df_base = pd.read_csv(os.path.join(test_d, "pest.phi.meas.csv"),index_col=0)
 
     pst.pestpp_options = {}
@@ -452,7 +458,7 @@ def tenpar_subset_test():
 
     pst.write(os.path.join(template_d, "pest.pst"))
     pyemu.os_utils.start_slaves(template_d, exe_path, "pest.pst", num_slaves=15,
-                               slave_root=model_d, master_dir=test_d,port=4020)
+                               slave_root=model_d, master_dir=test_d,port=port)
     df_sub = pd.read_csv(os.path.join(test_d, "pest.phi.meas.csv"),index_col=0)
     diff = (df_sub - df_base).apply(np.abs)
     diff = diff.iloc[:,6:]
@@ -711,7 +717,7 @@ def test_freyberg_full_cov_reorder_run():
     #pe.to_csv(os.path.join(test_d, "pyemu_pe.csv"))
 
     pyemu.os_utils.start_slaves(template_d, exe_path, "pest.pst", num_slaves=25,
-                                slave_root=model_d, master_dir=test_d,port=4020)
+                                slave_root=model_d, master_dir=test_d,port=port)
     
 
 def invest():
@@ -755,7 +761,7 @@ def eval_synth():
     pst.write(os.path.join(template_d,"pest.pst"))
     print("starting slaves")
     pyemu.os_utils.start_slaves(template_d,exe_path,"pest.pst",num_slaves=15,
-        master_dir=test_d,slave_root=model_d,port=4020)
+        master_dir=test_d,slave_root=model_d,port=port)
 
 def test_chenoliver():
     model_d = "ies_chenoliver"
@@ -802,7 +808,7 @@ def test_chenoliver():
     
 
     pyemu.os_utils.start_slaves(template_d,exe_path,"pest.pst",num_slaves=20,
-        master_dir=test_d,slave_root=model_d,port=4020,silent_master=True)
+        master_dir=test_d,slave_root=model_d,port=port,silent_master=True)
     df_full_obs = pd.read_csv(os.path.join(test_d,"pest.{0}.obs.csv".format(noptmax)),index_col=0)
     df_full_par = pd.read_csv(os.path.join(test_d,"pest.{0}.par.csv".format(noptmax)),index_col=0)
 
@@ -818,7 +824,7 @@ def test_chenoliver():
     pst.write(os.path.join(template_d,"pest.pst"))
 
     pyemu.os_utils.start_slaves(template_d,exe_path,"pest.pst",num_slaves=20,
-        master_dir=test_d,slave_root=model_d,port=4020,silent_master=True)
+        master_dir=test_d,slave_root=model_d,port=port,silent_master=True)
     df_approx_obs = pd.read_csv(os.path.join(test_d,"pest.{0}.obs.csv".format(noptmax)),index_col=0)
     df_approx_par = pd.read_csv(os.path.join(test_d,"pest.{0}.par.csv".format(noptmax)),index_col=0)
 
@@ -856,7 +862,7 @@ def test_chenoliver():
     pst.write(os.path.join(template_d,"pest.pst"))
 
     pyemu.os_utils.start_slaves(template_d,exe_path,"pest.pst",num_slaves=25,
-        master_dir=test_d,slave_root=model_d,port=4020,silent_master=True)
+        master_dir=test_d,slave_root=model_d,port=port,silent_master=True)
     df_full_obs = pd.read_csv(os.path.join(test_d,"pest.{0}.obs.csv".format(noptmax)),index_col=0)
     df_full_par = pd.read_csv(os.path.join(test_d,"pest.{0}.par.csv".format(noptmax)),index_col=0)
 
@@ -872,7 +878,7 @@ def test_chenoliver():
     pst.write(os.path.join(template_d,"pest.pst"))
 
     pyemu.os_utils.start_slaves(template_d,exe_path,"pest.pst",num_slaves=25,
-        master_dir=test_d,slave_root=model_d,port=4020,silent_master=True)
+        master_dir=test_d,slave_root=model_d,port=port,silent_master=True)
     df_approx_obs = pd.read_csv(os.path.join(test_d,"pest.{0}.obs.csv".format(noptmax)),index_col=0)
     df_approx_par = pd.read_csv(os.path.join(test_d,"pest.{0}.par.csv".format(noptmax)),index_col=0)
 
@@ -921,7 +927,7 @@ def eval_kirishima():
     pst.write(os.path.join(template_d, "pest.pst"))
     print("starting slaves")
     pyemu.os_utils.start_slaves(template_d, exe_path, "pest.pst", num_slaves=15, master_dir=test_d,
-                               slave_root=model_d,port=4020)
+                               slave_root=model_d,port=port)
 
 def test_freyberg_ineq():
 
@@ -944,7 +950,7 @@ def test_freyberg_ineq():
     pst.write(os.path.join(template_d, "pest_ineq.pst"))
     print("starting slaves")
     pyemu.os_utils.start_slaves(template_d, exe_path, "pest_ineq.pst", num_slaves=10, master_dir=test_d,
-                               slave_root=model_d,port=4020)
+                               slave_root=model_d,port=port)
 
     obs_csvs = [f for f in os.listdir(test_d) if "obs" in f and f.endswith(".csv")]
     print(obs_csvs)
@@ -989,7 +995,7 @@ def tenpar_fixed_test2():
     pst.write(os.path.join(template_d, "pest_fixed.pst"))
     # pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
     pyemu.os_utils.start_slaves(template_d, exe_path, "pest_fixed.pst", num_slaves=5, master_dir=test_d,
-                                slave_root=model_d, port=4020)
+                                slave_root=model_d, port=port)
     df = pd.read_csv(os.path.join(test_d,"pest_fixed.{0}.par.csv".format(pst.control_data.noptmax)),index_col=0)
     df.columns = df.columns.map(str.lower)
     #df = df.iloc[:-1, :]
@@ -1040,14 +1046,14 @@ def tenpar_fixed_test():
     pst.write(os.path.join(template_d, "pest_fixed.pst"))
     #pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
     pyemu.os_utils.start_slaves(template_d, exe_path, "pest_fixed.pst", num_slaves=5, master_dir=test_d,
-                               slave_root=model_d,port=4020)
+                               slave_root=model_d,port=port)
     compare()
     pe.to_binary(os.path.join(template_d,"par_fixed.jcb"))
     pst.pestpp_options["ies_par_en"] = "par_fixed.jcb"
     pst.write(os.path.join(template_d, "pest.pst"))
     #pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
     pyemu.os_utils.start_slaves(template_d, exe_path, "pest_fixed.pst", num_slaves=5, master_dir=test_d,
-                               slave_root=model_d,port=4020)
+                               slave_root=model_d,port=port)
     compare()
 
     pst.pestpp_options["ies_par_en"] = "par_fixed.jcb"
@@ -1055,7 +1061,7 @@ def tenpar_fixed_test():
     pst.write(os.path.join(template_d, "pest_fixed.pst"))
     #pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
     pyemu.os_utils.start_slaves(template_d, exe_path, "pest_fixed.pst", num_slaves=5, master_dir=test_d,
-                               slave_root=model_d,port=4020)
+                               slave_root=model_d,port=port)
     pe1 = pyemu.ParameterEnsemble.from_binary(pst=pst,filename=os.path.join(test_d,"pest_fixed.0.par.jcb"))
     #pe1.index = pe.index
     diff = pe - pe1
@@ -1186,7 +1192,7 @@ def tenpar_weight_pareto():
 
     pst.write(os.path.join(template_d,"pest_pareto.pst"))
     pyemu.os_utils.start_slaves(template_d,exe_path,"pest_pareto.pst",num_slaves=40,
-                                slave_root=model_d,master_dir=test_d,port=4020)
+                                slave_root=model_d,master_dir=test_d,port=port)
     obs = pst.observation_data
     df_init = pd.read_csv(os.path.join(test_d,"pest_pareto.0.obs.csv".format(pst.control_data.noptmax)))
     df = pd.read_csv(os.path.join(test_d,"pest_pareto.{0}.obs.csv".format(pst.control_data.noptmax)))
@@ -1285,14 +1291,14 @@ def tenpar_localizer_test1():
     pst.write(pst_name)
     pyemu.helpers.start_slaves(template_d, exe_path, "pest_local.pst", num_slaves=11,
                                    master_dir=test_d, verbose=True, slave_root=model_d,
-                                   port=4020)
+                                   port=port)
     phi_df1 = pd.read_csv(os.path.join(test_d,"pest_local.phi.actual.csv"))
 
     pst.pestpp_options.pop("ies_localizer")
     pst.write(pst_name)
     pyemu.helpers.start_slaves(template_d, exe_path, "pest_local.pst", num_slaves=11,
                                    master_dir=test_d, verbose=True, slave_root=model_d,
-                                   port=4020)
+                                   port=port)
     phi_df2 = pd.read_csv(os.path.join(test_d,"pest_local.phi.actual.csv"))
     diff = phi_df1 - phi_df2
     print(diff.max().max())
@@ -1351,7 +1357,7 @@ def tenpar_localizer_test2():
     pst.write(pst_name)
     pyemu.helpers.start_slaves(template_d, exe_path, "pest_local.pst", num_slaves=11,
                                    master_dir=test_d, verbose=True, slave_root=model_d,
-                                   port=4020)
+                                   port=port)
     phi_df1 = pd.read_csv(os.path.join(test_d,"pest_local.phi.actual.csv"))
     par_df1 = pd.read_csv(os.path.join(test_d,"pest_local.{0}.par.csv".format(pst.control_data.noptmax)),index_col=0)
     par_df1.columns = par_df1.columns.str.lower()
@@ -1362,7 +1368,7 @@ def tenpar_localizer_test2():
     pst.write(os.path.join(template_d,"pest_base.pst"))
     pyemu.helpers.start_slaves(template_d, exe_path, "pest_base.pst", num_slaves=11,
                                    master_dir=test_d+"_base", verbose=True, slave_root=model_d,
-                                   port=4020)
+                                   port=port)
     phi_df2 = pd.read_csv(os.path.join(test_d+"_base","pest_base.phi.actual.csv"))
     par_df2 = pd.read_csv(os.path.join(test_d+"_base","pest_base.{0}.par.csv".format(pst.control_data.noptmax)),index_col=0)
     par_df2.columns = par_df1.columns.str.lower()
@@ -1376,15 +1382,15 @@ def tenpar_localizer_test2():
         diff = np.abs(par_df1.loc[:,par] - par_df2.loc[:,par])
         print(diff)
         print(diff.sum())
-        assert diff.sum() < 1.0e-4
+        assert diff.sum() < 1.0e-4, diff.sum()
         if par in use_pars:
             continue
         diff = np.abs(par_df1.loc[:,par] - pe.loc[:,par])
         print(diff.sum())
-        assert diff.sum() < 1.0e-4
+        assert diff.sum() < 1.0e-4, diff.sum()
     diff = (phi_df1 - phi_df2).apply(np.abs)
     print(diff.max().max())
-    assert diff.max().max() <  1.0e-4
+    assert diff.max().max() <  1.0e-4, diff.max().max()
 
 def prep_for_travis(model_d):
     assert os.path.exists(os.path.join(model_d,"test_template"))
@@ -1448,7 +1454,7 @@ def tenpar_subset_how_test():
     pst.control_data.noptmax = -1
     pst.write(os.path.join(template_d,"pest_restart.pst"))
     pyemu.os_utils.start_slaves(template_d, exe_path, "pest_restart.pst", num_slaves=10,
-                                slave_root=model_d, master_dir=test_d, port=4020)
+                                slave_root=model_d, master_dir=test_d, port=port)
     pyemu.os_utils.run("{0} {1}".format(exe_path, "pest_restart.pst"), cwd=test_d)
     pst.pestpp_options["ies_par_en"] = "pest_restart.0.par.csv"
     pst.pestpp_options["ies_lambda_mults"] = 1.0
@@ -1552,7 +1558,7 @@ def tenpar_localizer_test3():
     pst.write(pst_name)
     pyemu.helpers.start_slaves(template_d, exe_path, "pest_local.pst", num_slaves=11,
                                master_dir=test_d, verbose=True, slave_root=model_d,
-                               port=4020)
+                               port=port)
     phi_df1 = pd.read_csv(os.path.join(test_d, "pest_local.phi.composite.csv"))
     par_df1 = pd.read_csv(os.path.join(test_d, "pest_local.{0}.par.csv".format(pst.control_data.noptmax)), index_col=0)
     par_df1.columns = par_df1.columns.str.lower()
@@ -1563,7 +1569,7 @@ def tenpar_localizer_test3():
     pst.write(os.path.join(template_d, "pest_base.pst"))
     pyemu.helpers.start_slaves(template_d, exe_path, "pest_base.pst", num_slaves=11,
                                master_dir=test_d + "_base", verbose=True, slave_root=model_d,
-                               port=4020)
+                               port=port)
     phi_df2 = pd.read_csv(os.path.join(test_d + "_base", "pest_base.phi.composite.csv"))
     par_df2 = pd.read_csv(os.path.join(test_d + "_base", "pest_base.{0}.par.csv".format(pst.control_data.noptmax)),
                           index_col=0)
@@ -1625,7 +1631,7 @@ def freyberg_localizer_eval1():
     pst.write(os.path.join(template_d, "pest_base.pst"))
     print("starting slaves")
     pyemu.helpers.start_slaves(template_d, exe_path, "pest_base.pst", num_slaves=11, master_dir=test_d,
-                               slave_root=model_d,port=4020)
+                               slave_root=model_d,port=port)
     par_df = pd.read_csv(os.path.join(test_d,"pest_base.{0}.par.csv".format(pst.control_data.noptmax)),index_col=0)
     #par_df.index = pe.index
     par_df.columns = par_df.columns.str.lower()
@@ -1691,7 +1697,7 @@ def freyberg_localizer_eval2():
     pst.write(os.path.join(template_d, "pest_local.pst"))
     print("starting slaves")
     pyemu.helpers.start_slaves(template_d, exe_path, "pest_local.pst", num_slaves=11, master_dir=test_d,
-                               slave_root=model_d, port=4020)
+                               slave_root=model_d, port=port)
     par_df1 = pd.read_csv(os.path.join(test_d, "pest_local.{0}.par.csv".format(pst.control_data.noptmax)), index_col=0)
     #par_df1.index = pe.index
     par_df1.columns = par_df1.columns.str.lower()
@@ -1701,7 +1707,7 @@ def freyberg_localizer_eval2():
     pst.write(os.path.join(template_d, "pest_base.pst"))
     print("starting slaves")
     pyemu.helpers.start_slaves(template_d, exe_path, "pest_base.pst", num_slaves=11, master_dir=test_d+"_base",
-                               slave_root=model_d, port=4020)
+                               slave_root=model_d, port=port)
     par_df2 = pd.read_csv(os.path.join(test_d+"_base", "pest_base.{0}.par.csv".format(pst.control_data.noptmax)), index_col=0)
     #par_df2.index = pe.index
     par_df2.columns = par_df2.columns.str.lower()
@@ -1750,7 +1756,7 @@ def freyberg_localizer_test3():
     pst.write(os.path.join(template_d, "pest_local.pst"))
     print("starting slaves")
     pyemu.helpers.start_slaves(template_d, exe_path, "pest_local.pst", num_slaves=15, master_dir=test_d,
-                               slave_root=model_d, port=4020)
+                               slave_root=model_d, port=port)
     par_df1 = pd.read_csv(os.path.join(test_d, "pest_local.{0}.par.csv".format(pst.control_data.noptmax)), index_col=0)
     #par_df1.index = pe.index
     par_df1.columns = par_df1.columns.str.lower()
@@ -1760,7 +1766,7 @@ def freyberg_localizer_test3():
     pst.write(os.path.join(template_d, "pest_base.pst"))
     print("starting slaves")
     pyemu.helpers.start_slaves(template_d, exe_path, "pest_base.pst", num_slaves=15, master_dir=test_d+"_base",
-                               slave_root=model_d, port=4020)
+                               slave_root=model_d, port=port)
     par_df2 = pd.read_csv(os.path.join(test_d+"_base", "pest_base.{0}.par.csv".format(pst.control_data.noptmax)), index_col=0)
     #par_df2.index = pe.index
     par_df2.columns = par_df2.columns.str.lower()
@@ -1849,7 +1855,7 @@ def csv_tests():
     # pst.write(pst_name)
     # pyemu.helpers.start_slaves(template_d, exe_path, "pest_local.pst", num_slaves=11,
     #                            master_dir=test_d, verbose=True, slave_root=model_d,
-    #                            port=4020)
+    #                            port=port)
     # phi_df2 = pd.read_csv(os.path.join(test_d, "pest_local.phi.actual.csv"))
     # diff = phi_df1 - phi_df2
     # print(diff.max().max())
@@ -1859,44 +1865,46 @@ def csv_tests():
     # plt.legend()
     # plt.savefig(os.path.join(test_d, "local_test.pdf"))
 
+#def tenpar_include_base_test():
+
+
 if __name__ == "__main__":
     # write_empty_test_matrix()
 
     #prep_10par_for_travis("ies_10par_xsec")
     # setup_suite_dir("ies_10par_xsec")
     # setup_suite_dir("ies_freyberg")
-    #
     # run_suite("ies_10par_xsec")
     # run_suite("ies_freyberg")
     # rebase("ies_freyberg")
     # rebase("ies_10par_xsec")
     # compare_suite("ies_10par_xsec")
     # compare_suite("ies_freyberg")
-    # test_10par_xsec(silent_master=False)
-    # test_freyberg()
+    # # test_10par_xsec(silent_master=False)
+    # # test_freyberg()
 
-    # full list of tests
+    # # full list of tests
     # tenpar_subset_test()
-    #tenpar_full_cov_test()
-    test_freyberg_full_cov_reorder()
-    test_freyberg_full_cov_reorder_run()
+    # tenpar_full_cov_test()
+    # test_freyberg_full_cov_reorder()
+    # test_freyberg_full_cov_reorder_run()
     # test_freyberg_full_cov_reorder_run()
     # test_freyberg_full_cov()
     # tenpar_tight_tol_test()
-    test_chenoliver()
+    # test_chenoliver()
     # tenpar_narrow_range_test()
-    test_freyberg_ineq()
+    # test_freyberg_ineq()
     # tenpar_fixed_test()
-    #tenpar_fixed_test2()
-    tenpar_subset_how_test()
+    # tenpar_fixed_test2()
+    # tenpar_subset_how_test()
     # tenpar_localizer_test1()
-    # tenpar_localizer_test2()
-    # tenpar_localizer_test3()
+    tenpar_localizer_test2()
+    tenpar_localizer_test3()
     freyberg_localizer_eval1()
     freyberg_localizer_eval2()
     freyberg_localizer_test3()
 
-    # csv_tests()
+    csv_tests()
     #test_10par_xsec(silent_master=False)
     #test_freyberg()        
 

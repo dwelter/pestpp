@@ -730,11 +730,11 @@ bool IterEnsembleSmoother::initialize_pe(Covariance &cov)
 		if (pp_args.find("IES_NUM_REALS") != pp_args.end())
 		{
 			int num_reals = pest_scenario.get_pestpp_options().get_ies_num_reals();
-			if (pest_scenario.get_pestpp_options().get_ies_include_base())
+			/*if (pest_scenario.get_pestpp_options().get_ies_include_base())
 			{
 				message(1, "Note: increasing num_reals by 1 to account for 'base' realization in existing par ensemble");
 				num_reals++;
-			}
+			}*/
 			if (num_reals < pe.shape().first)
 			{
 				message(1,"ies_num_reals arg passed, truncated parameter ensemble to ",num_reals);
@@ -790,6 +790,8 @@ void IterEnsembleSmoother::add_bases()
 		message(1, "adding 'base' parameter values to ensemble");
 		Parameters pars = pest_scenario.get_ctl_parameters();
 		pe.get_par_transform().active_ctl2numeric_ip(pars);
+		vector<int> drop{ pe.shape().first - 1 };
+		pe.drop_rows(drop);
 		pe.append("base", pars);
 	}
 	
@@ -807,7 +809,7 @@ void IterEnsembleSmoother::add_bases()
 			vector<string> prnames = pe.get_real_names();
 
 			int idx = find(prnames.begin(), prnames.end(), "base") - prnames.begin();
-			cout << idx << "," << rnames.size() << endl;
+			//cout << idx << "," << rnames.size() << endl;
 			string oreal = rnames[idx];
 			stringstream ss;
 			ss << "warning: 'base' realization in par ensenmble but not in obs ensemble," << endl;
@@ -825,6 +827,8 @@ void IterEnsembleSmoother::add_bases()
 		else
 		{
 			message(1, "adding 'base' observation values to ensemble");
+			vector<int> drop{ oe.shape().first - 1 };
+			oe.drop_rows(drop);
 			oe.append("base", obs);
 		}
 	}
@@ -947,11 +951,11 @@ bool IterEnsembleSmoother::initialize_oe(Covariance &cov)
 		if (pp_args.find("IES_NUM_REALS") != pp_args.end())
 		{
 			int num_reals = pest_scenario.get_pestpp_options().get_ies_num_reals();
-			if (pest_scenario.get_pestpp_options().get_ies_include_base())
+			/*if (pest_scenario.get_pestpp_options().get_ies_include_base())
 			{
 				message(1, "Note: increasing num_reals by 1 to account for 'base' realization in existing obs ensemble");
 				num_reals++;
-			}
+			}*/
 			if (num_reals < oe.shape().first)
 			{
 				message(1,"ies_num_reals arg passed, truncated observation ensemble to ",num_reals);
@@ -1172,11 +1176,11 @@ void IterEnsembleSmoother::initialize_restart_oe()
 	if (pp_args.find("IES_NUM_REALS") != pp_args.end())
 	{
 		int num_reals = pest_scenario.get_pestpp_options().get_ies_num_reals();
-		if (pest_scenario.get_pestpp_options().get_ies_include_base())
+		/*if (pest_scenario.get_pestpp_options().get_ies_include_base())
 		{
 			message(1, "Note: increasing num_reals by 1 to account for 'base' realization in existing obs restart ensemble");
 			num_reals++;
-		}
+		}*/
 		if (num_reals < oe.shape().first)
 		{
 			message(1, "ies_num_reals arg passed, truncated restart obs ensemble to ", num_reals);
@@ -1508,8 +1512,7 @@ void IterEnsembleSmoother::initialize()
 	double dec_fac = pest_scenario.get_pestpp_options().get_ies_lambda_dec_fac();
 	message(1, "lambda decrease factor: ", dec_fac);
 	message(1, "max run fail: ", ppo->get_max_run_fail());
-	string how = pest_scenario.get_pestpp_options().get_ies_subset_how();
-	message(1, "subset how: ", how);
+	
 	sanity_checks();
 	
 	bool echo = false;
@@ -1697,6 +1700,8 @@ void IterEnsembleSmoother::initialize()
 	else
 	{
 		message(1, "using subset in lambda testing, only first ", subset_size);
+		string how = pest_scenario.get_pestpp_options().get_ies_subset_how();
+		message(1, "subset how: ", how);
 		use_subset = true;
 	}
 	
@@ -3320,25 +3325,57 @@ void IterEnsembleSmoother::set_subset_idx(int size)
 	int nreal_subset = pest_scenario.get_pestpp_options().get_ies_subset_size();
 	if ((!use_subset) || (nreal_subset >= size))
 		return;
+	vector<string> pe_names = pe.get_real_names();
+
+	vector<string>::iterator bidx = find(pe_names.begin(), pe_names.end(), "base");
+	if (bidx != pe_names.end())
+	{
+
+		subset_idxs.push_back(bidx - pe_names.begin());
+	}
 	//int size = pe.shape().first;
 	string how = pest_scenario.get_pestpp_options().get_ies_subset_how();
 	if (how == "FIRST")
 	{
-		for (int i = 0; i < nreal_subset; i++)
+		for (int i = 0; i < size; i++)
+		{
+			if (find(subset_idxs.begin(), subset_idxs.end(), i) != subset_idxs.end())
+				continue;
 			subset_idxs.push_back(i);
+			if (subset_idxs.size() >= nreal_subset)
+				break;
+		}
+			
 	}
 	else if (how == "LAST")
 	{
 		
-		for (int i = size - nreal_subset; i < size; i++)
+		for (int i = size-1; i >= 0; i--)
+		{
+			if (find(subset_idxs.begin(), subset_idxs.end(), i) != subset_idxs.end())
+				continue;
 			subset_idxs.push_back(i);
+			if (subset_idxs.size() >= nreal_subset)
+				break;
+		}
+			
 	}
 	
 	else if (how == "RANDOM")
 	{
 		std::uniform_int_distribution<int> uni(0, size);
+		int idx;
 		for (int i = 0; i < nreal_subset; i++)
-			subset_idxs.push_back(uni(Ensemble::rand_engine));
+		{
+			idx = uni(Ensemble::rand_engine);
+			if (find(subset_idxs.begin(), subset_idxs.end(), idx) != subset_idxs.end())
+				continue;
+			subset_idxs.push_back(idx);
+			if (subset_idxs.size() >= nreal_subset)
+				break;
+
+		}
+			
 	}
 	else if (how == "PHI_BASED")
 	{
@@ -3385,7 +3422,10 @@ void IterEnsembleSmoother::set_subset_idx(int size)
 		//throw runtime_error("unkonwn 'subset_how'");
 		throw_ies_error("unknown 'subset_how'");
 	}
-	message(1,"subset idxs:",subset_idxs);
+	stringstream ss;
+	for (auto i : subset_idxs)
+		ss << i << ":" << pe_names[i] << ", ";
+	message(1,"subset idx:pe real name: ",ss.str());
 	return;
 	//return subset_idx_map;
 }

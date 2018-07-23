@@ -5660,3 +5660,5 @@ w1_r34_c12            1.0 * log(w1_r34_c12) = 0.000000E+00  1.6609640474E+00    
 ++ies_num_reals(30)
 ++ies_include_base(true)
 ++ies_group_draws(true)
+++ies_lambda_mults(0.9,1.1)
+++lambda_scale_fac(1.0)
