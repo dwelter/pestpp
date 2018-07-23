@@ -1512,8 +1512,7 @@ void IterEnsembleSmoother::initialize()
 	double dec_fac = pest_scenario.get_pestpp_options().get_ies_lambda_dec_fac();
 	message(1, "lambda decrease factor: ", dec_fac);
 	message(1, "max run fail: ", ppo->get_max_run_fail());
-	string how = pest_scenario.get_pestpp_options().get_ies_subset_how();
-	message(1, "subset how: ", how);
+	
 	sanity_checks();
 	
 	bool echo = false;
@@ -1701,6 +1700,8 @@ void IterEnsembleSmoother::initialize()
 	else
 	{
 		message(1, "using subset in lambda testing, only first ", subset_size);
+		string how = pest_scenario.get_pestpp_options().get_ies_subset_how();
+		message(1, "subset how: ", how);
 		use_subset = true;
 	}
 	
