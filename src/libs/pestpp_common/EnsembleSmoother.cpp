@@ -790,6 +790,8 @@ void IterEnsembleSmoother::add_bases()
 		message(1, "adding 'base' parameter values to ensemble");
 		Parameters pars = pest_scenario.get_ctl_parameters();
 		pe.get_par_transform().active_ctl2numeric_ip(pars);
+		vector<int> drop{ pe.shape().first - 1 };
+		pe.drop_rows(drop);
 		pe.append("base", pars);
 	}
 	
@@ -825,6 +827,8 @@ void IterEnsembleSmoother::add_bases()
 		else
 		{
 			message(1, "adding 'base' observation values to ensemble");
+			vector<int> drop{ oe.shape().first - 1 };
+			oe.drop_rows(drop);
 			oe.append("base", obs);
 		}
 	}
