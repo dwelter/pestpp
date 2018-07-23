@@ -86,7 +86,7 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>common.lib; mio.lib; ws2_32.lib; advapi32.lib; pest_routines.lib; PANTHER.lib; serial.lib; external.lib; wrappers.lib; abstract_base.lib</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib; wrappers.lib;abstract_base.lib;common.lib;mio.lib;pestpp_common.lib;PANTHER.lib;serial.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(IFORT_COMPILER16)\compiler\lib\intel64;$(IFORT_COMPILER16)\mkl\lib\intel64;$(SolutionDir)$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
