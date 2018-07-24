@@ -3339,11 +3339,13 @@ void IterEnsembleSmoother::set_subset_idx(int size)
 	{
 		for (int i = 0; i < size; i++)
 		{
-			if (find(subset_idxs.begin(), subset_idxs.end(), i) != subset_idxs.end())
-				continue;
-			subset_idxs.push_back(i);
 			if (subset_idxs.size() >= nreal_subset)
 				break;
+			if (find(subset_idxs.begin(), subset_idxs.end(), i) != subset_idxs.end())
+				continue;
+			
+			subset_idxs.push_back(i);
+			
 		}
 			
 	}
@@ -3352,11 +3354,13 @@ void IterEnsembleSmoother::set_subset_idx(int size)
 		
 		for (int i = size-1; i >= 0; i--)
 		{
-			if (find(subset_idxs.begin(), subset_idxs.end(), i) != subset_idxs.end())
-				continue;
-			subset_idxs.push_back(i);
 			if (subset_idxs.size() >= nreal_subset)
 				break;
+			if (find(subset_idxs.begin(), subset_idxs.end(), i) != subset_idxs.end())
+				continue;
+			
+			subset_idxs.push_back(i);
+			
 		}
 			
 	}
@@ -3365,14 +3369,16 @@ void IterEnsembleSmoother::set_subset_idx(int size)
 	{
 		std::uniform_int_distribution<int> uni(0, size);
 		int idx;
-		for (int i = 0; i < nreal_subset; i++)
+		for (int i = 0; i < 10000; i++)
 		{
+			if (subset_idxs.size() >= nreal_subset)
+				break;
 			idx = uni(Ensemble::rand_engine);
 			if (find(subset_idxs.begin(), subset_idxs.end(), idx) != subset_idxs.end())
 				continue;
+			
 			subset_idxs.push_back(idx);
-			if (subset_idxs.size() >= nreal_subset)
-				break;
+			
 
 		}
 			
@@ -3397,8 +3403,29 @@ void IterEnsembleSmoother::set_subset_idx(int size)
 		sort(phis.begin(), phis.end());
 
 		//include idx for lowest and highest phi reals
-		subset_idxs.push_back(phis[0].second);
-		subset_idxs.push_back(phis[phis.size() - 1].second);//can't get .back() to work with vector<pair<>>
+		if (subset_idxs.size() < nreal_subset)
+		{
+			for (auto phi : phis)
+			{
+				if (find(subset_idxs.begin(), subset_idxs.end(), phi.second) == subset_idxs.end())
+				{
+					subset_idxs.push_back(phi.second);
+					break;
+				}
+			}
+		}
+		if (subset_idxs.size() < nreal_subset)
+		{
+			for (int i = phis.size() - 1; i >= 0; i--)
+			{
+				if (find(subset_idxs.begin(), subset_idxs.end(), phis[i].second) == subset_idxs.end())
+				{
+					subset_idxs.push_back(phis[i].second);
+					break;
+				}
+			}
+		}
+		
 
 		step = (phis.size()-1) / nreal_subset;
 		//cout << step << endl;
