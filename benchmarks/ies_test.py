@@ -1868,43 +1868,80 @@ def csv_tests():
 #def tenpar_include_base_test():
 
 
+def tenpar_restart_test():
+    
+    model_d = "ies_10par_xsec"
+    test_d = os.path.join(model_d, "test_restart")
+    template_d = os.path.join(model_d, "template")
+    pst = pyemu.Pst(os.path.join(template_d, "pest.pst"))
+    num_reals = 20
+    if os.path.exists(test_d):
+       shutil.rmtree(test_d)
+    #shutil.copytree(template_d, test_d)
+    pst.pestpp_options = {"ies_num_reals":num_reals}
+    pst.control_data.noptmax = -1
+    pst.write(os.path.join(template_d,"pest_restart.pst"))
+    pyemu.os_utils.start_slaves(template_d, exe_path, "pest_restart.pst", num_slaves=10,
+                                slave_root=model_d, master_dir=test_d, port=port)
+    #pyemu.os_utils.run("{0} {1}".format(exe_path, "pest_restart.pst"), cwd=test_d)
+
+    par_df = pd.read_csv(os.path.join(test_d,"pest_restart.0.par.csv"),index_col=0)
+    par_df = par_df.iloc[::2,:]
+    par_df.to_csv(os.path.join(template_d,"par1.csv"))
+
+    obs_df = pd.read_csv(os.path.join(test_d,"pest_restart.0.obs.csv"),index_col=0)
+    obs_df = obs_df.iloc[::2,:]
+    obs_df.to_csv(os.path.join(template_d,"restart1.csv"))
+
+    shutil.copy2(os.path.join(test_d,"pest_restart.base.obs.csv"),os.path.join(template_d,"base.csv"))
+
+    pst.pestpp_options = {}
+    pst.pestpp_options["ies_par_en"] = "par1.csv"
+    pst.pestpp_options["ies_lambda_mults"] = 1.0
+    pst.pestpp_options["lambda_scale_fac"] = 1.0
+    #pst.pestpp_options["ies_num_reals"] = num_reals
+    pst.pestpp_options["ies_restart_obs_en"] = "restart1.csv"
+    pst.pestpp_options["ies_obs_en"] = "base.csv"
+    pst.control_data.noptmax = 3
+    pst.write(os.path.join(template_d,"pest_restart.pst"))
+    pyemu.os_utils.start_slaves(template_d, exe_path, "pest_restart.pst", num_slaves=10,
+                                slave_root=model_d, master_dir=test_d, port=port)
+    assert os.path.exists(os.path.join(test_d,"pest_restart.3.par.csv"))
 if __name__ == "__main__":
     # write_empty_test_matrix()
 
     #prep_10par_for_travis("ies_10par_xsec")
-    # setup_suite_dir("ies_10par_xsec")
-    # setup_suite_dir("ies_freyberg")
-    # run_suite("ies_10par_xsec")
-    # run_suite("ies_freyberg")
-    # rebase("ies_freyberg")
-    # rebase("ies_10par_xsec")
+    setup_suite_dir("ies_10par_xsec")
+    setup_suite_dir("ies_freyberg")
+    run_suite("ies_10par_xsec")
+    run_suite("ies_freyberg")
+    rebase("ies_freyberg")
+    rebase("ies_10par_xsec")
     # compare_suite("ies_10par_xsec")
     # compare_suite("ies_freyberg")
     # # test_10par_xsec(silent_master=False)
     # # test_freyberg()
 
     # # full list of tests
-    # tenpar_subset_test()
-    # tenpar_full_cov_test()
-    # test_freyberg_full_cov_reorder()
-    # test_freyberg_full_cov_reorder_run()
-    # test_freyberg_full_cov_reorder_run()
-    # test_freyberg_full_cov()
-    # tenpar_tight_tol_test()
-    # test_chenoliver()
-    # tenpar_narrow_range_test()
-    # test_freyberg_ineq()
-    # tenpar_fixed_test()
-    # tenpar_fixed_test2()
+    tenpar_subset_test()
+    tenpar_full_cov_test()
+    test_freyberg_full_cov_reorder()
+    test_freyberg_full_cov_reorder_run()
+    test_freyberg_full_cov_reorder_run()
+    test_freyberg_full_cov()
+    tenpar_tight_tol_test()
+    test_chenoliver()
+    tenpar_narrow_range_test()
+    test_freyberg_ineq()
+    tenpar_fixed_test()
+    tenpar_fixed_test2()
     tenpar_subset_how_test()
-    # tenpar_localizer_test1()
-    #tenpar_localizer_test2()
-    #tenpar_localizer_test3()
-    #freyberg_localizer_eval1()
-    #freyberg_localizer_eval2()
-    #freyberg_localizer_test3()
-
-    #csv_tests()
-    #test_10par_xsec(silent_master=False)
-    #test_freyberg()        
-
+    tenpar_localizer_test1()
+    tenpar_localizer_test2()
+    tenpar_localizer_test3()
+    freyberg_localizer_eval1()
+    freyberg_localizer_eval2()
+    freyberg_localizer_test3()
+    tenpar_restart_test()
+    csv_tests()
+    
