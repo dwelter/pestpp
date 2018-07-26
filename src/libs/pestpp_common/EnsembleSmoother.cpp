@@ -1204,7 +1204,7 @@ void IterEnsembleSmoother::initialize_restart_oe()
 			missing.push_back(rname);
 	if (missing.size() > 0)
 	{
-		ss << "the following realization names were not found in the restart obs csv:";
+		ss << "the following realization names were found in the restart obs en but not in the 'base' obs en:";
 		for (auto &m : missing)
 			ss << m << ",";
 		throw_ies_error(ss.str());
@@ -1577,9 +1577,47 @@ void IterEnsembleSmoother::initialize()
 
 	if (pe.shape().first != oe.shape().first)
 	{
-		ss.str("");
-		ss << "parameter ensemble rows (" << pe.shape().first << ") not equal to observation ensemble rows (" << oe.shape().first << ")";
-		throw_ies_error(ss.str());
+		//the special case where par en < obs en and all par reals are found in obs en...
+		
+		if (pe.shape().first < oe.shape().first)
+		{
+			vector<string> oe_names = oe.get_real_names();
+			set<string> oset(oe_names.begin(), oe_names.end());
+			vector<string> missing;
+			bool compat = true;
+			for (auto n : pe.get_real_names())
+				if (oset.find(n) == oset.end())
+				{
+					missing.push_back(n);
+				}
+			if (missing.size() == 0)
+			{
+				ss.str("");
+				ss << "par en has " << pe.shape().first << " realizations, compared to " << oe.shape().first << " obs realizations";
+				message(1, ss.str());
+				message(1," the realization names are compatible");
+				message(1, "re-indexing obs en to align with par en...");
+				
+				oe.reorder(pe.get_real_names(), vector<string>());
+			}
+			else
+			{
+				ss.str("");
+				ss << "the following par en real names were not found in the obs en: ";
+				for (auto m : missing)
+				{
+					ss << m << ",";
+				}
+				throw_ies_error(ss.str());
+
+			}
+		}
+		else
+		{
+			ss.str("");
+			ss << "parameter ensemble rows (" << pe.shape().first << ") not equal to observation ensemble rows (" << oe.shape().first << ")";
+			throw_ies_error(ss.str());
+		}
 	}
 
 	if (ppo->get_ies_weight_csv().size() > 0)
@@ -1613,7 +1651,12 @@ void IterEnsembleSmoother::initialize()
 	pe.transform_ip(ParameterEnsemble::transStatus::NUM);
 
 	if (pest_scenario.get_pestpp_options().get_ies_include_base())
-		add_bases();
+		if (pp_args.find("IES_RESTART_OBS_EN") != pp_args.end())
+		{
+			message(1, "Warning: even though `ies_include_base` is true, you passed a restart obs en, not adding 'base' realization...");
+		}
+		else
+			add_bases();
 
 	ss.str("");
 	if (pest_scenario.get_pestpp_options().get_ies_save_binary())
