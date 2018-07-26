@@ -99,6 +99,11 @@ void Pest::check_inputs(ostream &f_rec)
 	vector<string> par_warnings;
 	vector<string> par_problems;
 	bool unfixed_par = false;
+	int par_ub = 0;
+	int par_lb = 0;
+	bool forgive_bound = false;
+	if (control_info.noptmax == 0)
+		forgive_bound = true;
 	for (auto &pname : ctl_ordered_par_names)
 	{
 		//double pval = ctl_parameters[pname];
@@ -107,32 +112,62 @@ void Pest::check_inputs(ostream &f_rec)
 		if (prec->tranform_type != ParameterRec::TRAN_TYPE::FIXED)
 			unfixed_par = true;
 		if (prec->init_value < prec->lbnd)
-			par_problems.push_back(pname + " is less than lower bound");
+			if (forgive_bound)
+				par_warnings.push_back(pname + " is less than lower bound, but noptmax=0, continuing...");
+			else
+				par_problems.push_back(pname + " is less than lower bound");
 		else if (prec->init_value == prec->lbnd)
-			par_warnings.push_back(pname + " is at lower bound");
+		{
+			//par_warnings.push_back(pname + " is at lower bound");
+			par_lb++;
+		}
 		if (prec->init_value > prec->ubnd)
-			par_problems.push_back(pname + " is greater than upper bound");
+			if (forgive_bound)
+				par_warnings.push_back(pname + " is greater than upper bound, but noptmax=0, continuing...");
+			else
+				par_problems.push_back(pname + " is greater than upper bound");
 		else if (prec->init_value == prec->ubnd)
-			par_warnings.push_back(pname + " is at upper bound");
+		{
+			//par_warnings.push_back(pname + " is at upper bound");
+			par_ub++;
+		}
 		if (prec->dercom > 1)
 		{
 			par_warnings.push_back(pname + " has 'dercom' > 1, pestpp suite doesn't support 'dercom' > 1, ignoring");		
 		}
 
 	}
+
 	bool err = false;
 
+	if (par_lb > 0)
+	{
+		cout << "parameter warning: " << par_lb << " parameters are at lower bound" << endl;
+		f_rec << "parameter warning: " << par_lb << " parameters are at lower bound" << endl;
+	}
+
+	if (par_ub > 0)
+	{
+		cout << "parameter warning: " << par_ub << " parameters are at upper bound" << endl;
+		f_rec << "parameter warning: " << par_ub << " parameters are at upper bound" << endl;
+	}
 	for (auto &str : par_warnings)
+	{
 		cout << "parameter warning: " << str << endl;
+		f_rec << "parameter warning: " << str << endl;
+	}
 	for (auto &str : par_problems)
 	{
 		cout << "parameter error: " << str << endl;
+		f_rec << "parameter error: " << str << endl;
+
 		err = true;
 	}
 
 	if (!unfixed_par)
 	{
 		cout << "parameter error: no adjustable parameters" << endl;
+		f_rec << "parameter error: no adjustable parameters" << endl;
 		err = true;
 	}
 
@@ -179,6 +214,7 @@ void Pest::check_inputs(ostream &f_rec)
 			for (auto &m : missing)
 				ss << m << ',';
 			f_rec << ss.str() << endl;
+			cout << ss.str() << endl;
 			throw PestError(ss.str());
 		}
 	}

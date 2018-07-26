@@ -258,6 +258,19 @@ void OutputFileWriter::scenario_report(std::ostream &os)
 	os << endl << pest_scenario.get_svd_info() << endl;
 	os << endl;
 
+	if (pest_scenario.get_control_info().pestmode == ControlInfo::PestMode::REGUL)
+	{
+		os << "Regularization information:" << endl;
+		os << setw(0) << "    phimlim = " << pest_scenario.get_regul_scheme_ptr()->get_phimlim() << endl;
+		os << setw(0) << "    fracphim = " << pest_scenario.get_regul_scheme_ptr()->get_fracphim() << endl;
+		os << setw(0) << "    phimaccept = " << pest_scenario.get_regul_scheme_ptr()->get_phimaccept() << endl;
+		os << setw(0) << "    wfinit = " << pest_scenario.get_regul_scheme_ptr()->get_wfinit() << endl;
+
+	}
+	os << endl;
+	os << endl;
+	os << endl;
+
 }
 
 void OutputFileWriter::scenario_io_report(std::ostream &os)
