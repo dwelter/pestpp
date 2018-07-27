@@ -519,6 +519,20 @@ bool check_exist_out(std::string filename)
 	}
 }
 
+
+///Check if a given teststring ends with a given ending. This test is not case
+///sensitive and it will return true if the ending is empty.
+bool string_ends_with(const string &teststring, const string &ending) {
+	if (ending.length > teststring.length)
+		return false;
+	int offset = teststring.length - ending.length;
+	for (int i = 0; i < ending.length; i++)
+		if (tolower(teststring[i + offset]) != tolower(ending[i]))
+			return false;
+	return true;
+}
+
+
 thread_flag::thread_flag(bool _flag)
 {
 	flag = _flag;
@@ -551,8 +565,6 @@ void  thread_exceptions::rethrow()
 		std::rethrow_exception(iex);
 	}
 }
-
-
 
 
 } // end of namespace pest_utils
