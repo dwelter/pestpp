@@ -96,7 +96,11 @@ int main(int argc, char* argv[])
 		string filename = complete_path;
 		string pathname = ".";
 		file_manager.initialize_path(get_filename_without_ext(filename), pathname);
-
+		//jwhite - something weird is happening with the machine is busy and an existing
+		//rns file is really large. so let's remove it explicitly and wait a few seconds before continuing...
+		string rns_file = file_manager.build_filename("rns");
+		int flag = remove(rns_file.c_str());
+		w_sleep(2000);
 		//by default use the serial run manager.  This will be changed later if another
 		//run manger is specified on the command line.
 		RunManagerType run_manager_type = RunManagerType::SERIAL;
@@ -264,6 +268,8 @@ int main(int argc, char* argv[])
 			ppo->set_max_run_fail(1);
 
 		RunManagerAbstract *run_manager_ptr;
+		
+		
 		if (run_manager_type == RunManagerType::PANTHER)
 		{
 			string port = socket_str;
@@ -271,7 +277,7 @@ int main(int argc, char* argv[])
 			strip_ip(port, "front", ":");
 			const ModelExecInfo &exi = pest_scenario.get_model_exec_info();
 			run_manager_ptr = new RunManagerPanther(
-				file_manager.build_filename("rns"), port,
+				rns_file, port,
 				file_manager.open_ofile_ext("rmr"),
 				pest_scenario.get_pestpp_options().get_max_run_fail(),
 				pest_scenario.get_pestpp_options().get_overdue_reched_fac(),
@@ -289,7 +295,7 @@ int main(int argc, char* argv[])
 			const ModelExecInfo &exi = pest_scenario.get_model_exec_info();
 			run_manager_ptr = new RunManagerSerial(exi.comline_vec,
 				exi.tplfile_vec, exi.inpfile_vec, exi.insfile_vec, exi.outfile_vec,
-				file_manager.build_filename("rns"), pathname,
+				rns_file, pathname,
 				pest_scenario.get_pestpp_options().get_max_run_fail());
 		}
 
@@ -301,15 +307,9 @@ int main(int argc, char* argv[])
 		//Allocates Space for Run Manager.  This initializes the model parameter names and observations names.
 		//Neither of these will change over the course of the simulation
 
-		if (restart_ctl.get_restart_option() == RestartController::RestartOption::RESUME_JACOBIAN_RUNS)
-		{
-			run_manager_ptr->initialize_restart(file_manager.build_filename("rnj"));
-		}
-		else
-		{
-			run_manager_ptr->initialize(base_trans_seq.ctl2model_cp(cur_ctl_parameters), pest_scenario.get_ctl_observations());
-		}
-
+		
+		run_manager_ptr->initialize(base_trans_seq.ctl2model_cp(cur_ctl_parameters), pest_scenario.get_ctl_observations());
+	
 		IterEnsembleSmoother ies(pest_scenario, file_manager, output_file_writer, &performance_log, run_manager_ptr);
 
 		ies.initialize();

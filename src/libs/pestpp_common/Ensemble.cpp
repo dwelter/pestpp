@@ -1219,6 +1219,14 @@ void ParameterEnsemble::from_csv(string file_name)
 		num_reals++;
 	csv.close();
 
+	//make sure all adjustable parameters are present
+	vector<string> missing;
+	for (auto p : pest_scenario_ptr->get_ctl_ordered_adj_par_names())
+		if (header_info.find(p) == header_info.end())
+			missing.push_back(p);
+	if (missing.size() > 0)
+		throw_ensemble_error("ParameterEnsemble.from_csv() error: the following adjustable pars not in csv:",missing);
+
 	csv.open(file_name);
 	if (!csv.good())
 		throw runtime_error("error re-opening parameter csv " + file_name + " for reading");
