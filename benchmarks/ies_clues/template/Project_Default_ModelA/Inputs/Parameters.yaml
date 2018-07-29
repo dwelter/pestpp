@@ -1,0 +1,14 @@
+# Parameters, as a yaml file
+StreamDecayCoefficient: 0.01 # decay per km at 1 m3/s
+StreamDecayExponent: .7 # exponent, floating point
+StreamAreaCoefficient: 2.87 # stream velocity-flow coefficient
+StreamAreaExponent: 0.727 # stream velocity-flow exponent, floating point
+IfGWDecayFromCoefficients: 1 # 1 for determining the groundwater decay fractions from coefficients provided for each reach or calculated from area fractions. 0 for determining from fixed decay fractions.
+IfAdjustGWOutflowsForContinuity: 0 # 1 for adjusting the outflow coefficients to ensure continuity. 0 for using the values as input and require that lateral flows add to 1. 
+IfGWDecayCoefficientFromAreaFractions: 1 # If calculate the groundwater decay coefficients from the areas of oxic and anoxic groundwater and global parameters.
+GWDecayCoefficientOxic: 0.000036499 # decay per year
+GWDecayCoefficientMixed: 0.999372638 # decay per year
+GWDecayCoefficientAnoxic: 1.0 # decay per year
+GWDeepDecayCoefficientOxic: 0.000036499 # decay per year
+GWDeepDecayCoefficientMixed: 0.999372638 # decay per year
+GWDeepDecayCoefficientAnoxic: 1.0 # decay per year

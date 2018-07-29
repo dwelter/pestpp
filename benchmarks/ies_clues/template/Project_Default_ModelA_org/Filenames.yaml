@@ -1,0 +1,5 @@
+# Filenames for Clues-SAM. Without root directory name. Strings can be with or without quotes. This becomes a dictionary in the code once read in.
+ReachesFileName: Reaches.csv #
+ReachConnectivityFileName: ReachConnectivityOverrides.csv # Must be present but can have no rows. Over-rides then connectivity inferred from Reaches from and to nodes, for matching elements
+GWLateralConnectivityFileName : GWLateralConnectivity.csv
+GWDeepLateralConnectivityFileName : GWDeepLateralConnectivity.csv

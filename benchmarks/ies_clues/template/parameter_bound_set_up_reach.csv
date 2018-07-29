@@ -1,0 +1,9 @@
+﻿Parameter,IsMultiplier,Distribution,Min,Max
+TotalRunoff,1,Triangular ,0.95,1.05
+RechargeFraction,0,Triangular ,0,1
+StreamLossFraction,0,Triangular ,0,1
+GWDischargeFraction,0,Triangular ,0,1
+SourceYield,1,Triangular ,0.95,1.05
+RechargeConcFactor,1,Triangular ,1,1
+GWMixDepth,0,Triangular ,1,20
+GWExportFraction,1,Triangular ,1,1
