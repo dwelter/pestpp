@@ -1,0 +1,2 @@
+name,prior_mean,prior_stdev,prior_lower_bound,prior_upper_bound,post_mean,post_stdev,post_lower_bound,post_upper_bound
+REALLYREALLYREALLYLONGPARNAME,0,inf,-inf,inf,1,0.214994,0.570013,1.42999

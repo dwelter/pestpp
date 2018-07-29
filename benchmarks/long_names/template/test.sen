@@ -1,0 +1,8 @@
+                    PARAMETER SENSITIVITIES: CASE test
+
+
+NUMERIC PARAMETER SENSITIVITIES FOR OPTIMISATION ITERATION NO. 1   ----->
+  Parameter name   Group        Current Value        HILL_CSS_w_reg       PEST_CSS_w_reg       HILL_CSS_wo_reg      PEST_CSS_wo_reg
+   reallyreallyreallylongparname pargp        1.00000000000        0.000000000000       4.65129864043        0.000000000000       4.65129864043       
+
+
