@@ -981,7 +981,7 @@ def tenpar_fixed_test2():
     pst.parameter_data.loc["k_01","partrans"] = "fixed"
     cov = pyemu.Cov.from_parameter_data(pst)
     pe = pyemu.ParameterEnsemble.from_gaussian_draw(pst=pst,cov=cov,num_reals=10)
-    pe = pe.loc[:,pst.adj_par_names]
+    #pe = pe.loc[:,pst.adj_par_names[3:5]]
     pe.loc[:,"stage"] = np.linspace(0.0,1.0,pe.shape[0])
     pe.to_csv(os.path.join(template_d,"par_fixed.csv"))
     fixed_pars = ["stage","k_01"]
@@ -993,6 +993,7 @@ def tenpar_fixed_test2():
     pst.pestpp_options["ies_include_base"] = False
 
     pst.write(os.path.join(template_d, "pest_fixed.pst"))
+
     # pyemu.helpers.run("{0} pest.pst".format(exe_path), cwd=test_d)
     pyemu.os_utils.start_slaves(template_d, exe_path, "pest_fixed.pst", num_slaves=5, master_dir=test_d,
                                 slave_root=model_d, port=port)
@@ -1004,6 +1005,18 @@ def tenpar_fixed_test2():
     print(df.loc[:,"stage"] - pe.loc[:,"stage"])
     assert df.loc[:,"k_01"].mean() == pst.parameter_data.loc["k_01","parval1"]
     assert np.abs(df.loc[:,"stage"] - pe.loc[:,"stage"]).max() < 1.0e-5
+
+    pe = pe.loc[:,pst.adj_par_names[3:]]
+    pe.to_csv(os.path.join(test_d, "par_fixed.csv"))
+    if "win" in platform.platform().lower(): #bc of the stupid popup
+        return
+    try:
+        pyemu.os_utils.run("{0} {1}".format(exe_path,"pest_fixed.pst"),cwd=test_d)
+    except:
+        pass
+    else:
+        raise Exception()
+
 
 
 
@@ -1908,6 +1921,33 @@ def tenpar_restart_test():
     pyemu.os_utils.start_slaves(template_d, exe_path, "pest_restart.pst", num_slaves=10,
                                 slave_root=model_d, master_dir=test_d, port=port)
     assert os.path.exists(os.path.join(test_d,"pest_restart.3.par.csv"))
+
+def tenpar_rns_test():
+    
+    model_d = "ies_10par_xsec"
+    test_d = os.path.join(model_d, "test_rns2")
+    template_d = os.path.join(model_d, "template")
+    pst = pyemu.Pst(os.path.join(template_d, "pest.pst"))
+    pyemu.helpers.read_pestpp_runstorage(os.path.join(test_d,"pest_restart.rns"))
+    num_reals = 5
+    if os.path.exists(test_d):
+       shutil.rmtree(test_d)
+    shutil.copytree(template_d, test_d)
+    pst.pestpp_options = {"ies_num_reals":num_reals}
+    pst.control_data.noptmax = -1
+    pst.write(os.path.join(test_d,"pest_restart.pst"))
+    pyemu.os_utils.run("{0} {1}".format(exe_path, "pest_restart.pst"), cwd=test_d)
+
+    obs_df1 = pd.read_csv(os.path.join(test_d,"pest_restart.0.obs.csv"),index_col=0)
+    assert obs_df1.shape[0] == num_reals,obs_df1.shape
+    pst.pestpp_options = {}
+    num_reals = 10
+    pst.pestpp_options["ies_num_reals"] = num_reals
+    pst.write(os.path.join(test_d,"pest_restart.pst"))
+    pyemu.os_utils.run("{0} {1}".format(exe_path, "pest_restart.pst"), cwd=test_d)
+    obs_df2 = pd.read_csv(os.path.join(test_d,"pest_restart.0.obs.csv"),index_col=0)
+    assert obs_df2.shape[0] == num_reals,obs_df2.shape
+    
 if __name__ == "__main__":
     # write_empty_test_matrix()
 
@@ -1935,14 +1975,15 @@ if __name__ == "__main__":
     # tenpar_narrow_range_test()
     # test_freyberg_ineq()
     # tenpar_fixed_test()
-    # tenpar_fixed_test2()
-    tenpar_subset_how_test()
-    tenpar_localizer_test1()
-    tenpar_localizer_test2()
-    tenpar_localizer_test3()
-    freyberg_localizer_eval1()
-    freyberg_localizer_eval2()
-    freyberg_localizer_test3()
-    tenpar_restart_test()
-    csv_tests()
-    
+    tenpar_fixed_test2()
+    # tenpar_subset_how_test()
+    # tenpar_localizer_test1()
+    # tenpar_localizer_test2()
+    # tenpar_localizer_test3()
+    # freyberg_localizer_eval1()
+    # freyberg_localizer_eval2()
+    # freyberg_localizer_test3()
+    # tenpar_restart_test()
+    # csv_tests()
+    #tenpar_rns_test()
+
