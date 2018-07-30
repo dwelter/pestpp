@@ -27,7 +27,10 @@ The PEST++ software suite includes several stand-alone tools for model-independe
 All members of the software suite can be compiled for PC, MAC, or Linux and have several run managers to support parallelization.  precompiled binaries are available in the "exe" folder.  Windows users should use the ``intel_c_windows`` branch binaries to avoid the dreaded MSVC missing runtime DLL issue
 
 ## Recent Updates
-<b> update 4 July 2018 </b>: PESTPP++ version 4.0.0 has been released to support the newly-developed ``pestpp-ies``. A manuscript documenting ``pestpp-ies`` is available here: [https://www.sciencedirect.com/science/article/pii/S1364815218302676](https://www.sciencedirect.com/science/article/pii/S1364815218302676).  Stay tuned for an actual manual to accompany version 4!
+
+<b> update 30 July 2018 </b>: The PEST++ now supports parameter and observation names up to 200 characters in length. This allows for more descriptive naming and better support for problems with very large numbers of pars and obs.  Note that if a parameter name exceeds 12 chars or an observation name exceeds 20 chars, the resulting jacobian binary file will include truncated names (at 12 and 20 chars, respectively) and names exceeding these lengths are not backward compatible with PEST. 
+
+<b> update 4 July 2018 </b>: PEST++ version 4.0.0 has been released to support the newly-developed ``pestpp-ies``. A manuscript documenting ``pestpp-ies`` is available here: [https://www.sciencedirect.com/science/article/pii/S1364815218302676](https://www.sciencedirect.com/science/article/pii/S1364815218302676).  Stay tuned for an actual manual to accompany version 4!
 
 <b> update 2 May 2018 </b>: some refactoring is underway.  ``sweep`` has been renamed ``pestpp-swp`` and ``gsa`` has been renamed ``pestpp-gsa``.  Also, the initial version of the new iterative ensemble smoother is avaiable as ``pestpp-ies``.  The basic ``++`` options needed for fine-grained control of ``pestpp-ies`` are listed below.   
 
