@@ -1006,16 +1006,16 @@ def tenpar_fixed_test2():
     assert df.loc[:,"k_01"].mean() == pst.parameter_data.loc["k_01","parval1"]
     assert np.abs(df.loc[:,"stage"] - pe.loc[:,"stage"]).max() < 1.0e-5
 
-    pe = pe.loc[:,pst.adj_par_names[3:]]
-    pe.to_csv(os.path.join(test_d, "par_fixed.csv"))
-    if "win" in platform.platform().lower(): #bc of the stupid popup
-        return
-    try:
-        pyemu.os_utils.run("{0} {1}".format(exe_path,"pest_fixed.pst"),cwd=test_d)
-    except:
-        pass
-    else:
-        raise Exception()
+    # pe = pe.loc[:,pst.adj_par_names[3:]]
+    # pe.to_csv(os.path.join(test_d, "par_fixed.csv"))
+    # if "win" in platform.platform().lower(): #bc of the stupid popup
+    #     return
+    # try:
+    #     pyemu.os_utils.run("{0} {1}".format(exe_path,"pest_fixed.pst"),cwd=test_d)
+    # except:
+    #     pass
+    # else:
+    #     raise Exception()
 
 
 
@@ -1965,7 +1965,7 @@ def clues_longnames_test():
     pst.write(os.path.join(template_d,"pest.pst"))
     #pyemu.os_utils.run("{0} {1}".format(exe_path, "pest.pst"), cwd=test_d)
     pyemu.os_utils.start_slaves(template_d,exe_path,"pest.pst",5,
-                                slave_root=model_d,master_dir=test_d)
+                                slave_root=model_d,master_dir=test_d,port=port)
     pdf = pd.read_csv(os.path.join(test_d,"pest.0.par.csv"),index_col=0)
     pdf.columns = pdf.columns.str.lower()
     dset = set(pdf.columns)
@@ -1984,7 +1984,7 @@ def clues_longnames_test():
     pst.write(os.path.join(template_d,"pest.pst"))
 
     pyemu.os_utils.start_slaves(template_d, exe_path, "pest.pst", 5,
-                                slave_root=model_d, master_dir=test_d)
+                                slave_root=model_d, master_dir=test_d,port=port)
     pdf = pd.read_csv(os.path.join(test_d, "pest.0.par.csv"), index_col=0)
     pdf.columns = pdf.columns.str.lower()
     dset = set(pdf.columns)
@@ -1998,7 +1998,7 @@ def clues_longnames_test():
     d = dset.symmetric_difference(oset)
     assert len(d) == 0, d
     pyemu.os_utils.start_slaves(template_d, exe_path.replace("-ies","-swp"), "pest.pst", 5,
-                                slave_root=model_d, master_dir=test_d)
+                                slave_root=model_d, master_dir=test_d,port=port)
 
     odf = pd.read_csv(os.path.join(test_d, "sweep_out.csv"), index_col=0)
     odf.columns = odf.columns.str.lower()
@@ -2009,10 +2009,10 @@ def clues_longnames_test():
     assert len(d) == 0, d
 
     pst.parameter_data.loc[pst.adj_par_names[10:],"partrans"] = "fixed"
+    pst.control_data.noptmax = 1
     pst.write(os.path.join(template_d, "pest.pst"))
     pyemu.os_utils.start_slaves(template_d, exe_path.replace("-ies", ""), "pest.pst", 5,
-                                slave_root=model_d, master_dir=test_d)
-
+                                slave_root=model_d, master_dir=test_d,port=port)
 
 
 if __name__ == "__main__":
