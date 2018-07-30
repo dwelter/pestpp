@@ -3,6 +3,14 @@ Object Oriented Inverse Modeling Software
 <br><br><br>
 [![Travis Status](https://travis-ci.org/dwelter/pestpp.svg?branch=develop)](https://travis-ci.org/dwelter/pestpp)
 [![Build status](https://ci.appveyor.com/api/projects/status/6tktqgy67d47wkjf?svg=true)](https://ci.appveyor.com/project/jtwhite79/pestpp)
+
+## links to latest binaries
+
+* [windows (users with current visual studio installed)](https://github.com/dwelter/pestpp/tree/develop/exe/windows/x64/Release) 
+* [windows compiled with intel C++ (the 'i' prefix)](https://github.com/dwelter/pestpp/tree/intel_c_windows/exe/windows/x64/Release)
+* [mac OS](https://github.com/dwelter/pestpp/tree/develop/exe/mac) 
+* [linux static compiled with intel C++](https://github.com/dwelter/pestpp/tree/develop/exe/linux) (makefiles for GCC provides in src/ directory)
+
 ## Overview
 The PEST++ software suite includes several stand-alone tools for model-independent (non-intrusive) computer model parameter estimation and uncertainty analysis.  Codes include:
 
@@ -66,7 +74,7 @@ Welter, D.E., Doherty, J.E., Hunt, R.J., Muffels, C.T., Tonkin, M.J., and Schre√
 The master branch includes a Visual Studio 2015 project, as well as makefiles for linux and mac.
 
 ## Testing
-The benchmarks/ folder contain several test problems of varying problem size which are used to evaluate the performance of various aspects of the PEST++ algorithm and implementation.  
+The benchmarks/ folder contain several full-worked test problems of varying problem size which are used to evaluate the performance of various aspects of the PEST++ suite.  
 
 ## Dependencies
 Much work has been done to avoid additional external dependencies in PEST++.  As currently designed, the project is fully self-contained and statically linked.  
