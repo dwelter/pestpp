@@ -140,7 +140,7 @@ void ModelInterface::initialize(vector<string> &_par_name_vec, vector<string> &_
 	set_files();
 
 	//check template files
-	mio_process_template_files_w_(&ifail, &npar, pest_utils::StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt());
+	mio_process_template_files_w_(&ifail, &npar, pest_utils::StringvecFortranCharArray(par_name_vec, 200, pest_utils::TO_LOWER).get_prt());
 	if (ifail != 0)throw_mio_error("error in template files");
 
 	////build instruction set
@@ -409,7 +409,7 @@ void ModelInterface::run(pest_utils::thread_flag* terminate, pest_utils::thread_
 		char err_instruct[500];
 		try {
 			mio_read_model_output_files_w_(&ifail, &nobs,
-				pest_utils::StringvecFortranCharArray(obs_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
+				pest_utils::StringvecFortranCharArray(obs_name_vec, 200, pest_utils::TO_LOWER).get_prt(),
 				&obs_vals[0]);
 		}
 		catch (exception &e)

@@ -11,6 +11,7 @@ module model_input_output_interface
 
       integer                            :: numinfile=0  ! Number of input files
       integer                            :: numoutfile=0 ! Number of output files
+      integer                            :: name_len=200 !
 
 ! -- Counters and flags
 
@@ -461,15 +462,15 @@ subroutine mio_process_template_files(ifail,npar,apar)
         integer, intent(out)                :: ifail ! indicates error condition
         integer, intent(in)                 :: npar  ! number of parameters
         !character (len=*), dimension(npar)  :: apar  ! parameter names
-        character*50  :: apar(npar)
+        character (len=name_len)  :: apar(npar)
 !! Note that parameter names must be supplied in lower case.
         
         integer                             :: ipar,i,ierr,iline,nblc,j2,j1,jfail,nnw,iunit
         integer tpar_len
         character (len=10)                  :: aline
-        character (len=50)                  :: tpar
+        character (len=name_len)                  :: tpar
         type(c_ptr) cptr
-        tpar_len = 50
+        tpar_len = name_len
         errsub='Error in subroutine MIO_PROCESS_TEMPLATE_FILES:'
 
          call hash_add_table(apar, tpar_len, npar, cptr)
@@ -856,14 +857,14 @@ subroutine mio_read_model_output_files(ifail,nobs,aobs,obs,instruction)
         integer obsnam_len
         double precision    :: rtemp
         character (len=1)   :: aa,mkrdel
-        character (len=50)  :: obsnam
+        character (len=name_len)  :: obsnam
         character (len=15)  :: fmt
         character (len=10)  :: anum
         character (len=200) :: flenme
         type(c_ptr) cptr
         instruction=' '
         obs=-1.1d270    ! an array
-        obsnam_len = 50
+        obsnam_len = name_len
         errsub='Error reading model output file(s):'
         ifail=0
         idir=0
@@ -1517,7 +1518,7 @@ subroutine mio_parnam(ifail,j1,j2,tpar)
         implicit none
         integer, intent(out)          :: ifail   ! reports error condition
         integer, intent(in)           :: j1,j2   ! beginning and end of word
-        character (len=*), intent(out):: tpar    ! the extracted parameter
+        character (len=name_len), intent(out):: tpar    ! the extracted parameter
         
         integer             :: i,j
 
@@ -1533,7 +1534,7 @@ subroutine mio_parnam(ifail,j1,j2,tpar)
 10      continue
         ifail=2
         return
-30      j=min(12,j2-i)
+30      j=min(name_len,j2-i) !jwhite 29 July 2018
         tpar(1:j)=dline(i:i+j-1)
         return
 
@@ -1618,7 +1619,7 @@ subroutine mio_which1(ifail,npar,ipar,apar,tpar)
         integer, intent(in)                 :: npar     ! number of parameters
         integer, intent(inout)              :: ipar     ! where to start the search
         character (len=*), intent(in), dimension(npar)  :: apar     ! parameter names
-        character (len=*), intent(inout)    :: tpar     ! parameter name to look for
+        character (len=name_len), intent(inout)    :: tpar     ! parameter name to look for
 
         integer                             :: i
 

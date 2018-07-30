@@ -1,0 +1,139 @@
+------------------------------------------------------------------------------
+OPTIMISATION ITERATION NO.        : 1
+
+CURRENT VALUE OF MARQUARDT LAMBDA = 0 --------->
+
+FROZEN PARAMETERS-
+
+
+SINGULAR VALUES IN SOLUTION:-
+        21.6346
+TRUNCATED SINGULAR VALUES:-
+
+
+MATRIX OF EIGENVECTORS IN SOLUTION:-
+       -1.00000
+
+
+Number of singular values used in solution = 1
+
+
+CURRENT VALUE OF MARQUARDT LAMBDA = 0.100000 --------->
+
+FROZEN PARAMETERS-
+
+
+SINGULAR VALUES IN SOLUTION:-
+        1.00462
+TRUNCATED SINGULAR VALUES:-
+
+
+MATRIX OF EIGENVECTORS IN SOLUTION:-
+       -1.00000
+
+
+Number of singular values used in solution = 1
+
+
+CURRENT VALUE OF MARQUARDT LAMBDA = 1.00000 --------->
+
+FROZEN PARAMETERS-
+
+
+SINGULAR VALUES IN SOLUTION:-
+        1.04622
+TRUNCATED SINGULAR VALUES:-
+
+
+MATRIX OF EIGENVECTORS IN SOLUTION:-
+        1.00000
+
+
+Number of singular values used in solution = 1
+
+
+CURRENT VALUE OF MARQUARDT LAMBDA = 10.0000 --------->
+
+FROZEN PARAMETERS-
+
+
+SINGULAR VALUES IN SOLUTION:-
+        1.46222
+TRUNCATED SINGULAR VALUES:-
+
+
+MATRIX OF EIGENVECTORS IN SOLUTION:-
+        1.00000
+
+
+Number of singular values used in solution = 1
+
+
+CURRENT VALUE OF MARQUARDT LAMBDA = 20.0000 --------->
+
+FROZEN PARAMETERS-
+
+
+SINGULAR VALUES IN SOLUTION:-
+        1.92445
+TRUNCATED SINGULAR VALUES:-
+
+
+MATRIX OF EIGENVECTORS IN SOLUTION:-
+        1.00000
+
+
+Number of singular values used in solution = 1
+
+
+CURRENT VALUE OF MARQUARDT LAMBDA = 40.0000 --------->
+
+FROZEN PARAMETERS-
+
+
+SINGULAR VALUES IN SOLUTION:-
+        2.84889
+TRUNCATED SINGULAR VALUES:-
+
+
+MATRIX OF EIGENVECTORS IN SOLUTION:-
+       -1.00000
+
+
+Number of singular values used in solution = 1
+
+
+CURRENT VALUE OF MARQUARDT LAMBDA = 100.000 --------->
+
+FROZEN PARAMETERS-
+
+
+SINGULAR VALUES IN SOLUTION:-
+        5.62223
+TRUNCATED SINGULAR VALUES:-
+
+
+MATRIX OF EIGENVECTORS IN SOLUTION:-
+        1.00000
+
+
+Number of singular values used in solution = 1
+
+
+CURRENT VALUE OF MARQUARDT LAMBDA = 1000.00 --------->
+
+FROZEN PARAMETERS-
+
+
+SINGULAR VALUES IN SOLUTION:-
+        47.2223
+TRUNCATED SINGULAR VALUES:-
+
+
+MATRIX OF EIGENVECTORS IN SOLUTION:-
+        1.00000
+
+
+Number of singular values used in solution = 1
+
+
