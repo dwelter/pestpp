@@ -44,7 +44,7 @@ compare_files = ["pest.phi.actual.csv", "pest.phi.meas.csv", "pest.phi.regul.csv
                  "pest.{0}.par.csv".format(0), "pest.base.obs.csv"]
 diff_tol = 1.0e-6
 port = 4019
-num_reals = 30
+num_reals = 10
 def write_empty_test_matrix():
     test_names = [t.split()[0] for t in tests.split('\n')]
     df = pd.DataFrame(index=test_names, columns=ies_vars)
@@ -112,7 +112,7 @@ def setup_suite_dir(model_d):
     m_d = os.path.join(model_d,"master_sweep1")
     if os.path.exists(m_d):
         shutil.rmtree(m_d)
-    pyemu.os_utils.start_slaves(new_d, exe_path.replace("-ies","-swp"), "pest.pst", 10, master_dir=os.path.join(model_d,"master_sweep"),
+    pyemu.os_utils.start_slaves(new_d, exe_path.replace("-ies","-swp"), "pest.pst", 5, master_dir=os.path.join(model_d,"master_sweep"),
                            slave_root=model_d,local=local,port=port)
     #shutil.copytree(new_d,m_d)
     #pyemu.os_utils.run("{0} pest.pst".format(exe_path.replace("-ies","-swp")),cwd=m_d)
@@ -301,6 +301,7 @@ def rebase(model_d):
 
 
 def tenpar_narrow_range_test():
+    """tenpar narrow test"""
     model_d = "ies_10par_xsec"
     test_d = os.path.join(model_d, "master_narrow_test")
     template_d = os.path.join(model_d, "test_template")
@@ -369,6 +370,7 @@ def tenpar_narrow_range_test():
     assert diff < 1.0
 
 def tenpar_full_cov_test():
+    """tenpar full cov test"""
     model_d = "ies_10par_xsec"
     test_d = os.path.join(model_d, "master_full_cov_test")
     template_d = os.path.join(model_d, "test_template")
@@ -441,7 +443,7 @@ def tenpar_subset_test():
 
     # first without subset
     pst.pestpp_options = {}
-    pst.pestpp_options["ies_num_reals"] = 20
+    pst.pestpp_options["ies_num_reals"] = 10
     pst.pestpp_options["ies_lambda_mults"] = "1.0"
     pst.pestpp_options["ies_accept_phi_fac"] = 100.0
     pst.pestpp_options["ies_subset_size"] = 21
@@ -451,7 +453,7 @@ def tenpar_subset_test():
     df_base = pd.read_csv(os.path.join(test_d, "pest.phi.meas.csv"),index_col=0)
 
     pst.pestpp_options = {}
-    pst.pestpp_options["ies_num_reals"] = 20
+    pst.pestpp_options["ies_num_reals"] = 10
     pst.pestpp_options["ies_lambda_mults"] = "1.0"
     pst.pestpp_options["ies_subset_size"] = 5
     pst.pestpp_options["ies_accept_phi_fac"] = 100.0
@@ -467,8 +469,8 @@ def tenpar_subset_test():
     print(df_base.iloc[-1,:])
     assert diff.max().max() == 0.0
 
-def test_freyberg_full_cov():
-    """test that using subset gets the same results in the single lambda case"""
+def eval_freyberg_full_cov():
+    """freyberg full cov test"""
     model_d = "ies_freyberg"
     test_d = os.path.join(model_d, "master_draw_test")
     template_d = os.path.join(model_d, "test_template")
@@ -572,7 +574,7 @@ def test_freyberg_full_cov():
 
 
 def test_freyberg_full_cov_reorder():
-    """test that using subset gets the same results in the single lambda case"""
+    """freyberg full cov reorder test"""
     model_d = "ies_freyberg"
     test_d = os.path.join(model_d, "master_draw_test")
     template_d = os.path.join(model_d, "test_template")
@@ -680,7 +682,7 @@ def test_freyberg_full_cov_reorder():
 
 
 def test_freyberg_full_cov_reorder_run():
-    """test that using subset gets the same results in the single lambda case"""
+    """freyberg full cov reorder run test"""
     model_d = "ies_freyberg"
     test_d = os.path.join(model_d, "master_draw_test")
     template_d = os.path.join(model_d, "test_template")
@@ -764,6 +766,7 @@ def eval_synth():
         master_dir=test_d,slave_root=model_d,port=port)
 
 def test_chenoliver():
+    """chen and oliver test"""
     model_d = "ies_chenoliver"
     test_d = os.path.join(model_d,"master")
     template_d = os.path.join(model_d,"template")
@@ -930,7 +933,7 @@ def eval_kirishima():
                                slave_root=model_d,port=port)
 
 def test_freyberg_ineq():
-
+    """freyberg ineq test"""
     model_d = "ies_freyberg"
     test_d = os.path.join(model_d, "test_ineq")
     template_d = os.path.join(model_d, "template")
@@ -969,6 +972,7 @@ def test_freyberg_ineq():
 
 
 def tenpar_fixed_test2():
+    """tenpar fixed test 2"""
     model_d = "ies_10par_xsec"
     test_d = os.path.join(model_d, "test_fixed21")
     template_d = os.path.join(model_d, "template")
@@ -1019,6 +1023,7 @@ def tenpar_fixed_test2():
 
 
 def tenpar_fixed_test():
+    """tenpar fixed test"""
     model_d = "ies_10par_xsec"
     test_d = os.path.join(model_d, "test_fixed")
     template_d = os.path.join(model_d, "template")
@@ -1080,6 +1085,7 @@ def tenpar_fixed_test():
 
 
 def tenpar_weights_test():
+    """tenpar weights test"""
     model_d = "ies_10par_xsec"
     test_d = os.path.join(model_d, "test_weights")
     template_d = os.path.join(model_d, "template")
@@ -1126,6 +1132,7 @@ def tenpar_weights_test():
 
 
 def tenpar_tight_tol_test():
+    """tenpar tight tol test"""
     model_d = "ies_10par_xsec"
     test_d = os.path.join(model_d, "test_tighttol")
     template_d = os.path.join(model_d, "template")
@@ -1271,6 +1278,7 @@ def setup_rosenbrock():
 
 
 def tenpar_localizer_test1():
+    """tenpar local 1"""
     model_d = "ies_10par_xsec"
     test_d = os.path.join(model_d, "master_localizer_test1")
     template_d = os.path.join(model_d, "test_template")
@@ -1320,6 +1328,7 @@ def tenpar_localizer_test1():
     plt.savefig(os.path.join(test_d,"local_test.pdf"))
 
 def tenpar_localizer_test2():
+    """tenpar local 2"""
     model_d = "ies_10par_xsec"
     test_d = os.path.join(model_d, "master_localizer_test2")
     template_d = os.path.join(model_d, "test_template")
@@ -1421,6 +1430,7 @@ def prep_for_travis(model_d):
     pst.write(pst_file)
 
 def tenpar_incr_num_reals_test():
+    """tenpar incr num reals test"""
     model_d = "ies_10par_xsec"
     test_d = os.path.join(model_d, "test_incr_num_reals1")
     template_d = os.path.join(model_d, "template")
@@ -1453,6 +1463,7 @@ def tenpar_incr_num_reals_test():
     print(diff.max())
 
 def tenpar_subset_how_test():
+    """tenpar subet how"""
     model_d = "ies_10par_xsec"
     test_d = os.path.join(model_d, "test_subset_how")
     template_d = os.path.join(model_d, "template")
@@ -1519,6 +1530,7 @@ def tenpar_subset_how_test():
 
 
 def tenpar_localizer_test3():
+    """tenpar local 3"""
     plt.close("all")
     model_d = "ies_10par_xsec"
     test_d = os.path.join(model_d, "master_localizer_test3")
@@ -1731,6 +1743,7 @@ def freyberg_localizer_eval2():
 
 
 def freyberg_localizer_test3():
+    """freyberg local 3"""
     model_d = "ies_freyberg"
     test_d = os.path.join(model_d, "test_local3")
     template_d = os.path.join(model_d, "template")
@@ -1827,6 +1840,7 @@ def compare_freyberg_local3():
 
 
 def csv_tests():
+    """csv tests"""
     model_d = "ies_10par_xsec"
     test_d = os.path.join(model_d, "master_csv_test1")
     template_d = os.path.join(model_d, "test_template")
@@ -1881,7 +1895,7 @@ def csv_tests():
 
 
 def tenpar_restart_test():
-    
+    """tenpar restart tests"""
     model_d = "ies_10par_xsec"
     test_d = os.path.join(model_d, "test_restart")
     template_d = os.path.join(model_d, "template")
@@ -1921,7 +1935,7 @@ def tenpar_restart_test():
     assert os.path.exists(os.path.join(test_d,"pest_restart.3.par.csv"))
 
 def tenpar_rns_test():
-    
+    """tenpar rns test"""
     model_d = "ies_10par_xsec"
     test_d = os.path.join(model_d, "test_rns2")
     template_d = os.path.join(model_d, "template")
@@ -1948,6 +1962,7 @@ def tenpar_rns_test():
     
 
 def clues_longnames_test():
+    """clue long names tests"""
     model_d = "ies_clues"
     test_d = os.path.join(model_d, "test_longnames")
     template_d = os.path.join(model_d, "template")
@@ -2018,7 +2033,7 @@ if __name__ == "__main__":
     # write_empty_test_matrix()
 
     #prep_10par_for_travis("ies_10par_xsec")
-    # setup_suite_dir("ies_10par_xsec")
+    setup_suite_dir("ies_10par_xsec")
     # setup_suite_dir("ies_freyberg")
     # run_suite("ies_10par_xsec")
     # run_suite("ies_freyberg")
