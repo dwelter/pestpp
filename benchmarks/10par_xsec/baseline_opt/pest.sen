@@ -24,7 +24,7 @@ NUMERIC PARAMETER SENSITIVITIES FOR OPTIMISATION ITERATION NO. 2   ----->
 
 NUMERIC PARAMETER SENSITIVITIES FOR OPTIMISATION ITERATION NO. 3   ----->
   Parameter name   Group        Current Value        HILL_CSS_w_reg       PEST_CSS_w_reg       HILL_CSS_wo_reg      PEST_CSS_wo_reg
-   sup_1           g_sup_1      9.99877130179        45.9562934417        9.19238815543        45.9562934417        9.19238815543       
-   sup_2           g_sup_2      10.0619555091        7.95467428104        1.58113883008        7.95467428104        1.58113883008       
+   sup_1           g_sup_1      10.0182632127        44.3102923362        8.84590300648        44.3102923362        8.84590300648       
+   sup_2           g_sup_2      10.0750152730        5.63210475617        1.11803398875        5.63210475617        1.11803398875       
 
 

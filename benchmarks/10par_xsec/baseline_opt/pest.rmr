@@ -1,194 +1,130 @@
 
-YAMR Master listening on socket:0.0.0.0:4005 (IPv4)
+PANTHER master listening on socket:0.0.0.0:4005 (IPv4)
 running model 12 times
 
     waiting for slaves to appear...
 
 
-09/01/17 09:20:59->new connection from: IGSKIACWGSCLHD1.gs.doi.net:64111
-09/01/17 09:20:59->new connection from: IGSKIACWGSCLHD1.gs.doi.net:64112
-09/01/17 09:20:59->new connection from: IGSKIACWGSCLHD1.gs.doi.net:64113
-09/01/17 09:20:59->initializing new slave connection from: IGSKIACWGSCLHD1.gs.doi.net:64111; number of slaves: 3; working dir: E:\git\pestpp\benchmarks\10par_xsec\slave_3
-09/01/17 09:20:59->new connection from: IGSKIACWGSCLHD1.gs.doi.net:64114
-09/01/17 09:20:59->initializing new slave connection from: IGSKIACWGSCLHD1.gs.doi.net:64112; number of slaves: 4; working dir: E:\git\pestpp\benchmarks\10par_xsec\slave_2
-09/01/17 09:20:59->initializing new slave connection from: IGSKIACWGSCLHD1.gs.doi.net:64113; number of slaves: 4; working dir: E:\git\pestpp\benchmarks\10par_xsec\slave_4
-09/01/17 09:20:59->initializing new slave connection from: IGSKIACWGSCLHD1.gs.doi.net:64114; number of slaves: 4; working dir: E:\git\pestpp\benchmarks\10par_xsec\slave_1
-09/01/17 09:20:59->new slave ready: IGSKIACWGSCLHD1.gs.doi.net:64112
-09/01/17 09:20:59->Sending run 0 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (group id = 2, run id = 0, concurrent runs = 1)
-09/01/17 09:20:59->new slave ready: IGSKIACWGSCLHD1.gs.doi.net:64111
-09/01/17 09:20:59->Sending run 1 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (group id = 2, run id = 1, concurrent runs = 1)
-09/01/17 09:20:59->new slave ready: IGSKIACWGSCLHD1.gs.doi.net:64113
-09/01/17 09:20:59->Sending run 2 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (group id = 2, run id = 2, concurrent runs = 1)
-09/01/17 09:21:00->new slave ready: IGSKIACWGSCLHD1.gs.doi.net:64114
-09/01/17 09:21:00->Sending run 3 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (group id = 2, run id = 3, concurrent runs = 1)
-09/01/17 09:21:00->run 0 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (run time = 0.0153 min, group id = 2, run id = 0 concurrent = 1)
-09/01/17 09:21:00->Sending run 4 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (group id = 2, run id = 4, concurrent runs = 1)
-09/01/17 09:21:00->run 1 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (run time = 0.0153 min, group id = 2, run id = 1 concurrent = 1)
-09/01/17 09:21:00->Sending run 5 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (group id = 2, run id = 5, concurrent runs = 1)
-09/01/17 09:21:00->run 2 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (run time = 0.0153167 min, group id = 2, run id = 2 concurrent = 1)
-09/01/17 09:21:00->Sending run 6 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (group id = 2, run id = 6, concurrent runs = 1)
-09/01/17 09:21:01->run 3 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (run time = 0.0136 min, group id = 2, run id = 3 concurrent = 1)
-09/01/17 09:21:01->Sending run 7 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (group id = 2, run id = 7, concurrent runs = 1)
-09/01/17 09:21:01->run 4 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (run time = 0.01185 min, group id = 2, run id = 4 concurrent = 1)
-09/01/17 09:21:01->Sending run 8 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (group id = 2, run id = 8, concurrent runs = 1)
-09/01/17 09:21:01->run 5 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (run time = 0.01185 min, group id = 2, run id = 5 concurrent = 1)
-09/01/17 09:21:01->Sending run 9 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (group id = 2, run id = 9, concurrent runs = 1)
-09/01/17 09:21:01->run 6 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (run time = 0.01185 min, group id = 2, run id = 6 concurrent = 1)
-09/01/17 09:21:01->Sending run 10 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (group id = 2, run id = 10, concurrent runs = 1)
-09/01/17 09:21:01->run 7 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (run time = 0.011 min, group id = 2, run id = 7 concurrent = 1)
-09/01/17 09:21:01->Sending run 11 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (group id = 2, run id = 11, concurrent runs = 1)
-09/01/17 09:21:01->run 8 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (run time = 0.0101167 min, group id = 2, run id = 8 concurrent = 1)
-09/01/17 09:21:01->run 9 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (run time = 0.0101167 min, group id = 2, run id = 9 concurrent = 1)
-09/01/17 09:21:01->run 10 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (run time = 0.0101167 min, group id = 2, run id = 10 concurrent = 1)
-09/01/17 09:21:02->run 11 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (run time = 0.00968333 min, group id = 2, run id = 11 concurrent = 1)
+08/02/18 08:21:03->new connection from: empty.corp.gns.cri.nz:60368
+08/02/18 08:21:03->new connection from: empty.corp.gns.cri.nz:60369
+08/02/18 08:21:03->new connection from: empty.corp.gns.cri.nz:60370
+08/02/18 08:21:03->initializing new slave connection from: empty.corp.gns.cri.nz:60368; number of slaves: 3; working dir: C:\Dev\pestpp\benchmarks\10par_xsec\slave_2
+08/02/18 08:21:03->new connection from: empty.corp.gns.cri.nz:60371
+08/02/18 08:21:03->initializing new slave connection from: empty.corp.gns.cri.nz:60369; number of slaves: 4; working dir: C:\Dev\pestpp\benchmarks\10par_xsec\slave_1
+08/02/18 08:21:03->initializing new slave connection from: empty.corp.gns.cri.nz:60370; number of slaves: 4; working dir: C:\Dev\pestpp\benchmarks\10par_xsec\slave_3
+08/02/18 08:21:03->initializing new slave connection from: empty.corp.gns.cri.nz:60371; number of slaves: 4; working dir: C:\Dev\pestpp\benchmarks\10par_xsec\slave_4
+08/02/18 08:21:04->new slave ready: empty.corp.gns.cri.nz:60368
+08/02/18 08:21:04->Sending run 0 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_2  (group id = 2, run id = 0, concurrent runs = 1)
+08/02/18 08:21:04->new slave ready: empty.corp.gns.cri.nz:60369
+08/02/18 08:21:04->Sending run 1 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_1  (group id = 2, run id = 1, concurrent runs = 1)
+08/02/18 08:21:04->new slave ready: empty.corp.gns.cri.nz:60370
+08/02/18 08:21:04->Sending run 2 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_3  (group id = 2, run id = 2, concurrent runs = 1)
+08/02/18 08:21:04->new slave ready: empty.corp.gns.cri.nz:60371
+08/02/18 08:21:04->Sending run 3 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_4  (group id = 2, run id = 3, concurrent runs = 1)
+08/02/18 08:21:05->run 0 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_2  (run time = 0.0217333 min, group id = 2, run id = 0 concurrent = 1)
+08/02/18 08:21:05->Sending run 4 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_2  (group id = 2, run id = 4, concurrent runs = 1)
+08/02/18 08:21:05->run 1 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_1  (run time = 0.0217333 min, group id = 2, run id = 1 concurrent = 1)
+08/02/18 08:21:05->Sending run 5 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_1  (group id = 2, run id = 5, concurrent runs = 1)
+08/02/18 08:21:05->run 2 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_3  (run time = 0.0217333 min, group id = 2, run id = 2 concurrent = 1)
+08/02/18 08:21:05->Sending run 6 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_3  (group id = 2, run id = 6, concurrent runs = 1)
+08/02/18 08:21:05->run 3 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_4  (run time = 0.0217333 min, group id = 2, run id = 3 concurrent = 1)
+08/02/18 08:21:05->Sending run 7 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_4  (group id = 2, run id = 7, concurrent runs = 1)
+08/02/18 08:21:06->run 4 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_2  (run time = 0.0217167 min, group id = 2, run id = 4 concurrent = 1)
+08/02/18 08:21:06->Sending run 8 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_2  (group id = 2, run id = 8, concurrent runs = 1)
+08/02/18 08:21:06->run 5 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_1  (run time = 0.0217167 min, group id = 2, run id = 5 concurrent = 1)
+08/02/18 08:21:06->Sending run 9 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_1  (group id = 2, run id = 9, concurrent runs = 1)
+08/02/18 08:21:06->run 6 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_3  (run time = 0.0217167 min, group id = 2, run id = 6 concurrent = 1)
+08/02/18 08:21:06->Sending run 10 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_3  (group id = 2, run id = 10, concurrent runs = 1)
+08/02/18 08:21:07->run 7 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_4  (run time = 0.0217167 min, group id = 2, run id = 7 concurrent = 1)
+08/02/18 08:21:07->Sending run 11 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_4  (group id = 2, run id = 11, concurrent runs = 1)
+08/02/18 08:21:08->run 8 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_2  (run time = 0.0217 min, group id = 2, run id = 8 concurrent = 1)
+08/02/18 08:21:08->run 9 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_1  (run time = 0.0217 min, group id = 2, run id = 9 concurrent = 1)
+08/02/18 08:21:08->run 10 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_3  (run time = 0.0217 min, group id = 2, run id = 10 concurrent = 1)
+08/02/18 08:21:08->run 11 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_4  (run time = 0.0217167 min, group id = 2, run id = 11 concurrent = 1)
 
 ---------------------
    12 runs complete :  0 runs failed
 
-running model 35 times
-
-09/01/17 09:21:02->Sending run 1 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (group id = 3, run id = 1, concurrent runs = 1)
-09/01/17 09:21:02->Sending run 2 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (group id = 3, run id = 2, concurrent runs = 1)
-09/01/17 09:21:02->Sending run 3 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (group id = 3, run id = 3, concurrent runs = 1)
-09/01/17 09:21:02->Sending run 4 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (group id = 3, run id = 4, concurrent runs = 1)
-09/01/17 09:21:02->run 2 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (run time = 0.00841667 min, group id = 3, run id = 2 concurrent = 1)
-09/01/17 09:21:02->run 1 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (run time = 0.00841667 min, group id = 3, run id = 1 concurrent = 1)
-09/01/17 09:21:02->run 3 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (run time = 0.00841667 min, group id = 3, run id = 3 concurrent = 1)
-09/01/17 09:21:02->Sending run 5 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (group id = 3, run id = 5, concurrent runs = 1)
-09/01/17 09:21:02->Sending run 6 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (group id = 3, run id = 6, concurrent runs = 1)
-09/01/17 09:21:02->Sending run 7 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (group id = 3, run id = 7, concurrent runs = 1)
-09/01/17 09:21:02->run 4 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (run time = 0.0089 min, group id = 3, run id = 4 concurrent = 1)
-09/01/17 09:21:02->Sending run 8 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (group id = 3, run id = 8, concurrent runs = 1)
-09/01/17 09:21:03->run 6 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (run time = 0.0084 min, group id = 3, run id = 6 concurrent = 1)
-09/01/17 09:21:03->run 5 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (run time = 0.0084 min, group id = 3, run id = 5 concurrent = 1)
-09/01/17 09:21:03->run 7 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (run time = 0.0084 min, group id = 3, run id = 7 concurrent = 1)
-09/01/17 09:21:03->Sending run 9 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (group id = 3, run id = 9, concurrent runs = 1)
-09/01/17 09:21:03->Sending run 10 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (group id = 3, run id = 10, concurrent runs = 1)
-09/01/17 09:21:03->Sending run 11 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (group id = 3, run id = 11, concurrent runs = 1)
-09/01/17 09:21:03->run 8 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (run time = 0.00865 min, group id = 3, run id = 8 concurrent = 1)
-09/01/17 09:21:03->Sending run 12 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (group id = 3, run id = 12, concurrent runs = 1)
-09/01/17 09:21:03->run 9 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (run time = 0.0084 min, group id = 3, run id = 9 concurrent = 1)
-09/01/17 09:21:03->run 10 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (run time = 0.0084 min, group id = 3, run id = 10 concurrent = 1)
-09/01/17 09:21:03->run 11 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (run time = 0.0084 min, group id = 3, run id = 11 concurrent = 1)
-09/01/17 09:21:03->Sending run 13 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (group id = 3, run id = 13, concurrent runs = 1)
-09/01/17 09:21:03->Sending run 14 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (group id = 3, run id = 14, concurrent runs = 1)
-09/01/17 09:21:03->Sending run 15 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (group id = 3, run id = 15, concurrent runs = 1)
-09/01/17 09:21:03->run 12 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (run time = 0.00851667 min, group id = 3, run id = 12 concurrent = 1)
-09/01/17 09:21:03->Sending run 16 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (group id = 3, run id = 16, concurrent runs = 1)
-09/01/17 09:21:04->run 14 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (run time = 0.00838333 min, group id = 3, run id = 14 concurrent = 1)
-09/01/17 09:21:04->run 13 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (run time = 0.00838333 min, group id = 3, run id = 13 concurrent = 1)
-09/01/17 09:21:04->run 15 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (run time = 0.00838333 min, group id = 3, run id = 15 concurrent = 1)
-09/01/17 09:21:04->Sending run 17 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (group id = 3, run id = 17, concurrent runs = 1)
-09/01/17 09:21:04->Sending run 18 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (group id = 3, run id = 18, concurrent runs = 1)
-09/01/17 09:21:04->Sending run 19 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (group id = 3, run id = 19, concurrent runs = 1)
-09/01/17 09:21:04->run 16 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (run time = 0.00845 min, group id = 3, run id = 16 concurrent = 1)
-09/01/17 09:21:04->Sending run 20 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (group id = 3, run id = 20, concurrent runs = 1)
-09/01/17 09:21:04->run 17 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (run time = 0.00838333 min, group id = 3, run id = 17 concurrent = 1)
-09/01/17 09:21:04->Sending run 21 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (group id = 3, run id = 21, concurrent runs = 1)
-09/01/17 09:21:04->run 18 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (run time = 0.00838333 min, group id = 3, run id = 18 concurrent = 1)
-09/01/17 09:21:04->run 19 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (run time = 0.00838333 min, group id = 3, run id = 19 concurrent = 1)
-09/01/17 09:21:04->Sending run 22 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (group id = 3, run id = 22, concurrent runs = 1)
-09/01/17 09:21:04->Sending run 23 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (group id = 3, run id = 23, concurrent runs = 1)
-09/01/17 09:21:04->run 20 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (run time = 0.00841667 min, group id = 3, run id = 20 concurrent = 1)
-09/01/17 09:21:04->Sending run 24 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (group id = 3, run id = 24, concurrent runs = 1)
-09/01/17 09:21:05->run 21 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (run time = 0.00838333 min, group id = 3, run id = 21 concurrent = 1)
-09/01/17 09:21:05->Sending run 25 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (group id = 3, run id = 25, concurrent runs = 1)
-09/01/17 09:21:05->run 22 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (run time = 0.00838333 min, group id = 3, run id = 22 concurrent = 1)
-09/01/17 09:21:05->run 23 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (run time = 0.00838333 min, group id = 3, run id = 23 concurrent = 1)
-09/01/17 09:21:05->Sending run 26 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (group id = 3, run id = 26, concurrent runs = 1)
-09/01/17 09:21:05->Sending run 27 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (group id = 3, run id = 27, concurrent runs = 1)
-09/01/17 09:21:05->run 24 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (run time = 0.0084 min, group id = 3, run id = 24 concurrent = 1)
-09/01/17 09:21:05->Sending run 28 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (group id = 3, run id = 28, concurrent runs = 1)
-09/01/17 09:21:05->run 25 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (run time = 0.00838333 min, group id = 3, run id = 25 concurrent = 1)
-09/01/17 09:21:05->Sending run 29 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (group id = 3, run id = 29, concurrent runs = 1)
-09/01/17 09:21:05->run 26 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (run time = 0.00838333 min, group id = 3, run id = 26 concurrent = 1)
-09/01/17 09:21:05->run 27 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (run time = 0.00838333 min, group id = 3, run id = 27 concurrent = 1)
-09/01/17 09:21:05->Sending run 30 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (group id = 3, run id = 30, concurrent runs = 1)
-09/01/17 09:21:05->Sending run 31 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (group id = 3, run id = 31, concurrent runs = 1)
-09/01/17 09:21:05->run 28 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (run time = 0.0084 min, group id = 3, run id = 28 concurrent = 1)
-09/01/17 09:21:05->Sending run 32 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (group id = 3, run id = 32, concurrent runs = 1)
-09/01/17 09:21:06->run 29 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (run time = 0.00838333 min, group id = 3, run id = 29 concurrent = 1)
-09/01/17 09:21:06->Sending run 33 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (group id = 3, run id = 33, concurrent runs = 1)
-09/01/17 09:21:06->run 30 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (run time = 0.00838333 min, group id = 3, run id = 30 concurrent = 1)
-09/01/17 09:21:06->run 31 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (run time = 0.00838333 min, group id = 3, run id = 31 concurrent = 1)
-09/01/17 09:21:06->Sending run 34 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (group id = 3, run id = 34, concurrent runs = 1)
-09/01/17 09:21:06->Sending run 35 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (group id = 3, run id = 35, concurrent runs = 1)
-09/01/17 09:21:06->run 32 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (run time = 0.0084 min, group id = 3, run id = 32 concurrent = 1)
-09/01/17 09:21:06->run 33 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (run time = 0.00838333 min, group id = 3, run id = 33 concurrent = 1)
-09/01/17 09:21:06->run 34 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (run time = 0.00838333 min, group id = 3, run id = 34 concurrent = 1)
-09/01/17 09:21:06->run 35 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (run time = 0.00838333 min, group id = 3, run id = 35 concurrent = 1)
-
----------------------
-   35 runs complete :  0 runs failed
-
-running model 3 times
-
-09/01/17 09:21:06->Sending run 0 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (group id = 4, run id = 0, concurrent runs = 1)
-09/01/17 09:21:06->Sending run 1 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (group id = 4, run id = 1, concurrent runs = 1)
-09/01/17 09:21:06->Sending run 2 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (group id = 4, run id = 2, concurrent runs = 1)
-09/01/17 09:21:07->run 2 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (run time = 0.00755 min, group id = 4, run id = 2 concurrent = 1)
-09/01/17 09:21:07->run 1 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (run time = 0.00825 min, group id = 4, run id = 1 concurrent = 1)
-09/01/17 09:21:07->run 0 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (run time = 0.00826667 min, group id = 4, run id = 0 concurrent = 1)
-
----------------------
-   3 runs complete :  0 runs failed
-
 running model 7 times
 
-09/01/17 09:21:07->Sending run 1 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (group id = 5, run id = 1, concurrent runs = 1)
-09/01/17 09:21:07->Sending run 2 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (group id = 5, run id = 2, concurrent runs = 1)
-09/01/17 09:21:07->Sending run 3 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (group id = 5, run id = 3, concurrent runs = 1)
-09/01/17 09:21:07->Sending run 4 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (group id = 5, run id = 4, concurrent runs = 1)
-09/01/17 09:21:07->run 2 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (run time = 0.00755 min, group id = 5, run id = 2 concurrent = 1)
-09/01/17 09:21:07->Sending run 5 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (group id = 5, run id = 5, concurrent runs = 1)
-09/01/17 09:21:07->run 3 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (run time = 0.00718333 min, group id = 5, run id = 3 concurrent = 1)
-09/01/17 09:21:07->Sending run 6 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (group id = 5, run id = 6, concurrent runs = 1)
-09/01/17 09:21:07->run 1 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (run time = 0.00823333 min, group id = 5, run id = 1 concurrent = 1)
-09/01/17 09:21:07->Sending run 7 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (group id = 5, run id = 7, concurrent runs = 1)
-09/01/17 09:21:07->run 4 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (run time = 0.00825 min, group id = 5, run id = 4 concurrent = 1)
-09/01/17 09:21:08->run 5 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (run time = 0.00796667 min, group id = 5, run id = 5 concurrent = 1)
-09/01/17 09:21:08->rescheduling overdue run 6 (0.0083|0.00718333 minutes) on: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1
-09/01/17 09:21:08->Sending run 6 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (group id = 5, run id = 6, concurrent runs = 2)
-09/01/17 09:21:08->2 concurrent runs for run id = 6
-09/01/17 09:21:08->rescheduling overdue run 6 (0.0083|0.00718333 minutes) on: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1
-09/01/17 09:21:08->Sending run 6 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (group id = 5, run id = 6, concurrent runs = 3)
-09/01/17 09:21:08->3 concurrent runs for run id = 6
-09/01/17 09:21:08->run 6 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (run time = 0.00778333 min, group id = 5, run id = 6 concurrent = 3)
-09/01/17 09:21:08->sending kill request; reason: completed on alternative node; run id:6; slave: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3
-09/01/17 09:21:08->sending kill request; reason: completed on alternative node; run id:6; slave: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4
-09/01/17 09:21:08->run 7 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (run time = 0.00831667 min, group id = 5, run id = 7 concurrent = 1)
+08/02/18 08:21:08->Sending run 1 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_2  (group id = 3, run id = 1, concurrent runs = 1)
+08/02/18 08:21:08->Sending run 2 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_1  (group id = 3, run id = 2, concurrent runs = 1)
+08/02/18 08:21:08->Sending run 3 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_3  (group id = 3, run id = 3, concurrent runs = 1)
+08/02/18 08:21:08->Sending run 4 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_4  (group id = 3, run id = 4, concurrent runs = 1)
+08/02/18 08:21:09->run 1 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_2  (run time = 0.02085 min, group id = 3, run id = 1 concurrent = 1)
+08/02/18 08:21:09->run 2 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_1  (run time = 0.02085 min, group id = 3, run id = 2 concurrent = 1)
+08/02/18 08:21:09->run 3 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_3  (run time = 0.0208667 min, group id = 3, run id = 3 concurrent = 1)
+08/02/18 08:21:09->Sending run 5 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_2  (group id = 3, run id = 5, concurrent runs = 1)
+08/02/18 08:21:09->Sending run 6 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_1  (group id = 3, run id = 6, concurrent runs = 1)
+08/02/18 08:21:09->Sending run 7 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_3  (group id = 3, run id = 7, concurrent runs = 1)
+08/02/18 08:21:09->run 4 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_4  (run time = 0.0212833 min, group id = 3, run id = 4 concurrent = 1)
+08/02/18 08:21:11->run 7 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_3  (run time = 0.0212833 min, group id = 3, run id = 7 concurrent = 1)
+08/02/18 08:21:11->run 5 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_2  (run time = 0.0212833 min, group id = 3, run id = 5 concurrent = 1)
+08/02/18 08:21:11->run 6 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_1  (run time = 0.0212833 min, group id = 3, run id = 6 concurrent = 1)
 
 ---------------------
    7 runs complete :  0 runs failed
 
 running model 3 times
 
-09/01/17 09:21:08->Sending run 0 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (group id = 6, run id = 0, concurrent runs = 1)
-09/01/17 09:21:08->Sending run 1 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (group id = 6, run id = 1, concurrent runs = 1)
-09/01/17 09:21:08->Sending run 2 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (group id = 6, run id = 2, concurrent runs = 1)
-09/01/17 09:21:08->run 0 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (run time = 0.0073 min, group id = 6, run id = 0 concurrent = 1)
-09/01/17 09:21:08->run 1 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (run time = 0.00826667 min, group id = 6, run id = 1 concurrent = 1)
-09/01/17 09:21:08->run 2 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (run time = 0.00831667 min, group id = 6, run id = 2 concurrent = 1)
+08/02/18 08:21:11->Sending run 0 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_3  (group id = 4, run id = 0, concurrent runs = 1)
+08/02/18 08:21:11->Sending run 1 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_4  (group id = 4, run id = 1, concurrent runs = 1)
+08/02/18 08:21:11->Sending run 2 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_2  (group id = 4, run id = 2, concurrent runs = 1)
+08/02/18 08:21:12->run 1 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_4  (run time = 0.0206667 min, group id = 4, run id = 1 concurrent = 1)
+08/02/18 08:21:12->run 2 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_2  (run time = 0.0207667 min, group id = 4, run id = 2 concurrent = 1)
+08/02/18 08:21:12->run 0 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_3  (run time = 0.0207667 min, group id = 4, run id = 0 concurrent = 1)
 
 ---------------------
    3 runs complete :  0 runs failed
 
 running model 7 times
 
-09/01/17 09:21:08->Sending run 1 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (group id = 7, run id = 1, concurrent runs = 1)
-09/01/17 09:21:08->Sending run 2 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (group id = 7, run id = 2, concurrent runs = 1)
-09/01/17 09:21:08->Sending run 3 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (group id = 7, run id = 3, concurrent runs = 1)
-09/01/17 09:21:08->Sending run 4 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (group id = 7, run id = 4, concurrent runs = 1)
-09/01/17 09:21:09->run 3 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (run time = 0.00701667 min, group id = 7, run id = 3 concurrent = 1)
-09/01/17 09:21:09->run 2 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (run time = 0.00735 min, group id = 7, run id = 2 concurrent = 1)
-09/01/17 09:21:09->Sending run 5 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (group id = 7, run id = 5, concurrent runs = 1)
-09/01/17 09:21:09->Sending run 6 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (group id = 7, run id = 6, concurrent runs = 1)
-09/01/17 09:21:09->run 1 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (run time = 0.00803333 min, group id = 7, run id = 1 concurrent = 1)
-09/01/17 09:21:09->Sending run 7 to: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (group id = 7, run id = 7, concurrent runs = 1)
-09/01/17 09:21:09->run 4 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_3  (run time = 0.00828333 min, group id = 7, run id = 4 concurrent = 1)
-09/01/17 09:21:09->run 5 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_1  (run time = 0.0077 min, group id = 7, run id = 5 concurrent = 1)
-09/01/17 09:21:09->run 6 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_4  (run time = 0.00786667 min, group id = 7, run id = 6 concurrent = 1)
-09/01/17 09:21:09->run 7 received from: IGSKIACWGSCLHD1.gs.doi.net$E:\git\pestpp\benchmarks\10par_xsec\slave_2  (run time = 0.00821667 min, group id = 7, run id = 7 concurrent = 1)
+08/02/18 08:21:12->Sending run 1 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_2  (group id = 5, run id = 1, concurrent runs = 1)
+08/02/18 08:21:12->Sending run 2 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_1  (group id = 5, run id = 2, concurrent runs = 1)
+08/02/18 08:21:12->Sending run 3 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_4  (group id = 5, run id = 3, concurrent runs = 1)
+08/02/18 08:21:12->Sending run 4 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_3  (group id = 5, run id = 4, concurrent runs = 1)
+08/02/18 08:21:13->run 2 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_1  (run time = 0.02065 min, group id = 5, run id = 2 concurrent = 1)
+08/02/18 08:21:13->Sending run 5 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_1  (group id = 5, run id = 5, concurrent runs = 1)
+08/02/18 08:21:13->run 3 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_4  (run time = 0.0207167 min, group id = 5, run id = 3 concurrent = 1)
+08/02/18 08:21:13->Sending run 6 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_4  (group id = 5, run id = 6, concurrent runs = 1)
+08/02/18 08:21:13->run 4 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_3  (run time = 0.0208667 min, group id = 5, run id = 4 concurrent = 1)
+08/02/18 08:21:13->run 1 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_2  (run time = 0.0208667 min, group id = 5, run id = 1 concurrent = 1)
+08/02/18 08:21:13->Sending run 7 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_3  (group id = 5, run id = 7, concurrent runs = 1)
+08/02/18 08:21:14->run 5 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_1  (run time = 0.0211667 min, group id = 5, run id = 5 concurrent = 1)
+08/02/18 08:21:15->run 6 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_4  (run time = 0.0212 min, group id = 5, run id = 6 concurrent = 1)
+08/02/18 08:21:15->run 7 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_3  (run time = 0.0212833 min, group id = 5, run id = 7 concurrent = 1)
+
+---------------------
+   7 runs complete :  0 runs failed
+
+running model 3 times
+
+08/02/18 08:21:15->Sending run 0 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_2  (group id = 6, run id = 0, concurrent runs = 1)
+08/02/18 08:21:15->Sending run 1 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_1  (group id = 6, run id = 1, concurrent runs = 1)
+08/02/18 08:21:15->Sending run 2 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_4  (group id = 6, run id = 2, concurrent runs = 1)
+08/02/18 08:21:16->run 0 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_2  (run time = 0.0204333 min, group id = 6, run id = 0 concurrent = 1)
+08/02/18 08:21:16->run 1 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_1  (run time = 0.0205833 min, group id = 6, run id = 1 concurrent = 1)
+08/02/18 08:21:16->run 2 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_4  (run time = 0.0207333 min, group id = 6, run id = 2 concurrent = 1)
+
+---------------------
+   3 runs complete :  0 runs failed
+
+running model 7 times
+
+08/02/18 08:21:16->Sending run 1 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_2  (group id = 7, run id = 1, concurrent runs = 1)
+08/02/18 08:21:16->Sending run 2 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_1  (group id = 7, run id = 2, concurrent runs = 1)
+08/02/18 08:21:16->Sending run 3 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_3  (group id = 7, run id = 3, concurrent runs = 1)
+08/02/18 08:21:16->Sending run 4 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_4  (group id = 7, run id = 4, concurrent runs = 1)
+08/02/18 08:21:17->run 3 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_3  (run time = 0.02065 min, group id = 7, run id = 3 concurrent = 1)
+08/02/18 08:21:17->Sending run 5 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_3  (group id = 7, run id = 5, concurrent runs = 1)
+08/02/18 08:21:17->run 1 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_2  (run time = 0.0205833 min, group id = 7, run id = 1 concurrent = 1)
+08/02/18 08:21:17->run 2 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_1  (run time = 0.02065 min, group id = 7, run id = 2 concurrent = 1)
+08/02/18 08:21:17->Sending run 6 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_2  (group id = 7, run id = 6, concurrent runs = 1)
+08/02/18 08:21:17->Sending run 7 to: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_1  (group id = 7, run id = 7, concurrent runs = 1)
+08/02/18 08:21:17->run 4 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_4  (run time = 0.0208667 min, group id = 7, run id = 4 concurrent = 1)
+08/02/18 08:21:18->run 5 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_3  (run time = 0.0211667 min, group id = 7, run id = 5 concurrent = 1)
+08/02/18 08:21:18->run 7 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_1  (run time = 0.0211667 min, group id = 7, run id = 7 concurrent = 1)
+08/02/18 08:21:18->run 6 received from: empty.corp.gns.cri.nz$C:\Dev\pestpp\benchmarks\10par_xsec\slave_2  (run time = 0.0211333 min, group id = 7, run id = 6 concurrent = 1)
 
 ---------------------
    7 runs complete :  0 runs failed
