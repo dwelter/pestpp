@@ -1265,7 +1265,7 @@ ModelRun SVDSolver::iteration_upgrd(RunManagerAbstract &run_manager, Termination
 
 	if (!one_success)
 	{
-		throw runtime_error("all upgrades failed...can not continue.");
+		throw runtime_error("all upgrade runs failed.");
 	}
 
 	return best_upgrade_run;
