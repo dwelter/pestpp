@@ -262,11 +262,16 @@ int main(int argc, char* argv[])
 		//fout_rec << "    pestpp-ies parameter csv file = " << left << setw(50) << ppopt.get_ies_par_csv() << endl;
 		//fout_rec << "    pestpp-ies observation csv file = " << left << setw(50) << ppopt.get_ies_obs_csv() << endl;
 		
+
+		//reset some default args for ies here:
 		PestppOptions *ppo = pest_scenario.get_pestpp_options_ptr();
 		set<string> pp_args = ppo->get_passed_args();
 		if (pp_args.find("MAX_RUN_FAIL") == pp_args.end())
 			ppo->set_max_run_fail(1);
-
+		if (pp_args.find("OVERDUE_GIVEUP_FAC") == pp_args.end())
+			ppo->set_overdue_giveup_fac(2.0);
+		if (pp_args.find("OVERDUE_resched_FAC") == pp_args.end())
+			ppo->set_overdue_giveup_fac(1.15);
 		RunManagerAbstract *run_manager_ptr;
 		
 		

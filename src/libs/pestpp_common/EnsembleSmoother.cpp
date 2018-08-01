@@ -1414,7 +1414,6 @@ void IterEnsembleSmoother::initialize()
 	if (pp_args.find("LAMBDA_SCALE_FAC") == pp_args.end())
 		ppo->set_lambda_scale_vec(vector<double>{0.5, 0.75, 0.95, 1.0, 1.1});
 
-
 	verbose_level = pest_scenario.get_pestpp_options_ptr()->get_ies_verbose_level();
 	if (pest_scenario.get_n_adj_par() >= 1e6)
 	{

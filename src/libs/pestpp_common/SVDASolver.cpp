@@ -489,6 +489,7 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 	Parameters new_frozen_pars;
 
 	int n_runs = run_manager.get_nruns();
+	bool one_success = false;
 	for (int i = 1; i < n_runs; ++i) {
 		ModelRun upgrade_run(base_run);
 		Parameters tmp_pars;
@@ -498,6 +499,7 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 		bool success = run_manager.get_run(i, tmp_pars, tmp_obs, lambda_type, i_lambda);
 		if (success)
 		{
+			one_success = true;
 			par_transform.model2ctl_ip(tmp_pars);
 			upgrade_run.update_ctl(tmp_pars, tmp_obs);
 			par_transform.ctl2active_ctl_ip(tmp_pars);
@@ -575,6 +577,10 @@ ModelRun SVDASolver::iteration_upgrd(RunManagerAbstract &run_manager, Terminatio
 	// clean up run_manager memory
 	run_manager.free_memory();
 
+	if (!one_success)
+	{
+		throw runtime_error("all upgrades failed...can not continue");
+	}
 	return best_upgrade_run;
 }
 

@@ -106,6 +106,8 @@ public:
 	~RunManagerPanther(void); 
 	int get_n_waiting_runs() { return waiting_runs.size(); }
 	void close_slaves();
+	
+
 
 private:
 	std::string port;
