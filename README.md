@@ -14,16 +14,19 @@ The PEST++ software suite includes several stand-alone tools for model-independe
 
 * ``pestpp-ies``: iterative ensemble smoother implementation of GLM.
 
-All members of the software suite can be compiled for PC, MAC, or Linux and have several run managers to support parallelization.  precompiled binaries are available in the "exe" folder.  Windows users should use the ``intel_c_windows`` branch binaries to avoid the dreaded MSVC missing runtime DLL issue
+All members of the software suite can be compiled for PC, MAC, or Linux and have several run managers to support parallelization.  precompiled binaries are available in the "exe" folder.
 
 ## Recent Updates
+
+<b> update 5 August 2018 </b>: Official support for ``pestpp-opt``, ``pestpp-ies``, and ``pestpp-swp`` has been moved to [https://github.com/jtwhite79/pestpp](https://github.com/jtwhite79/pestpp).  All inquires regarding these codes should raised in this fork.
+
 <b> update 4 July 2018 </b>: PESTPP++ version 4.0.0 has been released to support the newly-developed ``pestpp-ies``. A manuscript documenting ``pestpp-ies`` is available here: [https://www.sciencedirect.com/science/article/pii/S1364815218302676](https://www.sciencedirect.com/science/article/pii/S1364815218302676).  Stay tuned for an actual manual to accompany version 4!
 
 <b> update 2 May 2018 </b>: some refactoring is underway.  ``sweep`` has been renamed ``pestpp-swp`` and ``gsa`` has been renamed ``pestpp-gsa``.  Also, the initial version of the new iterative ensemble smoother is avaiable as ``pestpp-ies``.  The basic ``++`` options needed for fine-grained control of ``pestpp-ies`` are listed below.   
 
 <b> update 09/20/2017</b>: the new optimization under uncertainty tool is ready!  A supporting publication is in the works and should be available soon (a link will be posted once it is accepted).  This new tool uses the same control file/template file/instruction file approach as other PEST(++) applications, so applying this tool to your problem should be seamless.  Optional "++" args for tool are available further done this page.
 
-<b>update 01/25/2017</b>: intel C++ builds are avaiable for mac and for windows.  For mac users, these are statically-linked so they do not require compilers to be installed.  For windows users, the intel build circumvents the "missing VCOMP140.DLL" error.  Note the intel windows builds are currently in the ``intel_c_windows`` branch.
+<b>update 01/25/2017</b>: intel C++ builds are avaiable for mac and for windows.  For mac users, these are statically-linked so they do not require compilers to be installed. 
 
 <b>update 11/25/2016</b>: PEST++ version 3.6 is now available. Some of the many enhancements available in 3.6 include:
 
@@ -117,84 +120,14 @@ Here is a (more or less) complete list of ``++`` arguments that can be added to 
 * ``++condor_submit_file(pest.sub)``: a HTCondor submit file.  Setting this arg results in use of a specialized version of the YAMR run manager where the ``condor_submit()`` command is issued before the run manager starts, and, once a set of runs are complete, the workers are released and the ``condor_rm()`` command is issued.  This specialized run manager is useful for those sharing an HTCondor pool so that during the upgrade calculation process, all workers are released and during upgrade testing, only the required number workers are queued.  As with all things PEST and PEST++, it is up to the user to make sure the relative paths between the location of the submit file, the control file and the instance of PEST++ are in sync.
 
 ### pestpp-swp ``++`` arguments
-``sweep`` is a utility to run a parametric sweep for a series of parameter values.  Useful for things like monte carlo, design of experiment, etc. Designed to be used with ``pyemu`` and the python pandas library.
-
-* ``++sweep_parameter_csv_file(filename)``: the CSV file that lists the runs to be evaluated. "sweep_in.csv" is the default
-* ``++sweep_output_csv_file(filename)``: the output CSV file from the parametric sweep.  If not passed, output is written to "sweep_out.csv"
-* ``++sweep_chunk(500)``: number of runs to batch queue for the run manager.  Each chunk is read, run and written as a single batch
-* ``++sweep_forgive(false)``: a flag to forgive missing parameters in the input csv file.  If ``true``, then missing parameters are filled with the initial parameter value in the control file.
+``sweep`` is a utility to run a parametric sweep for a series of parameter values.  Useful for things like monte carlo, design of experiment, etc. Designed to be used with ``pyemu`` and the python pandas library.  Support pestpp-swp, including input instructions, are available at [https://github.com/jtwhite79/pestpp](https://github.com/jtwhite79/pestpp)
 
 ### pestpp-opt ``++`` arguments
-``pestpp-opt`` is an implementation of sequential linear programming under uncertainty for the PEST-style model-independent interface
-
-* ``++opt_dec_var_groups(<group names>)``: comma-separated string identifying which parameter groups are to be treated as decision variables.  If not passed, all adjustable parameters are treated as decision variables
-
-* ``++opt_external_dec_var_groups(<group_names>)``: comma-separated string identifying which parameter groups are to be treated as "external" decision variables, that is decision variables that do not influence model-based constraints and therefore do not require a perturbation run of the model to fill columns in the response matrix.
-
-* ``++opt_constraint_groups(<group names>)``: comma-separated string identifying which observation and prior information groups are to be treated as constraints.  Groups for "less than" constraints must start with either "l_" or "less"; groups for "greater than" constraints must start with "g_" or "greater".  If not passed, all observation and prior information groups that meet the naming rules will be treated as constraints
-
-* ``++opt_obj_func(<obj func name >)``: string identifying the prior information equation or two-column ASCII file that contains the objective function coefficients.  If not passed, then each decision variable is given a coefficient of 1.0 in the objective function.
-
-* ``++opt_direction(<direction>)``: either "min" or "max", whether to minimize or maximize the objective function. 
-
-* ``++opt_risk(<risk>)``: a float ranging from 0.0 to 1.0 that is the value to use in the FOSM uncertainty estimation for model-based constraints. a value of 0.5 is a "risk neutral" position and no FOSM measures are calculated.  A value of 0.95 will seek a 95% risk averse solution, while a value of 0.05 will seek a 5% risk tolerant solution. See Wagner and Gorelick, 1987, *Optimal groundwater quality management under parameter uncertainty* for more background on chance-constrained linear programming
-
-* ``++opt_skip_final(<skip_final>)``: a flag to skip the final model run using optimal decision variable values.  If ``true`` and ``++base_jacobian()`` and ``++hotstart_resfile()`` are set and (lot of "ands") ``noptmax``=0, then this causes no model runs to happen, pestpp-opt simply solves the chance constrainted LP problem, report optimal decision variables and phi, then exits.  Default is ``false``.
-
-* ``++opt_std_weights(<std_weights>)``:a flag to treat model-based constraints (listed in the ``* observation data`` section) as standard deviations for chance constraints.  This can result in substantial time savings since the FOSM calculation process can be skipped.  This can also be used to specific empirical constraint uncertainty (e.g. from ensemble methods).  Default is ``false``.
+``pestpp-opt`` is an implementation of sequential linear programming under uncertainty for the PEST-style model-independent interface.  Support pestpp-opt, including input instructions, are available at [https://github.com/jtwhite79/pestpp](https://github.com/jtwhite79/pestpp)
 
 ### pestpp-ies ``++`` arguments
-``pestpp-ies`` is an implementation of the iterative ensemble smoother GLM algorithm of Chen and Oliver 2012. So far, this tool has performed very well across a range of problems.  It functions without any additional ``++`` arguments. However, several ``++`` arguments can be used to fine-tune the function of ``pestpp-ies``.  
+``pestpp-ies`` is an implementation of the iterative ensemble smoother GLM algorithm of Chen and Oliver 2012. So far, this tool has performed very well across a range of problems.  It functions without any additional ``++`` arguments. However, several ``++`` arguments can be used to fine-tune the function of ``pestpp-ies``.  Support pestpp-ies, including input instructions, are available at [https://github.com/jtwhite79/pestpp](https://github.com/jtwhite79/pestpp)
 
-* ``++ies_parameter_ensemble(<par_en>)``: file containing parameter ensemble.  File extension is used to determine file type: ``.csv`` and ``.jcb`` are supported.  If not passed, a parameter ensemble is generated from prior parameter distribution
-
-* ``++ies_observation_ensemble(<obs_en>)``: file containing observation noise ensemble (obs vals + noise realizatons). File extension is used to determine file type: ``.csv`` and ``.jcb`` are supported. If not passed, an observation ensemble is generated using observation weights
-
-* ``ies_restart_obs_en(<restart_obs_en>)``: file containting a restart observation ensemble (simulated outputs from a previous pestpp-ies run or from pestpp-swp).  File extension is used to determine file type: ``.csv`` and ``.jcb`` are supported.
-
-* ``ies_num_reals(<num_reals>)``: number of realizations to use.  If ``par_en``, ``obs_en`` and/or ``restart_obs_en`` are passed and are larger than ``num_reals``, then only the first ``num_reals`` realizations are used. Default is 50.  
-
-* ``ies_bad_phi(<bad_phi>)``: realizations yielding a phi greater than ``bad_phi`` are dropped from ``par_en`` and ``obs_en``.  Default is 1.0e+30
-
-* ``ies_lambda_mults(<lambda_mults>)``: lambda multiplers to test during upgrade calculations.  Default is [0.1,0.5,1.0,2.0,5.0].
-
-* ``ies_initial_lambda(<init_lambda>)``: initial lambda value to use with ``lambda_mults`` to get lambda values for testing during the first iteration.  If not passed, ``init_lambda`` is derived from the initial mean phi.  
-
-* ``ies_subset_size(<subset_size>)``: the number of realizations to test for each upgrade parameter ensemble.  The total number of upgrade testing runs is ``len(lambda_mults)`` * ``len(lambda_scale_fac)`` * ``subset_size``.  Default is 5, meaning only the first 5 realizations are evaluated during testing; if a successful (subset) upgrade ensemble is found, the remaining ``num_reals`` - ``subset_size`` realizations are evaluated.
-
-* ``ies_reg_factor(<reg_factor>)``: fraction of zeroth-order Tikhonov regularization penalty to add to the measurement phi to form composite phi.  Default is 0.0
-
-* ``ies_use_approx(<use_approx>)``: flag to use the approximate upgrade solution process.  Default is ``true``.
-
-* ``ies_use_prior_scaling(<use_prior_scaling>)``: flag to scale various quantities by the prior parameter covariance matrix during upgrade calculations.  Default is ``false``.
-
-* ``ies_use_empirical_prior(<use_empirical_prior>)``: flag to calculate prior parameter covariance matrix from the parameter ensemble.  Requires passing of ``par_en``.  Default is ``false``.
-
-* ``ies_verbose_level(<verbose_level>)``: integer to control how much pestpp-ies writes.  Can be 0, 1, 2, or 3.  Default is 1.
-
-* ``ies_add_bases(<add_bases>)``: flag to add initial parameter values to ``par_en`` and add actual observation values (no noise) to ``obs_en``.  This results in an approximation to the minimum error variance parameter set being carried through the pestpp-ies analysis.  If ``true``, results in ``num_reals`` + 1 realizations.  Default is ``true``.
-
-* ``ies_enforce_bounds(enforce_bounds>)``: flag to enforce parameter bounds during upgrade calculations.  Default is ``true``.
-
-* ``ies_save_binary(<save_binary>)``: flag to save iteration parameter and observation ensembles to pest-compatible (jacobian format) binary files.  Default is ``false``
-
-* ``ies_accept_phi_fac(<accept_phi_fac>)``: tolerance for accepting the results for a (subset) ensemble evaluation. If the resulting mean phi * ``accept_phi_fac`` is greater than the best mean phi from the last iteration, then the upgrade is rejected.  Default is 1.05 (5% tolerance).
-
-* ``ies_lambda_inc_fac(<lambda_inc_fac>)``: factor increase current lambda by if current upgrade testing was not successful.  Default is 10.0
-
-* ``ies_lambda_dec_fac(<lambda_dec_fac>)``: factor to decrease current lambd by if current upgrade testing was successful.  Default is 0.75.
-
-* ``ies_save_lambda_en(<save_lambda_en>)``: flag to save lambda testing parameter ensembles.  Can be use for finding parameters vectors that are causing run failures.  Default is ``false``.
-
-* ``parcov_filename(<parcov_filename>)``: (repeated argument for pestpp and pestpp-opt).  Name of existing prior parameter covariance matrix.  Can be ASCII (``.mat`` or ``.cov``), binary (``.jco`` or ``.jcb``) or an uncertainty file (``.unc``).  If not passed, the prior parameter covariance matrix is constructed from parameter bounds (or from the parameter ensemble if ``use_empirical_prior`` is passed).  
-
-* ``par_sigma_range(<par_sigma_range>)``: the number of standard deviations implied by parameter bounds.  Used to construct prior parameter covariance matrix from parameter bounds.  Default is 4.0.
-
-* ``lambda_scale_fac(<lambda_scale_fac>)``: line search lambda scaling factors.  Each lambda parameter upgrade ensemble is scaled by each ``lambda_scale_fac``.  Default is [0.5,0.75,0.9,1.0,1.1].  
-
-* ``ies_subset_how(<subset_how>)``: choice for how the subset is selected.  Choices are "first" (use the first ``subset_size`` realizations),"last" (use the last ``subset_size`` realizations),"random" (randomly select ``subset_size`` realizations each iteration),"phi_based" (chose ``subset_size`` realizations spread across the composite phi from the last iteration). Default is "first".  
-
-* ``ies_localizer(<localizer>)``: an optional localizer to use to localize spurious cross-correlations between observations and parameters.  The file format is determined by the extension: "mat","cov","csv","jco"/"jcb".  The row names of the matrix are observation names and/or observation group names and columns are parameter names and/or parameter group names (each obs/par can only be include once even through groups).  Currently only zero vs nonzero entires are used to localize.  
 
 ### USGS disclaimer
 
