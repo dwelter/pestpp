@@ -4,44 +4,49 @@
 # SYSTEM ?= linux (default)
 #        ?= mac
 #        ?= win
-# COMPILER ?= gcc (default)
+# COMPILER ?= gcc (default, if ifort not available)
 #          ?= intel
 # STATIC ?= -static (default)
 #        ?= no (shared dynamic linking)
 # These can be kept in local.mak
 -include $(top_builddir)/local.mak
 
-# Autodetect SYSTEM
-ifeq ($(OS),Windows_NT)
-    SYSTEM ?= win
-else
-    UNAME_S := $(shell uname -s)
-    ifeq ($(UNAME_S),Linux)
-        SYSTEM ?= linux
-    endif
-    ifeq ($(UNAME_S),Darwin)
-        SYSTEM ?= mac
+ifndef SYSTEM  # then autodetect this
+    ifeq ($(OS),Windows_NT)
+        SYSTEM ?= win
+    else
+        UNAME_S := $(shell uname -s)
+        ifeq ($(UNAME_S),Linux)
+            SYSTEM ?= linux
+        endif
+        ifeq ($(UNAME_S),Darwin)
+            SYSTEM ?= mac
+        endif
     endif
 endif
 
-# Defaults (if unset, or missing local.mak)
-#SYSTEM ?= mac
-COMPILER ?= intel
-
-
-ifeq ($(SYSTEM),mac)
-    # macOS
+ifeq ($(SYSTEM),mac)  # macOS
     bindir ?= $(top_builddir)/../exe/mac/
-else ifeq ($(SYSTEM),linux)
-    # GNU Linux
+else ifeq ($(SYSTEM),linux)  # GNU Linux
     bindir ?= $(top_builddir)/../exe/linux/
-    MKLROOT ?= /opt/intel/compilers_and_libraries/linux/mkl
-
-else ifeq ($(SYSTEM),win)
-    # Microsoft Windows
+else ifeq ($(SYSTEM),win)  # Microsoft Windows
     bindir ?= $(top_builddir)/../exe/windows/
 else
     $(error SYSTEM not understood: $(SYSTEM). Use one of mac, linux or win.)
+endif
+
+ifndef COMPILER  # also autodetect this
+    # If ifort on PATH, then assume intel
+    ifeq ($(SYSTEM),win)
+        IFORT := $(shell where ifort 2> nul)
+    else
+        IFORT := $(shell which ifort 2> /dev/null)
+    endif
+    ifneq ($(IFORT),)
+        COMPILER := intel
+    else
+        COMPILER := gcc
+    endif
 endif
 
 # Determine static (default '-static') or shared dynamic linking
@@ -50,16 +55,14 @@ ifndef STATIC
     STATIC = no
 endif
 
-ifeq ($(SYSTEM),win)
-    # Microsoft Windows
+ifeq ($(SYSTEM),win)  # Microsoft Windows
     EXE_EXT = .exe
     OBJ_EXT = .obj
     LIB_EXT = .lib
     CP = copy
     RM = del /Q
     MKDIR = md
-else
-    # POSIX (mac, linux)
+else  # POSIX (mac, linux)
     OBJ_EXT = .o
     LIB_PRE = lib
     LIB_EXT = .a
@@ -67,20 +70,22 @@ else
     MKDIR = mkdir -p
 endif
 
-ifeq ($(COMPILER),intel)
-    # Intel compilers
+# Default optimization
+OPT_FLAGS ?= -O2
+
+ifeq ($(COMPILER),intel)  # Intel compilers
     ifeq ($(SYSTEM),win)
         # Warning: this build method is not well tested
         CXX = icl
-        OPT_FLAGS = /nologo /O2 /Qmkl:sequential
-        CXXFLAGS = $(OPT_FLAGS) /Qstd=c++11 /EHsc
-        FFLAGS = $(OPT_FLAGS) /fpp
-        FFREE   = /free
-    else # mac,linux
+        OPT_FLAGS ?= /nologo /Qmkl:sequential
+        CXXFLAGS ?= $(OPT_FLAGS) /Qstd=c++11 /EHsc
+        FFLAGS ?= $(OPT_FLAGS) /fpp
+        FFREE = /free
+    else  # mac,linux
         CXX = icpc
-        OPT_FLAGS = -O2 -mkl=sequential
-        CXXFLAGS = $(OPT_FLAGS) -std=c++11
-        FFLAGS = $(OPT_FLAGS) -fpp
+        OPT_FLAGS ?= -mkl=sequential
+        CXXFLAGS ?= $(OPT_FLAGS) -std=c++11
+        FFLAGS ?= $(OPT_FLAGS) -fpp
         FFREE = -free
     endif
     FC = ifort
@@ -102,6 +107,7 @@ ifeq ($(COMPILER),intel)
                 mkl_core.lib
         endif
     else ifeq ($(SYSTEM),linux)
+        MKLROOT ?= /opt/intel/compilers_and_libraries/linux/mkl
         EXT_INCLUDES = -I${MKLROOT}/include/intel64/ilp64 -I${MKLROOT}/include
         EXT_LIBS = \
             ${MKLROOT}/lib/intel64/libmkl_blas95_lp64.a \
@@ -140,7 +146,7 @@ ifeq ($(COMPILER),intel)
             ${EXTRADIR}/lib/libifcore.a
         endif
         EXT_LIBS += -lpthread -lm -ldl
-    endif # $(SYSTEM)
+    endif  # $(SYSTEM)
 else  # $(COMPILER)
     # Assume GNU Compiler Collection
     ifeq ($(COMPILER),gcc)
@@ -150,9 +156,8 @@ else  # $(COMPILER)
         CXX ?= g++
         FC ?= gfortran
     endif
-    OPT_FLAGS = -O2
-    CXXFLAGS = $(OPT_FLAGS) -std=c++11
-    FFLAGS = $(OPT_FLAGS) -cpp
+    CXXFLAGS ?= $(OPT_FLAGS) -std=c++11
+    FFLAGS ?= $(OPT_FLAGS) -cpp
     FFREE = -ffree-form
     EXT_LIBS = -lpthread -llapack -lblas -lgfortran -lquadmath
 # else
