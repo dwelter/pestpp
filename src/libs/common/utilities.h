@@ -224,6 +224,8 @@ bool check_exist_in(std::string filename);
 
 bool check_exist_out(std::string filename);
 
+bool string_ends_with(const string &teststring, const string &ending);
+
 //template <class dataType>
 //void read_twocol_ascii_to_map(std::map<std::string, dataType> &result,std::string filename, int header_lines=0, int data_col=1);
 
