@@ -7,8 +7,8 @@
 typedef class RunManagerAbstract RunManagerAbstract;
 
 static RunManagerAbstract *_run_manager_ptr_ = nullptr;
-static string _run_manager_error;
-static ofstream fout_run_manager_log_file;
+static string _f_run_manager_error;
+static ofstream _f_fout_run_manager_log_file;
 
 using namespace pest_utils;
 
@@ -24,7 +24,7 @@ int rmif_create_serial_(char *f_comline, int  *comline_str_len, int *comline_arr
 	char *f_rundir, int *rundir_len, int *n_max_fail)
 
 {
-	_run_manager_error.clear();
+	_f_run_manager_error.clear();
 	vector<string> comline_vec =  fortran_str_array_2_vec(f_comline, *comline_str_len, *comline_array_len);
 	vector<string> tpl_vec =  fortran_str_array_2_vec(f_tpl, *tpl_str_len, *tpl_array_len);
 	vector<string> inp_vec =  fortran_str_array_2_vec(f_inp, *inp_str_len, *inp_array_len);
@@ -40,17 +40,17 @@ int rmif_create_serial_(char *f_comline, int  *comline_str_len, int *comline_arr
 	catch (const exception &e)
 	{
 		err = 1;
-		_run_manager_error = e.what();
+		_f_run_manager_error = e.what();
 	}
 	catch(char const *e)
 	{
 		err = 1;
-		_run_manager_error = e;
+		_f_run_manager_error = e;
 	}
 	catch (const string e)
 	{
 		err = 1;
-		_run_manager_error = e;
+		_f_run_manager_error = e;
 	}
 	catch(...)
 	{
@@ -66,30 +66,30 @@ int rmif_create_panther_(
 	char *f_info_filename, int *info_filename_len, int *n_max_fail,
 	double *overdue_reched_fac, double *overdue_giveup_fac)
 {
-	_run_manager_error.clear();
+	_f_run_manager_error.clear();
 	int err = 0;
 	try {
 		string storfile =  fortran_str_2_string(f_storfile, *storfile_len);
 		string port =  fortran_str_2_string(f_port, *f_port_len);
 		string info_filename =  fortran_str_2_string(f_info_filename, *info_filename_len);
-		fout_run_manager_log_file.open(info_filename);
+		_f_fout_run_manager_log_file.open(info_filename);
 		_run_manager_ptr_ = new RunManagerPanther(storfile, 
-			port, fout_run_manager_log_file, *n_max_fail, *overdue_reched_fac, *overdue_giveup_fac);
+			port, _f_fout_run_manager_log_file, *n_max_fail, *overdue_reched_fac, *overdue_giveup_fac);
 	}
 	catch (const exception &e)
 	{
 		err = 1;
-		_run_manager_error = e.what();
+		_f_run_manager_error = e.what();
 	}
 	catch (char const *e)
 	{
 		err = 1;
-		_run_manager_error = e;
+		_f_run_manager_error = e;
 	}
 	catch (const string e)
 	{
 		err = 1;
-		_run_manager_error = e;
+		_f_run_manager_error = e;
 	}
 	catch(...)
 	{
@@ -102,13 +102,109 @@ int rmif_create_panther_(
 int rmif_err_msg_(char *fortran_str, int *str_len)
 {
 	int err = 0;
-	string_to_fortran_char(_run_manager_error, fortran_str, *str_len);
+	string_to_fortran_char(_f_run_manager_error, fortran_str, *str_len);
 	return err;
 }
 
+
+int rmif_initialize_(char *f_pname, int  *pname_str_len, int *pname_array_len,
+	char *f_oname, int  *oname_str_len, int *oname_array_len)
+
+{
+	_f_run_manager_error.clear();
+	int err = 0;
+	try {
+		vector<string> pname_vec = fortran_str_array_2_vec(f_pname, *pname_str_len, *pname_array_len);
+		vector<string> oname_vec = fortran_str_array_2_vec(f_oname, *oname_str_len, *oname_array_len);
+		_run_manager_ptr_->initialize(pname_vec, oname_vec);
+	}
+	catch (const exception &e)
+	{
+		err = 1;
+		_f_run_manager_error = e.what();
+	}
+	catch (char const *e)
+	{
+		err = 1;
+		_f_run_manager_error = e;
+	}
+	catch (const string e)
+	{
+		err = 1;
+		_f_run_manager_error = e;
+	}
+	catch (...)
+	{
+		err = 1;
+	}
+	return err;
+}
+
+
+int rmif_reinitialize_()
+{
+	_f_run_manager_error.clear();
+	int err = 0;
+	try {
+		_run_manager_ptr_->reinitialize();
+	}
+	catch (const exception &e)
+	{
+		err = 1;
+		_f_run_manager_error = e.what();
+	}
+	catch (char const *e)
+	{
+		err = 1;
+		_f_run_manager_error = e;
+	}
+	catch (const string e)
+	{
+		err = 1;
+		_f_run_manager_error = e;
+	}
+	catch (...)
+	{
+		err = 1;
+	}
+	return err;
+}
+
+
+int rmif_initialize_restart_(char *f_storfile, int *storfile_len)
+{
+	_f_run_manager_error.clear();
+	int err = 0;
+	try {
+		string storfile = fortran_str_2_string(f_storfile, *storfile_len);
+		_run_manager_ptr_->initialize_restart(storfile);
+	}
+	catch (const exception &e)
+	{
+		err = 1;
+		_f_run_manager_error = e.what();
+	}
+	catch (char const *e)
+	{
+		err = 1;
+		_f_run_manager_error = e;
+	}
+	catch (const string e)
+	{
+		err = 1;
+		_f_run_manager_error = e;
+	}
+	catch (...)
+	{
+		err = 1;
+	}
+	return err;
+}
+
+
 int rmif_add_run_(double *parameter_data, int *npar, int *model_exe_index, int *id)
 {
-	_run_manager_error.clear();
+	_f_run_manager_error.clear();
 	int err = 0;
 	try {
 		vector<double> data(parameter_data, parameter_data+*npar);
@@ -117,17 +213,17 @@ int rmif_add_run_(double *parameter_data, int *npar, int *model_exe_index, int *
 	catch (const exception &e)
 	{
 		err = 1;
-		_run_manager_error = e.what();
+		_f_run_manager_error = e.what();
 	}
 	catch (char const *e)
 	{
 		err = 1;
-		_run_manager_error = e;
+		_f_run_manager_error = e;
 	}
 	catch (const string e)
 	{
 		err = 1;
-		_run_manager_error = e;
+		_f_run_manager_error = e;
 	}
 	catch(...)
 	{
@@ -136,10 +232,11 @@ int rmif_add_run_(double *parameter_data, int *npar, int *model_exe_index, int *
 	return err;
 }
 
-int rmif_add_run_with_info_(double *parameter_data, int *npar, int *model_exe_index, int *id,
-	char *f_info_txt, int  *info_txt_len, double *info_value)
+
+int rmif_add_run_with_info_(double *parameter_data, int *npar, int *model_exe_index,
+	char *f_info_txt, int  *info_txt_len, double *info_value, int *id)
 {
-	_run_manager_error.clear();
+	_f_run_manager_error.clear();
 	int err = 0;
 	try {
 		string info_txt = fortran_str_2_string(f_info_txt, *info_txt_len);
@@ -149,17 +246,17 @@ int rmif_add_run_with_info_(double *parameter_data, int *npar, int *model_exe_in
 	catch (const exception &e)
 	{
 		err = 1;
-		_run_manager_error = e.what();
+		_f_run_manager_error = e.what();
 	}
 	catch (char const *e)
 	{
 		err = 1;
-		_run_manager_error = e;
+		_f_run_manager_error = e;
 	}
 	catch (const string e)
 	{
 		err = 1;
-		_run_manager_error = e;
+		_f_run_manager_error = e;
 	}
 	catch (...)
 	{
@@ -168,101 +265,10 @@ int rmif_add_run_with_info_(double *parameter_data, int *npar, int *model_exe_in
 	return err;
 }
 
-int rmif_initialize_(char *f_pname, int  *pname_str_len, int *pname_array_len,
-				 char *f_oname, int  *oname_str_len, int *oname_array_len)
-
-{
-	_run_manager_error.clear();
-	int err = 0;
-	try {
-		vector<string> pname_vec =  fortran_str_array_2_vec(f_pname, *pname_str_len, *pname_array_len);
-		vector<string> oname_vec =  fortran_str_array_2_vec(f_oname, *oname_str_len, *oname_array_len);
-		_run_manager_ptr_->initialize(pname_vec, oname_vec);
-	}
-	catch (const exception &e)
-	{
-		err = 1;
-		_run_manager_error = e.what();
-	}
-	catch (char const *e)
-	{
-		err = 1;
-		_run_manager_error = e;
-	}
-	catch (const string e)
-	{
-		err = 1;
-		_run_manager_error = e;
-	}
-	catch(...)
-	{
-		err = 1;
-	}
-	return err;
-}
-
-int rmif_initialize_restart_(char *f_storfile, int *storfile_len)
-{
-	_run_manager_error.clear();
-	int err = 0;
-	try {
-		string storfile =  fortran_str_2_string(f_storfile, *storfile_len);
-		_run_manager_ptr_->initialize_restart(storfile);
-	}
-	catch (const exception &e)
-	{
-		err = 1;
-		_run_manager_error = e.what();
-	}
-	catch (char const *e)
-	{
-		err = 1;
-		_run_manager_error = e;
-	}
-	catch (const string e)
-	{
-		err = 1;
-		_run_manager_error = e;
-	}
-	catch(...)
-	{
-		err = 1;
-	}
-	return err;
-}
-
-int rmif_reinitialize_()
-{
-	_run_manager_error.clear();
-    int err = 0;
-	try {
-	    _run_manager_ptr_->reinitialize();
-	}
-	catch (const exception &e)
-	{
-		err = 1;
-		_run_manager_error = e.what();
-	}
-	catch (char const *e)
-	{
-		err = 1;
-		_run_manager_error = e;
-	}
-	catch (const string e)
-	{
-		err = 1;
-		_run_manager_error = e;
-	}
-	catch(...)
-	{
-		err = 1;
-	}
-	return err;
-}
 
 int rmif_run_()
 {
-	_run_manager_error.clear();
+	_f_run_manager_error.clear();
 	int err = 0;
 	try {
 		_run_manager_ptr_->run();
@@ -270,17 +276,17 @@ int rmif_run_()
 	catch (const exception &e)
 	{
 		err = 1;
-		_run_manager_error = e.what();
+		_f_run_manager_error = e.what();
 	}
 	catch (char const *e)
 	{
 		err = 1;
-		_run_manager_error = e;
+		_f_run_manager_error = e;
 	}
 	catch (const string e)
 	{
 		err = 1;
-		_run_manager_error = e;
+		_f_run_manager_error = e;
 	}
 	catch(...)
 	{
@@ -289,9 +295,10 @@ int rmif_run_()
 	return err;
 }
 
+
 int rmif_run_until_(int *condition, int *no_ops, double *time_sec, int *return_cond)
 {
-	_run_manager_error.clear();
+	_f_run_manager_error.clear();
 	int err = 0;
 	RunManagerAbstract::RUN_UNTIL_COND enum_input_cond;
 	RunManagerAbstract::RUN_UNTIL_COND enum_return_cond;
@@ -302,17 +309,17 @@ int rmif_run_until_(int *condition, int *no_ops, double *time_sec, int *return_c
 	catch (const exception &e)
 	{
 		err = 1;
-		_run_manager_error = e.what();
+		_f_run_manager_error = e.what();
 	}
 	catch (char const *e)
 	{
 		err = 1;
-		_run_manager_error = e;
+		_f_run_manager_error = e;
 	}
 	catch (const string e)
 	{
 		err = 1;
-		_run_manager_error = e;
+		_f_run_manager_error = e;
 	}
 	catch (...)
 	{
@@ -322,38 +329,10 @@ int rmif_run_until_(int *condition, int *no_ops, double *time_sec, int *return_c
 	return err;
 }
 
-int rmif_cancel_run_(int *run_id)
-{
-	_run_manager_error.clear();
-	int err = 0;
-	try {
-		_run_manager_ptr_->cancel_run(*run_id);
-	}
-	catch (const exception &e)
-	{
-		err = 1;
-		_run_manager_error = e.what();
-	}
-	catch (char const *e)
-	{
-		err = 1;
-		_run_manager_error = e;
-	}
-	catch (const string e)
-	{
-		err = 1;
-		_run_manager_error = e;
-	}
-	catch (...)
-	{
-		err = 1;
-	}
-	return err;
-}
 
 int rmif_get_run_(int *run_id, double *parameter_data, int *npar, double *obs_data, int *nobs)
 {
-	_run_manager_error.clear();
+	_f_run_manager_error.clear();
 	int err = 1;
 	bool success = false;
 	size_t n_par = *npar;
@@ -365,19 +344,19 @@ int rmif_get_run_(int *run_id, double *parameter_data, int *npar, double *obs_da
 	catch (const exception &e)
 	{
 		err = 1;
-		_run_manager_error = e.what();
+		_f_run_manager_error = e.what();
 	}
 	catch (char const *e)
 	{
 		err = 1;
-		_run_manager_error = e;
+		_f_run_manager_error = e;
 	}
 	catch (const string e)
 	{
 		err = 1;
-		_run_manager_error = e;
+		_f_run_manager_error = e;
 	}
-	catch(...) {
+	catch (...) {
 		err = 1;
 	}
 	return err;
@@ -387,7 +366,7 @@ int rmif_get_run_(int *run_id, double *parameter_data, int *npar, double *obs_da
 int rmif_get_run_with_info_(int *run_id, double *parameter_data, int *npar, double *obs_data, int *nobs,
 	char *f_info_txt, int  *info_txt_len, double *info_value)
 {
-	_run_manager_error.clear();
+	_f_run_manager_error.clear();
 	int err = 1;
 	bool success = false;
 	size_t n_par = *npar;
@@ -401,17 +380,17 @@ int rmif_get_run_with_info_(int *run_id, double *parameter_data, int *npar, doub
 	catch (const exception &e)
 	{
 		err = 1;
-		_run_manager_error = e.what();
+		_f_run_manager_error = e.what();
 	}
 	catch (char const *e)
 	{
 		err = 1;
-		_run_manager_error = e;
+		_f_run_manager_error = e;
 	}
 	catch (const string e)
 	{
 		err = 1;
-		_run_manager_error = e;
+		_f_run_manager_error = e;
 	}
 	catch (...) {
 		err = 1;
@@ -420,9 +399,39 @@ int rmif_get_run_with_info_(int *run_id, double *parameter_data, int *npar, doub
 }
 
 
+int rmif_cancel_run_(int *run_id)
+{
+	_f_run_manager_error.clear();
+	int err = 0;
+	try {
+		_run_manager_ptr_->cancel_run(*run_id);
+	}
+	catch (const exception &e)
+	{
+		err = 1;
+		_f_run_manager_error = e.what();
+	}
+	catch (char const *e)
+	{
+		err = 1;
+		_f_run_manager_error = e;
+	}
+	catch (const string e)
+	{
+		err = 1;
+		_f_run_manager_error = e;
+	}
+	catch (...)
+	{
+		err = 1;
+	}
+	return err;
+}
+
+
 int rmif_get_run_info_(int *run_id, int *run_status, int *model_exe_index, char *f_info_txt, int  *info_txt_len, double *info_value)
 {
-	_run_manager_error.clear();
+	_f_run_manager_error.clear();
 	int err = 1;
 	try {
 		string info_txt;
@@ -432,17 +441,17 @@ int rmif_get_run_info_(int *run_id, int *run_status, int *model_exe_index, char 
 	catch (const exception &e)
 	{
 		err = 1;
-		_run_manager_error = e.what();
+		_f_run_manager_error = e.what();
 	}
 	catch (char const *e)
 	{
 		err = 1;
-		_run_manager_error = e;
+		_f_run_manager_error = e;
 	}
 	catch (const string e)
 	{
 		err = 1;
-		_run_manager_error = e;
+		_f_run_manager_error = e;
 	}
 	catch (...) {
 		err = 1;
@@ -450,9 +459,10 @@ int rmif_get_run_info_(int *run_id, int *run_status, int *model_exe_index, char 
 	return err;
 }
 
-int rmif_get_run_status_info_(int *run_id, int *run_status, double *max_runtime, int* n_concurrent_runs)
+
+int rmif_get_run_status_(int *run_id, int *run_status, double *max_runtime, int* n_concurrent_runs)
 {
-	_run_manager_error.clear();
+	_f_run_manager_error.clear();
 	int err = 1;
 	try {
 		_run_manager_ptr_->get_run_status_info(*run_id, *run_status, *max_runtime, *n_concurrent_runs);
@@ -461,17 +471,17 @@ int rmif_get_run_status_info_(int *run_id, int *run_status, double *max_runtime,
 	catch (const exception &e)
 	{
 		err = 1;
-		_run_manager_error = e.what();
+		_f_run_manager_error = e.what();
 	}
 	catch (char const *e)
 	{
 		err = 1;
-		_run_manager_error = e;
+		_f_run_manager_error = e;
 	}
 	catch (const string e)
 	{
 		err = 1;
-		_run_manager_error = e;
+		_f_run_manager_error = e;
 	}
 	catch (...) {
 		err = 1;
@@ -479,38 +489,10 @@ int rmif_get_run_status_info_(int *run_id, int *run_status, double *max_runtime,
 	return err;
 }
 
-int rmif_delete_()
-{
-	_run_manager_error.clear();
-	int err = 0;
-	try {
-		delete _run_manager_ptr_;
-	}
-	catch (const exception &e)
-	{
-		err = 1;
-		_run_manager_error = e.what();
-	}
-	catch (char const *e)
-	{
-		err = 1;
-		_run_manager_error = e;
-	}
-	catch (const string e)
-	{
-		err = 1;
-		_run_manager_error = e;
-	}
-		catch(...)
-	{
-		err = 1;
-	}
-	return err;
-}
 
-int rmif_get_num_failed_runs_(int *nfail)
+int rmif_get_n_failed_runs_(int *nfail)
 {
-	_run_manager_error.clear();
+	_f_run_manager_error.clear();
     int err = 0;
 	*nfail = -999;
 	try
@@ -521,17 +503,17 @@ int rmif_get_num_failed_runs_(int *nfail)
 	catch (const exception &e)
 	{
 		err = 1;
-		_run_manager_error = e.what();
+		_f_run_manager_error = e.what();
 	}
 	catch (char const *e)
 	{
 		err = 1;
-		_run_manager_error = e;
+		_f_run_manager_error = e;
 	}
 	catch (const string e)
 	{
 		err = 1;
-		_run_manager_error = e;
+		_f_run_manager_error = e;
 	}
     catch(...)
 	{
@@ -540,9 +522,10 @@ int rmif_get_num_failed_runs_(int *nfail)
 	return err;
 }
 
+
 int rmif_get_failed_run_ids_(int *run_id_array, int *len_run_id_array)
 {
-	_run_manager_error.clear();
+	_f_run_manager_error.clear();
     int err = 0;
     try
 	{
@@ -554,17 +537,17 @@ int rmif_get_failed_run_ids_(int *run_id_array, int *len_run_id_array)
 	catch (const exception &e)
 	{
 		err = 1;
-		_run_manager_error = e.what();
+		_f_run_manager_error = e.what();
 	}
 	catch (char const *e)
 	{
 		err = 1;
-		_run_manager_error = e;
+		_f_run_manager_error = e;
 	}
 	catch (const string e)
 	{
 		err = 1;
-		_run_manager_error = e;
+		_f_run_manager_error = e;
 	}
     catch(...)
 	{
@@ -573,9 +556,40 @@ int rmif_get_failed_run_ids_(int *run_id_array, int *len_run_id_array)
 	return err;
 }
 
-int rmif_get_num_total_runs_(int *nruns)
+
+int rmif_get_n_cur_runs(int *nruns)
 {
-	_run_manager_error.clear();
+	_f_run_manager_error.clear();
+	int err = 0;
+	try {
+		*nruns = _run_manager_ptr_->get_nruns();
+	}
+	catch (const exception &e)
+	{
+		err = 1;
+		_f_run_manager_error = e.what();
+	}
+	catch (char const *e)
+	{
+		err = 1;
+		_f_run_manager_error = e;
+	}
+	catch (const string e)
+	{
+		err = 1;
+		_f_run_manager_error = e;
+	}
+	catch (...)
+	{
+		err = 1;
+	}
+	return err;
+}
+
+
+int rmif_get_n_total_runs_(int *nruns)
+{
+	_f_run_manager_error.clear();
     int err = 0;
     try {
         *nruns = _run_manager_ptr_->get_total_runs();
@@ -583,19 +597,49 @@ int rmif_get_num_total_runs_(int *nruns)
 	catch (const exception &e)
 	{
 		err = 1;
-		_run_manager_error = e.what();
+		_f_run_manager_error = e.what();
 	}
 	catch (char const *e)
 	{
 		err = 1;
-		_run_manager_error = e;
+		_f_run_manager_error = e;
 	}
 	catch (const string e)
 	{
 		err = 1;
-		_run_manager_error = e;
+		_f_run_manager_error = e;
 	}
     catch(...)
+	{
+		err = 1;
+	}
+	return err;
+}
+
+
+int rmif_delete_()
+{
+	_f_run_manager_error.clear();
+	int err = 0;
+	try {
+		delete _run_manager_ptr_;
+	}
+	catch (const exception &e)
+	{
+		err = 1;
+		_f_run_manager_error = e.what();
+	}
+	catch (char const *e)
+	{
+		err = 1;
+		_f_run_manager_error = e;
+	}
+	catch (const string e)
+	{
+		err = 1;
+		_f_run_manager_error = e;
+	}
+	catch (...)
 	{
 		err = 1;
 	}

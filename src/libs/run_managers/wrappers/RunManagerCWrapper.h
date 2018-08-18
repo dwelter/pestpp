@@ -32,6 +32,11 @@ extern "C"
 #ifdef OS_WIN
 	extern __declspec(dllexport)
 #endif
+		int rmic_err_msg(char *err_msg, int max_len);
+
+#ifdef OS_WIN
+	extern __declspec(dllexport)
+#endif
 		int rmic_initialize(RunManager *run_manager_ptr,
 			char **pname, int pname_array_len,
 			char **oname, int oname_array_len);
@@ -44,7 +49,18 @@ extern "C"
 #ifdef OS_WIN
 	extern __declspec(dllexport)
 #endif
+		int rmic_intialize_restart(RunManager *run_manager_ptr, char *store_filename);
+
+#ifdef OS_WIN
+	extern __declspec(dllexport)
+#endif
 		int rmic_add_run(RunManager *run_manager_ptr, double *parameter_data, int npar, int model_exe_index, int *id);
+
+#ifdef OS_WIN
+	extern __declspec(dllexport)
+#endif
+		int rmic_add_run_with_info(RunManager *run_manager_ptr, double *parameter_data, int npar, 
+			int model_exe_index, char *info_txt, double info_value, int *id);
 
 #ifdef OS_WIN
 	extern __declspec(dllexport)
@@ -74,13 +90,13 @@ extern "C"
 #ifdef OS_WIN
 	extern __declspec(dllexport)
 #endif
+		int rmic_get_run_with_info(RunManager *run_manager_ptr, int run_id, double *parameter_data, int npar, double *obs_data, int nobs, char *info_text, double);
+
+#ifdef OS_WIN
+	extern __declspec(dllexport)
+#endif
 		int rmic_get_num_failed_runs(RunManager *run_manager_ptr, int *nfail);
 
-	//*************************************************************************************
-	//******************************** IMPORTANT ******************************************
-	//The calling program is resposible for freeing the memory associated with run_id_array 
-	//after calling this function by involking delete[] run_id_array
-	//*************************************************************************************
 #ifdef OS_WIN
 	extern __declspec(dllexport)
 #endif
@@ -94,12 +110,12 @@ extern "C"
 #ifdef OS_WIN
 	extern __declspec(dllexport)
 #endif
-		int rmic_get_nruns(RunManager *run_manager_ptr, int *nruns);
+		int rmic_get_n_cur_runs(RunManager *run_manager_ptr, int *nruns);
 
 #ifdef OS_WIN
 	extern __declspec(dllexport)
 #endif
-		int rmic_get_total_runs(RunManager *run_manager_ptr, int *total_runs);
+		int rmic_get_n_total_runs(RunManager *run_manager_ptr, int *total_runs);
 
 #ifdef OS_WIN
 	extern __declspec(dllexport)

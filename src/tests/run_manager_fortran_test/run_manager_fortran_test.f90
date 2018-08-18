@@ -37,14 +37,14 @@
     integer rmif_cancel_run
     external rmif_get_run
     integer rmif_get_run
-    external rmif_get_num_failed_runs
-    integer rmif_get_num_failed_runs
+    external rmif_get_n_failed_runs
+    integer rmif_get_n_failed_runs
     external rmif_get_failed_run_ids
     integer rmif_get_failed_run_ids
-    external rmif_get_num_total_runs
-    integer rmif_get_num_total_runs
-    external rmif_get_run_status_info
-    integer rmif_get_run_status_info
+    external rmif_get_n_total_runs
+    integer rmif_get_n_total_runs
+    external rmif_get_run_status
+    integer rmif_get_run_status
     
     external rmif_initialize_restart
     integer rmif_initialize_restart
@@ -147,7 +147,7 @@
     end do
     ! show how to catch error and retrieve the associated error message
     ! 50 is not a valid model run id so the follow call should fail
-    err = rmif_get_run_status_info(50, istatus, runtime, n_concurrent)
+    err = rmif_get_run_status(50, istatus, runtime, n_concurrent)
     if (err.ne.0) then
         err = rmif_err_msg(err_msg, 100)
         write(*,*) err_msg
@@ -177,7 +177,7 @@
         ! check and print status of model runs
         write(*,*) '  ------------------- Status of Model Runs ----------------- '
         do irun = 0, nruns-1
-            err = rmif_get_run_status_info(irun, istatus, runtime, n_concurrent)
+            err = rmif_get_run_status(irun, istatus, runtime, n_concurrent)
             write(*,*) '    run_id: ', irun, '  istatus: ', istatus, '  runtime: ', runtime, ' num concurrent runs: ', n_concurrent
         end do
          write(*,*) '  ------------------------------------------------------------'
@@ -188,7 +188,7 @@
        err = rmif_cancel_run(run_id)
     end do
     ! get number of failed model runs
-    err = rmif_get_num_failed_runs(nfail)
+    err = rmif_get_n_failed_runs(nfail)
     write(*,*) 'Number of failed runs: ', nfail
     err = rmif_get_failed_run_ids(failed_run_ids, 100)
     do irun = 1, nfail
@@ -216,7 +216,7 @@
         endif
     end do
     
-    err = rmif_get_num_total_runs(n_total_runs)
+    err = rmif_get_n_total_runs(n_total_runs)
     write(*,*) ''
     write(*,*) 'Total number of successful model runs:', n_total_runs
     
@@ -234,7 +234,7 @@
     ! check and print status of model runs
         write(*,*) '  ------------------- Status of Model Runs ----------------- '
         do irun = 0, nruns-1
-            err = rmif_get_run_status_info(irun, istatus, runtime, n_concurrent)
+            err = rmif_get_run_status(irun, istatus, runtime, n_concurrent)
             write(*,*) '    run_id: ', irun, '  istatus: ', istatus, '  runtime: ', runtime, ' num concurrent runs: ', n_concurrent
         end do
     
@@ -249,7 +249,7 @@
     
     err = rmif_get_run(0, pars,npar, obs, nobs)
     
-    err = rmif_get_num_total_runs(n_total_runs)
+    err = rmif_get_n_total_runs(n_total_runs)
     write(*,*) ''
     write(*,*) 'Total number of successful model runs:', n_total_runs
     
