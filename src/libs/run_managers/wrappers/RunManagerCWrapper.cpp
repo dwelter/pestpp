@@ -95,10 +95,9 @@ RunManager* rmic_create_panther(char *storfile,
 	return run_manager_ptr;
 }
 
-int rmic_err_msg(char *err_msg, int max_len)
+const char* rmic_err_msg()
 {
-	int err = 0;
-	return err;
+	return _c_run_manager_error.c_str();
 }
 
 
@@ -386,10 +385,44 @@ int rmic_get_run(RunManager *run_manager_ptr, int run_id, double *parameter_data
 {
 	_c_run_manager_error.clear();
 	int err = 1;
+	try
+	{
+		bool success;
+		success = run_manager_ptr->get_run(run_id, parameter_data, npar, obs_data, nobs);
+		if (success) err = 0;
+	}
+	catch (const exception &e)
+	{
+		err = 1;
+		_c_run_manager_error = e.what();
+	}
+	catch (char const *e)
+	{
+		err = 1;
+		_c_run_manager_error = e;
+	}
+	catch (const string e)
+	{
+		err = 1;
+		_c_run_manager_error = e;
+	}
+	catch (...)
+	{
+		err = 1;
+	}
+	return err;
+}
+
+int rmic_get_run_with_info(RunManager *run_manager_ptr, int run_id, double *parameter_data, int npar, double *obs_data, int nobs, char *info_txt, int info_txt_len, double info_value)
+{
+	_c_run_manager_error.clear();
+	int err = 1;
 	try 
 	{
 	   bool success;
-	   success = run_manager_ptr->get_run(run_id, parameter_data, npar, obs_data, nobs);
+	   string info_txt_str;
+	   success = run_manager_ptr->get_run(run_id, parameter_data, npar, obs_data, nobs, info_txt_str, info_value);
+	   snprintf(info_txt, info_txt_len, info_txt_str.c_str());
 	   if (success) err = 0;
 	}
 	catch (const exception &e)
@@ -414,7 +447,8 @@ int rmic_get_run(RunManager *run_manager_ptr, int run_id, double *parameter_data
 	return err;
 }
 
-int rmic_get_num_failed_runs(RunManager *run_manager_ptr, int *nfail)
+
+int rmic_get_n_failed_runs(RunManager *run_manager_ptr, int *nfail)
 {
 	_c_run_manager_error.clear();
 	int err = 0;
@@ -446,7 +480,7 @@ int rmic_get_num_failed_runs(RunManager *run_manager_ptr, int *nfail)
 	return err;
 }
 
-int rmic_get_failed_runs_alloc(RunManager *run_manager_ptr, int *run_id_array, int *nfail)
+int rmic_get_failed_run_ids_alloc(RunManager *run_manager_ptr, int *run_id_array, int *nfail)
 {
 	_c_run_manager_error.clear();
     int err = 0;
@@ -481,7 +515,7 @@ int rmic_get_failed_runs_alloc(RunManager *run_manager_ptr, int *run_id_array, i
 	return err;
 }
 
-int rmic_get_failed_runs_n(RunManager *run_manager_ptr, int *run_id_array, int nfail)
+int rmic_get_failed_run_ids(RunManager *run_manager_ptr, int *run_id_array, int nfail)
 {
 	_c_run_manager_error.clear();
     int err = 0;
@@ -516,7 +550,7 @@ int rmic_get_failed_runs_n(RunManager *run_manager_ptr, int *run_id_array, int n
 
 
 
-int rmic_get_nruns(RunManager *run_manager_ptr, int *nruns)
+int rmic_get_n_cur_runs(RunManager *run_manager_ptr, int *nruns)
 {
 	_c_run_manager_error.clear();
     int err = 0;
@@ -545,7 +579,7 @@ int rmic_get_nruns(RunManager *run_manager_ptr, int *nruns)
 	return err;
 }
 
-int rmic_get_total_runs(RunManager *run_manager_ptr, int *total_runs)
+int rmic_get_n_total_runs(RunManager *run_manager_ptr, int *total_runs)
 {
 	_c_run_manager_error.clear();
     int err = 0;

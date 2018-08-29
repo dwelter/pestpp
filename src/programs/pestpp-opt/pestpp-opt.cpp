@@ -16,7 +16,6 @@
 #include "FileManager.h"
 #include "TerminationController.h"
 #include "RunManagerSerial.h"
-#include "RunManagerExternal.h"
 #include "OutputFileWriter.h"
 #include "PantherSlave.h"
 #include "Serialization.h"
@@ -97,11 +96,11 @@ int main(int argc, char* argv[])
 		string next_item;
 		string socket_str = "";
 		//Check for external run manager
-		it_find = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/e");
-		if (it_find != cmd_arg_vec.end())
-		{
-			run_manager_type = RunManagerType::EXTERNAL;
-		}
+		//it_find = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/e");
+		//if (it_find != cmd_arg_vec.end())
+		//{
+		//	run_manager_type = RunManagerType::EXTERNAL;
+		//}
 		//Check for PANTHER worker
 		it_find = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/h");
 		next_item.clear();
@@ -281,15 +280,15 @@ int main(int argc, char* argv[])
 				pest_scenario.get_pestpp_options().get_overdue_reched_fac(),
 				pest_scenario.get_pestpp_options().get_overdue_giveup_fac());
 		}
-		else if (run_manager_type == RunManagerType::EXTERNAL)
-		{
-			const ModelExecInfo &exi = pest_scenario.get_model_exec_info();
-			run_manager_ptr = new RunManagerExternal(exi.comline_vec,
-				exi.tplfile_vec, exi.inpfile_vec, exi.insfile_vec, exi.outfile_vec,
-				file_manager.build_filename("rns"), file_manager.build_filename("ext"),
-				file_manager.build_filename("exi"),
-				pest_scenario.get_pestpp_options().get_max_run_fail());
-		}
+		//else if (run_manager_type == RunManagerType::EXTERNAL)
+		//{
+		//	const ModelExecInfo &exi = pest_scenario.get_model_exec_info();
+		//	run_manager_ptr = new RunManagerExternal(exi.comline_vec,
+		//		exi.tplfile_vec, exi.inpfile_vec, exi.insfile_vec, exi.outfile_vec,
+		//		file_manager.build_filename("rns"), file_manager.build_filename("ext"),
+		//		file_manager.build_filename("exi"),
+		//		pest_scenario.get_pestpp_options().get_max_run_fail());
+		//}
 		else
 		{
 			performance_log.log_event("starting basic model IO error checking", 1);

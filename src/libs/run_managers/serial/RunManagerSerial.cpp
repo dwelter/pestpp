@@ -49,21 +49,24 @@ RunManagerSerial::RunManagerSerial(const vector<string> _comline_vec,
 
 void RunManagerSerial::run()
 {
+	ofstream fout_test("C:\\Users\\Dave\\Documents\\GitHub\\pestpp\\benchmarks\\stor\\test\\test_log.txt");
 	int success_runs = 0;
 	int prev_sucess_runs = 0;
 	const vector<string> &par_name_vec = file_stor.get_par_name_vec();
 	const vector<string> &obs_name_vec = file_stor.get_obs_name_vec();
-	
+	fout_test << "a9" << endl;
 	stringstream message;		
 	std::vector<double> obs_vec;
 	vector<int> run_id_vec;
 	int nruns = get_outstanding_run_ids().size();
+	fout_test << "a10" << endl;
 	while (!(run_id_vec = get_outstanding_run_ids()).empty())
 	{
 		for (int i_run : run_id_vec)
 		{						
 			try 
 			{
+				fout_test << "a20" << endl;
 				Observations obs;
 				vector<double> par_values;
 				Parameters pars;
@@ -72,12 +75,18 @@ void RunManagerSerial::run()
 				obs_vec.resize(obs_name_vec.size(), RunStorage::no_data);
 				obs.clear();
 				obs.insert(obs_name_vec, obs_vec);
+				fout_test << "a21" << endl;
+				// cd to specified run directory
+				string cwd = OperSys::getcwd();
+				OperSys::chdir(run_dir.c_str());
+				fout_test << "a25" << endl;
 				mi.run(&pars, &obs, model_exe_index);
+				fout_test << "a26" << endl;
+				OperSys::chdir(cwd.c_str());
 				std::cout << string(message.str().size(), '\b');
 				message.str("");
 				message << "(" << success_runs << "/" << nruns << " runs complete)";
 				std::cout << message.str();
-				OperSys::chdir(run_dir.c_str());
 				success_runs += 1;
 				file_stor.update_run(i_run, pars, obs);
 
@@ -118,6 +127,7 @@ void RunManagerSerial::run()
 		vector<double> pars;
 		int status = file_stor.get_run(0, pars, init_sim);
 	}
+	fout_test.close();
 }
 
 

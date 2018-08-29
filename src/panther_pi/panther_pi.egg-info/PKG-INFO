@@ -1,0 +1,14 @@
+Metadata-Version: 2.1
+Name: panther-pi
+Version: 0.0.1
+Summary: PANTHER parallel run manger Python interface
+Home-page: https://github.com/pypa/sampleproject
+Author: Dave Welter
+Author-email: dave@inversemodeler.com
+License: UNKNOWN
+Description: This Package contains the Python iterface for the PANTHER parallel run manager.
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: MIT License
+Classifier: Operating System :: Windows x64
+Description-Content-Type: text/markdown

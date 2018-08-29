@@ -15,9 +15,11 @@ main()
 	int npar = 3;
 	int nobs = 16;
 	char **p_names = (char*[]) { "recharge", "cond", "scoeff" };
-	char **o_names = (char*[]) { "head1", "head2", "head3", "head4", "head5",
-		"head6", "head7", "head8", "head9", "head10", "head11", "head12",
-		"head13", "head14", "head15", "head16" };
+	char **o_names = (char*[]) {
+		"head1", "head2", "head3", "head4", "head5",
+			"head6", "head7", "head8", "head9", "head10", "head11", "head12",
+			"head13", "head14", "head15", "head16"
+	};
 	double pars[3] = { 0.1, .005, .05 };
 	double bad_pars[3] = { 0.1, -9.0e9, .05 };
 
@@ -27,7 +29,14 @@ main()
 	printf("please enter port:\n");
 	scanf("%s", &port);
 	printf("%s\n", port);
-	run_mng = rmic_create_panther(storfile, port, rmi_info_file, 2, 1.15, 100.0);
+	/* run_mng = rmic_create_panther(storfile, port, rmi_info_file, 2, 1.15, 100.0); */
+	char **command_line = (char *[]){ ".\\exe\\storage1.exe" };
+	char **tpl = (char *[]){ ".\\misc\\input.tpl" };
+	char **inp = (char *[]){ ".\\input.dat" };
+	char **ins = (char *[]){ ".\\misc\\output.ins" };
+	char **out = (char *[]){ ".\\output.dat" };
+	char *run_dir = "C:\\Users\\Dave\\Documents\\GitHub\\pestpp\\benchmarks\\stor\\test";
+	run_mng = rmic_create_serial(command_line, 1, tpl, 1, inp, 1, ins, 1, out, 1, storfile,run_dir, 1);
 
 	/* intitialize run manager - allocate memory initialize parameter and observation names */
 	err = rmic_initialize(run_mng, p_names, npar, o_names, nobs);

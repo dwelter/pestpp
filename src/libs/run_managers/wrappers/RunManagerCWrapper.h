@@ -32,7 +32,7 @@ extern "C"
 #ifdef OS_WIN
 	extern __declspec(dllexport)
 #endif
-		int rmic_err_msg(char *err_msg, int max_len);
+		const char* rmic_err_msg();
 
 #ifdef OS_WIN
 	extern __declspec(dllexport)
@@ -49,7 +49,7 @@ extern "C"
 #ifdef OS_WIN
 	extern __declspec(dllexport)
 #endif
-		int rmic_intialize_restart(RunManager *run_manager_ptr, char *store_filename);
+		int rmic_initialize_restart_(RunManager *run_manager_ptr, char *store_filename);
 
 #ifdef OS_WIN
 	extern __declspec(dllexport)
@@ -70,7 +70,7 @@ extern "C"
 #ifdef OS_WIN
 	extern __declspec(dllexport)
 #endif
-		int rmic_run_until(RunManager *run_manager_ptr, int condition, int n_nops, double sec, int * return_cond);
+		int rmic_run_until(RunManager *run_manager_ptr, int condition, int no_ops, double time_sec, int * return_cond);
 
 #ifdef OS_WIN
 	extern __declspec(dllexport)
@@ -90,22 +90,22 @@ extern "C"
 #ifdef OS_WIN
 	extern __declspec(dllexport)
 #endif
-		int rmic_get_run_with_info(RunManager *run_manager_ptr, int run_id, double *parameter_data, int npar, double *obs_data, int nobs, char *info_text, double);
+		int rmic_get_run_with_info(RunManager *run_manager_ptr, int run_id, double *parameter_data, int npar, double *obs_data, int nobs, char *info_txt, int info_txt_len, double info_value);
 
 #ifdef OS_WIN
 	extern __declspec(dllexport)
 #endif
-		int rmic_get_num_failed_runs(RunManager *run_manager_ptr, int *nfail);
+		int rmic_get_n_failed_runs(RunManager *run_manager_ptr, int *nfail);
 
 #ifdef OS_WIN
 	extern __declspec(dllexport)
 #endif
-		int rmic_get_failed_runs_alloc(RunManager *run_manager_ptr, int *run_id_array, int *nfail);
+		int rmic_get_failed_run_ids_alloc(RunManager *run_manager_ptr, int *run_id_array, int *nfail);
 
 #ifdef OS_WIN
 	extern __declspec(dllexport)
 #endif
-		int rmic_get_failed_runs_n(RunManager *run_manager_ptr, int *run_id_array, int nfail);
+		int rmic_get_failed_run_ids(RunManager *run_manager_ptr, int *run_id_array, int nfail);
 
 #ifdef OS_WIN
 	extern __declspec(dllexport)
