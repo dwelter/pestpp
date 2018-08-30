@@ -258,7 +258,9 @@
     <ClCompile Include="network_package.cpp" />
     <ClCompile Include="network_wrapper.cpp" />
     <ClCompile Include="pest_error.cpp" />
-    <ClCompile Include="system_variables.cpp" />
+    <ClCompile Include="system_variables.cpp">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+    </ClCompile>
     <ClCompile Include="Transformable.cpp" />
     <ClCompile Include="utilities.cpp" />
   </ItemGroup>
