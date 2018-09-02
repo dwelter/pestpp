@@ -70,7 +70,7 @@ extern "C"
 #ifdef OS_WIN
 	extern __declspec(dllexport)
 #endif
-		int rmic_run_until(RunManager *run_manager_ptr, int condition, int no_ops, double time_sec, int * return_cond);
+		int rmic_run_until(RunManager *run_manager_ptr, int condition, int no_ops, double time_sec, int *return_cond);
 
 #ifdef OS_WIN
 	extern __declspec(dllexport)
@@ -80,7 +80,12 @@ extern "C"
 #ifdef OS_WIN
 	extern __declspec(dllexport)
 #endif
-		int rmic_get_run_status_info(RunManager *run_manager_ptr, int run_id, int *run_status, double *max_runtime, int *n_concurrent_runs);
+		int rmic_get_run_status(RunManager *run_manager_ptr, int run_id, int *run_status, double *max_runtime, int *n_concurrent_runs);
+
+#ifdef OS_WIN
+	extern __declspec(dllexport)
+#endif
+		int rmic_get_run_info(RunManager *run_manager_ptr, int run_id, int *run_status, int *model_exe_index, char *info_txt, int info_txt_len, double *info_value);
 
 #ifdef OS_WIN
 	extern __declspec(dllexport)

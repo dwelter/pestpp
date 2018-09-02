@@ -259,11 +259,12 @@ int rmic_run(RunManager *run_manager_ptr)
 
 
 int rmic_add_run_with_info(RunManager *run_manager_ptr, double *parameter_data, int npar,
-int model_exe_index, char *info_txt, double info_value, int *id)
+int model_exe_index, char *c_info_txt, double info_value, int *id)
 {
 	_c_run_manager_error.clear();
 	int err = 0;
 	try {
+		string info_txt;
 		vector<double> data(parameter_data, parameter_data + npar);
 		*id = run_manager_ptr->add_run(data, model_exe_index, info_txt, info_value);
 	}
@@ -352,12 +353,42 @@ int rmic_cancel_run(RunManager *run_manager_ptr, int run_id)
 	return err;
 }
 
-int rmic_get_run_status_info(RunManager *run_manager_ptr, int run_id, int *run_status, double *max_runtime, int *n_concurrent_runs)
+int rmic_get_run_status(RunManager *run_manager_ptr, int run_id, int *run_status, double *max_runtime, int *n_concurrent_runs)
 {
 	_c_run_manager_error.clear();
 	int err = 0;
 	try {
 		run_manager_ptr->get_run_status_info(run_id, *run_status, *max_runtime, *n_concurrent_runs);
+	}
+	catch (const exception &e)
+	{
+		err = 1;
+		_c_run_manager_error = e.what();
+	}
+	catch (char const *e)
+	{
+		err = 1;
+		_c_run_manager_error = e;
+	}
+	catch (const string e)
+	{
+		err = 1;
+		_c_run_manager_error = e;
+	}
+	catch (...)
+	{
+		err = 1;
+	}
+	return err;
+}
+int rmic_get_run_info(RunManager *run_manager_ptr, int run_id, int *run_status, int *model_exe_index, char *info_txt, int info_txt_len, double *info_value)
+{
+	_c_run_manager_error.clear();
+	int err = 0;
+	try {
+		string info_txt_str;
+		run_manager_ptr->get_info(run_id, *run_status, *model_exe_index, info_txt_str, *info_value);
+		snprintf(info_txt, info_txt_len, info_txt_str.c_str());
 	}
 	catch (const exception &e)
 	{

@@ -42,11 +42,13 @@ int RMIF_GET_RUN_WITH_INFO(int *run_id, double *parameter_data, int *npar, doubl
 
 int RMIF_CANCEL_RUN(int *run_id);
 
-int RMIF_GET_RUN_INFO(int run_id, int *run_status, int *model_exe_index, char *f_info_txt, int  *info_txt_len, double *info_value);
+int RMIF_GET_RUN_INFO(int run_id, int *run_status, int *model_exe_index, char *info_txt, int  *info_txt_len, double *info_value);
 
 int RMIF_GET_RUN_STATUS(int *run_id, int* run_status, double *max_runtime, int *n_concurrent_runs);
 
 int RMIF_GET_N_FAILED_RUNS(int *nfail);
+
+int RMIF_GET_N_CUR_RUNS(int *nruns);
 
 int RMIF_GET_FAILED_RUN_IDS(int *run_id_array, int *len_run_id_array);
 

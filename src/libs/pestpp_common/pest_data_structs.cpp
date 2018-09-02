@@ -405,7 +405,7 @@ void PestppOptions::parce_line(const string &line)
 			else if (value == "REDSVD")
 				svd_pack = REDSVD;
 			else if ((value == "EIGEN") || (value == "JACOBI"))
-				svd_pack == EIGEN;
+				svd_pack = EIGEN;
 			else
 				throw PestParsingError(line, "Invalid ++svd_pack: \"" + value + "\"");
 

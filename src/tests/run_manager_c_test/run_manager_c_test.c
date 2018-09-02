@@ -58,7 +58,7 @@ main()
 		int status;
 		double runtime;
 		int n_concurrent;
-		err = rmic_get_run_status_info(run_mng, irun, &status, &runtime, &n_concurrent);
+		err = rmic_get_run_status(run_mng, irun, &status, &runtime, &n_concurrent);
 		printf("    run_id = %d;   status = %d;   runtime = %f; concurrent = %d\n", irun, status, runtime, n_concurrent);
 	}
 	printf("  ------------------------------------------------------------ \n");
@@ -93,7 +93,7 @@ main()
 			int status;
 			double runtime;
 			int n_concurrent;
-			err = rmic_get_run_status_info(run_mng, irun, &status, &runtime, &n_concurrent);
+			err = rmic_get_run_status(run_mng, irun, &status, &runtime, &n_concurrent);
 			printf("    run_id = %d;   status = %d;   runtime = %f; concurrent = %d\n", irun, status, runtime, n_concurrent);
 		}
 		printf("  ------------------------------------------------------------ \n");

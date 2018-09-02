@@ -3,7 +3,7 @@ README.md
 setup.py
 panther_pi/__init__.py
 panther_pi/panther_pi.py
-panther_pi/wrappers.dll
+panther_pi/wrappers.lib
 panther_pi.egg-info/PKG-INFO
 panther_pi.egg-info/SOURCES.txt
 panther_pi.egg-info/dependency_links.txt

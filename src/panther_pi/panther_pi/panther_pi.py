@@ -69,7 +69,7 @@ class panther:
         self.par_names = copy.deepcopy(par_names)
         self.obs_names = copy.deepcopy(obs_names)
         func = self.runlib.rmic_initialize
-        func.argtypes = [ ct.c_void_p,,
+        func.argtypes = [ ct.c_void_p,
                           ct.POINTER(ct.c_char_p), ct.c_int,
                           ct.POINTER(ct.c_char_p), ct.c_int ]
         func.restype = ct.c_int
@@ -112,13 +112,13 @@ class panther:
             raise PantherError('panther error in function panther.add_run(): error number = %d\n %s' % (err, err_msg()))
         return run_id.value
     
-    def add_run_with_info(self, par_data, model_exe_index. info_txt, info_value):
+    def add_run_with_info(self, par_data, model_exe_index, info_txt, info_value):
         func = self.runlib.rmic_add_run_with_info
         func.argtypes = [ct.c_void_p, ct.POINTER(ct.c_double), ct.c_int, ct.c_int,
                          ct.c_char_p, ct.c_double, ct.POINTER(ct.c_int)]
         func.restype = ct.c_int
         n_par = ct.c_int(par_data.size)
-        model_exe_index_c = ct.c_int(model_exe_index()
+        model_exe_index_c = ct.c_int(model_exe_index)
         info_txt_c = self.string2c(info_txt)
         info_value_c = ct.c_double(info_value)
         run_id =  ct.c_int(-1)

@@ -1,1 +1,5 @@
-python setup.py bdist_wheelpython
+python setup.py bdist_wheel
+
+pip install panther_pi-0.0.1-py3-none-any.whl
+
+
