@@ -1,10 +1,12 @@
+#define MAX_PAR_NAME_LEN 200
+#define MAX_OBS_NAME_LEN 200      
 module model_input_output_interface
       use iso_c_binding
       external hash_add_table
       external hash_which1_lower
       external hash_free
       private
-       
+      
 ! -- Variables
 
 ! -- Size
@@ -48,8 +50,8 @@ module model_input_output_interface
 
       character (len=200)                :: afile        ! Temporary character storage
       character (len=80)                 :: errsub       ! Character string for error header
-      character*500               :: amessage=' ' ! Error message string
-      character (len=20000)               :: dline        ! Character string for text storage
+      character*500                      :: amessage=' ' ! Error message string
+      character (len=20000)              :: dline        ! Character string for text storage
 
 ! -- SUBROUTINES
 
@@ -461,15 +463,15 @@ subroutine mio_process_template_files(ifail,npar,apar)
         integer, intent(out)                :: ifail ! indicates error condition
         integer, intent(in)                 :: npar  ! number of parameters
         !character (len=*), dimension(npar)  :: apar  ! parameter names
-        character*50  :: apar(npar)
+        character*MAX_PAR_NAME_LEN  :: apar(npar)
 !! Note that parameter names must be supplied in lower case.
         
         integer                             :: ipar,i,ierr,iline,nblc,j2,j1,jfail,nnw,iunit
         integer tpar_len
         character (len=10)                  :: aline
-        character (len=50)                  :: tpar
+        character (len=MAX_PAR_NAME_LEN)    :: tpar
         type(c_ptr) cptr
-        tpar_len = 50
+        tpar_len = MAX_PAR_NAME_LEN
         errsub='Error in subroutine MIO_PROCESS_TEMPLATE_FILES:'
 
          call hash_add_table(apar, tpar_len, npar, cptr)
@@ -682,7 +684,7 @@ subroutine mio_write_model_input_files(ifail,npar,apar,pval)
         integer, intent(out)                             :: ifail  ! error condition indicator
         integer, intent(in)                              :: npar   ! number of parameters
         !character (len=*), intent(in), dimension(npar)   :: apar   ! parameter names
-        character*50  :: apar(npar)
+        character*MAX_PAR_NAME_LEN  :: apar(npar)
         double precision, intent(inout), dimension(npar) :: pval   ! parameter values
         !character (len=*), intent(in), optional          :: asldir ! slave directory - jwhite
         character (len=1)                                :: asldir ! slave directory - jwhite
@@ -693,10 +695,10 @@ subroutine mio_write_model_input_files(ifail,npar,apar,pval)
         integer tpar_len
         double precision                 :: tval
         character (len=1)                :: aa
-        character (len=50)               :: tpar
+        character (len=MAX_PAR_NAME_LEN) :: tpar
         character (len=200)              :: mifile
         type(c_ptr) cptr
-        tpar_len = 50
+        tpar_len = MAX_PAR_NAME_LEN
         errsub='Error writing parameters to model input file(s):'
         ifail=0
         idir=0
@@ -841,7 +843,7 @@ subroutine mio_read_model_output_files(ifail,nobs,aobs,obs,instruction)
         integer, intent(out)                            :: ifail   ! error indicator
         integer, intent(in)                             :: nobs    ! number of observations
         !character (len=*), intent(in), dimension(nobs)  :: aobs    ! observation names
-        character*50 :: aobs(nobs)
+        character*MAX_OBS_NAME_LEN :: aobs(nobs)
         double precision, intent(out), dimension(nobs)  :: obs     ! observation values
         !character (len=*), intent(out)                  :: instruction ! instruction of error
         character (len=20000)  :: instruction
@@ -856,14 +858,14 @@ subroutine mio_read_model_output_files(ifail,nobs,aobs,obs,instruction)
         integer obsnam_len
         double precision    :: rtemp
         character (len=1)   :: aa,mkrdel
-        character (len=50)  :: obsnam
+        character (len=MAX_OBS_NAME_LEN)  :: obsnam
         character (len=15)  :: fmt
         character (len=10)  :: anum
         character (len=200) :: flenme
         type(c_ptr) cptr
         instruction=' '
         obs=-1.1d270    ! an array
-        obsnam_len = 50
+        obsnam_len = MAX_OBS_NAME_LEN
         errsub='Error reading model output file(s):'
         ifail=0
         idir=0
@@ -2152,7 +2154,7 @@ end module model_input_output_interface
         integer, intent(out)                :: ifail ! indicates error condition
         integer, intent(in)                 :: npar  ! number of parameters
         !character (len=*), dimension(npar)  :: apar  ! parameter names
-        character*50  :: apar(npar)
+        character*MAX_PAR_NAME_LEN  :: apar(npar)
         call mio_process_template_files(ifail,npar,apar)
         return
     end subroutine mio_process_template_files_w
@@ -2172,7 +2174,7 @@ end module model_input_output_interface
         integer, intent(out)                             :: ifail  ! error condition indicator
         integer, intent(in)                              :: npar   ! number of parameters
         !character (len=*), intent(in), dimension(npar)   :: apar   ! parameter names
-        character*50  :: apar(npar)
+        character*MAX_PAR_NAME_LEN  :: apar(npar)
         double precision, intent(inout), dimension(npar) :: pval   ! parameter values
         call mio_write_model_input_files(ifail,npar,apar,pval)
         return 
@@ -2184,7 +2186,7 @@ end module model_input_output_interface
         integer, intent(out)                            :: ifail   ! error indicator
         integer, intent(in)                             :: nobs    ! number of observations
         !character (len=*), intent(in), dimension(nobs)  :: aobs    ! observation names
-        character*50 :: aobs(nobs)
+        character*MAX_OBS_NAME_LEN :: aobs(nobs)
         double precision, intent(out), dimension(nobs)  :: obs     ! observation values
         !character (len=*), intent(out)                  :: instruction ! instruction of error
         character (len=20000)  :: instruction

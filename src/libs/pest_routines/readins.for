@@ -1,3 +1,6 @@
+#define MAX_PAR_NAME_LEN 200
+#define MAX_OBS_NAME_LEN 200
+      
       subroutine readins(nins,insfle,outfle,nobs,onam,oval,ifail)
       implicit none
       
@@ -9,7 +12,7 @@
      +                             iiobs(:)
       double precision          :: oval(nobs)
       character*1,allocatable   :: a(:),mrkdel(:)
-      character*50              :: onam(nobs),insfle(nins),outfle(nins)
+      character*MAX_OBS_NAME_LEN :: onam(nobs),insfle(nins),outfle(nins)
       character*2000            :: aline,buf
       logical                   :: lexist,eof
       

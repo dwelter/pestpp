@@ -1,3 +1,6 @@
+#define MAX_PAR_NAME_LEN 200
+#define MAX_OBS_NAME_LEN 200
+      
 c     ******************************************************************
       subroutine wrttpl(ntpl,tplfle,infle,npar,pnam,pval,ifail)
       implicit none
@@ -19,8 +22,8 @@ c     ******************************************************************
      +                             jfail,ifail,ierr,nw(npar)
       double precision          :: pval(npar),tval
       character*1               :: mark
-      character*50              :: pword(npar),ftyp,tpar,pnam(npar)
-      character*50              :: tplfle(ntpl),infle(ntpl)
+      character*MAX_PAR_NAME_LEN :: pword(npar),ftyp,tpar,pnam(npar)
+      character*MAX_OBS_NAME_LEN :: tplfle(ntpl),infle(ntpl)
       character*2000            :: aline
       logical                   :: lexist,eof
       

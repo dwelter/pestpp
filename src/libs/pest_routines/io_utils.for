@@ -1,3 +1,6 @@
+#define MAX_PAR_NAME_LEN 200
+#define MAX_OBS_NAME_LEN 200
+      
 c     ******************************************************************
       SUBROUTINE PARNAM(IFAIL,J1,J2,TPAR,CLINE)
       implicit none
@@ -7,7 +10,7 @@ c     ******************************************************************
 
       INTEGER IFAIL
       INTEGER J1,J2,I,J
-      CHARACTER*50 TPAR
+      CHARACTER*MAX_PAR_NAME_LEN TPAR
       CHARACTER*(*) CLINE
 
       IFAIL=0
@@ -22,7 +25,7 @@ c     ******************************************************************
 10    CONTINUE
       IFAIL=2
       RETURN
-30    J=MIN(50,J2-I)
+30    J=MIN(MAX_PAR_NAME_LEN,J2-I)
       TPAR(1:J)=CLINE(I:I+J-1)
       RETURN
 #ifdef PESTMOD
@@ -95,7 +98,7 @@ c     ******************************************************************
       INTEGER IFAIL
       DOUBLE PRECISION VAL,TVAL
       CHARACTER*29 TWORD,TTWORD,FMT*14
-      CHARACTER*50 WORD
+      CHARACTER* MAX_PAR_NAME_LEN WORD
 
 C     The following line overcomes what appears to be a bug in the LF90
 C     compiler
@@ -508,7 +511,7 @@ ctm        USE PESTDATA, ONLY : INST
         INTEGER LCINS(NINSTR)
         INTEGER LL(NUML),OBSN1(NOBS),OBSN2(NOBS),IIOBS(NOBS)
         DOUBLE PRECISION OBS(NOBS),RTEMP
-        CHARACTER*15 FMT,OBSNAM*50,MKRDEL*1,AA*1
+        CHARACTER*15 FMT,OBSNAM*MAX_OBS_NAME_LEN,MKRDEL*1,AA*1
         CHARACTER MRKDEL(NOUFL)
         CHARACTER A(ASIZE)
         CHARACTER*(*) AOBS(NOBS)
