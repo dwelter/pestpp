@@ -15,7 +15,8 @@ int RMIF_CREATE_SERIAL(char *f_comline, int  *comline_str_len, int *comline_arra
 int RMIF_CREATE_PANTHER(char *f_storfile, int *storfile_len,
 	char *f_port, int *f_port_len,
 	char *f_info_filename, int *info_filename_len, int *n_max_fail,
-	double *overdue_reched_fac, double *overdue_giveup_fac);
+	double *overdue_reched_fac, double *overdue_giveup_fac,
+	double *overdue_giveup_time_sec);
 
 int RMIF_ERR_MSG(char *fortran_str, int *str_len);
 

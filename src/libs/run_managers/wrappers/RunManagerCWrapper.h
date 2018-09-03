@@ -27,7 +27,8 @@ extern "C"
 			char *port,
 			char *info_filename,
 			int n_max_fail,
-			double overdue_reched_fac, double overdue_giveup_fac);
+			double overdue_reched_fac, double overdue_giveup_fac,
+			double overdue_giveup_time_sec);
 
 #ifdef OS_WIN
 	extern __declspec(dllexport)

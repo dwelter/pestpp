@@ -228,7 +228,7 @@
     !
      err = rmif_create_panther(storfile, 20,&
             port, 20,&
-            rmi_info_file, 20, 2, 1.15, 100.0)
+            rmi_info_file, 20, 2, 1.15, 100.0, -999.0)
     err = rmif_initialize_restart(storfile, 20)
     err = rmif_run()
     ! check and print status of model runs

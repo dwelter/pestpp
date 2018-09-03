@@ -92,7 +92,7 @@ class RunManagerPanther : public RunManagerAbstract
 {
 public:
 	RunManagerPanther(const std::string &stor_filename, const std::string &port, std::ofstream &_f_rmr, int _max_n_failure,
-		double overdue_reched_fac, double overdue_giveup_fac);
+		double overdue_reched_fac, double overdue_giveup_fac, double overdue_giveup_time_sec = -999.0);
 	virtual void initialize(const Parameters &model_pars, const Observations &obs, const std::string &_filename = std::string(""));
 	virtual void initialize_restart(const std::string &_filename);
 	virtual void reinitialize(const std::string &_filename = std::string(""));
@@ -122,6 +122,7 @@ private:
 	
 	double overdue_reched_fac;
 	double overdue_giveup_fac;
+	double overdue_giveup_time_sec;
 	int max_concurrent_runs;
 	int n_no_ops;  //number of consecutive times tcp/ip has looked for slave communciations and not found any 
 	int listener;

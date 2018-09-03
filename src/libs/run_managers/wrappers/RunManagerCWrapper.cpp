@@ -63,7 +63,8 @@ RunManager* rmic_create_panther(char *storfile,
 	char *port,
 	char *info_filename,
 	int n_max_fail,
-	double overdue_reched_fac, double overdue_giveup_fac)
+	double overdue_reched_fac, double overdue_giveup_fac,
+	double overdue_giveup_time_sec)
 {
 	int err;
 	RunManager *run_manager_ptr = nullptr;
@@ -71,7 +72,8 @@ RunManager* rmic_create_panther(char *storfile,
 
 	try {
 		run_manager_ptr = new RunManagerPanther(storfile, port,
-			_c_fout_run_manager_log_file, n_max_fail, overdue_reched_fac, overdue_giveup_fac);
+			_c_fout_run_manager_log_file, n_max_fail, overdue_reched_fac,
+			overdue_giveup_fac, overdue_giveup_time_sec);
 	}
 	catch (const exception &e)
 	{

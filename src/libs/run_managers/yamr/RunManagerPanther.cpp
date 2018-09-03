@@ -258,10 +258,11 @@ int SlaveInfoRec::seconds_since_last_ping_time() const
 
 
 RunManagerPanther::RunManagerPanther(const string &stor_filename, const string &_port, ofstream &_f_rmr, int _max_n_failure,
-	double _overdue_reched_fac, double _overdue_giveup_fac)
+	double _overdue_reched_fac, double _overdue_giveup_fac, double _overdue_giveup_time_sec)
 	: RunManagerAbstract(vector<string>(), vector<string>(), vector<string>(),
 	vector<string>(), vector<string>(), stor_filename, _max_n_failure),
 	overdue_reched_fac(_overdue_reched_fac), overdue_giveup_fac(_overdue_giveup_fac),
+	overdue_giveup_time_sec(_overdue_giveup_time_sec),
 	port(_port), f_rmr(_f_rmr), n_no_ops(0)
 {
 	max_concurrent_runs = max(MAX_CONCURRENT_RUNS_LOWER_LIMIT, _max_n_failure);
@@ -774,7 +775,7 @@ void RunManagerPanther::schedule_runs()
 						should_schedule = true;
 						model_runs_timed_out += overdue_kill_runs_vec.size();
 					}
-					else if (duration > avg_runtime*overdue_giveup_fac  && free_slave_list.empty())
+					else if ((duration > avg_runtime*overdue_giveup_fac  || (overdue_giveup_time_sec > 0 && duration > overdue_giveup_time_sec))  && free_slave_list.empty())
 					{
 						// If there are no free slaves kill the overdue ones
 						// This is necessary to keep runs with small numbers of slaves behaving
@@ -1281,7 +1282,7 @@ void RunManagerPanther::kill_all_active_runs()
 			 if (avg_runtime <= 0) avg_runtime = get_global_runtime_minute();;
 			 if (avg_runtime <= 0) avg_runtime = 1.0E+10;
 			 duration = i->second->get_duration_minute();
-			 if (duration >= avg_runtime*overdue_giveup_fac)
+			 if (duration >= avg_runtime*overdue_giveup_fac || (overdue_giveup_time_sec > 0 && duration > overdue_giveup_time_sec) )
 			 {
 				 sock_id_vec.push_back(i->second->get_socket_fd());
 			 }
