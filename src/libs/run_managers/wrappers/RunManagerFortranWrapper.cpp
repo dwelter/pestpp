@@ -331,6 +331,37 @@ int rmif_run_until_(int *condition, int *no_ops, double *time_sec, int *return_c
 	return err;
 }
 
+int rmif_get_n_parameters(int *npar)
+{
+	_f_run_manager_error.clear();
+	int err = 0;
+	try 
+	{
+		const vector<string> pname_vec = _run_manager_ptr_->get_par_name_vec();
+		*npar = pname_vec.size();
+	}
+	catch (const exception &e)
+	{
+		err = 1;
+		_f_run_manager_error = e.what();
+	}
+	catch (char const *e)
+	{
+		err = 1;
+		_f_run_manager_error = e;
+	}
+	catch (const string e)
+	{
+		err = 1;
+		_f_run_manager_error = e;
+	}
+	catch (...)
+	{
+		err = 1;
+	}
+	return err;
+}
+
 
 int rmif_get_run_(int *run_id, double *parameter_data, int *npar, double *obs_data, int *nobs)
 {

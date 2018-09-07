@@ -81,6 +81,31 @@ extern "C"
 #ifdef OS_WIN
 	extern __declspec(dllexport)
 #endif
+		int rmic_get_n_parameters(RunManager *run_manager_ptr);
+
+#ifdef OS_WIN
+	extern __declspec(dllexport)
+#endif
+		int rmic_get_parameter_names(RunManager *run_manager_ptr, char ***pnames, int *npar);
+
+#ifdef OS_WIN
+	extern __declspec(dllexport)
+#endif
+		int rmic_get_n_observations(RunManager *run_manager_ptr);
+
+#ifdef OS_WIN
+	extern __declspec(dllexport)
+#endif
+		int rmic_get_observation_names(RunManager *run_manager_ptr, char ***onames, int *nobs);
+
+#ifdef OS_WIN
+	extern __declspec(dllexport)
+#endif
+		int rmic_free_names_memory(char **names, int names_len);
+
+#ifdef OS_WIN
+	extern __declspec(dllexport)
+#endif
 		int rmic_get_run_status(RunManager *run_manager_ptr, int run_id, int *run_status, double *max_runtime, int *n_concurrent_runs);
 
 #ifdef OS_WIN

@@ -36,6 +36,14 @@ int RMIF_RUN();
 
 int RMIF_RUN_UNTIL(int *condition, int *no_ops, double *time_sec, int *return_cond);
 
+int RMIF_GET_N_PARAMETERS(int *npar);
+/*
+int RMIF_GET_PARAMETER_NAMES(char *f_par_names, int *max_par_name_len, int *n_par_names);
+
+int RMIF_GET_N_OBSERVATIONS(int *nobs);
+
+int RMIF_GET_OBSERVATION_NAMES(char *f_obs_names, int *max_obs_name_len, int *n_obs_names);
+*/
 int RMIF_GET_RUN(int *run_id, double *parameter_data, int *npar, double *obs_data, int *nobs);
 
 int RMIF_GET_RUN_WITH_INFO(int *run_id, double *parameter_data, int *npar, double *obs_data, int *nobs,

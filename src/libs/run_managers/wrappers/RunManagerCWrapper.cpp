@@ -355,6 +355,129 @@ int rmic_cancel_run(RunManager *run_manager_ptr, int run_id)
 	return err;
 }
 
+int rmic_get_n_parameters(RunManager *run_manager_ptr)
+{
+	int npar = 0;
+	const vector<string> pname_vec = run_manager_ptr->get_par_name_vec();
+	npar = pname_vec.size();
+	return npar;
+}
+
+int rmic_get_parameter_names(RunManager *run_manager_ptr, char ***pnames, int *npar)
+{
+	int err = 0;
+	try
+	{
+		const vector<string> pname_vec = run_manager_ptr->get_par_name_vec();
+		*npar = pname_vec.size();
+		*pnames = (char **)malloc((*npar) * sizeof(char*));
+		for (size_t i = 0;i < *npar;i++)
+		{
+			int name_len = pname_vec[i].length();
+			(*pnames)[i] = (char *)malloc((name_len + 1) * sizeof(char));
+			snprintf((*pnames)[i], name_len + 1, "%s", pname_vec[i].c_str());
+		}
+	} 
+	catch (const exception &e)
+	{
+		err = 1;
+		_c_run_manager_error = e.what();
+	}
+	catch (char const *e)
+	{
+		err = 1;
+		_c_run_manager_error = e;
+	}
+	catch (const string e)
+	{
+		err = 1;
+		_c_run_manager_error = e;
+	}
+	catch (...)
+	{
+		err = 1;
+	}
+	return err;
+}
+
+int rmic_get_n_observations(RunManager *run_manager_ptr)
+{
+	int npar = 0;
+	const vector<string> oname_vec = run_manager_ptr->get_obs_name_vec();
+	npar = oname_vec.size();
+	return npar;
+}
+
+int rmic_get_observation_names(RunManager *run_manager_ptr, char ***onames, int *nobs)
+{
+	int err = 0;
+	try
+	{
+		const vector<string> oname_vec = run_manager_ptr->get_obs_name_vec();
+		*nobs = oname_vec.size();
+		*onames = (char **)malloc((*nobs) * sizeof(char*));
+		for (int  i = 0;i < *nobs;i++)
+		{
+			int name_len = oname_vec[i].length();
+			(*onames)[i] = (char *)malloc((name_len + 1) * sizeof(char));
+			snprintf((*onames)[i], name_len + 1, "%s", oname_vec[i].c_str());
+		}
+	}
+	catch (const exception &e)
+	{
+		err = 1;
+		_c_run_manager_error = e.what();
+	}
+	catch (char const *e)
+	{
+		err = 1;
+		_c_run_manager_error = e;
+	}
+	catch (const string e)
+	{
+		err = 1;
+		_c_run_manager_error = e;
+	}
+	catch (...)
+	{
+		err = 1;
+	}
+	return err;
+}
+
+int rmic_free_names_memory(char **names, int names_len)
+{
+	int err = 0;
+	try
+	{
+		for (size_t i = 0;i < names_len; i++)
+		{
+			free(names[i]);
+		}
+		free(names);
+	}
+	catch (const exception &e)
+	{
+		err = 1;
+		_c_run_manager_error = e.what();
+	}
+	catch (char const *e)
+	{
+		err = 1;
+		_c_run_manager_error = e;
+	}
+	catch (const string e)
+	{
+		err = 1;
+		_c_run_manager_error = e;
+	}
+	catch (...)
+	{
+		err = 1;
+	}
+	return err;
+}
+
 int rmic_get_run_status(RunManager *run_manager_ptr, int run_id, int *run_status, double *max_runtime, int *n_concurrent_runs)
 {
 	_c_run_manager_error.clear();
@@ -580,7 +703,6 @@ int rmic_get_failed_run_ids(RunManager *run_manager_ptr, int *run_id_array, int 
 	}
 	return err;
 }
-
 
 
 int rmic_get_n_cur_runs(RunManager *run_manager_ptr, int *nruns)

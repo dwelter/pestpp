@@ -1,483 +1,67 @@
 
 PANTHER master listening on socket:0.0.0.0:4015 (IPv4)
+running model 7 times
+
+    waiting for workers to appear...
+
+
+running model 6 times
+
+    waiting for workers to appear...
+
+
+running model 6 times
+
+    waiting for workers to appear...
+
+
+running model 6 times
+
+    waiting for workers to appear...
+
+
+09/06/18 12:01:33->new connection from: anole:54674
+running model 6 times
+
+09/06/18 12:01:33->initializing new worker connection from: anole:54674; number of workers: 1; working dir: C:\Users\Dave\Documents\GitHub\pestpp\src\tests\run_manager_c_test\test_dir
+running model 6 times
+
+09/06/18 12:01:35->new worker ready: anole:54674
+running model 6 times
+
+09/06/18 12:01:35->Sending run 0 to: anole$C:\Users\Dave\Documents\GitHub\pestpp\src\tests\run_manager_c_test\test_dir  (group id = -1, run id = 0, concurrent runs = 1)
+09/06/18 12:01:35->Run 0 failed on worker:anole$C:\Users\Dave\Documents\GitHub\pestpp\src\tests\run_manager_c_test\test_dir  (group id = -1, run id = 0, concurrent = 1) 
+running model 6 times
+
+09/06/18 12:01:35->Sending run 0 to: anole$C:\Users\Dave\Documents\GitHub\pestpp\src\tests\run_manager_c_test\test_dir  (group id = -1, run id = 0, concurrent runs = 1)
+09/06/18 12:01:36->Run 0 failed on worker:anole$C:\Users\Dave\Documents\GitHub\pestpp\src\tests\run_manager_c_test\test_dir  (group id = -1, run id = 0, concurrent = 1) 
 running model 5 times
 
-    waiting for workers to appear...
+09/06/18 12:01:36->Sending run 1 to: anole$C:\Users\Dave\Documents\GitHub\pestpp\src\tests\run_manager_c_test\test_dir  (group id = -1, run id = 1, concurrent runs = 1)
+09/06/18 12:01:36->Run 1 failed on worker:anole$C:\Users\Dave\Documents\GitHub\pestpp\src\tests\run_manager_c_test\test_dir  (group id = -1, run id = 1, concurrent = 1) 
+running model 5 times
 
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-running model 4 times
-
-    waiting for workers to appear...
-
-
-06/29/18 21:21:02->new connection from: anole:57371
-running model 4 times
-
-06/29/18 21:21:02->initializing new worker connection from: anole:57371; number of workers: 1; working dir: C:\Users\Dave\Documents\GitHub\pestp_test\src\tests\run_manager_c_test\test_dir
-running model 4 times
-
-running model 4 times
-
-running model 4 times
-
-06/29/18 21:21:06->new worker ready: anole:57371
-running model 4 times
-
-06/29/18 21:21:06->Sending run 0 to: anole$C:\Users\Dave\Documents\GitHub\pestp_test\src\tests\run_manager_c_test\test_dir  (group id = -1, run id = 0, concurrent runs = 1)
-06/29/18 21:21:06->Run 0 failed on worker:anole$C:\Users\Dave\Documents\GitHub\pestp_test\src\tests\run_manager_c_test\test_dir  (group id = -1, run id = 0, concurrent = 1) 
+09/06/18 12:01:36->Sending run 1 to: anole$C:\Users\Dave\Documents\GitHub\pestpp\src\tests\run_manager_c_test\test_dir  (group id = -1, run id = 1, concurrent runs = 1)
+09/06/18 12:01:36->Run 1 failed on worker:anole$C:\Users\Dave\Documents\GitHub\pestpp\src\tests\run_manager_c_test\test_dir  (group id = -1, run id = 1, concurrent = 1) 
 running model 4 times
 
-06/29/18 21:21:06->Sending run 0 to: anole$C:\Users\Dave\Documents\GitHub\pestp_test\src\tests\run_manager_c_test\test_dir  (group id = -1, run id = 0, concurrent runs = 1)
-06/29/18 21:21:06->Run 0 failed on worker:anole$C:\Users\Dave\Documents\GitHub\pestp_test\src\tests\run_manager_c_test\test_dir  (group id = -1, run id = 0, concurrent = 1) 
+09/06/18 12:01:36->Sending run 2 to: anole$C:\Users\Dave\Documents\GitHub\pestpp\src\tests\run_manager_c_test\test_dir  (group id = -1, run id = 2, concurrent runs = 1)
+09/06/18 12:01:37->run 2 received from: anole$C:\Users\Dave\Documents\GitHub\pestpp\src\tests\run_manager_c_test\test_dir  (run time = 0.00648333 min, group id = -1, run id = 2 concurrent = 1)
 running model 3 times
 
-06/29/18 21:21:06->Sending run 1 to: anole$C:\Users\Dave\Documents\GitHub\pestp_test\src\tests\run_manager_c_test\test_dir  (group id = -1, run id = 1, concurrent runs = 1)
-06/29/18 21:21:07->Run 1 failed on worker:anole$C:\Users\Dave\Documents\GitHub\pestp_test\src\tests\run_manager_c_test\test_dir  (group id = -1, run id = 1, concurrent = 1) 
-running model 3 times
-
-06/29/18 21:21:07->Sending run 1 to: anole$C:\Users\Dave\Documents\GitHub\pestp_test\src\tests\run_manager_c_test\test_dir  (group id = -1, run id = 1, concurrent runs = 1)
-06/29/18 21:21:07->Run 1 failed on worker:anole$C:\Users\Dave\Documents\GitHub\pestp_test\src\tests\run_manager_c_test\test_dir  (group id = -1, run id = 1, concurrent = 1) 
+09/06/18 12:01:37->Sending run 3 to: anole$C:\Users\Dave\Documents\GitHub\pestpp\src\tests\run_manager_c_test\test_dir  (group id = -1, run id = 3, concurrent runs = 1)
+09/06/18 12:01:37->run 3 received from: anole$C:\Users\Dave\Documents\GitHub\pestpp\src\tests\run_manager_c_test\test_dir  (run time = 0.0065 min, group id = -1, run id = 3 concurrent = 1)
 running model 2 times
 
-06/29/18 21:21:07->Sending run 2 to: anole$C:\Users\Dave\Documents\GitHub\pestp_test\src\tests\run_manager_c_test\test_dir  (group id = -1, run id = 2, concurrent runs = 1)
-06/29/18 21:21:07->run 2 received from: anole$C:\Users\Dave\Documents\GitHub\pestp_test\src\tests\run_manager_c_test\test_dir  (run time = 0.00656667 min, group id = -1, run id = 2 concurrent = 1)
+09/06/18 12:01:37->Sending run 4 to: anole$C:\Users\Dave\Documents\GitHub\pestpp\src\tests\run_manager_c_test\test_dir  (group id = -1, run id = 4, concurrent runs = 1)
+09/06/18 12:01:38->run 4 received from: anole$C:\Users\Dave\Documents\GitHub\pestpp\src\tests\run_manager_c_test\test_dir  (run time = 0.0065 min, group id = -1, run id = 4 concurrent = 1)
 running model 1 times
 
-06/29/18 21:21:07->Sending run 3 to: anole$C:\Users\Dave\Documents\GitHub\pestp_test\src\tests\run_manager_c_test\test_dir  (group id = -1, run id = 3, concurrent runs = 1)
-06/29/18 21:21:08->run 3 received from: anole$C:\Users\Dave\Documents\GitHub\pestp_test\src\tests\run_manager_c_test\test_dir  (run time = 0.00656667 min, group id = -1, run id = 3 concurrent = 1)
+09/06/18 12:01:38->Sending run 5 to: anole$C:\Users\Dave\Documents\GitHub\pestpp\src\tests\run_manager_c_test\test_dir  (group id = -1, run id = 5, concurrent runs = 1)
+09/06/18 12:01:38->run 5 received from: anole$C:\Users\Dave\Documents\GitHub\pestpp\src\tests\run_manager_c_test\test_dir  (run time = 0.00646667 min, group id = -1, run id = 5 concurrent = 1)
 running model 0 times
 
 
 ---------------------
-   2 runs complete :  2 runs failed
+   4 runs complete :  2 runs failed
 

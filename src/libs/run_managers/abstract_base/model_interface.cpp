@@ -273,7 +273,7 @@ void ModelInterface::run(pest_utils::thread_flag* terminate, pest_utils::thread_
 		try
 		{
 			mio_write_model_input_files_w_(&ifail, &npar,
-				pest_utils::StringvecFortranCharArray(par_name_vec, 50, pest_utils::TO_LOWER).get_prt(),
+				pest_utils::StringvecFortranCharArray(par_name_vec, MAX_PAR_NAME_LEN, pest_utils::TO_LOWER).get_prt(),
 				&par_vals[0]);
 		}
 		catch (exception &e)
@@ -437,7 +437,7 @@ void ModelInterface::run(pest_utils::thread_flag* terminate, pest_utils::thread_
 		 if (invalid.size() > 0)
 		 {
 		 	stringstream ss;
-		 	ss << "invalid parameter values read for the following parameters: ";
+		 	ss << "invalid parameter values read for the following parameters:\n";
 		 	for (auto &i : invalid)
 		 		ss << i << '\n';
 		 	throw PestError(ss.str());
@@ -451,7 +451,7 @@ void ModelInterface::run(pest_utils::thread_flag* terminate, pest_utils::thread_
 		 if (invalid.size() > 0)
 		 {
 		 	stringstream ss;
-		 	ss << "invalid observation values read for the following observations: ";
+		 	ss << "invalid observation values read for the following observations:\n";
 		 	for (auto &i : invalid)
 		 		ss << i << '\n';
 		 	throw PestError(ss.str());
