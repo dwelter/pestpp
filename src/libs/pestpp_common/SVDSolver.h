@@ -50,11 +50,14 @@ public:
 	double mu;
 	PhiComponets phi_comp;
 	double target_phi_meas;
+	MuPoint(const MuPoint &rhs);
+	MuPoint();
 	void set(double _mu, const PhiComponets &_phi_comp);
 	double f() const;
 	double error_frac();
 	double error_percent();
 	void print(ostream &os);
+	const MuPoint& operator=(const MuPoint &rhs);
 	bool operator< (const MuPoint &rhs) const;
 };
 

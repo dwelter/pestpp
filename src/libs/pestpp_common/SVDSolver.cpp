@@ -45,6 +45,21 @@ using namespace Eigen;
 
 const string SVDSolver::svd_solver_type_name = "svd_base_par";
 
+MuPoint::MuPoint()
+{
+	mu = -9999;
+	phi_comp.meas = -9999;
+	phi_comp.regul = -9999;
+	target_phi_meas = -9999;
+}
+
+
+MuPoint::MuPoint(const MuPoint &rhs)
+{
+	mu = rhs.mu;
+	phi_comp = rhs.phi_comp;
+	target_phi_meas = rhs.target_phi_meas;
+}
 
 void MuPoint::set(double _mu, const PhiComponets &_phi_comp)
 {
@@ -86,7 +101,13 @@ bool MuPoint::operator< (const MuPoint &rhs) const
 	return abs(f()) < abs(rhs.f());
 }
 
-
+const MuPoint& MuPoint::operator=(const MuPoint &rhs)
+{
+	mu = rhs.mu;
+	phi_comp = rhs.phi_comp;
+	target_phi_meas = rhs.target_phi_meas;
+	return *this;
+}
 
 SVDSolver::SVDSolver(Pest &_pest_scenario, FileManager &_file_manager, ObjectiveFunc *_obj_func,
 	const ParamTransformSeq &_par_transform, Jacobian &_jacobian,
@@ -1784,6 +1805,7 @@ void SVDSolver::dynamic_weight_adj(const ModelRun &base_run, const Jacobian &jac
 	int max_iter = regul_scheme_ptr->get_max_reg_iter();
 	Parameters new_pars;
 	vector<MuPoint> mu_vec;
+	MuPoint mu_min;
 	mu_vec.resize(4);
 
 	// Equalize Reqularization Groups if IREGADJ = 1
@@ -1820,23 +1842,27 @@ void SVDSolver::dynamic_weight_adj(const ModelRun &base_run, const Jacobian &jac
 	os << "    Starting regularization weight factor      : " << mu_cur << endl;
 	os << "    Starting measurement objective function    : " << phi_comp_cur.meas << endl;
 	os << "    Starting regularization objective function : " << phi_comp_cur.regul << endl;
-	os << endl << "    Target measurement objective function      : " << target_phi_meas << endl << endl;
+	os << "    Target measurement objective function      : " << target_phi_meas << endl << endl;
 	cout << "    ---  Solving for regularization weight factor   ---   " << endl;
 	cout << "    Starting regularization weight factor      : " << mu_cur << endl;
 	cout << "    Starting measurement objective function    : " << phi_comp_cur.meas << endl;
 	cout << "    Starting regularization objective function : " << phi_comp_cur.regul << endl;
 	cout << "    Target measurement objective function      : " << target_phi_meas << endl << endl;
 
+
 	for (auto &i_mu : mu_vec)
 	{
 		i_mu.target_phi_meas = target_phi_meas;
 	}
+
 	PhiComponets proj_phi_cur = phi_estimate(base_run, jacobian, Q_sqrt, *regul_scheme_ptr, residuals_vec, obs_names_vec,
 		base_run_active_ctl_par, freeze_active_ctl_pars, *regul_scheme_ptr);
+
 	double f_cur = proj_phi_cur.meas - target_phi_meas;
 
 	if (f_cur < 0)
 	{
+		// update mu_vec[3] if f_cur < 0
 		mu_vec[0].set(mu_cur, proj_phi_cur);
 		double mu_new = mu_vec[0].mu * wffac;
 		mu_new = max(wfmin, mu_new);
@@ -1845,11 +1871,23 @@ void SVDSolver::dynamic_weight_adj(const ModelRun &base_run, const Jacobian &jac
 		PhiComponets phi_proj_new = phi_estimate(base_run, jacobian, Q_sqrt, tmp_regul_scheme, residuals_vec, obs_names_vec,
 			base_run_active_ctl_par, freeze_active_ctl_pars, tmp_regul_scheme);
 		mu_vec[3].set(mu_new, phi_proj_new);
+		if (phi_comp_cur.meas < phimlim && mu_vec[3].f() < mu_vec[0].f())
+		{
+			regul_scheme_ptr->set_weight(mu_vec[3].mu);
+			os << "    ---  optimal regularization weight factor not found found  ---   " << endl;
+			mu_vec[3].print(os);
+			os << endl;
+			cout << "    ---  optimal regularization weight factor not found  ---   " << endl;
+			mu_vec[3].print(cout);
+			cout << endl;
+			return;
+		}
 	}
 	else
 	{
+		// update mu_vec[0] if f_cur > 0
 		mu_vec[3].set(mu_cur, proj_phi_cur);
-		double mu_new = mu_vec[3].mu * wffac;
+		double mu_new = mu_vec[3].mu / wffac;
 		mu_new = max(wfmin, mu_new);
 		mu_new = min(mu_new, wfmax);
 		tmp_regul_scheme.set_weight(mu_new);
@@ -1858,51 +1896,78 @@ void SVDSolver::dynamic_weight_adj(const ModelRun &base_run, const Jacobian &jac
 		mu_vec[0].set(mu_new, phi_proj_new);
 	}
 
+	mu_min = min(mu_vec[0], mu_vec[3]);
 	// make sure f[0] and f[3] bracket the solution
 
+	// insure f[0] < 0
 	int i;
-	for (i = 0; i < max_iter; ++i)
+	for (i = 0; i < max_iter && mu_vec[0].f() > 0 && mu_vec[0].mu < wfmax; ++i)
 	{
-		if (mu_vec[0].f() < 0)
+		MuPoint mu_new;
+		mu_new.target_phi_meas = mu_vec[0].target_phi_meas;
+		mu_new.mu = min(mu_vec[0].mu * wffac, wfmax);
+		tmp_regul_scheme.set_weight(mu_new.mu);
+		mu_new.phi_comp = phi_estimate(base_run, jacobian, Q_sqrt, tmp_regul_scheme, residuals_vec, obs_names_vec,
+			base_run_active_ctl_par, freeze_active_ctl_pars, tmp_regul_scheme);
+		os << "1------------------------------" << endl;
+		os << mu_vec[0].f() << "---" << mu_vec[0].mu << endl;
+		os << mu_vec[3].f() << "---" << mu_vec[3].mu << endl;
+		os << mu_new.f() << "---" << mu_new.mu << endl;
+		os << "------------------------------" << endl;
+
+		mu_min = min(mu_new, mu_min);
+		mu_vec[3] = mu_vec[0];
+		mu_vec[0] = mu_new;
+		if (mu_vec[0].f() > mu_vec[3].f())
 		{
-			break;
-		}
-		else
-		{
-			mu_vec[3] = mu_vec[0];
-			mu_vec[0].mu = max(mu_vec[0].mu / wffac, wfmin);
-			tmp_regul_scheme.set_weight(mu_vec[0].mu);
-			mu_vec[0].phi_comp = phi_estimate(base_run, jacobian, Q_sqrt, tmp_regul_scheme, residuals_vec, obs_names_vec,
-				base_run_active_ctl_par, freeze_active_ctl_pars, tmp_regul_scheme);
-			mu_vec[0].print(os);
+			regul_scheme_ptr->set_weight(mu_min.mu);
+			os << "    ---  optimal regularization weight factor not found found  ---   " << endl;
+			mu_min.print(os);
 			os << endl;
-			cout << "    ...solving for optimal weight factor : " << setw(6) << mu_vec[0].mu << endl << flush;
-			//mu_vec[0].print(cout);
-			//cout << endl;
+			cout << "    ---  optimal regularization weight factor not found  ---   " << endl;
+			mu_min.print(cout);
+			cout << endl;
+			return;
 		}
-		if (mu_vec[0].mu <= wfmin) break;
+
+		mu_vec[0].print(os);
+		os << endl;
+		cout << "    ...solving for optimal weight factor. : " << setw(6) << mu_vec[0].mu << endl << flush;
 	}
 
-	for (; i < max_iter; ++i)
+	// insure f[3] > 0
+	for (; i < max_iter && mu_vec[3].f() < 0 && mu_vec[3].mu > wfmin; ++i)
 	{
-		if (mu_vec[3].f() > 0)
+		MuPoint mu_new;
+		mu_new.target_phi_meas = mu_vec[3].target_phi_meas;
+		mu_new.mu = max(mu_vec[3].mu / wffac, wfmin);
+		tmp_regul_scheme.set_weight(mu_new.mu);
+		mu_new.phi_comp = phi_estimate(base_run, jacobian, Q_sqrt, tmp_regul_scheme, residuals_vec, obs_names_vec,
+			base_run_active_ctl_par, freeze_active_ctl_pars, tmp_regul_scheme);
+		os << "2------------------------------" << endl;
+		os << mu_vec[0].f() << "---" << mu_vec[0].mu << endl;
+		os << mu_vec[3].f() << "---" << mu_vec[3].mu << endl;
+		os << mu_new.f() << "---" << mu_new.mu << endl;
+		os << "------------------------------" << endl;
+		mu_min = min(mu_new, mu_min);
+		mu_vec[0] = mu_vec[3];
+		mu_vec[3] = mu_new;
+		if (mu_vec[3].f() < mu_vec[0].f())
 		{
-			break;
-		}
-		else
-		{
-			mu_vec[0] = mu_vec[3];
-			mu_vec[3].mu = min(mu_vec[3].mu * wffac, wfmax);
-			tmp_regul_scheme.set_weight(mu_vec[3].mu);
-			mu_vec[3].phi_comp = phi_estimate(base_run, jacobian, Q_sqrt, tmp_regul_scheme, residuals_vec, obs_names_vec,
-				base_run_active_ctl_par, freeze_active_ctl_pars, tmp_regul_scheme);
-			mu_vec[3].print(os);
+			regul_scheme_ptr->set_weight(mu_min.mu);
+			os << "    ---  optimal regularization weight factor not found found  ---   " << endl;
+			mu_min.print(os);
 			os << endl;
-			//mu_vec[0].print(cout);
-			//cout << endl;
-			cout << "    ...solving for optimal weight factor : " << setw(6) << mu_vec[3].mu << endl << flush;
+			cout << "    ---  optimal regularization weight factor not found  ---   " << endl;
+			mu_min.print(cout);
+			cout << endl;
+			return;
 		}
-		if (mu_vec[3].mu >= wfmax) break;
+		mu_vec[3].print(os);
+		os << endl;
+		//mu_vec[0].print(cout);
+		//cout << endl;
+		cout << "    ...solving for optimal weight factor.. : " << setw(6) << mu_vec[3].mu << endl << flush;
 	}
 
 	double tau = (sqrt(5.0) - 1.0) / 2.0;
@@ -1911,12 +1976,12 @@ void SVDSolver::dynamic_weight_adj(const ModelRun &base_run, const Jacobian &jac
 	tmp_regul_scheme.set_weight(mu_vec[1].mu);
 	mu_vec[1].phi_comp = phi_estimate(base_run, jacobian, Q_sqrt, tmp_regul_scheme, residuals_vec, obs_names_vec,
 		base_run_active_ctl_par, freeze_active_ctl_pars, tmp_regul_scheme);
-
+	mu_min = min(mu_min, mu_vec[1]);
 	mu_vec[2].mu = mu_vec[3].mu - (1.0 - tau) * lw;
 	tmp_regul_scheme.set_weight(mu_vec[2].mu);
 	mu_vec[2].phi_comp = phi_estimate(base_run, jacobian, Q_sqrt, tmp_regul_scheme, residuals_vec, obs_names_vec,
 		base_run_active_ctl_par, freeze_active_ctl_pars, tmp_regul_scheme);
-
+	mu_min = min(mu_min, mu_vec[2]);
 	if (mu_vec[0].f() > 0)
 	{
 		auto min_mu = (mu_vec[0] < mu_vec[3]) ? mu_vec[0] : mu_vec[3];
@@ -1946,6 +2011,10 @@ void SVDSolver::dynamic_weight_adj(const ModelRun &base_run, const Jacobian &jac
 	{
 		for (; i < max_iter; ++i)
 		{
+			os << "3------------------------------" << endl;
+			os << mu_vec[0].f() << endl;
+			os << mu_vec[3].f() << endl;
+			os << "------------------------------" << endl;
 			if (abs(mu_vec[0].f()) > abs(mu_vec[3].f()) && mu_vec[0].f() < 0)
 			{
 				mu_vec[0] = mu_vec[1];
@@ -1955,6 +2024,7 @@ void SVDSolver::dynamic_weight_adj(const ModelRun &base_run, const Jacobian &jac
 				tmp_regul_scheme.set_weight(mu_vec[2].mu);
 				mu_vec[2].phi_comp = phi_estimate(base_run, jacobian, Q_sqrt, tmp_regul_scheme, residuals_vec, obs_names_vec,
 					base_run_active_ctl_par, freeze_active_ctl_pars, tmp_regul_scheme);
+				mu_min = min(mu_min, mu_vec[2]);
 			}
 			else
 			{
@@ -1965,6 +2035,7 @@ void SVDSolver::dynamic_weight_adj(const ModelRun &base_run, const Jacobian &jac
 				tmp_regul_scheme.set_weight(mu_vec[1].mu);
 				mu_vec[1].phi_comp = phi_estimate(base_run, jacobian, Q_sqrt, tmp_regul_scheme, residuals_vec, obs_names_vec,
 					base_run_active_ctl_par, freeze_active_ctl_pars, tmp_regul_scheme);
+				mu_min = min(mu_min, mu_vec[1]);
 			}
 
 			auto min_mu = std::min_element(mu_vec.begin(), mu_vec.end());
@@ -1972,7 +2043,7 @@ void SVDSolver::dynamic_weight_adj(const ModelRun &base_run, const Jacobian &jac
 			os << endl;
 			//mu_vec[0].print(cout);
 			//cout << endl;
-			cout << "    ...solving for optimal weight factor : " << setw(6) << min_mu->mu << endl << flush;
+			cout << "    ...solving for optimal weight factor... : " << setw(6) << min_mu->mu << endl << flush;
 			if (min_mu->error_frac() <= wftol) break;
 		}
 		auto min_mu = std::min_element(mu_vec.begin(), mu_vec.end());
@@ -1983,9 +2054,12 @@ void SVDSolver::dynamic_weight_adj(const ModelRun &base_run, const Jacobian &jac
 		cout << "    ---  optimal regularization weight factor found  ---   " << endl;
 		min_mu->print(cout);
 		cout << endl;
-		double new_mu = std::min_element(mu_vec.begin(), mu_vec.end())->mu;
-		regul_scheme_ptr->set_weight(new_mu);
+		//double new_mu = std::min_element(mu_vec.begin(), mu_vec.end())->mu;
 	}
+	double new_mu = mu_min.mu;
+	if (mu_vec[0].f() > 0 ) { new_mu = mu_vec[0].mu * wffac; }
+	else if (mu_vec[3].f() < 0) { new_mu = mu_vec[3].mu / wffac; }
+	regul_scheme_ptr->set_weight(new_mu);
 	os << endl;
 }
 

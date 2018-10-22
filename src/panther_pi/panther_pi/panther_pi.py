@@ -137,9 +137,9 @@ class panther:
         err = err_c.value
         if err != 0:
             raise PantherError('panther error in function panther.run(): error number = %d\n %s' % (err, err_msg()))
-        return err
     
-    def run_until(self, condition, no_ops, time_sec, return_cond):
+    def run_until(self, condition, no_ops, time_sec):
+    	return_cond = 0
         func = self.runlib.rmic_run
         func.restype = ct.c_int
         func.argtypes = [ct.c_void_p, ct.c_int, ct.c_double, ct.POINTER(ct.c_int)]
@@ -148,7 +148,7 @@ class panther:
         err = err_c.value
         if err != 0:
             raise PantherError('panther error in function panther.run_until(): error number = %d\n %s' % (err, err_msg()))
-        return err
+        return return_cond
     
     def cancel_run(self, run_id):
         func = self.runlib.rmic_cancel_run
@@ -158,7 +158,6 @@ class panther:
         err = err_c.value
         if err != 0:
             raise PantherError('panther error in function panther.cancel_run(): error number = %d\n %s' % (err, err_msg()))
-        return err
 
     def get_run(self, run_id):
         func = self.runlib.rmic_get_run
@@ -179,7 +178,7 @@ class panther:
              raise PantherError('panther error in function panther.get_run() with id = %d: error number = %d\n%s' % (run_id, err, err_msg()))
         return par_data, obs_data
     
-     def get_run_with_info(run_id, par_data, obs_data, info_txt, info_value):
+     def get_run_with_info(run_id):
         func = self.runlib.rmic_get_run_with_info
         func.restype = ct.c_int
         func.argtypes = [ct.c_void_p, ct.c_int, 
@@ -204,7 +203,7 @@ class panther:
         if err != 0:
              raise PantherError('panther error in function panther.get_run_with_info() with id = %d: error number = %d\n%s' % (run_id, err, err_msg()))
             obs_data = None
-        return par_data, obs_data
+        return par_data, obs_data, info_txt, info_value
 
     def get_num_failed_runs(self):
         func = self.runlib.rmic_get_num_failed_runs
