@@ -1,5 +1,5 @@
 import numpy as np
-from numpy.ctlib import ndpointer 
+from numpy.ctypeslib import ndpointer 
 import ctypes as ct
 import os
 import copy
@@ -10,7 +10,8 @@ class PantherError(Exception):
 
 class panther:
     def __init__(self):
-        self.runlib = ct.cdll.LoadLibrary(r'wrappers.dll')
+        dll_file = os.path.join( os.path.dirname(__file__), 'wrappers.dll')
+        self.runlib = ct.cdll.LoadLibrary(dll_file)
         self.obj = ct.c_void_p()
 
     def string2c(self,str):
@@ -75,29 +76,29 @@ class panther:
         func.restype = ct.c_int
         par_names_c = self.list_strings2c(self.par_names)
         obs_names_c = self.list_strings2c(self.obs_names)
-        err_c = func(self.obj, par_names_c, ct.c_int(len(self.par_names)), obs_names_c, ct.c_int(len(self.obs_names)))
-        err = err_c.value
+        err = func(self.obj, par_names_c, ct.c_int(len(self.par_names)), obs_names_c, ct.c_int(len(self.obs_names)))
+        #err = err_c.value
         if err != 0:
-            raise PantherError('panther error in function panther.intialize(): error number = %d\n %s' % (err, err_msg()))
+            raise PantherError('panther error in function panther.intialize(): error number = %d\n %s' % (err, self.err_msg()))
 
     def reinitialize(self):
         func = self.runlib.rmic_initialize
         func.argtypes = [ct.c_void_p]
         func.restype = ct.c_int
-        err_c = func(self.obj)
-        err = err_c.value
+        err = func(self.obj)
+        #err = err_c.value
         if err != 0:
-            raise PantherError('panther error in function panther.reinitialize(): error number = %d\n %s' % (err, err_msg()))
+            raise PantherError('panther error in function panther.reinitialize(): error number = %d\n %s' % (err, self.err_msg()))
             
     def initialize_restart(self, store_filename):
         func = self.runlib.intiialize_restart
         func.argtypes = [ct.c_void_p, ct.c_char_p]
         func.restype = ct.c_int
         stor_file_c = self.string2c(stor_file)
-        err_c = func(self.obj, stor_file_c)
-        err = err_c.value
+        err = func(self.obj, stor_file_c)
+        #err = err_c.value
         if err != 0:
-            raise PantherError('panther error in function panther.intialize(): error number = %d\n %s' % (err, err_msg()))
+            raise PantherError('panther error in function panther.intialize(): error number = %d\n %s' % (err, self.err_msg()))
 
     def add_run(self, par_data, model_exe_index):
         func = self.runlib.rmic_add_run
@@ -105,11 +106,11 @@ class panther:
         func.restype = ct.c_int
         n_par = ct.c_int(par_data.size)
         run_id =  ct.c_int(-1)
-        err_c = func(self.obj, par_data.ct.data_as(ct.POINTER(ct.c_double)),
+        err = func(self.obj, par_data.ctypes.data_as(ct.POINTER(ct.c_double)),
                          n_par, model_exe_index, ct.byref(run_id))
-        err = err_c.value
+        #err = err_c.value
         if err != 0:
-            raise PantherError('panther error in function panther.add_run(): error number = %d\n %s' % (err, err_msg()))
+            raise PantherError('panther error in function panther.add_run(): error number = %d\n %s' % (err, self.err_msg()))
         return run_id.value
     
     def add_run_with_info(self, par_data, model_exe_index, info_txt, info_value):
@@ -122,43 +123,71 @@ class panther:
         info_txt_c = self.string2c(info_txt)
         info_value_c = ct.c_double(info_value)
         run_id =  ct.c_int(-1)
-        err_c = func(self.obj, par_data.ct.data_as(ct.POINTER(ct.c_double)),
+        err = func(self.obj, par_data.ctypes.data_as(ct.POINTER(ct.c_double)),
                          n_par, model_exe_index_c, info_txt_c, info_value_c, ct.byref(run_id))
-        err = err_c.value
+        #err = err_c.value
         if err != 0:
-            raise PantherError('panther error in function panther.add_run(): error number = %d\n %s' % (err, err_msg()))
+            raise PantherError('panther error in function panther.add_run(): error number = %d\n %s' % (err, self.err_msg()))
         return run_id.value
 
     def run(self):
         func = self.runlib.rmic_run
         func.restype = ct.c_int
         func.argtypes = [ct.c_void_p]
-        err_c = func(self.obj)
-        err = err_c.value
+        err = func(self.obj)
+        #err = err_c.value
         if err != 0:
-            raise PantherError('panther error in function panther.run(): error number = %d\n %s' % (err, err_msg()))
-        return err
+            raise PantherError('panther error in function panther.run(): error number = %d\n %s' % (err, self.err_msg()))
     
-    def run_until(self, condition, no_ops, time_sec, return_cond):
+    def run_until(self, condition, no_ops, time_sec):
+        return_cond = 0
         func = self.runlib.rmic_run
         func.restype = ct.c_int
         func.argtypes = [ct.c_void_p, ct.c_int, ct.c_double, ct.POINTER(ct.c_int)]
         return_cond_c = ct.c_int(0)
-        err_c = func(self.obj, ct.c_int(no_ops), ct.c_double(time_sec), ct.byref(return_cond_c))
-        err = err_c.value
+        err = func(self.obj, ct.c_int(no_ops), ct.c_double(time_sec), ct.byref(return_cond_c))
+        #err = err_c.value
         if err != 0:
-            raise PantherError('panther error in function panther.run_until(): error number = %d\n %s' % (err, err_msg()))
-        return err
+            raise PantherError('panther error in function panther.run_until(): error number = %d\n %s' % (err, self.err_msg()))
+        return return_cond
     
     def cancel_run(self, run_id):
         func = self.runlib.rmic_cancel_run
         func.restype = ct.c_int
         func.argtypes = [ct.c_void_p, ct.c_int]
-        err_c = func(self.obj, ct.c_int(run_id))
-        err = err_c.value
+        err = func(self.obj, ct.c_int(run_id))
+        #err = err_c.value
         if err != 0:
-            raise PantherError('panther error in function panther.cancel_run(): error number = %d\n %s' % (err, err_msg()))
-        return err
+            raise PantherError('panther error in function panther.cancel_run(): error number = %d\n %s' % (err, self.err_msg()))
+
+    def get_run_status(self, run_id):
+        func = self.runlib.rmic_get_run_status
+        func.restype = ct.c_int
+        func.argtypes = [ct.c_void_p, ct.c_int, ct.POINTER(ct.c_int), ct.POINTER(ct.c_double), ct.POINTER(ct.c_int)]
+        run_status =  ct.c_int(-1)
+        max_runtime = ct.c_double(-1)
+        n_concurrent_runs = ct.c_int(-1)
+        err = func(self.obj, ct.c_int(run_id), ct.byref(run_status), ct.byref(max_runtime), ct.byref(n_concurrent_runs))
+        #err = err_c.value
+        if err != 0:
+            raise PantherError('panther error in function panther.get_run_status(): error number = %d\n %s' % (err, self.err_msg()))
+        return run_status.value, max_runtime.value, n_concurrent_runs.value
+        
+    def get_run_info(self, run_id):
+        func = self.runlib.rmic_get_run_info
+        func.restype = ct.c_int
+        func.argtypes = [ct.c_void_p, ct.c_int, ct.POINTER(ct.c_int), ct.POINTER(ct.c_int), ct.c_char_p , ct.POINTER(ct.c_int), ct.POINTER(ct.c_double)]
+        run_status =  ct.c_int(-1)
+        model_exe_index = ct.c_int(-1)
+        info_txt_c = self.string2c(''*41)
+        info_txt_c_len = ct.c_int(41)
+        n_concurrent_runs = ct.c_int(-1)
+        info_value = ct.c_double(-1)
+        err = func(self.obj, ct.c_int(run_id), ct.byref(run_status), ct.byref(model_exe_index), info_txt_c, info_txt_c_len, ct.byref(info_value))
+        #err = err_c.value
+        if err != 0:
+            raise PantherError('panther error in function panther.get_run_status(): error number = %d\n %s' % (err, self.err_msg()))
+        return run_status.value, max_runtime.value, n_concurrent_runs.value   
 
     def get_run(self, run_id):
         func = self.runlib.rmic_get_run
@@ -171,15 +200,17 @@ class panther:
         n_obs_c = ct.c_int(len(self.obs_names))
         par_data = np.zeros(len(self.par_names), dtype=np.double)
         obs_data = np.zeros(len(self.obs_names), dtype=np.double)
-        err_c = func(self.obj, run_id_c, 
-            par_data.ct.data_as(ct.POINTER(ct.c_double)), n_par_c,
-            obs_data.ct.data_as(ct.POINTER(ct.c_double)), n_obs_c)
-        err = err_c.value
+        err = func(self.obj, run_id_c, 
+            par_data.ctypes.data_as(ct.POINTER(ct.c_double)), n_par_c,
+            obs_data.ctypes.data_as(ct.POINTER(ct.c_double)), n_obs_c)
+        #err = err_c.value
         if err != 0:
-             raise PantherError('panther error in function panther.get_run() with id = %d: error number = %d\n%s' % (run_id, err, err_msg()))
+             run_ok = False
+             obs_data = None
+             #raise PantherError('panther error in function panther.get_run() with id = %d: error number = %d\n%s' % (run_id, err, self.err_msg()))
         return par_data, obs_data
     
-     def get_run_with_info(run_id, par_data, obs_data, info_txt, info_value):
+    def get_run_with_info(run_id):
         func = self.runlib.rmic_get_run_with_info
         func.restype = ct.c_int
         func.argtypes = [ct.c_void_p, ct.c_int, 
@@ -193,58 +224,75 @@ class panther:
         info_txt_c = self.string2c(info_txt)
         info_value_c = ct.c_double(info_value)
         
-        err_c = func(self.obj, run_id_c, 
-            par_data.ct.data_as(ct.POINTER(ct.c_double)), n_par_c,
-            obs_data.ct.data_as(ct.POINTER(ct.c_double)), n_obs_c,
+        err = func(self.obj, run_id_c, 
+            par_data.ctypes.data_as(ct.POINTER(ct.c_double)), n_par_c,
+            obs_data.ctypes.data_as(ct.POINTER(ct.c_double)), n_obs_c,
             ct.byref(info_txt_c), ct,byref(info_value_c))
         
         info_txt = info_txt_c.value
         info_value = info_value_c.value
-        err = err_c.value
+        #err = err_c.value
+        run_ok = True
         if err != 0:
-             raise PantherError('panther error in function panther.get_run_with_info() with id = %d: error number = %d\n%s' % (run_id, err, err_msg()))
-            obs_data = None
-        return par_data, obs_data
+             run_ok = False
+             #raise PantherError('panther error in function panther.get_run_with_info() with id = %d: error number = %d\n%s' % (run_id, err, self.err_msg()))
+             obs_data = None
+        return par_data, obs_data, info_txt, info_value
 
-    def get_num_failed_runs(self):
-        func = self.runlib.rmic_get_num_failed_runs
+    def get_n_failed_runs(self):
+        func = self.runlib.rmic_get_n_failed_runs
         func.restype = ct.c_int
         nfail = ct.c_int(-999)
-        err_c = func(self.obj, ct.byref(nfail))
-        err = err_c.value
+        err = func(self.obj, ct.byref(nfail))
+        #err = err_c.value
         if err != 0:
-            raise PantherError('panther error in function panther.get_num_failed() with id = %d: error number = %d\n%s' % (run_id, err, err_msg()))
+            raise PantherError('panther error in function panther.get_num_failed() with id = %d: error number = %d\n%s' % (run_id, err, self.err_msg()))
         return nfail.value
 
     def get_failed_run_ids(self):
-        nfail = self.get_num_failed()
+        nfail = self.get_n_failed_runs()
         fail_list = []
-        func = self.runlib.rmic_get_failed_runs_n
+        func = self.runlib.rmic_get_failed_run_ids
         func.restype = ct.c_int
         func.argtypes = [ ct.c_void_p, ct.POINTER(ct.c_int), ct.c_int ]
         fail_array = np.ones((nfail,), dtype=np.int)
-        err_c = func(self.obj, fail_array.ct.data_as(ct.POINTER(ct.c_int)), ct.c_int(nfail))
-        err = err_c.value
+        err = func(self.obj, fail_array.ctypes.data_as(ct.POINTER(ct.c_int)), ct.c_int(nfail))
+        #err = err_c.value
         fail_list = fail_array.tolist()
         if err != 0:
-            raise PantherError('panther error in function panther.get_failed_run_ids() with id = %d: error number = %d\n%s' % (run_id, err, err_msg()))
+            raise PantherError('panther error in function panther.get_failed_run_ids() with id = %d: error number = %d\n%s' % (run_id, err, self.err_msg()))
         return fail_list
 
     def get_n_cur_runs():
-        pass
+        func = self.runlib.rmic_get_n_cur_runs
+        func.restype = ct.c_int
+        ncur = ct.c_int(-999)
+        err = func(self.obj, ct.byref(ncur))
+        #err = err_c.value
+        if err != 0:
+            raise PantherError('panther error in function panther.get_n_cur_runs() with id = %d: error number = %d\n%s' % (run_id, err, self.err_msg()))
+        return ncur.value
+
     
     def get_n_total_runs():
-        pass
+        func = self.runlib.rmic_get_n_total_runs
+        func.restype = ct.c_int
+        nruns = ct.c_int(-999)
+        err = func(self.obj, ct.byref(nruns))
+        #err = err_c.value
+        if err != 0:
+            raise PantherError('panther error in function panther.get_n_total_runs() with id = %d: error number = %d\n%s' % (run_id, err, self.err_msg()))
+        return nruns.value
     
 
     def __del__(self):
         func = self.runlib.rmic_delete
         func.restype = ct.c_int
         func.argtypes = [ct.c_void_p]
-        err_c = func(self.obj)
-        err = err_c.value
+        err = func(self.obj)
+        #err = err_c.value
         if err != 0:
-            raise PantherError('panther error in function panther.__del__(): error number = %d\n %s' % (err, err_msg()))
+            raise PantherError('panther error in function panther.__del__(): error number = %d\n %s' % (err, self.err_msg()))
 
 
 
@@ -316,7 +364,6 @@ def test_panther():
         print(par)
         print(obs)
         print('')
-    pass
 
 if __name__=="__main__":
     print('Starting serial test')
