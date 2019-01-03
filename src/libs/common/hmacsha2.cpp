@@ -25,7 +25,8 @@ namespace hmacsha2 {
 
 	string xor(const string& key, const string& pad) {
 		string answer = pad;
-		for (int i = 0; i < key.size(); i++)
+		int n = (key.size() < pad.size()) ? key.size() : pad.size();
+		for (int i = 0; i < n; i++)
 			answer[i] = key[i] ^ pad[i];
 		return answer;
 	}
@@ -42,8 +43,8 @@ namespace hmacsha2 {
 		//Hashing the key to make sure it is 64 bytes long, and then calculating inner_key and outer_key. Note 
 		//SHA-256 has a 64 byte block size.
 		string hashedKey = picosha2::hash256_hex_string(key);
-		string innerKey = xor(key, "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"); //64 "0x5C" values
-		string outerKey = xor(key, "6666666666666666666666666666666666666666666666666666666666666666"); //64 "0x36" values
+		string innerKey = xor(hashedKey, "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"); //64 "0x5C" values
+		string outerKey = xor(hashedKey, "6666666666666666666666666666666666666666666666666666666666666666"); //64 "0x36" values
 
 		//H(outer_key + H(inner_key + message))
 		string innerHash = picosha2::hash256_hex_string(innerKey + message);
