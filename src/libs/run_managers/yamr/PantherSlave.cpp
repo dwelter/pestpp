@@ -454,13 +454,13 @@ void PANTHERSlave::check_io()
 {
 	vector<string> inaccessible_files;
 	for (auto &file : insfile_vec)
-	if (!check_exist_in(file)) inaccessible_files.push_back(file);
+		if (!check_exist_in(file)) inaccessible_files.push_back(file);
 	for (auto &file : outfile_vec)
-	if (!check_exist_out(file)) inaccessible_files.push_back(file);
+		if (!check_exist_out(file)) inaccessible_files.push_back(file);
 	for (auto &file : tplfile_vec)
-	if (!check_exist_in(file)) inaccessible_files.push_back(file);
+		if (!check_exist_in(file)) inaccessible_files.push_back(file);
 	for (auto &file : inpfile_vec)
-	if (!check_exist_out(file)) inaccessible_files.push_back(file);
+		if (!check_exist_out(file)) inaccessible_files.push_back(file);
 
 	if (inaccessible_files.size() != 0)
 	{
