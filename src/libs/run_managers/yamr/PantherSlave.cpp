@@ -79,6 +79,7 @@ void PANTHERSlave::process_ctl_file(const string &ctl_filename)
 	string section("");
 	string line;
 	string line_upper;
+	string tns_security_key;
 	vector<string> tokens;
 
 	int num_par;
@@ -89,6 +90,7 @@ void PANTHERSlave::process_ctl_file(const string &ctl_filename)
 	inpfile_vec.clear();
 	insfile_vec.clear();
 	outfile_vec.clear();
+	tnsfile_vec.clear();
 	std::vector<std::string> pestpp_lines;
 	fin.open(ctl_filename);
 	if (!fin)
@@ -178,6 +180,18 @@ void PANTHERSlave::process_ctl_file(const string &ctl_filename)
 				tokenize(line, tokens_case_sen);
 				insfile_vec.push_back(tokens_case_sen[0]);
 				outfile_vec.push_back(tokens_case_sen[1]);
+			}
+			else if (section == "FILE TRANSFER")
+			{
+				vector<string> tokens_case_sen;
+				tokenize(line, tokens_case_sen);
+				tnsfile_vec.push_back(tokens_case_sen[0]);
+			}
+			else if (section == "FILE TRANSFER SECURITY")
+			{
+				vector<string> tokens_case_sen;
+				tokenize(line, tokens_case_sen);
+				tns_security_key = tokens_case_sen[0];
 			}
 		}
 	}
