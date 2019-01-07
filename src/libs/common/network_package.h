@@ -33,7 +33,8 @@ public:
 	int64_t get_group_id() const { return group; }
 	const std::vector<int8_t> &get_data(){ return data; }
 	void print_header(std::ostream &fout);
-	
+	const static int HASH_LEN = 256;
+	int8_t hash[HASH_LEN];
 
 private:
 	int64_t data_len;
