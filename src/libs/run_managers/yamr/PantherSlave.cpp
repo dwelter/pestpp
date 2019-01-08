@@ -647,6 +647,60 @@ void PANTHERSlave::start(const string &host, const string &port)
 			}
 			cout << "ping response sent" << endl;
 		}
+		else if (net_pack.get_type() == NetPackage::PackType::REQ_TNS_FILE)
+		{
+		//	//The master wants a file
+		//	cout << "received request for file...";
+		//	throw(PestNotImplementedError("Chas finish me. Read the required file and send it as a netpackage."));
+		//	
+		//	//Read the file
+		//	cout << "reading file...";
+		//	int filenumber = net_pack.get_file_number();				//How do I want to communicate the file number?
+		//	string filename = tnsfile_vec[filenumber]; 					//Do I need to turn this into another type for the file-reader?
+		//	const char* data = "";										//Change this line so it reads the file
+		//	const char* hmac = "";										//Change this line so it calculates the hmac
+
+		//	//Reset the netpackage and send it back with the file and hmac
+		//	net_pack.reset(NetPackage::PackType::TNS_FILE, 0, 0, "");	//How do I want to communicate the file number?
+		//	net_pack.set_file_number(filenumber);
+		//	net_pack.hash = hmac;										//Fix this cast
+		//	cout << "sending...";
+		//	err = send_message(net_pack, &data, 0);						//Third argument is the data length... that probably should be calculated to reflect the length of the file.
+		//	if (err != 1)
+		//	{
+		//		exit(-1);
+		//	}
+		//	cout << "done" << endl;
+		//}
+		//else if (net_pack.get_type() == NetPackage::PackType::TNS_FILE)
+		//{
+		//	//The master has sent a file
+		//	cout << "master has sent a file...";
+		//	throw(PestNotImplementedError("Chas finish me. Verify the hmac and write the file."));
+
+		//	//Checking hmac
+		//	cout << "checking hmac...";
+		//	const char* data_hmac = "";									//Change this line so it calculates the hmac
+		//	if (data_hmac == net_pack.hash)								//How to do a string comparison?
+		//	{
+		//		cout << "ok...";
+		//	}
+		//	else
+		//	{
+		//		cout << "invalid" << endl;
+		//		exit(-1);
+		//	}
+
+		//	//Write the file
+		//	cout << "writing file...";
+		//	bool allow_replace = TRUE;
+		//	err = write_file(filename, data, allow_replace);
+		//	if (err != 1)
+		//	{
+		//		exit(-1);
+		//	}
+		//	cout << "done" << endl;
+		}
 		else 
 		{
 			cout << "received unsupported messaged type: " << int(net_pack.get_type()) << endl;
