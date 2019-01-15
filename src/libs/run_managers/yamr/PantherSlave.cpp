@@ -650,11 +650,7 @@ void PANTHERSlave::start(const string &host, const string &port)
 		else if (net_pack.get_type() == NetPackage::PackType::REQ_TNS_FILE)
 		{
 			//The master wants a file
-			cout << "received request for file...";
-			throw(PestNotImplementedError("Chas finish me. Read the required file and send it as a netpackage."));
-			
-			//Read the file
-			cout << "reading file...";
+			cout << "master has requested a file...";
 			int file_number = net_pack.get_file_number();				//How do I want to communicate the file number?
 			string file_name = tnsfile_vec[file_number];
 			ifstream file(file_name, ios::in | ios::binary | ios::ate);			
@@ -681,38 +677,29 @@ void PANTHERSlave::start(const string &host, const string &port)
 		{
 			//The master has sent a file
 			cout << "master has sent a file...";
-			throw(PestNotImplementedError("Chas finish me. Verify the hmac and write the file."));
 
 			//Calculating the hmac and checking it
 			vector<int8_t> data_v = net_pack.get_data();
 			string data_s = (char*)&data_v[0]; //&data_v[0] is a pointer to the start of the vector
 			string calculated_hmac = hmacsha2::hmac(data_s, tns_security_key);
-			if (calculated_hmac == (char*)net_pack.hash)
-			{
-				cout << "hmac ok...";
-			}
-			else
+			if (calculated_hmac != (char*)net_pack.hash)
 			{
 				cout << "hmac invalid" << endl;
 				exit(-1);
 			}
 
 			//Write the file
-			cout << "writing file...";
 			int file_number = net_pack.get_file_number();				//How do I want to communicate the file number?
 			string file_name = tnsfile_vec[file_number];
-			try
+			cout << "writing file..." << file_name << "...";
+			if (!check_file_is_safe_for_transfer(file_name))
 			{
-				ofstream out(file_name);
-				out << data_s;
-				out.close();
-				cout << file_name << " written and closed." << endl;
-			}
-			catch (...)
-			{
-				err = -1;
+				cout << "file deemed unsafe.";
 				exit(-1);
 			}
+			ofstream out(file_name);
+			out << data_s;
+			out.close();
 			cout << "done" << endl;
 		}
 		else 
@@ -751,49 +738,3 @@ bool PANTHERSlave::check_file_is_safe_for_transfer(const string &filename) {
 
 	return answer;
 }
-
-
-///Read a given file and send it to the master.
-void PANTHERSlave::send_file_to_master(const string &filename, bool skip_file_safety_checks) {
-	if (skip_file_safety_checks || check_file_is_safe_for_transfer(filename))
-	{
-		//TODO: Chas write this bit
-		throw(PestNotImplementedError("Perform file transfer after passed safety checks."));
-	}
-	else
-	{
-		//TODO: Chas write this bit
-		throw(PestNotImplementedError("Reject file transfer due to failed safety checks."));
-	}
-}
-//
-//
-//char * try_read_file_in_binary_mode(const string &filename, char * &memblock, int *)
-//{
-//	streampos size;
-//	char * memblock;
-//	
-//	ifstream file(filename, ios::in | ios::binary | ios::ate);
-//	if (file.is_open())
-//	{
-//		size = file.tellg();
-//		memblock = new char[size];
-//		file.seekg(0, ios::beg);
-//		file.read(memblock, size);
-//		file.close();
-//		return memblock;
-//	}
-//	else
-//	{
-//		if (memblock != NULL)
-//			delete[] memblock;
-//		return NULL;
-//	}
-//}
-//
-//
-//bool try_write_binary_file(const string &filename)
-//{
-//
-//
-//}

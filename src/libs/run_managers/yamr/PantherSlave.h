@@ -51,7 +51,6 @@ public:
 	void listener();
 	void process_ctl_file(const string &ctl_filename);
 	bool check_file_is_safe_for_transfer(const string &filename);
-	void send_file_to_master(const string &filename, bool skip_file_safety_checks);
 private:
 	int sockfd;
 	int fdmax;
