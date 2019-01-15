@@ -9,6 +9,7 @@
 #include "system_variables.h"
 #include "utilities.h"
 #include <regex>
+#include "hmacsha2.h"
 
 using namespace pest_utils;
 
@@ -79,7 +80,6 @@ void PANTHERSlave::process_ctl_file(const string &ctl_filename)
 	string section("");
 	string line;
 	string line_upper;
-	string tns_security_key;
 	vector<string> tokens;
 
 	int num_par;
@@ -649,57 +649,71 @@ void PANTHERSlave::start(const string &host, const string &port)
 		}
 		else if (net_pack.get_type() == NetPackage::PackType::REQ_TNS_FILE)
 		{
-		//	//The master wants a file
-		//	cout << "received request for file...";
-		//	throw(PestNotImplementedError("Chas finish me. Read the required file and send it as a netpackage."));
-		//	
-		//	//Read the file
-		//	cout << "reading file...";
-		//	int filenumber = net_pack.get_file_number();				//How do I want to communicate the file number?
-		//	string filename = tnsfile_vec[filenumber]; 					//Do I need to turn this into another type for the file-reader?
-		//	const char* data = "";										//Change this line so it reads the file
-		//	const char* hmac = "";										//Change this line so it calculates the hmac
+			//The master wants a file
+			cout << "received request for file...";
+			throw(PestNotImplementedError("Chas finish me. Read the required file and send it as a netpackage."));
+			
+			//Read the file
+			cout << "reading file...";
+			int file_number = net_pack.get_file_number();				//How do I want to communicate the file number?
+			string file_name = tnsfile_vec[file_number];
+			ifstream file(file_name, ios::in | ios::binary | ios::ate);			
+			stringstream data_buffer;
+			data_buffer << file.rdbuf();
+			const string data = data_buffer.str();						//This gives me a string. Maybe data needs to be a char*
 
-		//	//Reset the netpackage and send it back with the file and hmac
-		//	net_pack.reset(NetPackage::PackType::TNS_FILE, 0, 0, "");	//How do I want to communicate the file number?
-		//	net_pack.set_file_number(filenumber);
-		//	net_pack.hash = hmac;										//Fix this cast
-		//	cout << "sending...";
-		//	err = send_message(net_pack, &data, 0);						//Third argument is the data length... that probably should be calculated to reflect the length of the file.
-		//	if (err != 1)
-		//	{
-		//		exit(-1);
-		//	}
-		//	cout << "done" << endl;
-		//}
-		//else if (net_pack.get_type() == NetPackage::PackType::TNS_FILE)
-		//{
-		//	//The master has sent a file
-		//	cout << "master has sent a file...";
-		//	throw(PestNotImplementedError("Chas finish me. Verify the hmac and write the file."));
+			//Calculate the hmac to send
+			string data_hmac = hmacsha2::hmac(data, tns_security_key);
 
-		//	//Checking hmac
-		//	cout << "checking hmac...";
-		//	const char* data_hmac = "";									//Change this line so it calculates the hmac
-		//	if (data_hmac == net_pack.hash)								//How to do a string comparison?
-		//	{
-		//		cout << "ok...";
-		//	}
-		//	else
-		//	{
-		//		cout << "invalid" << endl;
-		//		exit(-1);
-		//	}
+			//Reset the netpackage and send it back with the file and hmac
+			net_pack.reset(NetPackage::PackType::TNS_FILE, 0, 0, "");
+			net_pack.set_file_number(file_number);						//How do I want to communicate the file number?
+			strncpy((char*)net_pack.hash, data_hmac.c_str(), data_hmac.length());
+			cout << "sending...";
+			err = send_message(net_pack, &data, data.length());
+			if (err != 1)
+			{
+				exit(-1);
+			}
+			cout << "done" << endl;
+		}
+		else if (net_pack.get_type() == NetPackage::PackType::TNS_FILE)
+		{
+			//The master has sent a file
+			cout << "master has sent a file...";
+			throw(PestNotImplementedError("Chas finish me. Verify the hmac and write the file."));
 
-		//	//Write the file
-		//	cout << "writing file...";
-		//	bool allow_replace = TRUE;
-		//	err = write_file(filename, data, allow_replace);
-		//	if (err != 1)
-		//	{
-		//		exit(-1);
-		//	}
-		//	cout << "done" << endl;
+			//Calculating the hmac and checking it
+			vector<int8_t> data_v = net_pack.get_data();
+			string data_s = (char*)&data_v[0]; //&data_v[0] is a pointer to the start of the vector
+			string calculated_hmac = hmacsha2::hmac(data_s, tns_security_key);
+			if (calculated_hmac == (char*)net_pack.hash)
+			{
+				cout << "hmac ok...";
+			}
+			else
+			{
+				cout << "hmac invalid" << endl;
+				exit(-1);
+			}
+
+			//Write the file
+			cout << "writing file...";
+			int file_number = net_pack.get_file_number();				//How do I want to communicate the file number?
+			string file_name = tnsfile_vec[file_number];
+			try
+			{
+				ofstream out(file_name);
+				out << data_s;
+				out.close();
+				cout << file_name << " written and closed." << endl;
+			}
+			catch (...)
+			{
+				err = -1;
+				exit(-1);
+			}
+			cout << "done" << endl;
 		}
 		else 
 		{
@@ -752,3 +766,34 @@ void PANTHERSlave::send_file_to_master(const string &filename, bool skip_file_sa
 		throw(PestNotImplementedError("Reject file transfer due to failed safety checks."));
 	}
 }
+//
+//
+//char * try_read_file_in_binary_mode(const string &filename, char * &memblock, int *)
+//{
+//	streampos size;
+//	char * memblock;
+//	
+//	ifstream file(filename, ios::in | ios::binary | ios::ate);
+//	if (file.is_open())
+//	{
+//		size = file.tellg();
+//		memblock = new char[size];
+//		file.seekg(0, ios::beg);
+//		file.read(memblock, size);
+//		file.close();
+//		return memblock;
+//	}
+//	else
+//	{
+//		if (memblock != NULL)
+//			delete[] memblock;
+//		return NULL;
+//	}
+//}
+//
+//
+//bool try_write_binary_file(const string &filename)
+//{
+//
+//
+//}

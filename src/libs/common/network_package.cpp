@@ -300,6 +300,20 @@ void NetPackage::print_header(std::ostream &fout)
 		", data package size = " << data.size() << endl; 
 }
 
+int NetPackage::get_file_number()
+{
+	//In file-transfers the file is specified by a number.
+	//TODO: Chas find somewhere to transmit the file number. I think most options (run_id, group, description, data) are being used for other things already.	
+	//int filenumber = sscanf(desc, "%d", &x);
+	return 0;
+}
+
+void NetPackage::set_file_number(int file_number)
+{
+	//In file-transfers the file is specified by a number.
+	//TODO: Chas find somewhere to transmit the file number. I think most options (run_id, group, description, data) are being used for other things already.	
+}
+
 //template std::string NetPackage::extract_string< std::vector<int8_t>::iterator>(std::vector<int8_t>::iterator first, std::vector<int8_t>::iterator last);
 template std::vector<int8_t> NetPackage::pack_string< std::string::iterator>(std::string::iterator first, std::string::iterator last);
 template std::vector<int8_t> NetPackage::pack_string< std::string::const_iterator>(std::string::const_iterator first, std::string::const_iterator last);

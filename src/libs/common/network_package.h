@@ -33,6 +33,8 @@ public:
 	int64_t get_group_id() const { return group; }
 	const std::vector<int8_t> &get_data(){ return data; }
 	void print_header(std::ostream &fout);
+	int get_file_number();
+	void set_file_number(int file_number);
 	const static int HASH_LEN = 256;
 	int8_t hash[HASH_LEN];
 
