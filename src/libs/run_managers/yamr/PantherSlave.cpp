@@ -651,24 +651,23 @@ void PANTHERSlave::start(const string &host, const string &port)
 		{
 			//The master wants a file
 			cout << "master has requested a file...";
-			int file_number = net_pack.get_file_number();				//How do I want to communicate the file number?
+			int file_number = net_pack.get_file_number();					//How do I want to communicate the file number?
 			string file_name = tnsfile_vec[file_number];
-			ifstream file(file_name, ios::in | ios::binary | ios::ate);			
+			ifstream file(file_name, ios::in | ios::binary | ios::ate);		//Open the file and read it
 			stringstream data_buffer;
 			data_buffer << file.rdbuf();
-			const string data = data_buffer.str();						//This gives me a string. Maybe data needs to be a char*
-
-			//Calculate the hmac to send
-			string data_hmac = hmacsha2::hmac(data, tns_security_key);
+			const string data = data_buffer.str();							//This gives me a string. Maybe data needs to be a char*
+			string data_hmac = hmacsha2::hmac(data, tns_security_key);		//Calculate the hmac to send
 
 			//Reset the netpackage and send it back with the file and hmac
 			net_pack.reset(NetPackage::PackType::TNS_FILE, 0, 0, "");
-			net_pack.set_file_number(file_number);						//How do I want to communicate the file number?
+			net_pack.set_file_number(file_number);							//How do I want to communicate the file number?
 			strncpy((char*)net_pack.hash, data_hmac.c_str(), data_hmac.length());
 			cout << "sending...";
-			err = send_message(net_pack, &data, data.length());
+			err = send_message(net_pack, &data[0], data.length());			//&data_v[0] is a pointer to the first char in the string
 			if (err != 1)
 			{
+				cout << "error sending message" << endl;
 				exit(-1);
 			}
 			cout << "done" << endl;
@@ -677,10 +676,8 @@ void PANTHERSlave::start(const string &host, const string &port)
 		{
 			//The master has sent a file
 			cout << "master has sent a file...";
-
-			//Calculating the hmac and checking it
 			vector<int8_t> data_v = net_pack.get_data();
-			string data_s = (char*)&data_v[0]; //&data_v[0] is a pointer to the start of the vector
+			string data_s = (char*)&data_v[0];								//&data_v[0] is a pointer to the first char in the string
 			string calculated_hmac = hmacsha2::hmac(data_s, tns_security_key);
 			if (calculated_hmac != (char*)net_pack.hash)
 			{
@@ -689,15 +686,10 @@ void PANTHERSlave::start(const string &host, const string &port)
 			}
 
 			//Write the file
-			int file_number = net_pack.get_file_number();				//How do I want to communicate the file number?
+			int file_number = net_pack.get_file_number();					//How do I want to communicate the file number?
 			string file_name = tnsfile_vec[file_number];
 			cout << "writing file..." << file_name << "...";
-			if (!check_file_is_safe_for_transfer(file_name))
-			{
-				cout << "file deemed unsafe.";
-				exit(-1);
-			}
-			ofstream out(file_name);
+			ofstream out(file_name, ios::out | ios::binary);
 			out << data_s;
 			out.close();
 			cout << "done" << endl;
@@ -709,32 +701,4 @@ void PANTHERSlave::start(const string &host, const string &port)
 		//w_sleep(100);
 		this_thread::sleep_for(chrono::milliseconds(100));
 	}
-}
-
-
-///Check that the given file doesn't pose a security threat for file transfer.
-bool PANTHERSlave::check_file_is_safe_for_transfer(const string &filename) {
-	bool answer = true;
-
-#if !(defined(_WIN64) || defined(_WIN32))
-	//check linux permissions do not allow execution
-	//ref https://stackoverflow.com/questions/8812959/how-to-read-linux-file-permission-programmatically-in-c-c/46436636
-	struct stat st;
-	if (stat(filename, &st) == 0)
-	{
-		mode_t perm = st.st_mode;
-		if ((perm & S_IXUSR) || (perm & S_IXGRP) || (perm & S_IXOTH)) {
-			answer = false;
-		}
-	}
-#endif
-
-	//check extensions
-	if (pest_utils::string_ends_with(filename, ".exe") || 
-		pest_utils::string_ends_with(filename, ".bat") || 
-		pest_utils::string_ends_with(filename, ".com")) {
-		answer = false;
-	}
-
-	return answer;
 }
