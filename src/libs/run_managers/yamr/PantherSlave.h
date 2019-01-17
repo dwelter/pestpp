@@ -71,7 +71,7 @@ private:
 	std::vector<std::string> inpfile_vec;
 	std::vector<std::string> insfile_vec;
 	std::vector<std::string> outfile_vec;
-	std::vector<std::string> tnsfile_vec;
+	std::vector<std::string> transfer_file_names;
 	std::vector<std::string> obs_name_vec;
 	std::vector<std::string> par_name_vec;
 	

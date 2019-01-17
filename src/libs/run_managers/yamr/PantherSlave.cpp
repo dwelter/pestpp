@@ -90,7 +90,7 @@ void PANTHERSlave::process_ctl_file(const string &ctl_filename)
 	inpfile_vec.clear();
 	insfile_vec.clear();
 	outfile_vec.clear();
-	tnsfile_vec.clear();
+	transfer_file_names.clear();
 	std::vector<std::string> pestpp_lines;
 	fin.open(ctl_filename);
 	if (!fin)
@@ -185,7 +185,7 @@ void PANTHERSlave::process_ctl_file(const string &ctl_filename)
 			{
 				vector<string> tokens_case_sen;
 				tokenize(line, tokens_case_sen);
-				tnsfile_vec.push_back(tokens_case_sen[0]);
+				transfer_file_names.push_back(tokens_case_sen[0]);
 			}
 			else if (section == "FILE TRANSFER SECURITY")
 			{
