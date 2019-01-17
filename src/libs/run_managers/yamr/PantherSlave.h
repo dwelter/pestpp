@@ -65,7 +65,7 @@ private:
 	static const int recv_timeout_secs = 1;	
 	bool terminate;
 	fd_set master;
-	string tns_security_key;
+	string transfer_security_key;
 	std::vector<std::string> comline_vec;
 	std::vector<std::string> tplfile_vec;
 	std::vector<std::string> inpfile_vec;

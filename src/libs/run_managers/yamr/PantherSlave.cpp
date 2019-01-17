@@ -191,7 +191,7 @@ void PANTHERSlave::process_ctl_file(const string &ctl_filename)
 			{
 				vector<string> tokens_case_sen;
 				tokenize(line, tokens_case_sen);
-				tns_security_key = tokens_case_sen[0];
+				transfer_security_key = tokens_case_sen[0];
 			}
 		}
 	}
@@ -657,7 +657,7 @@ void PANTHERSlave::start(const string &host, const string &port)
 			stringstream data_buffer;
 			data_buffer << file.rdbuf();
 			const string data = data_buffer.str();							//This gives me a string. Maybe data needs to be a char*
-			string data_hmac = hmacsha2::hmac(data, tns_security_key);		//Calculate the hmac to send
+			string data_hmac = hmacsha2::hmac(data, transfer_security_key);	//Calculate the hmac to send
 
 			//Reset the netpackage and send it back with the file and hmac
 			net_pack.reset(NetPackage::PackType::TNS_FILE, 0, 0, "");
@@ -678,7 +678,7 @@ void PANTHERSlave::start(const string &host, const string &port)
 			cout << "master has sent a file...";
 			vector<int8_t> data_v = net_pack.get_data();
 			string data_s = (char*)&data_v[0];								//&data_v[0] is a pointer to the first char in the string
-			string calculated_hmac = hmacsha2::hmac(data_s, tns_security_key);
+			string calculated_hmac = hmacsha2::hmac(data_s, transfer_security_key);
 			if (calculated_hmac != (char*)net_pack.hash)
 			{
 				cout << "hmac invalid" << endl;
