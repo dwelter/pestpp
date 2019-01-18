@@ -652,7 +652,7 @@ void PANTHERSlave::start(const string &host, const string &port)
 			//The master wants a file
 			cout << "master has requested a file...";
 			int file_number = net_pack.get_file_number();					//How do I want to communicate the file number?
-			string file_name = tnsfile_vec[file_number];
+			string file_name = transfer_file_names[file_number];
 			ifstream file(file_name, ios::in | ios::binary | ios::ate);		//Open the file and read it
 			stringstream data_buffer;
 			data_buffer << file.rdbuf();
@@ -687,7 +687,7 @@ void PANTHERSlave::start(const string &host, const string &port)
 
 			//Write the file
 			int file_number = net_pack.get_file_number();					//How do I want to communicate the file number?
-			string file_name = tnsfile_vec[file_number];
+			string file_name = transfer_file_names[file_number];
 			cout << "writing file..." << file_name << "...";
 			ofstream out(file_name, ios::out | ios::binary);
 			out << data_s;
