@@ -491,6 +491,12 @@ RunManagerAbstract::RUN_UNTIL_COND RunManagerPanther::run_until(RUN_UNTIL_COND c
 		echo();
 		init_slaves();
 
+		if (demo_file_transfer)
+		{
+			bool success = file_transfer_demonstration();
+			demo_file_transfer = !success;
+		}
+
 		//schedule runs on available nodes
 		schedule_runs();
 		echo();
@@ -544,6 +550,43 @@ RunManagerAbstract::RUN_UNTIL_COND RunManagerPanther::run_until(RUN_UNTIL_COND c
 	}
 	return terminate_reason;
 }
+
+
+//Chas temp function to demonstrate file transfer
+bool RunManagerPanther::file_transfer_demonstration()
+{
+	bool demonstration_complete = false;
+	for (auto &i_slv : slave_info_set)
+	{
+		int i_sock = i_slv.get_socket_fd();
+		SlaveInfoRec::State cur_state = i_slv.get_state();
+		if (cur_state == SlaveInfoRec::State::WAITING)
+		{
+			//Request a file
+			NetPackage net_pack(NetPackage::PackType::REQ_TNS_FILE, 0, 0, "");
+			char data = '\0';
+			int err = net_pack.send(i_sock, &data, sizeof(data));
+			if (err > 0)
+			{				
+				i_slv.set_state(SlaveInfoRec::State::FTN_REQ);
+			}
+		}
+		else if (cur_state == SlaveInfoRec::State::FTN_REC)
+		{
+			//Send a file
+			NetPackage net_pack(NetPackage::PackType::TNS_FILE, 0, 0, "");
+			char data = '\0';
+			int err = net_pack.send(i_sock, &data, sizeof(data));
+			if (err > 0)
+			{
+				i_slv.set_state(SlaveInfoRec::State::WAITING);
+			}
+			demonstration_complete = true;
+		}
+	}
+	return demonstration_complete;
+}
+
 
 bool RunManagerPanther::ping()
 {
@@ -1103,6 +1146,18 @@ void RunManagerPanther::process_message(int i_sock)
 		//string err(net_pack.get_data().begin(),net_pack.get_data().end());		
 		report("error in model IO files on worker: " + host_name + "$" + slave_info_iter->get_work_dir() + "-terminating worker. ", true);
 		close_slave(i_sock);
+	}
+	else if (net_pack.get_type() == NetPackage::PackType::REQ_TNS_FILE)
+	{
+		//The slave should not be requesting a file transfer.
+		report("slave should not be requesting file transfer: " + host_name + "$" + slave_info_iter->get_work_dir() + "-terminating worker. ", true);
+		close_slave(i_sock);
+	}
+	else if (net_pack.get_type() == NetPackage::PackType::TNS_FILE)
+	{
+		//The slave has sent us a file.
+		//Check the HMAC.
+		//Save the file.
 	}
 	else
 	{
