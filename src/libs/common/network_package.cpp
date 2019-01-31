@@ -157,6 +157,7 @@ int NetPackage::send(int sockfd, const void *data, int64_t data_len_l)
 	buf_sz += sizeof(run_id);
 	buf_sz += sizeof(desc);
 	buf_sz += sizeof(hash);
+	buf_sz += sizeof(file_number);
 	buf_sz += data_len_l;
 	//pack information into buffer
 	//unique_ptr<char[]> buf(new char[buf_sz]);
@@ -175,6 +176,8 @@ int NetPackage::send(int sockfd, const void *data, int64_t data_len_l)
 	i_start += sizeof(desc);
 	w_memcpy_s(&buf[i_start], buf_sz-i_start, hash, sizeof(hash));
 	i_start += sizeof(hash);
+	w_memcpy_s(&buf[i_start], buf_sz - i_start, &file_number, sizeof(file_number));
+	i_start += sizeof(file_number);
 	if (data_len_l > 0) {
 		w_memcpy_s(&buf[i_start], buf_sz-i_start, data, data_len_l);
 		i_start += data_len_l;
@@ -201,7 +204,7 @@ int  NetPackage::recv(int sockfd)
 
 	try{
 		//get header (ie size, seq_id, id and name)
-		header_sz = sizeof(buf_sz) + sizeof(type) + sizeof(group) + sizeof(run_id) + sizeof(desc) + sizeof(hash);
+		header_sz = sizeof(buf_sz) + sizeof(type) + sizeof(group) + sizeof(run_id) + sizeof(desc) + sizeof(hash) + sizeof(file_number);
 		vector<int8_t> header_buf;
 		header_buf.resize(header_sz, '\0');
 		n = w_recvall(sockfd, &rcv_security_code[0], &rcv_security_code_size);
@@ -266,6 +269,8 @@ int  NetPackage::recv(int sockfd)
 				}
 			}
 			i_start += sizeof(hash);
+			w_memcpy_s(&file_number, sizeof(file_number), &header_buf[i_start], sizeof(file_number));
+			i_start += sizeof(file_number);
 			//get data
 			data_len = buf_sz - i_start;
 			data.resize(data_len, '\0');
@@ -303,15 +308,13 @@ void NetPackage::print_header(std::ostream &fout)
 int NetPackage::get_file_number()
 {
 	//In file-transfers the file is specified by a number.
-	//TODO: Chas find somewhere to transmit the file number. I think most options (run_id, group, description, data) are being used for other things already.	
-	//int filenumber = sscanf(desc, "%d", &x);
-	return 0;
+	return file_number;
 }
 
-void NetPackage::set_file_number(int file_number)
+void NetPackage::set_file_number(int _file_number)
 {
 	//In file-transfers the file is specified by a number.
-	//TODO: Chas find somewhere to transmit the file number. I think most options (run_id, group, description, data) are being used for other things already.	
+	file_number = _file_number;
 }
 
 //template std::string NetPackage::extract_string< std::vector<int8_t>::iterator>(std::vector<int8_t>::iterator first, std::vector<int8_t>::iterator last);
