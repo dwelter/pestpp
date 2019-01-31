@@ -1,0 +1,64 @@
+pcf
+* control data
+norestart estimation
+16 1 16 0 1
+1 1 single point 1 0 0
+5.0 2.0 0.4 0.03 10
+3.0 3.0 1.0e-3
+.1
+100 .01 20 3 .01 3
+0 0 0
+* pso
+0 9999 0
+50 2.0 2.05 555
+0 0.9 0.4 100
+0 0
+* parameter groups
+adimp1 relative .001 .00001 switch 2.0 parabolic
+lzfpm1 relative .001 .00001 switch 2.0 parabolic
+lzfsm1 relative .001 .00001 switch 2.0 parabolic
+lzpk1 relative .001 .00001 switch 2.0 parabolic
+lzsk1 relative .001 .00001 switch 2.0 parabolic
+lztwm1 relative .001 .00001 switch 2.0 parabolic
+pctim1 relative .001 .00001 switch 2.0 parabolic
+pfree1 relative .001 .00001 switch 2.0 parabolic
+rexp1 relative .001 .00001 switch 2.0 parabolic
+sarva1 relative .001 .00001 switch 2.0 parabolic
+side1 relative .001 .00001 switch 2.0 parabolic
+ssout1 relative .001 .00001 switch 2.0 parabolic
+uzfwm1 relative .001 .00001 switch 2.0 parabolic
+uzk1 relative .001 .00001 switch 2.0 parabolic
+uztwm1 relative .001 .00001 switch 2.0 parabolic
+zperc1 relative .001 .00001 switch 2.0 parabolic
+* parameter data
+adimp1 log factor .01 .00001 .15 adimp1 1.0 0.0 1
+lzfpm1 log factor 60 1 300 lzfpm1 1.0 0.0 1
+lzfsm1 log factor 80 1 350 lzfsm1 1.0 0.0 1
+lzpk1 log factor .01 .001 .9 lzpk1 1.0 0.0 1
+lzsk1 log factor .1 .001 .9 lzsk1 1.0 0.0 1
+lztwm1 log factor 150 10 600 lztwm1 1.0 0.0 1
+pctim1 log factor .01 .00001 .11 pctim1 1.0 0.0 1
+pfree1 log factor .1 .01 0.5 pfree1 1.0 0.0 1
+rexp1 log factor 1.5 1.0 6.0 rexp1 1.0 0.0 1
+sarva1 log factor .001 .00001 .11 sarva1 1.0 0.0 1
+side1 log factor .01 .00001 .1 side1 1.0 0.0 1
+ssout1 log factor .01 .00001 .1 ssout1 1.0 0.0 1
+uzfwm1 log factor 50 5 155 uzfwm1 1.0 0.0 1
+uzk1 log factor 0.2 .1 1 uzk1 1.0 0.0 1
+uztwm1 log factor 30 12 180 uztwm1 1.0 0.0 1
+zperc1 log factor 180 1 600 zperc1 1.0 0.0 1
+* observation groups
+obs1
+* observation data
+obs1      0   1.0    obs1      2
+* model command line
+run_fors.bat
+* model input/output
+model9.ptf model9.fors
+model9.ins ForsCalibrate.log
+* prior information
+* file transfer
+file0_from_slave.txt
+file1_from_master.txt
+* file transfer security
+strongPassword123
