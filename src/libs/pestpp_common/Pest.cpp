@@ -608,6 +608,24 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 		{
 			model_exec_info.comline_vec.push_back(line);
 		}
+		else if (section == "FILE TRANSFER")
+		{
+			//vector<string> tokens_case_sen;
+			//tokenize(line, tokens_case_sen);
+			//transfer_file_names.push_back(tokens_case_sen[0]);
+
+			//CHAS: we need somewhere to put the file transfer names
+			//Maybe create a class or strucutre called "file_transfer_info" and use it like "model_exec_info" is used below.
+		}
+		else if (section == "FILE TRANSFER SECURITY")
+		{
+			//vector<string> tokens_case_sen;
+			//tokenize(line, tokens_case_sen);
+			//transfer_security_key = tokens_case_sen[0];
+
+			//CHAS: we need somewhere to put the transfer_security_key
+			//Maybe create a class or strucutre called "file_transfer_info" and use it like "model_exec_info" is used below.
+		}
 		else if (section == "MODEL INPUT/OUTPUT" )
 		{
 			vector<string> tokens_case_sen;
