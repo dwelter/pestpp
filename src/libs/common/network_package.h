@@ -37,6 +37,7 @@ public:
 	void set_file_number(int _file_number);
 	const static int HASH_LEN = 256;
 	int8_t hash[HASH_LEN];
+	void set_hash(std::string _hash_string);
 
 private:
 	int64_t data_len;

@@ -659,10 +659,10 @@ void PANTHERSlave::start(const string &host, const string &port)
 			const string data = data_buffer.str();							//This gives me a string. Maybe data needs to be a char*
 			string data_hmac = hmacsha2::hmac(data, transfer_security_key);	//Calculate the hmac to send
 
-			//Reset the netpackage and send it back with the file and hmac
+			//Reset the netpackage and send it back with the file, file_number, and hmac
 			net_pack.reset(NetPackage::PackType::TNS_FILE, 0, 0, "");
-			net_pack.set_file_number(file_number);							//How do I want to communicate the file number?
-			strncpy((char*)net_pack.hash, data_hmac.c_str(), data_hmac.length());
+			net_pack.set_file_number(file_number);
+			net_pack.set_hash(data_hmac);
 			cout << "sending...";
 			err = send_message(net_pack, &data[0], data.length());			//&data_v[0] is a pointer to the first char in the string
 			if (err != 1)

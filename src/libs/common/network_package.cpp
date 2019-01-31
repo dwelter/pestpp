@@ -317,6 +317,12 @@ void NetPackage::set_file_number(int _file_number)
 	file_number = _file_number;
 }
 
+void NetPackage::set_hash(string _hash_string)
+{
+	//Copy the provided hash string into the local hash var (which is an int8_t[]).
+	strncpy((char*)hash, _hash_string.c_str(), _hash_string.length());
+}
+
 //template std::string NetPackage::extract_string< std::vector<int8_t>::iterator>(std::vector<int8_t>::iterator first, std::vector<int8_t>::iterator last);
 template std::vector<int8_t> NetPackage::pack_string< std::string::iterator>(std::string::iterator first, std::string::iterator last);
 template std::vector<int8_t> NetPackage::pack_string< std::string::const_iterator>(std::string::const_iterator first, std::string::const_iterator last);

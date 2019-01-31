@@ -39,6 +39,7 @@
 #include "Transformable.h"
 #include "utilities.h"
 #include "Serialization.h"
+#include "hmacsha2.h"
 
 
 using namespace std;
@@ -564,7 +565,9 @@ bool RunManagerPanther::file_transfer_demonstration()
 		{
 			//Request a file
 			NetPackage net_pack(NetPackage::PackType::REQ_TNS_FILE, 0, 0, "");
+			int file_number = 0;											//<-- request file number 0
 			char data = '\0';
+			net_pack.set_file_number(file_number);
 			int err = net_pack.send(i_sock, &data, sizeof(data));
 			if (err > 0)
 			{				
@@ -575,8 +578,16 @@ bool RunManagerPanther::file_transfer_demonstration()
 		{
 			//Send a file
 			NetPackage net_pack(NetPackage::PackType::TNS_FILE, 0, 0, "");
-			char data = '\0';
-			int err = net_pack.send(i_sock, &data, sizeof(data));
+			int file_number = 1;											//<-- send file number 1	
+			string file_name = "file1_from_master.txt";						//this should be something like = transfer_file_names[file_number];
+			ifstream file(file_name, ios::in | ios::binary | ios::ate);		//Open the file and read it
+			stringstream data_buffer;
+			data_buffer << file.rdbuf();
+			const string data = data_buffer.str();
+			string data_hmac = hmacsha2::hmac(data, transfer_security_key);	//Calculate the hmac to send			
+			net_pack.set_file_number(file_number);
+			net_pack.set_hash(data_hmac);
+			int err = net_pack.send(i_sock, &data[0], sizeof(data));
 			if (err > 0)
 			{
 				i_slv.set_state(SlaveInfoRec::State::WAITING);
