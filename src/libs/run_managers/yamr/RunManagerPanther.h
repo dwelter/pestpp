@@ -110,6 +110,7 @@ public:
 	void close_slaves();
 	std::string get_security_key();
 	void set_security_key(const std::string &security_key);
+	bool demo_file_transfer = false;    //Chas temp for file transfer demonstration
 
 private:
 	std::string port;

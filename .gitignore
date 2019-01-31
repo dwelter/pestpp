@@ -28,6 +28,9 @@
 
 # User files
 /src/local.mak
+*.vcxproj.user
+.vs
+*.VC.db
 
 # Makefile object
 /src/libs/build-stamp
