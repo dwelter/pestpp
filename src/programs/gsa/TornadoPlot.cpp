@@ -19,42 +19,39 @@
 
 using namespace std;
 using namespace pest_utils;
-TornadoPlot::TornadoPlot(const vector<string> &_adj_par_name_vec, const Parameters &_fixed_pars, const Parameters &_init_pars,
-	const Parameters &_lower_bnd, const Parameters &_upper_bnd, const set<string> &_log_trans_pars,
-	ParamTransformSeq *_base_partran_seq_ptr, const std::vector<std::string> &_obs_name_vec, 
-	FileManager *file_manager_ptr, const ObservationInfo *_obs_info_ptr,
-	bool _calc_obs_sen)
-	//: GsaAbstractBase(_base_partran_seq_ptr, _adj_par_name_vec, _fixed_pars, _lower_bnd, _upper_bnd,
-	//_obs_name_vec, file_manager_ptr), init_pars(_init_pars), obs_info_ptr(_obs_info_ptr), calc_obs_sen(_calc_obs_sen)
+TornadoPlot::TornadoPlot(Pest &_pest_scenario,
+		FileManager &_file_manager, ObjectiveFunc *_obj_func_ptr,
+		const ParamTransformSeq &_par_transform, bool _calc_obs_sen)
+	: GsaAbstractBase(_pest_scenario, _file_manager, _obj_func_ptr, _par_transform,
+		GsaAbstractBase::PARAM_DIST::uniform, 1), calc_obs_sen(_calc_obs_sen)
 {
-	log_trans_pars = _log_trans_pars;
+	init_pars = _pest_scenario.get_ctl_parameters();
+	max_ctl_pars = base_partran_seq_ptr->numeric2ctl_cp(max_numeric_pars);
+	min_ctl_pars = base_partran_seq_ptr->numeric2ctl_cp(min_numeric_pars);
 }
 
 void TornadoPlot::assemble_runs(RunManagerAbstract &run_manager)
 {
-	Parameters pars = fixed_ctl_pars;
-	pars.insert(init_pars);
-
 	// Assemble run Based on the inital Parameter values
 	Parameters tmp_pars;
-	tmp_pars = pars;
-	base_partran_seq_ptr->ctl2model_ip(tmp_pars);
-	int run_id = run_manager.add_run(tmp_pars, "base_run", Parameters::no_data);
+	tmp_pars = init_pars;
+	base_partran_seq_ptr->ctl2model_ip(init_pars);
+	int run_id = run_manager.add_run(tmp_pars, 1, "base_run", Parameters::no_data);
 
 	// Assemble runs which perturb each parameter to its max and min value
 	for (const auto &ipar : adj_par_name_vec)
 	{
-		tmp_pars = pars;
-		double low_value = lower_bnd.get_rec(ipar);
+		tmp_pars = init_pars;
+		double low_value = min_ctl_pars.get_rec(ipar);
 		tmp_pars[ipar] = low_value;
 		base_partran_seq_ptr->ctl2model_ip(tmp_pars);
-		run_id = run_manager.add_run(tmp_pars, ipar + " L", Parameters::no_data);
+		run_id = run_manager.add_run(tmp_pars, 1, ipar + " L", Parameters::no_data);
 
-		tmp_pars = pars;
-		double hi_value = upper_bnd.get_rec(ipar);
+		tmp_pars = init_pars;
+		double hi_value = max_ctl_pars.get_rec(ipar);
 		tmp_pars[ipar] = hi_value;
 		base_partran_seq_ptr->ctl2model_ip(tmp_pars);
-		run_id = run_manager.add_run(tmp_pars, ipar + " U", Parameters::no_data);
+		run_id = run_manager.add_run(tmp_pars, 1, ipar + " U", Parameters::no_data);
 	}
 }
 void  TornadoPlot::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run)
@@ -62,6 +59,7 @@ void  TornadoPlot::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run)
 	int n_runs = run_manager.get_nruns();
 	bool run_ok = false;
 	int run_status;
+	int model_exe_index;
 	string run_name;
 	double par_value_not_used;
 	cout << endl;
@@ -70,7 +68,7 @@ void  TornadoPlot::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run)
 		cerr << "Can not perform tornado calculations: insufficient number of runs (" << n_runs << ")" << endl;
 		return;
 	}
-	run_manager.get_info(0, run_status, run_name, par_value_not_used);
+	run_manager.get_info(0, run_status, model_exe_index, run_name, par_value_not_used);
 	if (run_status <= 0)
 	{
 		cerr << "Cannot perform tornado calculations: base run failed " << endl;
@@ -84,9 +82,11 @@ void  TornadoPlot::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run)
 	ofstream &fout_toi = file_manager_ptr->open_ofile_ext("toi");
 	if (calc_obs_sen)
 	{
-		for (const string &iobs : obs_name_vec)
+		const vector<string> &run_mngr_obs_name_vec = run_manager.get_obs_name_vec();
+		for (const string &iobs : run_mngr_obs_name_vec)
 		{
 			tornado_calc(run_manager, model_run, fout_toi, iobs);
+			fout_toi << "#" << endl;
 		}
 	}
 	file_manager_ptr->close_file("toi");
@@ -133,6 +133,7 @@ void  TornadoPlot::tornado_calc(RunManagerAbstract &run_manager, ModelRun model_
 	}
 
 	int run_status;
+	int model_exe_index;
 	string par_name;
 	string run_name;
 	char run_type;
@@ -150,7 +151,7 @@ void  TornadoPlot::tornado_calc(RunManagerAbstract &run_manager, ModelRun model_
 		message << "processing run " << i_run + 1 << " / " << n_runs;
 		std::cout << message.str();
 
-		run_manager.get_info(i_run, run_status, run_name, par_value_not_used);
+		run_manager.get_info(i_run, run_status, model_exe_index, run_name, par_value_not_used);
 		strip_ip(run_name);
 		run_type = run_name.back();
 		par_name = run_name.substr(0, run_name.size() - 2);
@@ -245,7 +246,7 @@ void  TornadoPlot::tornado_calc(RunManagerAbstract &run_manager, ModelRun model_
 				phi_lo << "na";
 			}
 			fout << par_name << ", " << phi_lo.str() << ", " << phi_base << ", " << phi_hi.str()
-				<< ", " << lower_bnd[par_name] << ", " << init_pars[par_name] << ", " << upper_bnd[par_name] << endl;
+				<< ", " << min_ctl_pars.get_rec(par_name) << ", " << init_pars[par_name] << ", " << max_ctl_pars.get_rec(par_name) << endl;
 		}
 	}
 }

@@ -42,7 +42,7 @@ public:
 protected:
 	PARAM_DIST par_dist;
 	std::vector<std::string> adj_par_name_vec;
-	std::vector<std::string> obs_name_vec;
+	//std::vector<std::string> obs_name_vec;
 	ParamTransformSeq gsa_parm_tran_seq;
 	const ParamTransformSeq *base_partran_seq_ptr;
 	FileManager *file_manager_ptr;

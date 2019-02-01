@@ -292,7 +292,9 @@ void  MorrisMethod::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run
 	Observations obs0;
 	Parameters pars1;
 	Observations obs1;
-	
+
+	vector<string> obs_names = run_manager.get_obs_name_vec();
+
 	map<string, RunningStats > sen_map;
 	map<string, RunningStats> obs_stats_map;
 
@@ -301,7 +303,7 @@ void  MorrisMethod::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run
 		sen_map[it_p] = RunningStats();
 	}
 
-	for (auto &it_obs : obs_name_vec)
+	for (auto &it_obs : obs_names)
 	{
 		obs_stats_map[it_obs] = RunningStats();
 	}
@@ -441,7 +443,7 @@ void  MorrisMethod::calc_sen(RunManagerAbstract &run_manager, ModelRun model_run
 					obs_pooled_grp_std_dev[pool_group] = sqrt(var_sum / weight_sum);
 				}
 			}
-			for (const auto &iobs : obs_name_vec)
+			for (const auto &iobs : obs_names)
 			{
 				const string &obs_name = iobs;
 				const string &obs_group = obs_info_ptr->get_group(obs_name);

@@ -25,7 +25,7 @@
 #include "config_os.h"
 #include "MorrisMethod.h"
 #include "sobol.h"
-//#include "TornadoPlot.h"
+#include "TornadoPlot.h"
 #include "Pest.h"
 #include "Transformable.h"
 #include "Transformation.h"
@@ -323,30 +323,21 @@ int main(int argc, char* argv[])
 		gsa_method = m_ptr;
 		m_ptr->process_pooled_var_file();
 	}
-	//else if (method != gsa_opt_map.end() && method->second == "TORNADO")
-	//{
-	//	bool calc_obs_sen = true;
-	//
-	//	auto morris_obs_sen_it = gsa_opt_map.find("TORNADO_OBS_SEN");
-	//	if (morris_obs_sen_it != gsa_opt_map.end())
-	//	{
-	//		string obs_sen_flag = morris_obs_sen_it->second;
-	//		upper_ip(obs_sen_flag);
-	//		if (obs_sen_flag == "FALSE") calc_obs_sen = false;
-	//	}
-	////	TornadoPlot(const std::vector<std::string> &_adj_par_name_vec, const Parameters &_fixed_ctl_pars, const Parameters &_init_pars,
-	//	///	const Parameters &lower_bnd,
-	//		//const Parameters &upper_bnd, const set<string> &_log_trans_pars,
-	//		//ParamTransformSeq *base_partran_seq,
-	//		//const std::vector<std::string> &_obs_name_vec, FileManager *_file_manager_ptr,
-	//		//const ObservationInfo *_obs_info_ptr, bool _calc_obs_sen);
-	//	Parameters init_par = pest_scenario.get_ctl_parameter_info().get_init_value(ctl_par.get_keys());
-	//	TornadoPlot *t_ptr = new TornadoPlot(adj_par_name_vec, fixed_pars, init_par,
-	//		lower_bnd, upper_bnd, log_trans_pars,
-	//		&base_partran_seq, pest_scenario.get_ctl_ordered_obs_names(), &file_manager,
-	//		&(pest_scenario.get_ctl_observation_info()), calc_obs_sen);
-	//	gsa_method = t_ptr;
-	//}
+	else if (method != gsa_opt_map.end() && method->second == "TORNADO")
+	{
+		bool calc_obs_sen = true;
+	
+		auto t_obs_sen_it = gsa_opt_map.find("TORNADO_OBS_SEN");
+		if (t_obs_sen_it != gsa_opt_map.end())
+		{
+			string obs_sen_flag = t_obs_sen_it->second;
+			upper_ip(obs_sen_flag);
+			if (obs_sen_flag == "FALSE") calc_obs_sen = false;
+		}
+		TornadoPlot *t_ptr = new TornadoPlot(pest_scenario, file_manager, &obj_func,
+			base_partran_seq, calc_obs_sen);
+		gsa_method = t_ptr;
+	}
 	else if (method != gsa_opt_map.end() && method->second == "SOBOL")
 	{
 		GsaAbstractBase::PARAM_DIST par_dist = GsaAbstractBase::PARAM_DIST::uniform;

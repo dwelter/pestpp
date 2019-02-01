@@ -449,6 +449,7 @@
     <ClInclude Include="MorrisMethod.h" />
     <ClInclude Include="sobol.h" />
     <ClInclude Include="Stats.h" />
+    <ClInclude Include="TornadoPlot.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GsaAbstractBase.cpp" />
@@ -456,6 +457,7 @@
     <ClCompile Include="MorrisMethod.cpp" />
     <ClCompile Include="sobol.cpp" />
     <ClCompile Include="Stats.cpp" />
+    <ClCompile Include="TornadoPlot.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\libs\common\common.vcxproj">
