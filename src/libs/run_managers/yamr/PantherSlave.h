@@ -50,8 +50,6 @@ public:
 	//void listener(pest_utils::thread_flag* terminate, pest_utils::thread_flag* finished);
 	void listener();
 	void process_ctl_file(const string &ctl_filename);
-	bool check_file_is_safe_for_transfer(const string &filename);
-	void send_file_to_master(const string &filename, bool skip_file_safety_checks);
 private:
 	int sockfd;
 	int fdmax;
@@ -67,11 +65,13 @@ private:
 	static const int recv_timeout_secs = 1;	
 	bool terminate;
 	fd_set master;
+	string transfer_security_key;
 	std::vector<std::string> comline_vec;
 	std::vector<std::string> tplfile_vec;
 	std::vector<std::string> inpfile_vec;
 	std::vector<std::string> insfile_vec;
 	std::vector<std::string> outfile_vec;
+	std::vector<std::string> transfer_file_names;
 	std::vector<std::string> obs_name_vec;
 	std::vector<std::string> par_name_vec;
 	

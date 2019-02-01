@@ -9,6 +9,7 @@
 #include "system_variables.h"
 #include "utilities.h"
 #include <regex>
+#include "hmacsha2.h"
 
 using namespace pest_utils;
 
@@ -89,6 +90,7 @@ void PANTHERSlave::process_ctl_file(const string &ctl_filename)
 	inpfile_vec.clear();
 	insfile_vec.clear();
 	outfile_vec.clear();
+	transfer_file_names.clear();
 	std::vector<std::string> pestpp_lines;
 	fin.open(ctl_filename);
 	if (!fin)
@@ -178,6 +180,18 @@ void PANTHERSlave::process_ctl_file(const string &ctl_filename)
 				tokenize(line, tokens_case_sen);
 				insfile_vec.push_back(tokens_case_sen[0]);
 				outfile_vec.push_back(tokens_case_sen[1]);
+			}
+			else if (section == "FILE TRANSFER")
+			{
+				vector<string> tokens_case_sen;
+				tokenize(line, tokens_case_sen);
+				transfer_file_names.push_back(tokens_case_sen[0]);
+			}
+			else if (section == "FILE TRANSFER SECURITY")
+			{
+				vector<string> tokens_case_sen;
+				tokenize(line, tokens_case_sen);
+				transfer_security_key = tokens_case_sen[0];
 			}
 		}
 	}
@@ -454,13 +468,13 @@ void PANTHERSlave::check_io()
 {
 	vector<string> inaccessible_files;
 	for (auto &file : insfile_vec)
-	if (!check_exist_in(file)) inaccessible_files.push_back(file);
+		if (!check_exist_in(file)) inaccessible_files.push_back(file);
 	for (auto &file : outfile_vec)
-	if (!check_exist_out(file)) inaccessible_files.push_back(file);
+		if (!check_exist_out(file)) inaccessible_files.push_back(file);
 	for (auto &file : tplfile_vec)
-	if (!check_exist_in(file)) inaccessible_files.push_back(file);
+		if (!check_exist_in(file)) inaccessible_files.push_back(file);
 	for (auto &file : inpfile_vec)
-	if (!check_exist_out(file)) inaccessible_files.push_back(file);
+		if (!check_exist_out(file)) inaccessible_files.push_back(file);
 
 	if (inaccessible_files.size() != 0)
 	{
@@ -633,54 +647,58 @@ void PANTHERSlave::start(const string &host, const string &port)
 			}
 			cout << "ping response sent" << endl;
 		}
+		else if (net_pack.get_type() == NetPackage::PackType::REQ_TNS_FILE)
+		{
+			//The master wants a file
+			cout << "master has requested a file...";
+			int file_number = net_pack.get_file_number();
+			string file_name = transfer_file_names[file_number];
+			ifstream file(file_name, ios::in | ios::binary | ios::ate);		//Open the file and read it
+			stringstream data_buffer;
+			data_buffer << file.rdbuf();
+			const string data = data_buffer.str();							//This gives me a string. Maybe data needs to be a char*
+			string data_hmac = hmacsha2::hmac(data, transfer_security_key);	//Calculate the hmac to send
+
+			//Reset the netpackage and send it back with the file, file_number, and hmac
+			net_pack.reset(NetPackage::PackType::TNS_FILE, 0, 0, "");
+			net_pack.set_file_number(file_number);
+			net_pack.set_hash(data_hmac);
+			cout << "sending...";
+			err = send_message(net_pack, &data[0], data.length());			//&data_v[0] is a pointer to the first char in the string
+			if (err != 1)
+			{
+				cout << "error sending message" << endl;
+				exit(-1);
+			}
+			cout << "done" << endl;
+		}
+		else if (net_pack.get_type() == NetPackage::PackType::TNS_FILE)
+		{
+			//The master has sent a file
+			cout << "master has sent a file...";
+			vector<int8_t> data_v = net_pack.get_data();
+			string data_s = (char*)&data_v[0];								//&data_v[0] is a pointer to the first char in the string
+			string calculated_hmac = hmacsha2::hmac(data_s, transfer_security_key);
+			if (calculated_hmac != (char*)net_pack.hash)
+			{
+				cout << "hmac invalid" << endl;
+				exit(-1);
+			}
+
+			//Write the file
+			int file_number = net_pack.get_file_number();
+			string file_name = transfer_file_names[file_number];
+			cout << "writing file..." << file_name << "...";
+			ofstream out(file_name, ios::out | ios::binary);
+			out << data_s;
+			out.close();
+			cout << "done" << endl;
+		}
 		else 
 		{
 			cout << "received unsupported messaged type: " << int(net_pack.get_type()) << endl;
 		}
 		//w_sleep(100);
 		this_thread::sleep_for(chrono::milliseconds(100));
-	}
-}
-
-
-///Check that the given file doesn't pose a security threat for file transfer.
-bool PANTHERSlave::check_file_is_safe_for_transfer(const string &filename) {
-	bool answer = true;
-
-#if !(defined(_WIN64) || defined(_WIN32))
-	//check linux permissions do not allow execution
-	//ref https://stackoverflow.com/questions/8812959/how-to-read-linux-file-permission-programmatically-in-c-c/46436636
-	struct stat st;
-	if (stat(filename, &st) == 0)
-	{
-		mode_t perm = st.st_mode;
-		if ((perm & S_IXUSR) || (perm & S_IXGRP) || (perm & S_IXOTH)) {
-			answer = false;
-		}
-	}
-#endif
-
-	//check extensions
-	if (pest_utils::string_ends_with(filename, ".exe") || 
-		pest_utils::string_ends_with(filename, ".bat") || 
-		pest_utils::string_ends_with(filename, ".com")) {
-		answer = false;
-	}
-
-	return answer;
-}
-
-
-///Read a given file and send it to the master.
-void PANTHERSlave::send_file_to_master(const string &filename, bool skip_file_safety_checks) {
-	if (skip_file_safety_checks || check_file_is_safe_for_transfer(filename))
-	{
-		//TODO: Chas write this bit
-		throw(PestNotImplementedError("Perform file transfer after passed safety checks."));
-	}
-	else
-	{
-		//TODO: Chas write this bit
-		throw(PestNotImplementedError("Reject file transfer due to failed safety checks."));
 	}
 }

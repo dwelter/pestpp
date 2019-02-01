@@ -33,7 +33,7 @@
 class SlaveInfoRec {
 public:
 	static const int UNKNOWN_ID = -9999;
-	enum class State { NEW, CWD_REQ, CWD_RCV, NAMES_SENT, LINPACK_REQ, LINPACK_RCV, WAITING, ACTIVE, KILLED, KILLED_FAILED, COMPLETE };
+	enum class State { NEW, CWD_REQ, CWD_RCV, FTN_REQ, FTN_REC, NAMES_SENT, LINPACK_REQ, LINPACK_RCV, WAITING, ACTIVE, KILLED, KILLED_FAILED, COMPLETE };
 	SlaveInfoRec(int _socket_fd);
 	int get_socket_fd() const;
 	string get_hostname()const;
@@ -108,12 +108,14 @@ public:
 	~RunManagerPanther(void); 
 	int get_n_waiting_runs() { return waiting_runs.size(); }
 	void close_slaves();
-	std::string get_security_key();
-	void set_security_key(const std::string &security_key);
+	std::string get_transfer_security_key();
+	void set_transfer_security_key(const std::string &transfer_security_key);
+	bool demo_file_transfer = false;    //Chas temp for file transfer demonstration
+	bool file_transfer_demonstration(); //Chas temp for file transfer demonstration
 
 private:
 	std::string port;
-	std::string security_key;
+	std::string transfer_security_key;
 	static const int BACKLOG;
 	static const int MAX_FAILED_PINGS;
 	static const int N_PINGS_UNRESPONSIVE;

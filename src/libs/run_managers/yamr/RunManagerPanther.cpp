@@ -39,6 +39,7 @@
 #include "Transformable.h"
 #include "utilities.h"
 #include "Serialization.h"
+#include "hmacsha2.h"
 
 
 using namespace std;
@@ -305,15 +306,15 @@ RunManagerPanther::RunManagerPanther(const string &stor_filename, const string &
 }
 
 
-std::string RunManagerPanther::get_security_key()
+std::string RunManagerPanther::get_transfer_security_key()
 {
-	return security_key;
+	return transfer_security_key;
 }
 
 
-void RunManagerPanther::set_security_key(const std::string &new_security_key)
+void RunManagerPanther::set_transfer_security_key(const std::string &new_transfer_security_key)
 {
-	security_key = new_security_key;
+	transfer_security_key = new_transfer_security_key;
 }
 
 
@@ -491,6 +492,12 @@ RunManagerAbstract::RUN_UNTIL_COND RunManagerPanther::run_until(RUN_UNTIL_COND c
 		echo();
 		init_slaves();
 
+		if (demo_file_transfer)
+		{
+			bool success = file_transfer_demonstration();
+			demo_file_transfer = !success;
+		}
+
 		//schedule runs on available nodes
 		schedule_runs();
 		echo();
@@ -544,6 +551,53 @@ RunManagerAbstract::RUN_UNTIL_COND RunManagerPanther::run_until(RUN_UNTIL_COND c
 	}
 	return terminate_reason;
 }
+
+
+//Chas temp function to demonstrate file transfer
+bool RunManagerPanther::file_transfer_demonstration()
+{
+	bool demonstration_complete = false;
+	for (auto &i_slv : slave_info_set)
+	{
+		int i_sock = i_slv.get_socket_fd();
+		SlaveInfoRec::State cur_state = i_slv.get_state();
+		if (cur_state == SlaveInfoRec::State::WAITING)
+		{
+			//Request a file
+			NetPackage net_pack(NetPackage::PackType::REQ_TNS_FILE, 0, 0, "");
+			int file_number = 0;											//<-- request file number 0
+			char data = '\0';
+			net_pack.set_file_number(file_number);
+			int err = net_pack.send(i_sock, &data, sizeof(data));
+			if (err > 0)
+			{				
+				i_slv.set_state(SlaveInfoRec::State::FTN_REQ);
+			}
+		}
+		else if (cur_state == SlaveInfoRec::State::FTN_REC)
+		{
+			//Send a file
+			NetPackage net_pack(NetPackage::PackType::TNS_FILE, 0, 0, "");
+			int file_number = 1;											//<-- send file number 1	
+			string file_name = "file1_from_master.txt";						//this should be something like = transfer_file_names[file_number];
+			ifstream file(file_name, ios::in | ios::binary | ios::ate);		//Open the file and read it
+			stringstream data_buffer;
+			data_buffer << file.rdbuf();
+			const string data = data_buffer.str();
+			string data_hmac = hmacsha2::hmac(data, transfer_security_key);	//Calculate the hmac to send			
+			net_pack.set_file_number(file_number);
+			net_pack.set_hash(data_hmac);
+			int err = net_pack.send(i_sock, &data[0], sizeof(data));
+			if (err > 0)
+			{
+				i_slv.set_state(SlaveInfoRec::State::WAITING);
+			}
+			demonstration_complete = true;
+		}
+	}
+	return demonstration_complete;
+}
+
 
 bool RunManagerPanther::ping()
 {
@@ -1103,6 +1157,44 @@ void RunManagerPanther::process_message(int i_sock)
 		//string err(net_pack.get_data().begin(),net_pack.get_data().end());		
 		report("error in model IO files on worker: " + host_name + "$" + slave_info_iter->get_work_dir() + "-terminating worker. ", true);
 		close_slave(i_sock);
+	}
+	else if (net_pack.get_type() == NetPackage::PackType::REQ_TNS_FILE)
+	{
+		//The slave should not be requesting a file transfer.
+		report("slave should not be requesting file transfer: " + host_name + "$" + slave_info_iter->get_work_dir() + "-terminating worker. ", true);
+		close_slave(i_sock);
+	}
+	else if (net_pack.get_type() == NetPackage::PackType::TNS_FILE)
+	{
+		if (slave_info_iter->get_state() == SlaveInfoRec::State::FTN_REQ)
+		{
+			//Check the HMAC.
+			vector<int8_t> data_v = net_pack.get_data();
+			string data_s = (char*)&data_v[0];								//&data_v[0] is a pointer to the first char in the string
+			string calculated_hmac = hmacsha2::hmac(data_s, transfer_security_key);
+			if (calculated_hmac != (char*)net_pack.hash)
+			{
+				cout << "hmac invalid" << endl;
+				//exit(-1);
+			}
+
+			//Write the file
+			int file_number = net_pack.get_file_number();
+			string file_name = "file0_from_slave.txt";						//Chas, this should be something like = transfer_file_names[file_number];
+			cout << "writing file..." << file_name << "...";
+			ofstream out(file_name, ios::out | ios::binary);
+			out << data_s;
+			out.close();
+			cout << "done" << endl;
+
+			//Update state to file transfer received
+			slave_info_iter->set_state(SlaveInfoRec::State::FTN_REC);
+		}
+		else
+		{
+			report("recieved unexpected file from slave: " + host_name + "$" + slave_info_iter->get_work_dir() + "-terminating worker. ", true);
+			close_slave(i_sock);
+		}
 	}
 	else
 	{
