@@ -5,11 +5,7 @@ running model 1 times
     waiting for workers to appear...
 
 
-01/31/19 18:02:42->new connection from: SDD00428.lands.resnet.qg:56810
-01/31/19 18:02:42->initializing new worker connection from: SDD00428.lands.resnet.qg:56810; number of workers: 1; working dir: D:\Chas\Code\PestPP\pestpp3\pestpp\src\tests\run_manager_user\slave_working_directory
-01/31/19 18:02:56->received corrupt message from worker: SDD00428.lands.resnet.qg$D:\Chas\Code\PestPP\pestpp3\pestpp\src\tests\run_manager_user\slave_working_directory - terminating worker
-01/31/19 18:02:56->closed connection to worker: SDD00428.lands.resnet.qg:56810; number of slaves: 0
-01/31/19 18:05:04->new connection from: SDD00428.lands.resnet.qg:56822
-01/31/19 18:05:04->initializing new worker connection from: SDD00428.lands.resnet.qg:56822; number of workers: 1; working dir: D:\Chas\Code\PestPP\pestpp3\pestpp\src\tests\run_manager_user\slave_working_directory
-01/31/19 18:05:20->received corrupt message from worker: SDD00428.lands.resnet.qg$D:\Chas\Code\PestPP\pestpp3\pestpp\src\tests\run_manager_user\slave_working_directory - terminating worker
-01/31/19 18:05:20->closed connection to worker: SDD00428.lands.resnet.qg:56822; number of slaves: 0
+02/01/19 12:26:17->new connection from: SDD00428.lands.resnet.qg:62131
+02/01/19 12:26:17->initializing new worker connection from: SDD00428.lands.resnet.qg:62131; number of workers: 1; working dir: D:\Chas\Code\PestPP\pestpp3\pestpp\src\tests\run_manager_user\slave_working_directory
+02/01/19 12:26:26->received corrupt message from worker: SDD00428.lands.resnet.qg$D:\Chas\Code\PestPP\pestpp3\pestpp\src\tests\run_manager_user\slave_working_directory - terminating worker
+02/01/19 12:26:26->closed connection to worker: SDD00428.lands.resnet.qg:62131; number of slaves: 0
