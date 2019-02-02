@@ -98,9 +98,13 @@ int main(int argc, char* argv[])
 	//which can be armed by setting the following flag.
 	run_manager_ptr->demo_file_transfer = true;								//This flag means that when it a slave connects, the manager will demonstrate file transfer.
 
+	//Build Transformation with ctl_2_numberic
+	ParamTransformSeq base_partran_seq(pest_scenario.get_base_par_tran_seq());
+	Parameters ctl_par = pest_scenario.get_ctl_parameters();
+
 	//Add a run and start the run manager.
-	Parameters cur_ctl_parameters = pest_scenario.get_ctl_parameters();
-	int run_id = run_manager_ptr->add_run(cur_ctl_parameters, 1);
+	run_manager_ptr->initialize(base_partran_seq.ctl2model_cp(ctl_par), pest_scenario.get_ctl_observations());
+	int run_id = run_manager_ptr->add_run(ctl_par, 1);
 	//run_manager_ptr->run_until(RunManagerAbstract::RUN_UNTIL_COND::TIME, 0, 10);
 	run_manager_ptr->run();
 
