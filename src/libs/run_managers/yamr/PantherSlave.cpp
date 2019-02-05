@@ -180,6 +180,18 @@ void PANTHERSlave::process_ctl_file(const string &ctl_filename)
 				insfile_vec.push_back(tokens_case_sen[0]);
 				outfile_vec.push_back(tokens_case_sen[1]);
 			}
+			else if (section == "FILE TRANSFER")
+			{
+				vector<string> tokens_case_sen;
+				tokenize(line, tokens_case_sen);
+				transfer_file_names.push_back(tokens_case_sen[0]);
+			}
+			else if (section == "FILE TRANSFER SECURITY")
+			{
+				vector<string> tokens_case_sen;
+				tokenize(line, tokens_case_sen);
+				transfer_security_key = tokens_case_sen[0];
+			}
 		}
 	}
 	catch (PestConversionError &e) {
