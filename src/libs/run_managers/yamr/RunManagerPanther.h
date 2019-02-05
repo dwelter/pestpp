@@ -109,12 +109,14 @@ public:
 	int get_n_waiting_runs() { return waiting_runs.size(); }
 	void close_slaves();
 	std::string get_transfer_security_key();
-	void set_transfer_security_key(const std::string &security_key);
+	void set_transfer_security_key(const std::string &_transfer_security_key);
+	void set_transfer_file_names(const std::vector<std::string> &_transfer_file_names);
 	bool demo_file_transfer = false;    //Chas temp for file transfer demonstration
 
 private:
 	std::string port;
 	std::string transfer_security_key;
+	std::vector<std::string> transfer_file_names;
 	static const int BACKLOG;
 	static const int MAX_FAILED_PINGS;
 	static const int N_PINGS_UNRESPONSIVE;

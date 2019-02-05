@@ -311,9 +311,15 @@ std::string RunManagerPanther::get_transfer_security_key()
 }
 
 
-void RunManagerPanther::set_transfer_security_key(const std::string &new_transfer_security_key)
+void RunManagerPanther::set_transfer_security_key(const std::string &_transfer_security_key)
 {
-	transfer_security_key = new_transfer_security_key;
+	transfer_security_key = _transfer_security_key;
+}
+
+
+void RunManagerPanther::set_transfer_file_names(const std::vector<std::string> &_transfer_file_names)
+{
+	transfer_file_names = _transfer_file_names;
 }
 
 
