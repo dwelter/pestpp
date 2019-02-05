@@ -305,15 +305,15 @@ RunManagerPanther::RunManagerPanther(const string &stor_filename, const string &
 }
 
 
-std::string RunManagerPanther::get_security_key()
+std::string RunManagerPanther::get_transfer_security_key()
 {
-	return security_key;
+	return transfer_security_key;
 }
 
 
-void RunManagerPanther::set_security_key(const std::string &new_security_key)
+void RunManagerPanther::set_transfer_security_key(const std::string &new_transfer_security_key)
 {
-	security_key = new_security_key;
+	transfer_security_key = new_transfer_security_key;
 }
 
 
