@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -44,12 +44,8 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-<<<<<<< HEAD
     <CharacterSet>Unicode</CharacterSet>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-=======
-    <CharacterSet>NotSet</CharacterSet>
->>>>>>> 00d3baa4f7624dafa0e327fa0509f2fd7b5d4804
+    <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -83,9 +79,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>true</LinkIncremental>
-  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
@@ -135,8 +129,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-<<<<<<< HEAD
-      <PreprocessorDefinitions>WIN32;WIN64;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;WIN64;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)\libs\common;$(SolutionDir)\libs\pestpp_common;$(SolutionDir)\libs\linear_analysis;$(SolutionDir)\libs\run_managers\abstract_base;$(SolutionDir)\libs\run_managers\yamr;$(SolutionDir)\libs\run_managers\genie_wrapper;$(SolutionDir)\libs\run_managers\serial;$(SolutionDir)\libs\run_managers\external;$(SolutionDir)libs\Eigen</AdditionalIncludeDirectories>
@@ -149,23 +142,14 @@
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-=======
-      <PreprocessorDefinitions>;WIN32;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)\libs\common;$(SolutionDir)\libs\pestpp_common;$(SolutionDir)\libs\linear_analysis;$(SolutionDir)\libs\run_managers\abstract_base;$(SolutionDir)\libs\run_managers\yamr;$(SolutionDir)\libs\run_managers\genie_wrapper;$(SolutionDir)\libs\run_managers\serial;$(SolutionDir)\libs\run_managers\external;$(SolutionDir)libs\opt;$(SolutionDir)libs\Eigen</AdditionalIncludeDirectories>
-      <CompileAsManaged>false</CompileAsManaged>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
->>>>>>> 00d3baa4f7624dafa0e327fa0509f2fd7b5d4804
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(IFORT_COMPILER16)\compiler\lib\intel64;$(IFORT_COMPILER16)\mkl\lib\intel64;$(SolutionDir)$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-<<<<<<< HEAD
-=======
-      <AdditionalDependencies>mkl_blas95_lp64.lib;mkl_lapack95_lp64.lib;ws2_32.lib;Advapi32.lib;propack.lib;PANTHER.lib;%(AdditionalDependencies)</AdditionalDependencies>
->>>>>>> 00d3baa4f7624dafa0e327fa0509f2fd7b5d4804
+      <AdditionalDependencies>ws2_32.lib;Advapi32.lib;propack.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
