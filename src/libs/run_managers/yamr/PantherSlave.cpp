@@ -89,6 +89,7 @@ void PANTHERSlave::process_ctl_file(const string &ctl_filename)
 	inpfile_vec.clear();
 	insfile_vec.clear();
 	outfile_vec.clear();
+	transfer_file_names.clear();
 	std::vector<std::string> pestpp_lines;
 	fin.open(ctl_filename);
 	if (!fin)
@@ -639,48 +640,5 @@ void PANTHERSlave::start(const string &host, const string &port)
 		}
 		//w_sleep(100);
 		this_thread::sleep_for(chrono::milliseconds(100));
-	}
-}
-
-
-///Check that the given file doesn't pose a security threat for file transfer.
-bool PANTHERSlave::check_file_is_safe_for_transfer(const string &filename) {
-	bool answer = true;
-
-#if !(defined(_WIN64) || defined(_WIN32))
-	//check linux permissions do not allow execution
-	//ref https://stackoverflow.com/questions/8812959/how-to-read-linux-file-permission-programmatically-in-c-c/46436636
-	struct stat st;
-	if (stat(filename, &st) == 0)
-	{
-		mode_t perm = st.st_mode;
-		if ((perm & S_IXUSR) || (perm & S_IXGRP) || (perm & S_IXOTH)) {
-			answer = false;
-		}
-	}
-#endif
-
-	//check extensions
-	if (pest_utils::string_ends_with(filename, ".exe") || 
-		pest_utils::string_ends_with(filename, ".bat") || 
-		pest_utils::string_ends_with(filename, ".com")) {
-		answer = false;
-	}
-
-	return answer;
-}
-
-
-///Read a given file and send it to the master.
-void PANTHERSlave::send_file_to_master(const string &filename, bool skip_file_safety_checks) {
-	if (skip_file_safety_checks || check_file_is_safe_for_transfer(filename))
-	{
-		//TODO: Chas write this bit
-		throw(PestNotImplementedError("Perform file transfer after passed safety checks."));
-	}
-	else
-	{
-		//TODO: Chas write this bit
-		throw(PestNotImplementedError("Reject file transfer due to failed safety checks."));
 	}
 }
