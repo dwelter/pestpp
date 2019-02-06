@@ -646,6 +646,56 @@ void PANTHERSlave::start(const string &host, const string &port)
 			}
 			cout << "ping response sent" << endl;
 		}
+		else if (net_pack.get_type() == NetPackage::PackType::REQ_TNS_FILE)
+		{
+			//The master has requested a file
+			int file_number = net_pack.get_file_number();
+			string file_name = transfer_file_names[file_number];
+			cout << "master has requested the file: " << file_name << endl;
+			ifstream file(file_name, ios::in | ios::binary | ios::ate);
+			stringstream data_buffer;
+			data_buffer << file.rdbuf();
+			const string data = data_buffer.str();							//This gives a string. Maybe data needs to be a char*
+			string hmac = string(256, 'H'); //hmacsha2::hmac(data, transfer_security_key);
+
+			//Reset the netpackage and send it back with the file, file_number, and hmac
+			net_pack.reset(NetPackage::PackType::TNS_FILE, 0, 0, "");
+			net_pack.set_file_number(file_number);
+			net_pack.set_hash(hmac);
+			cout << "sending...";
+			err = send_message(net_pack, &data[0], data.length());			//&data_v[0] is a pointer to the first char in the string
+			if (err != 1)
+			{
+				cout << "error sending message" << endl;
+				exit(-1);
+			}
+			cout << "done" << endl;
+		}
+		else if (net_pack.get_type() == NetPackage::PackType::TNS_FILE)
+		{
+			//The master has sent a file
+			vector<int8_t> data_v = net_pack.get_data();
+			string data_s = (char*)&data_v[0];								//&data_v[0] is a pointer to the first char in the string
+			string hmac = string(256, 'H'); //hmacsha2::hmac(data_s, transfer_security_key);
+			//if (strcmp((char*)&hmac[0], net_pack.hash) == 0)
+			if (false)
+			{
+				cout << "hmac invalid" << endl;
+				cout << "proceeding anyway" << endl;
+				//exit(-1);
+			}
+
+			//Write the file
+			int file_number = net_pack.get_file_number();
+			string file_name = transfer_file_names[file_number];
+			cout << "master has sent a file: " << file_name << endl;
+			cout << "contents: " << data_s << endl;
+			cout << "saving file: " << file_name << endl;
+			ofstream out(file_name, ios::out | ios::binary);
+			out << data_s;
+			out.close();
+			cout << "done" << endl;
+		}
 		else 
 		{
 			cout << "received unsupported messaged type: " << int(net_pack.get_type()) << endl;
