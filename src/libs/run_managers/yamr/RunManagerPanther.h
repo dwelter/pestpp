@@ -33,7 +33,7 @@
 class SlaveInfoRec {
 public:
 	static const int UNKNOWN_ID = -9999;
-	enum class State { NEW, CWD_REQ, CWD_RCV, NAMES_SENT, LINPACK_REQ, LINPACK_RCV, WAITING, ACTIVE, KILLED, KILLED_FAILED, COMPLETE };
+	enum class State { NEW, CWD_REQ, CWD_RCV, FTN_REQ, FTN_REC, NAMES_SENT, LINPACK_REQ, LINPACK_RCV, WAITING, ACTIVE, KILLED, KILLED_FAILED, COMPLETE };
 	SlaveInfoRec(int _socket_fd);
 	int get_socket_fd() const;
 	string get_hostname()const;

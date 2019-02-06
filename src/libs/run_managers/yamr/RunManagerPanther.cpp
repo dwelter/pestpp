@@ -1104,6 +1104,45 @@ void RunManagerPanther::process_message(int i_sock)
 		report("ping received from worker" + host_name + "$" + slave_info_iter->get_work_dir(), false);
 #endif
 	}
+	else if (net_pack.get_type() == NetPackage::PackType::REQ_TNS_FILE)
+	{
+		//The slave should not be requesting a file transfer.
+		report("slave should not be requesting file transfer: " + host_name + "$" + slave_info_iter->get_work_dir() + "-terminating worker. ", true);
+		close_slave(i_sock);
+	}
+	else if (net_pack.get_type() == NetPackage::PackType::TNS_FILE)
+	{
+		//Received a file from the slave.
+		if (slave_info_iter->get_state() != SlaveInfoRec::State::FTN_REQ)
+		{
+			report("recieved unexpected file from slave: " + host_name + "$" + slave_info_iter->get_work_dir() + "-terminating worker. ", true);
+			close_slave(i_sock);
+		}
+		else
+		{
+			//Check the HMAC.
+			vector<int8_t> data_v = net_pack.get_data();
+			string data_s = (char*)&data_v[0];								//&data_v[0] is a pointer to the first char in the string
+			//string calculated_hmac = hmacsha2::hmac(data_s, transfer_security_key);
+			//if (calculated_hmac != (char*)net_pack.hash)
+			//{
+			//	cout << "hmac invalid" << endl;
+			//	//exit(-1);
+			//}
+
+			//Write the file
+			int file_number = net_pack.get_file_number();
+			string file_name = "file0_from_slave.txt";						//Chas, this should be something like = transfer_file_names[file_number];
+			cout << "writing file..." << file_name << "...";
+			ofstream out(file_name, ios::out | ios::binary);
+			out << data_s;
+			out.close();
+			cout << "done" << endl;
+
+			//Update state to file transfer received
+			slave_info_iter->set_state(SlaveInfoRec::State::FTN_REC);
+		}
+	}
 	else if (net_pack.get_type() == NetPackage::PackType::IO_ERROR)
 	{
 		//string err(net_pack.get_data().begin(),net_pack.get_data().end());		
