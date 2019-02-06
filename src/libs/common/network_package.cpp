@@ -96,6 +96,7 @@ NetPackage::NetPackage(PackType _type, int _group, int _run_id, const string &de
 	: type(_type), group(_group), run_id(_run_id)
 {
 	memset(desc, '\0', DESC_LEN);
+	memset(hash, 'H', HASH_LEN);
 	int i = 0;
 	int max_len = min(size_t(DESC_LEN - 1), desc_str.size());
 	// This is done to remove possible system dependicies on whether char/uchar
@@ -120,6 +121,7 @@ void NetPackage::reset(PackType _type, int _group, int _run_id, const string &_d
 	group = _group;
 	run_id = _run_id;
 	memset(desc, '\0', DESC_LEN);
+	memset(hash, 'H', HASH_LEN);
 	int max_len = min(size_t(DESC_LEN - 1), _desc.size());
 	// This is done to remove possible system dependicies on whether char/uchar
 	// is use to represent a standard char
@@ -156,6 +158,8 @@ int NetPackage::send(int sockfd, const void *data, int64_t data_len_l)
 	buf_sz += sizeof(group);
 	buf_sz += sizeof(run_id);
 	buf_sz += sizeof(desc);
+	buf_sz += sizeof(file_number);
+	buf_sz += sizeof(hash);
 	buf_sz += data_len_l;
 	//pack information into buffer
 	//unique_ptr<char[]> buf(new char[buf_sz]);
@@ -172,6 +176,10 @@ int NetPackage::send(int sockfd, const void *data, int64_t data_len_l)
 	i_start += sizeof(run_id);
 	w_memcpy_s(&buf[i_start], buf_sz-i_start, desc, sizeof(desc));
 	i_start += sizeof(desc);
+	w_memcpy_s(&buf[i_start], buf_sz-i_start, &file_number, sizeof(file_number));
+	i_start += sizeof(file_number);
+	w_memcpy_s(&buf[i_start], buf_sz - i_start, hash, sizeof(hash));
+	i_start += sizeof(hash);
 	if (data_len_l > 0) {
 		w_memcpy_s(&buf[i_start], buf_sz-i_start, data, data_len_l);
 		i_start += data_len_l;
@@ -194,10 +202,11 @@ int  NetPackage::recv(int sockfd)
 	int8_t rcv_security_code[5] = { 0, 0, 0, 0, 0 };
 	int64_t rcv_security_code_size = sizeof(rcv_security_code);
 	bool corrupt_desc = false;
+	bool corrupt_hash = false;
 
 	try{
 		//get header (ie size, seq_id, id and name)
-		header_sz = sizeof(buf_sz) + sizeof(type) + sizeof(group) + sizeof(run_id) + sizeof(desc);
+		header_sz = sizeof(buf_sz) + sizeof(type) + sizeof(group) + sizeof(run_id) + sizeof(desc) + sizeof(file_number) + sizeof(hash);
 		vector<int8_t> header_buf;
 		header_buf.resize(header_sz, '\0');
 		n = w_recvall(sockfd, &rcv_security_code[0], &rcv_security_code_size);
@@ -245,6 +254,27 @@ int  NetPackage::recv(int sockfd)
 			}
 			i_start += sizeof(desc);
 			desc[DESC_LEN - 1] = '\0';
+			//get file number
+			w_memcpy_s(&file_number, sizeof(file_number), &header_buf[i_start], sizeof(file_number));
+			i_start += sizeof(file_number);
+			//get hash
+			//w_memcpy_s(&hash, sizeof(hash), &header_buf[i_start], sizeof(hash));
+			// This is done to remove possible system dependicies on whether char/uchar
+			// is use to represent a standard char
+			for (int i = 0; i < HASH_LEN; ++i)
+			{
+				if (!allowable_ascii_char(header_buf[i_start + 1]))
+				{
+					corrupt_hash = true;
+					n = -2;
+					return n;
+				}
+				else
+				{
+					hash[i] = header_buf[i_start + 1];
+				}
+			}
+			i_start += sizeof(hash);
 			//get data
 			data_len = buf_sz - i_start;
 			data.resize(data_len, '\0');
@@ -293,8 +323,11 @@ void NetPackage::set_file_number(int _file_number)
 
 void NetPackage::set_hash(string _hash_string)
 {
+	if (_hash_string.length() != HASH_LEN)
+		throw PestError("New hash value had unexpected length: " + _hash_string.length());
+
 	//Copy the provided hash string into the local hash var (which is an int8_t[]).
-	strncpy((char*)hash, _hash_string.c_str(), _hash_string.length());
+	strncpy((char*)hash, _hash_string.c_str(), HASH_LEN);
 }
 
 //template std::string NetPackage::extract_string< std::vector<int8_t>::iterator>(std::vector<int8_t>::iterator first, std::vector<int8_t>::iterator last);
