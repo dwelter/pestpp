@@ -39,6 +39,7 @@
 #include "Transformable.h"
 #include "utilities.h"
 #include "Serialization.h"
+#include "hmacsha2.h"
 
 
 using namespace std;
@@ -496,6 +497,9 @@ RunManagerAbstract::RUN_UNTIL_COND RunManagerPanther::run_until(RUN_UNTIL_COND c
 	{
 		echo();
 		init_slaves();
+
+		//demonstrate file transfer (can be removed once we build the API we want)
+		demonstrate_file_transfer();
 
 		//schedule runs on available nodes
 		schedule_runs();
@@ -1113,34 +1117,38 @@ void RunManagerPanther::process_message(int i_sock)
 	else if (net_pack.get_type() == NetPackage::PackType::TNS_FILE)
 	{
 		//Received a file from the slave.
-		if (slave_info_iter->get_state() != SlaveInfoRec::State::FTN_REQ)
-		{
-			report("recieved unexpected file from slave: " + host_name + "$" + slave_info_iter->get_work_dir() + "-terminating worker. ", true);
-			close_slave(i_sock);
-		}
-		else
+		if (slave_info_iter->get_state() == SlaveInfoRec::State::FTN_REQ)
 		{
 			//Check the HMAC.
 			vector<int8_t> data_v = net_pack.get_data();
-			string data_s = (char*)&data_v[0];								//&data_v[0] is a pointer to the first char in the string
-			//string calculated_hmac = hmacsha2::hmac(data_s, transfer_security_key);
-			//if (calculated_hmac != (char*)net_pack.hash)
-			//{
-			//	cout << "hmac invalid" << endl;
-			//	//exit(-1);
-			//}
+			string data_s(data_v.begin(), data_v.end());
+			string calculated_hmac = string(NetPackage::HASH_LEN, 'H'); //hmacsha2::hmac(data_s, transfer_security_key);
+			string expected_hmac = calculated_hmac; //net_pack.get_hash()
+			//cout << endl << "Expected HMAC  : " << expected_hmac;
+			//cout << endl << "Calculated HMAC: " << calculated_hmac;
+			if (calculated_hmac != expected_hmac)
+			{
+				cout << "error invalid hmac" << endl;
+				//throw error??
+			}
 
 			//Write the file
 			int file_number = net_pack.get_file_number();
-			string file_name = "file0_from_slave.txt";						//Chas, this should be something like = transfer_file_names[file_number];
-			cout << "writing file..." << file_name << "...";
-			ofstream out(file_name, ios::out | ios::binary);
+			string file_name = "file0_from_slave.txt"; //Chas, this should be something like = transfer_file_names[file_number];
+			ofstream out(file_name);
 			out << data_s;
 			out.close();
-			cout << "done" << endl;
+			//cout << endl << endl << "writing file..." << file_name << "..." << endl;
+			//cout << "data length: " << data_s.length() << endl;
+			//cout << "data: " << data_s << endl << endl << endl;
 
 			//Update state to file transfer received
 			slave_info_iter->set_state(SlaveInfoRec::State::FTN_REC);
+		}
+		else
+		{
+			report("recieved unrequested file from slave: " + host_name + "$" + slave_info_iter->get_work_dir() + "-terminating worker. ", true);
+			close_slave(i_sock);
 		}
 	}
 	else if (net_pack.get_type() == NetPackage::PackType::IO_ERROR)
@@ -1312,6 +1320,62 @@ void RunManagerPanther::kill_all_active_runs()
 		}
 	}
  }
+
+
+ void RunManagerPanther::demonstrate_file_transfer()
+ {	
+	//This method will demonstrate the file transfer using one slave.
+	//The demonstration involves fetching a file from the slave, and then sending a file to the slave.
+	for (auto &i_slv : slave_info_set)
+	{
+		int i_sock = i_slv.get_socket_fd();
+		SlaveInfoRec::State cur_state = i_slv.get_state();
+		if (cur_state == SlaveInfoRec::State::WAITING)
+		{
+			if (demo_file_transfer == true)
+			{
+				//Take the first slave that enters this code and use it to demonstrate the file transfer.
+				//demo_file_transfer=false so that we don't do this to any other slaves.
+				demo_file_transfer = false;
+
+				//Demonstrate how to request a file (file number 0).
+				int file_number = 0;
+				NetPackage net_pack(NetPackage::PackType::REQ_TNS_FILE, 0, 0, "");
+				net_pack.set_file_number(file_number);
+				char data = '\0';
+				int err = net_pack.send(i_sock, &data, sizeof(data));
+				if (err > 0)
+				{
+					i_slv.set_state(SlaveInfoRec::State::FTN_REQ);
+				}
+			}
+		}
+		else if (cur_state == SlaveInfoRec::State::FTN_REC)
+		{
+			//File has been received. 
+			//Next we demonstrate how to send a file (file number 1).
+			int file_number = 1;
+			string file_name = "file1_from_master.txt"; //this should be something like = transfer_file_names[file_number];
+			ifstream file(file_name);
+			string data((istreambuf_iterator<char>(file)), istreambuf_iterator<char>()); //doens't work if ifstream is binary
+			file.close();
+			//cout << "Sending a file to the slave: " << file_name << endl;
+			//cout << "data length: " << data.length() << endl;
+			//cout << "data: " << data << endl;
+
+			NetPackage net_pack(NetPackage::PackType::TNS_FILE, 0, 0, "");
+			net_pack.set_hash(string(NetPackage::HASH_LEN, 'H')); //hmacsha2::hmac(data, transfer_security_key);
+			net_pack.set_file_number(file_number); 
+			int err = net_pack.send(i_sock, &data[0], data.length());
+			if (err > 0)
+			{
+				i_slv.set_state(SlaveInfoRec::State::WAITING);
+			}
+		}
+	}
+ }
+
+
 
  vector<int> RunManagerPanther::get_overdue_runs_over_kill_threshold(int run_id)
  {

@@ -9,6 +9,7 @@
 #include "system_variables.h"
 #include "utilities.h"
 #include <regex>
+#include "hmacsha2.h"
 
 using namespace pest_utils;
 
@@ -651,50 +652,45 @@ void PANTHERSlave::start(const string &host, const string &port)
 			//The master has requested a file
 			int file_number = net_pack.get_file_number();
 			string file_name = transfer_file_names[file_number];
-			cout << "master has requested the file: " << file_name << endl;
-			ifstream file(file_name, ios::in | ios::binary | ios::ate);
-			stringstream data_buffer;
-			data_buffer << file.rdbuf();
-			const string data = data_buffer.str();							//This gives a string. Maybe data needs to be a char*
-			string hmac = string(256, 'H'); //hmacsha2::hmac(data, transfer_security_key);
-
-			//Reset the netpackage and send it back with the file, file_number, and hmac
+			ifstream file(file_name); //file(file_name, ios::in | ios::binary | ios::ate);
+			string data((istreambuf_iterator<char>(file)), istreambuf_iterator<char>()); //doens't work if ifstream is binary
+			file.close();
 			net_pack.reset(NetPackage::PackType::TNS_FILE, 0, 0, "");
+			net_pack.set_hash(string(NetPackage::HASH_LEN, 'H')); //hmacsha2::hmac(data, transfer_security_key);
 			net_pack.set_file_number(file_number);
-			net_pack.set_hash(hmac);
 			cout << "sending...";
-			err = send_message(net_pack, &data[0], data.length());			//&data_v[0] is a pointer to the first char in the string
+			err = send_message(net_pack, &data[0], data.length()); //&data[0] is a pointer to the first char in the string
 			if (err != 1)
 			{
 				cout << "error sending message" << endl;
 				exit(-1);
 			}
-			cout << "done" << endl;
+			//cout << "master has requested a file: " << file_name << endl;
+			//cout << "data length: " << data.length() << endl;
+			//cout << "data: " << data << endl;
 		}
 		else if (net_pack.get_type() == NetPackage::PackType::TNS_FILE)
 		{
 			//The master has sent a file
 			vector<int8_t> data_v = net_pack.get_data();
-			string data_s = (char*)&data_v[0];								//&data_v[0] is a pointer to the first char in the string
-			string hmac = string(256, 'H'); //hmacsha2::hmac(data_s, transfer_security_key);
-			//if (strcmp((char*)&hmac[0], net_pack.hash) == 0)
-			if (false)
+			string data_s(data_v.begin(), data_v.end());
+			string calculated_hmac = string(NetPackage::HASH_LEN, 'H'); //hmacsha2::hmac(data_s, transfer_security_key);
+			string expected_hmac = calculated_hmac; //string(NetPackage::HASH_LEN, 'H'); //net_pack.get_hash()
+			if (calculated_hmac == expected_hmac)
 			{
-				cout << "hmac invalid" << endl;
-				cout << "proceeding anyway" << endl;
-				//exit(-1);
+				string file_name = transfer_file_names[net_pack.get_file_number()];
+				ofstream out(file_name);
+				out << data_s;
+				out.close();
+				//cout << "master has sent a file: " << file_name << endl;
+				//cout << "data length: " << data.length() << endl;
+				//cout << "data: " << data_s << endl;
 			}
-
-			//Write the file
-			int file_number = net_pack.get_file_number();
-			string file_name = transfer_file_names[file_number];
-			cout << "master has sent a file: " << file_name << endl;
-			cout << "contents: " << data_s << endl;
-			cout << "saving file: " << file_name << endl;
-			ofstream out(file_name, ios::out | ios::binary);
-			out << data_s;
-			out.close();
-			cout << "done" << endl;
+			else
+			{
+				cout << "error invalid hmac" << endl;
+				exit(-1);
+			}
 		}
 		else 
 		{

@@ -111,7 +111,8 @@ public:
 	std::string get_transfer_security_key();
 	void set_transfer_security_key(const std::string &_transfer_security_key);
 	void set_transfer_file_names(const std::vector<std::string> &_transfer_file_names);
-	bool demo_file_transfer = false;    //Chas temp for file transfer demonstration
+	bool demo_file_transfer = false;						//Chas temp for file transfer demonstration
+	void RunManagerPanther::demonstrate_file_transfer();	//Chas temp for file transfer demonstration
 
 private:
 	std::string port;
