@@ -20,48 +20,9 @@ int main(int argc, char* argv[])
 	std::cout << "'RunManagerUser' test project started." << endl << endl;
 
 
-	vector<string> cmd_arg_vec(argc);
-	copy(argv, argv + argc, cmd_arg_vec.begin());
-	for (vector<string>::iterator it = cmd_arg_vec.begin(); it != cmd_arg_vec.end(); ++it)
-	{
-		transform(it->begin(), it->end(), it->begin(), ::tolower);
-	}
-
-
-
-	//Get the control file name.
-	string complete_path;
-	if (argc >= 2) {
-		complete_path = argv[1];
-		std::cout << "current path: " << std::experimental::filesystem::current_path() << endl;
-		cout << "using control file: \"" << complete_path << "\"" << endl;
-	}
-	else {
-		cerr << "--------------------------------------------------------" << endl;
-		cerr << "usage:" << endl << endl;
-		cerr << "    PANTHER master:" << endl;
-		cerr << "        run_manager_user.exe control_file.pst /H :port" << endl << endl;
-		cerr << "--------------------------------------------------------" << endl;
-		exit(0);
-	}
-
-
 	//Get a FileManager. This is handy for working with PEST paths and files.
 	FileManager file_manager;
-	string filename = complete_path;
-	string pathname = ".";
-	file_manager.initialize_path(get_filename_without_ext(filename), pathname);
-
-
-	//Get the socket from the commandline.
-	vector<string>::const_iterator it_find;
-	it_find = find(cmd_arg_vec.begin(), cmd_arg_vec.end(), "/h");
-	string socket_str = "";
-	string next_item = "";
-	next_item = *(it_find + 1);
-	strip_ip(next_item);
-	socket_str = next_item;
-	cout << "using socket: \"" << socket_str << "\"" << endl;
+	file_manager.initialize_path(get_filename_without_ext("control_file.pst"), ".");
 
 
 	//Create pest run and process control file to initialize it
@@ -72,9 +33,10 @@ int main(int argc, char* argv[])
 
 
 	//Get the port from the socket_str
-	string port = socket_str;
+	string port = "3801";
 	strip_ip(port);
 	strip_ip(port, "front", ":");
+	cout << "using socket: \"" << port << "\"" << endl;
 
 
 	//Get a PANTHER run manager instance
