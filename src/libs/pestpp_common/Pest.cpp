@@ -608,6 +608,18 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 		{
 			model_exec_info.comline_vec.push_back(line);
 		}
+		else if (section == "FILE TRANSFER")
+		{
+			vector<string> tokens_case_sen;
+			tokenize(line, tokens_case_sen);
+			file_transfer_info.transfer_file_names.push_back(tokens_case_sen[0]);
+		}
+		else if (section == "FILE TRANSFER SECURITY")
+		{
+			vector<string> tokens_case_sen;
+			tokenize(line, tokens_case_sen);
+			file_transfer_info.transfer_security_key = tokens_case_sen[0];
+		}
 		else if (section == "MODEL INPUT/OUTPUT" )
 		{
 			vector<string> tokens_case_sen;
@@ -671,6 +683,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 			}
 
 		}
+
 	}
 
 	// write out last prior information record
@@ -830,6 +843,15 @@ const vector<string> &Pest::get_outfile_vec()
 {
 	return model_exec_info.outfile_vec;
 }
+const vector<string> &Pest::get_transferfile_vec()
+{
+	return file_transfer_info.transfer_file_names;
+}
+const string &Pest::get_security_key()
+{
+	return file_transfer_info.transfer_security_key;
+}
+
 
 Pest::~Pest() {
 	//if (regul_scheme_ptr !=0) delete regul_scheme_ptr;

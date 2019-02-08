@@ -95,8 +95,9 @@ int main(int argc, char* argv[])
 	//without terminating. But the run manager just wants to get on with runs, so I'm not sure how the file 
 	//transfer functionality should fit within the current PANTHER API/ethos. To demonstrate what I have done
 	//I have written a new function inside RunManagerPanther, called RunManagerPanther::file_transfer_demonstration()
-	//which can be armed by setting the following flag.
-	run_manager_ptr->set_transfer_security_key("strongPassword123");
+	//which can be armed by setting the flag "demo_file_transfer = true".
+	run_manager_ptr->set_transfer_file_names(pest_scenario.get_transferfile_vec());
+	run_manager_ptr->set_transfer_security_key(pest_scenario.get_security_key());
 	run_manager_ptr->demo_file_transfer = true;
 
 	//Build Transformation with ctl_2_numberic

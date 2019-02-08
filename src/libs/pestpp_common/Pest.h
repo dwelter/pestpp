@@ -67,6 +67,8 @@ public:
 	const  vector<string> &get_inpfile_vec();
 	const  vector<string> &get_insfile_vec();
 	const  vector<string> &get_outfile_vec();
+	const vector<string> &get_transferfile_vec();
+	const string &get_security_key();
 	const PestppOptions &get_pestpp_options() const {return pestpp_options;}
     PestppOptions *get_pestpp_options_ptr() { return &pestpp_options; }
 	ObservationInfo *get_observation_info_ptr() { return &observation_info; }
@@ -85,6 +87,7 @@ private:
 	Observations observation_values;
 	ObservationInfo observation_info;
 	PriorInformation prior_info;
+	FileTransferInfo file_transfer_info;
 	ModelExecInfo model_exec_info;
 	PestppOptions pestpp_options;
 	ParamTransformSeq base_par_transform;

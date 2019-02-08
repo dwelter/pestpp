@@ -660,16 +660,16 @@ void PANTHERSlave::start(const string &host, const string &port)
 			net_pack.set_hash(hmac);
 			net_pack.set_file_number(file_number);
 			cout << "master has requested a file: " << file_name << endl;
-			cout << "data length: " << data.length() << endl;
-			cout << "data: " << data << endl;
-			cout << "transfer_security_key: " << transfer_security_key << endl;
 			cout << "hmac: " << hmac << endl;
+			//cout << "data length: " << data.length() << endl;
+			//cout << "data: " << data << endl;
 			err = send_message(net_pack, &data[0], data.length()); //&data[0] is a pointer to the first char in the string
 			if (err != 1)
 			{
 				cout << "error sending message" << endl;
 				exit(-1);
 			}
+			cout << "file sent." << endl;
 		}
 		else if (net_pack.get_type() == NetPackage::PackType::TNS_FILE)
 		{
@@ -679,22 +679,25 @@ void PANTHERSlave::start(const string &host, const string &port)
 			string calculated_hmac = hmacsha2::hmac(data_s, transfer_security_key);
 			string expected_hmac = net_pack.get_hash();
 			string file_name = transfer_file_names[net_pack.get_file_number()];
-			cout << "master has sent a file: " << file_name << endl;
-			cout << "data length: " << data_s.length() << endl;
-			cout << "data: " << data_s << endl;
-			cout << "transfer_security_key: " << transfer_security_key << endl;
-			cout << "calculated hmac: " << calculated_hmac << endl;
-			cout << "expected hmac: " << expected_hmac << endl;
+			//cout << "master has sent a file: " << file_name << endl;
+			//cout << "data length: " << data_s.length() << endl;
+			//cout << "data: " << data_s << endl;
+			//cout << "transfer_security_key: " << transfer_security_key << endl;
+			//cout << "calculated HMAC: " << calculated_hmac << endl;
+			//cout << "expected HMAC: " << expected_hmac << endl;
 			if (calculated_hmac == expected_hmac)
 			{
 				ofstream out(file_name);
 				out << data_s;
 				out.close();
+				cout << "master sent a file '" << file_name << "' and it has been saved." << endl;
 			}
 			else
 			{
-				cout << "error invalid hmac" << endl;
-				exit(-1);
+				//HMAC did not match. This means the message was corrupt, or originated from a third party.
+				cout << "master sent a file '" << file_name << "' but the HMAC did not verify and the file has not been saved." << endl;
+				cout << "expected HMAC: " << expected_hmac << endl;
+				cout << "calculated HMAC: " << calculated_hmac << endl;
 			}
 		}
 		else 
