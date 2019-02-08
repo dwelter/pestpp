@@ -88,14 +88,17 @@ int main(int argc, char* argv[])
 
 
 
-	//Somewhere here, the softare using the PANTHER manager may want to send or recieve files to the slaves.
+	//Somewhere here the softare using the PANTHER manager may want to send or recieve files to the slaves.
+	//
 	//Are these transfers assoicated with specific runs? Or specific slaves? 
 	//
 	//I expected to be able to start the run manager and have slaves connect and wait for my instruction 
 	//without terminating. But the run manager just wants to get on with runs, so I'm not sure how the file 
 	//transfer functionality should fit within the current PANTHER API/ethos. To demonstrate what I have done
-	//I have written a new function inside RunManagerPanther, called RunManagerPanther::file_transfer_demonstration()
-	//which can be armed by setting the flag "demo_file_transfer = true".
+	//I have written a new function RunManagerPanther::file_transfer_demonstration() which will securly 
+	//transfer file 0 from the slave to the master, and file 1 from slave to master.
+	//
+	//It can be armed by setting the flag "demo_file_transfer = true".
 	run_manager_ptr->set_transfer_file_names(pest_scenario.get_transferfile_vec());
 	run_manager_ptr->set_transfer_security_key(pest_scenario.get_security_key());
 	run_manager_ptr->demo_file_transfer = true;

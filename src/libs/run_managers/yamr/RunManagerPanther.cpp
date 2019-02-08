@@ -1124,7 +1124,7 @@ void RunManagerPanther::process_message(int i_sock)
 			string calculated_hmac = hmacsha2::hmac(data_s, transfer_security_key);
 			string expected_hmac = net_pack.get_hash();
 			int file_number = net_pack.get_file_number();
-			string file_name = "file0_from_slave.txt"; //Chas, this should be something like = transfer_file_names[file_number];
+			string file_name = transfer_file_names[file_number];
 			//cout << "slave has sent a file: " << file_name << endl;
 			//cout << "data length: " << data_s.length() << endl;
 			//cout << "data: " << data_s << endl;
@@ -1355,8 +1355,7 @@ void RunManagerPanther::kill_all_active_runs()
 			//File has been received. 
 			//Next we demonstrate how to send a file (file number 1).
 			int file_number = 1;
-			string file_name = "file1_from_master.txt"; //this should be something like = transfer_file_names[file_number];
-			file_name = transfer_file_names[file_number];
+			string file_name = transfer_file_names[file_number];
 			ifstream file(file_name);
 			string data((istreambuf_iterator<char>(file)), istreambuf_iterator<char>()); //doens't work if ifstream is binary
 			string hmac = hmacsha2::hmac(data, transfer_security_key);
