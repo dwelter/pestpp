@@ -35,8 +35,9 @@ public:
 	void print_header(std::ostream &fout);
 	int get_file_number();
 	void set_file_number(int _file_number);
-	const static int HASH_LEN = 256;
-	void set_hash(std::string _hash_string);
+	const static int HASH_LEN = 64;
+	void set_hash(std::string _hash);
+	std::string get_hash();
 
 private:
 	int64_t data_len;

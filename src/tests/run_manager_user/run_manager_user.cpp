@@ -96,7 +96,8 @@ int main(int argc, char* argv[])
 	//transfer functionality should fit within the current PANTHER API/ethos. To demonstrate what I have done
 	//I have written a new function inside RunManagerPanther, called RunManagerPanther::file_transfer_demonstration()
 	//which can be armed by setting the following flag.
-	run_manager_ptr->demo_file_transfer = true;								//This flag means that when it a slave connects, the manager will demonstrate file transfer.
+	run_manager_ptr->set_transfer_security_key("strongPassword123");
+	run_manager_ptr->demo_file_transfer = true;
 
 	//Build Transformation with ctl_2_numberic
 	ParamTransformSeq base_partran_seq(pest_scenario.get_base_par_tran_seq());

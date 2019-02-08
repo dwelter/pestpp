@@ -654,37 +654,42 @@ void PANTHERSlave::start(const string &host, const string &port)
 			string file_name = transfer_file_names[file_number];
 			ifstream file(file_name); //file(file_name, ios::in | ios::binary | ios::ate);
 			string data((istreambuf_iterator<char>(file)), istreambuf_iterator<char>()); //doens't work if ifstream is binary
+			string hmac = hmacsha2::hmac(data, transfer_security_key);
 			file.close();
 			net_pack.reset(NetPackage::PackType::TNS_FILE, 0, 0, "");
-			net_pack.set_hash(string(NetPackage::HASH_LEN, 'H')); //hmacsha2::hmac(data, transfer_security_key);
+			net_pack.set_hash(hmac);
 			net_pack.set_file_number(file_number);
-			cout << "sending...";
+			cout << "master has requested a file: " << file_name << endl;
+			cout << "data length: " << data.length() << endl;
+			cout << "data: " << data << endl;
+			cout << "transfer_security_key: " << transfer_security_key << endl;
+			cout << "hmac: " << hmac << endl;
 			err = send_message(net_pack, &data[0], data.length()); //&data[0] is a pointer to the first char in the string
 			if (err != 1)
 			{
 				cout << "error sending message" << endl;
 				exit(-1);
 			}
-			//cout << "master has requested a file: " << file_name << endl;
-			//cout << "data length: " << data.length() << endl;
-			//cout << "data: " << data << endl;
 		}
 		else if (net_pack.get_type() == NetPackage::PackType::TNS_FILE)
 		{
 			//The master has sent a file
 			vector<int8_t> data_v = net_pack.get_data();
 			string data_s(data_v.begin(), data_v.end());
-			string calculated_hmac = string(NetPackage::HASH_LEN, 'H'); //hmacsha2::hmac(data_s, transfer_security_key);
-			string expected_hmac = calculated_hmac; //string(NetPackage::HASH_LEN, 'H'); //net_pack.get_hash()
+			string calculated_hmac = hmacsha2::hmac(data_s, transfer_security_key);
+			string expected_hmac = net_pack.get_hash();
+			string file_name = transfer_file_names[net_pack.get_file_number()];
+			cout << "master has sent a file: " << file_name << endl;
+			cout << "data length: " << data_s.length() << endl;
+			cout << "data: " << data_s << endl;
+			cout << "transfer_security_key: " << transfer_security_key << endl;
+			cout << "calculated hmac: " << calculated_hmac << endl;
+			cout << "expected hmac: " << expected_hmac << endl;
 			if (calculated_hmac == expected_hmac)
 			{
-				string file_name = transfer_file_names[net_pack.get_file_number()];
 				ofstream out(file_name);
 				out << data_s;
 				out.close();
-				//cout << "master has sent a file: " << file_name << endl;
-				//cout << "data length: " << data.length() << endl;
-				//cout << "data: " << data_s << endl;
 			}
 			else
 			{

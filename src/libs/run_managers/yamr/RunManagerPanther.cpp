@@ -1119,28 +1119,29 @@ void RunManagerPanther::process_message(int i_sock)
 		//Received a file from the slave.
 		if (slave_info_iter->get_state() == SlaveInfoRec::State::FTN_REQ)
 		{
-			//Check the HMAC.
 			vector<int8_t> data_v = net_pack.get_data();
 			string data_s(data_v.begin(), data_v.end());
-			string calculated_hmac = string(NetPackage::HASH_LEN, 'H'); //hmacsha2::hmac(data_s, transfer_security_key);
-			string expected_hmac = calculated_hmac; //net_pack.get_hash()
-			//cout << endl << "Expected HMAC  : " << expected_hmac;
-			//cout << endl << "Calculated HMAC: " << calculated_hmac;
+			string calculated_hmac = hmacsha2::hmac(data_s, transfer_security_key);
+			string expected_hmac = net_pack.get_hash();
+			int file_number = net_pack.get_file_number();
+			string file_name = "file0_from_slave.txt"; //Chas, this should be something like = transfer_file_names[file_number];
+			cout << "slave has sent a file: " << file_name << endl;
+			cout << "data length: " << data_s.length() << endl;
+			cout << "data: " << data_s << endl;
+			cout << "transfer_security_key: " << transfer_security_key << endl;
+			cout << "calculated hmac: " << calculated_hmac << endl;
+			cout << "expected hmac: " << expected_hmac << endl;
 			if (calculated_hmac != expected_hmac)
+			{
+				ofstream out(file_name);
+				out << data_s;
+				out.close();
+			}
+			else
 			{
 				cout << "error invalid hmac" << endl;
 				//throw error??
 			}
-
-			//Write the file
-			int file_number = net_pack.get_file_number();
-			string file_name = "file0_from_slave.txt"; //Chas, this should be something like = transfer_file_names[file_number];
-			ofstream out(file_name);
-			out << data_s;
-			out.close();
-			//cout << endl << endl << "writing file..." << file_name << "..." << endl;
-			//cout << "data length: " << data_s.length() << endl;
-			//cout << "data: " << data_s << endl << endl << endl;
 
 			//Update state to file transfer received
 			slave_info_iter->set_state(SlaveInfoRec::State::FTN_REC);
@@ -1358,14 +1359,15 @@ void RunManagerPanther::kill_all_active_runs()
 			string file_name = "file1_from_master.txt"; //this should be something like = transfer_file_names[file_number];
 			ifstream file(file_name);
 			string data((istreambuf_iterator<char>(file)), istreambuf_iterator<char>()); //doens't work if ifstream is binary
+			string hmac = hmacsha2::hmac(data, transfer_security_key);
 			file.close();
-			//cout << "Sending a file to the slave: " << file_name << endl;
-			//cout << "data length: " << data.length() << endl;
-			//cout << "data: " << data << endl;
-
 			NetPackage net_pack(NetPackage::PackType::TNS_FILE, 0, 0, "");
-			net_pack.set_hash(string(NetPackage::HASH_LEN, 'H')); //hmacsha2::hmac(data, transfer_security_key);
+			net_pack.set_hash(hmac);
 			net_pack.set_file_number(file_number); 
+			cout << "Sending a file to the slave: " << file_name << endl;
+			cout << "data length: " << data.length() << endl;
+			cout << "data: " << data << endl;
+			cout << "hmac: " << hmac << endl;
 			int err = net_pack.send(i_sock, &data[0], data.length());
 			if (err > 0)
 			{

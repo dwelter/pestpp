@@ -178,7 +178,7 @@ int NetPackage::send(int sockfd, const void *data, int64_t data_len_l)
 	i_start += sizeof(desc);
 	w_memcpy_s(&buf[i_start], buf_sz-i_start, &file_number, sizeof(file_number));
 	i_start += sizeof(file_number);
-	w_memcpy_s(&buf[i_start], buf_sz - i_start, hash, sizeof(hash));
+	w_memcpy_s(&buf[i_start], buf_sz-i_start, hash, sizeof(hash));
 	i_start += sizeof(hash);
 	if (data_len_l > 0) {
 		w_memcpy_s(&buf[i_start], buf_sz-i_start, data, data_len_l);
@@ -258,22 +258,7 @@ int  NetPackage::recv(int sockfd)
 			w_memcpy_s(&file_number, sizeof(file_number), &header_buf[i_start], sizeof(file_number));
 			i_start += sizeof(file_number);
 			//get hash
-			//w_memcpy_s(&hash, sizeof(hash), &header_buf[i_start], sizeof(hash));
-			// This is done to remove possible system dependicies on whether char/uchar
-			// is use to represent a standard char
-			for (int i = 0; i < HASH_LEN; ++i)
-			{
-				if (!allowable_ascii_char(header_buf[i_start + 1]))
-				{
-					corrupt_hash = true;
-					n = -2;
-					return n;
-				}
-				else
-				{
-					hash[i] = header_buf[i_start + 1];
-				}
-			}
+			w_memcpy_s(&hash, sizeof(hash), &header_buf[i_start], sizeof(hash));
 			i_start += sizeof(hash);
 			//get data
 			data_len = buf_sz - i_start;
@@ -311,23 +296,26 @@ void NetPackage::print_header(std::ostream &fout)
 
 int NetPackage::get_file_number()
 {
-	//In file-transfers the file is specified by a number.
 	return file_number;
 }
 
 void NetPackage::set_file_number(int _file_number)
 {
-	//In file-transfers the file is specified by a number.
 	file_number = _file_number;
 }
 
-void NetPackage::set_hash(string _hash_string)
+void NetPackage::set_hash(string _hash)
 {
-	if (_hash_string.length() != HASH_LEN)
-		throw PestError("New hash value had unexpected length: " + _hash_string.length());
+	if (_hash.length() == HASH_LEN)
+		strncpy((char*)hash, _hash.c_str(), HASH_LEN);
+	else
+		throw PestError("New hash value had unexpected length: " + _hash.length());
+}
 
-	//Copy the provided hash string into the local hash var (which is an int8_t[]).
-	strncpy((char*)hash, _hash_string.c_str(), HASH_LEN);
+string NetPackage::get_hash()
+{	
+	string answer(hash, hash + HASH_LEN);
+	return answer;
 }
 
 //template std::string NetPackage::extract_string< std::vector<int8_t>::iterator>(std::vector<int8_t>::iterator first, std::vector<int8_t>::iterator last);
