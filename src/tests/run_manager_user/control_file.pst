@@ -61,4 +61,5 @@ model9.ins ForsCalibrate.log
 file0_from_slave.txt
 file1_from_master.txt
 * file transfer security
+hmac
 strongPassword123
