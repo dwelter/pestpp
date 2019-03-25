@@ -612,7 +612,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 		{
 			vector<string> tokens_case_sen;
 			tokenize(line, tokens_case_sen);
-			file_transfer_info.transfer_file_names.push_back(tokens_case_sen[0]);
+			file_transfer_control_info.transfer_file_names.push_back(tokens_case_sen[0]);
 		}
 		else if (section == "FILE TRANSFER SECURITY")
 		{
@@ -631,7 +631,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 			{
 				vector<string> tokens_case_sen;
 				tokenize(line, tokens_case_sen);
-				file_transfer_info.transfer_security_key = tokens_case_sen[0];
+				file_transfer_control_info.transfer_security_key = tokens_case_sen[0];
 			}
 		}
 		else if (section == "MODEL INPUT/OUTPUT" )
@@ -859,11 +859,11 @@ const vector<string> &Pest::get_outfile_vec()
 }
 const vector<string> &Pest::get_transferfile_vec()
 {
-	return file_transfer_info.transfer_file_names;
+	return file_transfer_control_info.transfer_file_names;
 }
 const string &Pest::get_security_key()
 {
-	return file_transfer_info.transfer_security_key;
+	return file_transfer_control_info.transfer_security_key;
 }
 
 

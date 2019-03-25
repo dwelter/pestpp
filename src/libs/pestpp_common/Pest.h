@@ -87,7 +87,7 @@ private:
 	Observations observation_values;
 	ObservationInfo observation_info;
 	PriorInformation prior_info;
-	FileTransferInfo file_transfer_info;
+	FileTransferControlInfo file_transfer_control_info;
 	ModelExecInfo model_exec_info;
 	PestppOptions pestpp_options;
 	ParamTransformSeq base_par_transform;

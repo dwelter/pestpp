@@ -312,8 +312,9 @@ std::string RunManagerPanther::get_transfer_security_key()
 }
 
 
-void RunManagerPanther::set_transfer_security_key(const std::string &_transfer_security_key)
+void RunManagerPanther::set_transfer_security(RunManagerPanther::SecurityMethod _transfer_security_method, const std::string &_transfer_security_key)
 {
+	transfer_security_method = _transfer_security_method;
 	transfer_security_key = _transfer_security_key;
 }
 
@@ -321,6 +322,86 @@ void RunManagerPanther::set_transfer_security_key(const std::string &_transfer_s
 void RunManagerPanther::set_transfer_file_names(const std::vector<std::string> &_transfer_file_names)
 {
 	transfer_file_names = _transfer_file_names;
+}
+
+
+void RunManagerPanther::transfer_file_to_all_workers(int _filename_index_on_worker, int _filename_index_on_manager)
+{
+	//This adds files to a list. That list is transferred to all slaves when rmif_run_until is called. 
+	//The list should be cleared when rmif_run_until returns: files_to_transfer_to_workers.clear();
+
+	//TODO: Chas the design needs to be changed so that the filename on the worker can be different.
+	FileTransferInfo info = FileTransferInfo();
+	info.file_number_on_worker = _filename_index_on_worker;
+	info.file_number_on_manager = _filename_index_on_manager;
+	info.transfer_type = FileTransferInfo::TransferType::SEND_TO_WORKERS;
+	file_transfer_tasks.push_back(info); //.push_back(_filename_index_on_manager);
+}
+
+
+void RunManagerPanther::transfer_file_from_worker(int _filename_index_on_worker, int _filename_index_on_manager, int _run_id)
+{
+	//Question: Should this be done immediately? Or should it queue to happen when run_until is called?
+	//I think it should actually be the former.
+
+	//This adds transfer requests to a list. That list is processed when rmif_run_until is called.
+	//The list should be cleared when rmif_run_until returns.
+	//TODO: Chas this is work in progress.
+
+	//This is called after rmif_run_until, and therefore happens instantaneously. I'm not sure 
+	//what should happen if the run is no longer available (e.g. the slave has detached or has 
+	//overridden the run).
+
+	FileTransferInfo info = FileTransferInfo();
+	info.file_number_on_worker = _filename_index_on_worker;
+	info.file_number_on_manager = _filename_index_on_manager;
+	info.target_run_id = _run_id;
+	info.transfer_type = FileTransferInfo::TransferType::RETRIEVE_FROM_WORKER;
+	file_transfer_tasks.push_back(info);
+
+
+	////which slave did the run? is there already a method that does this? or an easier way?
+	//int slave_found = false;
+	////auto &i_slv : slave_info_set
+	//list<SlaveInfoRec>::iterator slave_iter, last_slave;
+	//for (auto &i_slv : slave_info_set)
+	//{
+	//	slave_found = (_run_id == i_slv.get_run_id());
+	//	if (slave_found)
+	//	{
+
+	//		break;
+	//	}
+	//}
+	//if (slave_found)
+	//{
+	//	//fetch the file from the slave
+	//	int socket_id = slave_iter->get_socket_fd();
+
+	//	NetPackage net_pack(NetPackage::PackType::REQ_TNS_FILE, 0, 0, "");
+	//	net_pack.set_file_number(_filename_index_on_worker);
+	//	char data = '\0';
+	//	int err = net_pack.send(socket_id, &data, sizeof(data));
+	//	if (err == 1)
+	//	{
+	//		slave_iter->set_state(SlaveInfoRec::State::FTN_REQ);
+	//	}
+	//	else
+	//	{
+	//		throw PestError("Could not send file request to slave." + slave_iter->get_hostname());
+	//	}
+	//}
+	//else
+	//	throw PestError("Cannot retrieve file from slave. Could not find the slave that did _run_id. " + _run_id);
+}
+
+
+bool RunManagerPanther::is_run_last(int _run_id)
+{
+	for (auto &i_slv : slave_info_set)
+		if (_run_id == i_slv.get_run_id())
+			return true;
+	return false;
 }
 
 

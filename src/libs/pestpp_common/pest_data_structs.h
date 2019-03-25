@@ -201,7 +201,7 @@ public:
 };
 
 
-class FileTransferInfo {
+class FileTransferControlInfo {
 public:
 	std::vector<std::string> transfer_file_names;
 	std::string transfer_security_key;

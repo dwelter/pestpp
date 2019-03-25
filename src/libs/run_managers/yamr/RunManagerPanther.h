@@ -29,6 +29,7 @@
 #include "network_package.h"
 #include "RunManagerAbstract.h"
 #include "RunStorage.h"
+#include "file_transfer_info.h"
 
 class SlaveInfoRec {
 public:
@@ -108,22 +109,30 @@ public:
 	~RunManagerPanther(void); 
 	int get_n_waiting_runs() { return waiting_runs.size(); }
 	void close_slaves();
+	enum class SecurityMethod { UNDEFINED, HMAC };
 	std::string get_transfer_security_key();
-	void set_transfer_security_key(const std::string &_transfer_security_key);
+	void set_transfer_security(RunManagerPanther::SecurityMethod _transfer_security_method, const std::string &_transfer_security_key);
 	void set_transfer_file_names(const std::vector<std::string> &_transfer_file_names);
-	bool demo_file_transfer = false;						//Chas temp for file transfer demonstration
-	void RunManagerPanther::demonstrate_file_transfer();	//Chas temp for file transfer demonstration
+	void transfer_file_to_all_workers(int _filename_index_on_worker, int _filename_index_on_manager);			//Chas should this return something?
+	void transfer_file_from_worker(int _filename_index_on_worker, int _filename_index_on_manager, int _run_id); //Chas should this return something?
+	bool RunManagerPanther::is_run_last(int _run_id);						//Chas new function to check whether run number _run_id is still avaialble.
+	bool demo_file_transfer = false;										//Chas temp for file transfer demonstration
+	void demonstrate_file_transfer();										//Chas temp for file transfer demonstration
 
 private:
 	std::string port;
-	std::string transfer_security_key;
-	std::vector<std::string> transfer_file_names;
 	static const int BACKLOG;
 	static const int MAX_FAILED_PINGS;
 	static const int N_PINGS_UNRESPONSIVE;
 	static const int PING_INTERVAL_SECS;
 	static const int MAX_CONCURRENT_RUNS_LOWER_LIMIT;
-	
+
+	SecurityMethod transfer_security_method;
+	std::string transfer_security_key;
+	std::vector<std::string> transfer_file_names;
+	//vector<int> files_to_transfer_to_workers;
+    vector<FileTransferInfo> file_transfer_tasks;
+
 	double overdue_reched_fac;
 	double overdue_giveup_fac;
 	double overdue_giveup_time_sec;

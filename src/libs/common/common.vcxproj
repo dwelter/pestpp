@@ -277,6 +277,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="file_transfer_info.cpp" />
     <ClCompile Include="fortran_wrappers.cpp" />
     <ClCompile Include="hmacsha2.cpp" />
     <ClCompile Include="network_package.cpp" />
@@ -291,6 +292,7 @@
   <ItemGroup>
     <ClInclude Include="config_os.h" />
     <ClInclude Include="csv.h" />
+    <ClInclude Include="file_transfer_info.h" />
     <ClInclude Include="hmacsha2.h" />
     <ClInclude Include="network_package.h" />
     <ClInclude Include="network_wrapper.h" />

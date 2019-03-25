@@ -55,7 +55,7 @@ obs1      0   1.0    obs1      2
 run_fors.bat
 * model input/output
 model9.ptf model9.fors
-model9.ins ForsCalibrate.log
+model9.ins model_output.txt
 * prior information
 * file transfer
 file0_from_slave.txt
