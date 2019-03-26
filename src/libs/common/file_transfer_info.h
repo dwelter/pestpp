@@ -16,7 +16,8 @@ public:
 	int target_run_id = -1;
 	bool request_sent = false;
 	bool file_received = false;
-	std::vector<int> required_workers;
+	bool is_complete = false;
+	std::vector<int> workers;
 	//std::vector<int> workers_received_from;
 	//std::vector<int> workers_sent_to;
 

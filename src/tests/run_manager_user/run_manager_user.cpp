@@ -65,21 +65,42 @@ int main(int argc, char* argv[])
 
 	//Add a run
 	//Start the manager, allow slaves to join and complete the run.
+	std::cout << endl;
+	std::cout << "HHHHHHHHHHHHHHHHHHHHHHH Doing a run." << endl << endl;
 	int first_run_id = run_manager_ptr->add_run(ctl_par, 1);
 	run_manager_ptr->run();
 
 
+	//Test 
+	std::cout << endl;
+	std::cout << "HHHHHHHHHHHHHHHHHHHHHHH Doing an empty run." << endl << endl;
+	run_manager_ptr->run();
+
+
+	if (true)
+	{
+		//Now we want to check whether the first run is still available.
+		bool available = run_manager_ptr->is_run_last(first_run_id);
+		if (available)
+		{
+			std::cout << endl;
+			std::cout << "HHHHHHHHHHHHHHHHHHHHHHH Doing an empty run to retrieve a file from the slave that did run1." << endl << endl;
+
+			//We still have the first run available.
+			//Instruct the run manager to retrieve a file from the slave who performed that run. 
+			//Call run() to complete the transfer.
+			int file_to_retrieve_index_on_manager = 2;
+			int file_to_retrieve_index_on_worker = 2;
+			run_manager_ptr->transfer_file_from_worker(file_to_retrieve_index_on_worker, file_to_retrieve_index_on_manager, first_run_id); //this could be called multiple times for different files
+			run_manager_ptr->run();
+		}
+	}
+
+
 	if (false)
 	{
-		//Once the run is done, and we still have the slaves online, instruct the run manager to
-		//retrieve a file from the slave who performed a particular run. And call run() again to 
-		//actually do the transfer.
-		int run_of_interest = first_run_id;
-		int file_to_retrieve_index_on_manager = 2;
-		int file_to_retrieve_index_on_worker = 2;
-		run_manager_ptr->transfer_file_from_worker(file_to_retrieve_index_on_worker, file_to_retrieve_index_on_manager, run_of_interest); //this could be called multiple times for different files
-		run_manager_ptr->run();
-
+		std::cout << endl;
+		std::cout << "HHHHHHHHHHHHHHHHHHHHHHH Doing an empty run to send a file to the slave(s)." << endl << endl;
 
 		//Send a file to all slaves.
 		int file_to_send_index_on_manager = 1;
@@ -90,6 +111,8 @@ int main(int argc, char* argv[])
 
 
 	//Do another run runs.
+	std::cout << endl;
+	std::cout << "HHHHHHHHHHHHHHHHHHHHHHH Doing a run." << endl << endl;
 	int second_run_id = run_manager_ptr->add_run(ctl_par, 1);
 	run_manager_ptr->run();
 

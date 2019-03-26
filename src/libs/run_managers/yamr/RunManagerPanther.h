@@ -115,9 +115,9 @@ public:
 	void set_transfer_file_names(const std::vector<std::string> &_transfer_file_names);
 	void transfer_file_to_all_workers(int _filename_index_on_worker, int _filename_index_on_manager);			//Chas should this return something?
 	void transfer_file_from_worker(int _filename_index_on_worker, int _filename_index_on_manager, int _run_id); //Chas should this return something?
-	bool RunManagerPanther::is_run_last(int _run_id);						//Chas new function to check whether run number _run_id is still avaialble.
-	bool demo_file_transfer = false;										//Chas temp for file transfer demonstration
-	void demonstrate_file_transfer();										//Chas temp for file transfer demonstration
+	bool is_run_last(int _run_id);					//Chas new function to check whether run number _run_id is still avaialble.
+	//bool demo_file_transfer = false;				//Chas temp for file transfer demonstration //REMOVE ME
+	//void demonstrate_file_transfer();				//Chas temp for file transfer demonstration //REMOVE ME
 
 private:
 	std::string port;
@@ -130,8 +130,8 @@ private:
 	SecurityMethod transfer_security_method;
 	std::string transfer_security_key;
 	std::vector<std::string> transfer_file_names;
-	//vector<int> files_to_transfer_to_workers;
     vector<FileTransferInfo> file_transfer_tasks;
+	bool do_file_transfers();
 
 	double overdue_reched_fac;
 	double overdue_giveup_fac;
