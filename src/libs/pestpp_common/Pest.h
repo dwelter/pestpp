@@ -69,6 +69,7 @@ public:
 	const  vector<string> &get_outfile_vec();
 	const vector<string> &get_transferfile_vec();
 	const string &get_security_key();
+	const string &get_security_method();
 	const PestppOptions &get_pestpp_options() const {return pestpp_options;}
     PestppOptions *get_pestpp_options_ptr() { return &pestpp_options; }
 	ObservationInfo *get_observation_info_ptr() { return &observation_info; }

@@ -109,15 +109,14 @@ public:
 	~RunManagerPanther(void); 
 	int get_n_waiting_runs() { return waiting_runs.size(); }
 	void close_slaves();
-	enum class SecurityMethod { UNDEFINED, HMAC };
-	std::string get_transfer_security_key();
-	void set_transfer_security(RunManagerPanther::SecurityMethod _transfer_security_method, const std::string &_transfer_security_key);
+	enum class SecurityMethod { NONE, HMAC };
+	void set_transfer_security(std::string _transfer_security_method, const std::string &_transfer_security_key);
 	void set_transfer_file_names(const std::vector<std::string> &_transfer_file_names);
-	void transfer_file_to_all_workers(int _filename_index_on_worker, int _filename_index_on_manager);			//Chas should this return something?
-	void transfer_file_from_worker(int _filename_index_on_worker, int _filename_index_on_manager, int _run_id); //Chas should this return something?
-	bool is_run_last(int _run_id);					//Chas new function to check whether run number _run_id is still avaialble.
-	//bool demo_file_transfer = false;				//Chas temp for file transfer demonstration //REMOVE ME
-	//void demonstrate_file_transfer();				//Chas temp for file transfer demonstration //REMOVE ME
+	std::string get_transfer_security_key();
+	std::string get_transfer_file_name(int index);
+	void queue_file_transfer_to_workers(int _filename_index_on_manager, int _filename_index_on_worker);
+	void queue_file_transfer_from_worker(int _filename_index_on_worker, int _filename_index_on_manager, int _run_id);
+	bool is_run_last(int _run_id);
 
 private:
 	std::string port;

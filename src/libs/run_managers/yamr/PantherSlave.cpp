@@ -497,6 +497,14 @@ void PANTHERSlave::check_io()
 }
 
 
+std::string PANTHERSlave::get_transfer_file_name(int index)
+{
+	if (index < 0 || index > transfer_file_names.size())
+		throw(PestError("Invalid transfer file number: " + index));
+	return transfer_file_names[index];
+}
+
+
 void PANTHERSlave::start(const string &host, const string &port)
 {
 	NetPackage net_pack;
@@ -635,7 +643,6 @@ void PANTHERSlave::start(const string &host, const string &port)
 				{
 					exit(-1);
 				}
-				cout << "CHAS ready signal sucessfully sent to master" << endl;
 			}
 		}
 		else if (net_pack.get_type() == NetPackage::PackType::TERMINATE)
@@ -662,19 +669,17 @@ void PANTHERSlave::start(const string &host, const string &port)
 		else if (net_pack.get_type() == NetPackage::PackType::REQ_TNS_FILE)
 		{
 			//The master has requested a file
-			int file_number = net_pack.get_file_number();
-			string file_name = transfer_file_names[file_number]; //CHAS: this throws a tricky error if the user puts in an invalid file_number. Maybe shell this out into a new function and handle the error more nicely.
+			int file_number_on_worker = net_pack.get_file_number();
+			string file_name = get_transfer_file_name(file_number_on_worker);
 			ifstream file(file_name); //file(file_name, ios::in | ios::binary | ios::ate);
 			string data((istreambuf_iterator<char>(file)), istreambuf_iterator<char>()); //doens't work if ifstream is binary
 			string hmac = hmacsha2::hmac(data, transfer_security_key);
 			file.close();
 			net_pack.reset(NetPackage::PackType::TNS_FILE, 0, 0, "");
 			net_pack.set_hash(hmac);
-			net_pack.set_file_number(file_number);
+			net_pack.set_file_number(file_number_on_worker);
 			cout << "master has requested a file: " << file_name << endl;
 			cout << "hmac: " << hmac << endl;
-			//cout << "data length: " << data.length() << endl;
-			//cout << "data: " << data << endl;
 			err = send_message(net_pack, &data[0], data.length()); //&data[0] is a pointer to the first char in the string
 			if (err != 1)
 			{
@@ -691,12 +696,6 @@ void PANTHERSlave::start(const string &host, const string &port)
 			string calculated_hmac = hmacsha2::hmac(data_s, transfer_security_key);
 			string expected_hmac = net_pack.get_hash();
 			string file_name = transfer_file_names[net_pack.get_file_number()];
-			//cout << "master has sent a file: " << file_name << endl;
-			//cout << "data length: " << data_s.length() << endl;
-			//cout << "data: " << data_s << endl;
-			//cout << "transfer_security_key: " << transfer_security_key << endl;
-			//cout << "calculated HMAC: " << calculated_hmac << endl;
-			//cout << "expected HMAC: " << expected_hmac << endl;
 			if (calculated_hmac == expected_hmac)
 			{
 				ofstream out(file_name);

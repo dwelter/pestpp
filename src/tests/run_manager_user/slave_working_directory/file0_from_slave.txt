@@ -1,3 +1,0 @@
-Hello world.
-This is file0_from_slave.txt
-End

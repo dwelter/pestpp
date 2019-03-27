@@ -52,14 +52,20 @@ obs1
 * observation data
 obs1      0   1.0    obs1      2
 * model command line
-run_fors.bat
+run_model.bat
 * model input/output
 model9.ptf model9.fors
 model9.ins ForsCalibrate.log
 * prior information
 * file transfer
-file0_from_slave.txt
-file1_from_master.txt
+file_a_on_slave.txt
+file_b_on_slave.txt
+file_c_on_master.txt
+file_d_on_master.txt
+file_a_sent.txt
+file_b_sent.txt
+file_c_sent.txt
+file_d_sent.txt
 * file transfer security
 hmac
 strongPassword123

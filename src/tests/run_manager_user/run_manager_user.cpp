@@ -55,64 +55,33 @@ int main(int argc, char* argv[])
 	run_manager_ptr->initialize(base_partran_seq.ctl2model_cp(ctl_par), pest_scenario.get_ctl_observations());
 
 
-	//Configure PANTHER with file transfer info from pest_scenario
-	auto transfer_files = pest_scenario.get_transferfile_vec();
-	auto security_key = pest_scenario.get_security_key();
-	auto security_method = RunManagerPanther::SecurityMethod::HMAC; //should get this from pest_scenario 
-	run_manager_ptr->set_transfer_file_names(transfer_files);
-	run_manager_ptr->set_transfer_security(security_method, security_key);
+	//Configure PANTHER with file transfer settings info from pest_scenario
+	run_manager_ptr->set_transfer_file_names(pest_scenario.get_transferfile_vec());
+	run_manager_ptr->set_transfer_security(pest_scenario.get_security_method(), pest_scenario.get_security_key());
 
 
-	//Add a run
-	//Start the manager, allow slaves to join and complete the run.
-	std::cout << endl;
-	std::cout << "HHHHHHHHHHHHHHHHHHHHHHH Doing a run." << endl << endl;
+	//Do a single run.
 	int first_run_id = run_manager_ptr->add_run(ctl_par, 1);
 	run_manager_ptr->run();
 
 
-	//Test 
-	std::cout << endl;
-	std::cout << "HHHHHHHHHHHHHHHHHHHHHHH Doing an empty run." << endl << endl;
-	run_manager_ptr->run();
-
-
-	if (true)
+	//If the run is still available request files 0 and 1 from that slave 
+	//and save them as 4 and 5.
+	if (run_manager_ptr->is_run_last(first_run_id))
 	{
-		//Now we want to check whether the first run is still available.
-		bool available = run_manager_ptr->is_run_last(first_run_id);
-		if (available)
-		{
-			std::cout << endl;
-			std::cout << "HHHHHHHHHHHHHHHHHHHHHHH Doing an empty run to retrieve a file from the slave that did run1." << endl << endl;
-
-			//We still have the first run available.
-			//Instruct the run manager to retrieve a file from the slave who performed that run. 
-			//Call run() to complete the transfer.
-			int file_to_retrieve_index_on_manager = 0;
-			int file_to_retrieve_index_on_worker = 0;
-			run_manager_ptr->transfer_file_from_worker(file_to_retrieve_index_on_worker, file_to_retrieve_index_on_manager, first_run_id); //this could be called multiple times for different files
-			run_manager_ptr->run();
-		}
-	}
-
-
-	if (true)
-	{
-		std::cout << endl;
-		std::cout << "HHHHHHHHHHHHHHHHHHHHHHH Doing an empty run to send a file to the slave(s)." << endl << endl;
-
-		//Send a file to all slaves.
-		int file_to_send_index_on_manager = 1;
-		int file_to_send_index_on_worker = 1;
-		run_manager_ptr->transfer_file_to_all_workers(file_to_send_index_on_worker, file_to_send_index_on_manager); //this could be called multiple times for different files
+		run_manager_ptr->queue_file_transfer_from_worker(0, 4, first_run_id);
+		run_manager_ptr->queue_file_transfer_from_worker(1, 5, first_run_id);
 		run_manager_ptr->run();
 	}
 
 
-	//Do another run runs.
-	std::cout << endl;
-	std::cout << "HHHHHHHHHHHHHHHHHHHHHHH Doing a run." << endl << endl;
+	//Send files 2 and 3 to all slaves and save them as 4 and 5.
+	run_manager_ptr->queue_file_transfer_to_workers(2, 6);
+	run_manager_ptr->queue_file_transfer_to_workers(3, 7);
+	run_manager_ptr->run();
+
+
+	//Do another run for fun.
 	int second_run_id = run_manager_ptr->add_run(ctl_par, 1);
 	run_manager_ptr->run();
 

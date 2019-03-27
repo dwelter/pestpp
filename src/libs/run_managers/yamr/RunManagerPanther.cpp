@@ -312,9 +312,14 @@ std::string RunManagerPanther::get_transfer_security_key()
 }
 
 
-void RunManagerPanther::set_transfer_security(RunManagerPanther::SecurityMethod _transfer_security_method, const std::string &_transfer_security_key)
+void RunManagerPanther::set_transfer_security(string _transfer_security_method, const std::string &_transfer_security_key)
 {
-	transfer_security_method = _transfer_security_method;
+	if (_transfer_security_method == "HMAC")
+		transfer_security_method = RunManagerPanther::SecurityMethod::HMAC;
+	else if (_transfer_security_method == "NONE")
+		transfer_security_method = RunManagerPanther::SecurityMethod::NONE;
+	else 
+		throw(PestError("Invalid file transfer security method: " + _transfer_security_method));
 	transfer_security_key = _transfer_security_key;
 }
 
@@ -325,7 +330,15 @@ void RunManagerPanther::set_transfer_file_names(const std::vector<std::string> &
 }
 
 
-void RunManagerPanther::transfer_file_to_all_workers(int _filename_index_on_worker, int _filename_index_on_manager)
+std::string RunManagerPanther::get_transfer_file_name(int index)
+{
+	if (index < 0 || index > transfer_file_names.size())
+		throw(PestError("Invalid transfer file number: " + index));
+	return transfer_file_names[index];
+}
+
+
+void RunManagerPanther::queue_file_transfer_to_workers(int _filename_index_on_manager, int _filename_index_on_worker)
 {
 	FileTransferInfo info = FileTransferInfo();
 	info.transfer_type = FileTransferInfo::TransferType::SEND_TO_WORKERS;
@@ -335,7 +348,7 @@ void RunManagerPanther::transfer_file_to_all_workers(int _filename_index_on_work
 }
 
 
-void RunManagerPanther::transfer_file_from_worker(int _filename_index_on_worker, int _filename_index_on_manager, int _run_id)
+void RunManagerPanther::queue_file_transfer_from_worker(int _filename_index_on_worker, int _filename_index_on_manager, int _run_id)
 {
 	FileTransferInfo info = FileTransferInfo();
 	info.transfer_type = FileTransferInfo::TransferType::RETRIEVE_FROM_WORKER;
@@ -1158,7 +1171,7 @@ void RunManagerPanther::process_message(int i_sock)
 			string expected_hmac = net_pack.get_hash();
 			int file_number_on_worker = net_pack.get_file_number();
 
-			//Find this task
+			//Find this task. Chas this block is ugly clean it up
 			int i_task = -1;;
 			for (int i = 0; i < file_transfer_tasks.size(); i++)
 			{
@@ -1170,18 +1183,13 @@ void RunManagerPanther::process_message(int i_sock)
 					i_task = i;
 					break;
 				}
+				if (i_task == file_transfer_tasks.size() - 1)
+					throw(PestError("Recieved a file from the slave but could not find the task. Software bug?"));
 			}
-			if (i_task < 0)
-				cout << "Could not find task.";
 
 			//Save the file
 			int file_number_on_manager = file_transfer_tasks[i_task].file_number_on_manager;
-			string file_name = transfer_file_names[file_number_on_manager]; //CHAS: this throws a tricky error if the user puts in an invalid file_number. Maybe shell this out into a new function and handle the error more nicely.
-			cout << "slave has sent a file: " << file_name << endl;
-			cout << "data length: " << data_s.length() << endl;
-			cout << "data: " << data_s << endl;
-			cout << "calculated hmac: " << calculated_hmac << endl;
-			cout << "expected hmac: " << expected_hmac << endl;
+			string file_name = get_transfer_file_name(file_number_on_manager);
 			if (calculated_hmac == expected_hmac)
 			{
 				ofstream out(file_name);
@@ -1190,11 +1198,9 @@ void RunManagerPanther::process_message(int i_sock)
 			}
 			else
 			{
-				//HMAC did not match. This means the message was corrupt, or originated from a third party. Do not save the file. 
-				//TODO: Maybe we should report the issue, or throw an error, or kill slave, or request the file again.
+				report("received file with unmatching HMAC: ", true);
+				//TODO: Maybe we should something else here: throw an error, or kill slave, or request the file again.
 			}
-
-			//Update state to file transfer received
 			file_transfer_tasks[i_task].file_received = true;
 			file_transfer_tasks[i_task].is_complete = true;
 			slave_info_iter->set_state(SlaveInfoRec::State::WAITING);

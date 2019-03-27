@@ -623,9 +623,10 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 			{
 				vector<string> tokens_case_sen;
 				tokenize(line, tokens_case_sen);
-				string security_type = upper_cp(tokens_case_sen[0]); //HMAC
-				if (security_type != "HMAC")
-					throw PestError("Unrecognised file transfer security type: " + security_type);
+				auto security_method = upper_cp(tokens_case_sen[0]);
+				if (security_method != "HMAC" && security_method != "NONE")
+					throw PestError("Unrecognised file transfer security type: " + security_method);
+				file_transfer_control_info.transfer_security_method = security_method;
 			}
 			else if (sec_lnum == 2)
 			{
@@ -864,6 +865,10 @@ const vector<string> &Pest::get_transferfile_vec()
 const string &Pest::get_security_key()
 {
 	return file_transfer_control_info.transfer_security_key;
+}
+const string &Pest::get_security_method()
+{
+	return file_transfer_control_info.transfer_security_method;
 }
 
 
