@@ -89,15 +89,15 @@ int main(int argc, char* argv[])
 			//We still have the first run available.
 			//Instruct the run manager to retrieve a file from the slave who performed that run. 
 			//Call run() to complete the transfer.
-			int file_to_retrieve_index_on_manager = 2;
-			int file_to_retrieve_index_on_worker = 2;
+			int file_to_retrieve_index_on_manager = 0;
+			int file_to_retrieve_index_on_worker = 0;
 			run_manager_ptr->transfer_file_from_worker(file_to_retrieve_index_on_worker, file_to_retrieve_index_on_manager, first_run_id); //this could be called multiple times for different files
 			run_manager_ptr->run();
 		}
 	}
 
 
-	if (false)
+	if (true)
 	{
 		std::cout << endl;
 		std::cout << "HHHHHHHHHHHHHHHHHHHHHHH Doing an empty run to send a file to the slave(s)." << endl << endl;

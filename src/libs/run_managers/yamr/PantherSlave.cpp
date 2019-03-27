@@ -635,6 +635,7 @@ void PANTHERSlave::start(const string &host, const string &port)
 				{
 					exit(-1);
 				}
+				cout << "CHAS ready signal sucessfully sent to master" << endl;
 			}
 		}
 		else if (net_pack.get_type() == NetPackage::PackType::TERMINATE)
@@ -662,7 +663,7 @@ void PANTHERSlave::start(const string &host, const string &port)
 		{
 			//The master has requested a file
 			int file_number = net_pack.get_file_number();
-			string file_name = transfer_file_names[file_number];
+			string file_name = transfer_file_names[file_number]; //CHAS: this throws a tricky error if the user puts in an invalid file_number. Maybe shell this out into a new function and handle the error more nicely.
 			ifstream file(file_name); //file(file_name, ios::in | ios::binary | ios::ate);
 			string data((istreambuf_iterator<char>(file)), istreambuf_iterator<char>()); //doens't work if ifstream is binary
 			string hmac = hmacsha2::hmac(data, transfer_security_key);

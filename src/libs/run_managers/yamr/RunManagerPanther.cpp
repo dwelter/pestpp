@@ -530,8 +530,9 @@ RunManagerAbstract::RUN_UNTIL_COND RunManagerPanther::run_until(RUN_UNTIL_COND c
 		init_slaves();
 
 		//file transfers
-		if (do_file_transfers())
-			file_transfer_tasks.clear();
+		if (file_transfer_tasks.size() > 0)
+			if (do_file_transfers())
+				file_transfer_tasks.clear();
 
 		//schedule runs on available nodes
 		schedule_runs();
@@ -1149,19 +1150,38 @@ void RunManagerPanther::process_message(int i_sock)
 	else if (net_pack.get_type() == NetPackage::PackType::TNS_FILE)
 	{
 		//Received a file from the slave.
-		if (slave_info_iter->get_state() == SlaveInfoRec::State::FTN_REQ)
+		if (slave_info_iter->get_state() == SlaveInfoRec::State::FTN_REQ || true)
 		{
 			vector<int8_t> data_v = net_pack.get_data();
 			string data_s(data_v.begin(), data_v.end());
 			string calculated_hmac = hmacsha2::hmac(data_s, transfer_security_key);
 			string expected_hmac = net_pack.get_hash();
-			int file_number = net_pack.get_file_number();
-			string file_name = transfer_file_names[file_number];
-			//cout << "slave has sent a file: " << file_name << endl;
-			//cout << "data length: " << data_s.length() << endl;
-			//cout << "data: " << data_s << endl;
-			//cout << "calculated hmac: " << calculated_hmac << endl;
-			//cout << "expected hmac: " << expected_hmac << endl;
+			int file_number_on_worker = net_pack.get_file_number();
+
+			//Find this task
+			int i_task = -1;;
+			for (int i = 0; i < file_transfer_tasks.size(); i++)
+			{
+				auto task = file_transfer_tasks[i];
+				if (!task.is_complete &&
+					task.request_sent &&
+					task.workers[0] == i_sock)
+				{
+					i_task = i;
+					break;
+				}
+			}
+			if (i_task < 0)
+				cout << "Could not find task.";
+
+			//Save the file
+			int file_number_on_manager = file_transfer_tasks[i_task].file_number_on_manager;
+			string file_name = transfer_file_names[file_number_on_manager]; //CHAS: this throws a tricky error if the user puts in an invalid file_number. Maybe shell this out into a new function and handle the error more nicely.
+			cout << "slave has sent a file: " << file_name << endl;
+			cout << "data length: " << data_s.length() << endl;
+			cout << "data: " << data_s << endl;
+			cout << "calculated hmac: " << calculated_hmac << endl;
+			cout << "expected hmac: " << expected_hmac << endl;
 			if (calculated_hmac == expected_hmac)
 			{
 				ofstream out(file_name);
@@ -1175,7 +1195,9 @@ void RunManagerPanther::process_message(int i_sock)
 			}
 
 			//Update state to file transfer received
-			slave_info_iter->set_state(SlaveInfoRec::State::FTN_REC);
+			file_transfer_tasks[i_task].file_received = true;
+			file_transfer_tasks[i_task].is_complete = true;
+			slave_info_iter->set_state(SlaveInfoRec::State::WAITING);
 		}
 		else
 		{
@@ -1431,6 +1453,7 @@ void RunManagerPanther::kill_all_active_runs()
 						 {
 							 throw PestError("Error sending file to slave " + i_slv.get_hostname());
 						 }
+						 task.workers.push_back(i_sock);
 						 task.request_sent = true;
 					 }
 					 else
@@ -1441,31 +1464,11 @@ void RunManagerPanther::kill_all_active_runs()
 				 if (i_sock == -1)
 					 throw PestError("Cannot retrieve file from slave. Could not find the slave that did _run_id. " + task.target_run_id);
 			 }
-			 else
-			 {
-				 //Find the correct slave
-				 int i_sock = -1;
-				 for (auto &i_slv : slave_info_set)
-				 {
-					 if (task.target_run_id != i_slv.get_run_id())
-						 continue;
-
-					 i_sock = i_slv.get_socket_fd();
-					 SlaveInfoRec::State cur_state = i_slv.get_state();
-					 if (cur_state == SlaveInfoRec::State::FTN_REC)
-					 {
-						 //File recieved
-						 cur_state = SlaveInfoRec::State::WAITING;
-						 task.is_complete = true;
-					 }
-				 }
-				 if (i_sock == -1)
-					 throw PestError("Cannot retrieve file from slave. Could not find the slave that did _run_id. " + task.target_run_id);
-			 }
 		 }
 		 if (!task.is_complete)
 			 all_file_transfers_complete = false;
 	 }
+	 return all_file_transfers_complete;
  }
 
 
