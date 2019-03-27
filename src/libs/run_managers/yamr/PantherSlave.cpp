@@ -193,9 +193,11 @@ void PANTHERSlave::process_ctl_file(const string &ctl_filename)
 				{
 					vector<string> tokens_case_sen;
 					tokenize(line, tokens_case_sen);
-					string security_type = upper_cp(tokens_case_sen[0]); //HMAC
-					if (security_type != "HMAC")
-						throw PestConversionError("Unrecognised file transfer security type: " + security_type);
+					string token_upper_case = upper_cp(tokens_case_sen[0]);
+					if (token_upper_case == "HMAC" || token_upper_case == "NONE")
+						transfer_security_method = token_upper_case;
+					else
+						throw PestConversionError("Unrecognised file transfer security method: " + token_upper_case);
 				}
 				else if (sec_lnum == 2)
 				{
@@ -696,7 +698,8 @@ void PANTHERSlave::start(const string &host, const string &port)
 			string calculated_hmac = hmacsha2::hmac(data_s, transfer_security_key);
 			string expected_hmac = net_pack.get_hash();
 			string file_name = transfer_file_names[net_pack.get_file_number()];
-			if (calculated_hmac == expected_hmac)
+			if ((transfer_security_method == "NONE") ||
+				(transfer_security_method == "HMAC" && calculated_hmac == expected_hmac))
 			{
 				ofstream out(file_name);
 				out << data_s;
@@ -705,8 +708,7 @@ void PANTHERSlave::start(const string &host, const string &port)
 			}
 			else
 			{
-				//HMAC did not match. This means the message was corrupt, or originated from a third party.
-				cout << "master sent a file '" << file_name << "' but the HMAC did not verify and the file has not been saved." << endl;
+				cout << "master sent a file '" << file_name << "' but the HMAC did not match and the file has not been saved." << endl;
 				cout << "expected HMAC: " << expected_hmac << endl;
 				cout << "calculated HMAC: " << calculated_hmac << endl;
 			}

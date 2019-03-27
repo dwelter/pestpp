@@ -67,6 +67,7 @@ private:
 	bool terminate;
 	fd_set master;
 	string transfer_security_key;
+	string transfer_security_method;
 	std::vector<std::string> comline_vec;
 	std::vector<std::string> tplfile_vec;
 	std::vector<std::string> inpfile_vec;

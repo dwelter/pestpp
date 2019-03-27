@@ -1171,7 +1171,8 @@ void RunManagerPanther::process_message(int i_sock)
 			string expected_hmac = net_pack.get_hash();
 			int file_number_on_worker = net_pack.get_file_number();
 
-			//Find this task. Chas this block is ugly clean it up
+			//Find the file transfer task corresponding to this recieved message. 
+			//This block is ugly - clean it up.
 			int i_task = -1;;
 			for (int i = 0; i < file_transfer_tasks.size(); i++)
 			{
@@ -1190,7 +1191,8 @@ void RunManagerPanther::process_message(int i_sock)
 			//Save the file
 			int file_number_on_manager = file_transfer_tasks[i_task].file_number_on_manager;
 			string file_name = get_transfer_file_name(file_number_on_manager);
-			if (calculated_hmac == expected_hmac)
+			if ((transfer_security_method == RunManagerPanther::SecurityMethod::NONE) ||
+				(transfer_security_method == RunManagerPanther::SecurityMethod::HMAC && calculated_hmac == expected_hmac))
 			{
 				ofstream out(file_name);
 				out << data_s;
@@ -1198,7 +1200,7 @@ void RunManagerPanther::process_message(int i_sock)
 			}
 			else
 			{
-				report("received file with unmatching HMAC: ", true);
+				report("received file with unmatching HMAC and it has not been saved.", true);
 				//TODO: Maybe we should something else here: throw an error, or kill slave, or request the file again.
 			}
 			file_transfer_tasks[i_task].file_received = true;
