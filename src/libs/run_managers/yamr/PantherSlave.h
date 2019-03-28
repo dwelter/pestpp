@@ -55,6 +55,7 @@ private:
 	int fdmax;
 	double run_time;
 	int poll_interval_seconds;
+	std::string get_transfer_file_name(int index);
 #ifdef _DEBUG
 	static const int max_recv_fails = 100;
 	static const int max_send_fails = 100;
@@ -66,6 +67,7 @@ private:
 	bool terminate;
 	fd_set master;
 	string transfer_security_key;
+	string transfer_security_method;
 	std::vector<std::string> comline_vec;
 	std::vector<std::string> tplfile_vec;
 	std::vector<std::string> inpfile_vec;
@@ -74,6 +76,7 @@ private:
 	std::vector<std::string> transfer_file_names;
 	std::vector<std::string> obs_name_vec;
 	std::vector<std::string> par_name_vec;
+
 	
 	ModelInterface mi;
 	void run_async(pest_utils::thread_flag* terminate, pest_utils::thread_flag* finished,

@@ -312,9 +312,59 @@ std::string RunManagerPanther::get_transfer_security_key()
 }
 
 
-void RunManagerPanther::set_transfer_security_key(const std::string &new_transfer_security_key)
+void RunManagerPanther::set_transfer_security(string _transfer_security_method, const std::string &_transfer_security_key)
 {
-	transfer_security_key = new_transfer_security_key;
+	if (_transfer_security_method == "HMAC")
+		transfer_security_method = RunManagerPanther::SecurityMethod::HMAC;
+	else if (_transfer_security_method == "NONE")
+		transfer_security_method = RunManagerPanther::SecurityMethod::NONE;
+	else 
+		throw(PestError("Invalid file transfer security method: " + _transfer_security_method));
+	transfer_security_key = _transfer_security_key;
+}
+
+
+void RunManagerPanther::set_transfer_file_names(const std::vector<std::string> &_transfer_file_names)
+{
+	transfer_file_names = _transfer_file_names;
+}
+
+
+std::string RunManagerPanther::get_transfer_file_name(int index)
+{
+	if (index < 0 || index > transfer_file_names.size())
+		throw(PestError("Invalid transfer file number: " + index));
+	return transfer_file_names[index];
+}
+
+
+void RunManagerPanther::queue_file_transfer_to_workers(int _filename_index_on_manager, int _filename_index_on_worker)
+{
+	FileTransferInfo info = FileTransferInfo();
+	info.transfer_type = FileTransferInfo::TransferType::SEND_TO_WORKERS;
+	info.file_number_on_worker = _filename_index_on_worker;
+	info.file_number_on_manager = _filename_index_on_manager;
+	file_transfer_tasks.push_back(info);
+}
+
+
+void RunManagerPanther::queue_file_transfer_from_worker(int _filename_index_on_worker, int _filename_index_on_manager, int _run_id)
+{
+	FileTransferInfo info = FileTransferInfo();
+	info.transfer_type = FileTransferInfo::TransferType::RETRIEVE_FROM_WORKER;
+	info.file_number_on_worker = _filename_index_on_worker;
+	info.file_number_on_manager = _filename_index_on_manager;
+	info.target_run_id = _run_id;
+	file_transfer_tasks.push_back(info);
+}
+
+
+bool RunManagerPanther::is_run_last(int _run_id)
+{
+	for (auto &i_slv : slave_info_set)
+		if (_run_id == i_slv.get_run_id())
+			return true;
+	return false;
 }
 
 
@@ -487,16 +537,15 @@ RunManagerAbstract::RUN_UNTIL_COND RunManagerPanther::run_until(RUN_UNTIL_COND c
 
 	std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
 	double run_time_sec = 0.0;
-	while (!all_runs_complete() && terminate_reason == RUN_UNTIL_COND::NORMAL)
+	while (file_transfer_tasks.size() > 0 || !all_runs_complete() && terminate_reason == RUN_UNTIL_COND::NORMAL)
 	{
 		echo();
 		init_slaves();
 
-		if (demo_file_transfer)
-		{
-			bool success = file_transfer_demonstration();
-			demo_file_transfer = !success;
-		}
+		//file transfers
+		if (file_transfer_tasks.size() > 0)
+			if (do_file_transfers())
+				file_transfer_tasks.clear();
 
 		//schedule runs on available nodes
 		schedule_runs();
@@ -551,53 +600,6 @@ RunManagerAbstract::RUN_UNTIL_COND RunManagerPanther::run_until(RUN_UNTIL_COND c
 	}
 	return terminate_reason;
 }
-
-
-//Chas temp function to demonstrate file transfer
-bool RunManagerPanther::file_transfer_demonstration()
-{
-	bool demonstration_complete = false;
-	for (auto &i_slv : slave_info_set)
-	{
-		int i_sock = i_slv.get_socket_fd();
-		SlaveInfoRec::State cur_state = i_slv.get_state();
-		if (cur_state == SlaveInfoRec::State::WAITING)
-		{
-			//Request a file
-			NetPackage net_pack(NetPackage::PackType::REQ_TNS_FILE, 0, 0, "");
-			int file_number = 0;											//<-- request file number 0
-			char data = '\0';
-			net_pack.set_file_number(file_number);
-			int err = net_pack.send(i_sock, &data, sizeof(data));
-			if (err > 0)
-			{				
-				i_slv.set_state(SlaveInfoRec::State::FTN_REQ);
-			}
-		}
-		else if (cur_state == SlaveInfoRec::State::FTN_REC)
-		{
-			//Send a file
-			NetPackage net_pack(NetPackage::PackType::TNS_FILE, 0, 0, "");
-			int file_number = 1;											//<-- send file number 1	
-			string file_name = "file1_from_master.txt";						//this should be something like = transfer_file_names[file_number];
-			ifstream file(file_name, ios::in | ios::binary | ios::ate);		//Open the file and read it
-			stringstream data_buffer;
-			data_buffer << file.rdbuf();
-			const string data = data_buffer.str();
-			string data_hmac = hmacsha2::hmac(data, transfer_security_key);	//Calculate the hmac to send			
-			net_pack.set_file_number(file_number);
-			net_pack.set_hash(data_hmac);
-			int err = net_pack.send(i_sock, &data[0], sizeof(data));
-			if (err > 0)
-			{
-				i_slv.set_state(SlaveInfoRec::State::WAITING);
-			}
-			demonstration_complete = true;
-		}
-	}
-	return demonstration_complete;
-}
-
 
 bool RunManagerPanther::ping()
 {
@@ -1152,12 +1154,6 @@ void RunManagerPanther::process_message(int i_sock)
 		report("ping received from worker" + host_name + "$" + slave_info_iter->get_work_dir(), false);
 #endif
 	}
-	else if (net_pack.get_type() == NetPackage::PackType::IO_ERROR)
-	{
-		//string err(net_pack.get_data().begin(),net_pack.get_data().end());		
-		report("error in model IO files on worker: " + host_name + "$" + slave_info_iter->get_work_dir() + "-terminating worker. ", true);
-		close_slave(i_sock);
-	}
 	else if (net_pack.get_type() == NetPackage::PackType::REQ_TNS_FILE)
 	{
 		//The slave should not be requesting a file transfer.
@@ -1166,35 +1162,62 @@ void RunManagerPanther::process_message(int i_sock)
 	}
 	else if (net_pack.get_type() == NetPackage::PackType::TNS_FILE)
 	{
-		if (slave_info_iter->get_state() == SlaveInfoRec::State::FTN_REQ)
+		//Received a file from the slave.
+		if (slave_info_iter->get_state() == SlaveInfoRec::State::FTN_REQ || true)
 		{
-			//Check the HMAC.
 			vector<int8_t> data_v = net_pack.get_data();
-			string data_s = (char*)&data_v[0];								//&data_v[0] is a pointer to the first char in the string
+			string data_s(data_v.begin(), data_v.end());
 			string calculated_hmac = hmacsha2::hmac(data_s, transfer_security_key);
-			if (calculated_hmac != (char*)net_pack.hash)
+			string expected_hmac = net_pack.get_hash();
+			int file_number_on_worker = net_pack.get_file_number();
+
+			//Find the file transfer task corresponding to this recieved message. 
+			//This block is ugly - clean it up.
+			int i_task = -1;;
+			for (int i = 0; i < file_transfer_tasks.size(); i++)
 			{
-				cout << "hmac invalid" << endl;
-				//exit(-1);
+				auto task = file_transfer_tasks[i];
+				if (!task.is_complete &&
+					task.request_sent &&
+					task.workers[0] == i_sock)
+				{
+					i_task = i;
+					break;
+				}
+				if (i_task == file_transfer_tasks.size() - 1)
+					throw(PestError("Recieved a file from the slave but could not find the task. Software bug?"));
 			}
 
-			//Write the file
-			int file_number = net_pack.get_file_number();
-			string file_name = "file0_from_slave.txt";						//Chas, this should be something like = transfer_file_names[file_number];
-			cout << "writing file..." << file_name << "...";
-			ofstream out(file_name, ios::out | ios::binary);
-			out << data_s;
-			out.close();
-			cout << "done" << endl;
-
-			//Update state to file transfer received
-			slave_info_iter->set_state(SlaveInfoRec::State::FTN_REC);
+			//Save the file
+			int file_number_on_manager = file_transfer_tasks[i_task].file_number_on_manager;
+			string file_name = get_transfer_file_name(file_number_on_manager);
+			if ((transfer_security_method == RunManagerPanther::SecurityMethod::NONE) ||
+				(transfer_security_method == RunManagerPanther::SecurityMethod::HMAC && calculated_hmac == expected_hmac))
+			{
+				ofstream out(file_name);
+				out << data_s;
+				out.close();
+			}
+			else
+			{
+				report("received file with unmatching HMAC and it has not been saved.", true);
+				//TODO: Maybe we should something else here: throw an error, or kill slave, or request the file again.
+			}
+			file_transfer_tasks[i_task].file_received = true;
+			file_transfer_tasks[i_task].is_complete = true;
+			slave_info_iter->set_state(SlaveInfoRec::State::WAITING);
 		}
 		else
 		{
-			report("recieved unexpected file from slave: " + host_name + "$" + slave_info_iter->get_work_dir() + "-terminating worker. ", true);
+			report("recieved unrequested file from slave: " + host_name + "$" + slave_info_iter->get_work_dir() + "-terminating worker. ", true);
 			close_slave(i_sock);
 		}
+	}
+	else if (net_pack.get_type() == NetPackage::PackType::IO_ERROR)
+	{
+		//string err(net_pack.get_data().begin(),net_pack.get_data().end());		
+		report("error in model IO files on worker: " + host_name + "$" + slave_info_iter->get_work_dir() + "-terminating worker. ", true);
+		close_slave(i_sock);
 	}
 	else
 	{
@@ -1359,6 +1382,104 @@ void RunManagerPanther::kill_all_active_runs()
 		}
 	}
  }
+
+
+ bool RunManagerPanther::do_file_transfers()
+ {
+	 bool all_file_transfers_complete = true;
+
+	 //Loop over all file transfer tasks
+	 for (auto &task : file_transfer_tasks)
+	 {
+		 if (task.is_complete)
+			 continue;
+
+		 if (task.transfer_type == FileTransferInfo::TransferType::SEND_TO_WORKERS)
+		 {
+			 task.is_complete = true; //Try to complete this task by sending the file to all slaves
+			 for (auto &i_slv : slave_info_set)
+			 {
+				 int i_sock = i_slv.get_socket_fd();
+				 bool this_slave_done = find(task.workers.begin(), task.workers.end(), i_sock) < task.workers.end();
+				 if (!this_slave_done)
+				 {
+					 if (i_slv.get_state() == SlaveInfoRec::State::WAITING ||
+						 i_slv.get_state() == SlaveInfoRec::State::COMPLETE)
+					 {
+						 string file_name = transfer_file_names[task.file_number_on_manager];
+						 ifstream file(file_name);
+						 string data((istreambuf_iterator<char>(file)), istreambuf_iterator<char>()); //doens't work if ifstream is binary
+						 string hmac = hmacsha2::hmac(data, transfer_security_key);
+						 file.close();
+						 NetPackage net_pack(NetPackage::PackType::TNS_FILE, 0, 0, "");
+						 net_pack.set_hash(hmac);
+						 net_pack.set_file_number(task.file_number_on_worker);
+						 int err = net_pack.send(i_sock, &data[0], data.length());
+						 if (err > 0)
+						 {
+							 i_slv.set_state(SlaveInfoRec::State::WAITING);
+						 }
+						 else
+						 {
+							 throw PestError("Error sending file to slave " + i_slv.get_hostname());
+						 }
+						 task.workers.push_back(i_sock);
+					 }
+					 else
+					 {
+						 //This slave is busy so we can't do it yet. The task is not complete.
+						 task.is_complete = false;
+					 }
+				 }
+			 }
+		 }
+		 else if (task.transfer_type == FileTransferInfo::TransferType::RETRIEVE_FROM_WORKER)
+		 {
+			 if (!task.request_sent)
+			 {
+				 //Find the correct slave
+				 int i_sock = -1;
+				 for (auto &i_slv : slave_info_set)
+				 {
+					 if (task.target_run_id != i_slv.get_run_id())
+						 continue;
+
+					 i_sock = i_slv.get_socket_fd();
+					 if (i_slv.get_state() == SlaveInfoRec::State::WAITING || 
+						 i_slv.get_state() == SlaveInfoRec::State::COMPLETE)
+					 {
+						 //Request the file
+						 NetPackage net_pack(NetPackage::PackType::REQ_TNS_FILE, 0, 0, "");
+						 net_pack.set_file_number(task.file_number_on_worker);
+						 char data = '\0';
+						 int err = net_pack.send(i_sock, &data, sizeof(data));
+						 if (err > 0)
+						 {
+							 i_slv.set_state(SlaveInfoRec::State::FTN_REQ);
+						 }
+						 else
+						 {
+							 throw PestError("Error sending file to slave " + i_slv.get_hostname());
+						 }
+						 task.workers.push_back(i_sock);
+						 task.request_sent = true;
+					 }
+					 else
+					 {
+						 //Slave is doing something else. We can't send a request to this slave yet.
+					 }
+				 }
+				 if (i_sock == -1)
+					 throw PestError("Cannot retrieve file from slave. Could not find the slave that did _run_id. " + task.target_run_id);
+			 }
+		 }
+		 if (!task.is_complete)
+			 all_file_transfers_complete = false;
+	 }
+	 return all_file_transfers_complete;
+ }
+
+
 
  vector<int> RunManagerPanther::get_overdue_runs_over_kill_threshold(int run_id)
  {

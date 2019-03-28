@@ -610,21 +610,30 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 		}
 		else if (section == "FILE TRANSFER")
 		{
-			//vector<string> tokens_case_sen;
-			//tokenize(line, tokens_case_sen);
-			//transfer_file_names.push_back(tokens_case_sen[0]);
-
-			//CHAS: we need somewhere to put the file transfer names
-			//Maybe create a class or strucutre called "file_transfer_info" and use it like "model_exec_info" is used below.
+			vector<string> tokens_case_sen;
+			tokenize(line, tokens_case_sen);
+			file_transfer_control_info.transfer_file_names.push_back(tokens_case_sen[0]);
 		}
 		else if (section == "FILE TRANSFER SECURITY")
 		{
 			//vector<string> tokens_case_sen;
 			//tokenize(line, tokens_case_sen);
-			//transfer_security_key = tokens_case_sen[0];
-
-			//CHAS: we need somewhere to put the transfer_security_key
-			//Maybe create a class or strucutre called "file_transfer_info" and use it like "model_exec_info" is used below.
+			//file_transfer_info.transfer_security_key = tokens_case_sen[0];
+			if (sec_lnum == 1)
+			{
+				vector<string> tokens_case_sen;
+				tokenize(line, tokens_case_sen);
+				auto security_method = upper_cp(tokens_case_sen[0]);
+				if (security_method != "HMAC" && security_method != "NONE")
+					throw PestError("Unrecognised file transfer security type: " + security_method);
+				file_transfer_control_info.transfer_security_method = security_method;
+			}
+			else if (sec_lnum == 2)
+			{
+				vector<string> tokens_case_sen;
+				tokenize(line, tokens_case_sen);
+				file_transfer_control_info.transfer_security_key = tokens_case_sen[0];
+			}
 		}
 		else if (section == "MODEL INPUT/OUTPUT" )
 		{
@@ -689,6 +698,7 @@ int Pest::process_ctl_file(ifstream &fin, string pst_filename)
 			}
 
 		}
+
 	}
 
 	// write out last prior information record
@@ -848,6 +858,19 @@ const vector<string> &Pest::get_outfile_vec()
 {
 	return model_exec_info.outfile_vec;
 }
+const vector<string> &Pest::get_transferfile_vec()
+{
+	return file_transfer_control_info.transfer_file_names;
+}
+const string &Pest::get_security_key()
+{
+	return file_transfer_control_info.transfer_security_key;
+}
+const string &Pest::get_security_method()
+{
+	return file_transfer_control_info.transfer_security_method;
+}
+
 
 Pest::~Pest() {
 	//if (regul_scheme_ptr !=0) delete regul_scheme_ptr;

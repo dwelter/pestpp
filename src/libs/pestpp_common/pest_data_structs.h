@@ -200,6 +200,15 @@ public:
 	std::vector<std::string> outfile_vec;
 };
 
+
+class FileTransferControlInfo {
+public:
+	std::vector<std::string> transfer_file_names;
+	std::string transfer_security_key;
+	std::string transfer_security_method;
+};
+
+
 class ParetoInfo {
 public:
 	double wf_start, wf_fin, wf_inc;

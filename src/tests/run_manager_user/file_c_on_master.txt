@@ -1,0 +1,3 @@
+Hello world.
+This is file_c_on_master.txt
+End

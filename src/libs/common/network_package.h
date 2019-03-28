@@ -20,7 +20,7 @@ public:
 	enum class PackType :uint32_t {
 		UNKN, OK, CONFIRM_OK, READY, REQ_RUNDIR, RUNDIR, REQ_LINPACK, LINPACK, PAR_NAMES, OBS_NAMES,
 		START_RUN, RUN_FINISHED, RUN_FAILED, RUN_KILLED, TERMINATE, PING, REQ_KILL, IO_ERROR, CORRUPT_MESG,
-		REQ_TNS_FILE, TNS_FILE};
+		REQ_TNS_FILE, TNS_FILE };
 	static int get_new_group_id();
 	NetPackage(PackType _type=PackType::UNKN, int _group=-1, int _run_id=-1, const std::string &desc_str="");
 	~NetPackage(){}
@@ -35,13 +35,14 @@ public:
 	void print_header(std::ostream &fout);
 	int get_file_number();
 	void set_file_number(int _file_number);
-	const static int HASH_LEN = 256;
-	int8_t hash[HASH_LEN];
-	void set_hash(std::string _hash_string);
+	const static int HASH_LEN = 64;
+	void set_hash(std::string _hash);
+	std::string get_hash();
 
 private:
 	int64_t data_len;
-	int8_t file_number = -1;
+	int64_t file_number = -1;
+	int8_t hash[HASH_LEN];
 	static int64_t last_group_id;
 	PackType type;
 	int64_t group;

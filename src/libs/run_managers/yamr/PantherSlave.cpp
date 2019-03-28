@@ -189,9 +189,22 @@ void PANTHERSlave::process_ctl_file(const string &ctl_filename)
 			}
 			else if (section == "FILE TRANSFER SECURITY")
 			{
-				vector<string> tokens_case_sen;
-				tokenize(line, tokens_case_sen);
-				transfer_security_key = tokens_case_sen[0];
+				if (sec_lnum == 1)
+				{
+					vector<string> tokens_case_sen;
+					tokenize(line, tokens_case_sen);
+					string token_upper_case = upper_cp(tokens_case_sen[0]);
+					if (token_upper_case == "HMAC" || token_upper_case == "NONE")
+						transfer_security_method = token_upper_case;
+					else
+						throw PestConversionError("Unrecognised file transfer security method: " + token_upper_case);
+				}
+				else if (sec_lnum == 2)
+				{
+					vector<string> tokens_case_sen;
+					tokenize(line, tokens_case_sen);
+					transfer_security_key = tokens_case_sen[0];
+				}
 			}
 		}
 	}
@@ -468,13 +481,13 @@ void PANTHERSlave::check_io()
 {
 	vector<string> inaccessible_files;
 	for (auto &file : insfile_vec)
-		if (!check_exist_in(file)) inaccessible_files.push_back(file);
+	if (!check_exist_in(file)) inaccessible_files.push_back(file);
 	for (auto &file : outfile_vec)
-		if (!check_exist_out(file)) inaccessible_files.push_back(file);
+	if (!check_exist_out(file)) inaccessible_files.push_back(file);
 	for (auto &file : tplfile_vec)
-		if (!check_exist_in(file)) inaccessible_files.push_back(file);
+	if (!check_exist_in(file)) inaccessible_files.push_back(file);
 	for (auto &file : inpfile_vec)
-		if (!check_exist_out(file)) inaccessible_files.push_back(file);
+	if (!check_exist_out(file)) inaccessible_files.push_back(file);
 
 	if (inaccessible_files.size() != 0)
 	{
@@ -483,6 +496,14 @@ void PANTHERSlave::check_io()
 			missing += file + " , ";
 		throw PestError("Could not access the following model interface files: " + missing);
 	}
+}
+
+
+std::string PANTHERSlave::get_transfer_file_name(int index)
+{
+	if (index < 0 || index > transfer_file_names.size())
+		throw(PestError("Invalid transfer file number: " + index));
+	return transfer_file_names[index];
 }
 
 
@@ -649,50 +670,48 @@ void PANTHERSlave::start(const string &host, const string &port)
 		}
 		else if (net_pack.get_type() == NetPackage::PackType::REQ_TNS_FILE)
 		{
-			//The master wants a file
-			cout << "master has requested a file...";
-			int file_number = net_pack.get_file_number();
-			string file_name = transfer_file_names[file_number];
-			ifstream file(file_name, ios::in | ios::binary | ios::ate);		//Open the file and read it
-			stringstream data_buffer;
-			data_buffer << file.rdbuf();
-			const string data = data_buffer.str();							//This gives me a string. Maybe data needs to be a char*
-			string data_hmac = hmacsha2::hmac(data, transfer_security_key);	//Calculate the hmac to send
-
-			//Reset the netpackage and send it back with the file, file_number, and hmac
+			//The master has requested a file
+			int file_number_on_worker = net_pack.get_file_number();
+			string file_name = get_transfer_file_name(file_number_on_worker);
+			ifstream file(file_name); //file(file_name, ios::in | ios::binary | ios::ate);
+			string data((istreambuf_iterator<char>(file)), istreambuf_iterator<char>()); //doens't work if ifstream is binary
+			string hmac = hmacsha2::hmac(data, transfer_security_key);
+			file.close();
 			net_pack.reset(NetPackage::PackType::TNS_FILE, 0, 0, "");
-			net_pack.set_file_number(file_number);
-			net_pack.set_hash(data_hmac);
-			cout << "sending...";
-			err = send_message(net_pack, &data[0], data.length());			//&data_v[0] is a pointer to the first char in the string
+			net_pack.set_hash(hmac);
+			net_pack.set_file_number(file_number_on_worker);
+			cout << "master has requested a file: " << file_name << endl;
+			cout << "hmac: " << hmac << endl;
+			err = send_message(net_pack, &data[0], data.length()); //&data[0] is a pointer to the first char in the string
 			if (err != 1)
 			{
 				cout << "error sending message" << endl;
 				exit(-1);
 			}
-			cout << "done" << endl;
+			cout << "file sent." << endl;
 		}
 		else if (net_pack.get_type() == NetPackage::PackType::TNS_FILE)
 		{
 			//The master has sent a file
-			cout << "master has sent a file...";
 			vector<int8_t> data_v = net_pack.get_data();
-			string data_s = (char*)&data_v[0];								//&data_v[0] is a pointer to the first char in the string
+			string data_s(data_v.begin(), data_v.end());
 			string calculated_hmac = hmacsha2::hmac(data_s, transfer_security_key);
-			if (calculated_hmac != (char*)net_pack.hash)
+			string expected_hmac = net_pack.get_hash();
+			string file_name = transfer_file_names[net_pack.get_file_number()];
+			if ((transfer_security_method == "NONE") ||
+				(transfer_security_method == "HMAC" && calculated_hmac == expected_hmac))
 			{
-				cout << "hmac invalid" << endl;
-				exit(-1);
+				ofstream out(file_name);
+				out << data_s;
+				out.close();
+				cout << "master sent a file '" << file_name << "' and it has been saved." << endl;
 			}
-
-			//Write the file
-			int file_number = net_pack.get_file_number();
-			string file_name = transfer_file_names[file_number];
-			cout << "writing file..." << file_name << "...";
-			ofstream out(file_name, ios::out | ios::binary);
-			out << data_s;
-			out.close();
-			cout << "done" << endl;
+			else
+			{
+				cout << "master sent a file '" << file_name << "' but the HMAC did not match and the file has not been saved." << endl;
+				cout << "expected HMAC: " << expected_hmac << endl;
+				cout << "calculated HMAC: " << calculated_hmac << endl;
+			}
 		}
 		else 
 		{

@@ -29,6 +29,7 @@
 #include "network_package.h"
 #include "RunManagerAbstract.h"
 #include "RunStorage.h"
+#include "file_transfer_info.h"
 
 class SlaveInfoRec {
 public:
@@ -108,20 +109,29 @@ public:
 	~RunManagerPanther(void); 
 	int get_n_waiting_runs() { return waiting_runs.size(); }
 	void close_slaves();
+	enum class SecurityMethod { NONE, HMAC };
+	void set_transfer_security(std::string _transfer_security_method, const std::string &_transfer_security_key);
+	void set_transfer_file_names(const std::vector<std::string> &_transfer_file_names);
 	std::string get_transfer_security_key();
-	void set_transfer_security_key(const std::string &transfer_security_key);
-	bool demo_file_transfer = false;    //Chas temp for file transfer demonstration
-	bool file_transfer_demonstration(); //Chas temp for file transfer demonstration
+	std::string get_transfer_file_name(int index);
+	void queue_file_transfer_to_workers(int _filename_index_on_manager, int _filename_index_on_worker);
+	void queue_file_transfer_from_worker(int _filename_index_on_worker, int _filename_index_on_manager, int _run_id);
+	bool is_run_last(int _run_id);
 
 private:
 	std::string port;
-	std::string transfer_security_key;
 	static const int BACKLOG;
 	static const int MAX_FAILED_PINGS;
 	static const int N_PINGS_UNRESPONSIVE;
 	static const int PING_INTERVAL_SECS;
 	static const int MAX_CONCURRENT_RUNS_LOWER_LIMIT;
-	
+
+	SecurityMethod transfer_security_method;
+	std::string transfer_security_key;
+	std::vector<std::string> transfer_file_names;
+    vector<FileTransferInfo> file_transfer_tasks;
+	bool do_file_transfers();
+
 	double overdue_reched_fac;
 	double overdue_giveup_fac;
 	double overdue_giveup_time_sec;

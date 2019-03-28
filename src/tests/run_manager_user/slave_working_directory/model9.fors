@@ -1,0 +1,114 @@
+
+///////////////////////////////////////
+// input data definitions
+
+[input]
+name = rain040196
+file = 040196.infilled.csv
+
+[input]
+name = rain040599
+file = 040599.infilled.csv
+
+[input]
+name = rain040192
+file = 040192.infilled.csv
+
+[input]
+name = mpot
+file = 040196.mpot.csv
+
+[input]
+name = mlake
+file = 040196.mlake.csv
+
+///////////////////////////////////////
+// node definitions
+
+[sacramento]
+name = catchment1
+location = 152, 208
+area = 33.071
+model = my_sac_model1
+dsnode = split1
+
+[splitter]
+name = split1
+location = 253.9372, 212.3611
+splittable = +
+    inflow, losseos, +
+    0, 0, +
+    0.18, 0.18, +
+    999999, 0.18
+dsnode = tallydam
+dsnode = losseos
+
+[storage]
+name = tallydam
+location = 337.1976, 212.9923
+initialstorage = 363
+storagetable = tallebudgera_dimensions.csv
+spillwaytable = tallebudgera_spillway.csv
+rainfall = rain040196
+evaporation = mlake
+seepage = 0.821
+dsnode = catchment2
+
+[sacramento]
+name = catchment2
+location = 450.567, 210.4762
+area = 23.377
+model = my_sac_model2
+dsnode = split2
+
+[splitter]
+name = split2
+location = 540.0104, 218.2748
+splittable = +
+    inflow, losseos, +
+    0, 0, +
+    0.18, 0.18, +
+    999999, 0.18
+dsnode = gs146095a
+dsnode = losseos
+
+[gauge]
+name = losseos
+location = 466.0903, 340.2447
+
+[gauge]
+name = gs146095a
+location = 618.2924, 224.2964
+
+///////////////////////////////////////
+// sacramento models
+
+[sacramento model]
+name = my_sac_model1
+rainfall = 0.700000424438911*rain040192
+evaporation = mpot
+parameters = +
+       1.0000000E-02,    6.0000000E+01,    8.0000000E+01,    1.0000000E-02, + //adimp, lzfpm, lzfsm, lzpk
+       1.0000000E-01,    1.5000000E+02,    1.0000000E-02,    1.0000000E-01, + //lzsk, lztwm, pctim, pfree
+       1.5000000E+00,    1.0000000E-03,    1.0000000E-02,    1.0000000E-02, + //rexp, sarva, side, ssout
+       5.0000000E+01,    2.0000000E-01,    3.0000000E+01,    1.8000000E+02 //uzfwm, uzk, uztwm, zperc
+uh = 0.837397019315526, 0.162602980684474
+
+[sacramento model]
+name = my_sac_model2
+rainfall = 0.933691044633361*rain040599
+evaporation = mpot
+parameters = +
+       1.0000000E-02,    6.0000000E+01,    8.0000000E+01,    1.0000000E-02, + //adimp, lzfpm, lzfsm, lzpk
+       1.0000000E-01,    1.5000000E+02,    1.0000000E-02,    1.0000000E-01, + //lzsk, lztwm, pctim, pfree
+       1.5000000E+00,    1.0000000E-03,    1.0000000E-02,    1.0000000E-02, + //rexp, sarva, side, ssout
+       5.0000000E+01,    2.0000000E-01,    3.0000000E+01,    1.8000000E+02 //uzfwm, uzk, uztwm, zperc
+uh = 0.797626696108772, 0.202373303891228
+
+///////////////////////////////////////
+// recorders
+
+[recorder]
+node = gs146095a
+outno = 0
+filename = result_flow.csv
