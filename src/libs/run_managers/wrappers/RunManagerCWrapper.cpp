@@ -763,6 +763,155 @@ int rmic_get_n_total_runs(RunManager *run_manager_ptr, int *total_runs)
 	return err;
 }
 
+int rmic_set_transfer_file_names(RunManager *run_manager_ptr, char **fnames, int fnames_array_len)
+{
+	_c_run_manager_error.clear();
+	int err = 0;
+	try {
+		vector<string> fnames_vec(fnames, fnames + fnames_array_len);
+		run_manager_ptr->set_transfer_file_names(fnames_vec);
+	}
+	catch (const exception &e)
+	{
+		err = 1;
+		_c_run_manager_error = e.what();
+	}
+	catch (char const *e)
+	{
+		err = 1;
+		_c_run_manager_error = e;
+	}
+	catch (const string e)
+	{
+		err = 1;
+		_c_run_manager_error = e;
+	}
+	catch (...)
+	{
+		err = 1;
+	}
+	return err;
+}
+
+int rmic_set_transfer_security(RunManager *run_manager_ptr, char *security_method, char *security_key)
+{
+	int err = 0;
+	_c_run_manager_error.clear();
+	try {
+		run_manager_ptr->set_transfer_security(security_method, security_key);
+
+	}
+	catch (const exception &e)
+	{
+		err = 1;
+		_c_run_manager_error = e.what();
+	}
+	catch (char const *e)
+	{
+		err = 1;
+		_c_run_manager_error = e;
+	}
+	catch (const string e)
+	{
+		err = 1;
+		_c_run_manager_error = e;
+	}
+	catch (...)
+	{
+		err = 1;
+	}
+	return err;
+}
+
+int rmic_is_run_last(RunManager *run_manager_ptr, int run_id)
+{
+	_c_run_manager_error.clear();
+	int err = 0;
+	try {
+		run_manager_ptr->is_run_last(run_id);
+	}
+	catch (const exception &e)
+	{
+		err = 1;
+		_c_run_manager_error = e.what();
+	}
+	catch (char const *e)
+	{
+		err = 1;
+		_c_run_manager_error = e;
+	}
+	catch (const string e)
+	{
+		err = 1;
+		_c_run_manager_error = e;
+	}
+	catch (...)
+	{
+		err = 1;
+	}
+	return err;
+}
+
+int rmic_queue_file_transfer_from_worker(RunManager *run_manager_ptr, int filename_index_on_worker, int filename_index_on_manager, int run_id)
+{
+	_c_run_manager_error.clear();
+	int err = 0;
+	try {
+		run_manager_ptr->queue_file_transfer_from_worker(filename_index_on_worker, filename_index_on_manager, run_id);
+	}
+	catch (const exception &e)
+	{
+		err = 1;
+		_c_run_manager_error = e.what();
+	}
+	catch (char const *e)
+	{
+		err = 1;
+		_c_run_manager_error = e;
+	}
+	catch (const string e)
+	{
+		err = 1;
+		_c_run_manager_error = e;
+	}
+	catch (...)
+	{
+		err = 1;
+	}
+	return err;
+}
+
+int rmic_queue_file_transfer_to_workers(RunManager *run_manager_ptr, int filename_index_on_manager, int filename_index_on_worker)
+{
+	_c_run_manager_error.clear();
+	int err = 0;
+	try {
+		run_manager_ptr->queue_file_transfer_to_workers(filename_index_on_manager, filename_index_on_worker);
+	}
+	catch (const exception &e)
+	{
+		err = 1;
+		_c_run_manager_error = e.what();
+	}
+	catch (char const *e)
+	{
+		err = 1;
+		_c_run_manager_error = e;
+	}
+	catch (const string e)
+	{
+		err = 1;
+		_c_run_manager_error = e;
+	}
+	catch (...)
+	{
+		err = 1;
+	}
+	return err;
+}
+
+
+
 
 int rmic_delete(RunManager *run_manager_ptr)
 {

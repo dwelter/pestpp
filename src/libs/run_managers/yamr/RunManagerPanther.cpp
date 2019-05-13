@@ -312,7 +312,7 @@ std::string RunManagerPanther::get_transfer_security_key()
 }
 
 
-void RunManagerPanther::set_transfer_security(string _transfer_security_method, const std::string &_transfer_security_key)
+void RunManagerPanther::set_transfer_security(const string _transfer_security_method, const std::string &_transfer_security_key)
 {
 	if (_transfer_security_method == "HMAC")
 		transfer_security_method = RunManagerPanther::SecurityMethod::HMAC;

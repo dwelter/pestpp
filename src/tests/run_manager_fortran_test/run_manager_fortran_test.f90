@@ -48,6 +48,16 @@
     
     external rmif_initialize_restart
     integer rmif_initialize_restart
+    
+    external rmif_set_transfer_file_names
+    integer rmif_set_transfer_file_names
+    external rmif_set_transfer_security
+    integer rmif_set_transfer_security
+    external rmif_queue_file_transfer_from_worker
+    integer rmif_queue_file_transfer_from_worker
+    external rmif_queue_file_transfer_to_workers
+    integer rmif_queue_file_transfer_to_workers
+    
     external rmif_delete
     integer rmif_delete
     

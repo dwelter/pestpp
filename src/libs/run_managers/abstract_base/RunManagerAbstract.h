@@ -80,6 +80,14 @@ public:
 	virtual void print_run_summary(std::ostream &fout) { file_stor.print_run_summary(fout); }
 	//virtual Observations get_init_run_obs() { return init_run_obs; }
 	virtual std::vector<double> get_init_sim() { return init_sim;  }
+	// the follow methods are only used in some of the derived classes (ie PANTHER)
+	void set_transfer_security(std::string _transfer_security_method, const std::string &_transfer_security_key) {}
+	void set_transfer_file_names(const std::vector<std::string> &_transfer_file_names) {}
+	std::string get_transfer_security_key() {}
+	std::string get_transfer_file_name(int index) {}
+	void queue_file_transfer_to_workers(int _filename_index_on_manager, int _filename_index_on_worker) {}
+	void queue_file_transfer_from_worker(int _filename_index_on_worker, int _filename_index_on_manager, int _run_id) {}
+	bool is_run_last(int _run_id) { return true; }
 protected:
 	int total_runs;
 	int max_n_failure; // maximium number of times to retry a failed model run

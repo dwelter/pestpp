@@ -110,7 +110,7 @@ public:
 	int get_n_waiting_runs() { return waiting_runs.size(); }
 	void close_slaves();
 	enum class SecurityMethod { NONE, HMAC };
-	void set_transfer_security(std::string _transfer_security_method, const std::string &_transfer_security_key);
+	void set_transfer_security(const std::string _transfer_security_method, const std::string &_transfer_security_key);
 	void set_transfer_file_names(const std::vector<std::string> &_transfer_file_names);
 	std::string get_transfer_security_key();
 	std::string get_transfer_file_name(int index);
